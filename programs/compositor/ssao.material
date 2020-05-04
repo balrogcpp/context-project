@@ -1,0 +1,80 @@
+fragment_program Context/Crytek_fp_glsl glsl
+{
+    source ssao.frag
+
+	default_params
+	{
+		param_named sSceneDepthSampler int 0
+		param_named AttenuationSampler int 1
+		param_named sRotSampler4x4 int 2
+	}
+}
+
+fragment_program Context/Crytek_fp_glsles glsles
+{
+    source ssao.frag
+
+	default_params
+	{
+		param_named sSceneDepthSampler int 0
+		param_named AttenuationSampler int 1
+		param_named sRotSampler4x4 int 2
+	}
+}
+
+fragment_program Context/Crytek_fp unified
+{
+	delegate Context/Crytek_fp_glsl
+	delegate Context/Crytek_fp_glsles
+}
+
+material Context/SSAO
+{
+    technique
+    {
+        pass
+        {
+            depth_check off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+            fragment_program_ref Context/Crytek_fp
+            {
+                param_named_auto cViewportSize viewport_size
+                param_named_auto farClipDistance far_clip_distance
+                param_named_auto cFov fov
+
+				param_named cSampleInScreenspace float 0
+                param_named cSampleLengthScreenSpace float 0.06
+                param_named cSampleLengthWorldSpace float 2
+				param_named cOffsetScale float 0.05
+				param_named cDefaultAccessibility float 0.5
+				param_named cEdgeHighlight float 2
+            }
+
+            texture_unit
+            {
+                content_type compositor Context/Main mrt 0
+                tex_address_mode clamp
+                filtering none
+            }
+
+            texture_unit
+            {
+                content_type compositor Context/Main bloom
+                tex_address_mode clamp
+                filtering none
+            }
+
+            texture_unit
+            {
+                // texture regularSphere4.dds
+                texture regularSphereJittered4.dds
+                // texture regularSphereOctant4.dds
+                // texture regularSphereJitteredOctant4.dds
+                // texture rand4x4.dds
+                tex_address_mode wrap
+                filtering none
+            }
+        }
+    }
+}

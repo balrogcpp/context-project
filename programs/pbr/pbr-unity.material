@@ -1,0 +1,250 @@
+fragment_program PBR_IBL_Unity_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,DEPTH_SHADOWRECEIVER
+}
+
+fragment_program PBR_IBL_Unity_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,DEPTH_SHADOWRECEIVER
+}
+
+fragment_program PBR_IBL_Unity_fs unified
+{
+	delegate PBR_IBL_Unity_fs_glsl
+	delegate PBR_IBL_Unity_fs_glsles
+}
+
+material PBR_IBL/Unity
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+            texture_unit Normal {}
+            texture_unit MetallicRougness {}
+            texture_unit AmbientOcclusion {}
+            texture_unit Emissive {}
+            texture_unit IBL_Diffuse {}
+            texture_unit IBL_Specular {}
+            texture_unit IBL_LUT {}
+
+            vertex_program_ref PBR_vs {}
+
+			fragment_program_ref PBR_IBL_Unity_fs
+			{
+                param_named uBaseColorSampler   int 0
+                param_named uNormalSampler    int 1
+                param_named uMetallicRoughnessSampler int 2
+                param_named uEmissiveSampler      int 3
+                param_named uOcclusionSampler   int 4
+                param_named uDiffuseEnvSampler  int 5
+                param_named uSpecularEnvSampler int 6
+                param_named ubrdfLUT            int 7
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program PBR_Unity_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,DEPTH_SHADOWRECEIVER
+}
+
+fragment_program PBR_Unity_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,DEPTH_SHADOWRECEIVER
+}
+
+fragment_program PBR_Unity_fs unified
+{
+	delegate PBR_Unity_fs_glsl
+	delegate PBR_Unity_fs_glsles
+}
+
+
+material PBR/Unity
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+            texture_unit Normal {}
+            texture_unit MetallicRougness{}
+
+            vertex_program_ref PBR_vs {}
+
+			fragment_program_ref PBR_Unity_fs
+			{
+                param_named uBaseColorSampler   int 0
+                param_named uNormalSampler    int 1
+                param_named uMetallicRoughnessSampler int 2
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program PBRExt_Unity_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_OCCLUSIONMAP,DEPTH_SHADOWRECEIVER
+}
+
+fragment_program PBRExt_Unity_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_OCCLUSIONMAP,DEPTH_SHADOWRECEIVER
+}
+
+fragment_program PBRExt_Unity_fs unified
+{
+	delegate PBRExt_Unity_fs_glsl
+	delegate PBRExt_Unity_fs_glsles
+}
+
+
+material PBRExt/Unity
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+            texture_unit Normal {}
+            texture_unit MetallicRougness {}
+            texture_unit Emissive {}
+            texture_unit AmbientOcclusion {}
+
+            vertex_program_ref PBR_vs {}
+
+			fragment_program_ref PBRExt_Unity_fs
+			{
+                param_named uBaseColorSampler   int 0
+                param_named uNormalSampler    int 1
+                param_named uMetallicRoughnessSampler int 2
+                param_named uEmissiveSampler      int 3
+                param_named uOcclusionSampler   int 4
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program Forest_Unity_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+}
+
+fragment_program Forest_Unity_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+}
+
+fragment_program Forest_Unity_fs unified
+{
+	delegate Forest_Unity_fs_glsl
+	delegate Forest_Unity_fs_glsles
+}
+
+material Forest/Unity
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+
+			vertex_program_ref Forest_vs {}
+
+			fragment_program_ref Forest_Unity_fs
+			{
+                param_named uBaseColorSampler   int 0
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program Forest_Shadowed_Unity_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,DEPTH_SHADOWRECEIVER
+}
+
+fragment_program Forest_Shadowed_Unity_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,DEPTH_SHADOWRECEIVER
+}
+
+fragment_program Forest_Shadowed_Unity_fs unified
+{
+	delegate Forest_Unity_fs_glsl
+	delegate Forest_Unity_fs_glsles
+}
+
+material Forest_Shadowed/Unity
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+
+			vertex_program_ref Forest_Shadowed_vs {}
+
+			fragment_program_ref Forest_Shadowed_Unity_fs
+			{
+                param_named uBaseColorSampler   int 0
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program Forest_Normal_Unity_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP
+}
+
+fragment_program Forest_Normal_Unity_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP
+}
+
+fragment_program Forest_Normal_Unity_fs unified
+{
+	delegate Forest_Normal_Unity_fs_glsl
+	delegate Forest_Normal_Unity_fs_glsles
+}
+
+material Forest_Normal/Unity
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+            texture_unit Normal {}
+
+            vertex_program_ref Forest_vs {}
+
+			fragment_program_ref Forest_Normal_Unity_fs
+			{
+                param_named uBaseColorSampler   int 0
+                param_named uNormalSampler      int 1
+			}
+        }
+    }
+}

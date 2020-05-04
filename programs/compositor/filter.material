@@ -1,0 +1,87 @@
+fragment_program Context/filter1_fsGLSL glsl
+{
+	source filter1.frag
+}
+
+fragment_program Context/filter1_fsGLSLES glsles
+{
+	source filter1.frag
+}
+
+fragment_program Context/filter1_fs unified
+{
+	delegate Context/filter1_fsGLSL
+	delegate Context/filter1_fsGLSLES
+
+    default_params
+    {
+        param_named_auto screenSize viewport_size
+        param_named AttenuationSampler int 0
+    }
+}
+
+material Context/filter1
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Context/filter1_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/Main bloom
+                filtering none
+            }
+		}
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program Context/filter2_fsGLSL glsl
+{
+	source filter2.frag
+}
+
+fragment_program Context/filter2_fsGLSLES glsles
+{
+	source filter2.frag
+}
+
+fragment_program Context/filter2_fs unified
+{
+	delegate Context/filter2_fsGLSL
+	delegate Context/filter2_fsGLSLES
+
+    default_params
+    {
+        param_named_auto screenSize viewport_size
+        param_named AttenuationSampler int 0
+    }
+}
+
+material Context/filter2
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Context/filter2_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/Main bloom
+                filtering none
+            }
+		}
+	}
+}

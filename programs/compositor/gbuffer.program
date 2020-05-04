@@ -1,0 +1,31 @@
+vertex_program SSAO/GBuffer_vp_glsl glsl
+{
+ 	source gbuffer.vert
+} 
+
+vertex_program SSAO/GBuffer_vp_glsles glsles
+{
+ 	source gbuffer.vert
+} 
+
+fragment_program SSAO/GBuffer_fp_glsl glsl
+{
+	source gbuffer.frag
+}
+
+
+fragment_program SSAO/GBuffer_fp_glsles glsles
+{
+	source gbuffer.frag
+}
+
+vertex_program SSAO/GBuffer_vp unified
+{
+	delegate SSAO/GBuffer_vp_glsl
+    delegate SSAO/GBuffer_vp_glsles
+}
+
+fragment_program SSAO/GBuffer_fp unified
+{
+	delegate SSAO/GBuffer_fp_glsl
+}

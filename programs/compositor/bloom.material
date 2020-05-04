@@ -1,0 +1,44 @@
+fragment_program Context/bloom_fsGLSL glsl
+{
+	source bloom.frag
+}
+
+fragment_program Context/bloom_fsGLSLES glsles
+{
+	source bloom.frag
+}
+
+fragment_program Context/bloom_fs unified
+{
+	delegate Context/bloom_fsGLSL
+	delegate Context/bloom_fsGLSLES
+
+    default_params
+    {
+        param_named_auto screenSize viewport_size
+        param_named SceneSampler int 0
+        //param_named AttenuationSampler int 1
+    }
+}
+
+material Context/bloom
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Context/bloom_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/Main scene
+                filtering none
+            }
+		}
+	}
+}

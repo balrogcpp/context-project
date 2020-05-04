@@ -1,0 +1,44 @@
+fragment_program Context/hdr_fsGLSL glsl
+{
+	source hdr.frag
+}
+
+fragment_program Context/hdr_fsGLSLES glsles
+{
+	source hdr.frag
+}
+
+fragment_program Context/hdr_fs unified
+{
+	delegate Context/hdr_fsGLSL
+	delegate Context/hdr_fsGLSLES
+
+	default_params
+	{
+		param_named_auto screenSize viewport_size
+		param_named SceneSampler int 0
+		param_named exposure float 0.5
+	}
+}
+
+material Context/HDR
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Context/hdr_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/Main hdr
+                filtering none
+            }
+		}
+	}
+}

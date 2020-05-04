@@ -1,0 +1,61 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PSSM/shadow_receiver_vsGLSL glsl
+{
+	source receiver.vert
+}
+
+vertex_program PSSM/shadow_receiver_vsGLSLES glsles
+{
+	source receiver.vert
+}
+
+vertex_program PSSM/shadow_receiver_vs unified
+{
+	delegate PSSM/shadow_receiver_vsGLSL
+	delegate PSSM/shadow_receiver_vsGLSLES
+
+    default_params
+    {
+        param_named_auto NearClipDistance near_clip_distance
+        param_named_auto FarClipDistance far_clip_distance
+    }
+}
+
+fragment_program PSSM/shadow_receiver_fsGLSL glsl
+{
+	source receiver.frag
+}
+
+fragment_program PSSM/shadow_receiver_fsGLSLES glsles
+{
+	source receiver.frag
+}
+
+fragment_program PSSM/shadow_receiver_fs unified
+{
+	delegate PSSM/shadow_receiver_fsGLSL
+	delegate PSSM/shadow_receiver_fsGLSLES
+
+    default_params
+    {
+        param_named baseColor int 0
+    }
+}
+
+material PSSM/ShadowReceiver
+{
+	technique
+	{
+		pass
+		{
+		    lighting off
+            polygon_mode_overrideable true
+
+			vertex_program_ref PSSM/shadow_receiver_vs {}
+
+			fragment_program_ref PSSM/shadow_receiver_fs {}
+
+            texture_unit BaseColor {}
+		}
+	}
+}

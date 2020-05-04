@@ -1,0 +1,59 @@
+vertex_program PSSM/shadow_caster_vsGLSL glsl
+{
+	source caster.vert
+}
+
+vertex_program PSSM/shadow_caster_vsGLSLES glsles
+{
+	source caster.vert
+}
+
+vertex_program PSSM/shadow_caster_vs unified
+{
+	delegate PSSM/shadow_caster_vsGLSL
+	delegate PSSM/shadow_caster_vsGLSLES
+
+	default_params
+	{
+	    param_named_auto worldViewMatrix worldview_matrix
+		param_named_auto worldViewProjMatrix worldviewproj_matrix
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program PSSM/shadow_caster_fsGLSL glsl
+{
+	source caster.frag
+}
+
+fragment_program PSSM/shadow_caster_fsGLSLES glsles
+{
+	source caster.frag
+}
+
+fragment_program PSSM/shadow_caster_fs unified
+{
+	delegate PSSM/shadow_caster_fsGLSL
+	delegate PSSM/shadow_caster_fsGLSLES
+
+    default_params
+    {
+        param_named baseColorMap int 0
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+material PSSM/shadow_caster
+{
+	technique
+	{
+		pass
+		{
+            texture_unit BaseColor {}
+
+			vertex_program_ref PSSM/shadow_caster_vs {}
+
+			fragment_program_ref PSSM/shadow_caster_fs {}
+		}
+	}
+}

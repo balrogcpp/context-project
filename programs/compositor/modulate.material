@@ -1,0 +1,62 @@
+fragment_program PSSM/modulate_fsGLSL glsl
+{
+	source modulate.frag
+}
+
+fragment_program PSSM/modulate_fsGLSLES glsles
+{
+	source modulate.frag
+}
+
+fragment_program PSSM/modulate_fs unified
+{
+	delegate PSSM/modulate_fsGLSL
+	delegate PSSM/modulate_fsGLSLES
+
+	default_params
+	{
+		param_named_auto Ambient ambient_light_colour
+		param_named_auto screenSize viewport_size
+		param_named_auto NearClipDistance near_clip_distance
+		param_named_auto FarClipDistance far_clip_distance
+		param_named_auto FogColour fog_colour
+		param_named_auto FogParams fog_params
+		param_named AttenuationSampler int 0
+		param_named SceneSampler int 1
+		param_named MrtSampler int 2
+	}
+}
+
+material Context/Modulate
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref PSSM/modulate_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/Main bloom
+                filtering none
+            }
+
+			texture_unit
+            {
+                content_type compositor Context/Main scene
+                filtering none
+            }
+
+			texture_unit
+            {
+                content_type compositor Context/Main mrt 0
+                filtering none
+            }
+		}
+	}
+}

@@ -1,0 +1,161 @@
+compositor Context/Main
+{    
+    technique
+    {
+        // GBuffer enconding: --------------------------------------------------
+        // mrt0: rgba --> unused in this sample (plain white, (1, 1, 1, 1))
+        // mrt1: xyz --> normals, w --> normalized linear depth [0, 1]
+        // mrt2: xyz --> position in view space
+        // 
+        // use a better packing of variables in the mrt to (possibly) increase
+        // performance!
+        // ---------------------------------------------------------------------
+        texture scene target_width target_height PF_BYTE_RGBA chain_scope
+        texture bloom target_width target_height PF_BYTE_RGBA chain_scope
+        texture mrt target_width target_height PF_FLOAT32_RGBA PF_FLOAT32_RGBA chain_scope
+        texture hdr target_width target_height PF_FLOAT16_RGB chain_scope
+
+        // the scene we want to modulate
+        target scene
+        {
+            input previous
+        }
+
+        /*target attenuation
+        {
+            input none
+            shadows off
+            material_scheme ShadowReceiver
+
+            pass clear
+			{
+				colour_value 0 0 0 1
+			}
+
+            pass render_scene {}
+        }*/
+
+        target mrt
+        {
+            input none
+            shadows off
+            material_scheme GBuffer
+			
+            pass clear
+			{
+			    buffers colour depth stencil
+				depth_value 1.0 
+			}
+
+            pass render_scene {}
+        }
+    }
+}
+
+compositor Context/SSAO
+{
+    technique
+    {
+        texture_ref bloom Context/Main bloom
+
+        target bloom
+        {
+            pass render_quad
+            {
+                material Context/SSAO
+            }
+        }
+    }
+}
+
+compositor Context/Bloom
+{
+    technique
+    {
+        texture_ref bloom Context/Main bloom
+
+        target bloom
+        {
+            pass render_quad
+            {
+                material Context/bloom
+            }
+        }
+    }
+}
+
+compositor Context/Filter1
+{
+    technique
+    {
+        texture_ref bloom Context/Main bloom
+
+        target bloom
+        {
+            pass render_quad
+            {
+                material Context/filter1
+            }
+        }
+    }
+}
+
+compositor Context/Filter2
+{
+    technique
+    {
+        texture_ref bloom Context/Main bloom
+
+        target bloom
+        {
+            pass render_quad
+            {
+                material Context/filter2
+            }
+        }
+    }
+}
+
+compositor Context/Modulate
+{
+    technique
+    {
+        texture_ref hdr Context/Main hdr
+
+        target hdr
+        {
+            pass render_quad
+            {
+                material Context/Modulate
+            }
+        }
+    }
+}
+
+compositor Context/HDR
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material Context/HDR
+            }
+        }
+    }
+}
+
+compositor Context/Output
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material Context/Bypass
+            }
+        }
+    }
+}

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Comment=
+Encoding=UTF-8
+Exec=/home/balrog/sources/context/cmake-build-relwithdebinfo/x64/demo/context-demo
+GenericName=
+Icon=/path/to/icon
+MimeType=
+Name=MyDemo
+Path=/home/balrog/sources/context/cmake-build-relwithdebinfo/x64/demo
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+Version=1.0

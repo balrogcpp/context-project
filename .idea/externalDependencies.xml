@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalDependencies">
+    <plugin id="Docker" />
+    <plugin id="GLSL" />
+    <plugin id="Git4Idea" />
+    <plugin id="com.intellij.diagram" />
+    <plugin id="com.jetbrains.sh" />
+    <plugin id="com.tang" />
+    <plugin id="org.intellij.plugins.markdown" />
+    <plugin id="org.jetbrains.plugins.cidr-intelliLang" />
+    <plugin id="org.jetbrains.plugins.clangFormat" />
+    <plugin id="org.jetbrains.plugins.clion.test.google" />
+    <plugin id="org.jetbrains.plugins.terminal" />
+    <plugin id="org.jetbrains.plugins.yaml" />
+  </component>
+</project>

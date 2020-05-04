@@ -1,0 +1,237 @@
+/*
+MIT License
+
+Copyright (c) 2020 Andrey Vasiliev
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+#pragma once
+
+#include <OgreLog.h>
+
+#include <vector>
+#include <string>
+
+#include "ContextConfigStructures.hpp"
+#include "NoCopy.hpp"
+
+namespace Context {
+class CameraMan;
+class ShaderResolver;
+}
+
+namespace Ogre {
+namespace RTSS {
+class PSSMShadowCameraSetup;
+}
+}
+
+namespace Context {
+
+class ContextManager : public Ogre::LogListener, public NoCopy {
+ private:
+  void SetupConfigManager();
+  void SetupPath();
+  void SetupInputs();
+  void SetupSDL();
+  void SetupOGRE();
+  void SetupRTSS();
+  void SetupShaderResolver();
+  void SetupOgreLog();
+  void InitGeneralResources();
+  void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
+        bool maskDebug, const std::string &logName, bool &skipThisMessage) final;
+
+ public:
+  void Setup();
+  void Reset();
+  void RestoreScreenSize();
+  void SetupGlobal();
+  void ResetGlobals();
+  void Render();
+  void SetupOgreCamera();
+  void SetupOgreScenePreconditions();
+  void UpdateCursorStatus(Cursor cursor);
+
+  //getters
+  [[nodiscard]] Ogre::Root *GetOgreRootPtr() const {
+    return ogre_root_;
+  }
+
+  [[nodiscard]] Ogre::SceneManager *GetOgreScenePtr() const {
+    return ogre_scene_manager_;
+  }
+
+  [[nodiscard]] std::shared_ptr<CameraMan> GetCameraMan() const {
+    return camera_man_;
+  }
+
+  [[nodiscard]] Ogre::Camera *GetOgreCamera() const {
+    return ogre_camera_;
+  }
+
+  [[nodiscard]] Ogre::SceneNode *GetCameraNode() const {
+    return ogre_camera_node_;
+  }
+
+  [[nodiscard]] Ogre::Viewport *GetOgreViewport() const {
+    return ogre_viewport_;
+  }
+
+ public:
+  [[nodiscard]] const std::string &GetWindowCaption() const {
+    return window_caption_;
+  }
+
+  void SetCaption(const std::string &caption) {
+    ContextManager::window_caption_ = caption;
+  }
+
+ private:
+  //SDL2
+  SDL_Window *sdl_window_ = nullptr;
+  SDL_Renderer *sdl_renderer_ = nullptr;
+  SDL_DisplayMode *display_mode_ = nullptr;
+  SDL_GLContext sdl_context_ = nullptr;
+  std::string window_caption_ = "My Demo";
+  WindowPosition window_position_ = {0, 0, 1024, 768, false};
+  WindowPosition actual_monitor_size_ = {0, 0, 0, 0, false};
+  OpenGlAttribute opengl_version_ = {3, 3}; //default GL version
+  bool opengl_ver_force_ = false;
+
+  //OGRE stuff
+  std::string ogre_log_name_ = "Ogre.log";
+  Ogre::Root *ogre_root_ = nullptr;
+  Ogre::RenderWindow *ogre_render_window_ = nullptr;
+  Ogre::SceneManager *ogre_scene_manager_ = nullptr;
+  Ogre::SceneNode *ogre_camera_node_ = nullptr;
+  Ogre::Viewport *ogre_viewport_ = nullptr;
+  Ogre::Camera *ogre_camera_ = nullptr;
+  std::shared_ptr<CameraMan> camera_man_;
+  std::shared_ptr<Ogre::ShadowCameraSetup> ogre_shadow_camera_setup_;
+
+  //RTSS
+  std::shared_ptr<ShaderResolver> rtss_material_listener_;
+  bool rtss_enable_ = true;
+  bool rtss_pssm4_enable_ = true;
+  bool rtss_cache_enable_ = false;
+  bool rtss_resolver_enable_ = true;
+  bool rtss_perpixel_light_enable_ = false;
+  bool rtss_perpixel_fog_enable_ = true;
+  std::string rtss_cache_dir_ = ".rtss";
+
+  //HLMS
+  bool hlms_enable_ = false;
+  bool hlms_force_enable_ = false;
+
+ public:
+  [[nodiscard]] const std::shared_ptr<Ogre::ShadowCameraSetup> &GetOgreShadowCameraSetup() const;
+
+  //Global
+  std::string media_location_directory_ = "..";
+  std::string global_resource_list_file_ = "resources.list";
+  bool global_log_enable_ = false;
+  bool global_verbose_enable_ = false;
+  bool global_octree_enable_ = true;
+  bool global_stbi_enable_ = true;
+  bool global_freeimage_enable_ = false;
+  bool global_particlefx_enable_ = true;
+
+  bool physics_enable_ = true;
+  bool IsPhysicsEnable() const;
+  bool IsSoundEnable() const;
+  bool sound_enable_ = true;
+
+  bool graphics_debug_show_wireframe_ = false;
+  bool graphics_vsync_ = true;
+  bool graphics_gamma_enable_ = false;
+  int graphics_fsaa_ = 0;
+  int graphics_msaa_ = 0;
+  std::string graphics_filtration_ = "anisotropic";
+  int graphics_anisotropy_level_ = 4;
+  int graphics_mipmap_count_ = 10;
+
+  //Shadows
+  bool graphics_shadows_enable_ = true;
+  bool graphics_shadows_depth_enable_ = true;
+  bool graphics_shadows_pssm_enable_ = true;
+  int graphics_shadows_texture_resolution_ = 1024;
+  int graphics_shadows_texture_count_ = 3;
+  float graphics_shadows_pssm_0_ = 0.0f;
+  float graphics_shadows_pssm_1_ = 0.0f;
+  float graphics_shadows_pssm_2_ = 0.5f;
+  int graphics_shadows_pssm_0_resolution_ = 1024;
+  int graphics_shadows_pssm_1_resolution_ = 1024;
+  int graphics_shadows_pssm_2_resolution_ = 1024;
+  bool graphics_shadows_split_auto_ = false;
+  float graphics_shadows_far_distance_ = 200;
+  bool graphics_shadows_self_shadow_ = true;
+  float graphics_shadows_split_padding_ = 0.0f;
+  bool graphics_shadows_back_faces_ = true;
+  std::string graphics_shadows_tecnique_ = "texture";
+  std::string graphics_shadows_lighting_ = "additive";
+  std::string graphics_shadows_projection_ = "pssm";
+  std::string graphics_shadows_material_ = "default";
+  std::string graphics_shadows_receiver_material_;
+  std::string graphics_shadows_caster_material_ = "PSSM/shadow_caster";
+  bool graphics_shadows_integrated_ = true;
+
+  bool application_init_with_plane_ = false;
+  bool application_plane_wireframe_ = false;
+  float application_plane_size_x_ = 100.0f;
+  float application_plane_size_z_ = 100.0f;
+  float application_plane_offset_ = 0.0f;
+  int application_plane_segments_x_ = 10;
+  int application_plane_segments_z_ = 10;
+  std::string application_plane_material_;
+
+  bool application_init_with_plane2_ = false;
+  bool application_plane2_wireframe_ = false;
+  float application_plane2_size_x_ = 100.0f;
+  float application_plane2_size_z_ = 100.0f;
+  int application_plane2_segments_x_ = 10;
+  int application_plane2_segments_z_ = 10;
+  int application_plane2_offset_ = 0.0f;
+  std::string application_plane2_material_;
+
+  bool application_init_with_plane3_ = false;
+  bool application_plane3_wireframe_ = false;
+  float application_plane3_size_x_ = 100.0f;
+  float application_plane3_size_z_ = 100.0f;
+  float application_plane3_offset_ = 0.0f;
+  int application_plane3_segments_x_ = 10;
+  int application_plane3_segments_z_ = 10;
+  std::string application_plane3_material_;
+
+  //Singleton section
+ private:
+  static ContextManager ContextManagerSingleton;
+
+ public:
+  static ContextManager &GetSingleton() {
+    return ContextManagerSingleton;
+  }
+
+  static ContextManager *GetSingletonPtr() {
+    return &ContextManagerSingleton;
+  }
+};
+
+}

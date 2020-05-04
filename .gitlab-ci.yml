@@ -1,0 +1,24 @@
+image: docker:git
+
+services:
+  - docker:dind
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+build:
+  stage: build
+  script:
+    - docker build . -t context
+    - docker create -ti --name abc context bash
+    - mkdir artifacts
+    - docker cp abc:/home/user/context/artifacts/ContextProjectDemo-Release-x64.tar.gz .
+    - docker cp abc:/home/user/context/artifacts/ContextProjectDemo-Release-x64.zip .
+    - docker rm -f abc
+  artifacts:
+    paths:
+      - ContextProjectDemo-Release-x64.tar.gz
+      - ContextProjectDemo-Release-x64.zip
+    expire_in: 2 days
+  only:
+    - master

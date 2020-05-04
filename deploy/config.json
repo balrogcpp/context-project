@@ -1,0 +1,13 @@
+{
+  "window_caption": "ContextProjectDemo",
+  "window_width": 1024,
+  "window_high": 768,
+  "window_fullscreen": false,
+  "graphics_fsaa": 0,
+  "graphics_shadows_pssm_0_resolution": 1024,
+  "graphics_shadows_pssm_1_resolution": 1024,
+  "graphics_shadows_pssm_2_resolution": 1024,
+  "global_verbose_enable": false,
+  "global_log_enable": false,
+  "graphics_vsync": true
+}
