@@ -73,7 +73,7 @@ PSSMShadowCameraSetupB::~PSSMShadowCameraSetupB()
 {
 }
 //---------------------------------------------------------------------
-void PSSMShadowCameraSetupB::calculateSplitPoints(uint splitCount, float nearDist, float farDist, float lambda)
+void PSSMShadowCameraSetupB::calculateSplitPoints(Ogre::uint splitCount, float nearDist, float farDist, float lambda)
 {
   if (splitCount < 2)
     OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, "Cannot specify less than 2 splits",
@@ -101,7 +101,7 @@ void PSSMShadowCameraSetupB::setSplitPoints(const SplitPointList& newSplitPoints
   if (newSplitPoints.size() < 3) // 3, not 2 since splits + 1 points
     OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, "Cannot specify less than 2 splits",
                 "PSSMShadowCameraSetup::setSplitPoints");
-  mSplitCount = static_cast<uint>(newSplitPoints.size() - 1);
+  mSplitCount = static_cast<Ogre::uint>(newSplitPoints.size() - 1);
   mSplitPoints = newSplitPoints;
   mOptimalAdjustFactors.resize(mSplitCount);
 }

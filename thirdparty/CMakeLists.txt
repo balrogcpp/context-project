@@ -596,7 +596,7 @@ externalproject_add(target-cegui
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-freetype target-ogre1
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://gitlab.com/balrogcpp/cegui-static.git
+                    GIT_REPOSITORY https://github.com/roninest/cegui-static.git
                     GIT_TAG v0-8-7
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}

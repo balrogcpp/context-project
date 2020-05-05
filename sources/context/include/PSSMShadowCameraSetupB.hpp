@@ -85,7 +85,7 @@ namespace Context
         typedef std::vector<float> OptimalAdjustFactorList;
 
     protected:
-        uint mSplitCount;
+        Ogre::uint mSplitCount;
         SplitPointList mSplitPoints;
         OptimalAdjustFactorList mOptimalAdjustFactors;
         float mSplitPadding;
@@ -109,7 +109,7 @@ namespace Context
         @param farDist The far plane to use for the last split
         @param lambda Factor to use to reduce the split size
         */
-        void calculateSplitPoints(uint splitCount, float nearDist, float farDist, float lambda = 0.95f);
+        void calculateSplitPoints(Ogre::uint splitCount, float nearDist, float farDist, float lambda = 0.95f);
 
         /** Manually configure a new splitting scheme.
         @param newSplitPoints A list which is splitCount + 1 entries long, containing the
@@ -134,7 +134,7 @@ namespace Context
         */
         float getSplitPadding() const { return mSplitPadding; }
         /// Get the number of splits.
-        uint getSplitCount() const { return mSplitCount; }
+        Ogre::uint getSplitCount() const { return mSplitCount; }
 
         /// Returns a LiSPSM shadow camera with PSSM splits base on iteration.
         virtual void getShadowCamera(const Ogre::SceneManager *sm, const Ogre::Camera *cam,

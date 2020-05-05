@@ -175,21 +175,13 @@ RUN chown -R user:user /home/user
 USER user
 ENV HOME=/home/user
 
-WORKDIR /home/user/context/build-gnu
-RUN cmake -G Ninja ..
-
 WORKDIR /home/user/context/build-mingw
 RUN cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja ..
+RUN cmake --build . --target context-deps > /dev/null
+RUN cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target context-package
 
 WORKDIR /home/user/context/build-gnu
+RUN cmake -G Ninja ..
 RUN cmake --build . --target context-pdf > /dev/null
 RUN cmake --build . --target context-deps > /dev/null
-
-
-WORKDIR /home/user/context/build-gnu
 RUN cmake -G Ninja .. && cmake --build . --target context-package
-
-WORKDIR /home/user/context/build-mingw
-RUN cmake --build . --target context-deps > /dev/null
-WORKDIR /home/user/context/build-mingw
-RUN cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target context-package
