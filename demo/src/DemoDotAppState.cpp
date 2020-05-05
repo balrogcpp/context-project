@@ -58,7 +58,7 @@ void DemoDotAppState::Setup() {
                                                 Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
                                                 ogre_scene_manager_->getRootSceneNode());
 
-  ForestManager::GetSingleton().Create();
+//  ForestManager::GetSingleton().Create();
 
   if (ConfigManager::GetSingleton().GetBool("sound_enable")) {
     auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
@@ -76,7 +76,7 @@ void DemoDotAppState::Setup() {
     }
   }
 
-  ogre_scene_manager_->setShadowColour(Ogre::ColourValue(0.2));
+  ogre_scene_manager_->setShadowColour(Ogre::ColourValue(0.1));
 
 //  ContextManager::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::MANUAL);
 //  sinbad_ = std::make_shared<SinbadCharacterController>(ogre_camera_);
