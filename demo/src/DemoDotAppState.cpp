@@ -54,27 +54,27 @@ void DemoDotAppState::Setup() {
 
   ContextManager::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::FPS);
 
-  Ogre::SceneLoaderManager::getSingleton().load("empty.scene",
+  Ogre::SceneLoaderManager::getSingleton().load("test.scene",
                                                 Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
                                                 ogre_scene_manager_->getRootSceneNode());
 
 //  ForestManager::GetSingleton().Create();
 
-  if (ConfigManager::GetSingleton().GetBool("sound_enable")) {
-    auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
-
-    mSoundManager->setResourceGroupName(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-    mSoundManager->createSound("AmbientMusicDemo",
-                               "22384__dobroide__20060824-forest03.ogg",
-                               false,
-                               true,
-                               true,
-                               ContextManager::GetSingleton().GetOgreScenePtr());
-
-    if (mSoundManager->getSound("SceneManagerInstance1")) {
-      mSoundManager->getSound("SceneManagerInstance1")->play();
-    }
-  }
+//  if (ConfigManager::GetSingleton().GetBool("sound_enable")) {
+//    auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
+//
+//    mSoundManager->setResourceGroupName(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+//    mSoundManager->createSound("AmbientMusicDemo",
+//                               "22384__dobroide__20060824-forest03.ogg",
+//                               false,
+//                               true,
+//                               true,
+//                               ContextManager::GetSingleton().GetOgreScenePtr());
+//
+//    if (mSoundManager->getSound("SceneManagerInstance1")) {
+//      mSoundManager->getSound("SceneManagerInstance1")->play();
+//    }
+//  }
 
   ogre_scene_manager_->setShadowColour(Ogre::ColourValue(0.1));
 
