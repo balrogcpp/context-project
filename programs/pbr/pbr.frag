@@ -67,6 +67,9 @@ uniform vec4 uLightAttenuationArray[MAX_LIGHTS];
 uniform vec3 uLightSpotParamsArray[MAX_LIGHTS];
 #ifdef DEPTH_SHADOWRECEIVER
 uniform float uLightCastsShadowsArray[MAX_LIGHTS];
+uniform float bias0;
+uniform float bias1;
+uniform float bias2;
 #endif
 uniform vec3 uFogColour;
 uniform vec4 uFogParams;
@@ -116,14 +119,12 @@ uniform vec4 inverseShadowmapSize1;
 uniform vec4 inverseShadowmapSize2;
 uniform vec4 pssmSplitPoints;
 uniform vec4 uShadowColour;
+in vec4 lightSpacePosArray[MAX_LIGHTS * 3];
 #endif
 
 in vec3 vPosition;
 in vec4 vUV;
 
-#ifdef DEPTH_SHADOWRECEIVER
-in vec4 lightSpacePosArray[MAX_LIGHTS * 3];
-#endif
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -236,28 +237,46 @@ float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSiz
     return shadow;
 }
 
-float calcPSSMDepthShadow(sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2,
-vec4 inverseShadowmapSize0, vec4 inverseShadowmapSize1, vec4 inverseShadowmapSize2,
-vec4 lsPos0, vec4 lsPos1, vec4 lsPos2, vec4 splits, float camDepth)
+float calcPSSMDepthShadow()
 {
-    float shadow = 1.0;
+    float camDepth = vUV.z;
 
     // calculate shadow
-    if (camDepth <= splits.x)
+    if (camDepth <= pssmSplitPoints.x)
     {
-        shadow = calcDepthShadow_Poisson(shadowMap0, lsPos0, inverseShadowmapSize0, 0.0006);
+        return calcDepthShadow_Poisson(shadowMap0, lightSpacePosArray[0], inverseShadowmapSize0, bias0);
     }
-    else if (camDepth <= splits.y)
+    else if (camDepth <= pssmSplitPoints.y)
     {
-        shadow = calcDepthShadow_Poisson(shadowMap1, lsPos1, inverseShadowmapSize1, 0.001);
+        return calcDepthShadow_Poisson(shadowMap1, lightSpacePosArray[1], inverseShadowmapSize1, bias1);
     }
     else
     {
-        shadow = calcDepthShadow_Poisson(shadowMap2, lsPos2, inverseShadowmapSize2, 0.002);
+        return calcDepthShadow_Poisson(shadowMap2, lightSpacePosArray[2], inverseShadowmapSize2, bias2);
     }
-
-    return shadow;
 }
+//float calcPSSMDepthShadow(sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2,
+//vec4 inverseShadowmapSize0, vec4 inverseShadowmapSize1, vec4 inverseShadowmapSize2,
+//vec4 lsPos0, vec4 lsPos1, vec4 lsPos2, vec4 splits, float camDepth)
+//{
+//    float shadow = 1.0;
+//
+//    // calculate shadow
+//    if (camDepth <= splits.x)
+//    {
+//        shadow = calcDepthShadow_Poisson(shadowMap0, lsPos0, inverseShadowmapSize0, bias0);
+//    }
+//    else if (camDepth <= splits.y)
+//    {
+//        shadow = calcDepthShadow_Poisson(shadowMap1, lsPos1, inverseShadowmapSize1, bias1);
+//    }
+//    else
+//    {
+//        shadow = calcDepthShadow_Poisson(shadowMap2, lsPos2, inverseShadowmapSize2, bias2);
+//    }
+//
+//    return shadow;
+//}
 #endif
 
 // Encapsulate the various inputs used by the various functions in the shading equation
@@ -514,16 +533,32 @@ void main()
 #ifdef HAS_SEPARATE_ROUGHNESSMAP
     vec4 mrSampleMetallic = texture2D(uMetallicSampler, tex_coord);
     vec4 mrSampleRoughness = texture2D(uRoughnessSampler, tex_coord);
-    perceptualRoughness = mrSampleRoughness.r * perceptualRoughness;
-    metallic = mrSampleMetallic.r * metallic;
+    perceptualRoughness = mrSampleRoughness.r;
+    metallic = mrSampleMetallic.r;
 #else
     // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
     // This layout intentionally reserves the 'r' channel for (optional) occlusion map data
     vec4 mrSample = texture2D(uMetallicRoughnessSampler, tex_coord);
-    metallic = mrSample.r * metallic;
-    perceptualRoughness = mrSample.a * perceptualRoughness;
+    metallic = mrSample.r;
+    perceptualRoughness = mrSample.a;
 #endif
 #endif
+//    float perceptualRoughness = uMetallicRoughnessValues.y;
+//    float metallic = uMetallicRoughnessValues.x;
+//#ifdef HAS_METALROUGHNESSMAP
+//#ifdef HAS_SEPARATE_ROUGHNESSMAP
+//    vec4 mrSampleMetallic = texture2D(uMetallicSampler, tex_coord);
+//    vec4 mrSampleRoughness = texture2D(uRoughnessSampler, tex_coord);
+//    perceptualRoughness = mrSampleRoughness.r * perceptualRoughness;
+//    metallic = mrSampleMetallic.r * metallic;
+//#else
+//    // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
+//    // This layout intentionally reserves the 'r' channel for (optional) occlusion map data
+//    vec4 mrSample = texture2D(uMetallicRoughnessSampler, tex_coord);
+//    metallic = mrSample.r * metallic;
+//    perceptualRoughness = mrSample.a * perceptualRoughness;
+//#endif
+//#endif
 
     perceptualRoughness = clamp(perceptualRoughness, c_MinRoughness, 1.0);
     metallic = clamp(metallic, 0.0, 1.0);
@@ -619,10 +654,7 @@ void main()
 
 #ifdef DEPTH_SHADOWRECEIVER
         if (uLightCastsShadowsArray[i] == 1.0) {
-            float shadow = calcPSSMDepthShadow(shadowMap0, shadowMap1, shadowMap2,
-            inverseShadowmapSize0, inverseShadowmapSize1, inverseShadowmapSize2,
-            lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2],
-            pssmSplitPoints, vUV.z);
+            float shadow = calcPSSMDepthShadow();
 
             attenuation = min(attenuation, shadow);
         } else {

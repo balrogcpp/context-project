@@ -14,6 +14,13 @@ fragment_program PBR_IBL_Unreal_fs unified
 {
 	delegate PBR_IBL_Unreal_fs_glsl
 	delegate PBR_IBL_Unreal_fs_glsles
+
+	default_params
+	{
+	    param_named bias0 float 0.001
+	    param_named bias1 float 0.001
+	    param_named bias2 float 0.002
+	}
 }
 
 material PBR_IBL/Unreal
@@ -61,6 +68,13 @@ fragment_program PBR_Unreal_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,DEPTH_SHADOWRECEIVER
+
+	default_params
+	{
+	    param_named bias0 float 0.001
+	    param_named bias1 float 0.001
+	    param_named bias2 float 0.002
+	}
 }
 
 fragment_program PBR_Unreal_fs unified
@@ -110,6 +124,13 @@ fragment_program PBRExt_Unreal_fs unified
 {
 	delegate PBRExt_Unreal_fs_glsl
 	delegate PBRExt_Unreal_fs_glsles
+
+	default_params
+	{
+	    param_named bias0 float 0.001
+	    param_named bias1 float 0.001
+	    param_named bias2 float 0.002
+	}
 }
 
 material PBRExt/Unreal
@@ -157,6 +178,10 @@ fragment_program Forest_Unreal_fs unified
 {
 	delegate Forest_Unreal_fs_glsl
 	delegate Forest_Unreal_fs_glsles
+
+	default_params
+	{
+	}
 }
 
 material Forest/Unreal
@@ -194,6 +219,13 @@ fragment_program Forest_Shadowed_Unreal_fs unified
 {
 	delegate Forest_Shadowed_Unreal_fs_glsl
 	delegate Forest_Shadowed_Unreal_fs_glsles
+
+	default_params
+	{
+	    param_named bias0 float 0.001
+	    param_named bias1 float 0.001
+	    param_named bias2 float 0.002
+	}
 }
 
 material Forest_Shadowed/Unreal
@@ -231,6 +263,10 @@ fragment_program Forest_Normal_Unreal_fs unified
 {
 	delegate Forest_Normal_Unreal_fs_glsl
 	delegate Forest_Normal_Unreal_fs_glsles
+
+	default_params
+	{
+	}
 }
 
 material Forest_Normal/Unreal
