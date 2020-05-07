@@ -24,39 +24,15 @@ SOFTWARE.
 
 #pragma once
 
-#include "CeguiCommon.hpp"
-#include "PagedGeometryCommon.hpp"
-#include "OgreCommon.hpp"
-#include "BulletCommon.hpp"
-#include "SDL2Common.hpp"
-
-#include <pugixml.hpp>
-
-#include <rapidjson/rapidjson.h>
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/istreamwrapper.h>
-
-#include <angelscript.h>
-
-#include <glm/glm.hpp>
-
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <memory>
-#include <vector>
-#include <list>
-#include <set>
-#include <unordered_set>
-#include <unordered_map>
-#include <map>
-#include <algorithm>
-#include <chrono>
-#include <thread>
-#include <filesystem>
-#include <cstdlib>
-
-#include <omp.h>
+#include "BatchedGeometry.h"
+#include "BatchPage.h"
+#include "GrassLoader.h"
+#include "ImpostorPage.h"
+#include "PagedGeometry.h"
+#include "PropertyMaps.h"
+#include "RandomTable.h"
+#include "StaticBillboardSet.h"
+#include "TreeLoader2D.h"
+#include "TreeLoader3D.h"
+#include "WindBatchedGeometry.h"
+#include "WindBatchPage.h"
