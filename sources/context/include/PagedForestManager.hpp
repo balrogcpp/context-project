@@ -24,39 +24,39 @@ SOFTWARE.
 
 #pragma once
 
-#include "CeguiCommon.hpp"
-#include "PagedGeometryCommon.hpp"
-#include "OgreCommon.hpp"
-#include "BulletCommon.hpp"
-#include "SDL2Common.hpp"
+#include "ManagerCommon.hpp"
 
-#include <pugixml.hpp>
+namespace Forests {
+class PagedGeometry;
+}
+namespace Context {
 
-#include <rapidjson/rapidjson.h>
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/istreamwrapper.h>
+class PagedForestManager : public ManagerCommon {
+ public:
+  static PagedForestManager *GetSingletonPtr() {
+    return &pagedForestManagerSingleton;
+  }
 
-#include <angelscript.h>
+  static PagedForestManager &GetSingleton() {
+    return pagedForestManagerSingleton;
+  }
 
-#include <glm/glm.hpp>
+ private:
+  static PagedForestManager pagedForestManagerSingleton;
 
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <memory>
-#include <vector>
-#include <list>
-#include <set>
-#include <unordered_set>
-#include <unordered_map>
-#include <map>
-#include <algorithm>
-#include <chrono>
-#include <thread>
-#include <filesystem>
-#include <cstdlib>
+ public:
+  void Create();
 
-#include <omp.h>
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
+
+  void Reset() final;
+
+ private:
+  const float GRASS_WIDTH = 0.5f;
+  const float GRASS_HEIGHT = 0.5f;
+  Forests::PagedGeometry *trees = nullptr;
+  Forests::PagedGeometry *plants = nullptr;
+  Forests::PagedGeometry *grass = nullptr;
+};
+
+} //Context

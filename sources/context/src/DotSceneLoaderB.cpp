@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include "DotSceneLoaderB.hpp"
 
-#include "ForestManager.hpp"
+#include "StaticForestManager.hpp"
 #include "PhysicsManager.hpp"
 #include "CameraMan.hpp"
 #include "ConfigManager.hpp"
@@ -1505,7 +1505,7 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &xml_node, Ogre::SceneNode *pa
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessForest(pugi::xml_node &xml_node) {
-  ForestManager::GetSingleton().Create();
+  StaticForestManager::GetSingleton().Create();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessFog(pugi::xml_node &xml_node) {

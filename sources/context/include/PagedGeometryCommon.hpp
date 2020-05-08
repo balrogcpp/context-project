@@ -24,46 +24,15 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.hpp"
-
-namespace Context {
-
-class ForestManager : public ManagerCommon {
- public:
-  static ForestManager *GetSingletonPtr() {
-    return &staticForestManagerSingleton;
-  }
-
-  static ForestManager &GetSingleton() {
-    return staticForestManagerSingleton;
-  }
-
- private:
-  static ForestManager staticForestManagerSingleton;
-
- public:
-  void Create();
-
-  void GenerateTrees();
-
-  void GeneratePlants();
-
-  void generateBushes();
-
-  void GenerateGrass();
-
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
-
-  void Reset() final;
-
- private:
-  void createGrassMesh();
-
- private:
-  const float GRASS_WIDTH = 0.5f;
-  const float GRASS_HEIGHT = 0.5f;
-  Ogre::StaticGeometry *mField = nullptr;
-  Ogre::StaticGeometry *common = nullptr;
-};
-
-} //Context
+#include "BatchedGeometry.h"
+#include "BatchPage.h"
+#include "GrassLoader.h"
+#include "ImpostorPage.h"
+#include "PagedGeometry.h"
+#include "PropertyMaps.h"
+#include "RandomTable.h"
+#include "StaticBillboardSet.h"
+#include "TreeLoader2D.h"
+#include "TreeLoader3D.h"
+#include "WindBatchedGeometry.h"
+#include "WindBatchPage.h"

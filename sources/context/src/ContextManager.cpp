@@ -32,7 +32,8 @@ SOFTWARE.
 #include "PhysicsManager.hpp"
 #include "AppStateManager.hpp"
 #include "DotSceneLoaderB.hpp"
-#include "ForestManager.hpp"
+#include "StaticForestManager.hpp"
+#include "PagedForestManager.hpp"
 #include "SoundManager.hpp"
 #include "CompositorManager.hpp"
 #include "CeguiOverlayManager.hpp"
@@ -665,15 +666,15 @@ void ContextManager::SetupOGRE() {
   } else {
     ogre_root_ = new Ogre::Root("", "", "");
   }
-
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-  auto *mGL3PlusRenderSystem = new Ogre::GL3PlusRenderSystem();
-  Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
-#endif //OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL
   auto *mGLRenderSystem = new Ogre::GLRenderSystem();
   Ogre::Root::getSingleton().setRenderSystem(mGLRenderSystem);
-#endif //OGRE_BUILD_RENDERSYSTEM_GL
+#else
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+  auto *mGL3PlusRenderSystem = new Ogre::GL3PlusRenderSystem();
+  Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
+#endif
+#endif //OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   if (global_octree_enable_) {
     auto *mOctreePlugin = new Ogre::OctreeSceneManagerFactory();
@@ -869,58 +870,96 @@ void ContextManager::RestoreScreenSize() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupGlobal() {
+  std::cout << "SetupConfigManager...";
   SetupConfigManager();
+  std::cout << "Done\n";
+  std::cout << "SetupOgreLog...";
   SetupOgreLog();
+  std::cout << "Done\n";
+  std::cout << "SetupPath...";
   SetupPath();
+  std::cout << "Done\n";
+  std::cout << "SetupInputs...";
   SetupInputs();
+  std::cout << "SetupSDL...";
   SetupSDL();
+  std::cout << "Done\n";
+  std::cout << "SetupOGRE...";
   SetupOGRE();
-
+  std::cout << "Done\n";
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
   if (rtss_enable_) {
+    std::cout << "SetupRTSS...";
     SetupRTSS();
+    std::cout << "Done\n";
   }
 #endif
 
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
   if (rtss_enable_) {
+    std::cout << "SetupShaderResolver...";
     SetupShaderResolver();
+    std::cout << "Done\n";
   }
 #endif
 
+  std::cout << "InitGeneralResources...";
   InitGeneralResources();
+  std::cout << "Done\n";
 
-  ForestManager::GetSingleton().SetupGlobal();
-  ForestManager::GetSingleton().Setup();
+  std::cout << "StaticForestManager...";
+  StaticForestManager::GetSingleton().SetupGlobal();
+  StaticForestManager::GetSingleton().Setup();
+  std::cout << "Done\n";
+
+  std::cout << "PagedForestManager...";
+  PagedForestManager::GetSingleton().SetupGlobal();
+  PagedForestManager::GetSingleton().Setup();
+  std::cout << "Done\n";
 
   if (physics_enable_) {
+    std::cout << "PhysicsManager...";
     PhysicsManager::GetSingleton().SetupGlobal();
     PhysicsManager::GetSingleton().Setup();
+    std::cout << "Done\n";
   }
 
   if (sound_enable_) {
+    std::cout << "SoundManager...";
     SoundManager::GetSingleton().SetupGlobal();
     SoundManager::GetSingleton().Setup();
+    std::cout << "Done\n";
   }
 
+  std::cout << "CompositorManager...";
   CompositorManager::GetSingleton().SetupGlobal();
   CompositorManager::GetSingleton().Setup();
+  std::cout << "Done\n";
 
+  std::cout << "SetupOgreScenePreconditions...";
   SetupOgreScenePreconditions();
+  std::cout << "Done\n";
 
+  std::cout << "DotSceneLoaderB...";
   DotSceneLoaderB::GetSingleton().SetupGlobal();
   DotSceneLoaderB::GetSingleton().Setup();
+  std::cout << "Done\n";
 
+  std::cout << "CeguiOverlayManager...";
   CeguiOverlayManager::GetSingleton().SetupGlobal();
   CeguiOverlayManager::GetSingleton().Setup();
+  std::cout << "Done\n";
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::ResetGlobals() {
   CompositorManager::GetSingleton().ResetGlobal();
   CompositorManager::GetSingleton().Reset();
 
-  ForestManager::GetSingleton().ResetGlobal();
-  ForestManager::GetSingleton().Reset();
+  StaticForestManager::GetSingleton().ResetGlobal();
+  StaticForestManager::GetSingleton().Reset();
+
+  PagedForestManager::GetSingleton().ResetGlobal();
+  PagedForestManager::GetSingleton().Reset();
 
   if (physics_enable_) {
     PhysicsManager::GetSingleton().ResetGlobal();

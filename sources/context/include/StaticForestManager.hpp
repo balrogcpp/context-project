@@ -24,39 +24,46 @@ SOFTWARE.
 
 #pragma once
 
-#include "CeguiCommon.hpp"
-#include "PagedGeometryCommon.hpp"
-#include "OgreCommon.hpp"
-#include "BulletCommon.hpp"
-#include "SDL2Common.hpp"
+#include "ManagerCommon.hpp"
 
-#include <pugixml.hpp>
+namespace Context {
 
-#include <rapidjson/rapidjson.h>
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/istreamwrapper.h>
+class StaticForestManager : public ManagerCommon {
+ public:
+  static StaticForestManager *GetSingletonPtr() {
+    return &staticForestManagerSingleton;
+  }
 
-#include <angelscript.h>
+  static StaticForestManager &GetSingleton() {
+    return staticForestManagerSingleton;
+  }
 
-#include <glm/glm.hpp>
+ private:
+  static StaticForestManager staticForestManagerSingleton;
 
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <memory>
-#include <vector>
-#include <list>
-#include <set>
-#include <unordered_set>
-#include <unordered_map>
-#include <map>
-#include <algorithm>
-#include <chrono>
-#include <thread>
-#include <filesystem>
-#include <cstdlib>
+ public:
+  void Create();
 
-#include <omp.h>
+  void GenerateTrees();
+
+  void GeneratePlants();
+
+  void generateBushes();
+
+  void GenerateGrass();
+
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
+
+  void Reset() final;
+
+ private:
+  void createGrassMesh();
+
+ private:
+  const float GRASS_WIDTH = 0.5f;
+  const float GRASS_HEIGHT = 0.5f;
+  Ogre::StaticGeometry *mField = nullptr;
+  Ogre::StaticGeometry *common = nullptr;
+};
+
+} //Context

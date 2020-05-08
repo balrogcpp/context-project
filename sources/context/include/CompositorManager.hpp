@@ -74,6 +74,7 @@ class CompositorManager : public ManagerCommon {
   bool compositor_use_ssao_ = true;
   bool compositor_use_blur_ = true;
   bool compositor_use_hdr_ = true;
+  bool compositor_use_moution_blur_ = false;
 };
 
 } //namespace Context

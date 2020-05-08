@@ -5,11 +5,18 @@ This is prototype of 3D game engine written in C++. I develop it mostly during q
 Implemented features:
 
 - Accurate PBR materials
+- Loading of meshes and other resources
 - PSSM shadows
 - Solid body physics
+- Playing audio samples with OpenAL
 - Loading scenes from XML file
 - All dependencies manually compiled and linked statically
 - Cross platform build with CMake and Docker (for Linux and Windows) 
+
+Not implemented yet:
+
+- Game logic with Lua/Angelscript scripts and AI
+- Skeleton animation
 
 It is based on open source:
 

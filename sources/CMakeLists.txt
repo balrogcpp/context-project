@@ -52,6 +52,22 @@ set(OGGSOUND_HEADERS
     oggsound/include/OgreOggStreamWavSound.h
     )
 
+set(PAGEDGEOMETRY_HEADERS
+    pagedgeometry/include/BatchedGeometry.h
+    pagedgeometry/include/BatchPage.h
+    pagedgeometry/include/GrassLoader.h
+    pagedgeometry/include/ImpostorPage.h
+    pagedgeometry/include/PagedGeometry.h
+    pagedgeometry/include/PagedGeometryConfig.h
+    pagedgeometry/include/PropertyMaps.h
+    pagedgeometry/include/RandomTable.h
+    pagedgeometry/include/StaticBillboardSet.h
+    pagedgeometry/include/TreeLoader2D.h
+    pagedgeometry/include/TreeLoader3D.h
+    pagedgeometry/include/WindBatchedGeometry.h
+    pagedgeometry/include/WindBatchPage.h
+    )
+
 set(BTOGRE_HEADERS
     btogre/include/BtOgreExtras.h
     btogre/include/BtOgreGP.h
@@ -74,7 +90,8 @@ set(CONTEXT_HEADERS
     context/include/ConfigManager.hpp
     context/include/EventMapper.hpp
     context/include/DotSceneLoaderB.hpp
-    context/include/ForestManager.hpp
+    context/include/StaticForestManager.hpp
+    context/include/PagedForestManager.hpp
     context/include/SinbadCharacterController.hpp
     context/include/constants.hpp
     context/include/PhysicsManager.hpp
@@ -95,11 +112,12 @@ set(CONTEXT_HEADERS
     context/include/PropertyMaps.hpp
     context/include/CeguiOverlayManager.hpp
     context/include/PSSMShadowCameraSetupB.hpp
-    )
+    context/include/PagedGeometryCommon.hpp)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
     ${OGGSOUND_HEADERS}
+    ${PAGEDGEOMETRY_HEADERS}
     ${CONTEXT_HEADERS}
     )
 
@@ -119,6 +137,20 @@ set(OGGSOUND_SOURCES
     oggsound/src/OgreOggStreamWavSound.cpp
     )
 
+set(PAGEDGEOMETRY_SOURCES
+    pagedgeometry/src/BatchedGeometry.cpp
+    pagedgeometry/src/BatchPage.cpp
+    pagedgeometry/src/GrassLoader.cpp
+    pagedgeometry/src/ImpostorPage.cpp
+    pagedgeometry/src/PagedGeometry.cpp
+    pagedgeometry/src/PropertyMaps.cpp
+    pagedgeometry/src/StaticBillboardSet.cpp
+    pagedgeometry/src/TreeLoader2D.cpp
+    pagedgeometry/src/TreeLoader3D.cpp
+    pagedgeometry/src/WindBatchedGeometry.cpp
+    pagedgeometry/src/WindBatchPage.cpp
+    )
+
 set(CONTEXT_SOURCES
     context/src/Application.cpp
     context/src/AppState.cpp
@@ -135,7 +167,8 @@ set(CONTEXT_SOURCES
     context/src/DotSceneLoaderB.cpp
     context/src/SinbadCharacterController.cpp
     context/src/PhysicsManager.cpp
-    context/src/ForestManager.cpp
+    context/src/StaticForestManager.cpp
+    context/src/PagedForestManager.cpp
     context/src/DummyAppState.cpp
     context/src/SoundManager.cpp
     context/src/ManagerCommon.cpp
@@ -154,6 +187,7 @@ set(CONTEXT_SOURCES
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}
     ${OGGSOUND_SOURCES}
+    ${PAGEDGEOMETRY_SOURCES}
     ${CONTEXT_SOURCES}
     )
 
