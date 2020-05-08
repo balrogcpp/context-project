@@ -16,31 +16,6 @@ Permission is granted to anyone to use this software for any purpose, including 
 
 #include "pcheader.hpp"
 
-#include <OgreRoot.h>
-#include <OgreCamera.h>
-#include <OgreVector3.h>
-#include <OgreMeshManager.h>
-#include <OgreMesh.h>
-#include <OgreSubMesh.h>
-#include <OgreMaterialManager.h>
-#include <OgreMaterial.h>
-#include <OgreBillboardSet.h>
-#include <OgreBillboard.h>
-#include <OgreSceneNode.h>
-#include <OgreString.h>
-#include <OgreStringConverter.h>
-#include <OgreRenderSystem.h>
-#include <OgreRenderSystemCapabilities.h>
-#include <OgreHighLevelGpuProgramManager.h>
-#include <OgreHighLevelGpuProgram.h>
-#include <OgreHardwareBufferManager.h>
-#include <OgreHardwareBuffer.h>
-#include <OgreLogManager.h>
-#include <OgreEntity.h>
-#include <OgreTechnique.h>
-
-#include "StaticBillboardSet.h"
-
 using namespace Ogre;
 using namespace Forests;
 

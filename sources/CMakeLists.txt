@@ -90,7 +90,8 @@ set(CONTEXT_HEADERS
     context/include/ConfigManager.hpp
     context/include/EventMapper.hpp
     context/include/DotSceneLoaderB.hpp
-    context/include/ForestManager.hpp
+    context/include/StaticForestManager.hpp
+    context/include/PagedForestManager.hpp
     context/include/SinbadCharacterController.hpp
     context/include/constants.hpp
     context/include/PhysicsManager.hpp
@@ -166,7 +167,8 @@ set(CONTEXT_SOURCES
     context/src/DotSceneLoaderB.cpp
     context/src/SinbadCharacterController.cpp
     context/src/PhysicsManager.cpp
-    context/src/ForestManager.cpp
+    context/src/StaticForestManager.cpp
+    context/src/PagedForestManager.cpp
     context/src/DummyAppState.cpp
     context/src/SoundManager.cpp
     context/src/ManagerCommon.cpp

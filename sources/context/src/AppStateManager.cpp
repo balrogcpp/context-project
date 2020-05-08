@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include "AppStateManager.hpp"
 #include "DotSceneLoaderB.hpp"
-#include "ForestManager.hpp"
+#include "StaticForestManager.hpp"
 #include "PhysicsManager.hpp"
 #include "SoundManager.hpp"
 #include "ConfigManager.hpp"
@@ -98,7 +98,7 @@ void AppStateManager::GoNextState() {
 //----------------------------------------------------------------------------------------------------------------------
 void AppStateManager::CleanupResources() {
   if (waiting_) {
-    ForestManager::GetSingleton().Reset();
+    StaticForestManager::GetSingleton().Reset();
     DotSceneLoaderB::GetSingleton().Reset();
 
     if (ConfigManager::GetSingleton().GetBool("physics_enable")) {
@@ -147,7 +147,7 @@ void AppStateManager::Reset() {
     prev_state_.reset();
   }
 
-  ForestManager::GetSingleton().Reset();
+  StaticForestManager::GetSingleton().Reset();
   DotSceneLoaderB::GetSingleton().Reset();
   ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllEntities();
   ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllLights();

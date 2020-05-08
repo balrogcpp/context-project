@@ -131,6 +131,7 @@ void CompositorManager::Setup() {
   ConfigManager::Assign(compositor_use_ssao_, "compositor_use_ssao");
   ConfigManager::Assign(compositor_use_blur_, "compositor_use_blur");
   ConfigManager::Assign(compositor_use_hdr_, "compositor_use_hdr");
+  ConfigManager::Assign(compositor_use_moution_blur_, "compositor_use_moution_blur");
 
   /// Motion blur effect
   Ogre::CompositorPtr comp3 = Ogre::CompositorManager::getSingleton().create(
@@ -247,10 +248,12 @@ void CompositorManager::Setup() {
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
 
-//    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Motion Blur"))
-//      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Motion Blur", true);
-//    else
-//      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
+    if (compositor_use_moution_blur_) {
+    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Motion Blur"))
+      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Motion Blur", true);
+    else
+      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
+    }
 
     if (compositor_use_hdr_) {
       if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/HDR"))

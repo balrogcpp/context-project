@@ -28,18 +28,18 @@ SOFTWARE.
 
 namespace Context {
 
-class ForestManager : public ManagerCommon {
+class StaticForestManager : public ManagerCommon {
  public:
-  static ForestManager *GetSingletonPtr() {
+  static StaticForestManager *GetSingletonPtr() {
     return &staticForestManagerSingleton;
   }
 
-  static ForestManager &GetSingleton() {
+  static StaticForestManager &GetSingleton() {
     return staticForestManagerSingleton;
   }
 
  private:
-  static ForestManager staticForestManagerSingleton;
+  static StaticForestManager staticForestManagerSingleton;
 
  public:
   void Create();

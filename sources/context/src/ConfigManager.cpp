@@ -299,7 +299,7 @@ void ConfigManager::Setup() {
   document_.AddMember("window_fullscreen", false, allocator);
 
   document_.AddMember("global_octree_enable", true, allocator);
-  document_.AddMember("global_stbi_enable", false, allocator);
+  document_.AddMember("global_stbi_enable", true, allocator);
   document_.AddMember("global_particlefx_enable", true, allocator);
   document_.AddMember("physics_enable", true, allocator);
   document_.AddMember("sound_enable", true, allocator);

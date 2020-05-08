@@ -25,17 +25,17 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "ForestManager.hpp"
+#include "StaticForestManager.hpp"
 
 #include "DotSceneLoaderB.hpp"
 #include "ShaderResolver.hpp"
 
 namespace Context {
 
-ForestManager ForestManager::staticForestManagerSingleton;
+StaticForestManager StaticForestManager::staticForestManagerSingleton;
 
 //----------------------------------------------------------------------------------------------------------------------
-void ForestManager::GenerateTrees() {
+void StaticForestManager::GenerateTrees() {
   ContextManager &context = Context::ContextManager::GetSingleton();
   Ogre::Camera *ogreCamera = context.GetOgreCamera();
   Ogre::SceneNode *cameraNode = context.GetCameraNode();
@@ -103,7 +103,7 @@ void ForestManager::GenerateTrees() {
   trees->setVisible(true);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ForestManager::GeneratePlants() {
+void StaticForestManager::GeneratePlants() {
   ContextManager &context = Context::ContextManager::GetSingleton();
   Ogre::Camera *ogreCamera = context.GetOgreCamera();
   Ogre::SceneNode *cameraNode = context.GetCameraNode();
@@ -152,7 +152,7 @@ void ForestManager::GeneratePlants() {
   plants->setRegionDimensions(Ogre::Vector3(20));
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ForestManager::generateBushes() {
+void StaticForestManager::generateBushes() {
 //  ContextManager &context = Context::ContextManager::GetSingleton();
 //  Ogre::Camera *ogreCamera = context.GetOgreCamera();
 //  Ogre::SceneNode *cameraNode = context.GetCameraNode();
@@ -209,7 +209,7 @@ struct GrassVertex {
 };
 #pragma pack(pop)
 //----------------------------------------------------------------------------------------------------------------------
-void ForestManager::createGrassMesh() {
+void StaticForestManager::createGrassMesh() {
   Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
 
   // Create a submesh with the grass material
@@ -289,7 +289,7 @@ void ForestManager::createGrassMesh() {
   sm->indexData->indexBuffer->unlock(); // commit index changes
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ForestManager::GenerateGrass() {
+void StaticForestManager::GenerateGrass() {
   ContextManager &context = Context::ContextManager::GetSingleton();
   Ogre::SceneManager *sceneMgr = context.GetOgreScenePtr();
   // create our grass mesh, and Create a grass entity from it
@@ -321,14 +321,14 @@ void ForestManager::GenerateGrass() {
   mField->setCastShadows(false);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ForestManager::Create() {
+void StaticForestManager::Create() {
   GenerateTrees();
   GeneratePlants();
 //  generateBushes();
   GenerateGrass();
 }
 //----------------------------------------------------------------------------------------------------------------------
-bool ForestManager::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+bool StaticForestManager::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   float ellapsed = evt.timeSinceLastFrame;
 
   const float fadeRange = 100.0f;
@@ -338,7 +338,7 @@ bool ForestManager::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   const auto windDir = Ogre::Vector3::UNIT_X;
   const float animMag = 0.2f;
 
-//  if (mField) {
+  if (mField) {
     waveCount += ellapsed * (animSpeed * Ogre::Math::PI);
     if (waveCount > Ogre::Math::PI * 2) waveCount -= Ogre::Math::PI * 2;
 
@@ -385,12 +385,12 @@ bool ForestManager::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 //    params->setNamedConstant("frequency", animFreq);
     params->setNamedConstant("fadeRange", 500.0f);
     params->setNamedConstant("uWaveDirection", Ogre::Vector4(direction.x, direction.y, direction.z, 0));
-//  }
+  }
 
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ForestManager::Reset() {
+void StaticForestManager::Reset() {
   if (Ogre::MeshManager::getSingleton().getByName("grass",
                                                   Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
     Ogre::MeshManager::getSingleton().remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);

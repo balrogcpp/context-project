@@ -14,14 +14,6 @@ Permission is granted to anyone to use this software for any purpose, including 
 
 #include "pcheader.hpp"
 
-#include <OgreRoot.h>
-#include <OgreTimer.h>
-#include <OgreCamera.h>
-#include <OgreVector3.h>
-
-#include "PagedGeometry.h"
-#include "StaticBillboardSet.h"
-
 using namespace Ogre;
 using namespace std;
 
