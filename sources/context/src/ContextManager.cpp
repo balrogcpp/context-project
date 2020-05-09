@@ -666,13 +666,13 @@ void ContextManager::SetupOGRE() {
   } else {
     ogre_root_ = new Ogre::Root("", "", "");
   }
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL
-  auto *mGLRenderSystem = new Ogre::GLRenderSystem();
-  Ogre::Root::getSingleton().setRenderSystem(mGLRenderSystem);
-#else
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *mGL3PlusRenderSystem = new Ogre::GL3PlusRenderSystem();
   Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
+#else
+  #ifdef OGRE_BUILD_RENDERSYSTEM_GL
+  auto *mGLRenderSystem = new Ogre::GLRenderSystem();
+  Ogre::Root::getSingleton().setRenderSystem(mGLRenderSystem);
 #endif
 #endif //OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
