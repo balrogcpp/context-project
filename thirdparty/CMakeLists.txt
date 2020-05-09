@@ -187,7 +187,7 @@ externalproject_add(target-openal
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/kcat/openal-soft.git
-                    GIT_TAG openal-soft-1.19.1
+                    GIT_TAG openal-soft-1.20.1
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -430,6 +430,7 @@ externalproject_add(target-ogre1
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                     -DOGRE_CONFIG_THREADS=3
@@ -660,11 +661,30 @@ externalproject_add(target-jemalloc
                     INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
                     )
 
-externalproject_add(target-googletest
+externalproject_add(target-gtest
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/google/googletest.git
                     GIT_TAG release-1.8.1
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    ${CONTEXT_TOOLCHAIN_FILE}
+                    -G ${CMAKE_GENERATOR}
+                    )
+
+externalproject_add(target-gbenchmark
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/google/benchmark.git
+                    GIT_TAG v1.5.0
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}

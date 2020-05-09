@@ -4,9 +4,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update &&\
     apt-get install -y \
-        g++-9 \
-        gcc-9\
+        g++-10 \
+        gcc-10\
         make \
+        checkinstall \
         cmake \
         git \
         autoconf \
@@ -40,22 +41,22 @@ RUN apt-get update &&\
         nsis \
         > /dev/null
 
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 900 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 900 --slave /usr/bin/g++ g++ /usr/bin/g++-10
 
 ENV MINGW=/mingw
 
 ARG CMAKE_VERSION=3.16.3
 ARG BINUTILS_VERSION=2.33.1
 ARG MINGW_VERSION=7.0.0
-ARG GCC_VERSION=9.3.0
+ARG GCC_VERSION=10.1.0
 ARG PKG_CONFIG_VERSION=0.29.2
 
 WORKDIR /mnt
 
 RUN wget -q https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz
 RUN wget -q https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ
-RUN wget -q https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ
 RUN wget -q https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj
+RUN wget -q https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ
 RUN mkdir -p ${MINGW}/include ${MINGW}/lib/pkgconfig
 
 RUN cd pkg-config-${PKG_CONFIG_VERSION} \
