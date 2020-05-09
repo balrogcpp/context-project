@@ -170,7 +170,7 @@ if (UNIX)
     set(ALSOFT_BACKEND_PULSEAUDIO true)
     set(ALSOFT_BACKEND_ALSA false)
     set(ALSOFT_BACKEND_DAUDIO false)
-    set(ALSOFT_LIB_TYPE DYNAMIC)
+    set(ALSOFT_LIB_TYPE STATIC)
 elseif (MINGW)
     set(ALSOFT_BACKEND_PULSEAUDIO false)
     set(ALSOFT_BACKEND_DAUDIO true)
@@ -187,7 +187,7 @@ externalproject_add(target-openal
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/kcat/openal-soft.git
-                    GIT_TAG openal-soft-1.19.1
+                    GIT_TAG openal-soft-1.20.1
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -401,7 +401,7 @@ externalproject_add(target-pugixml
 
 cmake_dependent_option(CONTEXT_OGRE_BUILD_GLES2 "" true ANDROID false)
 cmake_dependent_option(CONTEXT_OGRE_BUILD_GL3PLUS "" true UNIX;WIN32 false)
-cmake_dependent_option(CONTEXT_OGRE_BUILD_GL "" true UNIX;WIN32 false)
+cmake_dependent_option(CONTEXT_OGRE_BUILD_GL "" false MINGW true)
 option(CONTEXT_OGRE_BUILD_PAGING "" true)
 option(CONTEXT_OGRE_BUILD_STBI "" true)
 option(CONTEXT_OGRE_BUILD_HLMS "" false)
@@ -430,6 +430,7 @@ externalproject_add(target-ogre1
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                     -DOGRE_CONFIG_THREADS=3
@@ -660,11 +661,30 @@ externalproject_add(target-jemalloc
                     INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
                     )
 
-externalproject_add(target-googletest
+externalproject_add(target-gtest
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/google/googletest.git
                     GIT_TAG release-1.8.1
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    ${CONTEXT_TOOLCHAIN_FILE}
+                    -G ${CMAKE_GENERATOR}
+                    )
+
+externalproject_add(target-gbenchmark
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/google/benchmark.git
+                    GIT_TAG v1.5.0
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}

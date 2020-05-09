@@ -1,16 +1,16 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update &&\
-    apt-get install software-properties-common -y &&\
-    add-apt-repository ppa:ubuntu-toolchain-r/test -y &&\
-    apt-get update > /dev/null &&\
     apt-get install -y \
-        g++-9 \
+        g++-10 \
+        gcc-10\
+        make \
+        checkinstall \
+        cmake \
         git \
-        subversion \
-        mercurial \
+        autoconf \
         libssl1.1 \
         wget \
         ca-certificates \
@@ -22,44 +22,41 @@ RUN apt-get update &&\
         libxrandr-dev \
         libglew-dev \
         libpulse-dev \
+        zlib1g-dev \
+        libssl-dev \
+        libgmp-dev \
+        libmpfr-dev \
+        libmpc-dev \
+        libisl-dev \
+        libgmp10 \
+        libmpfr6 \
+        libmpc3 \
+        yasm \
+        file \
+        patch \
+        gperf \
+        xz-utils \
+        bzip2 \
+        zip \
+        nsis \
         > /dev/null
 
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 900 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-
-RUN apt-get install -y \
-    zlib1g-dev \
-    libssl-dev \
-    libgmp-dev \
-    libmpfr-dev \
-    libmpc-dev \
-    libisl-dev \
-    libgmp10 \
-    libmpfr6 \
-    libmpc3 \
-    libisl19 \
-    yasm \
-    file \
-    patch \
-    gperf \
-    xz-utils \
-    bzip2 \
-    zip \
-    nsis
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 900 --slave /usr/bin/g++ g++ /usr/bin/g++-10
 
 ENV MINGW=/mingw
 
-ARG CMAKE_VERSION=3.16.4
+ARG CMAKE_VERSION=3.16.3
 ARG BINUTILS_VERSION=2.33.1
 ARG MINGW_VERSION=7.0.0
-ARG GCC_VERSION=9.2.0
+ARG GCC_VERSION=10.1.0
 ARG PKG_CONFIG_VERSION=0.29.2
 
 WORKDIR /mnt
 
 RUN wget -q https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz
-RUN wget -q https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ
-RUN wget -q https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ
-RUN git clone -b v7.0.0 --depth 1 https://github.com/mirror/mingw-w64.git mingw-w64-v${MINGW_VERSION}
+RUN wget -q https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ
+RUN wget -q https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj
+RUN wget -q https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ
 RUN mkdir -p ${MINGW}/include ${MINGW}/lib/pkgconfig
 
 RUN cd pkg-config-${PKG_CONFIG_VERSION} \
@@ -148,18 +145,10 @@ RUN cd gcc \
     && make install > /dev/null \
     && cd ..
 
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.15.5/cmake-3.15.5-Linux-x86_64.sh \
-         -q -O /tmp/cmake-install.sh \
-         && chmod u+x /tmp/cmake-install.sh \
-         && mkdir /usr/bin/cmake \
-         && /tmp/cmake-install.sh --skip-license --prefix=/usr/bin/cmake \
-         && rm /tmp/cmake-install.sh
-
-RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
-         -q -O /tmp/cmake-install.sh \
-         && chmod u+x /tmp/cmake-install.sh \
-         && mkdir /usr/bin/cmake \
-         && /tmp/cmake-install.sh --skip-license --prefix=/usr/bin/cmake \
-         && rm /tmp/cmake-install.sh
-
-ENV PATH="/usr/bin/cmake/bin:${PATH}"
+# RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
+#          -q -O /tmp/cmake-install.sh \
+#          && chmod u+x /tmp/cmake-install.sh \
+#          && mkdir /usr/bin/cmake \
+#          && /tmp/cmake-install.sh --skip-license --prefix=/usr/bin/cmake \
+#          && rm /tmp/cmake-install.sh
+#ENV PATH="/usr/bin/cmake/bin:${PATH}"
