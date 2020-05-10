@@ -41,7 +41,7 @@ void PhysicsManager::Setup() {
   ConfigManager::Assign(physics_debug_show_collider_, "physics_debug_show_collider");
 
   float gravity_x = 0;
-  float gravity_y = -9.8;
+  float gravity_y = -9.8f;
   float gravity_z = 0;
   ConfigManager::Assign(gravity_x, "physics_gravity_x");
   ConfigManager::Assign(gravity_y, "physics_gravity_y");
@@ -56,7 +56,7 @@ void PhysicsManager::Setup() {
                                                          solver_.get(),
                                                          collision_config_.get());
 
-  phy_world_->setGravity(btVector3(gravity_x, gravity_y, gravity_z));
+  phy_world_->setGravity(btVector3(0.0, gravity_y, 0.0));
 
   if (physics_debug_show_collider_) {
     dbg_draw_ = std::make_shared<BtOgre::DebugDrawer>(ogre_root_node_, phy_world_.get());
@@ -222,6 +222,11 @@ void PhysicsManager::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
       entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
     }
 
+    if (anisotropic_friction) {
+      entBody->setAnisotropicFriction({friction_x, friction_y, friction_z});
+    } else {
+      entBody->setFriction(friction_x);
+    }
     PhysicsManager::GetSingleton().AddRigidBody(entBody);
 
   } else if (physics_type == physics_type_dynamic) {

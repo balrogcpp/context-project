@@ -159,8 +159,6 @@ void Application::Go() {
 #ifdef DEBUG
   if (!global_verbose_) {
 #endif
-//    std::cout.setstate(std::ios_base::failbit);
-//    std::cerr.setstate(std::ios_base::failbit);
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     putenv("ALROUTER_LOGFILE=/dev/null");
     putenv("ALSOFT_LOGLEVEL=LOG_NONE");
@@ -270,9 +268,6 @@ static sigjmp_buf point;
 static void termination_handler(int signum) {
   ContextManager::GetSingleton().RestoreScreenSize();
 
-//  std::cout.setstate(std::ios_base::goodbit);
-//  std::cerr.setstate(std::ios_base::goodbit);
-
   printf("\nSegmentation fault occured!\n");
   std::fflush(stdout);
   std::fflush(stderr);
@@ -327,9 +322,6 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
     std::cerr << caption << std::endl;
     std::stringstream message;
     message << e.getDescription() << std::endl;
-//    std::cout.setstate(std::ios_base::goodbit);
-//    std::cerr.setstate(std::ios_base::goodbit);
-
     std::cerr << message.str();
 
 #ifdef _WIN32
@@ -344,9 +336,6 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
     std::cerr << caption << std::endl;
     std::stringstream message;
     message << e.getFullDescription() << std::endl;
-//    std::cout.setstate(std::ios_base::goodbit);
-//    std::cerr.setstate(std::ios_base::goodbit);
-
     std::cerr << message.str();
 
 #ifdef _WIN32
@@ -358,9 +347,6 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
   }
   catch (std::exception &e) {
     const std::string caption = "Exception occurred (std::exception)";
-//    std::cout.setstate(std::ios_base::goodbit);
-//    std::cerr.setstate(std::ios_base::goodbit);
-
     std::cerr << caption << std::endl;
     std::cerr << e.what() << std::endl;
 #ifdef _WIN32
@@ -372,9 +358,6 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
   }
   catch (...) {
     const std::string caption = "Unhandled exception occurred\n";
-//    std::cout.setstate(std::ios_base::goodbit);
-//    std::cerr.setstate(std::ios_base::goodbit);
-
     std::cerr << caption << std::endl;
 #ifdef _WIN32
     MessageBox(nullptr, caption.c_str(), caption.c_str(), MB_ICONERROR);

@@ -1,6 +1,27 @@
-//
-// Created by balrog on 07.07.19.
-//
+/*
+MIT License
+
+Copyright (c) 2020 Andrey Vasiliev
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 #include "pcheader.hpp"
 
 #include "CompositorManager.hpp"
@@ -33,6 +54,7 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     gBufferTech->setSchemeName(schemeName);
     Ogre::Pass *gbufPass = gBufferTech->createPass();
     *gbufPass = *mGBufRefMat->getTechnique(0)->getPass(0);
+
     if (originalMaterial->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
       auto *texPtr2 = gbufPass->getTextureUnitState("BaseColor");
       texPtr2->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
@@ -48,6 +70,7 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
   Ogre::MaterialPtr mGBufRefMat;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 class ShadowReceiverSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   ShadowReceiverSchemeHandler() {
@@ -107,7 +130,6 @@ class ShadowReceiverSchemeHandler : public Ogre::MaterialManager::Listener {
 };
 
 CompositorManager CompositorManager::CompositorManagerSingleton;
-
 //----------------------------------------------------------------------------------------------------------------------
 CompositorManager *CompositorManager::GetSingletonPtr() {
   return &CompositorManagerSingleton;
@@ -125,14 +147,7 @@ void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &ev
 
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CompositorManager::Setup() {
-  ConfigManager::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
-  ConfigManager::Assign(compositor_use_bloom_, "compositor_use_bloom");
-  ConfigManager::Assign(compositor_use_ssao_, "compositor_use_ssao");
-  ConfigManager::Assign(compositor_use_blur_, "compositor_use_blur");
-  ConfigManager::Assign(compositor_use_hdr_, "compositor_use_hdr");
-  ConfigManager::Assign(compositor_use_moution_blur_, "compositor_use_moution_blur");
-
+void CompositorManager::CreateMotionBlurCompositor() {
   /// Motion blur effect
   Ogre::CompositorPtr comp3 = Ogre::CompositorManager::getSingleton().create(
       "Motion Blur", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
@@ -201,12 +216,18 @@ void CompositorManager::Setup() {
       }
     }
   }
+}
+//----------------------------------------------------------------------------------------------------------------------
+void CompositorManager::Setup() {
+  ConfigManager::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
+  ConfigManager::Assign(compositor_use_bloom_, "compositor_use_bloom");
+  ConfigManager::Assign(compositor_use_ssao_, "compositor_use_ssao");
+  ConfigManager::Assign(compositor_use_blur_, "compositor_use_blur");
+  ConfigManager::Assign(compositor_use_hdr_, "compositor_use_hdr");
+  ConfigManager::Assign(compositor_use_moution_blur_, "compositor_use_moution_blur");
 
   if(ConfigManager::GetSingleton().GetBool("graphics_shadows_enable"))
   {
-//    shadow_receiever_scheme_handler_ = std::make_unique<ShadowReceiverSchemeHandler>();
-//    Ogre::MaterialManager::getSingleton().addListener(shadow_receiever_scheme_handler_.get(), "ShadowReceiver");
-
     ssaog_buffer_scheme_handler_ = std::make_unique<GBufferSchemeHandler>();
     Ogre::MaterialManager::getSingleton().addListener(ssaog_buffer_scheme_handler_.get(), "GBuffer");
 
@@ -249,6 +270,8 @@ void CompositorManager::Setup() {
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
 
     if (compositor_use_moution_blur_) {
+      CreateMotionBlurCompositor();
+
     if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Motion Blur"))
       Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Motion Blur", true);
     else

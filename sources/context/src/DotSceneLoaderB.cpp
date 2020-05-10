@@ -183,11 +183,6 @@ namespace Context {
 
 DotSceneLoaderB DotSceneLoaderB::DotSceneLoaderSingleton;
 
-std::vector<std::string> DotSceneLoaderB::material_list;
-std::vector<std::string> DotSceneLoaderB::shadowed_list;
-std::vector<std::string> DotSceneLoaderB::forest_list;
-
-
 //----------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB &DotSceneLoaderB::GetSingleton() {
   return DotSceneLoaderSingleton;
@@ -953,6 +948,30 @@ void DotSceneLoaderB::ProcessCamera(pugi::xml_node &xml_node, Ogre::SceneNode *p
   ContextManager::GetSingleton().GetCameraMan()->UnregCamera();
   ContextManager::GetSingleton().GetCameraMan()->RegCamera(parent);
 
+  auto *actor = ogre_scene_manager_->createEntity("Actor", "Icosphere.mesh");
+  actor->setCastShadows(false);
+  actor->setVisible(false);
+  parent->attachObject(actor);
+
+  std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
+  btVector3 inertia;
+  btRigidBody *entBody;
+
+  converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(actor);
+
+  auto *entShape = converter->createCapsule();
+
+  float mass = 100.0f;
+  entShape->calculateLocalInertia(mass, inertia);
+  auto *bodyState = new BtOgre::RigidBodyState(parent);
+  entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+  entBody->setAngularFactor(0);
+  entBody->activate(true);
+  entBody->forceActivationState(DISABLE_DEACTIVATION);
+  entBody->setActivationState(DISABLE_DEACTIVATION);
+  entBody->setFriction(1.0);
+  PhysicsManager::GetSingleton().AddRigidBody(entBody);
+  ContextManager::GetSingleton().GetCameraMan()->SetRigidBody(entBody);
   // Set the field-of-view
   pCamera->setFOVy(Ogre::Radian(fov));
 
@@ -1160,6 +1179,7 @@ void DotSceneLoaderB::UpdatePbrParams() {
 void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
   std::string material_name = material->getName();
   bool registered = false;
+  static std::vector<std::string> material_list;
 
   if (std::find(material_list.begin(), material_list.end(), material_name) != material_list.end()) {
     registered = true;
@@ -1167,26 +1187,32 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
   } else {
     material_list.push_back(material_name);
   }
+  std::cout << material_name << '\n';
 
   if (ConfigManager::GetSingleton().GetBool("graphics_shadows_enable")) {
     if (registered) {
       auto *pass = material->getTechnique(0)->getPass(0);
       std::string texture_name = pass->getTextureUnitState(0)->getTextureName();
       auto caster_material = material->getTechnique(0)->getShadowCasterMaterial();
-      auto *texPtr3 = caster_material->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
+      auto *texPtr3 = caster_material->getTechnique(0)->getPass(0)->getTextureUnitState(0);
       texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
       texPtr3->setTextureFiltering(Ogre::TFO_NONE);
       texPtr3->setTextureName(texture_name);
     } else {
       auto *pass = material->getTechnique(0)->getPass(0);
-      std::string texture_name = pass->getTextureUnitState(0)->getTextureName();
       auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
       auto new_caster = caster_material->clone("PSSM/shadow_caster" + std::to_string(material_list.size()));
       material->getTechnique(0)->setShadowCasterMaterial(new_caster);
-      auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
-      texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-      texPtr3->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
-      texPtr3->setTextureName(texture_name);
+
+      if (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
+        std::string texture_name = pass->getTextureUnitState(0)->getTextureName();
+        auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState(0);
+        if (texPtr3) {
+          texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+          texPtr3->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
+          texPtr3->setTextureName(texture_name);
+        }
+      }
     }
   }
 
@@ -1253,8 +1279,6 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     if (constants.map.count("uMetallicRoughnessValues") == 1)
       frag_params->setNamedConstant("uMetallicRoughnessValues", Ogre::Vector2(1, 1));
   }
-
-  ShaderResolver::FixMaterial(material->getName());
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
@@ -1263,6 +1287,7 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
   const int pssm_split_count = 3;
   const int light_count = 5;
   const int shadows = pssm_split_count * light_count;
+  static std::vector<std::string> shadowed_list;
 
   if (!material->getReceiveShadows()) {
     return;
@@ -1300,7 +1325,7 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
     auto pass = material->getTechnique(0)->getPass(0);
 
     if (ConfigManager::GetSingleton().GetBool("graphics_shadows_enable")) {
-      auto numTextures = (Ogre::uint) pssm->getSplitCount();
+      Ogre::uint numTextures = pssm->getSplitCount();
       Ogre::Vector4 splitPoints;
       const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
       // Populate from split point 1, not 0, since split 0 isn't useful (usually 0)
@@ -1322,6 +1347,10 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
         int texture_count = pass->getNumTextureUnitStates();
 
         for (int k = 0; k < pssm->getSplitCount(); k++) {
+          frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
+                                            Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
+                                            texture_count + k);
+
           if (!registered) {
             Ogre::TextureUnitState *tu = pass->createTextureUnitState();
             tu->setContentType(Ogre::TextureUnitState::CONTENT_SHADOW);
@@ -1331,9 +1360,6 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
           }
 
           frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);
-          frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
-                                            Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
-                                            texture_count + k);
         }
       }
     }
@@ -1369,7 +1395,6 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *p
 
   try {
     name += std::to_string(counter);
-    Ogre::MeshManager::getSingleton().load(meshFile, group_name_);
     counter++;
     entity = scene_manager_->createEntity(name, meshFile);
     entity->setCastShadows(castShadows);
@@ -1407,39 +1432,39 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *p
       if (!entity->getMesh()->isEdgeListBuilt()) {
         entity->getMesh()->buildEdgeList();
       }
-    }
 
-    EnsureHasTangents(entity->getMesh());
-    for (int j = 0; j < entity->getNumManualLodLevels(); j++) {
-      auto *lod = entity->getManualLodLevel(j);
-      EnsureHasTangents(lod->getMesh());
-      if (shadow_technique == "stencil") {
-        if (!lod->getMesh()->isEdgeListBuilt()) {
-          lod->getMesh()->buildEdgeList();
+      for (int j = 0; j < entity->getNumManualLodLevels(); j++) {
+        auto *lod = entity->getManualLodLevel(j);
+        EnsureHasTangents(lod->getMesh());
+        if (shadow_technique == "stencil") {
+          if (!lod->getMesh()->isEdgeListBuilt()) {
+            lod->getMesh()->buildEdgeList();
+          }
         }
       }
     }
 
-    if (material.empty()) {
-      material = entity->getMesh()->getSubMesh(0)->getMaterialName();
-    }
+    EnsureHasTangents(entity->getMesh());
 
-    if (!material.empty()) {
-      entity->setMaterialName(material);
+//    if (material.empty()) {
+//      material = entity->getMesh()->getSubMesh(0)->getMaterialName();
+//    }
+//    if (!material.empty()) {
+//      entity->setMaterialName(material);
+//
+//      for (int j = 0; j < entity->getNumManualLodLevels(); j++) {
+//        auto *lod = entity->getManualLodLevel(j);
+//        lod->setMaterialName(material);
+//      }
+//    }
 
-      for (int j = 0; j < entity->getNumManualLodLevels(); j++) {
-        auto *lod = entity->getManualLodLevel(j);
-        lod->setMaterialName(material);
-      }
-    }
-
-    for (int i = 0; i < mesh->getNumSubMeshes(); i++) {
-
-      if (mesh->getSubMesh(i)->getMaterial()) {
-        auto material_ptr = mesh->getSubMesh(i)->getMaterial();
+    for (auto &submesh : mesh->getSubMeshes()) {
+      if (submesh->getMaterial()) {
+        auto material_ptr = submesh->getMaterial();
         FixPbrParams(material_ptr);
-        FixPbrShadow(material_ptr);
-        std::string material_name = mesh->getSubMesh(i)->getMaterial()->getName();
+
+        if (material_ptr->getReceiveShadows())
+          FixPbrShadow(material_ptr);
       }
     }
 
@@ -1549,7 +1574,7 @@ void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &xml_node) {
     return;
   }
 
-  ShaderResolver::FixMaterial(material);
+//  ShaderResolver::FixMaterial(material);
   // Process rotation (?)
   Ogre::Quaternion rotation = Ogre::Quaternion::IDENTITY;
 
@@ -1662,7 +1687,6 @@ void DotSceneLoaderB::ProcessUserData(pugi::xml_node &xml_node,
                                       Ogre::UserObjectBindings &user_object_bindings,
                                       Ogre::Entity *entity,
                                       Ogre::SceneNode *parent_node) {
-
   // Process node (*)
   for (auto element : xml_node.children("property")) {
     std::string name = GetAttrib(element, "name");
@@ -1774,6 +1798,8 @@ void DotSceneLoaderB::ProcessUserData(pugi::xml_node &xml_node,
         auto *bodyState = new BtOgre::RigidBodyState(parent_node);
         entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
       }
+
+      entBody->setAngularFactor(0);
 
       PhysicsManager::GetSingleton().AddRigidBody(entBody);
 

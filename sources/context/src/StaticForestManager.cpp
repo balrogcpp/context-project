@@ -50,6 +50,7 @@ void StaticForestManager::GenerateTrees() {
   DotSceneLoaderB::FixPbrParams(Ogre::MaterialManager::getSingleton().getByName("3D-Diggers/farn02"));
   DotSceneLoaderB::FixPbrParams(Ogre::MaterialManager::getSingleton().getByName("3D-Diggers/fir01"));
   DotSceneLoaderB::FixPbrParams(Ogre::MaterialManager::getSingleton().getByName("3D-Diggers/fir02"));
+  DotSceneLoaderB::FixPbrShadow(Ogre::MaterialManager::getSingleton().getByName("3D-Diggers/fir02"));
   DotSceneLoaderB::FixPbrParams(Ogre::MaterialManager::getSingleton().getByName("3D-Diggers/plant1"));
   DotSceneLoaderB::FixPbrParams(Ogre::MaterialManager::getSingleton().getByName("3D-Diggers/plant2"));
 
@@ -216,6 +217,7 @@ void StaticForestManager::createGrassMesh() {
   Ogre::SubMesh *sm = mesh->createSubMesh();
   const std::string grassMaterial = "GrassCustom";
   Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
+
   DotSceneLoaderB::FixPbrParams(tmp);
   DotSceneLoaderB::FixPbrShadow(tmp);
 
@@ -302,18 +304,18 @@ void StaticForestManager::GenerateGrass() {
   mField->setRegionDimensions(Ogre::Vector3(20));
 
   const float step = 0.5f;
-  const float bounds = 20.0f;
+  const float bounds = 50.0f;
   // add grass uniformly throughout the field, with some random variations
-  for (float x = -bounds; x < bounds; x += step) {
-    for (float z = -bounds; z < bounds; z += step) {
-      Ogre::Vector3 pos(x + Ogre::Math::RangeRandom(-step, step),
-                        DotSceneLoaderB::GetHeigh(x, z),
-                        z + Ogre::Math::RangeRandom(-step, step));
-      Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
-      Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
-
-      mField->addEntity(grass, pos, ori, 2 * scale);
-    }
+//  for (int x = -bounds; x < bounds; x += step) {
+//    for (int z = -bounds; z < bounds; z += step) {
+  for (int i = 0; i < 5000; i++) {
+    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds),
+                      0,
+                      Ogre::Math::RangeRandom(-bounds, bounds));
+    Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
+    Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
+    scale *= 2;
+    mField->addEntity(grass, pos, ori, scale);
   }
 
   mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
@@ -322,8 +324,8 @@ void StaticForestManager::GenerateGrass() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void StaticForestManager::Create() {
-  GenerateTrees();
-  GeneratePlants();
+//  GenerateTrees();
+//  GeneratePlants();
 //  generateBushes();
   GenerateGrass();
 }
@@ -345,45 +347,8 @@ bool StaticForestManager::frameRenderingQueued(const Ogre::FrameEvent &evt) {
     auto params = Ogre::MaterialManager::getSingleton().getByName("GrassCustom")->\
             getTechnique(0)->getPass(0)->getVertexProgramParameters();
 
-//    params->setNamedConstant("uTime", waveCount);
-//    params->setNamedConstant("frequency", animFreq);
     params->setNamedConstant("fadeRange", fadeRange);
     Ogre::Vector3 direction = windDir * animMag;
-    params->setNamedConstant("uWaveDirection", Ogre::Vector4(direction.x, direction.y, direction.z, 0));
-
-    params = Ogre::MaterialManager::getSingleton().getByName("3D-Diggers/farn01")->\
-            getTechnique(0)->getPass(0)->getVertexProgramParameters();
-//    params->setNamedConstant("uTime", waveCount);
-//    params->setNamedConstant("frequency", animFreq);
-    params->setNamedConstant("fadeRange", fadeRange);
-    params->setNamedConstant("uWaveDirection", Ogre::Vector4(direction.x, direction.y, direction.z, 0));
-
-    params = Ogre::MaterialManager::getSingleton().getByName("3D-Diggers/farn02")->\
-            getTechnique(0)->getPass(0)->getVertexProgramParameters();
-//    params->setNamedConstant("uTime", waveCount);
-//    params->setNamedConstant("frequency", animFreq);
-    params->setNamedConstant("fadeRange", fadeRange);
-    params->setNamedConstant("uWaveDirection", Ogre::Vector4(direction.x, direction.y, direction.z, 0));
-
-    params = Ogre::MaterialManager::getSingleton().getByName("3D-Diggers/plant1")->\
-            getTechnique(0)->getPass(0)->getVertexProgramParameters();
-//    params->setNamedConstant("uTime", waveCount);
-//    params->setNamedConstant("frequency", animFreq);
-    params->setNamedConstant("fadeRange", fadeRange);
-    params->setNamedConstant("uWaveDirection", Ogre::Vector4(direction.x, direction.y, direction.z, 0));
-
-    params = Ogre::MaterialManager::getSingleton().getByName("3D-Diggers/plant2")->\
-            getTechnique(0)->getPass(0)->getVertexProgramParameters();
-//    params->setNamedConstant("uTime", waveCount);
-//    params->setNamedConstant("frequency", animFreq);
-    params->setNamedConstant("fadeRange", fadeRange);
-    params->setNamedConstant("uWaveDirection", Ogre::Vector4(direction.x, direction.y, direction.z, 0));
-
-    params = Ogre::MaterialManager::getSingleton().getByName("3D-Diggers/fir01")->\
-            getTechnique(0)->getPass(0)->getVertexProgramParameters();
-//    params->setNamedConstant("uTime", waveCount);
-//    params->setNamedConstant("frequency", animFreq);
-    params->setNamedConstant("fadeRange", 500.0f);
     params->setNamedConstant("uWaveDirection", Ogre::Vector4(direction.x, direction.y, direction.z, 0));
   }
 

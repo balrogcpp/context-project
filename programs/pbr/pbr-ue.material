@@ -17,9 +17,9 @@ fragment_program PBR_IBL_Unreal_fs unified
 
 	default_params
 	{
-	    param_named bias0 float 0.001
-	    param_named bias1 float 0.001
-	    param_named bias2 float 0.002
+	    param_named bias0 float 0.0001
+	    param_named bias1 float 0.0001
+	    param_named bias2 float 0.0001
 	}
 }
 
@@ -71,9 +71,9 @@ fragment_program PBR_Unreal_fs_glsles glsles
 
 	default_params
 	{
-	    param_named bias0 float 0.001
-	    param_named bias1 float 0.001
-	    param_named bias2 float 0.002
+	    param_named bias0 float 0.0001
+	    param_named bias1 float 0.0001
+	    param_named bias2 float 0.0001
 	}
 }
 
@@ -127,9 +127,9 @@ fragment_program PBRExt_Unreal_fs unified
 
 	default_params
 	{
-	    param_named bias0 float 0.001
-	    param_named bias1 float 0.001
-	    param_named bias2 float 0.002
+	    param_named bias0 float 0.0001
+	    param_named bias1 float 0.0001
+	    param_named bias2 float 0.0001
 	}
 }
 
@@ -156,134 +156,6 @@ material PBRExt/Unreal
                 param_named uRoughnessSampler int 3
                 param_named uEmissiveSampler      int 4
                 param_named uOcclusionSampler   int 5
-			}
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Forest_Unreal_fs_glsl glsl
-{
-	source pbr.frag
-    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
-}
-
-fragment_program Forest_Unreal_fs_glsles glsles
-{
-	source pbr.frag
-    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
-}
-
-fragment_program Forest_Unreal_fs unified
-{
-	delegate Forest_Unreal_fs_glsl
-	delegate Forest_Unreal_fs_glsles
-
-	default_params
-	{
-	}
-}
-
-material Forest/Unreal
-{
-    technique
-    {
-      pass
-      {
-            texture_unit Albedo {}
-
-			vertex_program_ref Forest_vs {}
-
-			fragment_program_ref Forest_Unreal_fs
-			{
-                param_named uBaseColorSampler   int 0
-			}
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Forest_Shadowed_Unreal_fs_glsl glsl
-{
-	source pbr.frag
-    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,DEPTH_SHADOWRECEIVER
-}
-
-fragment_program Forest_Shadowed_Unreal_fs_glsles glsles
-{
-	source pbr.frag
-    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,DEPTH_SHADOWRECEIVER
-}
-
-fragment_program Forest_Shadowed_Unreal_fs unified
-{
-	delegate Forest_Shadowed_Unreal_fs_glsl
-	delegate Forest_Shadowed_Unreal_fs_glsles
-
-	default_params
-	{
-	    param_named bias0 float 0.001
-	    param_named bias1 float 0.001
-	    param_named bias2 float 0.002
-	}
-}
-
-material Forest_Shadowed/Unreal
-{
-    technique
-    {
-      pass
-      {
-            texture_unit Albedo {}
-
-			vertex_program_ref Forest_Shadowed_vs {}
-
-			fragment_program_ref Forest_Shadowed_Unreal_fs
-			{
-                param_named uBaseColorSampler   int 0
-			}
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Forest_Normal_Unreal_fs_glsl glsl
-{
-	source pbr.frag
-    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP
-}
-
-fragment_program Forest_Normal_Unreal_fs_glsles glsles
-{
-	source pbr.frag
-    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP
-}
-
-fragment_program Forest_Normal_Unreal_fs unified
-{
-	delegate Forest_Normal_Unreal_fs_glsl
-	delegate Forest_Normal_Unreal_fs_glsles
-
-	default_params
-	{
-	}
-}
-
-material Forest_Normal/Unreal
-{
-    technique
-    {
-      pass
-      {
-            texture_unit Albedo {}
-            texture_unit Normal {}
-
-            vertex_program_ref Forest_vs {}
-
-			fragment_program_ref Forest_Normal_Unreal_fs
-			{
-                param_named uBaseColorSampler   int 0
-                param_named uNormalSampler      int 1
 			}
         }
     }

@@ -53,6 +53,9 @@ class CompositorManager : public ManagerCommon {
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
 
+ private:
+  void CreateMotionBlurCompositor();
+
  public:
   void SetCompositor(const std::string &compositor_);
   void SetPost(const std::string &post_);

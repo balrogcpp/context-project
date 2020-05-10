@@ -73,10 +73,6 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   static void UpdateForestParams(Ogre::MaterialPtr material);
   static void UpdateForestParams(const std::string &material);
 
-  static std::vector<std::string> material_list;
-  static std::vector<std::string> shadowed_list;
-  static std::vector<std::string> forest_list;
-
  private:
   void ProcessScene(pugi::xml_node &xml_root);
   void ProcessNodes(pugi::xml_node &xml_node);
@@ -128,7 +124,7 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   std::shared_ptr<Ogre::TerrainGroup> ogre_terrain_group_;
   std::shared_ptr<Ogre::TerrainPaging> terrain_paging_;
 
-  bool lod_generator_enable_ = true;
+  bool lod_generator_enable_ = false;
   bool physics_enable_ = true;
 
   bool terrain_fog_perpixel_ = true;

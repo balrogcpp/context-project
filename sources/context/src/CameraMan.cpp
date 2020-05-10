@@ -38,7 +38,7 @@ CameraMan::CameraMan() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 CameraMan::CameraMan(Ogre::SceneNode *ogre_camera_node)
-    : cameraNode(ogre_camera_node) {
+    : camera_node_(ogre_camera_node) {
   ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -51,11 +51,11 @@ void CameraMan::SetTarget(Ogre::SceneNode *target) {
     this->target_ = target;
     if (target) {
       SetYawPitchDist(Ogre::Degree(0), Ogre::Degree(45), 150);
-      cameraNode->setAutoTracking(true, target);
+      camera_node_->setAutoTracking(true, target);
     } else {
-      cameraNode->setAutoTracking(false);
+      camera_node_->setAutoTracking(false);
     }
-    prevPos = target->getPosition();
+    prev_pos_ = target->getPosition();
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -74,34 +74,34 @@ float CameraMan::GetTopSpeed() {
 //----------------------------------------------------------------------------------------------------------------------
 float CameraMan::GetDistToTarget() {
   if (target_) {
-    Ogre::Vector3 offset = cameraNode->getPosition() - target_->_getDerivedPosition() - offset;
+    Ogre::Vector3 offset = camera_node_->getPosition() - target_->_getDerivedPosition() - offset;
     return offset.length();
   } else {
-    Ogre::Vector3 offset = cameraNode->getPosition() - offset;
+    Ogre::Vector3 offset = camera_node_->getPosition() - offset;
     return offset.length();
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::SetStyle(CameraStyle style) {
   if (this->camera_style_ != CameraStyle::ORBIT && style == CameraStyle::ORBIT) {
-    cameraNode->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z); // also fix axis with lookAt calls
+    camera_node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z); // also fix axis with lookAt calls
 //    ogre_camera_node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_X); // also fix axis with lookAt calls
 
     // try to replicate the camera configuration
     float dist = GetDistToTarget();
-    const Ogre::Quaternion &q = cameraNode->getOrientation();
+    const Ogre::Quaternion &q = camera_node_->getOrientation();
     SetYawPitchDist(q.getYaw(), q.getPitch(), dist == 0 ? 400 : dist); // enforce some distance
-    cameraNode->setAutoTracking(true, target_);
+    camera_node_->setAutoTracking(true, target_);
     moving_ = true;
   } else if (this->camera_style_ != CameraStyle::FREELOOK && style == CameraStyle::FREELOOK) {
-    cameraNode->setFixedYawAxis(true); // also fix axis with lookAt calls
-    cameraNode->setAutoTracking(false);
+    camera_node_->setFixedYawAxis(true); // also fix axis with lookAt calls
+    camera_node_->setAutoTracking(false);
   } else if (this->camera_style_ != CameraStyle::MANUAL && style == CameraStyle::MANUAL) {
     ManualStop();
-    cameraNode->setAutoTracking(false);
+    camera_node_->setAutoTracking(false);
   } else if (this->camera_style_ != CameraStyle::FPS && style == CameraStyle::FPS) {
-    cameraNode->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z); // also fix axis with lookAt calls
-    cameraNode->setAutoTracking(false);
+    camera_node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z); // also fix axis with lookAt calls
+    camera_node_->setAutoTracking(false);
   }
 
   this->camera_style_ = style;
@@ -116,40 +116,40 @@ void CameraMan::Freeze(bool status) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::RegCamera(Ogre::SceneNode *ogre_camera_node) {
-  this->cameraNode = ogre_camera_node;
+  this->camera_node_ = ogre_camera_node;
 
-  this->camera = ContextManager::GetSingleton().GetOgreCamera();
+  this->ogre_camera_ = ContextManager::GetSingleton().GetOgreCamera();
   // Create the camera's yaw node as a child of camera's top node.
-  this->cameraYawNode = this->cameraNode->createChildSceneNode();
+  this->camera_yaw_node_ = this->camera_node_->createChildSceneNode();
 
   // Create the camera's pitch node as a child of camera's yaw node.
-  this->cameraPitchNode = this->cameraYawNode->createChildSceneNode();
+  this->camera_pitch_node_ = this->camera_yaw_node_->createChildSceneNode();
 
   // Create the camera's roll node as a child of camera's pitch node
   // and attach the camera to it.
-  this->cameraRollNode = this->cameraPitchNode->createChildSceneNode();
-  this->cameraRollNode->attachObject(this->camera);
+  this->camera_roll_node_ = this->camera_pitch_node_->createChildSceneNode();
+  this->camera_roll_node_->attachObject(this->ogre_camera_);
   if (this->camera_style_ == CameraStyle::FPS) {
     ogre_camera_node->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::UnregCamera() {
-  this->cameraRollNode->detachAllObjects();
-  this->cameraPitchNode->detachAllObjects();
-  this->cameraYawNode->detachAllObjects();
-  this->cameraNode->detachAllObjects();
-  cameraNode = nullptr;
-  cameraYawNode = nullptr;
-  cameraPitchNode = nullptr;
-  cameraRollNode = nullptr;
+  this->camera_roll_node_->detachAllObjects();
+  this->camera_pitch_node_->detachAllObjects();
+  this->camera_yaw_node_->detachAllObjects();
+  this->camera_node_->detachAllObjects();
+  camera_node_ = nullptr;
+  camera_yaw_node_ = nullptr;
+  camera_pitch_node_ = nullptr;
+  camera_roll_node_ = nullptr;
 }
 //----------------------------------------------------------------------------------------------------------------------
 Ogre::SceneNode *CameraMan::GetCameraNode() {
   if (camera_style_ == CameraStyle::FPS) {
-    return cameraRollNode;
+    return camera_roll_node_;
   } else {
-    return cameraNode;
+    return camera_node_;
   }
 
   return nullptr;
@@ -157,12 +157,12 @@ Ogre::SceneNode *CameraMan::GetCameraNode() {
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::SetYawPitchDist(Ogre::Radian yaw, Ogre::Radian pitch, float dist) {
   if (target_) {
-    cameraNode->setPosition(target_->_getDerivedPosition());
-    cameraNode->setOrientation(target_->_getDerivedOrientation());
+    camera_node_->setPosition(target_->_getDerivedPosition());
+    camera_node_->setOrientation(target_->_getDerivedOrientation());
   }
-  cameraNode->yaw(yaw);
-  cameraNode->pitch(-pitch);
-  cameraNode->translate(Ogre::Vector3(0, dist, 0), Ogre::Node::TS_LOCAL);
+  camera_node_->yaw(yaw);
+  camera_node_->pitch(-pitch);
+  camera_node_->translate(Ogre::Vector3(0, dist, 0), Ogre::Node::TS_LOCAL);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::ManualStop() {
@@ -173,7 +173,7 @@ void CameraMan::ManualStop() {
     move_right_ = false;
     move_up_ = false;
     move_down_ = false;
-    velocity = Ogre::Vector3::ZERO;
+    velocity_ = Ogre::Vector3::ZERO;
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
     top_speed_ = move_fast_ ? run_speed_ : const_speed_;
 
     Ogre::Vector3 accel = Ogre::Vector3::ZERO;
-    Ogre::Matrix3 axes = cameraRollNode->getLocalAxes();
+    Ogre::Matrix3 axes = camera_roll_node_->getLocalAxes();
 
     if (move_forward_) {
       accel -= axes.GetColumn(2);
@@ -207,63 +207,63 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 
     if (accel.squaredLength() != 0) {
       accel.normalise();
-      velocity += accel * top_speed_ * timeSinceLastFrame * 10;
+      velocity_ += accel * top_speed_ * timeSinceLastFrame * 10;
     } else {
-      velocity -= velocity * timeSinceLastFrame * 10;
+      velocity_ -= velocity_ * timeSinceLastFrame * 10;
     }
 
-    if (velocity.squaredLength() > top_speed_ * top_speed_) {
-      velocity.normalise();
-      velocity *= top_speed_;
+    if (velocity_.squaredLength() > top_speed_ * top_speed_) {
+      velocity_.normalise();
+      velocity_ *= top_speed_;
     }
 
-    if (velocity != Ogre::Vector3::ZERO) {
-      cameraNode->translate(velocity * timeSinceLastFrame);
-      float x = cameraNode->getPosition().x;
-      float z = cameraNode->getPosition().z;
+    if (velocity_ != Ogre::Vector3::ZERO) {
+      camera_node_->translate(velocity_ * timeSinceLastFrame);
+      float x = camera_node_->getPosition().x;
+      float z = camera_node_->getPosition().z;
     }
     if (target_) {
-      Ogre::Vector3 move = target_->getPosition() - prevPos;
-      prevPos = target_->getPosition();
-      cameraNode->translate(move);
+      Ogre::Vector3 move = target_->getPosition() - prev_pos_;
+      prev_pos_ = target_->getPosition();
+      camera_node_->translate(move);
     }
 
   } else if (camera_style_ == CameraStyle::FPS) {
     top_speed_ = move_fast_ ? run_speed_ : const_speed_;
 
-    velocity = {0, 0, 0};
+    velocity_ = {0, 0, 0};
     if (move_forward_) {
-      velocity.z = -run_speed_;
+      velocity_.z = -run_speed_;
     }
     if (move_back_) {
-      velocity.z = run_speed_;
+      velocity_.z = run_speed_;
     }
     if (move_right_) {
-      velocity.x = run_speed_;
+      velocity_.x = run_speed_;
     }
     if (move_left_) {
-      velocity.x = -run_speed_;
+      velocity_.x = -run_speed_;
     }
     if (move_up_) {
-      velocity.y = run_speed_;
+      velocity_.y = run_speed_;
     }
     if (move_down_) {
-      velocity.y = -run_speed_;
+      velocity_.y = -run_speed_;
     }
 
-    if (velocity.squaredLength() > top_speed_ * top_speed_) {
-      velocity.normalise();
-      velocity *= top_speed_;
+    if (velocity_.squaredLength() > top_speed_ * top_speed_) {
+      velocity_.normalise();
+      velocity_ *= top_speed_;
     }
 
     Ogre::Real pitchAngle;
     Ogre::Real pitchAngleSign;
 
     // Yaws the camera according to the mouse relative movement.
-    this->cameraYawNode->yaw(-dx_);
+    this->camera_yaw_node_->yaw(-dx_);
 
     // Pitches the camera according to the mouse relative movement.
-    this->cameraPitchNode->pitch(-dy_);
+    this->camera_pitch_node_->pitch(-dy_);
 
     // Translates the camera according to the translate vector which is
     // controlled by the keyboard arrows.
@@ -272,41 +272,54 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
     // orientation quaternion and the cameraYawNode's orientation
     // quaternion to translate the camera accoding to the camera's
     // orientation around the Y-axis and the X-axis.
-    this->cameraNode->translate(this->cameraYawNode->getOrientation() *
-                                    this->cameraPitchNode->getOrientation() *
-                                    this->velocity * timeSinceLastFrame,
-                                Ogre::SceneNode::TS_LOCAL);
+//    this->cameraNode->translate(cameraYawNode->getOrientation() *
+//                                    cameraPitchNode->getOrientation() *
+//                                    velocity_ * timeSinceLastFrame,
+//                                Ogre::SceneNode::TS_LOCAL);
+
+    Ogre::Vector3 tmp = camera_yaw_node_->getOrientation() *
+                                    camera_pitch_node_->getOrientation() *
+                                    velocity_;
+    if (rigid_body_) {
+      if (!velocity_.isZeroLength()) {
+        rigid_body_->setLinearVelocity({tmp.x, tmp.y, tmp.z});
+        rigid_body_->setFriction(0.0);
+      } else {
+        rigid_body_->setFriction(10.0);
+      }
+    }
 
     // Angle of rotation around the X-axis.
-    pitchAngle = (2 * Ogre::Degree(Ogre::Math::ACos(this->cameraPitchNode->getOrientation().w)).valueDegrees());
+    pitchAngle = (2 * Ogre::Degree(Ogre::Math::ACos(this->camera_pitch_node_->getOrientation().w)).valueDegrees());
 
     // Just to determine the sign of the angle we pick up above, the
     // value itself does not interest us.
-    pitchAngleSign = this->cameraPitchNode->getOrientation().x;
+    pitchAngleSign = this->camera_pitch_node_->getOrientation().x;
 
     // Limit the pitch between -90 degress and +90 degrees, Quake3-style.
     if (pitchAngle > 90.0f) {
       if (pitchAngleSign > 0)
         // Set orientation to 90 degrees on X-axis.
-        this->cameraPitchNode->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f),
-                                                               Ogre::Math::Sqrt(0.5f), 0, 0));
+        this->camera_pitch_node_->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f),
+                                                                  Ogre::Math::Sqrt(0.5f), 0, 0));
       else if (pitchAngleSign < 0)
         // Sets orientation to -90 degrees on X-axis.
-        this->cameraPitchNode->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f),
-                                                               -Ogre::Math::Sqrt(0.5f), 0, 0));
+        this->camera_pitch_node_->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f),
+                                                                  -Ogre::Math::Sqrt(0.5f), 0, 0));
     }
 
 //    cameraNode->translate(velocity * timeSinceLastFrame);
-    float x = cameraNode->getPosition().x;
-    float z = cameraNode->getPosition().z;
-    cameraNode->setPosition(x, DotSceneLoaderB::GetHeigh(x, z) + heigh_, z);
+//    float x = cameraNode->getPosition().x;
+//    float z = cameraNode->getPosition().z;
+//    cameraNode->setPosition(x, DotSceneLoaderB::GetHeigh(x, z) + heigh_, z);
+
     dx_ = 0;
     dy_ = 0;
 
   } else if (camera_style_ == CameraStyle::ORBIT) {
-    Ogre::Vector3 move = cameraNode->getPosition() - prevPos;
-    prevPos = cameraNode->getPosition();
-    cameraNode->translate(move);
+    Ogre::Vector3 move = camera_node_->getPosition() - prev_pos_;
+    prev_pos_ = camera_node_->getPosition();
+    camera_node_->translate(move);
 
   }
 
@@ -316,81 +329,39 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 void CameraMan::MouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   if (!stop_) {
     if (camera_style_ == CameraStyle::FREELOOK) {
-      cameraNode->yaw(Ogre::Degree(-dx * 0.25f));
-      cameraNode->pitch(Ogre::Degree(-dy * 0.1f));
+      camera_node_->yaw(Ogre::Degree(-dx * 0.25f));
+      camera_node_->pitch(Ogre::Degree(-dy * 0.1f));
 
       if (target_) {
         float dist = GetDistToTarget();
-        Ogre::Vector3 delta = cameraNode->getOrientation() * Ogre::Vector3(-dx, dy, 0);
+        Ogre::Vector3 delta = camera_node_->getOrientation() * Ogre::Vector3(-dx, dy, 0);
 
         // the further the camera is, the faster it moves
         delta *= dist / 1000.0f;
-        offset += delta;
-
+        offset_ += delta;
       }
     } else if (camera_style_ == CameraStyle::FPS) {
       dx_ = Ogre::Degree(dx * 0.25f);
       dy_ = Ogre::Degree(dy * 0.1f);
-//      Ogre::Real pitchAngle;
-//      Ogre::Real pitchAngleSign;
-//
-//      // Yaws the camera according to the mouse relative movement.
-//      this->cameraYawNode->yaw(Ogre::Degree(-dx * 0.25f));
-//
-//      // Pitches the camera according to the mouse relative movement.
-//      this->cameraPitchNode->pitch(Ogre::Degree(-dy * 0.1f));
-//
-//      // Translates the camera according to the translate vector which is
-//      // controlled by the keyboard arrows.
-//      //
-//      // NOTE: We multiply the mTranslateVector by the cameraPitchNode's
-//      // orientation quaternion and the cameraYawNode's orientation
-//      // quaternion to translate the camera accoding to the camera's
-//      // orientation around the Y-axis and the X-axis.
-//      this->cameraNode->translate(this->cameraYawNode->getOrientation() *
-//                                      this->cameraPitchNode->getOrientation() *
-//                                      this->mTranslateVector,
-//                                  Ogre::SceneNode::TS_LOCAL);
-//
-//      // Angle of rotation around the X-axis.
-//      pitchAngle = (2 * Ogre::Degree(Ogre::Math::ACos(this->cameraPitchNode->getOrientation().w)).valueDegrees());
-//
-//      // Just to determine the sign of the angle we pick up above, the
-//      // value itself does not interest us.
-//      pitchAngleSign = this->cameraPitchNode->getOrientation().x;
-//
-//      // Limit the pitch between -90 degress and +90 degrees, Quake3-style.
-//      if (pitchAngle > 90.0f)
-//      {
-//        if (pitchAngleSign > 0)
-//          // Set orientation to 90 degrees on X-axis.
-//          this->cameraPitchNode->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f),
-//                                                                 Ogre::Math::Sqrt(0.5f), 0, 0));
-//        else if (pitchAngleSign < 0)
-//          // Sets orientation to -90 degrees on X-axis.
-//          this->cameraPitchNode->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f),
-//                                                                 -Ogre::Math::Sqrt(0.5f), 0, 0));
-//      }
-
     } else if (camera_style_ == CameraStyle::ORBIT) {
       float dist = GetDistToTarget();
 
       if (orbiting_)   // yaw around the target, and pitch locally
       {
-        cameraNode->setPosition(target_->_getDerivedPosition() + offset);
+        camera_node_->setPosition(target_->_getDerivedPosition() + offset_);
 
-        cameraNode->yaw(Ogre::Degree(-dx * 0.25f), Ogre::Node::TS_PARENT);
-        cameraNode->pitch(Ogre::Degree(-dy * 0.25f));
+        camera_node_->yaw(Ogre::Degree(-dx * 0.25f), Ogre::Node::TS_PARENT);
+        camera_node_->pitch(Ogre::Degree(-dy * 0.25f));
 
-        cameraNode->translate(Ogre::Vector3(0, 0, dist), Ogre::Node::TS_LOCAL);
+        camera_node_->translate(Ogre::Vector3(0, 0, dist), Ogre::Node::TS_LOCAL);
         // don't let the camera Go over the top or around the bottom of the target
       } else if (moving_)  // move the camera along the image plane
       {
-        Ogre::Vector3 delta = cameraNode->getOrientation() * Ogre::Vector3(-dx, dy, 0);
+        Ogre::Vector3 delta = camera_node_->getOrientation() * Ogre::Vector3(-dx, dy, 0);
 
         // the further the camera is, the faster it moves
         delta *= dist / 1000.0f;
-        offset += delta;
+        offset_ += delta;
 
       }
     }
@@ -498,6 +469,12 @@ void CameraMan::KeyUp(SDL_Keycode sym) {
 
     }
   }
+}
+btRigidBody *CameraMan::GetRigidBody() const {
+  return rigid_body_;
+}
+void CameraMan::SetRigidBody(btRigidBody *rigid_body) {
+  rigid_body_ = rigid_body;
 }
 
 } //namespace Context
