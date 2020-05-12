@@ -96,9 +96,10 @@ void Application::Quit() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::WaitFPS() {
-  auto delay = static_cast<long> ((1000 / global_target_fps_) - time_since_last_frame_);
+  long delay = static_cast<long> ((1000000 / global_target_fps_) - time_since_last_frame_);
+
   if (delay > 0) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+    std::this_thread::sleep_for(std::chrono::microseconds(delay));
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -107,11 +108,11 @@ void Application::Loop() {
     if (AppStateManager::GetSingleton().cur_state_) {
 
       auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
-      auto millis_before_frame = std::chrono::duration_cast<std::chrono::milliseconds>(duration_before_frame).count();
+      long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
 
-      if (delta_time_ > 1000) {
+      if (delta_time_ > 1000000) {
         if (global_verbose_fps_) {
-          std::cout << "FPS " << 1000 * fps_frames_ / delta_time_ << '\n';
+          std::cout << "FPS " << fps_frames_ << '\n';
         }
 
         delta_time_ = 0;
@@ -129,17 +130,25 @@ void Application::Loop() {
       }
 #endif
 
-      fps_frames_++;
 
-      auto duration_after_frame = std::chrono::system_clock::now().time_since_epoch();
-      auto millis_after_frame = std::chrono::duration_cast<std::chrono::milliseconds>(duration_after_frame).count();
+      auto duration_after_render = std::chrono::system_clock::now().time_since_epoch();
+      long millis_after_render = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_render).count();
+      long render_time = millis_after_render - millis_before_frame;
 
-      time_since_last_frame_ = millis_after_frame - millis_before_frame;
+      if (global_lock_fps_) {
+        long delay = static_cast<long> ((1000000 / global_target_fps_) - render_time);
+        if (delay > 0) {
+          std::this_thread::sleep_for(std::chrono::microseconds (delay));
+        }
+      }
+
+      auto duration_after_loop = std::chrono::system_clock::now().time_since_epoch();
+      long millis_after_loop = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_loop).count();
+
+      time_since_last_frame_ = millis_after_loop - millis_before_frame;
       delta_time_ += time_since_last_frame_;
 
-      if (global_lock_fps_ && !graphics_vsync_) {
-        WaitFPS();
-      }
+      fps_frames_++;
     } else {
       Quit();
     }

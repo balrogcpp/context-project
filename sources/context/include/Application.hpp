@@ -72,7 +72,7 @@ class Application : public ManagerCommon {
   bool application_fkeys_enable_ = false;
   bool application_ask_before_quit_ = false;
   bool graphics_vsync_ = true;
-  bool global_lock_fps_ = false;
+  bool global_lock_fps_ = true;
   std::string application_scene_file_;
   std::string application_ambient_sound_file_;
 
