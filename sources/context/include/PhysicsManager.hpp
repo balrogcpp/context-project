@@ -80,6 +80,7 @@ class PhysicsManager :    //    Bullet initialisation.
   void Stop();
   void Start();
   void AddRigidBody(btRigidBody *body);
+  btRigidBody *GenerateProxy(Ogre::Entity *entity, const std::string &proxy_type, std::string &physics_type);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);
 
  private:

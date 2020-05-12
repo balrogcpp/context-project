@@ -81,10 +81,6 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   void ProcessTerrainGroup(pugi::xml_node &xml_node);
   void ProcessTerrainLightmap(pugi::xml_node &xml_node);
   void ProcessUserData(pugi::xml_node &xml_node, Ogre::UserObjectBindings &user_object_bindings);
-  void ProcessUserData(pugi::xml_node &xml_node,
-                       Ogre::UserObjectBindings &user_object_bindings,
-                       Ogre::Entity *entity,
-                       Ogre::SceneNode *parent_node);
   void ProcessLight(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
   void ProcessCamera(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
   void ProcessNode(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
