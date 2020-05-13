@@ -361,9 +361,9 @@ void ConfigManager::Setup() {
   document_.AddMember("terrain_fog_perpixel", true, allocator);
   document_.AddMember("terrain_receive_shadows", true, allocator);
   document_.AddMember("terrain_receive_shadows_low_lod", false, allocator);
-  document_.AddMember("terrain_cast_shadows", true, allocator);
+  document_.AddMember("terrain_cast_shadows", false, allocator);
   document_.AddMember("terrain_lightmap_enable", false, allocator);
-  document_.AddMember("terrain_lightmap_size", 2048, allocator);
+  document_.AddMember("terrain_lightmap_size", 4096, allocator);
   document_.AddMember("terrain_colourmap_enable", false, allocator);
   document_.AddMember("terrain_parallaxmap_enable", true, allocator);
   document_.AddMember("terrain_raybox_calculation", true, allocator);

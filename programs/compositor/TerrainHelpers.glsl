@@ -13,68 +13,78 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv, float invShadowMapSize)
 {
     // 4-sample PCF
     float shadow = 0.0;
-    uv.z /= uv.w;
     uv.z = uv.z * 0.5 + 0.5; // convert -1..1 to 0..1
-
     float compare = uv.z;
     int counter = 0;
     const float radius = 1.0;
     const int iterations = 16;
+    const float bias = 0.0;
 
-    //  float shadow_depth = texture2DProj(shadowMap, uv).r;
-    //  shadow = (shadow_depth > compare) ? 1.0 : 0.0;
+    //    float shadow_depth = texture2DProj(shadowMap, uv).r - bias;
+    //    shadow = (shadow_depth > compare) ? 1.0 : 0.0;
 
-    for (float y = -radius; y <= radius; y++)
-    for (float x = -radius; x <= radius; x++)
+    //    for (float y = -radius; y < radius; y++)
+    //    for (float x = -radius; x < radius; x++)
+    //    {
+    //        vec2 uv2 = uv.xy + vec2(x, y) * invShadowMapSize;
+    //        float depth = texture2D(shadowMap, uv2).r - bias;
+    //        if (depth > compare) {
+    //            counter++;
+    //        }
+    //    }
+    //    shadow = counter / ( (2.0 * radius) * (2.0 * radius));
+
+    //    for (float y = -radius; y <= radius; y++)
+    //    for (float x = -radius; x <= radius; x++)
+    //    {
+    //        vec2 uv2 = uv.xy + vec2(x, y) * invShadowMapSize;
+    //        float depth = texture2D(shadowMap, uv2).r - bias;
+    //        if (depth > compare) {
+    //            counter++;
+    //        }
+    //    }
+    //    shadow = counter / ( (2.0 * radius + 1.0 ) * (2.0 * radius + 1.0));
+
+    const vec2 poissonDisk16[16] = vec2[](
+    vec2( -0.94201624, -0.39906216 ),
+    vec2( 0.94558609, -0.76890725 ),
+    vec2( -0.094184101, -0.92938870 ),
+    vec2( 0.34495938, 0.29387760 ),
+    vec2( -0.91588581, 0.45771432 ),
+    vec2( -0.81544232, -0.87912464 ),
+    vec2( -0.38277543, 0.27676845 ),
+    vec2( 0.97484398, 0.75648379 ),
+    vec2( 0.44323325, -0.97511554 ),
+    vec2( 0.53742981, -0.47373420 ),
+    vec2( -0.26496911, -0.41893023 ),
+    vec2( 0.79197514, 0.19090188 ),
+    vec2( -0.24188840, 0.99706507 ),
+    vec2( -0.81409955, 0.91437590 ),
+    vec2( 0.19984126, 0.78641367 ),
+    vec2( 0.14383161, -0.14100790 )
+    );
+
+    for (int i = 0; i < iterations; i++)
     {
-        vec2 uv2 = uv.xy + vec2(x, y) * invShadowMapSize;
-        float depth = texture2D(shadowMap, uv2).r;
-        if (depth > compare) {
+        vec2 uv2 = uv.xy + poissonDisk16[i] * invShadowMapSize;
+        float shadow_depth = texture2D(shadowMap, uv2).r - bias;
+        if (shadow_depth > compare) {
             counter++;
         }
     }
-    shadow = counter / ( (2 * radius + 1 ) * (2*radius + 1));
+    shadow = counter / iterations;
 
-    //  const vec2 poissonDisk16[16] = vec2[](
-    //  vec2( -0.94201624, -0.39906216 ),
-    //  vec2( 0.94558609, -0.76890725 ),
-    //  vec2( -0.094184101, -0.92938870 ),
-    //  vec2( 0.34495938, 0.29387760 ),
-    //  vec2( -0.91588581, 0.45771432 ),
-    //  vec2( -0.81544232, -0.87912464 ),
-    //  vec2( -0.38277543, 0.27676845 ),
-    //  vec2( 0.97484398, 0.75648379 ),
-    //  vec2( 0.44323325, -0.97511554 ),
-    //  vec2( 0.53742981, -0.47373420 ),
-    //  vec2( -0.26496911, -0.41893023 ),
-    //  vec2( 0.79197514, 0.19090188 ),
-    //  vec2( -0.24188840, 0.99706507 ),
-    //  vec2( -0.81409955, 0.91437590 ),
-    //  vec2( 0.19984126, 0.78641367 ),
-    //  vec2( 0.14383161, -0.14100790 )
-    //  );
-
-    //  for (int i = 0; i < iterations; i++)
-    //  {
-    //    vec2 uv2 = uv.xy + poissonDisk16[i] * invShadowMapSize.x;
-    //    float shadow_depth = texture2D(shadowMap, uv2).r;
-    //    if (shadow_depth > compare) {
-    //      counter++;
-    //    }
-    //  }
-    //  shadow = counter / iterations;
-
-    //  for (float y = -radius; y <= radius; y++)
-    //  for (float x = -radius; x <= radius; x++)
-    //  for (int i = 0; i < iterations; i++)
-    //  {
-    //    vec2 uv2 = uv.xy + vec2(x, y) * invShadowMapSize.xy + poissonDisk16[i] * invShadowMapSize.x;
-    //    float depth = texture2D(shadowMap, uv2).r;
-    //    if (depth > compare) {
-    //      counter++;
-    //    }
-    //  }
-    //  shadow = counter / ( iterations * (2 * radius + 1 ) * (2*radius + 1));
+    //      for (float y = -radius; y <= radius; y++)
+    //      for (float x = -radius; x <= radius; x++)
+    //      for (int i = 0; i < iterations; i++)
+    //      {
+    //        vec2 uv2 = uv.xy + vec2(x, y) * invShadowMapSize + poissonDisk16[i] * invShadowMapSize;
+    //        float depth = texture2D(shadowMap, uv2).r - bias;
+    //        if (depth > compare) {
+    //          counter++;
+    //        }
+    //      }
+    //      shadow = counter / ( iterations * (2 * radius + 1 ) * (2 * radius + 1));
 
 //    shadow = clamp(shadow + uShadowColour.r, 0, 1);
 

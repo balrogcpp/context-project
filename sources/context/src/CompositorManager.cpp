@@ -59,8 +59,11 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
       auto *texPtr2 = gbufPass->getTextureUnitState("BaseColor");
       texPtr2->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
       texPtr2->setTextureFiltering(Ogre::TFO_NONE);
-      auto texture_name = originalMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->getTextureName();
-      texPtr2->setTextureName(texture_name);
+      auto texture_albedo = originalMaterial->getTechnique(0)->getPass(0)->getTextureUnitState("Albedo");
+      if (texture_albedo) {
+        auto texture_name = texture_albedo->getTextureName();
+        texPtr2->setTextureName(texture_name);
+      }
     }
 
     return gBufferTech;

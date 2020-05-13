@@ -65,7 +65,7 @@ uniform vec3 uLightDiffuseScaledColourArray[MAX_LIGHTS];
 uniform vec3 uLightSpecularScalesColourArray[MAX_LIGHTS];
 uniform vec4 uLightAttenuationArray[MAX_LIGHTS];
 uniform vec3 uLightSpotParamsArray[MAX_LIGHTS];
-#ifdef DEPTH_SHADOWRECEIVER
+#ifdef SHADOWRECEIVER
 uniform float uLightCastsShadowsArray[MAX_LIGHTS];
 uniform float bias0;
 uniform float bias1;
@@ -110,7 +110,7 @@ uniform sampler2D uOcclusionSampler;
 
 uniform vec2 uMetallicRoughnessValues;
 
-#ifdef DEPTH_SHADOWRECEIVER
+#ifdef SHADOWRECEIVER
 uniform sampler2D shadowMap0;
 uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
@@ -138,13 +138,13 @@ in vec3 vNormal;
 out vec4 gl_FragColor;
 #endif
 
-#ifdef DEPTH_SHADOWRECEIVER
+#ifdef SHADOWRECEIVER
 //float random(vec4 seed4)
 //{
 //    float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
 //    return fract(sin(dot_product) * 43758.5453);
 //}
-//
+
 //float random(vec2 seed2)
 //{
 //    float dot_product = dot(seed2, vec2(12.9898,78.233));
@@ -519,7 +519,7 @@ void main()
 
     float alpha = baseColor.a;
 
-#ifdef FADER_ENABLE
+#ifdef FADE
     alpha *= vUV.w;
 #endif
 
@@ -586,7 +586,7 @@ void main()
 
     vec3 total_colour = vec3(0.0);
 
-#ifdef DEPTH_SHADOWRECEIVER
+#ifdef SHADOWRECEIVER
     float attenuation = 1.0;
 #else
     float attenuation = alpha;
@@ -652,7 +652,7 @@ void main()
         vec3 color = NdotL * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
         color *= fSpotT * fAtten;
 
-#ifdef DEPTH_SHADOWRECEIVER
+#ifdef SHADOWRECEIVER
         if (uLightCastsShadowsArray[i] == 1.0) {
             float shadow = calcPSSMDepthShadow();
 

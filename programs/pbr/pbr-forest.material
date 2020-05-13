@@ -2,23 +2,19 @@
 fragment_program Forest_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+    preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
 }
 
 fragment_program Forest_fs_glsles glsles
 {
 	source pbr.frag
-    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+    preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
 }
 
 fragment_program Forest_fs unified
 {
 	delegate Forest_fs_glsl
 	delegate Forest_fs_glsles
-
-	default_params
-	{
-	}
 }
 
 material Forest
@@ -43,13 +39,13 @@ material Forest
 fragment_program Forest_Shadowed_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,DEPTH_SHADOWRECEIVER
+    preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
 }
 
 fragment_program Forest_Shadowed_fs_glsles glsles
 {
 	source pbr.frag
-    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,DEPTH_SHADOWRECEIVER
+    preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
 }
 
 fragment_program Forest_Shadowed_fs unified
@@ -78,49 +74,6 @@ material Forest_Shadowed
 			fragment_program_ref Forest_Shadowed_fs
 			{
                 param_named uBaseColorSampler   int 0
-			}
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Forest_Normal_fs_glsl glsl
-{
-	source pbr.frag
-    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP
-}
-
-fragment_program Forest_Normal_fs_glsles glsles
-{
-	source pbr.frag
-    preprocessor_defines FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP
-}
-
-fragment_program Forest_Normal_fs unified
-{
-	delegate Forest_Normal_fs_glsl
-	delegate Forest_Normal_fs_glsles
-
-	default_params
-	{
-	}
-}
-
-material Forest_Normal
-{
-    technique
-    {
-      pass
-      {
-            texture_unit Albedo {}
-            texture_unit Normal {}
-
-            vertex_program_ref Forest_vs {}
-
-			fragment_program_ref Forest_Normal_fs
-			{
-                param_named uBaseColorSampler   int 0
-                param_named uNormalSampler      int 1
 			}
         }
     }

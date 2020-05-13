@@ -39,7 +39,7 @@ material PBRBasic
 fragment_program PBRBasicShadow_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,DEPTH_SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
 }
 
 fragment_program PBRBasicShadow_fs_glsles glsles

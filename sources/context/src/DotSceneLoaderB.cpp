@@ -249,7 +249,6 @@ void DotSceneLoaderB::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool DotSceneLoaderB::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 
-
   return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -348,6 +347,7 @@ void DotSceneLoaderB::ProcessScene(pugi::xml_node &xml_root) {
     message += ", author " + std::string(xml_root.attribute("author").value());
 
   Ogre::LogManager::getSingleton().logMessage(message);
+
   if (application_init_with_plane_) {
     Ogre::MeshManager::getSingleton().createPlane("floor",
                                                   Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
@@ -539,6 +539,9 @@ void DotSceneLoaderB::ProcessEnvironment(pugi::xml_node &xml_node) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::PageConstructed(size_t pagex, size_t pagez, float *heightData) {
+}
+//----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::CreateTerrainHeightfieldShape(int size,
                                                     float *data,
                                                     const float &min_height,
@@ -567,7 +570,7 @@ void DotSceneLoaderB::CreateTerrainHeightfieldShape(int size,
                                                      PHY_FLOAT,
                                                      false);
 
-//  terrainShape->setUseDiamondSubdivision(true);
+  terrainShape->setUseDiamondSubdivision(true);
   terrainShape->setLocalScaling(localScaling);
 
   auto *groundMotionState =
@@ -619,14 +622,15 @@ void DotSceneLoaderB::DefineTerrain(long x, long y, bool flat, const std::string
     return;
   }
 
+  Ogre::Image image;
+  GetTerrainImage(x % 2 != 0, y % 2 != 0, image, filename);
+
   std::string cached = ogre_terrain_group_->generateFilename(x, y);
   if (Ogre::ResourceGroupManager::getSingleton().resourceExists(DotSceneLoaderB::GetSingleton().GetTerrainGroup()->getResourceGroup(),
                                                                 cached)) {
     ogre_terrain_group_->defineTerrain(x, y);
   } else {
-    Ogre::Image img;
-    GetTerrainImage(x % 2 != 0, y % 2 != 0, img, filename);
-    ogre_terrain_group_->defineTerrain(x, y, &img);
+    ogre_terrain_group_->defineTerrain(x, y, &image);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -753,14 +757,13 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
                       layer_counter,
                       pLayerElement.attribute("blendmap").value());
       }
-
     }
-
   }
 
   if (terrain_save_terrains_) {
     ogre_terrain_group_->saveAllTerrains(true, true);
   }
+
   ogre_terrain_group_->freeTemporaryResources();
 
   bool terrain_collider = physics_enable_;
@@ -779,9 +782,45 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
                                     terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1))
       );
     }
-
   }
 
+  if (ogre_terrain_group_) {
+    ogre_terrain_group_->removeAllTerrains();
+    ogre_terrain_group_.reset();
+  }
+
+//  auto terrain = Ogre::MeshManager::getSingleton().createPlane("Terrain",
+//                                                               Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+//                                                               Ogre::Plane(Ogre::Vector3::UNIT_Y,
+//                                                                           application_plane_offset_),
+//                                                               worldSize,
+//                                                               worldSize,
+//                                                               worldSize,
+//                                                               worldSize,
+//                                                               true,
+//                                                               1,
+//                                                               worldSize,
+//                                                               worldSize,
+//                                                               Ogre::Vector3::UNIT_X);
+//
+//  EnsureHasTangents(terrain);
+//  auto *floor = ogre_scene_manager_->createEntity("Floor", "Terrain");
+//
+//  floor->setMaterialName("Plane");
+//  auto *node = ogre_scene_manager_->getRootSceneNode()->createChildSceneNode();
+//  node->attachObject(floor);
+//
+//  FixPbrParams("Plane");
+//  FixPbrShadow("Plane");
+//  auto material = Ogre::MaterialManager::getSingleton().getByName("Plane");
+//  auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+//  auto &constants = vert_params->getConstantDefinitions();
+
+//  if (constants.map.count("TerrainBox") > 0) {
+//    vert_params->setNamedConstant("TerrainBox",
+//                                  Ogre::Vector4(-worldSize / 2, worldSize / 2, -worldSize / 2, worldSize / 2));
+//    vert_params->setNamedConstant("TerrainBox2", Ogre::Vector4(0, inputScale, 0, 0));
+//  }
 #else
   OGRE_EXCEPT(Ogre::Exception::ERR_INVALID_CALL, "recompile with Ogre::Terrain component");
 #endif
@@ -789,7 +828,6 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessTerrainLightmap(pugi::xml_node &xml_node) {
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-
   auto *terrain_global_options = Ogre::TerrainGlobalOptions::getSingletonPtr();
 
   auto *matProfile =
@@ -1187,7 +1225,6 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
   } else {
     material_list.push_back(material_name);
   }
-  std::cout << material_name << '\n';
 
   if (ConfigManager::GetSingleton().GetBool("graphics_shadows_enable")) {
     if (registered) {
@@ -1229,6 +1266,14 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     vert_params->setNamedAutoConstant("uMVPMatrix", Ogre::GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
     vert_params->setNamedAutoConstant("uModelMatrix", Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
     vert_params->setNamedAutoConstant("uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
+
+    if (constants.map.count("fadeRange") > 0) {
+      vert_params->setNamedConstant("fadeRange", 1 / (50.0f * 2.0f));
+    }
+
+    if (constants.map.count("uTime") > 0) {
+      vert_params->setNamedConstantFromTime("uTime", 1);
+    }
   }
 
   if (material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {

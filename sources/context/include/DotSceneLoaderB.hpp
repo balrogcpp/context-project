@@ -99,6 +99,7 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   void ProcessLightAttenuation(pugi::xml_node &xml_node, Ogre::Light *light);
 
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
+  void PageConstructed(size_t pagex, size_t pagez, float* heightData);
   void CreateTerrainHeightfieldShape(int size,
                                      float *data,
                                      const float &min_height,

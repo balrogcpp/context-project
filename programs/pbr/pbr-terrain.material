@@ -1,0 +1,47 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program Terrain_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
+}
+
+fragment_program Terrain_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
+}
+
+fragment_program Terrain_fs unified
+{
+	delegate Terrain_fs_glsl
+	delegate Terrain_fs_glsles
+}
+
+material Terrain
+{
+    technique
+    {
+      pass
+      {
+        texture_unit HeighMap {}
+
+        vertex_program_ref Terrain_vs
+        {
+            param_named TerrainBox  float -50 50 -50 50
+            param_named TerrainBox2 float 0 10 0 0
+            param_named HeighMap   int 0
+        }
+
+        texture_unit Albedo {}
+        texture_unit Normal {}
+        texture_unit MetallicRougness{}
+
+        fragment_program_ref Terrain_fs
+        {
+            param_named uBaseColorSampler   int 1
+            param_named uNormalSampler    int 2
+            param_named uMetallicRoughnessSampler int 3
+        }
+      }
+    }
+}
