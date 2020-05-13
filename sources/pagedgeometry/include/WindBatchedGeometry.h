@@ -18,35 +18,35 @@ Permission is granted to anyone to use this software for any purpose, including 
 
 #include "BatchedGeometry.h"
 
-namespace Forests
-{
-   // Forward declaration
-   class PagedGeometry;
+namespace Forests {
+// Forward declaration
+class PagedGeometry;
 
-
-   //-----------------------------------------------------------------------------
-   /// A variation of BatchedGeometry designed for WindBatchPage.
-   class WindBatchedGeometry: public BatchedGeometry
-   {
+//-----------------------------------------------------------------------------
+/// A variation of BatchedGeometry designed for WindBatchPage.
+class WindBatchedGeometry : public BatchedGeometry {
+ public:
+  //--------------------------------------------------------------------------
+  /// Wind chunck of Renderable geometry
+  class WindSubBatch : public BatchedGeometry::SubBatch {
    public:
-      //--------------------------------------------------------------------------
-      /// Wind chunck of Renderable geometry
-      class WindSubBatch: public BatchedGeometry::SubBatch
-      {
-      public:
-         WindSubBatch(WindBatchedGeometry *parent, Ogre::SubEntity *ent);
-         void build();
-      };
+    WindSubBatch(WindBatchedGeometry *parent, Ogre::SubEntity *ent);
+    void build();
+  };
 
-   public:
-      WindBatchedGeometry(Ogre::SceneManager *mgr, Ogre::SceneNode *rootSceneNode, const PagedGeometry *pagedGeom);
+ public:
+  WindBatchedGeometry(Ogre::SceneManager *mgr, Ogre::SceneNode *rootSceneNode, const PagedGeometry *pagedGeom);
 
-      void addEntity(Ogre::Entity *ent, const Ogre::Vector3 &position, const Ogre::Quaternion &orientation = Ogre::Quaternion::IDENTITY, const Ogre::Vector3 &scale = Ogre::Vector3::UNIT_SCALE, const Ogre::ColourValue &color = Ogre::ColourValue::White);
-      void setGeom(const PagedGeometry * geom) { mGeom = geom; }
+  void addEntity(Ogre::Entity *ent,
+                 const Ogre::Vector3 &position,
+                 const Ogre::Quaternion &orientation = Ogre::Quaternion::IDENTITY,
+                 const Ogre::Vector3 &scale = Ogre::Vector3::UNIT_SCALE,
+                 const Ogre::ColourValue &color = Ogre::ColourValue::White);
+  void setGeom(const PagedGeometry *geom) { mGeom = geom; }
 
-   private:
-      const PagedGeometry  * mGeom;
-   };
+ private:
+  const PagedGeometry *mGeom;
+};
 
 }
 
