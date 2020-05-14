@@ -84,7 +84,7 @@ Ogre::Vector3 ParsePosition(const pugi::xml_node &xml_node) {
   float z = Ogre::StringConverter::parseReal(xml_node.attribute("z").value());
 
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-  y += Context::DotSceneLoaderB::GetHeigh(x, z);
+  y += Context::DotSceneLoaderB::GetSingleton().GetHeigh(x, z);
 #endif
 
   return Ogre::Vector3(x, y, z);
@@ -194,11 +194,14 @@ DotSceneLoaderB *DotSceneLoaderB::GetSingletonPtr() {
 //----------------------------------------------------------------------------------------------------------------------
 float DotSceneLoaderB::GetHeigh(float x, float z) {
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-  if (DotSceneLoaderB::GetSingleton().ogre_terrain_group_) {
-    return DotSceneLoaderB::GetSingleton().ogre_terrain_group_->getHeightAtWorldPosition(x, 1000, z);
-  } else {
-    return 0;
-  }
+  if (x < -terrain_box_.x && x > terrain_box_.y && z < terrain_box_.z && z > terrain_box_.w)
+    return 0.0f;
+
+  float size = std::sqrt(heigh_data_.size());
+  int x_ = (x - terrain_box_.x) * size / (terrain_box_.y - terrain_box_.x);
+  int z_ = (z - terrain_box_.z) * size / (terrain_box_.w - terrain_box_.z);
+  z_ = size - z_ - 1;
+  return DotSceneLoaderB::GetSingleton().heigh_data_[x_ + z_ * size];
 #else
   return 0;
 #endif
@@ -556,7 +559,7 @@ void DotSceneLoaderB::CreateTerrainHeightfieldShape(int size,
     memcpy(terrainHeights + size * i, data + size * (size - i - 1), sizeof(float) * size);
   }
 
-  btScalar heightScale = 1.0f;
+  const btScalar heightScale = 1.0f;
 
   btVector3 localScaling(scale, heightScale, scale);
 
@@ -690,24 +693,28 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
 
   const bool flat = false;
+  const bool legacy_terrain = false;
 
-  terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
-  terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
-  terrain_global_options->setUseRayBoxDistanceCalculation(terrain_raybox_calculation_);
   terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
-  terrain_global_options->setCastsDynamicShadows(terrain_cast_shadows_);
 
   auto *matProfile =
       dynamic_cast<TerrainMaterialGeneratorB::SM2Profile *>(terrain_global_options->getDefaultMaterialGenerator()->getActiveProfile());
 
-  matProfile->setReceiveDynamicShadowsEnabled(terrain_receive_shadows_);
-  matProfile->setReceiveDynamicShadowsLowLod(terrain_receive_shadows_low_lod_);
-  matProfile->setReceiveDynamicShadowsDepth(terrain_receive_shadows_);
-  matProfile->setReceiveDynamicShadowsPSSM(dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ContextManager().GetSingleton().GetOgreShadowCameraSetup().get()));
-  matProfile->setLayerParallaxMappingEnabled(terrain_parallaxmap_enable_);
-  matProfile->setLayerNormalMappingEnabled(terrain_normalmap_enable_);
-  matProfile->setLayerSpecularMappingEnabled(terrain_specularmap_enable_);
-  matProfile->SetTerrainFogPerpixel(terrain_fog_perpixel_);
+  if (legacy_terrain) {
+    terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
+    terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
+    terrain_global_options->setUseRayBoxDistanceCalculation(terrain_raybox_calculation_);
+    terrain_global_options->setCastsDynamicShadows(terrain_cast_shadows_);
+
+    matProfile->setReceiveDynamicShadowsEnabled(terrain_receive_shadows_);
+    matProfile->setReceiveDynamicShadowsLowLod(terrain_receive_shadows_low_lod_);
+    matProfile->setReceiveDynamicShadowsDepth(terrain_receive_shadows_);
+    matProfile->setReceiveDynamicShadowsPSSM(dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ContextManager().GetSingleton().GetOgreShadowCameraSetup().get()));
+    matProfile->setLayerParallaxMappingEnabled(terrain_parallaxmap_enable_);
+    matProfile->setLayerNormalMappingEnabled(terrain_normalmap_enable_);
+    matProfile->setLayerSpecularMappingEnabled(terrain_specularmap_enable_);
+    matProfile->SetTerrainFogPerpixel(terrain_fog_perpixel_);
+  }
 
   ogre_terrain_group_ =
       std::make_shared<Ogre::TerrainGroup>(scene_manager_, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
@@ -727,35 +734,37 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     int pageX = Ogre::StringConverter::parseInt(pPageElement.attribute("x").value());
     int pageY = Ogre::StringConverter::parseInt(pPageElement.attribute("y").value());
 
-    int layers_count = 0;
-    for (const auto &pLayerElement : pPageElement.children("layer")) {
-      layers_count++;
-    }
-
-    defaultimp.layerList.resize(layers_count);
-
-    int layer_counter = 0;
-    for (auto pLayerElement : pPageElement.children("layer")) {
-      defaultimp.layerList[layer_counter].worldSize =
-          Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
-      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
-      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
-
-      layer_counter++;
-    }
-
     std::string heighmap = pPageElement.attribute("heightmap").value();
     DefineTerrain(pageX, pageY, flat, heighmap);
     ogre_terrain_group_->loadTerrain(pageX, pageY, true);
     ogre_terrain_group_->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
 
-    layer_counter = 0;
-    for (auto pLayerElement : pPageElement.children("layer")) {
-      layer_counter++;
-      if (layer_counter != layers_count) {
-        InitBlendMaps(ogre_terrain_group_->getTerrain(pageX, pageY),
-                      layer_counter,
-                      pLayerElement.attribute("blendmap").value());
+    if (legacy_terrain) {
+      int layers_count = 0;
+      for (const auto &pLayerElement : pPageElement.children("layer")) {
+        layers_count++;
+      }
+
+      defaultimp.layerList.resize(layers_count);
+
+      int layer_counter = 0;
+      for (auto pLayerElement : pPageElement.children("layer")) {
+        defaultimp.layerList[layer_counter].worldSize =
+            Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
+        defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
+        defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
+
+        layer_counter++;
+      }
+
+      layer_counter = 0;
+      for (auto pLayerElement : pPageElement.children("layer")) {
+        layer_counter++;
+        if (layer_counter != layers_count) {
+          InitBlendMaps(ogre_terrain_group_->getTerrain(pageX, pageY),
+                        layer_counter,
+                        pLayerElement.attribute("blendmap").value());
+        }
       }
     }
   }
@@ -766,10 +775,9 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 
   ogre_terrain_group_->freeTemporaryResources();
 
-  bool terrain_collider = physics_enable_;
-
-  if (terrain_collider) {
+  if (physics_enable_) {
     auto terrainIterator = ogre_terrain_group_->getTerrainIterator();
+    terrain_box_ = Ogre::Vector4(-worldSize / 2, worldSize / 2, -worldSize / 2, worldSize / 2);
 
     while (terrainIterator.hasMoreElements()) {
       auto *terrain = terrainIterator.getNext()->instance;
@@ -781,6 +789,82 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
                                     terrain->getPosition(),
                                     terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1))
       );
+
+      ManualObject *obj = ogre_scene_manager_->createManualObject("Terrain_Manual_Object");
+      obj->begin("Plane", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+
+      size_t size = terrain->getSize();
+      float *data = terrain->getHeightData();
+      heigh_data_.resize(size * size);
+
+      const int step = 1;
+      size_t counter = 0;
+
+      for (int z = 0; z < size; z += step) {
+        for (int x = 0; x < size; x += step) {
+          float heigh0 = data[x + z * size];
+          float heigh1 = data[x + 1 + z * size];
+          float heigh2 = data[x + (z + 1) * size];
+
+          heigh_data_[x + z * size] = heigh0;
+
+          float x0 = worldSize * ((float) (x) / (float) size) - worldSize / 2;
+          float z0 = worldSize * ((float) (size - z) / (float) size) - worldSize / 2;
+
+          float x1 = worldSize * ((float) (x + step) / (float) size) - worldSize / 2;
+          float z1 = worldSize * ((float) (size - z) / (float) size) - worldSize / 2;
+
+          float x2 = worldSize * ((float) (x) / (float) size) - worldSize / 2;
+          float z2 = worldSize * ((float) (size - z - step) / (float) size) - worldSize / 2;
+
+          auto position0 = Ogre::Vector3(x0, heigh0, z0);
+          auto position1 = Ogre::Vector3(x1, heigh1, z1);
+          auto position2 = Ogre::Vector3(x2, heigh2, z2);
+
+          auto v1 = position1 - position0;
+          auto v2 = position2 - position0;
+
+          Ogre::Vector3 normal = v1.crossProduct(v2);
+          normal.normalise();
+
+          if (x == 0 && z == 0 && x == size && z == size)
+            normal = Ogre::Vector3(0, 1, 0);
+
+          obj->position(position0);
+          obj->normal(normal);
+
+          obj->textureCoord((float)x / 8, (float)z / 8);
+        }
+      }
+
+      for (int z = 0; z < size - 1; z++) {
+        for (int x = 0; x < size - 1; x++) {
+          obj->quad((x) + (z) * size, (x + 1) + (z) * size, (x + 1) + (z + 1) * size, (x) + (z + 1) * size);
+//          obj->quad((x) + (z) * size, (x) + (z + 1) * size, (x + 1) + (z + 1) * size, (x + 1) + (z) * size);
+        }
+      }
+
+      obj->end();
+
+      std::string terrain_mesh_name = "Terrain_" + std::to_string(counter);
+      if (Ogre::MeshManager::getSingleton().getByName(terrain_mesh_name,
+                                                      Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
+        Ogre::MeshManager::getSingleton().remove(terrain_mesh_name,
+                                                 Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+      }
+
+      auto terrain_mesh = obj->convertToMesh(terrain_mesh_name);
+      terrain_mesh->buildTangentVectors();
+      counter++;
+      ogre_scene_manager_->getRootSceneNode()->createChildSceneNode()->attachObject(obj);
+
+      auto *terrain_entity = ogre_scene_manager_->createEntity(terrain_mesh);
+      terrain_entity->setCastShadows(false);
+      ogre_scene_manager_->getRootSceneNode()->createChildSceneNode()->attachObject(terrain_entity);
+      ogre_scene_manager_->destroyManualObject(obj);
+
+      FixPbrParams("Plane");
+      FixPbrShadow("Plane");
     }
   }
 
@@ -804,6 +888,7 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 //                                                               Ogre::Vector3::UNIT_X);
 //
 //  EnsureHasTangents(terrain);
+//
 //  auto *floor = ogre_scene_manager_->createEntity("Floor", "Terrain");
 //
 //  floor->setMaterialName("Plane");
@@ -812,10 +897,11 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 //
 //  FixPbrParams("Plane");
 //  FixPbrShadow("Plane");
+//
 //  auto material = Ogre::MaterialManager::getSingleton().getByName("Plane");
 //  auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
 //  auto &constants = vert_params->getConstantDefinitions();
-
+//
 //  if (constants.map.count("TerrainBox") > 0) {
 //    vert_params->setNamedConstant("TerrainBox",
 //                                  Ogre::Vector4(-worldSize / 2, worldSize / 2, -worldSize / 2, worldSize / 2));
@@ -1242,12 +1328,31 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
       material->getTechnique(0)->setShadowCasterMaterial(new_caster);
 
       if (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
-        std::string texture_name = pass->getTextureUnitState(0)->getTextureName();
-        auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState(0);
-        if (texPtr3) {
-          texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-          texPtr3->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
-          texPtr3->setTextureName(texture_name);
+
+        auto texture_albedo = pass->getTextureUnitState("Albedo");
+        if (texture_albedo) {
+          std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
+
+          auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
+
+          if (texPtr3) {
+            texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+            texPtr3->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
+            texPtr3->setTextureName(texture_name);
+          }
+        }
+
+        auto texture_heigh = pass->getTextureUnitState("HeighMap");
+        if (texture_heigh) {
+          std::string texture_name = pass->getTextureUnitState("HeighMap")->getTextureName();
+
+          auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("HeighMap");
+
+          if (texPtr3) {
+            texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+            texPtr3->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
+            texPtr3->setTextureName(texture_name);
+          }
         }
       }
     }
@@ -1268,7 +1373,7 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     vert_params->setNamedAutoConstant("uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
 
     if (constants.map.count("fadeRange") > 0) {
-      vert_params->setNamedConstant("fadeRange", 1 / (50.0f * 2.0f));
+      vert_params->setNamedConstant("fadeRange", 1 / (100.0f * 2.0f));
     }
 
     if (constants.map.count("uTime") > 0) {
@@ -1317,7 +1422,6 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
                                       light_count);
     frag_params->setNamedAutoConstant("uFogColour", Ogre::GpuProgramParameters::ACT_FOG_COLOUR);
     frag_params->setNamedAutoConstant("uFogParams", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
-    frag_params->setNamedAutoConstant("uAlphaRejection", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
     frag_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
 
     auto &constants = frag_params->getConstantDefinitions();

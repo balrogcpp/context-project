@@ -75,9 +75,9 @@ fragment_program PBR_Unity_fs unified
 
 	default_params
 	{
-	    param_named bias0 float 0.0001
-	    param_named bias1 float 0.0001
-	    param_named bias2 float 0.0001
+	    param_named bias0 float 0.0002
+	    param_named bias1 float 0.0002
+	    param_named bias2 float 0.0002
 	}
 }
 

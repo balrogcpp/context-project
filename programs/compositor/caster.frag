@@ -33,8 +33,6 @@ out vec4 gl_FragColor;
 #endif
 
 uniform sampler2D baseColorMap;
-uniform float NearClipDistance;
-uniform float FarClipDistance;
 
 in vec2 vUV;
 

@@ -42,20 +42,23 @@ uniform float FarClipDistance;
 uniform sampler2D AttenuationSampler;
 uniform sampler2D SceneSampler;
 uniform sampler2D MrtSampler;
+uniform vec4 ShadowColour;
 
 void main()
 {
-    vec4 bloom = texture2D(AttenuationSampler, oUv0);
+    vec4 tmp = texture2D(AttenuationSampler, oUv0);
+    vec3 bloom = tmp.rgb;
+    float shadow = tmp.a;
     vec3 scene = texture2D(SceneSampler, oUv0).rgb;
     float depth = FarClipDistance * texture2D(MrtSampler, oUv0).w + NearClipDistance;
 
     float fog_value = 0.0;
+    shadow = clamp(shadow + ShadowColour.r, 0, 1);
 
     if (depth < 100.0) {
-        scene.rgb *= bloom.a;
+        scene.rgb *= shadow;
     }
-
-    scene.rgb += bloom.rgb;
+    scene.rgb += bloom;
     scene.rgb += Ambient.rgb;
 
     if (depth < 1000.0) {

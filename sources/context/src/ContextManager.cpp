@@ -435,7 +435,7 @@ void ContextManager::SetupOgreScenePreconditions() {
 
       ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
       ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
-      ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 3 * 6);
+      ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 6);
       ogre_scene_manager_->setShadowTextureSelfShadow(graphics_shadows_self_shadow_);
       ogre_scene_manager_->setShadowCasterRenderBackFaces(graphics_shadows_back_faces_);
       ogre_scene_manager_->setShadowFarDistance(graphics_shadows_far_distance_);
@@ -470,6 +470,7 @@ void ContextManager::SetupOgreScenePreconditions() {
         } else {
           pssm_setup->setSplitPadding(graphics_shadows_split_padding_);
         }
+
         pssm_setup->setOptimalAdjustFactor(0, graphics_shadows_pssm_0_);
         pssm_setup->setOptimalAdjustFactor(1, graphics_shadows_pssm_1_);
         pssm_setup->setOptimalAdjustFactor(2, graphics_shadows_pssm_2_);
@@ -566,6 +567,10 @@ void ContextManager::SetupSDL() {
   actual_monitor_size_.h = static_cast<int>(DM.h);
   actual_monitor_size_.f = window_position_.f;
 
+  if (window_position_.w == 0) window_position_.w = actual_monitor_size_.w;
+  if (window_position_.h == 0) window_position_.h = actual_monitor_size_.h;
+  if (window_position_.w * window_position_.h == 0) window_position_.f = true;
+
   sdl_window_ = SDL_CreateWindow(window_caption_.c_str(),
                                  SDL_WINDOWPOS_CENTERED,
                                  SDL_WINDOWPOS_CENTERED,
@@ -575,8 +580,6 @@ void ContextManager::SetupSDL() {
 
   if (sdl_window_) {
     SDL_SetRelativeMouseMode(SDL_TRUE);
-//    sdl_renderer_ = SDL_GetRenderer(sdl_window_);
-//    SDL_CaptureMouse(SDL_TRUE);
   } else {
     throw Exception("Failed to Create SDL_Window");
   }

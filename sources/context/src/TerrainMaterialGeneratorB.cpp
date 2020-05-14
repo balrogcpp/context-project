@@ -1076,7 +1076,7 @@ void ShaderHelperGLSL::generateFpLayer(const SM2Profile *prof, const Ogre::Terra
   // apply to common
   if (!layer) {
     outStream << "    diffuse = diffuseSpecTex0.rgb;\n";
-    outStream << "    diffuse = diffuse * diffuse;\n";
+    outStream << "    diffuse = pow(diffuse, vec3(2.2));\n";
     if (prof->isLayerSpecularMappingEnabled())
       outStream << "    specular = diffuseSpecTex0.a;\n";
     outStream << "    specular = specular;\n";
@@ -1157,7 +1157,7 @@ void ShaderHelperGLSL::generateFpFooter(const SM2Profile *prof, const Ogre::Terr
     }
 
     // diffuse lighting
-    outStream << "    gl_FragColor.rgb += ambient.rgb * diffuse + litRes.y * lightDiffuseColour * diffuse * shadow;\n";
+    outStream << "    gl_FragColor.rgb += ambient.rgb * diffuse + litRes.y * lightDiffuseColour * diffuse;\n";
 
     // specular default
     if (!prof->isLayerSpecularMappingEnabled())
@@ -1169,7 +1169,7 @@ void ShaderHelperGLSL::generateFpFooter(const SM2Profile *prof, const Ogre::Terr
                 "    gl_FragColor.a = shadow;\n";
     } else {
       // Apply specular
-      outStream << "    gl_FragColor.rgb += litRes.z * lightSpecularColour * specular * shadow;\n";
+      outStream << "    gl_FragColor.rgb += litRes.z * lightSpecularColour * specular;\n";
 
       if (prof->getParent()->getDebugLevel()) {
         outStream << "    gl_FragColor.rg += lodInfo.xy;\n";
@@ -1177,7 +1177,8 @@ void ShaderHelperGLSL::generateFpFooter(const SM2Profile *prof, const Ogre::Terr
     }
   }
 
-  outStream << "    gl_FragColor.rgb = sqrt(gl_FragColor.rgb);\n";
+  outStream << "    gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1/2.2));\n";
+  outStream << "    gl_FragColor.a = shadow;\n";
 
   bool fog = terrain->getSceneManager()->getFogMode() != Ogre::FOG_NONE && tt != RENDER_COMPOSITE_MAP;
 
@@ -1185,18 +1186,15 @@ void ShaderHelperGLSL::generateFpFooter(const SM2Profile *prof, const Ogre::Terr
     if (terrain_fog_perpixel_) {
       if (terrain->getSceneManager()->getFogMode() == Ogre::FOG_LINEAR) {
         outStream << "    float dist = oUVMisc.z;\n";
-//        outStream << "    float dist = distance(eyePosObjSpace, oPosObj.xyz);\n";
         outStream << "    float fog_val =  clamp((dist - fogParams.y) * fogParams.w, 0.0, 1.0);\n";
         outStream << "    gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColour, fog_val);\n";
       } else if (terrain->getSceneManager()->getFogMode() == Ogre::FOG_EXP) {
         outStream << "    float dist = oUVMisc.z;\n";
-//        outStream << "    float dist = distance(eyePosObjSpace, oPosObj.xyz);\n";
         outStream << "    float exponent = dist * fogParams.x;\n";
         outStream << "    float fog_val = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);\n";
         outStream << "    gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColour, fog_val);\n";
       } else if (terrain->getSceneManager()->getFogMode() == Ogre::FOG_EXP2) {
         outStream << "    float dist = oUVMisc.z;\n";
-//        outStream << "    float dist = distance(eyePosObjSpace, oPosObj.xyz);\n";
         outStream << "    float exponent = dist * fogParams.x;\n";
         outStream << "    float fog_val = 1.0 - clamp(1.0 /exp(exponent * exponent), 0.0, 1.0);\n";
         outStream << "    gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColour, fog_val);\n";

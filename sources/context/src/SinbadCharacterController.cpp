@@ -233,7 +233,7 @@ void SinbadCharacterController::UpdateBody(float deltaTime) {
   goal_direction_ = Vector3::ZERO;   // we will calculate this
   float x = body_node_->getPosition().x;
   float z = body_node_->getPosition().z;
-  float y = DotSceneLoaderB::GetHeigh(x, z) + 4 * CHAR_HEIGHT;
+  float y = DotSceneLoaderB::GetSingleton().GetHeigh(x, z) + 4 * CHAR_HEIGHT;
   body_node_->setPosition(x, y, z);
 
   if (key_dirction_ != Vector3::ZERO && base_anim_ != ANIM_DANCE) {

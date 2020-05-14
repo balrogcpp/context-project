@@ -120,9 +120,9 @@ compositor Context/Modulate
 {
     technique
     {
-        texture_ref hdr Context/Main hdr
+        //texture_ref hdr Context/Main hdr
 
-        target hdr
+        target_output
         {
             pass render_quad
             {

@@ -47,7 +47,7 @@ precision highp float;
 #define MAX_LIGHTS 5
 #define MANUAL_SRGB
 #define SRGB_FAST_APPROXIMATION
-//#define SRGB_SQRT
+#define SRGB_SQRT
 
 uniform float uAlphaRejection;
 uniform vec4 uSurfaceAmbientColour;
@@ -74,11 +74,6 @@ uniform float bias2;
 uniform vec3 uFogColour;
 uniform vec4 uFogParams;
 uniform vec3 uCameraPosition;
-
-
-#ifdef USE_PARALLAX
-uniform sampler2D uOffsetMap;
-#endif
 
 #ifdef USE_IBL
 uniform samplerCube uDiffuseEnvSampler;
@@ -124,7 +119,6 @@ in vec4 lightSpacePosArray[MAX_LIGHTS * 3];
 
 in vec3 vPosition;
 in vec4 vUV;
-
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -212,12 +206,13 @@ float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSiz
 
     for (int i = 0; i < iterations; i++)
     {
-    vec2 uv2 = uv.xy + poissonDisk16[i] * invShadowMapSize.x;
-    float shadow_depth = texture2D(shadowMap, uv2).r - bias;
-    if (shadow_depth > compare) {
-      counter++;
+        vec2 uv2 = uv.xy + poissonDisk16[i] * invShadowMapSize.x;
+        float shadow_depth = texture2D(shadowMap, uv2).r - bias;
+        if (shadow_depth > compare) {
+          counter++;
+        }
     }
-    }
+
     shadow = counter / iterations;
 
 //      for (float y = -radius; y <= radius; y++)
@@ -232,7 +227,7 @@ float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSiz
 //      }
 //      shadow = counter / ( iterations * (2 * radius + 1 ) * (2 * radius + 1));
 
-    shadow = clamp(shadow + uShadowColour.r, 0, 1);
+//    shadow = clamp(shadow + uShadowColour.r, 0, 1);
 
     return shadow;
 }
@@ -490,12 +485,13 @@ float microfacetDistribution(PBRInfo pbrInputs)
     return roughnessSq / (M_PI * f * f);
 }
 
-#ifdef USE_PARALLAX
+#define HAS_PARALLAX
+#ifdef HAS_PARALLAX
 vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
 {
-    float height =  texture2D(uOffsetMap, texCoords).r;
+    float height =  texture2D(uBaseColorSampler, texCoords).a;
     const float height_scale = 0.01;
-    vec2 p = viewDir.xy / viewDir.z * (height * height_scale);
+    vec2 p = viewDir.xy * (height * height_scale);
     return texCoords - p;
 }
 #endif
@@ -504,7 +500,7 @@ void main()
 {
     vec3 v = normalize(uCameraPosition - vPosition);
 
-#ifdef USE_PARALLAX
+#ifdef HAS_PARALLAX
     vec2 tex_coord = ParallaxMapping(vUV.xy, v);
 #else
     vec2 tex_coord = vUV.xy;
@@ -523,7 +519,7 @@ void main()
     alpha *= vUV.w;
 #endif
 
-    if (alpha < 0.5) {
+    if (alpha < uAlphaRejection) {
         discard;
     }
 
@@ -543,22 +539,6 @@ void main()
     perceptualRoughness = mrSample.a;
 #endif
 #endif
-//    float perceptualRoughness = uMetallicRoughnessValues.y;
-//    float metallic = uMetallicRoughnessValues.x;
-//#ifdef HAS_METALROUGHNESSMAP
-//#ifdef HAS_SEPARATE_ROUGHNESSMAP
-//    vec4 mrSampleMetallic = texture2D(uMetallicSampler, tex_coord);
-//    vec4 mrSampleRoughness = texture2D(uRoughnessSampler, tex_coord);
-//    perceptualRoughness = mrSampleRoughness.r * perceptualRoughness;
-//    metallic = mrSampleMetallic.r * metallic;
-//#else
-//    // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
-//    // This layout intentionally reserves the 'r' channel for (optional) occlusion map data
-//    vec4 mrSample = texture2D(uMetallicRoughnessSampler, tex_coord);
-//    metallic = mrSample.r * metallic;
-//    perceptualRoughness = mrSample.a * perceptualRoughness;
-//#endif
-//#endif
 
     perceptualRoughness = clamp(perceptualRoughness, c_MinRoughness, 1.0);
     metallic = clamp(metallic, 0.0, 1.0);
@@ -658,8 +638,7 @@ void main()
 
             attenuation = min(attenuation, shadow);
         } else {
-//            attenuation += (color.r + color.g + color.b)/3;
-            attenuation += length(color);
+            attenuation = 1.0;
         }
 #endif
 
@@ -683,5 +662,7 @@ void main()
         total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour.rgb);
 #endif
 
-    gl_FragColor = vec4(LINEARtoSRGB(total_colour), attenuation);
+    const float exposure = 1;
+    vec3 mapped = vec3(1.0) - exp(-total_colour * exposure);
+    gl_FragColor = vec4(LINEARtoSRGB(mapped), attenuation);
 }

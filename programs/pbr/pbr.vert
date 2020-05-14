@@ -102,13 +102,9 @@ void main()
 
 #ifdef TERRAIN
   vec2 uv;
-  uv.x = (mypos.x + 50) / (100);
-  uv.y = (mypos.z + 50) / (100);
-  float heigh = texture2D(HeighMap, uv).r * 10;
-//  uv.x = (mypos.x - TerrainBox.x) / (TerrainBox.y - TerrainBox.x);
-//  uv.y = (mypos.z - TerrainBox.z) / (TerrainBox.w - TerrainBox.z);
-//  float heigh = texture2D(HeighMap, uv).r * TerrainBox2.y - TerrainBox2.x;
-
+  uv.x = (mypos.x - TerrainBox.x) / (TerrainBox.y - TerrainBox.x);
+  uv.y = (mypos.z - TerrainBox.z) / (TerrainBox.w - TerrainBox.z);
+  float heigh = texture2D(HeighMap, uv).r * TerrainBox2.y - TerrainBox2.x;
   mypos.y += heigh;
 #endif
 
@@ -123,16 +119,16 @@ void main()
 
   for (int i = 0; i < int(uLightCount);  i += 3) {
 #ifdef SHADOWRECEIVER
-    // Calculate the position of vertex in light space
-    if (uLightCastsShadowsArray[i] == 1.0) {
-      lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * mypos;
-      lightSpacePosArray[i + 1] = uTexWorldViewProjMatrixArray[i + 1] * mypos;
-      lightSpacePosArray[i + 2] = uTexWorldViewProjMatrixArray[i + 2] * mypos;
+  // Calculate the position of vertex in light space
+  if (uLightCastsShadowsArray[i] == 1.0) {
+    lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * mypos;
+    lightSpacePosArray[i + 1] = uTexWorldViewProjMatrixArray[i + 1] * mypos;
+    lightSpacePosArray[i + 2] = uTexWorldViewProjMatrixArray[i + 2] * mypos;
 
-      lightSpacePosArray[i] /= lightSpacePosArray[i].w;
-      lightSpacePosArray[i + 1] /= lightSpacePosArray[i + 1].w;
-      lightSpacePosArray[i + 2] /= lightSpacePosArray[i + 2].w;
-    }
+    lightSpacePosArray[i] /= lightSpacePosArray[i].w;
+    lightSpacePosArray[i + 1] /= lightSpacePosArray[i + 1].w;
+    lightSpacePosArray[i + 2] /= lightSpacePosArray[i + 2].w;
+  }
 #endif
   }
 

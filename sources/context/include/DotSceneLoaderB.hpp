@@ -27,6 +27,7 @@ SOFTWARE.
 #include "ManagerCommon.hpp"
 
 #include <OgreSceneLoader.h>
+#include <OgreVector4.h>
 
 #include <vector>
 #include <string>
@@ -65,7 +66,7 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
 
   std::shared_ptr<Ogre::TerrainGroup> GetTerrainGroup();
   void UpdatePbrParams();
-  static float GetHeigh(float x, float z);
+  float GetHeigh(float x, float z);
   static void FixPbrParams(Ogre::MaterialPtr material);
   static void FixPbrShadow(Ogre::MaterialPtr material);
   static void FixPbrParams(const std::string &material);
@@ -120,6 +121,8 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   std::string group_name_;
   std::shared_ptr<Ogre::TerrainGroup> ogre_terrain_group_;
   std::shared_ptr<Ogre::TerrainPaging> terrain_paging_;
+  std::vector<float> heigh_data_;
+  Ogre::Vector4 terrain_box_;
 
   bool lod_generator_enable_ = false;
   bool physics_enable_ = true;

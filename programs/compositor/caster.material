@@ -15,7 +15,6 @@ vertex_program PSSM/shadow_caster_vs unified
 
 	default_params
 	{
-	    param_named_auto worldViewMatrix worldview_matrix
 		param_named_auto worldViewProjMatrix worldviewproj_matrix
 	}
 }

@@ -59,7 +59,9 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
       auto *texPtr2 = gbufPass->getTextureUnitState("BaseColor");
       texPtr2->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
       texPtr2->setTextureFiltering(Ogre::TFO_NONE);
+
       auto texture_albedo = originalMaterial->getTechnique(0)->getPass(0)->getTextureUnitState("Albedo");
+
       if (texture_albedo) {
         auto texture_name = texture_albedo->getTextureName();
         texPtr2->setTextureName(texture_name);
@@ -281,17 +283,17 @@ void CompositorManager::Setup() {
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
     }
 
-    if (compositor_use_hdr_) {
-      if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/HDR"))
-        Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/HDR", true);
-      else
-        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
-    } else {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Output"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/Output", true);
-    else
-      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
-    }
+//    if (compositor_use_hdr_) {
+//      if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/HDR"))
+//        Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/HDR", true);
+//      else
+//        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
+//    } else {
+//    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Output"))
+//      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/Output", true);
+//    else
+//      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
+//    }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------

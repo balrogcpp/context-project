@@ -370,7 +370,7 @@ void ConfigManager::Setup() {
   document_.AddMember("terrain_specularmap_enable", true, allocator);
   document_.AddMember("terrain_normalmap_enable", true, allocator);
   document_.AddMember("terrain_save_terrains", false, allocator);
-  document_.AddMember("lod_generator_enable", false, allocator);
+  document_.AddMember("lod_generator_enable", true, allocator);
 
   if (GetBool("global_verbose_enable")) {
 

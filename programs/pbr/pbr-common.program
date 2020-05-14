@@ -53,22 +53,3 @@ vertex_program Forest_Shadowed_vs unified
 	delegate Forest_Shadowed_vs_glsl
 	delegate Forest_Shadowed_vs_glsles
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program Terrain_vs_glsl glsl
-{
-	source pbr.vert
-    preprocessor_defines TERRAIN,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
-}
-
-vertex_program Terrain_vs_glsles glsles
-{
-	source pbr.vert
-    preprocessor_defines TERRAIN,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
-}
-
-vertex_program Terrain_vs unified
-{
-	delegate Terrain_vs_glsl
-	delegate Terrain_vs_glsles
-}
