@@ -364,6 +364,7 @@ void ContextManager::SetupOgreCamera() {
 
   ogre_scene_manager_->setSkyBoxEnabled(false);
   ogre_scene_manager_->setSkyDomeEnabled(false);
+  ogre_scene_manager_->setAmbientLight(Ogre::ColourValue::Black);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupOgreScenePreconditions() {
@@ -458,7 +459,7 @@ void ContextManager::SetupOgreScenePreconditions() {
       if (!ogre_shadow_camera_setup_) {
         if (graphics_shadows_split_auto_) {
           pssm_setup->calculateSplitPoints(3, ogre_camera_->getNearClipDistance(),
-                                         ogre_scene_manager_->getShadowFarDistance());
+                                           ogre_scene_manager_->getShadowFarDistance());
         } else {
           Ogre::PSSMShadowCameraSetup::SplitPointList split_points =
               {ogre_camera_->getNearClipDistance(), 10.0, 20.0, ogre_scene_manager_->getShadowFarDistance()};
@@ -567,16 +568,31 @@ void ContextManager::SetupSDL() {
   actual_monitor_size_.h = static_cast<int>(DM.h);
   actual_monitor_size_.f = window_position_.f;
 
-  if (window_position_.w == 0) window_position_.w = actual_monitor_size_.w;
-  if (window_position_.h == 0) window_position_.h = actual_monitor_size_.h;
-  if (window_position_.w * window_position_.h == 0) window_position_.f = true;
+  bool invalid = (window_position_.w * window_position_.h) == 0;
+
+  if (invalid)
+    window_position_.w = actual_monitor_size_.w;
+  if (invalid)
+    window_position_.h = actual_monitor_size_.h;
+  if (invalid)
+    window_position_.f = true;
+
+  bool
+      factual_fullscreen = window_position_.w == actual_monitor_size_.w && window_position_.h == actual_monitor_size_.h;
+
+  uint32_t flags = 0x0;
+
+  flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+
+  if (factual_fullscreen)
+    flags |= SDL_WINDOW_BORDERLESS;
 
   sdl_window_ = SDL_CreateWindow(window_caption_.c_str(),
                                  SDL_WINDOWPOS_CENTERED,
                                  SDL_WINDOWPOS_CENTERED,
                                  window_position_.w,
                                  window_position_.h,
-                                 0x0);
+                                 flags);
 
   if (sdl_window_) {
     SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -673,7 +689,7 @@ void ContextManager::SetupOGRE() {
   auto *mGL3PlusRenderSystem = new Ogre::GL3PlusRenderSystem();
   Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
 #else
-  #ifdef OGRE_BUILD_RENDERSYSTEM_GL
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL
   auto *mGLRenderSystem = new Ogre::GLRenderSystem();
   Ogre::Root::getSingleton().setRenderSystem(mGLRenderSystem);
 #endif
