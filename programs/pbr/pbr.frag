@@ -662,7 +662,8 @@ void main()
         total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour.rgb);
 #endif
 
-    const float exposure = 1;
-    vec3 mapped = vec3(1.0) - exp(-total_colour * exposure);
-    gl_FragColor = vec4(LINEARtoSRGB(mapped), attenuation);
+    const float exposure = 1.0;
+    total_colour = vec3(1.0) - exp(-total_colour * exposure);
+
+    gl_FragColor = vec4(LINEARtoSRGB(total_colour), attenuation);
 }

@@ -283,17 +283,17 @@ void CompositorManager::Setup() {
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
     }
 
-//    if (compositor_use_hdr_) {
-//      if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/HDR"))
-//        Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/HDR", true);
-//      else
-//        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
-//    } else {
-//    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Output"))
-//      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/Output", true);
-//    else
-//      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
-//    }
+    if (compositor_use_hdr_) {
+      if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/HDR"))
+        Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/HDR", true);
+      else
+        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
+    } else {
+    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Output"))
+      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/Output", true);
+    else
+      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
+    }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------

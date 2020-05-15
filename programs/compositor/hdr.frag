@@ -32,7 +32,6 @@ precision highp float;
 out vec4 gl_FragColor;
 #endif
 
-
 in vec2 oUv0;
 
 uniform float exposure;
