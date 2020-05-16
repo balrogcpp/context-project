@@ -3,6 +3,8 @@ FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update &&\
+    apt-get install software-properties-common -y &&\
+    add-apt-repository ppa:ubuntu-toolchain-r/test -y &&\
     apt-get install -y \
         g++-10 \
         gcc-10\
