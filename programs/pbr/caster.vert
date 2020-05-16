@@ -3,6 +3,7 @@
 #version VERSION
 #define USE_TEX_LOD
 #if VERSION != 120
+#define attribute in
 #define texture1D texture
 #define texture2D texture
 #define texture2DProj textureProj
@@ -28,22 +29,15 @@ precision highp float;
 #define out varying
 #endif
 
-#if VERSION != 120
-out vec4 gl_FragColor;
-#endif
+attribute vec4 position;
+attribute vec2 uv0;
 
-uniform sampler2D baseColorMap;
-uniform float NearClipDistance;
-uniform float FarClipDistance;
+uniform mat4 worldViewProjMatrix;
 
-in vec2 vUV;
+out vec2 vUV;
 
 void main() {
-	vec4 baseColor = texture2D(baseColorMap, vUV);
+	vUV = uv0;
 
-	if (baseColor.a < 0.5) {
-		discard;
-	}
-
-	gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
+	gl_Position = worldViewProjMatrix * position;
 }

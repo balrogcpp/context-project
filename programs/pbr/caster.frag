@@ -28,17 +28,20 @@ precision highp float;
 #define out varying
 #endif
 
-attribute vec4 position;
-attribute vec2 uv0;
+#if VERSION != 120
+out vec4 gl_FragColor;
+#endif
 
-uniform mat4 worldViewProjMatrix;
-uniform mat4 worldViewMatrix;
-uniform float NearClipDistance;
-uniform float FarClipDistance;
+uniform sampler2D baseColorMap;
 
-out vec2 vUV;
+in vec2 vUV;
 
 void main() {
-	vUV = uv0;
-	gl_Position = worldViewProjMatrix * position;
+	vec4 baseColor = texture2D(baseColorMap, vUV);
+
+	if (baseColor.a < 0.5) {
+		discard;
+	}
+
+	gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
 }

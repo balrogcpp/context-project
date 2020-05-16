@@ -96,9 +96,10 @@ void Application::Quit() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::WaitFPS() {
-  auto delay = static_cast<long> ((1000 / global_target_fps_) - time_since_last_frame_);
+  long delay = static_cast<long> ((1000000 / global_target_fps_) - time_since_last_frame_);
+
   if (delay > 0) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+    std::this_thread::sleep_for(std::chrono::microseconds(delay));
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -107,11 +108,11 @@ void Application::Loop() {
     if (AppStateManager::GetSingleton().cur_state_) {
 
       auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
-      auto millis_before_frame = std::chrono::duration_cast<std::chrono::milliseconds>(duration_before_frame).count();
+      long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
 
-      if (delta_time_ > 1000) {
+      if (delta_time_ > 1000000) {
         if (global_verbose_fps_) {
-          std::cout << "FPS " << 1000 * fps_frames_ / delta_time_ << '\n';
+          std::cout << "FPS " << fps_frames_ << '\n';
         }
 
         delta_time_ = 0;
@@ -129,17 +130,25 @@ void Application::Loop() {
       }
 #endif
 
-      fps_frames_++;
 
-      auto duration_after_frame = std::chrono::system_clock::now().time_since_epoch();
-      auto millis_after_frame = std::chrono::duration_cast<std::chrono::milliseconds>(duration_after_frame).count();
+      auto duration_after_render = std::chrono::system_clock::now().time_since_epoch();
+      long millis_after_render = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_render).count();
+      long render_time = millis_after_render - millis_before_frame;
 
-      time_since_last_frame_ = millis_after_frame - millis_before_frame;
+      if (global_lock_fps_) {
+        long delay = static_cast<long> ((1000000 / global_target_fps_) - render_time);
+        if (delay > 0) {
+          std::this_thread::sleep_for(std::chrono::microseconds (delay));
+        }
+      }
+
+      auto duration_after_loop = std::chrono::system_clock::now().time_since_epoch();
+      long millis_after_loop = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_loop).count();
+
+      time_since_last_frame_ = millis_after_loop - millis_before_frame;
       delta_time_ += time_since_last_frame_;
 
-      if (global_lock_fps_ && !graphics_vsync_) {
-        WaitFPS();
-      }
+      fps_frames_++;
     } else {
       Quit();
     }
@@ -159,8 +168,6 @@ void Application::Go() {
 #ifdef DEBUG
   if (!global_verbose_) {
 #endif
-//    std::cout.setstate(std::ios_base::failbit);
-//    std::cerr.setstate(std::ios_base::failbit);
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     putenv("ALROUTER_LOGFILE=/dev/null");
     putenv("ALSOFT_LOGLEVEL=LOG_NONE");
@@ -270,9 +277,6 @@ static sigjmp_buf point;
 static void termination_handler(int signum) {
   ContextManager::GetSingleton().RestoreScreenSize();
 
-//  std::cout.setstate(std::ios_base::goodbit);
-//  std::cerr.setstate(std::ios_base::goodbit);
-
   printf("\nSegmentation fault occured!\n");
   std::fflush(stdout);
   std::fflush(stderr);
@@ -327,9 +331,6 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
     std::cerr << caption << std::endl;
     std::stringstream message;
     message << e.getDescription() << std::endl;
-//    std::cout.setstate(std::ios_base::goodbit);
-//    std::cerr.setstate(std::ios_base::goodbit);
-
     std::cerr << message.str();
 
 #ifdef _WIN32
@@ -344,9 +345,6 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
     std::cerr << caption << std::endl;
     std::stringstream message;
     message << e.getFullDescription() << std::endl;
-//    std::cout.setstate(std::ios_base::goodbit);
-//    std::cerr.setstate(std::ios_base::goodbit);
-
     std::cerr << message.str();
 
 #ifdef _WIN32
@@ -358,9 +356,6 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
   }
   catch (std::exception &e) {
     const std::string caption = "Exception occurred (std::exception)";
-//    std::cout.setstate(std::ios_base::goodbit);
-//    std::cerr.setstate(std::ios_base::goodbit);
-
     std::cerr << caption << std::endl;
     std::cerr << e.what() << std::endl;
 #ifdef _WIN32
@@ -372,9 +367,6 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
   }
   catch (...) {
     const std::string caption = "Unhandled exception occurred\n";
-//    std::cout.setstate(std::ios_base::goodbit);
-//    std::cerr.setstate(std::ios_base::goodbit);
-
     std::cerr << caption << std::endl;
 #ifdef _WIN32
     MessageBox(nullptr, caption.c_str(), caption.c_str(), MB_ICONERROR);

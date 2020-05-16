@@ -34,7 +34,7 @@ material Context/Bypass
 
 			texture_unit
             {
-                content_type compositor Context/Main hdr
+                content_type compositor Context/Modulate/Hdr hdr
                 filtering none
             }
 		}

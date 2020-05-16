@@ -53,14 +53,14 @@ material Context/SSAO
 
             texture_unit
             {
-                content_type compositor Context/Main mrt 0
+                content_type compositor Context/GBuffer mrt 0
                 tex_address_mode clamp
                 filtering none
             }
 
             texture_unit
             {
-                content_type compositor Context/Main bloom
+                content_type compositor Context/Bloom bloom
                 tex_address_mode clamp
                 filtering none
             }

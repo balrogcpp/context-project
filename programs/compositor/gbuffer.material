@@ -1,4 +1,36 @@
-material SSAO/GBuffer
+vertex_program gbuffer_vp_glsl glsl
+{
+ 	source gbuffer.vert
+}
+
+vertex_program gbuffer_vp_glsles glsles
+{
+ 	source gbuffer.vert
+}
+
+fragment_program gbuffer_fp_glsl glsl
+{
+	source gbuffer.frag
+}
+
+
+fragment_program gbuffer_fp_glsles glsles
+{
+	source gbuffer.frag
+}
+
+vertex_program gbuffer_vp unified
+{
+	delegate gbuffer_vp_glsl
+    delegate gbuffer_vp_glsles
+}
+
+fragment_program gbuffer_fp unified
+{
+	delegate gbuffer_fp_glsl
+}
+
+material Context/gbuffer
 {
     technique
     {
@@ -6,13 +38,13 @@ material SSAO/GBuffer
         {
             texture_unit BaseColor {}
 
-            vertex_program_ref SSAO/GBuffer_vp
+            vertex_program_ref gbuffer_vp
             {
                 param_named_auto cWorldViewProj worldviewproj_matrix
                 param_named_auto cWorldView worldview_matrix
             }
 
-            fragment_program_ref SSAO/GBuffer_fp
+            fragment_program_ref gbuffer_fp
             {
                 param_named_auto cNearClipDistance near_clip_distance
                 param_named_auto cFarClipDistance far_clip_distance

@@ -145,7 +145,7 @@ void PagedForestManager::Create() {
       z = Ogre::Math::RangeRandom(-g_worldBounds, g_worldBounds);
     }
 //        y = WorldTerrain::getSingleton().getY(x, z);
-    y = DotSceneLoaderB::GetHeigh(x, z);
+    y = DotSceneLoaderB::GetSingleton().GetHeigh(x, z);
     scale = Ogre::Math::RangeRandom(0.09f, 0.1f);
 
     if (i % 2 == 0) {

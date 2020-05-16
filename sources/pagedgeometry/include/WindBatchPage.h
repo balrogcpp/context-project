@@ -20,51 +20,49 @@ Permission is granted to anyone to use this software for any purpose, including 
 #include "BatchPage.h"
 #include "WindBatchedGeometry.h"
 
-namespace Forests
-{
+namespace Forests {
 
-   class PagedGeometry;
+class PagedGeometry;
 
-   /**
-   \brief The WindBatchPage class renders entities as StaticGeometry with hardware accelerated wind animation capability.
+/**
+\brief The WindBatchPage class renders entities as StaticGeometry with hardware accelerated wind animation capability.
 
-   This is one of the geometry page types included in the StaticGeometry engine. These
-   page types should be added to a PagedGeometry object with PagedGeometry::addDetailLevel()
-   so the PagedGeometry will know how you want your geometry displayed.
+This is one of the geometry page types included in the StaticGeometry engine. These
+page types should be added to a PagedGeometry object with PagedGeometry::addDetailLevel()
+so the PagedGeometry will know how you want your geometry displayed.
 
-   To use this page type, use:
-   \code
-   PagedGeometry::addDetailLevel<WindBatchPage>(farRange, transitionLength, Ogre::Any(LODLevel));
-   \endcode
+To use this page type, use:
+\code
+PagedGeometry::addDetailLevel<WindBatchPage>(farRange, transitionLength, Ogre::Any(LODLevel));
+\endcode
 
-   This page type (WindBatchPage) is almost identical to BatchPage, except it includes additional
-   code to support a hardware accelerated wind animation technique (through a vertex shader). To
-   enable animation on your tree(s), use PagedGeometry::setCustomParam() to set the following
-   parameters:
+This page type (WindBatchPage) is almost identical to BatchPage, except it includes additional
+code to support a hardware accelerated wind animation technique (through a vertex shader). To
+enable animation on your tree(s), use PagedGeometry::setCustomParam() to set the following
+parameters:
 
-   windFactorX - Horizontal tree sway magnitude
-   windFactorY - Vertical tree sway magnitude
+windFactorX - Horizontal tree sway magnitude
+windFactorY - Vertical tree sway magnitude
 
-   See Example 8 for a practical example of using WindBatchPage.
+See Example 8 for a practical example of using WindBatchPage.
 
-   Special thanks to Wendigo Studios (www.wendigostudios.com) for donating this extension of
-   BatchPage to the PagedGeometry project.
-   */
-   class WindBatchPage: public BatchPage
-   {
-   public:
-      WindBatchPage() : m_pPagedGeom(NULL) { /* empty */ }
+Special thanks to Wendigo Studios (www.wendigostudios.com) for donating this extension of
+BatchPage to the PagedGeometry project.
+*/
+class WindBatchPage : public BatchPage {
+ public:
+  WindBatchPage() : m_pPagedGeom(NULL) { /* empty */ }
 
-      ///
-      void init(PagedGeometry *geom, const Ogre::Any &data);
+  ///
+  void init(PagedGeometry *geom, const Ogre::Any &data);
 
-   protected:
-      void _updateShaders();
+ protected:
+  void _updateShaders();
 
-   private:
-      Ogre::String            m_strEntityName;     ///<
-      const PagedGeometry*    m_pPagedGeom;        ///<
-   };
+ private:
+  Ogre::String m_strEntityName;     ///<
+  const PagedGeometry *m_pPagedGeom;        ///<
+};
 
 }
 

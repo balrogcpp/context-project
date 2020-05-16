@@ -52,10 +52,10 @@ void FFP_VertexFog_Linear(in mat4 mWorldViewProj,
 				  out float oFogFactor)
 {
 	vec4 vOutPos  = mWorldViewProj * pos;
-	float distance  = vOutPos.w;
+	float distance  = abs(vOutPos.w);	
 	float fogFactor = (fogParams.z - distance) * fogParams.w;
-
-	oFogFactor  = clamp(fogFactor, 0.0, 1.0);
+	
+	oFogFactor  = clamp(fogFactor, 0.0, 1.0);	
 }
 
 //-----------------------------------------------------------------------------
@@ -66,8 +66,8 @@ void FFP_VertexFog_Exp(in mat4 mWorldViewProj,
 {
 	vec4 vOutPos  = mWorldViewProj * pos;
 	float distance  = abs(vOutPos.w);	
-	float exponent       = distance*fogParams.x;
-	float fogFactor = 1.0 / exp(exponent);
+	float exp       = distance*fogParams.x;
+	float fogFactor = 1.0 / pow(2.71828, exp);
 	
 	oFogFactor  = clamp(fogFactor, 0.0, 1.0);	
 }
@@ -79,11 +79,11 @@ void FFP_VertexFog_Exp2(in mat4 mWorldViewProj,
 				   out float oFogFactor)
 {
 	vec4 vOutPos  = mWorldViewProj * pos;
-	float distance  = vOutPos.w;
-	float exponent       = (distance*fogParams.x*distance*fogParams.x);
-	float fogFactor = 1.0 / exp(exponent);
-
-	oFogFactor  = clamp(fogFactor, 0.0, 1.0);
+	float distance  = abs(vOutPos.w);	
+	float exp       = (distance*fogParams.x*distance*fogParams.x);
+	float fogFactor = 1.0 / pow(2.71828, exp);
+	
+	oFogFactor  = clamp(fogFactor, 0.0, 1.0);	
 }
 
 
@@ -116,10 +116,10 @@ void FFP_PixelFog_Linear(in float depth,
 				   in vec4 baseColor,
 				   out vec4 oColor)
 {
-	float distance = depth;
+	float distance = abs(depth);
 	float fogFactor = clamp((fogParams.z - distance) * fogParams.w, 0.0, 1.0);
-
-	oColor = vec4(mix(vec3(fogColor.rgb), vec3(baseColor.rgb), fogFactor), baseColor.a);
+	
+	oColor = mix(fogColor, baseColor, fogFactor);
 }
 
 //-----------------------------------------------------------------------------
@@ -129,11 +129,11 @@ void FFP_PixelFog_Exp(in float depth,
 				   in vec4 baseColor,
 				   out vec4 oColor)
 {
-	float distance  = depth;
-	float exponent       = (distance*fogParams.x);
-	float fogFactor = clamp(1.0 / exp(exponent), 0.0, 1.0);
-
-	oColor = vec4(mix(vec3(fogColor.rgb), vec3(baseColor.rgb), fogFactor), baseColor.a);
+	float distance  = abs(depth);	
+	float exp       = (distance*fogParams.x);
+	float fogFactor = clamp(1.0 / pow(2.71828, exp), 0.0, 1.0);
+	
+	oColor = mix(fogColor, baseColor, fogFactor);
 }
 
 //-----------------------------------------------------------------------------
@@ -143,9 +143,9 @@ void FFP_PixelFog_Exp2(in float depth,
 				   in vec4 baseColor,
 				   out vec4 oColor)
 {
-	float distance  = depth;
-	float exponent       = (distance*fogParams.x*distance*fogParams.x);
-	float fogFactor = clamp(1.0 / exp(exponent), 0.0, 1.0);
-
-	oColor = vec4(mix(vec3(fogColor.rgb), vec3(baseColor.rgb), fogFactor), baseColor.a);
+	float distance  = abs(depth);	
+	float exp       = (distance*fogParams.x*distance*fogParams.x);
+	float fogFactor = clamp(1.0 / pow(2.71828, exp), 0.0, 1.0);
+	
+	oColor = mix(fogColor, baseColor, fogFactor);		
 }

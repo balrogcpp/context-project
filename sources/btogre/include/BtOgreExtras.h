@@ -207,8 +207,8 @@ class DebugDrawer : public btIDebugDraw {
   }
 
   ~DebugDrawer() override {
-//        Ogre::MaterialManager::getSingleton().remove("BtOgre/DebugLines", "BtOgre");
-//        Ogre::ResourceGroupManager::getSingleton().destroyResourceGroup("BtOgre");
+    Ogre::MaterialManager::getSingleton().remove("BtOgre/DebugLines", "BtOgre");
+    Ogre::ResourceGroupManager::getSingleton().destroyResourceGroup("BtOgre");
     delete mLineDrawer;
   }
 

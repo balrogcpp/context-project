@@ -84,7 +84,7 @@ Ogre::Vector3 ParsePosition(const pugi::xml_node &xml_node) {
   float z = Ogre::StringConverter::parseReal(xml_node.attribute("z").value());
 
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-  y += Context::DotSceneLoaderB::GetHeigh(x, z);
+  y += Context::DotSceneLoaderB::GetSingleton().GetHeigh(x, z);
 #endif
 
   return Ogre::Vector3(x, y, z);
@@ -183,11 +183,6 @@ namespace Context {
 
 DotSceneLoaderB DotSceneLoaderB::DotSceneLoaderSingleton;
 
-std::vector<std::string> DotSceneLoaderB::material_list;
-std::vector<std::string> DotSceneLoaderB::shadowed_list;
-std::vector<std::string> DotSceneLoaderB::forest_list;
-
-
 //----------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB &DotSceneLoaderB::GetSingleton() {
   return DotSceneLoaderSingleton;
@@ -199,11 +194,14 @@ DotSceneLoaderB *DotSceneLoaderB::GetSingletonPtr() {
 //----------------------------------------------------------------------------------------------------------------------
 float DotSceneLoaderB::GetHeigh(float x, float z) {
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-  if (DotSceneLoaderB::GetSingleton().ogre_terrain_group_) {
-    return DotSceneLoaderB::GetSingleton().ogre_terrain_group_->getHeightAtWorldPosition(x, 1000, z);
-  } else {
-    return 0;
-  }
+  if (x < -terrain_box_.x && x > terrain_box_.y && z < terrain_box_.z && z > terrain_box_.w)
+    return 0.0f;
+
+  float size = std::sqrt(heigh_data_.size());
+  int x_ = (x - terrain_box_.x) * size / (terrain_box_.y - terrain_box_.x);
+  int z_ = (z - terrain_box_.z) * size / (terrain_box_.w - terrain_box_.z);
+  z_ = size - z_ - 1;
+  return DotSceneLoaderB::GetSingleton().heigh_data_[x_ + z_ * size];
 #else
   return 0;
 #endif
@@ -253,7 +251,6 @@ void DotSceneLoaderB::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt)
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool DotSceneLoaderB::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-
 
   return true;
 }
@@ -353,6 +350,7 @@ void DotSceneLoaderB::ProcessScene(pugi::xml_node &xml_root) {
     message += ", author " + std::string(xml_root.attribute("author").value());
 
   Ogre::LogManager::getSingleton().logMessage(message);
+
   if (application_init_with_plane_) {
     Ogre::MeshManager::getSingleton().createPlane("floor",
                                                   Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
@@ -544,6 +542,9 @@ void DotSceneLoaderB::ProcessEnvironment(pugi::xml_node &xml_node) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::PageConstructed(size_t pagex, size_t pagez, float *heightData) {
+}
+//----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::CreateTerrainHeightfieldShape(int size,
                                                     float *data,
                                                     const float &min_height,
@@ -558,7 +559,7 @@ void DotSceneLoaderB::CreateTerrainHeightfieldShape(int size,
     memcpy(terrainHeights + size * i, data + size * (size - i - 1), sizeof(float) * size);
   }
 
-  btScalar heightScale = 1.0f;
+  const btScalar heightScale = 1.0f;
 
   btVector3 localScaling(scale, heightScale, scale);
 
@@ -572,7 +573,7 @@ void DotSceneLoaderB::CreateTerrainHeightfieldShape(int size,
                                                      PHY_FLOAT,
                                                      false);
 
-//  terrainShape->setUseDiamondSubdivision(true);
+  terrainShape->setUseDiamondSubdivision(true);
   terrainShape->setLocalScaling(localScaling);
 
   auto *groundMotionState =
@@ -624,14 +625,15 @@ void DotSceneLoaderB::DefineTerrain(long x, long y, bool flat, const std::string
     return;
   }
 
+  Ogre::Image image;
+  GetTerrainImage(x % 2 != 0, y % 2 != 0, image, filename);
+
   std::string cached = ogre_terrain_group_->generateFilename(x, y);
   if (Ogre::ResourceGroupManager::getSingleton().resourceExists(DotSceneLoaderB::GetSingleton().GetTerrainGroup()->getResourceGroup(),
                                                                 cached)) {
     ogre_terrain_group_->defineTerrain(x, y);
   } else {
-    Ogre::Image img;
-    GetTerrainImage(x % 2 != 0, y % 2 != 0, img, filename);
-    ogre_terrain_group_->defineTerrain(x, y, &img);
+    ogre_terrain_group_->defineTerrain(x, y, &image);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -691,24 +693,28 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
 
   const bool flat = false;
+  const bool legacy_terrain = false;
 
-  terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
-  terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
-  terrain_global_options->setUseRayBoxDistanceCalculation(terrain_raybox_calculation_);
   terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
-  terrain_global_options->setCastsDynamicShadows(terrain_cast_shadows_);
 
   auto *matProfile =
       dynamic_cast<TerrainMaterialGeneratorB::SM2Profile *>(terrain_global_options->getDefaultMaterialGenerator()->getActiveProfile());
 
-  matProfile->setReceiveDynamicShadowsEnabled(terrain_receive_shadows_);
-  matProfile->setReceiveDynamicShadowsLowLod(terrain_receive_shadows_low_lod_);
-  matProfile->setReceiveDynamicShadowsDepth(terrain_receive_shadows_);
-  matProfile->setReceiveDynamicShadowsPSSM(dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ContextManager().GetSingleton().GetOgreShadowCameraSetup().get()));
-  matProfile->setLayerParallaxMappingEnabled(terrain_parallaxmap_enable_);
-  matProfile->setLayerNormalMappingEnabled(terrain_normalmap_enable_);
-  matProfile->setLayerSpecularMappingEnabled(terrain_specularmap_enable_);
-  matProfile->SetTerrainFogPerpixel(terrain_fog_perpixel_);
+  if (legacy_terrain) {
+    terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
+    terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
+    terrain_global_options->setUseRayBoxDistanceCalculation(terrain_raybox_calculation_);
+    terrain_global_options->setCastsDynamicShadows(terrain_cast_shadows_);
+
+    matProfile->setReceiveDynamicShadowsEnabled(terrain_receive_shadows_);
+    matProfile->setReceiveDynamicShadowsLowLod(terrain_receive_shadows_low_lod_);
+    matProfile->setReceiveDynamicShadowsDepth(terrain_receive_shadows_);
+    matProfile->setReceiveDynamicShadowsPSSM(dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ContextManager().GetSingleton().GetOgreShadowCameraSetup().get()));
+    matProfile->setLayerParallaxMappingEnabled(terrain_parallaxmap_enable_);
+    matProfile->setLayerNormalMappingEnabled(terrain_normalmap_enable_);
+    matProfile->setLayerSpecularMappingEnabled(terrain_specularmap_enable_);
+    matProfile->SetTerrainFogPerpixel(terrain_fog_perpixel_);
+  }
 
   ogre_terrain_group_ =
       std::make_shared<Ogre::TerrainGroup>(scene_manager_, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
@@ -728,50 +734,50 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     int pageX = Ogre::StringConverter::parseInt(pPageElement.attribute("x").value());
     int pageY = Ogre::StringConverter::parseInt(pPageElement.attribute("y").value());
 
-    int layers_count = 0;
-    for (const auto &pLayerElement : pPageElement.children("layer")) {
-      layers_count++;
-    }
-
-    defaultimp.layerList.resize(layers_count);
-
-    int layer_counter = 0;
-    for (auto pLayerElement : pPageElement.children("layer")) {
-      defaultimp.layerList[layer_counter].worldSize =
-          Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
-      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
-      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
-
-      layer_counter++;
-    }
-
     std::string heighmap = pPageElement.attribute("heightmap").value();
     DefineTerrain(pageX, pageY, flat, heighmap);
     ogre_terrain_group_->loadTerrain(pageX, pageY, true);
     ogre_terrain_group_->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
 
-    layer_counter = 0;
-    for (auto pLayerElement : pPageElement.children("layer")) {
-      layer_counter++;
-      if (layer_counter != layers_count) {
-        InitBlendMaps(ogre_terrain_group_->getTerrain(pageX, pageY),
-                      layer_counter,
-                      pLayerElement.attribute("blendmap").value());
+    if (legacy_terrain) {
+      int layers_count = 0;
+      for (const auto &pLayerElement : pPageElement.children("layer")) {
+        layers_count++;
       }
 
-    }
+      defaultimp.layerList.resize(layers_count);
 
+      int layer_counter = 0;
+      for (auto pLayerElement : pPageElement.children("layer")) {
+        defaultimp.layerList[layer_counter].worldSize =
+            Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
+        defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
+        defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
+
+        layer_counter++;
+      }
+
+      layer_counter = 0;
+      for (auto pLayerElement : pPageElement.children("layer")) {
+        layer_counter++;
+        if (layer_counter != layers_count) {
+          InitBlendMaps(ogre_terrain_group_->getTerrain(pageX, pageY),
+                        layer_counter,
+                        pLayerElement.attribute("blendmap").value());
+        }
+      }
+    }
   }
 
   if (terrain_save_terrains_) {
     ogre_terrain_group_->saveAllTerrains(true, true);
   }
+
   ogre_terrain_group_->freeTemporaryResources();
 
-  bool terrain_collider = physics_enable_;
-
-  if (terrain_collider) {
+  if (physics_enable_) {
     auto terrainIterator = ogre_terrain_group_->getTerrainIterator();
+    terrain_box_ = Ogre::Vector4(-worldSize / 2, worldSize / 2, -worldSize / 2, worldSize / 2);
 
     while (terrainIterator.hasMoreElements()) {
       auto *terrain = terrainIterator.getNext()->instance;
@@ -783,10 +789,124 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
                                     terrain->getPosition(),
                                     terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1))
       );
-    }
 
+      ManualObject *obj = ogre_scene_manager_->createManualObject("Terrain_Manual_Object");
+      obj->begin("Plane", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+
+      size_t size = terrain->getSize();
+      float *data = terrain->getHeightData();
+      heigh_data_.resize(size * size);
+
+      const int step = 1;
+      size_t counter = 0;
+
+      for (int z = 0; z < size; z += step) {
+        for (int x = 0; x < size; x += step) {
+          float heigh0 = data[x + z * size];
+          float heigh1 = data[x + 1 + z * size];
+          float heigh2 = data[x + (z + 1) * size];
+
+          heigh_data_[x + z * size] = heigh0;
+
+          float x0 = worldSize * ((float) (x) / (float) size) - worldSize / 2;
+          float z0 = worldSize * ((float) (size - z) / (float) size) - worldSize / 2;
+
+          float x1 = worldSize * ((float) (x + step) / (float) size) - worldSize / 2;
+          float z1 = worldSize * ((float) (size - z) / (float) size) - worldSize / 2;
+
+          float x2 = worldSize * ((float) (x) / (float) size) - worldSize / 2;
+          float z2 = worldSize * ((float) (size - z - step) / (float) size) - worldSize / 2;
+
+          auto position0 = Ogre::Vector3(x0, heigh0, z0);
+          auto position1 = Ogre::Vector3(x1, heigh1, z1);
+          auto position2 = Ogre::Vector3(x2, heigh2, z2);
+
+          auto v1 = position1 - position0;
+          auto v2 = position2 - position0;
+
+          Ogre::Vector3 normal = v1.crossProduct(v2);
+          normal.normalise();
+
+          if (x == 0 && z == 0 && x == size && z == size)
+            normal = Ogre::Vector3(0, 1, 0);
+
+          obj->position(position0);
+          obj->normal(normal);
+
+          obj->textureCoord((float)x / 4, (float)z / 4);
+        }
+      }
+
+      for (int z = 0; z < size - 1; z++) {
+        for (int x = 0; x < size - 1; x++) {
+          obj->quad((x) + (z) * size, (x + 1) + (z) * size, (x + 1) + (z + 1) * size, (x) + (z + 1) * size);
+//          obj->quad((x) + (z) * size, (x) + (z + 1) * size, (x + 1) + (z + 1) * size, (x + 1) + (z) * size);
+        }
+      }
+
+      obj->end();
+
+      std::string terrain_mesh_name = "Terrain_" + std::to_string(counter);
+      if (Ogre::MeshManager::getSingleton().getByName(terrain_mesh_name,
+                                                      Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
+        Ogre::MeshManager::getSingleton().remove(terrain_mesh_name,
+                                                 Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+      }
+
+      auto terrain_mesh = obj->convertToMesh(terrain_mesh_name);
+      terrain_mesh->buildTangentVectors();
+      counter++;
+      ogre_scene_manager_->getRootSceneNode()->createChildSceneNode()->attachObject(obj);
+
+      auto *terrain_entity = ogre_scene_manager_->createEntity(terrain_mesh);
+      terrain_entity->setCastShadows(false);
+      ogre_scene_manager_->getRootSceneNode()->createChildSceneNode()->attachObject(terrain_entity);
+      ogre_scene_manager_->destroyManualObject(obj);
+
+      FixPbrParams("Plane");
+      FixPbrShadow("Plane");
+    }
   }
 
+  if (ogre_terrain_group_) {
+    ogre_terrain_group_->removeAllTerrains();
+    ogre_terrain_group_.reset();
+  }
+
+//  auto terrain = Ogre::MeshManager::getSingleton().createPlane("Terrain",
+//                                                               Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+//                                                               Ogre::Plane(Ogre::Vector3::UNIT_Y,
+//                                                                           application_plane_offset_),
+//                                                               worldSize,
+//                                                               worldSize,
+//                                                               worldSize,
+//                                                               worldSize,
+//                                                               true,
+//                                                               1,
+//                                                               worldSize,
+//                                                               worldSize,
+//                                                               Ogre::Vector3::UNIT_X);
+//
+//  EnsureHasTangents(terrain);
+//
+//  auto *floor = ogre_scene_manager_->createEntity("Floor", "Terrain");
+//
+//  floor->setMaterialName("Plane");
+//  auto *node = ogre_scene_manager_->getRootSceneNode()->createChildSceneNode();
+//  node->attachObject(floor);
+//
+//  FixPbrParams("Plane");
+//  FixPbrShadow("Plane");
+//
+//  auto material = Ogre::MaterialManager::getSingleton().getByName("Plane");
+//  auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+//  auto &constants = vert_params->getConstantDefinitions();
+//
+//  if (constants.map.count("TerrainBox") > 0) {
+//    vert_params->setNamedConstant("TerrainBox",
+//                                  Ogre::Vector4(-worldSize / 2, worldSize / 2, -worldSize / 2, worldSize / 2));
+//    vert_params->setNamedConstant("TerrainBox2", Ogre::Vector4(0, inputScale, 0, 0));
+//  }
 #else
   OGRE_EXCEPT(Ogre::Exception::ERR_INVALID_CALL, "recompile with Ogre::Terrain component");
 #endif
@@ -794,7 +914,6 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessTerrainLightmap(pugi::xml_node &xml_node) {
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-
   auto *terrain_global_options = Ogre::TerrainGlobalOptions::getSingletonPtr();
 
   auto *matProfile =
@@ -953,6 +1072,30 @@ void DotSceneLoaderB::ProcessCamera(pugi::xml_node &xml_node, Ogre::SceneNode *p
   ContextManager::GetSingleton().GetCameraMan()->UnregCamera();
   ContextManager::GetSingleton().GetCameraMan()->RegCamera(parent);
 
+  auto *actor = ogre_scene_manager_->createEntity("Actor", "Icosphere.mesh");
+  actor->setCastShadows(false);
+  actor->setVisible(false);
+  parent->attachObject(actor);
+
+  std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
+  btVector3 inertia;
+  btRigidBody *entBody;
+
+  converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(actor);
+
+  auto *entShape = converter->createCapsule();
+
+  float mass = 100.0f;
+  entShape->calculateLocalInertia(mass, inertia);
+  auto *bodyState = new BtOgre::RigidBodyState(parent);
+  entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+  entBody->setAngularFactor(0);
+  entBody->activate(true);
+  entBody->forceActivationState(DISABLE_DEACTIVATION);
+  entBody->setActivationState(DISABLE_DEACTIVATION);
+  entBody->setFriction(1.0);
+  PhysicsManager::GetSingleton().AddRigidBody(entBody);
+  ContextManager::GetSingleton().GetCameraMan()->SetRigidBody(entBody);
   // Set the field-of-view
   pCamera->setFOVy(Ogre::Radian(fov));
 
@@ -1160,6 +1303,7 @@ void DotSceneLoaderB::UpdatePbrParams() {
 void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
   std::string material_name = material->getName();
   bool registered = false;
+  static std::vector<std::string> material_list;
 
   if (std::find(material_list.begin(), material_list.end(), material_name) != material_list.end()) {
     registered = true;
@@ -1173,20 +1317,44 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
       auto *pass = material->getTechnique(0)->getPass(0);
       std::string texture_name = pass->getTextureUnitState(0)->getTextureName();
       auto caster_material = material->getTechnique(0)->getShadowCasterMaterial();
-      auto *texPtr3 = caster_material->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
+      auto *texPtr3 = caster_material->getTechnique(0)->getPass(0)->getTextureUnitState(0);
       texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
       texPtr3->setTextureFiltering(Ogre::TFO_NONE);
       texPtr3->setTextureName(texture_name);
     } else {
       auto *pass = material->getTechnique(0)->getPass(0);
-      std::string texture_name = pass->getTextureUnitState(0)->getTextureName();
       auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
       auto new_caster = caster_material->clone("PSSM/shadow_caster" + std::to_string(material_list.size()));
       material->getTechnique(0)->setShadowCasterMaterial(new_caster);
-      auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
-      texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-      texPtr3->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
-      texPtr3->setTextureName(texture_name);
+
+      if (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
+
+        auto texture_albedo = pass->getTextureUnitState("Albedo");
+        if (texture_albedo) {
+          std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
+
+          auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
+
+          if (texPtr3) {
+            texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+            texPtr3->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
+            texPtr3->setTextureName(texture_name);
+          }
+        }
+
+        auto texture_heigh = pass->getTextureUnitState("HeighMap");
+        if (texture_heigh) {
+          std::string texture_name = pass->getTextureUnitState("HeighMap")->getTextureName();
+
+          auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("HeighMap");
+
+          if (texPtr3) {
+            texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+            texPtr3->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
+            texPtr3->setTextureName(texture_name);
+          }
+        }
+      }
     }
   }
 
@@ -1203,6 +1371,14 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     vert_params->setNamedAutoConstant("uMVPMatrix", Ogre::GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
     vert_params->setNamedAutoConstant("uModelMatrix", Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
     vert_params->setNamedAutoConstant("uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
+
+    if (constants.map.count("fadeRange") > 0) {
+      vert_params->setNamedConstant("fadeRange", 1 / (100.0f * 2.0f));
+    }
+
+    if (constants.map.count("uTime") > 0) {
+      vert_params->setNamedConstantFromTime("uTime", 1);
+    }
   }
 
   if (material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
@@ -1246,15 +1422,12 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
                                       light_count);
     frag_params->setNamedAutoConstant("uFogColour", Ogre::GpuProgramParameters::ACT_FOG_COLOUR);
     frag_params->setNamedAutoConstant("uFogParams", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
-    frag_params->setNamedAutoConstant("uAlphaRejection", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
     frag_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
 
     auto &constants = frag_params->getConstantDefinitions();
     if (constants.map.count("uMetallicRoughnessValues") == 1)
       frag_params->setNamedConstant("uMetallicRoughnessValues", Ogre::Vector2(1, 1));
   }
-
-  ShaderResolver::FixMaterial(material->getName());
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
@@ -1263,6 +1436,7 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
   const int pssm_split_count = 3;
   const int light_count = 5;
   const int shadows = pssm_split_count * light_count;
+  static std::vector<std::string> shadowed_list;
 
   if (!material->getReceiveShadows()) {
     return;
@@ -1300,7 +1474,7 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
     auto pass = material->getTechnique(0)->getPass(0);
 
     if (ConfigManager::GetSingleton().GetBool("graphics_shadows_enable")) {
-      auto numTextures = (Ogre::uint) pssm->getSplitCount();
+      Ogre::uint numTextures = pssm->getSplitCount();
       Ogre::Vector4 splitPoints;
       const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
       // Populate from split point 1, not 0, since split 0 isn't useful (usually 0)
@@ -1322,6 +1496,10 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
         int texture_count = pass->getNumTextureUnitStates();
 
         for (int k = 0; k < pssm->getSplitCount(); k++) {
+          frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
+                                            Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
+                                            texture_count + k);
+
           if (!registered) {
             Ogre::TextureUnitState *tu = pass->createTextureUnitState();
             tu->setContentType(Ogre::TextureUnitState::CONTENT_SHADOW);
@@ -1331,9 +1509,6 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
           }
 
           frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);
-          frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
-                                            Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
-                                            texture_count + k);
         }
       }
     }
@@ -1369,7 +1544,6 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *p
 
   try {
     name += std::to_string(counter);
-    Ogre::MeshManager::getSingleton().load(meshFile, group_name_);
     counter++;
     entity = scene_manager_->createEntity(name, meshFile);
     entity->setCastShadows(castShadows);
@@ -1407,45 +1581,46 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *p
       if (!entity->getMesh()->isEdgeListBuilt()) {
         entity->getMesh()->buildEdgeList();
       }
-    }
 
-    EnsureHasTangents(entity->getMesh());
-    for (int j = 0; j < entity->getNumManualLodLevels(); j++) {
-      auto *lod = entity->getManualLodLevel(j);
-      EnsureHasTangents(lod->getMesh());
-      if (shadow_technique == "stencil") {
-        if (!lod->getMesh()->isEdgeListBuilt()) {
-          lod->getMesh()->buildEdgeList();
+      for (int j = 0; j < entity->getNumManualLodLevels(); j++) {
+        auto *lod = entity->getManualLodLevel(j);
+        EnsureHasTangents(lod->getMesh());
+        if (shadow_technique == "stencil") {
+          if (!lod->getMesh()->isEdgeListBuilt()) {
+            lod->getMesh()->buildEdgeList();
+          }
         }
       }
     }
 
-    if (material.empty()) {
-      material = entity->getMesh()->getSubMesh(0)->getMaterialName();
-    }
+    EnsureHasTangents(entity->getMesh());
 
-    if (!material.empty()) {
-      entity->setMaterialName(material);
+//    if (material.empty()) {
+//      material = entity->getMesh()->getSubMesh(0)->getMaterialName();
+//    }
+//    if (!material.empty()) {
+//      entity->setMaterialName(material);
+//
+//      for (int j = 0; j < entity->getNumManualLodLevels(); j++) {
+//        auto *lod = entity->getManualLodLevel(j);
+//        lod->setMaterialName(material);
+//      }
+//    }
 
-      for (int j = 0; j < entity->getNumManualLodLevels(); j++) {
-        auto *lod = entity->getManualLodLevel(j);
-        lod->setMaterialName(material);
-      }
-    }
-
-    for (int i = 0; i < mesh->getNumSubMeshes(); i++) {
-
-      if (mesh->getSubMesh(i)->getMaterial()) {
-        auto material_ptr = mesh->getSubMesh(i)->getMaterial();
+    for (auto &submesh : mesh->getSubMeshes()) {
+      if (submesh->getMaterial()) {
+        auto material_ptr = submesh->getMaterial();
         FixPbrParams(material_ptr);
-        FixPbrShadow(material_ptr);
-        std::string material_name = mesh->getSubMesh(i)->getMaterial()->getName();
+
+        if (material_ptr->getReceiveShadows())
+          FixPbrShadow(material_ptr);
       }
     }
 
     // Process userDataReference (?)
     if (auto element = xml_node.child("userData")) {
-      ProcessUserData(element, entity->getUserObjectBindings(), entity, parent);
+      ProcessUserData(element, entity->getUserObjectBindings());
+      PhysicsManager::GetSingleton().ProcessData(entity->getUserObjectBindings(), entity, parent);
     }
 
   }
@@ -1549,7 +1724,6 @@ void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &xml_node) {
     return;
   }
 
-  ShaderResolver::FixMaterial(material);
   // Process rotation (?)
   Ogre::Quaternion rotation = Ogre::Quaternion::IDENTITY;
 
@@ -1656,264 +1830,6 @@ void DotSceneLoaderB::ProcessUserData(pugi::xml_node &xml_node, Ogre::UserObject
 
     user_object_bindings.setUserAny(name, value);
   }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessUserData(pugi::xml_node &xml_node,
-                                      Ogre::UserObjectBindings &user_object_bindings,
-                                      Ogre::Entity *entity,
-                                      Ogre::SceneNode *parent_node) {
-
-  // Process node (*)
-  for (auto element : xml_node.children("property")) {
-    std::string name = GetAttrib(element, "name");
-    std::string type = GetAttrib(element, "type");
-    std::string data = GetAttrib(element, "data");
-
-    Ogre::Any value;
-
-    if (type == "bool") {
-      value = Ogre::StringConverter::parseBool(data);
-    } else if (type == "float") {
-      value = Ogre::StringConverter::parseReal(data);
-    } else if (type == "int") {
-      value = Ogre::StringConverter::parseInt(data);
-    } else {
-      value = data;
-    }
-
-    user_object_bindings.setUserAny(name, value);
-  }
-
-  // Add to Bullet Physics
-  if (physics_enable_) {
-    const std::string physics_type_static = "STATIC";
-    const std::string physics_type_dynamic = "dynamic";
-    const std::string physics_type_actor = "actor";
-    const std::string physics_type_ghost = "ghost";
-    const std::string physics_type_none = "none";
-    const std::string proxy_box = "box";
-    const std::string proxy_capsule = "capsule";
-    const std::string proxy_sphere = "sphere";
-    const std::string proxy_cylinder = "cylinder";
-    const std::string proxy_trimesh = "trimesh";
-    const std::string proxy_convex = "convex";
-
-    std::string proxy;
-    if (user_object_bindings.getUserAny("proxy").has_value()) {
-      proxy = Ogre::any_cast<std::string>(user_object_bindings.getUserAny("proxy"));
-    }
-
-    std::string physics_type = Ogre::any_cast<std::string>(user_object_bindings.getUserAny("physics_type"));
-    float mass = Ogre::any_cast<float>(user_object_bindings.getUserAny("mass"));
-    float mass_radius = Ogre::any_cast<float>(user_object_bindings.getUserAny("mass_radius"));
-    float inertia_tensor = Ogre::any_cast<float>(user_object_bindings.getUserAny("inertia_tensor"));
-    float velocity_min = Ogre::any_cast<float>(user_object_bindings.getUserAny("velocity_min"));
-    float velocity_max = Ogre::any_cast<float>(user_object_bindings.getUserAny("velocity_max"));
-    bool lock_trans_x = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_x"));
-    bool lock_trans_y = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_y"));
-    bool lock_trans_z = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_z"));
-    bool lock_rot_x = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_x"));
-    bool lock_rot_y = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_y"));
-    bool lock_rot_z = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_z"));
-    bool anisotropic_friction = Ogre::any_cast<bool>(user_object_bindings.getUserAny("anisotropic_friction"));
-    float friction_x = Ogre::any_cast<float>(user_object_bindings.getUserAny("friction_x"));
-    float friction_y = Ogre::any_cast<float>(user_object_bindings.getUserAny("friction_y"));
-    float friction_z = Ogre::any_cast<float>(user_object_bindings.getUserAny("friction_z"));
-    float damping_trans = Ogre::any_cast<float>(user_object_bindings.getUserAny("damping_trans"));
-    float damping_rot = Ogre::any_cast<float>(user_object_bindings.getUserAny("damping_rot"));
-
-    if (physics_type == physics_type_static) {
-      std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
-      btRigidBody *entBody;
-
-      if (entity->getNumManualLodLevels() > 0) {
-        converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(
-            entity->getNumManualLodLevels() - 1));
-      } else {
-        converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
-      }
-
-      if (proxy == proxy_capsule) {
-        auto *entShape = converter->createCapsule();
-
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-      } else if (proxy == proxy_box) {
-        auto *entShape = converter->createBox();
-
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-      } else if (proxy == proxy_sphere) {
-        auto *entShape = converter->createSphere();
-
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-      } else if (proxy == proxy_cylinder) {
-        auto *entShape = converter->createCylinder();
-
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-      } else if (proxy == proxy_trimesh) {
-        auto *entShape = converter->createTrimesh();
-
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-      } else if (proxy == proxy_convex) {
-        auto *entShape = converter->createConvex();
-
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-      } else if (proxy.empty()) {
-        auto *entShape = converter->createConvex();
-
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-      } else {
-        auto *entShape = converter->createConvex();
-
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-      }
-
-      PhysicsManager::GetSingleton().AddRigidBody(entBody);
-
-    } else if (physics_type == physics_type_dynamic) {
-      std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
-      btVector3 inertia;
-      btRigidBody *entBody;
-
-      if (entity->getNumManualLodLevels() > 0) {
-        converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(
-            entity->getNumManualLodLevels() - 1));
-
-        auto *entShape = converter->createConvex();
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-
-      } else {
-        converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
-      }
-
-      if (proxy == proxy_capsule) {
-        auto *entShape = converter->createCapsule();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else if (proxy == proxy_box) {
-        auto *entShape = converter->createBox();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else if (proxy == proxy_sphere) {
-        auto *entShape = converter->createSphere();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else if (proxy == proxy_cylinder) {
-        auto *entShape = converter->createCylinder();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else if (proxy == proxy_trimesh) {
-        auto *entShape = converter->createTrimesh();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else if (proxy == proxy_convex) {
-        auto *entShape = converter->createConvex();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else if (proxy.empty()) {
-        auto *entShape = converter->createConvex();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else {
-        auto *entShape = converter->createConvex();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      }
-
-      PhysicsManager::GetSingleton().AddRigidBody(entBody);
-
-    } else if (physics_type == physics_type_ghost) {
-      std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
-      btVector3 inertia;
-      btRigidBody *entBody;
-
-      if (entity->getNumManualLodLevels() > 0) {
-        converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(
-            entity->getNumManualLodLevels() - 1));
-      } else {
-        converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
-      }
-      if (proxy == proxy_capsule) {
-        auto *entShape = converter->createCapsule();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else if (proxy == proxy_box) {
-        auto *entShape = converter->createBox();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else if (proxy == proxy_sphere) {
-        auto *entShape = converter->createSphere();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else if (proxy == proxy_cylinder) {
-        auto *entShape = converter->createCylinder();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else if (proxy == proxy_trimesh) {
-        auto *entShape = converter->createTrimesh();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else if (proxy == proxy_convex) {
-        auto *entShape = converter->createConvex();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else if (proxy.empty()) {
-        auto *entShape = converter->createConvex();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      } else {
-        auto *entShape = converter->createConvex();
-
-        entShape->calculateLocalInertia(mass, inertia);
-        auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-        entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-      }
-
-      entBody->setAngularFactor(0);
-      PhysicsManager::GetSingleton().AddRigidBody(entBody);
-
-    }
-  }
-
 }
 //----------------------------------------------------------------------------------------------------------------------
 std::shared_ptr<Ogre::TerrainGroup> DotSceneLoaderB::GetTerrainGroup() {

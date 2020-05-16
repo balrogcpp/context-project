@@ -1,13 +1,13 @@
 vertex_program PBR_vs_glsl glsl
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,DEPTH_SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
 }
 
 vertex_program PBR_vs_glsles glsles
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,DEPTH_SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
 }
 
 vertex_program PBR_vs unified
@@ -20,46 +20,36 @@ vertex_program PBR_vs unified
 vertex_program Forest_vs_glsl glsl
 {
 	source pbr.vert
-    preprocessor_defines WAVER,FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_UV
+    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV
 }
 
 vertex_program Forest_vs_glsles glsles
 {
 	source pbr.vert
-    preprocessor_defines WAVER,FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_UV
+    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV
 }
 
 vertex_program Forest_vs unified
 {
 	delegate Forest_vs_glsl
 	delegate Forest_vs_glsles
-
-	default_params
-	{
-	    param_named_auto uTime time
-	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 vertex_program Forest_Shadowed_vs_glsl glsl
 {
 	source pbr.vert
-    preprocessor_defines WAVER,FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,DEPTH_SHADOWRECEIVER
+    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
 }
 
 vertex_program Forest_Shadowed_vs_glsles glsles
 {
 	source pbr.vert
-    preprocessor_defines WAVER,FADER_ENABLE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,DEPTH_SHADOWRECEIVER
+    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
 }
 
 vertex_program Forest_Shadowed_vs unified
 {
 	delegate Forest_Shadowed_vs_glsl
 	delegate Forest_Shadowed_vs_glsles
-
-	default_params
-	{
-	    param_named_auto uTime time
-	}
 }

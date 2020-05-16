@@ -32,6 +32,7 @@ class Material;
 
 namespace Context {
 class GBufferSchemeHandler;
+class DepthSchemeHandler;
 class ShadowReceiverSchemeHandler;
 }
 
@@ -53,6 +54,9 @@ class CompositorManager : public ManagerCommon {
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
 
+ private:
+  void CreateMotionBlurCompositor();
+
  public:
   void SetCompositor(const std::string &compositor_);
   void SetPost(const std::string &post_);
@@ -66,6 +70,7 @@ class CompositorManager : public ManagerCommon {
   std::string current_modulate_scene_;
 
   std::unique_ptr<GBufferSchemeHandler> ssaog_buffer_scheme_handler_;
+  std::unique_ptr<DepthSchemeHandler> depth_scheme_handler_;
   std::unique_ptr<ShadowReceiverSchemeHandler> shadow_receiever_scheme_handler_;
 
   //SSAO

@@ -44,12 +44,6 @@ class StaticForestManager : public ManagerCommon {
  public:
   void Create();
 
-  void GenerateTrees();
-
-  void GeneratePlants();
-
-  void generateBushes();
-
   void GenerateGrass();
 
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;

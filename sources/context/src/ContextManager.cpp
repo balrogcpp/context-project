@@ -364,6 +364,7 @@ void ContextManager::SetupOgreCamera() {
 
   ogre_scene_manager_->setSkyBoxEnabled(false);
   ogre_scene_manager_->setSkyDomeEnabled(false);
+  ogre_scene_manager_->setAmbientLight(Ogre::ColourValue::Black);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupOgreScenePreconditions() {
@@ -435,7 +436,7 @@ void ContextManager::SetupOgreScenePreconditions() {
 
       ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
       ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
-      ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 3 * 6);
+      ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 6);
       ogre_scene_manager_->setShadowTextureSelfShadow(graphics_shadows_self_shadow_);
       ogre_scene_manager_->setShadowCasterRenderBackFaces(graphics_shadows_back_faces_);
       ogre_scene_manager_->setShadowFarDistance(graphics_shadows_far_distance_);
@@ -458,7 +459,7 @@ void ContextManager::SetupOgreScenePreconditions() {
       if (!ogre_shadow_camera_setup_) {
         if (graphics_shadows_split_auto_) {
           pssm_setup->calculateSplitPoints(3, ogre_camera_->getNearClipDistance(),
-                                         ogre_scene_manager_->getShadowFarDistance());
+                                           ogre_scene_manager_->getShadowFarDistance());
         } else {
           Ogre::PSSMShadowCameraSetup::SplitPointList split_points =
               {ogre_camera_->getNearClipDistance(), 10.0, 20.0, ogre_scene_manager_->getShadowFarDistance()};
@@ -470,6 +471,7 @@ void ContextManager::SetupOgreScenePreconditions() {
         } else {
           pssm_setup->setSplitPadding(graphics_shadows_split_padding_);
         }
+
         pssm_setup->setOptimalAdjustFactor(0, graphics_shadows_pssm_0_);
         pssm_setup->setOptimalAdjustFactor(1, graphics_shadows_pssm_1_);
         pssm_setup->setOptimalAdjustFactor(2, graphics_shadows_pssm_2_);
@@ -566,17 +568,34 @@ void ContextManager::SetupSDL() {
   actual_monitor_size_.h = static_cast<int>(DM.h);
   actual_monitor_size_.f = window_position_.f;
 
+  bool invalid = (window_position_.w * window_position_.h) == 0;
+
+  if (invalid)
+    window_position_.w = actual_monitor_size_.w;
+  if (invalid)
+    window_position_.h = actual_monitor_size_.h;
+  if (invalid)
+    window_position_.f = true;
+
+  bool
+      factual_fullscreen = window_position_.w == actual_monitor_size_.w && window_position_.h == actual_monitor_size_.h;
+
+  uint32_t flags = 0x0;
+
+  flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+
+  if (factual_fullscreen)
+    flags |= SDL_WINDOW_BORDERLESS;
+
   sdl_window_ = SDL_CreateWindow(window_caption_.c_str(),
                                  SDL_WINDOWPOS_CENTERED,
                                  SDL_WINDOWPOS_CENTERED,
                                  window_position_.w,
                                  window_position_.h,
-                                 0x0);
+                                 flags);
 
   if (sdl_window_) {
     SDL_SetRelativeMouseMode(SDL_TRUE);
-//    sdl_renderer_ = SDL_GetRenderer(sdl_window_);
-//    SDL_CaptureMouse(SDL_TRUE);
   } else {
     throw Exception("Failed to Create SDL_Window");
   }
@@ -670,7 +689,7 @@ void ContextManager::SetupOGRE() {
   auto *mGL3PlusRenderSystem = new Ogre::GL3PlusRenderSystem();
   Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
 #else
-  #ifdef OGRE_BUILD_RENDERSYSTEM_GL
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL
   auto *mGLRenderSystem = new Ogre::GLRenderSystem();
   Ogre::Root::getSingleton().setRenderSystem(mGLRenderSystem);
 #endif

@@ -1,0 +1,80 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program PBRBasic_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+}
+
+fragment_program PBRBasic_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+}
+
+fragment_program PBRBasic_fs unified
+{
+	delegate PBRBasic_fs_glsl
+	delegate PBRBasic_fs_glsles
+}
+
+material PBRBasic
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+
+            vertex_program_ref PBR_vs {}
+
+			fragment_program_ref PBRBasic_fs
+			{
+                param_named uBaseColorSampler   int 0
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program PBRBasicShadow_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
+}
+
+fragment_program PBRBasicShadow_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+
+	default_params
+	{
+	    param_named bias0 float 0.0001
+	    param_named bias1 float 0.001
+	    param_named bias2 float 0.001
+	}
+}
+
+fragment_program PBRBasicShadow_fs unified
+{
+	delegate PBRBasicShadow_fs_glsl
+	delegate PBRBasicShadow_fs_glsles
+}
+
+material PBRBasicShadow
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+
+            vertex_program_ref PBR_vs {}
+
+			fragment_program_ref PBRBasicShadow_fs
+			{
+                param_named uBaseColorSampler   int 0
+			}
+        }
+    }
+}

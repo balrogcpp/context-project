@@ -33,6 +33,8 @@ namespace Ogre {
 class SceneNode;
 }
 
+class btRigidBody;
+
 namespace Context {
 
 enum class CameraStyle   // enumerator values for different styles of camera movement
@@ -77,19 +79,26 @@ class CameraMan : public InputListener, public NoCopy, public Ogre::FrameListene
   void KeyUp(SDL_Keycode sym) override;
 
  private:
-  Ogre::SceneNode *cameraNode = nullptr;
-  Ogre::SceneNode *cameraYawNode = nullptr;
-  Ogre::SceneNode *cameraPitchNode = nullptr;
-  Ogre::SceneNode *cameraRollNode = nullptr;
+  Ogre::SceneNode *camera_node_ = nullptr;
+  Ogre::SceneNode *camera_yaw_node_ = nullptr;
+  Ogre::SceneNode *camera_pitch_node_ = nullptr;
+  Ogre::SceneNode *camera_roll_node_ = nullptr;
+  btRigidBody *rigid_body_ = nullptr;
+
+ public:
+  void SetRigidBody(btRigidBody *rigid_body);
+  btRigidBody *GetRigidBody() const;
+
+ private:
   Ogre::Degree dx_, dy_;
-  Ogre::Camera *camera = nullptr;
+  Ogre::Camera *ogre_camera_ = nullptr;
   CameraStyle camera_style_ = CameraStyle::FPS;
   Ogre::SceneNode *target_ = nullptr;
   bool orbiting_ = false;
   bool zoom_ = false;
   bool moving_ = false;
-  float top_speed_ = 1.0f;
-  float run_speed_ = 8.0f;
+  float top_speed_ = 10.0f;
+  float run_speed_ = 20.0f;
   float const_speed_ = 1.5f;
   float heigh_ = 1.5f;
   bool move_forward_ = false;
@@ -100,11 +109,9 @@ class CameraMan : public InputListener, public NoCopy, public Ogre::FrameListene
   bool move_down_ = false;
   bool move_fast_ = false;
   bool stop_ = false;
-  Ogre::Vector3 offset = Ogre::Vector3::ZERO;
-  Ogre::Vector3 velocity = Ogre::Vector3::ZERO;
-  Ogre::Vector3 prevPos = Ogre::Vector3::ZERO;
-  Ogre::Vector3 translate = Ogre::Vector3::ZERO;
-
+  Ogre::Vector3 offset_ = Ogre::Vector3::ZERO;
+  Ogre::Vector3 velocity_ = Ogre::Vector3::ZERO;
+  Ogre::Vector3 prev_pos_ = Ogre::Vector3::ZERO;
 };
 
 }

@@ -59,9 +59,9 @@ void SGX_Generate_Parallax_Texcoord(in sampler2D normalHeightMap,
 						in vec2 scaleBias,
 						out vec2 newTexCoord)
 {
-    eyeVec = normalize(eyeVec);
-    float height = texture2D(normalHeightMap, texCoord).a;
-    float displacement = (height * scaleBias.x) + scaleBias.y;
-    vec2 scaledEyeDir = eyeVec.xy * displacement;
-    newTexCoord = scaledEyeDir + texCoord;
+	eyeVec = normalize(eyeVec);
+	float height = texture2D(normalHeightMap, texCoord).a;
+	float displacement = (height * scaleBias.x) + scaleBias.y;
+	vec2 scaledEyeDir = eyeVec.xy * displacement;
+	newTexCoord = scaledEyeDir + texCoord;
 }

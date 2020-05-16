@@ -311,7 +311,7 @@ void ConfigManager::Setup() {
   document_.AddMember("rtss_enable", true, allocator);
   document_.AddMember("rtss_pssm4_enable", true, allocator);
   document_.AddMember("rtss_cache_enable", false, allocator);
-  document_.AddMember("rtss_resolver_enable", true, allocator);
+  document_.AddMember("rtss_resolver_enable", false, allocator);
   document_.AddMember("rtss_perpixel_light_enable", false, allocator);
   document_.AddMember("rtss_perpixel_fog_enable", true, allocator);
   document_.AddMember("rtss_cache_dir", ".rtss", allocator);
@@ -347,7 +347,7 @@ void ConfigManager::Setup() {
   document_.AddMember("graphics_shadows_back_faces", true, allocator);
   document_.AddMember("graphics_shadows_caster_material", "PSSM/shadow_caster", allocator);
   document_.AddMember("graphics_shadows_receiver_material", std::string(), allocator);
-  document_.AddMember("graphics_shadows_far_distance", 100.0f, allocator);
+  document_.AddMember("graphics_shadows_far_distance", 200.0f, allocator);
   document_.AddMember("graphics_shadows_pssm_0", 0.0f, allocator);
   document_.AddMember("graphics_shadows_pssm_1", 0.0f, allocator);
   document_.AddMember("graphics_shadows_pssm_2", 0.0f, allocator);
@@ -361,15 +361,16 @@ void ConfigManager::Setup() {
   document_.AddMember("terrain_fog_perpixel", true, allocator);
   document_.AddMember("terrain_receive_shadows", true, allocator);
   document_.AddMember("terrain_receive_shadows_low_lod", false, allocator);
-  document_.AddMember("terrain_cast_shadows", true, allocator);
+  document_.AddMember("terrain_cast_shadows", false, allocator);
   document_.AddMember("terrain_lightmap_enable", false, allocator);
-  document_.AddMember("terrain_lightmap_size", 2048, allocator);
+  document_.AddMember("terrain_lightmap_size", 4096, allocator);
   document_.AddMember("terrain_colourmap_enable", false, allocator);
   document_.AddMember("terrain_parallaxmap_enable", true, allocator);
   document_.AddMember("terrain_raybox_calculation", true, allocator);
   document_.AddMember("terrain_specularmap_enable", true, allocator);
   document_.AddMember("terrain_normalmap_enable", true, allocator);
   document_.AddMember("terrain_save_terrains", false, allocator);
+  document_.AddMember("lod_generator_enable", true, allocator);
 
   if (GetBool("global_verbose_enable")) {
 

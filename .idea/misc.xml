@@ -25,6 +25,7 @@
       <file path="$PROJECT_DIR$/thirdparty/external/windows-msvc/Debug/src" />
       <file path="$PROJECT_DIR$/thirdparty/external/windows-msvc/RelWithDebInfo/src" />
       <file path="$PROJECT_DIR$/thirdparty/external/windows-msvc/Release/src" />
+      <file path="$PROJECT_DIR$/tmp" />
     </excludeRoots>
   </component>
   <component name="JavaScriptSettings">

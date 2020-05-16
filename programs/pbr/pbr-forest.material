@@ -1,0 +1,80 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program Forest_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+}
+
+fragment_program Forest_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+}
+
+fragment_program Forest_fs unified
+{
+	delegate Forest_fs_glsl
+	delegate Forest_fs_glsles
+}
+
+material Forest
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+
+			vertex_program_ref Forest_vs {}
+
+			fragment_program_ref Forest_fs
+			{
+                param_named uBaseColorSampler   int 0
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program Forest_Shadowed_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
+}
+
+fragment_program Forest_Shadowed_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
+}
+
+fragment_program Forest_Shadowed_fs unified
+{
+	delegate Forest_Shadowed_fs_glsl
+	delegate Forest_Shadowed_fs_glsles
+
+	default_params
+	{
+	    param_named bias0 float 0.0001
+	    param_named bias1 float 0.001
+	    param_named bias2 float 0.001
+	}
+}
+
+material Forest_Shadowed
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+
+			vertex_program_ref Forest_Shadowed_vs {}
+
+			fragment_program_ref Forest_Shadowed_fs
+			{
+                param_named uBaseColorSampler   int 0
+			}
+        }
+    }
+}

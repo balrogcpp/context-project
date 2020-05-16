@@ -27,6 +27,7 @@ SOFTWARE.
 #include "ManagerCommon.hpp"
 
 #include <OgreSceneLoader.h>
+#include <OgreVector4.h>
 
 #include <vector>
 #include <string>
@@ -65,17 +66,13 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
 
   std::shared_ptr<Ogre::TerrainGroup> GetTerrainGroup();
   void UpdatePbrParams();
-  static float GetHeigh(float x, float z);
+  float GetHeigh(float x, float z);
   static void FixPbrParams(Ogre::MaterialPtr material);
   static void FixPbrShadow(Ogre::MaterialPtr material);
   static void FixPbrParams(const std::string &material);
   static void FixPbrShadow(const std::string &material);
   static void UpdateForestParams(Ogre::MaterialPtr material);
   static void UpdateForestParams(const std::string &material);
-
-  static std::vector<std::string> material_list;
-  static std::vector<std::string> shadowed_list;
-  static std::vector<std::string> forest_list;
 
  private:
   void ProcessScene(pugi::xml_node &xml_root);
@@ -85,10 +82,6 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   void ProcessTerrainGroup(pugi::xml_node &xml_node);
   void ProcessTerrainLightmap(pugi::xml_node &xml_node);
   void ProcessUserData(pugi::xml_node &xml_node, Ogre::UserObjectBindings &user_object_bindings);
-  void ProcessUserData(pugi::xml_node &xml_node,
-                       Ogre::UserObjectBindings &user_object_bindings,
-                       Ogre::Entity *entity,
-                       Ogre::SceneNode *parent_node);
   void ProcessLight(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
   void ProcessCamera(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
   void ProcessNode(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
@@ -107,6 +100,7 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   void ProcessLightAttenuation(pugi::xml_node &xml_node, Ogre::Light *light);
 
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
+  void PageConstructed(size_t pagex, size_t pagez, float* heightData);
   void CreateTerrainHeightfieldShape(int size,
                                      float *data,
                                      const float &min_height,
@@ -127,8 +121,10 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   std::string group_name_;
   std::shared_ptr<Ogre::TerrainGroup> ogre_terrain_group_;
   std::shared_ptr<Ogre::TerrainPaging> terrain_paging_;
+  std::vector<float> heigh_data_;
+  Ogre::Vector4 terrain_box_;
 
-  bool lod_generator_enable_ = true;
+  bool lod_generator_enable_ = false;
   bool physics_enable_ = true;
 
   bool terrain_fog_perpixel_ = true;
