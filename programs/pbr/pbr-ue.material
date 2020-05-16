@@ -1,19 +1,19 @@
-fragment_program PBR_IBL_Unreal_fs_glsl glsl
+fragment_program PbrIbl_Unreal_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
 }
 
-fragment_program PBR_IBL_Unreal_fs_glsles glsles
+fragment_program PbrIbl_Unreal_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
 }
 
-fragment_program PBR_IBL_Unreal_fs unified
+fragment_program PbrIbl_Unreal_fs unified
 {
-	delegate PBR_IBL_Unreal_fs_glsl
-	delegate PBR_IBL_Unreal_fs_glsles
+	delegate PbrIbl_Unreal_fs_glsl
+	delegate PbrIbl_Unreal_fs_glsles
 
 	default_params
 	{
@@ -23,7 +23,7 @@ fragment_program PBR_IBL_Unreal_fs unified
 	}
 }
 
-material PBR_IBL/Unreal
+material PbrIbl/Unreal
 {
     technique
     {
@@ -41,7 +41,7 @@ material PBR_IBL/Unreal
 
             vertex_program_ref PBR_vs {}
 
-			fragment_program_ref PBR_IBL_Unreal_fs
+			fragment_program_ref PbrIbl_Unreal_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
@@ -108,22 +108,22 @@ material PBR/Unreal
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PBRExt_Unreal_fs_glsl glsl
+fragment_program PbrExt_Unreal_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,HAS_OCCLUSIONMAP,SHADOWRECEIVER
 }
 
-fragment_program PBRExt_Unreal_fs_glsles glsles
+fragment_program PbrExt_Unreal_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,HAS_OCCLUSIONMAP,SHADOWRECEIVER
 }
 
-fragment_program PBRExt_Unreal_fs unified
+fragment_program PbrExt_Unreal_fs unified
 {
-	delegate PBRExt_Unreal_fs_glsl
-	delegate PBRExt_Unreal_fs_glsles
+	delegate PbrExt_Unreal_fs_glsl
+	delegate PbrExt_Unreal_fs_glsles
 
 	default_params
 	{
@@ -133,7 +133,7 @@ fragment_program PBRExt_Unreal_fs unified
 	}
 }
 
-material PBRExt/Unreal
+material PbrExt/Unreal
 {
     technique
     {
@@ -148,7 +148,7 @@ material PBRExt/Unreal
 
             vertex_program_ref PBR_vs {}
 
-			fragment_program_ref PBRExt_Unreal_fs
+			fragment_program_ref PbrExt_Unreal_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1

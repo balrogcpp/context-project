@@ -1,0 +1,54 @@
+vertex_program depth_vp_glsl glsl
+{
+ 	source depth.vert
+}
+
+vertex_program depth_vp_glsles glsles
+{
+ 	source depth.vert
+}
+
+fragment_program depth_fp_glsl glsl
+{
+	source depth.frag
+}
+
+
+fragment_program depth_fp_glsles glsles
+{
+	source depth.frag
+}
+
+vertex_program depth_vp unified
+{
+	delegate depth_vp_glsl
+    delegate depth_vp_glsles
+}
+
+fragment_program depth_fp unified
+{
+	delegate depth_fp_glsl
+}
+
+material Context/depth
+{
+    technique
+    {
+        pass
+        {
+            texture_unit BaseColor {}
+
+            vertex_program_ref depth_vp
+            {
+                param_named_auto cWorldViewProj worldviewproj_matrix
+                param_named_auto cWorldView worldview_matrix
+            }
+
+            fragment_program_ref depth_fp
+            {
+                param_named_auto cNearClipDistance near_clip_distance
+                param_named_auto cFarClipDistance far_clip_distance
+            }
+        }
+    }
+}

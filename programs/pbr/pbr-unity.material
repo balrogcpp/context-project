@@ -1,19 +1,19 @@
-fragment_program PBR_IBL_Unity_fs_glsl glsl
+fragment_program PbrIbl_Unity_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
 }
 
-fragment_program PBR_IBL_Unity_fs_glsles glsles
+fragment_program PbrIbl_Unity_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
 }
 
-fragment_program PBR_IBL_Unity_fs unified
+fragment_program PbrIbl_Unity_fs unified
 {
-	delegate PBR_IBL_Unity_fs_glsl
-	delegate PBR_IBL_Unity_fs_glsles
+	delegate PbrIbl_Unity_fs_glsl
+	delegate PbrIbl_Unity_fs_glsles
 
 	default_params
 	{
@@ -23,7 +23,7 @@ fragment_program PBR_IBL_Unity_fs unified
 	}
 }
 
-material PBR_IBL/Unity
+material PbrIbl/Unity
 {
     technique
     {
@@ -40,7 +40,7 @@ material PBR_IBL/Unity
 
             vertex_program_ref PBR_vs {}
 
-			fragment_program_ref PBR_IBL_Unity_fs
+			fragment_program_ref PbrIbl_Unity_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
@@ -105,13 +105,13 @@ material PBR/Unity
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PBRExt_Unity_fs_glsl glsl
+fragment_program PbrExt_Unity_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_OCCLUSIONMAP,SHADOWRECEIVER
 }
 
-fragment_program PBRExt_Unity_fs_glsles glsles
+fragment_program PbrExt_Unity_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_OCCLUSIONMAP,SHADOWRECEIVER
@@ -124,14 +124,14 @@ fragment_program PBRExt_Unity_fs_glsles glsles
 	}
 }
 
-fragment_program PBRExt_Unity_fs unified
+fragment_program PbrExt_Unity_fs unified
 {
-	delegate PBRExt_Unity_fs_glsl
-	delegate PBRExt_Unity_fs_glsles
+	delegate PbrExt_Unity_fs_glsl
+	delegate PbrExt_Unity_fs_glsles
 }
 
 
-material PBRExt/Unity
+material PbrExt/Unity
 {
     technique
     {
@@ -145,7 +145,7 @@ material PBRExt/Unity
 
             vertex_program_ref PBR_vs {}
 
-			fragment_program_ref PBRExt_Unity_fs
+			fragment_program_ref PbrExt_Unity_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1

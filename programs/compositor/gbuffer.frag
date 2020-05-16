@@ -11,13 +11,14 @@ uniform sampler2D baseColor;
 
 void main()
 {
-    if (texture2D(baseColor, vUV).a == 0.0) {
+    vec4 color = texture2D(baseColor, vUV);
+    if (color.a == 0.0) {
         discard;
     }
 
     float distance = length(oViewPos);
 
-    if (distance > 1000) {
+    if (distance > 1000.0) {
         discard;
     }
 

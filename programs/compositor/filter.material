@@ -35,7 +35,7 @@ material Context/filter1
 
 			texture_unit
             {
-                content_type compositor Context/Main bloom
+                content_type compositor Context/Bloom bloom
                 filtering none
             }
 		}
@@ -79,7 +79,7 @@ material Context/filter2
 
 			texture_unit
             {
-                content_type compositor Context/Main bloom
+                content_type compositor Context/Bloom bloom
                 filtering none
             }
 		}

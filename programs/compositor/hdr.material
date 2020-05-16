@@ -17,7 +17,7 @@ fragment_program Context/hdr_fs unified
 	{
 		param_named_auto screenSize viewport_size
 		param_named SceneSampler int 0
-		param_named exposure float 0.5
+		param_named exposure float 1
 	}
 }
 
@@ -36,7 +36,7 @@ material Context/HDR
 
 			texture_unit
             {
-                content_type compositor Context/Main hdr
+                content_type compositor Context/Modulate/HDR hdr
                 filtering none
             }
 		}

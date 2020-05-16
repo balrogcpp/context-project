@@ -23,19 +23,17 @@ material Terrain
     {
       pass
       {
-        texture_unit HeighMap {}
-
         vertex_program_ref PBR_vs {}
 
-        texture_unit Albedo {}
+        texture_unit AlbedoParallax {}
         texture_unit Normal {}
         texture_unit MetallicRougness {}
 
         fragment_program_ref Terrain_fs
         {
-            param_named uBaseColorSampler   int 1
-            param_named uNormalSampler    int 2
-            param_named uMetallicRoughnessSampler int 3
+            param_named uBaseColorSampler   int 0
+            param_named uNormalSampler    int 1
+            param_named uMetallicRoughnessSampler int 1
         }
       }
     }

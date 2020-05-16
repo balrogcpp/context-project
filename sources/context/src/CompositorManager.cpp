@@ -38,9 +38,50 @@ namespace Context {
 class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   GBufferSchemeHandler() {
-    mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("SSAO/GBuffer");
+    mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer");
     Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("GBuffer",
-                                                                     "SSAO/GBuffer",
+                                                                     "Context/gbuffer",
+                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    mGBufRefMat->load();
+  }
+
+  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex,
+                                        const Ogre::String &schemeName,
+                                        Ogre::Material *originalMaterial,
+                                        unsigned short lodIndex,
+                                        const Ogre::Renderable *rend) final {
+    Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
+    gBufferTech->setSchemeName(schemeName);
+    Ogre::Pass *gbufPass = gBufferTech->createPass();
+    *gbufPass = *mGBufRefMat->getTechnique(0)->getPass(0);
+
+    if (originalMaterial->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
+      auto *texPtr2 = gbufPass->getTextureUnitState("BaseColor");
+      texPtr2->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+      texPtr2->setTextureFiltering(Ogre::TFO_NONE);
+
+      auto texture_albedo = originalMaterial->getTechnique(0)->getPass(0)->getTextureUnitState("Albedo");
+
+      if (texture_albedo) {
+        auto texture_name = texture_albedo->getTextureName();
+        texPtr2->setTextureName(texture_name);
+      }
+    }
+
+    return gBufferTech;
+  }
+
+ private:
+  Ogre::MaterialPtr mGBufRefMat;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
+ public:
+  DepthSchemeHandler() {
+    mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("Context/depth");
+    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("Depth",
+                                                                     "Context/depth",
                                                                      Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     mGBufRefMat->load();
   }
@@ -234,13 +275,30 @@ void CompositorManager::Setup() {
   ConfigManager::Assign(compositor_use_hdr_, "compositor_use_hdr");
   ConfigManager::Assign(compositor_use_moution_blur_, "compositor_use_moution_blur");
 
-  ssaog_buffer_scheme_handler_ = std::make_unique<GBufferSchemeHandler>();
-  Ogre::MaterialManager::getSingleton().addListener(ssaog_buffer_scheme_handler_.get(), "GBuffer");
+  if (compositor_use_ssao_) {
+    ssaog_buffer_scheme_handler_ = std::make_unique<GBufferSchemeHandler>();
+    Ogre::MaterialManager::getSingleton().addListener(ssaog_buffer_scheme_handler_.get(), "GBuffer");
+  } else {
+    depth_scheme_handler_ = std::make_unique<DepthSchemeHandler>();
+    Ogre::MaterialManager::getSingleton().addListener(depth_scheme_handler_.get(), "Depth");
+  }
 
   if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Main"))
     Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/Main", true);
   else
     Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
+
+  if (compositor_use_ssao_) {
+    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/GBuffer"))
+      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/GBuffer", true);
+    else
+      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
+  } else {
+    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Depth"))
+      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/Depth", true);
+    else
+      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
+  }
 
   if (compositor_use_bloom_) {
     if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Bloom"))
@@ -279,21 +337,23 @@ void CompositorManager::Setup() {
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
   }
 
-  if (compositor_use_hdr_) {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Modulate/Hdr"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/Modulate/Hdr", true);
-    else
-      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
+  std::string modulate_compositor = "Context/Modulate";
 
-    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/HDR"))
+  modulate_compositor += compositor_use_ssao_ ? "/SSAO" : "";
+  modulate_compositor += compositor_use_hdr_ ? "/HDR" : "";
+
+  if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, modulate_compositor))
+    Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, modulate_compositor, true);
+  else
+    Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
+
+  if (compositor_use_hdr_) {
+    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/HDR")) {
       Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/HDR", true);
-    else
+    }
+    else {
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
-  } else {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Modulate"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/Modulate", true);
-    else
-      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
+    }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
