@@ -833,7 +833,7 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
           obj->position(position0);
           obj->normal(normal);
 
-          obj->textureCoord((float)x / 8, (float)z / 8);
+          obj->textureCoord((float)x / 4, (float)z / 4);
         }
       }
 
@@ -1724,7 +1724,6 @@ void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &xml_node) {
     return;
   }
 
-//  ShaderResolver::FixMaterial(material);
   // Process rotation (?)
   Ogre::Quaternion rotation = Ogre::Quaternion::IDENTITY;
 
