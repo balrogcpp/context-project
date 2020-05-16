@@ -36,78 +36,6 @@ THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
 #define M_PI 3.141592654
-//#define MANUAL_SRGB
-//#define SRGB_FAST_APPROXIMATION
-//#define SRGB_SQRT
-//#define NORMALISED
-
-//-----------------------------------------------------------------------------
-vec4 SRGBtoLINEAR(vec4 srgbIn)
-{
-#ifdef MANUAL_SRGB
-#ifdef SRGB_FAST_APPROXIMATION
-#ifdef SRGB_SQRT
-	vec3 linOut = srgbIn.xyz * srgbIn.xyz;
-#else
-	vec3 linOut = pow(srgbIn.xyz,vec3(2.2));
-#endif
-#else //SRGB_FAST_APPROXIMATION
-	vec3 bLess = step(vec3(0.04045),srgbIn.xyz);
-	vec3 linOut = mix( srgbIn.xyz/vec3(12.92), pow((srgbIn.xyz+vec3(0.055))/vec3(1.055),vec3(2.4)), bLess );
-#endif //SRGB_FAST_APPROXIMATION
-	return vec4(linOut,srgbIn.w);;
-#else //MANUAL_SRGB
-	return srgbIn;
-#endif //MANUAL_SRGB
-}
-
-//-----------------------------------------------------------------------------
-vec3 SRGBtoLINEAR(vec3 srgbIn)
-{
-#ifdef MANUAL_SRGB
-#ifdef SRGB_FAST_APPROXIMATION
-#ifdef SRGB_SQRT
-	vec3 linOut = srgbIn.xyz * srgbIn.xyz;
-#else
-	vec3 linOut = pow(srgbIn.xyz,vec3(2.2));
-#endif
-#else //SRGB_FAST_APPROXIMATION
-	vec3 bLess = step(vec3(0.04045),srgbIn.xyz);
-	vec3 linOut = mix( srgbIn.xyz/vec3(12.92), pow((srgbIn.xyz+vec3(0.055))/vec3(1.055),vec3(2.4)), bLess );
-#endif //SRGB_FAST_APPROXIMATION
-	return linOut;
-#else //MANUAL_SRGB
-	return srgbIn;
-#endif //MANUAL_SRGB
-}
-//------------------------------------------------------------------------------
-vec4 LineartoSRGB(vec4 srgbIn)
-{
-#ifdef MANUAL_SRGB
-#ifdef SRGB_SQRT
-	return vec4(sqrt(srgbIn.rgb), srgbIn.a);
-#else
-	return vec4(pow(srgbIn.rgb, vec3(1.0 / 2.2)), srgbIn.a);
-#endif
-#else
-	return srgbIn;
-#endif
-}
-
-//-----------------------------------------------------------------------------
-vec3 LineartoSRGB(vec3 srgbIn)
-{
-#ifdef MANUAL_SRGB
-#ifdef SRGB_SQRT
-	return sqrt(srgbIn);
-#else
-	return pow(srgbIn.rgb, vec3(1.0 / 2.2));
-#endif
-#else
-	return srgbIn;
-#endif
-}
-
 
 //-----------------------------------------------------------------------------
 void SGX_FetchNormal(in sampler2D s,
@@ -126,13 +54,9 @@ void SGX_Light_Directional_Diffuse(
 {
 	vec3 vNormalView = normalize(vNormal);
 	float nDotL = dot(vNormalView, vNegLightDirView);
-
-	vDiffuseColour = SRGBtoLINEAR(vDiffuseColour);
-
+	
 	vOut += vDiffuseColour * clamp(nDotL, 0.0, 1.0);
 	vOut = clamp(vOut, 0.0, 1.0);
-
-	vOut = LineartoSRGB(vOut);
 }
 
 //-----------------------------------------------------------------------------
@@ -151,10 +75,9 @@ void SGX_Light_Directional_DiffuseSpecular(
 	vec3 vView       = normalize(vViewDir);
 	vec3 vHalfWay    = normalize(vView + vNegLightDirView);
 	float nDotH        = dot(vNormalView, vHalfWay);
-
+	
 	if (nDotL > 0.0)
 	{
-		vDiffuseColour = SRGBtoLINEAR(vDiffuseColour);
 		vOutDiffuse  += vDiffuseColour * nDotL;		
 #ifdef NORMALISED
 		vSpecularColour *= (fSpecularPower + 8.0)/(8.0 * M_PI);
@@ -163,8 +86,6 @@ void SGX_Light_Directional_DiffuseSpecular(
         vOutDiffuse = clamp(vOutDiffuse, 0.0, 1.0);
 	    vOutSpecular = clamp(vOutSpecular, 0.0, 1.0);
 	}
-
-	vOutDiffuse = LineartoSRGB(vOutDiffuse);
 }
 
 //-----------------------------------------------------------------------------
@@ -178,18 +99,14 @@ void SGX_Light_Point_Diffuse(
 	float fLightD      = length(vLightView);
 	vec3 vNormalView = normalize(vNormal);
 	float nDotL        = dot(vNormalView, normalize(vLightView));
-
+	
 	if (nDotL > 0.0 && fLightD <= vAttParams.x)
 	{
-		vDiffuseColour = SRGBtoLINEAR(vDiffuseColour);
-
 		float fAtten	   = 1.0 / (vAttParams.y + vAttParams.z*fLightD + vAttParams.w*fLightD*fLightD);
 			
 		vOut += vDiffuseColour * nDotL * fAtten;
         vOut = clamp(vOut, 0.0, 1.0);
 	}
-
-	vOut = LineartoSRGB(vOut);
 }
 
 
@@ -209,17 +126,15 @@ void SGX_Light_Point_DiffuseSpecular(
 	float fLightD      = length(vLightView);
 	vLightView		   = normalize(vLightView);	
 	vec3 vNormalView = normalize(vNormal);
-	float nDotL        = dot(vNormalView, vLightView);
-
+	float nDotL        = dot(vNormalView, vLightView);	
+		
 	if (nDotL > 0.0 && fLightD <= vAttParams.x)
 	{					
 		vec3 vView       = normalize(vViewDir);
 		vec3 vHalfWay    = normalize(vView + vLightView);		
 		float nDotH        = dot(vNormalView, vHalfWay);
-		float fAtten	   = 1.0 / (vAttParams.y + vAttParams.z*fLightD + vAttParams.w*fLightD*fLightD);
-
-		vDiffuseColour = SRGBtoLINEAR(vDiffuseColour);
-
+		float fAtten	   = 1.0 / (vAttParams.y + vAttParams.z*fLightD + vAttParams.w*fLightD*fLightD);					
+		
 		vOutDiffuse  += vDiffuseColour * nDotL * fAtten;
 #ifdef NORMALISED
 		vSpecularColour *= (fSpecularPower + 8.0)/(8.0 * M_PI);
@@ -229,8 +144,6 @@ void SGX_Light_Point_DiffuseSpecular(
         vOutDiffuse = clamp(vOutDiffuse, 0.0, 1.0);
         vOutSpecular = clamp(vOutSpecular, 0.0, 1.0);
 	}
-
-	vOutDiffuse = LineartoSRGB(vOutDiffuse);
 }
 
 //-----------------------------------------------------------------------------
@@ -247,11 +160,9 @@ void SGX_Light_Spot_Diffuse(
 	vLightView		   = normalize(vLightView);
 	vec3 vNormalView = normalize(vNormal);
 	float nDotL        = dot(vNormalView, vLightView);
-
+	
 	if (nDotL > 0.0 && fLightD <= vAttParams.x)
 	{
-		vDiffuseColour = SRGBtoLINEAR(vDiffuseColour);
-
 		float fAtten	= 1.0 / (vAttParams.y + vAttParams.z*fLightD + vAttParams.w*fLightD*fLightD);
 		float rho		= dot(vNegLightDirView, vLightView);						
 		float fSpotE	= clamp((rho - vSpotParams.y) / (vSpotParams.x - vSpotParams.y), 0.0, 1.0);
@@ -260,8 +171,6 @@ void SGX_Light_Spot_Diffuse(
 		vOut += vDiffuseColour * nDotL * fAtten * fSpotT;
         vOut = clamp(vOut, 0.0, 1.0);
 	}
-
-	vOut = LineartoSRGB(vOut);
 }
 
 //-----------------------------------------------------------------------------
@@ -282,11 +191,10 @@ void SGX_Light_Spot_DiffuseSpecular(
 	vLightView		   = normalize(vLightView);
 	vec3 vNormalView = normalize(vNormal);
 	float nDotL        = dot(vNormalView, vLightView);
-
+	
+	
 	if (nDotL > 0.0 && fLightD <= vAttParams.x)
 	{
-		vDiffuseColour = SRGBtoLINEAR(vDiffuseColour);
-
 		vec3 vView       = normalize(vViewDir);
 		vec3 vHalfWay    = normalize(vView + vLightView);				
 		float nDotH        = dot(vNormalView, vHalfWay);
@@ -303,7 +211,5 @@ void SGX_Light_Spot_DiffuseSpecular(
         vOutDiffuse = clamp(vOutDiffuse, 0.0, 1.0);
         vOutSpecular = clamp(vOutSpecular, 0.0, 1.0);
 	}
-
-	vOutDiffuse = LineartoSRGB(vOutDiffuse);
 }
 
