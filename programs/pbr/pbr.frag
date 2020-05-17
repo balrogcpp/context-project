@@ -682,6 +682,6 @@ void main()
         total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour.rgb);
 #endif
 
-    gl_FragColor = vec4((total_colour), attenuation);
+    gl_FragColor = vec4(total_colour, attenuation);
 //    gl_FragColor = vec4(LINEARtoSRGB(total_colour), attenuation);
 }
