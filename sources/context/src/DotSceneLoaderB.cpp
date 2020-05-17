@@ -33,6 +33,7 @@ SOFTWARE.
 #include "TerrainMaterialGeneratorB.hpp"
 #include "ShaderResolver.hpp"
 #include "PSSMShadowCameraSetupB.hpp"
+#include "CubeMapCamera.hpp"
 
 namespace {
 //----------------------------------------------------------------------------------------------------------------------
@@ -1071,6 +1072,8 @@ void DotSceneLoaderB::ProcessCamera(pugi::xml_node &xml_node, Ogre::SceneNode *p
 
   ContextManager::GetSingleton().GetCameraMan()->UnregCamera();
   ContextManager::GetSingleton().GetCameraMan()->RegCamera(parent);
+  CubeMapCamera::GetSingleton().FreeCamera();
+  CubeMapCamera::GetSingleton().Setup();
 
   auto *actor = ogre_scene_manager_->createEntity("Actor", "Icosphere.mesh");
   actor->setCastShadows(false);
@@ -1427,6 +1430,11 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     auto &constants = frag_params->getConstantDefinitions();
     if (constants.map.count("uMetallicRoughnessValues") == 1)
       frag_params->setNamedConstant("uMetallicRoughnessValues", Ogre::Vector2(1, 1));
+
+    auto ibl_texture = pass->getTextureUnitState("IBL_Specular");
+    if (ibl_texture) {
+      ibl_texture->setTexture(CubeMapCamera::GetSingleton().GetDyncubemap());
+    }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -1504,8 +1512,8 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
           if (!registered) {
             Ogre::TextureUnitState *tu = pass->createTextureUnitState();
             tu->setContentType(Ogre::TextureUnitState::CONTENT_SHADOW);
-            tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
-//            tu->setTextureBorderColour(Ogre::ColourValue::White);
+            tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
+            tu->setTextureBorderColour(Ogre::ColourValue::White);
             tu->setTextureFiltering(Ogre::TFO_NONE);
           }
 

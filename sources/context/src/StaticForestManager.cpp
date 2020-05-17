@@ -42,7 +42,7 @@ struct GrassVertex {
 };
 #pragma pack(pop)
 //----------------------------------------------------------------------------------------------------------------------
-void StaticForestManager::createGrassMesh() {
+void StaticForestManager::CreateGrassMesh() {
   Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
 
   // Create a submesh with the grass material

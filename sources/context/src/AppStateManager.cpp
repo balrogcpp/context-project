@@ -30,6 +30,7 @@ SOFTWARE.
 #include "PhysicsManager.hpp"
 #include "SoundManager.hpp"
 #include "ConfigManager.hpp"
+#include "CubeMapCamera.hpp"
 
 #include <iostream>
 
@@ -124,6 +125,7 @@ void AppStateManager::CleanupResources() {
     ContextManager::GetSingleton().GetOgreScenePtr()->getRootSceneNode()->removeAndDestroyAllChildren();
 
     ContextManager::GetSingleton().SetupOgreScenePreconditions();
+    CubeMapCamera::GetSingleton().Setup();
   }
 
   if (waiting_) {

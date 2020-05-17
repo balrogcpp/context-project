@@ -34,7 +34,7 @@ material PbrIbl/Unity
             }
             texture_unit IBL_Specular
             {
-                texture specular.dds cubic
+                texture OutputCube.dds cubic
             }
             texture_unit IBL_LUT
             {

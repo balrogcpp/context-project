@@ -43,6 +43,11 @@ class PSSMShadowCameraSetup;
 }
 }
 
+namespace Ogre {
+class RenderTarget;
+class Texture;
+}
+
 namespace Context {
 
 class ContextManager : public Ogre::LogListener, public NoCopy {
@@ -66,7 +71,7 @@ class ContextManager : public Ogre::LogListener, public NoCopy {
   void SetupGlobal();
   void ResetGlobals();
   void Render();
-  void SetupOgreCamera();
+  void CreateOgreCamera();
   void SetupOgreScenePreconditions();
   void UpdateCursorStatus(Cursor cursor);
 
@@ -104,6 +109,8 @@ class ContextManager : public Ogre::LogListener, public NoCopy {
     ContextManager::window_caption_ = caption;
   }
 
+  [[nodiscard]] const std::shared_ptr<Ogre::ShadowCameraSetup> &GetOgreShadowCameraSetup() const;
+
  private:
   //SDL2
   SDL_Window *sdl_window_ = nullptr;
@@ -140,9 +147,6 @@ class ContextManager : public Ogre::LogListener, public NoCopy {
   //HLMS
   bool hlms_enable_ = false;
   bool hlms_force_enable_ = false;
-
- public:
-  [[nodiscard]] const std::shared_ptr<Ogre::ShadowCameraSetup> &GetOgreShadowCameraSetup() const;
 
   //Global
   std::string media_location_directory_ = "..";
@@ -192,33 +196,6 @@ class ContextManager : public Ogre::LogListener, public NoCopy {
   std::string graphics_shadows_receiver_material_;
   std::string graphics_shadows_caster_material_ = "PSSM/shadow_caster";
   bool graphics_shadows_integrated_ = true;
-
-  bool application_init_with_plane_ = false;
-  bool application_plane_wireframe_ = false;
-  float application_plane_size_x_ = 100.0f;
-  float application_plane_size_z_ = 100.0f;
-  float application_plane_offset_ = 0.0f;
-  int application_plane_segments_x_ = 10;
-  int application_plane_segments_z_ = 10;
-  std::string application_plane_material_;
-
-  bool application_init_with_plane2_ = false;
-  bool application_plane2_wireframe_ = false;
-  float application_plane2_size_x_ = 100.0f;
-  float application_plane2_size_z_ = 100.0f;
-  int application_plane2_segments_x_ = 10;
-  int application_plane2_segments_z_ = 10;
-  int application_plane2_offset_ = 0.0f;
-  std::string application_plane2_material_;
-
-  bool application_init_with_plane3_ = false;
-  bool application_plane3_wireframe_ = false;
-  float application_plane3_size_x_ = 100.0f;
-  float application_plane3_size_z_ = 100.0f;
-  float application_plane3_offset_ = 0.0f;
-  int application_plane3_segments_x_ = 10;
-  int application_plane3_segments_z_ = 10;
-  std::string application_plane3_material_;
 
   //Singleton section
  private:

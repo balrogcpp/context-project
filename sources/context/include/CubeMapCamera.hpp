@@ -26,38 +26,42 @@ SOFTWARE.
 
 #include "ManagerCommon.hpp"
 
+namespace Ogre {
+class RenderTarget;
+class Texture;
+class SceneNode;
+}
+
 namespace Context {
 
-class StaticForestManager : public ManagerCommon {
- public:
-  static StaticForestManager *GetSingletonPtr() {
-    return &staticForestManagerSingleton;
-  }
-
-  static StaticForestManager &GetSingleton() {
-    return staticForestManagerSingleton;
-  }
-
+class CubeMapCamera : public ManagerCommon {
  private:
-  static StaticForestManager staticForestManagerSingleton;
+  static CubeMapCamera CubeMapCameraSingleton;
 
  public:
-  void Create();
+  static CubeMapCamera *GetSingletonPtr();
+  static CubeMapCamera &GetSingleton();
 
-  void GenerateGrass();
+ public:
+  void Setup() final;
+  void Reset() final;
+  void FreeCamera();
 
+ public:
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
 
-  void Reset() final;
-
  private:
-  void CreateGrassMesh();
-
+  Ogre::Camera* ogre_cube_camera_ = nullptr;
+  Ogre::SceneNode *ogre_cube_camera_node_ = nullptr;
+  std::shared_ptr<Ogre::Texture> dyncubemap;
+ public:
+  [[nodiscard]] const std::shared_ptr<Ogre::Texture> &GetDyncubemap() const {
+    return dyncubemap;
+  }
  private:
-  const float GRASS_WIDTH = 0.5f;
-  const float GRASS_HEIGHT = 0.5f;
-  Ogre::StaticGeometry *mField = nullptr;
-  Ogre::StaticGeometry *common = nullptr;
+  Ogre::RenderTarget* targets[6];
 };
 
-} //Context
+} //namespace Context

@@ -667,6 +667,7 @@ void main()
         // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection) / attenuation;
+//    total_colour = SRGBtoLINEAR(textureCube(uSpecularEnvSampler, -v)).rgb;
 #else
     total_colour += (uAmbientLightColour * baseColor.rgb) / attenuation;
 #endif

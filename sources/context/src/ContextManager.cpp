@@ -38,6 +38,7 @@ SOFTWARE.
 #include "CompositorManager.hpp"
 #include "CeguiOverlayManager.hpp"
 #include "PSSMShadowCameraSetupB.hpp"
+#include "CubeMapCamera.hpp"
 
 extern "C" {
 #include <SDL2/SDL_syswm.h>
@@ -64,30 +65,6 @@ void ContextManager::SetupConfigManager() {
   ConfigManager::Assign(rtss_perpixel_light_enable_, "rtss_perpixel_light_enable");
   ConfigManager::Assign(rtss_perpixel_fog_enable_, "rtss_perpixel_fog_enable");
   ConfigManager::Assign(rtss_cache_dir_, "rtss_cache_dir");
-
-  ConfigManager::Assign(application_init_with_plane_, "application_init_with_plane");
-  ConfigManager::Assign(application_plane_size_x_, "application_plane_size_x");
-  ConfigManager::Assign(application_plane_size_z_, "application_plane_size_z");
-  ConfigManager::Assign(application_plane_offset_, "application_plane_offset");
-  ConfigManager::Assign(application_plane_segments_x_, "application_plane_segments_x");
-  ConfigManager::Assign(application_plane_segments_z_, "application_plane_segments_z");
-  ConfigManager::Assign(application_plane_material_, "application_plane_material");
-
-  ConfigManager::Assign(application_init_with_plane2_, "application_init_with_plane2");
-  ConfigManager::Assign(application_plane2_size_x_, "application_plane2_size_x");
-  ConfigManager::Assign(application_plane2_size_z_, "application_plane2_size_z");
-  ConfigManager::Assign(application_plane2_offset_, "application_plane2_offset");
-  ConfigManager::Assign(application_plane2_segments_x_, "application_plane2_segments_x");
-  ConfigManager::Assign(application_plane2_segments_z_, "application_plane2_segments_z");
-  ConfigManager::Assign(application_plane2_material_, "application_plane2_material");
-
-  ConfigManager::Assign(application_init_with_plane3_, "application_init_with_plane3");
-  ConfigManager::Assign(application_plane3_size_x_, "application_plane3_size_x");
-  ConfigManager::Assign(application_plane3_size_z_, "application_plane3_size_z");
-  ConfigManager::Assign(application_plane3_offset_, "application_plane3_offset");
-  ConfigManager::Assign(application_plane3_segments_x_, "application_plane3_segments_x");
-  ConfigManager::Assign(application_plane3_segments_z_, "application_plane3_segments_z");
-  ConfigManager::Assign(application_plane3_material_, "application_plane3_material");
 
   ConfigManager::Assign(hlms_enable_, "hlms_enable");
   ConfigManager::Assign(hlms_force_enable_, "hlms_force_enable");
@@ -335,7 +312,7 @@ void ContextManager::InitGeneralResources() {
   Ogre::ResourceGroupManager::getSingletonPtr()->initialiseAllResourceGroups();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ContextManager::SetupOgreCamera() {
+void ContextManager::CreateOgreCamera() {
   ogre_camera_node_ = ogre_scene_manager_->getRootSceneNode()->createChildSceneNode();
 
   if (!ogre_scene_manager_->hasCamera("Camera")) {
@@ -368,7 +345,9 @@ void ContextManager::SetupOgreCamera() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupOgreScenePreconditions() {
-  SetupOgreCamera();
+  CreateOgreCamera();
+//  CubeMapCamera::GetSingleton().SetupGlobal();
+//  CubeMapCamera::GetSingleton().Setup();
 
   // Texture filtering
   if (graphics_filtration_ == "anisotropic") {
@@ -933,6 +912,9 @@ void ContextManager::SetupGlobal() {
   DotSceneLoaderB::GetSingleton().SetupGlobal();
   DotSceneLoaderB::GetSingleton().Setup();
 
+  CubeMapCamera::GetSingleton().SetupGlobal();
+  CubeMapCamera::GetSingleton().Setup();
+
   CeguiOverlayManager::GetSingleton().SetupGlobal();
   CeguiOverlayManager::GetSingleton().Setup();
 }
@@ -959,6 +941,9 @@ void ContextManager::ResetGlobals() {
 
   DotSceneLoaderB::GetSingleton().ResetGlobal();
   DotSceneLoaderB::GetSingleton().Reset();
+
+  CubeMapCamera::GetSingleton().ResetGlobal();
+  CubeMapCamera::GetSingleton().Reset();
 
   CeguiOverlayManager::GetSingleton().ResetGlobal();
   CeguiOverlayManager::GetSingleton().Reset();

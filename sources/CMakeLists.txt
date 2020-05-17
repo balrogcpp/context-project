@@ -112,7 +112,7 @@ set(CONTEXT_HEADERS
     context/include/PropertyMaps.hpp
     context/include/CeguiOverlayManager.hpp
     context/include/PSSMShadowCameraSetupB.hpp
-    context/include/PagedGeometryCommon.hpp)
+    context/include/PagedGeometryCommon.hpp context/include/CubeMapCamera.hpp)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
@@ -182,7 +182,7 @@ set(CONTEXT_SOURCES
     context/src/PropertyMaps.cpp
     context/src/CeguiOverlayManager.cpp
     context/src/PSSMShadowCameraSetupB.cpp
-    )
+    context/src/CubeMapCamera.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}
