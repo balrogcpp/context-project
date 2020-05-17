@@ -200,7 +200,7 @@ float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSiz
 //    shadow = counter / iterations;
 
 //    const float radius = 1.0;
-//    const int iterations = 8;
+//    const int iterations = 16;
 //    const vec2 poissonDisk16[16] = vec2[](
 //    vec2( -0.94201624, -0.39906216 ),
 //    vec2( 0.94558609, -0.76890725 ),
@@ -233,7 +233,7 @@ float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSiz
 //    shadow = counter / ( iterations * (2 * radius + 1 ) * (2 * radius + 1));
 
     const float radius = 1.0;
-    const int iterations = 2;
+    const int iterations = 4;
     const vec2 poissonDisk16[16] = vec2[](
     vec2( -0.94201624, -0.39906216 ),
     vec2( 0.94558609, -0.76890725 ),
@@ -312,7 +312,7 @@ struct PBRInfo
 const float M_PI = 3.141592653589793;
 const float c_MinRoughness = 0.04;
 
-//#define MANUAL_SRGB
+#define MANUAL_SRGB
 #define SRGB_FAST_APPROXIMATION
 //#define SRGB_SQRT
 
@@ -665,7 +665,7 @@ void main()
 
         // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
-        total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection);
+    total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection);
 #else
     total_colour += (uAmbientLightColour * baseColor.rgb) / attenuation;
 #endif
@@ -679,9 +679,9 @@ void main()
 #ifdef HAS_EMISSIVEMAP
         total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord)).rgb;
 #else
-        total_colour += uSurfaceEmissiveColour.rgb;
+        total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour.rgb);
 #endif
 
-
-    gl_FragColor = vec4(LINEARtoSRGB(total_colour), attenuation);
+    gl_FragColor = vec4((total_colour), attenuation);
+//    gl_FragColor = vec4(LINEARtoSRGB(total_colour), attenuation);
 }
