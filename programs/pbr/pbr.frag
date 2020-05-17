@@ -542,8 +542,9 @@ void main()
         discard;
     }
 
-    float perceptualRoughness = uMetallicRoughnessValues.y;
     float metallic = uMetallicRoughnessValues.x;
+    float perceptualRoughness = uMetallicRoughnessValues.y;
+
 #ifdef HAS_METALROUGHNESSMAP
 #ifdef HAS_SEPARATE_ROUGHNESSMAP
     vec4 mrSampleMetallic = texture2D(uMetallicSampler, tex_coord);
@@ -665,19 +666,18 @@ void main()
 
         // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
-    total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection);
+    total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection) / attenuation;
 #else
     total_colour += (uAmbientLightColour * baseColor.rgb) / attenuation;
 #endif
 
         // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
-        float ao = texture2D(uOcclusionSampler, tex_coord).r;
-        total_colour *= ao;
+        total_colour *= texture2D(uOcclusionSampler, tex_coord).r;
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-        total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord)).rgb;
+        total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord).rgb);
 #else
         total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour.rgb);
 #endif

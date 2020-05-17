@@ -1,55 +1,55 @@
-vertex_program PBR_vs_glsl glsl
+vertex_program Pbr_vs_glsl glsl
 {
 	source pbr.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
 }
 
-vertex_program PBR_vs_glsles glsles
+vertex_program Pbr_vs_glsles glsles
 {
 	source pbr.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
 }
 
-vertex_program PBR_vs unified
+vertex_program Pbr_vs unified
 {
-	delegate PBR_vs_glsl
-	delegate PBR_vs_glsles
+	delegate Pbr_vs_glsl
+	delegate Pbr_vs_glsles
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program Forest_vs_glsl glsl
+vertex_program PbrForest_vs_glsl glsl
 {
 	source pbr.vert
     preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV
 }
 
-vertex_program Forest_vs_glsles glsles
+vertex_program PbrForest_vs_glsles glsles
 {
 	source pbr.vert
     preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV
 }
 
-vertex_program Forest_vs unified
+vertex_program PbrForest_vs unified
 {
-	delegate Forest_vs_glsl
-	delegate Forest_vs_glsles
+	delegate PbrForest_vs_glsl
+	delegate PbrForest_vs_glsles
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program Forest_Shadowed_vs_glsl glsl
+vertex_program PbrForest_Shadowed_vs_glsl glsl
 {
 	source pbr.vert
     preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
 }
 
-vertex_program Forest_Shadowed_vs_glsles glsles
+vertex_program PbrForest_Shadowed_vs_glsles glsles
 {
 	source pbr.vert
     preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
 }
 
-vertex_program Forest_Shadowed_vs unified
+vertex_program PbrForest_Shadowed_vs unified
 {
-	delegate Forest_Shadowed_vs_glsl
-	delegate Forest_Shadowed_vs_glsles
+	delegate PbrForest_Shadowed_vs_glsl
+	delegate PbrForest_Shadowed_vs_glsles
 }

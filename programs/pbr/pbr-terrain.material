@@ -1,39 +1,39 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Terrain_fs_glsl glsl
+fragment_program PbrTerrain_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines HAS_PARALLAX,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
 }
 
-fragment_program Terrain_fs_glsles glsles
+fragment_program PbrTerrain_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_PARALLAX,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
 }
 
-fragment_program Terrain_fs unified
+fragment_program PbrTerrain_fs unified
 {
-	delegate Terrain_fs_glsl
-	delegate Terrain_fs_glsles
+	delegate PbrTerrain_fs_glsl
+	delegate PbrTerrain_fs_glsles
 }
 
-material Terrain
+material PbrTerrain
 {
     technique
     {
       pass
       {
-        vertex_program_ref PBR_vs {}
+        vertex_program_ref Pbr_vs {}
 
         texture_unit AlbedoParallax {}
         texture_unit Normal {}
         texture_unit MetallicRougness {}
 
-        fragment_program_ref Terrain_fs
+        fragment_program_ref PbrTerrain_fs
         {
             param_named uBaseColorSampler   int 0
             param_named uNormalSampler    int 1
-            param_named uMetallicRoughnessSampler int 1
+            param_named uMetallicRoughnessSampler int 2
         }
       }
     }

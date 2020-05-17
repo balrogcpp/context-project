@@ -1,33 +1,35 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Forest_fs_glsl glsl
+fragment_program PbrForest_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
 }
 
-fragment_program Forest_fs_glsles glsles
+fragment_program PbrForest_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
 }
 
-fragment_program Forest_fs unified
+fragment_program PbrForest_fs unified
 {
-	delegate Forest_fs_glsl
-	delegate Forest_fs_glsles
+	delegate PbrForest_fs_glsl
+	delegate PbrForest_fs_glsles
 }
 
-material Forest
+material PbrForest
 {
+    receive_shadows off
+
     technique
     {
       pass
       {
             texture_unit Albedo {}
 
-			vertex_program_ref Forest_vs {}
+			vertex_program_ref PbrForest_vs {}
 
-			fragment_program_ref Forest_fs
+			fragment_program_ref PbrForest_fs
 			{
                 param_named uBaseColorSampler   int 0
 			}
@@ -36,22 +38,22 @@ material Forest
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Forest_Shadowed_fs_glsl glsl
+fragment_program PbrForest_Shadowed_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
 }
 
-fragment_program Forest_Shadowed_fs_glsles glsles
+fragment_program PbrForest_Shadowed_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
 }
 
-fragment_program Forest_Shadowed_fs unified
+fragment_program PbrForest_Shadowed_fs unified
 {
-	delegate Forest_Shadowed_fs_glsl
-	delegate Forest_Shadowed_fs_glsles
+	delegate PbrForest_Shadowed_fs_glsl
+	delegate PbrForest_Shadowed_fs_glsles
 
 	default_params
 	{
@@ -61,7 +63,7 @@ fragment_program Forest_Shadowed_fs unified
 	}
 }
 
-material Forest_Shadowed
+material PbrForest_Shadowed
 {
     technique
     {
@@ -69,9 +71,9 @@ material Forest_Shadowed
       {
             texture_unit Albedo {}
 
-			vertex_program_ref Forest_Shadowed_vs {}
+			vertex_program_ref PbrForest_Shadowed_vs {}
 
-			fragment_program_ref Forest_Shadowed_fs
+			fragment_program_ref PbrForest_Shadowed_fs
 			{
                 param_named uBaseColorSampler   int 0
 			}

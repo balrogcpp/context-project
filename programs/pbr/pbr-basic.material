@@ -19,13 +19,15 @@ fragment_program PBRBasic_fs unified
 
 material PBRBasic
 {
+    receive_shadows on
+
     technique
     {
       pass
       {
             texture_unit Albedo {}
 
-            vertex_program_ref PBR_vs {}
+            vertex_program_ref Pbr_vs {}
 
 			fragment_program_ref PBRBasic_fs
 			{
@@ -69,7 +71,7 @@ material PBRBasicShadow
       {
             texture_unit Albedo {}
 
-            vertex_program_ref PBR_vs {}
+            vertex_program_ref Pbr_vs {}
 
 			fragment_program_ref PBRBasicShadow_fs
 			{
