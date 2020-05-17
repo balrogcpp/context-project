@@ -1474,15 +1474,16 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
     auto pass = material->getTechnique(0)->getPass(0);
 
     if (ConfigManager::GetSingleton().GetBool("graphics_shadows_enable")) {
-      Ogre::uint numTextures = pssm->getSplitCount();
+      Ogre::uint numTextures = 3;
       Ogre::Vector4 splitPoints;
-      const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
-      // Populate from split point 1, not 0, since split 0 isn't useful (usually 0)
+      if (ConfigManager::GetSingleton().GetString("graphics_shadows_projection") == "pssm") {
+        const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
+        // Populate from split point 1, not 0, since split 0 isn't useful (usually 0)
 
-      for (int j = 1; j < numTextures; ++j) {
-        splitPoints[j - 1] = splitPointList[j];
+        for (int j = 1; j < numTextures; ++j) {
+          splitPoints[j - 1] = splitPointList[j];
+        }
       }
-
       const int light_count = 5;
 
       auto &constants = frag_params->getConstantDefinitions();
@@ -1495,7 +1496,7 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
 
         int texture_count = pass->getNumTextureUnitStates();
 
-        for (int k = 0; k < pssm->getSplitCount(); k++) {
+        for (int k = 0; k < 3; k++) {
           frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
                                             Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
                                             texture_count + k);
@@ -1503,9 +1504,9 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
           if (!registered) {
             Ogre::TextureUnitState *tu = pass->createTextureUnitState();
             tu->setContentType(Ogre::TextureUnitState::CONTENT_SHADOW);
-            tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
-            tu->setTextureBorderColour(Ogre::ColourValue::White);
-            tu->setTextureFiltering(Ogre::TFO_BILINEAR);
+            tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
+//            tu->setTextureBorderColour(Ogre::ColourValue::White);
+            tu->setTextureFiltering(Ogre::TFO_NONE);
           }
 
           frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);
@@ -1598,6 +1599,7 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *p
 //    if (material.empty()) {
 //      material = entity->getMesh()->getSubMesh(0)->getMaterialName();
 //    }
+
 //    if (!material.empty()) {
 //      entity->setMaterialName(material);
 //
@@ -1608,8 +1610,16 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *p
 //    }
 
     for (auto &submesh : mesh->getSubMeshes()) {
-      if (submesh->getMaterial()) {
-        auto material_ptr = submesh->getMaterial();
+      Ogre::MaterialPtr material_ptr;
+
+      if (!material.empty()) {
+        entity->setMaterialName(material);
+        material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+      } else if (submesh->getMaterial()) {
+        material_ptr = submesh->getMaterial();
+      }
+
+      if (material_ptr) {
         FixPbrParams(material_ptr);
 
         if (material_ptr->getReceiveShadows())

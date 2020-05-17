@@ -889,85 +889,52 @@ void ContextManager::RestoreScreenSize() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupGlobal() {
-  std::cout << "SetupConfigManager...";
   SetupConfigManager();
-  std::cout << "Done\n";
-  std::cout << "SetupOgreLog...";
   SetupOgreLog();
-  std::cout << "Done\n";
-  std::cout << "SetupPath...";
   SetupPath();
-  std::cout << "Done\n";
-  std::cout << "SetupInputs...";
   SetupInputs();
-  std::cout << "SetupSDL...";
   SetupSDL();
-  std::cout << "Done\n";
-  std::cout << "SetupOGRE...";
   SetupOGRE();
-  std::cout << "Done\n";
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
   if (rtss_enable_) {
-    std::cout << "SetupRTSS...";
     SetupRTSS();
-    std::cout << "Done\n";
   }
 #endif
 
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
   if (rtss_enable_) {
-    std::cout << "SetupShaderResolver...";
     SetupShaderResolver();
-    std::cout << "Done\n";
   }
 #endif
 
-  std::cout << "InitGeneralResources...";
   InitGeneralResources();
-  std::cout << "Done\n";
 
-  std::cout << "StaticForestManager...";
   StaticForestManager::GetSingleton().SetupGlobal();
   StaticForestManager::GetSingleton().Setup();
-  std::cout << "Done\n";
 
-  std::cout << "PagedForestManager...";
   PagedForestManager::GetSingleton().SetupGlobal();
   PagedForestManager::GetSingleton().Setup();
-  std::cout << "Done\n";
 
   if (physics_enable_) {
-    std::cout << "PhysicsManager...";
     PhysicsManager::GetSingleton().SetupGlobal();
     PhysicsManager::GetSingleton().Setup();
-    std::cout << "Done\n";
   }
 
   if (sound_enable_) {
-    std::cout << "SoundManager...";
     SoundManager::GetSingleton().SetupGlobal();
     SoundManager::GetSingleton().Setup();
-    std::cout << "Done\n";
   }
 
-  std::cout << "CompositorManager...";
   CompositorManager::GetSingleton().SetupGlobal();
   CompositorManager::GetSingleton().Setup();
-  std::cout << "Done\n";
 
-  std::cout << "SetupOgreScenePreconditions...";
   SetupOgreScenePreconditions();
-  std::cout << "Done\n";
 
-  std::cout << "DotSceneLoaderB...";
   DotSceneLoaderB::GetSingleton().SetupGlobal();
   DotSceneLoaderB::GetSingleton().Setup();
-  std::cout << "Done\n";
 
-  std::cout << "CeguiOverlayManager...";
   CeguiOverlayManager::GetSingleton().SetupGlobal();
   CeguiOverlayManager::GetSingleton().Setup();
-  std::cout << "Done\n";
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::ResetGlobals() {
