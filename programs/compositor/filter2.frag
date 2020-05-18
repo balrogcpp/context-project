@@ -39,12 +39,12 @@ uniform sampler2D AttenuationSampler;
 
 void main()
 {
-//  const int radius = 3;
-//  const float offset[3] = float[]( 0.0, 1.3846153846, 3.2307692308 );
-//  const float weight[3] = float[]( 0.2270270270, 0.3162162162, 0.0702702703 );
-  const int radius = 5;
-  const float offset[5] = float[](0.0, 1.0, 2.0, 3.0, 4.0);
-  const float weight[5] = float[](0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162);
+  const int radius = 3;
+  const float offset[3] = float[]( 0.0, 1.3846153846, 3.2307692308 );
+  const float weight[3] = float[]( 0.2270270270, 0.3162162162, 0.0702702703 );
+//  const int radius = 5;
+//  const float offset[5] = float[](0.0, 1.0, 2.0, 3.0, 4.0);
+//  const float weight[5] = float[](0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162);
 
   vec4 final_color = texture2D(AttenuationSampler, oUv0) * weight[0];
   for (int i=1; i<radius; i++) {
