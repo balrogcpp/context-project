@@ -9,9 +9,10 @@
       <template name="CMakeLists.txt.cmake" reformat="true" live-template-enabled="true" enabled="true" />
     </internal_templates>
     <includes_templates>
-      <template name=" C++ File Sources.cpp" reformat="true" live-template-enabled="true" />
       <template name="C File Header.h" reformat="true" live-template-enabled="true" enabled="true" />
       <template name="C++ File Header.hpp" reformat="true" live-template-enabled="true" />
+      <template name="C++ File Sources.cpp" reformat="true" live-template-enabled="true" />
+      <template name="CMakeLists.txt" reformat="true" live-template-enabled="true" />
     </includes_templates>
   </component>
 </project>
