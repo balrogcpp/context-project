@@ -50,15 +50,15 @@ material Skybox
 {
 	technique
 	{
-
 		pass
 		{
-			vertex_program_ref SkyBoxCustomVp
-			{
-			}
-			fragment_program_ref SkyBoxCustomFp
-			{
-			}
+            cull_hardware none
+            cull_software none
+            lighting off
+            depth_write off
+
+			vertex_program_ref SkyBoxCustomVp {}
+			fragment_program_ref SkyBoxCustomFp {}
 
 			texture_unit
 			{

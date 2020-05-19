@@ -471,10 +471,14 @@ void CameraMan::KeyUp(SDL_Keycode sym) {
   }
 }
 btRigidBody *CameraMan::GetRigidBody() const {
-  return rigid_body_;
+  if (camera_style_ == CameraStyle::FPS)
+    return rigid_body_;
+  else
+    return nullptr;
 }
 void CameraMan::SetRigidBody(btRigidBody *rigid_body) {
-  rigid_body_ = rigid_body;
+  if (camera_style_ == CameraStyle::FPS)
+    rigid_body_ = rigid_body;
 }
 
 } //namespace Context

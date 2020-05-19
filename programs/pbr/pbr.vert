@@ -142,10 +142,6 @@ void main()
     lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * mypos;
     lightSpacePosArray[i + 1] = uTexWorldViewProjMatrixArray[i + 1] * mypos;
     lightSpacePosArray[i + 2] = uTexWorldViewProjMatrixArray[i + 2] * mypos;
-
-    lightSpacePosArray[i] /= lightSpacePosArray[i].w;
-    lightSpacePosArray[i + 1] /= lightSpacePosArray[i + 1].w;
-    lightSpacePosArray[i + 2] /= lightSpacePosArray[i + 2].w;
   }
 #endif
   }
@@ -153,6 +149,14 @@ void main()
   gl_Position = uMVPMatrix * mypos;
   vUV.z = gl_Position.z;
   vPosition = vec3(pos.xyz) / pos.w;
+
+#ifdef REFLECTION
+  mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
+                        0.0, 0.5, 0.0, 0.0,
+                        0.0, 0.0, 0.5, 0.0,
+                        0.5, 0.5, 0.5, 1.0);
+  projectionCoord = scalemat * gl_Position;
+#endif
 
 #else //SHADOWCASTER
 
@@ -165,16 +169,6 @@ void main()
 #endif
 
   gl_Position = uMVPMatrix * mypos;
-
-#ifdef REFLECTION
-  mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
-                        0.0, -0.5, 0.0, 0.0,
-                        0.0, 0.0, 0.5, 0.0,
-                        0.5, 0.5, 0.5, 1.0);
-  projectionCoord = scalemat * gl_Position;
-  projectionCoord /= projectionCoord.w;
-#endif
-
 #endif //SHADOWCASTER
 
 #ifdef FADE

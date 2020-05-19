@@ -110,8 +110,6 @@ uniform sampler2D uMetallicRoughnessSampler;
 uniform sampler2D uOcclusionSampler;
 #endif
 
-uniform vec2 uMetallicRoughnessValues;
-
 #ifdef SHADOWRECEIVER
 uniform sampler2D shadowMap0;
 uniform sampler2D shadowMap1;
@@ -134,7 +132,7 @@ in vec3 vNormal;
 #endif
 #endif
 #ifdef REFLECTION
-uniform sampler2D reflectMap;
+uniform sampler2D uReflectionMap;
 in vec4 projectionCoord;
 #endif
 
@@ -151,6 +149,8 @@ vec4 offsetSample(vec4 uv, vec2 offset, float invMapSize)
 float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize, float bias)
 {
     // 4-sample PCF
+    uv.xyz /= uv.w;
+
     uv.z = uv.z * 0.5 + 0.5; // convert -1..1 to 0..1
     float shadow = 0.0;
     float compare = uv.z;
@@ -535,6 +535,7 @@ void main()
 {
 #ifndef SHADOWCASTER
     vec3 v = normalize(uCameraPosition - vPosition);
+//    vec3 v = normalize(vPosition - uCameraPosition);
 
 #ifdef HAS_PARALLAX
     vec2 tex_coord = ParallaxMapping(vUV.xy, v);
@@ -559,8 +560,8 @@ void main()
         discard;
     }
 
-    float metallic = uMetallicRoughnessValues.x;
-    float perceptualRoughness = uMetallicRoughnessValues.y;
+    float metallic = 1.0;
+    float perceptualRoughness = 1.0;
 
 #ifdef HAS_METALROUGHNESSMAP
 #ifdef HAS_SEPARATE_ROUGHNESSMAP
@@ -690,28 +691,34 @@ void main()
 
         // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
-        total_colour *= texture2D(uOcclusionSampler, tex_coord).r;
+    total_colour *= texture2D(uOcclusionSampler, tex_coord).r;
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-        total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord).rgb);
+    total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord).rgb);
 #else
-        total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour.rgb);
+    total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour.rgb);
 #endif
 
 #ifdef REFLECTION
-        vec3 reflectionColour = texture2D(reflectMap.xy , projectionCoord.xy).rgb;
-        total_colour = reflectionColour;
+    vec2 final = projectionCoord.xy / projectionCoord.w;
+
+    vec3 reflectionColour = texture2D(uReflectionMap , final).rgb;
+    const float fresnelBias = 0.1;
+    const float fresnelScale = 1.8;
+    const float fresnelPower = 8.0;
+
+    float vector = dot(n, -v);
+    float fresnel = fresnelBias + fresnelScale * pow(1.0 + vector, fresnelPower);
+
+    total_colour = mix(total_colour, reflectionColour, fresnel * metallic);
 #endif
 
-        gl_FragColor = vec4(total_colour, attenuation);
+    gl_FragColor = vec4(total_colour, attenuation);
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
     float alpha = texture2D(uBaseColorSampler, vUV.xy).a;
-//#ifdef FADE
-//    alpha *= vUV.w;
-//#endif
 
     if (alpha < 0.5) {
         discard;

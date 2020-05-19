@@ -159,7 +159,7 @@ material Pbr/Unity
       {
             texture_unit Albedo {}
             texture_unit Normal {}
-            texture_unit MetallicRougness{}
+            texture_unit MetallicRougness {}
 
             vertex_program_ref Pbr_vs {}
 
@@ -168,6 +168,50 @@ material Pbr/Unity
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
                 param_named uMetallicRoughnessSampler int 2
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program PbrReflection_Unity_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,REFLECTION
+}
+
+fragment_program PbrReflection_Unity_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,REFLECTION
+}
+
+fragment_program PbrReflection_Unity_fs unified
+{
+	delegate PbrReflection_Unity_fs_glsl
+	delegate PbrReflection_Unity_fs_glsles
+}
+
+
+material PbrReflection/Unity
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+            texture_unit Normal {}
+            texture_unit MetallicRougness {}
+            texture_unit ReflectionMap {}
+
+            vertex_program_ref PbrReflection_Shadowed_vs {}
+
+			fragment_program_ref PbrReflection_Unity_fs
+			{
+                param_named uBaseColorSampler   int 0
+                param_named uNormalSampler    int 1
+                param_named uMetallicRoughnessSampler int 2
+                param_named uReflectionMap int 3
 			}
         }
     }

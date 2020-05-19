@@ -48,6 +48,8 @@ class ReflectionCamera : public ManagerCommon {
   void Setup() final;
   void Reset() final;
   void FreeCamera();
+  void RegPlane(Ogre::Plane);
+  void UnregPlane();
 
  public:
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
@@ -56,7 +58,8 @@ class ReflectionCamera : public ManagerCommon {
 
  private:
   std::shared_ptr<Ogre::Texture> reflection_;
-  std::vector<Ogre::Plane> reflection_planes_;
+//  std::vector<Ogre::Plane> reflection_planes_;
+  Ogre::Plane plane_;
 
  public:
   [[nodiscard]] const std::shared_ptr<Ogre::Texture> &GetReflectionTex() const {

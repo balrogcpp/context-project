@@ -31,6 +31,7 @@ SOFTWARE.
 #include "SoundManager.hpp"
 #include "ConfigManager.hpp"
 #include "CubeMapCamera.hpp"
+#include "ReflectionCamera.hpp"
 
 #include <iostream>
 
@@ -86,7 +87,6 @@ void AppStateManager::GoNextState() {
     cur_state_->Reset();
     cur_state_->ResetGlobals();
     cur_state_.reset();
-//    prev_state_ = cur_state_;
   }
 
   if (next_state_) {
@@ -101,6 +101,7 @@ void AppStateManager::CleanupResources() {
   if (waiting_) {
     StaticForestManager::GetSingleton().Reset();
     DotSceneLoaderB::GetSingleton().Reset();
+    ReflectionCamera::GetSingleton().FreeCamera();
 
     if (ConfigManager::GetSingleton().GetBool("physics_enable")) {
       PhysicsManager::GetSingleton().Reset();

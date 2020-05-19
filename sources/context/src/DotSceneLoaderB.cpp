@@ -34,6 +34,7 @@ SOFTWARE.
 #include "ShaderResolver.hpp"
 #include "PSSMShadowCameraSetupB.hpp"
 #include "CubeMapCamera.hpp"
+#include "ReflectionCamera.hpp"
 
 namespace {
 //----------------------------------------------------------------------------------------------------------------------
@@ -1375,6 +1376,9 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     vert_params->setNamedAutoConstant("uMVPMatrix", Ogre::GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
     vert_params->setNamedAutoConstant("uModelMatrix", Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
     vert_params->setNamedAutoConstant("uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
+//    vert_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
+//    vert_params->setNamedAutoConstant("uCameraPositionObjSpace", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION_OBJECT_SPACE);
+
 
     if (constants.map.count("fadeRange") > 0) {
       vert_params->setNamedConstant("fadeRange", 1 / (100.0f * 2.0f));
@@ -1427,10 +1431,7 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     frag_params->setNamedAutoConstant("uFogColour", Ogre::GpuProgramParameters::ACT_FOG_COLOUR);
     frag_params->setNamedAutoConstant("uFogParams", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
     frag_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
-
-    auto &constants = frag_params->getConstantDefinitions();
-    if (constants.map.count("uMetallicRoughnessValues") == 1)
-      frag_params->setNamedConstant("uMetallicRoughnessValues", Ogre::Vector2(1, 1));
+//    frag_params->setNamedAutoConstant("uCameraPositionObjSpace", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION_OBJECT_SPACE);
 
     auto ibl_texture = pass->getTextureUnitState("IBL_Specular");
     if (ibl_texture) {
@@ -1681,28 +1682,60 @@ void DotSceneLoaderB::ProcessBillboardSet(pugi::xml_node &xml_node, Ogre::SceneN
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessPlane(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   std::string name = GetAttrib(xml_node, "name");
-  float distance = GetAttribReal(xml_node, "distance");
-  float width = GetAttribReal(xml_node, "width");
-  float height = GetAttribReal(xml_node, "height");
-  int xSegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "xSegments"));
-  int ySegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "ySegments"));
-  int numTexCoordSets = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "numTexCoordSets"));
-  float uTile = GetAttribReal(xml_node, "uTile");
-  float vTile = GetAttribReal(xml_node, "vTile");
-  std::string material = GetAttrib(xml_node, "material");
-  bool hasNormals = GetAttribBool(xml_node, "hasNormals");
+  float distance = GetAttribReal(xml_node, "distance", 0.0f);
+  float width = GetAttribReal(xml_node, "width", 1.0f);
+  float height = GetAttribReal(xml_node, "height", width);
+  int xSegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "xSegments"), 10);
+  int ySegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "ySegments"), 10);
+  int numTexCoordSets = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "numTexCoordSets"), 1);
+  float uTile = GetAttribReal(xml_node, "uTile", 5.0f);
+  float vTile = GetAttribReal(xml_node, "vTile", 5.0f);
+  std::string material = GetAttrib(xml_node, "material", "BaseWhite");
+  bool hasNormals = GetAttribBool(xml_node, "hasNormals", true);
   Ogre::Vector3 normal = ParseVector3(xml_node.child("normal"));
   Ogre::Vector3 up = ParseVector3(xml_node.child("upVector"));
+  bool reflection = GetAttribBool(xml_node, "reflection", false);
+
+  normal = {0, 1, 0};
+  up = {0, 0, 1};
 
   Ogre::Plane plane(normal, distance);
+
+  std::string mesh_name = name + "mesh";
+
+  Ogre::MeshPtr tmp_mesh = Ogre::MeshManager::getSingleton().getByName(mesh_name, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+  if (tmp_mesh)
+    Ogre::MeshManager::getSingleton().remove(tmp_mesh);
   Ogre::MeshPtr res =
-      Ogre::MeshManager::getSingletonPtr()->createPlane(name + "mesh", group_name_, plane, width, height, xSegments,
+      Ogre::MeshManager::getSingletonPtr()->createPlane(mesh_name, group_name_, plane, width, height, xSegments,
                                                         ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
-  Ogre::Entity *ent = scene_manager_->createEntity(name, name + "mesh");
+  res->buildTangentVectors();
+  Ogre::Entity *ent = scene_manager_->createEntity(name, mesh_name);
 
-  ent->setMaterialName(material);
+  if (material.empty())
+    return;
 
-  parent->attachObject(ent);
+  if (!material.empty()) {
+    ent->setMaterialName(material);
+    FixPbrParams(material);
+  }
+
+  if (reflection) {
+    Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+
+    auto material_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("ReflectionMap");
+
+    if (material_unit) {
+      material_unit->setTexture(ReflectionCamera::GetSingleton().GetReflectionTex());
+      material_unit->setTextureAddressingMode(Ogre::TAM_CLAMP);
+    }
+  }
+
+  ReflectionCamera::GetSingleton().RegPlane(plane);
+  ogre_root_node_->attachObject(ent);
+
+  const uint32 WATER_MASK = 0xF00;
+  ent->setVisibilityFlags(WATER_MASK);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessForest(pugi::xml_node &xml_node) {
@@ -1743,7 +1776,7 @@ void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &xml_node) {
   // Process attributes
   std::string material = GetAttrib(xml_node, "material", "Skybox");
   std::string cubemap = GetAttrib(xml_node, "cubemap", "OutputCube.dds");
-  float distance = GetAttribReal(xml_node, "distance", 5000);
+  float distance = GetAttribReal(xml_node, "distance", 1000);
   bool drawFirst = GetAttribBool(xml_node, "drawFirst", true);
   bool active = GetAttribBool(xml_node, "active", true);
 
@@ -1777,7 +1810,7 @@ void DotSceneLoaderB::ProcessSkyDome(pugi::xml_node &xml_node) {
   std::string material = xml_node.attribute("material").value();
   float curvature = GetAttribReal(xml_node, "curvature", 10);
   float tiling = GetAttribReal(xml_node, "tiling", 8);
-  float distance = GetAttribReal(xml_node, "distance", 4000);
+  float distance = GetAttribReal(xml_node, "distance", 1000);
   bool drawFirst = GetAttribBool(xml_node, "drawFirst", true);
   bool active = GetAttribBool(xml_node, "active", false);
 

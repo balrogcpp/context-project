@@ -39,6 +39,7 @@ SOFTWARE.
 #include "CeguiOverlayManager.hpp"
 #include "PSSMShadowCameraSetupB.hpp"
 #include "CubeMapCamera.hpp"
+#include "ReflectionCamera.hpp"
 
 extern "C" {
 #include <SDL2/SDL_syswm.h>
@@ -346,8 +347,6 @@ void ContextManager::CreateOgreCamera() {
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupOgreScenePreconditions() {
   CreateOgreCamera();
-//  CubeMapCamera::GetSingleton().SetupGlobal();
-//  CubeMapCamera::GetSingleton().Setup();
 
   // Texture filtering
   if (graphics_filtration_ == "anisotropic") {
@@ -915,6 +914,9 @@ void ContextManager::SetupGlobal() {
   CubeMapCamera::GetSingleton().SetupGlobal();
   CubeMapCamera::GetSingleton().Setup();
 
+  ReflectionCamera::GetSingleton().SetupGlobal();
+  ReflectionCamera::GetSingleton().Setup();
+
   CeguiOverlayManager::GetSingleton().SetupGlobal();
   CeguiOverlayManager::GetSingleton().Setup();
 }
@@ -944,6 +946,9 @@ void ContextManager::ResetGlobals() {
 
   CubeMapCamera::GetSingleton().ResetGlobal();
   CubeMapCamera::GetSingleton().Reset();
+
+  ReflectionCamera::GetSingleton().ResetGlobal();
+  ReflectionCamera::GetSingleton().Reset();
 
   CeguiOverlayManager::GetSingleton().ResetGlobal();
   CeguiOverlayManager::GetSingleton().Reset();
