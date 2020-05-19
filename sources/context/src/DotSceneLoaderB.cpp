@@ -1741,7 +1741,8 @@ void DotSceneLoaderB::ProcessFog(pugi::xml_node &xml_node) {
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &xml_node) {
   // Process attributes
-  std::string material = GetAttrib(xml_node, "material", "BaseWhite");
+  std::string material = GetAttrib(xml_node, "material", "Skybox");
+  std::string cubemap = GetAttrib(xml_node, "cubemap", "OutputCube.dds");
   float distance = GetAttribReal(xml_node, "distance", 5000);
   bool drawFirst = GetAttribBool(xml_node, "drawFirst", true);
   bool active = GetAttribBool(xml_node, "active", true);
@@ -1755,6 +1756,16 @@ void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &xml_node) {
 
   if (auto element = xml_node.child("rotation")) {
     rotation = ParseQuaternion(element);
+  }
+
+  Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+
+  if (material_ptr->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0 ) {
+    auto texture_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState(0);
+
+    if (texture_unit) {
+      texture_unit->setTextureName(cubemap);
+    }
   }
 
   // Setup the sky box

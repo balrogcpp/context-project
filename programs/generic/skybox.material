@@ -1,6 +1,6 @@
 vertex_program SkyBoxCustomVpGLSL glsl
 {
-	source SkyBoxCustom.vert
+	source skybox.vert
     default_params
     {
         param_named_auto worldViewProj worldviewproj_matrix
@@ -9,7 +9,7 @@ vertex_program SkyBoxCustomVpGLSL glsl
 
 vertex_program SkyBoxCustomVpGLSLES glsles
 {
-	source SkyBoxCustom.vert
+	source skybox.vert
     default_params
     {
         param_named_auto worldViewProj worldviewproj_matrix
@@ -18,7 +18,7 @@ vertex_program SkyBoxCustomVpGLSLES glsles
 
 fragment_program SkyBoxCustomFpGLSL glsl
 {
-	source SkyBoxCustom.frag
+	source skybox.frag
     default_params
     {
         param_named cubemap int 0
@@ -27,7 +27,7 @@ fragment_program SkyBoxCustomFpGLSL glsl
 
 fragment_program SkyBoxCustomFpGLSLES glsles
 {
-	source SkyBoxCustom.frag
+	source skybox.frag
     default_params
     {
         param_named cubemap int 0
@@ -46,7 +46,7 @@ fragment_program SkyBoxCustomFp unified
 	delegate SkyBoxCustomFpGLSLES
 }
 
-material CustomSkyBox
+material Skybox
 {
 	technique
 	{
