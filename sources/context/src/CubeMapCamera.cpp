@@ -49,23 +49,23 @@ void CubeMapCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   ogre_scene_manager_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
 
   if (evt.source == targets[0]) {
-    ogre_cube_camera_node_->yaw(Ogre::Degree(-90));
-//    ogre_cube_camera_node_->setDirection(1, 0, 0, Ogre::Node::TS_WORLD);
+//    ogre_cube_camera_node_->yaw(Ogre::Degree(-90));
+    ogre_cube_camera_node_->setOrientation(0, 1, 0, 0);
   } else if (evt.source == targets[1]) {
-    ogre_cube_camera_node_->yaw(Ogre::Degree(90));
-//    ogre_cube_camera_node_->setDirection(1, 0, 0, Ogre::Node::TS_WORLD);
+//    ogre_cube_camera_node_->yaw(Ogre::Degree(90));
+    ogre_cube_camera_node_->setOrientation(0, 1, 0, 0);
   } else if (evt.source == targets[2]) {
-    ogre_cube_camera_node_->pitch(Ogre::Degree(90));
-//    ogre_cube_camera_node_->setDirection(1, 0, 0, Ogre::Node::TS_WORLD);
+//    ogre_cube_camera_node_->pitch(Ogre::Degree(90));
+    ogre_cube_camera_node_->setOrientation(0, 1, 0, 0);
   } else if (evt.source == targets[3]) {
-    ogre_cube_camera_node_->pitch(Ogre::Degree(-90));
-//    ogre_cube_camera_node_->setDirection(1, 0, 0, Ogre::Node::TS_WORLD);
+//    ogre_cube_camera_node_->pitch(Ogre::Degree(-90));
+    ogre_cube_camera_node_->setOrientation(0, 1, 0, 0);
   } else if (evt.source == targets[4]) {
-//    ogre_cube_camera_node_->pitch(Ogre::Degree(180), Ogre::Node::TS_WORLD);
-//    ogre_cube_camera_node_->setDirection(1, 0, 0, Ogre::Node::TS_WORLD);
+//    ogre_cube_camera_node_->pitch(Ogre::Degree(180));
+    ogre_cube_camera_node_->setOrientation(0, 1, 0, 0);
   } else if (evt.source == targets[5]) {
-    ogre_cube_camera_node_->yaw(Ogre::Degree(180));
-//    ogre_cube_camera_node_->setDirection(1, 0, 0, Ogre::Node::TS_WORLD);
+//    ogre_cube_camera_node_->yaw(Ogre::Degree(180));
+    ogre_cube_camera_node_->setOrientation(0, 1, 0, 0);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
