@@ -1,11 +1,13 @@
 vertex_program PSSM/shadow_caster_vsGLSL glsl
 {
-	source caster.vert
+	source pbr.vert
+	preprocessor_defines SHADOWCASTER,HAS_UV
 }
 
 vertex_program PSSM/shadow_caster_vsGLSLES glsles
 {
-	source caster.vert
+	source pbr.vert
+	preprocessor_defines SHADOWCASTER,HAS_UV
 }
 
 vertex_program PSSM/shadow_caster_vs unified
@@ -15,34 +17,93 @@ vertex_program PSSM/shadow_caster_vs unified
 
 	default_params
 	{
-		param_named_auto worldViewProjMatrix worldviewproj_matrix
+		param_named_auto uMVPMatrix worldviewproj_matrix
+		param_named_auto uModelMatrix world_matrix
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 fragment_program PSSM/shadow_caster_fsGLSL glsl
 {
-	source caster.frag
+	source pbr.frag
+	preprocessor_defines SHADOWCASTER
 }
 
 fragment_program PSSM/shadow_caster_fsGLSLES glsles
 {
-	source caster.frag
+	source pbr.frag
+	preprocessor_defines SHADOWCASTER
 }
 
 fragment_program PSSM/shadow_caster_fs unified
 {
 	delegate PSSM/shadow_caster_fsGLSL
 	delegate PSSM/shadow_caster_fsGLSLES
+}
+
+
+material PSSM/shadow_caster
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref PSSM/shadow_caster_vs {}
+
+			fragment_program_ref PSSM/shadow_caster_fs {}
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PSSM/Transparent/shadow_caster_vsGLSL glsl
+{
+	source pbr.vert
+	preprocessor_defines SHADOWCASTER,HAS_UV,SHADOWCASTER_ALPHA
+}
+
+vertex_program PSSM/Transparent/shadow_caster_vsGLSLES glsles
+{
+	source pbr.vert
+	preprocessor_defines SHADOWCASTER,HAS_UV,SHADOWCASTER_ALPHA
+}
+
+vertex_program PSSM/Transparent/shadow_caster_vs unified
+{
+	delegate PSSM/Transparent/shadow_caster_vsGLSL
+	delegate PSSM/Transparent/shadow_caster_vsGLSLES
+
+	default_params
+	{
+		param_named_auto uMVPMatrix worldviewproj_matrix
+		param_named_auto uModelMatrix world_matrix
+	}
+}
+
+fragment_program PSSM/Transparent/shadow_caster_fsGLSL glsl
+{
+	source pbr.frag
+	preprocessor_defines SHADOWCASTER,HAS_BASECOLORMAP,SHADOWCASTER_ALPHA
+}
+
+fragment_program PSSM/Transparent/shadow_caster_fsGLSLES glsles
+{
+	source pbr.frag
+	preprocessor_defines SHADOWCASTER,HAS_BASECOLORMAP,SHADOWCASTER_ALPHA
+}
+
+fragment_program PSSM/Transparent/shadow_caster_fs unified
+{
+	delegate PSSM/Transparent/shadow_caster_fsGLSL
+	delegate PSSM/Transparent/shadow_caster_fsGLSLES
 
     default_params
     {
-        param_named baseColorMap int 0
+        param_named uBaseColorSampler int 0
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-material PSSM/shadow_caster
+material PSSM/Transparent/shadow_caster
 {
 	technique
 	{
@@ -50,9 +111,9 @@ material PSSM/shadow_caster
 		{
             texture_unit BaseColor {}
 
-			vertex_program_ref PSSM/shadow_caster_vs {}
+			vertex_program_ref PSSM/Transparent/shadow_caster_vs {}
 
-			fragment_program_ref PSSM/shadow_caster_fs {}
+			fragment_program_ref PSSM/Transparent/shadow_caster_fs {}
 		}
 	}
 }

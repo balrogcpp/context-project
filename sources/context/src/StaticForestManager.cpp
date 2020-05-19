@@ -51,7 +51,7 @@ void StaticForestManager::CreateGrassMesh() {
   Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
 
   DotSceneLoaderB::FixPbrParams(tmp);
-  DotSceneLoaderB::FixPbrShadow(tmp);
+  DotSceneLoaderB::FixPbrShadowReceiver(tmp);
 
   sm->setMaterialName(grassMaterial);
   sm->useSharedVertices = false;
@@ -158,11 +158,10 @@ void StaticForestManager::GenerateGrass() {
 //----------------------------------------------------------------------------------------------------------------------
 void StaticForestManager::Create() {
   DotSceneLoaderB::FixPbrParams("3D-Diggers/farn01");
-  DotSceneLoaderB::FixPbrShadow("3D-Diggers/farn01");
+  DotSceneLoaderB::FixPbrShadowReceiver("3D-Diggers/farn01");
   DotSceneLoaderB::FixPbrParams("3D-Diggers/farn02");
   DotSceneLoaderB::FixPbrParams("3D-Diggers/fir01");
   DotSceneLoaderB::FixPbrParams("3D-Diggers/fir02");
-  DotSceneLoaderB::FixPbrShadow("3D-Diggers/fir02");
   DotSceneLoaderB::FixPbrParams("3D-Diggers/plant1");
   DotSceneLoaderB::FixPbrParams("3D-Diggers/plant2");
 

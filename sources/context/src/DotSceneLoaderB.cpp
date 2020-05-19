@@ -834,7 +834,7 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
           obj->position(position0);
           obj->normal(normal);
 
-          obj->textureCoord((float)x / 4, (float)z / 4);
+          obj->textureCoord((float) x / 4, (float) z / 4);
         }
       }
 
@@ -865,7 +865,7 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
       ogre_scene_manager_->destroyManualObject(obj);
 
       FixPbrParams("Plane");
-      FixPbrShadow("Plane");
+      FixPbrShadowReceiver("Plane");
     }
   }
 
@@ -1303,6 +1303,53 @@ void DotSceneLoaderB::UpdatePbrParams() {
 
 }
 //----------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::FixPbrShadowCaster(Ogre::MaterialPtr material) {
+  std::string material_name = material->getName();
+  static std::vector<std::string> material_list;
+
+  if (std::find(material_list.begin(), material_list.end(), material_name) != material_list.end()) {
+    return;
+  } else {
+    material_list.push_back(material_name);
+  }
+
+  if (ConfigManager::GetSingleton().GetBool("graphics_shadows_enable")) {
+    auto *pass = material->getTechnique(0)->getPass(0);
+    int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
+
+    if (alpha_rejection > 0) {
+      auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/Transparent/shadow_caster");
+
+      auto *texPtr3 = caster_material->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
+      if (texPtr3) {
+        texPtr3->setTextureFiltering(Ogre::TFO_NONE);
+//        texPtr3->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_NONE);
+      }
+
+//      auto new_caster = caster_material->clone("PSSM/Transparent/shadow_caster" + std::to_string(material_list.size()));
+//      material->getTechnique(0)->setShadowCasterMaterial(new_caster);
+//
+//      if (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
+//
+//        auto texture_albedo = pass->getTextureUnitState("Albedo");
+//        if (texture_albedo) {
+//          std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
+//
+//          auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
+//
+//          if (texPtr3) {
+//            texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+//            texPtr3->setTextureFiltering(Ogre::TFO_NONE);
+//            texPtr3->setTextureName(texture_name);
+//          }
+//        }
+//      }
+    } else {
+      material->getTechnique(0)->setShadowCasterMaterial("PSSM/shadow_caster");
+    }
+  }
+}
+//----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
   std::string material_name = material->getName();
   bool registered = false;
@@ -1313,52 +1360,6 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     return;
   } else {
     material_list.push_back(material_name);
-  }
-
-  if (ConfigManager::GetSingleton().GetBool("graphics_shadows_enable")) {
-    if (registered) {
-      auto *pass = material->getTechnique(0)->getPass(0);
-      std::string texture_name = pass->getTextureUnitState(0)->getTextureName();
-      auto caster_material = material->getTechnique(0)->getShadowCasterMaterial();
-      auto *texPtr3 = caster_material->getTechnique(0)->getPass(0)->getTextureUnitState(0);
-      texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-      texPtr3->setTextureFiltering(Ogre::TFO_NONE);
-      texPtr3->setTextureName(texture_name);
-    } else {
-      auto *pass = material->getTechnique(0)->getPass(0);
-      auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
-      auto new_caster = caster_material->clone("PSSM/shadow_caster" + std::to_string(material_list.size()));
-      material->getTechnique(0)->setShadowCasterMaterial(new_caster);
-
-      if (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
-
-        auto texture_albedo = pass->getTextureUnitState("Albedo");
-        if (texture_albedo) {
-          std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
-
-          auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
-
-          if (texPtr3) {
-            texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-            texPtr3->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
-            texPtr3->setTextureName(texture_name);
-          }
-        }
-
-        auto texture_heigh = pass->getTextureUnitState("HeighMap");
-        if (texture_heigh) {
-          std::string texture_name = pass->getTextureUnitState("HeighMap")->getTextureName();
-
-          auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("HeighMap");
-
-          if (texPtr3) {
-            texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-            texPtr3->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
-            texPtr3->setTextureName(texture_name);
-          }
-        }
-      }
-    }
   }
 
   const int light_count = 5;
@@ -1438,7 +1439,7 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
+void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
   std::string material_name = material->getName();
   bool registered = false;
   const int pssm_split_count = 3;
@@ -1531,8 +1532,12 @@ void DotSceneLoaderB::FixPbrParams(const std::string &material) {
   DotSceneLoaderB::FixPbrParams(Ogre::MaterialManager::getSingleton().getByName(material));
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::FixPbrShadow(const std::string &material) {
-  DotSceneLoaderB::FixPbrShadow(Ogre::MaterialManager::getSingleton().getByName(material));
+void DotSceneLoaderB::FixPbrShadowReceiver(const std::string &material) {
+  DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialManager::getSingleton().getByName(material));
+}
+//----------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::FixPbrShadowCaster(const std::string &material) {
+  DotSceneLoaderB::FixPbrShadowCaster(Ogre::MaterialManager::getSingleton().getByName(material));
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::UpdateForestParams(const std::string &material) {
@@ -1630,8 +1635,11 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *p
       if (material_ptr) {
         FixPbrParams(material_ptr);
 
+        if (entity->getCastShadows())
+          FixPbrShadowCaster(material_ptr);
+
         if (material_ptr->getReceiveShadows())
-          FixPbrShadow(material_ptr);
+          FixPbrShadowReceiver(material_ptr);
       }
     }
 

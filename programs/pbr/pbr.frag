@@ -44,6 +44,20 @@ precision highp float;
 #define out varying
 #endif
 
+#ifdef SHADOWCASTER_ALPHA
+in vec4 vUV;
+#ifdef HAS_BASECOLORMAP
+uniform sampler2D uBaseColorSampler;
+uniform float uAlphaRejection;
+#endif
+#endif
+
+#ifndef SHADOWCASTER
+in vec4 vUV;
+#ifdef HAS_BASECOLORMAP
+uniform sampler2D uBaseColorSampler;
+#endif
+
 #define MAX_LIGHTS 5
 uniform float uAlphaRejection;
 uniform vec4 uSurfaceAmbientColour;
@@ -77,9 +91,6 @@ uniform samplerCube uSpecularEnvSampler;
 uniform sampler2D ubrdfLUT;
 #endif
 
-#ifdef HAS_BASECOLORMAP
-uniform sampler2D uBaseColorSampler;
-#endif
 #ifdef HAS_NORMALMAP
 uniform sampler2D uNormalSampler;
 #endif
@@ -114,7 +125,6 @@ in vec4 lightSpacePosArray[MAX_LIGHTS * 3];
 #endif
 
 in vec3 vPosition;
-in vec4 vUV;
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -515,8 +525,11 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
 }
 #endif
 
+#endif //SHADOWCASTER
+
 void main()
 {
+#ifndef SHADOWCASTER
     vec3 v = normalize(uCameraPosition - vPosition);
 
 #ifdef HAS_PARALLAX
@@ -685,4 +698,22 @@ void main()
 
     gl_FragColor = vec4(total_colour, attenuation);
 //    gl_FragColor = vec4(LINEARtoSRGB(total_colour), attenuation);
+
+#else //SHADOWCASTER
+
+#ifdef SHADOWCASTER_ALPHA
+    float alpha = texture2D(uBaseColorSampler, vUV.xy).a;
+
+//#ifdef FADE
+//    alpha *= vUV.w;
+//#endif
+
+    if (alpha < 0.5) {
+        discard;
+    }
+#endif
+
+    gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
+
+#endif //SHADOWCASTER
 }

@@ -68,9 +68,11 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   void UpdatePbrParams();
   float GetHeigh(float x, float z);
   static void FixPbrParams(Ogre::MaterialPtr material);
-  static void FixPbrShadow(Ogre::MaterialPtr material);
+  static void FixPbrShadowReceiver(Ogre::MaterialPtr material);
+  static void FixPbrShadowCaster(Ogre::MaterialPtr material);
   static void FixPbrParams(const std::string &material);
-  static void FixPbrShadow(const std::string &material);
+  static void FixPbrShadowReceiver(const std::string &material);
+  static void FixPbrShadowCaster(const std::string &material);
   static void UpdateForestParams(Ogre::MaterialPtr material);
   static void UpdateForestParams(const std::string &material);
 

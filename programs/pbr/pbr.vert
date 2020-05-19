@@ -33,18 +33,31 @@ precision highp float;
 #endif
 
 attribute vec4 position;
+uniform mat4 uMVPMatrix;
+uniform mat4 uModelMatrix;
+
+#ifdef SHADOWCASTER_ALPHA
+#ifdef HAS_UV
+attribute vec2 uv0;
+#endif
+
+out vec4 vUV;
+#endif
+
+#ifndef SHADOWCASTER
+#ifdef HAS_UV
+attribute vec2 uv0;
+#endif
+
+out vec4 vUV;
+
 #ifdef HAS_NORMALS
 attribute vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
 attribute vec4 tangent;
 #endif
-#ifdef HAS_UV
-attribute vec2 uv0;
-#endif
 
-uniform mat4 uMVPMatrix;
-uniform mat4 uModelMatrix;
 uniform float uLightCount;
 
 #define MAX_LIGHTS 5
@@ -67,7 +80,6 @@ uniform vec4 TerrainBox2; //-y+y
 #endif
 
 out vec3 vPosition;
-out vec4 vUV;
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -77,28 +89,11 @@ out vec3 vNormal;
 #endif
 #endif
 
+#endif //SHADOWCASTER
+
 void main()
 {
-  vec4 pos = uModelMatrix * position;
-  vPosition = vec3(pos.xyz) / pos.w;
   vec4 mypos = position;
-
-#ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
-  vec3 normalW = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
-  vec3 tangentW = normalize(vec3(uModelMatrix * vec4(tangent.xyz, 0.0)));
-  vec3 bitangentW = cross(normalW, tangentW) * tangent.w;
-  vTBN = mat3(tangentW, bitangentW, normalW);
-#else // HAS_TANGENTS != 1
-  vNormal = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
-#endif
-#endif
-
-#ifdef HAS_UV
-  vUV.xy = uv0;
-#else
-  vUV.xy = vec2(0.0);
-#endif
 
 #ifdef TERRAIN
   vec2 uv;
@@ -115,6 +110,26 @@ void main()
   float factorY = 1;
   mypos.y += sin(uTime + mypos.z + mypos.y + mypos.x) * radiusCoeff * radiusCoeff * factorY;
   mypos.x += sin(uTime + mypos.z ) * heightCoeff * heightCoeff * factorX;
+#endif
+
+#ifndef SHADOWCASTER
+  vec4 pos = uModelMatrix * position;
+
+#ifdef HAS_NORMALS
+#ifdef HAS_TANGENTS
+  vec3 normalW = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
+  vec3 tangentW = normalize(vec3(uModelMatrix * vec4(tangent.xyz, 0.0)));
+  vec3 bitangentW = cross(normalW, tangentW) * tangent.w;
+  vTBN = mat3(tangentW, bitangentW, normalW);
+#else // HAS_TANGENTS != 1
+  vNormal = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
+#endif
+#endif
+
+#ifdef HAS_UV
+  vUV.xy = uv0;
+#else
+  vUV.xy = vec2(0.0);
 #endif
 
   for (int i = 0; i < int(uLightCount);  i += 3) {
@@ -134,6 +149,20 @@ void main()
 
   gl_Position = uMVPMatrix * mypos;
   vUV.z = gl_Position.z;
+  vPosition = vec3(pos.xyz) / pos.w;
+
+#else //SHADOWCASTER
+
+#ifdef SHADOWCASTER_ALPHA
+#ifdef HAS_UV
+  vUV.xy = uv0;
+#else
+  vUV.xy = vec2(0.0);
+#endif
+#endif
+
+  gl_Position = uMVPMatrix * mypos;
+#endif //SHADOWCASTER
 
 #ifdef FADE
   vUV.w = 1.0 - clamp(gl_Position.z * fadeRange, 0.0, 1.0);
