@@ -88,6 +88,9 @@ out mat3 vTBN;
 out vec3 vNormal;
 #endif
 #endif
+#ifdef REFLECTION
+out vec4 projectionCoord;
+#endif
 
 #endif //SHADOWCASTER
 
@@ -162,6 +165,16 @@ void main()
 #endif
 
   gl_Position = uMVPMatrix * mypos;
+
+#ifdef REFLECTION
+  mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
+                        0.0, -0.5, 0.0, 0.0,
+                        0.0, 0.0, 0.5, 0.0,
+                        0.5, 0.5, 0.5, 1.0);
+  projectionCoord = scalemat * gl_Position;
+  projectionCoord /= projectionCoord.w;
+#endif
+
 #endif //SHADOWCASTER
 
 #ifdef FADE

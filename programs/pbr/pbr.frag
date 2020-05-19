@@ -133,6 +133,10 @@ in mat3 vTBN;
 in vec3 vNormal;
 #endif
 #endif
+#ifdef REFLECTION
+uniform sampler2D reflectMap;
+in vec4 projectionCoord;
+#endif
 
 #if VERSION != 120
 out vec4 gl_FragColor;
@@ -680,7 +684,6 @@ void main()
         // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection) / attenuation;
-//    total_colour = SRGBtoLINEAR(textureCube(uSpecularEnvSampler, -v)).rgb;
 #else
     total_colour += (uAmbientLightColour * baseColor.rgb) / attenuation;
 #endif
@@ -696,14 +699,16 @@ void main()
         total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour.rgb);
 #endif
 
-    gl_FragColor = vec4(total_colour, attenuation);
-//    gl_FragColor = vec4(LINEARtoSRGB(total_colour), attenuation);
+#ifdef REFLECTION
+        vec3 reflectionColour = texture2D(reflectMap.xy , projectionCoord.xy).rgb;
+        total_colour = reflectionColour;
+#endif
+
+        gl_FragColor = vec4(total_colour, attenuation);
 
 #else //SHADOWCASTER
-
 #ifdef SHADOWCASTER_ALPHA
     float alpha = texture2D(uBaseColorSampler, vUV.xy).a;
-
 //#ifdef FADE
 //    alpha *= vUV.w;
 //#endif
@@ -714,6 +719,5 @@ void main()
 #endif
 
     gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
-
 #endif //SHADOWCASTER
 }

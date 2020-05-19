@@ -46,7 +46,7 @@ bool CubeMapCamera::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 void CubeMapCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   // point the camera in the right direction based on which face of the cubemap this is
   ogre_cube_camera_node_->setOrientation(Ogre::Quaternion::IDENTITY);
-  ogre_scene_manager_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+//  ogre_scene_manager_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
 
   if (evt.source == targets[0]) {
 //    ogre_cube_camera_node_->yaw(Ogre::Degree(-90));
@@ -70,7 +70,7 @@ void CubeMapCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-  ogre_scene_manager_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+//  ogre_scene_manager_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::FreeCamera() {
@@ -111,6 +111,7 @@ void CubeMapCamera::Setup() {
 
     if (!targets[i]->getViewport(0)) {
       Ogre::Viewport *vp = targets[i]->addViewport(ogre_cube_camera_);
+      vp->setShadowsEnabled(false);
       vp->setVisibilityMask(0xF0);
       vp->setOverlaysEnabled(false);
       targets[i]->addListener(this);

@@ -114,6 +114,7 @@ set(CONTEXT_HEADERS
     context/include/PSSMShadowCameraSetupB.hpp
     context/include/PagedGeometryCommon.hpp
     context/include/CubeMapCamera.hpp
+    context/include/ReflectionCamera.hpp
     )
 
 set(HEADER_FILES_CONTEXT_LIB
@@ -185,6 +186,7 @@ set(CONTEXT_SOURCES
     context/src/CeguiOverlayManager.cpp
     context/src/PSSMShadowCameraSetupB.cpp
     context/src/CubeMapCamera.cpp
+    context/src/ReflectionCamera.cpp
     )
 
 set(SOURCE_FILES_CONTEXT_LIB
