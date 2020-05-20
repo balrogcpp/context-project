@@ -359,7 +359,7 @@ void ContextManager::SetupOgreScenePreconditions() {
   } else if (graphics_filtration_ == "none") {
     Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_NONE);
   } else {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_ANISOTROPIC);
+    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
   }
 
   if (graphics_mipmap_count_ > 0) {
@@ -393,7 +393,7 @@ void ContextManager::SetupOgreScenePreconditions() {
     ogre_scene_manager_->setShadowTechnique(static_cast<Ogre::ShadowTechnique>(shadow_technique));
 
     if (graphics_shadows_material_ == "default") {
-      auto texture_type = Ogre::PF_FLOAT32_R;
+      auto texture_type = Ogre::PF_DEPTH;
 
       ogre_scene_manager_->setShadowTextureSettings(graphics_shadows_texture_resolution_,
                                                     graphics_shadows_texture_count_,
@@ -912,10 +912,10 @@ void ContextManager::SetupGlobal() {
   DotSceneLoaderB::GetSingleton().Setup();
 
   CubeMapCamera::GetSingleton().SetupGlobal();
-  CubeMapCamera::GetSingleton().Setup();
+//  CubeMapCamera::GetSingleton().Setup();
 
   ReflectionCamera::GetSingleton().SetupGlobal();
-  ReflectionCamera::GetSingleton().Setup();
+//  ReflectionCamera::GetSingleton().Setup();
 
   CeguiOverlayManager::GetSingleton().SetupGlobal();
   CeguiOverlayManager::GetSingleton().Setup();

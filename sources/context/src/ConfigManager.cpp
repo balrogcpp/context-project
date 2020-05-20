@@ -334,7 +334,7 @@ void ConfigManager::Setup() {
   document_.AddMember("graphics_fsaa", 0, allocator);
   document_.AddMember("graphics_debug_show_wireframe", false, allocator);
   document_.AddMember("graphics_gamma", false, allocator);
-  document_.AddMember("graphics_filtration", "anisotropic", allocator);
+  document_.AddMember("graphics_filtration", "bilinear", allocator);
   document_.AddMember("graphics_anisotropy_level", 4, allocator);
   document_.AddMember("graphics_mipmap_count", 10, allocator);
   document_.AddMember("graphics_shadows_pssm_0_resolution", 1024, allocator);
