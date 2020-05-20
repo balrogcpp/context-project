@@ -36,7 +36,6 @@ in vec2 oUv0;
 uniform vec4 screenSize;
 uniform sampler2D AttenuationSampler;
 
-
 void main()
 {
   const int radius = 3;
