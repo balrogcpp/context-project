@@ -1,6 +1,6 @@
 vertex_program PSSM/shadow_caster_vsGLSL glsl
 {
-	source pbr.vert
+	source caster.vert
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
 }
 
@@ -23,7 +23,7 @@ vertex_program PSSM/shadow_caster_vs unified
 
 fragment_program PSSM/shadow_caster_fsGLSL glsl
 {
-	source pbr.frag
+	source caster.frag
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
 }
 
