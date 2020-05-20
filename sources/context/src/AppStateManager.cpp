@@ -126,7 +126,7 @@ void AppStateManager::CleanupResources() {
     ContextManager::GetSingleton().GetOgreScenePtr()->getRootSceneNode()->removeAndDestroyAllChildren();
 
     ContextManager::GetSingleton().SetupOgreScenePreconditions();
-    CubeMapCamera::GetSingleton().Setup();
+//    CubeMapCamera::GetSingleton().Setup();
   }
 
   if (waiting_) {

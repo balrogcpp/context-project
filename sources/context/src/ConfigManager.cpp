@@ -345,7 +345,8 @@ void ConfigManager::Setup() {
   document_.AddMember("graphics_shadows_split_padding", 1.0, allocator);
   document_.AddMember("graphics_shadows_self_shadow", true, allocator);
   document_.AddMember("graphics_shadows_back_faces", true, allocator);
-  document_.AddMember("graphics_shadows_caster_material", "PSSM/Transparent/shadow_caster", allocator);
+  document_.AddMember("graphics_shadows_caster_material", "PSSM/shadow_caster", allocator);
+//  document_.AddMember("graphics_shadows_caster_material", "PSSM/Transparent/shadow_caster", allocator);
   document_.AddMember("graphics_shadows_receiver_material", std::string(), allocator);
   document_.AddMember("graphics_shadows_far_distance", 200.0f, allocator);
   document_.AddMember("graphics_shadows_pssm_0", 0.0f, allocator);

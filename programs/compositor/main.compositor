@@ -129,54 +129,6 @@ compositor Context/FilterX
     }
 }
 
-compositor Context/Compose
-{
-    technique
-    {
-        texture compose 1024 1024 PF_FLOAT16_RGB global_scope
-
-        target compose
-        {
-            pass render_quad
-            {
-                material Context/compose
-            }
-        }
-    }
-}
-
-compositor Context/BlurY
-{
-    technique
-    {
-        texture_ref compose Context/Compose compose
-
-        target compose
-        {
-            pass render_quad
-            {
-                material Context/blury
-            }
-        }
-    }
-}
-
-compositor Context/BlurX
-{
-    technique
-    {
-        texture_ref compose Context/Compose compose
-
-        target compose
-        {
-            pass render_quad
-            {
-                material Context/blurx
-            }
-        }
-    }
-}
-
 compositor Context/Modulate
 {
     technique

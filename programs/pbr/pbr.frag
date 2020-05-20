@@ -45,11 +45,8 @@ precision highp float;
 #endif
 
 #ifdef SHADOWCASTER_ALPHA
-in vec4 vUV;
-#ifdef HAS_BASECOLORMAP
+in vec2 vUV;
 uniform sampler2D uBaseColorSampler;
-uniform float uAlphaRejection;
-#endif
 #endif
 
 #ifndef SHADOWCASTER
@@ -328,56 +325,56 @@ float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSiz
     return shadow;
 }
 
-float calcDepthShadow_Poisson0(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
-{
-    // 4-sample PCF
-    uv.xyz /= uv.w;
-
-    uv.z = uv.z * 0.5 + 0.5;// convert -1..1 to 0..1
-    float shadow = 0.0;
-    float compare = uv.z;
-
-    float shadow_depth = texture2D(shadowMap, uv.xy).r;
-    shadow = (shadow_depth > compare) ? 1.0 : 0.0;
-
-    shadow = clamp(shadow + uShadowColour.r, 0, 1);
-
-    return shadow;
-}
-
-float calcDepthShadow_Poisson1(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
-{
-    // 4-sample PCF
-    uv.xyz /= uv.w;
-
-    uv.z = uv.z * 0.5 + 0.5;// convert -1..1 to 0..1
-    float shadow = 0.0;
-    float compare = uv.z;
-
-    float shadow_depth = texture2D(shadowMap, uv.xy).g;
-    shadow = (shadow_depth > compare) ? 1.0 : 0.0;
-
-    shadow = clamp(shadow + uShadowColour.r, 0, 1);
-
-    return shadow;
-}
-
-float calcDepthShadow_Poisson2(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
-{
-    // 4-sample PCF
-    uv.xyz /= uv.w;
-
-    uv.z = uv.z * 0.5 + 0.5;// convert -1..1 to 0..1
-    float shadow = 0.0;
-    float compare = uv.z;
-
-    float shadow_depth = texture2D(shadowMap, uv.xy).b;
-    shadow = (shadow_depth > compare) ? 1.0 : 0.0;
-
-    shadow = clamp(shadow + uShadowColour.r, 0, 1);
-
-    return shadow;
-}
+//float calcDepthShadow_Poisson0(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
+//{
+//    // 4-sample PCF
+//    uv.xyz /= uv.w;
+//
+//    uv.z = uv.z * 0.5 + 0.5;// convert -1..1 to 0..1
+//    float shadow = 0.0;
+//    float compare = uv.z;
+//
+//    float shadow_depth = texture2D(shadowMap, uv.xy).r;
+//    shadow = (shadow_depth > compare) ? 1.0 : 0.0;
+//
+//    shadow = clamp(shadow + uShadowColour.r, 0, 1);
+//
+//    return shadow;
+//}
+//
+//float calcDepthShadow_Poisson1(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
+//{
+//    // 4-sample PCF
+//    uv.xyz /= uv.w;
+//
+//    uv.z = uv.z * 0.5 + 0.5;// convert -1..1 to 0..1
+//    float shadow = 0.0;
+//    float compare = uv.z;
+//
+//    float shadow_depth = texture2D(shadowMap, uv.xy).g;
+//    shadow = (shadow_depth > compare) ? 1.0 : 0.0;
+//
+//    shadow = clamp(shadow + uShadowColour.r, 0, 1);
+//
+//    return shadow;
+//}
+//
+//float calcDepthShadow_Poisson2(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
+//{
+//    // 4-sample PCF
+//    uv.xyz /= uv.w;
+//
+//    uv.z = uv.z * 0.5 + 0.5;// convert -1..1 to 0..1
+//    float shadow = 0.0;
+//    float compare = uv.z;
+//
+//    float shadow_depth = texture2D(shadowMap, uv.xy).b;
+//    shadow = (shadow_depth > compare) ? 1.0 : 0.0;
+//
+//    shadow = clamp(shadow + uShadowColour.r, 0, 1);
+//
+//    return shadow;
+//}
 
 float calcPSSMDepthShadow()
 {
@@ -776,12 +773,12 @@ void main()
         vec3 color = NdotL * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib) * fSpotT * fAtten;
 
 #ifdef SHADOWRECEIVER
+        float attenuation = 1.0;
         if (uLightCastsShadowsArray[i] == 1.0) {
-            float shadow = calcPSSMDepthShadow();
-            total_colour += color * shadow;
-        } else {
-            total_colour += color;
+            attenuation = calcPSSMDepthShadow();
         }
+
+        total_colour += color * attenuation;
 #else
         total_colour += color;
 #endif
@@ -822,16 +819,13 @@ void main()
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
-    float alpha = texture2D(uBaseColorSampler, vUV.xy).a;
+    float alpha = texture2D(uBaseColorSampler, vUV).a;
 
     if (alpha < 0.5) {
         discard;
     }
 #endif
 
-    const float bias = 0.0001;
-    float depth = gl_FragCoord.z - bias;
-
-    gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
+    gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
 #endif //SHADOWCASTER
 }

@@ -32,12 +32,12 @@ precision highp float;
 attribute vec4 position;
 attribute vec2 uv0;
 
-uniform mat4 worldViewProjMatrix;
+uniform mat4 uMVPMatrix;
 
 out vec2 vUV;
 
 void main() {
 	vUV = uv0;
 
-	gl_Position = worldViewProjMatrix * position;
+	gl_Position = uMVPMatrix * position;
 }

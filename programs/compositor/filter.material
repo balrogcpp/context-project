@@ -1,17 +1,17 @@
-fragment_program Context/filter5y_fsGLSL glsl
+fragment_program Context/filter3y_fsGLSL glsl
 {
-	source filter5y.frag
+	source filter3y.frag
 }
 
-fragment_program Context/filter5y_fsGLSLES glsles
+fragment_program Context/filter3y_fsGLSLES glsles
 {
-	source filter5y.frag
+	source filter3y.frag
 }
 
-fragment_program Context/filter5y_fs unified
+fragment_program Context/filter3y_fs unified
 {
-	delegate Context/filter5y_fsGLSL
-	delegate Context/filter5y_fsGLSLES
+	delegate Context/filter3y_fsGLSL
+	delegate Context/filter3y_fsGLSLES
 
     default_params
     {
@@ -31,7 +31,7 @@ material Context/filterY
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filter5y_fs {}
+			fragment_program_ref Context/filter3y_fs {}
 
 			texture_unit
             {
@@ -42,20 +42,20 @@ material Context/filterY
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Context/filter5x_fsGLSL glsl
+fragment_program Context/filter3x_fsGLSL glsl
 {
-	source filter5x.frag
+	source filter3x.frag
 }
 
-fragment_program Context/filter5x_fsGLSLES glsles
+fragment_program Context/filter3x_fsGLSLES glsles
 {
-	source filter5x.frag
+	source filter3x.frag
 }
 
-fragment_program Context/filter5x_fs unified
+fragment_program Context/filter3x_fs unified
 {
-	delegate Context/filter5x_fsGLSL
-	delegate Context/filter5x_fsGLSLES
+	delegate Context/filter3x_fsGLSL
+	delegate Context/filter3x_fsGLSLES
 
     default_params
     {
@@ -75,7 +75,7 @@ material Context/filterX
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filter5x_fs {}
+			fragment_program_ref Context/filter3x_fs {}
 
 			texture_unit
             {

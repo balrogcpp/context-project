@@ -120,19 +120,22 @@ void Application::Loop() {
         fps_frames_ = 0;
       }
 
+      if (delta_time_ > 500000)
+        started_ = true;
+
       InputManager::GetSingleton().Capture();
 
       if (!paused_) {
         AppStateManager::GetSingleton().CleanupResources();
 
         Render();
+      }
 
 #ifdef DEBUG
-        if (global_verbose_) {
-          std::cout << std::flush;
-        }
-#endif
+      if (global_verbose_) {
+        std::cout << std::flush;
       }
+#endif
 
       auto duration_after_render = std::chrono::system_clock::now().time_since_epoch();
       long millis_after_render = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_render).count();
@@ -192,6 +195,8 @@ void Application::Go() {
     SetupGlobal();
     InputManager::GetSingletonPtr()->RegisterListener(this);
     ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
+
+    fullscreen_ = ContextManager::GetSingleton().IsFullscreen();
 
     if (!application_scene_file_.empty()) {
       Ogre::SceneLoaderManager::getSingleton().load(application_scene_file_,
@@ -266,13 +271,32 @@ void mouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle)
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
+  if (!started_)
+    return;
+
   if (evt.type == SDL_WINDOWEVENT) {
-    if (evt.window.event == SDL_WINDOWEVENT_LEAVE) {
-      paused_ = true;
-      global_target_fps_ = 1;
-    } else if (evt.window.event == SDL_WINDOWEVENT_ENTER) {
-      paused_ = false;
-      ConfigManager::Assign(global_target_fps_, "global_target_fps");
+    if (!fullscreen_) {
+      if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+        paused_ = true;
+        global_target_fps_ = 1;
+        global_lock_fps_ = true;
+      } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
+          || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
+        paused_ = false;
+        ConfigManager::Assign(global_target_fps_, "global_target_fps");
+        ConfigManager::Assign(global_lock_fps_, "global_lock_fps");
+      }
+    } else {
+      if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+        paused_ = true;
+        global_target_fps_ = 1;
+        global_lock_fps_ = true;
+      } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
+          || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
+        paused_ = false;
+        ConfigManager::Assign(global_target_fps_, "global_target_fps");
+        ConfigManager::Assign(global_lock_fps_, "global_lock_fps");
+      }
     }
   }
 }

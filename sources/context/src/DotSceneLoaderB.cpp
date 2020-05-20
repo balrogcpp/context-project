@@ -1074,7 +1074,6 @@ void DotSceneLoaderB::ProcessCamera(pugi::xml_node &xml_node, Ogre::SceneNode *p
   ContextManager::GetSingleton().GetCameraMan()->UnregCamera();
   ContextManager::GetSingleton().GetCameraMan()->RegCamera(parent);
   CubeMapCamera::GetSingleton().FreeCamera();
-  CubeMapCamera::GetSingleton().Setup();
 
   auto *actor = ogre_scene_manager_->createEntity("Actor", "Icosphere.mesh");
   actor->setCastShadows(false);
@@ -1314,38 +1313,26 @@ void DotSceneLoaderB::FixPbrShadowCaster(Ogre::MaterialPtr material) {
     material_list.push_back(material_name);
   }
 
-  if (ConfigManager::GetSingleton().GetBool("graphics_shadows_enable")) {
-    auto *pass = material->getTechnique(0)->getPass(0);
-    int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
+  auto *pass = material->getTechnique(0)->getPass(0);
+  int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
 
-    if (alpha_rejection > 0) {
-//      auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/Transparent/shadow_caster");
-//
-//      auto *texPtr3 = caster_material->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
-//      if (texPtr3) {
-//        texPtr3->setTextureFiltering(Ogre::TFO_NONE);
-//      }
+  auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+  auto new_caster = caster_material->clone("PSSM/shadow_caster" + std::to_string(material_list.size()));
+  material->getTechnique(0)->setShadowCasterMaterial(new_caster);
 
-//      auto new_caster = caster_material->clone("PSSM/Transparent/shadow_caster" + std::to_string(material_list.size()));
-//      material->getTechnique(0)->setShadowCasterMaterial(new_caster);
-//
-//      if (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
-//
-//        auto texture_albedo = pass->getTextureUnitState("Albedo");
-//        if (texture_albedo) {
-//          std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
-//
-//          auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
-//
-//          if (texPtr3) {
-//            texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-//            texPtr3->setTextureFiltering(Ogre::TFO_NONE);
-//            texPtr3->setTextureName(texture_name);
-//          }
-//        }
-//      }
-    } else {
-      material->getTechnique(0)->setShadowCasterMaterial("PSSM/shadow_caster");
+  if (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0 && alpha_rejection > 0) {
+
+    auto texture_albedo = pass->getTextureUnitState("Albedo");
+    if (texture_albedo) {
+      std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
+
+      auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
+
+      if (texPtr3) {
+        texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+        texPtr3->setTextureFiltering(Ogre::TFO_NONE);
+        texPtr3->setTextureName(texture_name);
+      }
     }
   }
 }
@@ -1508,7 +1495,8 @@ void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
 //            tu->setTextureName("c0/Context/Compose/compose");
             tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
             tu->setTextureBorderColour(Ogre::ColourValue::White);
-            tu->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_LINEAR);
+            tu->setTextureFiltering(Ogre::TFO_NONE);
+//            tu->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_LINEAR);
           }
 
           frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);

@@ -34,17 +34,15 @@ precision highp float;
 
 attribute vec4 position;
 uniform mat4 uMVPMatrix;
-uniform mat4 uModelMatrix;
 
 #ifdef SHADOWCASTER_ALPHA
-#ifdef HAS_UV
 attribute vec2 uv0;
-#endif
-
-out vec4 vUV;
+out vec2 vUV;
 #endif
 
 #ifndef SHADOWCASTER
+uniform mat4 uModelMatrix;
+
 #ifdef HAS_UV
 attribute vec2 uv0;
 #endif
@@ -161,11 +159,7 @@ void main()
 #else //SHADOWCASTER
 
 #ifdef SHADOWCASTER_ALPHA
-#ifdef HAS_UV
   vUV.xy = uv0;
-#else
-  vUV.xy = vec2(0.0);
-#endif
 #endif
 
   gl_Position = uMVPMatrix * mypos;

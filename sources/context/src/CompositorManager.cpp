@@ -288,23 +288,6 @@ void CompositorManager::Setup() {
   else
     Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Context/Main compositor\n");
 
-//  if (graphics_shadows_enable_) {
-//    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Compose"))
-//      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/Compose", true);
-//    else
-//      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Context/Compose compositor\n");
-//
-//    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/BlurY"))
-//      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/BlurY", true);
-//    else
-//      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Context/BlurY compositor\n");
-//
-//    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/BlurX"))
-//      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/BlurX", true);
-//    else
-//      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Context/BlurX compositor\n");
-//  }
-
   if (compositor_use_ssao_) {
     if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/GBuffer"))
       Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/GBuffer", true);

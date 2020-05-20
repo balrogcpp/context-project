@@ -393,7 +393,8 @@ void ContextManager::SetupOgreScenePreconditions() {
     ogre_scene_manager_->setShadowTechnique(static_cast<Ogre::ShadowTechnique>(shadow_technique));
 
     if (graphics_shadows_material_ == "default") {
-      auto texture_type = Ogre::PF_DEPTH;
+      auto texture_type = Ogre::PF_DEPTH16;
+//      auto texture_type = Ogre::PF_FLOAT32_R;
 
       ogre_scene_manager_->setShadowTextureSettings(graphics_shadows_texture_resolution_,
                                                     graphics_shadows_texture_count_,
@@ -555,15 +556,21 @@ void ContextManager::SetupSDL() {
   if (invalid)
     window_position_.f = true;
 
-  bool
-      factual_fullscreen = window_position_.w == actual_monitor_size_.w && window_position_.h == actual_monitor_size_.h;
+  bool factual_fullscreen = (window_position_.w == actual_monitor_size_.w && window_position_.h == actual_monitor_size_.h);
 
   uint32_t flags = 0x0;
 
   flags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
-  if (factual_fullscreen)
+  if (factual_fullscreen) {
     flags |= SDL_WINDOW_BORDERLESS;
+  }
+
+  if (window_position_.f) {
+    flags |= SDL_WINDOW_ALWAYS_ON_TOP;
+    flags |= SDL_WINDOW_INPUT_GRABBED;
+    flags |= SDL_WINDOW_MOUSE_FOCUS;
+  }
 
   sdl_window_ = SDL_CreateWindow(window_caption_.c_str(),
                                  SDL_WINDOWPOS_CENTERED,

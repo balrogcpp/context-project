@@ -100,9 +100,12 @@ class ContextManager : public Ogre::LogListener, public NoCopy {
     return ogre_viewport_;
   }
 
- public:
   [[nodiscard]] const std::string &GetWindowCaption() const {
     return window_caption_;
+  }
+
+  [[nodiscard]] const bool IsFullscreen() const {
+    return window_position_.f;
   }
 
   void SetCaption(const std::string &caption) {

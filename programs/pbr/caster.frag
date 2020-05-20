@@ -32,16 +32,16 @@ precision highp float;
 out vec4 gl_FragColor;
 #endif
 
-uniform sampler2D baseColorMap;
+uniform sampler2D uBaseColorSampler;
 
 in vec2 vUV;
 
 void main() {
-	vec4 baseColor = texture2D(baseColorMap, vUV);
+	vec4 baseColor = texture2D(uBaseColorSampler, vUV);
 
 	if (baseColor.a < 0.5) {
 		discard;
 	}
 
-	gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
+	gl_FragColor = vec4(gl_FragCoord.z - 0.0002, 0.0, 0.0, 1.0);
 }
