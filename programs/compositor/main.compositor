@@ -4,7 +4,6 @@ compositor Context/Main
     {
         texture scene target_width target_height PF_BYTE_RGBA chain_scope
 
-        // the scene we want to modulate
         target scene
         {
             input previous
@@ -98,7 +97,7 @@ compositor Context/Bloom
     }
 }
 
-compositor Context/Filter1
+compositor Context/FilterY
 {
     technique
     {
@@ -108,13 +107,13 @@ compositor Context/Filter1
         {
             pass render_quad
             {
-                material Context/filter1
+                material Context/filterY
             }
         }
     }
 }
 
-compositor Context/Filter2
+compositor Context/FilterX
 {
     technique
     {
@@ -124,7 +123,55 @@ compositor Context/Filter2
         {
             pass render_quad
             {
-                material Context/filter2
+                material Context/filterX
+            }
+        }
+    }
+}
+
+compositor Context/Compose
+{
+    technique
+    {
+        texture compose 1024 1024 PF_FLOAT16_RGB global_scope
+
+        target compose
+        {
+            pass render_quad
+            {
+                material Context/compose
+            }
+        }
+    }
+}
+
+compositor Context/BlurY
+{
+    technique
+    {
+        texture_ref compose Context/Compose compose
+
+        target compose
+        {
+            pass render_quad
+            {
+                material Context/blury
+            }
+        }
+    }
+}
+
+compositor Context/BlurX
+{
+    technique
+    {
+        texture_ref compose Context/Compose compose
+
+        target compose
+        {
+            pass render_quad
+            {
+                material Context/blurx
             }
         }
     }

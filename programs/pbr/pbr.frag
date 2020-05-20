@@ -76,9 +76,6 @@ uniform vec4 uLightAttenuationArray[MAX_LIGHTS];
 uniform vec3 uLightSpotParamsArray[MAX_LIGHTS];
 #ifdef SHADOWRECEIVER
 uniform float uLightCastsShadowsArray[MAX_LIGHTS];
-uniform float bias0;
-uniform float bias1;
-uniform float bias2;
 #endif
 uniform vec3 uFogColour;
 uniform vec4 uFogParams;
@@ -140,12 +137,24 @@ out vec4 gl_FragColor;
 #endif
 
 #ifdef SHADOWRECEIVER
-vec4 offsetSample(vec4 uv, vec2 offset, float invMapSize)
-{
-    return vec4(uv.xy + offset * invMapSize * uv.w, uv.z, uv.w);
-}
+//float VSM(sampler2D shadowMap, vec2 uv, float compare){
+//    vec2 moments = texture2D(shadowMap, uv).xy;
+//    float m1 = moments.x;
+//    float m2 = moments.y;
+//    float sigma2 = m2 - (m1 * m1);
+//
+//    float diff = compare - m1;
+//    if(diff > 0.0)
+//    {
+//        return sigma2 / (sigma2 + diff * diff);
+//    }
+//    else
+//    {
+//        return 1.0;
+//    }
+//}
 
-float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize, float bias)
+float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
 {
     // 4-sample PCF
     uv.xyz /= uv.w;
@@ -153,35 +162,37 @@ float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSiz
     uv.z = uv.z * 0.5 + 0.5; // convert -1..1 to 0..1
     float shadow = 0.0;
     float compare = uv.z;
-    int counter = 0;
 
-//    float shadow_depth = texture2DProj(shadowMap, uv).r - bias;
+//    float shadow_depth = texture2D(shadowMap, uv.xy).r;
 //    shadow = (shadow_depth > compare) ? 1.0 : 0.0;
 
+//    int counter = 0;
 //    const float radius = 1.0;
 //    for (float y = -radius; y < radius; y++)
 //    for (float x = -radius; x < radius; x++)
 //    {
 //        vec2 uv2 = uv.xy + vec2(x, y) * invShadowMapSize.xy;
-//        float depth = texture2D(shadowMap, uv2).r - bias;
+//        float depth = texture2D(shadowMap, uv2).r;
 //        if (depth > compare) {
 //            counter++;
 //        }
 //    }
 //    shadow = counter / ( (2.0 * radius) * (2.0 * radius));
 
+//    int counter = 0;
 //    const float radius = 1.0;
 //    for (float y = -radius; y <= radius; y++)
 //    for (float x = -radius; x <= radius; x++)
 //    {
 //        vec2 uv2 = uv.xy + vec2(x, y) * invShadowMapSize.xy;
-//        float depth = texture2D(shadowMap, uv2).r - bias;
+//        float depth = texture2D(shadowMap, uv2).r;
 //        if (depth > compare) {
 //            counter++;
 //        }
 //    }
 //    shadow = counter / ( (2.0 * radius + 1.0 ) * (2.0 * radius + 1.0));
 
+//    int counter = 0;
 //    const int iterations = 16;
 //    const vec2 poissonDisk16[16] = vec2[](
 //    vec2( -0.94201624, -0.39906216 ),
@@ -205,13 +216,14 @@ float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSiz
 //    for (int i = 0; i < iterations; i++)
 //    {
 //        vec2 uv2 = uv.xy + poissonDisk16[i] * invShadowMapSize.x;
-//        float shadow_depth = texture2D(shadowMap, uv2).r - bias;
+//        float shadow_depth = texture2D(shadowMap, uv2).r;
 //        if (shadow_depth > compare) {
 //          counter++;
 //        }
 //    }
 //    shadow = counter / iterations;
 
+//    int counter = 0;
 //    const float radius = 1.0;
 //    const int iterations = 16;
 //    const vec2 poissonDisk16[16] = vec2[](
@@ -238,13 +250,14 @@ float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSiz
 //    for (int i = 0; i < iterations; i++)
 //    {
 //        vec2 uv2 = uv.xy + vec2(x, y) * invShadowMapSize.xy + poissonDisk16[i] * invShadowMapSize.x;
-//        float depth = texture2D(shadowMap, uv2).r - bias;
+//        float depth = texture2D(shadowMap, uv2).r;
 //        if (depth > compare) {
 //          counter++;
 //        }
 //    }
 //    shadow = counter / ( iterations * (2 * radius + 1 ) * (2 * radius + 1));
 
+    int counter = 0;
     const float radius = 1.0;
     const int iterations = 4;
     const vec2 poissonDisk16[16] = vec2[](
@@ -271,12 +284,95 @@ float calcDepthShadow_Poisson(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSiz
     for (int i = 0; i < iterations; i++)
     {
         vec2 uv2 = uv.xy + vec2(x, y) * invShadowMapSize.xy + poissonDisk16[i] * invShadowMapSize.x;
-        float depth = texture2D(shadowMap, uv2).r - bias;
+        float depth = texture2D(shadowMap, uv2).r;
         if (depth > compare) {
           counter++;
         }
     }
     shadow = counter / ( iterations * (2 * radius ) * (2 * radius));
+
+//    shadow = VSM(shadowMap, uv.xy, compare);
+
+//    const float radius = 1.0;
+//    const int iterations = 16;
+//    const vec2 poissonDisk16[16] = vec2[](
+//    vec2( -0.94201624, -0.39906216 ),
+//    vec2( 0.94558609, -0.76890725 ),
+//    vec2( -0.094184101, -0.92938870 ),
+//    vec2( 0.34495938, 0.29387760 ),
+//    vec2( -0.91588581, 0.45771432 ),
+//    vec2( -0.81544232, -0.87912464 ),
+//    vec2( -0.38277543, 0.27676845 ),
+//    vec2( 0.97484398, 0.75648379 ),
+//    vec2( 0.44323325, -0.97511554 ),
+//    vec2( 0.53742981, -0.47373420 ),
+//    vec2( -0.26496911, -0.41893023 ),
+//    vec2( 0.79197514, 0.19090188 ),
+//    vec2( -0.24188840, 0.99706507 ),
+//    vec2( -0.81409955, 0.91437590 ),
+//    vec2( 0.19984126, 0.78641367 ),
+//    vec2( 0.14383161, -0.14100790 )
+//    );
+//
+//    for (float y = -radius; y < radius; y++)
+//    for (float x = -radius; x < radius; x++)
+//    for (int i = 0; i < iterations; i++)
+//    {
+//        vec2 uv2 = uv.xy + vec2(x, y) * invShadowMapSize.xy + poissonDisk16[i] * invShadowMapSize.x;
+//        shadow += VSM(shadowMap, uv2, compare);
+//    }
+//    shadow /= (iterations * (2 * radius ) * (2 * radius));
+//
+    shadow = clamp(shadow + uShadowColour.r, 0, 1);
+
+    return shadow;
+}
+
+float calcDepthShadow_Poisson0(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
+{
+    // 4-sample PCF
+    uv.xyz /= uv.w;
+
+    uv.z = uv.z * 0.5 + 0.5;// convert -1..1 to 0..1
+    float shadow = 0.0;
+    float compare = uv.z;
+
+    float shadow_depth = texture2D(shadowMap, uv.xy).r;
+    shadow = (shadow_depth > compare) ? 1.0 : 0.0;
+
+    shadow = clamp(shadow + uShadowColour.r, 0, 1);
+
+    return shadow;
+}
+
+float calcDepthShadow_Poisson1(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
+{
+    // 4-sample PCF
+    uv.xyz /= uv.w;
+
+    uv.z = uv.z * 0.5 + 0.5;// convert -1..1 to 0..1
+    float shadow = 0.0;
+    float compare = uv.z;
+
+    float shadow_depth = texture2D(shadowMap, uv.xy).g;
+    shadow = (shadow_depth > compare) ? 1.0 : 0.0;
+
+    shadow = clamp(shadow + uShadowColour.r, 0, 1);
+
+    return shadow;
+}
+
+float calcDepthShadow_Poisson2(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
+{
+    // 4-sample PCF
+    uv.xyz /= uv.w;
+
+    uv.z = uv.z * 0.5 + 0.5;// convert -1..1 to 0..1
+    float shadow = 0.0;
+    float compare = uv.z;
+
+    float shadow_depth = texture2D(shadowMap, uv.xy).b;
+    shadow = (shadow_depth > compare) ? 1.0 : 0.0;
 
     shadow = clamp(shadow + uShadowColour.r, 0, 1);
 
@@ -290,16 +386,29 @@ float calcPSSMDepthShadow()
     // calculate shadow
     if (camDepth <= pssmSplitPoints.x)
     {
-        return calcDepthShadow_Poisson(shadowMap0, lightSpacePosArray[0], inverseShadowmapSize0, bias0);
+        return calcDepthShadow_Poisson(shadowMap0, lightSpacePosArray[0], inverseShadowmapSize0);
     }
     else if (camDepth <= pssmSplitPoints.y)
     {
-        return calcDepthShadow_Poisson(shadowMap1, lightSpacePosArray[1], inverseShadowmapSize1, bias1);
+        return calcDepthShadow_Poisson(shadowMap1, lightSpacePosArray[1], inverseShadowmapSize1);
     }
     else
     {
-        return calcDepthShadow_Poisson(shadowMap2, lightSpacePosArray[2], inverseShadowmapSize2, bias2);
+        return calcDepthShadow_Poisson(shadowMap2, lightSpacePosArray[2], inverseShadowmapSize2);
     }
+
+//    if (camDepth <= pssmSplitPoints.x)
+//    {
+//        return calcDepthShadow_Poisson0(shadowMap0, lightSpacePosArray[0], inverseShadowmapSize0);
+//    }
+//    else if (camDepth <= pssmSplitPoints.y)
+//    {
+//        return calcDepthShadow_Poisson1(shadowMap0, lightSpacePosArray[1], inverseShadowmapSize0);
+//    }
+//    else
+//    {
+//        return calcDepthShadow_Poisson2(shadowMap0, lightSpacePosArray[2], inverseShadowmapSize0);
+//    }
 }
 #endif
 
@@ -539,7 +648,6 @@ void main()
 {
 #ifndef SHADOWCASTER
     vec3 v = normalize(uCameraPosition - vPosition);
-//    vec3 v = normalize(vPosition - uCameraPosition);
 
 #ifdef HAS_PARALLAX
     vec2 tex_coord = ParallaxMapping(vUV.xy, v);
@@ -607,9 +715,6 @@ void main()
     vec3 reflection = -normalize(reflect(v, n));
 
     vec3 total_colour = vec3(0.0);
-    vec3 total_colour2 = vec3(0.0);
-
-    float attenuation = 1.0;
 
     for (int i = 0; i < int(uLightCount); i++)
     {
@@ -673,8 +778,6 @@ void main()
 #ifdef SHADOWRECEIVER
         if (uLightCastsShadowsArray[i] == 1.0) {
             float shadow = calcPSSMDepthShadow();
-            total_colour2 += (shadow * color);
-
             total_colour += color * shadow;
         } else {
             total_colour += color;
@@ -709,13 +812,13 @@ void main()
     const float fresnelScale = 1.8;
     const float fresnelPower = 8.0;
 
-    float vector = dot(n, -v);
-    float fresnel = fresnelBias + fresnelScale * pow(1.0 + vector, fresnelPower);
+    float cosa = dot(n, -v);
+    float fresnel = fresnelBias + fresnelScale * pow(1.0 + cosa, fresnelPower);
 
     total_colour = mix(total_colour, reflectionColour, fresnel * metallic);
 #endif
 
-    gl_FragColor = vec4(total_colour, attenuation);
+    gl_FragColor = vec4(total_colour, alpha);
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
@@ -726,6 +829,9 @@ void main()
     }
 #endif
 
-    gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
+    const float bias = 0.0001;
+    float depth = gl_FragCoord.z - bias;
+
+    gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
 #endif //SHADOWCASTER
 }

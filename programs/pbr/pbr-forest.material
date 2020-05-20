@@ -54,13 +54,6 @@ fragment_program PbrForest_Shadowed_fs unified
 {
 	delegate PbrForest_Shadowed_fs_glsl
 	delegate PbrForest_Shadowed_fs_glsles
-
-	default_params
-	{
-	    param_named bias0 float 0.0001
-	    param_named bias1 float 0.001
-	    param_named bias2 float 0.001
-	}
 }
 
 material PbrForest_Shadowed

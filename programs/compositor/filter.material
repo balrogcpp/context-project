@@ -1,17 +1,17 @@
-fragment_program Context/filter1_fsGLSL glsl
+fragment_program Context/filter3y_fsGLSL glsl
 {
-	source filter1.frag
+	source filter3y.frag
 }
 
-fragment_program Context/filter1_fsGLSLES glsles
+fragment_program Context/filter3y_fsGLSLES glsles
 {
-	source filter1.frag
+	source filter3y.frag
 }
 
-fragment_program Context/filter1_fs unified
+fragment_program Context/filter3y_fs unified
 {
-	delegate Context/filter1_fsGLSL
-	delegate Context/filter1_fsGLSLES
+	delegate Context/filter3y_fsGLSL
+	delegate Context/filter3y_fsGLSLES
 
     default_params
     {
@@ -20,7 +20,7 @@ fragment_program Context/filter1_fs unified
     }
 }
 
-material Context/filter1
+material Context/filterY
 {
 	technique
 	{
@@ -31,7 +31,7 @@ material Context/filter1
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filter1_fs {}
+			fragment_program_ref Context/filter3y_fs {}
 
 			texture_unit
             {
@@ -42,20 +42,20 @@ material Context/filter1
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Context/filter2_fsGLSL glsl
+fragment_program Context/filter3x_fsGLSL glsl
 {
-	source filter2.frag
+	source filter3x.frag
 }
 
-fragment_program Context/filter2_fsGLSLES glsles
+fragment_program Context/filter3x_fsGLSLES glsles
 {
-	source filter2.frag
+	source filter3x.frag
 }
 
-fragment_program Context/filter2_fs unified
+fragment_program Context/filter3x_fs unified
 {
-	delegate Context/filter2_fsGLSL
-	delegate Context/filter2_fsGLSLES
+	delegate Context/filter3x_fsGLSL
+	delegate Context/filter3x_fsGLSLES
 
     default_params
     {
@@ -64,7 +64,7 @@ fragment_program Context/filter2_fs unified
     }
 }
 
-material Context/filter2
+material Context/filterX
 {
 	technique
 	{
@@ -75,7 +75,7 @@ material Context/filter2
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filter2_fs {}
+			fragment_program_ref Context/filter3x_fs {}
 
 			texture_unit
             {

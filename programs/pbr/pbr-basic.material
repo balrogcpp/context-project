@@ -48,13 +48,6 @@ fragment_program PBRBasicShadow_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
-
-	default_params
-	{
-	    param_named bias0 float 0.0001
-	    param_named bias1 float 0.001
-	    param_named bias2 float 0.001
-	}
 }
 
 fragment_program PBRBasicShadow_fs unified
