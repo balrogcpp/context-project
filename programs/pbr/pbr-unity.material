@@ -59,26 +59,19 @@ material PbrIbl/Unity
 fragment_program PbrExtIbl_Unity_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL
 }
 
 fragment_program PbrExtIbl_Unity_fs_glsles glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL
 }
 
 fragment_program PbrExtIbl_Unity_fs unified
 {
 	delegate PbrExtIbl_Unity_fs_glsl
 	delegate PbrExtIbl_Unity_fs_glsles
-
-	default_params
-	{
-	    param_named bias0 float 0.0001
-	    param_named bias1 float 0.0001
-	    param_named bias2 float 0.0001
-	}
 }
 
 material PbrExtIbl/Unity
@@ -92,15 +85,21 @@ material PbrExtIbl/Unity
             texture_unit Albedo {}
             texture_unit Normal {}
             texture_unit MetallicRougness {}
-            texture_unit AmbientOcclusion {}
-            texture_unit Emissive {}
+            texture_unit Emissive
+            {
+                texture black.dds
+            }
+            texture_unit AmbientOcclusion
+            {
+                texture white.dds
+            }
             texture_unit IBL_Diffuse
             {
                 texture diffuse.dds cubic
             }
             texture_unit IBL_Specular
             {
-                texture specular.dds cubic
+                texture OutputCube.dds cubic
             }
             texture_unit IBL_LUT
             {
@@ -172,51 +171,6 @@ material Pbr/Unity
         }
     }
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PbrReflection_Unity_fs_glsl glsl
-{
-	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,REFLECTION
-}
-
-fragment_program PbrReflection_Unity_fs_glsles glsles
-{
-	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,REFLECTION
-}
-
-fragment_program PbrReflection_Unity_fs unified
-{
-	delegate PbrReflection_Unity_fs_glsl
-	delegate PbrReflection_Unity_fs_glsles
-}
-
-
-material PbrReflection/Unity
-{
-    technique
-    {
-      pass
-      {
-            texture_unit Albedo {}
-            texture_unit Normal {}
-            texture_unit MetallicRougness {}
-            texture_unit ReflectionMap {}
-
-            vertex_program_ref PbrReflection_Shadowed_vs {}
-
-			fragment_program_ref PbrReflection_Unity_fs
-			{
-                param_named uBaseColorSampler   int 0
-                param_named uNormalSampler    int 1
-                param_named uMetallicRoughnessSampler int 2
-                param_named uReflectionMap int 3
-			}
-        }
-    }
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 fragment_program PbrExt_Unity_fs_glsl glsl
 {
@@ -265,6 +219,50 @@ material PbrExt/Unity
                 param_named uMetallicRoughnessSampler int 2
                 param_named uEmissiveSampler      int 3
                 param_named uOcclusionSampler   int 4
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program PbrReflection_Unity_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,REFLECTION,SHADOWRECEIVER
+}
+
+fragment_program PbrReflection_Unity_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,REFLECTION,SHADOWRECEIVER
+}
+
+fragment_program PbrReflection_Unity_fs unified
+{
+	delegate PbrReflection_Unity_fs_glsl
+	delegate PbrReflection_Unity_fs_glsles
+}
+
+
+material PbrReflection/Unity
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+            texture_unit Normal {}
+            texture_unit MetallicRougness {}
+            texture_unit ReflectionMap {}
+
+            vertex_program_ref PbrReflection_vs {}
+
+			fragment_program_ref PbrReflection_Unity_fs
+			{
+                param_named uBaseColorSampler   int 0
+                param_named uNormalSampler    int 1
+                param_named uMetallicRoughnessSampler int 2
+                param_named uReflectionMap int 3
 			}
         }
     }

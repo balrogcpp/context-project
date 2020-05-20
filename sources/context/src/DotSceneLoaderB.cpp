@@ -1419,9 +1419,6 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     frag_params->setNamedAutoConstant("uLightDiffuseScaledColourArray",
                                       Ogre::GpuProgramParameters::ACT_LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY,
                                       light_count);
-    frag_params->setNamedAutoConstant("uLightSpecularScalesColourArray",
-                                      Ogre::GpuProgramParameters::ACT_LIGHT_SPECULAR_COLOUR_POWER_SCALED_ARRAY,
-                                      light_count);
     frag_params->setNamedAutoConstant("uLightAttenuationArray",
                                       Ogre::GpuProgramParameters::ACT_LIGHT_ATTENUATION_ARRAY,
                                       light_count);
@@ -1435,7 +1432,7 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
 
     auto ibl_texture = pass->getTextureUnitState("IBL_Specular");
     if (ibl_texture) {
-      ibl_texture->setTexture(CubeMapCamera::GetSingleton().GetDyncubemap());
+//      ibl_texture->setTexture(CubeMapCamera::GetSingleton().GetDyncubemap());
     }
   }
 }
@@ -1718,6 +1715,8 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &xml_node, Ogre::SceneNode *pa
   if (!material.empty()) {
     ent->setMaterialName(material);
     FixPbrParams(material);
+    FixPbrShadowReceiver(material);
+    FixPbrShadowCaster(material);
   }
 
   if (reflection) {

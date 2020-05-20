@@ -72,7 +72,6 @@ uniform vec3 uLightPositionObjectSpaceArray[MAX_LIGHTS];
 uniform vec3 uLightPositionViewSpaceArray[MAX_LIGHTS];
 uniform vec3 uLightDirectionArray[MAX_LIGHTS];
 uniform vec3 uLightDiffuseScaledColourArray[MAX_LIGHTS];
-uniform vec3 uLightSpecularScalesColourArray[MAX_LIGHTS];
 uniform vec4 uLightAttenuationArray[MAX_LIGHTS];
 uniform vec3 uLightSpotParamsArray[MAX_LIGHTS];
 #ifdef SHADOWRECEIVER
@@ -531,6 +530,11 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
 
 #endif //SHADOWCASTER
 
+float mean(vec3 a)
+{
+    return (a.x + a.y + a.z) / 3;
+}
+
 void main()
 {
 #ifndef SHADOWCASTER
@@ -603,12 +607,9 @@ void main()
     vec3 reflection = -normalize(reflect(v, n));
 
     vec3 total_colour = vec3(0.0);
+    vec3 total_colour2 = vec3(0.0);
 
-#ifdef SHADOWRECEIVER
     float attenuation = 1.0;
-#else
-    float attenuation = 1.0;
-#endif
 
     for (int i = 0; i < int(uLightCount); i++)
     {
@@ -670,23 +671,23 @@ void main()
         vec3 color = NdotL * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib) * fSpotT * fAtten;
 
 #ifdef SHADOWRECEIVER
-        float shadow = 1.0;
         if (uLightCastsShadowsArray[i] == 1.0) {
-            shadow = calcPSSMDepthShadow();
-            attenuation = min(attenuation, shadow);
+            float shadow = calcPSSMDepthShadow();
+            total_colour2 += (shadow * color);
+
+            total_colour += color * shadow;
         } else {
-            attenuation = 1.0;
+            total_colour += color;
         }
-#endif
-
+#else
         total_colour += color;
+#endif
     }
-
         // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
-    total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection) / attenuation;
+    total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection);
 #else
-    total_colour += (uAmbientLightColour * baseColor.rgb) / attenuation;
+    total_colour += (uAmbientLightColour * baseColor.rgb);
 #endif
 
         // Apply optional PBR terms for additional (optional) shading

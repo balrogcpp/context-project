@@ -52,8 +52,6 @@ material Skybox
 	{
 		pass
 		{
-            cull_hardware none
-            cull_software none
             lighting off
             depth_write off
 

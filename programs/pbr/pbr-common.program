@@ -55,20 +55,20 @@ vertex_program PbrForest_Shadowed_vs unified
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program PbrReflection_Shadowed_vs_glsl glsl
+vertex_program PbrReflection_vs_glsl glsl
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,REFLECTION
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,REFLECTION,SHADOWRECEIVER
 }
 
-vertex_program PbrReflection_Shadowed_vs_glsles glsles
+vertex_program PbrReflection_vs_glsles glsles
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,REFLECTION
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,REFLECTION,SHADOWRECEIVER
 }
 
-vertex_program PbrReflection_Shadowed_vs unified
+vertex_program PbrReflection_vs unified
 {
-	delegate PbrReflection_Shadowed_vs_glsl
-	delegate PbrReflection_Shadowed_vs_glsles
+	delegate PbrReflection_vs_glsl
+	delegate PbrReflection_vs_glsles
 }
