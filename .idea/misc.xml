@@ -14,6 +14,7 @@
       <file path="$PROJECT_DIR$/thirdparty/external/windows-msvc/Release/sdk" />
     </libraryRoots>
     <excludeRoots>
+      <file path="$PROJECT_DIR$/android" />
       <file path="$PROJECT_DIR$/artifacts" />
       <file path="$PROJECT_DIR$/install" />
       <file path="$PROJECT_DIR$/thirdparty/external/unix-gnu/Debug/src" />

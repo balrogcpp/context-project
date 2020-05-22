@@ -24,7 +24,9 @@
 cmake_minimum_required(VERSION 3.15.1)
 
 find_package(OpenMP REQUIRED)
-find_package(OpenGL REQUIRED)
+if (NOT ANDROID)
+    find_package(OpenGL REQUIRED)
+endif()
 
 include(cotire)
 
