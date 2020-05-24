@@ -59,6 +59,7 @@ include(CheckIncludeFileCXX)
 include(CheckTypeSize)
 include(TestBigEndian)
 include(ProcessorCount)
+include(GetGitRevisionDescription)
 
 test_big_endian(CONTEXT_BIG_ENDIAN)
 if (${CONTEXT_BIG_ENDIAN})
@@ -367,8 +368,10 @@ set(CONTEXT_BIN_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
 set(CONTEXT_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/context CACHE PATH "")
 set(CONTEXT_INCLUDE_DIR ${CONTEXT_SOURCE_DIR}/context/include CACHE PATH "")
 
-set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install/${CONTEXT_BUILD_PLATFORM} CACHE PATH "")
-set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH})
+get_git_head_revision(GIT_REFSPEC GIT_SHA1)
+set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install  CACHE PATH "")
+set(CONTEXT_ZIP_NAME ContextProjectDemo-${CMAKE_BUILD_TYPE}-${GIT_SHA1} CACHE PATH "")
+set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
 
 if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
     message(SEND_ERROR "In-source builds are not allowed!")
@@ -515,7 +518,14 @@ add_custom_target(context-package
 add_custom_target(context-install
                   COMMAND ${CMAKE_COMMAND} --build . --target install
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/..
-                  COMMENT "Creating packages..."
+                  COMMENT "Installing..."
+                  VERBATIM
+                  )
+
+add_custom_target(context-install-zip
+                  COMMAND zip -r ${CONTEXT_ZIP_NAME}.zip ${CONTEXT_ZIP_NAME}
+                  WORKING_DIRECTORY ${CONTEXT_INSTALL_PATH}
+                  COMMENT "Create zip..."
                   VERBATIM
                   )
 

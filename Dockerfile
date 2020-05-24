@@ -177,7 +177,7 @@ ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 
 RUN useradd -m -d /home/user user
 
-WORKDIR /home/user/context
+WORKDIR /home/user/context-demo
 
 ADD sources ./sources
 ADD deploy ./deploy
@@ -191,6 +191,7 @@ ADD LICENSE .
 ADD programs ./programs
 ADD scenes ./scenes
 ADD gui ./gui
+ADD .git ./.git
 
 RUN mkdir -p ./build-mingw && mkdir -p ./build-gnu
 RUN chown -R user:user /home/user
@@ -198,13 +199,16 @@ RUN chown -R user:user /home/user
 USER user
 ENV HOME=/home/user
 
-WORKDIR /home/user/context/build-mingw
+WORKDIR /home/user/context-demo/build-mingw
 RUN cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja ..
 RUN cmake --build . --target context-deps > /dev/null
 RUN cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target context-package
+RUN cmake --build . --target install
 
-WORKDIR /home/user/context/build-gnu
+WORKDIR /home/user/context-demo/build-gnu
 RUN cmake -G Ninja ..
 RUN cmake --build . --target context-pdf > /dev/null
 RUN cmake --build . --target context-deps > /dev/null
 RUN cmake -G Ninja .. && cmake --build . --target context-package
+RUN cmake --build . --target install
+RUN cmake --build . --target context-install-zip
