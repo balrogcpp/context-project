@@ -1351,9 +1351,14 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
 
     auto ibl_texture = pass->getTextureUnitState("IBL_Specular");
     const bool realtime_cubemap = false;
-    if (ibl_texture && realtime_cubemap) {
-      CubeMapCamera::GetSingleton().Setup();
-      ibl_texture->setTexture(CubeMapCamera::GetSingleton().GetDyncubemap());
+    if (ibl_texture ) {
+      if (realtime_cubemap) {
+        CubeMapCamera::GetSingleton().Setup();
+        ibl_texture->setTexture(CubeMapCamera::GetSingleton().GetDyncubemap());
+      } else {
+        std::string skybox_cubemap = Ogre::MaterialManager::getSingleton().getByName("SkyBox")->getTechnique(0)->getPass(0)->getTextureUnitState("CubeMap")->getTextureName();
+        ibl_texture->setTextureName(skybox_cubemap);
+      }
     }
   }
 }
@@ -1579,6 +1584,7 @@ void DotSceneLoaderB::ProcessParticleSystem(pugi::xml_node &xml_node, Ogre::Scen
   // Process attributes
   std::string name = GetAttrib(xml_node, "name");
   std::string templateName = GetAttrib(xml_node, "template");
+  bool attachedCamera = GetAttribBool(xml_node, "attachedCamera", false);
 
   if (templateName.empty()) {
     templateName = GetAttrib(xml_node, "file"); // compatibility with old scenes
@@ -1587,7 +1593,18 @@ void DotSceneLoaderB::ProcessParticleSystem(pugi::xml_node &xml_node, Ogre::Scen
   // Create the particle system
   try {
     Ogre::ParticleSystem *pParticles = scene_manager_->createParticleSystem(name, templateName);
-    parent->attachObject(pParticles);
+    FixPbrParams(pParticles->getMaterialName());
+
+    const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
+    const Ogre::uint32 SURFACE_MASK = 0x00F;
+    const Ogre::uint32 WATER_MASK = 0xF00;
+    pParticles->setVisibilityFlags(WATER_MASK);
+
+    if (attachedCamera) {
+      ogre_camera_->getParentSceneNode()->createChildSceneNode(Ogre::Vector3{0, 10, 0})->attachObject(pParticles);
+    } else {
+      parent->attachObject(pParticles);
+    }
   }
   catch (Ogre::Exception &e) {
     Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error creating a particle system!");

@@ -117,6 +117,7 @@ set(CONTEXT_HEADERS
     context/include/PagedGeometryCommon.hpp
     context/include/CubeMapCamera.hpp
     context/include/ReflectionCamera.hpp
+    context/include/ParticlesManager.hpp
     )
 
 set(HEADER_FILES_CONTEXT_LIB
@@ -189,6 +190,7 @@ set(CONTEXT_SOURCES
     context/src/PSSMShadowCameraSetupB.cpp
     context/src/CubeMapCamera.cpp
     context/src/ReflectionCamera.cpp
+    context/src/ParticlesManager.cpp
     )
 
 set(SOURCE_FILES_CONTEXT_LIB

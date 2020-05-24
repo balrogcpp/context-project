@@ -49,5 +49,6 @@ INT WINAPI WinMain
 int main(int argc, char *argv[])
 #endif
 {
+//  return Context::Application::Main(std::make_shared<Demo::DemoDotAppState>());
   return Context::Application::Main(std::make_shared<Demo::MenuAppState>());
 }

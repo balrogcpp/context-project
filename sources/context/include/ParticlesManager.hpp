@@ -22,59 +22,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-vertex_program PSSM/no_shadow_vsGLSL glsl
-{
-	source noshadow.vert
-}
+#pragma once
 
-vertex_program PSSM/no_shadow_vsGLSLES glsles
-{
-	source noshadow.vert
-}
+#include "ManagerCommon.hpp"
 
-vertex_program PSSM/no_shadow_vs unified
-{
-	delegate PSSM/no_shadow_vsGLSL
-	delegate PSSM/no_shadow_vsGLSLES
+namespace Context {
 
-	default_params
-	{
-	    param_named_auto uMVPMatrix worldviewproj_matrix
-	}
-}
+class ParticlesManager : public ManagerCommon {
+ private:
+  static ParticlesManager ParticlesManagerSingleton;
 
-fragment_program PSSM/no_shadow_fsGLSL glsl
-{
-	source noshadow.frag
-}
+ public:
+  static ParticlesManager *GetSingletonPtr();
+  static ParticlesManager &GetSingleton();
 
-fragment_program PSSM/no_shadow_fsGLSLES glsles
-{
-	source noshadow.frag
-}
+ public:
+  void Setup() final;
+  void Reset() final;
 
-fragment_program PSSM/no_shadow_fs unified
-{
-	delegate PSSM/no_shadow_fsGLSL
-	delegate PSSM/no_shadow_fsGLSLES
+ public:
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
+};
 
-    default_params
-    {
-        param_named baseColor int 0
-    }
-}
-
-material PSSM/NoShadow
-{
-	technique
-	{
-		pass
-		{
-			vertex_program_ref PSSM/no_shadow_vs {}
-
-			fragment_program_ref PSSM/no_shadow_fs {}
-
-			texture_unit BaseColor {}
-		}
-	}
-}
+} //namespace Context

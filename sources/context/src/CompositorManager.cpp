@@ -102,7 +102,6 @@ class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
                                         unsigned short lodIndex,
                                         const Ogre::Renderable *rend) final {
 
-
     auto *pass = originalMaterial->getTechnique(0)->getPass(0);
     int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
 
@@ -139,65 +138,6 @@ class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
   Ogre::MaterialPtr mGBufRefMat2;
 };
 
-//----------------------------------------------------------------------------------------------------------------------
-class ShadowReceiverSchemeHandler : public Ogre::MaterialManager::Listener {
- public:
-  ShadowReceiverSchemeHandler() {
-    mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("PSSM/ShadowReceiver");
-    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("ShadowReceiver",
-                                                                     "PSSM/ShadowReceiver",
-                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-    mGBufRefMat->load();
-
-    mGBufRefMat2 = Ogre::MaterialManager::getSingleton().getByName("PSSM/NoShadow");
-    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("ShadowReceiver",
-                                                                     "PSSM/NoShadow",
-                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-    mGBufRefMat2->load();
-  }
-
-  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex,
-                                        const Ogre::String &schemeName,
-                                        Ogre::Material *originalMaterial,
-                                        unsigned short lodIndex,
-                                        const Ogre::Renderable *rend) final {
-    auto texture_name = originalMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->getTextureName();
-
-    if (originalMaterial->getReceiveShadows()) {
-
-      Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
-      gBufferTech->setSchemeName(schemeName);
-      Ogre::Pass *gbufPass = gBufferTech->createPass();
-      *gbufPass = *mGBufRefMat->getTechnique(0)->getPass(0);
-
-      auto *texPtr2 = gbufPass->getTextureUnitState("BaseColor");
-      texPtr2->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-      texPtr2->setTextureFiltering(Ogre::TFO_NONE);
-      texPtr2->setTextureName(texture_name);
-
-      return gBufferTech;
-    } else {
-      Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
-      gBufferTech->setSchemeName(schemeName);
-      Ogre::Pass *gbufPass = gBufferTech->createPass();
-      *gbufPass = *mGBufRefMat2->getTechnique(0)->getPass(0);
-
-      auto *texPtr2 = gbufPass->getTextureUnitState("BaseColor");
-      texPtr2->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-      texPtr2->setTextureFiltering(Ogre::TFO_NONE);
-      texPtr2->setTextureName(texture_name);
-
-      return gBufferTech;
-
-    }
-
-  }
-
- private:
-  Ogre::MaterialPtr mGBufRefMat;
-  Ogre::MaterialPtr mGBufRefMat2;
-};
-
 CompositorManager CompositorManager::CompositorManagerSingleton;
 //----------------------------------------------------------------------------------------------------------------------
 CompositorManager *CompositorManager::GetSingletonPtr() {
@@ -219,73 +159,71 @@ void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &ev
 void CompositorManager::CreateMotionBlurCompositor() {
   /// Motion blur effect
   Ogre::CompositorPtr comp3 = Ogre::CompositorManager::getSingleton().create(
-      "Motion Blur", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
+      "MotionBlur", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
   );
+  Ogre::CompositionTechnique *t = comp3->createTechnique();
   {
-    Ogre::CompositionTechnique *t = comp3->createTechnique();
+    Ogre::CompositionTechnique::TextureDefinition *def = t->createTextureDefinition("scene");
+    def->width = 0;
+    def->height = 0;
+    def->formatList.push_back(Ogre::PF_R8G8B8);
+  }
+  {
+    Ogre::CompositionTechnique::TextureDefinition *def = t->createTextureDefinition("sum");
+    def->width = 0;
+    def->height = 0;
+    def->formatList.push_back(Ogre::PF_R8G8B8);
+  }
+  {
+    Ogre::CompositionTechnique::TextureDefinition *def = t->createTextureDefinition("temp");
+    def->width = 0;
+    def->height = 0;
+    def->formatList.push_back(Ogre::PF_R8G8B8);
+  }
+  /// Render scene
+  {
+    Ogre::CompositionTargetPass *tp = t->createTargetPass();
+    tp->setInputMode(Ogre::CompositionTargetPass::IM_PREVIOUS);
+    tp->setOutputName("scene");
+  }
+  /// Initialisation pass for sum texture
+  {
+    Ogre::CompositionTargetPass *tp = t->createTargetPass();
+    tp->setInputMode(Ogre::CompositionTargetPass::IM_PREVIOUS);
+    tp->setOutputName("sum");
+    tp->setOnlyInitial(true);
+  }
+  /// Do the motion blur
+  {
+    Ogre::CompositionTargetPass *tp = t->createTargetPass();
+    tp->setInputMode(Ogre::CompositionTargetPass::IM_NONE);
+    tp->setOutputName("temp");
     {
-      Ogre::CompositionTechnique::TextureDefinition *def = t->createTextureDefinition("scene");
-      def->width = 0;
-      def->height = 0;
-      def->formatList.push_back(Ogre::PF_R8G8B8);
+      Ogre::CompositionPass *pass = tp->createPass(Ogre::CompositionPass::PT_RENDERQUAD);
+      pass->setMaterialName("Ogre/Compositor/Combine");
+      pass->setInput(0, "scene");
+      pass->setInput(1, "sum");
     }
+  }
+  /// Copy back sum texture
+  {
+    Ogre::CompositionTargetPass *tp = t->createTargetPass();
+    tp->setInputMode(Ogre::CompositionTargetPass::IM_NONE);
+    tp->setOutputName("sum");
     {
-      Ogre::CompositionTechnique::TextureDefinition *def = t->createTextureDefinition("sum");
-      def->width = 0;
-      def->height = 0;
-      def->formatList.push_back(Ogre::PF_R8G8B8);
+      Ogre::CompositionPass *pass = tp->createPass(Ogre::CompositionPass::PT_RENDERQUAD);
+      pass->setMaterialName("Ogre/Compositor/Copyback");
+      pass->setInput(0, "temp");
     }
+  }
+  /// Display result
+  {
+    Ogre::CompositionTargetPass *tp = t->getOutputTargetPass();
+    tp->setInputMode(Ogre::CompositionTargetPass::IM_NONE);
     {
-      Ogre::CompositionTechnique::TextureDefinition *def = t->createTextureDefinition("temp");
-      def->width = 0;
-      def->height = 0;
-      def->formatList.push_back(Ogre::PF_R8G8B8);
-    }
-    /// Render scene
-    {
-      Ogre::CompositionTargetPass *tp = t->createTargetPass();
-      tp->setInputMode(Ogre::CompositionTargetPass::IM_PREVIOUS);
-      tp->setOutputName("scene");
-    }
-    /// Initialisation pass for sum texture
-    {
-      Ogre::CompositionTargetPass *tp = t->createTargetPass();
-      tp->setInputMode(Ogre::CompositionTargetPass::IM_PREVIOUS);
-      tp->setOutputName("sum");
-      tp->setOnlyInitial(true);
-    }
-    /// Do the motion blur
-    {
-      Ogre::CompositionTargetPass *tp = t->createTargetPass();
-      tp->setInputMode(Ogre::CompositionTargetPass::IM_NONE);
-      tp->setOutputName("temp");
-      {
-        Ogre::CompositionPass *pass = tp->createPass(Ogre::CompositionPass::PT_RENDERQUAD);
-        pass->setMaterialName("Ogre/Compositor/Combine");
-        pass->setInput(0, "scene");
-        pass->setInput(1, "sum");
-      }
-    }
-    /// Copy back sum texture
-    {
-      Ogre::CompositionTargetPass *tp = t->createTargetPass();
-      tp->setInputMode(Ogre::CompositionTargetPass::IM_NONE);
-      tp->setOutputName("sum");
-      {
-        Ogre::CompositionPass *pass = tp->createPass(Ogre::CompositionPass::PT_RENDERQUAD);
-        pass->setMaterialName("Ogre/Compositor/Copyback");
-        pass->setInput(0, "temp");
-      }
-    }
-    /// Display result
-    {
-      Ogre::CompositionTargetPass *tp = t->getOutputTargetPass();
-      tp->setInputMode(Ogre::CompositionTargetPass::IM_NONE);
-      {
-        Ogre::CompositionPass *pass = tp->createPass(Ogre::CompositionPass::PT_RENDERQUAD);
-        pass->setMaterialName("Ogre/Compositor/MotionBlur");
-        pass->setInput(0, "sum");
-      }
+      Ogre::CompositionPass *pass = tp->createPass(Ogre::CompositionPass::PT_RENDERQUAD);
+      pass->setMaterialName("Ogre/Compositor/MotionBlur");
+      pass->setInput(0, "sum");
     }
   }
 }
@@ -354,8 +292,8 @@ void CompositorManager::Setup() {
   if (compositor_use_moution_blur_) {
     CreateMotionBlurCompositor();
 
-    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Motion Blur"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Motion Blur", true);
+    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "MotionBlur"))
+      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "MotionBlur", true);
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
   }
@@ -373,8 +311,7 @@ void CompositorManager::Setup() {
   if (compositor_use_hdr_) {
     if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/HDR")) {
       Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/HDR", true);
-    }
-    else {
+    } else {
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
     }
   }
