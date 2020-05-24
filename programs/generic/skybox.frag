@@ -52,14 +52,13 @@ precision highp float;
 #define in varying
 #define out varying
 #endif
+#if VERSION != 120
+out vec4 gl_FragColor;
+#endif
 
 uniform samplerCube cubemap;
 
 in vec3 TexCoords; // direction vector representing a 3D texture coordinate
-
-#if VERSION != 120
-out vec4 gl_FragColor;
-#endif
 
 #define MANUAL_SRGB
 #define SRGB_FAST_APPROXIMATION
@@ -134,6 +133,5 @@ vec3 LINEARtoSRGB(vec3 srgbIn)
 
 void main()
 {
-//    gl_FragColor = textureCube(cubemap, TexCoords);
     gl_FragColor = SRGBtoLINEAR(textureCube(cubemap, TexCoords));
 }

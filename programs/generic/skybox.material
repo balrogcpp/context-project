@@ -82,7 +82,7 @@ material Skybox
 			vertex_program_ref SkyBoxCustomVp {}
 			fragment_program_ref SkyBoxCustomFp {}
 
-			texture_unit
+			texture_unit CubeMap
 			{
 				texture OutputCube.dds cubic
 			}

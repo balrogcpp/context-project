@@ -36,7 +36,6 @@ fragment_program Ogre/Compositor/Combine_GLSLES_fp glsles
 fragment_program Ogre/Compositor/Combine_GLSL_fp glsl
 {
 	source combine.frag
-	syntax glsl150
 	default_params
 	{
 		param_named blur float 0.8
@@ -60,13 +59,9 @@ material Ogre/Compositor/Combine
 			depth_check off
             polygon_mode_overrideable false
 
-			fragment_program_ref Ogre/Compositor/Combine_fp
-			{
-			}
+			fragment_program_ref Ogre/Compositor/Combine_fp {}
 
-			vertex_program_ref Ogre/Compositor/StdQuad_Tex2a_vp
-			{
-			}
+			vertex_program_ref Ogre/Compositor/StdQuad_Tex2a_vp {}
 
 			texture_unit RT
 			{

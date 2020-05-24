@@ -52,6 +52,9 @@ precision highp float;
 #define in varying
 #define out varying
 #endif
+#if VERSION != 120
+out vec4 gl_FragColor;
+#endif
 
 #define MAX_LIGHTS 5
 
@@ -73,11 +76,6 @@ in vec2 vUV;
 in float depth;
 #ifdef FADER_ENABLE
 in float fade;
-#endif
-
-
-#if VERSION != 120
-out vec4 gl_FragColor;
 #endif
 
 vec4 offsetSample(vec4 uv, vec2 offset, float invMapSize)

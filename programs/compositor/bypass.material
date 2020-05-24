@@ -22,44 +22,45 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef GL_ES
-#define VERSION 120
-#version VERSION
-#define USE_TEX_LOD
-#if VERSION != 120
-#define attribute in
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-#else
-#define in varying
-#define out varying
-#endif
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : require
-#endif
-#else
-#version 100
-#extension GL_OES_standard_derivatives : enable
-#extension GL_EXT_shader_texture_lod: enable
-#define textureCubeLod textureLodEXT
-precision highp float;
-#define in varying
-#define out varying
-#endif
+fragment_program Context/bypass_fsGLSL glsl
+{
+	source bypass.frag
+}
 
-uniform sampler2D baseColor;
+fragment_program Context/bypass_fsGLSLES glsles
+{
+	source bypass.frag
+}
 
-in vec2 vUV;
+fragment_program Context/bypass_fs unified
+{
+	delegate Context/bypass_fsGLSL
+	delegate Context/bypass_fsGLSLES
 
-void main () {
-  if (texture2D(baseColor, vUV).a < 0.5)
-    discard;
+	default_params
+	{
+		param_named SceneSampler int 0
+	}
+}
 
-  gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+material Context/Bypass
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Context/bypass_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/Modulate/Hdr hdr
+                filtering none
+            }
+		}
+	}
 }

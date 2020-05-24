@@ -53,6 +53,9 @@ precision highp float;
 #define out varying
 #endif
 #extension GL_ARB_draw_buffers : enable
+#if VERSION != 120
+out vec4 gl_FragColor;
+#endif
 
 varying    vec3 oViewPos;
 varying    vec3 oNormal;
