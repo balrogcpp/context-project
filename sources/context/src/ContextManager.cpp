@@ -38,6 +38,8 @@ SOFTWARE.
 #include "CompositorManager.hpp"
 #include "CeguiOverlayManager.hpp"
 #include "PSSMShadowCameraSetupB.hpp"
+#include "CubeMapCamera.hpp"
+#include "ReflectionCamera.hpp"
 
 extern "C" {
 #include <SDL2/SDL_syswm.h>
@@ -64,30 +66,6 @@ void ContextManager::SetupConfigManager() {
   ConfigManager::Assign(rtss_perpixel_light_enable_, "rtss_perpixel_light_enable");
   ConfigManager::Assign(rtss_perpixel_fog_enable_, "rtss_perpixel_fog_enable");
   ConfigManager::Assign(rtss_cache_dir_, "rtss_cache_dir");
-
-  ConfigManager::Assign(application_init_with_plane_, "application_init_with_plane");
-  ConfigManager::Assign(application_plane_size_x_, "application_plane_size_x");
-  ConfigManager::Assign(application_plane_size_z_, "application_plane_size_z");
-  ConfigManager::Assign(application_plane_offset_, "application_plane_offset");
-  ConfigManager::Assign(application_plane_segments_x_, "application_plane_segments_x");
-  ConfigManager::Assign(application_plane_segments_z_, "application_plane_segments_z");
-  ConfigManager::Assign(application_plane_material_, "application_plane_material");
-
-  ConfigManager::Assign(application_init_with_plane2_, "application_init_with_plane2");
-  ConfigManager::Assign(application_plane2_size_x_, "application_plane2_size_x");
-  ConfigManager::Assign(application_plane2_size_z_, "application_plane2_size_z");
-  ConfigManager::Assign(application_plane2_offset_, "application_plane2_offset");
-  ConfigManager::Assign(application_plane2_segments_x_, "application_plane2_segments_x");
-  ConfigManager::Assign(application_plane2_segments_z_, "application_plane2_segments_z");
-  ConfigManager::Assign(application_plane2_material_, "application_plane2_material");
-
-  ConfigManager::Assign(application_init_with_plane3_, "application_init_with_plane3");
-  ConfigManager::Assign(application_plane3_size_x_, "application_plane3_size_x");
-  ConfigManager::Assign(application_plane3_size_z_, "application_plane3_size_z");
-  ConfigManager::Assign(application_plane3_offset_, "application_plane3_offset");
-  ConfigManager::Assign(application_plane3_segments_x_, "application_plane3_segments_x");
-  ConfigManager::Assign(application_plane3_segments_z_, "application_plane3_segments_z");
-  ConfigManager::Assign(application_plane3_material_, "application_plane3_material");
 
   ConfigManager::Assign(hlms_enable_, "hlms_enable");
   ConfigManager::Assign(hlms_force_enable_, "hlms_force_enable");
@@ -335,7 +313,7 @@ void ContextManager::InitGeneralResources() {
   Ogre::ResourceGroupManager::getSingletonPtr()->initialiseAllResourceGroups();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ContextManager::SetupOgreCamera() {
+void ContextManager::CreateOgreCamera() {
   ogre_camera_node_ = ogre_scene_manager_->getRootSceneNode()->createChildSceneNode();
 
   if (!ogre_scene_manager_->hasCamera("Camera")) {
@@ -368,7 +346,7 @@ void ContextManager::SetupOgreCamera() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupOgreScenePreconditions() {
-  SetupOgreCamera();
+  CreateOgreCamera();
 
   // Texture filtering
   if (graphics_filtration_ == "anisotropic") {
@@ -381,7 +359,7 @@ void ContextManager::SetupOgreScenePreconditions() {
   } else if (graphics_filtration_ == "none") {
     Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_NONE);
   } else {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_ANISOTROPIC);
+    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
   }
 
   if (graphics_mipmap_count_ > 0) {
@@ -415,7 +393,9 @@ void ContextManager::SetupOgreScenePreconditions() {
     ogre_scene_manager_->setShadowTechnique(static_cast<Ogre::ShadowTechnique>(shadow_technique));
 
     if (graphics_shadows_material_ == "default") {
-      auto texture_type = Ogre::PF_FLOAT32_R;
+//      auto texture_type = Ogre::PF_FLOAT16_R;
+//      auto texture_type = Ogre::PF_FLOAT32_R;
+      auto texture_type = Ogre::PF_FLOAT32_GR;
 
       ogre_scene_manager_->setShadowTextureSettings(graphics_shadows_texture_resolution_,
                                                     graphics_shadows_texture_count_,
@@ -577,15 +557,21 @@ void ContextManager::SetupSDL() {
   if (invalid)
     window_position_.f = true;
 
-  bool
-      factual_fullscreen = window_position_.w == actual_monitor_size_.w && window_position_.h == actual_monitor_size_.h;
+  bool factual_fullscreen = (window_position_.w == actual_monitor_size_.w && window_position_.h == actual_monitor_size_.h);
 
   uint32_t flags = 0x0;
 
   flags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
-  if (factual_fullscreen)
+  if (factual_fullscreen) {
     flags |= SDL_WINDOW_BORDERLESS;
+  }
+
+  if (window_position_.f) {
+    flags |= SDL_WINDOW_ALWAYS_ON_TOP;
+    flags |= SDL_WINDOW_INPUT_GRABBED;
+    flags |= SDL_WINDOW_MOUSE_FOCUS;
+  }
 
   sdl_window_ = SDL_CreateWindow(window_caption_.c_str(),
                                  SDL_WINDOWPOS_CENTERED,
@@ -889,85 +875,58 @@ void ContextManager::RestoreScreenSize() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupGlobal() {
-  std::cout << "SetupConfigManager...";
   SetupConfigManager();
-  std::cout << "Done\n";
-  std::cout << "SetupOgreLog...";
   SetupOgreLog();
-  std::cout << "Done\n";
-  std::cout << "SetupPath...";
   SetupPath();
-  std::cout << "Done\n";
-  std::cout << "SetupInputs...";
   SetupInputs();
-  std::cout << "SetupSDL...";
   SetupSDL();
-  std::cout << "Done\n";
-  std::cout << "SetupOGRE...";
   SetupOGRE();
-  std::cout << "Done\n";
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
   if (rtss_enable_) {
-    std::cout << "SetupRTSS...";
     SetupRTSS();
-    std::cout << "Done\n";
   }
 #endif
 
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
   if (rtss_enable_) {
-    std::cout << "SetupShaderResolver...";
     SetupShaderResolver();
-    std::cout << "Done\n";
   }
 #endif
 
-  std::cout << "InitGeneralResources...";
   InitGeneralResources();
-  std::cout << "Done\n";
 
-  std::cout << "StaticForestManager...";
   StaticForestManager::GetSingleton().SetupGlobal();
   StaticForestManager::GetSingleton().Setup();
-  std::cout << "Done\n";
 
-  std::cout << "PagedForestManager...";
   PagedForestManager::GetSingleton().SetupGlobal();
   PagedForestManager::GetSingleton().Setup();
-  std::cout << "Done\n";
 
   if (physics_enable_) {
-    std::cout << "PhysicsManager...";
     PhysicsManager::GetSingleton().SetupGlobal();
     PhysicsManager::GetSingleton().Setup();
-    std::cout << "Done\n";
   }
 
   if (sound_enable_) {
-    std::cout << "SoundManager...";
     SoundManager::GetSingleton().SetupGlobal();
     SoundManager::GetSingleton().Setup();
-    std::cout << "Done\n";
   }
 
-  std::cout << "CompositorManager...";
   CompositorManager::GetSingleton().SetupGlobal();
   CompositorManager::GetSingleton().Setup();
-  std::cout << "Done\n";
 
-  std::cout << "SetupOgreScenePreconditions...";
   SetupOgreScenePreconditions();
-  std::cout << "Done\n";
 
-  std::cout << "DotSceneLoaderB...";
   DotSceneLoaderB::GetSingleton().SetupGlobal();
   DotSceneLoaderB::GetSingleton().Setup();
-  std::cout << "Done\n";
 
-  std::cout << "CeguiOverlayManager...";
+  CubeMapCamera::GetSingleton().SetupGlobal();
+//  CubeMapCamera::GetSingleton().Setup();
+
+  ReflectionCamera::GetSingleton().SetupGlobal();
+//  ReflectionCamera::GetSingleton().Setup();
+
   CeguiOverlayManager::GetSingleton().SetupGlobal();
   CeguiOverlayManager::GetSingleton().Setup();
-  std::cout << "Done\n";
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::ResetGlobals() {
@@ -992,6 +951,12 @@ void ContextManager::ResetGlobals() {
 
   DotSceneLoaderB::GetSingleton().ResetGlobal();
   DotSceneLoaderB::GetSingleton().Reset();
+
+  CubeMapCamera::GetSingleton().ResetGlobal();
+  CubeMapCamera::GetSingleton().Reset();
+
+  ReflectionCamera::GetSingleton().ResetGlobal();
+  ReflectionCamera::GetSingleton().Reset();
 
   CeguiOverlayManager::GetSingleton().ResetGlobal();
   CeguiOverlayManager::GetSingleton().Reset();

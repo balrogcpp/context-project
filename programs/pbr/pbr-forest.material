@@ -1,33 +1,58 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Forest_fs_glsl glsl
+/*
+MIT License
+
+Copyright (c) 2020 Andrey Vasiliev
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+fragment_program PbrForest_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
 }
 
-fragment_program Forest_fs_glsles glsles
+fragment_program PbrForest_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
 }
 
-fragment_program Forest_fs unified
+fragment_program PbrForest_fs unified
 {
-	delegate Forest_fs_glsl
-	delegate Forest_fs_glsles
+	delegate PbrForest_fs_glsl
+	delegate PbrForest_fs_glsles
 }
 
-material Forest
+material PbrForest
 {
+    receive_shadows off
+
     technique
     {
       pass
       {
             texture_unit Albedo {}
 
-			vertex_program_ref Forest_vs {}
+			vertex_program_ref PbrForest_vs {}
 
-			fragment_program_ref Forest_fs
+			fragment_program_ref PbrForest_fs
 			{
                 param_named uBaseColorSampler   int 0
 			}
@@ -36,32 +61,25 @@ material Forest
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Forest_Shadowed_fs_glsl glsl
+fragment_program PbrForest_Shadowed_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
 }
 
-fragment_program Forest_Shadowed_fs_glsles glsles
+fragment_program PbrForest_Shadowed_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
 }
 
-fragment_program Forest_Shadowed_fs unified
+fragment_program PbrForest_Shadowed_fs unified
 {
-	delegate Forest_Shadowed_fs_glsl
-	delegate Forest_Shadowed_fs_glsles
-
-	default_params
-	{
-	    param_named bias0 float 0.0001
-	    param_named bias1 float 0.001
-	    param_named bias2 float 0.001
-	}
+	delegate PbrForest_Shadowed_fs_glsl
+	delegate PbrForest_Shadowed_fs_glsles
 }
 
-material Forest_Shadowed
+material PbrForest_Shadowed
 {
     technique
     {
@@ -69,9 +87,9 @@ material Forest_Shadowed
       {
             texture_unit Albedo {}
 
-			vertex_program_ref Forest_Shadowed_vs {}
+			vertex_program_ref PbrForest_Shadowed_vs {}
 
-			fragment_program_ref Forest_Shadowed_fs
+			fragment_program_ref PbrForest_Shadowed_fs
 			{
                 param_named uBaseColorSampler   int 0
 			}

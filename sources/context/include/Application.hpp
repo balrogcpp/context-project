@@ -61,10 +61,13 @@ class Application : public ManagerCommon {
 
  protected:
   DummyListener dummy_listener_;
-  bool running_ = true;
+  bool quit_ = true;
+  bool paused_ = false;
+  bool fullscreen_ = false;
   int fps_frames_ = 0;
   int global_target_fps_ = 60;
   long delta_time_ = 0;
+  bool started_ = false;
   long time_since_last_frame_ = 0;
   bool global_verbose_fps_ = false;
   bool global_verbose_ = false;

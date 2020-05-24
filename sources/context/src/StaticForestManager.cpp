@@ -42,7 +42,7 @@ struct GrassVertex {
 };
 #pragma pack(pop)
 //----------------------------------------------------------------------------------------------------------------------
-void StaticForestManager::createGrassMesh() {
+void StaticForestManager::CreateGrassMesh() {
   Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
 
   // Create a submesh with the grass material
@@ -51,7 +51,7 @@ void StaticForestManager::createGrassMesh() {
   Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
 
   DotSceneLoaderB::FixPbrParams(tmp);
-  DotSceneLoaderB::FixPbrShadow(tmp);
+  DotSceneLoaderB::FixPbrShadowReceiver(tmp);
 
   sm->setMaterialName(grassMaterial);
   sm->useSharedVertices = false;
@@ -151,6 +151,10 @@ void StaticForestManager::GenerateGrass() {
     mField->addEntity(grass, pos, ori, scale);
   }
 
+  static const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
+  static const Ogre::uint32 SURFACE_MASK = 0x00F;
+  static const Ogre::uint32 WATER_MASK = 0xF00;
+  mField->setVisibilityFlags(SUBMERGED_MASK);
 //  mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
   mField->build(); // build our static geometry (bake the grass into it)
   mField->setCastShadows(false);
@@ -158,11 +162,10 @@ void StaticForestManager::GenerateGrass() {
 //----------------------------------------------------------------------------------------------------------------------
 void StaticForestManager::Create() {
   DotSceneLoaderB::FixPbrParams("3D-Diggers/farn01");
-  DotSceneLoaderB::FixPbrShadow("3D-Diggers/farn01");
+  DotSceneLoaderB::FixPbrShadowReceiver("3D-Diggers/farn01");
   DotSceneLoaderB::FixPbrParams("3D-Diggers/farn02");
   DotSceneLoaderB::FixPbrParams("3D-Diggers/fir01");
   DotSceneLoaderB::FixPbrParams("3D-Diggers/fir02");
-  DotSceneLoaderB::FixPbrShadow("3D-Diggers/fir02");
   DotSceneLoaderB::FixPbrParams("3D-Diggers/plant1");
   DotSceneLoaderB::FixPbrParams("3D-Diggers/plant2");
 

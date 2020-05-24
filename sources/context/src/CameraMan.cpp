@@ -272,22 +272,37 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
     // orientation quaternion and the cameraYawNode's orientation
     // quaternion to translate the camera accoding to the camera's
     // orientation around the Y-axis and the X-axis.
-//    this->cameraNode->translate(cameraYawNode->getOrientation() *
-//                                    cameraPitchNode->getOrientation() *
-//                                    velocity_ * timeSinceLastFrame,
-//                                Ogre::SceneNode::TS_LOCAL);
-
-    Ogre::Vector3 tmp = camera_yaw_node_->getOrientation() *
+    Ogre::Vector3 velocity = camera_yaw_node_->getOrientation() *
                                     camera_pitch_node_->getOrientation() *
                                     velocity_;
     if (rigid_body_) {
       if (!velocity_.isZeroLength()) {
-        rigid_body_->setLinearVelocity({tmp.x, tmp.y, tmp.z});
+        rigid_body_->setLinearVelocity({velocity.x, velocity.y, velocity.z});
+//        rigid_body_->applyCentralImpulse({velocity.x, velocity.y, velocity.z});
         rigid_body_->setFriction(0.0);
       } else {
         rigid_body_->setFriction(10.0);
       }
     }
+
+    float speed = rigid_body_->getLinearVelocity().length();
+
+    if (speed > (run_speed_ + run_speed_) / 2.0f) {
+      animation_time_ += evt.timeSinceLastFrame;
+    }
+    else {
+      animation_time_ -= evt.timeSinceLastFrame;
+    }
+
+    if (animation_time_ > anim_duration_) {
+      animation_time_ = anim_duration_;
+    } else if (animation_time_ < 0.0f) {
+      animation_time_ = 0.0f;
+    }
+
+//    std::cout << speed << std::endl;
+
+//    ogre_camera_->setFOVy(Ogre::Radian(1.0 + 0.25 * (animation_time_ / anim_duration_)));
 
     // Angle of rotation around the X-axis.
     pitchAngle = (2 * Ogre::Degree(Ogre::Math::ACos(this->camera_pitch_node_->getOrientation().w)).valueDegrees());
@@ -307,11 +322,6 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
         this->camera_pitch_node_->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f),
                                                                   -Ogre::Math::Sqrt(0.5f), 0, 0));
     }
-
-//    cameraNode->translate(velocity * timeSinceLastFrame);
-//    float x = cameraNode->getPosition().x;
-//    float z = cameraNode->getPosition().z;
-//    cameraNode->setPosition(x, DotSceneLoaderB::GetHeigh(x, z) + heigh_, z);
 
     dx_ = 0;
     dy_ = 0;
@@ -471,10 +481,14 @@ void CameraMan::KeyUp(SDL_Keycode sym) {
   }
 }
 btRigidBody *CameraMan::GetRigidBody() const {
-  return rigid_body_;
+  if (camera_style_ == CameraStyle::FPS)
+    return rigid_body_;
+  else
+    return nullptr;
 }
 void CameraMan::SetRigidBody(btRigidBody *rigid_body) {
-  rigid_body_ = rigid_body;
+  if (camera_style_ == CameraStyle::FPS)
+    rigid_body_ = rigid_body;
 }
 
 } //namespace Context

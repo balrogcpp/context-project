@@ -92,19 +92,20 @@ void Application::Reset() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Quit() {
-  running_ = false;
+  quit_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::WaitFPS() {
   long delay = static_cast<long> ((1000000 / global_target_fps_) - time_since_last_frame_);
 
   if (delay > 0) {
-    std::this_thread::sleep_for(std::chrono::microseconds(delay));
+    std::this_thread::sleep_for
+    (std::chrono::microseconds(delay));
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Loop() {
-  while (running_) {
+  while (quit_) {
     if (AppStateManager::GetSingleton().cur_state_) {
 
       auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
@@ -119,17 +120,22 @@ void Application::Loop() {
         fps_frames_ = 0;
       }
 
-      AppStateManager::GetSingleton().CleanupResources();
+      if (delta_time_ > 500000)
+        started_ = true;
+
       InputManager::GetSingleton().Capture();
 
-      Render();
+      if (!paused_) {
+        AppStateManager::GetSingleton().CleanupResources();
+
+        Render();
+      }
 
 #ifdef DEBUG
       if (global_verbose_) {
         std::cout << std::flush;
       }
 #endif
-
 
       auto duration_after_render = std::chrono::system_clock::now().time_since_epoch();
       long millis_after_render = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_render).count();
@@ -156,7 +162,7 @@ void Application::Loop() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go() {
-  running_ = false;
+  quit_ = false;
 
   ConfigManager::GetSingleton().Setup();
   std::ios_base::sync_with_stdio(false);
@@ -190,6 +196,8 @@ void Application::Go() {
     InputManager::GetSingletonPtr()->RegisterListener(this);
     ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
 
+    fullscreen_ = ContextManager::GetSingleton().IsFullscreen();
+
     if (!application_scene_file_.empty()) {
       Ogre::SceneLoaderManager::getSingleton().load(application_scene_file_,
                                                     Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
@@ -214,7 +222,7 @@ void Application::Go() {
 
     AppStateManager::GetSingleton().cur_state_->Setup();
 
-    running_ = true;
+    quit_ = true;
 
     Loop();
 
@@ -258,13 +266,39 @@ void Application::KeyUp(SDL_Keycode sym) {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
-
 void mouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
-  //
+  if (!started_)
+    return;
+
+  if (evt.type == SDL_WINDOWEVENT) {
+    if (!fullscreen_) {
+      if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+        paused_ = true;
+        global_target_fps_ = 1;
+        global_lock_fps_ = true;
+      } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
+          || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
+        paused_ = false;
+        ConfigManager::Assign(global_target_fps_, "global_target_fps");
+        ConfigManager::Assign(global_lock_fps_, "global_lock_fps");
+      }
+    } else {
+      if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+        paused_ = true;
+        global_target_fps_ = 1;
+        global_lock_fps_ = true;
+      } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
+          || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
+        paused_ = false;
+        ConfigManager::Assign(global_target_fps_, "global_target_fps");
+        ConfigManager::Assign(global_lock_fps_, "global_lock_fps");
+      }
+    }
+  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::User(Uint8 type, int code, void *data1, void *data2) {

@@ -24,7 +24,9 @@
 cmake_minimum_required(VERSION 3.15.1)
 
 find_package(OpenMP REQUIRED)
-find_package(OpenGL REQUIRED)
+if (NOT ANDROID)
+    find_package(OpenGL REQUIRED)
+endif()
 
 include(cotire)
 
@@ -112,7 +114,11 @@ set(CONTEXT_HEADERS
     context/include/PropertyMaps.hpp
     context/include/CeguiOverlayManager.hpp
     context/include/PSSMShadowCameraSetupB.hpp
-    context/include/PagedGeometryCommon.hpp)
+    context/include/PagedGeometryCommon.hpp
+    context/include/CubeMapCamera.hpp
+    context/include/ReflectionCamera.hpp
+    context/include/ParticlesManager.hpp
+    )
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
@@ -182,6 +188,9 @@ set(CONTEXT_SOURCES
     context/src/PropertyMaps.cpp
     context/src/CeguiOverlayManager.cpp
     context/src/PSSMShadowCameraSetupB.cpp
+    context/src/CubeMapCamera.cpp
+    context/src/ReflectionCamera.cpp
+    context/src/ParticlesManager.cpp
     )
 
 set(SOURCE_FILES_CONTEXT_LIB

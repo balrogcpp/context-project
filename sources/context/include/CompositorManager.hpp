@@ -33,7 +33,6 @@ class Material;
 namespace Context {
 class GBufferSchemeHandler;
 class DepthSchemeHandler;
-class ShadowReceiverSchemeHandler;
 }
 
 namespace Context {
@@ -71,7 +70,6 @@ class CompositorManager : public ManagerCommon {
 
   std::unique_ptr<GBufferSchemeHandler> ssaog_buffer_scheme_handler_;
   std::unique_ptr<DepthSchemeHandler> depth_scheme_handler_;
-  std::unique_ptr<ShadowReceiverSchemeHandler> shadow_receiever_scheme_handler_;
 
   //SSAO
   bool graphics_shadows_enable_ = true;

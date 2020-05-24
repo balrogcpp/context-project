@@ -1,30 +1,49 @@
+/*
+MIT License
+
+Copyright (c) 2020 Andrey Vasiliev
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 fragment_program PbrIbl_Unreal_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,USE_IBL
 }
 
 fragment_program PbrIbl_Unreal_fs_glsles glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,USE_IBL
 }
 
 fragment_program PbrIbl_Unreal_fs unified
 {
 	delegate PbrIbl_Unreal_fs_glsl
 	delegate PbrIbl_Unreal_fs_glsles
-
-	default_params
-	{
-	    param_named bias0 float 0.0001
-	    param_named bias1 float 0.0001
-	    param_named bias2 float 0.0001
-	}
 }
 
 material PbrIbl/Unreal
 {
+    receive_shadows off
+
     technique
     {
       pass
@@ -33,15 +52,89 @@ material PbrIbl/Unreal
             texture_unit Normal {}
             texture_unit Metalness {}
             texture_unit Roughness {}
-            texture_unit Emissive {}
-            texture_unit AmbientOcclusion {}
-            texture_unit IBL_Diffuse {}
-            texture_unit IBL_Specular {}
-            texture_unit IBL_LUT {}
+            texture_unit IBL_Diffuse
+            {
+                texture diffuse.dds cubic
+            }
+            texture_unit IBL_Specular
+            {
+                texture OutputCube.dds cubic
+            }
+            texture_unit IBL_LUT
+            {
+                texture brdfLUT.dds
+            }
 
-            vertex_program_ref PBR_vs {}
+            vertex_program_ref Pbr_vs {}
 
 			fragment_program_ref PbrIbl_Unreal_fs
+			{
+                param_named uBaseColorSampler   int 0
+                param_named uNormalSampler    int 1
+                param_named uMetallicSampler int 2
+                param_named uRoughnessSampler int 3
+                param_named uDiffuseEnvSampler  int 4
+                param_named uSpecularEnvSampler int 5
+                param_named ubrdfLUT            int 6
+			}
+        }
+    }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program PbrExtIbl_Unreal_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
+}
+
+fragment_program PbrExtIbl_Unreal_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
+}
+
+fragment_program PbrExtIbl_Unreal_fs unified
+{
+	delegate PbrExtIbl_Unreal_fs_glsl
+	delegate PbrExtIbl_Unreal_fs_glsles
+}
+
+material PbrExtIbl/Unreal
+{
+    receive_shadows off
+
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+            texture_unit Normal {}
+            texture_unit Metalness {}
+            texture_unit Roughness {}
+            texture_unit Emissive
+            {
+                texture black.dds
+            }
+            texture_unit AmbientOcclusion
+            {
+                texture white.dds
+            }
+            texture_unit IBL_Diffuse
+            {
+                texture diffuse.dds cubic
+            }
+            texture_unit IBL_Specular
+            {
+                texture OutputCube.dds cubic
+            }
+            texture_unit IBL_LUT
+            {
+                texture brdfLUT.dds
+            }
+
+            vertex_program_ref Pbr_vs {}
+
+			fragment_program_ref PbrExtIbl_Unreal_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
@@ -58,32 +151,26 @@ material PbrIbl/Unreal
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PBR_Unreal_fs_glsl glsl
+fragment_program Pbr_Unreal_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,SHADOWRECEIVER
 }
 
-fragment_program PBR_Unreal_fs_glsles glsles
+fragment_program Pbr_Unreal_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,SHADOWRECEIVER
-
-	default_params
-	{
-	    param_named bias0 float 0.0001
-	    param_named bias1 float 0.0001
-	    param_named bias2 float 0.0001
-	}
 }
 
-fragment_program PBR_Unreal_fs unified
+fragment_program Pbr_Unreal_fs unified
 {
-	delegate PBR_Unreal_fs_glsl
-	delegate PBR_Unreal_fs_glsles
+	delegate Pbr_Unreal_fs_glsl
+	delegate Pbr_Unreal_fs_glsles
 }
 
-material PBR/Unreal
+
+material Pbr/Unreal
 {
     technique
     {
@@ -94,9 +181,9 @@ material PBR/Unreal
             texture_unit Metalness {}
             texture_unit Roughness {}
 
-            vertex_program_ref PBR_vs {}
+            vertex_program_ref Pbr_vs {}
 
-			fragment_program_ref PBR_Unreal_fs
+			fragment_program_ref Pbr_Unreal_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
@@ -106,7 +193,6 @@ material PBR/Unreal
         }
     }
 }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 fragment_program PbrExt_Unreal_fs_glsl glsl
 {
@@ -124,14 +210,8 @@ fragment_program PbrExt_Unreal_fs unified
 {
 	delegate PbrExt_Unreal_fs_glsl
 	delegate PbrExt_Unreal_fs_glsles
-
-	default_params
-	{
-	    param_named bias0 float 0.0001
-	    param_named bias1 float 0.0001
-	    param_named bias2 float 0.0001
-	}
 }
+
 
 material PbrExt/Unreal
 {
@@ -146,7 +226,7 @@ material PbrExt/Unreal
             texture_unit Emissive {}
             texture_unit AmbientOcclusion {}
 
-            vertex_program_ref PBR_vs {}
+            vertex_program_ref Pbr_vs {}
 
 			fragment_program_ref PbrExt_Unreal_fs
 			{
@@ -156,6 +236,51 @@ material PbrExt/Unreal
                 param_named uRoughnessSampler int 3
                 param_named uEmissiveSampler      int 4
                 param_named uOcclusionSampler   int 5
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program PbrReflection_Unreal_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,REFLECTION,SHADOWRECEIVER
+}
+
+fragment_program PbrReflection_Unreal_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,HAS_SEPARATE_ROUGHNESSMAP,REFLECTION,SHADOWRECEIVER
+}
+
+fragment_program PbrReflection_Unreal_fs unified
+{
+	delegate PbrReflection_Unreal_fs_glsl
+	delegate PbrReflection_Unreal_fs_glsles
+}
+
+
+material PbrReflection/Unreal
+{
+    technique
+    {
+      pass
+      {
+            texture_unit Albedo {}
+            texture_unit Normal {}
+            texture_unit Metalness {}
+            texture_unit Roughness {}
+
+            vertex_program_ref PbrReflection_vs {}
+
+			fragment_program_ref PbrReflection_Unreal_fs
+			{
+                param_named uBaseColorSampler   int 0
+                param_named uNormalSampler    int 1
+                param_named uMetallicSampler int 2
+                param_named uRoughnessSampler int 3
+                param_named uReflectionMap int 4
 			}
         }
     }

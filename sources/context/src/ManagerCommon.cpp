@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include "ManagerCommon.hpp"
 #include "InputManager.hpp"
+#include "ContextManager.hpp"
 
 namespace Context {
 

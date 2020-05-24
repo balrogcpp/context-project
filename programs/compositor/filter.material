@@ -1,17 +1,41 @@
-fragment_program Context/filter1_fsGLSL glsl
+/*
+MIT License
+
+Copyright (c) 2020 Andrey Vasiliev
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+fragment_program Context/filter3y_fsGLSL glsl
 {
-	source filter1.frag
+	source filter3y.frag
 }
 
-fragment_program Context/filter1_fsGLSLES glsles
+fragment_program Context/filter3y_fsGLSLES glsles
 {
-	source filter1.frag
+	source filter3y.frag
 }
 
-fragment_program Context/filter1_fs unified
+fragment_program Context/filter3y_fs unified
 {
-	delegate Context/filter1_fsGLSL
-	delegate Context/filter1_fsGLSLES
+	delegate Context/filter3y_fsGLSL
+	delegate Context/filter3y_fsGLSLES
 
     default_params
     {
@@ -20,7 +44,7 @@ fragment_program Context/filter1_fs unified
     }
 }
 
-material Context/filter1
+material Context/filterY
 {
 	technique
 	{
@@ -31,7 +55,7 @@ material Context/filter1
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filter1_fs {}
+			fragment_program_ref Context/filter3y_fs {}
 
 			texture_unit
             {
@@ -42,20 +66,20 @@ material Context/filter1
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Context/filter2_fsGLSL glsl
+fragment_program Context/filter3x_fsGLSL glsl
 {
-	source filter2.frag
+	source filter3x.frag
 }
 
-fragment_program Context/filter2_fsGLSLES glsles
+fragment_program Context/filter3x_fsGLSLES glsles
 {
-	source filter2.frag
+	source filter3x.frag
 }
 
-fragment_program Context/filter2_fs unified
+fragment_program Context/filter3x_fs unified
 {
-	delegate Context/filter2_fsGLSL
-	delegate Context/filter2_fsGLSLES
+	delegate Context/filter3x_fsGLSL
+	delegate Context/filter3x_fsGLSLES
 
     default_params
     {
@@ -64,7 +88,7 @@ fragment_program Context/filter2_fs unified
     }
 }
 
-material Context/filter2
+material Context/filterX
 {
 	technique
 	{
@@ -75,7 +99,7 @@ material Context/filter2
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filter2_fs {}
+			fragment_program_ref Context/filter3x_fs {}
 
 			texture_unit
             {

@@ -33,6 +33,8 @@ SOFTWARE.
 #include "TerrainMaterialGeneratorB.hpp"
 #include "ShaderResolver.hpp"
 #include "PSSMShadowCameraSetupB.hpp"
+#include "CubeMapCamera.hpp"
+#include "ReflectionCamera.hpp"
 
 namespace {
 //----------------------------------------------------------------------------------------------------------------------
@@ -194,16 +196,20 @@ DotSceneLoaderB *DotSceneLoaderB::GetSingletonPtr() {
 //----------------------------------------------------------------------------------------------------------------------
 float DotSceneLoaderB::GetHeigh(float x, float z) {
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-  if (x < -terrain_box_.x && x > terrain_box_.y && z < terrain_box_.z && z > terrain_box_.w)
-    return 0.0f;
+  if (terrain_created_) {
+    if (x < -terrain_box_.x && x > terrain_box_.y && z < terrain_box_.z && z > terrain_box_.w)
+      return 0.0f;
 
-  float size = std::sqrt(heigh_data_.size());
-  int x_ = (x - terrain_box_.x) * size / (terrain_box_.y - terrain_box_.x);
-  int z_ = (z - terrain_box_.z) * size / (terrain_box_.w - terrain_box_.z);
-  z_ = size - z_ - 1;
-  return DotSceneLoaderB::GetSingleton().heigh_data_[x_ + z_ * size];
+    float size = std::sqrt(heigh_data_.size());
+    int x_ = (x - terrain_box_.x) * size / (terrain_box_.y - terrain_box_.x);
+    int z_ = (z - terrain_box_.z) * size / (terrain_box_.w - terrain_box_.z);
+    z_ = size - z_ - 1;
+    return DotSceneLoaderB::GetSingleton().heigh_data_[x_ + z_ * size];
+  } else {
+    return 0.0f;
+  }
 #else
-  return 0;
+  return 0.0f;
 #endif
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -239,6 +245,8 @@ void DotSceneLoaderB::Reset() {
     ogre_terrain_group_->removeAllTerrains();
     ogre_terrain_group_.reset();
   }
+
+  terrain_created_ = false;
 #endif
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -350,86 +358,6 @@ void DotSceneLoaderB::ProcessScene(pugi::xml_node &xml_root) {
     message += ", author " + std::string(xml_root.attribute("author").value());
 
   Ogre::LogManager::getSingleton().logMessage(message);
-
-  if (application_init_with_plane_) {
-    Ogre::MeshManager::getSingleton().createPlane("floor",
-                                                  Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                                                  Ogre::Plane(Ogre::Vector3::UNIT_Y, application_plane_offset_),
-                                                  application_plane_size_x_,
-                                                  application_plane_size_z_,
-                                                  application_plane_segments_x_,
-                                                  application_plane_segments_z_,
-                                                  true,
-                                                  1,
-                                                  application_plane_segments_x_,
-                                                  application_plane_segments_z_,
-                                                  Ogre::Vector3::UNIT_Z);
-
-    auto *floor = ogre_scene_manager_->createEntity("Floor", "floor");
-    if (!application_plane_material_.empty()) {
-      floor->setMaterialName(application_plane_material_);
-    }
-
-    floor->setCastShadows(false);
-
-    auto *node = ogre_scene_manager_->getRootSceneNode()->createChildSceneNode();
-    node->attachObject(floor);
-
-//    auto converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(floor);
-//
-//    auto *entShape = converter->createBox();
-//
-//    auto *bodyState = new BtOgre::RigidBodyState(node);
-//    auto *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-//    PhysicsManager::GetSingleton().GetPhyWorld()->addRigidBody(entBody);
-  }
-
-  if (application_init_with_plane2_) {
-    Ogre::MeshManager::getSingleton().createPlane("wall2",
-                                                  Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                                                  Ogre::Plane(Ogre::Vector3::UNIT_X, application_plane2_offset_),
-                                                  application_plane2_size_x_,
-                                                  application_plane2_size_z_,
-                                                  application_plane2_segments_x_,
-                                                  application_plane2_segments_z_,
-                                                  true,
-                                                  1,
-                                                  application_plane2_segments_x_,
-                                                  application_plane2_segments_z_,
-                                                  Ogre::Vector3::UNIT_Y);
-
-    auto *wall2 = ogre_scene_manager_->createEntity("Wall2", "wall2");
-    if (!application_plane2_material_.empty()) {
-      wall2->setMaterialName(application_plane2_material_);
-    }
-
-    wall2->setCastShadows(false);
-    ogre_scene_manager_->getRootSceneNode()->attachObject(wall2);
-
-  }
-
-  if (application_init_with_plane3_) {
-    Ogre::MeshManager::getSingleton().createPlane("wall3",
-                                                  Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                                                  Ogre::Plane(Ogre::Vector3::UNIT_Z, application_plane3_offset_),
-                                                  application_plane3_size_x_,
-                                                  application_plane3_size_z_,
-                                                  application_plane3_segments_x_,
-                                                  application_plane3_segments_z_,
-                                                  true,
-                                                  1,
-                                                  application_plane3_segments_x_,
-                                                  application_plane3_segments_z_,
-                                                  Ogre::Vector3::UNIT_X);
-
-    auto *wall3 = ogre_scene_manager_->createEntity("Wall3", "wall3");
-    if (!application_plane3_material_.empty()) {
-      wall3->setMaterialName(application_plane3_material_);
-    }
-    wall3->setCastShadows(false);
-    ogre_scene_manager_->getRootSceneNode()->attachObject(wall3);
-
-  }
 
   // Process environment (?)
   // Process terrain (?)
@@ -833,7 +761,7 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
           obj->position(position0);
           obj->normal(normal);
 
-          obj->textureCoord((float)x / 4, (float)z / 4);
+          obj->textureCoord((float) x / 4, (float) z / 4);
         }
       }
 
@@ -860,11 +788,15 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 
       auto *terrain_entity = ogre_scene_manager_->createEntity(terrain_mesh);
       terrain_entity->setCastShadows(false);
+      const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
+      const Ogre::uint32 SURFACE_MASK = 0x00F;
+      const Ogre::uint32 WATER_MASK = 0xF00;
+      terrain_entity->setVisibilityFlags(SUBMERGED_MASK);
       ogre_scene_manager_->getRootSceneNode()->createChildSceneNode()->attachObject(terrain_entity);
       ogre_scene_manager_->destroyManualObject(obj);
 
       FixPbrParams("Plane");
-      FixPbrShadow("Plane");
+      FixPbrShadowReceiver("Plane");
     }
   }
 
@@ -872,6 +804,8 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     ogre_terrain_group_->removeAllTerrains();
     ogre_terrain_group_.reset();
   }
+
+  terrain_created_ = true;
 
 //  auto terrain = Ogre::MeshManager::getSingleton().createPlane("Terrain",
 //                                                               Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
@@ -1071,6 +1005,7 @@ void DotSceneLoaderB::ProcessCamera(pugi::xml_node &xml_node, Ogre::SceneNode *p
 
   ContextManager::GetSingleton().GetCameraMan()->UnregCamera();
   ContextManager::GetSingleton().GetCameraMan()->RegCamera(parent);
+  CubeMapCamera::GetSingleton().FreeCamera();
 
   auto *actor = ogre_scene_manager_->createEntity("Actor", "Icosphere.mesh");
   actor->setCastShadows(false);
@@ -1300,6 +1235,45 @@ void DotSceneLoaderB::UpdatePbrParams() {
 
 }
 //----------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::FixPbrShadowCaster(Ogre::MaterialPtr material) {
+  std::string material_name = material->getName();
+  static std::vector<std::string> material_list;
+
+  if (std::find(material_list.begin(), material_list.end(), material_name) != material_list.end()) {
+    return;
+  } else {
+    material_list.push_back(material_name);
+  }
+
+  auto *pass = material->getTechnique(0)->getPass(0);
+  int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
+
+  if (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0 && alpha_rejection > 0) {
+    auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+    auto new_caster = caster_material->clone("PSSM/shadow_caster" + std::to_string(material_list.size()));
+    material->getTechnique(0)->setShadowCasterMaterial(new_caster);
+
+
+    auto texture_albedo = pass->getTextureUnitState("Albedo");
+    if (texture_albedo) {
+      std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
+
+      auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
+
+      if (texPtr3) {
+        texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+//        texPtr3->setTextureFiltering(Ogre::TFO_NONE);
+        texPtr3->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
+        texPtr3->setTextureName(texture_name);
+      }
+    }
+  } else {
+    auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/NoAlpha/shadow_caster");
+    auto new_caster = caster_material->clone("PSSM/NoAlpha/shadow_caster" + std::to_string(material_list.size()));
+    material->getTechnique(0)->setShadowCasterMaterial(new_caster);
+  }
+}
+//----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
   std::string material_name = material->getName();
   bool registered = false;
@@ -1310,52 +1284,6 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     return;
   } else {
     material_list.push_back(material_name);
-  }
-
-  if (ConfigManager::GetSingleton().GetBool("graphics_shadows_enable")) {
-    if (registered) {
-      auto *pass = material->getTechnique(0)->getPass(0);
-      std::string texture_name = pass->getTextureUnitState(0)->getTextureName();
-      auto caster_material = material->getTechnique(0)->getShadowCasterMaterial();
-      auto *texPtr3 = caster_material->getTechnique(0)->getPass(0)->getTextureUnitState(0);
-      texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-      texPtr3->setTextureFiltering(Ogre::TFO_NONE);
-      texPtr3->setTextureName(texture_name);
-    } else {
-      auto *pass = material->getTechnique(0)->getPass(0);
-      auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
-      auto new_caster = caster_material->clone("PSSM/shadow_caster" + std::to_string(material_list.size()));
-      material->getTechnique(0)->setShadowCasterMaterial(new_caster);
-
-      if (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
-
-        auto texture_albedo = pass->getTextureUnitState("Albedo");
-        if (texture_albedo) {
-          std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
-
-          auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
-
-          if (texPtr3) {
-            texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-            texPtr3->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
-            texPtr3->setTextureName(texture_name);
-          }
-        }
-
-        auto texture_heigh = pass->getTextureUnitState("HeighMap");
-        if (texture_heigh) {
-          std::string texture_name = pass->getTextureUnitState("HeighMap")->getTextureName();
-
-          auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("HeighMap");
-
-          if (texPtr3) {
-            texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-            texPtr3->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
-            texPtr3->setTextureName(texture_name);
-          }
-        }
-      }
-    }
   }
 
   const int light_count = 5;
@@ -1411,9 +1339,6 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     frag_params->setNamedAutoConstant("uLightDiffuseScaledColourArray",
                                       Ogre::GpuProgramParameters::ACT_LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY,
                                       light_count);
-    frag_params->setNamedAutoConstant("uLightSpecularScalesColourArray",
-                                      Ogre::GpuProgramParameters::ACT_LIGHT_SPECULAR_COLOUR_POWER_SCALED_ARRAY,
-                                      light_count);
     frag_params->setNamedAutoConstant("uLightAttenuationArray",
                                       Ogre::GpuProgramParameters::ACT_LIGHT_ATTENUATION_ARRAY,
                                       light_count);
@@ -1424,13 +1349,21 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     frag_params->setNamedAutoConstant("uFogParams", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
     frag_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
 
-    auto &constants = frag_params->getConstantDefinitions();
-    if (constants.map.count("uMetallicRoughnessValues") == 1)
-      frag_params->setNamedConstant("uMetallicRoughnessValues", Ogre::Vector2(1, 1));
+    auto ibl_texture = pass->getTextureUnitState("IBL_Specular");
+    const bool realtime_cubemap = false;
+    if (ibl_texture ) {
+      if (realtime_cubemap) {
+        CubeMapCamera::GetSingleton().Setup();
+        ibl_texture->setTexture(CubeMapCamera::GetSingleton().GetDyncubemap());
+      } else {
+        std::string skybox_cubemap = Ogre::MaterialManager::getSingleton().getByName("SkyBox")->getTechnique(0)->getPass(0)->getTextureUnitState("CubeMap")->getTextureName();
+        ibl_texture->setTextureName(skybox_cubemap);
+      }
+    }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
+void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
   std::string material_name = material->getName();
   bool registered = false;
   const int pssm_split_count = 3;
@@ -1474,15 +1407,16 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
     auto pass = material->getTechnique(0)->getPass(0);
 
     if (ConfigManager::GetSingleton().GetBool("graphics_shadows_enable")) {
-      Ogre::uint numTextures = pssm->getSplitCount();
+      Ogre::uint numTextures = 3;
       Ogre::Vector4 splitPoints;
-      const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
-      // Populate from split point 1, not 0, since split 0 isn't useful (usually 0)
+      if (ConfigManager::GetSingleton().GetString("graphics_shadows_projection") == "pssm") {
+        const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
+        // Populate from split point 1, not 0, since split 0 isn't useful (usually 0)
 
-      for (int j = 1; j < numTextures; ++j) {
-        splitPoints[j - 1] = splitPointList[j];
+        for (int j = 1; j < numTextures; ++j) {
+          splitPoints[j - 1] = splitPointList[j];
+        }
       }
-
       const int light_count = 5;
 
       auto &constants = frag_params->getConstantDefinitions();
@@ -1495,20 +1429,20 @@ void DotSceneLoaderB::FixPbrShadow(Ogre::MaterialPtr material) {
 
         int texture_count = pass->getNumTextureUnitStates();
 
-        for (int k = 0; k < pssm->getSplitCount(); k++) {
-          frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
-                                            Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
-                                            texture_count + k);
-
+        for (int k = 0; k < 3; k++) {
           if (!registered) {
             Ogre::TextureUnitState *tu = pass->createTextureUnitState();
             tu->setContentType(Ogre::TextureUnitState::CONTENT_SHADOW);
-            tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
+            tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
             tu->setTextureBorderColour(Ogre::ColourValue::White);
-            tu->setTextureFiltering(Ogre::TFO_BILINEAR);
+            tu->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
           }
 
           frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);
+
+          frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
+                                            Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
+                                            texture_count + k);
         }
       }
     }
@@ -1522,8 +1456,12 @@ void DotSceneLoaderB::FixPbrParams(const std::string &material) {
   DotSceneLoaderB::FixPbrParams(Ogre::MaterialManager::getSingleton().getByName(material));
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::FixPbrShadow(const std::string &material) {
-  DotSceneLoaderB::FixPbrShadow(Ogre::MaterialManager::getSingleton().getByName(material));
+void DotSceneLoaderB::FixPbrShadowReceiver(const std::string &material) {
+  DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialManager::getSingleton().getByName(material));
+}
+//----------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::FixPbrShadowCaster(const std::string &material) {
+  DotSceneLoaderB::FixPbrShadowCaster(Ogre::MaterialManager::getSingleton().getByName(material));
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::UpdateForestParams(const std::string &material) {
@@ -1598,6 +1536,7 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *p
 //    if (material.empty()) {
 //      material = entity->getMesh()->getSubMesh(0)->getMaterialName();
 //    }
+
 //    if (!material.empty()) {
 //      entity->setMaterialName(material);
 //
@@ -1608,12 +1547,23 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *p
 //    }
 
     for (auto &submesh : mesh->getSubMeshes()) {
-      if (submesh->getMaterial()) {
-        auto material_ptr = submesh->getMaterial();
+      Ogre::MaterialPtr material_ptr;
+
+      if (!material.empty()) {
+        entity->setMaterialName(material);
+        material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+      } else if (submesh->getMaterial()) {
+        material_ptr = submesh->getMaterial();
+      }
+
+      if (material_ptr) {
         FixPbrParams(material_ptr);
 
+        if (entity->getCastShadows())
+          FixPbrShadowCaster(material_ptr);
+
         if (material_ptr->getReceiveShadows())
-          FixPbrShadow(material_ptr);
+          FixPbrShadowReceiver(material_ptr);
       }
     }
 
@@ -1634,6 +1584,7 @@ void DotSceneLoaderB::ProcessParticleSystem(pugi::xml_node &xml_node, Ogre::Scen
   // Process attributes
   std::string name = GetAttrib(xml_node, "name");
   std::string templateName = GetAttrib(xml_node, "template");
+  bool attachedCamera = GetAttribBool(xml_node, "attachedCamera", false);
 
   if (templateName.empty()) {
     templateName = GetAttrib(xml_node, "file"); // compatibility with old scenes
@@ -1642,7 +1593,18 @@ void DotSceneLoaderB::ProcessParticleSystem(pugi::xml_node &xml_node, Ogre::Scen
   // Create the particle system
   try {
     Ogre::ParticleSystem *pParticles = scene_manager_->createParticleSystem(name, templateName);
-    parent->attachObject(pParticles);
+    FixPbrParams(pParticles->getMaterialName());
+
+    const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
+    const Ogre::uint32 SURFACE_MASK = 0x00F;
+    const Ogre::uint32 WATER_MASK = 0xF00;
+    pParticles->setVisibilityFlags(WATER_MASK);
+
+    if (attachedCamera) {
+      ogre_camera_->getParentSceneNode()->createChildSceneNode(Ogre::Vector3{0, 10, 0})->attachObject(pParticles);
+    } else {
+      parent->attachObject(pParticles);
+    }
   }
   catch (Ogre::Exception &e) {
     Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error creating a particle system!");
@@ -1655,28 +1617,74 @@ void DotSceneLoaderB::ProcessBillboardSet(pugi::xml_node &xml_node, Ogre::SceneN
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessPlane(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   std::string name = GetAttrib(xml_node, "name");
-  float distance = GetAttribReal(xml_node, "distance");
-  float width = GetAttribReal(xml_node, "width");
-  float height = GetAttribReal(xml_node, "height");
-  int xSegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "xSegments"));
-  int ySegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "ySegments"));
-  int numTexCoordSets = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "numTexCoordSets"));
-  float uTile = GetAttribReal(xml_node, "uTile");
-  float vTile = GetAttribReal(xml_node, "vTile");
-  std::string material = GetAttrib(xml_node, "material");
-  bool hasNormals = GetAttribBool(xml_node, "hasNormals");
+  float distance = GetAttribReal(xml_node, "distance", 0.0f);
+  float width = GetAttribReal(xml_node, "width", 1.0f);
+  float height = GetAttribReal(xml_node, "height", width);
+  int xSegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "xSegments"), 10);
+  int ySegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "ySegments"), 10);
+  int numTexCoordSets = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "numTexCoordSets"), 1);
+  float uTile = GetAttribReal(xml_node, "uTile", width / 5.0f);
+  float vTile = GetAttribReal(xml_node, "vTile", height / 5.0f);
+  std::string material = GetAttrib(xml_node, "material", "BaseWhite");
+  bool hasNormals = GetAttribBool(xml_node, "hasNormals", true);
   Ogre::Vector3 normal = ParseVector3(xml_node.child("normal"));
   Ogre::Vector3 up = ParseVector3(xml_node.child("upVector"));
+  bool reflection = GetAttribBool(xml_node, "reflection", false);
+
+  normal = {0, 1, 0};
+  up = {0, 0, 1};
 
   Ogre::Plane plane(normal, distance);
+
+  std::string mesh_name = name + "mesh";
+
+  Ogre::MeshPtr terrain_mesh = Ogre::MeshManager::getSingleton().getByName(mesh_name, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+  if (terrain_mesh)
+    Ogre::MeshManager::getSingleton().remove(terrain_mesh);
   Ogre::MeshPtr res =
-      Ogre::MeshManager::getSingletonPtr()->createPlane(name + "mesh", group_name_, plane, width, height, xSegments,
+      Ogre::MeshManager::getSingletonPtr()->createPlane(mesh_name, group_name_, plane, width, height, xSegments,
                                                         ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
-  Ogre::Entity *ent = scene_manager_->createEntity(name, name + "mesh");
+  res->buildTangentVectors();
+  Ogre::Entity *entity = scene_manager_->createEntity(name, mesh_name);
 
-  ent->setMaterialName(material);
+  if (material.empty())
+    return;
 
-  parent->attachObject(ent);
+  if (!material.empty()) {
+    entity->setMaterialName(material);
+    FixPbrParams(material);
+    FixPbrShadowReceiver(material);
+    FixPbrShadowCaster(material);
+  }
+
+  if (reflection) {
+    Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+
+    auto material_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("ReflectionMap");
+
+    if (material_unit) {
+      ReflectionCamera::GetSingleton().Setup();
+
+      material_unit->setTexture(ReflectionCamera::GetSingleton().GetReflectionTex());
+      material_unit->setTextureAddressingMode(Ogre::TAM_CLAMP);
+      material_unit->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
+    }
+  }
+
+  ReflectionCamera::GetSingleton().RegPlane(plane);
+  parent->attachObject(entity);
+
+  std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
+  auto *entShape = converter->createTrimesh();
+  auto *bodyState = new BtOgre::RigidBodyState(parent);
+  btRigidBody *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+  entBody->setFriction(1);
+  PhysicsManager::GetSingleton().AddRigidBody(entBody);
+
+  const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
+  const Ogre::uint32 SURFACE_MASK = 0x00F;
+  const Ogre::uint32 WATER_MASK = 0xF00;
+//  entity->setVisibilityFlags(WATER_MASK);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessForest(pugi::xml_node &xml_node) {
@@ -1715,8 +1723,9 @@ void DotSceneLoaderB::ProcessFog(pugi::xml_node &xml_node) {
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &xml_node) {
   // Process attributes
-  std::string material = GetAttrib(xml_node, "material", "BaseWhite");
-  float distance = GetAttribReal(xml_node, "distance", 5000);
+  std::string material = GetAttrib(xml_node, "material", "Skybox");
+  std::string cubemap = GetAttrib(xml_node, "cubemap", "OutputCube.dds");
+  float distance = GetAttribReal(xml_node, "distance", 1000);
   bool drawFirst = GetAttribBool(xml_node, "drawFirst", true);
   bool active = GetAttribBool(xml_node, "active", true);
 
@@ -1731,6 +1740,16 @@ void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &xml_node) {
     rotation = ParseQuaternion(element);
   }
 
+  Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+
+  if (material_ptr->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0 ) {
+    auto texture_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState(0);
+
+    if (texture_unit) {
+      texture_unit->setTextureName(cubemap);
+    }
+  }
+
   // Setup the sky box
   scene_manager_->setSkyBox(true, material, distance, drawFirst, rotation, group_name_);
 }
@@ -1740,7 +1759,7 @@ void DotSceneLoaderB::ProcessSkyDome(pugi::xml_node &xml_node) {
   std::string material = xml_node.attribute("material").value();
   float curvature = GetAttribReal(xml_node, "curvature", 10);
   float tiling = GetAttribReal(xml_node, "tiling", 8);
-  float distance = GetAttribReal(xml_node, "distance", 4000);
+  float distance = GetAttribReal(xml_node, "distance", 1000);
   bool drawFirst = GetAttribBool(xml_node, "drawFirst", true);
   bool active = GetAttribBool(xml_node, "active", false);
 

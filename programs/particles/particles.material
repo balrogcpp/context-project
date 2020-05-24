@@ -1,0 +1,49 @@
+import PbrBasic from pbr-basic.material
+
+fragment_program droplet_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+}
+
+fragment_program droplet_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+}
+
+fragment_program droplet_fs unified
+{
+	delegate droplet_fs_glsl
+	delegate droplet_fs_glsles
+}
+
+material Examples/Droplet
+{
+    receive_shadows off
+
+    technique
+    {
+      pass
+      {
+            alpha_rejection greater_equal 128
+            emissive 0.3 0.3 0.3
+			scene_blend colour_blend
+			//depth_write off
+			//diffuse vertexcolour
+
+            texture_unit Albedo
+            {
+                texture basic_droplet.dds
+                filtering none
+            }
+
+            vertex_program_ref Pbr_vs {}
+
+			fragment_program_ref droplet_fs
+			{
+                param_named uBaseColorSampler int 0
+			}
+        }
+    }
+}

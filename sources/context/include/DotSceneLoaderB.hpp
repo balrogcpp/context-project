@@ -68,9 +68,11 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   void UpdatePbrParams();
   float GetHeigh(float x, float z);
   static void FixPbrParams(Ogre::MaterialPtr material);
-  static void FixPbrShadow(Ogre::MaterialPtr material);
+  static void FixPbrShadowReceiver(Ogre::MaterialPtr material);
+  static void FixPbrShadowCaster(Ogre::MaterialPtr material);
   static void FixPbrParams(const std::string &material);
-  static void FixPbrShadow(const std::string &material);
+  static void FixPbrShadowReceiver(const std::string &material);
+  static void FixPbrShadowCaster(const std::string &material);
   static void UpdateForestParams(Ogre::MaterialPtr material);
   static void UpdateForestParams(const std::string &material);
 
@@ -140,33 +142,7 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   bool terrain_normalmap_enable_ = true;
   bool terrain_save_terrains_ = false;
   int terrain_lightmap_size_ = 2048;
-
-  bool application_init_with_plane_ = false;
-  bool application_plane_wireframe_ = false;
-  float application_plane_size_x_ = 100.0f;
-  float application_plane_size_z_ = 100.0f;
-  float application_plane_offset_ = 0.0f;
-  int application_plane_segments_x_ = 10;
-  int application_plane_segments_z_ = 10;
-  std::string application_plane_material_;
-
-  bool application_init_with_plane2_ = false;
-  bool application_plane2_wireframe_ = false;
-  float application_plane2_size_x_ = 100.0f;
-  float application_plane2_size_z_ = 100.0f;
-  int application_plane2_segments_x_ = 10;
-  int application_plane2_segments_z_ = 10;
-  int application_plane2_offset_ = 0.0f;
-  std::string application_plane2_material_;
-
-  bool application_init_with_plane3_ = false;
-  bool application_plane3_wireframe_ = false;
-  float application_plane3_size_x_ = 100.0f;
-  float application_plane3_size_z_ = 100.0f;
-  float application_plane3_offset_ = 0.0f;
-  int application_plane3_segments_x_ = 10;
-  int application_plane3_segments_z_ = 10;
-  std::string application_plane3_material_;
+  bool terrain_created_ = false;
 
  public:
   void Setup() final;

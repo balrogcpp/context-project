@@ -51,7 +51,7 @@ class StaticForestManager : public ManagerCommon {
   void Reset() final;
 
  private:
-  void createGrassMesh();
+  void CreateGrassMesh();
 
  private:
   const float GRASS_WIDTH = 0.5f;

@@ -32,6 +32,10 @@ SOFTWARE.
 #include <OgreRenderTargetListener.h>
 
 namespace Context {
+  class CameraMan;
+}
+
+namespace Context {
 
 class ManagerCommon
     : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputListener, public NoCopy {

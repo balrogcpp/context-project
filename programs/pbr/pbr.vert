@@ -1,3 +1,27 @@
+/*
+MIT License
+
+Copyright (c) 2020 Andrey Vasiliev
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 // The MIT License
 // Copyright (c) 2016-2017 Mohamad Moneimne and Contributors
 
@@ -33,18 +57,29 @@ precision highp float;
 #endif
 
 attribute vec4 position;
+uniform mat4 uMVPMatrix;
+
+#ifdef SHADOWCASTER_ALPHA
+attribute vec2 uv0;
+out vec2 vUV;
+#endif
+
+#ifndef SHADOWCASTER
+uniform mat4 uModelMatrix;
+
+#ifdef HAS_UV
+attribute vec2 uv0;
+#endif
+
+out vec4 vUV;
+
 #ifdef HAS_NORMALS
 attribute vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
 attribute vec4 tangent;
 #endif
-#ifdef HAS_UV
-attribute vec2 uv0;
-#endif
 
-uniform mat4 uMVPMatrix;
-uniform mat4 uModelMatrix;
 uniform float uLightCount;
 
 #define MAX_LIGHTS 5
@@ -67,7 +102,6 @@ uniform vec4 TerrainBox2; //-y+y
 #endif
 
 out vec3 vPosition;
-out vec4 vUV;
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -76,29 +110,15 @@ out mat3 vTBN;
 out vec3 vNormal;
 #endif
 #endif
+#ifdef REFLECTION
+out vec4 projectionCoord;
+#endif
+
+#endif //SHADOWCASTER
 
 void main()
 {
-  vec4 pos = uModelMatrix * position;
-  vPosition = vec3(pos.xyz) / pos.w;
   vec4 mypos = position;
-
-#ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
-  vec3 normalW = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
-  vec3 tangentW = normalize(vec3(uModelMatrix * vec4(tangent.xyz, 0.0)));
-  vec3 bitangentW = cross(normalW, tangentW) * tangent.w;
-  vTBN = mat3(tangentW, bitangentW, normalW);
-#else // HAS_TANGENTS != 1
-  vNormal = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
-#endif
-#endif
-
-#ifdef HAS_UV
-  vUV.xy = uv0;
-#else
-  vUV.xy = vec2(0.0);
-#endif
 
 #ifdef TERRAIN
   vec2 uv;
@@ -117,6 +137,26 @@ void main()
   mypos.x += sin(uTime + mypos.z ) * heightCoeff * heightCoeff * factorX;
 #endif
 
+#ifndef SHADOWCASTER
+  vec4 pos = uModelMatrix * position;
+
+#ifdef HAS_NORMALS
+#ifdef HAS_TANGENTS
+  vec3 normalW = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
+  vec3 tangentW = normalize(vec3(uModelMatrix * vec4(tangent.xyz, 0.0)));
+  vec3 bitangentW = cross(normalW, tangentW) * tangent.w;
+  vTBN = mat3(tangentW, bitangentW, normalW);
+#else // HAS_TANGENTS != 1
+  vNormal = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
+#endif
+#endif
+
+#ifdef HAS_UV
+  vUV.xy = uv0;
+#else
+  vUV.xy = vec2(0.0);
+#endif
+
   for (int i = 0; i < int(uLightCount);  i += 3) {
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
@@ -124,16 +164,30 @@ void main()
     lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * mypos;
     lightSpacePosArray[i + 1] = uTexWorldViewProjMatrixArray[i + 1] * mypos;
     lightSpacePosArray[i + 2] = uTexWorldViewProjMatrixArray[i + 2] * mypos;
-
-    lightSpacePosArray[i] /= lightSpacePosArray[i].w;
-    lightSpacePosArray[i + 1] /= lightSpacePosArray[i + 1].w;
-    lightSpacePosArray[i + 2] /= lightSpacePosArray[i + 2].w;
   }
 #endif
   }
 
   gl_Position = uMVPMatrix * mypos;
   vUV.z = gl_Position.z;
+  vPosition = vec3(pos.xyz) / pos.w;
+
+#ifdef REFLECTION
+  mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
+                        0.0, 0.5, 0.0, 0.0,
+                        0.0, 0.0, 0.5, 0.0,
+                        0.5, 0.5, 0.5, 1.0);
+  projectionCoord = scalemat * gl_Position;
+#endif
+
+#else //SHADOWCASTER
+
+#ifdef SHADOWCASTER_ALPHA
+  vUV.xy = uv0;
+#endif
+
+  gl_Position = uMVPMatrix * mypos;
+#endif //SHADOWCASTER
 
 #ifdef FADE
   vUV.w = 1.0 - clamp(gl_Position.z * fadeRange, 0.0, 1.0);

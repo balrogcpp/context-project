@@ -99,6 +99,8 @@ class CameraMan : public InputListener, public NoCopy, public Ogre::FrameListene
   bool moving_ = false;
   float top_speed_ = 10.0f;
   float run_speed_ = 20.0f;
+  float animation_time_ = 0.0f;
+  float anim_duration_ = .5f;//ms
   float const_speed_ = 1.5f;
   float heigh_ = 1.5f;
   bool move_forward_ = false;

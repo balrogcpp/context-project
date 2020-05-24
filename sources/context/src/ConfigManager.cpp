@@ -334,9 +334,9 @@ void ConfigManager::Setup() {
   document_.AddMember("graphics_fsaa", 0, allocator);
   document_.AddMember("graphics_debug_show_wireframe", false, allocator);
   document_.AddMember("graphics_gamma", false, allocator);
-  document_.AddMember("graphics_filtration", "anisotropic", allocator);
+  document_.AddMember("graphics_filtration", "bilinear", allocator);
   document_.AddMember("graphics_anisotropy_level", 4, allocator);
-  document_.AddMember("graphics_mipmap_count", 10, allocator);
+  document_.AddMember("graphics_mipmap_count", 5, allocator);
   document_.AddMember("graphics_shadows_pssm_0_resolution", 1024, allocator);
   document_.AddMember("graphics_shadows_pssm_1_resolution", 1024, allocator);
   document_.AddMember("graphics_shadows_pssm_2_resolution", 1024, allocator);
@@ -346,6 +346,7 @@ void ConfigManager::Setup() {
   document_.AddMember("graphics_shadows_self_shadow", true, allocator);
   document_.AddMember("graphics_shadows_back_faces", true, allocator);
   document_.AddMember("graphics_shadows_caster_material", "PSSM/shadow_caster", allocator);
+//  document_.AddMember("graphics_shadows_caster_material", "PSSM/Transparent/shadow_caster", allocator);
   document_.AddMember("graphics_shadows_receiver_material", std::string(), allocator);
   document_.AddMember("graphics_shadows_far_distance", 200.0f, allocator);
   document_.AddMember("graphics_shadows_pssm_0", 0.0f, allocator);
