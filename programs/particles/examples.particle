@@ -87,9 +87,9 @@ particle_system Examples/PurpleFountain
 particle_system Examples/Rain
 {
     material        Examples/Droplet
-    particle_width  20
-    particle_height 100
-    cull_each       true
+    particle_width  0.1
+    particle_height 1
+    cull_each       false
     quota           10000
     // Make common direction straight down (faster than self oriented)
     billboard_type  oriented_common
@@ -99,12 +99,12 @@ particle_system Examples/Rain
     emitter Box
     {
         angle           0
-        emission_rate   100
-        time_to_live    5
+        emission_rate   1000
+        time_to_live    2
         direction       0 -1 0
         velocity    	50
-        width           1000
-        height          1000
+        width           25
+        height          25
         depth           0
     }
 
