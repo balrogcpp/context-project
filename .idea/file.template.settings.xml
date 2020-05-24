@@ -7,12 +7,18 @@
       <template name="C++ Class.cc" reformat="true" live-template-enabled="true" enabled="true" />
       <template name="C++ Class Header.h" reformat="true" live-template-enabled="true" enabled="true" />
       <template name="CMakeLists.txt.cmake" reformat="true" live-template-enabled="true" enabled="true" />
+      <template name="GLSL Fragment Shader.frag" reformat="true" live-template-enabled="true" enabled="true" />
+      <template name="GLSL Shader.glsl" reformat="true" live-template-enabled="true" enabled="true" />
+      <template name="GLSL Vertex Shader.vert" reformat="true" live-template-enabled="true" enabled="true" />
     </internal_templates>
     <includes_templates>
       <template name="C File Header.h" reformat="true" live-template-enabled="true" enabled="true" />
+      <template name="C File Sources.c" reformat="true" live-template-enabled="true" />
       <template name="C++ File Header.hpp" reformat="true" live-template-enabled="true" />
       <template name="C++ File Sources.cpp" reformat="true" live-template-enabled="true" />
       <template name="CMakeLists.txt" reformat="true" live-template-enabled="true" />
+      <template name="GLSL Fragment Program.frag" reformat="true" live-template-enabled="true" />
+      <template name="GLSL Vertex Program.vert" reformat="true" live-template-enabled="true" />
     </includes_templates>
   </component>
 </project>
