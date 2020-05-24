@@ -394,8 +394,8 @@ void ContextManager::SetupOgreScenePreconditions() {
 
     if (graphics_shadows_material_ == "default") {
 //      auto texture_type = Ogre::PF_FLOAT16_R;
-      auto texture_type = Ogre::PF_FLOAT32_R;
-//      auto texture_type = Ogre::PF_FLOAT32_GR;
+//      auto texture_type = Ogre::PF_FLOAT32_R;
+      auto texture_type = Ogre::PF_FLOAT32_GR;
 
       ogre_scene_manager_->setShadowTextureSettings(graphics_shadows_texture_resolution_,
                                                     graphics_shadows_texture_count_,

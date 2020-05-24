@@ -1,12 +1,12 @@
 vertex_program PSSM/shadow_caster_vsGLSL glsl
 {
-	source caster.vert
+	source pbr.vert
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
 }
 
 vertex_program PSSM/shadow_caster_vsGLSLES glsles
 {
-	source caster.vert
+	source pbr.vert
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
 }
 
@@ -23,13 +23,13 @@ vertex_program PSSM/shadow_caster_vs unified
 
 fragment_program PSSM/shadow_caster_fsGLSL glsl
 {
-	source caster.frag
+	source pbr.frag
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
 }
 
 fragment_program PSSM/shadow_caster_fsGLSLES glsles
 {
-	source caster.frag
+	source pbr.frag
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
 }
 
@@ -44,7 +44,6 @@ fragment_program PSSM/shadow_caster_fs unified
 	}
 }
 
-
 material PSSM/shadow_caster
 {
 	technique
@@ -56,6 +55,61 @@ material PSSM/shadow_caster
 			vertex_program_ref PSSM/shadow_caster_vs {}
 
 			fragment_program_ref PSSM/shadow_caster_fs {}
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PSSM/NoAlpha/shadow_caster_vsGLSL glsl
+{
+	source pbr.vert
+	preprocessor_defines SHADOWCASTER
+}
+
+vertex_program PSSM/NoAlpha/shadow_caster_vsGLSLES glsles
+{
+	source pbr.vert
+	preprocessor_defines SHADOWCASTER
+}
+
+vertex_program PSSM/NoAlpha/shadow_caster_vs unified
+{
+	delegate PSSM/NoAlpha/shadow_caster_vsGLSL
+	delegate PSSM/NoAlpha/shadow_caster_vsGLSLES
+
+	default_params
+	{
+		param_named_auto uMVPMatrix worldviewproj_matrix
+	}
+}
+
+fragment_program PSSM/NoAlpha/shadow_caster_fsGLSL glsl
+{
+	source pbr.frag
+	preprocessor_defines SHADOWCASTER
+}
+
+fragment_program PSSM/NoAlpha/shadow_caster_fsGLSLES glsles
+{
+	source pbr.frag
+	preprocessor_defines SHADOWCASTER
+}
+
+fragment_program PSSM/NoAlpha/shadow_caster_fs unified
+{
+	delegate PSSM/NoAlpha/shadow_caster_fsGLSL
+	delegate PSSM/NoAlpha/shadow_caster_fsGLSLES
+}
+
+material PSSM/NoAlpha/shadow_caster
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref PSSM/NoAlpha/shadow_caster_vs {}
+
+			fragment_program_ref PSSM/NoAlpha/shadow_caster_fs {}
 		}
 	}
 }

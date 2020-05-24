@@ -241,6 +241,11 @@ material PbrReflection/Unity
             texture_unit Normal {}
             texture_unit MetallicRougness {}
             texture_unit ReflectionMap {}
+            texture_unit NoiseMap
+            {
+                texture noise_fresnel.dds
+                filtering linear linear point
+            }
 
             vertex_program_ref PbrReflection_vs {}
 
@@ -250,6 +255,7 @@ material PbrReflection/Unity
                 param_named uNormalSampler    int 1
                 param_named uMetallicRoughnessSampler int 2
                 param_named uReflectionMap int 3
+                param_named uNoiseMap int 4
 			}
         }
     }

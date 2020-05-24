@@ -54,8 +54,10 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     gBufferTech->setSchemeName(schemeName);
     Ogre::Pass *gbufPass = gBufferTech->createPass();
     *gbufPass = *mGBufRefMat->getTechnique(0)->getPass(0);
+    auto *pass = originalMaterial->getTechnique(0)->getPass(0);
+    int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
 
-    if (originalMaterial->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
+    if (pass->getNumTextureUnitStates() > 0 && alpha_rejection > 0) {
       auto *texPtr2 = gbufPass->getTextureUnitState("BaseColor");
       texPtr2->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
       texPtr2->setTextureFiltering(Ogre::TFO_NONE);
@@ -66,6 +68,8 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
         auto texture_name = texture_albedo->getTextureName();
         texPtr2->setTextureName(texture_name);
       }
+    } else {
+
     }
 
     return gBufferTech;
@@ -79,11 +83,17 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   DepthSchemeHandler() {
-    mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("Context/depth");
+    mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("Context/depth_alpha");
+    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("Depth",
+                                                                     "Context/depth_alpha",
+                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    mGBufRefMat->load();
+
+    mGBufRefMat2 = Ogre::MaterialManager::getSingleton().getByName("Context/depth");
     Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("Depth",
                                                                      "Context/depth",
                                                                      Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-    mGBufRefMat->load();
+    mGBufRefMat2->load();
   }
 
   Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex,
@@ -91,12 +101,17 @@ class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
                                         Ogre::Material *originalMaterial,
                                         unsigned short lodIndex,
                                         const Ogre::Renderable *rend) final {
-    Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
-    gBufferTech->setSchemeName(schemeName);
-    Ogre::Pass *gbufPass = gBufferTech->createPass();
-    *gbufPass = *mGBufRefMat->getTechnique(0)->getPass(0);
 
-    if (originalMaterial->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
+
+    auto *pass = originalMaterial->getTechnique(0)->getPass(0);
+    int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
+
+    if (pass->getNumTextureUnitStates() > 0 && alpha_rejection > 0) {
+      Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
+      gBufferTech->setSchemeName(schemeName);
+      Ogre::Pass *gbufPass = gBufferTech->createPass();
+      *gbufPass = *mGBufRefMat->getTechnique(0)->getPass(0);
+
       auto *texPtr2 = gbufPass->getTextureUnitState("BaseColor");
       texPtr2->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
       texPtr2->setTextureFiltering(Ogre::TFO_NONE);
@@ -107,13 +122,21 @@ class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
         auto texture_name = texture_albedo->getTextureName();
         texPtr2->setTextureName(texture_name);
       }
-    }
 
-    return gBufferTech;
+      return gBufferTech;
+    } else {
+      Ogre::Technique *gBufferTech2 = originalMaterial->createTechnique();
+      gBufferTech2->setSchemeName(schemeName);
+      Ogre::Pass *gbufPass2 = gBufferTech2->createPass();
+      *gbufPass2 = *mGBufRefMat2->getTechnique(0)->getPass(0);
+
+      return gBufferTech2;
+    }
   }
 
  private:
   Ogre::MaterialPtr mGBufRefMat;
+  Ogre::MaterialPtr mGBufRefMat2;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

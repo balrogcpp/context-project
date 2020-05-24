@@ -57,19 +57,22 @@ precision highp float;
 out vec4 gl_FragColor;
 #endif
 
+#ifdef SHADOWCASTER_ALPHA
 uniform sampler2D uBaseColorSampler;
-
 in vec2 vUV;
+#endif
 
 void main() {
+#ifdef SHADOWCASTER_ALPHA
 	vec4 baseColor = texture2D(uBaseColorSampler, vUV);
 
 	if (baseColor.a < 0.5) {
 		discard;
 	}
+#endif
 
 	float depth = gl_FragCoord.z - 0.0002;
 
-	gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
-//	gl_FragColor = vec4(depth, depth * depth, 0.0, 1.0);
+//	gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
+	gl_FragColor = vec4(depth, depth * depth, 0.0, 1.0);
 }

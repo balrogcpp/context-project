@@ -45,33 +45,42 @@ bool ReflectionCamera::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 //----------------------------------------------------------------------------------------------------------------------
 void ReflectionCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   ogre_scene_manager_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-//  for (const auto &it : reflection_planes_) {
-//    ogre_camera_->enableReflection(Ogre::Plane(Ogre::Vector4(0, 1, 0, -5)));
-    ogre_camera_->enableReflection(plane_);
-//  }
+  reflection_camera_->setFOVy(ogre_camera_->getFOVy());
+  reflection_camera_->enableReflection(plane_);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ReflectionCamera::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-  ogre_camera_->disableReflection();
   ogre_scene_manager_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+  reflection_camera_->disableReflection();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ReflectionCamera::FreeCamera() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ReflectionCamera::RegPlane(Ogre::Plane plane) {
-//  reflection_planes_.push_back(plane);
   plane_ = plane;
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ReflectionCamera::UnregPlane() {
-//  reflection_planes_.clear();
-//  reflection_planes_.(plane);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ReflectionCamera::Setup() {
-  ogre_camera_->setAutoAspectRatio(false);
   // create our reflection & refraction render textures, and setup their render targets
+
+  if (!reflection_camera_) {
+    reflection_camera_ = ogre_scene_manager_->createCamera("CubeMapCamera");
+    reflection_camera_->setProjectionType(Ogre::PT_PERSPECTIVE);
+    reflection_camera_->setFOVy(ogre_camera_->getFOVy());
+    reflection_camera_->setAspectRatio(ogre_camera_->getAspectRatio());
+    reflection_camera_->setLodBias(0.2);
+    reflection_camera_->setNearClipDistance(ogre_camera_->getNearClipDistance());
+    reflection_camera_->setFarClipDistance(ogre_camera_->getFarClipDistance());
+  }
+
+  ogre_reflection_camera_node_ = ogre_camera_->getParentSceneNode()->createChildSceneNode();
+  ogre_reflection_camera_node_->attachObject(reflection_camera_);
+
+//  reflection_camera_ = ogre_camera_;
 
   if (!reflection_)
     reflection_ = Ogre::TextureManager::getSingleton().createManual("reflection",
@@ -83,18 +92,42 @@ void ReflectionCamera::Setup() {
                                                                     Ogre::PF_R8G8B8,
                                                                     Ogre::TU_RENDERTARGET);
 
-  Ogre::RenderTarget *rtt = reflection_->getBuffer()->getRenderTarget();
+  Ogre::RenderTarget *rtt1 = reflection_->getBuffer()->getRenderTarget();
 
-  if (!rtt->getViewport(0)) {
-    Ogre::Viewport *vp = rtt->addViewport(ogre_camera_);
+  const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
+  const Ogre::uint32 SURFACE_MASK = 0x00F;
+  const Ogre::uint32 WATER_MASK = 0xF00;
+
+  if (!rtt1->getViewport(0)) {
+    Ogre::Viewport *vp = rtt1->addViewport(reflection_camera_);
     vp->setOverlaysEnabled(false);
     vp->setShadowsEnabled(false);
     // toggle reflection in camera
-    rtt->addListener(this);
-    vp->setVisibilityMask(0x000F);
+    rtt1->addListener(this);
+    vp->setVisibilityMask(SURFACE_MASK);
   }
 
-  ogre_camera_->setAutoAspectRatio(true);
+  if (!refraction_ && reflection_camera_ == ogre_camera_) {
+    refraction_ = Ogre::TextureManager::getSingleton().createManual("refraction",
+                                                                    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                                                                    Ogre::TEX_TYPE_2D,
+                                                                    1,
+                                                                    1,
+                                                                    0,
+                                                                    Ogre::PF_R8G8B8,
+                                                                    Ogre::TU_RENDERTARGET);
+
+    Ogre::RenderTarget *rtt2 = refraction_->getBuffer()->getRenderTarget();
+
+    if (!rtt2->getViewport(0)) {
+      Ogre::Viewport *vp = rtt2->addViewport(ogre_camera_);
+      vp->setOverlaysEnabled(false);
+      vp->setShadowsEnabled(false);
+      // toggle reflection in camera
+      rtt2->addListener(this);
+      vp->setVisibilityMask(SUBMERGED_MASK);
+    }
+  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ReflectionCamera::Reset() {

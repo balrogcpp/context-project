@@ -26,12 +26,6 @@ SOFTWARE.
 
 #include "ManagerCommon.hpp"
 
-namespace Ogre {
-class RenderTarget;
-class Texture;
-class SceneNode;
-}
-
 namespace Context {
 
 class CubeMapCamera : public ManagerCommon {

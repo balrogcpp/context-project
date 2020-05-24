@@ -1,25 +1,24 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PBRBasic_fs_glsl glsl
+fragment_program PbrBasic_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
 }
 
-fragment_program PBRBasic_fs_glsles glsles
+fragment_program PbrBasic_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
 }
 
-fragment_program PBRBasic_fs unified
+fragment_program PbrBasic_fs unified
 {
-	delegate PBRBasic_fs_glsl
-	delegate PBRBasic_fs_glsles
+	delegate PbrBasic_fs_glsl
+	delegate PbrBasic_fs_glsles
 }
 
-material PBRBasic
+material PbrBasic
 {
-    receive_shadows on
+    receive_shadows off
 
     technique
     {
@@ -29,34 +28,35 @@ material PBRBasic
 
             vertex_program_ref Pbr_vs {}
 
-			fragment_program_ref PBRBasic_fs
+			fragment_program_ref PbrBasic_fs
 			{
-                param_named uBaseColorSampler   int 0
+                param_named uBaseColorSampler int 0
 			}
         }
     }
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PBRBasicShadow_fs_glsl glsl
+fragment_program PbrBasicShadow_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
 }
 
-fragment_program PBRBasicShadow_fs_glsles glsles
+fragment_program PbrBasicShadow_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
 }
 
-fragment_program PBRBasicShadow_fs unified
+fragment_program PbrBasicShadow_fs unified
 {
-	delegate PBRBasicShadow_fs_glsl
-	delegate PBRBasicShadow_fs_glsles
+	delegate PbrBasicShadow_fs_glsl
+	delegate PbrBasicShadow_fs_glsles
 }
 
-material PBRBasicShadow
+material PbrBasicShadow
 {
     technique
     {
@@ -66,7 +66,7 @@ material PBRBasicShadow
 
             vertex_program_ref Pbr_vs {}
 
-			fragment_program_ref PBRBasicShadow_fs
+			fragment_program_ref PbrBasicShadow_fs
 			{
                 param_named uBaseColorSampler   int 0
 			}

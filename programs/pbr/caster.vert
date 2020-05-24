@@ -53,15 +53,18 @@ precision highp float;
 #define out varying
 #endif
 
+#ifdef SHADOWCASTER_ALPHA
 attribute vec4 position;
 attribute vec2 uv0;
+out vec2 vUV;
+#endif
 
 uniform mat4 uMVPMatrix;
 
-out vec2 vUV;
-
 void main() {
+#ifdef SHADOWCASTER_ALPHA
 	vUV = uv0;
+#endif
 
 	gl_Position = uMVPMatrix * position;
 }

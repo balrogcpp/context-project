@@ -151,7 +151,9 @@ void StaticForestManager::GenerateGrass() {
     mField->addEntity(grass, pos, ori, scale);
   }
 
-  const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
+  static const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
+  static const Ogre::uint32 SURFACE_MASK = 0x00F;
+  static const Ogre::uint32 WATER_MASK = 0xF00;
   mField->setVisibilityFlags(SUBMERGED_MASK);
 //  mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
   mField->build(); // build our static geometry (bake the grass into it)
