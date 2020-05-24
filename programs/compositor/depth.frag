@@ -54,18 +54,23 @@ precision highp float;
 #endif
 
 varying    vec3 oViewPos;
-varying     vec2 vUV;
+
+#ifdef HAS_ALPHA
+varying vec2 vUV;
+uniform sampler2D baseColor;
+#endif
 
 uniform float cNearClipDistance;
 uniform float cFarClipDistance;// !!! might be 0 for infinite view projection.
-uniform sampler2D baseColor;
 
 void main()
 {
-  vec4 color = texture2D(baseColor, vUV);
-  if (color.a == 0.0) {
+#ifdef HAS_ALPHA
+  float alpha = texture2D(baseColor, vUV).a;
+  if (alpha < 0.5) {
     discard;
   }
+#endif
 
   float distance = length(oViewPos);
   if (distance > 1000.0) {

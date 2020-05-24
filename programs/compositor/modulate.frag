@@ -58,9 +58,6 @@ out vec4 gl_FragColor;
 #endif
 
 in vec2 oUv0;
-uniform float exposure;
-uniform vec3 Ambient;
-uniform vec4 screenSize;
 uniform vec3 FogColour;
 uniform vec4 FogParams;
 uniform float NearClipDistance;
@@ -68,7 +65,6 @@ uniform float FarClipDistance;
 uniform sampler2D AttenuationSampler;
 uniform sampler2D SceneSampler;
 uniform sampler2D MrtSampler;
-uniform vec4 ShadowColour;
 
 void main()
 {

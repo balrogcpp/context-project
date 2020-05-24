@@ -1,3 +1,68 @@
+vertex_program depth_alpha_vp_glsl glsl
+{
+ 	source depth.vert
+ 	preprocessor_defines HAS_ALPHA
+}
+
+vertex_program depth_alpha_vp_glsles glsles
+{
+ 	source depth.vert
+ 	preprocessor_defines HAS_ALPHA
+}
+
+fragment_program depth_alpha_fp_glsl glsl
+{
+	source depth.frag
+	preprocessor_defines HAS_ALPHA
+}
+
+fragment_program depth_alpha_fp_glsles glsles
+{
+	source depth.frag
+	preprocessor_defines HAS_ALPHA
+}
+
+vertex_program depth_alpha_vp unified
+{
+	delegate depth_alpha_vp_glsl
+    delegate depth_alpha_vp_glsles
+
+    default_params
+    {
+        param_named_auto cWorldViewProj worldviewproj_matrix
+        param_named_auto cWorldView worldview_matrix
+    }
+}
+
+fragment_program depth_alpha_fp unified
+{
+	delegate depth_alpha_fp_glsl
+	delegate depth_alpha_vp_glsles
+
+    default_params
+    {
+        param_named_auto cNearClipDistance near_clip_distance
+        param_named_auto cFarClipDistance far_clip_distance
+        param_named baseColor int 0
+    }
+}
+
+material Context/depth_alpha
+{
+    technique
+    {
+        pass
+        {
+            texture_unit BaseColor {}
+
+            vertex_program_ref depth_alpha_vp {}
+
+            fragment_program_ref depth_alpha_fp {}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 vertex_program depth_vp_glsl glsl
 {
  	source depth.vert
@@ -23,11 +88,24 @@ vertex_program depth_vp unified
 {
 	delegate depth_vp_glsl
     delegate depth_vp_glsles
+
+    default_params
+    {
+        param_named_auto cWorldViewProj worldviewproj_matrix
+        param_named_auto cWorldView worldview_matrix
+    }
 }
 
 fragment_program depth_fp unified
 {
 	delegate depth_fp_glsl
+	delegate depth_fp_glsles
+
+    default_params
+    {
+        param_named_auto cNearClipDistance near_clip_distance
+        param_named_auto cFarClipDistance far_clip_distance
+    }
 }
 
 material Context/depth
@@ -36,19 +114,9 @@ material Context/depth
     {
         pass
         {
-            texture_unit BaseColor {}
+            vertex_program_ref depth_vp {}
 
-            vertex_program_ref depth_vp
-            {
-                param_named_auto cWorldViewProj worldviewproj_matrix
-                param_named_auto cWorldView worldview_matrix
-            }
-
-            fragment_program_ref depth_fp
-            {
-                param_named_auto cNearClipDistance near_clip_distance
-                param_named_auto cFarClipDistance far_clip_distance
-            }
+            fragment_program_ref depth_fp {}
         }
     }
 }

@@ -15,17 +15,13 @@ fragment_program PSSM/modulate_fs unified
 
 	default_params
 	{
-		param_named_auto Ambient ambient_light_colour
-		param_named_auto screenSize viewport_size
 		param_named_auto NearClipDistance near_clip_distance
 		param_named_auto FarClipDistance far_clip_distance
 		param_named_auto FogColour fog_colour
 		param_named_auto FogParams fog_params
-		param_named_auto ShadowColour shadow_colour
 		param_named AttenuationSampler int 0
 		param_named SceneSampler int 1
 		param_named MrtSampler int 2
-		param_named exposure float 2
 	}
 }
 

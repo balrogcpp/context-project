@@ -60,11 +60,16 @@ uniform    mat4 cWorldViewProj;
 uniform    mat4 cWorldView;
 
 varying    vec3 oViewPos;
+
+#ifdef HAS_ALPHA
 varying     vec2 vUV;
+#endif
 
 void main()
 {
   oViewPos = (cWorldView * vertex).xyz;// transform the vertex position to the view space
+#ifdef HAS_ALPHA
   vUV = uv0;
+#endif
   gl_Position = cWorldViewProj * vertex;
 }
