@@ -68,6 +68,9 @@ precision highp float;
 #define in varying
 #define out varying
 #endif
+#if VERSION != 120
+out vec4 gl_FragColor;
+#endif
 
 #ifdef SHADOWCASTER_ALPHA
 in vec2 vUV;
@@ -156,10 +159,6 @@ in vec3 vNormal;
 uniform sampler2D uReflectionMap;
 uniform sampler2D uNoiseMap;
 in vec4 projectionCoord;
-#endif
-
-#if VERSION != 120
-out vec4 gl_FragColor;
 #endif
 
 #ifdef SHADOWRECEIVER

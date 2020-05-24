@@ -52,7 +52,6 @@ precision highp float;
 #define in varying
 #define out varying
 #endif
-
 #if VERSION != 120
 out vec4 gl_FragColor;
 #endif

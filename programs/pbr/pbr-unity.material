@@ -267,7 +267,7 @@ material PbrReflection/Unity
             texture_unit NoiseMap
             {
                 texture noise_fresnel.dds
-                filtering linear linear point
+                filtering linear linear linear
             }
 
             vertex_program_ref PbrReflection_vs {}
