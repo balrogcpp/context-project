@@ -177,6 +177,26 @@ externalproject_add(target-ois
                     -G "${CMAKE_GENERATOR}"
                     )
 
+externalproject_add(target-iconv
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://git.savannah.gnu.org/git/libiconv.git
+                    GIT_TAG v1.16
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
 externalproject_add(target-bullet3
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -218,8 +238,8 @@ externalproject_add(target-bullet3
                     )
 
 # Build OpenAL with PulseAudio on Linux and DirectAudio on Windows
-
 if (ANDROID)
+    set(ALSOFT_LIB_TYPE STATIC)
 elseif (UNIX)
     set(ALSOFT_BACKEND_PULSEAUDIO true)
     set(ALSOFT_BACKEND_ALSA false)
@@ -1017,6 +1037,15 @@ if (UNIX AND NOT ANDROID)
     list(APPEND STATIC_LIBRARIES Xrandr)
     list(APPEND STATIC_LIBRARIES dl)
 elseif (ANDROID)
+    list(APPEND STATIC_LIBRARIES z)
+    list(APPEND STATIC_LIBRARIES log)
+    list(APPEND STATIC_LIBRARIES android)
+    list(APPEND STATIC_LIBRARIES EGL)
+    list(APPEND STATIC_LIBRARIES GLESv2)
+    list(APPEND STATIC_LIBRARIES GLESv1_CM)
+    list(APPEND STATIC_LIBRARIES OpenSLES)
+    list(APPEND STATIC_LIBRARIES dl)
+    list(APPEND STATIC_LIBRARIES m)
 elseif (WIN32)
     list(APPEND STATIC_LIBRARIES zlibstatic)
     list(APPEND STATIC_LIBRARIES opengl32)
@@ -1054,4 +1083,7 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OG
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2/GLSLES)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/Overlay)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/cegui-0)
+if (ANDROID)
+    list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_ROOT_DIR}/android/include/)
+endif ()
 set(CONTEXT_DEPENDENCY_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIRS} CACHE INTERNAL "")
