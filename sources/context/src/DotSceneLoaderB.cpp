@@ -627,19 +627,15 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 
   const bool flat = false;
 
+  terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
+  terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
+  terrain_global_options->setUseRayBoxDistanceCalculation(terrain_raybox_calculation_);
   terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
-
-  auto *matProfile =
-      dynamic_cast<TerrainMaterialGeneratorB::SM2Profile *>(terrain_global_options->getDefaultMaterialGenerator()->getActiveProfile());
+  terrain_global_options->setCastsDynamicShadows(terrain_cast_shadows_);
 
   if (legacy_terrain_) {
-    FixPbrParams("Plane");
-    FixPbrShadowReceiver("Plane");
-
-    terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
-    terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
-    terrain_global_options->setUseRayBoxDistanceCalculation(terrain_raybox_calculation_);
-    terrain_global_options->setCastsDynamicShadows(terrain_cast_shadows_);
+    auto *matProfile =
+        dynamic_cast<TerrainMaterialGeneratorB::SM2Profile *>(terrain_global_options->getDefaultMaterialGenerator()->getActiveProfile());
 
     matProfile->setReceiveDynamicShadowsEnabled(terrain_receive_shadows_);
     matProfile->setReceiveDynamicShadowsLowLod(terrain_receive_shadows_low_lod_);
@@ -700,17 +696,19 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
                         layer_counter,
                         pLayerElement.attribute("blendmap").value());
         }
+
       }
     }
   }
 
-  if (terrain_save_terrains_) {
+  if (terrain_save_terrains_ && legacy_terrain_) {
     ogre_terrain_group_->saveAllTerrains(true, true);
   }
-
   ogre_terrain_group_->freeTemporaryResources();
 
-  if (physics_enable_) {
+  bool terrain_collider = physics_enable_;
+
+  if (physics_enable_ && terrain_collider) {
     auto terrainIterator = ogre_terrain_group_->getTerrainIterator();
     terrain_box_ = Ogre::Vector4(-worldSize / 2, worldSize / 2, -worldSize / 2, worldSize / 2);
 
