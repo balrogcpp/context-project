@@ -90,8 +90,8 @@ set(EXTERNAL_GIT_PROGRESS false)
 
 set(CONTEXT_CMAKE_EXTRA_FLAGS " ${CONTEXT_CMAKE_EXTRA_FLAGS}")
 if (ANDROID)
-    set(CONTEXT_CMAKE_EXTRA_FLAGS " -DANDROID_NDK=/opt/android-ndk -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16")
-    string(APPEND CONTEXT_EXTERNAL_C_FLAGS " -I /opt/android-ndk/sources/android/cpufeatures")
+    set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=/opt/android-ndk -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16)
+    string(APPEND CONTEXT_EXTERNAL_C_FLAGS  -I /opt/android-ndk/sources/android/cpufeatures)
 endif ()
 
 externalproject_add(target-sdl
@@ -114,7 +114,7 @@ externalproject_add(target-sdl
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-sdl-ttf
@@ -134,7 +134,7 @@ externalproject_add(target-sdl-ttf
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-sdl-image
@@ -154,7 +154,7 @@ externalproject_add(target-sdl-image
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-ois
@@ -174,7 +174,7 @@ externalproject_add(target-ois
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-bullet3
@@ -214,7 +214,7 @@ externalproject_add(target-bullet3
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 # Build OpenAL with PulseAudio on Linux and DirectAudio on Windows
@@ -279,7 +279,7 @@ externalproject_add(target-openal
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-ogg
@@ -300,8 +300,12 @@ externalproject_add(target-ogg
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
+
+if (ANDROID)
+    set(OGG_ANDROID_LIB libogg.a)
+endif ()
 
 externalproject_add(target-vorbis
                     EXCLUDE_FROM_ALL true
@@ -314,6 +318,8 @@ externalproject_add(target-vorbis
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DOGG_INCLUDE_DIRS=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
+                    -DOGG_LIBRARIES=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/${OGG_ANDROID_LIB}
                     -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
                     -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
                     -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
@@ -321,7 +327,7 @@ externalproject_add(target-vorbis
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 #Patch for MinGW static build
@@ -352,7 +358,7 @@ externalproject_add(target-zlib
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-zlib-build
                     ${CMAKE_COMMAND} --build ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-zlib-build --target install
                     && ${CMAKE_COMMAND} -E copy ${ZLIB_STATIC_LIBRARY} ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/${ZLIB_STATIC_LIBRARY}
@@ -385,7 +391,7 @@ externalproject_add(target-freetype
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config ${EXTERNAL_BUILD_TYPE} --target install
                     ${MINGW_INSTALL_PATHC}
                     )
@@ -408,7 +414,7 @@ externalproject_add(target-zzip
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-rapidjson
@@ -433,7 +439,7 @@ externalproject_add(target-rapidjson
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-pugixml
@@ -453,12 +459,12 @@ externalproject_add(target-pugixml
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
-cmake_dependent_option(CONTEXT_OGRE_BUILD_GLES2 "" true ANDROID false)
-cmake_dependent_option(CONTEXT_OGRE_BUILD_GL3PLUS "" true UNIX;WIN32 false)
-cmake_dependent_option(CONTEXT_OGRE_BUILD_GL "" false MINGW true)
+cmake_dependent_option(CONTEXT_OGRE_BUILD_GLES2 "" true "ANDROID;UNIX" false)
+cmake_dependent_option(CONTEXT_OGRE_BUILD_GL3PLUS "" true "NOT ANDROID" false)
+cmake_dependent_option(CONTEXT_OGRE_BUILD_GL "" true "UNIX;NOT ANDROID" false)
 option(CONTEXT_OGRE_BUILD_PAGING "" true)
 option(CONTEXT_OGRE_BUILD_STBI "" true)
 option(CONTEXT_OGRE_BUILD_HLMS "" false)
@@ -467,7 +473,7 @@ option(CONTEXT_OGRE_BUILD_TERRAIN "" true)
 option(CONTEXT_OGRE_BUILD_MESHLODGENERATOR "" true)
 option(CONTEXT_OGRE_BUILD_VOLUME "" false)
 option(CONTEXT_OGRE_BUILD_PROPERTY "" false)
-option(CONTEXT_OGRE_BUILD_OVERLAY "" false)
+option(CONTEXT_OGRE_BUILD_OVERLAY "" true)
 option(CONTEXT_OGRE_BUILD_OVERLAY_IMGUI "" false)
 option(CONTEXT_OGRE_BUILD_PFX "" true)
 option(CONTEXT_OGRE_BUILD_OCTREE "" true)
@@ -535,7 +541,7 @@ externalproject_add(target-ogre1
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-orge-audiovideo
@@ -558,7 +564,7 @@ externalproject_add(target-orge-audiovideo
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-ogre2.1
@@ -593,7 +599,7 @@ externalproject_add(target-ogre2.1
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-ogre2.2
@@ -628,7 +634,7 @@ externalproject_add(target-ogre2.2
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-particleuniverse
@@ -652,7 +658,7 @@ externalproject_add(target-particleuniverse
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-cegui
@@ -692,6 +698,11 @@ externalproject_add(target-cegui
                     -DCEGUI_STATIC_IMAGECODEC_MODULE=true
                     -DCEGUI_BUILD_STATIC_FACTORY_MODULE=true
                     -DCEGUI_BUILD_RENDERER_OGRE=true
+                    -DOGRE_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/OGRE/cmake
+                    -DCEGUI_FOUND_OGRE_VERSION_MAJOR=1
+                    -DCEGUI_FOUND_OGRE_VERSION_MINOR=12
+                    -DCEGUI_FOUND_OGRE_VERSION_PATCH=5
+                    -DFreetype_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/cmake/freetype
                     -DCEGUI_BUILD_RENDERER_OPENGL=false
                     -DCEGUI_BUILD_RENDERER_OPENGL3=false
                     -DCEGUI_BUILD_RENDERER_OPENGLES=false
@@ -709,7 +720,7 @@ externalproject_add(target-cegui
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-jemalloc
@@ -741,7 +752,7 @@ externalproject_add(target-gtest
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-gbenchmark
@@ -761,7 +772,7 @@ externalproject_add(target-gbenchmark
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-glm
@@ -784,7 +795,7 @@ externalproject_add(target-glm
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-glm ${CMAKE_COMMAND}
                     -E copy_directory glm ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/glm
                     )
@@ -809,7 +820,7 @@ externalproject_add(target-lua
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-angelscript
@@ -831,7 +842,7 @@ externalproject_add(target-angelscript
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-angelscript/sdk/angelscript/projects/cmake
                     BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-angelscript-build
                     ${CMAKE_COMMAND} --build ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-angelscript-build
@@ -859,7 +870,7 @@ externalproject_add(target-opennn
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G ${CMAKE_GENERATOR}
+                    -G "${CMAKE_GENERATOR}"
                     INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-opennn ${CMAKE_COMMAND}
                     -E copy_directory opennn ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/opennn
                     && ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-opennn-build/opennn ${CMAKE_COMMAND}
@@ -867,7 +878,7 @@ externalproject_add(target-opennn
                     )
 
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-    if (UNIX OR MINGW)
+    if (UNIX OR MINGW AND NOT ANDROID)
         list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
     endif()
 endif ()
@@ -945,7 +956,7 @@ if (CONTEXT_OGRE_BUILD_GL)
     list(APPEND OGRE_PLUGINS RenderSystem_GL${SUFFIX_LIB_OGRE})
 endif ()
 if (CONTEXT_OGRE_BUILD_GLES2)
-    list(APPEND OGRE_PLUGINS RenderSystem_GLES${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_PLUGINS RenderSystem_GLES2${SUFFIX_LIB_OGRE})
 endif ()
 if (CONTEXT_OGRE_BUILD_OCTREE)
     list(APPEND OGRE_PLUGINS Plugin_OctreeSceneManager${SUFFIX_LIB_OGRE})
@@ -994,17 +1005,18 @@ list(APPEND STATIC_LIBRARIES pugixml)
 list(APPEND STATIC_LIBRARIES zzip)
 list(APPEND STATIC_LIBRARIES freetype)
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-    if (UNIX OR MINGW)
+    if (UNIX OR MINGW AND NOT ANDROID)
         list(APPEND JEMALLOC_LIBRARIES jemalloc)
     endif ()
 endif ()
-if (UNIX)
+if (UNIX AND NOT ANDROID)
     list(APPEND STATIC_LIBRARIES z)
     list(APPEND STATIC_LIBRARIES OpenGL)
     list(APPEND STATIC_LIBRARIES GLX)
     list(APPEND STATIC_LIBRARIES X11)
     list(APPEND STATIC_LIBRARIES Xrandr)
     list(APPEND STATIC_LIBRARIES dl)
+elseif (ANDROID)
 elseif (WIN32)
     list(APPEND STATIC_LIBRARIES zlibstatic)
     list(APPEND STATIC_LIBRARIES opengl32)
@@ -1037,7 +1049,9 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/bullet)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GL3Plus)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GL)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2/GLSLES)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/Overlay)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/cegui-0)
 set(CONTEXT_DEPENDENCY_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIRS} CACHE INTERNAL "")

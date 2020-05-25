@@ -16,6 +16,7 @@
     <excludeRoots>
       <file path="$PROJECT_DIR$/android" />
       <file path="$PROJECT_DIR$/artifacts" />
+      <file path="$PROJECT_DIR$/cmake-build-android" />
       <file path="$PROJECT_DIR$/install" />
       <file path="$PROJECT_DIR$/thirdparty/external/unix-gnu/Debug/src" />
       <file path="$PROJECT_DIR$/thirdparty/external/unix-gnu/RelWithDebInfo/src" />

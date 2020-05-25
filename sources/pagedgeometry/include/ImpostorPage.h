@@ -358,7 +358,7 @@ class ImpostorTexture {
   }
 
   //This will only be used when IMPOSTOR_FILE_SAVE is set to 0
-  std::auto_ptr<ImpostorTextureResourceLoader> loader;
+  std::shared_ptr<ImpostorTextureResourceLoader> loader;
 };
 
 //-------------------------------------------------------------------------------------

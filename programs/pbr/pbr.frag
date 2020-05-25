@@ -166,6 +166,7 @@ float VSM(vec2 moments, vec2 uv, float compare){
     float m1 = moments.x;
     float m2 = moments.y;
     float sigma2 = m2 - (m1 * m1);
+    sigma2 = clamp(sigma2, -0.01, 0.01);
     const float offset = -0.5;
 
     float diff = compare - m1;

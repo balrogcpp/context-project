@@ -671,6 +671,10 @@ void ContextManager::SetupOGRE() {
   } else {
     ogre_root_ = new Ogre::Root("", "", "");
   }
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+  auto *mGlesRenderSystem = new Ogre::GLES2RenderSystem();
+  Ogre::Root::getSingleton().setRenderSystem(mGlesRenderSystem);
+#else
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *mGL3PlusRenderSystem = new Ogre::GL3PlusRenderSystem();
   Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
@@ -680,6 +684,7 @@ void ContextManager::SetupOGRE() {
   Ogre::Root::getSingleton().setRenderSystem(mGLRenderSystem);
 #endif
 #endif //OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+#endif //OGRE_BUILD_RENDERSYSTEM_GLES2
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   if (global_octree_enable_) {
     auto *mOctreePlugin = new Ogre::OctreeSceneManagerFactory();

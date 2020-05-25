@@ -222,7 +222,7 @@ set(CMAKE_EXE_LINKER_FLAGS ${CONTEXT_EXE_LINKER_FLAGS})
 set(CMAKE_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS})
 set(CMAKE_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS})
 
-if (NOT MSVC)
+if (NOT MSVC AND NOT ANDROID)
     set_target_properties(context-lib-dynamic PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "context/include/pcheader.hpp")
     set_target_properties(context-lib-static PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "context/include/pcheader.hpp")
     #    cotire(context-lib-dynamic)
