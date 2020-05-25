@@ -111,6 +111,7 @@ set(CONTEXT_HEADERS
     context/include/NoCopy.hpp
     context/include/ImguiOverlay.hpp
     context/include/TerrainMaterialGeneratorB.hpp
+    context/include/TerrainMaterialGeneratorC.hpp
     context/include/PropertyMaps.hpp
     context/include/CeguiOverlayManager.hpp
     context/include/PSSMShadowCameraSetupB.hpp
@@ -185,6 +186,7 @@ set(CONTEXT_SOURCES
     context/src/CompositorManager.cpp
     context/src/ImguiOverlay.cpp
     context/src/TerrainMaterialGeneratorB.cpp
+    context/src/TerrainMaterialGeneratorC.cpp
     context/src/PropertyMaps.cpp
     context/src/CeguiOverlayManager.cpp
     context/src/PSSMShadowCameraSetupB.cpp
