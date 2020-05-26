@@ -189,6 +189,18 @@ if (ANDROID)
                         BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ndk-build
                         INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv/obj/local/arm64-v8a ${CMAKE_COMMAND} -E copy libiconv.a ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libiconv.a
                         )
+else ()
+    externalproject_add(target-iconv
+                        EXCLUDE_FROM_ALL true
+                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                        GIT_REPOSITORY https://github.com/roninest/iconv-android.git
+                        GIT_TAG 7d729796e02da9360018d63d7f853dcd4121cce7
+                        GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                        GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ./configure --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ${CONTEXT_MAKE}
+                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv make install
+                        )
 endif ()
 externalproject_add(target-cpuinfo
                     EXCLUDE_FROM_ALL true
@@ -689,12 +701,16 @@ externalproject_add(target-particleuniverse
                     -G "${CMAKE_GENERATOR}"
                     )
 
+if (ANDROID)
+    set (CEGUI_GIT_TAG -Android)
+endif ()
+
 externalproject_add(target-cegui
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-freetype target-ogre1
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/roninest/cegui-static.git
-                    GIT_TAG v0-8-7
+                    GIT_TAG v0-8-7${CEGUI_GIT_TAG}
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
