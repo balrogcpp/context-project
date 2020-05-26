@@ -17,15 +17,7 @@
       <file path="$PROJECT_DIR$/artifacts" />
       <file path="$PROJECT_DIR$/cmake-build-android" />
       <file path="$PROJECT_DIR$/install" />
-      <file path="$PROJECT_DIR$/thirdparty/external/unix-gnu/Debug/src" />
-      <file path="$PROJECT_DIR$/thirdparty/external/unix-gnu/RelWithDebInfo/src" />
-      <file path="$PROJECT_DIR$/thirdparty/external/unix-gnu/Release/src" />
-      <file path="$PROJECT_DIR$/thirdparty/external/windows-mingw/Debug/src" />
-      <file path="$PROJECT_DIR$/thirdparty/external/windows-mingw/RelWithDebInfo/src" />
-      <file path="$PROJECT_DIR$/thirdparty/external/windows-mingw/Release/src" />
-      <file path="$PROJECT_DIR$/thirdparty/external/windows-msvc/Debug/src" />
-      <file path="$PROJECT_DIR$/thirdparty/external/windows-msvc/RelWithDebInfo/src" />
-      <file path="$PROJECT_DIR$/thirdparty/external/windows-msvc/Release/src" />
+      <file path="$PROJECT_DIR$/thirdparty/external" />
       <file path="$PROJECT_DIR$/tmp" />
     </excludeRoots>
   </component>

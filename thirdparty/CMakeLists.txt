@@ -36,7 +36,7 @@ include(ExternalProject)
 find_package(OpenMP REQUIRED)
 if (NOT ANDROID)
     find_package(OpenGL REQUIRED)
-endif()
+endif ()
 find_package(Git REQUIRED)
 find_package(Subversion)
 find_package(Hg)
@@ -91,7 +91,6 @@ set(EXTERNAL_GIT_PROGRESS false)
 set(CONTEXT_CMAKE_EXTRA_FLAGS " ${CONTEXT_CMAKE_EXTRA_FLAGS}")
 if (ANDROID)
     set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=/opt/android-ndk -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16)
-    string(APPEND CONTEXT_EXTERNAL_C_FLAGS  -I /opt/android-ndk/sources/android/cpufeatures)
 endif ()
 
 externalproject_add(target-sdl
@@ -106,6 +105,7 @@ externalproject_add(target-sdl
                     -DSDL_SHARED_ENABLED_BY_DEFAULT=false
                     -DDIRECTX=false
                     -DSDL_AUDIO=false
+                    -DSDL_CPUINFO_ENABLED_BY_DEFAULT=false
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                     -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
                     -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
@@ -113,7 +113,7 @@ externalproject_add(target-sdl
                     -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS} -I /opt/android-ndk/sources/android/cpufeatures
                     -G "${CMAKE_GENERATOR}"
                     )
 
@@ -177,21 +177,29 @@ externalproject_add(target-ois
                     -G "${CMAKE_GENERATOR}"
                     )
 
-externalproject_add(target-iconv
+if (ANDROID)
+    externalproject_add(target-iconv
+                        EXCLUDE_FROM_ALL true
+                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                        GIT_REPOSITORY https://github.com/roninest/iconv-android.git
+                        GIT_TAG 7d729796e02da9360018d63d7f853dcd4121cce7
+                        GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                        GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ./configure --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ndk-build
+                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv/obj/local/arm64-v8a ${CMAKE_COMMAND} -E copy libiconv.a ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libiconv.a
+                        )
+endif ()
+externalproject_add(target-cpuinfo
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://git.savannah.gnu.org/git/libiconv.git
-                    GIT_TAG v1.16
+                    GIT_REPOSITORY https://github.com/google/cpu_features.git
+                    GIT_TAG v0.4.1
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -900,9 +908,13 @@ externalproject_add(target-opennn
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     if (UNIX OR MINGW AND NOT ANDROID)
         list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
-    endif()
+    endif ()
 endif ()
 
+if (ANDROID)
+    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-iconv)
+endif ()
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rapidjson)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-pugixml)
@@ -1037,7 +1049,8 @@ if (UNIX AND NOT ANDROID)
     list(APPEND STATIC_LIBRARIES Xrandr)
     list(APPEND STATIC_LIBRARIES dl)
 elseif (ANDROID)
-    list(APPEND STATIC_LIBRARIES z)
+    list(APPEND STATIC_LIBRARIES iconv)
+    list(APPEND STATIC_LIBRARIES z.a)
     list(APPEND STATIC_LIBRARIES log)
     list(APPEND STATIC_LIBRARIES android)
     list(APPEND STATIC_LIBRARIES EGL)
@@ -1045,7 +1058,9 @@ elseif (ANDROID)
     list(APPEND STATIC_LIBRARIES GLESv1_CM)
     list(APPEND STATIC_LIBRARIES OpenSLES)
     list(APPEND STATIC_LIBRARIES dl)
-    list(APPEND STATIC_LIBRARIES m)
+    list(APPEND STATIC_LIBRARIES m.a)
+    list(APPEND STATIC_LIBRARIES hidapi)
+    list(APPEND STATIC_LIBRARIES ndk_compat)
 elseif (WIN32)
     list(APPEND STATIC_LIBRARIES zlibstatic)
     list(APPEND STATIC_LIBRARIES opengl32)

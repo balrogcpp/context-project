@@ -208,6 +208,7 @@ bool ConfigManager::Add(const std::string &name, char *value) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ConfigManager::Setup() {
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   if (!std::filesystem::exists(file_name_)) {
     file_name_ = std::string("../") + file_name_;
 
@@ -215,7 +216,9 @@ void ConfigManager::Setup() {
       throw Exception("Error during parsing of " + file_name_ + " : file not exist");
     }
   }
-
+#else
+  file_name_ = std::string("../") + file_name_;
+#endif
   std::ifstream ifs(file_name_);
 
   rapidjson::IStreamWrapper isw(ifs);
