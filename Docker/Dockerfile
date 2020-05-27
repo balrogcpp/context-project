@@ -3,12 +3,13 @@ FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update &&\
+    apt-get install software-properties-common -y &&\
+    add-apt-repository ppa:ubuntu-toolchain-r/test -y &&\
     apt-get install -y \
         g++-10 \
         gcc-10\
         make \
         checkinstall \
-        cmake \
         git \
         autoconf \
         libssl1.1 \
@@ -45,7 +46,6 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 900 --slave /
 
 ENV MINGW=/mingw
 
-ARG CMAKE_VERSION=3.16.3
 ARG BINUTILS_VERSION=2.33.1
 ARG MINGW_VERSION=7.0.0
 ARG GCC_VERSION=10.1.0
@@ -145,10 +145,32 @@ RUN cd gcc \
     && make install > /dev/null \
     && cd ..
 
-# RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
-#          -q -O /tmp/cmake-install.sh \
-#          && chmod u+x /tmp/cmake-install.sh \
-#          && mkdir /usr/bin/cmake \
-#          && /tmp/cmake-install.sh --skip-license --prefix=/usr/bin/cmake \
-#          && rm /tmp/cmake-install.sh
-#ENV PATH="/usr/bin/cmake/bin:${PATH}"
+ARG CMAKE_VERSION=3.16.6
+ARG CMAKE_HOME=/opt/cmake
+
+RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
+          -q -O /tmp/cmake-install.sh \
+          && chmod u+x /tmp/cmake-install.sh \
+          && mkdir /opt/cmake \
+          && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
+          && rm /tmp/cmake-install.sh
+ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+
+ARG ANDROID_NDK_HOME=/opt/android-ndk
+ARG ANDROID_NDK_VERSION=r21b
+ARG GRADLE_VERSION=6.4.1
+ARG GRADLE_HOME=/opt/gradle
+
+RUN cd /tmp && \
+    wget -q https://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
+    unzip -q android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
+    mv ./android-ndk-${ANDROID_NDK_VERSION} ${ANDROID_NDK_HOME} && \
+    rm android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip
+ENV PATH="${ANDROID_NDK_HOME}:${PATH}"
+
+RUN cd /tmp && \
+    wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip && \
+    unzip -q gradle-${GRADLE_VERSION}-bin.zip && \
+    mv ./gradle-${GRADLE_VERSION}/ ${GRADLE_HOME} && \
+    rm gradle-${GRADLE_VERSION}-bin.zip
+ENV PATH="${GRADLE_HOME}/bin:${PATH}"
