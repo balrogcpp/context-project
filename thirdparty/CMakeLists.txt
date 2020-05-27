@@ -197,11 +197,12 @@ else ()
                         GIT_TAG 7d729796e02da9360018d63d7f853dcd4121cce7
                         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ./configure --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ./configure --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION} --enable-static=yes --enable-shared=no
                         BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ${CONTEXT_MAKE}
                         INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv make install
                         )
 endif ()
+
 externalproject_add(target-cpuinfo
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -230,7 +231,7 @@ externalproject_add(target-bullet3
                     -DUSE_MSVC_RUNTIME_LIBRARY_DLL=true
                     -DUSE_MSVC_INCREMENTAL_LINKING=false
                     -DUSE_MSVC_EXEPTIONS=true
-                    -DUSE_MSVC_AVX=true
+                    -DUSE_MSVC_AVX=false
                     -DUSE_MSVC_FAST_FLOATINGPOINT=true
                     -DUSE_MSVC_STRING_POOLING=true
                     -DUSE_MSVC_FUNCTION_LEVEL_LINKING=true
@@ -927,9 +928,7 @@ if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     endif ()
 endif ()
 
-if (ANDROID)
-    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-iconv)
-endif ()
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-iconv)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rapidjson)
@@ -1058,6 +1057,7 @@ if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     endif ()
 endif ()
 if (UNIX AND NOT ANDROID)
+    list(APPEND STATIC_LIBRARIES iconv)
     list(APPEND STATIC_LIBRARIES z)
     list(APPEND STATIC_LIBRARIES OpenGL)
     list(APPEND STATIC_LIBRARIES GLX)
@@ -1077,7 +1077,8 @@ elseif (ANDROID)
     list(APPEND STATIC_LIBRARIES m.a)
     list(APPEND STATIC_LIBRARIES hidapi)
     list(APPEND STATIC_LIBRARIES ndk_compat)
-elseif (WIN32)
+elseif (MINGW)
+    list(APPEND STATIC_LIBRARIES iconv)
     list(APPEND STATIC_LIBRARIES zlibstatic)
     list(APPEND STATIC_LIBRARIES opengl32)
     list(APPEND STATIC_LIBRARIES imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
