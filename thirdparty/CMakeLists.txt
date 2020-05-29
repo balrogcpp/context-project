@@ -105,7 +105,6 @@ externalproject_add(target-sdl
                     -DSDL_SHARED_ENABLED_BY_DEFAULT=false
                     -DDIRECTX=false
                     -DSDL_AUDIO=false
-                    -DSDL_CPUINFO_ENABLED_BY_DEFAULT=false
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                     -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
                     -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}

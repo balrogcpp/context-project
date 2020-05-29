@@ -35,9 +35,13 @@ SOFTWARE.
 #include <locale>
 #endif
 
-#define WINAPI_MAIN_FUNC
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#include <android_native_app_glue.h>
+#include <jni.h>
+#endif
 
-#if defined _WIN32 && !defined DEBUG && defined WINAPI_MAIN_FUNC
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#define WINAPI_MAIN_FUNC
 INT WINAPI WinMain
 (
     _In_ HINSTANCE hInstance,
@@ -45,10 +49,12 @@ INT WINAPI WinMain
     _In_ LPSTR lpCmdLine,
     _In_ int nShowCmd
 )
+#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+void android_main(struct android_app *pApp)
 #else
 int main(int argc, char *argv[])
 #endif
 {
 //  return Context::Application::Main(std::make_shared<Demo::DemoDotAppState>());
-  return Context::Application::Main(std::make_shared<Demo::MenuAppState>());
+  Context::Application::Main(std::make_shared<Demo::MenuAppState>());
 }

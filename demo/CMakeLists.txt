@@ -39,7 +39,11 @@ set(SOURCE_FILES_context-demo
     )
 include_directories(context-demo ${CMAKE_CURRENT_SOURCE_DIR}/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 
-add_executable(context-demo ${SOURCE_FILES_context-demo} ${HEADER_FILES_context-demo})
+if (NOT ANDROID)
+    add_executable(context-demo ${SOURCE_FILES_context-demo} ${HEADER_FILES_context-demo})
+else ()
+    add_library(context-demo SHARED ${SOURCE_FILES_context-demo} ${HEADER_FILES_context-demo})
+endif ()
 set(CONTEXT_LIBRARIES context-static)
 
 target_link_directories(context-demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
