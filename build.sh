@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker build . -t balrogcpp/context-project-demo &&\
+docker build . -t balrogcpp/context-project-demo
 docker create -ti --name abc context bash
 mkdir artifacts
 docker cp abc:/mnt/context-demo/artifacts/refman.pdf artifacts
