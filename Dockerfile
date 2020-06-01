@@ -1,4 +1,4 @@
-FROM balrogcpp/mingw-gcc10-cmake:latest
+FROM balrogcpp/context-project-dependencies:latest
 
 ARG CONTEXT_HOME=/mnt/context-demo
 WORKDIR ${CONTEXT_HOME}
@@ -18,20 +18,17 @@ ADD gui ./gui
 ADD android ./android
 ADD .git ./.git
 
-RUN mkdir -p ./build-mingw && mkdir -p ./build-gnu && mkdir -p ./build-android
+RUN mkdir -p ./build-windows && mkdir -p ./build-linux && mkdir -p ./build-android
 
-WORKDIR ${CONTEXT_HOME}/build-mingw
-RUN cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja ..
-RUN cmake --build . --target context-deps
-RUN cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target context-package
+WORKDIR ${CONTEXT_HOME}/build-windows
+RUN cmake -DCONTEXT_ONLY_DEPS=false -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target context-package
 RUN cmake --build . --target install
 
-WORKDIR ${CONTEXT_HOME}/build-gnu
-RUN cmake -G Ninja ..
+WORKDIR ${CONTEXT_HOME}/build-linux
+RUN cmake -DCONTEXT_ONLY_DEPS=false -G Ninja .. && cmake --build . --target context-package
 RUN cmake --build . --target context-pdf > /dev/null
-RUN cmake --build . --target context-deps
-RUN cmake -G Ninja .. && cmake --build . --target context-package
 RUN cmake --build . --target install
+
 RUN cmake --build . --target context-install-zip
 
 #WORKDIR /home/user/context-demo/build-android

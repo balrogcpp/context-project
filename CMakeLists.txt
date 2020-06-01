@@ -59,7 +59,6 @@ include(CheckIncludeFileCXX)
 include(CheckTypeSize)
 include(TestBigEndian)
 include(ProcessorCount)
-include(GetGitRevisionDescription)
 
 test_big_endian(CONTEXT_BIG_ENDIAN)
 if (${CONTEXT_BIG_ENDIAN})
@@ -392,6 +391,14 @@ set(CONTEXT_BIN_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
 set(CONTEXT_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/context CACHE PATH "")
 set(CONTEXT_INCLUDE_DIR ${CONTEXT_SOURCE_DIR}/context/include CACHE PATH "")
 
+set(CONTEXT_THIRDPARTY_ROOT ${CONTEXT_ROOT_DIR}/sources CACHE PATH "")
+set(CONTEXT_THIRDPARTY_DIR ${CONTEXT_THIRDPARTY_ROOT} CACHE PATH "")
+
+add_subdirectory(${CONTEXT_ROOT_DIR}/thirdparty ${CONTEXT_WORK_DIR}/thirdparty)
+
+if (NOT CONTEXT_ONLY_DEPS)
+include(GetGitRevisionDescription)
+
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
 set(CONTEXT_ZIP_NAME ContextProjectDemo-${CMAKE_BUILD_TYPE}-${GIT_SHA1} CACHE PATH "")
@@ -400,11 +407,6 @@ set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
 if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
     message(SEND_ERROR "In-source builds are not allowed!")
 endif ()
-
-set(CONTEXT_THIRDPARTY_ROOT ${CONTEXT_ROOT_DIR}/sources CACHE PATH "")
-set(CONTEXT_THIRDPARTY_DIR ${CONTEXT_THIRDPARTY_ROOT} CACHE PATH "")
-
-add_subdirectory(${CONTEXT_ROOT_DIR}/thirdparty ${CONTEXT_WORK_DIR}/thirdparty)
 
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release" "RelWithDebInfo" "Debug")
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "CMake build type")
@@ -554,3 +556,5 @@ add_custom_target(context-install-zip
                   )
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
+
+endif ()
