@@ -12,13 +12,10 @@ build:
     - docker build . -t context
     - docker create -ti --name abc context bash
     - mkdir artifacts
-    - docker cp abc:/home/user/context/artifacts/ContextProjectDemo-Release-x64.tar.gz .
-    - docker cp abc:/home/user/context/artifacts/ContextProjectDemo-Release-x64.zip .
+    - docker cp abc:/mnt/context-demo/install/ContextProjectDemo-Release-$CI_COMMIT_SHA.zip .
     - docker rm -f abc
   artifacts:
     paths:
-      - ContextProjectDemo-Release-x64.tar.gz
-      - ContextProjectDemo-Release-x64.zip
-    expire_in: 2 days
+      - ContextProjectDemo-Release-$CI_COMMIT_SHA.zip
   only:
     - master
