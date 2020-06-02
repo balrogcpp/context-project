@@ -120,13 +120,11 @@ void main()
 {
   vec4 mypos = position;
 
-#ifdef TERRAIN
-  vec2 uv;
-  uv.x = (mypos.x - TerrainBox.x) / (TerrainBox.y - TerrainBox.x);
-  uv.y = (mypos.z - TerrainBox.z) / (TerrainBox.w - TerrainBox.z);
-  float heigh = texture2D(HeighMap, uv).r * TerrainBox2.y - TerrainBox2.x;
-  mypos.y += heigh;
-#endif
+//  vec2 uv;
+//  uv.x = (mypos.x - TerrainBox.x) / (TerrainBox.y - TerrainBox.x);
+//  uv.y = (mypos.z - TerrainBox.z) / (TerrainBox.w - TerrainBox.z);
+//  float heigh = texture2D(HeighMap, uv).r * TerrainBox2.y - TerrainBox2.x;
+//  mypos.y += heigh;
 
 #ifdef FOREST
   float radiusCoeff = 0.25;

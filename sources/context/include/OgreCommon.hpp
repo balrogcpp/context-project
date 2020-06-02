@@ -72,15 +72,16 @@ SOFTWARE.
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
 #endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-#include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
-#else
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL
-#include <RenderSystems/GL/OgreGLRenderSystem.h>
-#endif
-#endif
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-#include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
+  #include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
+#else
+  #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+    #include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
+  #else
+    #ifdef OGRE_BUILD_RENDERSYSTEM_GL
+      #include <RenderSystems/GL/OgreGLRenderSystem.h>
+    #endif
+  #endif
 #endif
 #ifdef OGRE_BUILD_PLUGIN_STBI
 #include <Plugins/STBICodec/OgreSTBICodec.h>

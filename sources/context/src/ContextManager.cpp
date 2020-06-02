@@ -215,13 +215,14 @@ void ContextManager::InitGeneralResources() {
   ogre_resource_manager.addResourceLocation(media_location_directory_ + "gui/xml_schemas.zip", "Zip", "XmlSchemas");
 #endif
 
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   if (rtss_cache_enable_) {
     if (!std::filesystem::exists(rtss_cache_dir_)) {
       std::filesystem::create_directory(rtss_cache_dir_);
       resource_list.push_back({rtss_cache_dir_, "FileSystem", default_group_name});
     }
-
   }
+#endif
 
   if (!global_resource_list_file_.empty()) {
     std::fstream list_file;
@@ -272,6 +273,7 @@ void ContextManager::InitGeneralResources() {
       throw Exception("Path " + std::get<0>(it) + " already registered. Aborting.");
     }
 
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
     for (auto jt = fs::recursive_directory_iterator(std::get<0>(it)); jt != fs::recursive_directory_iterator(); ++jt) {
       const auto file_path = jt->path().string();
       const auto file_name = jt->path().filename().string();
@@ -303,10 +305,13 @@ void ContextManager::InitGeneralResources() {
           }
 
           ogre_resource_manager.addResourceLocation(file_path, "Zip", std::get<2>(it));
-
         }
       }
     }
+#else
+    if (std::get<1>(it) == "Filesystem" || std::get<1>(it) == "Zip")
+      ogre_resource_manager.addResourceLocation(std::get<0>(it), std::get<1>(it), std::get<2>(it));
+#endif
   }
 
   // load resources
@@ -671,6 +676,10 @@ void ContextManager::SetupOGRE() {
   } else {
     ogre_root_ = new Ogre::Root("", "", "");
   }
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+  auto *mGlesRenderSystem = new Ogre::GLES2RenderSystem();
+  Ogre::Root::getSingleton().setRenderSystem(mGlesRenderSystem);
+#else
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *mGL3PlusRenderSystem = new Ogre::GL3PlusRenderSystem();
   Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
@@ -680,6 +689,7 @@ void ContextManager::SetupOGRE() {
   Ogre::Root::getSingleton().setRenderSystem(mGLRenderSystem);
 #endif
 #endif //OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+#endif //OGRE_BUILD_RENDERSYSTEM_GLES2
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   if (global_octree_enable_) {
     auto *mOctreePlugin = new Ogre::OctreeSceneManagerFactory();
@@ -802,6 +812,7 @@ void ContextManager::SetupShaderResolver() {
       schemRenderState->addTemplateSubRenderState(perPixelLightModel);
     }
 
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
     if (rtss_cache_enable_) {
       const std::string cacheDirectory = rtss_cache_dir_;
 
@@ -813,6 +824,13 @@ void ContextManager::SetupShaderResolver() {
     } else {
       mShaderGenerator->setShaderCachePath("");
     }
+#else
+    if (rtss_cache_enable_) {
+      mShaderGenerator->setShaderCachePath("./");
+    } else {
+      mShaderGenerator->setShaderCachePath("");
+    }
+#endif
   }
 }
 #endif

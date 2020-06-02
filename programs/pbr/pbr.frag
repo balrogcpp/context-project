@@ -166,6 +166,7 @@ float VSM(vec2 moments, vec2 uv, float compare){
     float m1 = moments.x;
     float m2 = moments.y;
     float sigma2 = m2 - (m1 * m1);
+    sigma2 = clamp(sigma2, -0.01, 0.01);
     const float offset = -0.5;
 
     float diff = compare - m1;
@@ -198,7 +199,7 @@ float VSM(vec2 moments, vec2 uv, float compare){
 float calcDepthShadow(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
 {
     // 4-sample PCF
-    uv.xy /= uv.w;
+    uv.xyz /= uv.w;
 
     uv.z = uv.z * 0.5 + 0.5; // convert -1..1 to 0..1
     float shadow = 0.0;
@@ -688,12 +689,9 @@ void main()
     const float fresnelScale = 1.8;
     const float fresnelPower = 8.0;
     float cosa = dot(n, -v);
-    float sina = 1 - cosa * cosa;
     float fresnel = fresnelBias + fresnelScale * pow(1.0 + cosa, fresnelPower);
 
-//    vec2 noise = texture2D(uNormalSampler, vUV.xy / 5.0).xy - 0.5;
     vec2 noise = texture2D(uNoiseMap, vUV.xy).xy - 0.5;
-//    noise *= cosa;
     noise *= 0.1;
     proj += noise;
     vec3 reflectionColour = texture2D(uReflectionMap , proj).rgb;
@@ -714,7 +712,6 @@ void main()
 
     float depth = gl_FragCoord.z  - 0.0002;
 
-//    gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
     gl_FragColor = vec4(depth, depth * depth, 0.0, 1.0);
 #endif //SHADOWCASTER
 }
