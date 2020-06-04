@@ -176,11 +176,11 @@ in vec4 projectionCoord;
 #endif
 
 #ifdef SHADOWRECEIVER
-float VSM(vec2 moments, vec2 uv, float compare){
+float VSM(vec2 moments, float compare){
     float m1 = moments.x;
     float m2 = moments.y;
     float sigma2 = m2 - (m1 * m1);
-    sigma2 = clamp(sigma2, -0.01, 0.01);
+//    sigma2 = clamp(sigma2, -0.01, 0.01);
     const float offset = -0.5;
 
     float diff = compare - m1;
@@ -195,20 +195,20 @@ float VSM(vec2 moments, vec2 uv, float compare){
     }
 }
 
-//float ESM(float depth, vec2 uv, float compare){
-//    const float k = 10.0;
-//    const float offset = -1.0;
-//
-//    if(compare > depth)
-//    {
-//        float shadow = offset + exp(k * depth) * exp(-k * compare);
-//        return clamp(shadow, 0, 1);
-//    }
-//    else
-//    {
-//        return 1.0;
-//    }
-//}
+float ESM(float depth, float compare){
+    const float k = 10.0;
+    const float offset = -1.0;
+
+    if(compare > depth)
+    {
+        float shadow = offset + exp(k * depth) * exp(-k * compare);
+        return clamp(shadow, 0, 1);
+    }
+    else
+    {
+        return 1.0;
+    }
+}
 
 float calcDepthShadow(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
 {
@@ -219,18 +219,49 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
     float shadow = 0.0;
     float compare = uv.z;
 
+//    const float radius = 1.0;
 //    float counter = 0.0;
-//    for (int i = 0; i < iterations; i++)
 //    for (float y = -radius; y < radius; y++)
 //    for (float x = -radius; x < radius; x++)
 //    {
-//        vec2 uv2 = uv.xy + vec2(x, y) * invShadowMapSize.xy + poissonDisk16[i] * invShadowMapSize.x;
+//        vec2 uv2 = uv.xy + vec2(x, y) * invShadowMapSize.xy;
+//        float depth = texture2D(shadowMap, uv2).r;
+//        if (depth > compare) {
+//            counter++;
+//        }
+//    }
+//    shadow = counter / ((2 * radius ) * (2 * radius));
+
+//    const vec2 poissonDisk16[16] = vec2[](
+//    vec2( -0.94201624, -0.39906216 ),
+//    vec2( 0.94558609, -0.76890725 ),
+//    vec2( -0.094184101, -0.92938870 ),
+//    vec2( 0.34495938, 0.29387760 ),
+//    vec2( -0.91588581, 0.45771432 ),
+//    vec2( -0.81544232, -0.87912464 ),
+//    vec2( -0.38277543, 0.27676845 ),
+//    vec2( 0.97484398, 0.75648379 ),
+//    vec2( 0.44323325, -0.97511554 ),
+//    vec2( 0.53742981, -0.47373420 ),
+//    vec2( -0.26496911, -0.41893023 ),
+//    vec2( 0.79197514, 0.19090188 ),
+//    vec2( -0.24188840, 0.99706507 ),
+//    vec2( -0.81409955, 0.91437590 ),
+//    vec2( 0.19984126, 0.78641367 ),
+//    vec2( 0.14383161, -0.14100790 )
+//    );
+//
+//    const int iterations = 4;
+//    float counter = 0.0;
+//    for (int i = 0; i < iterations; i++)
+//    {
+//        vec2 uv2 = uv.xy + poissonDisk16[i] * invShadowMapSize.x;
 //        float depth = texture2D(shadowMap, uv2).r;
 //        if (depth > compare) {
 //          counter++;
 //        }
 //    }
-//    shadow = counter / ( iterations * (2 * radius ) * (2 * radius));
+//    shadow = counter / ( iterations);
 
 //    const vec2 poissonDisk4[4] = vec2[](
 //    vec2( -0.94201624, -0.39906216 ),
@@ -275,7 +306,8 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv, vec4 invShadowMapSize)
     for (int i = 0; i < iterations; i++)
     {
         vec2 uv2 = uv.xy + poissonDisk16[i] * invShadowMapSize.xy;
-        shadow += VSM(texture2D(shadowMap, uv2).rg, uv2, compare);
+//        shadow += VSM(texture2D(shadowMap, uv2).rg, compare);
+        shadow += ESM(texture2D(shadowMap, uv2).r, compare);
     }
     shadow /= float(iterations);
 
