@@ -39,24 +39,38 @@ SOFTWARE.
 #else
 #define in varying
 #define out varying
+#if VERSION != 120
+out vec4 gl_FragColor;
+#endif
 #endif
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
 #endif
 #else
-#version 100
+#define VERSION 300
+#version VERSION es
 #extension GL_OES_standard_derivatives : enable
 #extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
 precision highp float;
+#if VERSION == 100
 #define in varying
 #define out varying
-#endif
-#if VERSION != 120
+#else
+#define attribute in
+#define texture1D texture
+#define texture2D texture
+#define texture2DProj textureProj
+#define shadow2DProj textureProj
+#define texture3D texture
+#define textureCube texture
+#define texture2DLod textureLod
+#define textureCubeLod textureLod
 out vec4 gl_FragColor;
 #endif
+#endif
 
-varying vec2 oUv0;
+in vec2 oUv0;
 
 uniform sampler2D sSceneDepthSampler;
 uniform sampler2D AttenuationSampler;
@@ -74,7 +88,7 @@ uniform float cEdgeHighlight; // multiplier for edge highlighting in [1, 2] 1 is
 
 void main()
 {
-  const int nSampleNum = 32; // number of samples
+  const float nSampleNum = 32.0; // number of samples
 
   vec4 attenuation = texture2D(AttenuationSampler, oUv0);
 
@@ -85,9 +99,9 @@ void main()
   vec2 rotationTC = oUv0 * cViewportSize.xy / 4.0;
   vec3 rotationVector = 2.0 * texture2D(sRotSampler4x4, rotationTC).xyz - 1.0; // [-1, 1]x[-1. 1]x[-1. 1]
 
-  float rUV = 0; // radius of influence in screen space
-  float r = 0; // radius of influence in world space
-  if (cSampleInScreenspace == 1)
+  float rUV = 0.0; // radius of influence in screen space
+  float r = 0.0; // radius of influence in world space
+  if (cSampleInScreenspace == 1.0)
   {
     rUV = cSampleLengthScreenSpace;
     r = tan(rUV * cFov) * fragmentWorldDepth;
@@ -101,9 +115,9 @@ void main()
   float sampleLength = cOffsetScale; // the offset for the first sample
   float sampleLengthStep = pow((rUV / sampleLength), 1.0f/nSampleNum);
 
-  float accessibility = 0;
+  float accessibility = 0.0;
   // sample the sphere and accumulate accessibility
-  for (int i = 0; i < (nSampleNum/8); i++)
+  for (int i = 0; i < (int(nSampleNum)/8); i++)
   {
     for (int x = -1; x <= 1; x += 2)
     for (int y = -1; y <= 1; y += 2)

@@ -39,18 +39,34 @@ SOFTWARE.
 #else
 #define in varying
 #define out varying
+#if VERSION != 120
+out vec4 gl_FragColor;
+#endif
 #endif
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
 #endif
 #else
-#version 100
+#define VERSION 300
+#version VERSION es
 #extension GL_OES_standard_derivatives : enable
 #extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
 precision highp float;
+#if VERSION == 100
 #define in varying
 #define out varying
+#else
+#define attribute in
+#define texture1D texture
+#define texture2D texture
+#define texture2DProj textureProj
+#define shadow2DProj textureProj
+#define texture3D texture
+#define textureCube texture
+#define texture2DLod textureLod
+#define textureCubeLod textureLod
+#endif
 #endif
 
 attribute vec4 vertex;
@@ -59,10 +75,10 @@ attribute vec2 uv0;
 uniform    mat4 cWorldViewProj;
 uniform    mat4 cWorldView;
 
-varying    vec3 oViewPos;
+out    vec3 oViewPos;
 
 #ifdef HAS_ALPHA
-varying     vec2 vUV;
+out     vec2 vUV;
 #endif
 
 void main()

@@ -39,27 +39,40 @@ SOFTWARE.
 #else
 #define in varying
 #define out varying
+#if VERSION != 120
+out vec4 gl_FragColor;
+#endif
 #endif
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
 #endif
 #else
-#version 100
+#define VERSION 300
+#version VERSION es
 #extension GL_OES_standard_derivatives : enable
 #extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
 precision highp float;
+#if VERSION == 100
 #define in varying
 #define out varying
-#endif
-#extension GL_ARB_draw_buffers : enable
-#if VERSION != 120
+#else
+#define attribute in
+#define texture1D texture
+#define texture2D texture
+#define texture2DProj textureProj
+#define shadow2DProj textureProj
+#define texture3D texture
+#define textureCube texture
+#define texture2DLod textureLod
+#define textureCubeLod textureLod
 out vec4 gl_FragColor;
 #endif
+#endif
 
-varying    vec3 oViewPos;
-varying    vec3 oNormal;
-varying     vec2 vUV;
+in    vec3 oViewPos;
+in    vec3 oNormal;
+in     vec2 vUV;
 
 uniform float cNearClipDistance;
 uniform float cFarClipDistance;// !!! might be 0 for infinite view projection.
