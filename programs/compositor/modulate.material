@@ -46,6 +46,7 @@ fragment_program PSSM/modulate_fs unified
 		param_named AttenuationSampler int 0
 		param_named SceneSampler int 1
 		param_named MrtSampler int 2
+		param_named exposure float 1
 	}
 }
 

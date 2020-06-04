@@ -73,7 +73,6 @@ out vec4 gl_FragColor;
 in vec2 oUv0;
 
 uniform float exposure;
-uniform vec4 screenSize;
 uniform sampler2D SceneSampler;
 
 void main()
