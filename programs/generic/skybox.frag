@@ -148,4 +148,5 @@ vec3 LINEARtoSRGB(vec3 srgbIn)
 void main()
 {
     gl_FragColor = SRGBtoLINEAR(textureCube(cubemap, TexCoords));
+//    gl_FragColor = textureCube(cubemap, TexCoords);
 }

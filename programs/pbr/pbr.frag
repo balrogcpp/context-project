@@ -742,7 +742,7 @@ void main()
     proj += noise;
     vec3 reflectionColour = texture2D(uReflectionMap , proj).rgb;
 
-    total_colour = mix(total_colour, reflectionColour, fresnel * metallic);
+    total_colour = mix(SRGBtoLINEAR(total_colour), reflectionColour, fresnel * metallic);
 #endif
 
     float exponent = vUV.z * uFogParams.x;
@@ -761,7 +761,8 @@ void main()
     }
 #endif
 
-    float depth = gl_FragCoord.z  - 0.0002;
+//    float depth = gl_FragCoord.z  - 0.0002;
+    float depth = gl_FragCoord.z;
 
     gl_FragColor = vec4(depth, depth * depth, 0.0, 1.0);
 #endif //SHADOWCASTER
