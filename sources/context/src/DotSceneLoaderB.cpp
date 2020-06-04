@@ -1240,12 +1240,12 @@ void DotSceneLoaderB::FixPbrShadowCaster(Ogre::MaterialPtr material) {
 
       if (texPtr3) {
         texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-//        texPtr3->setTextureFiltering(Ogre::TFO_NONE);
         texPtr3->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
         texPtr3->setTextureName(texture_name);
       }
     }
-  } else {
+  }
+  else {
     auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/NoAlpha/shadow_caster");
     auto new_caster = caster_material->clone("PSSM/NoAlpha/shadow_caster" + std::to_string(material_list.size()));
     material->getTechnique(0)->setShadowCasterMaterial(new_caster);

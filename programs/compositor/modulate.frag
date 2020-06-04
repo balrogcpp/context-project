@@ -69,19 +69,7 @@ void main()
 {
     vec4 tmp = texture2D(AttenuationSampler, oUv0);
     vec3 bloom = tmp.rgb;
-//    float shadow = tmp.a;
     vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-    float depth = FarClipDistance * texture2D(MrtSampler, oUv0).r + NearClipDistance;
-
-    float fog_value = 0.0;
-
-    if (depth < 500.0) {
-//        scene *= shadow;
-        scene += bloom;
-        float exponent = depth * FogParams.x;
-        fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
-        scene = mix(scene, FogColour, fog_value);
-    }
-
+    scene += bloom;
     gl_FragColor = vec4(scene, 1.0);
 }

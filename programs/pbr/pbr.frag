@@ -699,6 +699,11 @@ void main()
     total_colour = mix(total_colour, reflectionColour, fresnel * metallic);
 #endif
 
+    float exponent = vUV.z * uFogParams.x;
+    float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
+    total_colour = mix(total_colour, uFogColour, fog_value);
+
+//    gl_FragColor = vec4(LINEARtoSRGB(total_colour), alpha);
     gl_FragColor = vec4(total_colour, alpha);
 
 #else //!SHADOWCASTER

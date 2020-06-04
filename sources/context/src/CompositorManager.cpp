@@ -240,8 +240,8 @@ void CompositorManager::Setup() {
     ssaog_buffer_scheme_handler_ = std::make_unique<GBufferSchemeHandler>();
     Ogre::MaterialManager::getSingleton().addListener(ssaog_buffer_scheme_handler_.get(), "GBuffer");
   } else {
-    depth_scheme_handler_ = std::make_unique<DepthSchemeHandler>();
-    Ogre::MaterialManager::getSingleton().addListener(depth_scheme_handler_.get(), "Depth");
+//    depth_scheme_handler_ = std::make_unique<DepthSchemeHandler>();
+//    Ogre::MaterialManager::getSingleton().addListener(depth_scheme_handler_.get(), "Depth");
   }
 
   if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Main"))
@@ -255,10 +255,10 @@ void CompositorManager::Setup() {
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
   } else {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Depth"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/Depth", true);
-    else
-      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
+//    if (Ogre::CompositorManager::getSingleton().addCompositor(ogre_viewport_, "Context/Depth"))
+//      Ogre::CompositorManager::getSingleton().setCompositorEnabled(ogre_viewport_, "Context/Depth", true);
+//    else
+//      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
   }
 
   if (compositor_use_bloom_) {

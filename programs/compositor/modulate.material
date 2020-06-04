@@ -74,11 +74,11 @@ material Context/Modulate
                 filtering none
             }
 
-			texture_unit
+			/*texture_unit
             {
                 content_type compositor Context/Depth depth
                 filtering none
-            }
+            }*/
 		}
 	}
 }
