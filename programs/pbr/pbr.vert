@@ -40,7 +40,7 @@ SOFTWARE.
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
 #else
-#define in varying
+#define in attribute
 #define out varying
 #if VERSION != 120
 out vec4 gl_FragColor;
@@ -72,28 +72,29 @@ precision highp float;
 #endif
 #endif
 
-attribute vec4 position;
+in vec4 position;
 uniform mat4 uMVPMatrix;
 
 #ifdef SHADOWCASTER_ALPHA
-attribute vec2 uv0;
-out vec2 vUV;
+in vec2 uv0;
+out vec2 vUV0;
 #endif
 
 #ifndef SHADOWCASTER
 uniform mat4 uModelMatrix;
 
 #ifdef HAS_UV
-attribute vec2 uv0;
+in vec2 uv0;
 #endif
 
-out vec4 vUV;
+out vec4 vUV0;
+out vec4 vUV1;
 
 #ifdef HAS_NORMALS
-attribute vec4 normal;
+in vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
-attribute vec4 tangent;
+in vec4 tangent;
 #endif
 
 uniform float uLightCount;
@@ -166,9 +167,9 @@ void main()
 #endif
 
 #ifdef HAS_UV
-  vUV.xy = uv0;
+  vUV0.xy = uv0;
 #else
-  vUV.xy = vec2(0.0);
+  vUV0.xy = vec2(0.0);
 #endif
 
   for (int i = 0; i < int(uLightCount);  i += 3) {
@@ -183,11 +184,11 @@ void main()
   }
 
   gl_Position = uMVPMatrix * mypos;
-  vUV.z = gl_Position.z;
+  vUV0.z = gl_Position.z;
   vPosition = vec3(pos.xyz) / pos.w;
 
 #ifdef REFLECTION
-  mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
+  const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
                         0.0, 0.5, 0.0, 0.0,
                         0.0, 0.0, 0.5, 0.0,
                         0.5, 0.5, 0.5, 1.0);
@@ -197,13 +198,13 @@ void main()
 #else //SHADOWCASTER
 
 #ifdef SHADOWCASTER_ALPHA
-  vUV.xy = uv0;
+  vUV0.xy = uv0;
 #endif
 
   gl_Position = uMVPMatrix * mypos;
 #endif //SHADOWCASTER
 
 #ifdef FADE
-  vUV.w = 1.0 - clamp(gl_Position.z * fadeRange, 0.0, 1.0);
+  vUV0.w = 1.0 - clamp(gl_Position.z * fadeRange, 0.0, 1.0);
 #endif
 }
