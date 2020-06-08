@@ -60,7 +60,7 @@ material Context/filter5Y
 			texture_unit
             {
                 content_type compositor Context/Bloom bloom
-                filtering linear linear none
+                filtering none
             }
 		}
 	}
@@ -104,7 +104,7 @@ material Context/filter5X
 			texture_unit
             {
                 content_type compositor Context/Bloom bloom
-                filtering linear linear none
+                filtering none
             }
 		}
 	}
@@ -151,7 +151,7 @@ material Context/filter3Y
 			texture_unit
             {
                 content_type compositor Context/Bloom bloom
-                filtering linear linear none
+                filtering none
             }
 		}
 	}
@@ -195,7 +195,7 @@ material Context/filter3X
 			texture_unit
             {
                 content_type compositor Context/Bloom bloom
-                filtering linear linear none
+                filtering none
             }
 		}
 	}

@@ -1241,6 +1241,7 @@ void DotSceneLoaderB::FixPbrShadowCaster(Ogre::MaterialPtr material) {
       if (texPtr3) {
         texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
         texPtr3->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
+//        texPtr3->setTextureFiltering(Ogre::TFO_NONE);
         texPtr3->setTextureName(texture_name);
       }
     }
@@ -1416,6 +1417,7 @@ void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
             tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
             tu->setTextureBorderColour(Ogre::ColourValue::White);
             tu->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
+//            tu->setTextureFiltering(Ogre::TFO_NONE);
           }
 
           frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);

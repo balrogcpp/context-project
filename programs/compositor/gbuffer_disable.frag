@@ -70,29 +70,8 @@ out vec4 gl_FragColor;
 #endif
 #endif
 
-in vec2 oUv0;
-uniform vec3 FogColour;
-uniform vec4 FogParams;
-uniform float NearClipDistance;
-uniform float FarClipDistance;
-uniform sampler2D AttenuationSampler;
-uniform sampler2D SceneSampler;
-uniform sampler2D MrtSampler;
-
-uniform float exposure;
-
 void main()
 {
-    vec4 tmp = texture2D(AttenuationSampler, oUv0);
-    vec3 bloom = tmp.rgb;
-    vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-    scene += 0.05 * bloom;
-    scene *= tmp.a;
-
-    const float gamma = 2.2;
-    vec3 mapped = vec3(1.0) - exp(-scene * exposure);
-    scene = pow(mapped, vec3(1.0 / gamma));
-
-    gl_FragColor = vec4(scene, 1.0);
-//    gl_FragColor = vec4(vec3(tmp.a), 1.0);
+//  discard;
+  gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
 }

@@ -175,7 +175,10 @@ uniform sampler2D uNoiseMap;
 in vec4 projectionCoord;
 #endif
 
+#undef SHADOWRECEIVER_VSM
+
 #ifdef SHADOWRECEIVER
+#ifdef SHADOWRECEIVER_VSM
 float VSM(vec2 moments, float compare){
     float m1 = moments.x;
     float diff = compare - m1;
@@ -193,7 +196,7 @@ float VSM(vec2 moments, float compare){
         return 1.0;
     }
 }
-
+#else
 float ESM(float depth, float compare){
     const float k = 30.0;
     const float offset = 0.0;
@@ -209,6 +212,7 @@ float ESM(float depth, float compare){
         return 1.0;
     }
 }
+#endif
 
 float calcDepthShadow(sampler2D shadowMap, vec4 uv)
 {
@@ -238,6 +242,15 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv)
     vec2( 0.14383161, -0.14100790 )
     );
 
+#ifdef SHADOWRECEIVER_VSM
+    const int iterations = 16;
+    for (int i = 0; i < iterations; i++)
+    {
+        vec4 uv2 = uv;
+        uv2.xy += poissonDisk16[i] * 0.001;
+        shadow += (VSM(texture2DProj(shadowMap, uv2).rg, compare) / iterations);
+    }
+#else
     const int iterations = 16;
     for (int i = 0; i < iterations; i++)
     {
@@ -245,14 +258,7 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv)
         uv2.xy += poissonDisk16[i] * 0.001;
         shadow += (ESM(texture2DProj(shadowMap, uv2).r, compare) / iterations);
     }
-
-//    const int iterations = 16;
-//    for (int i = 0; i < iterations; i++)
-//    {
-//        vec4 uv2 = uv;
-//        uv2.xy += poissonDisk16[i] * 0.001;
-//        shadow += (VSM(texture2DProj(shadowMap, uv2).rg, compare) / iterations);
-//    }
+#endif
 
     shadow = clamp(shadow + uShadowColour.r, 0, 1);
 
@@ -675,7 +681,6 @@ void main()
 
 #ifdef REFLECTION
     vec4 projection = projectionCoord;
-//    projection.xyz /= projectionCoord.w;
 
     const float fresnelBias = 0.1;
     const float fresnelScale = 1.8;
@@ -708,9 +713,12 @@ void main()
     }
 #endif
 
-//    float depth = gl_FragCoord.z  - 0.0002;
-    float depth = gl_FragCoord.z;
-
+#ifdef SHADOWRECEIVER_VSM
+    float depth = gl_FragCoord.z  - 0.0002;
     gl_FragColor = vec4(depth, depth * depth, 0.0, 1.0);
+#else
+    float depth = gl_FragCoord.z;
+    gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
+#endif
 #endif //SHADOWCASTER
 }

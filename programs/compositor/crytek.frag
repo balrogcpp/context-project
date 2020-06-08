@@ -88,9 +88,8 @@ uniform float cEdgeHighlight; // multiplier for edge highlighting in [1, 2] 1 is
 
 void main()
 {
-  const float nSampleNum = 32.0; // number of samples
-
-  vec4 attenuation = texture2D(AttenuationSampler, oUv0);
+//  const float nSampleNum = 32.0; // number of samples
+  const float nSampleNum = 8.0; // number of samples
 
   // get the depth of the current pixel and convert into world space unit [0, inf]
   float fragmentWorldDepth = texture2D(sSceneDepthSampler, oUv0).w * farClipDistance;
@@ -153,5 +152,6 @@ void main()
   accessibility *= cEdgeHighlight;
 
   // amplify and saturate if necessary
-  gl_FragColor = vec4(attenuation.rgb, attenuation.a * accessibility);
+  vec4 attenuation = texture2D(AttenuationSampler, oUv0);
+  gl_FragColor = vec4(attenuation.rgb, accessibility);
 }

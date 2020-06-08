@@ -71,28 +71,50 @@ out vec4 gl_FragColor;
 #endif
 
 in vec2 oUv0;
-uniform vec3 FogColour;
-uniform vec4 FogParams;
-uniform float NearClipDistance;
-uniform float FarClipDistance;
-uniform sampler2D AttenuationSampler;
-uniform sampler2D SceneSampler;
-uniform sampler2D MrtSampler;
 
-uniform float exposure;
+uniform sampler2D sNormal;
+uniform sampler2D sPosition;
+uniform sampler2D AttenuationSampler;
+
+uniform float cRange; // the three(four) artistic parameters
+uniform float cBias;
+uniform float cAverager;
+uniform float cMinimumCrease;
+uniform float cKernelSize; // Bias for the kernel size, Hack for the fixed size 11x11 stipple kernel
+uniform vec4 cViewportSize;
 
 void main()
 {
-    vec4 tmp = texture2D(AttenuationSampler, oUv0);
-    vec3 bloom = tmp.rgb;
-    vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-    scene += 0.05 * bloom;
-    scene *= tmp.a;
+  // get the view space position and normal of the fragment
+  vec3 fragmentPosition = texture2D(sPosition, oUv0).xyz;
+  vec3 fragmentNormal = texture2D(sNormal, oUv0).xyz;
 
-    const float gamma = 2.2;
-    vec3 mapped = vec3(1.0) - exp(-scene * exposure);
-    scene = pow(mapped, vec3(1.0 / gamma));
+  float totalGI = 0.0f;
 
-    gl_FragColor = vec4(scene, 1.0);
-//    gl_FragColor = vec4(vec3(tmp.a), 1.0);
+  const int stippleSize = 11; // must be odd
+  for (int i = 0; i < (stippleSize + 1) / 2; i++)
+  {
+    vec2 diagonalStart = vec2(-(stippleSize - 1.0) / 2.0, 0) + i;
+    for(int j = 0; j < (stippleSize + 1) / 2; j++)
+    {
+      vec2 sampleOffset = diagonalStart + vec2(j, -j);
+
+      vec2 sampleUV = oUv0 + (sampleOffset * cViewportSize.zw * cKernelSize);
+      vec3 samplePos = texture2D(sPosition, sampleUV).xyz;
+
+      vec3 toCenter = samplePos - fragmentPosition;
+      float distance = length(toCenter);
+
+      toCenter = normalize(toCenter);
+      float centerContrib = clamp((dot(toCenter, fragmentNormal) - cMinimumCrease) * cBias, 0.0, 1.0);
+      float rangeAttenuation = 1.0f - clamp(distance / cRange, 0.0, 1.0);
+
+      totalGI += centerContrib * rangeAttenuation;
+    }
+  }
+
+  totalGI /= cAverager;
+
+  vec4 attenuation = texture2D(AttenuationSampler, oUv0);
+  gl_FragColor = vec4(attenuation.rgb, 1.0 - totalGI);
 }

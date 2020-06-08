@@ -9,5 +9,6 @@
   "graphics_shadows_pssm_2_resolution": 2048,
   "global_verbose_enable": false,
   "global_log_enable": false,
-  "graphics_vsync": true
+  "graphics_vsync": true,
+  "compositor_use_ssao": true
 }
