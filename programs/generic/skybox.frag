@@ -97,7 +97,6 @@ vec4 SRGBtoLINEAR(vec4 srgbIn)
 #endif //MANUAL_SRGB
 }
 
-
 vec3 SRGBtoLINEAR(vec3 srgbIn)
 {
 #ifdef MANUAL_SRGB

@@ -73,22 +73,16 @@ out vec4 gl_FragColor;
 in vec2 oUv0;
 uniform vec4 screenSize;
 uniform sampler2D SceneSampler;
-//uniform sampler2D AttenuationSampler;
 
 void main()
 {
-  float a = texture2D(SceneSampler, oUv0).a;
   vec3 color = texture2D(SceneSampler, oUv0).rgb;
+  float attenuation = texture2D(SceneSampler, oUv0).a;
   vec3 bloom = vec3(0.0);
 
-  const float treshhold = 0.9;
+  float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
+  if(brightness > 0.9)
+    bloom = color;
 
-//  bloom.r = color.r > treshhold ? color.r : 0.0;
-//  bloom.g = color.g > treshhold ? color.g : 0.0;
-//  bloom.b = color.b > treshhold ? color.b : 0.0;
-  bloom.r = color.r > treshhold ? color.r - treshhold : 0.0;
-  bloom.g = color.g > treshhold ? color.g - treshhold : 0.0;
-  bloom.b = color.b > treshhold ? color.b - treshhold : 0.0;
-
-  gl_FragColor = vec4(bloom, a);
+  gl_FragColor = vec4(bloom, 1.0);
 }

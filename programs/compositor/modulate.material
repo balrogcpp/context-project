@@ -66,7 +66,7 @@ material Context/Modulate
 			texture_unit
             {
                 content_type compositor Context/Bloom bloom
-                filtering none
+                filtering linear linear none
             }
 
 			texture_unit
@@ -74,12 +74,6 @@ material Context/Modulate
                 content_type compositor Context/Main scene
                 filtering none
             }
-
-			/*texture_unit
-            {
-                content_type compositor Context/Depth depth
-                filtering none
-            }*/
 		}
 	}
 }
