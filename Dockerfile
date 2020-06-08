@@ -14,20 +14,18 @@ ADD CMakeLists.txt .
 ADD LICENSE .
 ADD programs ./programs
 ADD scenes ./scenes
-ADD cegui ./cegui
+ADD gui ./gui
 ADD android ./android
 ADD .git ./.git
 
 RUN mkdir -p ./build-windows && mkdir -p ./build-linux && mkdir -p ./build-android
 
 WORKDIR ${CONTEXT_HOME}/build-windows
-RUN cmake -DCONTEXT_ONLY_DEPS=false -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target context-package
-RUN cmake --build . --target install
+RUN cmake -DCONTEXT_ONLY_DEPS=false -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target install
 
 WORKDIR ${CONTEXT_HOME}/build-linux
-RUN cmake -DCONTEXT_ONLY_DEPS=false -G Ninja .. && cmake --build . --target context-package
-RUN cmake --build . --target context-pdf > /dev/null
-RUN cmake --build . --target install
+RUN cmake -DCONTEXT_ONLY_DEPS=false -G Ninja .. && cmake --build . --target install
+# RUN cmake --build . --target context-pdf > /dev/null
 
 RUN cmake --build . --target context-install-zip
 
