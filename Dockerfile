@@ -14,7 +14,7 @@ ADD CMakeLists.txt .
 ADD LICENSE .
 ADD programs ./programs
 ADD scenes ./scenes
-ADD gui ./gui
+ADD cegui ./cegui
 ADD android ./android
 ADD .git ./.git
 
