@@ -95,6 +95,32 @@ if (ANDROID)
     set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=/opt/android-ndk -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16)
 endif ()
 
+externalproject_add(target-yamlcpp
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+                    GIT_TAG yaml-cpp-0.6.3
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DYAML_BUILD_SHARED_LIBS=false
+                    -DYAML_CPP_BUILD_CONTRIB=false
+                    -DYAML_CPP_BUILD_TESTS=false
+                    -DYAML_CPP_BUILD_TOOLS=false
+                    -DMSVC_SHARED_RT=false
+                    -DMSVC_STHREADED_RT=false
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS} -I /opt/android-ndk/sources/android/cpufeatures
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
 externalproject_add(target-sdl
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -516,7 +542,7 @@ option(CONTEXT_OGRE_BUILD_EXRCODEC "" false)
 
 externalproject_add(target-ogre1
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zlib target-zzip target-freetype target-pugixml
+                    DEPENDS target-zlib target-zzip target-freetype target-pugixml target-sdl
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v1.12.5
@@ -921,6 +947,7 @@ if (ANDROID)
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-iconv)
 endif ()
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rapidjson)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-pugixml)
@@ -1054,6 +1081,7 @@ if (UNIX AND NOT ANDROID)
     list(APPEND STATIC_LIBRARIES X11)
     list(APPEND STATIC_LIBRARIES Xrandr)
     list(APPEND STATIC_LIBRARIES dl)
+    list(APPEND STATIC_LIBRARIES yaml-cpp)
 elseif (ANDROID)
     list(APPEND STATIC_LIBRARIES iconv)
     list(APPEND STATIC_LIBRARIES z.a)
@@ -1070,6 +1098,7 @@ elseif (ANDROID)
 elseif (MINGW)
     list(APPEND STATIC_LIBRARIES zlibstatic)
     list(APPEND STATIC_LIBRARIES opengl32)
+    list(APPEND STATIC_LIBRARIES yaml-cpp)
     list(APPEND STATIC_LIBRARIES imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 endif ()
 
