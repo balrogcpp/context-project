@@ -119,6 +119,8 @@ set(CONTEXT_HEADERS
     context/include/CubeMapCamera.hpp
     context/include/ReflectionCamera.hpp
     context/include/ParticlesManager.hpp
+    context/include/Gorilla.h
+    context/include/GorillaOverlay.hpp
     )
 
 set(HEADER_FILES_CONTEXT_LIB
@@ -193,6 +195,8 @@ set(CONTEXT_SOURCES
     context/src/CubeMapCamera.cpp
     context/src/ReflectionCamera.cpp
     context/src/ParticlesManager.cpp
+    context/src/Gorilla.cpp
+    context/src/GorillaOverlay.cpp
     )
 
 set(SOURCE_FILES_CONTEXT_LIB
