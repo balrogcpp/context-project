@@ -323,7 +323,7 @@ void ConfigManager::Setup() {
   document_.AddMember("compositor_use_bloom", true, allocator);
   document_.AddMember("compositor_use_ssao", false, allocator);
   document_.AddMember("compositor_use_blur", true, allocator);
-  document_.AddMember("compositor_use_hdr", true, allocator);
+  document_.AddMember("compositor_use_hdr", false, allocator);
 
   document_.AddMember("media_location_directory", "../", allocator);
   document_.AddMember("opengl_ver_force", false, allocator);
@@ -339,19 +339,18 @@ void ConfigManager::Setup() {
   document_.AddMember("graphics_gamma", false, allocator);
   document_.AddMember("graphics_filtration", "bilinear", allocator);
   document_.AddMember("graphics_anisotropy_level", 4, allocator);
-  document_.AddMember("graphics_mipmap_count", 5, allocator);
+  document_.AddMember("graphics_mipmap_count", 16, allocator);
   document_.AddMember("graphics_shadows_pssm_0_resolution", 1024, allocator);
   document_.AddMember("graphics_shadows_pssm_1_resolution", 1024, allocator);
   document_.AddMember("graphics_shadows_pssm_2_resolution", 1024, allocator);
   document_.AddMember("graphics_shadows_texture_resolution", 1024, allocator);
-  document_.AddMember("graphics_shadows_split_auto", false, allocator);
+  document_.AddMember("graphics_shadows_split_auto", true, allocator);
   document_.AddMember("graphics_shadows_split_padding", 1.0, allocator);
   document_.AddMember("graphics_shadows_self_shadow", true, allocator);
   document_.AddMember("graphics_shadows_back_faces", true, allocator);
   document_.AddMember("graphics_shadows_caster_material", "PSSM/shadow_caster", allocator);
-//  document_.AddMember("graphics_shadows_caster_material", "PSSM/Transparent/shadow_caster", allocator);
   document_.AddMember("graphics_shadows_receiver_material", std::string(), allocator);
-  document_.AddMember("graphics_shadows_far_distance", 200.0f, allocator);
+  document_.AddMember("graphics_shadows_far_distance", 500.0f, allocator);
   document_.AddMember("graphics_shadows_pssm_0", 0.0f, allocator);
   document_.AddMember("graphics_shadows_pssm_1", 0.0f, allocator);
   document_.AddMember("graphics_shadows_pssm_2", 0.0f, allocator);
@@ -361,7 +360,7 @@ void ConfigManager::Setup() {
   document_.AddMember("graphics_shadows_projection", "pssm", allocator);
   document_.AddMember("graphics_shadows_projection", "default", allocator);
   document_.AddMember("graphics_shadows_integrated", true, allocator);
-
+  document_.AddMember("graphics_shadows_texture_format", "DEPTH32", allocator);
   document_.AddMember("terrain_fog_perpixel", true, allocator);
   document_.AddMember("terrain_receive_shadows", true, allocator);
   document_.AddMember("terrain_receive_shadows_low_lod", false, allocator);

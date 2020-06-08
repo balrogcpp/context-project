@@ -39,7 +39,6 @@ namespace Context {
 
 class Application : public ManagerCommon {
  public:
-
   void Update(float timeSinceLastFrame);
   void Setup() final;
   void Reset() final;
@@ -55,6 +54,7 @@ class Application : public ManagerCommon {
   void Event(const SDL_Event &evt) override;
   void Quit() override;
   void User(Uint8 type, int code, void *data1, void *data2) override;
+  int GetFpsFrames() const;
 
  public:
   static int Main(std::shared_ptr<AppState> app_state);
@@ -65,6 +65,7 @@ class Application : public ManagerCommon {
   bool paused_ = false;
   bool fullscreen_ = false;
   int fps_frames_ = 0;
+  int current_fps_ = 0;
   int global_target_fps_ = 60;
   long delta_time_ = 0;
   bool started_ = false;

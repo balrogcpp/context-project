@@ -40,6 +40,7 @@ SOFTWARE.
 #include "PSSMShadowCameraSetupB.hpp"
 #include "CubeMapCamera.hpp"
 #include "ReflectionCamera.hpp"
+#include "GorillaOverlay.hpp"
 
 extern "C" {
 #include <SDL2/SDL_syswm.h>
@@ -100,6 +101,7 @@ void ContextManager::SetupConfigManager() {
   ConfigManager::Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
   ConfigManager::Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
   ConfigManager::Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
+  ConfigManager::Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
   ConfigManager::Assign(graphics_shadows_pssm_0_resolution_, "graphics_shadows_pssm_0_resolution");
   ConfigManager::Assign(graphics_shadows_pssm_1_resolution_, "graphics_shadows_pssm_1_resolution");
   ConfigManager::Assign(graphics_shadows_pssm_2_resolution_, "graphics_shadows_pssm_2_resolution");
@@ -196,23 +198,23 @@ void ContextManager::InitGeneralResources() {
   resource_list.push_back({media_location_directory_ + "scenes", "FileSystem", default_group_name});
 
 #ifdef DEBUG
-  resource_list.push_back({media_location_directory_ + "gui/animations", "FileSystem", "Animation"});
-  resource_list.push_back({media_location_directory_ + "gui/fonts", "FileSystem", "Fonts"});
-  resource_list.push_back({media_location_directory_ + "gui/imagesets", "FileSystem", "Imagesets"});
-  resource_list.push_back({media_location_directory_ + "gui/layouts", "FileSystem", "Layouts"});
-  resource_list.push_back({media_location_directory_ + "gui/looknfeel", "FileSystem", "LookNFeel"});
-  resource_list.push_back({media_location_directory_ + "gui/lua_scripts", "FileSystem", "LuaScripts"});
-  resource_list.push_back({media_location_directory_ + "gui/schemes", "FileSystem", "Schemes"});
-  resource_list.push_back({media_location_directory_ + "gui/xml_schemas", "FileSystem", "XmlSchemas"});
+  resource_list.push_back({media_location_directory_ + "cegui/animations", "FileSystem", "Animation"});
+  resource_list.push_back({media_location_directory_ + "cegui/fonts", "FileSystem", "Fonts"});
+  resource_list.push_back({media_location_directory_ + "cegui/imagesets", "FileSystem", "Imagesets"});
+  resource_list.push_back({media_location_directory_ + "cegui/layouts", "FileSystem", "Layouts"});
+  resource_list.push_back({media_location_directory_ + "cegui/looknfeel", "FileSystem", "LookNFeel"});
+  resource_list.push_back({media_location_directory_ + "cegui/lua_scripts", "FileSystem", "LuaScripts"});
+  resource_list.push_back({media_location_directory_ + "cegui/schemes", "FileSystem", "Schemes"});
+  resource_list.push_back({media_location_directory_ + "cegui/xml_schemas", "FileSystem", "XmlSchemas"});
 #else
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "gui/animations.zip", "Zip", "Animation");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "gui/fonts.zip", "Zip", "Fonts");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "gui/imagesets.zip", "Zip", "Imagesets");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "gui/layouts.zip", "Zip", "Layouts");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "gui/looknfeel.zip", "Zip", "LookNFeel");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "gui/lua_scripts.zip", "Zip", "LuaScripts");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "gui/schemes.zip", "Zip", "Schemes");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "gui/xml_schemas.zip", "Zip", "XmlSchemas");
+  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/animations.zip", "Zip", "Animation");
+  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/fonts.zip", "Zip", "Fonts");
+  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/imagesets.zip", "Zip", "Imagesets");
+  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/layouts.zip", "Zip", "Layouts");
+  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/looknfeel.zip", "Zip", "LookNFeel");
+  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/lua_scripts.zip", "Zip", "LuaScripts");
+  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/schemes.zip", "Zip", "Schemes");
+  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/xml_schemas.zip", "Zip", "XmlSchemas");
 #endif
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
@@ -398,9 +400,24 @@ void ContextManager::SetupOgreScenePreconditions() {
     ogre_scene_manager_->setShadowTechnique(static_cast<Ogre::ShadowTechnique>(shadow_technique));
 
     if (graphics_shadows_material_ == "default") {
-//      auto texture_type = Ogre::PF_FLOAT16_R;
-//      auto texture_type = Ogre::PF_FLOAT32_R;
-      auto texture_type = Ogre::PF_FLOAT32_GR;
+      Ogre::PixelFormat texture_type;
+
+      if (graphics_shadows_texture_format_ == "F32_R")
+        texture_type = Ogre::PF_FLOAT32_R;
+      else if (graphics_shadows_texture_format_ == "F16_R")
+        texture_type = Ogre::PF_FLOAT16_R;
+      else if (graphics_shadows_texture_format_ == "F32_GR")
+        texture_type = Ogre::PF_FLOAT32_GR;
+      else if (graphics_shadows_texture_format_ == "F16_GR")
+        texture_type = Ogre::PF_FLOAT16_GR;
+      else if (graphics_shadows_texture_format_ == "DEPTH16")
+        texture_type = Ogre::PF_DEPTH16;
+      else if (graphics_shadows_texture_format_ == "DEPTH32")
+        texture_type = Ogre::PF_DEPTH32;
+      else if (graphics_shadows_texture_format_ == "DEPTH32F")
+        texture_type = Ogre::PF_DEPTH32F;
+      else
+        texture_type = Ogre::PF_DEPTH32;
 
       ogre_scene_manager_->setShadowTextureSettings(graphics_shadows_texture_resolution_,
                                                     graphics_shadows_texture_count_,
@@ -409,15 +426,15 @@ void ContextManager::SetupOgreScenePreconditions() {
       ogre_scene_manager_->setShadowTextureConfig(0,
                                                   graphics_shadows_pssm_0_resolution_,
                                                   graphics_shadows_pssm_0_resolution_,
-                                                  texture_type);
+                                                  texture_type, 0, 2);
       ogre_scene_manager_->setShadowTextureConfig(1,
                                                   graphics_shadows_pssm_1_resolution_,
                                                   graphics_shadows_pssm_1_resolution_,
-                                                  texture_type);
+                                                  texture_type, 0, 2);
       ogre_scene_manager_->setShadowTextureConfig(2,
                                                   graphics_shadows_pssm_2_resolution_,
                                                   graphics_shadows_pssm_2_resolution_,
-                                                  texture_type);
+                                                  texture_type, 0, 2);
 
       ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
       ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
@@ -439,7 +456,7 @@ void ContextManager::SetupOgreScenePreconditions() {
 
       auto pssm_setup = std::make_shared<Ogre::PSSMShadowCameraSetup>();
 
-      pssm_setup->setUseAggressiveFocusRegion(false);
+      pssm_setup->setUseAggressiveFocusRegion(true);
 
       if (!ogre_shadow_camera_setup_) {
         if (graphics_shadows_split_auto_) {
@@ -570,9 +587,11 @@ void ContextManager::SetupSDL() {
 
   if (factual_fullscreen) {
     flags |= SDL_WINDOW_BORDERLESS;
+    actual_monitor_size_.f = true;
   }
 
   if (window_position_.f) {
+//    flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     flags |= SDL_WINDOW_ALWAYS_ON_TOP;
     flags |= SDL_WINDOW_INPUT_GRABBED;
     flags |= SDL_WINDOW_MOUSE_FOCUS;
@@ -868,13 +887,13 @@ void ContextManager::Setup() {
   if (sdl_window_) {
     if (window_position_.f) {
       SDL_SetWindowSize(sdl_window_, actual_monitor_size_.w, actual_monitor_size_.h);
-      SDL_WarpMouseGlobal(0, 0);
-      SDL_SetWindowFullscreen(sdl_window_, SDL_WINDOW_FULLSCREEN);
-      SDL_WarpMouseGlobal(0, 0);
+//      SDL_WarpMouseGlobal(0, 0);
+      SDL_SetWindowFullscreen(sdl_window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
+//      SDL_WarpMouseGlobal(0, 0);
       SDL_SetWindowSize(sdl_window_, window_position_.w, window_position_.h);
-      SDL_WarpMouseGlobal(0, 0);
+//      SDL_WarpMouseGlobal(0, 0);
       ogre_render_window_->setFullscreen(true, window_position_.w, window_position_.h);
-      SDL_WarpMouseGlobal(0, 0);
+//      SDL_WarpMouseGlobal(0, 0);
     }
   }
 }
@@ -886,9 +905,9 @@ void ContextManager::Reset() {
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::RestoreScreenSize() {
   if (window_position_.f) {
-    SDL_WarpMouseGlobal(0, 0);
+//    SDL_WarpMouseGlobal(0, 0);
     SDL_SetWindowFullscreen(sdl_window_, SDL_FALSE);
-    SDL_WarpMouseGlobal(0, 0);
+//    SDL_WarpMouseGlobal(0, 0);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -945,6 +964,9 @@ void ContextManager::SetupGlobal() {
 
   CeguiOverlayManager::GetSingleton().SetupGlobal();
   CeguiOverlayManager::GetSingleton().Setup();
+
+  GorillaOverlay::GetSingleton().SetupGlobal();
+  GorillaOverlay::GetSingleton().Setup();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::ResetGlobals() {
@@ -978,6 +1000,9 @@ void ContextManager::ResetGlobals() {
 
   CeguiOverlayManager::GetSingleton().ResetGlobal();
   CeguiOverlayManager::GetSingleton().Reset();
+
+  GorillaOverlay::GetSingleton().ResetGlobal();
+  GorillaOverlay::GetSingleton().Reset();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::Render() {

@@ -198,6 +198,7 @@ class ContextManager : public Ogre::LogListener, public NoCopy {
   std::string graphics_shadows_material_ = "default";
   std::string graphics_shadows_receiver_material_;
   std::string graphics_shadows_caster_material_ = "PSSM/shadow_caster";
+  std::string graphics_shadows_texture_format_ = "DEPTH32";
   bool graphics_shadows_integrated_ = true;
 
   //Singleton section

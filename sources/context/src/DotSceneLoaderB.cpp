@@ -626,6 +626,7 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
 
   const bool flat = false;
+  legacy_terrain_ = false;
 
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
   terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
@@ -636,7 +637,6 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   if (legacy_terrain_) {
     auto *matProfile =
         dynamic_cast<TerrainMaterialGeneratorB::SM2Profile *>(terrain_global_options->getDefaultMaterialGenerator()->getActiveProfile());
-
     matProfile->setReceiveDynamicShadowsEnabled(terrain_receive_shadows_);
     matProfile->setReceiveDynamicShadowsLowLod(terrain_receive_shadows_low_lod_);
     matProfile->setReceiveDynamicShadowsDepth(terrain_receive_shadows_);

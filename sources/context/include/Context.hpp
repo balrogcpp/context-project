@@ -51,6 +51,7 @@
 #include "EntityCommon.hpp"
 #include "AgentCommon.hpp"
 #include "DotSceneLoaderB.hpp"
+#include "GorillaOverlay.hpp"
 
 #include "CeguiCommon.hpp"
 #include "OgreCommon.hpp"

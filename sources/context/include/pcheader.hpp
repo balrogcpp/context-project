@@ -38,6 +38,8 @@ SOFTWARE.
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/istreamwrapper.h>
 
+#include <yaml-cpp/yaml.h>
+
 #include <angelscript.h>
 
 #include <glm/glm.hpp>
