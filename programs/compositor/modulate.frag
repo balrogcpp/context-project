@@ -71,13 +71,8 @@ out vec4 gl_FragColor;
 #endif
 
 in vec2 oUv0;
-uniform vec3 FogColour;
-uniform vec4 FogParams;
-uniform float NearClipDistance;
-uniform float FarClipDistance;
 uniform sampler2D AttenuationSampler;
 uniform sampler2D SceneSampler;
-uniform sampler2D MrtSampler;
 
 uniform float exposure;
 

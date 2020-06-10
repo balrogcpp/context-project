@@ -39,7 +39,6 @@ fragment_program Context/bloom_fs unified
 
     default_params
     {
-        param_named_auto screenSize viewport_size
         param_named SceneSampler int 0
     }
 }

@@ -99,16 +99,16 @@ uniform sampler2D uBaseColorSampler;
 
 #define MAX_LIGHTS 5
 uniform float uAlphaRejection;
-uniform vec3 uSurfaceAmbientColour;
+//uniform vec3 uSurfaceAmbientColour;
 uniform vec4 uSurfaceDiffuseColour;
 uniform float uSurfaceSpecularColour;
 uniform vec3 uSurfaceEmissiveColour;
-uniform float uSurfaceShininessColour;
+//uniform float uSurfaceShininessColour;
 uniform vec3 uAmbientLightColour;
 uniform float uLightCount;
 uniform vec3 uLightPositionArray[MAX_LIGHTS];
-uniform vec3 uLightPositionObjectSpaceArray[MAX_LIGHTS];
-uniform vec3 uLightPositionViewSpaceArray[MAX_LIGHTS];
+//uniform vec3 uLightPositionObjectSpaceArray[MAX_LIGHTS];
+//uniform vec3 uLightPositionViewSpaceArray[MAX_LIGHTS];
 uniform vec3 uLightDirectionArray[MAX_LIGHTS];
 uniform vec3 uLightDiffuseScaledColourArray[MAX_LIGHTS];
 uniform vec4 uLightAttenuationArray[MAX_LIGHTS];
@@ -152,9 +152,9 @@ uniform sampler2D uOffsetSampler;
 uniform sampler2D shadowMap0;
 uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
-uniform vec4 inverseShadowmapSize0;
-uniform vec4 inverseShadowmapSize1;
-uniform vec4 inverseShadowmapSize2;
+//uniform vec4 inverseShadowmapSize0;
+//uniform vec4 inverseShadowmapSize1;
+//uniform vec4 inverseShadowmapSize2;
 uniform vec4 pssmSplitPoints;
 uniform vec4 uShadowColour;
 in vec4 lightSpacePosArray[MAX_LIGHTS * 3];
@@ -652,10 +652,13 @@ void main()
 
 #ifdef SHADOWRECEIVER
         float shadow = 1.0;
-        ndotl = ndotl > 0.001 ? 1.0 : 0.0;
-        if (uLightCastsShadowsArray[i] * ndotl > 0.0) {
+        const float treshhold = 0.001;
+//        ndotl = ndotl > 0.001 ? 1.0 : 0.0;
+
+//        if (uLightCastsShadowsArray[i] > 0.0)
+//            if (ndotl > 0.0)
+        if (uLightCastsShadowsArray[i] * ndotl > 0.0)
             shadow = calcPSSMDepthShadow();
-        }
         total_colour += color * shadow;
 #else
         total_colour += color;
@@ -692,7 +695,7 @@ void main()
     vec2 noise = texture2D(uNoiseMap, vUV0.xy).xy - 0.5;
     noise *= 0.1;
     projection.xy += noise;
-    vec3 reflectionColour = texture2DProj(uReflectionMap, projectionCoord).rgb;
+    vec3 reflectionColour = texture2DProj(uReflectionMap, projection).rgb;
 
     total_colour = mix(total_colour, reflectionColour, fresnel * metallic);
 #endif

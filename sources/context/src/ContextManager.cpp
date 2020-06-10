@@ -701,6 +701,7 @@ void ContextManager::SetupOGRE() {
 #else
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *mGL3PlusRenderSystem = new Ogre::GL3PlusRenderSystem();
+  mGL3PlusRenderSystem->setConfigOption("Separate Shader Objects", "Yes");
   Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
 #else
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL
@@ -881,8 +882,8 @@ void ContextManager::SetupOgreLog() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::Setup() {
-  ShaderResolver::FixMaterial("BaseWhite");
-  ShaderResolver::FixMaterial("BaseWhiteNoLighting");
+//  ShaderResolver::FixMaterial("BaseWhite");
+//  ShaderResolver::FixMaterial("BaseWhiteNoLighting");
 
   if (sdl_window_) {
     if (window_position_.f) {
@@ -962,8 +963,10 @@ void ContextManager::SetupGlobal() {
   ReflectionCamera::GetSingleton().SetupGlobal();
 //  ReflectionCamera::GetSingleton().Setup();
 
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   CeguiOverlayManager::GetSingleton().SetupGlobal();
   CeguiOverlayManager::GetSingleton().Setup();
+#endif
 
   GorillaOverlay::GetSingleton().SetupGlobal();
   GorillaOverlay::GetSingleton().Setup();
@@ -998,8 +1001,10 @@ void ContextManager::ResetGlobals() {
   ReflectionCamera::GetSingleton().ResetGlobal();
   ReflectionCamera::GetSingleton().Reset();
 
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   CeguiOverlayManager::GetSingleton().ResetGlobal();
   CeguiOverlayManager::GetSingleton().Reset();
+#endif
 
   GorillaOverlay::GetSingleton().ResetGlobal();
   GorillaOverlay::GetSingleton().Reset();

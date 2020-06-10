@@ -86,12 +86,10 @@ void main()
 //    }
 
     float distance = length(oViewPos);
-
-//    if (distance > 100.0) {
-//        discard;
-//    }
-
     float clipDistance = cFarClipDistance - cNearClipDistance;
-    gl_FragData[0] = vec4(normalize(oNormal).xyz, (distance - cNearClipDistance) / clipDistance);// normal + linear depth [0, 1]
-    //gl_FragData[1] = vec4(oViewPos, 0.0);// view space position
+
+    gl_FragColor = vec4((distance - cNearClipDistance) / clipDistance, 0, 0, 1);
+
+//    gl_FragData[0] = vec4(normalize(oNormal).xyz, (distance - cNearClipDistance) / clipDistance);// normal + linear depth [0, 1]
+//    gl_FragData[1] = vec4(oViewPos, 0.0);// view space position
 }

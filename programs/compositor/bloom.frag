@@ -71,7 +71,6 @@ out vec4 gl_FragColor;
 #endif
 
 in vec2 oUv0;
-uniform vec4 screenSize;
 uniform sampler2D SceneSampler;
 
 void main()

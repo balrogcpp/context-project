@@ -1294,24 +1294,23 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     auto pass = material->getTechnique(0)->getPass(0);
 
     frag_params->setNamedAutoConstant("uAlphaRejection", Ogre::GpuProgramParameters::ACT_SURFACE_ALPHA_REJECTION_VALUE);
-    frag_params->setNamedAutoConstant("uSurfaceAmbientColour", Ogre::GpuProgramParameters::ACT_SURFACE_AMBIENT_COLOUR);
+//    frag_params->setNamedAutoConstant("uSurfaceAmbientColour", Ogre::GpuProgramParameters::ACT_SURFACE_AMBIENT_COLOUR);
     frag_params->setNamedAutoConstant("uSurfaceDiffuseColour", Ogre::GpuProgramParameters::ACT_SURFACE_DIFFUSE_COLOUR);
-    frag_params->setNamedAutoConstant("uSurfaceSpecularColour",
-                                      Ogre::GpuProgramParameters::ACT_SURFACE_SPECULAR_COLOUR);
+//    frag_params->setNamedAutoConstant("uSurfaceSpecularColour",Ogre::GpuProgramParameters::ACT_SURFACE_SPECULAR_COLOUR);
     frag_params->setNamedAutoConstant("uSurfaceEmissiveColour",
                                       Ogre::GpuProgramParameters::ACT_SURFACE_EMISSIVE_COLOUR);
-    frag_params->setNamedAutoConstant("uSurfaceShininessColour", Ogre::GpuProgramParameters::ACT_SURFACE_SHININESS);
+//    frag_params->setNamedAutoConstant("uSurfaceShininessColour", Ogre::GpuProgramParameters::ACT_SURFACE_SHININESS);
     frag_params->setNamedAutoConstant("uAmbientLightColour", Ogre::GpuProgramParameters::ACT_AMBIENT_LIGHT_COLOUR);
     frag_params->setNamedAutoConstant("uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
     frag_params->setNamedAutoConstant("uLightPositionArray",
                                       Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_ARRAY,
                                       light_count);
-    frag_params->setNamedAutoConstant("uLightPositionObjectSpaceArray",
-                                      Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_OBJECT_SPACE_ARRAY,
-                                      light_count);
-    frag_params->setNamedAutoConstant("uLightPositionViewSpaceArray",
-                                      Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_VIEW_SPACE_ARRAY,
-                                      light_count);
+//    frag_params->setNamedAutoConstant("uLightPositionObjectSpaceArray",
+//                                      Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_OBJECT_SPACE_ARRAY,
+//                                      light_count);
+//    frag_params->setNamedAutoConstant("uLightPositionViewSpaceArray",
+//                                      Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_VIEW_SPACE_ARRAY,
+//                                      light_count);
     frag_params->setNamedAutoConstant("uLightDirectionArray",
                                       Ogre::GpuProgramParameters::ACT_LIGHT_DIRECTION_ARRAY,
                                       light_count);
@@ -1422,9 +1421,9 @@ void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
 
           frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);
 
-          frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
-                                            Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
-                                            texture_count + k);
+//          frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
+//                                            Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
+//                                            texture_count + k);
         }
       }
     }
@@ -1659,7 +1658,8 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &xml_node, Ogre::SceneNode *pa
 
   std::unique_ptr<BtOgre::StaticMeshToShapeConverter>
       converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
-  auto *entShape = converter->createTrimesh();
+//  auto *entShape = converter->createTrimesh();
+  auto *entShape = converter->createBox();
   auto *bodyState = new BtOgre::RigidBodyState(parent);
   btRigidBody *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
   entBody->setFriction(1);
