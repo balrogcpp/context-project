@@ -156,6 +156,7 @@ class ContextManager : public Ogre::LogListener, public NoCopy {
   std::string global_resource_list_file_ = "resources.list";
   bool global_log_enable_ = false;
   bool global_verbose_enable_ = false;
+  bool global_sso_enable_ = true;
   bool global_octree_enable_ = true;
   bool global_stbi_enable_ = true;
   bool global_freeimage_enable_ = false;

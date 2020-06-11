@@ -48,6 +48,8 @@ material PbrBasic
     {
       pass
       {
+            specular 1 1 1 1
+
             texture_unit Albedo {}
 
             vertex_program_ref Pbr_vs {}
@@ -86,6 +88,8 @@ material PbrBasicShadow
     {
       pass
       {
+            specular 1 1 1 1
+
             texture_unit Albedo {}
 
             vertex_program_ref Pbr_vs {}

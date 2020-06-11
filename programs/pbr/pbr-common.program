@@ -41,44 +41,6 @@ vertex_program Pbr_vs unified
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program PbrForest_vs_glsl glsl
-{
-	source pbr.vert
-    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV
-}
-
-vertex_program PbrForest_vs_glsles glsles
-{
-	source pbr.vert
-    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV
-}
-
-vertex_program PbrForest_vs unified
-{
-	delegate PbrForest_vs_glsl
-	delegate PbrForest_vs_glsles
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program PbrForest_Shadowed_vs_glsl glsl
-{
-	source pbr.vert
-    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
-}
-
-vertex_program PbrForest_Shadowed_vs_glsles glsles
-{
-	source pbr.vert
-    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
-}
-
-vertex_program PbrForest_Shadowed_vs unified
-{
-	delegate PbrForest_Shadowed_vs_glsl
-	delegate PbrForest_Shadowed_vs_glsles
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 vertex_program PbrReflection_vs_glsl glsl
 {
 	source pbr.vert

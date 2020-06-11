@@ -304,6 +304,8 @@ void ConfigManager::Setup() {
   document_.AddMember("global_octree_enable", true, allocator);
   document_.AddMember("global_stbi_enable", true, allocator);
   document_.AddMember("global_particlefx_enable", true, allocator);
+  document_.AddMember("global_sso_enable", true, allocator);
+
   document_.AddMember("physics_enable", true, allocator);
   document_.AddMember("sound_enable", true, allocator);
 

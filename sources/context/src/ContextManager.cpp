@@ -78,6 +78,7 @@ void ContextManager::SetupConfigManager() {
   ConfigManager::Assign(global_stbi_enable_, "global_stbi_enable");
   ConfigManager::Assign(global_freeimage_enable_, "global_freeimage_enable");
   ConfigManager::Assign(global_particlefx_enable_, "global_particlefx_enable");
+  ConfigManager::Assign(global_sso_enable_, "global_sso_enable");
   ConfigManager::Assign(physics_enable_, "physics_enable");
   ConfigManager::Assign(sound_enable_, "sound_enable");
 #ifdef DEBUG
@@ -701,7 +702,10 @@ void ContextManager::SetupOGRE() {
 #else
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *mGL3PlusRenderSystem = new Ogre::GL3PlusRenderSystem();
-  mGL3PlusRenderSystem->setConfigOption("Separate Shader Objects", "Yes");
+  if (global_sso_enable_)
+    mGL3PlusRenderSystem->setConfigOption("Separate Shader Objects", "Yes");
+  else
+    mGL3PlusRenderSystem->setConfigOption("Separate Shader Objects", "No");
   Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
 #else
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL

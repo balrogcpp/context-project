@@ -22,6 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PbrForest_vs_glsl glsl
+{
+	source pbr.vert
+    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV
+}
+
+vertex_program PbrForest_vs_glsles glsles
+{
+	source pbr.vert
+    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV
+}
+
+vertex_program PbrForest_vs unified
+{
+	delegate PbrForest_vs_glsl
+	delegate PbrForest_vs_glsles
+}
+
+
 fragment_program PbrForest_fs_glsl glsl
 {
 	source pbr.frag
@@ -48,6 +68,8 @@ material PbrForest
     {
       pass
       {
+            specular 1 1 1 1
+
             texture_unit Albedo {}
 
 			vertex_program_ref PbrForest_vs {}
@@ -79,12 +101,32 @@ fragment_program PbrForest_Shadowed_fs unified
 	delegate PbrForest_Shadowed_fs_glsles
 }
 
+vertex_program PbrForest_Shadowed_vs_glsl glsl
+{
+	source pbr.vert
+    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
+}
+
+vertex_program PbrForest_Shadowed_vs_glsles glsles
+{
+	source pbr.vert
+    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
+}
+
+vertex_program PbrForest_Shadowed_vs unified
+{
+	delegate PbrForest_Shadowed_vs_glsl
+	delegate PbrForest_Shadowed_vs_glsles
+}
+
 material PbrForest_Shadowed
 {
     technique
     {
       pass
       {
+            specular 1 1 1 1
+
             texture_unit Albedo {}
 
 			vertex_program_ref PbrForest_Shadowed_vs {}

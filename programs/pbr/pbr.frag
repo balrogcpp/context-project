@@ -99,16 +99,14 @@ uniform sampler2D uBaseColorSampler;
 
 #define MAX_LIGHTS 5
 uniform float uAlphaRejection;
-//uniform vec3 uSurfaceAmbientColour;
+uniform vec3 uSurfaceAmbientColour;
 uniform vec4 uSurfaceDiffuseColour;
 uniform float uSurfaceSpecularColour;
+uniform float uSurfaceShininessColour;
 uniform vec3 uSurfaceEmissiveColour;
-//uniform float uSurfaceShininessColour;
 uniform vec3 uAmbientLightColour;
 uniform float uLightCount;
 uniform vec3 uLightPositionArray[MAX_LIGHTS];
-//uniform vec3 uLightPositionObjectSpaceArray[MAX_LIGHTS];
-//uniform vec3 uLightPositionViewSpaceArray[MAX_LIGHTS];
 uniform vec3 uLightDirectionArray[MAX_LIGHTS];
 uniform vec3 uLightDiffuseScaledColourArray[MAX_LIGHTS];
 uniform vec4 uLightAttenuationArray[MAX_LIGHTS];
@@ -561,7 +559,8 @@ void main()
     perceptualRoughness = mrSample.a;
 #endif
 #else
-    metallic = uSurfaceSpecularColour;
+    metallic = uSurfaceShininessColour;
+    perceptualRoughness = uSurfaceSpecularColour;
 #endif
 
     perceptualRoughness = clamp(perceptualRoughness, c_MinRoughness, 1.0);
@@ -653,10 +652,6 @@ void main()
 #ifdef SHADOWRECEIVER
         float shadow = 1.0;
         const float treshhold = 0.001;
-//        ndotl = ndotl > 0.001 ? 1.0 : 0.0;
-
-//        if (uLightCastsShadowsArray[i] > 0.0)
-//            if (ndotl > 0.0)
         if (uLightCastsShadowsArray[i] * ndotl > 0.0)
             shadow = calcPSSMDepthShadow();
         total_colour += color * shadow;
@@ -664,11 +659,12 @@ void main()
         total_colour += color;
 #endif
     }
+
         // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection);
 #else
-    total_colour += (uAmbientLightColour * baseColor.rgb);
+    total_colour += ((1.0 - uSurfaceAmbientColour + uAmbientLightColour) * baseColor.rgb);
 #endif
 
         // Apply optional PBR terms for additional (optional) shading

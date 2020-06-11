@@ -1241,7 +1241,6 @@ void DotSceneLoaderB::FixPbrShadowCaster(Ogre::MaterialPtr material) {
       if (texPtr3) {
         texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
         texPtr3->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
-//        texPtr3->setTextureFiltering(Ogre::TFO_NONE);
         texPtr3->setTextureName(texture_name);
       }
     }
@@ -1251,6 +1250,55 @@ void DotSceneLoaderB::FixPbrShadowCaster(Ogre::MaterialPtr material) {
     auto new_caster = caster_material->clone("PSSM/NoAlpha/shadow_caster" + std::to_string(material_list.size()));
     material->getTechnique(0)->setShadowCasterMaterial(new_caster);
   }
+}
+//----------------------------------------------------------------------------------------------------------------------
+static void AddGpuConstParameterAuto(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, const Ogre::GpuProgramParameters::AutoConstantType value_name, const int info = 0) {
+  const auto &constants = parameters->getConstantDefinitions();
+
+  if (constants.map.count(parameter_name) > 0)
+    parameters->setNamedAutoConstant(parameter_name, value_name, info);
+}
+//----------------------------------------------------------------------------------------------------------------------
+static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, Ogre::Vector4 value) {
+  const auto &constants = parameters->getConstantDefinitions();
+
+  if (constants.map.count(parameter_name) > 0)
+    parameters->setNamedConstant(parameter_name, value);
+}
+//----------------------------------------------------------------------------------------------------------------------
+static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, Ogre::Vector3 value) {
+  const auto &constants = parameters->getConstantDefinitions();
+
+  if (constants.map.count(parameter_name) > 0)
+    parameters->setNamedConstant(parameter_name, value);
+}
+//----------------------------------------------------------------------------------------------------------------------
+static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, Ogre::Vector2 value) {
+  const auto &constants = parameters->getConstantDefinitions();
+
+  if (constants.map.count(parameter_name) > 0)
+    parameters->setNamedConstant(parameter_name, value);
+}
+//----------------------------------------------------------------------------------------------------------------------
+static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, float value) {
+  const auto &constants = parameters->getConstantDefinitions();
+
+  if (constants.map.count(parameter_name) > 0)
+    parameters->setNamedConstant(parameter_name, value);
+}
+//----------------------------------------------------------------------------------------------------------------------
+static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, int value) {
+  const auto &constants = parameters->getConstantDefinitions();
+
+  if (constants.map.count(parameter_name) > 0)
+    parameters->setNamedConstant(parameter_name, value);
+}
+//----------------------------------------------------------------------------------------------------------------------
+static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, unsigned int value) {
+  const auto &constants = parameters->getConstantDefinitions();
+
+  if (constants.map.count(parameter_name) > 0)
+    parameters->setNamedConstant(parameter_name, value);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
@@ -1275,57 +1323,39 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
       return;
     }
 
-    vert_params->setNamedAutoConstant("uMVPMatrix", Ogre::GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
-    vert_params->setNamedAutoConstant("uModelMatrix", Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
-    vert_params->setNamedAutoConstant("uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
+    AddGpuConstParameterAuto(vert_params, "uMVPMatrix", Ogre::GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
+    AddGpuConstParameterAuto(vert_params, "uModelMatrix", Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
+    AddGpuConstParameterAuto(vert_params, "uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
 
     if (constants.map.count("fadeRange") > 0) {
-      vert_params->setNamedConstant("fadeRange", 1 / (100.0f * 2.0f));
+      AddGpuConstParameter(vert_params, "fadeRange", 1 / (100.0f * 2.0f));
     }
 
     if (constants.map.count("uTime") > 0) {
-      vert_params->setNamedConstantFromTime("uTime", 1);
+      AddGpuConstParameter(vert_params, "uTime", 1.0f);
     }
   }
 
   if (material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
     auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-
     auto pass = material->getTechnique(0)->getPass(0);
 
-    frag_params->setNamedAutoConstant("uAlphaRejection", Ogre::GpuProgramParameters::ACT_SURFACE_ALPHA_REJECTION_VALUE);
-//    frag_params->setNamedAutoConstant("uSurfaceAmbientColour", Ogre::GpuProgramParameters::ACT_SURFACE_AMBIENT_COLOUR);
-    frag_params->setNamedAutoConstant("uSurfaceDiffuseColour", Ogre::GpuProgramParameters::ACT_SURFACE_DIFFUSE_COLOUR);
-//    frag_params->setNamedAutoConstant("uSurfaceSpecularColour",Ogre::GpuProgramParameters::ACT_SURFACE_SPECULAR_COLOUR);
-    frag_params->setNamedAutoConstant("uSurfaceEmissiveColour",
-                                      Ogre::GpuProgramParameters::ACT_SURFACE_EMISSIVE_COLOUR);
-//    frag_params->setNamedAutoConstant("uSurfaceShininessColour", Ogre::GpuProgramParameters::ACT_SURFACE_SHININESS);
-    frag_params->setNamedAutoConstant("uAmbientLightColour", Ogre::GpuProgramParameters::ACT_AMBIENT_LIGHT_COLOUR);
-    frag_params->setNamedAutoConstant("uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
-    frag_params->setNamedAutoConstant("uLightPositionArray",
-                                      Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_ARRAY,
-                                      light_count);
-//    frag_params->setNamedAutoConstant("uLightPositionObjectSpaceArray",
-//                                      Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_OBJECT_SPACE_ARRAY,
-//                                      light_count);
-//    frag_params->setNamedAutoConstant("uLightPositionViewSpaceArray",
-//                                      Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_VIEW_SPACE_ARRAY,
-//                                      light_count);
-    frag_params->setNamedAutoConstant("uLightDirectionArray",
-                                      Ogre::GpuProgramParameters::ACT_LIGHT_DIRECTION_ARRAY,
-                                      light_count);
-    frag_params->setNamedAutoConstant("uLightDiffuseScaledColourArray",
-                                      Ogre::GpuProgramParameters::ACT_LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY,
-                                      light_count);
-    frag_params->setNamedAutoConstant("uLightAttenuationArray",
-                                      Ogre::GpuProgramParameters::ACT_LIGHT_ATTENUATION_ARRAY,
-                                      light_count);
-    frag_params->setNamedAutoConstant("uLightSpotParamsArray",
-                                      Ogre::GpuProgramParameters::ACT_SPOTLIGHT_PARAMS_ARRAY,
-                                      light_count);
-    frag_params->setNamedAutoConstant("uFogColour", Ogre::GpuProgramParameters::ACT_FOG_COLOUR);
-    frag_params->setNamedAutoConstant("uFogParams", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
-    frag_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
+    AddGpuConstParameterAuto(frag_params, "uAlphaRejection", Ogre::GpuProgramParameters::ACT_SURFACE_ALPHA_REJECTION_VALUE);
+    AddGpuConstParameterAuto(frag_params, "uSurfaceAmbientColour", Ogre::GpuProgramParameters::ACT_SURFACE_AMBIENT_COLOUR);
+    AddGpuConstParameterAuto(frag_params, "uSurfaceDiffuseColour", Ogre::GpuProgramParameters::ACT_SURFACE_DIFFUSE_COLOUR);
+    AddGpuConstParameterAuto(frag_params, "uSurfaceSpecularColour",Ogre::GpuProgramParameters::ACT_SURFACE_SPECULAR_COLOUR);
+    AddGpuConstParameterAuto(frag_params, "uSurfaceShininessColour", Ogre::GpuProgramParameters::ACT_SURFACE_SHININESS);
+    AddGpuConstParameterAuto(frag_params, "uSurfaceEmissiveColour", Ogre::GpuProgramParameters::ACT_SURFACE_EMISSIVE_COLOUR);
+    AddGpuConstParameterAuto(frag_params, "uAmbientLightColour", Ogre::GpuProgramParameters::ACT_AMBIENT_LIGHT_COLOUR);
+    AddGpuConstParameterAuto(frag_params, "uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
+    AddGpuConstParameterAuto(frag_params, "uLightPositionArray", Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_ARRAY, light_count);
+    AddGpuConstParameterAuto(frag_params, "uLightDirectionArray", Ogre::GpuProgramParameters::ACT_LIGHT_DIRECTION_ARRAY, light_count);
+    AddGpuConstParameterAuto(frag_params, "uLightDiffuseScaledColourArray", Ogre::GpuProgramParameters::ACT_LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY, light_count);
+    AddGpuConstParameterAuto(frag_params, "uLightAttenuationArray", Ogre::GpuProgramParameters::ACT_LIGHT_ATTENUATION_ARRAY, light_count);
+    AddGpuConstParameterAuto(frag_params, "uLightSpotParamsArray", Ogre::GpuProgramParameters::ACT_SPOTLIGHT_PARAMS_ARRAY, light_count);
+    AddGpuConstParameterAuto(frag_params, "uFogColour", Ogre::GpuProgramParameters::ACT_FOG_COLOUR);
+    AddGpuConstParameterAuto(frag_params, "uFogParams", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
+    AddGpuConstParameterAuto(frag_params, "uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
 
     auto ibl_texture = pass->getTextureUnitState("IBL_Specular");
     const bool realtime_cubemap = false;
@@ -1362,8 +1392,7 @@ void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
     shadowed_list.push_back(material_name);
   }
 
-  auto *pssm =
-      dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ContextManager::GetSingleton().GetOgreShadowCameraSetup().get());
+  auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ContextManager::GetSingleton().GetOgreShadowCameraSetup().get());
 
   if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
     auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
@@ -1373,17 +1402,12 @@ void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
       return;
     }
 
-    vert_params->setNamedAutoConstant("uTexWorldViewProjMatrixArray",
-                                      Ogre::GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY,
-                                      pssm_split_count);
-    vert_params->setNamedAutoConstant("uLightCastsShadowsArray",
-                                      Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY,
-                                      light_count);
+    AddGpuConstParameterAuto(vert_params, "uTexWorldViewProjMatrixArray",Ogre::GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY, pssm_split_count);
+    AddGpuConstParameterAuto(vert_params, "uLightCastsShadowsArray",Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY, light_count);
   }
 
   if (material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
     auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-
     auto pass = material->getTechnique(0)->getPass(0);
 
     if (ConfigManager::GetSingleton().GetBool("graphics_shadows_enable")) {
@@ -1391,19 +1415,17 @@ void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
       Ogre::Vector4 splitPoints;
       if (ConfigManager::GetSingleton().GetString("graphics_shadows_projection") == "pssm") {
         const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
-        // Populate from split point 1, not 0, since split 0 isn't useful (usually 0)
-
         for (int j = 1; j < numTextures; ++j) {
           splitPoints[j - 1] = splitPointList[j];
         }
       }
-      const int light_count = 5;
 
+      const int light_count = 5;
       auto &constants = frag_params->getConstantDefinitions();
       if (constants.map.count("pssmSplitPoints") != 0) {
         frag_params->setNamedConstant("pssmSplitPoints", splitPoints);
-        frag_params->setNamedAutoConstant("uShadowColour", Ogre::GpuProgramParameters::ACT_SHADOW_COLOUR);
-        frag_params->setNamedAutoConstant("uLightCastsShadowsArray",
+        AddGpuConstParameterAuto(frag_params, "uShadowColour", Ogre::GpuProgramParameters::ACT_SHADOW_COLOUR);
+        AddGpuConstParameterAuto(frag_params, "uLightCastsShadowsArray",
                                           Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY,
                                           light_count);
 
@@ -1416,7 +1438,6 @@ void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
             tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
             tu->setTextureBorderColour(Ogre::ColourValue::White);
             tu->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
-//            tu->setTextureFiltering(Ogre::TFO_NONE);
           }
 
           frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);
