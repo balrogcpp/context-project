@@ -69,6 +69,7 @@ material PbrForest
       pass
       {
             specular 1 1 1 1
+            ambient 0 0 0
 
             texture_unit Albedo {}
 
@@ -126,6 +127,7 @@ material PbrForest_Shadowed
       pass
       {
             specular 1 1 1 1
+            ambient 0 0 0
 
             texture_unit Albedo {}
 

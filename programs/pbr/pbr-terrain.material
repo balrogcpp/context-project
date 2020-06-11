@@ -46,6 +46,9 @@ material PbrTerrain
     {
       pass
       {
+        specular 1 1 1 1
+        ambient 0 0 0
+
         vertex_program_ref Pbr_vs {}
 
         texture_unit AlbedoParallax {}

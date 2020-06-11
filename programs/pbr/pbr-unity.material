@@ -48,6 +48,9 @@ material PbrIbl/Unity
     {
       pass
       {
+            ambient 0 0 0
+            specular 1 1 1 1
+
             texture_unit Albedo {}
             texture_unit Normal {}
             texture_unit MetallicRougness {}
@@ -105,6 +108,9 @@ material PbrExtIbl/Unity
     {
       pass
       {
+            ambient 0 0 0
+            specular 1 1 1 1
+
             texture_unit Albedo {}
             texture_unit Normal {}
             texture_unit MetallicRougness {}
@@ -172,6 +178,9 @@ material Pbr/Unity
     {
       pass
       {
+            ambient 0 0 0
+            specular 1 1 1 1
+
             texture_unit Albedo {}
             texture_unit Normal {}
             texture_unit MetallicRougness {}
@@ -214,6 +223,9 @@ material PbrExt/Unity
     {
       pass
       {
+            ambient 0 0 0
+            specular 1 1 1 1
+
             texture_unit Albedo {}
             texture_unit Normal {}
             texture_unit MetallicRougness {}
@@ -260,6 +272,9 @@ material PbrReflection/Unity
     {
       pass
       {
+            ambient 0 0 0
+            specular 1 1 1 1
+
             texture_unit Albedo {}
             texture_unit Normal {}
             texture_unit MetallicRougness {}

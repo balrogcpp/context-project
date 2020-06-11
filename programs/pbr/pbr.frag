@@ -555,8 +555,8 @@ void main()
     // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
     // This layout intentionally reserves the 'r' channel for (optional) occlusion map data
     vec4 mrSample = texture2D(uMetallicRoughnessSampler, tex_coord);
-    metallic = mrSample.r;
-    perceptualRoughness = mrSample.a;
+    metallic = mrSample.r * uSurfaceShininessColour;
+    perceptualRoughness = mrSample.a * uSurfaceSpecularColour;
 #endif
 #else
     metallic = uSurfaceShininessColour;
@@ -664,7 +664,7 @@ void main()
 #ifdef USE_IBL
     total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection);
 #else
-    total_colour += ((1.0 - uSurfaceAmbientColour + uAmbientLightColour) * baseColor.rgb);
+    total_colour += ((uSurfaceAmbientColour + uAmbientLightColour) * baseColor.rgb);
 #endif
 
         // Apply optional PBR terms for additional (optional) shading
