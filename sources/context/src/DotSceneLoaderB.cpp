@@ -626,11 +626,6 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 
   OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
 
-  const bool flat = false;
-
-  FixPbrParams("Plane");
-  FixPbrShadowReceiver("Plane");
-
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
   terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
   terrain_global_options->setUseRayBoxDistanceCalculation(terrain_raybox_calculation_);
@@ -670,7 +665,7 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     int pageY = Ogre::StringConverter::parseInt(pPageElement.attribute("y").value());
 
     std::string heighmap = pPageElement.attribute("heightmap").value();
-    DefineTerrain(pageX, pageY, flat, heighmap);
+    DefineTerrain(pageX, pageY, false, heighmap);
     ogre_terrain_group_->loadTerrain(pageX, pageY, true);
     ogre_terrain_group_->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
 
@@ -779,7 +774,7 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
           obj->position(position0);
           obj->normal(normal);
 
-          obj->textureCoord((float) x / 8, (float) z / 8);
+          obj->textureCoord((float) x / (64*8), (float) z / (64*8));
         }
       }
 
