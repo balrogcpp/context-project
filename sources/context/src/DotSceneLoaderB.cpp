@@ -231,6 +231,8 @@ void DotSceneLoaderB::Setup() {
   ConfigManager::Assign(physics_enable_, "physics_enable");
   ConfigManager::Assign(lod_generator_enable_, "lod_generator_enable");
   ConfigManager::Assign(terrain_fog_perpixel_, "terrain_fog_perpixel");
+  ConfigManager::Assign(legacy_terrain_, "terrain_legacy");
+  ConfigManager::Assign(terrain_generator_b_, "terrain_generator_b");
   ConfigManager::Assign(terrain_receive_shadows_, "terrain_receive_shadows");
   ConfigManager::Assign(terrain_receive_shadows_low_lod_, "terrain_receive_shadows_low_lod");
   ConfigManager::Assign(terrain_cast_shadows_, "terrain_cast_shadows");
@@ -614,8 +616,7 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   int minBatchSize = Ogre::StringConverter::parseInt(xml_node.attribute("minBatchSize").value());
   int maxBatchSize = Ogre::StringConverter::parseInt(xml_node.attribute("maxBatchSize").value());
   int inputScale = Ogre::StringConverter::parseInt(xml_node.attribute("inputScale").value());
-  int tuningCompositeMapDistance =
-      Ogre::StringConverter::parseInt(xml_node.attribute("tuningCompositeMapDistance").value());
+  int tuningCompositeMapDistance = Ogre::StringConverter::parseInt(xml_node.attribute("tuningCompositeMapDistance").value());
   int tuningMaxPixelError = GetAttribInt(xml_node, "tuningMaxPixelError", 8);
   auto *terrain_global_options = Ogre::TerrainGlobalOptions::getSingletonPtr();
 
@@ -626,17 +627,21 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
 
   const bool flat = false;
-  legacy_terrain_ = false;
+
+  FixPbrParams("Plane");
+  FixPbrShadowReceiver("Plane");
 
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
   terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
   terrain_global_options->setUseRayBoxDistanceCalculation(terrain_raybox_calculation_);
-  terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
+  if (terrain_generator_b_)
+    terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
+  else
+    terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorC>());
   terrain_global_options->setCastsDynamicShadows(terrain_cast_shadows_);
 
-  if (legacy_terrain_) {
-    auto *matProfile =
-        dynamic_cast<TerrainMaterialGeneratorB::SM2Profile *>(terrain_global_options->getDefaultMaterialGenerator()->getActiveProfile());
+  if (legacy_terrain_ && terrain_generator_b_) {
+    auto *matProfile = dynamic_cast<TerrainMaterialGeneratorB::SM2Profile *>(terrain_global_options->getDefaultMaterialGenerator()->getActiveProfile());
     matProfile->setReceiveDynamicShadowsEnabled(terrain_receive_shadows_);
     matProfile->setReceiveDynamicShadowsLowLod(terrain_receive_shadows_low_lod_);
     matProfile->setReceiveDynamicShadowsDepth(terrain_receive_shadows_);
@@ -647,8 +652,7 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     matProfile->SetTerrainFogPerpixel(terrain_fog_perpixel_);
   }
 
-  ogre_terrain_group_ =
-      std::make_shared<Ogre::TerrainGroup>(scene_manager_, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
+  ogre_terrain_group_ = std::make_shared<Ogre::TerrainGroup>(scene_manager_, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
   ogre_terrain_group_->setFilenameConvention("terrain", "bin");
   ogre_terrain_group_->setOrigin(Ogre::Vector3::ZERO);
   ogre_terrain_group_->setResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -775,7 +779,7 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
           obj->position(position0);
           obj->normal(normal);
 
-          obj->textureCoord((float) x / 4, (float) z / 4);
+          obj->textureCoord((float) x / 8, (float) z / 8);
         }
       }
 
@@ -827,6 +831,9 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessTerrainLightmap(pugi::xml_node &xml_node) {
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
+  if (!terrain_generator_b_)
+    return;
+
   auto *terrain_global_options = Ogre::TerrainGlobalOptions::getSingletonPtr();
 
   auto *matProfile =
@@ -852,7 +859,6 @@ void DotSceneLoaderB::ProcessTerrainLightmap(pugi::xml_node &xml_node) {
           static_cast<TerrainMaterialGeneratorB::SM2Profile *>(terrain_global_options->getDefaultMaterialGenerator()->getActiveProfile());
       matProfile->setLightmapEnabled(false);
     }
-
   }
 
 #else

@@ -20,6 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 //
+
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
@@ -95,14 +96,6 @@ TerrainMaterialGeneratorC::SM2Profile::SM2Profile(TerrainMaterialGenerator *pare
       mDepthShadows(false),
       mLowLodShadows(false) {
   Ogre::HighLevelGpuProgramManager &hmgr = Ogre::HighLevelGpuProgramManager::getSingleton();
-
-//  if (hmgr.isLanguageSupported("glsl") || hmgr.isLanguageSupported("glsles")) {
-//    mShaderGen = OGRE_NEW ShaderHelperGLSL();
-//    mShaderGen->SetTerrainFogPerpixel(this->terrain_fog_perpixel_);
-//  } else if (hmgr.isLanguageSupported("cg") || hmgr.isLanguageSupported("hlsl")) {
-//    mShaderGen = OGRE_NEW ShaderHelperCg();
-//    mShaderGen->SetTerrainFogPerpixel(this->terrain_fog_perpixel_);
-//  }
 }
 //---------------------------------------------------------------------
 TerrainMaterialGeneratorC::SM2Profile::~SM2Profile() {
@@ -114,22 +107,17 @@ void TerrainMaterialGeneratorC::SM2Profile::requestOptions(Ogre::Terrain *terrai
   terrain->_setNormalMapRequired(true);
   terrain->_setLightMapRequired(false, false);
   terrain->_setCompositeMapRequired(false);
-//  terrain->_setMorphRequired(true);
-//  terrain->_setNormalMapRequired(true);
-//  terrain->_setLightMapRequired(mLightmapEnabled, true);
-//  terrain->_setCompositeMapRequired(mCompositeMapEnabled);
+  terrain->_setMorphRequired(true);
+  terrain->_setNormalMapRequired(true);
+  terrain->_setLightMapRequired(mLightmapEnabled, false);
+  terrain->_setCompositeMapRequired(false);
 }
 //---------------------------------------------------------------------
 bool TerrainMaterialGeneratorC::SM2Profile::isVertexCompressionSupported() const {
-//  return mShaderGen && mShaderGen->isVertexCompressionSupported();
   return false;
 }
 //---------------------------------------------------------------------
 void TerrainMaterialGeneratorC::SM2Profile::setLightmapEnabled(bool enabled) {
-//  if (enabled != mLightmapEnabled) {
-//    mLightmapEnabled = enabled;
-//    mParent->_markChanged();
-//  }
 }
 //---------------------------------------------------------------------
 Ogre::uint8 TerrainMaterialGeneratorC::SM2Profile::getMaxLayers(const Ogre::Terrain *terrain) const {
@@ -158,81 +146,19 @@ Ogre::uint8 TerrainMaterialGeneratorC::SM2Profile::getMaxLayers(const Ogre::Terr
 }
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorC::SM2Profile::generate(const Ogre::Terrain *terrain) {
-//  // re-use old material if exists
-//  Ogre::MaterialPtr mat = terrain->_getMaterial();
-//  if (!mat) {
-//    Ogre::MaterialManager &matMgr = Ogre::MaterialManager::getSingleton();
-//    const Ogre::String &matName = terrain->getMaterialName();
-//    mat = matMgr.getByName(matName);
-//    if (!mat) {
-//      mat = matMgr.create(matName, terrain->_getDerivedResourceGroup());
-//    }
-//  }
-//  // clear everything
-//  mat->removeAllTechniques();
-//
-//  // Automatically disable normal & parallax mapping if card cannot handle it
-//  // We do this rather than having a specific technique for it since it's simpler
-//  Ogre::GpuProgramManager &gmgr = Ogre::GpuProgramManager::getSingleton();
-//  if (!gmgr.isSyntaxSupported("ps_4_0") && !gmgr.isSyntaxSupported("ps_3_0") && !gmgr.isSyntaxSupported("ps_2_x")
-//      && !gmgr.isSyntaxSupported("fp40") && !gmgr.isSyntaxSupported("arbfp1") && !gmgr.isSyntaxSupported("glsl")
-//      && !gmgr.isSyntaxSupported("glsles")) {
-//    setLayerNormalMappingEnabled(false);
-//    setLayerParallaxMappingEnabled(false);
-//  }
-//
-//  addTechnique(mat, terrain, HIGH_LOD);
-//
-//  // LOD
-//  if (mCompositeMapEnabled) {
-//    addTechnique(mat, terrain, LOW_LOD);
-//    Ogre::Material::LodValueList lodValues;
-//    lodValues.push_back(Ogre::TerrainGlobalOptions::getSingleton().getCompositeMapDistance());
-//    mat->setLodLevels(lodValues);
-//    Ogre::Technique *lowLodTechnique = mat->getTechnique(1);
-//    lowLodTechnique->setLodIndex(1);
-//  }
-//
-//  updateParams(mat, terrain);
-//
-//  return mat;
 
     return Ogre::MaterialManager::getSingleton().getByName("Plane");
 }
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorC::SM2Profile::generateForCompositeMap(const Ogre::Terrain *terrain) {
-//  // re-use old material if exists
-//  Ogre::MaterialPtr mat = terrain->_getCompositeMapMaterial();
-//  if (!mat) {
-//    Ogre::MaterialManager &matMgr = Ogre::MaterialManager::getSingleton();
-//
-//    // it's important that the names are deterministic for a given terrain, so
-//    // use the terrain pointer as an ID
-//    const Ogre::String &matName = terrain->getMaterialName() + "/comp";
-//    mat = matMgr.getByName(matName);
-//    if (!mat) {
-//      mat = matMgr.create(matName, terrain->_getDerivedResourceGroup());
-//    }
-//  }
-//  // clear everything
-//  mat->removeAllTechniques();
-//
-//  addTechnique(mat, terrain, RENDER_COMPOSITE_MAP);
-//
-//  updateParamsForCompositeMap(mat, terrain);
-//
-//  return mat;
   return Ogre::MaterialManager::getSingleton().getByName("Plane");
 }
 //---------------------------------------------------------------------
 void TerrainMaterialGeneratorC::SM2Profile::updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) {
-//  mShaderGen->updateParams(this, mat, terrain, false);
-
 }
 //---------------------------------------------------------------------
 void TerrainMaterialGeneratorC::SM2Profile::updateParamsForCompositeMap(const Ogre::MaterialPtr &mat,
                                                                         const Ogre::Terrain *terrain) {
-//  mShaderGen->updateParams(this, mat, terrain, true);
 }
 
 } //namespace Context
