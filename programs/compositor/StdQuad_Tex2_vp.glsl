@@ -28,6 +28,7 @@ SOFTWARE.
 #define USE_TEX_LOD
 #if VERSION != 120
 #define attribute in
+#define varying out
 #define texture1D texture
 #define texture2D texture
 #define texture2DProj textureProj
@@ -37,7 +38,7 @@ SOFTWARE.
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
 #else
-#define in varying
+#define in attribute
 #define out varying
 #if VERSION != 120
 out vec4 gl_FragColor;
@@ -54,7 +55,7 @@ out vec4 gl_FragColor;
 #define textureCubeLod textureLodEXT
 precision highp float;
 #if VERSION == 100
-#define in varying
+#define in attribute
 #define out varying
 #else
 #define attribute in
@@ -70,8 +71,8 @@ precision highp float;
 #endif
 
 uniform mat4 worldViewProj;
-attribute vec4 vertex;
-attribute vec2 uv0;
+in vec4 vertex;
+in vec2 uv0;
 out vec2 oUv0;
 out vec2 oUv1;
 
