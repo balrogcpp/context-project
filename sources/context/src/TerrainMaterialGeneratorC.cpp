@@ -51,26 +51,11 @@ THE SOFTWARE.
 #include "pcheader.hpp"
 
 #include "TerrainMaterialGeneratorC.hpp"
+#include "DotSceneLoaderB.hpp"
 
 namespace Context {
 //---------------------------------------------------------------------
 TerrainMaterialGeneratorC::TerrainMaterialGeneratorC() {
-  // define the layers
-  // We expect terrain textures to have no alpha, so we use the alpha channel
-  // in the albedo texture to store specular reflection
-  // similarly we double-up the normal and height (for parallax)
-  mLayerDecl.samplers.push_back(Ogre::TerrainLayerSampler("albedo_specular", Ogre::PF_BYTE_RGBA));
-  mLayerDecl.samplers.push_back(Ogre::TerrainLayerSampler("normal_height", Ogre::PF_BYTE_RGBA));
-
-  mLayerDecl.elements.push_back(
-      Ogre::TerrainLayerSamplerElement(0, Ogre::TLSS_ALBEDO, 0, 3));
-  mLayerDecl.elements.push_back(
-      Ogre::TerrainLayerSamplerElement(0, Ogre::TLSS_SPECULAR, 3, 1));
-  mLayerDecl.elements.push_back(
-      Ogre::TerrainLayerSamplerElement(1, Ogre::TLSS_NORMAL, 0, 3));
-  mLayerDecl.elements.push_back(
-      Ogre::TerrainLayerSamplerElement(1, Ogre::TLSS_HEIGHT, 3, 1));
-
   mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
 
   // TODO - check hardware capabilities & use fallbacks if required (more profiles needed)
@@ -79,37 +64,24 @@ TerrainMaterialGeneratorC::TerrainMaterialGeneratorC() {
 //---------------------------------------------------------------------
 TerrainMaterialGeneratorC::~TerrainMaterialGeneratorC() = default;
 //---------------------------------------------------------------------
-//---------------------------------------------------------------------
 TerrainMaterialGeneratorC::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent,
                                                   const Ogre::String &name,
                                                   const Ogre::String &desc)
-    : Profile(parent, name, desc),
-      mShaderGen(nullptr),
-      mLayerNormalMappingEnabled(true),
-      mLayerParallaxMappingEnabled(true),
-      mLayerSpecularMappingEnabled(true),
-      mGlobalColourMapEnabled(true),
-      mLightmapEnabled(true),
-      mCompositeMapEnabled(true),
-      mReceiveDynamicShadows(true),
-      mPSSM(nullptr),
-      mDepthShadows(false),
-      mLowLodShadows(false) {
-  Ogre::HighLevelGpuProgramManager &hmgr = Ogre::HighLevelGpuProgramManager::getSingleton();
+    : Profile(parent, name, desc)
+{
 }
 //---------------------------------------------------------------------
 TerrainMaterialGeneratorC::SM2Profile::~SM2Profile() {
-  OGRE_DELETE mShaderGen;
 }
 //---------------------------------------------------------------------
 void TerrainMaterialGeneratorC::SM2Profile::requestOptions(Ogre::Terrain *terrain) {
   terrain->_setMorphRequired(false);
-  terrain->_setNormalMapRequired(true);
+  terrain->_setNormalMapRequired(false);
   terrain->_setLightMapRequired(false, false);
   terrain->_setCompositeMapRequired(false);
   terrain->_setMorphRequired(true);
-  terrain->_setNormalMapRequired(true);
-  terrain->_setLightMapRequired(mLightmapEnabled, false);
+  terrain->_setNormalMapRequired(false);
+  terrain->_setLightMapRequired(false);
   terrain->_setCompositeMapRequired(false);
 }
 //---------------------------------------------------------------------
@@ -122,36 +94,27 @@ void TerrainMaterialGeneratorC::SM2Profile::setLightmapEnabled(bool enabled) {
 //---------------------------------------------------------------------
 Ogre::uint8 TerrainMaterialGeneratorC::SM2Profile::getMaxLayers(const Ogre::Terrain *terrain) const {
   // count the texture units free
-  Ogre::uint8 freeTextureUnits = 16;
-//  // lightmap
-//  --freeTextureUnits;
-//  // normalmap
-  --freeTextureUnits;
-//  // colourmap
-//  if (terrain->getGlobalColourMapEnabled())
-//    --freeTextureUnits;
-//  if (isShadowingEnabled(HIGH_LOD, terrain)) {
-//    Ogre::uint8 numShadowTextures = 1;
-//    if (getReceiveDynamicShadowsPSSM()) {
-//      numShadowTextures = (Ogre::uint8) getReceiveDynamicShadowsPSSM()->getSplitCount();
-//    }
-//    freeTextureUnits -= numShadowTextures;
-//  }
-
-  freeTextureUnits -= 3;
-
-  // each layer needs 2.25 units (1xdiffusespec, 1xnormalheight, 0.25xblend)
-  return static_cast<Ogre::uint8>(freeTextureUnits / 2.25f);
-
+  return 1;
 }
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorC::SM2Profile::generate(const Ogre::Terrain *terrain) {
+  std::string material_name = "Plane";
+  DotSceneLoaderB::FixPbrParams(material_name);
+  DotSceneLoaderB::FixPbrShadowReceiver(material_name);
 
-    return Ogre::MaterialManager::getSingleton().getByName("Plane");
+  static long long counter = 0;
+  counter++;
+  return Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(counter));
 }
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorC::SM2Profile::generateForCompositeMap(const Ogre::Terrain *terrain) {
-  return Ogre::MaterialManager::getSingleton().getByName("Plane");
+  std::string material_name = "Plane";
+  DotSceneLoaderB::FixPbrParams(material_name);
+  DotSceneLoaderB::FixPbrShadowReceiver(material_name);
+
+  static long long counter = 0;
+  counter++;
+  return Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(counter));
 }
 //---------------------------------------------------------------------
 void TerrainMaterialGeneratorC::SM2Profile::updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) {
@@ -160,5 +123,4 @@ void TerrainMaterialGeneratorC::SM2Profile::updateParams(const Ogre::MaterialPtr
 void TerrainMaterialGeneratorC::SM2Profile::updateParamsForCompositeMap(const Ogre::MaterialPtr &mat,
                                                                         const Ogre::Terrain *terrain) {
 }
-
 } //namespace Context

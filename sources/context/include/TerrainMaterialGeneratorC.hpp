@@ -64,36 +64,20 @@ class TerrainMaterialGeneratorC : public TerrainMaterialGenerator {
   TerrainMaterialGeneratorC();
   ~TerrainMaterialGeneratorC() override;
 
-  class SM2Profile :
-      public TerrainMaterialGenerator::Profile {
+  class SM2Profile : public TerrainMaterialGenerator::Profile {
    public:
     SM2Profile(TerrainMaterialGenerator *parent,
                const String &name,
                const String &desc);
     ~SM2Profile() override;
-    MaterialPtr generate(const Terrain *terrain) override;
-    MaterialPtr generateForCompositeMap(const Terrain *terrain) override;
-    uint8 getMaxLayers(const Terrain *terrain) const override;
-    void updateParams(const MaterialPtr &mat, const Terrain *terrain) override;
-    void updateParamsForCompositeMap(const MaterialPtr &mat, const Terrain *terrain) override;
-    void requestOptions(Terrain *terrain) override;
-    [[nodiscard]] bool isVertexCompressionSupported() const override;
-    void setLightmapEnabled(bool enabled) override;
-
-    ShaderHelper *mShaderGen;
-    bool mLayerNormalMappingEnabled;
-    bool mLayerParallaxMappingEnabled;
-    bool mLayerSpecularMappingEnabled;
-    bool mGlobalColourMapEnabled;
-    bool mLightmapEnabled;
-    bool mCompositeMapEnabled;
-    bool mReceiveDynamicShadows;
-    PSSMShadowCameraSetup *mPSSM;
-    bool mDepthShadows;
-    bool mLowLodShadows;
-    bool terrain_fog_perpixel_ = true;
+    MaterialPtr generate(const Terrain *terrain) final;
+    MaterialPtr generateForCompositeMap(const Terrain *terrain) final;
+    uint8 getMaxLayers(const Terrain *terrain) const final;
+    void updateParams(const MaterialPtr &mat, const Terrain *terrain) final;
+    void updateParamsForCompositeMap(const MaterialPtr &mat, const Terrain *terrain) final;
+    void requestOptions(Terrain *terrain) final;
+    [[nodiscard]] bool isVertexCompressionSupported() const final;
+    void setLightmapEnabled(bool enabled) final;
   };
 };
-
-//typedef TerrainMaterialGeneratorC::SM2Profile SM2Profile;
 } //namespace Context

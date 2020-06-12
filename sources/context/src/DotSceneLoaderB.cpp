@@ -624,17 +624,20 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     terrain_global_options = new Ogre::TerrainGlobalOptions();
   }
 
+  Ogre::MaterialManager::getSingleton().load("Plane", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, true);
+//  Ogre::MaterialManager::getSingleton().prepare("Plane", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  DotSceneLoaderB::FixPbrParams("Plane");
+  DotSceneLoaderB::FixPbrShadowReceiver("Plane");
   OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
 
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
   terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
+  terrain_global_options->setCastsDynamicShadows(terrain_cast_shadows_);
   terrain_global_options->setUseRayBoxDistanceCalculation(terrain_raybox_calculation_);
   if (terrain_generator_b_)
     terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
   else
     terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorC>());
-  terrain_global_options->setCastsDynamicShadows(terrain_cast_shadows_);
-
   if (legacy_terrain_ && terrain_generator_b_) {
     auto *matProfile = dynamic_cast<TerrainMaterialGeneratorB::SM2Profile *>(terrain_global_options->getDefaultMaterialGenerator()->getActiveProfile());
     matProfile->setReceiveDynamicShadowsEnabled(terrain_receive_shadows_);
@@ -1309,7 +1312,7 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
 
   if (std::find(material_list.begin(), material_list.end(), material_name) != material_list.end()) {
     registered = true;
-    return;
+//    return;
   } else {
     material_list.push_back(material_name);
   }
@@ -1388,7 +1391,7 @@ void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
 
   if (std::find(shadowed_list.begin(), shadowed_list.end(), material_name) != shadowed_list.end()) {
     registered = true;
-    return;
+//    return;
   } else {
     shadowed_list.push_back(material_name);
   }
@@ -1432,20 +1435,18 @@ void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
 
         int texture_count = pass->getNumTextureUnitStates();
 
+        if (!registered) {
         for (int k = 0; k < 3; k++) {
-          if (!registered) {
             Ogre::TextureUnitState *tu = pass->createTextureUnitState();
             tu->setContentType(Ogre::TextureUnitState::CONTENT_SHADOW);
-            tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
+            tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
             tu->setTextureBorderColour(Ogre::ColourValue::White);
             tu->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
-          }
-
-          frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);
-
-//          frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
-//                                            Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
-//                                            texture_count + k);
+            frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);
+//            frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
+//                                    Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
+//                                    texture_count + k);
+        }
         }
       }
     }

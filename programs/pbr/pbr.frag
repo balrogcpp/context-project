@@ -408,13 +408,8 @@ vec3 getNormal(vec2 uv)
 #endif
 
 #ifdef HAS_NORMALMAP
-#ifndef TERRAIN
     vec3 n = texture2D(uNormalSampler, uv).rgb;
     n = normalize(tbn * ((2.0 * n - 1.0)));
-#else
-    vec3 n = texture2D(uNormalSampler, uv).rgb;
-    n = normalize(tbn * ((2.0 * n - 1.0)));
-#endif
 #else
     vec3 n = tbn[2].xyz;
 #endif
@@ -537,7 +532,7 @@ void main()
 #endif
 
 #ifdef TERRAIN
-    tex_coord *= 16.0;
+    tex_coord *= 32.0;
 #endif
 
     // The albedo may be defined from a base texture or a flat color
@@ -564,8 +559,8 @@ void main()
 #ifdef HAS_SEPARATE_ROUGHNESSMAP
     vec4 mrSampleMetallic = texture2D(uMetallicSampler, tex_coord);
     vec4 mrSampleRoughness = texture2D(uRoughnessSampler, tex_coord);
-    perceptualRoughness = mrSampleRoughness.r;
-    metallic = mrSampleMetallic.r;
+    perceptualRoughness = mrSampleRoughness.r * uSurfaceSpecularColour;
+    metallic = mrSampleMetallic.r * uSurfaceShininessColour;
 #else
     // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
     // This layout intentionally reserves the 'r' channel for (optional) occlusion map data

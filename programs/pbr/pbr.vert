@@ -143,6 +143,7 @@ void main()
 
 #ifndef SHADOWCASTER
   vec4 pos = uModelMatrix * position;
+  vPosition = vec3(pos.xyz) / pos.w;
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -153,6 +154,7 @@ void main()
 #else // HAS_TANGENTS != 1
   vNormal = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
 #endif
+#else
 #endif
 
 #ifdef HAS_UV
@@ -174,7 +176,6 @@ void main()
 
   gl_Position = uMVPMatrix * mypos;
   vUV0.z = gl_Position.z;
-  vPosition = vec3(pos.xyz) / pos.w;
 
 #ifdef REFLECTION
   const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
