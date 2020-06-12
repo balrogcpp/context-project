@@ -31,6 +31,7 @@ SOFTWARE.
 #define USE_TEX_LOD
 #if VERSION != 120
 #define attribute in
+#define varying out
 #define texture1D texture
 #define texture2D texture
 #define texture2DProj textureProj
@@ -57,7 +58,7 @@ out vec4 gl_FragColor;
 #define textureCubeLod textureLodEXT
 precision highp float;
 #if VERSION == 100
-#define in varying
+#define in attribute
 #define out varying
 #else
 #define attribute in
@@ -112,12 +113,6 @@ uniform float fadeRange;
 #endif
 uniform float uTime;
 
-#ifdef TERRAIN
-uniform sampler2D HeighMap;
-uniform vec4 TerrainBox; //-x+x-z+z
-uniform vec4 TerrainBox2; //-y+y
-#endif
-
 out vec3 vPosition;
 
 #ifdef HAS_NORMALS
@@ -136,12 +131,6 @@ out vec4 projectionCoord;
 void main()
 {
   vec4 mypos = position;
-
-//  vec2 uv;
-//  uv.x = (mypos.x - TerrainBox.x) / (TerrainBox.y - TerrainBox.x);
-//  uv.y = (mypos.z - TerrainBox.z) / (TerrainBox.w - TerrainBox.z);
-//  float heigh = texture2D(HeighMap, uv).r * TerrainBox2.y - TerrainBox2.x;
-//  mypos.y += heigh;
 
 #ifdef FOREST
   float radiusCoeff = 0.25;

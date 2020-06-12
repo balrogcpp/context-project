@@ -43,7 +43,7 @@ SOFTWARE.
 #version VERSION
 #define USE_TEX_LOD
 #if VERSION != 120
-#define attribute in
+#define varying in
 #define texture1D texture
 #define texture2D texture
 #define texture2DProj textureProj
@@ -73,7 +73,7 @@ precision highp float;
 #define in varying
 #define out varying
 #else
-#define attribute in
+#define varying in
 #define texture1D texture
 #define texture2D texture
 #define texture2DProj textureProj
@@ -378,32 +378,43 @@ vec3 LINEARtoSRGB(vec3 srgbIn)
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-vec3 getNormal()
+vec3 getNormal(vec2 uv)
 {
     // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
     vec3 pos_dx = dFdx(vPosition);
     vec3 pos_dy = dFdy(vPosition);
-    vec3 tex_dx = dFdx(vec3(vUV0.xy, 0.0));
-    vec3 tex_dy = dFdy(vec3(vUV0.xy, 0.0));
-    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
+//    vec3 tex_dx = dFdx(vec3(vUV0.xy, 0.0));
+//    vec3 tex_dy = dFdy(vec3(vUV0.xy, 0.0));
+//    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
+    vec3 t = vec3(1.0, 0.0, 0.0);
 
 #ifdef HAS_NORMALS
     vec3 ng = normalize(vNormal);
 #else
+#ifndef TERRAIN
     vec3 ng = cross(pos_dx, pos_dy);
+#else
+    vec3 ng = normalize(cross(pos_dy, pos_dx));
+#endif
 #endif
 
-    t = normalize(t - ng * dot(ng, t));
+//    t = normalize(t - ng * dot(ng, t));
     vec3 b = normalize(cross(ng, t));
+    t = normalize(cross(ng ,b));
     mat3 tbn = mat3(t, b, ng);
 #else // HAS_TANGENTS
     mat3 tbn = vTBN;
 #endif
 
 #ifdef HAS_NORMALMAP
-    vec3 n = texture2D(uNormalSampler, vUV0.xy).rgb;
+#ifndef TERRAIN
+    vec3 n = texture2D(uNormalSampler, uv).rgb;
     n = normalize(tbn * ((2.0 * n - 1.0)));
+#else
+    vec3 n = texture2D(uNormalSampler, uv).rgb;
+    n = normalize(tbn * ((2.0 * n - 1.0)));
+#endif
 #else
     vec3 n = tbn[2].xyz;
 #endif
@@ -525,6 +536,10 @@ void main()
     vec2 tex_coord = vUV0.xy;
 #endif
 
+#ifdef TERRAIN
+    tex_coord *= 16.0;
+#endif
+
     // The albedo may be defined from a base texture or a flat color
 #ifdef HAS_BASECOLORMAP
     vec4 baseColor = SRGBtoLINEAR(texture2D(uBaseColorSampler, tex_coord)) * uSurfaceDiffuseColour;
@@ -583,7 +598,7 @@ void main()
     vec3 specularEnvironmentR0 = specularColor.rgb;
     vec3 specularEnvironmentR90 = vec3(1.0) * reflectance90;
 
-    vec3 n = getNormal();                             // normal at surface point
+    vec3 n = getNormal(tex_coord);                             // normal at surface point
     float NdotV = abs(dot(n, v)) + 0.001;
     vec3 reflection = -normalize(reflect(v, n));
 
