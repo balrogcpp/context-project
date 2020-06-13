@@ -75,13 +75,9 @@ TerrainMaterialGeneratorC::SM2Profile::~SM2Profile() {
 }
 //---------------------------------------------------------------------
 void TerrainMaterialGeneratorC::SM2Profile::requestOptions(Ogre::Terrain *terrain) {
-  terrain->_setMorphRequired(false);
-  terrain->_setNormalMapRequired(false);
-  terrain->_setLightMapRequired(false, false);
-  terrain->_setCompositeMapRequired(false);
   terrain->_setMorphRequired(true);
-  terrain->_setNormalMapRequired(false);
-  terrain->_setLightMapRequired(false);
+  terrain->_setNormalMapRequired(true);
+  terrain->_setLightMapRequired(false, false);
   terrain->_setCompositeMapRequired(false);
 }
 //---------------------------------------------------------------------
@@ -94,17 +90,27 @@ void TerrainMaterialGeneratorC::SM2Profile::setLightmapEnabled(bool enabled) {
 //---------------------------------------------------------------------
 Ogre::uint8 TerrainMaterialGeneratorC::SM2Profile::getMaxLayers(const Ogre::Terrain *terrain) const {
   // count the texture units free
-  return 1;
+  return 16;
 }
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorC::SM2Profile::generate(const Ogre::Terrain *terrain) {
   std::string material_name = "Plane";
   DotSceneLoaderB::FixPbrParams(material_name);
   DotSceneLoaderB::FixPbrShadowReceiver(material_name);
-
   static long long counter = 0;
+
+  auto normalmap = terrain->getTerrainNormalMap();
+
+  auto new_material = Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(counter));
+  auto *texture_state = new_material->getTechnique(0)->getPass(0)->getTextureUnitState("GlobalNormal");
+  if (texture_state) {
+    texture_state->setTexture(normalmap);
+    texture_state->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_NONE);
+    texture_state->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
+  }
   counter++;
-  return Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(counter));
+
+  return new_material;
 }
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorC::SM2Profile::generateForCompositeMap(const Ogre::Terrain *terrain) {

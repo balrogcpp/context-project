@@ -829,36 +829,30 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessTerrainLightmap(pugi::xml_node &xml_node) {
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-  if (!terrain_generator_b_)
-    return;
-
   auto *terrain_global_options = Ogre::TerrainGlobalOptions::getSingletonPtr();
-
-  auto *matProfile =
-      dynamic_cast<TerrainMaterialGeneratorB::SM2Profile *>(terrain_global_options->getDefaultMaterialGenerator()->getActiveProfile());
-
-  matProfile->setLightmapEnabled(terrain_lightmap_enable_);
-
   if (!terrain_lightmap_enable_)
     return;
 
   if (!ogre_scene_manager_->getLight("Sun"))
     return;
 
-  if (terrain_lightmap_enable_) {
-    terrain_global_options->setLightMapSize(terrain_lightmap_size_);
-    terrain_global_options->setLightMapDirection(ogre_scene_manager_->getLight("Sun")->getDerivedDirection());
+  if (terrain_generator_b_) {
+    auto *matProfile =
+        dynamic_cast<TerrainMaterialGeneratorB::SM2Profile *>(terrain_global_options->getDefaultMaterialGenerator()->getActiveProfile());
+
     matProfile->setLightmapEnabled(terrain_lightmap_enable_);
 
     // Disable the lightmap for OpenGL ES 2.0. The minimum number of samplers allowed is 8(as opposed to 16 on desktop).
     // Otherwise we will run over the limit by just one. The minimum was raised to 16 in GL ES 3.0.
     if (Ogre::Root::getSingletonPtr()->getRenderSystem()->getCapabilities()->getNumTextureUnits() < 9) {
-      TerrainMaterialGeneratorB::SM2Profile *matProfile =
-          static_cast<TerrainMaterialGeneratorB::SM2Profile *>(terrain_global_options->getDefaultMaterialGenerator()->getActiveProfile());
       matProfile->setLightmapEnabled(false);
     }
   }
 
+  if (Ogre::Root::getSingletonPtr()->getRenderSystem()->getCapabilities()->getNumTextureUnits() >= 9) {
+    terrain_global_options->setLightMapSize(terrain_lightmap_size_);
+    terrain_global_options->setLightMapDirection(ogre_scene_manager_->getLight("Sun")->getDerivedDirection());
+  }
 #else
   OGRE_EXCEPT(Ogre::Exception::ERR_INVALID_CALL, "recompile with Ogre::Terrain component");
 #endif
@@ -945,7 +939,7 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &xml_node, Ogre::SceneNode *pa
   }
 
   light->setVisible(GetAttribBool(xml_node, "visible", true));
-  light->setCastShadows(GetAttribBool(xml_node, "castShadows", true));
+  light->setCastShadows(GetAttribBool(xml_node, "castShadows", false));
   light->setPowerScale(GetAttribReal(xml_node, "powerScale", 1.0));
 
   // Process colourDiffuse (?)
@@ -1085,6 +1079,12 @@ void DotSceneLoaderB::ProcessNode(pugi::xml_node &xml_node, Ogre::SceneNode *par
   // Process rotation (?)
   if (auto element = xml_node.child("rotation")) {
     node->setOrientation(ParseQuaternion(element));
+    node->setInitialState();
+  }
+
+  // Process rotation (?)
+  if (auto element = xml_node.child("direction")) {
+    node->setDirection(ParsePosition(element).normalisedCopy());
     node->setInitialState();
   }
 

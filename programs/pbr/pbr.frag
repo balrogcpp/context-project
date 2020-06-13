@@ -124,6 +124,9 @@ uniform samplerCube uSpecularEnvSampler;
 uniform sampler2D ubrdfLUT;
 #endif
 
+#ifdef TERRAIN_GLOBAL_NORMALMAP
+uniform sampler2D uGlobalNormalSampler;
+#endif
 #ifdef HAS_NORMALMAP
 uniform sampler2D uNormalSampler;
 #endif
@@ -185,8 +188,9 @@ float VSM(vec2 moments, float compare){
     {
         float m2 = moments.y;
         float sigma2 = m2 - (m1 * m1);
-        const float offset = -0.5;
-        float shadow = offset + sigma2 / (sigma2 + diff * diff);
+        const float offset = 0.0;
+        const float scale = 0.1;
+        float shadow = offset + scale * sigma2 / (sigma2 + diff * diff);
         return clamp(shadow, 0, 1);
     }
     else
@@ -198,7 +202,7 @@ float VSM(vec2 moments, float compare){
 float ESM(float depth, float compare){
     const float k = 30.0;
     const float offset = 0.0;
-    const float scale = 0.5;
+    const float scale = 0.05;
 
     if(compare > depth)
     {
@@ -244,19 +248,18 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv)
     const int iterations = 16;
     for (int i = 0; i < iterations; i++)
     {
-        vec4 uv2 = uv;
-        uv2.xy += poissonDisk16[i] * 0.001;
-        shadow += (VSM(texture2DProj(shadowMap, uv2).rg, compare) / iterations);
+        shadow += (VSM(texture2D(shadowMap, uv.xy + poissonDisk16[i] * 0.001).rg, compare) / iterations);
     }
 #else
     const int iterations = 16;
     for (int i = 0; i < iterations; i++)
     {
-        vec4 uv2 = uv;
-        uv2.xy += poissonDisk16[i] * 0.001;
-        shadow += (ESM(texture2DProj(shadowMap, uv2).r, compare) / iterations);
+        shadow += (ESM(texture2D(shadowMap, uv.xy + poissonDisk16[i] * 0.001).r, compare) / iterations);
     }
 #endif
+
+//    shadow = texture2D(shadowMap, uv.xy).r > compare ? 1.0 : 0.0;
+//    shadow = ESM(texture2D(shadowMap, uv.xy).r, compare);
 
     shadow = clamp(shadow + uShadowColour.r, 0, 1);
 
@@ -376,18 +379,23 @@ vec3 LINEARtoSRGB(vec3 srgbIn)
 #endif
 }
 
+#ifdef TERRAIN_GLOBAL_NORMALMAP
+vec4 expand(vec4 v)
+{
+    return v * 2.0 - 1.0;
+}
+#endif
+
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 vec3 getNormal(vec2 uv)
 {
     // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
+    vec3 t = vec3(1.0, 0.0, 0.0);
+#ifndef TERRAIN_GLOBAL_NORMALMAP
     vec3 pos_dx = dFdx(vPosition);
     vec3 pos_dy = dFdy(vPosition);
-//    vec3 tex_dx = dFdx(vec3(vUV0.xy, 0.0));
-//    vec3 tex_dy = dFdy(vec3(vUV0.xy, 0.0));
-//    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
-    vec3 t = vec3(1.0, 0.0, 0.0);
 
 #ifdef HAS_NORMALS
     vec3 ng = normalize(vNormal);
@@ -398,7 +406,13 @@ vec3 getNormal(vec2 uv)
     vec3 ng = normalize(cross(pos_dy, pos_dx));
 #endif
 #endif
+#else
+    vec3 ng = expand(texture2D(uGlobalNormalSampler, vUV0.xy)).xyz;
+#endif
 
+//    vec3 tex_dx = dFdx(vec3(vUV0.xy, 0.0));
+//    vec3 tex_dy = dFdy(vec3(vUV0.xy, 0.0));
+//    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
 //    t = normalize(t - ng * dot(ng, t));
     vec3 b = normalize(cross(ng, t));
     t = normalize(cross(ng ,b));
@@ -657,13 +671,14 @@ void main()
         vec3 diffuseContrib = (1.0 - F) * diffuse(pbrInputs);
         vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
 
-        vec3 color = NdotL * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib) * fSpotT * fAtten;
+        float tmp = NdotL * fSpotT * fAtten;
+        vec3 color = tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
 #ifdef SHADOWRECEIVER
         float shadow = 1.0;
-        const float treshhold = 0.001;
-        if (uLightCastsShadowsArray[i] * ndotl > 0.0)
+        if (uLightCastsShadowsArray[i] * tmp > 0) {
             shadow = calcPSSMDepthShadow();
+        }
         total_colour += color * shadow;
 #else
         total_colour += color;

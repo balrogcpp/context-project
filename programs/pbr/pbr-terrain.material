@@ -26,14 +26,12 @@ vertex_program PbrTerrain_vs_glsl glsl
 {
 	source pbr.vert
     preprocessor_defines HAS_UV,SHADOWRECEIVER
-    //preprocessor_defines HAS_UV,SHADOWRECEIVER,HAS_NORMALS,HAS_TANGENTS
 }
 
 vertex_program PbrTerrain_vs_glsles glsles
 {
 	source pbr.vert
     preprocessor_defines HAS_UV,SHADOWRECEIVER
-    //preprocessor_defines HAS_UV,SHADOWRECEIVER,HAS_NORMALS,HAS_TANGENTS
 }
 
 vertex_program PbrTerrain_vs unified
@@ -45,15 +43,13 @@ vertex_program PbrTerrain_vs unified
 fragment_program PbrTerrain_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines TERRAIN,HAS_PARALLAXMAP,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
-    //preprocessor_defines HAS_PARALLAXMAP,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
+    preprocessor_defines TERRAIN,TERRAIN_GLOBAL_NORMALMAP,HAS_PARALLAXMAP,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
 }
 
 fragment_program PbrTerrain_fs_glsles glsles
 {
 	source pbr.frag
-    preprocessor_defines TERRAIN,HAS_PARALLAXMAP,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
-    //preprocessor_defines HAS_PARALLAXMAP,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
+    preprocessor_defines TERRAIN,TERRAIN_GLOBAL_NORMALMAP,HAS_PARALLAXMAP,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
 }
 
 fragment_program PbrTerrain_fs unified
@@ -76,12 +72,14 @@ material PbrTerrain
         texture_unit AlbedoParallax {}
         texture_unit Normal {}
         texture_unit MetallicRougness {}
+        texture_unit GlobalNormal {}
 
         fragment_program_ref PbrTerrain_fs
         {
             param_named uBaseColorSampler   int 0
             param_named uNormalSampler    int 1
             param_named uMetallicRoughnessSampler int 2
+            param_named uGlobalNormalSampler int 3
         }
       }
     }
