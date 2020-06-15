@@ -420,22 +420,11 @@ void ContextManager::SetupOgreScenePreconditions() {
       else
         texture_type = Ogre::PF_DEPTH32;
 
-      ogre_scene_manager_->setShadowTextureSettings(graphics_shadows_texture_resolution_,
-                                                    graphics_shadows_texture_count_,
-                                                    texture_type);
+      ogre_scene_manager_->setShadowTextureSettings(graphics_shadows_texture_resolution_, graphics_shadows_texture_count_, texture_type, 0, 2);
 
-      ogre_scene_manager_->setShadowTextureConfig(0,
-                                                  graphics_shadows_pssm_0_resolution_,
-                                                  graphics_shadows_pssm_0_resolution_,
-                                                  texture_type, 0, 2);
-      ogre_scene_manager_->setShadowTextureConfig(1,
-                                                  graphics_shadows_pssm_1_resolution_,
-                                                  graphics_shadows_pssm_1_resolution_,
-                                                  texture_type, 0, 2);
-      ogre_scene_manager_->setShadowTextureConfig(2,
-                                                  graphics_shadows_pssm_2_resolution_,
-                                                  graphics_shadows_pssm_2_resolution_,
-                                                  texture_type, 0, 2);
+      for (int i = 0; i < graphics_shadows_texture_count_; i++) {
+        ogre_scene_manager_->setShadowTextureConfig(i, graphics_shadows_texture_resolution_, graphics_shadows_texture_resolution_, texture_type, 0, 2);
+      }
 
       ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
       ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
@@ -443,6 +432,7 @@ void ContextManager::SetupOgreScenePreconditions() {
       ogre_scene_manager_->setShadowTextureSelfShadow(graphics_shadows_self_shadow_);
       ogre_scene_manager_->setShadowCasterRenderBackFaces(graphics_shadows_back_faces_);
       ogre_scene_manager_->setShadowFarDistance(graphics_shadows_far_distance_);
+      ogre_scene_manager_->setShadowDirectionalLightExtrusionDistance(graphics_shadows_far_distance_);
 
       if (!graphics_shadows_caster_material_.empty()) {
         auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName(graphics_shadows_caster_material_);
@@ -450,18 +440,19 @@ void ContextManager::SetupOgreScenePreconditions() {
       }
 
       if (!graphics_shadows_receiver_material_.empty()) {
-        auto
-            passReceiverMaterial = Ogre::MaterialManager::getSingleton().getByName(graphics_shadows_receiver_material_);
+        auto passReceiverMaterial = Ogre::MaterialManager::getSingleton().getByName(graphics_shadows_receiver_material_);
         ogre_scene_manager_->setShadowTextureReceiverMaterial(passReceiverMaterial);
       }
 
       auto pssm_setup = std::make_shared<Ogre::PSSMShadowCameraSetup>();
 
-      pssm_setup->setUseAggressiveFocusRegion(true);
+//      pssm_setup->setUseAggressiveFocusRegion(true);
+
+      int pssm_splits_ = 3;
 
       if (!ogre_shadow_camera_setup_) {
         if (graphics_shadows_split_auto_) {
-          pssm_setup->calculateSplitPoints(3, ogre_camera_->getNearClipDistance(),
+          pssm_setup->calculateSplitPoints(pssm_splits_, ogre_camera_->getNearClipDistance(),
                                            ogre_scene_manager_->getShadowFarDistance());
         } else {
           Ogre::PSSMShadowCameraSetup::SplitPointList split_points =
@@ -480,7 +471,7 @@ void ContextManager::SetupOgreScenePreconditions() {
         pssm_setup->setOptimalAdjustFactor(2, graphics_shadows_pssm_2_);
 
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-        if (rtss_enable_ && rtss_pssm4_enable_) {
+        if (rtss_enable_ && rtss_pssm4_enable_ && pssm_splits_ == 3) {
           // Make this viewport work with shader generator scheme.
           Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
 

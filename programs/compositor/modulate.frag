@@ -36,12 +36,10 @@ SOFTWARE.
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
+out vec4 gl_FragColor;
 #else
 #define in varying
 #define out varying
-#if VERSION != 120
-out vec4 gl_FragColor;
-#endif
 #endif
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
@@ -81,8 +79,8 @@ void main()
     vec4 tmp = texture2D(AttenuationSampler, oUv0);
     vec3 bloom = tmp.rgb;
     vec3 scene = texture2D(SceneSampler, oUv0).rgb;
+//    scene *= tmp.a;
     scene += 0.05 * bloom;
-    scene *= tmp.a;
 
     const float gamma = 2.2;
     vec3 mapped = vec3(1.0) - exp(-scene * exposure);

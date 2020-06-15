@@ -40,12 +40,10 @@ SOFTWARE.
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
+out vec4 gl_FragColor;
 #else
 #define in attribute
 #define out varying
-#if VERSION != 120
-out vec4 gl_FragColor;
-#endif
 #endif
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
@@ -105,7 +103,7 @@ uniform float uLightCount;
 #ifdef SHADOWRECEIVER
 uniform float uLightCastsShadowsArray[MAX_LIGHTS];
 uniform mat4 uTexWorldViewProjMatrixArray[3];
-out vec4 lightSpacePosArray[MAX_LIGHTS * 3];
+out vec4 lightSpacePosArray[2 * 3];
 #endif
 
 #ifdef FADE
@@ -163,16 +161,14 @@ void main()
   vUV0.xy = vec2(0.0);
 #endif
 
-  for (int i = 0; i < int(uLightCount);  i += 3) {
 #ifdef SHADOWRECEIVER
-  // Calculate the position of vertex in light space
-  if (uLightCastsShadowsArray[i] == 1.0) {
-    lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * mypos;
-    lightSpacePosArray[i + 1] = uTexWorldViewProjMatrixArray[i + 1] * mypos;
-    lightSpacePosArray[i + 2] = uTexWorldViewProjMatrixArray[i + 2] * mypos;
-  }
+// Calculate the position of vertex in light space
+for (int i = 0; i < int(2*3);  i += 3) {
+  lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * mypos;
+  lightSpacePosArray[i + 1] = uTexWorldViewProjMatrixArray[i + 1] * mypos;
+  lightSpacePosArray[i + 2] = uTexWorldViewProjMatrixArray[i + 2] * mypos;
+}
 #endif
-  }
 
   gl_Position = uMVPMatrix * mypos;
   vUV0.z = gl_Position.z;

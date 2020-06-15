@@ -36,12 +36,10 @@ SOFTWARE.
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
+out vec4 gl_FragColor;
 #else
 #define in varying
 #define out varying
-#if VERSION != 120
-out vec4 gl_FragColor;
-#endif
 #endif
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
@@ -95,7 +93,7 @@ void main()
   float fragmentWorldDepth = texture2D(sSceneDepthSampler, oUv0).r * farClipDistance;
   float accessibility = 0.0;
 
-  if (fragmentWorldDepth < 25.0) {
+  if (fragmentWorldDepth < 50.0) {
     // get rotation vector, rotation is tiled every 4 screen pixels
     vec2 rotationTC = oUv0 * cViewportSize.xy / 4.0;
     vec3 rotationVector = 2.0 * texture2D(sRotSampler4x4, rotationTC).xyz - 1.0;// [-1, 1]x[-1. 1]x[-1. 1]
@@ -158,6 +156,7 @@ void main()
   }
 
   // amplify and saturate if necessary
-  vec3 attenuation = texture2D(AttenuationSampler, oUv0).rgb;
-  gl_FragColor = vec4(attenuation, accessibility);
+  vec4 attenuation = texture2D(AttenuationSampler, oUv0);
+//  gl_FragColor = vec4(attenuation.rgb, accessibility * attenuation.a);
+  gl_FragColor = vec4(attenuation.rgb, accessibility);
 }

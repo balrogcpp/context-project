@@ -76,6 +76,6 @@ void DemoDotAppState::Setup() {
 //    }
 //  }
 
-  ogre_scene_manager_->setShadowColour(Ogre::ColourValue(0.0));
+  ogre_scene_manager_->setShadowColour(Ogre::ColourValue(0.2));
 }
 }

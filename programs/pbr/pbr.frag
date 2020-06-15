@@ -52,12 +52,10 @@ SOFTWARE.
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
+out vec4 gl_FragColor;
 #else
 #define in varying
 #define out varying
-#if VERSION != 120
-out vec4 gl_FragColor;
-#endif
 #endif
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
@@ -153,12 +151,9 @@ uniform sampler2D uOffsetSampler;
 uniform sampler2D shadowMap0;
 uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
-//uniform vec4 inverseShadowmapSize0;
-//uniform vec4 inverseShadowmapSize1;
-//uniform vec4 inverseShadowmapSize2;
 uniform vec4 pssmSplitPoints;
-uniform vec4 uShadowColour;
-in vec4 lightSpacePosArray[MAX_LIGHTS * 3];
+uniform float uShadowColour;
+in vec4 lightSpacePosArray[2 * 3];
 #endif
 
 in vec3 vPosition;
@@ -176,7 +171,9 @@ uniform sampler2D uNoiseMap;
 in vec4 projectionCoord;
 #endif
 
+#define SHADOWRECEIVER_PCF
 #undef SHADOWRECEIVER_VSM
+#undef SHADOWRECEIVER_ESM
 
 #ifdef SHADOWRECEIVER
 #ifdef SHADOWRECEIVER_VSM
@@ -188,8 +185,8 @@ float VSM(vec2 moments, float compare){
     {
         float m2 = moments.y;
         float sigma2 = m2 - (m1 * m1);
-        const float offset = 0.0;
-        const float scale = 0.1;
+        const float offset = -0.5;
+        const float scale = 0.5;
         float shadow = offset + scale * sigma2 / (sigma2 + diff * diff);
         return clamp(shadow, 0, 1);
     }
@@ -198,11 +195,12 @@ float VSM(vec2 moments, float compare){
         return 1.0;
     }
 }
-#else
+#endif
+#ifdef SHADOWRECEIVER_ESM
 float ESM(float depth, float compare){
-    const float k = 30.0;
-    const float offset = 0.0;
-    const float scale = 0.05;
+    const float k = 10.0;
+    const float offset = -0.5;
+    const float scale = 0.5;
 
     if(compare > depth)
     {
@@ -216,16 +214,33 @@ float ESM(float depth, float compare){
 }
 #endif
 
-float calcDepthShadow(sampler2D shadowMap, vec4 uv)
+// Returns a random number based on a vec3 and an int.
+float random(vec3 seed, int i)
 {
-    // 4-sample PCF
-    uv.xyz /= uv.w;
+    vec4 seed4 = vec4(seed,i);
+    float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
+    return fract(sin(dot_product) * 43758.5453);
+}
 
-    uv.z = uv.z * 0.5 + 0.5; // convert -1..1 to 0..1
-    float shadow = 0.0;
-    float compare = uv.z;
+vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
+{
+    const float GoldenAngle = 2.4;
 
-    const vec2 poissonDisk16[16] = vec2[] (
+    float r = sqrt(sampleIndex + 0.5) / sqrt(samplesCount);
+    float theta = sampleIndex * GoldenAngle + phi;
+    float sine = sin(theta);
+    float cosine = cos(theta);
+
+    return vec2(r * cosine, r * sine);
+}
+
+float InterleavedGradientNoise(vec2 position_screen)
+{
+    vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
+    return fract(magic.z * fract(dot(position_screen, magic.xy)));
+}
+
+const vec2 poissonDisk16[16] = vec2[] (
     vec2( -0.94201624, -0.39906216 ),
     vec2( 0.94558609, -0.76890725 ),
     vec2( -0.094184101, -0.92938870 ),
@@ -244,24 +259,46 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv)
     vec2( 0.14383161, -0.14100790 )
     );
 
+float calcDepthShadow(sampler2D shadowMap, vec4 uv)
+{
+    // 4-sample PCF
+    uv.xyz /= uv.w;
+
+    uv.z = uv.z * 0.5 + 0.5; // convert -1..1 to 0..1
+    float shadow = 0.0;
+    float compare = uv.z;
+
 #ifdef SHADOWRECEIVER_VSM
     const int iterations = 16;
     for (int i = 0; i < iterations; i++)
     {
-        shadow += (VSM(texture2D(shadowMap, uv.xy + poissonDisk16[i] * 0.001).rg, compare) / iterations);
+        int index = int(16.0*random(vPosition, i))%16;
+        shadow += (VSM(texture2D(shadowMap, uv.xy + poissonDisk16[index] * 0.001).rg, compare) / iterations);
     }
-#else
+#endif
+#ifdef SHADOWRECEIVER_ESM
     const int iterations = 16;
     for (int i = 0; i < iterations; i++)
     {
-        shadow += (ESM(texture2D(shadowMap, uv.xy + poissonDisk16[i] * 0.001).r, compare) / iterations);
+        int index = int(16.0*random(vPosition, i))%16;
+        shadow += (ESM(texture2D(shadowMap, uv.xy + poissonDisk16[index] * 0.001).r, compare) / iterations);
+    }
+#endif
+#ifdef SHADOWRECEIVER_PCF
+    const int iterations = 16;
+    for (int i = 0; i < iterations; i++)
+    {
+        shadow += (texture2D(shadowMap, uv.xy + VogelDiskSample(i, 16, InterleavedGradientNoise(gl_FragCoord.xy)) * 0.002).r > compare ? 1.0 / iterations : 0.0);
+//        int index = int(16.0*random(vPosition, i))%16;
+//        shadow += (texture2D(shadowMap, uv.xy + VogelDiskSample(index, 16, 1.0) * 0.001).r > compare ? 1.0 / iterations : 0.0);
+//        shadow += (texture2D(shadowMap, uv.xy + poissonDisk16[index] * 0.001).r > compare ? 1.0 / iterations : 0.0);
     }
 #endif
 
 //    shadow = texture2D(shadowMap, uv.xy).r > compare ? 1.0 : 0.0;
 //    shadow = ESM(texture2D(shadowMap, uv.xy).r, compare);
 
-    shadow = clamp(shadow + uShadowColour.r, 0, 1);
+    shadow = clamp(shadow + uShadowColour, 0, 1);
 
     return shadow;
 }
@@ -279,9 +316,12 @@ float calcPSSMDepthShadow()
     {
         return calcDepthShadow(shadowMap1, lightSpacePosArray[1]);
     }
-    else
+    else if (camDepth <= pssmSplitPoints.z)
     {
         return calcDepthShadow(shadowMap2, lightSpacePosArray[2]);
+    } else
+    {
+        return 1.0;
     }
 }
 #endif
@@ -612,6 +652,7 @@ void main()
     vec3 reflection = -normalize(reflect(v, n));
 
     vec3 total_colour = vec3(0.0);
+    float attenuation = 1.0;
 
     for (int i = 0; i < int(uLightCount); i++)
     {
@@ -676,8 +717,9 @@ void main()
 
 #ifdef SHADOWRECEIVER
         float shadow = 1.0;
-        if (uLightCastsShadowsArray[i] * tmp > 0) {
+        if (uLightCastsShadowsArray[i] * tmp > 0.001) {
             shadow = calcPSSMDepthShadow();
+            attenuation = shadow;
         }
         total_colour += color * shadow;
 #else
@@ -725,12 +767,11 @@ void main()
     float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
     total_colour = mix(total_colour, uFogColour, fog_value);
 
-//    gl_FragColor = vec4(LINEARtoSRGB(total_colour), alpha);
-    gl_FragColor = vec4(total_colour, alpha);
+    gl_FragColor = vec4(total_colour, attenuation);
 
 #else //!SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
-    float alpha = texture2D(uBaseColorSampler, vUV0).a;
+    float alpha = texture2D(uBaseColorSampler, vUV0.xy).a;
 
     if (alpha < 0.5) {
         discard;
@@ -738,10 +779,10 @@ void main()
 #endif
 
 #ifdef SHADOWRECEIVER_VSM
-    float depth = gl_FragCoord.z  - 0.0002;
+    float depth = gl_FragCoord.z;
     gl_FragColor = vec4(depth, depth * depth, 0.0, 1.0);
 #else
-    float depth = gl_FragCoord.z;
+    float depth = gl_FragCoord.z - 0.001;
     gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
 #endif
 #endif //SHADOWCASTER

@@ -37,12 +37,10 @@ SOFTWARE.
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
+out vec4 gl_FragColor;
 #else
 #define in attribute
 #define out varying
-#if VERSION != 120
-out vec4 gl_FragColor;
-#endif
 #endif
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require

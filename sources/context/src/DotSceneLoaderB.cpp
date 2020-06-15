@@ -1244,6 +1244,7 @@ void DotSceneLoaderB::FixPbrShadowCaster(Ogre::MaterialPtr material) {
 
       if (texPtr3) {
         texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+        texPtr3->setTextureAddressingMode(Ogre::TextureAddressingMode::TAM_CLAMP);
         texPtr3->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
         texPtr3->setTextureName(texture_name);
       }
@@ -1331,12 +1332,10 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     AddGpuConstParameterAuto(vert_params, "uModelMatrix", Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
     AddGpuConstParameterAuto(vert_params, "uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
 
-    if (constants.map.count("fadeRange") > 0) {
-      AddGpuConstParameter(vert_params, "fadeRange", 1 / (100.0f * 2.0f));
-    }
+    AddGpuConstParameter(vert_params, "fadeRange", 1 / (100.0f * 2.0f));
 
     if (constants.map.count("uTime") > 0) {
-      AddGpuConstParameter(vert_params, "uTime", 1.0f);
+      vert_params->setNamedConstantFromTime("uTime", 1);
     }
   }
 
@@ -1422,6 +1421,7 @@ void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
         for (int j = 1; j < numTextures; ++j) {
           splitPoints[j - 1] = splitPointList[j];
         }
+        splitPoints[numTextures - 1] = ContextManager::GetSingleton().GetOgreScenePtr()->getShadowFarDistance();
       }
 
       const int light_count = 5;
