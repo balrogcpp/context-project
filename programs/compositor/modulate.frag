@@ -79,7 +79,7 @@ void main()
     vec4 tmp = texture2D(AttenuationSampler, oUv0);
     vec3 bloom = tmp.rgb;
     vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-//    scene *= tmp.a;
+    scene *= tmp.a;
     scene += 0.05 * bloom;
 
     const float gamma = 2.2;
@@ -87,5 +87,4 @@ void main()
     scene = pow(mapped, vec3(1.0 / gamma));
 
     gl_FragColor = vec4(scene, 1.0);
-//    gl_FragColor = vec4(vec3(tmp.a), 1.0);
 }

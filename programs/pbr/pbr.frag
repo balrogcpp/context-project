@@ -290,13 +290,11 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv)
     {
         shadow += (texture2D(shadowMap, uv.xy + VogelDiskSample(i, 16, InterleavedGradientNoise(gl_FragCoord.xy)) * 0.002).r > compare ? 1.0 / iterations : 0.0);
 //        int index = int(16.0*random(vPosition, i))%16;
-//        shadow += (texture2D(shadowMap, uv.xy + VogelDiskSample(index, 16, 1.0) * 0.001).r > compare ? 1.0 / iterations : 0.0);
 //        shadow += (texture2D(shadowMap, uv.xy + poissonDisk16[index] * 0.001).r > compare ? 1.0 / iterations : 0.0);
     }
 #endif
 
 //    shadow = texture2D(shadowMap, uv.xy).r > compare ? 1.0 : 0.0;
-//    shadow = ESM(texture2D(shadowMap, uv.xy).r, compare);
 
     shadow = clamp(shadow + uShadowColour, 0, 1);
 
