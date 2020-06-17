@@ -422,6 +422,11 @@ vec4 expand(vec4 v)
 {
     return v * 2.0 - 1.0;
 }
+
+vec3 expand(vec3 v)
+{
+    return v * 2.0 - 1.0;
+}
 #endif
 
 // Find the normal for this fragment, pulling either from a predefined normal map
@@ -445,14 +450,14 @@ vec3 getNormal(vec2 uv)
 #endif
 #endif
 #else
-    vec3 ng = expand(texture2D(uGlobalNormalSampler, vUV0.xy)).xyz;
+    vec3 ng = texture2D(uGlobalNormalSampler, vUV0.xy).xyz * 2.0 - 1.0;
 #endif
 
+    vec3 b = normalize(cross(ng, t));
 //    vec3 tex_dx = dFdx(vec3(vUV0.xy, 0.0));
 //    vec3 tex_dy = dFdy(vec3(vUV0.xy, 0.0));
 //    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
 //    t = normalize(t - ng * dot(ng, t));
-    vec3 b = normalize(cross(ng, t));
     t = normalize(cross(ng ,b));
     mat3 tbn = mat3(t, b, ng);
 #else // HAS_TANGENTS
