@@ -240,6 +240,44 @@ float InterleavedGradientNoise(vec2 position_screen)
     return fract(magic.z * fract(dot(position_screen, magic.xy)));
 }
 
+float AvgBlockersDepthToPenumbra(float z_shadowMapView, float avgBlockersDepth)
+{
+    float penumbra = (z_shadowMapView - avgBlockersDepth) / avgBlockersDepth;
+    penumbra *= penumbra;
+    return clamp(80.0f * penumbra, 0.0, 1.0);
+}
+
+float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float z_shadowMapView, int samplesCount)
+{
+    float avgBlockersDepth = 0.0f;
+    float blockersCount = 0.0f;
+    const float penumbraFilterMaxSize = 0.001;
+
+    for(int i = 0; i < samplesCount; i++)
+    {
+        vec2 sampleUV = VogelDiskSample(i, samplesCount, gradientNoise);
+        sampleUV = shadowMapUV + penumbraFilterMaxSize * sampleUV;
+
+        float sampleDepth = texture2D(shadowMap, sampleUV).x;
+
+        if(sampleDepth < z_shadowMapView)
+        {
+            avgBlockersDepth += sampleDepth;
+            blockersCount += 1.0f;
+        }
+    }
+
+    if(blockersCount > 0.0f)
+    {
+        avgBlockersDepth /= blockersCount;
+        return AvgBlockersDepthToPenumbra(z_shadowMapView, avgBlockersDepth);
+    }
+    else
+    {
+        return 0.0f;
+    }
+}
+
 const vec2 poissonDisk16[16] = vec2[] (
     vec2( -0.94201624, -0.39906216 ),
     vec2( 0.94558609, -0.76890725 ),
@@ -288,13 +326,11 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv)
     const int iterations = 16;
     for (int i = 0; i < iterations; i++)
     {
-        shadow += (texture2D(shadowMap, uv.xy + VogelDiskSample(i, 16, InterleavedGradientNoise(gl_FragCoord.xy)) * 0.002).r > compare ? 1.0 / iterations : 0.0);
-//        int index = int(16.0*random(vPosition, i))%16;
-//        shadow += (texture2D(shadowMap, uv.xy + poissonDisk16[index] * 0.001).r > compare ? 1.0 / iterations : 0.0);
+        float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
+        float penumbra = Penumbra(shadowMap, gradientNoise, uv.xy, compare, 16);
+        shadow += (texture2D(shadowMap, uv.xy + VogelDiskSample(i, 16, gradientNoise) * 0.002).r > compare ? 1.0 / float(iterations) : 0.0);
     }
 #endif
-
-//    shadow = texture2D(shadowMap, uv.xy).r > compare ? 1.0 : 0.0;
 
     shadow = clamp(shadow + uShadowColour, 0, 1);
 
