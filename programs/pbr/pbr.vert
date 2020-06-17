@@ -40,7 +40,6 @@ SOFTWARE.
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
-out vec4 gl_FragColor;
 #else
 #define in attribute
 #define out varying
@@ -87,7 +86,6 @@ in vec2 uv0;
 #endif
 
 out vec4 vUV0;
-out vec4 vUV1;
 
 #ifdef HAS_NORMALS
 in vec4 normal;

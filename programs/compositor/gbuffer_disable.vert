@@ -37,7 +37,6 @@ SOFTWARE.
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
-out vec4 gl_FragColor;
 #else
 #define in attribute
 #define out varying
