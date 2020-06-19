@@ -112,7 +112,7 @@ class SinbadCharacterController : public InputListener, public Ogre::FrameListen
   bool anim_fading_in_[NUM_ANIMS];            // which animations are fading in
   bool anim_fading_out_[NUM_ANIMS];           // which animations are fading out
   bool sword_drawn_ = false;
-  Ogre::Vector3 key_dirction_ = {0, 0, 0};      // player's local intended direction based on WASD keys
+  Ogre::Vector3 key_direction_ = {0, 0, 0};      // player's local intended direction based on WASD keys
   Ogre::Vector3 goal_direction_ = {0, 0, 0};     // actual intended direction in world-space
   float vertical_velocity_ = 0.0f;     // for jumping
   float timer_ = 0.0f;                // general timer to see how long animations have been playing
