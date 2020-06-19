@@ -30,14 +30,14 @@ SOFTWARE.
 
 using namespace Ogre;
 
-const static float scale = 0.1f;
-const static float CHAR_HEIGHT = 1.5 * scale;          // height of character's center of mass above ground
-const static float CAM_HEIGHT = scale * CHAR_HEIGHT;           // height of camera above character's center of mass
-const static float RUN_SPEED = 5;           // character running speed in units per second
-const static float TURN_SPEED = 250.0f;      // character turning in degrees per second
+const static float scale = 0.2f;
+const static float CHAR_HEIGHT = scale*2.0f;         // height of character's center of mass above ground
+const static float CAM_HEIGHT = scale*2.0f;           // height of camera above character's center of mass
+const static float RUN_SPEED = scale*17;           // character running speed in units per second
+const static float TURN_SPEED = 500.0f;      // character turning in degrees per second
 const static float ANIM_FADE_SPEED = 7.5f;   // animation crossfade speed in % of full weight per second
-const static float JUMP_ACCEL = 30.0f;       // character jump acceleration in upward units per squared second
-const static float GRAVITY = 9.8f;          // gravity in downward units per squared second
+const static float JUMP_ACCEL = scale*30.0f;       // character jump acceleration in upward units per squared second
+const static float GRAVITY = scale * 90.0f;          // gravity in downward units per squared second
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ SinbadCharacterController::~SinbadCharacterController() {
   InputManager::GetSingleton().UnregisterListener(this);
   ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
 }
-
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::AddTime(float deltaTime) {
   UpdateBody(deltaTime);
   UpdateAnimations(deltaTime);
@@ -91,10 +91,10 @@ void SinbadCharacterController::KeyDown(SDL_Keycode key) {
   }
 
     // keep track of the player's intended direction
-  else if (code == SDL_SCANCODE_W) key_dirction_.z = -1;
-  else if (code == SDL_SCANCODE_A) key_dirction_.x = -1;
-  else if (code == SDL_SCANCODE_S) key_dirction_.z = 1;
-  else if (code == SDL_SCANCODE_D) key_dirction_.x = 1;
+  else if (code == SDL_SCANCODE_W) key_direction_.z = -1;
+  else if (code == SDL_SCANCODE_A) key_direction_.x = -1;
+  else if (code == SDL_SCANCODE_S) key_direction_.z = 1;
+  else if (code == SDL_SCANCODE_D) key_direction_.x = 1;
 
   else if (code == SDL_SCANCODE_SPACE && (top_anim_ == ANIM_IDLE_TOP || top_anim_ == ANIM_RUN_TOP)) {
     // jump if on ground
@@ -103,7 +103,7 @@ void SinbadCharacterController::KeyDown(SDL_Keycode key) {
     timer_ = 0;
   }
 
-  if (!key_dirction_.isZeroLength() && base_anim_ == ANIM_IDLE_BASE) {
+  if (!key_direction_.isZeroLength() && base_anim_ == ANIM_IDLE_BASE) {
     // start running if not already moving and the player wants to move
     SetBaseAnimation(ANIM_RUN_BASE, true);
     if (top_anim_ == ANIM_IDLE_TOP) SetTopAnimation(ANIM_RUN_TOP, true);
@@ -113,12 +113,12 @@ void SinbadCharacterController::KeyDown(SDL_Keycode key) {
 void SinbadCharacterController::KeyUp(SDL_Keycode key) {
   SDL_Scancode code = SDL_GetScancodeFromKey(key);
   // keep track of the player's intended direction
-  if (code == SDL_SCANCODE_W && key_dirction_.z == -1) key_dirction_.z = 0;
-  else if (code == SDL_SCANCODE_A && key_dirction_.x == -1) key_dirction_.x = 0;
-  else if (code == SDL_SCANCODE_S && key_dirction_.z == 1) key_dirction_.z = 0;
-  else if (code == SDL_SCANCODE_D && key_dirction_.x == 1) key_dirction_.x = 0;
+  if (code == SDL_SCANCODE_W && key_direction_.z == -1) key_direction_.z = 0;
+  else if (code == SDL_SCANCODE_A && key_direction_.x == -1) key_direction_.x = 0;
+  else if (code == SDL_SCANCODE_S && key_direction_.z == 1) key_direction_.z = 0;
+  else if (code == SDL_SCANCODE_D && key_direction_.x == 1) key_direction_.x = 0;
 
-  if (key_dirction_.isZeroLength() && base_anim_ == ANIM_RUN_BASE) {
+  if (key_direction_.isZeroLength() && base_anim_ == ANIM_RUN_BASE) {
     // stop running if already moving and the player doesn't want to move
     SetBaseAnimation(ANIM_IDLE_BASE);
     if (top_anim_ == ANIM_RUN_TOP) SetTopAnimation(ANIM_IDLE_TOP);
@@ -132,7 +132,7 @@ void SinbadCharacterController::MouseMove(int x, int y, int dx, int dy, bool lef
 //----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::MouseWheel(int x, int y) {
 //        // Update camera goal based on mouse movement
-  //UpdateCameraGoal(0, 0, -0.05f * y);
+  UpdateCameraGoal(0, 0, -0.05f * y);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::LeftButtonDown(int x, int y) {
@@ -183,7 +183,7 @@ void SinbadCharacterController::SetupBody(SceneManager *sceneMgr) {
     sword_trail_->setInitialWidth(i, 0.5);
   }
 
-  key_dirction_ = Vector3::ZERO;
+  key_direction_ = Vector3::ZERO;
   vertical_velocity_ = 0;
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -214,12 +214,13 @@ void SinbadCharacterController::SetupAnimations() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::SetupCamera(Camera *cam) {
+  // this is where the camera actually is
+  camera_node_ = cam->getParentSceneNode();
   // Create a pivot at roughly the character's shoulder
   camera_pivot_ = cam->getSceneManager()->getRootSceneNode()->createChildSceneNode();
   // this is where the camera should be soon, and it spins around the pivot
-  camera_goal_ = camera_pivot_->createChildSceneNode(Vector3(0, 0, 20 * scale));
-  // this is where the camera actually is
-  camera_node_ = cam->getParentSceneNode();
+//  camera_goal_ = camera_pivot_->createChildSceneNode(Vector3(0, 0,  15));
+  camera_goal_ = camera_pivot_->createChildSceneNode(Vector3(0, 0,  2.0));
   camera_node_->setPosition(camera_pivot_->getPosition() + camera_goal_->getPosition());
 
   camera_pivot_->setFixedYawAxis(true);
@@ -233,13 +234,13 @@ void SinbadCharacterController::UpdateBody(float deltaTime) {
   goal_direction_ = Vector3::ZERO;   // we will calculate this
   float x = body_node_->getPosition().x;
   float z = body_node_->getPosition().z;
-  float y = DotSceneLoaderB::GetSingleton().GetHeigh(x, z) + 4 * CHAR_HEIGHT;
+  float y = DotSceneLoaderB::GetSingleton().GetHeigh(x, z) + CHAR_HEIGHT;
   body_node_->setPosition(x, y, z);
 
-  if (key_dirction_ != Vector3::ZERO && base_anim_ != ANIM_DANCE) {
+  if (key_direction_ != Vector3::ZERO && base_anim_ != ANIM_DANCE) {
     // calculate actually goal direction in world based on player's key directions
-    goal_direction_ += key_dirction_.z * camera_node_->getOrientation().zAxis();
-    goal_direction_ += key_dirction_.x * camera_node_->getOrientation().xAxis();
+    goal_direction_ += key_direction_.z * camera_node_->getOrientation().zAxis();
+    goal_direction_ += key_direction_.x * camera_node_->getOrientation().xAxis();
     goal_direction_.y = 0;
     goal_direction_.normalise();
 
@@ -254,19 +255,14 @@ void SinbadCharacterController::UpdateBody(float deltaTime) {
 
     // turn as much as we can, but not more than we need to
     if (yawToGoal < 0)
-      yawToGoal = std::min<float>(0,
-                                  std::max<float>(yawToGoal,
-                                                  yawAtSpeed)); //yawToGoal = Math::Clamp<float>(yawToGoal, yawAtSpeed, 0);
+      yawToGoal = std::min<float>(0, std::max<float>(yawToGoal, yawAtSpeed));
     else if (yawToGoal > 0)
-      yawToGoal = std::max<float>(0,
-                                  std::min<float>(yawToGoal,
-                                                  yawAtSpeed)); //yawToGoal = Math::Clamp<float>(yawToGoal, 0, yawAtSpeed);
+      yawToGoal = std::max<float>(0, std::min<float>(yawToGoal, yawAtSpeed));
 
     body_node_->yaw(Degree(yawToGoal));
 
     // move in current body direction (not the goal direction)
-    body_node_->translate(0, 0, deltaTime * RUN_SPEED * anims_[base_anim_]->getWeight(),
-                          Node::TS_LOCAL);
+    body_node_->translate(0, 0, deltaTime * RUN_SPEED * anims_[base_anim_]->getWeight(), Node::TS_LOCAL);
   }
 
   if (base_anim_ == ANIM_JUMP_LOOP) {
@@ -345,12 +341,11 @@ void SinbadCharacterController::UpdateAnimations(float deltaTime) {
       SetBaseAnimation(ANIM_JUMP_LOOP, true);
       // apply a jump acceleration to the character
       vertical_velocity_ = JUMP_ACCEL;
-
     }
   } else if (base_anim_ == ANIM_JUMP_END) {
     if (timer_ >= anims_[base_anim_]->getLength()) {
       // safely landed, so Go back to running or idling
-      if (key_dirction_ == Vector3::ZERO) {
+      if (key_direction_ == Vector3::ZERO) {
         SetBaseAnimation(ANIM_IDLE_BASE);
         SetTopAnimation(ANIM_IDLE_TOP);
       } else {
@@ -393,12 +388,13 @@ void SinbadCharacterController::UpdateCamera(float deltaTime) {
 
   // move the camera smoothly to the goal
   Vector3 goalOffset = camera_goal_->_getDerivedPosition() - camera_node_->getPosition();
-  camera_node_->translate(goalOffset * deltaTime * 9.0f);
-//    mCameraNode->setPosition(mCameraGoal->_getDerivedPosition());
+  camera_node_->translate(goalOffset * deltaTime);
 
   // always look at the pivot
-  camera_node_->lookAt(camera_pivot_->_getDerivedPosition(), Node::TS_PARENT);
+//  camera_node_->lookAt(camera_pivot_->_getDerivedPosition(), Node::TS_PARENT);
 
+//  camera_node_->setPosition(body_node_->getPosition());
+  camera_node_->lookAt(body_node_->_getDerivedPosition(), Node::TS_WORLD);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::UpdateCameraGoal(float deltaYaw, float deltaPitch, float deltaZoom) {
@@ -415,8 +411,8 @@ void SinbadCharacterController::UpdateCameraGoal(float deltaYaw, float deltaPitc
   float distChange = deltaZoom * dist;
 
   // bound the zoom
-  if (!(dist + distChange < 8 && distChange < 0) &&
-      !(dist + distChange > 25 && distChange > 0)) {
+  if (!(dist + distChange < scale*8 && distChange < 0) &&
+      !(dist + distChange > scale*25 && distChange > 0)) {
     camera_goal_->translate(0, 0, distChange, Node::TS_LOCAL);
   }
 }
@@ -458,5 +454,4 @@ void SinbadCharacterController::SetTopAnimation(AnimID id, bool reset) {
     if (reset) anims_[id]->setTimePosition(0);
   }
 }
-//----------------------------------------------------------------------------------------------------------------------
 } //namespace Context
