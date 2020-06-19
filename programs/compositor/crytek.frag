@@ -71,7 +71,6 @@ out vec4 gl_FragColor;
 in vec2 oUv0;
 
 uniform sampler2D sSceneDepthSampler;
-uniform sampler2D AttenuationSampler;
 uniform sampler2D sRotSampler4x4;
 uniform vec4 cViewportSize; // auto param width/height/inv. width/inv. height
 uniform float cFov; // vertical field of view in radians
@@ -93,7 +92,7 @@ void main()
   float fragmentWorldDepth = texture2D(sSceneDepthSampler, oUv0).r * farClipDistance;
   float accessibility = 0.0;
 
-  if (fragmentWorldDepth < 50.0) {
+  if (fragmentWorldDepth < 30.0) {
     // get rotation vector, rotation is tiled every 4 screen pixels
     vec2 rotationTC = oUv0 * cViewportSize.xy / 4.0;
     vec3 rotationVector = 2.0 * texture2D(sRotSampler4x4, rotationTC).xyz - 1.0;// [-1, 1]x[-1. 1]x[-1. 1]
@@ -156,7 +155,5 @@ void main()
   }
 
   // amplify and saturate if necessary
-  vec4 attenuation = texture2D(AttenuationSampler, oUv0);
-//  gl_FragColor = vec4(attenuation.rgb, accessibility * attenuation.a);
-  gl_FragColor = vec4(attenuation.rgb, accessibility);
+  gl_FragColor = vec4(vec3(accessibility), 1.0);
 }

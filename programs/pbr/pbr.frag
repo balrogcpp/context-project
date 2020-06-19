@@ -806,7 +806,7 @@ void main()
     float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
     total_colour = mix(total_colour, uFogColour, fog_value);
 
-    gl_FragColor = vec4(total_colour, attenuation);
+    gl_FragColor = vec4(total_colour, alpha);
 
 #else //!SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA

@@ -40,8 +40,7 @@ fragment_program Context/Crytek_fp unified
 	default_params
 	{
 		param_named sSceneDepthSampler int 0
-		param_named AttenuationSampler int 1
-		param_named sRotSampler4x4 int 2
+		param_named sRotSampler4x4 int 1
         param_named_auto cViewportSize viewport_size
         param_named_auto farClipDistance far_clip_distance
         param_named_auto cFov fov
@@ -71,13 +70,6 @@ material Context/SsaoCrytek
             texture_unit
             {
                 content_type compositor Context/GBuffer mrt 0
-                tex_address_mode clamp
-                filtering none
-            }
-
-            texture_unit
-            {
-                content_type compositor Context/Bloom bloom
                 tex_address_mode clamp
                 filtering none
             }

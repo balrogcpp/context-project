@@ -80,5 +80,5 @@ void main()
   if(brightness > 0.9)
     bloom = color.rgb;
 
-  gl_FragColor = vec4(bloom, color.a);
+  gl_FragColor = vec4(bloom, 1.0);
 }

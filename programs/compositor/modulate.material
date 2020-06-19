@@ -40,7 +40,8 @@ fragment_program PSSM/modulate_fs unified
 	default_params
 	{
 		param_named AttenuationSampler int 0
-		param_named SceneSampler int 1
+		param_named SsaoSampler int 1
+		param_named SceneSampler int 2
 		param_named exposure float 1
 	}
 }
@@ -89,6 +90,12 @@ material Context/Modulate/SSAO
 			texture_unit
             {
                 content_type compositor Context/Bloom bloom
+                filtering none
+            }
+
+			texture_unit
+            {
+                content_type compositor Context/SSAO ssao
                 filtering none
             }
 
