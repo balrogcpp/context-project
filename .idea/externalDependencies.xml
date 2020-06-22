@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ExternalDependencies">
+    <plugin id="BashSupport" />
     <plugin id="Docker" />
     <plugin id="GLSL" />
     <plugin id="Git4Idea" />
@@ -8,6 +9,7 @@
     <plugin id="com.intellij.gradle" />
     <plugin id="com.jetbrains.sh" />
     <plugin id="com.tang" />
+    <plugin id="name.kropp.intellij.makefile" />
     <plugin id="org.intellij.plugins.markdown" />
     <plugin id="org.jetbrains.plugins.cidr-intelliLang" />
     <plugin id="org.jetbrains.plugins.clangFormat" />
