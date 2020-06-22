@@ -5,8 +5,8 @@
 #version 100
 #endif
 
-in vec4 uv0;
-in vec4 position;
+attribute vec4 uv0;
+attribute vec4 position;
 
 uniform mat4 worldviewproj_matrix;
 uniform vec4 light_position_object_space; // homogenous, object space
