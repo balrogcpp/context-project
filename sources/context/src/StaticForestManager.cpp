@@ -158,30 +158,30 @@ void StaticForestManager::GenerateGrass() {
   mField->build(); // build our static geometry (bake the grass into it)
   mField->setCastShadows(false);
 
-  Ogre::Entity *grass = sceneMgr->createEntity("Grass", "grass");
-  // Create a static geometry field, which we will populate with grass
-  mField = sceneMgr->createStaticGeometry("GrassField");
-  DotSceneLoaderB::FixPbrParams("GrassCustom");
-  DotSceneLoaderB::FixPbrShadowReceiver("GrassCustom");
-  grass->setMaterialName("GrassCustom");
-  mField->setRegionDimensions(Ogre::Vector3(20));
+//  Ogre::Entity *grass = sceneMgr->createEntity("Grass", "grass");
+//  // Create a static geometry field, which we will populate with grass
+//  mField = sceneMgr->createStaticGeometry("GrassField");
+//  DotSceneLoaderB::FixPbrParams("GrassCustom");
+//  DotSceneLoaderB::FixPbrShadowReceiver("GrassCustom");
+//  grass->setMaterialName("GrassCustom");
+//  mField->setRegionDimensions(Ogre::Vector3(20));
+//
+//  // add grass uniformly throughout the field, with some random variations
+//  for (int i = 0; i < 100000; i++) {
+//    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
+//
+//    pos.y += DotSceneLoaderB::GetSingleton().GetHeigh(pos.x, pos.z);
+//
+//    Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
+//    Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
+//    scale *= 2.0f;
+//    mField->addEntity(grass, pos, ori, scale);
+//  }
 
-  // add grass uniformly throughout the field, with some random variations
-  for (int i = 0; i < 100000; i++) {
-    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
-
-    pos.y += DotSceneLoaderB::GetSingleton().GetHeigh(pos.x, pos.z);
-
-    Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
-    Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
-    scale *= 2.0f;
-    mField->addEntity(grass, pos, ori, scale);
-  }
-
-  mField->setVisibilityFlags(SUBMERGED_MASK);
-  mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
-  mField->build(); // build our static geometry (bake the grass into it)
-  mField->setCastShadows(false);
+//  mField->setVisibilityFlags(SUBMERGED_MASK);
+//  mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
+//  mField->build(); // build our static geometry (bake the grass into it)
+//  mField->setCastShadows(false);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void StaticForestManager::Create() {

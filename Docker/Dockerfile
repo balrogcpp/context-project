@@ -3,11 +3,9 @@ FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update &&\
-    apt-get install software-properties-common -y &&\
-    add-apt-repository ppa:ubuntu-toolchain-r/test -y &&\
     apt-get install -y \
-        g++-10 \
-        gcc-10\
+        g++ \
+        gcc\
         make \
         checkinstall \
         git \
@@ -42,8 +40,6 @@ RUN apt-get update &&\
         nsis \
         > /dev/null
 
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 900 --slave /usr/bin/g++ g++ /usr/bin/g++-10
-
 ENV MINGW=/mingw
 
 ARG BINUTILS_VERSION=2.33.1
@@ -70,10 +66,28 @@ RUN cd pkg-config-${PKG_CONFIG_VERSION} \
     && make install > /dev/null \
     && cd ..
 
-RUN cd binutils-${BINUTILS_VERSION} \
-    && ./configure \
+RUN mkdir binutils-${BINUTILS_VERSION}-mingw \
+    && cd binutils-${BINUTILS_VERSION}-mingw \
+    && ../binutils-${BINUTILS_VERSION}/configure \
       --prefix=/usr \
       --target=x86_64-w64-mingw32 \
+      --disable-shared \
+      --enable-static \
+      --enable-lto \
+      --enable-plugins \
+      --disable-multilib \
+      --disable-nls \
+      --disable-werror \
+      --with-system-zlib \
+    && make -j`nproc` > /dev/null \
+    && make install > /dev/null \
+    && cd ..
+
+RUN mkdir binutils-${BINUTILS_VERSION}-linux \
+    && cd binutils-${BINUTILS_VERSION}-linux \
+    && ../binutils-${BINUTILS_VERSION}/configure \
+      --prefix=/usr \
+      --target=x86_64-linux-gnu \
       --disable-shared \
       --enable-static \
       --enable-lto \
@@ -97,8 +111,8 @@ RUN mkdir mingw-w64 \
     && make install > /dev/null \
     && cd ..
 
-RUN mkdir gcc \
-    && cd gcc \
+RUN mkdir gcc-mingw32 \
+    && cd gcc-mingw32 \
     && ../gcc-${GCC_VERSION}/configure \
       --prefix=/usr \
       --target=x86_64-w64-mingw32 \
@@ -115,6 +129,17 @@ RUN mkdir gcc \
       --enable-lto \
       --disable-nls \
       --disable-werror \
+    && make -j`nproc` all-gcc > /dev/null \
+    && make install-gcc > /dev/null \
+    && cd ..
+
+RUN mkdir gcc-linux \
+    && cd gcc-linux \
+    && ../gcc-${GCC_VERSION}/configure \
+      --prefix=/usr \
+      --target=x86_64-linux-gnu \
+      --enable-languages=c,c++ \
+      --disable-multilib \
     && make -j`nproc` all-gcc > /dev/null \
     && make install-gcc > /dev/null \
     && cd ..
@@ -140,10 +165,18 @@ RUN cd mingw-w64 \
     && make install > /dev/null \
     && cd ..
 
-RUN cd gcc \
+RUN cd gcc-mingw32 \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
     && cd ..
+
+RUN cd gcc-linux \
+    && make -j`nproc` > /dev/null \
+    && make install > /dev/null \
+    && cd ..
+
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 10000 --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++
+RUN update-alternatives --install /usr/bin/mingw32-gcc mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc 10000 --slave /usr/bin/mingw32-g++ mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++
 
 ARG CMAKE_VERSION=3.16.6
 ARG CMAKE_HOME=/opt/cmake
@@ -154,4 +187,5 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cm
           && mkdir /opt/cmake \
           && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
           && rm /tmp/cmake-install.sh
+
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"

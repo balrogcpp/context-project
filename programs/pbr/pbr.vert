@@ -129,12 +129,15 @@ void main()
   vec4 mypos = position;
 
 #ifdef FOREST
+if (uv0 == vec2(0, 0))
+{
   float radiusCoeff = 0.25;
   float heightCoeff = 0.25;
   float factorX = 1.0;
   float factorY = 1.0;
   mypos.y += sin(uTime + mypos.z + mypos.y + mypos.x) * radiusCoeff * radiusCoeff * factorY;
-  mypos.x += sin(uTime + mypos.z ) * heightCoeff * heightCoeff * factorX;
+  mypos.x += sin(uTime + mypos.z) * heightCoeff * heightCoeff * factorX;
+}
 #endif
 
 #ifndef SHADOWCASTER

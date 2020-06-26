@@ -80,7 +80,7 @@ void main()
     vec3 bloom = texture2D(AttenuationSampler, oUv0).rgb;
     float ssao = texture2D(SsaoSampler, oUv0).r;
     vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-//    scene *= ssao;
+    scene *= ssao;
     scene += 0.05 * bloom;
 
     const float gamma = 2.2;
