@@ -278,6 +278,7 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
     }
 }
 
+#ifndef SHADOWRECEIVER_PCF
 const vec2 poissonDisk16[16] = vec2[] (
     vec2( -0.94201624, -0.39906216 ),
     vec2( 0.94558609, -0.76890725 ),
@@ -296,6 +297,7 @@ const vec2 poissonDisk16[16] = vec2[] (
     vec2( 0.19984126, 0.78641367 ),
     vec2( 0.14383161, -0.14100790 )
     );
+#endif
 
 float calcDepthShadow(sampler2D shadowMap, vec4 uv)
 {

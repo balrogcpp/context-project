@@ -345,8 +345,7 @@ void ContextManager::CreateOgreCamera() {
     ogre_camera_->setFarClipDistance(10000.0f);
   }
 
-  ogre_camera_->setAspectRatio(
-      static_cast<float>(ogre_viewport_->getActualWidth()) / static_cast<float>(ogre_viewport_->getActualHeight()));
+  ogre_camera_->setAspectRatio(static_cast<float>(ogre_viewport_->getActualWidth()) / static_cast<float>(ogre_viewport_->getActualHeight()));
 
   ogre_scene_manager_->setSkyBoxEnabled(false);
   ogre_scene_manager_->setSkyDomeEnabled(false);
