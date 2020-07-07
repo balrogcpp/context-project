@@ -214,14 +214,6 @@ float ESM(float depth, float compare){
 }
 #endif
 
-// Returns a random number based on a vec3 and an int.
-float random(vec3 seed, int i)
-{
-    vec4 seed4 = vec4(seed,i);
-    float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
-    return fract(sin(dot_product) * 43758.5453);
-}
-
 vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
 {
     const float GoldenAngle = 2.4;
@@ -279,6 +271,14 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
 }
 
 #ifndef SHADOWRECEIVER_PCF
+// Returns a random number based on a vec3 and an int.
+float random(vec3 seed, int i)
+{
+    vec4 seed4 = vec4(seed,i);
+    float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
+    return fract(sin(dot_product) * 43758.5453);
+}
+
 const vec2 poissonDisk16[16] = vec2[] (
     vec2( -0.94201624, -0.39906216 ),
     vec2( 0.94558609, -0.76890725 ),

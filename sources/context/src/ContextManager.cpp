@@ -882,13 +882,9 @@ void ContextManager::Setup() {
   if (sdl_window_) {
     if (window_position_.f) {
       SDL_SetWindowSize(sdl_window_, actual_monitor_size_.w, actual_monitor_size_.h);
-//      SDL_WarpMouseGlobal(0, 0);
       SDL_SetWindowFullscreen(sdl_window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
-//      SDL_WarpMouseGlobal(0, 0);
       SDL_SetWindowSize(sdl_window_, window_position_.w, window_position_.h);
-//      SDL_WarpMouseGlobal(0, 0);
       ogre_render_window_->setFullscreen(true, window_position_.w, window_position_.h);
-//      SDL_WarpMouseGlobal(0, 0);
     }
   }
 }
@@ -900,9 +896,7 @@ void ContextManager::Reset() {
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::RestoreScreenSize() {
   if (window_position_.f) {
-//    SDL_WarpMouseGlobal(0, 0);
     SDL_SetWindowFullscreen(sdl_window_, SDL_FALSE);
-//    SDL_WarpMouseGlobal(0, 0);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
