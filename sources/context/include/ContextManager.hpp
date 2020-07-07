@@ -156,6 +156,7 @@ class ContextManager : public Ogre::LogListener, public NoCopy {
   std::string global_resource_list_file_ = "resources.list";
   bool global_log_enable_ = false;
   bool global_verbose_enable_ = false;
+  bool global_sso_enable_ = true;
   bool global_octree_enable_ = true;
   bool global_stbi_enable_ = true;
   bool global_freeimage_enable_ = false;
@@ -198,6 +199,7 @@ class ContextManager : public Ogre::LogListener, public NoCopy {
   std::string graphics_shadows_material_ = "default";
   std::string graphics_shadows_receiver_material_;
   std::string graphics_shadows_caster_material_ = "PSSM/shadow_caster";
+  std::string graphics_shadows_texture_format_ = "DEPTH32";
   bool graphics_shadows_integrated_ = true;
 
   //Singleton section

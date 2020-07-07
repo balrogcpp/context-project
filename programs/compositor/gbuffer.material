@@ -52,6 +52,7 @@ vertex_program gbuffer_vp unified
 fragment_program gbuffer_fp unified
 {
 	delegate gbuffer_fp_glsl
+	delegate gbuffer_fp_glsles
 }
 
 material Context/gbuffer
@@ -73,6 +74,53 @@ material Context/gbuffer
                 param_named_auto cNearClipDistance near_clip_distance
                 param_named_auto cFarClipDistance far_clip_distance
             }
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program gbuffer_disable_vp_glsl glsl
+{
+ 	source gbuffer_disable.vert
+}
+
+vertex_program gbuffer_disable_vp_glsles glsles
+{
+ 	source gbuffer_disable.vert
+}
+
+fragment_program gbuffer_disable_fp_glsl glsl
+{
+	source gbuffer_disable.frag
+}
+
+
+fragment_program gbuffer_disable_fp_glsles glsles
+{
+	source gbuffer_disable.frag
+}
+
+vertex_program gbuffer_disable_vp unified
+{
+	delegate gbuffer_disable_vp_glsl
+    delegate gbuffer_disable_vp_glsles
+}
+
+fragment_program gbuffer_disable_fp unified
+{
+	delegate gbuffer_disable_fp_glsl
+	delegate gbuffer_disable_fp_glsles
+}
+
+material Context/gbuffer_disable
+{
+    technique
+    {
+        pass
+        {
+            vertex_program_ref gbuffer_disable_vp {}
+
+            fragment_program_ref gbuffer_disable_fp {}
         }
     }
 }

@@ -28,6 +28,7 @@ SOFTWARE.
 #define USE_TEX_LOD
 #if VERSION != 120
 #define attribute in
+#define varying out
 #define texture1D texture
 #define texture2D texture
 #define texture2DProj textureProj
@@ -37,30 +38,46 @@ SOFTWARE.
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
 #else
-#define in varying
+#define in attribute
 #define out varying
+#if VERSION != 120
+out vec4 gl_FragColor;
+#endif
 #endif
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
 #endif
 #else
-#version 100
+#define VERSION 300
+#version VERSION es
 #extension GL_OES_standard_derivatives : enable
 #extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
 precision highp float;
-#define in varying
+#if VERSION == 100
+#define in attribute
 #define out varying
+#else
+#define attribute in
+#define texture1D texture
+#define texture2D texture
+#define texture2DProj textureProj
+#define shadow2DProj textureProj
+#define texture3D texture
+#define textureCube texture
+#define texture2DLod textureLod
+#define textureCubeLod textureLod
+#endif
 #endif
 
 uniform mat4 worldViewProj;
-attribute vec4 vertex;
-attribute vec2 uv0;
-varying vec2 oUv0;
-varying vec2 oUv1;
-varying vec2 oUv2;
-varying vec2 oUv3;
-varying vec4 pos;
+in vec4 vertex;
+in vec2 uv0;
+out vec2 oUv0;
+out vec2 oUv1;
+out vec2 oUv2;
+out vec2 oUv3;
+out vec4 pos;
 
 void main()
 {

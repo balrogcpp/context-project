@@ -31,6 +31,7 @@ SOFTWARE.
 #define USE_TEX_LOD
 #if VERSION != 120
 #define attribute in
+#define varying out
 #define texture1D texture
 #define texture2D texture
 #define texture2DProj textureProj
@@ -40,44 +41,57 @@ SOFTWARE.
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
 #else
-#define in varying
+#define in attribute
 #define out varying
 #endif
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
 #endif
 #else
-#version 100
+#define VERSION 300
+#version VERSION es
 #extension GL_OES_standard_derivatives : enable
 #extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
 precision highp float;
-#define in varying
+#if VERSION == 100
+#define in attribute
 #define out varying
+#else
+#define attribute in
+#define texture1D texture
+#define texture2D texture
+#define texture2DProj textureProj
+#define shadow2DProj textureProj
+#define texture3D texture
+#define textureCube texture
+#define texture2DLod textureLod
+#define textureCubeLod textureLod
+#endif
 #endif
 
-attribute vec4 position;
+in vec4 position;
 uniform mat4 uMVPMatrix;
 
 #ifdef SHADOWCASTER_ALPHA
-attribute vec2 uv0;
-out vec2 vUV;
+in vec2 uv0;
+out vec2 vUV0;
 #endif
 
 #ifndef SHADOWCASTER
 uniform mat4 uModelMatrix;
 
 #ifdef HAS_UV
-attribute vec2 uv0;
+in vec2 uv0;
 #endif
 
-out vec4 vUV;
+out vec4 vUV0;
 
 #ifdef HAS_NORMALS
-attribute vec4 normal;
+in vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
-attribute vec4 tangent;
+in vec4 tangent;
 #endif
 
 uniform float uLightCount;
@@ -87,19 +101,13 @@ uniform float uLightCount;
 #ifdef SHADOWRECEIVER
 uniform float uLightCastsShadowsArray[MAX_LIGHTS];
 uniform mat4 uTexWorldViewProjMatrixArray[3];
-out vec4 lightSpacePosArray[MAX_LIGHTS * 3];
+out vec4 lightSpacePosArray[2 * 3];
 #endif
 
 #ifdef FADE
 uniform float fadeRange;
 #endif
 uniform float uTime;
-
-#ifdef TERRAIN
-uniform sampler2D HeighMap;
-uniform vec4 TerrainBox; //-x+x-z+z
-uniform vec4 TerrainBox2; //-y+y
-#endif
 
 out vec3 vPosition;
 
@@ -120,23 +128,21 @@ void main()
 {
   vec4 mypos = position;
 
-//  vec2 uv;
-//  uv.x = (mypos.x - TerrainBox.x) / (TerrainBox.y - TerrainBox.x);
-//  uv.y = (mypos.z - TerrainBox.z) / (TerrainBox.w - TerrainBox.z);
-//  float heigh = texture2D(HeighMap, uv).r * TerrainBox2.y - TerrainBox2.x;
-//  mypos.y += heigh;
-
 #ifdef FOREST
+if (uv0 == vec2(0, 0))
+{
   float radiusCoeff = 0.25;
   float heightCoeff = 0.25;
-  float factorX = 1;
-  float factorY = 1;
+  float factorX = 1.0;
+  float factorY = 1.0;
   mypos.y += sin(uTime + mypos.z + mypos.y + mypos.x) * radiusCoeff * radiusCoeff * factorY;
-  mypos.x += sin(uTime + mypos.z ) * heightCoeff * heightCoeff * factorX;
+  mypos.x += sin(uTime + mypos.z) * heightCoeff * heightCoeff * factorX;
+}
 #endif
 
 #ifndef SHADOWCASTER
   vec4 pos = uModelMatrix * position;
+  vPosition = vec3(pos.xyz) / pos.w;
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -147,31 +153,29 @@ void main()
 #else // HAS_TANGENTS != 1
   vNormal = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
 #endif
+#else
 #endif
 
 #ifdef HAS_UV
-  vUV.xy = uv0;
+  vUV0.xy = uv0;
 #else
-  vUV.xy = vec2(0.0);
+  vUV0.xy = vec2(0.0);
 #endif
 
-  for (int i = 0; i < int(uLightCount);  i += 3) {
 #ifdef SHADOWRECEIVER
-  // Calculate the position of vertex in light space
-  if (uLightCastsShadowsArray[i] == 1.0) {
-    lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * mypos;
-    lightSpacePosArray[i + 1] = uTexWorldViewProjMatrixArray[i + 1] * mypos;
-    lightSpacePosArray[i + 2] = uTexWorldViewProjMatrixArray[i + 2] * mypos;
-  }
+// Calculate the position of vertex in light space
+for (int i = 0; i < int(2*3);  i += 3) {
+  lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * mypos;
+  lightSpacePosArray[i + 1] = uTexWorldViewProjMatrixArray[i + 1] * mypos;
+  lightSpacePosArray[i + 2] = uTexWorldViewProjMatrixArray[i + 2] * mypos;
+}
 #endif
-  }
 
   gl_Position = uMVPMatrix * mypos;
-  vUV.z = gl_Position.z;
-  vPosition = vec3(pos.xyz) / pos.w;
+  vUV0.z = gl_Position.z;
 
 #ifdef REFLECTION
-  mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
+  const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
                         0.0, 0.5, 0.0, 0.0,
                         0.0, 0.0, 0.5, 0.0,
                         0.5, 0.5, 0.5, 1.0);
@@ -181,13 +185,13 @@ void main()
 #else //SHADOWCASTER
 
 #ifdef SHADOWCASTER_ALPHA
-  vUV.xy = uv0;
+  vUV0.xy = uv0;
 #endif
 
   gl_Position = uMVPMatrix * mypos;
 #endif //SHADOWCASTER
 
 #ifdef FADE
-  vUV.w = 1.0 - clamp(gl_Position.z * fadeRange, 0.0, 1.0);
+  vUV0.w = 1.0 - clamp(gl_Position.z * fadeRange, 0.0, 1.0);
 #endif
 }

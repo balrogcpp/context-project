@@ -144,6 +144,7 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   int terrain_lightmap_size_ = 2048;
   bool terrain_created_ = false;
   bool legacy_terrain_ = false;
+  bool terrain_generator_b_ = false;
 
  public:
   void Setup() final;

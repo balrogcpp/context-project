@@ -339,8 +339,8 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 void CameraMan::MouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   if (!stop_) {
     if (camera_style_ == CameraStyle::FREELOOK) {
-      camera_node_->yaw(Ogre::Degree(-dx * 0.25f));
-      camera_node_->pitch(Ogre::Degree(-dy * 0.1f));
+      camera_node_->yaw(Ogre::Degree(-dx));
+      camera_node_->pitch(Ogre::Degree(-dy));
 
       if (target_) {
         float dist = GetDistToTarget();
@@ -351,8 +351,8 @@ void CameraMan::MouseMove(int x, int y, int dx, int dy, bool left, bool right, b
         offset_ += delta;
       }
     } else if (camera_style_ == CameraStyle::FPS) {
-      dx_ = Ogre::Degree(dx * 0.25f);
-      dy_ = Ogre::Degree(dy * 0.1f);
+      dx_ = Ogre::Degree(dx);
+      dy_ = Ogre::Degree(dy);
     } else if (camera_style_ == CameraStyle::ORBIT) {
       float dist = GetDistToTarget();
 

@@ -76,6 +76,10 @@ void DemoDotAppState::Setup() {
 //    }
 //  }
 
-  ogre_scene_manager_->setShadowColour(Ogre::ColourValue(0.4));
+  ogre_scene_manager_->setShadowColour(Ogre::ColourValue(0.2));
+
+//  DotSceneLoaderB::FixPbrParams("Examples/LightRibbonTrail");
+//  ContextManager::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::MANUAL);
+//  sinbad_ = std::make_shared<SinbadCharacterController>(ogre_camera_);
 }
 }

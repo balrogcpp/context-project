@@ -27,7 +27,7 @@ SOFTWARE.
 #version VERSION
 #define USE_TEX_LOD
 #if VERSION != 120
-#define attribute in
+#define varying in
 #define texture1D texture
 #define texture2D texture
 #define texture2DProj textureProj
@@ -36,6 +36,7 @@ SOFTWARE.
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
+out vec4 gl_FragColor;
 #else
 #define in varying
 #define out varying
@@ -44,22 +45,32 @@ SOFTWARE.
 #extension GL_ARB_shader_texture_lod : require
 #endif
 #else
-#version 100
+#define VERSION 300
+#version VERSION es
 #extension GL_OES_standard_derivatives : enable
 #extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
 precision highp float;
+#if VERSION == 100
 #define in varying
 #define out varying
-#endif
-#if VERSION != 120
+#else
+#define varying in
+#define texture1D texture
+#define texture2D texture
+#define texture2DProj textureProj
+#define shadow2DProj textureProj
+#define texture3D texture
+#define textureCube texture
+#define texture2DLod textureLod
+#define textureCubeLod textureLod
 out vec4 gl_FragColor;
+#endif
 #endif
 
 in vec2 oUv0;
 
 uniform float exposure;
-uniform vec4 screenSize;
 uniform sampler2D SceneSampler;
 
 void main()

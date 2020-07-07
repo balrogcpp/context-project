@@ -22,6 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+vertex_program PbrBasic_vs_glsl glsl
+{
+	source pbr.vert
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV
+}
+
+vertex_program PbrBasic_vs_glsles glsles
+{
+	source pbr.vert
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV
+}
+
+vertex_program PbrBasic_vs unified
+{
+	delegate PbrBasic_vs_glsl
+	delegate PbrBasic_vs_glsles
+}
+
+
 fragment_program PbrBasic_fs_glsl glsl
 {
 	source pbr.frag
@@ -48,9 +67,12 @@ material PbrBasic
     {
       pass
       {
+            specular 1 1 1 1
+            ambient 0 0 0
+
             texture_unit Albedo {}
 
-            vertex_program_ref Pbr_vs {}
+            vertex_program_ref PbrBasic_vs {}
 
 			fragment_program_ref PbrBasic_fs
 			{
@@ -86,6 +108,9 @@ material PbrBasicShadow
     {
       pass
       {
+            specular 1 1 1 1
+            ambient 0 0 0
+
             texture_unit Albedo {}
 
             vertex_program_ref Pbr_vs {}

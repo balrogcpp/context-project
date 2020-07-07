@@ -446,7 +446,7 @@ add_custom_target(context-workspace
 
 set(CONTEXT_PROGRAMS_DIR ${CMAKE_SOURCE_DIR}/programs)
 set(CONTEXT_SCENES_DIR ${CMAKE_SOURCE_DIR}/scenes)
-set(CONTEXT_GUI_DIR ${CMAKE_SOURCE_DIR}/gui)
+set(CONTEXT_GUI_DIR ${CMAKE_SOURCE_DIR}/cegui)
 set(CONTEXT_TEMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
 
 macro(subdirlist result curdir)
@@ -485,10 +485,10 @@ macro(copydirlist curdir destination)
 endmacro()
 
 #copydirlist(${CONTEXT_PROGRAMS_DIR} programs)
-#zipdirlist(${CONTEXT_GUI_DIR} gui)
+#zipdirlist(${CONTEXT_GUI_DIR} cegui)
 #copydirlist(${CONTEXT_SCENES_DIR} scenes)
 zipdirlist(${CONTEXT_PROGRAMS_DIR} programs)
-zipdirlist(${CONTEXT_GUI_DIR} gui)
+zipdirlist(${CONTEXT_GUI_DIR} cegui)
 zipdirlist(${CONTEXT_SCENES_DIR} scenes)
 
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}

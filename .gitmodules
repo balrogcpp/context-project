@@ -1,6 +1,3 @@
 [submodule "scenes"]
 	path = scenes
 	url = https://github.com/roninest/scenes.git
-[submodule "assets"]
-	path = assets
-	url = https://github.com/roninest/assets.git

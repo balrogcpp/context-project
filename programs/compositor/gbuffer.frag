@@ -27,7 +27,7 @@ SOFTWARE.
 #version VERSION
 #define USE_TEX_LOD
 #if VERSION != 120
-#define attribute in
+#define varying in
 #define texture1D texture
 #define texture2D texture
 #define texture2DProj textureProj
@@ -36,6 +36,7 @@ SOFTWARE.
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
+out vec4 gl_FragColor;
 #else
 #define in varying
 #define out varying
@@ -44,41 +45,49 @@ SOFTWARE.
 #extension GL_ARB_shader_texture_lod : require
 #endif
 #else
-#version 100
+#define VERSION 300
+#version VERSION es
 #extension GL_OES_standard_derivatives : enable
 #extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
 precision highp float;
+#if VERSION == 100
 #define in varying
 #define out varying
-#endif
-#extension GL_ARB_draw_buffers : enable
-#if VERSION != 120
+#else
+#define varying in
+#define texture1D texture
+#define texture2D texture
+#define texture2DProj textureProj
+#define shadow2DProj textureProj
+#define texture3D texture
+#define textureCube texture
+#define texture2DLod textureLod
+#define textureCubeLod textureLod
 out vec4 gl_FragColor;
 #endif
+#endif
 
-varying    vec3 oViewPos;
-varying    vec3 oNormal;
-varying     vec2 vUV;
+in    vec3 oViewPos;
+in    vec3 oNormal;
+in     vec2 vUV;
 
 uniform float cNearClipDistance;
 uniform float cFarClipDistance;// !!! might be 0 for infinite view projection.
-uniform sampler2D baseColor;
+//uniform sampler2D baseColor;
 
 void main()
 {
-    vec4 color = texture2D(baseColor, vUV);
-    if (color.a == 0.0) {
-        discard;
-    }
+//    vec4 color = texture2D(baseColor, vUV);
+//    if (color.a < 1.0) {
+//        discard;
+//    }
 
     float distance = length(oViewPos);
-
-    if (distance > 1000.0) {
-        discard;
-    }
-
     float clipDistance = cFarClipDistance - cNearClipDistance;
-    gl_FragData[0] = vec4(normalize(oNormal).xyz, (distance - cNearClipDistance) / clipDistance);// normal + linear depth [0, 1]
-    gl_FragData[1] = vec4(oViewPos, 0.0);// view space position
+
+    gl_FragColor = vec4((distance - cNearClipDistance) / clipDistance, 0, 0, 1);
+
+//    gl_FragData[0] = vec4(normalize(oNormal).xyz, (distance - cNearClipDistance) / clipDistance);// normal + linear depth [0, 1]
+//    gl_FragData[1] = vec4(oViewPos, 0.0);// view space position
 }

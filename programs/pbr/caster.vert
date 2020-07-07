@@ -28,6 +28,7 @@ SOFTWARE.
 #define USE_TEX_LOD
 #if VERSION != 120
 #define attribute in
+#define varying out
 #define texture1D texture
 #define texture2D texture
 #define texture2DProj textureProj
@@ -37,25 +38,38 @@ SOFTWARE.
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
 #else
-#define in varying
+#define in attribute
 #define out varying
 #endif
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
 #endif
 #else
-#version 100
+#define VERSION 300
+#version VERSION es
 #extension GL_OES_standard_derivatives : enable
 #extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
 precision highp float;
-#define in varying
+#if VERSION == 100
+#define in attribute
 #define out varying
+#else
+#define attribute in
+#define texture1D texture
+#define texture2D texture
+#define texture2DProj textureProj
+#define shadow2DProj textureProj
+#define texture3D texture
+#define textureCube texture
+#define texture2DLod textureLod
+#define textureCubeLod textureLod
+#endif
 #endif
 
 #ifdef SHADOWCASTER_ALPHA
-attribute vec4 position;
-attribute vec2 uv0;
+in vec4 position;
+in vec2 uv0;
 out vec2 vUV;
 #endif
 

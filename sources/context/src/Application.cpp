@@ -116,6 +116,7 @@ void Application::Loop() {
           std::cout << "FPS " << fps_frames_ << '\n';
         }
 
+        current_fps_ = fps_frames_;
         delta_time_ = 0;
         fps_frames_ = 0;
       }
@@ -274,11 +275,13 @@ void Application::Event(const SDL_Event &evt) {
   if (!started_)
     return;
 
+  const int fps_inactive = 30;
+
   if (evt.type == SDL_WINDOWEVENT) {
     if (!fullscreen_) {
       if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         paused_ = true;
-        global_target_fps_ = 1;
+        global_target_fps_ = fps_inactive;
         global_lock_fps_ = true;
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
@@ -289,7 +292,7 @@ void Application::Event(const SDL_Event &evt) {
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         paused_ = true;
-        global_target_fps_ = 1;
+        global_target_fps_ = fps_inactive;
         global_lock_fps_ = true;
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
@@ -427,6 +430,9 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
 #endif
 
   return return_value;
+}
+int Application::GetFpsFrames() const {
+  return current_fps_;
 }
 
 }

@@ -61,7 +61,7 @@ vertex_program depth_alpha_vp unified
 fragment_program depth_alpha_fp unified
 {
 	delegate depth_alpha_fp_glsl
-	delegate depth_alpha_vp_glsles
+	delegate depth_alpha_fp_glsles
 
     default_params
     {

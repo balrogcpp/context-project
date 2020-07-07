@@ -1,0 +1,548 @@
+abstract overlay_element SdkTrays/Border12
+{
+	border_material SdkTrays/MiniTray
+	border_size 12 12 12 12
+    border_topleft_uv     0.000 0.000 0.375 0.375
+    border_top_uv         0.375 0.000 0.625 0.375
+    border_topright_uv    0.625 0.000 1.000 0.375
+    border_left_uv        0.000 0.375 0.375 0.625
+    border_right_uv       0.625 0.375 1.000 0.625
+    border_bottomleft_uv  0.000 0.625 0.375 1.000
+    border_bottom_uv      0.375 0.625 0.625 1.000
+    border_bottomright_uv 0.625 0.625 1.000 1.000
+}
+
+abstract overlay_element SdkTrays/Border13
+{
+	border_size 13 13 13 13
+	border_topleft_uv     0.0 0.0 0.4 0.4
+	border_top_uv         0.4 0.0 0.6 0.4
+	border_topright_uv    0.6 0.0 1.0 0.4
+	border_left_uv        0.0 0.4 0.4 0.6
+	border_right_uv       0.6 0.4 1.0 0.6
+	border_bottomleft_uv  0.0 0.6 0.4 1.0
+	border_bottom_uv      0.4 0.6 0.6 1.0
+	border_bottomright_uv 0.6 0.6 1.0 1.0
+}
+
+overlay_element SdkTrays/Cursor Panel
+{
+	metrics_mode pixels
+	transparent true
+	
+	// You can offset the image to change the cursor "hotspot"
+	overlay_element CursorImage Panel
+	{
+        metrics_mode pixels
+        material SdkTrays/Cursor
+        width 32
+        height 32
+	}
+}
+
+overlay_element SdkTrays/Tray BorderPanel
+{
+	metrics_mode pixels
+	material SdkTrays/Tray
+	uv_coords 0.25 0.25 0.75 0.75
+	
+	border_material SdkTrays/Tray
+	border_size 16 16 16 16
+	border_topleft_uv     0.00 0.00 0.25 0.25
+	border_top_uv         0.25 0.00 0.75 0.25
+	border_topright_uv    0.75 0.00 1.00 0.25
+	border_left_uv        0.00 0.25 0.25 0.75
+	border_right_uv       0.75 0.25 1.00 0.75
+	border_bottomleft_uv  0.00 0.75 0.25 1.00
+	border_bottom_uv      0.25 0.75 0.75 1.00
+	border_bottomright_uv 0.75 0.75 1.00 1.00
+}
+
+overlay_element SdkTrays/Button BorderPanel
+{
+	metrics_mode pixels
+	material SdkTrays/Button/Up
+	horz_align center
+	height 32
+	uv_coords 0.145 0.000 0.855 1.000
+	
+	border_material SdkTrays/Button/Up
+	border_size 16 16 0 0
+	border_left_uv  0.000 0.000 0.125 1.000
+	border_right_uv 0.875 0.000 1.000 1.000
+
+	overlay_element ButtonCaption TextArea
+	{
+        metrics_mode pixels
+        horz_align center
+        vert_align center
+        alignment center
+        font_name SdkTrays/Caption
+        char_height 15
+        space_width 7
+        colour 0 0 0
+	}
+}
+
+overlay_element SdkTrays/TextBox BorderPanel : SdkTrays/Border13
+{
+	metrics_mode pixels
+	material SdkTrays/TextBox
+	horz_align center
+	uv_coords 0.4 0.4 0.6 0.6
+	
+	border_material SdkTrays/TextBox
+	
+	overlay_element TextBoxCaptionBar BorderPanel : SdkTrays/Border12
+	{
+		metrics_mode pixels
+		material SdkTrays/MiniTray
+		height 30
+		top 2
+		left 2
+		uv_coords 0.375 0.375 0.625 0.625
+
+		overlay_element TextBoxCaption TextArea
+		{
+			metrics_mode pixels
+			horz_align center
+			alignment center
+			top 8
+			font_name SdkTrays/Caption
+			char_height 15
+			space_width 7
+			colour 0 0 0
+		}
+	}
+
+	overlay_element TextBoxText TextArea
+	{
+        metrics_mode pixels
+        font_name SdkTrays/Value
+        char_height 19
+        space_width 8
+        colour 0 0 0
+	}
+
+	overlay_element TextBoxScrollTrack BorderPanel
+	{
+        metrics_mode pixels
+        material SdkTrays/ScrollTrack
+        width 12
+		horz_align right
+		left -23
+		uv_coords 0.0 0.31 1.0 0.69
+		
+		border_material SdkTrays/ScrollTrack
+		border_size 0 0 10 10
+		border_top_uv    0.0 0.0 1.0 0.31
+		border_bottom_uv 0.0 0.69 1.0 1.0
+        
+		overlay_element TextBoxScrollHandle Panel
+		{
+			metrics_mode pixels
+			material SdkTrays/Handle
+			horz_align center
+			left -8
+			width 16
+			height 16
+		}
+	}
+}
+
+overlay_element SdkTrays/SelectMenu BorderPanel : SdkTrays/Border12
+{
+	metrics_mode pixels
+	material SdkTrays/MiniTray
+	horz_align center
+	height 56
+	uv_coords 0.375 0.375 0.625 0.625
+
+	overlay_element MenuCaption TextArea
+	{
+        metrics_mode pixels
+        horz_align center
+        alignment center
+        top 9
+        font_name SdkTrays/Caption
+        char_height 15
+        space_width 7
+        colour 0 0 0
+	}
+	
+	overlay_element MenuSmallBox BorderPanel : SdkTrays/Border13
+	{
+		metrics_mode pixels
+		material SdkTrays/MiniTextBox
+		height 30
+		top 24
+		left 5
+		uv_coords 0.4 0.4 0.6 0.6
+		
+		border_material SdkTrays/MiniTextBox
+
+		overlay_element MenuSmallText TextArea
+		{
+			metrics_mode pixels
+			left 12
+			top 7
+			font_name SdkTrays/Value
+			char_height 19
+			space_width 8
+			colour 0 0 0
+		}
+	}
+	
+	overlay_element MenuExpandedBox BorderPanel : SdkTrays/Border12
+	{
+		metrics_mode pixels
+		material SdkTrays/MiniTray
+		top 28
+		uv_coords 0.375 0.375 0.625 0.625
+		
+		overlay_element MenuScrollTrack BorderPanel
+		{
+			metrics_mode pixels
+			material SdkTrays/ScrollTrack
+			width 12
+			horz_align right
+			left -23
+			top 10
+			uv_coords 0.0 0.31 1.0 0.69
+			
+			border_material SdkTrays/ScrollTrack
+			border_size 0 0 10 10
+			border_top_uv    0.0 0.0 1.0 0.31
+			border_bottom_uv 0.0 0.69 1.0 1.0
+			
+
+			overlay_element MenuScrollHandle Panel
+			{
+				metrics_mode pixels
+				material SdkTrays/Handle
+				horz_align center
+				left -8
+				width 16
+				height 16
+			}
+		}
+	}
+}
+
+overlay_element SdkTrays/SelectMenuItem BorderPanel : SdkTrays/Border13
+{
+	metrics_mode pixels
+	material SdkTrays/MiniTextBox
+	height 30
+	left 5
+	uv_coords 0.4 0.4 0.6 0.6
+	
+	border_material SdkTrays/MiniTextBox
+
+	overlay_element MenuItemText TextArea
+	{
+		metrics_mode pixels
+		left 12
+		top 7
+		font_name SdkTrays/Value
+		char_height 19
+		space_width 8
+		colour 0 0 0
+		caption "Special Delivery"
+	}
+}
+
+overlay_element SdkTrays/Slider BorderPanel : SdkTrays/Border12
+{
+	metrics_mode pixels
+	material SdkTrays/MiniTray
+	horz_align center
+	height 53
+	uv_coords 0.375 0.375 0.625 0.625
+
+	overlay_element SliderCaption TextArea
+	{
+        metrics_mode pixels
+        left 12
+        top 10
+        font_name SdkTrays/Caption
+        char_height 15
+        space_width 7
+        colour 0 0 0
+	}
+	
+	overlay_element SliderValueBox BorderPanel : SdkTrays/Border13
+	{
+		metrics_mode pixels
+		material SdkTrays/MiniTextBox
+		horz_align right
+		height 30
+		top 2
+		uv_coords 0.4 0.4 0.6 0.6
+		
+		border_material SdkTrays/MiniTextBox
+
+		overlay_element SliderValueText TextArea
+		{
+			metrics_mode pixels
+			left 11
+			top 6
+			font_name SdkTrays/Value
+			char_height 19
+			space_width 8
+			colour 0 0 0
+		}
+	}
+		
+	overlay_element SliderTrack BorderPanel
+	{
+		metrics_mode pixels
+		material SdkTrays/SliderTrack
+		left 8
+		height 12
+		vert_align bottom
+		top -20
+		uv_coords 0.31 0.0 0.69 1.0
+		
+		border_material SdkTrays/SliderTrack
+		border_size 10 10 0 0
+		border_left_uv  0.0 0.0 0.31 1.0
+		border_right_uv 0.69 0.0 1.0 1.0
+		
+		overlay_element SliderHandle Panel
+		{
+			metrics_mode pixels
+			material SdkTrays/Handle
+			vert_align center
+			top -8
+			width 16
+			height 16
+		}
+	}
+}
+
+overlay_element SdkTrays/Label BorderPanel
+{
+	metrics_mode pixels
+	material SdkTrays/Label
+	horz_align center
+	height 32
+	uv_coords 0.49 0.000 0.51 1.000
+	
+	border_material SdkTrays/Label
+	border_size 16 16 0 0
+	border_left_uv  0.000 0.000 0.49 1.000
+	border_right_uv 0.51 0.000 1.000 1.000
+
+	overlay_element LabelCaption TextArea
+	{
+        metrics_mode pixels
+        horz_align center
+        alignment center
+        top 10
+        font_name SdkTrays/Caption
+        char_height 18
+        space_width 9
+        colour 0.9 1 0.7
+	}
+}
+
+overlay_element SdkTrays/Separator Panel
+{
+	metrics_mode pixels
+	material SdkTrays/Separator
+	horz_align center
+	height 16
+}
+
+overlay_element SdkTrays/ParamsPanel BorderPanel : SdkTrays/Border13
+{
+	metrics_mode pixels
+	material SdkTrays/TextBox
+	horz_align center
+	uv_coords 0.4 0.4 0.6 0.6
+	
+	border_material SdkTrays/TextBox
+
+	overlay_element ParamsPanelNames TextArea
+	{
+        metrics_mode pixels
+        left 15
+        top 10
+        font_name SdkTrays/Value
+        char_height 19
+        space_width 8
+        colour 0 0 0
+	}
+
+	overlay_element ParamsPanelValues TextArea
+	{
+        metrics_mode pixels
+        horz_align right
+        alignment right
+        left -15
+        top 10
+        font_name SdkTrays/Value
+        char_height 19
+        space_width 8
+        colour 0 0 0
+	}
+}
+
+overlay_element SdkTrays/CheckBox BorderPanel : SdkTrays/Border12
+{
+	metrics_mode pixels
+	material SdkTrays/MiniTray
+	horz_align center
+	height 34
+	uv_coords 0.375 0.375 0.625 0.625
+	
+
+
+	overlay_element CheckBoxCaption TextArea
+	{
+        metrics_mode pixels
+        left 12
+        top 10
+        font_name SdkTrays/Caption
+        char_height 15
+        space_width 7
+        colour 0 0 0
+	}
+	
+	overlay_element CheckBoxSquare BorderPanel : SdkTrays/Border13
+	{
+		metrics_mode pixels
+		material SdkTrays/MiniTextBox
+		horz_align right
+		width 28
+		height 26
+		left -33
+		top 4
+		uv_coords 0.4 0.4 0.6 0.6
+		
+		border_material SdkTrays/MiniTextBox
+
+		overlay_element CheckBoxX TextArea
+		{
+			metrics_mode pixels
+			left 8
+			top 5
+			font_name SdkTrays/Caption
+			char_height 18
+			space_width 9
+			colour 0 0 0
+			caption "X"
+		}
+	}
+}
+
+overlay_element SdkTrays/Logo Panel
+{
+	metrics_mode pixels
+	material SdkTrays/Logo
+	horz_align center
+	width 128
+	height 53
+}
+
+overlay_element SdkTrays/Picture Panel
+{
+	metrics_mode pixels
+	material SdkTrays/Shade
+	
+	overlay_element PictureFrame BorderPanel
+	{
+		metrics_mode pixels
+		material SdkTrays/Frame
+		left -8
+		top -8
+		uv_coords 0.49 0.49 0.51 0.51
+		
+		border_material SdkTrays/Frame
+		border_size 15 15 15 15
+		border_topleft_uv     0.00 0.00 0.49 0.49
+		border_top_uv         0.49 0.00 0.51 0.49
+		border_topright_uv    0.51 0.00 1.00 0.49
+		border_left_uv        0.00 0.49 0.49 0.51
+		border_right_uv       0.51 0.49 1.00 0.51
+		border_bottomleft_uv  0.00 0.51 0.49 1.00
+		border_bottom_uv      0.49 0.51 0.51 1.00
+		border_bottomright_uv 0.51 0.51 1.00 1.00
+	}
+}
+
+overlay_element SdkTrays/ProgressBar BorderPanel : SdkTrays/Border12
+{
+	metrics_mode pixels
+	material SdkTrays/MiniTray
+	horz_align center
+	height 63
+	uv_coords 0.375 0.375 0.625 0.625
+
+	overlay_element ProgressCaption TextArea
+	{
+        metrics_mode pixels
+        left 12
+        top 10
+        font_name SdkTrays/Caption
+        char_height 15
+        space_width 7
+        colour 0 0 0
+	}
+	
+	overlay_element ProgressCommentBox BorderPanel : SdkTrays/Border13
+	{
+		metrics_mode pixels
+		material SdkTrays/MiniTextBox
+		horz_align right
+		height 30
+		top 2
+		uv_coords 0.4 0.4 0.6 0.6
+		
+		border_material SdkTrays/MiniTextBox
+
+		overlay_element ProgressCommentText TextArea
+		{
+			metrics_mode pixels
+			left 11
+			top 6
+			font_name SdkTrays/Value
+			char_height 19
+			space_width 8
+			colour 0 0 0
+		}
+	}
+		
+	overlay_element ProgressMeter BorderPanel
+	{
+		metrics_mode pixels
+		material SdkTrays/MiniTextBox
+		left 5
+		height 32
+		vert_align bottom
+		top -34
+		uv_coords 0.31 0.0 0.69 1.0
+		
+		border_material SdkTrays/MiniTextBox
+		border_size 10 10 0 0
+		border_left_uv  0.0 0.0 0.31 1.0
+		border_right_uv 0.69 0.0 1.0 1.0
+		
+		overlay_element ProgressFill BorderPanel
+		{
+			metrics_mode pixels
+			material SdkTrays/MiniTextBox/Over
+			width 20
+			height 20
+			top 6
+			left 6
+			uv_coords 0.31 0.0 0.69 1.0
+			
+			border_material SdkTrays/MiniTextBox/Over
+			border_size 10 10 0 0
+			border_left_uv  0.0 0.0 0.31 1.0
+			border_right_uv 0.69 0.0 1.0 1.0
+		}
+	}
+}

@@ -22,6 +22,97 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+fragment_program Context/filter5y_fsGLSL glsl
+{
+	source filter5y.frag
+}
+
+fragment_program Context/filter5y_fsGLSLES glsles
+{
+	source filter5y.frag
+}
+
+fragment_program Context/filter5y_fs unified
+{
+	delegate Context/filter5y_fsGLSL
+	delegate Context/filter5y_fsGLSLES
+
+    default_params
+    {
+        param_named_auto screenSize viewport_size
+        param_named AttenuationSampler int 0
+    }
+}
+
+material Context/filter5Y
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Context/filter5y_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/SSAO ssao
+                filtering none
+            }
+		}
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program Context/filter5x_fsGLSL glsl
+{
+	source filter5x.frag
+}
+
+fragment_program Context/filter5x_fsGLSLES glsles
+{
+	source filter5x.frag
+}
+
+fragment_program Context/filter5x_fs unified
+{
+	delegate Context/filter5x_fsGLSL
+	delegate Context/filter5x_fsGLSLES
+
+    default_params
+    {
+        param_named_auto screenSize viewport_size
+        param_named AttenuationSampler int 0
+    }
+}
+
+material Context/filter5X
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Context/filter5x_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/SSAO ssao
+                filtering none
+            }
+		}
+	}
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 fragment_program Context/filter3y_fsGLSL glsl
 {
 	source filter3y.frag
@@ -44,7 +135,7 @@ fragment_program Context/filter3y_fs unified
     }
 }
 
-material Context/filterY
+material Context/filter3Y
 {
 	technique
 	{
@@ -59,7 +150,7 @@ material Context/filterY
 
 			texture_unit
             {
-                content_type compositor Context/Bloom bloom
+                content_type compositor Context/SSAO ssao
                 filtering none
             }
 		}
@@ -88,7 +179,7 @@ fragment_program Context/filter3x_fs unified
     }
 }
 
-material Context/filterX
+material Context/filter3X
 {
 	technique
 	{
@@ -103,7 +194,7 @@ material Context/filterX
 
 			texture_unit
             {
-                content_type compositor Context/Bloom bloom
+                content_type compositor Context/SSAO ssao
                 filtering none
             }
 		}

@@ -27,7 +27,7 @@ SOFTWARE.
 #version VERSION
 #define USE_TEX_LOD
 #if VERSION != 120
-#define attribute in
+#define varying in
 #define texture1D texture
 #define texture2D texture
 #define texture2DProj textureProj
@@ -36,6 +36,7 @@ SOFTWARE.
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
+out vec4 gl_FragColor;
 #else
 #define in varying
 #define out varying
@@ -44,44 +45,47 @@ SOFTWARE.
 #extension GL_ARB_shader_texture_lod : require
 #endif
 #else
-#version 100
+#define VERSION 300
+#version VERSION es
 #extension GL_OES_standard_derivatives : enable
 #extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
 precision highp float;
+#if VERSION == 100
 #define in varying
 #define out varying
-#endif
-#if VERSION != 120
+#else
+#define varying in
+#define texture1D texture
+#define texture2D texture
+#define texture2DProj textureProj
+#define shadow2DProj textureProj
+#define texture3D texture
+#define textureCube texture
+#define texture2DLod textureLod
+#define textureCubeLod textureLod
 out vec4 gl_FragColor;
+#endif
 #endif
 
 in vec2 oUv0;
-uniform vec3 FogColour;
-uniform vec4 FogParams;
-uniform float NearClipDistance;
-uniform float FarClipDistance;
 uniform sampler2D AttenuationSampler;
+uniform sampler2D SsaoSampler;
 uniform sampler2D SceneSampler;
-uniform sampler2D MrtSampler;
+
+uniform float exposure;
 
 void main()
 {
-    vec4 tmp = texture2D(AttenuationSampler, oUv0);
-    vec3 bloom = tmp.rgb;
-//    float shadow = tmp.a;
+    vec3 bloom = texture2D(AttenuationSampler, oUv0).rgb;
+    float ssao = texture2D(SsaoSampler, oUv0).r;
     vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-    float depth = FarClipDistance * texture2D(MrtSampler, oUv0).r + NearClipDistance;
+    scene *= ssao;
+    scene += 0.05 * bloom;
 
-    float fog_value = 0.0;
-
-    if (depth < 500.0) {
-//        scene *= shadow;
-        scene += bloom;
-        float exponent = depth * FogParams.x;
-        fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
-        scene = mix(scene, FogColour, fog_value);
-    }
+    const float gamma = 2.2;
+    vec3 mapped = vec3(1.0) - exp(-scene * exposure);
+    scene = pow(mapped, vec3(1.0 / gamma));
 
     gl_FragColor = vec4(scene, 1.0);
 }

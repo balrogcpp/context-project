@@ -1,5 +1,9 @@
 // Directional light extrude - FINITE
+#ifndef GL_ES
 #version 120
+#else
+#version 100
+#endif
 
 attribute vec4 uv0;
 attribute vec4 position;

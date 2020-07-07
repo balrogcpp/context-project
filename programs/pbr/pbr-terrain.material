@@ -22,16 +22,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+vertex_program PbrTerrain_vs_glsl glsl
+{
+	source pbr.vert
+    preprocessor_defines HAS_UV,SHADOWRECEIVER
+}
+
+vertex_program PbrTerrain_vs_glsles glsles
+{
+	source pbr.vert
+    preprocessor_defines HAS_UV,SHADOWRECEIVER
+}
+
+vertex_program PbrTerrain_vs unified
+{
+	delegate PbrTerrain_vs_glsl
+	delegate PbrTerrain_vs_glsles
+}
+
 fragment_program PbrTerrain_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_PARALLAXMAP,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
+    preprocessor_defines TERRAIN,TERRAIN_GLOBAL_NORMALMAP,HAS_PARALLAXMAP,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
 }
 
 fragment_program PbrTerrain_fs_glsles glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_PARALLAXMAP,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
+    preprocessor_defines TERRAIN,TERRAIN_GLOBAL_NORMALMAP,HAS_PARALLAXMAP,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
 }
 
 fragment_program PbrTerrain_fs unified
@@ -46,17 +64,22 @@ material PbrTerrain
     {
       pass
       {
-        vertex_program_ref Pbr_vs {}
+        specular 1 1 1 1
+        ambient 0 0 0
+
+        vertex_program_ref PbrTerrain_vs {}
 
         texture_unit AlbedoParallax {}
         texture_unit Normal {}
         texture_unit MetallicRougness {}
+        texture_unit GlobalNormal {}
 
         fragment_program_ref PbrTerrain_fs
         {
             param_named uBaseColorSampler   int 0
             param_named uNormalSampler    int 1
             param_named uMetallicRoughnessSampler int 2
+            param_named uGlobalNormalSampler int 3
         }
       }
     }

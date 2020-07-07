@@ -39,7 +39,6 @@ fragment_program Context/hdr_fs unified
 
 	default_params
 	{
-		param_named_auto screenSize viewport_size
 		param_named SceneSampler int 0
 		param_named exposure float 1
 	}

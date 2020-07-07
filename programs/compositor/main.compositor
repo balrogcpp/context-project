@@ -23,10 +23,10 @@ SOFTWARE.
 */
 
 compositor Context/Main
-{    
+{
     technique
     {
-        texture scene target_width target_height PF_BYTE_RGBA chain_scope
+        texture scene target_width target_height PF_FLOAT16_RGBA chain_scope
 
         target scene
         {
@@ -47,7 +47,8 @@ compositor Context/GBuffer
         // use a better packing of variables in the mrt to (possibly) increase
         // performance!
         // ---------------------------------------------------------------------
-        texture mrt target_width target_height PF_FLOAT32_RGBA PF_FLOAT32_RGBA chain_scope
+        texture mrt target_width target_height PF_FLOAT16_R chain_scope
+        //texture mrt target_width target_height PF_FLOAT32_RGBA PF_FLOAT32_RGB chain_scope
 
         target mrt
         {
@@ -93,13 +94,14 @@ compositor Context/SSAO
 {
     technique
     {
-        texture_ref bloom Context/Bloom bloom
+        //texture_ref bloom Context/Bloom bloom
+        texture ssao target_width target_height PF_FLOAT16_R chain_scope
 
-        target bloom
+        target ssao
         {
             pass render_quad
             {
-                material Context/SSAO
+                material Context/SsaoCrytek
             }
         }
     }
@@ -109,7 +111,8 @@ compositor Context/Bloom
 {
     technique
     {
-        texture bloom target_width target_height PF_BYTE_RGBA chain_scope
+        texture bloom target_width target_height PF_FLOAT16_RGB chain_scope
+        //texture bloom target_width target_height PF_BYTE_RGBA chain_scope
 
         target bloom
         {
@@ -125,13 +128,13 @@ compositor Context/FilterY
 {
     technique
     {
-        texture_ref bloom Context/Bloom bloom
+        texture_ref ssao Context/SSAO ssao
 
-        target bloom
+        target ssao
         {
             pass render_quad
             {
-                material Context/filterY
+                material Context/filter5Y
             }
         }
     }
@@ -141,13 +144,13 @@ compositor Context/FilterX
 {
     technique
     {
-        texture_ref bloom Context/Bloom bloom
+        texture_ref ssao Context/SSAO ssao
 
-        target bloom
+        target ssao
         {
             pass render_quad
             {
-                material Context/filterX
+                material Context/filter5X
             }
         }
     }

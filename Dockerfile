@@ -9,13 +9,13 @@ ADD CMake ./CMake
 ADD demo ./demo
 ADD doc ./doc
 ADD tests ./tests
-ADD thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
-ADD CMakeLists.txt .
 ADD LICENSE .
+ADD cegui ./cegui
+ADD android ./android
 ADD programs ./programs
 ADD scenes ./scenes
-ADD gui ./gui
-ADD android ./android
+ADD CMakeLists.txt .
+ADD thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
 ADD .git ./.git
 
 RUN mkdir -p ./build-windows && mkdir -p ./build-linux && mkdir -p ./build-android
