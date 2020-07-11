@@ -53,9 +53,8 @@ RUN cd pkg-config-${PKG_CONFIG_VERSION} \
        --disable-nls \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
-    && cd ..
-
-RUN mkdir binutils-${BINUTILS_VERSION}-mingw \
+    && cd .. \
+    && mkdir binutils-${BINUTILS_VERSION}-mingw \
     && cd binutils-${BINUTILS_VERSION}-mingw \
     && ../binutils-${BINUTILS_VERSION}/configure \
       --prefix=/usr \
@@ -70,9 +69,8 @@ RUN mkdir binutils-${BINUTILS_VERSION}-mingw \
       --with-system-zlib \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
-    && cd ..
-
-RUN mkdir binutils-${BINUTILS_VERSION}-linux \
+    && cd .. \
+    && mkdir binutils-${BINUTILS_VERSION}-linux \
     && cd binutils-${BINUTILS_VERSION}-linux \
     && ../binutils-${BINUTILS_VERSION}/configure \
       --prefix=/usr \
@@ -87,9 +85,8 @@ RUN mkdir binutils-${BINUTILS_VERSION}-linux \
       --with-system-zlib \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
-    && cd ..
-
-RUN mkdir mingw-w64 \
+    && cd .. \
+    && mkdir mingw-w64 \
     && cd mingw-w64 \
     && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-headers/configure \
       --prefix=/usr/x86_64-w64-mingw32 \
@@ -98,9 +95,8 @@ RUN mkdir mingw-w64 \
       --enable-secure-api \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
-    && cd ..
-
-RUN mkdir gcc-mingw32 \
+    && cd .. \
+    && mkdir gcc-mingw32 \
     && cd gcc-mingw32 \
     && ../gcc-${GCC_VERSION}/configure \
       --prefix=/usr \
@@ -120,9 +116,8 @@ RUN mkdir gcc-mingw32 \
       --disable-werror \
     && make -j`nproc` all-gcc > /dev/null \
     && make install-gcc > /dev/null \
-    && cd ..
-
-RUN mkdir gcc-linux \
+    && cd .. \
+    && mkdir gcc-linux \
     && cd gcc-linux \
     && ../gcc-${GCC_VERSION}/configure \
       --prefix=/usr \
@@ -131,9 +126,8 @@ RUN mkdir gcc-linux \
       --disable-multilib \
     && make -j`nproc` all-gcc > /dev/null \
     && make install-gcc > /dev/null \
-    && cd ..
-
-RUN cd mingw-w64 \
+    && cd .. \
+    && cd mingw-w64 \
     && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-crt/configure \
       --prefix=/usr/x86_64-w64-mingw32 \
       --host=x86_64-w64-mingw32 \
@@ -142,9 +136,8 @@ RUN cd mingw-w64 \
       --enable-lib64 \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
-    && cd ..
-
-RUN cd mingw-w64 \
+    && cd .. \
+    && cd mingw-w64 \
     && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-libraries/winpthreads/configure \
       --prefix=/usr/x86_64-w64-mingw32 \
       --host=x86_64-w64-mingw32 \
@@ -152,20 +145,16 @@ RUN cd mingw-w64 \
       --disable-shared \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
-    && cd ..
-
-RUN cd gcc-mingw32 \
+    && cd .. \
+    && cd gcc-mingw32 \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
-    && cd ..
-
-RUN cd gcc-linux \
+    && cd .. \
+    && cd gcc-linux \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
-    && cd ..
-
-#Cleanup up to reduce Docker container size
-RUN rm -rf pkg-config-${PKG_CONFIG_VERSION} \
+    && cd .. \
+    && rm -rf pkg-config-${PKG_CONFIG_VERSION} \
     && rm -rf binutils-${BINUTILS_VERSION} \
     && rm -rf binutils-${BINUTILS_VERSION}-mingw \
     && rm -rf binutils-${BINUTILS_VERSION}-linux \
