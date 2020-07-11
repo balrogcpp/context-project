@@ -1,5 +1,8 @@
 FROM balrogcpp/context-project-dependencies:latest
 
+ARG DEBIAN_FRONTEND=noninteractive
+#RUN apt-get install -y doxygen doxygen-latex graphviz
+
 ARG CONTEXT_HOME=/mnt/context-demo
 WORKDIR ${CONTEXT_HOME}
 

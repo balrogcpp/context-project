@@ -7,20 +7,10 @@ RUN apt-get update &&\
         g++ \
         gcc\
         make \
-        checkinstall \
-        git \
         autoconf \
         libssl1.1 \
         wget \
         ca-certificates \
-        ninja-build \
-        doxygen \
-        doxygen-latex \
-        graphviz \
-        libxaw7-dev \
-        libxrandr-dev \
-        libglew-dev \
-        libpulse-dev \
         zlib1g-dev \
         libssl-dev \
         libgmp-dev \
@@ -37,7 +27,6 @@ RUN apt-get update &&\
         xz-utils \
         bzip2 \
         zip \
-        nsis \
         > /dev/null
 
 ENV MINGW=/mingw
@@ -174,6 +163,20 @@ RUN cd gcc-linux \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
     && cd ..
+
+#Cleanup up to reduce Docker container size
+RUN rm -rf pkg-config-${PKG_CONFIG_VERSION} \
+    && rm -rf binutils-${BINUTILS_VERSION} \
+    && rm -rf binutils-${BINUTILS_VERSION}-mingw \
+    && rm -rf binutils-${BINUTILS_VERSION}-linux \
+    && rm -rf mingw-w64-v${MINGW_VERSION} \
+    && rm -rf mingw-w64 \
+    && rm -rf gcc-${GCC_VERSION} \
+    && rm -rf gcc-mingw32 \
+    && rm -rf gcc-linux
+
+#RUN apt-get purge -y gcc g++ > /dev/null && apt-get autoremove -y > /dev/null
+#ENV PATH="/usr/local/bin:${PATH}"
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 10000 --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++
 RUN update-alternatives --install /usr/bin/mingw32-gcc mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc 10000 --slave /usr/bin/mingw32-g++ mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++
