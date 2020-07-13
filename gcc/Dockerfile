@@ -38,13 +38,12 @@ ARG PKG_CONFIG_VERSION=0.29.2
 
 WORKDIR /mnt
 
-RUN wget -q https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz
-RUN wget -q https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ
-RUN wget -q https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj
-RUN wget -q https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ
-RUN mkdir -p ${MINGW}/include ${MINGW}/lib/pkgconfig
-
-RUN cd pkg-config-${PKG_CONFIG_VERSION} \
+RUN wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
+    && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
+    && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
+    && wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
+    && mkdir -p ${MINGW}/include ${MINGW}/lib/pkgconfig \
+    && cd pkg-config-${PKG_CONFIG_VERSION} \
     && ./configure \
        --prefix=/usr \
        --with-pc-path=${MINGW}/lib/pkgconfig \
@@ -164,17 +163,13 @@ RUN cd pkg-config-${PKG_CONFIG_VERSION} \
     && rm -rf gcc-mingw32 \
     && rm -rf gcc-linux
 
-#RUN apt-get purge -y gcc g++ > /dev/null && apt-get autoremove -y > /dev/null
-#ENV PATH="/usr/local/bin:${PATH}"
-
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 10000 --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++
 RUN update-alternatives --install /usr/bin/mingw32-gcc mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc 10000 --slave /usr/bin/mingw32-g++ mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++
 
 ARG CMAKE_VERSION=3.16.6
 ARG CMAKE_HOME=/opt/cmake
 
-RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
-          -q -O /tmp/cmake-install.sh \
+RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
           && chmod u+x /tmp/cmake-install.sh \
           && mkdir /opt/cmake \
           && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
