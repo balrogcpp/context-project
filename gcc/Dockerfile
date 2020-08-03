@@ -20,16 +20,18 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
+#Purpose of this image is to provide latest gcc and mingw-w64, only way to get them is manually compile
+
 FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV MINGW=/mingw
 ARG BINUTILS_VERSION=2.33.1
 ARG MINGW_VERSION=7.0.0
-ARG GCC_VERSION=10.1.0
+ARG GCC_VERSION=10.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
 WORKDIR /mnt
-ARG CMAKE_VERSION=3.16.6
+ARG CMAKE_VERSION=3.18.1
 ARG CMAKE_HOME=/opt/cmake
 
 RUN apt-get update &&\

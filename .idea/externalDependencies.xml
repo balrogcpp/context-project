@@ -5,7 +5,6 @@
     <plugin id="GLSL" />
     <plugin id="Git4Idea" />
     <plugin id="com.jetbrains.sh" />
-    <plugin id="name.kropp.intellij.makefile" />
     <plugin id="org.intellij.plugins.markdown" />
     <plugin id="org.jetbrains.plugins.cidr-intelliLang" />
     <plugin id="org.jetbrains.plugins.clangFormat" />

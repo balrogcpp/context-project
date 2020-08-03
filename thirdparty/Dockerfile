@@ -20,7 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-FROM balrogcpp/mingw-gcc10-cmake:latest
+FROM balrogcpp/gcc-mingw-x86_64:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt/context-demo
