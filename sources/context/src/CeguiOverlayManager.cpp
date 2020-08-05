@@ -69,30 +69,30 @@ void CeguiOverlayManager::Setup() {
   CeguiOverlayManager::Hide();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CeguiOverlayManager::MouseMove(int x, int y) {
+void CeguiOverlayManager::move(int x, int y) {
   if (active_) {
     CEGUI::System &sys = CEGUI::System::getSingleton();
     CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseMove(x, y);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CeguiOverlayManager::MouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
+void CeguiOverlayManager::move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   if (active_) {
     CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseMove(dx, dy);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CeguiOverlayManager::MouseWheel(int x, int y) {
+void CeguiOverlayManager::wheel(int x, int y) {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CeguiOverlayManager::LeftButtonDown(int x, int y) {
+void CeguiOverlayManager::lb_down(int x, int y) {
   if (active_) {
     CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseButtonDown(CEGUI::MouseButton::LeftButton);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CeguiOverlayManager::LeftButtonUp(int x, int y) {
+void CeguiOverlayManager::lb_up(int x, int y) {
   if (active_) {
     CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseButtonUp(CEGUI::MouseButton::LeftButton);
   }

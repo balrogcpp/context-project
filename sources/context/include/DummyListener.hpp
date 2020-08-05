@@ -47,51 +47,41 @@ class DummyListener : public Context::InputListener {
   }
 
  protected:
-  void KeyDown(SDL_Keycode sym) final;
+  void key_down(SDL_Keycode sym) final;
 
-  void KeyUp(SDL_Keycode sym) final;
+  void key_up(SDL_Keycode sym) final;
 
-  void MouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) final;
+  void move(int x, int y, int dx, int dy, bool left, bool right, bool middle) final;
 
-  void MouseWheel(int x, int y) final;
+  void wheel(int x, int y) final;
 
-  void LeftButtonDown(int x, int y) final;
+  void lb_down(int x, int y) final;
 
-  void LeftButtonUp(int x, int y) final;
+  void lb_up(int x, int y) final;
 
-  void RightButtonDown(int x, int y) final;
+  void rb_down(int x, int y) final;
 
-  void RightButtonUp(int x, int y) final;
+  void rb_up(int x, int y) final;
 
-  void MiddleButtonDown(int x, int y) final;
+  void mb_down(int x, int y) final;
 
-  void MiddleButtonUp(int x, int y) final;
+  void mb_up(int x, int y) final;
 
-  void JoyAxis(int which, int axis, int value) final;
+  void axis(int which, int axis, int value) final;
 
-  void JoyButtonDown(int which, int button) final;
+  void bt_down(int which, int button) final;
 
-  void JoyButtonUp(int which, int button) final;
+  void bt_up(int which, int button) final;
 
-  void JoyHat(int which, int hat, int value) final;
+  void hat(int which, int hat, int value) final;
 
-  void JoyBall(int which, int ball, int xrel, int yrel) final;
+  void ball(int which, int ball, int xrel, int yrel) final;
 
-  void ControllerAxis(int which, int axis, int value) final;
+  void event(const SDL_Event &evt) final;
 
-  void ControllerButtonDown(int which, int button) final;
+  void quit() final;
 
-  void ControllerButtonUp(int which, int button) final;
-
-  void ControllerHat(int which, int hat, int value) final;
-
-  void ControllerBall(int which, int ball, int xrel, int yrel) final;
-
-  void Event(const SDL_Event &evt) final;
-
-  void Quit() final;
-
-  void User(Uint8 type, int code, void *data1, void *data2) final;
+  void user(Uint8 type, int code, void *data1, void *data2) final;
 
 };
 

@@ -45,7 +45,7 @@ class DemoDotAppState : public Context::AppState {
 
     void Next() final {};
 
-    void KeyDown(SDL_Keycode sym) final;
+    void key_down(SDL_Keycode sym) final;
 
  private:
   std::shared_ptr<Context::SinbadCharacterController> sinbad_;

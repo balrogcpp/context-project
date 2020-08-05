@@ -49,20 +49,20 @@ class MenuAppState : public Context::AppState {
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) override final;
   void Setup() final;
   void Reset() final;
-  void Quit() final;
+  void quit() final;
   void Next() final;
 
  private:
-  virtual void MouseMove(int x, int y) override final;
-  virtual void MouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override final;
-  virtual void MouseWheel(int x, int y) override final;
-  virtual void LeftButtonDown(int x, int y) override final;
-  virtual void LeftButtonUp(int x, int y) override final;
-  virtual void RightButtonDown(int x, int y) override final;
-  virtual void RightButtonUp(int x, int y) override final;
-  virtual void MiddleButtonDown(int x, int y) override final;
-  virtual void MiddleButtonUp(int x, int y) override final;
-  virtual void KeyDown(SDL_Keycode sym) override final;
+  virtual void move(int x, int y) override final;
+  virtual void move(int x, int y, int dx, int dy, bool left, bool right, bool middle) override final;
+  virtual void wheel(int x, int y) override final;
+  virtual void lb_down(int x, int y) override final;
+  virtual void lb_up(int x, int y) override final;
+  virtual void rb_down(int x, int y) override final;
+  virtual void rb_up(int x, int y) override final;
+  virtual void mb_down(int x, int y) override final;
+  virtual void mb_up(int x, int y) override final;
+  virtual void key_down(SDL_Keycode sym) override final;
 };
 
 }

@@ -58,43 +58,43 @@ bool MenuAppState::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   return true;
 }
 
-void MenuAppState::MouseMove(int x, int y) {
+void MenuAppState::move(int x, int y) {
 
 }
 
-void MenuAppState::MouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
+void MenuAppState::move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
 
 }
 
-void MenuAppState::MouseWheel(int x, int y) {
+void MenuAppState::wheel(int x, int y) {
 
 }
 
-void MenuAppState::LeftButtonDown(int x, int y) {
+void MenuAppState::lb_down(int x, int y) {
 
 }
 
-void MenuAppState::LeftButtonUp(int x, int y) {
+void MenuAppState::lb_up(int x, int y) {
 
 }
 
-void MenuAppState::RightButtonDown(int x, int y) {
+void MenuAppState::rb_down(int x, int y) {
 
 }
 
-void MenuAppState::RightButtonUp(int x, int y) {
+void MenuAppState::rb_up(int x, int y) {
 
 }
 
-void MenuAppState::MiddleButtonDown(int x, int y) {
+void MenuAppState::mb_down(int x, int y) {
 
 }
 
-void MenuAppState::MiddleButtonUp(int x, int y) {
+void MenuAppState::mb_up(int x, int y) {
 
 }
 
-void MenuAppState::KeyDown(SDL_Keycode sym) {
+void MenuAppState::key_down(SDL_Keycode sym) {
 #ifdef DEBUG
 //  if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_G) {
 //    AppStateManager::GetSingleton().GoNextState();
@@ -102,7 +102,7 @@ void MenuAppState::KeyDown(SDL_Keycode sym) {
 #endif
 }
 
-void MenuAppState::Quit() {
+void MenuAppState::quit() {
   AppStateManager::GetSingleton().ResetGlobals();
 }
 
@@ -123,7 +123,7 @@ void MenuAppState::Setup() {
 
   sheet = CeguiOverlayManager::GetSingleton().GetCeguiWindow();
   sheet->addChild(quitButton);
-  quitButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&MenuAppState::Quit, this));
+  quitButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&MenuAppState::quit, this));
 
   nextButton = CEGUI::WindowManager::getSingleton().createWindow("TaharezLook/Button", "CEGUIDemo/StartButton");
   nextButton->setText("New Game");

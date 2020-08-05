@@ -38,7 +38,7 @@ DemoDotAppState::~DemoDotAppState() {
 
 }
 
-void DemoDotAppState::KeyDown(SDL_Keycode sym) {
+void DemoDotAppState::key_down(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
     AppStateManager::GetSingleton().GoNextState();
   }

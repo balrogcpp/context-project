@@ -50,11 +50,11 @@ class CeguiOverlayManager : public ManagerCommon {
 
  private:
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
-  void MouseMove(int x, int y) final;
-  void MouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) final;
-  void MouseWheel(int x, int y) final;
-  void LeftButtonDown(int x, int y) final;
-  void LeftButtonUp(int x, int y) final;
+  void move(int x, int y) final;
+  void move(int x, int y, int dx, int dy, bool left, bool right, bool middle) final;
+  void wheel(int x, int y) final;
+  void lb_down(int x, int y) final;
+  void lb_up(int x, int y) final;
 
  private:
   static CeguiOverlayManager CeguiOverlayManagerSingleton;

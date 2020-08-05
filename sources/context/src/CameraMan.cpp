@@ -336,7 +336,7 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::MouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
+void CameraMan::move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   if (!stop_) {
     if (camera_style_ == CameraStyle::FREELOOK) {
       camera_node_->yaw(Ogre::Degree(-dx));
@@ -378,31 +378,31 @@ void CameraMan::MouseMove(int x, int y, int dx, int dy, bool left, bool right, b
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::LeftButtonDown(int x, int y) {
+void CameraMan::lb_down(int x, int y) {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::LeftButtonUp(int x, int y) {
+void CameraMan::lb_up(int x, int y) {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::RightButtonDown(int x, int y) {
+void CameraMan::rb_down(int x, int y) {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::RightButtonUp(int x, int y) {
+void CameraMan::rb_up(int x, int y) {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::MiddleButtonDown(int x, int y) {
+void CameraMan::mb_down(int x, int y) {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::MiddleButtonUp(int x, int y) {
+void CameraMan::mb_up(int x, int y) {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::KeyDown(SDL_Keycode sym) {
+void CameraMan::key_down(SDL_Keycode sym) {
   SDL_Scancode code = SDL_GetScancodeFromKey(sym);
 
   if (!stop_) {
@@ -441,7 +441,7 @@ void CameraMan::KeyDown(SDL_Keycode sym) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::KeyUp(SDL_Keycode sym) {
+void CameraMan::key_up(SDL_Keycode sym) {
   SDL_Scancode code = SDL_GetScancodeFromKey(sym);
 
   if (!stop_) {

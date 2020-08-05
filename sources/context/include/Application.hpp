@@ -49,11 +49,11 @@ class Application : public ManagerCommon {
   void SetCurState(std::shared_ptr<AppState> scene_ptr);
   void SetNextState(std::shared_ptr<AppState> scene_ptr);
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) override;
-  void KeyDown(SDL_Keycode sym) override;
-  void KeyUp(SDL_Keycode sym) override;
-  void Event(const SDL_Event &evt) override;
-  void Quit() override;
-  void User(Uint8 type, int code, void *data1, void *data2) override;
+  void key_down(SDL_Keycode sym) override;
+  void key_up(SDL_Keycode sym) override;
+  void event(const SDL_Event &evt) override;
+  void quit() override;
+  void user(Uint8 type, int code, void *data1, void *data2) override;
   int GetFpsFrames() const;
 
  public:

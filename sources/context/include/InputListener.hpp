@@ -30,7 +30,6 @@ namespace Context {
 
 class InputListener :
     public Context::JoyListener,
-    public Context::ControllerListener,
     public Context::KeyboardListener,
     public Context::MouseListener,
     public Context::OtherEventListener {

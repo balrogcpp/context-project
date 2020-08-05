@@ -33,7 +33,7 @@ class InputManager : public Context::InputSequencer {
 
   static InputManager *GetSingletonPtr();
   static InputManager &GetSingleton();
-  void Capture() final;
+  void capture() final;
   void Reset();
   void StopCapture();
   void StartCapture();

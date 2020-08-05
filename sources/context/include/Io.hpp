@@ -32,118 +32,55 @@ extern "C" {
 
 namespace Context {
 
-struct KeyboardEvent {
-  SDL_Keycode code;
-};
-
 class KeyboardListener {
  public:
   virtual ~KeyboardListener() = default;
-  virtual void KeyDown(SDL_Keycode sym);
-  virtual void KeyUp(SDL_Keycode sym);
+  virtual void key_down(SDL_Keycode sym);
+  virtual void key_up(SDL_Keycode sym);
 };
-// class KeyboardListener
 
-#pragma pack(push, 1)
-struct MouseEvent {
-  int x;
-  int y;
-  int dx;
-  int dy;
-  bool left;
-  bool right;
-  bool middle;
-};
-#pragma pack(pop)
-
-/**
- * @brief
- */
 class MouseListener {
  public:
   virtual ~MouseListener() = default;
-  virtual void MouseMove(int x, int y);
-  virtual void MouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle);
-  virtual void MouseWheel(int x, int y);
-  virtual void LeftButtonDown(int x, int y);
-  virtual void LeftButtonUp(int x, int y);
-  virtual void RightButtonDown(int x, int y);
-  virtual void RightButtonUp(int x, int y);
-  virtual void MiddleButtonDown(int x, int y);
-  virtual void MiddleButtonUp(int x, int y);
-  virtual void Universal(const MouseEvent &evt);
+  virtual void move(int x, int y);
+  virtual void move(int x, int y, int dx, int dy, bool left, bool right, bool middle);
+  virtual void wheel(int x, int y);
+  virtual void lb_down(int x, int y);
+  virtual void lb_up(int x, int y);
+  virtual void rb_down(int x, int y);
+  virtual void rb_up(int x, int y);
+  virtual void mb_down(int x, int y);
+  virtual void mb_up(int x, int y);
 };
-// class MouseListener
-
-#pragma pack(push, 1)
-struct JoyEvent {
-  int which;
-  int ball;
-  int xrel;
-  int yrel;
-};
-#pragma pack(pop)
 
 class JoyListener {
  public:
 
   virtual ~JoyListener() = default;
-  virtual void JoyAxis(int which, int axis, int value);
-  virtual void JoyButtonDown(int which, int button);
-  virtual void JoyButtonUp(int which, int button);
-  virtual void JoyHat(int which, int hat, int value);
-  virtual void JoyBall(int which, int ball, int xrel, int yrel);
+  virtual void axis(int which, int axis, int value);
+  virtual void bt_down(int which, int button);
+  virtual void bt_up(int which, int button);
+  virtual void hat(int which, int hat, int value);
+  virtual void ball(int which, int ball, int xrel, int yrel);
 };
-// class JoyListener
-
-#pragma pack(push, 1)
-struct ControllerEvent {
-  int which;
-  int ball;
-  int xrel;
-  int yrel;
-};
-#pragma pack(pop)
 
 class ControllerListener {
  public:
   virtual ~ControllerListener() = default;
-  virtual void ControllerAxis(int which, int axis, int value);
-  virtual void ControllerButtonDown(int which, int button);
-  virtual void ControllerButtonUp(int which, int button);
-  virtual void ControllerHat(int which, int hat, int value);
-  virtual void ControllerBall(int which, int ball, int xrel, int yrel);
+  virtual void axis(int which, int axis, int value);
+  virtual void bt_down(int which, int button);
+  virtual void bt_up(int which, int button);
+  virtual void hat(int which, int hat, int value);
+  virtual void ball(int which, int ball, int xrel, int yrel);
 };
-// class ControllerListener
 
 class OtherEventListener {
  public:
   virtual ~OtherEventListener() = default;
-  virtual void Event(const SDL_Event &evt);
-  virtual void Quit();
-  virtual void User(Uint8 type, int code, void *data1, void *data2);
+  virtual void event(const SDL_Event &evt);
+  virtual void quit();
+  virtual void user(Uint8 type, int code, void *data1, void *data2);
 };
-// class OtherEventListener
-
-
-enum class EventType {
-  MOUSE,
-  KEYBOARD,
-  JOY,
-  CONTROLLER
-};
-
-#pragma pack(push, 1)
-struct IoEvent {
-  EventType type;
-  union {
-    MouseEvent mouseEvt;
-    ControllerEvent controllerEvt;
-    JoyEvent joyEvt;
-    KeyboardEvent keyboardEvent;
-  };
-};
-#pragma pack(pop)
 
 class InputSequencer {
  protected:
@@ -162,17 +99,17 @@ class InputSequencer {
 
  public:
   virtual ~InputSequencer() = default;
-  virtual void RegKeyboardListener(KeyboardListener *l);
-  virtual void UnregKeyboardListener(KeyboardListener *l);
-  virtual void RegMouseListener(MouseListener *l);
-  virtual void UnregMouseListener(MouseListener *l);
-  virtual void RegJoyListener(JoyListener *l);
-  virtual void UnregJoyListener(JoyListener *l);
-  virtual void RegControllerListener(ControllerListener *l);
-  virtual void UnregControllerListener(ControllerListener *l);
-  virtual void RegEventListener(OtherEventListener *l);
-  virtual void UnregEventListener(OtherEventListener *l);
-  virtual void Capture();
+  virtual void reg_kb_listener(KeyboardListener *l);
+  virtual void unreg_kb_listener(KeyboardListener *l);
+  virtual void reg_ms_listener(MouseListener *l);
+  virtual void unreg_ms_listener(MouseListener *l);
+  virtual void reg_joy_listener(JoyListener *l);
+  virtual void unreg_joy_listener(JoyListener *l);
+  virtual void reg_con_listener(ControllerListener *l);
+  virtual void unreg_con_listener(ControllerListener *l);
+  virtual void reg_event_listener(OtherEventListener *l);
+  virtual void unreg_event_listener(OtherEventListener *l);
+  virtual void capture();
 };
 // class InputManager
 

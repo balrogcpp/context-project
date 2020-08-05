@@ -68,15 +68,15 @@ class CameraMan : public InputListener, public NoCopy, public Ogre::FrameListene
 
   bool frameRenderingQueued(const Ogre::FrameEvent &event) override;
 
-  void MouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override;
-  void LeftButtonDown(int x, int y) override;
-  void LeftButtonUp(int x, int y) override;
-  void RightButtonDown(int x, int y) override;
-  void RightButtonUp(int x, int y) override;
-  void MiddleButtonDown(int x, int y) override;
-  void MiddleButtonUp(int x, int y) override;
-  void KeyDown(SDL_Keycode sym) override;
-  void KeyUp(SDL_Keycode sym) override;
+  void move(int x, int y, int dx, int dy, bool left, bool right, bool middle) override;
+  void lb_down(int x, int y) override;
+  void lb_up(int x, int y) override;
+  void rb_down(int x, int y) override;
+  void rb_up(int x, int y) override;
+  void mb_down(int x, int y) override;
+  void mb_up(int x, int y) override;
+  void key_down(SDL_Keycode sym) override;
+  void key_up(SDL_Keycode sym) override;
 
  private:
   Ogre::SceneNode *camera_node_ = nullptr;
