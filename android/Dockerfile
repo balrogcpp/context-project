@@ -24,24 +24,21 @@ FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && \
-    apt-get install -y wget zip openjdk-8-jdk
-
-RUN update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
-
 ARG GRADLE_VERSION=6.4.1
 ARG GRADLE_HOME=/opt/gradle
-RUN cd /tmp && \
-    wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip && \
-    unzip -q gradle-${GRADLE_VERSION}-bin.zip && \
-    mv ./gradle-${GRADLE_VERSION}/ ${GRADLE_HOME} && \
-    rm gradle-${GRADLE_VERSION}-bin.zip
-ENV PATH="${GRADLE_HOME}/bin:${PATH}"
-
 ARG ANDROID_SDK_VERSION=r30.0.1
 ARG ANDROID_NDK_VERSION=r21b
 ARG ANDROID_SDK_HOME=/opt/android-sdk
-RUN mkdir ${ANDROID_SDK_HOME} && \
+
+RUN apt-get update && \
+    apt-get install -y wget zip openjdk-8-jdk && \
+    update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java && \
+    cd /tmp && \
+    wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip && \
+    unzip -q gradle-${GRADLE_VERSION}-bin.zip && \
+    mv ./gradle-${GRADLE_VERSION}/ ${GRADLE_HOME} && \
+    rm gradle-${GRADLE_VERSION}-bin.zip && \
+    mkdir ${ANDROID_SDK_HOME} && \
     cd /tmp && \
 	wget --output-document=platform-tools.zip --quiet https://dl.google.com/android/repository/platform-tools_r30.0.1-linux.zip && \
         unzip platform-tools.zip && \
@@ -66,7 +63,9 @@ RUN mkdir ${ANDROID_SDK_HOME} && \
     wget -q https://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
         unzip -q android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
         mv android-ndk-${ANDROID_NDK_VERSION} ${ANDROID_SDK_HOME}/ndk && \
-        rm android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip
-RUN cd ${ANDROID_SDK_HOME}/tools/bin && yes | ./sdkmanager --licenses
+        rm android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
+    cd ${ANDROID_SDK_HOME}/tools/bin && yes | ./sdkmanager --licenses
+
+ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 ENV ANDROID_SDK_ROOT="${ANDROID_SDK_HOME}"
 ENV PATH="${ANDROID_SDK_HOME}/ndk:${PATH}"
