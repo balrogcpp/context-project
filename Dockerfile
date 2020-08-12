@@ -35,7 +35,6 @@ ADD demo ./demo
 ADD doc ./doc
 ADD tests ./tests
 ADD LICENSE .
-ADD cegui ./cegui
 ADD android ./android
 ADD programs ./programs
 ADD scenes ./scenes
