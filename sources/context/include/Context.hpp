@@ -53,7 +53,7 @@
 #include "DotSceneLoaderB.hpp"
 #include "GorillaOverlay.hpp"
 
-#include "CeguiCommon.hpp"
+//#include "CeguiCommon.hpp"
 #include "OgreCommon.hpp"
 #include "BulletCommon.hpp"
 #include "SDL2Common.hpp"

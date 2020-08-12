@@ -27,7 +27,7 @@ SOFTWARE.
 #include "DemoDotAppState.h"
 #include "DotSceneLoaderB.hpp"
 #include "AppStateManager.hpp"
-#include "MenuAppState.h"
+//#include "MenuAppState.h"
 #include "CameraMan.hpp"
 
 namespace Demo {
@@ -49,7 +49,7 @@ void DemoDotAppState::Reset() {
 }
 
 void DemoDotAppState::Setup() {
-  AppStateManager::GetSingleton().SetNextState(std::make_shared<MenuAppState>());
+//  AppStateManager::GetSingleton().SetNextState(std::make_shared<MenuAppState>());
   ContextManager::GetSingleton().UpdateCursorStatus({false, true, true});
 
   ContextManager::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::FPS);

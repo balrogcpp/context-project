@@ -56,5 +56,4 @@ int main(int argc, char *argv[])
 #endif
 {
   Context::Application::Main(std::make_shared<Demo::DemoDotAppState>());
-//  Context::Application::Main(std::make_shared<Demo::MenuAppState>());
 }

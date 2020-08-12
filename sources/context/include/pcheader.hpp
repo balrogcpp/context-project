@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "CeguiCommon.hpp"
+//#include "CeguiCommon.hpp"
 #include "PagedGeometryCommon.hpp"
 #include "OgreCommon.hpp"
 #include "BulletCommon.hpp"

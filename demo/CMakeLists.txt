@@ -27,13 +27,11 @@ include(cotire)
 project(ContextProjectDemo)
 
 set(HEADER_FILES_context-demo
-    include/MenuAppState.h
     include/DemoDotAppState.h
     )
 
 set(SOURCE_FILES_context-demo
     src/main.cpp
-    src/MenuAppState.cpp
     src/DemoDotAppState.cpp
     )
 include_directories(context-demo ${CMAKE_CURRENT_SOURCE_DIR}/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})

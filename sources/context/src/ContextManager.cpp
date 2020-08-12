@@ -36,7 +36,7 @@ SOFTWARE.
 #include "PagedForestManager.hpp"
 #include "SoundManager.hpp"
 #include "CompositorManager.hpp"
-#include "CeguiOverlayManager.hpp"
+//#include "CeguiOverlayManager.hpp"
 #include "PSSMShadowCameraSetupB.hpp"
 #include "CubeMapCamera.hpp"
 #include "ReflectionCamera.hpp"
@@ -198,25 +198,25 @@ void ContextManager::InitGeneralResources() {
   resource_list.push_back({media_location_directory_ + "programs", "FileSystem", default_group_name});
   resource_list.push_back({media_location_directory_ + "scenes", "FileSystem", default_group_name});
 
-#ifdef DEBUG
-  resource_list.push_back({media_location_directory_ + "cegui/animations", "FileSystem", "Animation"});
-  resource_list.push_back({media_location_directory_ + "cegui/fonts", "FileSystem", "Fonts"});
-  resource_list.push_back({media_location_directory_ + "cegui/imagesets", "FileSystem", "Imagesets"});
-  resource_list.push_back({media_location_directory_ + "cegui/layouts", "FileSystem", "Layouts"});
-  resource_list.push_back({media_location_directory_ + "cegui/looknfeel", "FileSystem", "LookNFeel"});
-  resource_list.push_back({media_location_directory_ + "cegui/lua_scripts", "FileSystem", "LuaScripts"});
-  resource_list.push_back({media_location_directory_ + "cegui/schemes", "FileSystem", "Schemes"});
-  resource_list.push_back({media_location_directory_ + "cegui/xml_schemas", "FileSystem", "XmlSchemas"});
-#else
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/animations.zip", "Zip", "Animation");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/fonts.zip", "Zip", "Fonts");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/imagesets.zip", "Zip", "Imagesets");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/layouts.zip", "Zip", "Layouts");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/looknfeel.zip", "Zip", "LookNFeel");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/lua_scripts.zip", "Zip", "LuaScripts");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/schemes.zip", "Zip", "Schemes");
-  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/xml_schemas.zip", "Zip", "XmlSchemas");
-#endif
+//#ifdef DEBUG
+//  resource_list.push_back({media_location_directory_ + "cegui/animations", "FileSystem", "Animation"});
+//  resource_list.push_back({media_location_directory_ + "cegui/fonts", "FileSystem", "Fonts"});
+//  resource_list.push_back({media_location_directory_ + "cegui/imagesets", "FileSystem", "Imagesets"});
+//  resource_list.push_back({media_location_directory_ + "cegui/layouts", "FileSystem", "Layouts"});
+//  resource_list.push_back({media_location_directory_ + "cegui/looknfeel", "FileSystem", "LookNFeel"});
+//  resource_list.push_back({media_location_directory_ + "cegui/lua_scripts", "FileSystem", "LuaScripts"});
+//  resource_list.push_back({media_location_directory_ + "cegui/schemes", "FileSystem", "Schemes"});
+//  resource_list.push_back({media_location_directory_ + "cegui/xml_schemas", "FileSystem", "XmlSchemas"});
+//#else
+//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/animations.zip", "Zip", "Animation");
+//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/fonts.zip", "Zip", "Fonts");
+//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/imagesets.zip", "Zip", "Imagesets");
+//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/layouts.zip", "Zip", "Layouts");
+//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/looknfeel.zip", "Zip", "LookNFeel");
+//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/lua_scripts.zip", "Zip", "LuaScripts");
+//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/schemes.zip", "Zip", "Schemes");
+//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/xml_schemas.zip", "Zip", "XmlSchemas");
+//#endif
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   if (rtss_cache_enable_) {
@@ -951,10 +951,10 @@ void ContextManager::SetupGlobal() {
   ReflectionCamera::GetSingleton().SetupGlobal();
 //  ReflectionCamera::GetSingleton().Setup();
 
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  CeguiOverlayManager::GetSingleton().SetupGlobal();
-  CeguiOverlayManager::GetSingleton().Setup();
-#endif
+//#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+//  CeguiOverlayManager::GetSingleton().SetupGlobal();
+//  CeguiOverlayManager::GetSingleton().Setup();
+//#endif
 
   GorillaOverlay::GetSingleton().SetupGlobal();
   GorillaOverlay::GetSingleton().Setup();
@@ -989,10 +989,10 @@ void ContextManager::ResetGlobals() {
   ReflectionCamera::GetSingleton().ResetGlobal();
   ReflectionCamera::GetSingleton().Reset();
 
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  CeguiOverlayManager::GetSingleton().ResetGlobal();
-  CeguiOverlayManager::GetSingleton().Reset();
-#endif
+//#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+//  CeguiOverlayManager::GetSingleton().ResetGlobal();
+//  CeguiOverlayManager::GetSingleton().Reset();
+//#endif
 
   GorillaOverlay::GetSingleton().ResetGlobal();
   GorillaOverlay::GetSingleton().Reset();
