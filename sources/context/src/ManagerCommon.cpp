@@ -26,7 +26,7 @@ SOFTWARE.
 #include "pcheader.hpp"
 
 #include "ManagerCommon.hpp"
-#include "InputManager.hpp"
+#include "IO.hpp"
 #include "ContextManager.hpp"
 
 namespace Context {
@@ -40,7 +40,7 @@ void ManagerCommon::SetupGlobal() {
   SetOgreRootNode(ContextManager::GetSingleton().GetOgreScenePtr()->getRootSceneNode());
 
   ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
-  InputManager::GetSingleton().RegisterListener(this);
+  io::InputManager::GetSingleton().RegisterListener(this);
 
   registered_ = true;
 }
@@ -48,7 +48,7 @@ void ManagerCommon::SetupGlobal() {
 void ManagerCommon::ResetGlobal() {
   if (registered_) {
     ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
-    InputManager::GetSingleton().UnregisterListener(this);
+    io::InputManager::GetSingleton().UnregisterListener(this);
   }
 }
 

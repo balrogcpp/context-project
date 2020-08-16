@@ -27,8 +27,7 @@ SOFTWARE.
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 
-#include "InputManager.hpp"
-#include "InputListener.hpp"
+#include "IO.hpp"
 
 namespace Context {
 class CameraMan;
@@ -36,7 +35,7 @@ class CameraMan;
 
 namespace Context {
 
-class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public Context::InputListener {
+class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener {
  public:
   AppState();
   virtual ~AppState();

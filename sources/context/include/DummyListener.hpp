@@ -24,12 +24,11 @@ SOFTWARE.
 
 #pragma once
 
-#include "InputListener.hpp"
-#include "Io.hpp"
+#include "IO.hpp"
 
 namespace Context {
 
-class DummyListener : public Context::InputListener {
+class DummyListener : public io::InputListener {
  public:
 
   DummyListener() = default;

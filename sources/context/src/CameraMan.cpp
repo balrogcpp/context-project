@@ -25,7 +25,7 @@ SOFTWARE.
 #include "pcheader.hpp"
 
 #include "ContextManager.hpp"
-#include "InputManager.hpp"
+#include "IO.hpp"
 #include "CameraMan.hpp"
 #include "DotSceneLoaderB.hpp"
 
@@ -33,7 +33,7 @@ namespace Context {
 
 //----------------------------------------------------------------------------------------------------------------------
 CameraMan::CameraMan() {
-  InputManager::GetSingleton().RegisterListener(this);
+  io::InputManager::GetSingleton().RegisterListener(this);
   ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------

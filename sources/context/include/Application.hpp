@@ -27,7 +27,6 @@ SOFTWARE.
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 
-#include "InputListener.hpp"
 #include "DummyListener.hpp"
 #include "ManagerCommon.hpp"
 

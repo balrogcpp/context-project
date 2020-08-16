@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "InputListener.hpp"
+#include "IO.hpp"
 #include "NoCopy.hpp"
 
 #include <Ogre.h>
@@ -45,7 +45,7 @@ enum class CameraStyle   // enumerator values for different styles of camera mov
   MANUAL
 };
 
-class CameraMan : public InputListener, public NoCopy, public Ogre::FrameListener {
+ class CameraMan : public io::InputListener, public NoCopy, public Ogre::FrameListener {
  public:
   CameraMan();
   explicit CameraMan(Ogre::SceneNode *ogre_camera_node);

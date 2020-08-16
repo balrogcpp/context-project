@@ -77,19 +77,16 @@ set(BTOGRE_HEADERS
 
 set(CONTEXT_HEADERS
     context/include/Application.hpp
-    context/include/InputListener.hpp
     context/include/AppState.hpp
     context/include/AppStateManager.hpp
     context/include/CameraMan.hpp
     context/include/Exception.hpp
-    context/include/Io.hpp
+    context/include/IO.hpp
     context/include/pcheader.hpp
     context/include/ContextManager.hpp
     context/include/ShaderResolver.hpp
     context/include/DummyListener.hpp
-    context/include/InputManager.hpp
     context/include/ConfigManager.hpp
-    context/include/EventMapper.hpp
     context/include/DotSceneLoaderB.hpp
     context/include/StaticForestManager.hpp
     context/include/PagedForestManager.hpp
@@ -162,13 +159,10 @@ set(CONTEXT_SOURCES
     context/src/AppState.cpp
     context/src/AppStateManager.cpp
     context/src/CameraMan.cpp
-    context/src/Io.cpp
     context/src/ContextManager.cpp
     context/src/ShaderResolver.cpp
     context/src/DummyListener.cpp
-    context/src/InputManager.cpp
     context/src/ConfigManager.cpp
-    context/src/EventMapper.cpp
     context/src/DotSceneLoaderB.cpp
     context/src/SinbadCharacterController.cpp
     context/src/PhysicsManager.cpp
@@ -177,7 +171,6 @@ set(CONTEXT_SOURCES
     context/src/DummyAppState.cpp
     context/src/SoundManager.cpp
     context/src/ManagerCommon.cpp
-    context/src/InputListener.cpp
     context/src/pcheader.cpp
     context/src/AgentCommon.cpp
     context/src/CompositorManager.cpp

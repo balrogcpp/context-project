@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include "NoCopy.hpp"
 #include "ContextManager.hpp"
-#include "InputListener.hpp"
+#include "IO.hpp"
 
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
@@ -38,7 +38,7 @@ namespace Context {
 namespace Context {
 
 class ManagerCommon
-    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputListener, public NoCopy {
+ : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener, public NoCopy {
  public:
   virtual void SetupGlobal();
   virtual void ResetGlobal();

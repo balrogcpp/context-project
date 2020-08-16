@@ -24,12 +24,11 @@ SOFTWARE.
 
 #pragma once
 
-#include "InputManager.hpp"
-#include "InputListener.hpp"
+#include "IO.hpp"
 #include <Ogre.h>
 
 namespace Context {
-class SinbadCharacterController : public InputListener, public Ogre::FrameListener {
+ class SinbadCharacterController : public io::InputListener, public Ogre::FrameListener {
  private:
   // all the animations our character has, and a null ID
   // some of these affect separate body parts and will be blended together
