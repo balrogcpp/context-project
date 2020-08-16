@@ -24,66 +24,18 @@ SOFTWARE.
 
 #pragma once
 
-extern "C" {
-#include <SDL2/SDL.h>
-}
+#include "IoListeners.h"
 
 #include <vector>
-#include <queue>
-#include <mutex>
 
 namespace io {
-
-class KeyboardListener {
- public:
-  virtual void KeyDown(SDL_Keycode sym) {}
-  virtual void KeyUp(SDL_Keycode sym) {}
-};
-//----------------------------------------------------------------------------------------------------------------------
-class MouseListener {
- public:
-  virtual void Move(int x, int y) {}
-  virtual void Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {}
-  virtual void Wheel(int x, int y) {}
-  virtual void LbDown(int x, int y) {}
-  virtual void LbUp(int x, int y) {}
-  virtual void RbDown(int x, int y) {}
-  virtual void RbUp(int x, int y) {}
-  virtual void MbDown(int x, int y) {}
-  virtual void MbUp(int x, int y) {}
-};
-//----------------------------------------------------------------------------------------------------------------------
-class JoyListener {
- public:
-  virtual void Axis(int which, int axis, int value) {}
-  virtual void BtDown(int which, int button) {}
-  virtual void BtUp(int which, int button) {}
-  virtual void Hat(int which, int hat, int value) {}
-  virtual void Ball(int which, int ball, int xrel, int yrel) {}
-};
-//----------------------------------------------------------------------------------------------------------------------
-class OtherEventListener {
- public:
-  virtual void Event(const SDL_Event &evt) {}
-  virtual void Quit() {}
-  virtual void Other(Uint8 type, int code, void *data1, void *data2) {}
-};
-//----------------------------------------------------------------------------------------------------------------------
-class InputListener :
-    public JoyListener,
-    public KeyboardListener,
-    public MouseListener,
-    public OtherEventListener {
-};
 //----------------------------------------------------------------------------------------------------------------------
 class InputSequencer {
  public:
-  InputSequencer() {
-    kb_listeners.reserve(127);
-    ms_listeners.reserve(127);
-    joy_listeners.reserve(127);
-    other_listeners.reserve(127);
-  }
+  using KeyboardListenersList = std::vector<KeyboardListener *>;
+  using MouseListenersList = std::vector<MouseListener *>;
+  using JoyListenersList = std::vector<JoyListener *>;
+  using OtherListenersList = std::vector<OtherEventListener *>;
 
   InputSequencer(const InputSequencer &) = delete;
   InputSequencer &operator=(const InputSequencer &) = delete;
@@ -95,11 +47,12 @@ class InputSequencer {
     return InputSingleton;
   }
 
- protected:
-  using KeyboardListenersList = std::vector<KeyboardListener *>;
-  using MouseListenersList = std::vector<MouseListener *>;
-  using JoyListenersList = std::vector<JoyListener *>;
-  using OtherListenersList = std::vector<OtherEventListener *>;
+  InputSequencer() {
+    kb_listeners.reserve(127);
+    ms_listeners.reserve(127);
+    joy_listeners.reserve(127);
+    other_listeners.reserve(127);
+  }
 
  protected:
   KeyboardListenersList kb_listeners;
@@ -108,13 +61,13 @@ class InputSequencer {
   OtherListenersList other_listeners;
 
  public:
-  virtual void RegKbListener(KeyboardListener *l) {
+  void RegKbListener(KeyboardListener *l) {
     if (l && find(kb_listeners.begin(), kb_listeners.end(), l) == kb_listeners.end()) {
       kb_listeners.push_back(l);
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual void UnregKbListener(KeyboardListener *l) {
+  void UnregKbListener(KeyboardListener *l) {
     if (!kb_listeners.empty()) {
       auto it = find(kb_listeners.begin(), kb_listeners.end(), l);
       if (l && it != kb_listeners.end()) {
@@ -124,13 +77,13 @@ class InputSequencer {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual void RegMsListener(MouseListener *l) {
+  void RegMsListener(MouseListener *l) {
     if (l && find(ms_listeners.begin(), ms_listeners.end(), l) == ms_listeners.end()) {
       ms_listeners.push_back(l);
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual void UnregMsListener(MouseListener *l) {
+  void UnregMsListener(MouseListener *l) {
     if (!ms_listeners.empty()) {
       auto it = find(ms_listeners.begin(), ms_listeners.end(), l);
       if (l && it != ms_listeners.end()) {
@@ -140,13 +93,13 @@ class InputSequencer {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual void RegJoyListener(JoyListener *l) {
+  void RegJoyListener(JoyListener *l) {
     if (l && find(joy_listeners.begin(), joy_listeners.end(), l) == joy_listeners.end()) {
       joy_listeners.push_back(l);
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual void UnregJoyListener(JoyListener *l) {
+  void UnregJoyListener(JoyListener *l) {
     if (!joy_listeners.empty()) {
       auto it = find(joy_listeners.begin(), joy_listeners.end(), l);
       if (l && it != joy_listeners.end()) {
@@ -156,13 +109,13 @@ class InputSequencer {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual void RegEventListener(OtherEventListener *l) {
+  void RegEventListener(OtherEventListener *l) {
     if (l && find(other_listeners.begin(), other_listeners.end(), l) == other_listeners.end()) {
       other_listeners.push_back(l);
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual void UnregEventListener(OtherEventListener *l) {
+  void UnregEventListener(OtherEventListener *l) {
     if (!other_listeners.empty()) {
       auto it = find(other_listeners.begin(), other_listeners.end(), l);
       if (l && it != other_listeners.end()) {
@@ -172,28 +125,28 @@ class InputSequencer {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual void RegisterListener(InputListener *l) {
+  void RegisterListener(InputListener *l) {
     RegKbListener(l);
     RegMsListener(l);
     RegJoyListener(l);
     RegEventListener(l);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual void UnregisterListener(InputListener *l) {
+  void UnregisterListener(InputListener *l) {
     UnregKbListener(l);
     UnregMsListener(l);
     UnregJoyListener(l);
     UnregEventListener(l);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual void Reset() {
+  void Reset() {
     kb_listeners.clear();
     ms_listeners.clear();
     joy_listeners.clear();
     other_listeners.clear();
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual void Capture() {
+  void Capture() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
 

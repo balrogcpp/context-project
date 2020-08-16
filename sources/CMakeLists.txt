@@ -94,16 +94,14 @@ set(CONTEXT_HEADERS
     context/include/PhysicsManager.hpp
     context/include/BulletCommon.hpp
     context/include/OgreCommon.hpp
-    context/include/DummyAppState.hpp
     context/include/SoundManager.hpp
     context/include/ManagerCommon.hpp
     context/include/SDL2Common.hpp
     context/include/Context.hpp
-    context/include/AgentCommon.hpp
     context/include/CompositorManager.hpp
     context/include/ContextConfigStructures.hpp
+    context/include/Singleton.hpp
     context/include/NoCopy.hpp
-    context/include/ImguiOverlay.hpp
     context/include/TerrainMaterialGeneratorB.hpp
     context/include/TerrainMaterialGeneratorC.hpp
     context/include/PropertyMaps.hpp
@@ -115,7 +113,7 @@ set(CONTEXT_HEADERS
     context/include/ParticlesManager.hpp
     context/include/Gorilla.h
     context/include/GorillaOverlay.hpp
-    )
+    context/include/IoListeners.h)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
@@ -168,13 +166,10 @@ set(CONTEXT_SOURCES
     context/src/PhysicsManager.cpp
     context/src/StaticForestManager.cpp
     context/src/PagedForestManager.cpp
-    context/src/DummyAppState.cpp
     context/src/SoundManager.cpp
     context/src/ManagerCommon.cpp
     context/src/pcheader.cpp
-    context/src/AgentCommon.cpp
     context/src/CompositorManager.cpp
-    context/src/ImguiOverlay.cpp
     context/src/TerrainMaterialGeneratorB.cpp
     context/src/TerrainMaterialGeneratorC.cpp
     context/src/PropertyMaps.cpp

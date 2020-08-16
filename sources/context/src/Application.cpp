@@ -64,7 +64,6 @@ void Application::Update(float timeSinceLastFrame) {
 void Application::Setup() {
   ContextManager::GetSingleton().SetupGlobal();
   ContextManager::GetSingleton().Setup();
-  ConfigManager::GetSingleton().SetupGlobal();
   AppStateManager::GetSingleton().cur_state_->SetupGlobals();
 
   ConfigManager::Assign(global_verbose_fps_, "global_verbose_fps");
@@ -99,8 +98,7 @@ void Application::WaitFPS() {
   long delay = static_cast<long> ((1000000 / global_target_fps_) - time_since_last_frame_);
 
   if (delay > 0) {
-    std::this_thread::sleep_for
-    (std::chrono::microseconds(delay));
+    std::this_thread::sleep_for(std::chrono::microseconds(delay));
   }
 }
 //----------------------------------------------------------------------------------------------------------------------

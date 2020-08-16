@@ -40,11 +40,7 @@ class DemoDotAppState : public Context::AppState {
 
  public:
     void Setup() final;
-
     void Reset() final;
-
-    void Next() final {};
-
     void KeyDown(SDL_Keycode sym) final;
 
  private:

@@ -25,7 +25,7 @@
 #pragma once
 
 #include "IO.hpp"
-#include "NoCopy.hpp"
+#include "Singleton.hpp"
 #include "Application.hpp"
 #include "AppState.hpp"
 #include "AppStateManager.hpp"
@@ -43,10 +43,8 @@
 #include "SinbadCharacterController.hpp"
 #include "PhysicsManager.hpp"
 #include "CeguiOverlayManager.hpp"
-#include "DummyAppState.hpp"
 #include "SoundManager.hpp"
 #include "ManagerCommon.hpp"
-#include "AgentCommon.hpp"
 #include "DotSceneLoaderB.hpp"
 #include "GorillaOverlay.hpp"
 

@@ -1014,6 +1014,5 @@ bool ContextManager::IsPhysicsEnable() const {
 }
 bool ContextManager::IsSoundEnable() const {
   return sound_enable_;
-}
-
+} //class ContextManager
 } //namespace Context

@@ -30,7 +30,9 @@ SOFTWARE.
 #include <string>
 
 #include "ContextConfigStructures.hpp"
-#include "NoCopy.hpp"
+#include "Singleton.hpp"
+
+#include "SDL2Common.hpp"
 
 namespace Context {
 class CameraMan;
@@ -50,7 +52,7 @@ class Texture;
 
 namespace Context {
 
-class ContextManager : public Ogre::LogListener, public NoCopy {
+class ContextManager : public Ogre::LogListener, public Singleton {
  private:
   void SetupConfigManager();
   void SetupPath();

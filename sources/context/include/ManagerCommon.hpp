@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "NoCopy.hpp"
+#include "Singleton.hpp"
 #include "ContextManager.hpp"
 #include "IO.hpp"
 
@@ -38,7 +38,7 @@ namespace Context {
 namespace Context {
 
 class ManagerCommon
- : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener, public NoCopy {
+ : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener, public Singleton {
  public:
   virtual void SetupGlobal();
   virtual void ResetGlobal();

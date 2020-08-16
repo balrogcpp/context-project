@@ -40,29 +40,21 @@ class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, 
   AppState();
   virtual ~AppState();
 
-  virtual void SetupGlobals();
-  virtual void ResetGlobals();
+  void SetupGlobals();
+  void ResetGlobals();
+
   virtual void Setup() = 0;
   virtual void Reset() = 0;
-  virtual void Next() = 0;
 
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {};
-
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {};
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) override { return true; };
 
-  void SetOgreRoot(Ogre::Root *ogre_root);
-  void SetOgreScene(Ogre::SceneManager *ogre_scene);
-  void SetCameraMan(const std::shared_ptr<CameraMan> &camera_man);
-  void SetOgreCamera(Ogre::Camera *ogre_camera);
-  void SetOgreViewport(Ogre::Viewport *ogre_viewport);
-
- public:
   Ogre::Root *ogre_root = nullptr;
   Ogre::SceneManager *ogre_scene_manager_ = nullptr;
   std::shared_ptr<CameraMan> camera_man_;
   Ogre::Camera *ogre_camera_ = nullptr;
   Ogre::Viewport *ogre_viewport_ = nullptr;
   bool registered_ = false;
-};
-
-}
+}; //class AppState
+} //namespace Context

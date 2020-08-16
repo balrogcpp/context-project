@@ -22,38 +22,56 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.hpp"
+#pragma once
 
-#include "AppState.hpp"
-#include "ContextManager.hpp"
+extern "C" {
+#include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_events.h>
+}
 
-namespace Context {
+#include <cstdint>
 
+namespace io {
 //----------------------------------------------------------------------------------------------------------------------
-AppState::AppState() {
-}
+class KeyboardListener {
+ public:
+  virtual void KeyDown(SDL_Keycode sym) {}
+  virtual void KeyUp(SDL_Keycode sym) {}
+};
 //----------------------------------------------------------------------------------------------------------------------
-AppState::~AppState() {
-  if (registered_) {
-    ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
-  }
-}
+class MouseListener {
+ public:
+  virtual void Move(int32_t x, int32_t y) {}
+  virtual void Move(int32_t x, int32_t y, int32_t dx, int32_t dy, bool left, bool right, bool middle) {}
+  virtual void Wheel(int32_t x, int32_t y) {}
+  virtual void LbDown(int32_t x, int32_t y) {}
+  virtual void LbUp(int32_t x, int32_t y) {}
+  virtual void RbDown(int32_t x, int32_t y) {}
+  virtual void RbUp(int32_t x, int32_t y) {}
+  virtual void MbDown(int32_t x, int32_t y) {}
+  virtual void MbUp(int32_t x, int32_t y) {}
+};
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::SetupGlobals() {
-  ogre_root = ContextManager::GetSingleton().GetOgreRootPtr();
-  ogre_scene_manager_ = ContextManager::GetSingleton().GetOgreScenePtr();
-  ogre_viewport_ = ContextManager::GetSingleton().GetOgreViewport();
-  ogre_camera_ = ContextManager::GetSingleton().GetOgreCamera();
-  camera_man_ = ContextManager::GetSingleton().GetCameraMan();
-  io::InputSequencer::GetSingleton().RegisterListener(this);
-  ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
-  registered_ = true;
-}
+class JoyListener {
+ public:
+  virtual void Axis(int32_t which, int32_t axis, int32_t value) {}
+  virtual void BtDown(int32_t which, int32_t button) {}
+  virtual void BtUp(int32_t which, int32_t button) {}
+  virtual void Hat(int32_t which, int32_t hat, int32_t value) {}
+  virtual void Ball(int32_t which, int32_t ball, int32_t xrel, int32_t yrel) {}
+};
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::ResetGlobals() {
-  if (registered_) {
-    ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
-    io::InputSequencer::GetSingleton().UnregisterListener(this);
-  }
-}
-} //namespace Context
+class OtherEventListener {
+ public:
+  virtual void Event(const SDL_Event &evt) {}
+  virtual void Quit() {}
+  virtual void Other(Uint8 type, int32_t code, void *data1, void *data2) {}
+};
+//----------------------------------------------------------------------------------------------------------------------
+class InputListener :
+    public JoyListener,
+    public KeyboardListener,
+    public MouseListener,
+    public OtherEventListener {
+};
+} //namespace io
