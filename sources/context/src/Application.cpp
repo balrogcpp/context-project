@@ -91,7 +91,7 @@ void Application::Reset() {
   ContextManager::GetSingleton().ResetGlobals();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::quit() {
+void Application::Quit() {
   quit_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -124,7 +124,7 @@ void Application::Loop() {
       if (delta_time_ > 500000)
         started_ = true;
 
-      InputManager::GetSingleton().capture();
+      InputManager::GetSingleton().Capture();
 
       if (!paused_) {
         AppStateManager::GetSingleton().CleanupResources();
@@ -157,7 +157,7 @@ void Application::Loop() {
 
       fps_frames_++;
     } else {
-      quit();
+      Quit();
     }
   }
 }
@@ -247,10 +247,10 @@ bool Application::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::key_down(SDL_Keycode sym) {
+void Application::KeyDown(SDL_Keycode sym) {
   if (application_fkeys_enable_) {
     if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F12) {
-      quit();
+      Quit();
     } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F11) {
       ContextManager::GetSingleton().GetOgreCamera()->setPolygonMode(Ogre::PM_WIREFRAME);
     } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F10) {
@@ -263,7 +263,7 @@ void Application::key_down(SDL_Keycode sym) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::key_up(SDL_Keycode sym) {
+void Application::KeyUp(SDL_Keycode sym) {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -271,7 +271,7 @@ void mouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle)
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::event(const SDL_Event &evt) {
+void Application::Event(const SDL_Event &evt) {
   if (!started_)
     return;
 
@@ -304,7 +304,7 @@ void Application::event(const SDL_Event &evt) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::user(Uint8 type, int code, void *data1, void *data2) {
+void Application::Other(Uint8 type, int code, void *data1, void *data2) {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------

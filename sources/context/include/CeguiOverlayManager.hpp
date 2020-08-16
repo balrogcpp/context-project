@@ -38,7 +38,7 @@ class CeguiOverlayManager : public ManagerCommon {
   bool active_ = false;
 
  public:
-  [[nodiscard]] CEGUI::Window *GetCeguiWindow() const {
+  CEGUI::Window *GetCeguiWindow() const {
     return cegui_window_;
   }
 

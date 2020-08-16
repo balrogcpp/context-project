@@ -31,7 +31,7 @@ SOFTWARE.
 namespace Context {
 
 PhysicsManager PhysicsManager::BulletPhysicsManagerSingleton;
-[[nodiscard]] const std::shared_ptr<btDynamicsWorld> &PhysicsManager::GetPhyWorld() const {
+const std::shared_ptr<btDynamicsWorld> &PhysicsManager::GetPhyWorld() const {
   return phy_world_;
 }
 //----------------------------------------------------------------------------------------------------------------------

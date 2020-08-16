@@ -28,7 +28,7 @@ SOFTWARE.
 
 namespace Context {
 
-class CubeMapCamera : public ManagerCommon {
+class CubeMapCamera final : public ManagerCommon {
  private:
   static CubeMapCamera CubeMapCameraSingleton;
 
@@ -51,7 +51,7 @@ class CubeMapCamera : public ManagerCommon {
   Ogre::SceneNode *ogre_cube_camera_node_ = nullptr;
   std::shared_ptr<Ogre::Texture> dyncubemap;
  public:
-  [[nodiscard]] const std::shared_ptr<Ogre::Texture> &GetDyncubemap() const {
+  std::shared_ptr<Ogre::Texture> GetDyncubemap() const {
     return dyncubemap;
   }
  private:

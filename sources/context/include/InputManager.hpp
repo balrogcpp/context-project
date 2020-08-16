@@ -30,10 +30,9 @@ namespace Context {
 
 class InputManager : public Context::InputSequencer {
  public:
-
   static InputManager *GetSingletonPtr();
   static InputManager &GetSingleton();
-  void capture() final;
+  void Capture() final;
   void Reset();
   void StopCapture();
   void StartCapture();

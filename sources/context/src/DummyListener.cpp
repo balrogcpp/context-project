@@ -35,7 +35,7 @@ extern "C" {
 namespace Context {
 
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::key_down(SDL_Keycode sym) {
+void DummyListener::KeyDown(SDL_Keycode sym) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -45,7 +45,7 @@ void DummyListener::key_down(SDL_Keycode sym) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::key_up(SDL_Keycode sym) {
+void DummyListener::KeyUp(SDL_Keycode sym) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -54,7 +54,7 @@ void DummyListener::key_up(SDL_Keycode sym) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
+void DummyListener::Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -76,7 +76,7 @@ void DummyListener::move(int x, int y, int dx, int dy, bool left, bool right, bo
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::wheel(int x, int y) {
+void DummyListener::Wheel(int x, int y) {
   if (print_) {
     std::cout << __func__;
     std::cout << "Up" << " ";
@@ -86,7 +86,7 @@ void DummyListener::wheel(int x, int y) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::lb_down(int x, int y) {
+void DummyListener::LbDown(int x, int y) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -98,7 +98,7 @@ void DummyListener::lb_down(int x, int y) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::lb_up(int x, int y) {
+void DummyListener::LbUp(int x, int y) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -110,7 +110,7 @@ void DummyListener::lb_up(int x, int y) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::rb_down(int x, int y) {
+void DummyListener::RbDown(int x, int y) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -122,7 +122,7 @@ void DummyListener::rb_down(int x, int y) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::rb_up(int x, int y) {
+void DummyListener::RbUp(int x, int y) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -134,7 +134,7 @@ void DummyListener::rb_up(int x, int y) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::mb_down(int x, int y) {
+void DummyListener::MbDown(int x, int y) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -146,7 +146,7 @@ void DummyListener::mb_down(int x, int y) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::mb_up(int x, int y) {
+void DummyListener::MbUp(int x, int y) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -158,7 +158,7 @@ void DummyListener::mb_up(int x, int y) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::axis(int which, int axis, int value) {
+void DummyListener::Axis(int which, int axis, int value) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -172,7 +172,7 @@ void DummyListener::axis(int which, int axis, int value) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::bt_down(int which, int button) {
+void DummyListener::BtDown(int which, int button) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -184,7 +184,7 @@ void DummyListener::bt_down(int which, int button) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::bt_up(int which, int button) {
+void DummyListener::BtUp(int which, int button) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -196,7 +196,7 @@ void DummyListener::bt_up(int which, int button) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::hat(int which, int hat, int value) {
+void DummyListener::Hat(int which, int hat, int value) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -210,7 +210,7 @@ void DummyListener::hat(int which, int hat, int value) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::ball(int which, int ball, int xrel, int yrel) {
+void DummyListener::Ball(int which, int ball, int xrel, int yrel) {
   if (print_) {
     std::cout << __func__;
     std::cout << " ";
@@ -224,15 +224,15 @@ void DummyListener::ball(int which, int ball, int xrel, int yrel) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::event(const SDL_Event &evt) {
+void DummyListener::Event(const SDL_Event &evt) {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::quit() {
+void DummyListener::Quit() {
   //
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DummyListener::user(Uint8 type, int code, void *data1, void *data2) {
+void DummyListener::Other(Uint8 type, int code, void *data1, void *data2) {
   //
 }
 

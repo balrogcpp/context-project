@@ -74,8 +74,7 @@ void CubeMapCamera::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::FreeCamera() {
-  if (ogre_cube_camera_node_)
-  {
+  if (ogre_cube_camera_node_) {
     ogre_cube_camera_node_->detachAllObjects();
   }
 }

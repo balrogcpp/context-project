@@ -43,7 +43,6 @@ void InputManager::Reset() {
   kb_listeners.clear();
   ms_listeners.clear();
   joy_listeners.clear();
-  cont_listeners.clear();
   other_listeners.clear();
   waiting_for_reg_.clear();
 
@@ -51,7 +50,7 @@ void InputManager::Reset() {
   waiting_reg_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void InputManager::capture() {
+void InputManager::Capture() {
   if (waiting_garbage_) {
     for (auto it : waiting_for_unreg_) {
       UnregisterListener(it);
@@ -77,7 +76,7 @@ void InputManager::capture() {
   lock_reg_ = true;
 
   if (capture_enable_) {
-    InputSequencer::capture();
+    InputSequencer::Capture();
   }
 
   lock_reg_ = false;
@@ -93,10 +92,10 @@ void InputManager::StartCapture() {
 //----------------------------------------------------------------------------------------------------------------------
 void InputManager::RegisterListener(InputListener *l) {
   if (!lock_reg_) {
-    reg_kb_listener(l);
-    reg_ms_listener(l);
-    reg_joy_listener(l);
-    reg_event_listener(l);
+    RegKbListener(l);
+    RegMsListener(l);
+    RegJoyListener(l);
+    RegEventListener(l);
     capture_enable_ = true;
   } else {
     capture_enable_ = false;
@@ -108,10 +107,10 @@ void InputManager::RegisterListener(InputListener *l) {
 //----------------------------------------------------------------------------------------------------------------------
 void InputManager::UnregisterListener(InputListener *l) {
   if (!lock_reg_) {
-    unreg_kb_listener(l);
-    unreg_ms_listener(l);
-    unreg_joy_listener(l);
-    unreg_event_listener(l);
+    UnregKbListener(l);
+    UnregMsListener(l);
+    UnregJoyListener(l);
+    UnregEventListener(l);
     capture_enable_ = true;
   } else {
     capture_enable_ = false;

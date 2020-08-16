@@ -64,10 +64,10 @@ class ReflectionCamera : public ManagerCommon {
   Ogre::SceneNode *ogre_reflection_camera_node_ = nullptr;
 
  public:
-  [[nodiscard]] const std::shared_ptr<Ogre::Texture> &GetReflectionTex() const {
+  const std::shared_ptr<Ogre::Texture> &GetReflectionTex() const {
     return reflection_;
   }
-  [[nodiscard]] const std::shared_ptr<Ogre::Texture> &GetRefractionTex() const {
+  const std::shared_ptr<Ogre::Texture> &GetRefractionTex() const {
     return refraction_;
   }
 };

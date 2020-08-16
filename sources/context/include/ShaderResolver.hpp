@@ -50,7 +50,7 @@ class ShaderResolver : public Ogre::MaterialManager::Listener {
   static std::vector<std::string> material_list_;
 
  public:
-  [[nodiscard]] Ogre::RTShader::ShaderGenerator *GetMShaderGenerator() const {
+  Ogre::RTShader::ShaderGenerator *GetMShaderGenerator() const {
     return shader_generator_;
   }
   // The shader generator instance.

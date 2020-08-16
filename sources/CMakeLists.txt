@@ -94,7 +94,6 @@ set(CONTEXT_HEADERS
     context/include/StaticForestManager.hpp
     context/include/PagedForestManager.hpp
     context/include/SinbadCharacterController.hpp
-    context/include/constants.hpp
     context/include/PhysicsManager.hpp
     context/include/BulletCommon.hpp
     context/include/OgreCommon.hpp
@@ -103,7 +102,6 @@ set(CONTEXT_HEADERS
     context/include/ManagerCommon.hpp
     context/include/SDL2Common.hpp
     context/include/Context.hpp
-    context/include/EntityCommon.hpp
     context/include/AgentCommon.hpp
     context/include/CompositorManager.hpp
     context/include/ContextConfigStructures.hpp
@@ -164,7 +162,6 @@ set(CONTEXT_SOURCES
     context/src/AppState.cpp
     context/src/AppStateManager.cpp
     context/src/CameraMan.cpp
-    context/src/Exception.cpp
     context/src/Io.cpp
     context/src/ContextManager.cpp
     context/src/ShaderResolver.cpp
@@ -182,7 +179,6 @@ set(CONTEXT_SOURCES
     context/src/ManagerCommon.cpp
     context/src/InputListener.cpp
     context/src/pcheader.cpp
-    context/src/EntityCommon.cpp
     context/src/AgentCommon.cpp
     context/src/CompositorManager.cpp
     context/src/ImguiOverlay.cpp

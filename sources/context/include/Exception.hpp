@@ -29,41 +29,27 @@ SOFTWARE.
 
 namespace Context {
 
-/**
- * @brief
- */
-enum class ExceptionType {
-  Common,
-  NoFile,
-  NotImplemented,
-  TableMiss,
-  Other
-};
-
-class Exception : public std::exception {
+class Exception final : public std::exception {
  public:
   Exception() = default;
 
-  explicit Exception(const std::string &description);
-
-  explicit Exception(const std::string &description, ExceptionType type);
+  explicit Exception(const std::string &description)
+      : description(description) {};
 
   ~Exception() noexcept override = default;
 
  public:
+  std::string getDescription() const noexcept {
+    return description;
+  }
 
-  static void throwException(const std::string &msg, ExceptionType type = ExceptionType::Common);
-
-  [[nodiscard]] std::string getDescription() const noexcept;
-
-  [[nodiscard]] const char *what() const noexcept override;
+  const char *what() const noexcept override {
+    return description.c_str();
+  }
 
  protected:
   std::string description = std::string("Description not specified");
 
   size_t code = 0;
-
-  ExceptionType type = ExceptionType::Common;
 };
-
 } //namespace Context

@@ -35,220 +35,118 @@ using namespace std;
 namespace Context {
 
 //----------------------------------------------------------------------------------------------------------------------
-void KeyboardListener::key_down(SDL_Keycode sym) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void KeyboardListener::key_up(SDL_Keycode sym) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void MouseListener::move(int x, int y) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void MouseListener::move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
-
-}
-//----------------------------------------------------------------------------------------------------------------------
-void MouseListener::wheel(int x, int y) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void MouseListener::lb_down(int x, int y) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void MouseListener::lb_up(int x, int y) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void MouseListener::rb_down(int x, int y) {
-  //
-}
-
-void MouseListener::rb_up(int x, int y) {
-
-}
-//----------------------------------------------------------------------------------------------------------------------
-void MouseListener::mb_down(int x, int y) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void MouseListener::mb_up(int x, int y) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void JoyListener::axis(int which, int axis, int value) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void JoyListener::bt_down(int which, int button) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void JoyListener::bt_up(int which, int button) {
-
-}
-//----------------------------------------------------------------------------------------------------------------------
-void JoyListener::hat(int which, int hat, int value) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void JoyListener::ball(int which, int ball, int xrel, int yrel) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ControllerListener::axis(int which, int axis, int value) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ControllerListener::bt_down(int which, int button) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ControllerListener::bt_up(int which, int button) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ControllerListener::hat(int which, int hat, int value) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ControllerListener::ball(int which, int ball, int xrel, int yrel) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void OtherEventListener::event(const SDL_Event &evt) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void OtherEventListener::quit() {
-  //
-}
-
-void OtherEventListener::user(Uint8 type, int code, void *data1, void *data2) {
-
-}
-//----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::reg_kb_listener(KeyboardListener *l) {
+void InputSequencer::RegKbListener(KeyboardListener *l) {
   if (l && find(kb_listeners.begin(), kb_listeners.end(), l) == kb_listeners.end()) {
-    kb_listeners.insert(l);
+    kb_listeners.push_back(l);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::unreg_kb_listener(KeyboardListener *l) {
+void InputSequencer::UnregKbListener(KeyboardListener *l) {
   if (!kb_listeners.empty()) {
-    if (l && find(kb_listeners.begin(), kb_listeners.end(), l) != kb_listeners.end()) {
-      kb_listeners.erase(l);
+    KeyboardListenersList::iterator it = find(kb_listeners.begin(), kb_listeners.end(), l);
+    if (l && it != kb_listeners.end()) {
+      std::iter_swap(it, std::prev(kb_listeners.end()));
+      kb_listeners.pop_back();
     }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::reg_ms_listener(MouseListener *l) {
+void InputSequencer::RegMsListener(MouseListener *l) {
   if (l && find(ms_listeners.begin(), ms_listeners.end(), l) == ms_listeners.end()) {
-    ms_listeners.insert(l);
+    ms_listeners.push_back(l);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::unreg_ms_listener(MouseListener *l) {
+void InputSequencer::UnregMsListener(MouseListener *l) {
   if (!ms_listeners.empty()) {
-    if (l && find(ms_listeners.begin(), ms_listeners.end(), l) != ms_listeners.end()) {
-      ms_listeners.erase(l);
+    MouseListenersList::iterator it = find(ms_listeners.begin(), ms_listeners.end(), l);
+    if (l && it != ms_listeners.end()) {
+      std::iter_swap(it, std::prev(ms_listeners.end()));
+      ms_listeners.pop_back();
     }
   }
 }
-
-void InputSequencer::reg_joy_listener(JoyListener *l) {
+//----------------------------------------------------------------------------------------------------------------------
+void InputSequencer::RegJoyListener(JoyListener *l) {
   if (l && find(joy_listeners.begin(), joy_listeners.end(), l) == joy_listeners.end()) {
-    joy_listeners.insert(l);
+    joy_listeners.push_back(l);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::unreg_joy_listener(JoyListener *l) {
+void InputSequencer::UnregJoyListener(JoyListener *l) {
   if (!joy_listeners.empty()) {
-    if (l && find(joy_listeners.begin(), joy_listeners.end(), l) != joy_listeners.end()) {
-      joy_listeners.erase(l);
+    JoyListenersList ::iterator it = find(joy_listeners.begin(), joy_listeners.end(), l);
+    if (l && it != joy_listeners.end()) {
+      std::iter_swap(it, std::prev(joy_listeners.end()));
+      joy_listeners.pop_back();
     }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::reg_con_listener(ControllerListener *l) {
-  if (l && find(cont_listeners.begin(), cont_listeners.end(), l) == cont_listeners.end()) {
-    cont_listeners.insert(l);
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::unreg_con_listener(ControllerListener *l) {
-  if (!cont_listeners.empty()) {
-    if (l && find(cont_listeners.begin(), cont_listeners.end(), l) != cont_listeners.end()) {
-      cont_listeners.erase(l);
-    }
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::reg_event_listener(OtherEventListener *l) {
+void InputSequencer::RegEventListener(OtherEventListener *l) {
   if (l && find(other_listeners.begin(), other_listeners.end(), l) == other_listeners.end()) {
-    other_listeners.insert(l);
+    other_listeners.push_back(l);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::unreg_event_listener(OtherEventListener *l) {
+void InputSequencer::UnregEventListener(OtherEventListener *l) {
   if (!other_listeners.empty()) {
-    if (l && find(other_listeners.begin(), other_listeners.end(), l) != other_listeners.end()) {
-      other_listeners.erase(l);
+    OtherListenersList::iterator it = find(other_listeners.begin(), other_listeners.end(), l);
+    if (l && it != other_listeners.end()) {
+      std::iter_swap(it, std::prev(other_listeners.end()));
+      other_listeners.pop_back();
     }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::capture() {
-  SDL_Event Event;
-  while (SDL_PollEvent(&Event)) {
+void InputSequencer::Capture() {
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
 
-    switch (Event.type) {
+    switch (event.type) {
       case SDL_KEYUP: {
         for (auto it : kb_listeners) {
-          it->key_up(Event.key.keysym.sym);
+          it->KeyUp(event.key.keysym.sym);
         }
         break;
       }
 
       case SDL_KEYDOWN: {
         for (auto it : kb_listeners) {
-          it->key_down(Event.key.keysym.sym);
+          it->KeyDown(event.key.keysym.sym);
         }
         break;
       }
 
       case SDL_MOUSEMOTION: {
         for (auto it : ms_listeners) {
-          it->move(Event.motion.x, Event.motion.y,
-                   Event.motion.xrel, Event.motion.yrel,
-                   (Event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0,
-                   (Event.motion.state & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0,
-                   (Event.motion.state & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
+          it->Move(event.motion.x, event.motion.y,
+                   event.motion.xrel, event.motion.yrel,
+                   (event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0,
+                   (event.motion.state & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0,
+                   (event.motion.state & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
         }
         break;
       }
 
       case SDL_MOUSEBUTTONDOWN: {
-        switch (Event.button.button) {
+        switch (event.button.button) {
           case SDL_BUTTON_LEFT: {
             for (auto it : ms_listeners) {
-              it->lb_down(Event.button.x, Event.button.y);
+              it->LbDown(event.button.x, event.button.y);
             }
             break;
           }
           case SDL_BUTTON_RIGHT: {
             for (auto it : ms_listeners) {
-              it->rb_down(Event.button.x, Event.button.y);
+              it->RbDown(event.button.x, event.button.y);
             }
 
             break;
           }
           case SDL_BUTTON_MIDDLE: {
             for (auto it : ms_listeners) {
-              it->mb_down(Event.button.x, Event.button.y);
+              it->MbDown(event.button.x, event.button.y);
             }
             break;
           }
@@ -257,22 +155,22 @@ void InputSequencer::capture() {
       }
 
       case SDL_MOUSEBUTTONUP: {
-        switch (Event.button.button) {
+        switch (event.button.button) {
           case SDL_BUTTON_LEFT: {
             for (auto it : ms_listeners) {
-              it->lb_up(Event.button.x, Event.button.y);
+              it->LbUp(event.button.x, event.button.y);
             }
             break;
           }
           case SDL_BUTTON_RIGHT: {
             for (auto it : ms_listeners) {
-              it->rb_up(Event.button.x, Event.button.y);
+              it->RbUp(event.button.x, event.button.y);
             }
             break;
           }
           case SDL_BUTTON_MIDDLE: {
             for (auto it : ms_listeners) {
-              it->mb_up(Event.button.x, Event.button.y);
+              it->MbUp(event.button.x, event.button.y);
             }
             break;
           }
@@ -282,7 +180,7 @@ void InputSequencer::capture() {
 
       case SDL_MOUSEWHEEL: {
         for (auto it : ms_listeners) {
-          it->wheel(Event.wheel.x, Event.wheel.y);
+          it->Wheel(event.wheel.x, event.wheel.y);
         }
 
         break;
@@ -290,7 +188,7 @@ void InputSequencer::capture() {
 
       case SDL_JOYAXISMOTION: {
         for (auto it : joy_listeners) {
-          it->axis(Event.jaxis.which, Event.jaxis.axis, Event.jaxis.value);
+          it->Axis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
         }
 
         break;
@@ -298,20 +196,20 @@ void InputSequencer::capture() {
 
       case SDL_JOYBALLMOTION: {
         for (auto it : joy_listeners) {
-          it->ball(Event.jball.which, Event.jball.ball, Event.jball.xrel, Event.jball.yrel);
+          it->Ball(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
         }
         break;
       }
 
       case SDL_JOYHATMOTION: {
         for (auto it : joy_listeners) {
-          it->hat(Event.jhat.which, Event.jhat.hat, Event.jhat.value);
+          it->Hat(event.jhat.which, event.jhat.hat, event.jhat.value);
         }
         break;
       }
       case SDL_JOYBUTTONDOWN: {
         for (auto it : joy_listeners) {
-          it->bt_down(Event.jbutton.which, Event.jbutton.button);
+          it->BtDown(event.jbutton.which, event.jbutton.button);
         }
         break;
       }
@@ -319,8 +217,8 @@ void InputSequencer::capture() {
       case SDL_JOYBUTTONUP: {
         for (auto it : joy_listeners) {
           if (it) {
-            it->bt_up(Event.jbutton.which,
-                      Event.jbutton.button);
+            it->BtUp(event.jbutton.which,
+                     event.jbutton.button);
           }
         }
         break;
@@ -328,14 +226,14 @@ void InputSequencer::capture() {
 
       case SDL_QUIT: {
         for (auto it : other_listeners) {
-          it->quit();
+          it->Quit();
         }
         break;
       }
 
       default: {
         for (auto it : other_listeners) {
-          it->event(Event);
+          it->Event(event);
         }
       }
     }

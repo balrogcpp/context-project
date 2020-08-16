@@ -67,7 +67,7 @@ bool SinbadCharacterController::frameRenderingQueued(const Ogre::FrameEvent &evt
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::key_down(SDL_Keycode key) {
+void SinbadCharacterController::KeyDown(SDL_Keycode key) {
   SDL_Scancode code = SDL_GetScancodeFromKey(key);
 //        Keycode key = evt.keysym.sym;
   if (code == SDL_SCANCODE_Q && (top_anim_ == ANIM_IDLE_TOP || top_anim_ == ANIM_RUN_TOP)) {
@@ -110,7 +110,7 @@ void SinbadCharacterController::key_down(SDL_Keycode key) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::key_up(SDL_Keycode key) {
+void SinbadCharacterController::KeyUp(SDL_Keycode key) {
   SDL_Scancode code = SDL_GetScancodeFromKey(key);
   // keep track of the player's intended direction
   if (code == SDL_SCANCODE_W && key_direction_.z == -1) key_direction_.z = 0;
@@ -125,17 +125,17 @@ void SinbadCharacterController::key_up(SDL_Keycode key) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
+void SinbadCharacterController::Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   // Update camera goal based on mouse movement
   UpdateCameraGoal(-0.05f * dx, -0.05f * dy, 0);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::wheel(int x, int y) {
+void SinbadCharacterController::Wheel(int x, int y) {
 //        // Update camera goal based on mouse movement
   UpdateCameraGoal(0, 0, -0.05f * y);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::lb_down(int x, int y) {
+void SinbadCharacterController::LbDown(int x, int y) {
   if (sword_drawn_ && (top_anim_ == ANIM_IDLE_TOP || top_anim_ == ANIM_RUN_TOP)) {
     // if swords are out, and character's not doing something weird, then SLICE!
     SetTopAnimation(ANIM_SLICE_VERTICAL, true);
@@ -143,7 +143,7 @@ void SinbadCharacterController::lb_down(int x, int y) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::rb_down(int x, int y) {
+void SinbadCharacterController::RbDown(int x, int y) {
   if (sword_drawn_ && (top_anim_ == ANIM_IDLE_TOP || top_anim_ == ANIM_RUN_TOP)) {
     // if swords are out, and character's not doing something weird, then SLICE!
     SetTopAnimation(ANIM_SLICE_HORIZONTAL, true);

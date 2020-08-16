@@ -44,7 +44,7 @@ class ConfigManager : public ManagerCommon {
  public:
   std::string GetConfigFileName() const;
   void SetConfigFileName(const std::string &config_file_name);
-  [[nodiscard]] const rapidjson::Document &GetDocument() const;
+  const rapidjson::Document &GetDocument() const;
 
   bool HasMember(const std::string &parameter);
 

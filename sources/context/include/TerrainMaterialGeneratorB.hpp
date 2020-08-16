@@ -84,30 +84,30 @@ class TerrainMaterialGeneratorB : public TerrainMaterialGenerator {
     void updateParams(const MaterialPtr &mat, const Terrain *terrain) override;
     void updateParamsForCompositeMap(const MaterialPtr &mat, const Terrain *terrain) override;
     void requestOptions(Terrain *terrain) override;
-    [[nodiscard]] bool isVertexCompressionSupported() const override;
+    bool isVertexCompressionSupported() const override;
 
 /** Whether to support normal mapping per layer in the shader (default true).
 */
-    [[nodiscard]] bool isLayerNormalMappingEnabled() const { return mLayerNormalMappingEnabled; }
+    bool isLayerNormalMappingEnabled() const { return mLayerNormalMappingEnabled; }
 /** Whether to support normal mapping per layer in the shader (default true).
 */
     void setLayerNormalMappingEnabled(bool enabled);
 /** Whether to support parallax mapping per layer in the shader (default true).
 */
-    [[nodiscard]] bool isLayerParallaxMappingEnabled() const { return mLayerParallaxMappingEnabled; }
+    bool isLayerParallaxMappingEnabled() const { return mLayerParallaxMappingEnabled; }
 /** Whether to support parallax mapping per layer in the shader (default true).
 */
     void setLayerParallaxMappingEnabled(bool enabled);
 /** Whether to support specular mapping per layer in the shader (default true).
 */
-    [[nodiscard]] bool isLayerSpecularMappingEnabled() const { return mLayerSpecularMappingEnabled; }
+    bool isLayerSpecularMappingEnabled() const { return mLayerSpecularMappingEnabled; }
 /** Whether to support specular mapping per layer in the shader (default true).
 */
     void setLayerSpecularMappingEnabled(bool enabled);
 /** Whether to support a global colour map over the terrain in the shader,
     if it's present (default true).
 */
-    [[nodiscard]] bool isGlobalColourMapEnabled() const { return mGlobalColourMapEnabled; }
+    bool isGlobalColourMapEnabled() const { return mGlobalColourMapEnabled; }
 /** Whether to support a global colour map over the terrain in the shader,
 if it's present (default true).
 */
@@ -115,7 +115,7 @@ if it's present (default true).
 /** Whether to support a light map over the terrain in the shader,
 if it's present (default true).
 */
-    [[nodiscard]] bool isLightmapEnabled() const { return mLightmapEnabled; }
+    bool isLightmapEnabled() const { return mLightmapEnabled; }
 /** Whether to support a light map over the terrain in the shader,
 if it's present (default true).
 */
@@ -123,7 +123,7 @@ if it's present (default true).
 /** Whether to use the composite map to provide a lower LOD technique
     in the distance (default true).
 */
-    [[nodiscard]] bool isCompositeMapEnabled() const { return mCompositeMapEnabled; }
+    bool isCompositeMapEnabled() const { return mCompositeMapEnabled; }
 /** Whether to use the composite map to provide a lower LOD technique
 in the distance (default true).
 */
@@ -131,7 +131,7 @@ in the distance (default true).
 /** Whether to support dynamic texture shadows received from other
     objects, on the terrain (default true).
 */
-    [[nodiscard]] bool getReceiveDynamicShadowsEnabled() const { return mReceiveDynamicShadows; }
+    bool getReceiveDynamicShadowsEnabled() const { return mReceiveDynamicShadows; }
 /** Whether to support dynamic texture shadows received from other
 objects, on the terrain (default true).
 */
@@ -144,19 +144,19 @@ objects, on the terrain (default true).
 /** Whether to use PSSM support dynamic texture shadows, and if so the
 settings to use (default 0).
 */
-    [[nodiscard]] PSSMShadowCameraSetup *getReceiveDynamicShadowsPSSM() const { return mPSSM; }
+    PSSMShadowCameraSetup *getReceiveDynamicShadowsPSSM() const { return mPSSM; }
 /** Whether to use depth shadows (default false).
 */
     void setReceiveDynamicShadowsDepth(bool enabled);
 /** Whether to use depth shadows (default false).
 */
-    [[nodiscard]] bool getReceiveDynamicShadowsDepth() const { return mDepthShadows; }
+    bool getReceiveDynamicShadowsDepth() const { return mDepthShadows; }
 /** Whether to use shadows on low LOD material rendering (when using composite map) (default false).
 */
     void setReceiveDynamicShadowsLowLod(bool enabled);
 /** Whether to use shadows on low LOD material rendering (when using composite map) (default false).
 */
-    [[nodiscard]] bool getReceiveDynamicShadowsLowLod() const { return mLowLodShadows; }
+    bool getReceiveDynamicShadowsLowLod() const { return mLowLodShadows; }
 
     bool isShadowingEnabled(TechniqueType tt, const Terrain *terrain) const;
    protected:

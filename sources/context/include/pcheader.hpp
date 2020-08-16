@@ -24,7 +24,6 @@ SOFTWARE.
 
 #pragma once
 
-//#include "CeguiCommon.hpp"
 #include "PagedGeometryCommon.hpp"
 #include "OgreCommon.hpp"
 #include "BulletCommon.hpp"
@@ -49,6 +48,9 @@ SOFTWARE.
 #include <memory>
 #include <vector>
 #include <list>
+#include <deque>
+#include <queue>
+#include <stack>
 #include <set>
 #include <unordered_set>
 #include <unordered_map>

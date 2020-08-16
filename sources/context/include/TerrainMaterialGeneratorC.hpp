@@ -76,7 +76,7 @@ class TerrainMaterialGeneratorC : public TerrainMaterialGenerator {
     void updateParams(const MaterialPtr &mat, const Terrain *terrain) final;
     void updateParamsForCompositeMap(const MaterialPtr &mat, const Terrain *terrain) final;
     void requestOptions(Terrain *terrain) final;
-    [[nodiscard]] bool isVertexCompressionSupported() const final;
+    bool isVertexCompressionSupported() const final;
     void setLightmapEnabled(bool enabled) final;
   };
 };

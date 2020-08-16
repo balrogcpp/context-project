@@ -52,7 +52,7 @@ class PhysicsManager :    //    Bullet initialisation.
     public ManagerCommon {
  public:
   //getters
-  [[nodiscard]] const std::shared_ptr<btDynamicsWorld> &GetPhyWorld() const;
+  const std::shared_ptr<btDynamicsWorld> &GetPhyWorld() const;
 
  private:
   std::shared_ptr<BtOgre::DebugDrawer> dbg_draw_;

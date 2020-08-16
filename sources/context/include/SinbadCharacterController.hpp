@@ -61,17 +61,17 @@ class SinbadCharacterController : public InputListener, public Ogre::FrameListen
 
   bool frameRenderingQueued(const Ogre::FrameEvent &evt);
 
-  void key_down(SDL_Keycode key) override;
+  void KeyDown(SDL_Keycode key) override;
 
-  void key_up(SDL_Keycode key) override;
+  void KeyUp(SDL_Keycode key) override;
 
-  void move(int x, int y, int dx, int dy, bool left, bool right, bool middle) override;
+  void Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) override;
 
-  void wheel(int x, int y) override;
+  void Wheel(int x, int y) override;
 
-  void lb_down(int x, int y) override;
+  void LbDown(int x, int y) override;
 
-  void rb_down(int x, int y) override;
+  void RbDown(int x, int y) override;
 
   void SetupBody(Ogre::SceneManager *sceneMgr);
 

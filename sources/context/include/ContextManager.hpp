@@ -76,35 +76,35 @@ class ContextManager : public Ogre::LogListener, public NoCopy {
   void UpdateCursorStatus(Cursor cursor);
 
   //getters
-  [[nodiscard]] Ogre::Root *GetOgreRootPtr() const {
+  Ogre::Root *GetOgreRootPtr() const {
     return ogre_root_;
   }
 
-  [[nodiscard]] Ogre::SceneManager *GetOgreScenePtr() const {
+  Ogre::SceneManager *GetOgreScenePtr() const {
     return ogre_scene_manager_;
   }
 
-  [[nodiscard]] std::shared_ptr<CameraMan> GetCameraMan() const {
+  std::shared_ptr<CameraMan> GetCameraMan() const {
     return camera_man_;
   }
 
-  [[nodiscard]] Ogre::Camera *GetOgreCamera() const {
+  Ogre::Camera *GetOgreCamera() const {
     return ogre_camera_;
   }
 
-  [[nodiscard]] Ogre::SceneNode *GetCameraNode() const {
+  Ogre::SceneNode *GetCameraNode() const {
     return ogre_camera_node_;
   }
 
-  [[nodiscard]] Ogre::Viewport *GetOgreViewport() const {
+  Ogre::Viewport *GetOgreViewport() const {
     return ogre_viewport_;
   }
 
-  [[nodiscard]] const std::string &GetWindowCaption() const {
+  const std::string &GetWindowCaption() const {
     return window_caption_;
   }
 
-  [[nodiscard]] const bool IsFullscreen() const {
+  const bool IsFullscreen() const {
     return window_position_.f;
   }
 
@@ -112,7 +112,7 @@ class ContextManager : public Ogre::LogListener, public NoCopy {
     ContextManager::window_caption_ = caption;
   }
 
-  [[nodiscard]] const std::shared_ptr<Ogre::ShadowCameraSetup> &GetOgreShadowCameraSetup() const;
+  const std::shared_ptr<Ogre::ShadowCameraSetup> &GetOgreShadowCameraSetup() const;
 
  private:
   //SDL2

@@ -48,7 +48,6 @@
 #include "DummyAppState.hpp"
 #include "SoundManager.hpp"
 #include "ManagerCommon.hpp"
-#include "EntityCommon.hpp"
 #include "AgentCommon.hpp"
 #include "DotSceneLoaderB.hpp"
 #include "GorillaOverlay.hpp"
