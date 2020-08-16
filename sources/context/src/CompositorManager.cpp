@@ -39,15 +39,15 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   GBufferSchemeHandler() {
     mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer");
-    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("GBuffer",
-                                                                     "Context/gbuffer",
-                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+//    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("GBuffer",
+//                                                                     "Context/gbuffer",
+//                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     mGBufRefMat->load();
 
     mGBufRefMat2 = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer_disable");
-    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("GBuffer",
-                                                                     "Context/gbuffer_disable",
-                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+//    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("GBuffer",
+//                                                                     "Context/gbuffer_disable",
+//                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     mGBufRefMat2->load();
   }
 
@@ -103,15 +103,15 @@ class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   DepthSchemeHandler() {
     mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("Context/depth_alpha");
-    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("Depth",
-                                                                     "Context/depth_alpha",
-                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+//    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("Depth",
+//                                                                     "Context/depth_alpha",
+//                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     mGBufRefMat->load();
 
     mGBufRefMat2 = Ogre::MaterialManager::getSingleton().getByName("Context/depth");
-    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("Depth",
-                                                                     "Context/depth",
-                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+//    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("Depth",
+//                                                                     "Context/depth",
+//                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     mGBufRefMat2->load();
   }
 

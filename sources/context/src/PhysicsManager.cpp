@@ -63,7 +63,9 @@ void PhysicsManager::Setup() {
     dbg_draw_->setDebugMode(physics_debug_show_collider_);
     phy_world_->setDebugDrawer(dbg_draw_.get());
 
+#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
     ShaderResolver::FixMaterial("BtOgre/DebugLines");
+#endif
   }
 
   stopped_ = false;

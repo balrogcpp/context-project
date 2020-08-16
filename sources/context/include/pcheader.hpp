@@ -42,8 +42,6 @@ SOFTWARE.
 
 #include <angelscript.h>
 
-#include <glm/glm.hpp>
-
 #include <string>
 #include <iostream>
 #include <fstream>

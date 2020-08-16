@@ -846,8 +846,9 @@ void ContextManager::SetupShaderResolver() {
     }
 #endif
   }
-}
 #endif
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::UpdateCursorStatus(Cursor cursor) {
   SDL_ShowCursor(cursor.show);

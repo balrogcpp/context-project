@@ -91,7 +91,6 @@ SOFTWARE.
 #include <Plugins/FreeImageCodec/OgreFreeImageCodecExports.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
-#include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
