@@ -43,7 +43,7 @@ AppStateManager AppStateManager::AppStateSingleton;
 //----------------------------------------------------------------------------------------------------------------------
 void AppStateManager::SetInitialState(const std::shared_ptr<AppState> &state) {
   if (prev_state_) {
-    io::InputManager::GetSingleton().UnregisterListener(prev_state_.get());
+    io::InputSequencer::GetSingleton().UnregisterListener(prev_state_.get());
     ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(prev_state_.get());
   }
 
@@ -61,7 +61,7 @@ void AppStateManager::SetInitialState(const std::shared_ptr<AppState> &state) {
 //----------------------------------------------------------------------------------------------------------------------
 void AppStateManager::SetCurrentState(const std::shared_ptr<AppState> &state) {
   if (prev_state_) {
-    io::InputManager::GetSingleton().UnregisterListener(prev_state_.get());
+    io::InputSequencer::GetSingleton().UnregisterListener(prev_state_.get());
     ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(prev_state_.get());
   }
 

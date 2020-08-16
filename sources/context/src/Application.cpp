@@ -124,7 +124,7 @@ void Application::Loop() {
       if (delta_time_ > 500000)
         started_ = true;
 
-      io::InputManager::GetSingleton().Capture();
+      io::InputSequencer::GetSingleton().Capture();
 
       if (!paused_) {
         AppStateManager::GetSingleton().CleanupResources();
@@ -187,14 +187,14 @@ void Application::Go() {
 #endif
 
   if (AppStateManager::GetSingleton().GetCurState()) {
-    io::InputManager::GetSingleton().RegisterListener(&dummy_listener_);
+    io::InputSequencer::GetSingleton().RegisterListener(&dummy_listener_);
     if (global_verbose_input_) {
       dummy_listener_.SetPrint(true);
     }
 
     Setup();
     SetupGlobal();
-    io::InputManager::GetSingleton().RegisterListener(this);
+    io::InputSequencer::GetSingleton().RegisterListener(this);
     ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
 
     fullscreen_ = ContextManager::GetSingleton().IsFullscreen();
@@ -227,9 +227,7 @@ void Application::Go() {
 
     Loop();
 
-    io::InputManager::GetSingleton().StopCapture();
-    io::InputManager::GetSingleton().Reset();
-    io::InputManager::GetSingleton().UnregisterListener(&dummy_listener_);
+    io::InputSequencer::GetSingleton().Reset();
 
     Reset();
   }

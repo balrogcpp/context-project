@@ -40,7 +40,7 @@ void ManagerCommon::SetupGlobal() {
   SetOgreRootNode(ContextManager::GetSingleton().GetOgreScenePtr()->getRootSceneNode());
 
   ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
-  io::InputManager::GetSingleton().RegisterListener(this);
+  io::InputSequencer::GetSingleton().RegisterListener(this);
 
   registered_ = true;
 }
@@ -48,7 +48,7 @@ void ManagerCommon::SetupGlobal() {
 void ManagerCommon::ResetGlobal() {
   if (registered_) {
     ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
-    io::InputManager::GetSingleton().UnregisterListener(this);
+    io::InputSequencer::GetSingleton().UnregisterListener(this);
   }
 }
 

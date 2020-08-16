@@ -34,7 +34,5 @@ class NoCopy {
   NoCopy(NoCopy &&) = delete;
   NoCopy &operator=(NoCopy &&) = delete;
   virtual ~NoCopy() = default;
-
 };
-
 } //namespace Context

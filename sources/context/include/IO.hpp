@@ -29,6 +29,8 @@ extern "C" {
 }
 
 #include <vector>
+#include <queue>
+#include <mutex>
 
 namespace io {
 
@@ -71,15 +73,26 @@ class InputListener :
     public JoyListener,
     public KeyboardListener,
     public MouseListener,
-    public OtherEventListener {};
+    public OtherEventListener {
+};
 //----------------------------------------------------------------------------------------------------------------------
 class InputSequencer {
  public:
   InputSequencer() {
-    kb_listeners.reserve(256);
-    ms_listeners.reserve(256);
-    joy_listeners.reserve(256);
-    other_listeners.reserve(256);
+    kb_listeners.reserve(127);
+    ms_listeners.reserve(127);
+    joy_listeners.reserve(127);
+    other_listeners.reserve(127);
+  }
+
+  InputSequencer(const InputSequencer &) = delete;
+  InputSequencer &operator=(const InputSequencer &) = delete;
+  InputSequencer(InputSequencer &&) = delete;
+  InputSequencer &operator=(InputSequencer &&) = delete;
+
+  static InputSequencer &GetSingleton() {
+    static InputSequencer InputSingleton;
+    return InputSingleton;
   }
 
  protected:
@@ -157,6 +170,27 @@ class InputSequencer {
         other_listeners.pop_back();
       }
     }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  virtual void RegisterListener(InputListener *l) {
+    RegKbListener(l);
+    RegMsListener(l);
+    RegJoyListener(l);
+    RegEventListener(l);
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  virtual void UnregisterListener(InputListener *l) {
+    UnregKbListener(l);
+    UnregMsListener(l);
+    UnregJoyListener(l);
+    UnregEventListener(l);
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  virtual void Reset() {
+    kb_listeners.clear();
+    ms_listeners.clear();
+    joy_listeners.clear();
+    other_listeners.clear();
   }
 //----------------------------------------------------------------------------------------------------------------------
   virtual void Capture() {
@@ -300,101 +334,4 @@ class InputSequencer {
     }
   }
 }; //class InputSequencer
-
-class InputManager final : public InputSequencer {
- public:
-  static InputManager &GetSingleton() {
-    static InputManager InputSingleton;
-    return InputSingleton;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void Reset() {
-    waiting_for_unreg_.clear();
-    kb_listeners.clear();
-    ms_listeners.clear();
-    joy_listeners.clear();
-    other_listeners.clear();
-    waiting_for_reg_.clear();
-
-    waiting_garbage_ = false;
-    waiting_reg_ = false;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void Capture() final {
-    if (waiting_garbage_) {
-      for (auto it : waiting_for_unreg_) {
-        UnregisterListener(it);
-      }
-
-      if (capture_enable_) {
-        waiting_for_unreg_.clear();
-        waiting_garbage_ = false;
-      }
-    }
-
-    if (waiting_reg_) {
-      for (auto it : waiting_for_reg_) {
-        RegisterListener(it);
-      }
-
-      if (capture_enable_) {
-        waiting_for_reg_.clear();
-        waiting_reg_ = false;
-      }
-    }
-
-    lock_reg_ = true;
-
-    if (capture_enable_) {
-      InputSequencer::Capture();
-    }
-
-    lock_reg_ = false;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void StopCapture() {
-    capture_enable_ = false;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void StartCapture() {
-    capture_enable_ = true;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void RegisterListener(InputListener *l) {
-    if (!lock_reg_) {
-      RegKbListener(l);
-      RegMsListener(l);
-      RegJoyListener(l);
-      RegEventListener(l);
-      capture_enable_ = true;
-    } else {
-      capture_enable_ = false;
-      waiting_reg_ = true;
-      waiting_for_reg_.push_back(l);
-    }
-
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void UnregisterListener(InputListener *l) {
-    if (!lock_reg_) {
-      UnregKbListener(l);
-      UnregMsListener(l);
-      UnregJoyListener(l);
-      UnregEventListener(l);
-      capture_enable_ = true;
-    } else {
-      capture_enable_ = false;
-      waiting_garbage_ = true;
-      waiting_for_unreg_.push_back(l);
-    }
-  }
-
- private:
-  bool capture_enable_ = false;
-  bool lock_reg_ = false;
-  bool waiting_garbage_ = false;
-  bool waiting_reg_ = false;
-  std::vector<InputListener *> waiting_for_unreg_;
-  std::vector<InputListener *> waiting_for_reg_;
-}; //class InputManager
-} //namespace Context
+} //namespace io

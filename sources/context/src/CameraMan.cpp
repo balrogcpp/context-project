@@ -33,7 +33,7 @@ namespace Context {
 
 //----------------------------------------------------------------------------------------------------------------------
 CameraMan::CameraMan() {
-  io::InputManager::GetSingleton().RegisterListener(this);
+  io::InputSequencer::GetSingleton().RegisterListener(this);
   ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------

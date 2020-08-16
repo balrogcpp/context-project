@@ -45,7 +45,7 @@ void AppState::SetupGlobals() {
   SetOgreCamera(ContextManager::GetSingleton().GetOgreCamera());
   SetOgreViewport(ContextManager::GetSingleton().GetOgreViewport());
   SetOgreRoot(ContextManager::GetSingleton().GetOgreRootPtr());
-  io::InputManager::GetSingleton().RegisterListener(this);
+  io::InputSequencer::GetSingleton().RegisterListener(this);
   ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
 
   registered_ = true;
@@ -54,7 +54,7 @@ void AppState::SetupGlobals() {
 void AppState::ResetGlobals() {
   if (registered_) {
     ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
-    io::InputManager::GetSingleton().UnregisterListener(this);
+    io::InputSequencer::GetSingleton().UnregisterListener(this);
   }
 }
 void AppState::SetOgreRoot(Ogre::Root *ogre_root) {

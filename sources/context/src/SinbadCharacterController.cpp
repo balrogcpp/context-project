@@ -46,12 +46,12 @@ SinbadCharacterController::SinbadCharacterController(Camera *cam)
   SetupBody(cam->getSceneManager());
   SetupCamera(cam);
   SetupAnimations();
-  io::InputManager::GetSingleton().RegisterListener(this);
+  io::InputSequencer::GetSingleton().RegisterListener(this);
   ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
 SinbadCharacterController::~SinbadCharacterController() {
-  io::InputManager::GetSingleton().UnregisterListener(this);
+  io::InputSequencer::GetSingleton().UnregisterListener(this);
   ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
