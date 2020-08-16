@@ -24,8 +24,8 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "ConfigManager.hpp"
-#include "Exception.hpp"
+#include "ConfigManager.h"
+#include "Exception.h"
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------

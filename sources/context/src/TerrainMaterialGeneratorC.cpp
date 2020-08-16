@@ -50,8 +50,8 @@ THE SOFTWARE.
 */
 #include "pcheader.hpp"
 
-#include "TerrainMaterialGeneratorC.hpp"
-#include "DotSceneLoaderB.hpp"
+#include "TerrainMaterialGeneratorC.h"
+#include "DotSceneLoaderB.h"
 
 namespace Context {
 //---------------------------------------------------------------------

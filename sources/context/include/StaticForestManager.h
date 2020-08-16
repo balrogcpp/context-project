@@ -21,54 +21,43 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-/*
+
 #pragma once
 
-#include "ManagerCommon.hpp"
-
-namespace CEGUI {
-class Window;
-}
+#include "ManagerCommon.h"
 
 namespace Context {
 
-class CeguiOverlayManager : public ManagerCommon {
- private:
-  CEGUI::Window *cegui_window_ = nullptr;
-  bool active_ = false;
-
+class StaticForestManager : public ManagerCommon {
  public:
-  CEGUI::Window *GetCeguiWindow() const {
-    return cegui_window_;
+  static StaticForestManager *GetSingletonPtr() {
+    return &staticForestManagerSingleton;
   }
 
- public:
-  void Setup() override;
-  void Show();
-  void Hide();
-  void Reset() override;
+  static StaticForestManager &GetSingleton() {
+    return staticForestManagerSingleton;
+  }
 
  private:
+  static StaticForestManager staticForestManagerSingleton;
+
+ public:
+  void Create();
+
+  void GenerateGrass();
+
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
-  void move(int x, int y) final;
-  void move(int x, int y, int dx, int dy, bool left, bool right, bool middle) final;
-  void wheel(int x, int y) final;
-  void lb_down(int x, int y) final;
-  void lb_up(int x, int y) final;
+
+  void Reset() final;
 
  private:
-  static CeguiOverlayManager CeguiOverlayManagerSingleton;
+  void CreateGrassMesh();
 
- public:
-  static CeguiOverlayManager *GetSingletonPtr() {
-    return &CeguiOverlayManagerSingleton;
-  }
-
-  static CeguiOverlayManager &GetSingleton() {
-    return CeguiOverlayManagerSingleton;
-  }
-
+ private:
+  const float GRASS_WIDTH = 0.5f;
+  const float GRASS_HEIGHT = 0.5f;
+  Ogre::StaticGeometry *mField = nullptr;
+  Ogre::StaticGeometry *common = nullptr;
 };
 
-}
-*/
+} //Context

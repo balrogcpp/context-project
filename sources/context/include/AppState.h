@@ -24,44 +24,37 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.hpp"
-#include "Gorilla.h"
+#include <OgreFrameListener.h>
+#include <OgreRenderTargetListener.h>
 
-namespace Ogre {
-class RenderTarget;
-class Texture;
-class SceneNode;
+#include "IO.h"
+
+namespace Context {
+class CameraMan;
 }
 
 namespace Context {
 
-class GorillaOverlay : public ManagerCommon {
- private:
-  static GorillaOverlay GorillaOverlaySingleton;
-
+class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener {
  public:
-  static GorillaOverlay *GetSingletonPtr();
-  static GorillaOverlay &GetSingleton();
+  AppState();
+  virtual ~AppState();
 
- public:
-  void Setup() final;
-  void Reset() final;
+  void SetupGlobals();
+  void ResetGlobals();
 
- public:
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
+  virtual void Setup() = 0;
+  virtual void Reset() = 0;
 
- private:
-  Gorilla::Silverback *mSilverback = nullptr;
-  Gorilla::Screen *mScreen = nullptr;
-  Gorilla::Layer *layer = nullptr;
-  Gorilla::Polygon *poly = nullptr;
-  Gorilla::LineList *list = nullptr;
-  Gorilla::Caption *caption = nullptr;
-  Gorilla::Rectangle *rect = nullptr;
-  Gorilla::QuadList *quads = nullptr;
-  Gorilla::MarkupText *markup = nullptr;
-};
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {};
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {};
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) override { return true; };
 
+  Ogre::Root *ogre_root = nullptr;
+  Ogre::SceneManager *ogre_scene_manager_ = nullptr;
+  std::shared_ptr<CameraMan> camera_man_;
+  Ogre::Camera *ogre_camera_ = nullptr;
+  Ogre::Viewport *ogre_viewport_ = nullptr;
+  bool registered_ = false;
+}; //class AppState
 } //namespace Context

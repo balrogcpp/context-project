@@ -24,37 +24,45 @@ SOFTWARE.
 
 #pragma once
 
+#include "Singleton.h"
+#include "ContextManager.h"
+#include "IO.h"
+
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 
-#include "IO.hpp"
-
 namespace Context {
-class CameraMan;
+  class CameraMan;
 }
 
 namespace Context {
 
-class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener {
+class ManagerCommon
+ : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener, public Singleton {
  public:
-  AppState();
-  virtual ~AppState();
+  virtual void SetupGlobal();
+  virtual void ResetGlobal();
+  virtual void Setup() {}
+  virtual void Reset() {}
 
-  void SetupGlobals();
-  void ResetGlobals();
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) override { return true; }
+  void SetOgreScene(Ogre::SceneManager *scene_ptr);
+  void SetCameraMan(std::shared_ptr<CameraMan> camera_ptr);
+  void SetOgreCamera(Ogre::Camera *ogreCamera);
+  void SetOgreViewport(Ogre::Viewport *ogreViewport);
+  void SetOgreRoot(Ogre::Root *ogreRoot);
 
-  virtual void Setup() = 0;
-  virtual void Reset() = 0;
-
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {};
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {};
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) override { return true; };
-
-  Ogre::Root *ogre_root = nullptr;
+ public:
+  Ogre::Root *ogre_root_ = nullptr;
   Ogre::SceneManager *ogre_scene_manager_ = nullptr;
+  Ogre::SceneNode *ogre_root_node_ = nullptr;
+  void SetOgreRootNode(Ogre::SceneNode *ogre_root_node);
   std::shared_ptr<CameraMan> camera_man_;
   Ogre::Camera *ogre_camera_ = nullptr;
   Ogre::Viewport *ogre_viewport_ = nullptr;
   bool registered_ = false;
-}; //class AppState
-} //namespace Context
+};
+
+}

@@ -24,39 +24,52 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.hpp"
-#include "OgreOggSound.h"
+#include "ManagerCommon.h"
+
+#include <OgrePlane.h>
+
+namespace Ogre {
+class RenderTarget;
+class Texture;
+class SceneNode;
+}
 
 namespace Context {
 
-class SoundManager : public ManagerCommon {
- public:
-
-  static SoundManager *GetSingletonPtr() {
-    return &OggSoundManagerSingleton;
-  }
-
-  static SoundManager &GetSingleton() {
-    return OggSoundManagerSingleton;
-  }
-
+class ReflectionCamera : public ManagerCommon {
  private:
-  static SoundManager OggSoundManagerSingleton;
+  static ReflectionCamera CubeMapCameraSingleton;
 
  public:
-  void CreateSound();
+  static ReflectionCamera *GetSingletonPtr();
+  static ReflectionCamera &GetSingleton();
 
-  void StopAllSounds();
-
+ public:
   void Setup() final;
-
   void Reset() final;
+  void FreeCamera();
+  void RegPlane(Ogre::Plane);
+  void UnregPlane();
+
+ public:
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
 
  private:
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final {
-    return true;
-  }
+  std::shared_ptr<Ogre::Texture> reflection_;
+  std::shared_ptr<Ogre::Texture> refraction_;
+  Ogre::Plane plane_;
+  Ogre::Camera *reflection_camera_ = nullptr ;
+  Ogre::SceneNode *ogre_reflection_camera_node_ = nullptr;
 
+ public:
+  const std::shared_ptr<Ogre::Texture> &GetReflectionTex() const {
+    return reflection_;
+  }
+  const std::shared_ptr<Ogre::Texture> &GetRefractionTex() const {
+    return refraction_;
+  }
 };
 
-}
+} //namespace Context

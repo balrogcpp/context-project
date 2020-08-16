@@ -25,10 +25,10 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "StaticForestManager.hpp"
+#include "StaticForestManager.h"
 
-#include "DotSceneLoaderB.hpp"
-#include "ShaderResolver.hpp"
+#include "DotSceneLoaderB.h"
+#include "ShaderResolver.h"
 
 namespace Context {
 

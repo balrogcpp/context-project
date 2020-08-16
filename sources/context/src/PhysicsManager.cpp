@@ -24,9 +24,9 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "PhysicsManager.hpp"
-#include "ConfigManager.hpp"
-#include "ShaderResolver.hpp"
+#include "PhysicsManager.h"
+#include "ConfigManager.h"
+#include "ShaderResolver.h"
 
 namespace Context {
 

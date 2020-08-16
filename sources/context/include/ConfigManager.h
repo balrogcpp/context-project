@@ -24,9 +24,9 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.hpp"
+#include "ManagerCommon.h"
 
-#include "ContextConfigStructures.hpp"
+#include "ContextConfigStructures.h"
 
 #include "rapidjson/document.h"
 

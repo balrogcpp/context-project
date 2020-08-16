@@ -49,7 +49,7 @@ THE SOFTWARE.
 */
 #include "pcheader.hpp"
 
-#include "TerrainMaterialGeneratorB.hpp"
+#include "TerrainMaterialGeneratorB.h"
 
 namespace Context {
 //---------------------------------------------------------------------

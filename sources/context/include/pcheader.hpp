@@ -24,10 +24,10 @@ SOFTWARE.
 
 #pragma once
 
-#include "PagedGeometryCommon.hpp"
-#include "OgreCommon.hpp"
-#include "BulletCommon.hpp"
-#include "SDL2Common.hpp"
+#include "PagedGeometryCommon.h"
+#include "OgreCommon.h"
+#include "BulletCommon.h"
+#include "SDL2Common.h"
 
 #include <pugixml.hpp>
 

@@ -24,23 +24,21 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "ContextManager.hpp"
-#include "ConfigManager.hpp"
-#include "Exception.hpp"
-#include "CameraMan.hpp"
-#include "ShaderResolver.hpp"
-#include "PhysicsManager.hpp"
-#include "AppStateManager.hpp"
-#include "DotSceneLoaderB.hpp"
-#include "StaticForestManager.hpp"
-#include "PagedForestManager.hpp"
-#include "SoundManager.hpp"
-#include "CompositorManager.hpp"
-//#include "CeguiOverlayManager.hpp"
-#include "PSSMShadowCameraSetupB.hpp"
-#include "CubeMapCamera.hpp"
-#include "ReflectionCamera.hpp"
-#include "GorillaOverlay.hpp"
+#include "ContextManager.h"
+#include "ConfigManager.h"
+#include "Exception.h"
+#include "CameraMan.h"
+#include "ShaderResolver.h"
+#include "PhysicsManager.h"
+#include "AppStateManager.h"
+#include "DotSceneLoaderB.h"
+#include "StaticForestManager.h"
+#include "SoundManager.h"
+#include "CompositorManager.h"
+#include "PSSMShadowCameraSetupB.h"
+#include "CubeMapCamera.h"
+#include "ReflectionCamera.h"
+#include "GorillaOverlay.h"
 
 extern "C" {
 #include <SDL2/SDL_syswm.h>
@@ -925,9 +923,6 @@ void ContextManager::SetupGlobal() {
   StaticForestManager::GetSingleton().SetupGlobal();
   StaticForestManager::GetSingleton().Setup();
 
-  PagedForestManager::GetSingleton().SetupGlobal();
-  PagedForestManager::GetSingleton().Setup();
-
   if (physics_enable_) {
     PhysicsManager::GetSingleton().SetupGlobal();
     PhysicsManager::GetSingleton().Setup();
@@ -952,11 +947,6 @@ void ContextManager::SetupGlobal() {
   ReflectionCamera::GetSingleton().SetupGlobal();
 //  ReflectionCamera::GetSingleton().Setup();
 
-//#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-//  CeguiOverlayManager::GetSingleton().SetupGlobal();
-//  CeguiOverlayManager::GetSingleton().Setup();
-//#endif
-
   GorillaOverlay::GetSingleton().SetupGlobal();
   GorillaOverlay::GetSingleton().Setup();
 }
@@ -967,9 +957,6 @@ void ContextManager::ResetGlobals() {
 
   StaticForestManager::GetSingleton().ResetGlobal();
   StaticForestManager::GetSingleton().Reset();
-
-  PagedForestManager::GetSingleton().ResetGlobal();
-  PagedForestManager::GetSingleton().Reset();
 
   if (physics_enable_) {
     PhysicsManager::GetSingleton().ResetGlobal();
@@ -989,11 +976,6 @@ void ContextManager::ResetGlobals() {
 
   ReflectionCamera::GetSingleton().ResetGlobal();
   ReflectionCamera::GetSingleton().Reset();
-
-//#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-//  CeguiOverlayManager::GetSingleton().ResetGlobal();
-//  CeguiOverlayManager::GetSingleton().Reset();
-//#endif
 
   GorillaOverlay::GetSingleton().ResetGlobal();
   GorillaOverlay::GetSingleton().Reset();

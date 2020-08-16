@@ -24,7 +24,7 @@ SOFTWARE.
 */
 
 #include "pcheader.hpp"
-#include "DummyListener.hpp"
+#include "DummyListener.h"
 
 extern "C" {
 #include <SDL2/SDL.h>

@@ -24,8 +24,8 @@ SOFTWARE.
 
 #pragma once
 
-#include "IO.hpp"
-#include "Singleton.hpp"
+#include "IO.h"
+#include "Singleton.h"
 
 #include <Ogre.h>
 

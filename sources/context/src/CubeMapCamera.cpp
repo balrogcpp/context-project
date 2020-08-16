@@ -24,9 +24,9 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "CubeMapCamera.hpp"
-#include "CameraMan.hpp"
-#include "ContextManager.hpp"
+#include "CubeMapCamera.h"
+#include "CameraMan.h"
+#include "ContextManager.h"
 
 namespace Context {
 CubeMapCamera CubeMapCamera::CubeMapCameraSingleton;

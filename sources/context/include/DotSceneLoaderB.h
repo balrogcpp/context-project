@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.hpp"
+#include "ManagerCommon.h"
 
 #include <OgreSceneLoader.h>
 #include <OgreVector4.h>

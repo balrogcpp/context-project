@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "SoundManager.hpp"
+#include "SoundManager.h"
 
 namespace Context {
 

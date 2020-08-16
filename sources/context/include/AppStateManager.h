@@ -24,40 +24,56 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.hpp"
+#include "AppState.h"
 
 namespace Context {
 
-class StaticForestManager : public ManagerCommon {
+class AppStateManager {
  public:
-  static StaticForestManager *GetSingletonPtr() {
-    return &staticForestManagerSingleton;
-  }
-
-  static StaticForestManager &GetSingleton() {
-    return staticForestManagerSingleton;
-  }
-
- private:
-  static StaticForestManager staticForestManagerSingleton;
+  static AppStateManager AppStateSingleton;
 
  public:
-  void Create();
 
-  void GenerateGrass();
+  static AppStateManager *GetSingletonPtr() {
+    return &AppStateSingleton;
+  }
 
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
+  static AppStateManager &GetSingleton() {
+    return AppStateSingleton;
+  }
 
-  void Reset() final;
+ public:
 
- private:
-  void CreateGrassMesh();
+  void SetInitialState(const std::shared_ptr<AppState> &state);
 
- private:
-  const float GRASS_WIDTH = 0.5f;
-  const float GRASS_HEIGHT = 0.5f;
-  Ogre::StaticGeometry *mField = nullptr;
-  Ogre::StaticGeometry *common = nullptr;
+  void SetCurrentState(const std::shared_ptr<AppState> &state);
+
+  void SetNextState(const std::shared_ptr<AppState> &state);
+
+  void GoNextState();
+
+  void CleanupResources();
+
+  void Reset();
+
+  void ResetGlobals();
+
+  AppState *GetCurState();
+
+  AppState *GetPrevState();
+
+  AppState *GetNextState();
+
+ public:
+  bool garbage_ = false;
+
+  bool waiting_ = false;
+
+  std::shared_ptr<AppState> cur_state_;
+
+  std::shared_ptr<AppState> prev_state_;
+
+  std::shared_ptr<AppState> next_state_;
 };
 
-} //Context
+}

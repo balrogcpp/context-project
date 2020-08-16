@@ -24,38 +24,39 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.hpp"
+#include "ManagerCommon.h"
+#include "OgreOggSound.h"
 
 namespace Context {
 
-class CubeMapCamera final : public ManagerCommon {
- private:
-  static CubeMapCamera CubeMapCameraSingleton;
-
+class SoundManager : public ManagerCommon {
  public:
-  static CubeMapCamera *GetSingletonPtr();
-  static CubeMapCamera &GetSingleton();
 
- public:
-  void Setup() final;
-  void Reset() final;
-  void FreeCamera();
-
- public:
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
-
- private:
-  Ogre::Camera* ogre_cube_camera_ = nullptr;
-  Ogre::SceneNode *ogre_cube_camera_node_ = nullptr;
-  std::shared_ptr<Ogre::Texture> dyncubemap;
- public:
-  std::shared_ptr<Ogre::Texture> GetDyncubemap() const {
-    return dyncubemap;
+  static SoundManager *GetSingletonPtr() {
+    return &OggSoundManagerSingleton;
   }
+
+  static SoundManager &GetSingleton() {
+    return OggSoundManagerSingleton;
+  }
+
  private:
-  Ogre::RenderTarget* targets[6];
+  static SoundManager OggSoundManagerSingleton;
+
+ public:
+  void CreateSound();
+
+  void StopAllSounds();
+
+  void Setup() final;
+
+  void Reset() final;
+
+ private:
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final {
+    return true;
+  }
+
 };
 
-} //namespace Context
+}

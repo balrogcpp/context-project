@@ -29,10 +29,10 @@ SOFTWARE.
 #include <vector>
 #include <string>
 
-#include "ContextConfigStructures.hpp"
-#include "Singleton.hpp"
+#include "ContextConfigStructures.h"
+#include "Singleton.h"
 
-#include "SDL2Common.hpp"
+#include "SDL2Common.h"
 
 namespace Context {
 class CameraMan;

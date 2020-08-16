@@ -24,14 +24,14 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "Application.hpp"
-#include "ContextManager.hpp"
+#include "Application.h"
+#include "ContextManager.h"
 
-#include "AppStateManager.hpp"
-#include "ConfigManager.hpp"
-#include "Exception.hpp"
-#include "PhysicsManager.hpp"
-#include "SoundManager.hpp"
+#include "AppStateManager.h"
+#include "ConfigManager.h"
+#include "Exception.h"
+#include "PhysicsManager.h"
+#include "SoundManager.h"
 
 #include <csetjmp>
 #include <csignal>

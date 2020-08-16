@@ -27,8 +27,8 @@ SOFTWARE.
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 
-#include "DummyListener.hpp"
-#include "ManagerCommon.hpp"
+#include "DummyListener.h"
+#include "ManagerCommon.h"
 
 namespace Context {
 class AppState;

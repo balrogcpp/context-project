@@ -24,15 +24,15 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "AppStateManager.hpp"
-#include "DotSceneLoaderB.hpp"
-#include "StaticForestManager.hpp"
-#include "PhysicsManager.hpp"
-#include "SoundManager.hpp"
-#include "ConfigManager.hpp"
-#include "CubeMapCamera.hpp"
-#include "ReflectionCamera.hpp"
-#include "IO.hpp"
+#include "AppStateManager.h"
+#include "DotSceneLoaderB.h"
+#include "StaticForestManager.h"
+#include "PhysicsManager.h"
+#include "SoundManager.h"
+#include "ConfigManager.h"
+#include "CubeMapCamera.h"
+#include "ReflectionCamera.h"
+#include "IO.h"
 
 #include <iostream>
 

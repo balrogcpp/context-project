@@ -24,10 +24,10 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "ContextManager.hpp"
-#include "IO.hpp"
-#include "CameraMan.hpp"
-#include "DotSceneLoaderB.hpp"
+#include "ContextManager.h"
+#include "IO.h"
+#include "CameraMan.h"
+#include "DotSceneLoaderB.h"
 
 namespace Context {
 

@@ -24,9 +24,9 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "ShaderResolver.hpp"
-#include "ContextManager.hpp"
-#include "ConfigManager.hpp"
+#include "ShaderResolver.h"
+#include "ContextManager.h"
+#include "ConfigManager.h"
 
 #include <OgreTechnique.h>
 #include <Ogre.h>

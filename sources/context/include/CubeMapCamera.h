@@ -24,56 +24,38 @@ SOFTWARE.
 
 #pragma once
 
-#include "AppState.hpp"
+#include "ManagerCommon.h"
 
 namespace Context {
 
-class AppStateManager {
- public:
-  static AppStateManager AppStateSingleton;
+class CubeMapCamera final : public ManagerCommon {
+ private:
+  static CubeMapCamera CubeMapCameraSingleton;
 
  public:
+  static CubeMapCamera *GetSingletonPtr();
+  static CubeMapCamera &GetSingleton();
 
-  static AppStateManager *GetSingletonPtr() {
-    return &AppStateSingleton;
+ public:
+  void Setup() final;
+  void Reset() final;
+  void FreeCamera();
+
+ public:
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
+
+ private:
+  Ogre::Camera* ogre_cube_camera_ = nullptr;
+  Ogre::SceneNode *ogre_cube_camera_node_ = nullptr;
+  std::shared_ptr<Ogre::Texture> dyncubemap;
+ public:
+  std::shared_ptr<Ogre::Texture> GetDyncubemap() const {
+    return dyncubemap;
   }
-
-  static AppStateManager &GetSingleton() {
-    return AppStateSingleton;
-  }
-
- public:
-
-  void SetInitialState(const std::shared_ptr<AppState> &state);
-
-  void SetCurrentState(const std::shared_ptr<AppState> &state);
-
-  void SetNextState(const std::shared_ptr<AppState> &state);
-
-  void GoNextState();
-
-  void CleanupResources();
-
-  void Reset();
-
-  void ResetGlobals();
-
-  AppState *GetCurState();
-
-  AppState *GetPrevState();
-
-  AppState *GetNextState();
-
- public:
-  bool garbage_ = false;
-
-  bool waiting_ = false;
-
-  std::shared_ptr<AppState> cur_state_;
-
-  std::shared_ptr<AppState> prev_state_;
-
-  std::shared_ptr<AppState> next_state_;
+ private:
+  Ogre::RenderTarget* targets[6];
 };
 
-}
+} //namespace Context

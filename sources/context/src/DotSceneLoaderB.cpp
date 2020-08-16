@@ -24,18 +24,18 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "DotSceneLoaderB.hpp"
+#include "DotSceneLoaderB.h"
 
-#include "StaticForestManager.hpp"
-#include "PhysicsManager.hpp"
-#include "CameraMan.hpp"
-#include "ConfigManager.hpp"
-#include "TerrainMaterialGeneratorB.hpp"
-#include "TerrainMaterialGeneratorC.hpp"
-#include "ShaderResolver.hpp"
-#include "PSSMShadowCameraSetupB.hpp"
-#include "CubeMapCamera.hpp"
-#include "ReflectionCamera.hpp"
+#include "StaticForestManager.h"
+#include "PhysicsManager.h"
+#include "CameraMan.h"
+#include "ConfigManager.h"
+#include "TerrainMaterialGeneratorB.h"
+#include "TerrainMaterialGeneratorC.h"
+#include "ShaderResolver.h"
+#include "PSSMShadowCameraSetupB.h"
+#include "CubeMapCamera.h"
+#include "ReflectionCamera.h"
 
 namespace {
 //----------------------------------------------------------------------------------------------------------------------

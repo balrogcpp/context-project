@@ -24,8 +24,8 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "GorillaOverlay.hpp"
-#include "Application.hpp"
+#include "GorillaOverlay.h"
+#include "Application.h"
 
 namespace Context {
 GorillaOverlay GorillaOverlay::GorillaOverlaySingleton;

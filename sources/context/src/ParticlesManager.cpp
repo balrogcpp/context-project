@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "ParticlesManager.hpp"
+#include "ParticlesManager.h"
 
 namespace Context {
 ParticlesManager ParticlesManager::ParticlesManagerSingleton;

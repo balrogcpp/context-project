@@ -24,9 +24,9 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "ReflectionCamera.hpp"
-#include "CameraMan.hpp"
-#include "ContextManager.hpp"
+#include "ReflectionCamera.h"
+#include "CameraMan.h"
+#include "ContextManager.h"
 
 namespace Context {
 ReflectionCamera ReflectionCamera::CubeMapCameraSingleton;

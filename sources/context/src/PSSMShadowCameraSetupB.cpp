@@ -53,7 +53,7 @@ THE SOFTWARE.
 
 //#include "OgreStableHeaders.h"
 #include "pcheader.hpp"
-#include "PSSMShadowCameraSetupB.hpp"
+#include "PSSMShadowCameraSetupB.h"
 
 namespace Context
 {

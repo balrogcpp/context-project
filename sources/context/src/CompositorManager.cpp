@@ -24,11 +24,11 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "CompositorManager.hpp"
-#include "Exception.hpp"
-#include "ConfigManager.hpp"
-#include "ShaderResolver.hpp"
-#include "DotSceneLoaderB.hpp"
+#include "CompositorManager.h"
+#include "Exception.h"
+#include "ConfigManager.h"
+#include "ShaderResolver.h"
+#include "DotSceneLoaderB.h"
 
 namespace Context {
 

@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.hpp"
+#include "ManagerCommon.h"
 
 namespace Ogre {
 class Material;

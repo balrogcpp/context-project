@@ -76,43 +76,38 @@ set(BTOGRE_HEADERS
     )
 
 set(CONTEXT_HEADERS
-    context/include/Application.hpp
-    context/include/AppState.hpp
-    context/include/AppStateManager.hpp
-    context/include/CameraMan.hpp
-    context/include/Exception.hpp
-    context/include/IO.hpp
+    context/include/Application.h
+    context/include/AppState.h
+    context/include/AppStateManager.h
+    context/include/CameraMan.h
+    context/include/Exception.h
+    context/include/IO.h
     context/include/pcheader.hpp
-    context/include/ContextManager.hpp
-    context/include/ShaderResolver.hpp
-    context/include/DummyListener.hpp
-    context/include/ConfigManager.hpp
-    context/include/DotSceneLoaderB.hpp
-    context/include/StaticForestManager.hpp
-    context/include/PagedForestManager.hpp
-    context/include/SinbadCharacterController.hpp
-    context/include/PhysicsManager.hpp
-    context/include/BulletCommon.hpp
-    context/include/OgreCommon.hpp
-    context/include/SoundManager.hpp
-    context/include/ManagerCommon.hpp
-    context/include/SDL2Common.hpp
-    context/include/Context.hpp
-    context/include/CompositorManager.hpp
-    context/include/ContextConfigStructures.hpp
-    context/include/Singleton.hpp
-    context/include/NoCopy.hpp
-    context/include/TerrainMaterialGeneratorB.hpp
-    context/include/TerrainMaterialGeneratorC.hpp
-    context/include/PropertyMaps.hpp
-    context/include/CeguiOverlayManager.hpp
-    context/include/PSSMShadowCameraSetupB.hpp
-    context/include/PagedGeometryCommon.hpp
-    context/include/CubeMapCamera.hpp
-    context/include/ReflectionCamera.hpp
-    context/include/ParticlesManager.hpp
+    context/include/ContextManager.h
+    context/include/ShaderResolver.h
+    context/include/DummyListener.h
+    context/include/ConfigManager.h
+    context/include/DotSceneLoaderB.h
+    context/include/StaticForestManager.h
+    context/include/PhysicsManager.h
+    context/include/BulletCommon.h
+    context/include/OgreCommon.h
+    context/include/SoundManager.h
+    context/include/ManagerCommon.h
+    context/include/SDL2Common.h
+    context/include/Context.h
+    context/include/CompositorManager.h
+    context/include/ContextConfigStructures.h
+    context/include/Singleton.h
+    context/include/NoCopy.h
+    context/include/TerrainMaterialGeneratorB.h
+    context/include/TerrainMaterialGeneratorC.h
+    context/include/PSSMShadowCameraSetupB.h
+    context/include/CubeMapCamera.h
+    context/include/ReflectionCamera.h
+    context/include/ParticlesManager.h
     context/include/Gorilla.h
-    context/include/GorillaOverlay.hpp
+    context/include/GorillaOverlay.h
     context/include/IoListeners.h)
 
 set(HEADER_FILES_CONTEXT_LIB
@@ -162,18 +157,14 @@ set(CONTEXT_SOURCES
     context/src/DummyListener.cpp
     context/src/ConfigManager.cpp
     context/src/DotSceneLoaderB.cpp
-    context/src/SinbadCharacterController.cpp
     context/src/PhysicsManager.cpp
     context/src/StaticForestManager.cpp
-    context/src/PagedForestManager.cpp
     context/src/SoundManager.cpp
     context/src/ManagerCommon.cpp
     context/src/pcheader.cpp
     context/src/CompositorManager.cpp
     context/src/TerrainMaterialGeneratorB.cpp
     context/src/TerrainMaterialGeneratorC.cpp
-    context/src/PropertyMaps.cpp
-    context/src/CeguiOverlayManager.cpp
     context/src/PSSMShadowCameraSetupB.cpp
     context/src/CubeMapCamera.cpp
     context/src/ReflectionCamera.cpp
@@ -192,7 +183,7 @@ set(SOURCE_FILES_CONTEXT_LIB
 include_directories(context-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 
 add_library(context-lib-static STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
-add_library(context-lib-dynamic SHARED EXCLUDE_FROM_ALL ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
+add_library(context-lib-dynamic SHARED EXCLUDE_FROM_ALL ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB} context/include/PagedGeometryCommon.h)
 
 target_link_directories(context-lib-dynamic PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE)
 target_link_libraries(context-lib-dynamic PUBLIC ${CONTEXT_STATIC_DEPENDENCY_LIBS})

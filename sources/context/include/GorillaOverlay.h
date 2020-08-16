@@ -24,39 +24,44 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.hpp"
+#include "ManagerCommon.h"
+#include "Gorilla.h"
 
-namespace Forests {
-class PagedGeometry;
+namespace Ogre {
+class RenderTarget;
+class Texture;
+class SceneNode;
 }
+
 namespace Context {
 
-class PagedForestManager : public ManagerCommon {
- public:
-  static PagedForestManager *GetSingletonPtr() {
-    return &pagedForestManagerSingleton;
-  }
-
-  static PagedForestManager &GetSingleton() {
-    return pagedForestManagerSingleton;
-  }
-
+class GorillaOverlay : public ManagerCommon {
  private:
-  static PagedForestManager pagedForestManagerSingleton;
+  static GorillaOverlay GorillaOverlaySingleton;
 
  public:
-  void Create();
+  static GorillaOverlay *GetSingletonPtr();
+  static GorillaOverlay &GetSingleton();
 
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
-
+ public:
+  void Setup() final;
   void Reset() final;
 
+ public:
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
+
  private:
-  const float GRASS_WIDTH = 0.5f;
-  const float GRASS_HEIGHT = 0.5f;
-  Forests::PagedGeometry *trees = nullptr;
-  Forests::PagedGeometry *plants = nullptr;
-  Forests::PagedGeometry *grass = nullptr;
+  Gorilla::Silverback *mSilverback = nullptr;
+  Gorilla::Screen *mScreen = nullptr;
+  Gorilla::Layer *layer = nullptr;
+  Gorilla::Polygon *poly = nullptr;
+  Gorilla::LineList *list = nullptr;
+  Gorilla::Caption *caption = nullptr;
+  Gorilla::Rectangle *rect = nullptr;
+  Gorilla::QuadList *quads = nullptr;
+  Gorilla::MarkupText *markup = nullptr;
 };
 
-} //Context
+} //namespace Context

@@ -24,64 +24,26 @@ SOFTWARE.
 
 #pragma once
 
-#include "IO.hpp"
+#include "ManagerCommon.h"
 
 namespace Context {
 
-class DummyListener : public io::InputListener {
- public:
-
-  DummyListener() = default;
-
+class ParticlesManager : public ManagerCommon {
  private:
-  bool print_ = false;
+  static ParticlesManager ParticlesManagerSingleton;
 
  public:
-  bool IsPrint() const {
-    return print_;
-  }
+  static ParticlesManager *GetSingletonPtr();
+  static ParticlesManager &GetSingleton();
 
-  void SetPrint(bool print) {
-    print_ = print;
-  }
+ public:
+  void Setup() final;
+  void Reset() final;
 
- protected:
-  void KeyDown(SDL_Keycode sym) final;
-
-  void KeyUp(SDL_Keycode sym) final;
-
-  void Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) final;
-
-  void Wheel(int x, int y) final;
-
-  void LbDown(int x, int y) final;
-
-  void LbUp(int x, int y) final;
-
-  void RbDown(int x, int y) final;
-
-  void RbUp(int x, int y) final;
-
-  void MbDown(int x, int y) final;
-
-  void MbUp(int x, int y) final;
-
-  void Axis(int which, int axis, int value) final;
-
-  void BtDown(int which, int button) final;
-
-  void BtUp(int which, int button) final;
-
-  void Hat(int which, int hat, int value) final;
-
-  void Ball(int which, int ball, int xrel, int yrel) final;
-
-  void Event(const SDL_Event &evt) final;
-
-  void Quit() final;
-
-  void Other(Uint8 type, int code, void *data1, void *data2) final;
-
+ public:
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
 };
 
-}
+} //namespace Context

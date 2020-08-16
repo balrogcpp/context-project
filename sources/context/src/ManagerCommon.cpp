@@ -25,9 +25,9 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "ManagerCommon.hpp"
-#include "IO.hpp"
-#include "ContextManager.hpp"
+#include "ManagerCommon.h"
+#include "IO.h"
+#include "ContextManager.h"
 
 namespace Context {
 

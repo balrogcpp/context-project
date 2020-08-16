@@ -24,8 +24,8 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "AppState.hpp"
-#include "ContextManager.hpp"
+#include "AppState.h"
+#include "ContextManager.h"
 
 namespace Context {
 

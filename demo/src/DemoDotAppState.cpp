@@ -22,13 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Context.hpp"
+#include "Context.h"
 
 #include "DemoDotAppState.h"
-#include "DotSceneLoaderB.hpp"
-#include "AppStateManager.hpp"
+#include "DotSceneLoaderB.h"
+#include "AppStateManager.h"
 //#include "MenuAppState.h"
-#include "CameraMan.hpp"
+#include "CameraMan.h"
 
 namespace Demo {
 
@@ -45,7 +45,6 @@ void DemoDotAppState::KeyDown(SDL_Keycode sym) {
 }
 
 void DemoDotAppState::Reset() {
-  sinbad_.reset();
 }
 
 void DemoDotAppState::Setup() {
