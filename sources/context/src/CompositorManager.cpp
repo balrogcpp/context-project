@@ -22,11 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
 #include "CompositorManager.h"
 #include "Exception.h"
-#include "ConfigManager.h"
+#include "Configurator.h"
 #include "ShaderResolver.h"
 #include "DotSceneLoaderB.h"
 
@@ -213,12 +213,12 @@ void CompositorManager::CreateMotionBlurCompositor() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CompositorManager::Setup() {
-  ConfigManager::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
-  ConfigManager::Assign(compositor_use_bloom_, "compositor_use_bloom");
-  ConfigManager::Assign(compositor_use_ssao_, "compositor_use_ssao");
-  ConfigManager::Assign(compositor_use_blur_, "compositor_use_blur");
-  ConfigManager::Assign(compositor_use_hdr_, "compositor_use_hdr");
-  ConfigManager::Assign(compositor_use_moution_blur_, "compositor_use_moution_blur");
+  Configurator::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
+  Configurator::Assign(compositor_use_bloom_, "compositor_use_bloom");
+  Configurator::Assign(compositor_use_ssao_, "compositor_use_ssao");
+  Configurator::Assign(compositor_use_blur_, "compositor_use_blur");
+  Configurator::Assign(compositor_use_hdr_, "compositor_use_hdr");
+  Configurator::Assign(compositor_use_moution_blur_, "compositor_use_moution_blur");
 
   if (compositor_use_ssao_) {
     ssaog_buffer_scheme_handler_ = std::make_unique<GBufferSchemeHandler>();

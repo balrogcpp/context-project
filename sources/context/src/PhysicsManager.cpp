@@ -22,10 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
 #include "PhysicsManager.h"
-#include "ConfigManager.h"
+#include "Configurator.h"
 #include "ShaderResolver.h"
 
 namespace Context {
@@ -36,16 +36,16 @@ const std::shared_ptr<btDynamicsWorld> &PhysicsManager::GetPhyWorld() const {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void PhysicsManager::Setup() {
-  ConfigManager::Assign(physics_skip_frames_, "physics_skip_frames");
-  ConfigManager::Assign(physics_max_sub_steps_, "physics_max_sub_steps");
-  ConfigManager::Assign(physics_debug_show_collider_, "physics_debug_show_collider");
+  Configurator::Assign(physics_skip_frames_, "physics_skip_frames");
+  Configurator::Assign(physics_max_sub_steps_, "physics_max_sub_steps");
+  Configurator::Assign(physics_debug_show_collider_, "physics_debug_show_collider");
 
   float gravity_x = 0;
   float gravity_y = -9.8f;
   float gravity_z = 0;
-  ConfigManager::Assign(gravity_x, "physics_gravity_x");
-  ConfigManager::Assign(gravity_y, "physics_gravity_y");
-  ConfigManager::Assign(gravity_z, "physics_gravity_z");
+  Configurator::Assign(gravity_x, "physics_gravity_x");
+  Configurator::Assign(gravity_y, "physics_gravity_y");
+  Configurator::Assign(gravity_z, "physics_gravity_z");
 
   broadphase_ = std::make_shared<btAxisSweep3>(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000), 1024);
   collision_config_ = std::make_shared<btDefaultCollisionConfiguration>();

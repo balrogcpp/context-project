@@ -22,13 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
 #include "Application.h"
 #include "ContextManager.h"
 
 #include "AppStateManager.h"
-#include "ConfigManager.h"
+#include "Configurator.h"
 #include "Exception.h"
 #include "PhysicsManager.h"
 #include "SoundManager.h"
@@ -66,17 +66,17 @@ void Application::Setup() {
   ContextManager::GetSingleton().Setup();
   AppStateManager::GetSingleton().cur_state_->SetupGlobals();
 
-  ConfigManager::Assign(global_verbose_fps_, "global_verbose_fps");
-  ConfigManager::Assign(global_verbose_, "global_verbose_enable");
-  ConfigManager::Assign(global_verbose_input_, "global_verbose_input");
-  ConfigManager::Assign(application_fkeys_enable_, "application_fkeys_enable");
+  Configurator::Assign(global_verbose_fps_, "global_verbose_fps");
+  Configurator::Assign(global_verbose_, "global_verbose_enable");
+  Configurator::Assign(global_verbose_input_, "global_verbose_input");
+  Configurator::Assign(application_fkeys_enable_, "application_fkeys_enable");
 
-  ConfigManager::Assign(global_target_fps_, "global_target_fps");
-  ConfigManager::Assign(global_lock_fps_, "global_lock_fps");
-  ConfigManager::Assign(graphics_vsync_, "graphics_vsync");
-  ConfigManager::Assign(application_ask_before_quit_, "application_ask_before_quit");
-  ConfigManager::Assign(application_scene_file_, "application_scene_file");
-  ConfigManager::Assign(application_ambient_sound_file_, "application_ambient_sound_file");
+  Configurator::Assign(global_target_fps_, "global_target_fps");
+  Configurator::Assign(global_lock_fps_, "global_lock_fps");
+  Configurator::Assign(graphics_vsync_, "graphics_vsync");
+  Configurator::Assign(application_ask_before_quit_, "application_ask_before_quit");
+  Configurator::Assign(application_scene_file_, "application_scene_file");
+  Configurator::Assign(application_ambient_sound_file_, "application_ambient_sound_file");
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Render() {
@@ -163,7 +163,7 @@ void Application::Loop() {
 void Application::Go() {
   quit_ = false;
 
-  ConfigManager::GetSingleton().Setup();
+  Configurator::GetSingleton().Setup();
   std::ios_base::sync_with_stdio(false);
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
@@ -282,8 +282,8 @@ void Application::Event(const SDL_Event &evt) {
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         paused_ = false;
-        ConfigManager::Assign(global_target_fps_, "global_target_fps");
-        ConfigManager::Assign(global_lock_fps_, "global_lock_fps");
+        Configurator::Assign(global_target_fps_, "global_target_fps");
+        Configurator::Assign(global_lock_fps_, "global_lock_fps");
       }
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
@@ -293,8 +293,8 @@ void Application::Event(const SDL_Event &evt) {
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         paused_ = false;
-        ConfigManager::Assign(global_target_fps_, "global_target_fps");
-        ConfigManager::Assign(global_lock_fps_, "global_lock_fps");
+        Configurator::Assign(global_target_fps_, "global_target_fps");
+        Configurator::Assign(global_lock_fps_, "global_lock_fps");
       }
     }
   }

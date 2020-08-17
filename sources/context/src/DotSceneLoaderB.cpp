@@ -22,14 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
 #include "DotSceneLoaderB.h"
 
 #include "StaticForestManager.h"
 #include "PhysicsManager.h"
 #include "CameraMan.h"
-#include "ConfigManager.h"
+#include "Configurator.h"
 #include "TerrainMaterialGeneratorB.h"
 #include "TerrainMaterialGeneratorC.h"
 #include "ShaderResolver.h"
@@ -228,22 +228,22 @@ void DotSceneLoaderB::Setup() {
 
   Ogre::SceneLoaderManager::getSingleton().registerSceneLoader("DotSceneB", {".scene", ".xml"}, GetSingletonPtr());
 
-  ConfigManager::Assign(physics_enable_, "physics_enable");
-  ConfigManager::Assign(lod_generator_enable_, "lod_generator_enable");
-  ConfigManager::Assign(terrain_fog_perpixel_, "terrain_fog_perpixel");
-  ConfigManager::Assign(legacy_terrain_, "terrain_legacy");
-  ConfigManager::Assign(terrain_generator_b_, "terrain_generator_b");
-  ConfigManager::Assign(terrain_receive_shadows_, "terrain_receive_shadows");
-  ConfigManager::Assign(terrain_receive_shadows_low_lod_, "terrain_receive_shadows_low_lod");
-  ConfigManager::Assign(terrain_cast_shadows_, "terrain_cast_shadows");
-  ConfigManager::Assign(terrain_lightmap_enable_, "terrain_lightmap_enable");
-  ConfigManager::Assign(terrain_lightmap_, "terrain_lightmap");
-  ConfigManager::Assign(terrain_parallaxmap_enable_, "terrain_parallaxmap_enable");
-  ConfigManager::Assign(terrain_specularmap_enable_, "terrain_specularmap_enable");
-  ConfigManager::Assign(terrain_normalmap_enable_, "terrain_normalmap_enable");
-  ConfigManager::Assign(terrain_save_terrains_, "terrain_save_terrains");
-  ConfigManager::Assign(terrain_colourmap_enable_, "terrain_colourmap_enable");
-  ConfigManager::Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
+  Configurator::Assign(physics_enable_, "physics_enable");
+  Configurator::Assign(lod_generator_enable_, "lod_generator_enable");
+  Configurator::Assign(terrain_fog_perpixel_, "terrain_fog_perpixel");
+  Configurator::Assign(legacy_terrain_, "terrain_legacy");
+  Configurator::Assign(terrain_generator_b_, "terrain_generator_b");
+  Configurator::Assign(terrain_receive_shadows_, "terrain_receive_shadows");
+  Configurator::Assign(terrain_receive_shadows_low_lod_, "terrain_receive_shadows_low_lod");
+  Configurator::Assign(terrain_cast_shadows_, "terrain_cast_shadows");
+  Configurator::Assign(terrain_lightmap_enable_, "terrain_lightmap_enable");
+  Configurator::Assign(terrain_lightmap_, "terrain_lightmap");
+  Configurator::Assign(terrain_parallaxmap_enable_, "terrain_parallaxmap_enable");
+  Configurator::Assign(terrain_specularmap_enable_, "terrain_specularmap_enable");
+  Configurator::Assign(terrain_normalmap_enable_, "terrain_normalmap_enable");
+  Configurator::Assign(terrain_save_terrains_, "terrain_save_terrains");
+  Configurator::Assign(terrain_colourmap_enable_, "terrain_colourmap_enable");
+  Configurator::Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::Reset() {
@@ -1400,10 +1400,10 @@ void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
     auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     auto pass = material->getTechnique(0)->getPass(0);
 
-    if (ConfigManager::GetSingleton().GetBool("graphics_shadows_enable")) {
+    if (Configurator::GetSingleton().GetBool("graphics_shadows_enable")) {
       Ogre::uint numTextures = 3;
       Ogre::Vector4 splitPoints;
-      if (ConfigManager::GetSingleton().GetString("graphics_shadows_projection") == "pssm") {
+      if (Configurator::GetSingleton().GetString("graphics_shadows_projection") == "pssm") {
         const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
         for (int j = 1; j < numTextures; ++j) {
           splitPoints[j - 1] = splitPointList[j];
@@ -1504,7 +1504,7 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *p
     }
 
     std::string shadow_technique;
-    ConfigManager::Assign(shadow_technique, "graphics_shadows_tecnique");
+    Configurator::Assign(shadow_technique, "graphics_shadows_tecnique");
 
     if (shadow_technique == "stencil") {
       if (!entity->getMesh()->isEdgeListBuilt()) {

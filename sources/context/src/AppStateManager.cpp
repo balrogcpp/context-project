@@ -22,14 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
 #include "AppStateManager.h"
 #include "DotSceneLoaderB.h"
 #include "StaticForestManager.h"
 #include "PhysicsManager.h"
 #include "SoundManager.h"
-#include "ConfigManager.h"
+#include "Configurator.h"
 #include "CubeMapCamera.h"
 #include "ReflectionCamera.h"
 #include "IO.h"
@@ -104,7 +104,7 @@ void AppStateManager::CleanupResources() {
     DotSceneLoaderB::GetSingleton().Reset();
     ReflectionCamera::GetSingleton().FreeCamera();
 
-    if (ConfigManager::GetSingleton().GetBool("physics_enable")) {
+    if (Configurator::GetSingleton().GetBool("physics_enable")) {
       PhysicsManager::GetSingleton().Reset();
     }
 

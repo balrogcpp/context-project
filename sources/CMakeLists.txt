@@ -82,11 +82,11 @@ set(CONTEXT_HEADERS
     context/include/CameraMan.h
     context/include/Exception.h
     context/include/IO.h
-    context/include/pcheader.hpp
+    context/include/pcheader.h
     context/include/ContextManager.h
     context/include/ShaderResolver.h
     context/include/DummyListener.h
-    context/include/ConfigManager.h
+    context/include/Configurator.h
     context/include/DotSceneLoaderB.h
     context/include/StaticForestManager.h
     context/include/PhysicsManager.h
@@ -155,7 +155,6 @@ set(CONTEXT_SOURCES
     context/src/CameraMan.cpp
     context/src/ContextManager.cpp
     context/src/ShaderResolver.cpp
-    context/src/ConfigManager.cpp
     context/src/DotSceneLoaderB.cpp
     context/src/PhysicsManager.cpp
     context/src/StaticForestManager.cpp
@@ -201,8 +200,8 @@ set(CMAKE_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS})
 set(CMAKE_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS})
 
 if (NOT MSVC AND NOT ANDROID)
-    set_target_properties(context-lib-dynamic PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "context/include/pcheader.hpp")
-    set_target_properties(context-lib-static PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "context/include/pcheader.hpp")
+    set_target_properties(context-lib-dynamic PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "context/include/pcheader.h")
+    set_target_properties(context-lib-static PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "context/include/pcheader.h")
     #    cotire(context-lib-dynamic)
     cotire(context-lib-static)
 endif ()

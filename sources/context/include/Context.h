@@ -35,7 +35,7 @@
 #include "ContextManager.h"
 #include "ShaderResolver.h"
 #include "DummyListener.h"
-#include "ConfigManager.h"
+#include "Configurator.h"
 #include "CompositorManager.h"
 #include "StaticForestManager.h"
 #include "PhysicsManager.h"

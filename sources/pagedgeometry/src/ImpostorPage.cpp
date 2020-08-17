@@ -13,7 +13,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 //ImposterPage is an extension to PagedGeometry which displays entities as imposters.
 //-------------------------------------------------------------------------------------
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
 using namespace Ogre;
 using namespace Forests;

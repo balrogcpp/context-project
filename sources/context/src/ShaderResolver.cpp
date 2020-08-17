@@ -22,11 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
 #include "ShaderResolver.h"
 #include "ContextManager.h"
-#include "ConfigManager.h"
+#include "Configurator.h"
 
 #include <OgreTechnique.h>
 #include <Ogre.h>

@@ -22,10 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
 #include "ContextManager.h"
-#include "ConfigManager.h"
+#include "Configurator.h"
 #include "Exception.h"
 #include "CameraMan.h"
 #include "ShaderResolver.h"
@@ -49,75 +49,75 @@ ContextManager ContextManager::ContextManagerSingleton;
 
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupConfigManager() {
-  ConfigManager::Assign(window_position_.f, "window_fullscreen");
-  ConfigManager::Assign(window_position_.h, "window_high");
-  ConfigManager::Assign(window_position_.w, "window_width");
-  ConfigManager::Assign(window_caption_, "window_caption");
+  Configurator::Assign(window_position_.f, "window_fullscreen");
+  Configurator::Assign(window_position_.h, "window_high");
+  Configurator::Assign(window_position_.w, "window_width");
+  Configurator::Assign(window_caption_, "window_caption");
 
-  ConfigManager::Assign(opengl_version_.major, "opengl_ver_major");
-  ConfigManager::Assign(opengl_version_.minor, "opengl_ver_minor");
-  ConfigManager::Assign(opengl_ver_force_, "opengl_ver_force");
+  Configurator::Assign(opengl_version_.major, "opengl_ver_major");
+  Configurator::Assign(opengl_version_.minor, "opengl_ver_minor");
+  Configurator::Assign(opengl_ver_force_, "opengl_ver_force");
 
-  ConfigManager::Assign(rtss_enable_, "rtss_enable");
-  ConfigManager::Assign(rtss_pssm4_enable_, "rtss_pssm4_enable");
-  ConfigManager::Assign(rtss_resolver_enable_, "rtss_resolver_enable");
-  ConfigManager::Assign(rtss_cache_enable_, "rtss_cache_enable");
-  ConfigManager::Assign(rtss_perpixel_light_enable_, "rtss_perpixel_light_enable");
-  ConfigManager::Assign(rtss_perpixel_fog_enable_, "rtss_perpixel_fog_enable");
-  ConfigManager::Assign(rtss_cache_dir_, "rtss_cache_dir");
+  Configurator::Assign(rtss_enable_, "rtss_enable");
+  Configurator::Assign(rtss_pssm4_enable_, "rtss_pssm4_enable");
+  Configurator::Assign(rtss_resolver_enable_, "rtss_resolver_enable");
+  Configurator::Assign(rtss_cache_enable_, "rtss_cache_enable");
+  Configurator::Assign(rtss_perpixel_light_enable_, "rtss_perpixel_light_enable");
+  Configurator::Assign(rtss_perpixel_fog_enable_, "rtss_perpixel_fog_enable");
+  Configurator::Assign(rtss_cache_dir_, "rtss_cache_dir");
 
-  ConfigManager::Assign(hlms_enable_, "hlms_enable");
-  ConfigManager::Assign(hlms_force_enable_, "hlms_force_enable");
+  Configurator::Assign(hlms_enable_, "hlms_enable");
+  Configurator::Assign(hlms_force_enable_, "hlms_force_enable");
 
-  ConfigManager::Assign(global_octree_enable_, "global_octree_enable");
-  ConfigManager::Assign(global_verbose_enable_, "global_verbose_enable");
-  ConfigManager::Assign(global_log_enable_, "global_log_enable");
-  ConfigManager::Assign(ogre_log_name_, "global_log_name");
-  ConfigManager::Assign(global_stbi_enable_, "global_stbi_enable");
-  ConfigManager::Assign(global_freeimage_enable_, "global_freeimage_enable");
-  ConfigManager::Assign(global_particlefx_enable_, "global_particlefx_enable");
-  ConfigManager::Assign(global_sso_enable_, "global_sso_enable");
-  ConfigManager::Assign(physics_enable_, "physics_enable");
-  ConfigManager::Assign(sound_enable_, "sound_enable");
+  Configurator::Assign(global_octree_enable_, "global_octree_enable");
+  Configurator::Assign(global_verbose_enable_, "global_verbose_enable");
+  Configurator::Assign(global_log_enable_, "global_log_enable");
+  Configurator::Assign(ogre_log_name_, "global_log_name");
+  Configurator::Assign(global_stbi_enable_, "global_stbi_enable");
+  Configurator::Assign(global_freeimage_enable_, "global_freeimage_enable");
+  Configurator::Assign(global_particlefx_enable_, "global_particlefx_enable");
+  Configurator::Assign(global_sso_enable_, "global_sso_enable");
+  Configurator::Assign(physics_enable_, "physics_enable");
+  Configurator::Assign(sound_enable_, "sound_enable");
 #ifdef DEBUG
-  ConfigManager::Assign(media_location_directory_, "media_location_directory");
+  Configurator::Assign(media_location_directory_, "media_location_directory");
 #endif
-  ConfigManager::Assign(global_resource_list_file_, "global_resource_list");
+  Configurator::Assign(global_resource_list_file_, "global_resource_list");
 
-  ConfigManager::Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
-  ConfigManager::Assign(graphics_vsync_, "graphics_vsync");
-  ConfigManager::Assign(graphics_gamma_enable_, "graphics_gamma");
-  ConfigManager::Assign(graphics_fsaa_, "graphics_fsaa");
-  ConfigManager::Assign(graphics_msaa_, "graphics_msaa");
-  ConfigManager::Assign(graphics_filtration_, "graphics_filtration");
-  ConfigManager::Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
-  ConfigManager::Assign(graphics_mipmap_count_, "graphics_mipmap_count");
+  Configurator::Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
+  Configurator::Assign(graphics_vsync_, "graphics_vsync");
+  Configurator::Assign(graphics_gamma_enable_, "graphics_gamma");
+  Configurator::Assign(graphics_fsaa_, "graphics_fsaa");
+  Configurator::Assign(graphics_msaa_, "graphics_msaa");
+  Configurator::Assign(graphics_filtration_, "graphics_filtration");
+  Configurator::Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
+  Configurator::Assign(graphics_mipmap_count_, "graphics_mipmap_count");
 
-  ConfigManager::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
-  ConfigManager::Assign(graphics_shadows_pssm_enable_, "graphics_shadows_pssm_enable");
-  ConfigManager::Assign(graphics_shadows_depth_enable_, "graphics_shadows_depth_enable");
-  ConfigManager::Assign(graphics_shadows_pssm_0_, "graphics_shadows_pssm_0");
-  ConfigManager::Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
-  ConfigManager::Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
-  ConfigManager::Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
-  ConfigManager::Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
-  ConfigManager::Assign(graphics_shadows_pssm_0_resolution_, "graphics_shadows_pssm_0_resolution");
-  ConfigManager::Assign(graphics_shadows_pssm_1_resolution_, "graphics_shadows_pssm_1_resolution");
-  ConfigManager::Assign(graphics_shadows_pssm_2_resolution_, "graphics_shadows_pssm_2_resolution");
-  ConfigManager::Assign(graphics_shadows_texture_resolution_, "graphics_shadows_texture_resolution");
-  ConfigManager::Assign(graphics_shadows_split_padding_, "graphics_shadows_split_padding");
-  ConfigManager::Assign(graphics_shadows_texture_count_, "graphics_shadows_texture_count");
-  ConfigManager::Assign(graphics_shadows_far_distance_, "graphics_shadows_far_distance");
-  ConfigManager::Assign(graphics_shadows_self_shadow_, "graphics_shadows_self_shadow");
-  ConfigManager::Assign(graphics_shadows_back_faces_, "graphics_shadows_back_faces");
-  ConfigManager::Assign(graphics_shadows_caster_material_, "graphics_shadows_caster_material");
-  ConfigManager::Assign(graphics_shadows_receiver_material_, "graphics_shadows_receiver_material");
+  Configurator::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
+  Configurator::Assign(graphics_shadows_pssm_enable_, "graphics_shadows_pssm_enable");
+  Configurator::Assign(graphics_shadows_depth_enable_, "graphics_shadows_depth_enable");
+  Configurator::Assign(graphics_shadows_pssm_0_, "graphics_shadows_pssm_0");
+  Configurator::Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
+  Configurator::Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
+  Configurator::Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
+  Configurator::Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
+  Configurator::Assign(graphics_shadows_pssm_0_resolution_, "graphics_shadows_pssm_0_resolution");
+  Configurator::Assign(graphics_shadows_pssm_1_resolution_, "graphics_shadows_pssm_1_resolution");
+  Configurator::Assign(graphics_shadows_pssm_2_resolution_, "graphics_shadows_pssm_2_resolution");
+  Configurator::Assign(graphics_shadows_texture_resolution_, "graphics_shadows_texture_resolution");
+  Configurator::Assign(graphics_shadows_split_padding_, "graphics_shadows_split_padding");
+  Configurator::Assign(graphics_shadows_texture_count_, "graphics_shadows_texture_count");
+  Configurator::Assign(graphics_shadows_far_distance_, "graphics_shadows_far_distance");
+  Configurator::Assign(graphics_shadows_self_shadow_, "graphics_shadows_self_shadow");
+  Configurator::Assign(graphics_shadows_back_faces_, "graphics_shadows_back_faces");
+  Configurator::Assign(graphics_shadows_caster_material_, "graphics_shadows_caster_material");
+  Configurator::Assign(graphics_shadows_receiver_material_, "graphics_shadows_receiver_material");
 
-  ConfigManager::Assign(graphics_shadows_tecnique_, "graphics_shadows_tecnique");
-  ConfigManager::Assign(graphics_shadows_lighting_, "graphics_shadows_lighting");
-  ConfigManager::Assign(graphics_shadows_projection_, "graphics_shadows_projection");
-  ConfigManager::Assign(graphics_shadows_material_, "graphics_shadows_material");
-  ConfigManager::Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
+  Configurator::Assign(graphics_shadows_tecnique_, "graphics_shadows_tecnique");
+  Configurator::Assign(graphics_shadows_lighting_, "graphics_shadows_lighting");
+  Configurator::Assign(graphics_shadows_projection_, "graphics_shadows_projection");
+  Configurator::Assign(graphics_shadows_material_, "graphics_shadows_material");
+  Configurator::Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupPath() {
