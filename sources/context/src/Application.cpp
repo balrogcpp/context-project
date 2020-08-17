@@ -28,7 +28,7 @@ SOFTWARE.
 #include "ContextManager.h"
 
 #include "AppStateManager.h"
-#include "Configurator.h"
+#include "ConfiguratorJson.h"
 #include "Exception.h"
 #include "PhysicsManager.h"
 #include "SoundManager.h"
@@ -66,17 +66,17 @@ void Application::Setup() {
   ContextManager::GetSingleton().Setup();
   AppStateManager::GetSingleton().cur_state_->SetupGlobals();
 
-  Configurator::Assign(global_verbose_fps_, "global_verbose_fps");
-  Configurator::Assign(global_verbose_, "global_verbose_enable");
-  Configurator::Assign(global_verbose_input_, "global_verbose_input");
-  Configurator::Assign(application_fkeys_enable_, "application_fkeys_enable");
+  ConfiguratorJson::Assign(global_verbose_fps_, "global_verbose_fps");
+  ConfiguratorJson::Assign(global_verbose_, "global_verbose_enable");
+  ConfiguratorJson::Assign(global_verbose_input_, "global_verbose_input");
+  ConfiguratorJson::Assign(application_fkeys_enable_, "application_fkeys_enable");
 
-  Configurator::Assign(global_target_fps_, "global_target_fps");
-  Configurator::Assign(global_lock_fps_, "global_lock_fps");
-  Configurator::Assign(graphics_vsync_, "graphics_vsync");
-  Configurator::Assign(application_ask_before_quit_, "application_ask_before_quit");
-  Configurator::Assign(application_scene_file_, "application_scene_file");
-  Configurator::Assign(application_ambient_sound_file_, "application_ambient_sound_file");
+  ConfiguratorJson::Assign(global_target_fps_, "global_target_fps");
+  ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
+  ConfiguratorJson::Assign(graphics_vsync_, "graphics_vsync");
+  ConfiguratorJson::Assign(application_ask_before_quit_, "application_ask_before_quit");
+  ConfiguratorJson::Assign(application_scene_file_, "application_scene_file");
+  ConfiguratorJson::Assign(application_ambient_sound_file_, "application_ambient_sound_file");
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Render() {
@@ -163,7 +163,7 @@ void Application::Loop() {
 void Application::Go() {
   quit_ = false;
 
-  Configurator::GetSingleton().Setup();
+  ConfiguratorJson::GetSingleton().Setup();
   std::ios_base::sync_with_stdio(false);
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
@@ -282,8 +282,8 @@ void Application::Event(const SDL_Event &evt) {
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         paused_ = false;
-        Configurator::Assign(global_target_fps_, "global_target_fps");
-        Configurator::Assign(global_lock_fps_, "global_lock_fps");
+        ConfiguratorJson::Assign(global_target_fps_, "global_target_fps");
+        ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
       }
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
@@ -293,8 +293,8 @@ void Application::Event(const SDL_Event &evt) {
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         paused_ = false;
-        Configurator::Assign(global_target_fps_, "global_target_fps");
-        Configurator::Assign(global_lock_fps_, "global_lock_fps");
+        ConfiguratorJson::Assign(global_target_fps_, "global_target_fps");
+        ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
       }
     }
   }
@@ -429,6 +429,5 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
 }
 int Application::GetFpsFrames() const {
   return current_fps_;
-}
-
-}
+} //class Application
+} //namespace Context

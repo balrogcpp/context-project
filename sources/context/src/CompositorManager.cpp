@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include "CompositorManager.h"
 #include "Exception.h"
-#include "Configurator.h"
+#include "ConfiguratorJson.h"
 #include "ShaderResolver.h"
 #include "DotSceneLoaderB.h"
 
@@ -213,12 +213,12 @@ void CompositorManager::CreateMotionBlurCompositor() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CompositorManager::Setup() {
-  Configurator::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
-  Configurator::Assign(compositor_use_bloom_, "compositor_use_bloom");
-  Configurator::Assign(compositor_use_ssao_, "compositor_use_ssao");
-  Configurator::Assign(compositor_use_blur_, "compositor_use_blur");
-  Configurator::Assign(compositor_use_hdr_, "compositor_use_hdr");
-  Configurator::Assign(compositor_use_moution_blur_, "compositor_use_moution_blur");
+  ConfiguratorJson::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
+  ConfiguratorJson::Assign(compositor_use_bloom_, "compositor_use_bloom");
+  ConfiguratorJson::Assign(compositor_use_ssao_, "compositor_use_ssao");
+  ConfiguratorJson::Assign(compositor_use_blur_, "compositor_use_blur");
+  ConfiguratorJson::Assign(compositor_use_hdr_, "compositor_use_hdr");
+  ConfiguratorJson::Assign(compositor_use_moution_blur_, "compositor_use_moution_blur");
 
   if (compositor_use_ssao_) {
     ssaog_buffer_scheme_handler_ = std::make_unique<GBufferSchemeHandler>();

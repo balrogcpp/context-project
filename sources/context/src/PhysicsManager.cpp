@@ -25,7 +25,7 @@ SOFTWARE.
 #include "pcheader.h"
 
 #include "PhysicsManager.h"
-#include "Configurator.h"
+#include "ConfiguratorJson.h"
 #include "ShaderResolver.h"
 
 namespace Context {
@@ -36,16 +36,16 @@ const std::shared_ptr<btDynamicsWorld> &PhysicsManager::GetPhyWorld() const {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void PhysicsManager::Setup() {
-  Configurator::Assign(physics_skip_frames_, "physics_skip_frames");
-  Configurator::Assign(physics_max_sub_steps_, "physics_max_sub_steps");
-  Configurator::Assign(physics_debug_show_collider_, "physics_debug_show_collider");
+  ConfiguratorJson::Assign(physics_skip_frames_, "physics_skip_frames");
+  ConfiguratorJson::Assign(physics_max_sub_steps_, "physics_max_sub_steps");
+  ConfiguratorJson::Assign(physics_debug_show_collider_, "physics_debug_show_collider");
 
   float gravity_x = 0;
   float gravity_y = -9.8f;
   float gravity_z = 0;
-  Configurator::Assign(gravity_x, "physics_gravity_x");
-  Configurator::Assign(gravity_y, "physics_gravity_y");
-  Configurator::Assign(gravity_z, "physics_gravity_z");
+  ConfiguratorJson::Assign(gravity_x, "physics_gravity_x");
+  ConfiguratorJson::Assign(gravity_y, "physics_gravity_y");
+  ConfiguratorJson::Assign(gravity_z, "physics_gravity_z");
 
   broadphase_ = std::make_shared<btAxisSweep3>(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000), 1024);
   collision_config_ = std::make_shared<btDefaultCollisionConfiguration>();

@@ -35,11 +35,11 @@ SOFTWARE.
 
 namespace Context {
 
-class Configurator {
+class ConfiguratorJson {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  static Configurator &GetSingleton() {
-    static Configurator ConfigManagerSingleton;
+  static ConfiguratorJson &GetSingleton() {
+    static ConfiguratorJson ConfigManagerSingleton;
     return ConfigManagerSingleton;
   }
 //----------------------------------------------------------------------------------------------------------------------
@@ -193,6 +193,9 @@ class Configurator {
 
       std::cout << '\n';
     }
+
+    if (ifs.is_open())
+      ifs.close();
   }
 //----------------------------------------------------------------------------------------------------------------------
   std::string GetConfigFileName() const {

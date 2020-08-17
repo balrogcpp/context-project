@@ -26,10 +26,10 @@ SOFTWARE.
 
 #include "AppStateManager.h"
 #include "DotSceneLoaderB.h"
-#include "StaticForestManager.h"
+#include "StaticForest.h"
 #include "PhysicsManager.h"
 #include "SoundManager.h"
-#include "Configurator.h"
+#include "ConfiguratorJson.h"
 #include "CubeMapCamera.h"
 #include "ReflectionCamera.h"
 #include "IO.h"
@@ -100,11 +100,10 @@ void AppStateManager::GoNextState() {
 //----------------------------------------------------------------------------------------------------------------------
 void AppStateManager::CleanupResources() {
   if (waiting_) {
-    StaticForestManager::GetSingleton().Reset();
+    StaticForest::GetSingleton().Reset();
     DotSceneLoaderB::GetSingleton().Reset();
-    ReflectionCamera::GetSingleton().FreeCamera();
 
-    if (Configurator::GetSingleton().GetBool("physics_enable")) {
+    if (ConfiguratorJson::GetSingleton().GetBool("physics_enable")) {
       PhysicsManager::GetSingleton().Reset();
     }
 
@@ -151,7 +150,7 @@ void AppStateManager::Reset() {
     prev_state_.reset();
   }
 
-  StaticForestManager::GetSingleton().Reset();
+  StaticForest::GetSingleton().Reset();
   DotSceneLoaderB::GetSingleton().Reset();
   ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllEntities();
   ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllLights();

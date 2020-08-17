@@ -25,14 +25,14 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "StaticForestManager.h"
+#include "StaticForest.h"
 
 #include "DotSceneLoaderB.h"
 #include "ShaderResolver.h"
 
 namespace Context {
 
-StaticForestManager StaticForestManager::staticForestManagerSingleton;
+StaticForest StaticForest::staticForestManagerSingleton;
 
 #pragma pack(push, 1)
 struct GrassVertex {
@@ -42,7 +42,7 @@ struct GrassVertex {
 };
 #pragma pack(pop)
 //----------------------------------------------------------------------------------------------------------------------
-void StaticForestManager::CreateGrassMesh() {
+void StaticForest::CreateGrassMesh() {
   Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
 
   // Create a submesh with the grass material
@@ -123,7 +123,7 @@ void StaticForestManager::CreateGrassMesh() {
   sm->indexData->indexBuffer->unlock(); // commit index changes
 }
 //----------------------------------------------------------------------------------------------------------------------
-void StaticForestManager::GenerateGrass() {
+void StaticForest::GenerateGrass() {
   ContextManager &context = Context::ContextManager::GetSingleton();
   Ogre::SceneManager *sceneMgr = context.GetOgreScenePtr();
   // create our grass mesh, and Create a grass entity from it
@@ -184,7 +184,7 @@ void StaticForestManager::GenerateGrass() {
 //  mField->setCastShadows(false);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void StaticForestManager::Create() {
+void StaticForest::Create() {
   DotSceneLoaderB::FixPbrParams("3D-Diggers/farn01");
   DotSceneLoaderB::FixPbrShadowReceiver("3D-Diggers/farn01");
   DotSceneLoaderB::FixPbrParams("3D-Diggers/farn02");
@@ -199,12 +199,12 @@ void StaticForestManager::Create() {
   GenerateGrass();
 }
 //----------------------------------------------------------------------------------------------------------------------
-bool StaticForestManager::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+bool StaticForest::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void StaticForestManager::Reset() {
+void StaticForest::Reset() {
   if (Ogre::MeshManager::getSingleton().getByName("grass",
                                                   Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
     Ogre::MeshManager::getSingleton().remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);

@@ -27,6 +27,8 @@ SOFTWARE.
 #include "Manager.h"
 
 #include <OgrePlane.h>
+#include <OgreFrameListener.h>
+#include <OgreRenderTargetListener.h>
 
 namespace Ogre {
 class RenderTarget;
@@ -36,40 +38,120 @@ class SceneNode;
 
 namespace Context {
 
-class ReflectionCamera : public Manager {
+class ReflectionCamera final : public Ogre::RenderTargetListener, public Ogre::FrameListener{
  private:
   static ReflectionCamera CubeMapCameraSingleton;
 
  public:
-  static ReflectionCamera *GetSingletonPtr();
-  static ReflectionCamera &GetSingleton();
+  static ReflectionCamera &GetSingleton() {
+    static ReflectionCamera Singleton;
+    return Singleton;
+  }
 
  public:
-  void Setup() final;
-  void Reset() final;
-  void FreeCamera();
-  void RegPlane(Ogre::Plane);
-  void UnregPlane();
+//----------------------------------------------------------------------------------------------------------------------
+  void Setup() {
+    // create our reflection & refraction render textures, and setup their render targets
+    auto* scene = Ogre::Root::getSingleton().getSceneManager("Default");
+    auto* camera = scene->getCamera("Default");
+
+    if (!camera_) {
+      camera_ = scene->createCamera("CubeMapCamera");
+      camera_->setProjectionType(Ogre::PT_PERSPECTIVE);
+      camera_->setFOVy(camera->getFOVy());
+      camera_->setAspectRatio(camera->getAspectRatio());
+      camera_->setLodBias(0.2);
+      camera_->setNearClipDistance(camera->getNearClipDistance());
+      camera_->setFarClipDistance(camera->getFarClipDistance());
+    }
+
+    ref_cam_node_ = camera->getParentSceneNode()->createChildSceneNode();
+    ref_cam_node_->attachObject(camera_);
+
+    if (!reflection_tex_)
+      reflection_tex_ = Ogre::TextureManager::getSingleton().createManual("reflection",
+                                                                          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                                                                          Ogre::TEX_TYPE_2D,
+                                                                          1024,
+                                                                          1024,
+                                                                          0,
+                                                                          Ogre::PF_R8G8B8,
+                                                                          Ogre::TU_RENDERTARGET);
+
+    Ogre::RenderTarget *rtt1 = reflection_tex_->getBuffer()->getRenderTarget();
+
+    const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
+    const Ogre::uint32 SURFACE_MASK = 0x00F;
+    const Ogre::uint32 WATER_MASK = 0xF00;
+
+    if (!rtt1->getViewport(0)) {
+      Ogre::Viewport *vp = rtt1->addViewport(camera_);
+      vp->setOverlaysEnabled(false);
+      vp->setShadowsEnabled(false);
+      // toggle reflection in camera
+      rtt1->addListener(this);
+      vp->setVisibilityMask(SURFACE_MASK);
+    }
+
+    if (!refraction_tex_ && camera_ == camera) {
+      refraction_tex_ = Ogre::TextureManager::getSingleton().createManual("refraction",
+                                                                          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                                                                          Ogre::TEX_TYPE_2D,
+                                                                          1,
+                                                                          1,
+                                                                          0,
+                                                                          Ogre::PF_R8G8B8,
+                                                                          Ogre::TU_RENDERTARGET);
+
+      Ogre::RenderTarget *rtt2 = refraction_tex_->getBuffer()->getRenderTarget();
+
+      if (!rtt2->getViewport(0)) {
+        Ogre::Viewport *vp = rtt2->addViewport(camera);
+        vp->setOverlaysEnabled(false);
+        vp->setShadowsEnabled(false);
+        // toggle reflection in camera
+        rtt2->addListener(this);
+        vp->setVisibilityMask(SUBMERGED_MASK);
+      }
+    }
+  }
+
+  void Reset() {};
+//----------------------------------------------------------------------------------------------------------------------
+  void RegPlane(Ogre::Plane plane) {
+    plane_ = plane;
+  }
 
  public:
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
+//----------------------------------------------------------------------------------------------------------------------
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
+    auto* scene = Ogre::Root::getSingleton().getSceneManager("Default");
+    scene->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+    camera_->setFOVy(scene->getCamera("Default")->getFOVy());
+    camera_->enableReflection(plane_);
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
+    Ogre::Root::getSingleton().getSceneManager("Default")->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    camera_->disableReflection();
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final { return true; };
 
  private:
-  std::shared_ptr<Ogre::Texture> reflection_;
-  std::shared_ptr<Ogre::Texture> refraction_;
+  std::shared_ptr<Ogre::Texture> reflection_tex_;
+  std::shared_ptr<Ogre::Texture> refraction_tex_;
   Ogre::Plane plane_;
-  Ogre::Camera *reflection_camera_ = nullptr ;
-  Ogre::SceneNode *ogre_reflection_camera_node_ = nullptr;
+  Ogre::Camera *camera_ = nullptr ;
+  Ogre::SceneNode *ref_cam_node_ = nullptr;
 
  public:
-  const std::shared_ptr<Ogre::Texture> &GetReflectionTex() const {
-    return reflection_;
+  std::shared_ptr<Ogre::Texture> GetReflectionTex() const {
+    return reflection_tex_;
   }
-  const std::shared_ptr<Ogre::Texture> &GetRefractionTex() const {
-    return refraction_;
+
+  std::shared_ptr<Ogre::Texture> GetRefractionTex() const {
+    return refraction_tex_;
   }
 };
-
 } //namespace Context

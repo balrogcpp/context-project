@@ -25,14 +25,14 @@ SOFTWARE.
 #include "pcheader.h"
 
 #include "ContextManager.h"
-#include "Configurator.h"
+#include "ConfiguratorJson.h"
 #include "Exception.h"
 #include "CameraMan.h"
 #include "ShaderResolver.h"
 #include "PhysicsManager.h"
 #include "AppStateManager.h"
 #include "DotSceneLoaderB.h"
-#include "StaticForestManager.h"
+#include "StaticForest.h"
 #include "SoundManager.h"
 #include "CompositorManager.h"
 #include "PSSMShadowCameraSetupB.h"
@@ -49,75 +49,75 @@ ContextManager ContextManager::ContextManagerSingleton;
 
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupConfigManager() {
-  Configurator::Assign(window_position_.f, "window_fullscreen");
-  Configurator::Assign(window_position_.h, "window_high");
-  Configurator::Assign(window_position_.w, "window_width");
-  Configurator::Assign(window_caption_, "window_caption");
+  ConfiguratorJson::Assign(window_position_.f, "window_fullscreen");
+  ConfiguratorJson::Assign(window_position_.h, "window_high");
+  ConfiguratorJson::Assign(window_position_.w, "window_width");
+  ConfiguratorJson::Assign(window_caption_, "window_caption");
 
-  Configurator::Assign(opengl_version_.major, "opengl_ver_major");
-  Configurator::Assign(opengl_version_.minor, "opengl_ver_minor");
-  Configurator::Assign(opengl_ver_force_, "opengl_ver_force");
+  ConfiguratorJson::Assign(opengl_version_.major, "opengl_ver_major");
+  ConfiguratorJson::Assign(opengl_version_.minor, "opengl_ver_minor");
+  ConfiguratorJson::Assign(opengl_ver_force_, "opengl_ver_force");
 
-  Configurator::Assign(rtss_enable_, "rtss_enable");
-  Configurator::Assign(rtss_pssm4_enable_, "rtss_pssm4_enable");
-  Configurator::Assign(rtss_resolver_enable_, "rtss_resolver_enable");
-  Configurator::Assign(rtss_cache_enable_, "rtss_cache_enable");
-  Configurator::Assign(rtss_perpixel_light_enable_, "rtss_perpixel_light_enable");
-  Configurator::Assign(rtss_perpixel_fog_enable_, "rtss_perpixel_fog_enable");
-  Configurator::Assign(rtss_cache_dir_, "rtss_cache_dir");
+  ConfiguratorJson::Assign(rtss_enable_, "rtss_enable");
+  ConfiguratorJson::Assign(rtss_pssm4_enable_, "rtss_pssm4_enable");
+  ConfiguratorJson::Assign(rtss_resolver_enable_, "rtss_resolver_enable");
+  ConfiguratorJson::Assign(rtss_cache_enable_, "rtss_cache_enable");
+  ConfiguratorJson::Assign(rtss_perpixel_light_enable_, "rtss_perpixel_light_enable");
+  ConfiguratorJson::Assign(rtss_perpixel_fog_enable_, "rtss_perpixel_fog_enable");
+  ConfiguratorJson::Assign(rtss_cache_dir_, "rtss_cache_dir");
 
-  Configurator::Assign(hlms_enable_, "hlms_enable");
-  Configurator::Assign(hlms_force_enable_, "hlms_force_enable");
+  ConfiguratorJson::Assign(hlms_enable_, "hlms_enable");
+  ConfiguratorJson::Assign(hlms_force_enable_, "hlms_force_enable");
 
-  Configurator::Assign(global_octree_enable_, "global_octree_enable");
-  Configurator::Assign(global_verbose_enable_, "global_verbose_enable");
-  Configurator::Assign(global_log_enable_, "global_log_enable");
-  Configurator::Assign(ogre_log_name_, "global_log_name");
-  Configurator::Assign(global_stbi_enable_, "global_stbi_enable");
-  Configurator::Assign(global_freeimage_enable_, "global_freeimage_enable");
-  Configurator::Assign(global_particlefx_enable_, "global_particlefx_enable");
-  Configurator::Assign(global_sso_enable_, "global_sso_enable");
-  Configurator::Assign(physics_enable_, "physics_enable");
-  Configurator::Assign(sound_enable_, "sound_enable");
+  ConfiguratorJson::Assign(global_octree_enable_, "global_octree_enable");
+  ConfiguratorJson::Assign(global_verbose_enable_, "global_verbose_enable");
+  ConfiguratorJson::Assign(global_log_enable_, "global_log_enable");
+  ConfiguratorJson::Assign(ogre_log_name_, "global_log_name");
+  ConfiguratorJson::Assign(global_stbi_enable_, "global_stbi_enable");
+  ConfiguratorJson::Assign(global_freeimage_enable_, "global_freeimage_enable");
+  ConfiguratorJson::Assign(global_particlefx_enable_, "global_particlefx_enable");
+  ConfiguratorJson::Assign(global_sso_enable_, "global_sso_enable");
+  ConfiguratorJson::Assign(physics_enable_, "physics_enable");
+  ConfiguratorJson::Assign(sound_enable_, "sound_enable");
 #ifdef DEBUG
-  Configurator::Assign(media_location_directory_, "media_location_directory");
+  ConfiguratorJson::Assign(media_location_directory_, "media_location_directory");
 #endif
-  Configurator::Assign(global_resource_list_file_, "global_resource_list");
+  ConfiguratorJson::Assign(global_resource_list_file_, "global_resource_list");
 
-  Configurator::Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
-  Configurator::Assign(graphics_vsync_, "graphics_vsync");
-  Configurator::Assign(graphics_gamma_enable_, "graphics_gamma");
-  Configurator::Assign(graphics_fsaa_, "graphics_fsaa");
-  Configurator::Assign(graphics_msaa_, "graphics_msaa");
-  Configurator::Assign(graphics_filtration_, "graphics_filtration");
-  Configurator::Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
-  Configurator::Assign(graphics_mipmap_count_, "graphics_mipmap_count");
+  ConfiguratorJson::Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
+  ConfiguratorJson::Assign(graphics_vsync_, "graphics_vsync");
+  ConfiguratorJson::Assign(graphics_gamma_enable_, "graphics_gamma");
+  ConfiguratorJson::Assign(graphics_fsaa_, "graphics_fsaa");
+  ConfiguratorJson::Assign(graphics_msaa_, "graphics_msaa");
+  ConfiguratorJson::Assign(graphics_filtration_, "graphics_filtration");
+  ConfiguratorJson::Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
+  ConfiguratorJson::Assign(graphics_mipmap_count_, "graphics_mipmap_count");
 
-  Configurator::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
-  Configurator::Assign(graphics_shadows_pssm_enable_, "graphics_shadows_pssm_enable");
-  Configurator::Assign(graphics_shadows_depth_enable_, "graphics_shadows_depth_enable");
-  Configurator::Assign(graphics_shadows_pssm_0_, "graphics_shadows_pssm_0");
-  Configurator::Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
-  Configurator::Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
-  Configurator::Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
-  Configurator::Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
-  Configurator::Assign(graphics_shadows_pssm_0_resolution_, "graphics_shadows_pssm_0_resolution");
-  Configurator::Assign(graphics_shadows_pssm_1_resolution_, "graphics_shadows_pssm_1_resolution");
-  Configurator::Assign(graphics_shadows_pssm_2_resolution_, "graphics_shadows_pssm_2_resolution");
-  Configurator::Assign(graphics_shadows_texture_resolution_, "graphics_shadows_texture_resolution");
-  Configurator::Assign(graphics_shadows_split_padding_, "graphics_shadows_split_padding");
-  Configurator::Assign(graphics_shadows_texture_count_, "graphics_shadows_texture_count");
-  Configurator::Assign(graphics_shadows_far_distance_, "graphics_shadows_far_distance");
-  Configurator::Assign(graphics_shadows_self_shadow_, "graphics_shadows_self_shadow");
-  Configurator::Assign(graphics_shadows_back_faces_, "graphics_shadows_back_faces");
-  Configurator::Assign(graphics_shadows_caster_material_, "graphics_shadows_caster_material");
-  Configurator::Assign(graphics_shadows_receiver_material_, "graphics_shadows_receiver_material");
+  ConfiguratorJson::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
+  ConfiguratorJson::Assign(graphics_shadows_pssm_enable_, "graphics_shadows_pssm_enable");
+  ConfiguratorJson::Assign(graphics_shadows_depth_enable_, "graphics_shadows_depth_enable");
+  ConfiguratorJson::Assign(graphics_shadows_pssm_0_, "graphics_shadows_pssm_0");
+  ConfiguratorJson::Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
+  ConfiguratorJson::Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
+  ConfiguratorJson::Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
+  ConfiguratorJson::Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
+  ConfiguratorJson::Assign(graphics_shadows_pssm_0_resolution_, "graphics_shadows_pssm_0_resolution");
+  ConfiguratorJson::Assign(graphics_shadows_pssm_1_resolution_, "graphics_shadows_pssm_1_resolution");
+  ConfiguratorJson::Assign(graphics_shadows_pssm_2_resolution_, "graphics_shadows_pssm_2_resolution");
+  ConfiguratorJson::Assign(graphics_shadows_texture_resolution_, "graphics_shadows_texture_resolution");
+  ConfiguratorJson::Assign(graphics_shadows_split_padding_, "graphics_shadows_split_padding");
+  ConfiguratorJson::Assign(graphics_shadows_texture_count_, "graphics_shadows_texture_count");
+  ConfiguratorJson::Assign(graphics_shadows_far_distance_, "graphics_shadows_far_distance");
+  ConfiguratorJson::Assign(graphics_shadows_self_shadow_, "graphics_shadows_self_shadow");
+  ConfiguratorJson::Assign(graphics_shadows_back_faces_, "graphics_shadows_back_faces");
+  ConfiguratorJson::Assign(graphics_shadows_caster_material_, "graphics_shadows_caster_material");
+  ConfiguratorJson::Assign(graphics_shadows_receiver_material_, "graphics_shadows_receiver_material");
 
-  Configurator::Assign(graphics_shadows_tecnique_, "graphics_shadows_tecnique");
-  Configurator::Assign(graphics_shadows_lighting_, "graphics_shadows_lighting");
-  Configurator::Assign(graphics_shadows_projection_, "graphics_shadows_projection");
-  Configurator::Assign(graphics_shadows_material_, "graphics_shadows_material");
-  Configurator::Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
+  ConfiguratorJson::Assign(graphics_shadows_tecnique_, "graphics_shadows_tecnique");
+  ConfiguratorJson::Assign(graphics_shadows_lighting_, "graphics_shadows_lighting");
+  ConfiguratorJson::Assign(graphics_shadows_projection_, "graphics_shadows_projection");
+  ConfiguratorJson::Assign(graphics_shadows_material_, "graphics_shadows_material");
+  ConfiguratorJson::Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupPath() {
@@ -920,8 +920,8 @@ void ContextManager::SetupGlobal() {
 
   InitGeneralResources();
 
-  StaticForestManager::GetSingleton().SetupGlobal();
-  StaticForestManager::GetSingleton().Setup();
+  StaticForest::GetSingleton().SetupGlobal();
+  StaticForest::GetSingleton().Setup();
 
   if (physics_enable_) {
     PhysicsManager::GetSingleton().SetupGlobal();
@@ -944,7 +944,7 @@ void ContextManager::SetupGlobal() {
   CubeMapCamera::GetSingleton().SetupGlobal();
 //  CubeMapCamera::GetSingleton().Setup();
 
-  ReflectionCamera::GetSingleton().SetupGlobal();
+//  ReflectionCamera::GetSingleton().SetupGlobal();
 //  ReflectionCamera::GetSingleton().Setup();
 
   GorillaOverlay::GetSingleton().SetupGlobal();
@@ -955,8 +955,8 @@ void ContextManager::ResetGlobals() {
   CompositorManager::GetSingleton().ResetGlobal();
   CompositorManager::GetSingleton().Reset();
 
-  StaticForestManager::GetSingleton().ResetGlobal();
-  StaticForestManager::GetSingleton().Reset();
+  StaticForest::GetSingleton().ResetGlobal();
+  StaticForest::GetSingleton().Reset();
 
   if (physics_enable_) {
     PhysicsManager::GetSingleton().ResetGlobal();
@@ -974,7 +974,7 @@ void ContextManager::ResetGlobals() {
   CubeMapCamera::GetSingleton().ResetGlobal();
   CubeMapCamera::GetSingleton().Reset();
 
-  ReflectionCamera::GetSingleton().ResetGlobal();
+//  ReflectionCamera::GetSingleton().ResetGlobal();
   ReflectionCamera::GetSingleton().Reset();
 
   GorillaOverlay::GetSingleton().ResetGlobal();

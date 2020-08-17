@@ -86,9 +86,9 @@ set(CONTEXT_HEADERS
     context/include/ContextManager.h
     context/include/ShaderResolver.h
     context/include/DummyListener.h
-    context/include/Configurator.h
+    context/include/ConfiguratorJson.h
     context/include/DotSceneLoaderB.h
-    context/include/StaticForestManager.h
+    context/include/StaticForest.h
     context/include/PhysicsManager.h
     context/include/BulletCommon.h
     context/include/OgreCommon.h
@@ -157,7 +157,7 @@ set(CONTEXT_SOURCES
     context/src/ShaderResolver.cpp
     context/src/DotSceneLoaderB.cpp
     context/src/PhysicsManager.cpp
-    context/src/StaticForestManager.cpp
+    context/src/StaticForest.cpp
     context/src/SoundManager.cpp
     context/src/Manager.cpp
     context/src/pcheader.cpp
@@ -166,7 +166,6 @@ set(CONTEXT_SOURCES
     context/src/TerrainMaterialGeneratorC.cpp
     context/src/PSSMShadowCameraSetupB.cpp
     context/src/CubeMapCamera.cpp
-    context/src/ReflectionCamera.cpp
     context/src/ParticlesManager.cpp
     context/src/Gorilla.cpp
     context/src/GorillaOverlay.cpp
@@ -182,7 +181,7 @@ set(SOURCE_FILES_CONTEXT_LIB
 include_directories(context-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 
 add_library(context-lib-static STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
-add_library(context-lib-dynamic SHARED EXCLUDE_FROM_ALL ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB} context/include/PagedGeometryCommon.h)
+add_library(context-lib-dynamic SHARED EXCLUDE_FROM_ALL ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB} pagedgeometry/include/PagedGeometryCommon.h)
 
 target_link_directories(context-lib-dynamic PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE)
 target_link_libraries(context-lib-dynamic PUBLIC ${CONTEXT_STATIC_DEPENDENCY_LIBS})

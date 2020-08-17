@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include "ShaderResolver.h"
 #include "ContextManager.h"
-#include "Configurator.h"
+#include "ConfiguratorJson.h"
 
 #include <OgreTechnique.h>
 #include <Ogre.h>

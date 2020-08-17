@@ -26,10 +26,10 @@ SOFTWARE.
 
 #include "DotSceneLoaderB.h"
 
-#include "StaticForestManager.h"
+#include "StaticForest.h"
 #include "PhysicsManager.h"
 #include "CameraMan.h"
-#include "Configurator.h"
+#include "ConfiguratorJson.h"
 #include "TerrainMaterialGeneratorB.h"
 #include "TerrainMaterialGeneratorC.h"
 #include "ShaderResolver.h"
@@ -228,22 +228,22 @@ void DotSceneLoaderB::Setup() {
 
   Ogre::SceneLoaderManager::getSingleton().registerSceneLoader("DotSceneB", {".scene", ".xml"}, GetSingletonPtr());
 
-  Configurator::Assign(physics_enable_, "physics_enable");
-  Configurator::Assign(lod_generator_enable_, "lod_generator_enable");
-  Configurator::Assign(terrain_fog_perpixel_, "terrain_fog_perpixel");
-  Configurator::Assign(legacy_terrain_, "terrain_legacy");
-  Configurator::Assign(terrain_generator_b_, "terrain_generator_b");
-  Configurator::Assign(terrain_receive_shadows_, "terrain_receive_shadows");
-  Configurator::Assign(terrain_receive_shadows_low_lod_, "terrain_receive_shadows_low_lod");
-  Configurator::Assign(terrain_cast_shadows_, "terrain_cast_shadows");
-  Configurator::Assign(terrain_lightmap_enable_, "terrain_lightmap_enable");
-  Configurator::Assign(terrain_lightmap_, "terrain_lightmap");
-  Configurator::Assign(terrain_parallaxmap_enable_, "terrain_parallaxmap_enable");
-  Configurator::Assign(terrain_specularmap_enable_, "terrain_specularmap_enable");
-  Configurator::Assign(terrain_normalmap_enable_, "terrain_normalmap_enable");
-  Configurator::Assign(terrain_save_terrains_, "terrain_save_terrains");
-  Configurator::Assign(terrain_colourmap_enable_, "terrain_colourmap_enable");
-  Configurator::Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
+  ConfiguratorJson::Assign(physics_enable_, "physics_enable");
+  ConfiguratorJson::Assign(lod_generator_enable_, "lod_generator_enable");
+  ConfiguratorJson::Assign(terrain_fog_perpixel_, "terrain_fog_perpixel");
+  ConfiguratorJson::Assign(legacy_terrain_, "terrain_legacy");
+  ConfiguratorJson::Assign(terrain_generator_b_, "terrain_generator_b");
+  ConfiguratorJson::Assign(terrain_receive_shadows_, "terrain_receive_shadows");
+  ConfiguratorJson::Assign(terrain_receive_shadows_low_lod_, "terrain_receive_shadows_low_lod");
+  ConfiguratorJson::Assign(terrain_cast_shadows_, "terrain_cast_shadows");
+  ConfiguratorJson::Assign(terrain_lightmap_enable_, "terrain_lightmap_enable");
+  ConfiguratorJson::Assign(terrain_lightmap_, "terrain_lightmap");
+  ConfiguratorJson::Assign(terrain_parallaxmap_enable_, "terrain_parallaxmap_enable");
+  ConfiguratorJson::Assign(terrain_specularmap_enable_, "terrain_specularmap_enable");
+  ConfiguratorJson::Assign(terrain_normalmap_enable_, "terrain_normalmap_enable");
+  ConfiguratorJson::Assign(terrain_save_terrains_, "terrain_save_terrains");
+  ConfiguratorJson::Assign(terrain_colourmap_enable_, "terrain_colourmap_enable");
+  ConfiguratorJson::Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::Reset() {
@@ -1400,10 +1400,10 @@ void DotSceneLoaderB::FixPbrShadowReceiver(Ogre::MaterialPtr material) {
     auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     auto pass = material->getTechnique(0)->getPass(0);
 
-    if (Configurator::GetSingleton().GetBool("graphics_shadows_enable")) {
+    if (ConfiguratorJson::GetSingleton().GetBool("graphics_shadows_enable")) {
       Ogre::uint numTextures = 3;
       Ogre::Vector4 splitPoints;
-      if (Configurator::GetSingleton().GetString("graphics_shadows_projection") == "pssm") {
+      if (ConfiguratorJson::GetSingleton().GetString("graphics_shadows_projection") == "pssm") {
         const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
         for (int j = 1; j < numTextures; ++j) {
           splitPoints[j - 1] = splitPointList[j];
@@ -1504,7 +1504,7 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *p
     }
 
     std::string shadow_technique;
-    Configurator::Assign(shadow_technique, "graphics_shadows_tecnique");
+    ConfiguratorJson::Assign(shadow_technique, "graphics_shadows_tecnique");
 
     if (shadow_technique == "stencil") {
       if (!entity->getMesh()->isEdgeListBuilt()) {
@@ -1682,7 +1682,7 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &xml_node, Ogre::SceneNode *pa
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessForest(pugi::xml_node &xml_node) {
-  StaticForestManager::GetSingleton().Create();
+  StaticForest::GetSingleton().Create();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessFog(pugi::xml_node &xml_node) {
