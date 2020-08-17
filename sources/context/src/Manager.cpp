@@ -27,21 +27,18 @@ SOFTWARE.
 
 #include "Manager.h"
 #include "IO.h"
-#include "ContextManager.h"
 
 namespace Context {
-
+//----------------------------------------------------------------------------------------------------------------------
 void Manager::SetupGlobal() {
-  ogre_root_ = ContextManager::GetSingleton().GetOgreRootPtr();
-  ogre_scene_manager_ = ContextManager::GetSingleton().GetOgreScenePtr();
-  ogre_viewport_ = ContextManager::GetSingleton().GetOgreViewport();
-  ogre_camera_ = ContextManager::GetSingleton().GetOgreCamera();
-  camera_man_ = ContextManager::GetSingleton().GetCameraMan();
+  ogre_scene_manager_ = Ogre::Root::getSingleton().getSceneManager("Default");
+  ogre_camera_ = ogre_scene_manager_->getCamera("Default");
+  ogre_viewport_ = ogre_camera_->getViewport();
   io::InputSequencer::GetSingleton().RegisterListener(this);
   ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
   registered_ = true;
 }
-
+//----------------------------------------------------------------------------------------------------------------------
 void Manager::ResetGlobal() {
   if (registered_) {
     ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);

@@ -50,10 +50,7 @@ class Manager
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) override { return true; }
 
  public:
-  Ogre::Root *ogre_root_ = nullptr;
   Ogre::SceneManager *ogre_scene_manager_ = nullptr;
-  Ogre::SceneNode *ogre_root_node_ = nullptr;
-  std::shared_ptr<CameraMan> camera_man_;
   Ogre::Camera *ogre_camera_ = nullptr;
   Ogre::Viewport *ogre_viewport_ = nullptr;
   bool registered_ = false;

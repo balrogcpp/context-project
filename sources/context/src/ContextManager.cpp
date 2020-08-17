@@ -322,8 +322,8 @@ void ContextManager::InitGeneralResources() {
 void ContextManager::CreateOgreCamera() {
   ogre_camera_node_ = ogre_scene_manager_->getRootSceneNode()->createChildSceneNode();
 
-  if (!ogre_scene_manager_->hasCamera("Camera")) {
-    ogre_camera_ = (ogre_scene_manager_->createCamera("Camera"));
+  if (!ogre_scene_manager_->hasCamera("Default")) {
+    ogre_camera_ = (ogre_scene_manager_->createCamera("Default"));
     auto *renderTarget = ogre_root_->getRenderTarget(this->window_caption_);
     renderTarget->removeViewport(0);
     ogre_viewport_ = renderTarget->addViewport(ogre_camera_);
@@ -759,9 +759,9 @@ void ContextManager::SetupOGRE() {
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   if (global_octree_enable_) {
-    ogre_scene_manager_ = ogre_root_->createSceneManager("OctreeSceneManager");
+    ogre_scene_manager_ = ogre_root_->createSceneManager("OctreeSceneManager", "Default");
   } else {
-    ogre_scene_manager_ = ogre_root_->createSceneManager();
+    ogre_scene_manager_ = ogre_root_->createSceneManager("Default");
   }
 #else
   scene_mgr_ = ogre_root->createSceneManager();
@@ -777,7 +777,7 @@ void ContextManager::SetupOGRE() {
     }
   }
 
-  ogre_camera_ = (ogre_scene_manager_->createCamera("Camera"));
+  ogre_camera_ = (ogre_scene_manager_->createCamera("Default"));
   auto *renderTarget = ogre_root_->getRenderTarget(this->window_caption_);
 
   ogre_viewport_ = renderTarget->addViewport(ogre_camera_);
