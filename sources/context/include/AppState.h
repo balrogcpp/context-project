@@ -50,7 +50,7 @@ class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, 
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {};
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) override { return true; };
 
-  Ogre::Root *ogre_root = nullptr;
+  Ogre::Root *ogre_root_ = nullptr;
   Ogre::SceneManager *ogre_scene_manager_ = nullptr;
   std::shared_ptr<CameraMan> camera_man_;
   Ogre::Camera *ogre_camera_ = nullptr;

@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.h"
+#include "Manager.h"
 
 #include <OgreAny.h>
 
@@ -49,7 +49,7 @@ class btCollisionObject;
 namespace Context {
 
 class PhysicsManager :    //    Bullet initialisation.
-    public ManagerCommon {
+    public Manager {
  public:
   //getters
   const std::shared_ptr<btDynamicsWorld> &GetPhyWorld() const;

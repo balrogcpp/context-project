@@ -24,11 +24,11 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.h"
+#include "Manager.h"
 
 namespace Context {
 
-class ParticlesManager : public ManagerCommon {
+class ParticlesManager : public Manager {
  private:
   static ParticlesManager ParticlesManagerSingleton;
 

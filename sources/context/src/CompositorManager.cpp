@@ -32,22 +32,13 @@ SOFTWARE.
 
 namespace Context {
 
-/** Class for handling materials who did not specify techniques for rendering
- *  themselves into the GBuffer.
- */
 class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   GBufferSchemeHandler() {
     mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer");
-//    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("GBuffer",
-//                                                                     "Context/gbuffer",
-//                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     mGBufRefMat->load();
 
     mGBufRefMat2 = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer_disable");
-//    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("GBuffer",
-//                                                                     "Context/gbuffer_disable",
-//                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     mGBufRefMat2->load();
   }
 
@@ -56,26 +47,6 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
                                         Ogre::Material *originalMaterial,
                                         unsigned short lodIndex,
                                         const Ogre::Renderable *rend) final {
-//    Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
-//    gBufferTech->setSchemeName(schemeName);
-//    Ogre::Pass *gbufPass = gBufferTech->createPass();
-//    *gbufPass = *mGBufRefMat->getTechnique(0)->getPass(0);
-//    auto *pass = originalMaterial->getTechnique(0)->getPass(0);
-//    int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
-//
-//    if (pass->getNumTextureUnitStates() > 0 && alpha_rejection > 0) {
-//      auto *texPtr2 = gbufPass->getTextureUnitState("BaseColor");
-//      texPtr2->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-//      texPtr2->setTextureFiltering(Ogre::TFO_NONE);
-//
-//      auto texture_albedo = originalMaterial->getTechnique(0)->getPass(0)->getTextureUnitState("Albedo");
-//
-//      if (texture_albedo) {
-//        auto texture_name = texture_albedo->getTextureName();
-//        texPtr2->setTextureName(texture_name);
-//      }
-//    }
-
     auto *pass = originalMaterial->getTechnique(0)->getPass(0);
     int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
     Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
@@ -103,15 +74,9 @@ class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   DepthSchemeHandler() {
     mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("Context/depth_alpha");
-//    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("Depth",
-//                                                                     "Context/depth_alpha",
-//                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     mGBufRefMat->load();
 
     mGBufRefMat2 = Ogre::MaterialManager::getSingleton().getByName("Context/depth");
-//    Ogre::RTShader::ShaderGenerator::getSingleton().validateMaterial("Depth",
-//                                                                     "Context/depth",
-//                                                                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     mGBufRefMat2->load();
   }
 

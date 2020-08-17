@@ -26,62 +26,215 @@ SOFTWARE.
 
 #include "IO.h"
 
+#include <iostream>
+
 namespace Context {
 
-class DummyListener : public io::InputListener {
+class DummyListener final : public io::InputListener {
  public:
 
   DummyListener() = default;
-
+//----------------------------------------------------------------------------------------------------------------------
  private:
   bool print_ = false;
-
+//----------------------------------------------------------------------------------------------------------------------
  public:
   bool IsPrint() const {
     return print_;
   }
-
+//----------------------------------------------------------------------------------------------------------------------
   void SetPrint(bool print) {
     print_ = print;
   }
-
+//----------------------------------------------------------------------------------------------------------------------
  protected:
-  void KeyDown(SDL_Keycode sym) final;
-
-  void KeyUp(SDL_Keycode sym) final;
-
-  void Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) final;
-
-  void Wheel(int x, int y) final;
-
-  void LbDown(int x, int y) final;
-
-  void LbUp(int x, int y) final;
-
-  void RbDown(int x, int y) final;
-
-  void RbUp(int x, int y) final;
-
-  void MbDown(int x, int y) final;
-
-  void MbUp(int x, int y) final;
-
-  void Axis(int which, int axis, int value) final;
-
-  void BtDown(int which, int button) final;
-
-  void BtUp(int which, int button) final;
-
-  void Hat(int which, int hat, int value) final;
-
-  void Ball(int which, int ball, int xrel, int yrel) final;
-
-  void Event(const SDL_Event &evt) final;
-
-  void Quit() final;
-
-  void Other(Uint8 type, int code, void *data1, void *data2) final;
-
-};
-
-}
+  void KeyDown(SDL_Keycode sym) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << "sym ";
+      std::cout << sym;
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void KeyUp(SDL_Keycode sym) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << sym;
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << " x ";
+      std::cout << x << ' ';
+      std::cout << "y" << ' ';
+      std::cout << y << ' ';
+      std::cout << "dx" << ' ';
+      std::cout << dx << ' ';
+      std::cout << "dy" << ' ';
+      std::cout << dy << ' ';
+      std::cout << "left" << ' ';
+      std::cout << left << ' ';
+      std::cout << "right" << ' ';
+      std::cout << right << ' ';
+      std::cout << "middle" << ' ';
+      std::cout << middle << ' ';
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void Wheel(int x, int y) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << "Up" << ' ';
+      std::cout << x << ' ';
+      std::cout << "Down" << ' ';
+      std::cout << y << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void LbDown(int x, int y) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << "x" << ' ';
+      std::cout << x << ' ';
+      std::cout << "y" << ' ';
+      std::cout << y << ' ';
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void LbUp(int x, int y) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << "x" << ' ';
+      std::cout << x << ' ';
+      std::cout << "y" << ' ';
+      std::cout << y << ' ';
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void RbDown(int x, int y) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << "x" << ' ';
+      std::cout << x << ' ';
+      std::cout << "y" << ' ';
+      std::cout << y << ' ';
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void RbUp(int x, int y) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << "x" << ' ';
+      std::cout << x << ' ';
+      std::cout << "y" << ' ';
+      std::cout << y << ' ';
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void MbDown(int x, int y) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << "x" << ' ';
+      std::cout << x << ' ';
+      std::cout << "y" << ' ';
+      std::cout << y << ' ';
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void MbUp(int x, int y) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << "x" << ' ';
+      std::cout << x << ' ';
+      std::cout << "y" << ' ';
+      std::cout << y << ' ';
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void Axis(int which, int axis, int value) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << "which" << ' ';
+      std::cout << which << ' ';
+      std::cout << "axis" << ' ';
+      std::cout << axis << ' ';
+      std::cout << "value" << ' ';
+      std::cout << value << ' ';
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void BtDown(int which, int button) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << "which" << ' ';
+      std::cout << which << ' ';
+      std::cout << "button" << ' ';
+      std::cout << button << ' ';
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void BtUp(int which, int button) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << "which" << ' ';
+      std::cout << which << ' ';
+      std::cout << "button" << ' ';
+      std::cout << button << ' ';
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void Hat(int which, int hat, int value) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << "which" << ' ';
+      std::cout << which << ' ';
+      std::cout << "hat" << ' ';
+      std::cout << hat << ' ';
+      std::cout << "value" << ' ';
+      std::cout << value << ' ';
+      std::cout << '\n';
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void Ball(int which, int ball, int xrel, int yrel) {
+    if (print_) {
+      std::cout << __func__;
+      std::cout << ' ';
+      std::cout << "which" << ' ';
+      std::cout << which << ' ';
+      std::cout << "ball" << ' ';
+      std::cout << ball << ' ';
+      std::cout << "yrel" << ' ';
+      std::cout << yrel << ' ';
+      std::cout << '\n';
+    }
+  }
+}; //class DummyListener
+} //namespace Context

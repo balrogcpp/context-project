@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.h"
+#include "Manager.h"
 
 #include <OgrePlane.h>
 
@@ -36,7 +36,7 @@ class SceneNode;
 
 namespace Context {
 
-class ReflectionCamera : public ManagerCommon {
+class ReflectionCamera : public Manager {
  private:
   static ReflectionCamera CubeMapCameraSingleton;
 

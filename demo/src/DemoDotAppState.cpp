@@ -25,9 +25,7 @@ SOFTWARE.
 #include "Context.h"
 
 #include "DemoDotAppState.h"
-#include "DotSceneLoaderB.h"
 #include "AppStateManager.h"
-//#include "MenuAppState.h"
 #include "CameraMan.h"
 
 namespace Demo {

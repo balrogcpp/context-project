@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.h"
+#include "Manager.h"
 
 #include "ContextConfigStructures.h"
 

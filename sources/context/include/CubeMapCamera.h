@@ -24,11 +24,11 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.h"
+#include "Manager.h"
 
 namespace Context {
 
-class CubeMapCamera final : public ManagerCommon {
+class CubeMapCamera final : public Manager {
  private:
   static CubeMapCamera CubeMapCameraSingleton;
 

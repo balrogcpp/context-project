@@ -25,54 +25,27 @@ SOFTWARE.
 
 #include "pcheader.hpp"
 
-#include "ManagerCommon.h"
+#include "Manager.h"
 #include "IO.h"
 #include "ContextManager.h"
 
 namespace Context {
 
-void ManagerCommon::SetupGlobal() {
-  SetOgreScene(ContextManager::GetSingleton().GetOgreScenePtr());
-  SetCameraMan(ContextManager::GetSingleton().GetCameraMan());
-  SetOgreCamera(ContextManager::GetSingleton().GetOgreCamera());
-  SetOgreViewport(ContextManager::GetSingleton().GetOgreViewport());
-  SetOgreRoot(ContextManager::GetSingleton().GetOgreRootPtr());
-  SetOgreRootNode(ContextManager::GetSingleton().GetOgreScenePtr()->getRootSceneNode());
-
-  ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
+void Manager::SetupGlobal() {
+  ogre_root_ = ContextManager::GetSingleton().GetOgreRootPtr();
+  ogre_scene_manager_ = ContextManager::GetSingleton().GetOgreScenePtr();
+  ogre_viewport_ = ContextManager::GetSingleton().GetOgreViewport();
+  ogre_camera_ = ContextManager::GetSingleton().GetOgreCamera();
+  camera_man_ = ContextManager::GetSingleton().GetCameraMan();
   io::InputSequencer::GetSingleton().RegisterListener(this);
-
+  ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
   registered_ = true;
 }
 
-void ManagerCommon::ResetGlobal() {
+void Manager::ResetGlobal() {
   if (registered_) {
     ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
     io::InputSequencer::GetSingleton().UnregisterListener(this);
   }
 }
-
-void ManagerCommon::SetOgreScene(Ogre::SceneManager *scene_ptr) {
-  this->ogre_scene_manager_ = scene_ptr;
-}
-
-void ManagerCommon::SetCameraMan(std::shared_ptr<CameraMan> camera_ptr) {
-  this->camera_man_ = camera_ptr;
-}
-
-void ManagerCommon::SetOgreCamera(Ogre::Camera *ogreCamera) {
-  this->ogre_camera_ = ogreCamera;
-}
-
-void ManagerCommon::SetOgreViewport(Ogre::Viewport *ogreViewport) {
-  this->ogre_viewport_ = ogreViewport;
-}
-
-void ManagerCommon::SetOgreRoot(Ogre::Root *ogreRoot) {
-  ManagerCommon::ogre_root_ = ogreRoot;
-}
-void ManagerCommon::SetOgreRootNode(Ogre::SceneNode *ogre_root_node) {
-  ogre_root_node_ = ogre_root_node;
-}
-
 }

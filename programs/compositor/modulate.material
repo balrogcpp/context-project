@@ -39,9 +39,31 @@ fragment_program PSSM/modulate_fs unified
 
 	default_params
 	{
-		param_named AttenuationSampler int 0
-		param_named SsaoSampler int 1
-		param_named SceneSampler int 2
+		param_named SceneSampler int 0
+		param_named BloomSampler int 1
+		param_named exposure float 1
+	}
+}
+
+fragment_program PSSM/modulate_SSAO_fsGLSL glsl
+{
+	source modulate.frag
+}
+
+fragment_program PSSM/modulate_SSAO_fsGLSLES glsles
+{
+	source modulate.frag
+}
+
+fragment_program PSSM/modulate_SSAO_fs unified
+{
+	delegate PSSM/modulate_SSAO_fsGLSL
+	delegate PSSM/modulate_SSAO_fsGLSLES
+
+	default_params
+	{
+		param_named SceneSampler int 0
+		param_named BloomSampler int 1
 		param_named exposure float 1
 	}
 }
@@ -61,13 +83,13 @@ material Context/Modulate
 
 			texture_unit
             {
-                content_type compositor Context/Bloom bloom
+                content_type compositor Context/Main scene
                 filtering none
             }
 
 			texture_unit
             {
-                content_type compositor Context/Main scene
+                content_type compositor Context/Bloom bloom
                 filtering none
             }
 		}
@@ -85,7 +107,13 @@ material Context/Modulate/SSAO
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref PSSM/modulate_fs {}
+			fragment_program_ref PSSM/modulate_SSAO_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/Main scene
+                filtering none
+            }
 
 			texture_unit
             {
@@ -96,18 +124,6 @@ material Context/Modulate/SSAO
 			texture_unit
             {
                 content_type compositor Context/SSAO ssao
-                filtering none
-            }
-
-			texture_unit
-            {
-                content_type compositor Context/Main scene
-                filtering none
-            }
-
-			texture_unit
-            {
-                content_type compositor Context/GBuffer mrt 0
                 filtering none
             }
 		}

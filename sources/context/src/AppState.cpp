@@ -40,7 +40,7 @@ AppState::~AppState() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::SetupGlobals() {
-  ogre_root = ContextManager::GetSingleton().GetOgreRootPtr();
+  ogre_root_ = ContextManager::GetSingleton().GetOgreRootPtr();
   ogre_scene_manager_ = ContextManager::GetSingleton().GetOgreScenePtr();
   ogre_viewport_ = ContextManager::GetSingleton().GetOgreViewport();
   ogre_camera_ = ContextManager::GetSingleton().GetOgreCamera();

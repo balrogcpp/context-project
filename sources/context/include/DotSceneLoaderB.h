@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.h"
+#include "Manager.h"
 
 #include <OgreSceneLoader.h>
 #include <OgreVector4.h>
@@ -59,7 +59,7 @@ struct Item {
   btRigidBody *rigid_body_;
 };
 
-class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
+class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
  public:
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
   void load(const std::string &filename, const std::string &group_name, Ogre::SceneNode *root_node);
@@ -147,13 +147,12 @@ class DotSceneLoaderB : public ManagerCommon, public Ogre::SceneLoader {
   bool terrain_generator_b_ = false;
 
  public:
-  void Setup() final;
-  void Reset() final;
-  void ResetGlobal() final;
+  void Setup();
+  void Reset();
 
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) override;
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt);
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt);
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt);
 
  private:
   static DotSceneLoaderB DotSceneLoaderSingleton;

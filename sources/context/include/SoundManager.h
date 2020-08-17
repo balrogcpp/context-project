@@ -24,12 +24,12 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.h"
+#include "Manager.h"
 #include "OgreOggSound.h"
 
 namespace Context {
 
-class SoundManager : public ManagerCommon {
+class SoundManager : public Manager {
  public:
 
   static SoundManager *GetSingletonPtr() {

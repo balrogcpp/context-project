@@ -245,34 +245,8 @@ void DotSceneLoaderB::Setup() {
   ConfigManager::Assign(terrain_colourmap_enable_, "terrain_colourmap_enable");
   ConfigManager::Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::Reset() {
-#ifdef OGRE_BUILD_COMPONENT_TERRAIN
-  if (ogre_terrain_group_) {
-    ogre_terrain_group_->removeAllTerrains();
-    ogre_terrain_group_.reset();
-  }
-
-  terrain_created_ = false;
-#endif
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void DotSceneLoaderB::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void DotSceneLoaderB::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool DotSceneLoaderB::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-
-  return true;
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void DotSceneLoaderB::ResetGlobal() {
-  ManagerCommon::ResetGlobal();
-
   if (Ogre::SceneLoaderManager::getSingleton()._getSceneLoader("DotScene")) {
     Ogre::SceneLoaderManager::getSingleton().unregisterSceneLoader("DotScene");
   }
@@ -287,6 +261,19 @@ void DotSceneLoaderB::ResetGlobal() {
     ogre_terrain_group_.reset();
   }
 #endif
+}
+//----------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+
+}
+//----------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+
+}
+//----------------------------------------------------------------------------------------------------------------------
+bool DotSceneLoaderB::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+
+  return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const std::string &groupName, Ogre::SceneNode *rootNode) {

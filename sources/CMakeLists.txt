@@ -93,7 +93,7 @@ set(CONTEXT_HEADERS
     context/include/BulletCommon.h
     context/include/OgreCommon.h
     context/include/SoundManager.h
-    context/include/ManagerCommon.h
+    context/include/Manager.h
     context/include/SDL2Common.h
     context/include/Context.h
     context/include/CompositorManager.h
@@ -108,7 +108,8 @@ set(CONTEXT_HEADERS
     context/include/ParticlesManager.h
     context/include/Gorilla.h
     context/include/GorillaOverlay.h
-    context/include/IoListeners.h)
+    context/include/IoListeners.h
+    )
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
@@ -154,13 +155,12 @@ set(CONTEXT_SOURCES
     context/src/CameraMan.cpp
     context/src/ContextManager.cpp
     context/src/ShaderResolver.cpp
-    context/src/DummyListener.cpp
     context/src/ConfigManager.cpp
     context/src/DotSceneLoaderB.cpp
     context/src/PhysicsManager.cpp
     context/src/StaticForestManager.cpp
     context/src/SoundManager.cpp
-    context/src/ManagerCommon.cpp
+    context/src/Manager.cpp
     context/src/pcheader.cpp
     context/src/CompositorManager.cpp
     context/src/TerrainMaterialGeneratorB.cpp

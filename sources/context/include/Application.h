@@ -28,7 +28,7 @@ SOFTWARE.
 #include <OgreRenderTargetListener.h>
 
 #include "DummyListener.h"
-#include "ManagerCommon.h"
+#include "Manager.h"
 
 namespace Context {
 class AppState;
@@ -36,7 +36,7 @@ class AppState;
 
 namespace Context {
 
-class Application : public ManagerCommon {
+class Application : public Manager {
  public:
   void Update(float timeSinceLastFrame);
   void Setup() final;

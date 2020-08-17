@@ -24,11 +24,11 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.h"
+#include "Manager.h"
 
 namespace Context {
 
-class StaticForestManager : public ManagerCommon {
+class StaticForestManager : public Manager {
  public:
   static StaticForestManager *GetSingletonPtr() {
     return &staticForestManagerSingleton;

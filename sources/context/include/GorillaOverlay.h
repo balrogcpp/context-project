@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.h"
+#include "Manager.h"
 #include "Gorilla.h"
 
 namespace Ogre {
@@ -35,7 +35,7 @@ class SceneNode;
 
 namespace Context {
 
-class GorillaOverlay : public ManagerCommon {
+class GorillaOverlay : public Manager {
  private:
   static GorillaOverlay GorillaOverlaySingleton;
 

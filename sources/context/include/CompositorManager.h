@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "ManagerCommon.h"
+#include "Manager.h"
 
 namespace Ogre {
 class Material;
@@ -37,7 +37,7 @@ class DepthSchemeHandler;
 
 namespace Context {
 
-class CompositorManager : public ManagerCommon {
+class CompositorManager final : public Manager {
  private:
   static CompositorManager CompositorManagerSingleton;
 
@@ -46,12 +46,12 @@ class CompositorManager : public ManagerCommon {
   static CompositorManager &GetSingleton();
 
  public:
-  void Setup() final;
-  void Reset() final;
+  void Setup();
+  void Reset();
 
  public:
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt);
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt);
 
  private:
   void CreateMotionBlurCompositor();
@@ -73,11 +73,10 @@ class CompositorManager : public ManagerCommon {
 
   //SSAO
   bool graphics_shadows_enable_ = true;
-  bool compositor_use_bloom_ = true;
-  bool compositor_use_ssao_ = true;
+  bool compositor_use_bloom_ = false;
+  bool compositor_use_ssao_ = false;
   bool compositor_use_blur_ = true;
   bool compositor_use_hdr_ = true;
   bool compositor_use_moution_blur_ = false;
-};
-
+}; //class CompositorManager
 } //namespace Context

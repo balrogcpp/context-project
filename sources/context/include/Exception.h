@@ -26,15 +26,16 @@ SOFTWARE.
 
 #include <string>
 #include <exception>
+#include <utility>
 
 namespace Context {
 
-class Exception final : public std::exception {
+class Exception : public std::exception {
  public:
   Exception() = default;
 
-  explicit Exception(const std::string &description)
-      : description(description) {};
+  explicit Exception(std::string description)
+      : description(std::move(description)) {};
 
   ~Exception() noexcept override = default;
 
