@@ -26,14 +26,10 @@ SOFTWARE.
 
 #include "Singleton.h"
 #include "ContextManager.h"
-#include "IO.h"
+#include "IoListeners.h"
 
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
-
-namespace Context {
-  class CameraMan;
-}
 
 namespace Context {
 
@@ -42,6 +38,7 @@ class Manager
  public:
   void SetupGlobal();
   void ResetGlobal();
+
   virtual void Setup() {}
   virtual void Reset() {}
 
@@ -50,9 +47,9 @@ class Manager
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) override { return true; }
 
  public:
-  Ogre::SceneManager *ogre_scene_manager_ = nullptr;
-  Ogre::Camera *ogre_camera_ = nullptr;
-  Ogre::Viewport *ogre_viewport_ = nullptr;
+  Ogre::SceneManager *scene_ = nullptr;
+  Ogre::Camera *camera_ = nullptr;
+  Ogre::Viewport *viewport_ = nullptr;
   bool registered_ = false;
 };
 }

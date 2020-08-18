@@ -90,11 +90,10 @@ set(CONTEXT_HEADERS
     context/include/DotSceneLoaderB.h
     context/include/StaticForest.h
     context/include/PhysicsManager.h
-    context/include/BulletCommon.h
-    context/include/OgreCommon.h
+    context/include/BulletHeaders.h
+    context/include/OgreHeaders.h
     context/include/SoundManager.h
     context/include/Manager.h
-    context/include/SDL2Common.h
     context/include/Context.h
     context/include/CompositorManager.h
     context/include/ContextConfigStructures.h

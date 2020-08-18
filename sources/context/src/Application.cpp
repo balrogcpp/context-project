@@ -199,7 +199,7 @@ void Application::Go() {
     if (!application_scene_file_.empty()) {
       Ogre::SceneLoaderManager::getSingleton().load(application_scene_file_,
                                                     Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-                                                    ogre_scene_manager_->getRootSceneNode());
+                                                    scene_->getRootSceneNode());
     }
 
     if (!application_ambient_sound_file_.empty()) {

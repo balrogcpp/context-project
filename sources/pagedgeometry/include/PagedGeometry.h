@@ -29,7 +29,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 #include <OgrePrerequisites.h>
 #include <OgreRenderSystem.h>
 #include <OgreEntity.h>
-#include <OgreCommon.h>
+#include <OgreHeaders.h>
 #include <OgreCamera.h>
 #include <OgreVector3.h>
 #include <OgreTimer.h>

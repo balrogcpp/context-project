@@ -52,7 +52,7 @@ void GorillaOverlay::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) 
 void GorillaOverlay::Setup() {
   mSilverback = new Gorilla::Silverback();
   mSilverback->loadAtlas("dejavu");
-  mScreen = mSilverback->createScreen(ogre_viewport_, "dejavu");
+  mScreen = mSilverback->createScreen(viewport_, "dejavu");
   layer = mScreen->createLayer(0);
   Ogre::Real vpW = mScreen->getWidth(), vpH = mScreen->getHeight();
 

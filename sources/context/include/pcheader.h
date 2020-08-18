@@ -25,9 +25,11 @@ SOFTWARE.
 #pragma once
 
 #include "PagedGeometryCommon.h"
-#include "OgreCommon.h"
-#include "BulletCommon.h"
-#include "SDL2Common.h"
+#include "OgreHeaders.h"
+#include "BulletHeaders.h"
+extern "C" {
+#include <SDL2/SDL.h>
+}
 
 #include <pugixml.hpp>
 

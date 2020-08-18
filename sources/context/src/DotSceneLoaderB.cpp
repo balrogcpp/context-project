@@ -459,7 +459,7 @@ void DotSceneLoaderB::ProcessEnvironment(pugi::xml_node &xml_node) {
 
   // Process colourBackground (?)
   if (auto element = xml_node.child("colourBackground")) {
-    ogre_viewport_->setBackgroundColour(ParseColour(element));
+    viewport_->setBackgroundColour(ParseColour(element));
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -714,7 +714,7 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   }
 
   if (!legacy_terrain_) {
-    ManualObject *obj = ogre_scene_manager_->createManualObject("Terrain_Manual_Object");
+    ManualObject *obj = scene_->createManualObject("Terrain_Manual_Object");
     obj->begin("Plane", Ogre::RenderOperation::OT_TRIANGLE_LIST);
 
     auto terrainIterator = ogre_terrain_group_->getTerrainIterator();
@@ -786,16 +786,16 @@ void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &xml_node) {
       auto terrain_mesh = obj->convertToMesh(terrain_mesh_name);
       terrain_mesh->buildTangentVectors();
       counter++;
-      ogre_scene_manager_->getRootSceneNode()->createChildSceneNode()->attachObject(obj);
+      scene_->getRootSceneNode()->createChildSceneNode()->attachObject(obj);
 
-      auto *terrain_entity = ogre_scene_manager_->createEntity(terrain_mesh);
+      auto *terrain_entity = scene_->createEntity(terrain_mesh);
       terrain_entity->setCastShadows(false);
       const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
       const Ogre::uint32 SURFACE_MASK = 0x00F;
       const Ogre::uint32 WATER_MASK = 0xF00;
       terrain_entity->setVisibilityFlags(SUBMERGED_MASK);
-      ogre_scene_manager_->getRootSceneNode()->createChildSceneNode()->attachObject(terrain_entity);
-      ogre_scene_manager_->destroyManualObject(obj);
+      scene_->getRootSceneNode()->createChildSceneNode()->attachObject(terrain_entity);
+      scene_->destroyManualObject(obj);
 
       FixPbrParams("Plane");
       FixPbrShadowReceiver("Plane");
@@ -819,7 +819,7 @@ void DotSceneLoaderB::ProcessTerrainLightmap(pugi::xml_node &xml_node) {
   if (!terrain_lightmap_enable_)
     return;
 
-  if (!ogre_scene_manager_->getLight("Sun"))
+  if (!scene_->getLight("Sun"))
     return;
 
   if (terrain_generator_b_) {
@@ -837,7 +837,7 @@ void DotSceneLoaderB::ProcessTerrainLightmap(pugi::xml_node &xml_node) {
 
   if (Ogre::Root::getSingletonPtr()->getRenderSystem()->getCapabilities()->getNumTextureUnits() >= 9) {
     terrain_global_options->setLightMapSize(terrain_lightmap_size_);
-    terrain_global_options->setLightMapDirection(ogre_scene_manager_->getLight("Sun")->getDerivedDirection());
+    terrain_global_options->setLightMapDirection(scene_->getLight("Sun")->getDerivedDirection());
   }
 #else
   OGRE_EXCEPT(Ogre::Exception::ERR_INVALID_CALL, "recompile with Ogre::Terrain component");
@@ -894,7 +894,7 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &xml_node, Ogre::SceneNode *pa
   std::string name = GetAttrib(xml_node, "name");
 
   if (!parent) {
-    parent = ogre_scene_manager_->createSceneNode();
+    parent = scene_->createSceneNode();
   }
 
   // Create the light
@@ -969,7 +969,7 @@ void DotSceneLoaderB::ProcessCamera(pugi::xml_node &xml_node, Ogre::SceneNode *p
   ContextManager::GetSingleton().GetCameraMan()->UnregCamera();
   ContextManager::GetSingleton().GetCameraMan()->RegCamera(parent);
 
-  auto *actor = ogre_scene_manager_->createEntity("Actor", "Icosphere.mesh");
+  auto *actor = scene_->createEntity("Actor", "Icosphere.mesh");
   actor->setCastShadows(false);
   actor->setVisible(false);
   parent->attachObject(actor);
@@ -1489,11 +1489,11 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *p
         if (!lodConfig.advanced.useBackgroundQueue) {
 
           if (entity) {
-            ogre_scene_manager_->destroyEntity(entity);
+            scene_->destroyEntity(entity);
             entity = nullptr; // createEntity may throw exception, so it is safer to reset to 0.
           }
 
-          entity = ogre_scene_manager_->createEntity(name, lodConfig.mesh);
+          entity = scene_->createEntity(name, lodConfig.mesh);
           entity->setCastShadows(castShadows);
           parent->attachObject(entity);
         }
@@ -1589,7 +1589,7 @@ void DotSceneLoaderB::ProcessParticleSystem(pugi::xml_node &xml_node, Ogre::Scen
     pParticles->setVisibilityFlags(WATER_MASK);
 
     if (attachedCamera) {
-      ogre_camera_->getParentSceneNode()->createChildSceneNode(Ogre::Vector3{0, 10, 0})->attachObject(pParticles);
+      camera_->getParentSceneNode()->createChildSceneNode(Ogre::Vector3{0, 10, 0})->attachObject(pParticles);
     } else {
       parent->attachObject(pParticles);
     }

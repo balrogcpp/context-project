@@ -31,24 +31,9 @@ SOFTWARE.
 namespace Context {
 
 class DummyListener final : public io::InputListener {
- public:
-
-  DummyListener() = default;
-//----------------------------------------------------------------------------------------------------------------------
  private:
-  bool print_ = false;
 //----------------------------------------------------------------------------------------------------------------------
- public:
-  bool IsPrint() const {
-    return print_;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void SetPrint(bool print) {
-    print_ = print;
-  }
-//----------------------------------------------------------------------------------------------------------------------
- protected:
-  void KeyDown(SDL_Keycode sym) {
+  void KeyDown(SDL_Keycode sym) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -58,7 +43,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void KeyUp(SDL_Keycode sym) {
+  void KeyUp(SDL_Keycode sym) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -67,7 +52,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
+  void Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -89,7 +74,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Wheel(int x, int y) {
+  void Wheel(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << "Up" << ' ';
@@ -99,7 +84,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void LbDown(int x, int y) {
+  void LbDown(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -111,7 +96,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void LbUp(int x, int y) {
+  void LbUp(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -123,7 +108,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void RbDown(int x, int y) {
+  void RbDown(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -135,7 +120,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void RbUp(int x, int y) {
+  void RbUp(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -147,7 +132,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void MbDown(int x, int y) {
+  void MbDown(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -159,7 +144,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void MbUp(int x, int y) {
+  void MbUp(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -171,7 +156,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Axis(int which, int axis, int value) {
+  void Axis(int which, int axis, int value) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -185,7 +170,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void BtDown(int which, int button) {
+  void BtDown(int which, int button) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -197,7 +182,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void BtUp(int which, int button) {
+  void BtUp(int which, int button) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -209,7 +194,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Hat(int which, int hat, int value) {
+  void Hat(int which, int hat, int value) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -223,7 +208,7 @@ class DummyListener final : public io::InputListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Ball(int which, int ball, int xrel, int yrel) {
+  void Ball(int which, int ball, int xrel, int yrel) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -235,6 +220,18 @@ class DummyListener final : public io::InputListener {
       std::cout << yrel << ' ';
       std::cout << '\n';
     }
+  }
+
+ private:
+  bool print_ = false;
+
+ public:
+  bool IsPrint() const noexcept {
+    return print_;
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void SetPrint(bool print) noexcept {
+    print_ = print;
   }
 }; //class DummyListener
 } //namespace Context

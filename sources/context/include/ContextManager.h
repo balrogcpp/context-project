@@ -32,7 +32,8 @@ SOFTWARE.
 #include "ContextConfigStructures.h"
 #include "Singleton.h"
 
-#include "SDL2Common.h"
+struct SDL_Window;
+typedef void *SDL_GLContext;
 
 namespace Context {
 class CameraMan;
@@ -119,8 +120,6 @@ class ContextManager : public Ogre::LogListener, public Singleton {
  private:
   //SDL2
   SDL_Window *sdl_window_ = nullptr;
-  SDL_Renderer *sdl_renderer_ = nullptr;
-  SDL_DisplayMode *display_mode_ = nullptr;
   SDL_GLContext sdl_context_ = nullptr;
   std::string window_caption_ = "My Demo";
   WindowPosition window_position_ = {0, 0, 1024, 768, false};
@@ -134,7 +133,7 @@ class ContextManager : public Ogre::LogListener, public Singleton {
   Ogre::RenderWindow *ogre_render_window_ = nullptr;
   Ogre::SceneManager *ogre_scene_manager_ = nullptr;
   Ogre::SceneNode *ogre_camera_node_ = nullptr;
-  Ogre::Viewport *ogre_viewport_ = nullptr;
+  Ogre::Viewport *ogre_viewport_= nullptr;
   Ogre::Camera *ogre_camera_ = nullptr;
   std::shared_ptr<CameraMan> camera_man_;
   std::shared_ptr<Ogre::ShadowCameraSetup> ogre_shadow_camera_setup_;
@@ -216,6 +215,5 @@ class ContextManager : public Ogre::LogListener, public Singleton {
   static ContextManager *GetSingletonPtr() {
     return &ContextManagerSingleton;
   }
-};
-
-}
+}; //class ContextManager
+} //namespace Context
