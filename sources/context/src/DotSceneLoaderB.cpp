@@ -33,7 +33,6 @@ SOFTWARE.
 #include "TerrainMaterialGeneratorB.h"
 #include "TerrainMaterialGeneratorC.h"
 #include "ShaderResolver.h"
-#include "PSSMShadowCameraSetupB.h"
 #include "CubeMapCamera.h"
 #include "ReflectionCamera.h"
 

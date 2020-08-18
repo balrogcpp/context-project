@@ -32,7 +32,7 @@ class ShaderGenerator;
 
 namespace Context {
 
-class ShaderResolver : public Ogre::MaterialManager::Listener {
+class ShaderResolver final : public Ogre::MaterialManager::Listener {
  public:
   explicit ShaderResolver(Ogre::RTShader::ShaderGenerator *shader_generator);
   Ogre::Technique *handleSchemeNotFound(unsigned short scheme_index,

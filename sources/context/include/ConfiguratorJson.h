@@ -42,8 +42,64 @@ class ConfiguratorJson {
     static ConfiguratorJson ConfigManagerSingleton;
     return ConfigManagerSingleton;
   }
+
+  ConfiguratorJson() {
+    Init_();
+  }
+
+  ConfiguratorJson(const ConfiguratorJson &) = delete;
+  ConfiguratorJson &operator=(const ConfiguratorJson &) = delete;
+  ConfiguratorJson(Singleton &&) = delete;
+  ConfiguratorJson &operator=(ConfiguratorJson &&) = delete;
+  ~ConfiguratorJson() = default;
+
 //----------------------------------------------------------------------------------------------------------------------
-  void Setup() {
+  void Print() {
+    if (GetBool("global_verbose_enable")) {
+
+      std::cout << "Global config variables:\n";
+      std::cout << "--------------------------------------------\n";
+
+      int counter = 0;
+      for (auto it = document_.Begin(); it != document_.End(); ++it) {
+        if (counter == 0) {
+          std::cout << "variable: ";
+        }
+
+        const char true_string[] = "True";
+        const char false_string[] = "False";
+
+        if (it->IsString()) {
+          std::cout << it->GetString();
+        } else if (it->IsBool()) {
+          std::cout << (it->GetBool() ? true_string : false_string);
+        } else if (it->IsInt()) {
+          std::cout << it->GetInt();
+        } else if (it->IsInt64()) {
+          std::cout << it->GetInt64();
+        } else if (it->IsFloat()) {
+          std::cout << it->GetFloat();
+        } else if (it->IsDouble()) {
+          std::cout << it->GetDouble();
+        }
+
+        if (counter == 0) {
+          std::cout << " | value: ";
+          counter++;
+        } else if (counter == 1) {
+          std::cout << '\n';
+          counter = 0;
+        }
+      }
+
+      std::cout << '\n';
+    }
+  }
+
+ private:
+  //----------------------------------------------------------------------------------------------------------------------
+  void Init_() {
+//Because Android cland does not support std filesystem
 #ifndef __ANDROID__
     if (!std::filesystem::exists(file_name_)) {
       file_name_ = std::string("../") + file_name_;
@@ -52,24 +108,19 @@ class ConfiguratorJson {
         throw Exception("Error during parsing of " + file_name_ + " : file not exist");
       }
     }
-#else
-    file_name_ = std::string("../") + file_name_;
 #endif
+
     std::ifstream ifs(file_name_);
-
     rapidjson::IStreamWrapper isw(ifs);
-
     document_.ParseStream(isw);
 
-    if (ifs.is_open()) {
+    if (ifs.is_open())
       ifs.close();
-    } else {
+    else
       throw Exception("Error during parsing of " + file_name_ + " : can't open file");
-    }
 
-    if (!document_.IsObject()) {
+    if (!document_.IsObject())
       throw Exception("Error during parsing of " + file_name_ + " : file is empty or incorrect");
-    }
 
     auto &allocator = document_.GetAllocator();
 
@@ -153,49 +204,35 @@ class ConfiguratorJson {
     document_.AddMember("terrain_normalmap_enable", true, allocator);
     document_.AddMember("terrain_save_terrains", false, allocator);
     document_.AddMember("lod_generator_enable", true, allocator);
+  }
 
-    if (GetBool("global_verbose_enable")) {
+  std::string file_name_ = "config.json";
+  rapidjson::Document document_;
 
-      std::cout << "Global config variables:\n";
-      std::cout << "--------------------------------------------\n";
-
-      int counter = 0;
-      for (auto it = document_.Begin(); it != document_.End(); ++it) {
-        if (counter == 0) {
-          std::cout << "variable: ";
-        }
-
-        const char true_string[] = "True";
-        const char false_string[] = "False";
-
-        if (it->IsString()) {
-          std::cout << it->GetString();
-        } else if (it->IsBool()) {
-          std::cout << (it->GetBool() ? true_string : false_string);
-        } else if (it->IsInt()) {
-          std::cout << it->GetInt();
-        } else if (it->IsInt64()) {
-          std::cout << it->GetInt64();
-        } else if (it->IsFloat()) {
-          std::cout << it->GetFloat();
-        } else if (it->IsDouble()) {
-          std::cout << it->GetDouble();
-        }
-
-        if (counter == 0) {
-          std::cout << " | value: ";
-          counter++;
-        } else if (counter == 1) {
-          std::cout << '\n';
-          counter = 0;
-        }
-      }
-
-      std::cout << '\n';
+ public:
+//----------------------------------------------------------------------------------------------------------------------
+  template<typename T>
+  void AddMember(const char *name, T &&value) {
+    static auto &allocator = document_.GetAllocator();
+    if (!document_.HasMember(name)) {
+      document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name), value, allocator);
     }
-
-    if (ifs.is_open())
-      ifs.close();
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  template<typename T>
+  void AddMember(char *name, T &&value) {
+    static auto &allocator = document_.GetAllocator();
+    if (!document_.HasMember(name)) {
+      document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name), value, allocator);
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  template<typename T>
+  void AddMember(const std::string &name, T &&value) {
+    static auto &allocator = document_.GetAllocator();
+    if (!document_.HasMember(name)) {
+      document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name.c_str()), value, allocator);
+    }
   }
 //----------------------------------------------------------------------------------------------------------------------
   std::string GetConfigFileName() const {
@@ -211,43 +248,38 @@ class ConfiguratorJson {
   }
 //----------------------------------------------------------------------------------------------------------------------
   int GetInt(const char *parameter) {
-    if (document_[parameter].IsInt()) {
+    if (document_[parameter].IsInt())
       return document_[parameter].GetInt();
-    } else {
+    else
       return 0;
-    }
   }
 //----------------------------------------------------------------------------------------------------------------------
   bool GetBool(const char *parameter) {
-    if (document_[parameter].IsBool()) {
+    if (document_[parameter].IsBool())
       return document_[parameter].GetBool();
-    } else {
+    else
       return false;
-    }
   }
 //----------------------------------------------------------------------------------------------------------------------
   std::string GetString(const char *parameter) {
-    if (document_[parameter].IsString()) {
+    if (document_[parameter].IsString())
       return document_[parameter].GetString();
-    } else {
+    else
       return std::string();
-    }
   }
 //----------------------------------------------------------------------------------------------------------------------
   float GetFloat(const char *parameter) {
-    if (document_[parameter].IsFloat()) {
+    if (document_[parameter].IsFloat())
       return document_[parameter].GetFloat();
-    } else {
+    else
       return 0;
-    }
   }
 //----------------------------------------------------------------------------------------------------------------------
   double GetDouble(const char *parameter) {
-    if (document_[parameter].IsDouble()) {
+    if (document_[parameter].IsDouble())
       return document_[parameter].GetDouble();
-    } else {
+    else
       return 0;
-    }
   }
 //----------------------------------------------------------------------------------------------------------------------
   static bool Assign(bool &value, const char *parameter) {
@@ -294,15 +326,5 @@ class ConfiguratorJson {
 
     return exists;
   }
-//----------------------------------------------------------------------------------------------------------------------
-  template<typename T>
-  void Add(const char *name, T &&value) {
-    if (!document_.HasMember(name))
-      document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name), value, document_.GetAllocator());
-  }
-
- private:
-  std::string file_name_ = "config.json";
-  rapidjson::Document document_;
 }; //class ConfigManager
 } //namespace Context

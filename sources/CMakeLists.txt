@@ -102,7 +102,6 @@ set(CONTEXT_HEADERS
     context/include/NoCopy.h
     context/include/TerrainMaterialGeneratorB.h
     context/include/TerrainMaterialGeneratorC.h
-    context/include/PSSMShadowCameraSetupB.h
     context/include/CubeMapCamera.h
     context/include/ReflectionCamera.h
     context/include/ParticlesManager.h
@@ -164,7 +163,6 @@ set(CONTEXT_SOURCES
     context/src/CompositorManager.cpp
     context/src/TerrainMaterialGeneratorB.cpp
     context/src/TerrainMaterialGeneratorC.cpp
-    context/src/PSSMShadowCameraSetupB.cpp
     context/src/ParticlesManager.cpp
     context/src/Gorilla.cpp
     context/src/GorillaOverlay.cpp

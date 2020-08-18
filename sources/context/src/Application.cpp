@@ -163,7 +163,6 @@ void Application::Loop() {
 void Application::Go() {
   quit_ = false;
 
-  ConfiguratorJson::GetSingleton().Setup();
   std::ios_base::sync_with_stdio(false);
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
