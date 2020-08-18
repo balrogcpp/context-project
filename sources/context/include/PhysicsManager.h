@@ -48,8 +48,7 @@ class btCollisionObject;
 
 namespace Context {
 
-class PhysicsManager :    //    Bullet initialisation.
-    public Manager {
+class PhysicsManager : public Manager {
  public:
   //getters
   const std::shared_ptr<btDynamicsWorld> &GetPhyWorld() const;
@@ -94,6 +93,5 @@ class PhysicsManager :    //    Bullet initialisation.
   static PhysicsManager &GetSingleton() {
     return BulletPhysicsManagerSingleton;
   }
-
 };
 }

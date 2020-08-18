@@ -40,10 +40,8 @@ class CameraMan;
 class ShaderResolver;
 }
 
-namespace Ogre {
-namespace RTSS {
+namespace Ogre::RTSS {
 class PSSMShadowCameraSetup;
-}
 }
 
 namespace Ogre {
@@ -173,22 +171,17 @@ class ContextManager : public Ogre::LogListener, public Singleton {
   bool graphics_gamma_enable_ = false;
   int graphics_fsaa_ = 0;
   int graphics_msaa_ = 0;
-  std::string graphics_filtration_ = "anisotropic";
+  std::string graphics_filtration_ = "bilinear";
   int graphics_anisotropy_level_ = 4;
   int graphics_mipmap_count_ = 10;
 
   //Shadows
   bool graphics_shadows_enable_ = true;
-  bool graphics_shadows_depth_enable_ = true;
-  bool graphics_shadows_pssm_enable_ = true;
   int graphics_shadows_texture_resolution_ = 1024;
   int graphics_shadows_texture_count_ = 3;
   float graphics_shadows_pssm_0_ = 0.0f;
   float graphics_shadows_pssm_1_ = 0.0f;
-  float graphics_shadows_pssm_2_ = 0.5f;
-  int graphics_shadows_pssm_0_resolution_ = 1024;
-  int graphics_shadows_pssm_1_resolution_ = 1024;
-  int graphics_shadows_pssm_2_resolution_ = 1024;
+  float graphics_shadows_pssm_2_ = 0.0f;
   bool graphics_shadows_split_auto_ = false;
   float graphics_shadows_far_distance_ = 200;
   bool graphics_shadows_self_shadow_ = true;

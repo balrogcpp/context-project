@@ -90,16 +90,11 @@ void ContextManager::SetupConfigManager() {
   ConfiguratorJson::Assign(graphics_mipmap_count_, "graphics_mipmap_count");
 
   ConfiguratorJson::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
-  ConfiguratorJson::Assign(graphics_shadows_pssm_enable_, "graphics_shadows_pssm_enable");
-  ConfiguratorJson::Assign(graphics_shadows_depth_enable_, "graphics_shadows_depth_enable");
   ConfiguratorJson::Assign(graphics_shadows_pssm_0_, "graphics_shadows_pssm_0");
   ConfiguratorJson::Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
   ConfiguratorJson::Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
   ConfiguratorJson::Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
   ConfiguratorJson::Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
-  ConfiguratorJson::Assign(graphics_shadows_pssm_0_resolution_, "graphics_shadows_pssm_0_resolution");
-  ConfiguratorJson::Assign(graphics_shadows_pssm_1_resolution_, "graphics_shadows_pssm_1_resolution");
-  ConfiguratorJson::Assign(graphics_shadows_pssm_2_resolution_, "graphics_shadows_pssm_2_resolution");
   ConfiguratorJson::Assign(graphics_shadows_texture_resolution_, "graphics_shadows_texture_resolution");
   ConfiguratorJson::Assign(graphics_shadows_split_padding_, "graphics_shadows_split_padding");
   ConfiguratorJson::Assign(graphics_shadows_texture_count_, "graphics_shadows_texture_count");
@@ -191,26 +186,6 @@ void ContextManager::InitGeneralResources() {
 
   resource_list.push_back({media_location_directory_ + "programs", "FileSystem", default_group_name});
   resource_list.push_back({media_location_directory_ + "scenes", "FileSystem", default_group_name});
-
-//#ifdef DEBUG
-//  resource_list.push_back({media_location_directory_ + "cegui/animations", "FileSystem", "Animation"});
-//  resource_list.push_back({media_location_directory_ + "cegui/fonts", "FileSystem", "Fonts"});
-//  resource_list.push_back({media_location_directory_ + "cegui/imagesets", "FileSystem", "Imagesets"});
-//  resource_list.push_back({media_location_directory_ + "cegui/layouts", "FileSystem", "Layouts"});
-//  resource_list.push_back({media_location_directory_ + "cegui/looknfeel", "FileSystem", "LookNFeel"});
-//  resource_list.push_back({media_location_directory_ + "cegui/lua_scripts", "FileSystem", "LuaScripts"});
-//  resource_list.push_back({media_location_directory_ + "cegui/schemes", "FileSystem", "Schemes"});
-//  resource_list.push_back({media_location_directory_ + "cegui/xml_schemas", "FileSystem", "XmlSchemas"});
-//#else
-//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/animations.zip", "Zip", "Animation");
-//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/fonts.zip", "Zip", "Fonts");
-//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/imagesets.zip", "Zip", "Imagesets");
-//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/layouts.zip", "Zip", "Layouts");
-//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/looknfeel.zip", "Zip", "LookNFeel");
-//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/lua_scripts.zip", "Zip", "LuaScripts");
-//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/schemes.zip", "Zip", "Schemes");
-//  ogre_resource_manager.addResourceLocation(media_location_directory_ + "cegui/xml_schemas.zip", "Zip", "XmlSchemas");
-//#endif
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   if (rtss_cache_enable_) {
@@ -670,14 +645,7 @@ void ContextManager::SetupSDL() {
 
   }
 }
-//
-//
-//
-/////////////////////////////////////////////////////////////////////////////////////
-//
-//
-//
-/////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupOGRE() {
   if (global_log_enable_) {
     ogre_root_ = new Ogre::Root("", "", ogre_log_name_);

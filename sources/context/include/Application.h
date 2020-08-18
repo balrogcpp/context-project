@@ -27,8 +27,9 @@ SOFTWARE.
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 
+#include "IoListeners.h"
 #include "DummyListener.h"
-#include "Manager.h"
+#include "Singleton.h"
 
 namespace Context {
 class AppState;
@@ -36,29 +37,32 @@ class AppState;
 
 namespace Context {
 
-class Application : public Manager {
+class Application final : public Singleton, public Ogre::FrameListener, public io::InputListener {
  public:
-  void Update(float timeSinceLastFrame);
-  void Setup() final;
-  void Reset() final;
-  void Render();
-  void WaitFPS();
-  void Loop();
-  void Go();
+  static Application &GetSingleton() {
+    static Application Singleton;
+    return Singleton;
+  }
+
+  int GetFpsFrames() const;
+  static int Main(std::shared_ptr<AppState> app_state);
   void SetCurState(std::shared_ptr<AppState> scene_ptr);
   void SetNextState(std::shared_ptr<AppState> scene_ptr);
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) override;
-  void KeyDown(SDL_Keycode sym) override;
-  void KeyUp(SDL_Keycode sym) override;
-  void Event(const SDL_Event &evt) override;
-  void Quit() override;
-  void Other(Uint8 type, int code, void *data1, void *data2) override;
-  int GetFpsFrames() const;
 
- public:
-  static int Main(std::shared_ptr<AppState> app_state);
+ private:
+  void Init_();
+  void Reset_();
+  void Render_();
+  void WaitFPS_();
+  void Loop_();
+  void Go_();
 
- protected:
+  void KeyDown(SDL_Keycode sym) final;
+  void Event(const SDL_Event &evt) final;
+  void Quit() final;
+
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final { return true; };
+
   DummyListener dummy_listener_;
   bool quit_ = true;
   bool paused_ = false;
@@ -76,22 +80,5 @@ class Application : public Manager {
   bool application_ask_before_quit_ = false;
   bool graphics_vsync_ = true;
   bool global_lock_fps_ = true;
-  std::string application_scene_file_;
-  std::string application_ambient_sound_file_;
-
-  //Singleton section
- private:
-  static Application ApplicationSingleton;
-
- public:
-  static Application &GetSingleton() {
-    return ApplicationSingleton;
-  }
-
-  static Application *GetSingletonPtr() {
-    return &ApplicationSingleton;
-  }
-
-};
-
-}
+}; //class Application
+} //namespace Context

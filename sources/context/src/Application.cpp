@@ -55,13 +55,8 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
 namespace Context {
-Application Application::ApplicationSingleton;
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Update(float timeSinceLastFrame) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Setup() {
+void Application::Init_() {
   ContextManager::GetSingleton().SetupGlobal();
   ContextManager::GetSingleton().Setup();
   AppStateManager::GetSingleton().cur_state_->SetupGlobals();
@@ -75,15 +70,13 @@ void Application::Setup() {
   ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
   ConfiguratorJson::Assign(graphics_vsync_, "graphics_vsync");
   ConfiguratorJson::Assign(application_ask_before_quit_, "application_ask_before_quit");
-  ConfiguratorJson::Assign(application_scene_file_, "application_scene_file");
-  ConfiguratorJson::Assign(application_ambient_sound_file_, "application_ambient_sound_file");
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Render() {
+void Application::Render_() {
   ContextManager::GetSingleton().Render();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Reset() {
+void Application::Reset_() {
   AppStateManager::GetSingleton().Reset();
   AppStateManager::GetSingleton().ResetGlobals();
   ContextManager::GetSingleton().Reset();
@@ -94,7 +87,7 @@ void Application::Quit() {
   quit_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::WaitFPS() {
+void Application::WaitFPS_() {
   long delay = static_cast<long> ((1000000 / global_target_fps_) - time_since_last_frame_);
 
   if (delay > 0) {
@@ -102,7 +95,7 @@ void Application::WaitFPS() {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Loop() {
+void Application::Loop_() {
   while (quit_) {
     if (AppStateManager::GetSingleton().cur_state_) {
 
@@ -127,7 +120,7 @@ void Application::Loop() {
       if (!paused_) {
         AppStateManager::GetSingleton().CleanupResources();
 
-        Render();
+        Render_();
       }
 
 #ifdef DEBUG
@@ -160,7 +153,7 @@ void Application::Loop() {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Go() {
+void Application::Go_() {
   quit_ = false;
 
   std::ios_base::sync_with_stdio(false);
@@ -189,44 +182,21 @@ void Application::Go() {
       dummy_listener_.SetPrint(true);
     }
 
-    Setup();
-    SetupGlobal();
+    Init_();
     io::InputSequencer::GetSingleton().RegisterListener(this);
     ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
 
     fullscreen_ = ContextManager::GetSingleton().IsFullscreen();
 
-    if (!application_scene_file_.empty()) {
-      Ogre::SceneLoaderManager::getSingleton().load(application_scene_file_,
-                                                    Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-                                                    scene_->getRootSceneNode());
-    }
-
-    if (!application_ambient_sound_file_.empty()) {
-      auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
-
-      mSoundManager->setResourceGroupName(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-      mSoundManager->createSound("AmbientMusic",
-                                 application_ambient_sound_file_,
-                                 false,
-                                 true,
-                                 true,
-                                 ContextManager::GetSingleton().GetOgreScenePtr());
-
-      if (mSoundManager->getSound("SceneManagerInstance1")) {
-        mSoundManager->getSound("SceneManagerInstance1")->play();
-      }
-    }
-
     AppStateManager::GetSingleton().cur_state_->Setup();
 
     quit_ = true;
 
-    Loop();
+    Loop_();
 
     io::InputSequencer::GetSingleton().Reset();
 
-    Reset();
+    Reset_();
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -238,8 +208,17 @@ void Application::SetNextState(std::shared_ptr<AppState> scene_ptr) {
   AppStateManager::GetSingleton().SetNextState(scene_ptr);
 }
 //----------------------------------------------------------------------------------------------------------------------
-bool Application::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-  return true;
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+static sigjmp_buf point;
+
+static void termination_handler(int signum) {
+  ContextManager::GetSingleton().RestoreScreenSize();
+
+  printf("\nSegmentation fault occured!\n");
+  std::fflush(stdout);
+  std::fflush(stderr);
+
+  longjmp(point, 1);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::KeyDown(SDL_Keycode sym) {
@@ -256,14 +235,6 @@ void Application::KeyDown(SDL_Keycode sym) {
       PhysicsManager::GetSingleton().SetPhysicsDebugShowCollider(false);
     }
   }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::KeyUp(SDL_Keycode sym) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void mouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
-  //
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
@@ -297,23 +268,6 @@ void Application::Event(const SDL_Event &evt) {
       }
     }
   }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Other(Uint8 type, int code, void *data1, void *data2) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-static sigjmp_buf point;
-
-static void termination_handler(int signum) {
-  ContextManager::GetSingleton().RestoreScreenSize();
-
-  printf("\nSegmentation fault occured!\n");
-  std::fflush(stdout);
-  std::fflush(stderr);
-
-  longjmp(point, 1);
 }
 
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
@@ -356,7 +310,7 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
 
   try {
     Application::GetSingleton().SetCurState(app_state);
-    Application::GetSingleton().Go();
+    Application::GetSingleton().Go_();
   }
   catch (Exception &e) {
     const std::string caption = "Exception occurred (Context core)";

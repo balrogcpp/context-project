@@ -48,11 +48,13 @@ fragment_program PSSM/modulate_fs unified
 fragment_program PSSM/modulate_SSAO_fsGLSL glsl
 {
 	source modulate.frag
+	preprocessor_defines SSAO
 }
 
 fragment_program PSSM/modulate_SSAO_fsGLSLES glsles
 {
 	source modulate.frag
+	preprocessor_defines SSAO
 }
 
 fragment_program PSSM/modulate_SSAO_fs unified
