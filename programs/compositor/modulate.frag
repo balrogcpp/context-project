@@ -71,7 +71,9 @@ out vec4 gl_FragColor;
 in vec2 oUv0;
 
 uniform sampler2D SceneSampler;
+#ifdef Bloom
 uniform sampler2D BloomSampler;
+#endif
 #ifdef SSAO
 uniform sampler2D SsaoSampler;
 #endif
@@ -80,12 +82,14 @@ uniform float exposure;
 void main()
 {
     vec3 scene = texture2D(SceneSampler, oUv0).rgb;
+#ifdef Bloom
+    vec3 bloom = texture2D(BloomSampler, oUv0).rgb;
+    scene += 0.05 * bloom;
+#endif
 #ifdef SSAO
     float ssao = texture2D(SsaoSampler, oUv0).r;
     scene *= ssao;
 #endif
-    vec3 bloom = texture2D(BloomSampler, oUv0).rgb;
-    scene += 0.05 * bloom;
 
     const float gamma = 2.2;
     vec3 mapped = vec3(1.0) - exp(-scene * exposure);

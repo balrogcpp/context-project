@@ -87,14 +87,6 @@ void Application::Quit() {
   quit_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::WaitFPS_() {
-  long delay = static_cast<long> ((1000000 / global_target_fps_) - time_since_last_frame_);
-
-  if (delay > 0) {
-    std::this_thread::sleep_for(std::chrono::microseconds(delay));
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
 void Application::Loop_() {
   while (quit_) {
     if (AppStateManager::GetSingleton().cur_state_) {

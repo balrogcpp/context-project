@@ -53,7 +53,6 @@ class Application final : public Singleton, public Ogre::FrameListener, public i
   void Init_();
   void Reset_();
   void Render_();
-  void WaitFPS_();
   void Loop_();
   void Go_();
 

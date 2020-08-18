@@ -250,22 +250,21 @@ void CompositorManager::Setup() {
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
 
-    if (compositor_use_blur_) {
-      for (int i = 0; i < 1; i++) {
-        if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/FilterY"))
-          Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Context/FilterY", true);
-        else
-          Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
+    for (int i = 0; i < 1; i++) {
+      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/FilterY"))
+        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Context/FilterY", true);
+      else
+        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
 
-        if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/FilterX"))
-          Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Context/FilterX", true);
-        else
-          Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
-      }
+      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/FilterX"))
+        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Context/FilterX", true);
+      else
+        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
     }
   }
 
   if (compositor_use_moution_blur_) {
+    throw Exception("Motion blur not implemented!");
     CreateMotionBlurCompositor();
 
     if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "MotionBlur"))
@@ -276,6 +275,7 @@ void CompositorManager::Setup() {
 
   std::string modulate_compositor = "Context/Modulate";
 
+  modulate_compositor += compositor_use_bloom_ ? "/Bloom" : "";
   modulate_compositor += compositor_use_ssao_ ? "/SSAO" : "";
   modulate_compositor += compositor_use_hdr_ ? "/HDR" : "";
 
