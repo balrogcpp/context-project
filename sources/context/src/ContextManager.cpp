@@ -875,9 +875,6 @@ void ContextManager::SetupOgreLog() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::Setup() {
-//  ShaderResolver::FixMaterial("BaseWhite");
-//  ShaderResolver::FixMaterial("BaseWhiteNoLighting");
-
   if (sdl_window_) {
     if (window_position_.f) {
       SDL_SetWindowSize(sdl_window_, actual_monitor_size_.w, actual_monitor_size_.h);
@@ -941,12 +938,6 @@ void ContextManager::SetupGlobal() {
   DotSceneLoaderB::GetSingleton().SetupGlobal();
   DotSceneLoaderB::GetSingleton().Setup();
 
-  CubeMapCamera::GetSingleton().SetupGlobal();
-//  CubeMapCamera::GetSingleton().Setup();
-
-//  ReflectionCamera::GetSingleton().SetupGlobal();
-//  ReflectionCamera::GetSingleton().Setup();
-
   GorillaOverlay::GetSingleton().SetupGlobal();
   GorillaOverlay::GetSingleton().Setup();
 }
@@ -970,12 +961,6 @@ void ContextManager::ResetGlobals() {
 
   DotSceneLoaderB::GetSingleton().ResetGlobal();
   DotSceneLoaderB::GetSingleton().Reset();
-
-  CubeMapCamera::GetSingleton().ResetGlobal();
-  CubeMapCamera::GetSingleton().Reset();
-
-//  ReflectionCamera::GetSingleton().ResetGlobal();
-  ReflectionCamera::GetSingleton().Reset();
 
   GorillaOverlay::GetSingleton().ResetGlobal();
   GorillaOverlay::GetSingleton().Reset();

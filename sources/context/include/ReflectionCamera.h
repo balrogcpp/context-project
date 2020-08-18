@@ -24,8 +24,6 @@ SOFTWARE.
 
 #pragma once
 
-#include "Manager.h"
-
 #include <OgrePlane.h>
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
@@ -38,22 +36,50 @@ class SceneNode;
 
 namespace Context {
 
-class ReflectionCamera final : public Ogre::RenderTargetListener, public Ogre::FrameListener{
- private:
-  static ReflectionCamera CubeMapCameraSingleton;
-
+class ReflectionCamera final : public Ogre::RenderTargetListener, public Ogre::FrameListener {
  public:
   static ReflectionCamera &GetSingleton() {
     static ReflectionCamera Singleton;
     return Singleton;
   }
 
+  ReflectionCamera() {
+    Init_();
+  }
+
+  explicit ReflectionCamera(Ogre::Plane plane) {
+    SetPlane(plane);
+    Init_();
+  }
+
+  ReflectionCamera(const ReflectionCamera &) = delete;
+  ReflectionCamera &operator=(const ReflectionCamera &) = delete;
+  ReflectionCamera(Singleton &&) = delete;
+  ReflectionCamera &operator=(ReflectionCamera &&) = delete;
+  virtual ~ReflectionCamera() = default;
+
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  void Setup() {
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
+    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+    scene->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+    camera_->setFOVy(scene->getCamera("Default")->getFOVy());
+    camera_->enableReflection(plane_);
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
+    Ogre::Root::getSingleton().getSceneManager("Default")->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    camera_->disableReflection();
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final { return true; };
+
+ private:
+//----------------------------------------------------------------------------------------------------------------------
+  void Init_() {
     // create our reflection & refraction render textures, and setup their render targets
-    auto* scene = Ogre::Root::getSingleton().getSceneManager("Default");
-    auto* camera = scene->getCamera("Default");
+    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+    auto *camera = scene->getCamera("Default");
 
     if (!camera_) {
       camera_ = scene->createCamera("CubeMapCamera");
@@ -116,36 +142,18 @@ class ReflectionCamera final : public Ogre::RenderTargetListener, public Ogre::F
     }
   }
 
-  void Reset() {};
-//----------------------------------------------------------------------------------------------------------------------
-  void RegPlane(Ogre::Plane plane) {
-    plane_ = plane;
-  }
-
- public:
-//----------------------------------------------------------------------------------------------------------------------
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
-    auto* scene = Ogre::Root::getSingleton().getSceneManager("Default");
-    scene->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-    camera_->setFOVy(scene->getCamera("Default")->getFOVy());
-    camera_->enableReflection(plane_);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
-    Ogre::Root::getSingleton().getSceneManager("Default")->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-    camera_->disableReflection();
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final { return true; };
-
- private:
   std::shared_ptr<Ogre::Texture> reflection_tex_;
   std::shared_ptr<Ogre::Texture> refraction_tex_;
   Ogre::Plane plane_;
-  Ogre::Camera *camera_ = nullptr ;
+  Ogre::Camera *camera_ = nullptr;
   Ogre::SceneNode *ref_cam_node_ = nullptr;
 
  public:
+//----------------------------------------------------------------------------------------------------------------------
+  void SetPlane(Ogre::Plane plane) {
+    plane_ = plane;
+  }
+
   std::shared_ptr<Ogre::Texture> GetReflectionTex() const {
     return reflection_tex_;
   }

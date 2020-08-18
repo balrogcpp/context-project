@@ -165,7 +165,6 @@ set(CONTEXT_SOURCES
     context/src/TerrainMaterialGeneratorB.cpp
     context/src/TerrainMaterialGeneratorC.cpp
     context/src/PSSMShadowCameraSetupB.cpp
-    context/src/CubeMapCamera.cpp
     context/src/ParticlesManager.cpp
     context/src/Gorilla.cpp
     context/src/GorillaOverlay.cpp

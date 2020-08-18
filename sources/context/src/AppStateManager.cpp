@@ -30,11 +30,7 @@ SOFTWARE.
 #include "PhysicsManager.h"
 #include "SoundManager.h"
 #include "ConfiguratorJson.h"
-#include "CubeMapCamera.h"
-#include "ReflectionCamera.h"
 #include "IO.h"
-
-#include <iostream>
 
 namespace Context {
 

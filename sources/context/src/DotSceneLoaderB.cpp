@@ -969,7 +969,6 @@ void DotSceneLoaderB::ProcessCamera(pugi::xml_node &xml_node, Ogre::SceneNode *p
 
   ContextManager::GetSingleton().GetCameraMan()->UnregCamera();
   ContextManager::GetSingleton().GetCameraMan()->RegCamera(parent);
-  CubeMapCamera::GetSingleton().FreeCamera();
 
   auto *actor = ogre_scene_manager_->createEntity("Actor", "Icosphere.mesh");
   actor->setCastShadows(false);
@@ -1351,7 +1350,6 @@ void DotSceneLoaderB::FixPbrParams(Ogre::MaterialPtr material) {
     const bool realtime_cubemap = false;
     if (ibl_texture) {
       if (realtime_cubemap) {
-        CubeMapCamera::GetSingleton().Setup();
         ibl_texture->setTexture(CubeMapCamera::GetSingleton().GetDyncubemap());
       } else {
         std::string skybox_cubemap =
@@ -1655,15 +1653,13 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &xml_node, Ogre::SceneNode *pa
     auto material_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("ReflectionMap");
 
     if (material_unit) {
-      ReflectionCamera::GetSingleton().Setup();
-
       material_unit->setTexture(ReflectionCamera::GetSingleton().GetReflectionTex());
       material_unit->setTextureAddressingMode(Ogre::TAM_CLAMP);
       material_unit->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
     }
   }
 
-  ReflectionCamera::GetSingleton().RegPlane(plane);
+  ReflectionCamera::GetSingleton().SetPlane(plane);
   parent->attachObject(entity);
 
   std::unique_ptr<BtOgre::StaticMeshToShapeConverter>
