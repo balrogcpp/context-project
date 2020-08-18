@@ -24,35 +24,147 @@ SOFTWARE.
 
 #pragma once
 
-#include <OgreMaterialManager.h>
+#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
+#include "ConfiguratorJson.h"
 
-namespace Ogre::RTShader {
-class ShaderGenerator;
-}
+#include <RTShaderSystem/OgreShaderGenerator.h>
 
 namespace Context {
 
 class ShaderResolver final : public Ogre::MaterialManager::Listener {
  public:
-  explicit ShaderResolver(Ogre::RTShader::ShaderGenerator *shader_generator);
+//----------------------------------------------------------------------------------------------------------------------
+  ShaderResolver(Ogre::RTShader::ShaderGenerator *shader_generator) {
+    shader_generator_ = shader_generator;
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  static bool FixMaterial(const std::string &material_name) {
+    static std::vector<std::string> material_list_;
+
+    if (find(material_list_.begin(), material_list_.end(), material_name) == material_list_.end())
+      material_list_.push_back(material_name);
+    else
+      return false;
+
+    auto &mShaderGenerator = Ogre::RTShader::ShaderGenerator::getSingleton();
+    auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+
+    if (!originalMaterial) {
+      originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name, Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+    }
+
+    bool verbose = ConfiguratorJson::GetSingleton().GetBool("global_verbose_enable");
+
+    if (!originalMaterial) {
+      if (verbose)
+        std::cout << "Requested to fix material " << material_name << " but it does not exist\n";
+
+      return false;
+    } else {
+      if (verbose)
+        std::cout << "Fixing Material " << material_name << " !\n";
+    }
+
+    // Create shader generated technique for this material.
+    bool techniqueCreated = mShaderGenerator.createShaderBasedTechnique(
+        *originalMaterial,
+        Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
+        Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME
+    );
+
+    // Case technique registration succeeded.
+    if (techniqueCreated) {
+      // Force creating the shaders for the generated technique.
+      mShaderGenerator.validateMaterial(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME,
+                                        originalMaterial->getName(),
+                                        originalMaterial->getGroup());
+    } else {
+      originalMaterial->getTechnique(0)->setSchemeName(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+    }
+
+    return true;
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  static bool ProtectMaterial(const std::string &material_name) {
+    auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name);
+    Ogre::Viewport *ogreViewport = ContextManager::GetSingleton().GetOgreViewport();
+    originalMaterial->getTechnique(0)->setSchemeName(ogreViewport->getMaterialScheme());
+
+    return true;
+  }
+//----------------------------------------------------------------------------------------------------------------------
   Ogre::Technique *handleSchemeNotFound(unsigned short scheme_index,
                                         const std::string &scheme_name,
-                                        Ogre::Material *original_material, unsigned short lod_index,
-                                        const Ogre::Renderable *renderable) final;
+                                        Ogre::Material *original_material,
+                                        unsigned short lod_index,
+                                        const Ogre::Renderable *renderable) {
+    static std::vector<std::string> material_list_;
 
-  bool afterIlluminationPassesCreated(Ogre::Technique *technique) final;
-  bool beforeIlluminationPassesCleared(Ogre::Technique *technique) final;
-  static bool FixMaterial(const std::string &material_name);
-  static bool ProtectMaterial(const std::string &material_name);
+    if (scheme_name != Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
+      return nullptr;
+    }
 
- protected:
+    std::string material_name = original_material->getName();
+    if (std::find(material_list_.begin(), material_list_.end(), material_name) == material_list_.end()) {
+      material_list_.push_back(material_name);
+    } else {
+      return nullptr;
+    }
+
+    // Create shader generated technique for this material.
+    bool techniqueCreated = shader_generator_->createShaderBasedTechnique(
+        *original_material,
+        Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
+        scheme_name);
+
+    // Case technique registration succeeded.
+    if (techniqueCreated) {
+      // Force creating the shaders for the generated technique.
+      shader_generator_->validateMaterial(scheme_name, original_material->getName(), original_material->getGroup());
+
+      // Grab the generated technique.
+      for (const auto &it : original_material->getTechniques()) {
+        if (it->getSchemeName() == scheme_name) {
+          return it;
+        }
+      }
+    } else {
+      original_material->getTechnique(0)->setSchemeName(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+    }
+
+    return nullptr;
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  bool afterIlluminationPassesCreated(Ogre::Technique *technique) {
+    if (technique->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
+      Ogre::Material *mat = technique->getParent();
+      shader_generator_->validateMaterialIlluminationPasses(technique->getSchemeName(),
+                                                            mat->getName(), mat->getGroup());
+      return true;
+    } else {
+      return false;
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  bool beforeIlluminationPassesCleared(Ogre::Technique *technique) {
+    if (technique->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
+      Ogre::Material *mat = technique->getParent();
+      shader_generator_->invalidateMaterialIlluminationPasses(technique->getSchemeName(),
+                                                              mat->getName(),
+                                                              mat->getGroup());
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+ private:
   Ogre::RTShader::ShaderGenerator *shader_generator_;
-  static std::vector<std::string> material_list_;
 
  public:
   Ogre::RTShader::ShaderGenerator *GetMShaderGenerator() const {
     return shader_generator_;
   }
-  // The shader generator instance.
-};
-}
+}; //namespace ShaderResolver
+} //namespace Context
+#endif

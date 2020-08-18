@@ -24,23 +24,16 @@
 
 #pragma once
 
-#include "IO.h"
-#include "Singleton.h"
 #include "Application.h"
 #include "AppState.h"
-#include "AppStateManager.h"
 #include "CameraMan.h"
 #include "Exception.h"
-#include "ContextConfigStructures.h"
 #include "ContextManager.h"
-#include "ShaderResolver.h"
 #include "DummyListener.h"
-#include "ConfiguratorJson.h"
 #include "CompositorManager.h"
 #include "StaticForest.h"
 #include "PhysicsManager.h"
 #include "SoundManager.h"
-#include "Manager.h"
 #include "DotSceneLoaderB.h"
 #include "GorillaOverlay.h"
 #include "OgreCommon.h"

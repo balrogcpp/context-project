@@ -153,7 +153,6 @@ set(CONTEXT_SOURCES
     context/src/AppStateManager.cpp
     context/src/CameraMan.cpp
     context/src/ContextManager.cpp
-    context/src/ShaderResolver.cpp
     context/src/DotSceneLoaderB.cpp
     context/src/PhysicsManager.cpp
     context/src/StaticForest.cpp
