@@ -30,14 +30,10 @@ SOFTWARE.
 #include "CameraMan.h"
 #include "ShaderResolver.h"
 #include "PhysicsManager.h"
-#include "AppStateManager.h"
 #include "DotSceneLoaderB.h"
 #include "StaticForest.h"
 #include "SoundManager.h"
 #include "CompositorManager.h"
-#include "PSSMShadowCameraSetupB.h"
-#include "CubeMapCamera.h"
-#include "ReflectionCamera.h"
 #include "GorillaOverlay.h"
 
 extern "C" {
@@ -674,6 +670,10 @@ void ContextManager::SetupSDL() {
 
   }
 }
+//
+//
+//
+/////////////////////////////////////////////////////////////////////////////////////
 //
 //
 //
