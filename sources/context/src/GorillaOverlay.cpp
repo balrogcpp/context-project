@@ -28,25 +28,10 @@ SOFTWARE.
 #include "Application.h"
 
 namespace Context {
-GorillaOverlay GorillaOverlay::GorillaOverlaySingleton;
-//----------------------------------------------------------------------------------------------------------------------
-GorillaOverlay *GorillaOverlay::GetSingletonPtr() {
-  return &GorillaOverlaySingleton;
-}
-//----------------------------------------------------------------------------------------------------------------------
-GorillaOverlay &GorillaOverlay::GetSingleton() {
-  return GorillaOverlaySingleton;
-}
 //----------------------------------------------------------------------------------------------------------------------
 bool GorillaOverlay::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   caption->text(std::to_string(Application::GetSingleton().GetFpsFrames()));
   return true;
-}
-//----------------------------------------------------------------------------------------------------------------------
-void GorillaOverlay::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-}
-//----------------------------------------------------------------------------------------------------------------------
-void GorillaOverlay::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void GorillaOverlay::Setup() {

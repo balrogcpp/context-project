@@ -29,9 +29,8 @@ SOFTWARE.
 #include "ShaderResolver.h"
 
 namespace Context {
-
-PhysicsManager PhysicsManager::BulletPhysicsManagerSingleton;
-const std::shared_ptr<btDynamicsWorld> &PhysicsManager::GetPhyWorld() const {
+//----------------------------------------------------------------------------------------------------------------------
+std::shared_ptr<btDynamicsWorld> PhysicsManager::GetPhyWorld() const {
   return phy_world_;
 }
 //----------------------------------------------------------------------------------------------------------------------

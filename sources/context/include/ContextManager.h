@@ -29,7 +29,6 @@ SOFTWARE.
 #include <vector>
 #include <string>
 
-#include "ContextConfigStructures.h"
 #include "Singleton.h"
 
 struct SDL_Window;
@@ -50,6 +49,21 @@ class Texture;
 }
 
 namespace Context {
+struct WindowPosition {
+  int x, y; //x,y
+  int w, h; //width, high
+  bool f; //fullscreen
+};
+
+struct OpenGlAttribute {
+  int major, minor;
+};
+
+struct Cursor {
+  bool show;
+  bool grab;
+  bool relative;
+};
 
 class ContextManager : public Ogre::LogListener, public Singleton {
  private:

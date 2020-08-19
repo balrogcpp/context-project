@@ -96,14 +96,11 @@ set(CONTEXT_HEADERS
     context/include/Manager.h
     context/include/Context.h
     context/include/CompositorManager.h
-    context/include/ContextConfigStructures.h
     context/include/Singleton.h
     context/include/NoCopy.h
     context/include/TerrainMaterialGeneratorB.h
-    context/include/TerrainMaterialGeneratorC.h
     context/include/CubeMapCamera.h
     context/include/ReflectionCamera.h
-    context/include/ParticlesManager.h
     context/include/Gorilla.h
     context/include/GorillaOverlay.h
     context/include/IoListeners.h
@@ -160,8 +157,6 @@ set(CONTEXT_SOURCES
     context/src/pcheader.cpp
     context/src/CompositorManager.cpp
     context/src/TerrainMaterialGeneratorB.cpp
-    context/src/TerrainMaterialGeneratorC.cpp
-    context/src/ParticlesManager.cpp
     context/src/Gorilla.cpp
     context/src/GorillaOverlay.cpp
     )

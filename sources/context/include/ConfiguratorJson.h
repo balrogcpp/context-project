@@ -24,7 +24,6 @@ SOFTWARE.
 
 #pragma once
 
-#include "ContextConfigStructures.h"
 #include "Exception.h"
 
 #include <rapidjson/document.h>

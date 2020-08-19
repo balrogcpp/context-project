@@ -30,6 +30,22 @@ SOFTWARE.
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
+Manager::Manager() {
+//  scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
+//  camera_ = scene_->getCamera("Default");
+//  viewport_ = camera_->getViewport();
+//  io::InputSequencer::GetSingleton().RegisterListener(this);
+//  ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
+//  registered_ = true;
+}
+//----------------------------------------------------------------------------------------------------------------------
+Manager::~Manager() {
+//  if (registered_) {
+//    ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
+//    io::InputSequencer::GetSingleton().UnregisterListener(this);
+//  }
+}
+//----------------------------------------------------------------------------------------------------------------------
 void Manager::SetupGlobal() {
   scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   camera_ = scene_->getCamera("Default");

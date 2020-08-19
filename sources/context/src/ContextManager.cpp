@@ -871,22 +871,21 @@ void ContextManager::SetupGlobal() {
   SetupInputs();
   SetupSDL();
   SetupOGRE();
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-  if (rtss_enable_) {
-    SetupRTSS();
-  }
-#endif
 
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
   if (rtss_enable_) {
+    SetupRTSS();
     SetupShaderResolver();
   }
 #endif
 
-  InitGeneralResources();
-
   StaticForest::GetSingleton().SetupGlobal();
   StaticForest::GetSingleton().Setup();
+
+  InitGeneralResources();
+
+  DotSceneLoaderB::GetSingleton().SetupGlobal();
+  DotSceneLoaderB::GetSingleton().Setup();
 
   if (physics_enable_) {
     PhysicsManager::GetSingleton().SetupGlobal();
@@ -902,9 +901,6 @@ void ContextManager::SetupGlobal() {
   CompositorManager::GetSingleton().Setup();
 
   SetupOgreScenePreconditions();
-
-  DotSceneLoaderB::GetSingleton().SetupGlobal();
-  DotSceneLoaderB::GetSingleton().Setup();
 
   GorillaOverlay::GetSingleton().SetupGlobal();
   GorillaOverlay::GetSingleton().Setup();
@@ -926,9 +922,6 @@ void ContextManager::ResetGlobals() {
     SoundManager::GetSingleton().ResetGlobal();
     SoundManager::GetSingleton().Reset();
   }
-
-  DotSceneLoaderB::GetSingleton().ResetGlobal();
-  DotSceneLoaderB::GetSingleton().Reset();
 
   GorillaOverlay::GetSingleton().ResetGlobal();
   GorillaOverlay::GetSingleton().Reset();

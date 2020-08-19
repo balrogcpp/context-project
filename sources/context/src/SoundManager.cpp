@@ -28,17 +28,15 @@ SOFTWARE.
 #include "SoundManager.h"
 
 namespace Context {
-
-SoundManager SoundManager::OggSoundManagerSingleton;
-
+//----------------------------------------------------------------------------------------------------------------------
 void SoundManager::CreateSound() {
 
 }
-
+//----------------------------------------------------------------------------------------------------------------------
 void SoundManager::StopAllSounds() {
   OgreOggSound::OgreOggSoundManager::getSingleton().stopAllSounds();
 }
-
+//----------------------------------------------------------------------------------------------------------------------
 void SoundManager::Setup() {
   OgreOggSound::OgreOggSoundFactory *mOgreOggSoundFactory;
   // Create new factory
@@ -51,14 +49,9 @@ void SoundManager::Setup() {
     std::cerr << "Failed to initialize OgreOggSoundManager" << std::endl;
   }
 }
-
+//----------------------------------------------------------------------------------------------------------------------
 void SoundManager::Reset() {
   OgreOggSound::OgreOggSoundManager::getSingleton().stopAllSounds();
   OgreOggSound::OgreOggSoundManager::getSingleton().destroyAllSounds();
 }
-
-bool frameRenderingQueued(const Ogre::FrameEvent &evt) {
-  return true;
-}
-
 }

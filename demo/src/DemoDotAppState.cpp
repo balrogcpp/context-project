@@ -51,6 +51,10 @@ void DemoDotAppState::Setup() {
 
   ContextManager::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::FPS);
 
+//  Context::DotSceneLoaderB::GetSingleton().load("test.scene",
+//                                              Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+//                                              ogre_scene_manager_->getRootSceneNode());
+
   Ogre::SceneLoaderManager::getSingleton().load("test.scene",
                                                 Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
                                                 ogre_scene_manager_->getRootSceneNode());
@@ -74,9 +78,5 @@ void DemoDotAppState::Setup() {
 //  }
 
   ogre_scene_manager_->setShadowColour(Ogre::ColourValue(0.2));
-
-//  DotSceneLoaderB::FixPbrParams("Examples/LightRibbonTrail");
-//  ContextManager::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::MANUAL);
-//  sinbad_ = std::make_shared<SinbadCharacterController>(ogre_camera_);
 }
 }

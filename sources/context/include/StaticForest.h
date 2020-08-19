@@ -49,6 +49,7 @@ class StaticForest : public Manager {
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
 
   void Reset() final;
+  void Setup() final {}
 
  private:
   void CreateGrassMesh();

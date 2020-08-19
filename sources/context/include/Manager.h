@@ -36,11 +36,14 @@ namespace Context {
 class Manager
  : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener, public Singleton {
  public:
+  Manager();
+  virtual ~Manager();
+
   void SetupGlobal();
   void ResetGlobal();
 
-  virtual void Setup() {}
-  virtual void Reset() {}
+  virtual void Setup() = 0;
+  virtual void Reset() = 0;
 
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}

@@ -36,20 +36,15 @@ class SceneNode;
 namespace Context {
 
 class GorillaOverlay : public Manager {
- private:
-  static GorillaOverlay GorillaOverlaySingleton;
-
  public:
-  static GorillaOverlay *GetSingletonPtr();
-  static GorillaOverlay &GetSingleton();
+  static GorillaOverlay& GetSingleton() {
+    static GorillaOverlay singleton;
+    return singleton;
+  }
 
- public:
   void Setup() final;
   void Reset() final;
 
- public:
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final;
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
 
  private:

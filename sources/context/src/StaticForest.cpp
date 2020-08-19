@@ -50,15 +50,15 @@ void StaticForest::CreateGrassMesh() {
   const std::string grassMaterial = "GrassCustom";
   Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
 
-  DotSceneLoaderB::FixPbrParams(tmp);
-  DotSceneLoaderB::FixPbrShadowReceiver(tmp);
+  DotSceneLoaderB::UpdatePbrParams(tmp);
+  DotSceneLoaderB::UpdatePbrShadowReceiver(tmp);
 
   sm->setMaterialName(grassMaterial);
   sm->useSharedVertices = false;
   sm->vertexData = new Ogre::VertexData();
   sm->vertexData->vertexStart = 0;
-  sm->vertexData->vertexCount = 8; //12
-  sm->indexData->indexCount = 12; //18
+  sm->vertexData->vertexCount = 8;
+  sm->indexData->indexCount = 12;
 
   // specify a vertex format declaration for our mesh: 3 floats for position, 3 floats for normal, 2 floats for UV
   Ogre::VertexDeclaration *decl = sm->vertexData->vertexDeclaration;
@@ -185,13 +185,13 @@ void StaticForest::GenerateGrass() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void StaticForest::Create() {
-  DotSceneLoaderB::FixPbrParams("3D-Diggers/farn01");
-  DotSceneLoaderB::FixPbrShadowReceiver("3D-Diggers/farn01");
-  DotSceneLoaderB::FixPbrParams("3D-Diggers/farn02");
-  DotSceneLoaderB::FixPbrParams("3D-Diggers/fir01");
-  DotSceneLoaderB::FixPbrParams("3D-Diggers/fir02");
-  DotSceneLoaderB::FixPbrParams("3D-Diggers/plant1");
-  DotSceneLoaderB::FixPbrParams("3D-Diggers/plant2");
+  DotSceneLoaderB::UpdatePbrParams("3D-Diggers/farn01");
+  DotSceneLoaderB::UpdatePbrShadowReceiver("3D-Diggers/farn01");
+  DotSceneLoaderB::UpdatePbrParams("3D-Diggers/farn02");
+  DotSceneLoaderB::UpdatePbrParams("3D-Diggers/fir01");
+  DotSceneLoaderB::UpdatePbrParams("3D-Diggers/fir02");
+  DotSceneLoaderB::UpdatePbrParams("3D-Diggers/plant1");
+  DotSceneLoaderB::UpdatePbrParams("3D-Diggers/plant2");
 
 //  GenerateTrees();
 //  GeneratePlants();

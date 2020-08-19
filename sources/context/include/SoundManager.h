@@ -31,32 +31,15 @@ namespace Context {
 
 class SoundManager : public Manager {
  public:
-
-  static SoundManager *GetSingletonPtr() {
-    return &OggSoundManagerSingleton;
-  }
-
   static SoundManager &GetSingleton() {
-    return OggSoundManagerSingleton;
+    static SoundManager singleton;
+    return singleton;
   }
-
- private:
-  static SoundManager OggSoundManagerSingleton;
 
  public:
   void CreateSound();
-
   void StopAllSounds();
-
   void Setup() final;
-
   void Reset() final;
-
- private:
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final {
-    return true;
-  }
-
-};
-
-}
+}; //class SoundManager
+} //namespace Context

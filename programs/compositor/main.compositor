@@ -227,6 +227,7 @@ compositor Context/Modulate/SSAO/HDR
         }
     }
 }
+
 compositor Context/Modulate/Bloom/HDR
 {
     technique
