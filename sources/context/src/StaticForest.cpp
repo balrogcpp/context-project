@@ -28,7 +28,6 @@ SOFTWARE.
 #include "StaticForest.h"
 
 #include "DotSceneLoaderB.h"
-#include "ShaderResolver.h"
 #include "ContextManager.h"
 #include "Utils.h"
 using namespace utils;

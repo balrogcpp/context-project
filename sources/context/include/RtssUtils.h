@@ -23,13 +23,35 @@ SOFTWARE.
 */
 
 #pragma once
-
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
+
 #include "ConfiguratorJson.h"
-
 #include <RTShaderSystem/OgreShaderGenerator.h>
+#include <exception>
 
-namespace Context {
+namespace rtss {
+class RtssException : public std::exception {
+ public:
+  RtssException() = default;
+
+  explicit RtssException(std::string description)
+      : description(std::move(description)) {};
+
+  ~RtssException() noexcept override = default;
+
+ public:
+  std::string getDescription() const noexcept {
+    return description;
+  }
+
+  const char *what() const noexcept override {
+    return description.c_str();
+  }
+
+ protected:
+  std::string description = std::string("Description not specified");
+  size_t code = 0;
+};
 
 class ShaderResolver final : public Ogre::MaterialManager::Listener {
  public:
@@ -39,6 +61,7 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
   }
 //----------------------------------------------------------------------------------------------------------------------
   static bool FixMaterial(const std::string &material_name) {
+    using namespace Context;
     static std::vector<std::string> material_list_;
 
     if (find(material_list_.begin(), material_list_.end(), material_name) == material_list_.end())
@@ -47,10 +70,12 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
       return false;
 
     auto &mShaderGenerator = Ogre::RTShader::ShaderGenerator::getSingleton();
-    auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+    auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name,
+                                                                            Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 
     if (!originalMaterial) {
-      originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name, Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+      originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name,
+                                                                         Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
     }
 
     bool verbose = ConfiguratorJson::GetSingleton().GetBool("global_verbose_enable");
@@ -81,14 +106,6 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
     } else {
       originalMaterial->getTechnique(0)->setSchemeName(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
     }
-
-    return true;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  static bool ProtectMaterial(const std::string &material_name) {
-    auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name);
-    Ogre::Viewport *ogreViewport = ContextManager::GetSingleton().GetOgreViewport();
-    originalMaterial->getTechnique(0)->setSchemeName(ogreViewport->getMaterialScheme());
 
     return true;
   }
@@ -166,5 +183,36 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
     return shader_generator_;
   }
 }; //namespace ShaderResolver
-} //namespace Context
+
+void InitRtss() {
+  if (!Ogre::RTShader::ShaderGenerator::initialize()) {
+    throw RtssException("RTTS System failed to initialize");
+  }
+
+  auto *scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
+  auto *camera_ = scene_->getCamera("Default");
+  auto *viewport_ = camera_->getViewport();
+
+  viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+
+  auto *shader_generator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
+  shader_generator->addSceneManager(scene_);
+  viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+
+  // Create and register the material manager listener if it doesn't exist yet.
+  shader_generator->setShaderCachePath("");
+  Ogre::MaterialManager::getSingleton().addListener(new ShaderResolver(shader_generator));
+}
+
+void RtssPssm(const std::vector<float> &split_points) {
+    Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
+
+  auto subRenderState = rtShaderGen.createSubRenderState<Ogre::RTShader::IntegratedPSSM3>();
+  Ogre::RTShader::RenderState
+      *schemRenderState = rtShaderGen.getRenderState(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+
+  subRenderState->setSplitPoints(split_points);
+  schemRenderState->addTemplateSubRenderState(subRenderState);
+}
+} //namespace rtss
 #endif

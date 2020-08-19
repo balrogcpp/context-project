@@ -48,79 +48,85 @@ class InputSequencer {
   }
 
   InputSequencer() {
-    kb_listeners.reserve(127);
-    ms_listeners.reserve(127);
-    joy_listeners.reserve(127);
-    other_listeners.reserve(127);
+    kb_listeners_.reserve(reserve_);
+    ms_listeners_.reserve(reserve_);
+    joy_listeners_.reserve(reserve_);
+    other_listeners_.reserve(reserve_);
   }
 
- protected:
-  KeyboardListenersList kb_listeners;
-  MouseListenersList ms_listeners;
-  JoyListenersList joy_listeners;
-  OtherListenersList other_listeners;
+ private:
+  KeyboardListenersList kb_listeners_;
+  MouseListenersList ms_listeners_;
+  JoyListenersList joy_listeners_;
+  OtherListenersList other_listeners_;
+  const size_t reserve_ = 16;
+
+  template<typename T>
+  auto find_(std::vector<T> v, T t) -> decltype(v.begin()) {
+    return std::find(v.begin(), v.end(), t);
+  }
 
  public:
   void RegKbListener(KeyboardListener *l) {
-    if (l && find(kb_listeners.begin(), kb_listeners.end(), l) == kb_listeners.end()) {
-      kb_listeners.push_back(l);
+    if (l && find(kb_listeners_.begin(), kb_listeners_.end(), l) == kb_listeners_.end()) {
+      kb_listeners_.push_back(l);
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
   void UnregKbListener(KeyboardListener *l) {
-    if (!kb_listeners.empty()) {
-      auto it = find(kb_listeners.begin(), kb_listeners.end(), l);
-      if (l && it != kb_listeners.end()) {
-        iter_swap(it, prev(kb_listeners.end()));
-        kb_listeners.pop_back();
+    if (!kb_listeners_.empty()) {
+      auto it = find(kb_listeners_.begin(), kb_listeners_.end(), l);
+      if (l && it != kb_listeners_.end()) {
+        iter_swap(it, prev(kb_listeners_.end()));
+        kb_listeners_.pop_back();
       }
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
   void RegMsListener(MouseListener *l) {
-    if (l && find(ms_listeners.begin(), ms_listeners.end(), l) == ms_listeners.end()) {
-      ms_listeners.push_back(l);
+    if (l && find(ms_listeners_.begin(), ms_listeners_.end(), l) == ms_listeners_.end()) {
+      ms_listeners_.push_back(l);
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
   void UnregMsListener(MouseListener *l) {
-    if (!ms_listeners.empty()) {
-      auto it = find(ms_listeners.begin(), ms_listeners.end(), l);
-      if (l && it != ms_listeners.end()) {
-        iter_swap(it, prev(ms_listeners.end()));
-        ms_listeners.pop_back();
+    if (!ms_listeners_.empty()) {
+      auto it = find(ms_listeners_.begin(), ms_listeners_.end(), l);
+      if (l && it != ms_listeners_.end()) {
+        iter_swap(it, prev(ms_listeners_.end()));
+        ms_listeners_.pop_back();
       }
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
   void RegJoyListener(JoyListener *l) {
-    if (l && find(joy_listeners.begin(), joy_listeners.end(), l) == joy_listeners.end()) {
-      joy_listeners.push_back(l);
+    if (l && find(joy_listeners_.begin(), joy_listeners_.end(), l) == joy_listeners_.end()) {
+      joy_listeners_.push_back(l);
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
   void UnregJoyListener(JoyListener *l) {
-    if (!joy_listeners.empty()) {
-      auto it = find(joy_listeners.begin(), joy_listeners.end(), l);
-      if (l && it != joy_listeners.end()) {
-        iter_swap(it, prev(joy_listeners.end()));
-        joy_listeners.pop_back();
+    if (!joy_listeners_.empty()) {
+      auto it = find(joy_listeners_.begin(), joy_listeners_.end(), l);
+      if (l && it != joy_listeners_.end()) {
+        iter_swap(it, prev(joy_listeners_.end()));
+        joy_listeners_.pop_back();
       }
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
   void RegEventListener(OtherEventListener *l) {
-    if (l && find(other_listeners.begin(), other_listeners.end(), l) == other_listeners.end()) {
-      other_listeners.push_back(l);
+    if (l && find(other_listeners_.begin(), other_listeners_.end(), l) == other_listeners_.end()) {
+      other_listeners_.push_back(l);
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
   void UnregEventListener(OtherEventListener *l) {
-    if (!other_listeners.empty()) {
-      auto it = find(other_listeners.begin(), other_listeners.end(), l);
-      if (l && it != other_listeners.end()) {
-        iter_swap(it, prev(other_listeners.end()));
-        other_listeners.pop_back();
+    if (!other_listeners_.empty()) {
+      auto it = find(other_listeners_.begin(), other_listeners_.end(), l);
+      if (l && it != other_listeners_.end()) {
+        iter_swap(it, prev(other_listeners_.end()));
+        other_listeners_.pop_back();
       }
     }
   }
@@ -140,10 +146,10 @@ class InputSequencer {
   }
 //----------------------------------------------------------------------------------------------------------------------
   void Reset() {
-    kb_listeners.clear();
-    ms_listeners.clear();
-    joy_listeners.clear();
-    other_listeners.clear();
+    kb_listeners_.clear();
+    ms_listeners_.clear();
+    joy_listeners_.clear();
+    other_listeners_.clear();
   }
 //----------------------------------------------------------------------------------------------------------------------
   void Capture() {
@@ -152,21 +158,21 @@ class InputSequencer {
 
       switch (event.type) {
         case SDL_KEYUP: {
-          for (auto it : kb_listeners) {
+          for (auto it : kb_listeners_) {
             it->KeyUp(event.key.keysym.sym);
           }
           break;
         }
 
         case SDL_KEYDOWN: {
-          for (auto it : kb_listeners) {
+          for (auto it : kb_listeners_) {
             it->KeyDown(event.key.keysym.sym);
           }
           break;
         }
 
         case SDL_MOUSEMOTION: {
-          for (auto it : ms_listeners) {
+          for (auto it : ms_listeners_) {
             it->Move(event.motion.x, event.motion.y,
                      event.motion.xrel, event.motion.yrel,
                      (event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0,
@@ -179,20 +185,20 @@ class InputSequencer {
         case SDL_MOUSEBUTTONDOWN: {
           switch (event.button.button) {
             case SDL_BUTTON_LEFT: {
-              for (auto it : ms_listeners) {
+              for (auto it : ms_listeners_) {
                 it->LbDown(event.button.x, event.button.y);
               }
               break;
             }
             case SDL_BUTTON_RIGHT: {
-              for (auto it : ms_listeners) {
+              for (auto it : ms_listeners_) {
                 it->RbDown(event.button.x, event.button.y);
               }
 
               break;
             }
             case SDL_BUTTON_MIDDLE: {
-              for (auto it : ms_listeners) {
+              for (auto it : ms_listeners_) {
                 it->MbDown(event.button.x, event.button.y);
               }
               break;
@@ -204,19 +210,19 @@ class InputSequencer {
         case SDL_MOUSEBUTTONUP: {
           switch (event.button.button) {
             case SDL_BUTTON_LEFT: {
-              for (auto it : ms_listeners) {
+              for (auto it : ms_listeners_) {
                 it->LbUp(event.button.x, event.button.y);
               }
               break;
             }
             case SDL_BUTTON_RIGHT: {
-              for (auto it : ms_listeners) {
+              for (auto it : ms_listeners_) {
                 it->RbUp(event.button.x, event.button.y);
               }
               break;
             }
             case SDL_BUTTON_MIDDLE: {
-              for (auto it : ms_listeners) {
+              for (auto it : ms_listeners_) {
                 it->MbUp(event.button.x, event.button.y);
               }
               break;
@@ -226,7 +232,7 @@ class InputSequencer {
         }
 
         case SDL_MOUSEWHEEL: {
-          for (auto it : ms_listeners) {
+          for (auto it : ms_listeners_) {
             it->Wheel(event.wheel.x, event.wheel.y);
           }
 
@@ -234,7 +240,7 @@ class InputSequencer {
         }
 
         case SDL_JOYAXISMOTION: {
-          for (auto it : joy_listeners) {
+          for (auto it : joy_listeners_) {
             it->Axis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
           }
 
@@ -242,27 +248,27 @@ class InputSequencer {
         }
 
         case SDL_JOYBALLMOTION: {
-          for (auto it : joy_listeners) {
+          for (auto it : joy_listeners_) {
             it->Ball(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
           }
           break;
         }
 
         case SDL_JOYHATMOTION: {
-          for (auto it : joy_listeners) {
+          for (auto it : joy_listeners_) {
             it->Hat(event.jhat.which, event.jhat.hat, event.jhat.value);
           }
           break;
         }
         case SDL_JOYBUTTONDOWN: {
-          for (auto it : joy_listeners) {
+          for (auto it : joy_listeners_) {
             it->BtDown(event.jbutton.which, event.jbutton.button);
           }
           break;
         }
 
         case SDL_JOYBUTTONUP: {
-          for (auto it : joy_listeners) {
+          for (auto it : joy_listeners_) {
             if (it) {
               it->BtUp(event.jbutton.which,
                        event.jbutton.button);
@@ -272,14 +278,14 @@ class InputSequencer {
         }
 
         case SDL_QUIT: {
-          for (auto it : other_listeners) {
+          for (auto it : other_listeners_) {
             it->Quit();
           }
           break;
         }
 
         default: {
-          for (auto it : other_listeners) {
+          for (auto it : other_listeners_) {
             it->Event(event);
           }
         }

@@ -26,12 +26,9 @@ SOFTWARE.
 
 #include "Application.h"
 #include "ContextManager.h"
-
 #include "AppStateManager.h"
 #include "ConfiguratorJson.h"
 #include "Exception.h"
-#include "PhysicsManager.h"
-#include "SoundManager.h"
 
 #include <csetjmp>
 #include <csignal>
@@ -221,8 +218,6 @@ void Application::Go_() {
 
     Init_();
 
-//    fullscreen_ = ContextManager::GetSingleton().IsFullscreen();
-
     AppStateManager::GetSingleton().cur_state_->Setup();
 
     quit_ = true;
@@ -271,7 +266,7 @@ static void do_segv() {
   *segv = 1;
 }
 
-int Application::Main(std::shared_ptr<AppState> app_state) {
+int Application::Main(std::shared_ptr<AppState> scene_ptr) {
 #ifdef _MSC_VER
   SDL_SetMainReady();
 #endif
@@ -292,7 +287,7 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
   bool exception_occured = false;
 
   try {
-    Application::GetSingleton().SetCurState(app_state);
+    Application::GetSingleton().SetCurState(scene_ptr);
     Application::GetSingleton().Go_();
   }
   catch (Exception &e) {
@@ -344,10 +339,6 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
     return_value = 1;
     exception_occured = true;
   }
-
-//  if (exception_occured) {
-//    ContextManager::GetSingleton().RestoreScreenSize();
-//  }
 
 #if defined _WIN32 && defined DEBUG
   if (ConfigManager::GetSingleton().GetBool("application_ask_before_quit")) {

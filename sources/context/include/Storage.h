@@ -121,23 +121,6 @@ InitGeneralResources(const std::vector<std::string> &path_list, const std::strin
   std::vector<std::tuple<std::string, std::string, std::string>> resource_list;
   auto &ogre_resource_manager = Ogre::ResourceGroupManager::getSingleton();
 
-//#ifndef DEBUG
-//  media_location_directory_ = "./";
-//#else
-//  media_location_directory_ = "../../../";
-//#endif
-
-//  resource_list.push_back({path + "programs", "FileSystem", default_group_name});
-//  resource_list.push_back({path + "scenes", "FileSystem", default_group_name});
-
-//#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-//  if (rtss_cache_enable_) {
-//    if (!std::filesystem::exists(rtss_cache_dir_)) {
-//      std::filesystem::create_directory(rtss_cache_dir_);
-//      resource_list.push_back({rtss_cache_dir_, "FileSystem", default_group_name});
-//    }
-//  }
-//#endif
   for (const auto &it : path_list)
     resource_list.push_back({it, "FileSystem", default_group_name});
 

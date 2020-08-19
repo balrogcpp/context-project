@@ -49,7 +49,7 @@ namespace Context {
   }
 
   int GetFpsFrames() const;
-  static int Main(std::shared_ptr<AppState> app_state);
+  static int Main(std::shared_ptr<AppState> scene_ptr);
   void SetCurState(std::shared_ptr<AppState> scene_ptr);
   void SetNextState(std::shared_ptr<AppState> scene_ptr);
 

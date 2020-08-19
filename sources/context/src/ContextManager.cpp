@@ -29,35 +29,19 @@ SOFTWARE.
 #include "Exception.h"
 #include "Storage.h"
 #include "CameraMan.h"
-#include "ShaderResolver.h"
 #include "PhysicsManager.h"
 #include "DotSceneLoaderB.h"
 #include "StaticForest.h"
 #include "SoundManager.h"
 #include "CompositorManager.h"
 #include "GorillaOverlay.h"
+#include "RtssUtils.h"
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupConfigManager() {
-  ConfiguratorJson::Assign(rtss_enable_, "rtss_enable");
-  ConfiguratorJson::Assign(rtss_pssm4_enable_, "rtss_pssm4_enable");
-  ConfiguratorJson::Assign(rtss_resolver_enable_, "rtss_resolver_enable");
-  ConfiguratorJson::Assign(rtss_cache_enable_, "rtss_cache_enable");
-  ConfiguratorJson::Assign(rtss_perpixel_light_enable_, "rtss_perpixel_light_enable");
-  ConfiguratorJson::Assign(rtss_perpixel_fog_enable_, "rtss_perpixel_fog_enable");
-  ConfiguratorJson::Assign(rtss_cache_dir_, "rtss_cache_dir");
-
-  ConfiguratorJson::Assign(global_octree_enable_, "global_octree_enable");
-  ConfiguratorJson::Assign(global_verbose_enable_, "global_verbose_enable");
-  ConfiguratorJson::Assign(global_log_enable_, "global_log_enable");
-  ConfiguratorJson::Assign(global_stbi_enable_, "global_stbi_enable");
-  ConfiguratorJson::Assign(global_freeimage_enable_, "global_freeimage_enable");
-  ConfiguratorJson::Assign(global_particlefx_enable_, "global_particlefx_enable");
-  ConfiguratorJson::Assign(global_sso_enable_, "global_sso_enable");
   ConfiguratorJson::Assign(physics_enable_, "physics_enable");
   ConfiguratorJson::Assign(sound_enable_, "sound_enable");
-  ConfiguratorJson::Assign(global_resource_list_file_, "global_resource_list");
 
   ConfiguratorJson::Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
   ConfiguratorJson::Assign(graphics_vsync_, "graphics_vsync");
@@ -214,8 +198,6 @@ void ContextManager::SetupOgreScenePreconditions() {
 
       auto pssm_setup = std::make_shared<Ogre::PSSMShadowCameraSetup>();
 
-//      pssm_setup->setUseAggressiveFocusRegion(true);
-
       int pssm_splits_ = 3;
 
       if (!ogre_shadow_camera_setup_) {
@@ -238,19 +220,6 @@ void ContextManager::SetupOgreScenePreconditions() {
         pssm_setup->setOptimalAdjustFactor(1, graphics_shadows_pssm_1_);
         pssm_setup->setOptimalAdjustFactor(2, graphics_shadows_pssm_2_);
 
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-        if (rtss_enable_ && rtss_pssm4_enable_ && pssm_splits_ == 3) {
-          // Make this viewport work with shader generator scheme.
-          Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
-
-          auto subRenderState = rtShaderGen.createSubRenderState<Ogre::RTShader::IntegratedPSSM3>();
-          Ogre::RTShader::RenderState
-              *schemRenderState = rtShaderGen.getRenderState(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
-
-          subRenderState->setSplitPoints(pssm_setup->getSplitPoints());
-          schemRenderState->addTemplateSubRenderState(subRenderState);
-        }
-#endif
         ogre_shadow_camera_setup_ = pssm_setup;
       }
     }
@@ -275,22 +244,6 @@ void ContextManager::SetupOgreScenePreconditions() {
     ogre_scene_manager_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   }
 
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-  if (rtss_enable_ && rtss_perpixel_fog_enable_) {
-    // Make this viewport work with shader generator scheme.
-    Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
-
-    Ogre::RTShader::RenderState
-        *schemRenderState = rtShaderGen.getRenderState(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
-
-    auto subRenderState2 = rtShaderGen.createSubRenderState<Ogre::RTShader::FFPFog>();
-    subRenderState2->setCalcMode(Ogre::RTShader::FFPFog::CM_PER_PIXEL);
-    schemRenderState->addTemplateSubRenderState(subRenderState2);
-
-    rtShaderGen.invalidateScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
-  }
-#endif
-
   if (graphics_debug_show_wireframe_) {
     ContextManager::GetSingleton().GetOgreCamera()->setPolygonMode(Ogre::PM_WIREFRAME);
   } else {
@@ -300,11 +253,8 @@ void ContextManager::SetupOgreScenePreconditions() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupOGRE() {
-  if (global_log_enable_) {
-    ogre_root_ = new Ogre::Root("", "", ogre_log_name_);
-  } else {
-    ogre_root_ = new Ogre::Root("", "", "");
-  }
+  ogre_root_ = new Ogre::Root("", "", "");
+
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
   auto *mGlesRenderSystem = new Ogre::GLES2RenderSystem();
   Ogre::Root::getSingleton().setRenderSystem(mGlesRenderSystem);
@@ -388,16 +338,6 @@ void ContextManager::SetupOGRE() {
   scene_mgr_ = ogre_root->createSceneManager();
 #endif
 
-  if (global_verbose_enable_) {
-    std::cout << "Scene Managers supported:\n";
-    std::cout << "--------------------------------------------\n";
-
-    for (auto &it : Ogre::SceneManagerEnumerator::getSingleton().getMetaDataIterator()) {
-      std::string worldGeometrySupported = it->worldGeometrySupported ? "True" : "False";
-      std::cout << it->typeName << " " << worldGeometrySupported << '\n';
-    }
-  }
-
   ogre_camera_ = (ogre_scene_manager_->createCamera("Default"));
   auto *renderTarget = ogre_root_->getRenderTarget(window_.GetCaption());
 
@@ -406,78 +346,9 @@ void ContextManager::SetupOGRE() {
 
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ContextManager::SetupRTSS() {
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-  if (rtss_enable_) {
-    if (!Ogre::RTShader::ShaderGenerator::initialize()) {
-      throw Exception("RTTS System failed to initialize");
-    }
-
-    ogre_viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
-  }
-#endif
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ContextManager::SetupShaderResolver() {
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-  if (rtss_enable_) {
-    auto *mShaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
-    mShaderGenerator->addSceneManager(ogre_scene_manager_);
-    ogre_viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
-
-    if (rtss_resolver_enable_) {
-      // Create and register the material manager listener if it doesn't exist yet.
-      if (!rtss_material_listener_) {
-        rtss_material_listener_ = std::make_shared<ShaderResolver>(mShaderGenerator);
-        Ogre::MaterialManager::getSingleton().addListener(rtss_material_listener_.get());
-      }
-    }
-
-    // Add per pixel lighting sub Render state to the global scheme Render state.
-    // It will override the default FFP lighting sub Render state.
-    if (rtss_perpixel_light_enable_) {
-      // Grab the scheme Render state.
-      Ogre::RTShader::RenderState *schemRenderState =
-          mShaderGenerator->getRenderState(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
-
-      Ogre::RTShader::SubRenderState *perPixelLightModel =
-          mShaderGenerator->createSubRenderState(Ogre::RTShader::PerPixelLighting::Type);
-      schemRenderState->addTemplateSubRenderState(perPixelLightModel);
-    }
-
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-    if (rtss_cache_enable_) {
-      const std::string cacheDirectory = rtss_cache_dir_;
-
-      if (!std::filesystem::exists(cacheDirectory)) {
-        std::filesystem::create_directory(cacheDirectory);
-      }
-
-      mShaderGenerator->setShaderCachePath(cacheDirectory);
-    } else {
-      mShaderGenerator->setShaderCachePath("");
-    }
-#else
-    if (rtss_cache_enable_) {
-      mShaderGenerator->setShaderCachePath("./");
-    } else {
-      mShaderGenerator->setShaderCachePath("");
-    }
-#endif
-  }
-#endif
-}
-//----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupGlobal() {
   SetupConfigManager();
   SetupOGRE();
-
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-  if (rtss_enable_) {
-    SetupRTSS();
-    SetupShaderResolver();
-  }
-#endif
 
   StaticForest::GetSingleton().SetupGlobal();
   StaticForest::GetSingleton().Setup();

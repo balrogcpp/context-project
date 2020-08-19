@@ -27,7 +27,6 @@ SOFTWARE.
 #include "CompositorManager.h"
 #include "Exception.h"
 #include "ConfiguratorJson.h"
-#include "ShaderResolver.h"
 #include "DotSceneLoaderB.h"
 
 namespace Context {

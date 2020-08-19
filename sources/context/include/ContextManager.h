@@ -63,8 +63,6 @@ class ContextManager : public Singleton {
  private:
   void SetupConfigManager();
   void SetupOGRE();
-  void SetupRTSS();
-  void SetupShaderResolver();
   void CreateOgreCamera();
 
  private:
@@ -80,21 +78,7 @@ class ContextManager : public Singleton {
   std::shared_ptr<CameraMan> camera_man_;
   std::shared_ptr<Ogre::ShadowCameraSetup> ogre_shadow_camera_setup_;
 
-  //RTSS
-  std::shared_ptr<ShaderResolver> rtss_material_listener_;
-  bool rtss_enable_ = true;
-  bool rtss_pssm4_enable_ = true;
-  bool rtss_cache_enable_ = false;
-  bool rtss_resolver_enable_ = true;
-  bool rtss_perpixel_light_enable_ = false;
-  bool rtss_perpixel_fog_enable_ = true;
-  std::string rtss_cache_dir_ = ".rtss";
-
   //Global
-  std::string media_location_directory_ = "..";
-  std::string global_resource_list_file_ = "resources.list";
-  bool global_log_enable_ = false;
-  bool global_verbose_enable_ = false;
   bool global_sso_enable_ = true;
   bool global_octree_enable_ = true;
   bool global_stbi_enable_ = true;

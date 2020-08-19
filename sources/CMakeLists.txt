@@ -84,7 +84,6 @@ set(CONTEXT_HEADERS
     context/include/IO.h
     context/include/pcheader.h
     context/include/ContextManager.h
-    context/include/ShaderResolver.h
     context/include/DummyListener.h
     context/include/ConfiguratorJson.h
     context/include/DotSceneLoaderB.h
@@ -104,7 +103,7 @@ set(CONTEXT_HEADERS
     context/include/Gorilla.h
     context/include/GorillaOverlay.h
     context/include/IoListeners.h
-    context/include/Window.h context/include/Utils.h context/include/Storage.h)
+    context/include/Window.h context/include/Utils.h context/include/Storage.h context/include/RtssUtils.h)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
