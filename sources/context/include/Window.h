@@ -177,27 +177,29 @@ class Window : public NoCopy {
 
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  std::string GetCaption() const noexcept {
+  inline std::string GetCaption() const noexcept {
     return caption_;
   }
 
-  std::pair<uint32_t, uint32_t> GetSize() const noexcept {
+  inline std::pair<uint32_t, uint32_t> GetSize() const noexcept {
     return std::make_pair(w_, h_);
   }
 
-  SDL_SysWMinfo GetInfo() const noexcept {
+  inline SDL_SysWMinfo GetInfo() const noexcept {
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
     SDL_GetWindowWMInfo(sdl_window_, &info);
     return info;
   }
 
-  //----------------------------------------------------------------------------------------------------------------------
-  void UpdateCursorStatus(bool show, bool grab, bool relative) {
-//  SDL_ShowCursor(cursor.show);
-//  SDL_SetWindowGrab(sdl_window_, static_cast<SDL_bool>(cursor.grab));
-//  SDL_SetRelativeMouseMode(static_cast<SDL_bool>(cursor.relative));
+  inline void UpdateCursorStatus(bool show, bool grab, bool relative) const noexcept {
+    SDL_ShowCursor(show);
+    SDL_SetWindowGrab(sdl_window_, static_cast<SDL_bool>(grab));
+    SDL_SetRelativeMouseMode(static_cast<SDL_bool>(relative));
   }
 
+  inline void SwapBuffers() const noexcept {
+    SDL_GL_SwapWindow(sdl_window_);
+  }
 }; //class Window
 } //namespace Context

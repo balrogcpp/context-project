@@ -55,6 +55,9 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
 namespace Context {
+Application::Application() = default;
+Application::~Application() {};
+
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
   ContextManager::GetSingleton().SetupGlobal();
@@ -70,7 +73,7 @@ void Application::Init_() {
   ConfiguratorJson::Assign(graphics_vsync_, "graphics_vsync");
   ConfiguratorJson::Assign(application_ask_before_quit_, "application_ask_before_quit");
 
-  io::InputSequencer::GetSingleton().RegisterListener(this);
+  io::InputSequencer::GetSingleton().RegEventListener(this);
 
   if (!global_verbose_) {
     auto *logger = new Ogre::LogManager();
@@ -97,6 +100,41 @@ void Application::Reset_() {
 void Application::Quit() {
   quit_ = false;
 }
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Event(const SDL_Event &evt) {
+  if (!started_)
+    return;
+
+  const int fps_inactive = 30;
+
+  if (evt.type == SDL_WINDOWEVENT) {
+    if (!fullscreen_) {
+      if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+        paused_ = true;
+        global_target_fps_ = fps_inactive;
+        global_lock_fps_ = true;
+      } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
+          || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
+        paused_ = false;
+        ConfiguratorJson::Assign(global_target_fps_, "global_target_fps");
+        ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
+      }
+    } else {
+      if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+        paused_ = true;
+        global_target_fps_ = fps_inactive;
+        global_lock_fps_ = true;
+      } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
+          || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
+        paused_ = false;
+        ConfiguratorJson::Assign(global_target_fps_, "global_target_fps");
+        ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
+      }
+    }
+  }
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Other(Uint8 type, int32_t code, void *data1, void *data2) {}
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Loop_() {
   while (quit_) {
@@ -209,7 +247,6 @@ void Application::SetNextState(std::shared_ptr<AppState> scene_ptr) {
 static sigjmp_buf point;
 
 static void termination_handler(int signum) {
-//  ContextManager::GetSingleton().RestoreScreenSize();
 
   printf("\nSegmentation fault occured!\n");
   std::fflush(stdout);
@@ -217,60 +254,9 @@ static void termination_handler(int signum) {
 
   longjmp(point, 1);
 }
-//----------------------------------------------------------------------------------------------------------------------
-void Application::KeyDown(SDL_Keycode sym) {
-  if (application_fkeys_enable_) {
-    if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F12) {
-      Quit();
-    } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F11) {
-      ContextManager::GetSingleton().GetOgreCamera()->setPolygonMode(Ogre::PM_WIREFRAME);
-    } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F10) {
-      ContextManager::GetSingleton().GetOgreCamera()->setPolygonMode(Ogre::PM_SOLID);
-    } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F9) {
-      PhysicsManager::GetSingleton().SetPhysicsDebugShowCollider(true);
-    } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F8) {
-      PhysicsManager::GetSingleton().SetPhysicsDebugShowCollider(false);
-    }
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Event(const SDL_Event &evt) {
-  if (!started_)
-    return;
-
-  const int fps_inactive = 30;
-
-  if (evt.type == SDL_WINDOWEVENT) {
-    if (!fullscreen_) {
-      if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
-        paused_ = true;
-        global_target_fps_ = fps_inactive;
-        global_lock_fps_ = true;
-      } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
-          || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
-        paused_ = false;
-        ConfiguratorJson::Assign(global_target_fps_, "global_target_fps");
-        ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
-      }
-    } else {
-      if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
-        paused_ = true;
-        global_target_fps_ = fps_inactive;
-        global_lock_fps_ = true;
-      } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
-          || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
-        paused_ = false;
-        ConfiguratorJson::Assign(global_target_fps_, "global_target_fps");
-        ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
-      }
-    }
-  }
-}
 
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 static void termination_handler(int signum) {
-  ContextManager::GetSingleton().RestoreScreenSize();
-
   printf("\nSegmentation fault occured!\n");
   std::fflush(stdout);
   std::fflush(stderr);

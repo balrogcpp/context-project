@@ -46,9 +46,3 @@ RUN mkdir -p ./build-windows && mkdir -p ./build-linux && mkdir -p ./build-andro
     cd ${CONTEXT_HOME}/build-linux && \
     cmake -DCONTEXT_ONLY_DEPS=false -G Ninja .. && cmake --build . --target install && \
     cmake --build . --target context-install-zip
-
-#WORKDIR ${CONTEXT_HOME}/build-android
-#RUN cmake -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16 -G Ninja .. && \
-#    cmake --build . --target context-deps && \
-#    cmake -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16 -G Ninja .. && \
-#    cmake --build . --target context-demo

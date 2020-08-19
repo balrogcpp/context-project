@@ -705,8 +705,9 @@ void ContextManager::ResetGlobals() {
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::Render() {
   ogre_root_->renderOneFrame();
+
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  SDL_GL_SwapWindow(sdl_window_);
+  window_.SwapBuffers();
 #endif
 }
 //----------------------------------------------------------------------------------------------------------------------

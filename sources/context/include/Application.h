@@ -38,12 +38,14 @@ class AppState;
 
 namespace Context {
 
-class Application final
-    : public Singleton, public io::InputListener, public Ogre::LogListener {
+ class Application : public io::OtherEventListener, public Ogre::LogListener, public Singleton {
  public:
+  Application();
+  virtual ~Application();
+
   static Application &GetSingleton() {
-    static Application Singleton;
-    return Singleton;
+    static Application singleton;
+    return singleton;
   }
 
   int GetFpsFrames() const;
@@ -58,9 +60,9 @@ class Application final
   void Loop_();
   void Go_();
 
-  void KeyDown(SDL_Keycode sym) final;
-  void Event(const SDL_Event &evt) final;
-  void Quit() final;
+  void Event(const SDL_Event &evt) override;
+  void Other(Uint8 type, int32_t code, void *data1, void *data2) override;
+  void Quit() override;
 
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const std::string &logName, bool &skipThisMessage) final {
