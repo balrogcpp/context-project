@@ -30,6 +30,8 @@ SOFTWARE.
 #include "DotSceneLoaderB.h"
 #include "ShaderResolver.h"
 #include "ContextManager.h"
+#include "Utils.h"
+using namespace utils;
 
 namespace Context {
 
@@ -51,8 +53,8 @@ void StaticForest::CreateGrassMesh() {
   const std::string grassMaterial = "GrassCustom";
   Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
 
-  DotSceneLoaderB::UpdatePbrParams(tmp);
-  DotSceneLoaderB::UpdatePbrShadowReceiver(tmp);
+  UpdatePbrParams(tmp);
+  UpdatePbrShadowReceiver(tmp);
 
   sm->setMaterialName(grassMaterial);
   sm->useSharedVertices = false;
@@ -186,13 +188,13 @@ void StaticForest::GenerateGrass() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void StaticForest::Create() {
-  DotSceneLoaderB::UpdatePbrParams("3D-Diggers/farn01");
-  DotSceneLoaderB::UpdatePbrShadowReceiver("3D-Diggers/farn01");
-  DotSceneLoaderB::UpdatePbrParams("3D-Diggers/farn02");
-  DotSceneLoaderB::UpdatePbrParams("3D-Diggers/fir01");
-  DotSceneLoaderB::UpdatePbrParams("3D-Diggers/fir02");
-  DotSceneLoaderB::UpdatePbrParams("3D-Diggers/plant1");
-  DotSceneLoaderB::UpdatePbrParams("3D-Diggers/plant2");
+  UpdatePbrParams("3D-Diggers/farn01");
+  UpdatePbrShadowReceiver("3D-Diggers/farn01");
+  UpdatePbrParams("3D-Diggers/farn02");
+  UpdatePbrParams("3D-Diggers/fir01");
+  UpdatePbrParams("3D-Diggers/fir02");
+  UpdatePbrParams("3D-Diggers/plant1");
+  UpdatePbrParams("3D-Diggers/plant2");
 
 //  GenerateTrees();
 //  GeneratePlants();

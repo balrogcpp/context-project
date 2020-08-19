@@ -53,8 +53,6 @@ class RenderWindow;
 }
 
 namespace Context {
-class Window;
-
 class ContextManager : public Singleton {
  public:
   static ContextManager &GetSingleton() {

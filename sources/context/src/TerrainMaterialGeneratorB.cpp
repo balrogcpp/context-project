@@ -53,6 +53,9 @@ THE SOFTWARE.
 #include "TerrainMaterialGeneratorB.h"
 #include "DotSceneLoaderB.h"
 
+#include "Utils.h"
+using namespace utils;
+
 namespace Context {
 //---------------------------------------------------------------------
 TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
@@ -95,8 +98,8 @@ Ogre::uint8 TerrainMaterialGeneratorB::SM2Profile::getMaxLayers(const Ogre::Terr
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *terrain) {
   std::string material_name = "Plane";
-  DotSceneLoaderB::UpdatePbrParams(material_name);
-  DotSceneLoaderB::UpdatePbrShadowReceiver(material_name);
+  UpdatePbrParams(material_name);
+  UpdatePbrShadowReceiver(material_name);
   static long long counter = 0;
 
   auto normalmap = terrain->getTerrainNormalMap();
@@ -115,8 +118,8 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Ogre::Terrain *terrain) {
   std::string material_name = "Plane";
-  DotSceneLoaderB::UpdatePbrParams(material_name);
-  DotSceneLoaderB::UpdatePbrShadowReceiver(material_name);
+  UpdatePbrParams(material_name);
+  UpdatePbrShadowReceiver(material_name);
 
   static long long counter = 0;
   counter++;

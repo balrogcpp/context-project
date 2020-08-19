@@ -61,16 +61,6 @@ class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
     return singleton;
   }
 
-  DotSceneLoaderB() {
-//    SetupGlobal();
-//    Setup();
-  }
-
-  virtual ~DotSceneLoaderB() {
-//    ResetGlobal();
-//    Reset();
-  }
-
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
   void Load(const std::string &filename, const std::string &group_name, Ogre::SceneNode *root_node);
 
@@ -78,22 +68,6 @@ class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
   void Reset() final;
 
   float GetHeigh(float x, float z);
-
-  //utils
-  static void UpdatePbrParams(Ogre::MaterialPtr material);
-  static void UpdatePbrParams(const std::string &material);
-
-  static void UpdatePbrShadowReceiver(Ogre::MaterialPtr material);
-  static void UpdatePbrShadowReceiver(const std::string &material);
-
-  static void UpdatePbrShadowCaster(Ogre::MaterialPtr material);
-  static void UpdatePbrShadowCaster(const std::string &material);
-
-  static void UpdateForestParams(Ogre::MaterialPtr material);
-  static void UpdateForestParams(const std::string &material);
-
-  static void EnsureHasTangents(Ogre::MeshPtr mesh_ptr);
-  static bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration);
 
  private:
   void ProcessScene_(pugi::xml_node &xml_root);

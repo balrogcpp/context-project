@@ -104,7 +104,7 @@ set(CONTEXT_HEADERS
     context/include/Gorilla.h
     context/include/GorillaOverlay.h
     context/include/IoListeners.h
-    context/include/Window.h)
+    context/include/Window.h context/include/Utils.h)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
@@ -159,7 +159,7 @@ set(CONTEXT_SOURCES
     context/src/TerrainMaterialGeneratorB.cpp
     context/src/Gorilla.cpp
     context/src/GorillaOverlay.cpp
-    )
+    context/src/Utils.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}
