@@ -121,8 +121,10 @@ InitGeneralResources(const std::vector<std::string> &path_list, const std::strin
   std::vector<std::tuple<std::string, std::string, std::string>> resource_list;
   auto &ogre_resource_manager = Ogre::ResourceGroupManager::getSingleton();
 
-  for (const auto &it : path_list)
-    resource_list.push_back({it, "FileSystem", default_group_name});
+  for (const auto &it : path_list) {
+    if (fs::exists(it))
+      resource_list.push_back({it, "FileSystem", default_group_name});
+  }
 
   if (!resource_file.empty()) {
     std::fstream list_file;

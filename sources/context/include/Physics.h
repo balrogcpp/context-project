@@ -48,10 +48,10 @@ class btCollisionObject;
 
 namespace Context {
 
-class PhysicsManager final : public Manager {
+class Physics final : public Manager {
  public:
-  static PhysicsManager &GetSingleton() {
-    static PhysicsManager singleton;
+  static Physics &GetSingleton() {
+    static Physics singleton;
     return singleton;
   }
 

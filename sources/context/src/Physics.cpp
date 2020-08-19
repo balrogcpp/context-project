@@ -24,16 +24,16 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "PhysicsManager.h"
+#include "Physics.h"
 #include "ConfiguratorJson.h"
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
-std::shared_ptr<btDynamicsWorld> PhysicsManager::GetPhyWorld() const {
+std::shared_ptr<btDynamicsWorld> Physics::GetPhyWorld() const {
   return phy_world_;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsManager::Setup() {
+void Physics::Setup() {
   ConfiguratorJson::Assign(physics_skip_frames_, "physics_skip_frames");
   ConfiguratorJson::Assign(physics_max_sub_steps_, "physics_max_sub_steps");
   ConfiguratorJson::Assign(physics_debug_show_collider_, "physics_debug_show_collider");
@@ -69,7 +69,7 @@ void PhysicsManager::Setup() {
   stopped_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
-bool PhysicsManager::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+bool Physics::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   if (!stopped_) {
     factor_++;
     cumulative_ += evt.timeSinceLastFrame;
@@ -90,7 +90,7 @@ bool PhysicsManager::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsManager::Reset() {
+void Physics::Reset() {
   stopped_ = true;
   phy_world_->clearForces();
 
@@ -112,24 +112,24 @@ void PhysicsManager::Reset() {
   rigid_bodies_.clear();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsManager::Start() {
+void Physics::Start() {
   stopped_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsManager::Stop() {
+void Physics::Stop() {
   stopped_ = true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsManager::SetPhysicsDebugShowCollider(bool physics_debug_show_collider) {
+void Physics::SetPhysicsDebugShowCollider(bool physics_debug_show_collider) {
   physics_debug_show_collider_ = physics_debug_show_collider;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsManager::AddRigidBody(btRigidBody *body) {
+void Physics::AddRigidBody(btRigidBody *body) {
   phy_world_->addRigidBody(body);
 //  rigid_bodies_.push_back(body);
 }
 //----------------------------------------------------------------------------------------------------------------------
-btRigidBody *PhysicsManager::GenerateProxy(Ogre::Entity *entity, const std::string &proxy_type, std::string &physics_type) {
+btRigidBody *Physics::GenerateProxy(Ogre::Entity *entity, const std::string &proxy_type, std::string &physics_type) {
   const std::string physics_type_static = "STATIC";
   const std::string physics_type_dynamic = "dynamic";
   const std::string physics_type_actor = "actor";
@@ -147,9 +147,9 @@ btRigidBody *PhysicsManager::GenerateProxy(Ogre::Entity *entity, const std::stri
   return rigid_body;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsManager::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
-                                 Ogre::Entity *entity,
-                                 Ogre::SceneNode *parent_node) {
+void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
+                          Ogre::Entity *entity,
+                          Ogre::SceneNode *parent_node) {
   const std::string physics_type_static = "STATIC";
   const std::string physics_type_dynamic = "dynamic";
   const std::string physics_type_actor = "actor";
@@ -375,7 +375,7 @@ void PhysicsManager::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
       entBody->setFriction(friction_x);
     }
 
-    PhysicsManager::GetSingleton().AddRigidBody(entBody);
+    Physics::GetSingleton().AddRigidBody(entBody);
   }
 }
 } //namespace Context

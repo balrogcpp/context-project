@@ -29,10 +29,10 @@ SOFTWARE.
 #include "Exception.h"
 #include "Storage.h"
 #include "CameraMan.h"
-#include "PhysicsManager.h"
+#include "Physics.h"
 #include "DotSceneLoaderB.h"
 #include "StaticForest.h"
-#include "SoundManager.h"
+#include "Sounds.h"
 #include "CompositorManager.h"
 #include "GorillaOverlay.h"
 #include "RtssUtils.h"
@@ -353,19 +353,23 @@ void ContextManager::SetupGlobal() {
   StaticForest::GetSingleton().SetupGlobal();
   StaticForest::GetSingleton().Setup();
 
-  storage::InitGeneralResources({"../../../programs", "../../../scenes"});
+#ifndef DEBUG
+  storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
+#else
+  storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
+#endif
 
   DotSceneLoaderB::GetSingleton().SetupGlobal();
   DotSceneLoaderB::GetSingleton().Setup();
 
   if (physics_enable_) {
-    PhysicsManager::GetSingleton().SetupGlobal();
-    PhysicsManager::GetSingleton().Setup();
+    Physics::GetSingleton().SetupGlobal();
+    Physics::GetSingleton().Setup();
   }
 
   if (sound_enable_) {
-    SoundManager::GetSingleton().SetupGlobal();
-    SoundManager::GetSingleton().Setup();
+    Sounds::GetSingleton().SetupGlobal();
+    Sounds::GetSingleton().Setup();
   }
 
   CompositorManager::GetSingleton().SetupGlobal();
@@ -385,13 +389,13 @@ void ContextManager::ResetGlobals() {
   StaticForest::GetSingleton().Reset();
 
   if (physics_enable_) {
-    PhysicsManager::GetSingleton().ResetGlobal();
-    PhysicsManager::GetSingleton().Reset();
+    Physics::GetSingleton().ResetGlobal();
+    Physics::GetSingleton().Reset();
   }
 
   if (sound_enable_) {
-    SoundManager::GetSingleton().ResetGlobal();
-    SoundManager::GetSingleton().Reset();
+    Sounds::GetSingleton().ResetGlobal();
+    Sounds::GetSingleton().Reset();
   }
 
   GorillaOverlay::GetSingleton().ResetGlobal();

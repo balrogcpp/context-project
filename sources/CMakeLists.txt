@@ -88,10 +88,10 @@ set(CONTEXT_HEADERS
     context/include/ConfiguratorJson.h
     context/include/DotSceneLoaderB.h
     context/include/StaticForest.h
-    context/include/PhysicsManager.h
+    context/include/Physics.h
     context/include/BulletHeaders.h
     context/include/OgreHeaders.h
-    context/include/SoundManager.h
+    context/include/Sounds.h
     context/include/Manager.h
     context/include/Context.h
     context/include/CompositorManager.h
@@ -145,13 +145,12 @@ set(PAGEDGEOMETRY_SOURCES
 set(CONTEXT_SOURCES
     context/src/Application.cpp
     context/src/AppState.cpp
-    context/src/AppStateManager.cpp
     context/src/CameraMan.cpp
     context/src/ContextManager.cpp
     context/src/DotSceneLoaderB.cpp
-    context/src/PhysicsManager.cpp
+    context/src/Physics.cpp
     context/src/StaticForest.cpp
-    context/src/SoundManager.cpp
+    context/src/Sounds.cpp
     context/src/Manager.cpp
     context/src/pcheader.cpp
     context/src/CompositorManager.cpp

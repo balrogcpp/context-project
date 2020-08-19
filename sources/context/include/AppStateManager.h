@@ -25,55 +25,78 @@ SOFTWARE.
 #pragma once
 
 #include "AppState.h"
+#include "Singleton.h"
 
 namespace Context {
 
-class AppStateManager {
+class AppStateManager : public Singleton {
  public:
-  static AppStateManager AppStateSingleton;
-
- public:
-
-  static AppStateManager *GetSingletonPtr() {
-    return &AppStateSingleton;
-  }
-
+//----------------------------------------------------------------------------------------------------------------------
   static AppStateManager &GetSingleton() {
-    return AppStateSingleton;
+    static AppStateManager singleton;
+    return singleton;
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void ResetGlobals() {
+    if (cur_state_) {
+      cur_state_.reset();
+    }
+
+    if (next_state_) {
+      next_state_.reset();
+    }
   }
 
- public:
-
-  void SetInitialState(const std::shared_ptr<AppState> &state);
-
-  void SetCurrentState(const std::shared_ptr<AppState> &state);
-
-  void SetNextState(const std::shared_ptr<AppState> &state);
-
-  void GoNextState();
-
-  void CleanupResources();
-
-  void Reset();
-
-  void ResetGlobals();
-
-  AppState *GetCurState();
-
-  AppState *GetPrevState();
-
-  AppState *GetNextState();
-
- public:
-  bool garbage_ = false;
-
+ private:
   bool waiting_ = false;
-
   std::shared_ptr<AppState> cur_state_;
-
-  std::shared_ptr<AppState> prev_state_;
-
   std::shared_ptr<AppState> next_state_;
-};
 
+ public:
+//----------------------------------------------------------------------------------------------------------------------
+  void SetInitialState(const std::shared_ptr<AppState> &state) {
+    if (state)
+      cur_state_ = state;
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void SetNextState(const std::shared_ptr<AppState> &state) {
+    if (state)
+      next_state_ = state;
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void GoNextState() {
+    if (cur_state_) {
+      cur_state_->Reset();
+      cur_state_->ResetGlobals();
+      cur_state_.reset();
+    }
+
+    if (next_state_) {
+      cur_state_ = next_state_;
+      next_state_.reset();
+      waiting_ = true;
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void InitCurrState() {
+    cur_state_->SetupGlobals();
+    cur_state_->Setup();
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  std::shared_ptr<AppState> GetCurState() {
+    return cur_state_;
+  }
+
+  std::shared_ptr<AppState> GetNextState() {
+    return next_state_;
+  }
+
+  bool IsWaiting() const noexcept {
+    return waiting_;
+  }
+
+  void ClearWaiting() {
+    waiting_ = false;
+  }
+};
 }

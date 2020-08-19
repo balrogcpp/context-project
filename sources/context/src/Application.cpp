@@ -26,6 +26,9 @@ SOFTWARE.
 
 #include "Application.h"
 #include "ContextManager.h"
+#include "StaticForest.h"
+#include "Physics.h"
+#include "DotSceneLoaderB.h"
 #include "AppStateManager.h"
 #include "ConfiguratorJson.h"
 #include "Exception.h"
@@ -58,7 +61,7 @@ Application::~Application() {};
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
   ContextManager::GetSingleton().SetupGlobal();
-  AppStateManager::GetSingleton().cur_state_->SetupGlobals();
+  AppStateManager::GetSingleton().GetCurState()->SetupGlobals();
 
   ConfiguratorJson::Assign(global_verbose_fps_, "global_verbose_fps");
   ConfiguratorJson::Assign(global_verbose_, "global_verbose_enable");
@@ -89,7 +92,22 @@ void Application::Render_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Reset_() {
-  AppStateManager::GetSingleton().Reset();
+  StaticForest::GetSingleton().Reset();
+  DotSceneLoaderB::GetSingleton().Reset();
+  ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllEntities();
+  ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllLights();
+  ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllParticleSystems();
+  ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllAnimations();
+  ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllAnimationStates();
+  ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllStaticGeometry();
+  ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllManualObjects();
+  ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllInstanceManagers();
+  ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllBillboardChains();
+  ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllBillboardSets();
+  ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllMovableObjects();
+  ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllCameras();
+  ContextManager::GetSingleton().GetOgreScenePtr()->getRootSceneNode()->removeAndDestroyAllChildren();
+  Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
   AppStateManager::GetSingleton().ResetGlobals();
   ContextManager::GetSingleton().ResetGlobals();
 }
@@ -135,7 +153,7 @@ void Application::Other(Uint8 type, int32_t code, void *data1, void *data2) {}
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Loop_() {
   while (quit_) {
-    if (AppStateManager::GetSingleton().cur_state_) {
+    if (AppStateManager::GetSingleton().GetCurState()) {
 
       auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
       long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
@@ -155,7 +173,37 @@ void Application::Loop_() {
       io::InputSequencer::GetSingleton().Capture();
 
       if (!paused_) {
-        AppStateManager::GetSingleton().CleanupResources();
+        if (AppStateManager::GetSingleton().IsWaiting()) {
+          StaticForest::GetSingleton().Reset();
+          DotSceneLoaderB::GetSingleton().Reset();
+
+          if (ConfiguratorJson::GetSingleton().GetBool("physics_enable")) {
+            Physics::GetSingleton().Reset();
+          }
+
+          ContextManager::GetSingleton().GetOgreScenePtr()->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+
+          ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllEntities();
+          ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllLights();
+          ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllParticleSystems();
+          ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllAnimations();
+          ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllAnimationStates();
+          ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllStaticGeometry();
+          ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllRibbonTrails();
+          ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllManualObjects();
+          ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllInstanceManagers();
+          ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllBillboardChains();
+          ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllBillboardSets();
+          ContextManager::GetSingleton().GetOgreScenePtr()->destroyAllMovableObjects();
+
+          ContextManager::GetSingleton().GetOgreScenePtr()->getRootSceneNode()->removeAndDestroyAllChildren();
+
+          ContextManager::GetSingleton().SetupOgreScenePreconditions();
+          AppStateManager::GetSingleton().InitCurrState();
+          Physics::GetSingleton().Start();
+          AppStateManager::GetSingleton().ClearWaiting();
+        }
+
         Render_();
       }
 
@@ -218,7 +266,7 @@ void Application::Go_() {
 
     Init_();
 
-    AppStateManager::GetSingleton().cur_state_->Setup();
+    AppStateManager::GetSingleton().GetCurState()->Setup();
 
     quit_ = true;
 
@@ -257,14 +305,6 @@ static void termination_handler(int signum) {
   std::fflush(stderr);
 }
 #endif
-
-static void do_segv() {
-  int *segv;
-
-  segv = 0; /* malloc(a_huge_amount); */
-
-  *segv = 1;
-}
 
 int Application::Main(std::shared_ptr<AppState> scene_ptr) {
 #ifdef _MSC_VER

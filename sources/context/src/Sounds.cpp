@@ -25,19 +25,19 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "SoundManager.h"
+#include "Sounds.h"
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
-void SoundManager::CreateSound() {
+void Sounds::CreateSound() {
 
 }
 //----------------------------------------------------------------------------------------------------------------------
-void SoundManager::StopAllSounds() {
+void Sounds::StopAllSounds() {
   OgreOggSound::OgreOggSoundManager::getSingleton().stopAllSounds();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void SoundManager::Setup() {
+void Sounds::Setup() {
   OgreOggSound::OgreOggSoundFactory *mOgreOggSoundFactory;
   // Create new factory
   mOgreOggSoundFactory = OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
@@ -50,7 +50,7 @@ void SoundManager::Setup() {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void SoundManager::Reset() {
+void Sounds::Reset() {
   OgreOggSound::OgreOggSoundManager::getSingleton().stopAllSounds();
   OgreOggSound::OgreOggSoundManager::getSingleton().destroyAllSounds();
 }

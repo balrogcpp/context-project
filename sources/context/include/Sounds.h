@@ -29,10 +29,10 @@ SOFTWARE.
 
 namespace Context {
 
-class SoundManager : public Manager {
+class Sounds : public Manager {
  public:
-  static SoundManager &GetSingleton() {
-    static SoundManager singleton;
+  static Sounds &GetSingleton() {
+    static Sounds singleton;
     return singleton;
   }
 
