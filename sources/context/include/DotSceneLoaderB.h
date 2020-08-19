@@ -142,9 +142,8 @@ class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
 
   bool terrain_cast_shadows_ = false;
   bool terrain_raybox_calculation_ = true;
-  bool terrain_save_terrains_ = false;
   bool terrain_created_ = false;
-  bool legacy_terrain_ = true;
+  bool manual_terrain_ = false;
   bool terrain_generator_b_ = false;
 }; //class DotSceneLoaderB
 } //namespace Context

@@ -182,7 +182,8 @@ namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
 float DotSceneLoaderB::GetHeigh(float x, float z) {
   if (terrain_created_) {
-    if (!legacy_terrain_) {
+#ifdef MANUAL_TERRAIN
+    if (manual_terrain_) {
       if (x < -terrain_box_.x && x > terrain_box_.y && z < terrain_box_.z && z > terrain_box_.w)
         return 0.0f;
 
@@ -194,6 +195,9 @@ float DotSceneLoaderB::GetHeigh(float x, float z) {
     } else {
       return DotSceneLoaderB::GetSingleton().ogre_terrain_group_->getHeightAtWorldPosition(x, 1000, z);
     }
+#else
+    return DotSceneLoaderB::GetSingleton().ogre_terrain_group_->getHeightAtWorldPosition(x, 1000, z);
+#endif
   } else {
     return 0.0f;
   }
@@ -211,9 +215,7 @@ void DotSceneLoaderB::Setup() {
 
   ConfiguratorJson::Assign(physics_enable_, "physics_enable");
   ConfiguratorJson::Assign(lod_generator_enable_, "lod_generator_enable");
-  ConfiguratorJson::Assign(legacy_terrain_, "terrain_legacy");
   ConfiguratorJson::Assign(terrain_cast_shadows_, "terrain_cast_shadows");
-  ConfiguratorJson::Assign(terrain_save_terrains_, "terrain_save_terrains");
   ConfiguratorJson::Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -546,13 +548,13 @@ void DotSceneLoaderB::InitBlendMaps(Ogre::Terrain *terrain,
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
-#ifdef OGRE_BUILD_COMPONENT_TERRAIN
   float worldSize = GetAttribReal(xml_node, "worldSize");
   int mapSize = GetAttribInt(xml_node, "mapSize");
   int minBatchSize = Ogre::StringConverter::parseInt(xml_node.attribute("minBatchSize").value());
   int maxBatchSize = Ogre::StringConverter::parseInt(xml_node.attribute("maxBatchSize").value());
   int inputScale = Ogre::StringConverter::parseInt(xml_node.attribute("inputScale").value());
-  int tuningCompositeMapDistance = Ogre::StringConverter::parseInt(xml_node.attribute("tuningCompositeMapDistance").value());
+  int tuningCompositeMapDistance =
+      Ogre::StringConverter::parseInt(xml_node.attribute("tuningCompositeMapDistance").value());
   int tuningMaxPixelError = GetAttribInt(xml_node, "tuningMaxPixelError", 8);
   auto *terrain_global_options = Ogre::TerrainGlobalOptions::getSingletonPtr();
 
@@ -560,19 +562,15 @@ void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
     terrain_global_options = new Ogre::TerrainGlobalOptions();
   }
 
-  Ogre::MaterialManager::getSingleton().load("Plane", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, true);
-//  Ogre::MaterialManager::getSingleton().prepare("Plane", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-  DotSceneLoaderB::UpdatePbrParams("Plane");
-  DotSceneLoaderB::UpdatePbrShadowReceiver("Plane");
   OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
-
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
   terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
   terrain_global_options->setCastsDynamicShadows(terrain_cast_shadows_);
   terrain_global_options->setUseRayBoxDistanceCalculation(terrain_raybox_calculation_);
   terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
 
-  ogre_terrain_group_ = std::make_shared<Ogre::TerrainGroup>(scene_manager_, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
+  ogre_terrain_group_ =
+      std::make_shared<Ogre::TerrainGroup>(scene_manager_, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
   ogre_terrain_group_->setFilenameConvention("terrain", "bin");
   ogre_terrain_group_->setOrigin(Ogre::Vector3::ZERO);
   ogre_terrain_group_->setResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -594,40 +592,35 @@ void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
     ogre_terrain_group_->loadTerrain(pageX, pageY, true);
     ogre_terrain_group_->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
 
-    if (legacy_terrain_) {
-      int layers_count = 0;
-      for (const auto &pLayerElement : pPageElement.children("layer")) {
-        layers_count++;
+    int layers_count = 0;
+    for (const auto &pLayerElement : pPageElement.children("layer")) {
+      layers_count++;
+    }
+
+    defaultimp.layerList.resize(layers_count);
+
+    int layer_counter = 0;
+    for (auto pLayerElement : pPageElement.children("layer")) {
+      defaultimp.layerList[layer_counter].worldSize =
+          Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
+      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
+      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
+
+      layer_counter++;
+    }
+
+    layer_counter = 0;
+    for (auto pLayerElement : pPageElement.children("layer")) {
+      layer_counter++;
+      if (layer_counter != layers_count) {
+        InitBlendMaps(ogre_terrain_group_->getTerrain(pageX, pageY),
+                      layer_counter,
+                      pLayerElement.attribute("blendmap").value());
       }
 
-      defaultimp.layerList.resize(layers_count);
-
-      int layer_counter = 0;
-      for (auto pLayerElement : pPageElement.children("layer")) {
-        defaultimp.layerList[layer_counter].worldSize =
-            Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
-        defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
-        defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
-
-        layer_counter++;
-      }
-
-      layer_counter = 0;
-      for (auto pLayerElement : pPageElement.children("layer")) {
-        layer_counter++;
-        if (layer_counter != layers_count) {
-          InitBlendMaps(ogre_terrain_group_->getTerrain(pageX, pageY),
-                        layer_counter,
-                        pLayerElement.attribute("blendmap").value());
-        }
-
-      }
     }
   }
 
-  if (terrain_save_terrains_ && legacy_terrain_) {
-    ogre_terrain_group_->saveAllTerrains(true, true);
-  }
   ogre_terrain_group_->freeTemporaryResources();
 
   bool terrain_collider = physics_enable_;
@@ -649,7 +642,12 @@ void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
     }
   }
 
-  if (!legacy_terrain_) {
+#ifdef MANUAL_TERRAIN
+  Ogre::MaterialManager::getSingleton().load("Plane", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, true);
+  DotSceneLoaderB::UpdatePbrParams("Plane");
+  DotSceneLoaderB::UpdatePbrShadowReceiver("Plane");
+
+  if (manual_terrain_) {
     ManualObject *obj = scene_->createManualObject("Terrain_Manual_Object");
     obj->begin("Plane", Ogre::RenderOperation::OT_TRIANGLE_LIST);
 
@@ -706,7 +704,6 @@ void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
       for (int z = 0; z < size - 1; z++) {
         for (int x = 0; x < size - 1; x++) {
           obj->quad((x) + (z) * size, (x + 1) + (z) * size, (x + 1) + (z + 1) * size, (x) + (z + 1) * size);
-//          obj->quad((x) + (z) * size, (x) + (z + 1) * size, (x + 1) + (z + 1) * size, (x + 1) + (z) * size);
         }
       }
 
@@ -742,11 +739,9 @@ void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
       ogre_terrain_group_.reset();
     }
   }
+#endif
 
   terrain_created_ = true;
-#else
-  OGRE_EXCEPT(Ogre::Exception::ERR_INVALID_CALL, "recompile with Ogre::Terrain component");
-#endif
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::EnsureHasTangents(Ogre::MeshPtr mesh_ptr) {
@@ -1131,57 +1126,71 @@ void DotSceneLoaderB::UpdatePbrShadowCaster(Ogre::MaterialPtr material) {
         texPtr3->setTextureName(texture_name);
       }
     }
-  }
-  else {
+  } else {
     auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/NoAlpha/shadow_caster");
     auto new_caster = caster_material->clone("PSSM/NoAlpha/shadow_caster" + std::to_string(material_list.size()));
     material->getTechnique(0)->setShadowCasterMaterial(new_caster);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-static void AddGpuConstParameterAuto(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, const Ogre::GpuProgramParameters::AutoConstantType value_name, const int info = 0) {
+static void AddGpuConstParameterAuto(const GpuProgramParametersSharedPtr &parameters,
+                                     const std::string &parameter_name,
+                                     const Ogre::GpuProgramParameters::AutoConstantType value_name,
+                                     const int info = 0) {
   const auto &constants = parameters->getConstantDefinitions();
 
   if (constants.map.count(parameter_name) > 0)
     parameters->setNamedAutoConstant(parameter_name, value_name, info);
 }
 //----------------------------------------------------------------------------------------------------------------------
-static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, Ogre::Vector4 value) {
+static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters,
+                                 const std::string &parameter_name,
+                                 Ogre::Vector4 value) {
   const auto &constants = parameters->getConstantDefinitions();
 
   if (constants.map.count(parameter_name) > 0)
     parameters->setNamedConstant(parameter_name, value);
 }
 //----------------------------------------------------------------------------------------------------------------------
-static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, Ogre::Vector3 value) {
+static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters,
+                                 const std::string &parameter_name,
+                                 Ogre::Vector3 value) {
   const auto &constants = parameters->getConstantDefinitions();
 
   if (constants.map.count(parameter_name) > 0)
     parameters->setNamedConstant(parameter_name, value);
 }
 //----------------------------------------------------------------------------------------------------------------------
-static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, Ogre::Vector2 value) {
+static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters,
+                                 const std::string &parameter_name,
+                                 Ogre::Vector2 value) {
   const auto &constants = parameters->getConstantDefinitions();
 
   if (constants.map.count(parameter_name) > 0)
     parameters->setNamedConstant(parameter_name, value);
 }
 //----------------------------------------------------------------------------------------------------------------------
-static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, float value) {
+static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters,
+                                 const std::string &parameter_name,
+                                 float value) {
   const auto &constants = parameters->getConstantDefinitions();
 
   if (constants.map.count(parameter_name) > 0)
     parameters->setNamedConstant(parameter_name, value);
 }
 //----------------------------------------------------------------------------------------------------------------------
-static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, int value) {
+static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters,
+                                 const std::string &parameter_name,
+                                 int value) {
   const auto &constants = parameters->getConstantDefinitions();
 
   if (constants.map.count(parameter_name) > 0)
     parameters->setNamedConstant(parameter_name, value);
 }
 //----------------------------------------------------------------------------------------------------------------------
-static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters, const std::string &parameter_name, unsigned int value) {
+static void AddGpuConstParameter(const GpuProgramParametersSharedPtr &parameters,
+                                 const std::string &parameter_name,
+                                 unsigned int value) {
   const auto &constants = parameters->getConstantDefinitions();
 
   if (constants.map.count(parameter_name) > 0)
@@ -1225,19 +1234,44 @@ void DotSceneLoaderB::UpdatePbrParams(Ogre::MaterialPtr material) {
     auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     auto pass = material->getTechnique(0)->getPass(0);
 
-    AddGpuConstParameterAuto(frag_params, "uAlphaRejection", Ogre::GpuProgramParameters::ACT_SURFACE_ALPHA_REJECTION_VALUE);
-    AddGpuConstParameterAuto(frag_params, "uSurfaceAmbientColour", Ogre::GpuProgramParameters::ACT_SURFACE_AMBIENT_COLOUR);
-    AddGpuConstParameterAuto(frag_params, "uSurfaceDiffuseColour", Ogre::GpuProgramParameters::ACT_SURFACE_DIFFUSE_COLOUR);
-    AddGpuConstParameterAuto(frag_params, "uSurfaceSpecularColour",Ogre::GpuProgramParameters::ACT_SURFACE_SPECULAR_COLOUR);
+    AddGpuConstParameterAuto(frag_params,
+                             "uAlphaRejection",
+                             Ogre::GpuProgramParameters::ACT_SURFACE_ALPHA_REJECTION_VALUE);
+    AddGpuConstParameterAuto(frag_params,
+                             "uSurfaceAmbientColour",
+                             Ogre::GpuProgramParameters::ACT_SURFACE_AMBIENT_COLOUR);
+    AddGpuConstParameterAuto(frag_params,
+                             "uSurfaceDiffuseColour",
+                             Ogre::GpuProgramParameters::ACT_SURFACE_DIFFUSE_COLOUR);
+    AddGpuConstParameterAuto(frag_params,
+                             "uSurfaceSpecularColour",
+                             Ogre::GpuProgramParameters::ACT_SURFACE_SPECULAR_COLOUR);
     AddGpuConstParameterAuto(frag_params, "uSurfaceShininessColour", Ogre::GpuProgramParameters::ACT_SURFACE_SHININESS);
-    AddGpuConstParameterAuto(frag_params, "uSurfaceEmissiveColour", Ogre::GpuProgramParameters::ACT_SURFACE_EMISSIVE_COLOUR);
+    AddGpuConstParameterAuto(frag_params,
+                             "uSurfaceEmissiveColour",
+                             Ogre::GpuProgramParameters::ACT_SURFACE_EMISSIVE_COLOUR);
     AddGpuConstParameterAuto(frag_params, "uAmbientLightColour", Ogre::GpuProgramParameters::ACT_AMBIENT_LIGHT_COLOUR);
     AddGpuConstParameterAuto(frag_params, "uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
-    AddGpuConstParameterAuto(frag_params, "uLightPositionArray", Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_ARRAY, light_count);
-    AddGpuConstParameterAuto(frag_params, "uLightDirectionArray", Ogre::GpuProgramParameters::ACT_LIGHT_DIRECTION_ARRAY, light_count);
-    AddGpuConstParameterAuto(frag_params, "uLightDiffuseScaledColourArray", Ogre::GpuProgramParameters::ACT_LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY, light_count);
-    AddGpuConstParameterAuto(frag_params, "uLightAttenuationArray", Ogre::GpuProgramParameters::ACT_LIGHT_ATTENUATION_ARRAY, light_count);
-    AddGpuConstParameterAuto(frag_params, "uLightSpotParamsArray", Ogre::GpuProgramParameters::ACT_SPOTLIGHT_PARAMS_ARRAY, light_count);
+    AddGpuConstParameterAuto(frag_params,
+                             "uLightPositionArray",
+                             Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_ARRAY,
+                             light_count);
+    AddGpuConstParameterAuto(frag_params,
+                             "uLightDirectionArray",
+                             Ogre::GpuProgramParameters::ACT_LIGHT_DIRECTION_ARRAY,
+                             light_count);
+    AddGpuConstParameterAuto(frag_params,
+                             "uLightDiffuseScaledColourArray",
+                             Ogre::GpuProgramParameters::ACT_LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY,
+                             light_count);
+    AddGpuConstParameterAuto(frag_params,
+                             "uLightAttenuationArray",
+                             Ogre::GpuProgramParameters::ACT_LIGHT_ATTENUATION_ARRAY,
+                             light_count);
+    AddGpuConstParameterAuto(frag_params,
+                             "uLightSpotParamsArray",
+                             Ogre::GpuProgramParameters::ACT_SPOTLIGHT_PARAMS_ARRAY,
+                             light_count);
     AddGpuConstParameterAuto(frag_params, "uFogColour", Ogre::GpuProgramParameters::ACT_FOG_COLOUR);
     AddGpuConstParameterAuto(frag_params, "uFogParams", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
     AddGpuConstParameterAuto(frag_params, "uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
@@ -1276,7 +1310,8 @@ void DotSceneLoaderB::UpdatePbrShadowReceiver(Ogre::MaterialPtr material) {
     shadowed_list.push_back(material_name);
   }
 
-  auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ContextManager::GetSingleton().GetOgreShadowCameraSetup().get());
+  auto *pssm =
+      dynamic_cast<Ogre::PSSMShadowCameraSetup *>(ContextManager::GetSingleton().GetOgreShadowCameraSetup().get());
 
   if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
     auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
@@ -1286,8 +1321,14 @@ void DotSceneLoaderB::UpdatePbrShadowReceiver(Ogre::MaterialPtr material) {
       return;
     }
 
-    AddGpuConstParameterAuto(vert_params, "uTexWorldViewProjMatrixArray",Ogre::GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY, pssm_split_count);
-    AddGpuConstParameterAuto(vert_params, "uLightCastsShadowsArray",Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY, light_count);
+    AddGpuConstParameterAuto(vert_params,
+                             "uTexWorldViewProjMatrixArray",
+                             Ogre::GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY,
+                             pssm_split_count);
+    AddGpuConstParameterAuto(vert_params,
+                             "uLightCastsShadowsArray",
+                             Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY,
+                             light_count);
   }
 
   if (material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
@@ -1311,13 +1352,13 @@ void DotSceneLoaderB::UpdatePbrShadowReceiver(Ogre::MaterialPtr material) {
         frag_params->setNamedConstant("pssmSplitPoints", splitPoints);
         AddGpuConstParameterAuto(frag_params, "uShadowColour", Ogre::GpuProgramParameters::ACT_SHADOW_COLOUR);
         AddGpuConstParameterAuto(frag_params, "uLightCastsShadowsArray",
-                                          Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY,
-                                          light_count);
+                                 Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY,
+                                 light_count);
 
         int texture_count = pass->getNumTextureUnitStates();
 
         if (!registered) {
-        for (int k = 0; k < 3; k++) {
+          for (int k = 0; k < 3; k++) {
             Ogre::TextureUnitState *tu = pass->createTextureUnitState();
             tu->setContentType(Ogre::TextureUnitState::CONTENT_SHADOW);
             tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
@@ -1327,7 +1368,7 @@ void DotSceneLoaderB::UpdatePbrShadowReceiver(Ogre::MaterialPtr material) {
 //            frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
 //                                    Ogre::GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
 //                                    texture_count + k);
-        }
+          }
         }
       }
     }
