@@ -25,6 +25,7 @@ SOFTWARE.
 #include "pcheader.h"
 
 #include "GorillaOverlay.h"
+#include "Gorilla.h"
 #include "Application.h"
 
 namespace Context {

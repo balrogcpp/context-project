@@ -33,6 +33,7 @@ SOFTWARE.
 #include "TerrainMaterialGeneratorB.h"
 #include "CubeMapCamera.h"
 #include "ReflectionCamera.h"
+#include "ContextManager.h"
 
 namespace {
 //----------------------------------------------------------------------------------------------------------------------

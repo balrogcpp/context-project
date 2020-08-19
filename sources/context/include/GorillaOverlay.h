@@ -25,7 +25,6 @@ SOFTWARE.
 #pragma once
 
 #include "Manager.h"
-#include "Gorilla.h"
 
 namespace Ogre {
 class RenderTarget;
@@ -33,11 +32,23 @@ class Texture;
 class SceneNode;
 }
 
+namespace Gorilla {
+class Silverback;
+class Screen;
+class Layer;
+class Polygon;
+class LineList;
+class Caption;
+class Rectangle;
+class QuadList;
+class MarkupText;
+}
+
 namespace Context {
 
 class GorillaOverlay : public Manager {
  public:
-  static GorillaOverlay& GetSingleton() {
+  static GorillaOverlay &GetSingleton() {
     static GorillaOverlay singleton;
     return singleton;
   }

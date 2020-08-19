@@ -51,13 +51,13 @@ void Manager::SetupGlobal() {
   camera_ = scene_->getCamera("Default");
   viewport_ = camera_->getViewport();
   io::InputSequencer::GetSingleton().RegisterListener(this);
-  ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
+  Ogre::Root::getSingleton().addFrameListener(this);
   registered_ = true;
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Manager::ResetGlobal() {
   if (registered_) {
-    ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
+    Ogre::Root::getSingleton().removeFrameListener(this);
     io::InputSequencer::GetSingleton().UnregisterListener(this);
   }
 } //class Manager

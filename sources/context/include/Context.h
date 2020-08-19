@@ -34,6 +34,5 @@
 #include "PhysicsManager.h"
 #include "SoundManager.h"
 #include "DotSceneLoaderB.h"
-#include "GorillaOverlay.h"
 #include "OgreHeaders.h"
 #include "BulletHeaders.h"

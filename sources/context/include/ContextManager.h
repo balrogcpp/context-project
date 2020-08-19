@@ -29,9 +29,7 @@ SOFTWARE.
 #include <memory>
 
 #include "Singleton.h"
-
-struct SDL_Window;
-typedef void *SDL_GLContext;
+#include "Window.h"
 
 namespace Context {
 class CameraMan;
@@ -55,99 +53,37 @@ class RenderWindow;
 }
 
 namespace Context {
-struct WindowPosition {
-  int x, y; //x,y
-  int w, h; //width, high
-  bool f; //fullscreen
-};
-
-struct OpenGlAttribute {
-  int major, minor;
-};
-
-struct Cursor {
-  bool show;
-  bool grab;
-  bool relative;
-};
+class Window;
 
 class ContextManager : public Singleton {
+ public:
+  static ContextManager &GetSingleton() {
+    static ContextManager singleton;
+    return singleton;
+  }
+
+  void SetupOgreScenePreconditions();
+  void SetupGlobal();
+  void ResetGlobals();
+  void Render();
+
  private:
   void SetupConfigManager();
-  void SetupInputs();
-  void SetupSDL();
   void SetupOGRE();
   void SetupRTSS();
   void SetupShaderResolver();
   void InitGeneralResources();
-
- public:
-  void Setup();
-  void Reset();
-  void RestoreScreenSize();
-  void SetupGlobal();
-  void ResetGlobals();
-  void Render();
   void CreateOgreCamera();
-  void SetupOgreScenePreconditions();
-  void UpdateCursorStatus(Cursor cursor);
-
-  //getters
-  Ogre::Root *GetOgreRootPtr() const {
-    return ogre_root_;
-  }
-
-  Ogre::SceneManager *GetOgreScenePtr() const {
-    return ogre_scene_manager_;
-  }
-
-  std::shared_ptr<CameraMan> GetCameraMan() const {
-    return camera_man_;
-  }
-
-  Ogre::Camera *GetOgreCamera() const {
-    return ogre_camera_;
-  }
-
-  Ogre::SceneNode *GetCameraNode() const {
-    return ogre_camera_node_;
-  }
-
-  Ogre::Viewport *GetOgreViewport() const {
-    return ogre_viewport_;
-  }
-
-  const std::string &GetWindowCaption() const {
-    return window_caption_;
-  }
-
-  const bool IsFullscreen() const {
-    return window_position_.f;
-  }
-
-  void SetCaption(const std::string &caption) {
-    ContextManager::window_caption_ = caption;
-  }
-
-  const std::shared_ptr<Ogre::ShadowCameraSetup> &GetOgreShadowCameraSetup() const;
 
  private:
-  //SDL2
-  SDL_Window *sdl_window_ = nullptr;
-  SDL_GLContext sdl_context_ = nullptr;
-  std::string window_caption_ = "My Demo";
-  WindowPosition window_position_ = {0, 0, 1024, 768, false};
-  WindowPosition actual_monitor_size_ = {0, 0, 0, 0, false};
-  OpenGlAttribute opengl_version_ = {3, 3}; //default GL version
-  bool opengl_ver_force_ = false;
+  Window window_;
 
   //OGRE stuff
   std::string ogre_log_name_ = "Ogre.log";
   Ogre::Root *ogre_root_ = nullptr;
-  Ogre::RenderWindow *ogre_render_window_ = nullptr;
   Ogre::SceneManager *ogre_scene_manager_ = nullptr;
   Ogre::SceneNode *ogre_camera_node_ = nullptr;
-  Ogre::Viewport *ogre_viewport_= nullptr;
+  Ogre::Viewport *ogre_viewport_ = nullptr;
   Ogre::Camera *ogre_camera_ = nullptr;
   std::shared_ptr<CameraMan> camera_man_;
   std::shared_ptr<Ogre::ShadowCameraSetup> ogre_shadow_camera_setup_;
@@ -161,10 +97,6 @@ class ContextManager : public Singleton {
   bool rtss_perpixel_light_enable_ = false;
   bool rtss_perpixel_fog_enable_ = true;
   std::string rtss_cache_dir_ = ".rtss";
-
-  //HLMS
-  bool hlms_enable_ = false;
-  bool hlms_force_enable_ = false;
 
   //Global
   std::string media_location_directory_ = "..";
@@ -211,18 +143,33 @@ class ContextManager : public Singleton {
   std::string graphics_shadows_caster_material_ = "PSSM/shadow_caster";
   std::string graphics_shadows_texture_format_ = "DEPTH32";
   bool graphics_shadows_integrated_ = true;
-
-  //Singleton section
- private:
-  static ContextManager ContextManagerSingleton;
-
  public:
-  static ContextManager &GetSingleton() {
-    return ContextManagerSingleton;
+  //getters
+  Ogre::Root *GetOgreRootPtr() const {
+    return ogre_root_;
   }
 
-  static ContextManager *GetSingletonPtr() {
-    return &ContextManagerSingleton;
+  Ogre::SceneManager *GetOgreScenePtr() const {
+    return ogre_scene_manager_;
   }
+
+  std::shared_ptr<CameraMan> GetCameraMan() const {
+    return camera_man_;
+  }
+
+  Ogre::Camera *GetOgreCamera() const {
+    return ogre_camera_;
+  }
+
+  Ogre::SceneNode *GetCameraNode() const {
+    return ogre_camera_node_;
+  }
+
+  Ogre::Viewport *GetOgreViewport() const {
+    return ogre_viewport_;
+  }
+
+  const std::shared_ptr<Ogre::ShadowCameraSetup> &GetOgreShadowCameraSetup() const;
+
 }; //class ContextManager
 } //namespace Context

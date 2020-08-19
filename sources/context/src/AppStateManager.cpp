@@ -24,6 +24,7 @@ SOFTWARE.
 
 #include "pcheader.h"
 
+#include "ContextManager.h"
 #include "AppStateManager.h"
 #include "DotSceneLoaderB.h"
 #include "StaticForest.h"

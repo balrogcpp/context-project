@@ -39,7 +39,7 @@ class AppState;
 namespace Context {
 
 class Application final
-    : public Singleton, public Ogre::FrameListener, public io::InputListener, public Ogre::LogListener {
+    : public Singleton, public io::InputListener, public Ogre::LogListener {
  public:
   static Application &GetSingleton() {
     static Application Singleton;
@@ -61,8 +61,6 @@ class Application final
   void KeyDown(SDL_Keycode sym) final;
   void Event(const SDL_Event &evt) final;
   void Quit() final;
-
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final { return true; };
 
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const std::string &logName, bool &skipThisMessage) final {

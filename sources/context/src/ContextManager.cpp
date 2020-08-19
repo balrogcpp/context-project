@@ -36,24 +36,9 @@ SOFTWARE.
 #include "CompositorManager.h"
 #include "GorillaOverlay.h"
 
-extern "C" {
-#include <SDL2/SDL_syswm.h>
-}
-
 namespace Context {
-ContextManager ContextManager::ContextManagerSingleton;
-
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupConfigManager() {
-  ConfiguratorJson::Assign(window_position_.f, "window_fullscreen");
-  ConfiguratorJson::Assign(window_position_.h, "window_high");
-  ConfiguratorJson::Assign(window_position_.w, "window_width");
-  ConfiguratorJson::Assign(window_caption_, "window_caption");
-
-  ConfiguratorJson::Assign(opengl_version_.major, "opengl_ver_major");
-  ConfiguratorJson::Assign(opengl_version_.minor, "opengl_ver_minor");
-  ConfiguratorJson::Assign(opengl_ver_force_, "opengl_ver_force");
-
   ConfiguratorJson::Assign(rtss_enable_, "rtss_enable");
   ConfiguratorJson::Assign(rtss_pssm4_enable_, "rtss_pssm4_enable");
   ConfiguratorJson::Assign(rtss_resolver_enable_, "rtss_resolver_enable");
@@ -61,9 +46,6 @@ void ContextManager::SetupConfigManager() {
   ConfiguratorJson::Assign(rtss_perpixel_light_enable_, "rtss_perpixel_light_enable");
   ConfiguratorJson::Assign(rtss_perpixel_fog_enable_, "rtss_perpixel_fog_enable");
   ConfiguratorJson::Assign(rtss_cache_dir_, "rtss_cache_dir");
-
-  ConfiguratorJson::Assign(hlms_enable_, "hlms_enable");
-  ConfiguratorJson::Assign(hlms_force_enable_, "hlms_force_enable");
 
   ConfiguratorJson::Assign(global_octree_enable_, "global_octree_enable");
   ConfiguratorJson::Assign(global_verbose_enable_, "global_verbose_enable");
@@ -289,7 +271,7 @@ void ContextManager::CreateOgreCamera() {
 
   if (!ogre_scene_manager_->hasCamera("Default")) {
     ogre_camera_ = (ogre_scene_manager_->createCamera("Default"));
-    auto *renderTarget = ogre_root_->getRenderTarget(this->window_caption_);
+    auto *renderTarget = ogre_root_->getRenderTarget(window_.GetCaption());
     renderTarget->removeViewport(0);
     ogre_viewport_ = renderTarget->addViewport(ogre_camera_);
     ogre_viewport_->setBackgroundColour(Ogre::ColourValue::Black);
@@ -493,152 +475,6 @@ void ContextManager::SetupOgreScenePreconditions() {
 
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ContextManager::SetupInputs() {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
-    throw Exception("Failed to init SDL2");
-
-  if (SDL_NumJoysticks() != 0) {
-    if (global_verbose_enable_) {
-      std::cout << SDL_NumJoysticks() << " joystick(s) detected\n";
-    }
-
-    for (int i = 0; i < SDL_NumJoysticks(); i++) {
-      if (SDL_IsGameController(i)) {
-        SDL_GameController *controller = nullptr;
-
-        controller = SDL_GameControllerOpen(i);
-
-        break;
-      }
-    }
-
-  }
-
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ContextManager::SetupSDL() {
-  SDL_DisplayMode DM;
-  SDL_GetCurrentDisplayMode(0, &DM);
-
-  actual_monitor_size_.w = static_cast<int>(DM.w);
-  actual_monitor_size_.h = static_cast<int>(DM.h);
-  actual_monitor_size_.f = window_position_.f;
-
-  bool invalid = (window_position_.w * window_position_.h) == 0;
-
-  if (invalid)
-    window_position_.w = actual_monitor_size_.w;
-  if (invalid)
-    window_position_.h = actual_monitor_size_.h;
-  if (invalid)
-    window_position_.f = true;
-
-  bool factual_fullscreen = (window_position_.w == actual_monitor_size_.w && window_position_.h == actual_monitor_size_.h);
-
-  uint32_t flags = 0x0;
-
-  flags |= SDL_WINDOW_ALLOW_HIGHDPI;
-
-  if (factual_fullscreen) {
-    flags |= SDL_WINDOW_BORDERLESS;
-    actual_monitor_size_.f = true;
-  }
-
-  if (window_position_.f) {
-//    flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    flags |= SDL_WINDOW_ALWAYS_ON_TOP;
-    flags |= SDL_WINDOW_INPUT_GRABBED;
-    flags |= SDL_WINDOW_MOUSE_FOCUS;
-  }
-
-  sdl_window_ = SDL_CreateWindow(window_caption_.c_str(),
-                                 SDL_WINDOWPOS_CENTERED,
-                                 SDL_WINDOWPOS_CENTERED,
-                                 window_position_.w,
-                                 window_position_.h,
-                                 flags);
-
-  if (sdl_window_) {
-    SDL_SetRelativeMouseMode(SDL_TRUE);
-  } else {
-    throw Exception("Failed to Create SDL_Window");
-  }
-
-  if (opengl_ver_force_) {
-    constexpr std::array<std::pair<int, int>, 10> ver = {std::make_pair(4, 5),
-                                                         std::make_pair(4, 4),
-                                                         std::make_pair(4, 3),
-                                                         std::make_pair(4, 2),
-                                                         std::make_pair(4, 1),
-                                                         std::make_pair(4, 0),
-                                                         std::make_pair(3, 3),
-                                                         std::make_pair(3, 2),
-                                                         std::make_pair(3, 1),
-                                                         std::make_pair(3, 0)
-    };
-
-    if (opengl_ver_force_) {
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, opengl_version_.major);
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, opengl_version_.minor);
-
-      sdl_context_ = SDL_GL_CreateContext(sdl_window_);
-
-      if (!sdl_context_) {
-        for (const auto &it : ver) {
-          SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-          SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, it.first);
-          SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, it.second);
-
-          sdl_context_ = SDL_GL_CreateContext(sdl_window_);
-
-          if (!sdl_context_) {
-            continue;
-          } else {
-            opengl_version_.major = it.first;
-            opengl_version_.minor = it.second;
-            if (global_verbose_enable_) {
-              std::cout << "Context initialized with OpenGL ";
-              std::cout << it.first;
-              std::cout << ".";
-              std::cout << it.second;
-              std::cout << '\n';
-            }
-            break;
-          }
-        }
-      }
-    } else {
-      for (auto &it : ver) {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, it.first);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, it.second);
-
-        sdl_context_ = SDL_GL_CreateContext(sdl_window_);
-
-        if (!sdl_context_) {
-          continue;
-        } else {
-          opengl_version_.major = it.first;
-          opengl_version_.minor = it.second;
-          if (global_verbose_enable_) {
-            std::cout << "Context initialized with OpenGL ";
-            std::cout << it.first;
-            std::cout << ".";
-            std::cout << it.second;
-            std::cout << '\n';
-          }
-          break;
-        }
-      }
-    }
-
-    if (!sdl_context_) {
-      throw Exception("Failed to Create SDL_GL_Context");
-    }
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupOGRE() {
   if (global_log_enable_) {
     ogre_root_ = new Ogre::Root("", "", ogre_log_name_);
@@ -690,9 +526,8 @@ void ContextManager::SetupOGRE() {
   ogre_root_->initialise(false);
   Ogre::NameValuePairList params;
 
-  SDL_SysWMinfo info;
-  SDL_VERSION(&info.version);
-  SDL_GetWindowWMInfo(sdl_window_, &info);
+  SDL_SysWMinfo info = window_.GetInfo();
+
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   if (!reinterpret_cast<size_t>(info.info.win.window)) {
     throw Exception("Cast from info.info.win.window to size_t failed");
@@ -715,8 +550,8 @@ void ContextManager::SetupOGRE() {
   params["FSAA"] = std::to_string(graphics_fsaa_);
   params["MSAA"] = std::to_string(graphics_msaa_);
 
-  ogre_render_window_ = ogre_root_->createRenderWindow(window_caption_, static_cast<unsigned>(window_position_.w), \
-                       static_cast<unsigned>(window_position_.h), false, &params);
+  auto *ogre_render_window_ = ogre_root_->createRenderWindow(window_.GetCaption(), window_.GetSize().first, \
+                       window_.GetSize().second, false, &params);
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   if (global_octree_enable_) {
@@ -739,7 +574,7 @@ void ContextManager::SetupOGRE() {
   }
 
   ogre_camera_ = (ogre_scene_manager_->createCamera("Default"));
-  auto *renderTarget = ogre_root_->getRenderTarget(this->window_caption_);
+  auto *renderTarget = ogre_root_->getRenderTarget(window_.GetCaption());
 
   ogre_viewport_ = renderTarget->addViewport(ogre_camera_);
   ogre_viewport_->setBackgroundColour(Ogre::ColourValue::Black);
@@ -809,38 +644,8 @@ void ContextManager::SetupShaderResolver() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void ContextManager::UpdateCursorStatus(Cursor cursor) {
-  SDL_ShowCursor(cursor.show);
-  SDL_SetWindowGrab(sdl_window_, static_cast<SDL_bool>(cursor.grab));
-  SDL_SetRelativeMouseMode(static_cast<SDL_bool>(cursor.relative));
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ContextManager::Setup() {
-  if (sdl_window_) {
-    if (window_position_.f) {
-      SDL_SetWindowSize(sdl_window_, actual_monitor_size_.w, actual_monitor_size_.h);
-      SDL_SetWindowFullscreen(sdl_window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
-      SDL_SetWindowSize(sdl_window_, window_position_.w, window_position_.h);
-      ogre_render_window_->setFullscreen(true, window_position_.w, window_position_.h);
-    }
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ContextManager::Reset() {
-  RestoreScreenSize();
-  SDL_DestroyWindow(sdl_window_);
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ContextManager::RestoreScreenSize() {
-  if (window_position_.f) {
-    SDL_SetWindowFullscreen(sdl_window_, SDL_FALSE);
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupGlobal() {
   SetupConfigManager();
-  SetupInputs();
-  SetupSDL();
   SetupOGRE();
 
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM

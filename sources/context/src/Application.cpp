@@ -58,7 +58,6 @@ namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
   ContextManager::GetSingleton().SetupGlobal();
-  ContextManager::GetSingleton().Setup();
   AppStateManager::GetSingleton().cur_state_->SetupGlobals();
 
   ConfiguratorJson::Assign(global_verbose_fps_, "global_verbose_fps");
@@ -70,6 +69,8 @@ void Application::Init_() {
   ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
   ConfiguratorJson::Assign(graphics_vsync_, "graphics_vsync");
   ConfiguratorJson::Assign(application_ask_before_quit_, "application_ask_before_quit");
+
+  io::InputSequencer::GetSingleton().RegisterListener(this);
 
   if (!global_verbose_) {
     auto *logger = new Ogre::LogManager();
@@ -90,7 +91,6 @@ void Application::Render_() {
 void Application::Reset_() {
   AppStateManager::GetSingleton().Reset();
   AppStateManager::GetSingleton().ResetGlobals();
-  ContextManager::GetSingleton().Reset();
   ContextManager::GetSingleton().ResetGlobals();
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -106,9 +106,8 @@ void Application::Loop_() {
       long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
 
       if (delta_time_ > 1000000) {
-        if (global_verbose_fps_) {
+        if (global_verbose_fps_)
           std::cout << "FPS " << fps_frames_ << '\n';
-        }
 
         current_fps_ = fps_frames_;
         delta_time_ = 0;
@@ -122,14 +121,12 @@ void Application::Loop_() {
 
       if (!paused_) {
         AppStateManager::GetSingleton().CleanupResources();
-
         Render_();
       }
 
 #ifdef DEBUG
-      if (global_verbose_) {
+      if (global_verbose_)
         std::cout << std::flush;
-      }
 #endif
 
       auto duration_after_render = std::chrono::system_clock::now().time_since_epoch();
@@ -138,9 +135,8 @@ void Application::Loop_() {
 
       if (global_lock_fps_) {
         long delay = static_cast<long> ((1000000 / global_target_fps_) - render_time);
-        if (delay > 0) {
+        if (delay > 0)
           std::this_thread::sleep_for(std::chrono::microseconds (delay));
-        }
       }
 
       auto duration_after_loop = std::chrono::system_clock::now().time_since_epoch();
@@ -186,10 +182,8 @@ void Application::Go_() {
     }
 
     Init_();
-    io::InputSequencer::GetSingleton().RegisterListener(this);
-    ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
 
-    fullscreen_ = ContextManager::GetSingleton().IsFullscreen();
+//    fullscreen_ = ContextManager::GetSingleton().IsFullscreen();
 
     AppStateManager::GetSingleton().cur_state_->Setup();
 
@@ -215,7 +209,7 @@ void Application::SetNextState(std::shared_ptr<AppState> scene_ptr) {
 static sigjmp_buf point;
 
 static void termination_handler(int signum) {
-  ContextManager::GetSingleton().RestoreScreenSize();
+//  ContextManager::GetSingleton().RestoreScreenSize();
 
   printf("\nSegmentation fault occured!\n");
   std::fflush(stdout);
@@ -365,9 +359,9 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
     exception_occured = true;
   }
 
-  if (exception_occured) {
-    ContextManager::GetSingleton().RestoreScreenSize();
-  }
+//  if (exception_occured) {
+//    ContextManager::GetSingleton().RestoreScreenSize();
+//  }
 
 #if defined _WIN32 && defined DEBUG
   if (ConfigManager::GetSingleton().GetBool("application_ask_before_quit")) {

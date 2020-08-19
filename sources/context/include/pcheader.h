@@ -27,10 +27,6 @@ SOFTWARE.
 #include "PagedGeometryCommon.h"
 #include "OgreHeaders.h"
 #include "BulletHeaders.h"
-extern "C" {
-#include <SDL2/SDL.h>
-}
-
 #include <pugixml.hpp>
 
 #include <rapidjson/rapidjson.h>

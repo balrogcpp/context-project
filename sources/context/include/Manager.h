@@ -25,7 +25,6 @@ SOFTWARE.
 #pragma once
 
 #include "Singleton.h"
-#include "ContextManager.h"
 #include "IoListeners.h"
 
 #include <OgreFrameListener.h>

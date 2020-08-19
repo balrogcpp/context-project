@@ -29,6 +29,7 @@ SOFTWARE.
 
 #include "DotSceneLoaderB.h"
 #include "ShaderResolver.h"
+#include "ContextManager.h"
 
 namespace Context {
 
