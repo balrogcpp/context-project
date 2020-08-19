@@ -1,11 +1,9 @@
-#ifndef GL_ES
-#version 120
-#else
-#version 100
-#endif
+#include <OgreUnifiedShader.h>
 
 uniform vec4 shadowColor;
 
-void main() {
+MAIN_PARAMETERS
+MAIN_DECLARATION
+{
     gl_FragColor = shadowColor;
 }

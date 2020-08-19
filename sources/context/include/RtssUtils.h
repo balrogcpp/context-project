@@ -200,7 +200,7 @@ void InitRtss() {
   viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
   // Create and register the material manager listener if it doesn't exist yet.
-  shader_generator->setShaderCachePath("");
+  shader_generator->setShaderCachePath("./");
   Ogre::MaterialManager::getSingleton().addListener(new ShaderResolver(shader_generator));
 }
 
