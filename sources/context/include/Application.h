@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
+#include <OgreLog.h>
 
 #include "IoListeners.h"
 #include "DummyListener.h"
@@ -37,7 +38,8 @@ class AppState;
 
 namespace Context {
 
-class Application final : public Singleton, public Ogre::FrameListener, public io::InputListener {
+class Application final
+    : public Singleton, public Ogre::FrameListener, public io::InputListener, public Ogre::LogListener {
  public:
   static Application &GetSingleton() {
     static Application Singleton;
@@ -61,6 +63,16 @@ class Application final : public Singleton, public Ogre::FrameListener, public i
   void Quit() final;
 
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) final { return true; };
+
+  void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
+        bool maskDebug, const std::string &logName, bool &skipThisMessage) final {
+    switch (lml) {
+      case Ogre::LML_WARNING: break;
+      case Ogre::LML_NORMAL: break;
+      case Ogre::LML_CRITICAL: break;
+      case Ogre::LML_TRIVIAL: break;
+    }
+  }
 
   DummyListener dummy_listener_;
   bool quit_ = true;

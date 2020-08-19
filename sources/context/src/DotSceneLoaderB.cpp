@@ -31,7 +31,6 @@ SOFTWARE.
 #include "CameraMan.h"
 #include "ConfiguratorJson.h"
 #include "TerrainMaterialGeneratorB.h"
-#include "ShaderResolver.h"
 #include "CubeMapCamera.h"
 #include "ReflectionCamera.h"
 
@@ -182,22 +181,7 @@ namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
 float DotSceneLoaderB::GetHeigh(float x, float z) {
   if (terrain_created_) {
-#ifdef MANUAL_TERRAIN
-    if (manual_terrain_) {
-      if (x < -terrain_box_.x && x > terrain_box_.y && z < terrain_box_.z && z > terrain_box_.w)
-        return 0.0f;
-
-      float size = std::sqrt(heigh_data_.size());
-      int x_ = (x - terrain_box_.x) * size / (terrain_box_.y - terrain_box_.x);
-      int z_ = (z - terrain_box_.z) * size / (terrain_box_.w - terrain_box_.z);
-      z_ = size - z_ - 1;
-      return DotSceneLoaderB::GetSingleton().heigh_data_[x_ + z_ * size];
-    } else {
-      return DotSceneLoaderB::GetSingleton().ogre_terrain_group_->getHeightAtWorldPosition(x, 1000, z);
-    }
-#else
     return DotSceneLoaderB::GetSingleton().ogre_terrain_group_->getHeightAtWorldPosition(x, 1000, z);
-#endif
   } else {
     return 0.0f;
   }
@@ -627,7 +611,6 @@ void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
 
   if (physics_enable_ && terrain_collider) {
     auto terrainIterator = ogre_terrain_group_->getTerrainIterator();
-    terrain_box_ = Ogre::Vector4(-worldSize / 2, worldSize / 2, -worldSize / 2, worldSize / 2);
 
     while (terrainIterator.hasMoreElements()) {
       auto *terrain = terrainIterator.getNext()->instance;
@@ -641,105 +624,6 @@ void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
       );
     }
   }
-
-#ifdef MANUAL_TERRAIN
-  Ogre::MaterialManager::getSingleton().load("Plane", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, true);
-  DotSceneLoaderB::UpdatePbrParams("Plane");
-  DotSceneLoaderB::UpdatePbrShadowReceiver("Plane");
-
-  if (manual_terrain_) {
-    ManualObject *obj = scene_->createManualObject("Terrain_Manual_Object");
-    obj->begin("Plane", Ogre::RenderOperation::OT_TRIANGLE_LIST);
-
-    auto terrainIterator = ogre_terrain_group_->getTerrainIterator();
-    terrain_box_ = Ogre::Vector4(-worldSize / 2, worldSize / 2, -worldSize / 2, worldSize / 2);
-
-    while (terrainIterator.hasMoreElements()) {
-      auto *terrain = terrainIterator.getNext()->instance;
-
-      size_t size = terrain->getSize();
-      float *data = terrain->getHeightData();
-      heigh_data_.resize(size * size);
-
-      const int step = 1;
-      size_t counter = 0;
-
-      for (int z = 0; z < size; z += step) {
-        for (int x = 0; x < size; x += step) {
-          float heigh0 = data[x + z * size];
-          float heigh1 = data[x + 1 + z * size];
-          float heigh2 = data[x + (z + 1) * size];
-
-          heigh_data_[x + z * size] = heigh0;
-
-          float x0 = worldSize * ((float) (x) / (float) size) - worldSize / 2;
-          float z0 = worldSize * ((float) (size - z) / (float) size) - worldSize / 2;
-
-          float x1 = worldSize * ((float) (x + step) / (float) size) - worldSize / 2;
-          float z1 = worldSize * ((float) (size - z) / (float) size) - worldSize / 2;
-
-          float x2 = worldSize * ((float) (x) / (float) size) - worldSize / 2;
-          float z2 = worldSize * ((float) (size - z - step) / (float) size) - worldSize / 2;
-
-          auto position0 = Ogre::Vector3(x0, heigh0, z0);
-          auto position1 = Ogre::Vector3(x1, heigh1, z1);
-          auto position2 = Ogre::Vector3(x2, heigh2, z2);
-
-          auto v1 = position1 - position0;
-          auto v2 = position2 - position0;
-
-          Ogre::Vector3 normal = v1.crossProduct(v2);
-          normal.normalise();
-
-          if (x == 0 && z == 0 && x == size && z == size)
-            normal = Ogre::Vector3(0, 1, 0);
-
-          obj->position(position0);
-          obj->normal(normal);
-
-          obj->textureCoord((float) x / (64*8), (float) z / (64*8));
-        }
-      }
-
-      for (int z = 0; z < size - 1; z++) {
-        for (int x = 0; x < size - 1; x++) {
-          obj->quad((x) + (z) * size, (x + 1) + (z) * size, (x + 1) + (z + 1) * size, (x) + (z + 1) * size);
-        }
-      }
-
-      obj->end();
-
-      std::string terrain_mesh_name = "Terrain_" + std::to_string(counter);
-      if (Ogre::MeshManager::getSingleton().getByName(terrain_mesh_name,
-                                                      Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
-        Ogre::MeshManager::getSingleton().remove(terrain_mesh_name,
-                                                 Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-      }
-
-      auto terrain_mesh = obj->convertToMesh(terrain_mesh_name);
-      terrain_mesh->buildTangentVectors();
-      counter++;
-      scene_->getRootSceneNode()->createChildSceneNode()->attachObject(obj);
-
-      auto *terrain_entity = scene_->createEntity(terrain_mesh);
-      terrain_entity->setCastShadows(false);
-      const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
-      const Ogre::uint32 SURFACE_MASK = 0x00F;
-      const Ogre::uint32 WATER_MASK = 0xF00;
-      terrain_entity->setVisibilityFlags(SUBMERGED_MASK);
-      scene_->getRootSceneNode()->createChildSceneNode()->attachObject(terrain_entity);
-      scene_->destroyManualObject(obj);
-
-      UpdatePbrParams("Plane");
-      UpdatePbrShadowReceiver("Plane");
-    }
-
-    if (ogre_terrain_group_) {
-      ogre_terrain_group_->removeAllTerrains();
-      ogre_terrain_group_.reset();
-    }
-  }
-#endif
 
   terrain_created_ = true;
 }

@@ -68,16 +68,12 @@ void ContextManager::SetupConfigManager() {
   ConfiguratorJson::Assign(global_octree_enable_, "global_octree_enable");
   ConfiguratorJson::Assign(global_verbose_enable_, "global_verbose_enable");
   ConfiguratorJson::Assign(global_log_enable_, "global_log_enable");
-  ConfiguratorJson::Assign(ogre_log_name_, "global_log_name");
   ConfiguratorJson::Assign(global_stbi_enable_, "global_stbi_enable");
   ConfiguratorJson::Assign(global_freeimage_enable_, "global_freeimage_enable");
   ConfiguratorJson::Assign(global_particlefx_enable_, "global_particlefx_enable");
   ConfiguratorJson::Assign(global_sso_enable_, "global_sso_enable");
   ConfiguratorJson::Assign(physics_enable_, "physics_enable");
   ConfiguratorJson::Assign(sound_enable_, "sound_enable");
-#ifdef DEBUG
-  ConfiguratorJson::Assign(media_location_directory_, "media_location_directory");
-#endif
   ConfiguratorJson::Assign(global_resource_list_file_, "global_resource_list");
 
   ConfiguratorJson::Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
@@ -109,14 +105,6 @@ void ContextManager::SetupConfigManager() {
   ConfiguratorJson::Assign(graphics_shadows_projection_, "graphics_shadows_projection");
   ConfiguratorJson::Assign(graphics_shadows_material_, "graphics_shadows_material");
   ConfiguratorJson::Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ContextManager::SetupPath() {
-#ifndef DEBUG
-  media_location_directory_ = "./";
-#else
-  media_location_directory_ = "../../../";
-#endif
 }
 //----------------------------------------------------------------------------------------------------------------------
 static bool StringSanityCheck(const std::string &str) {
@@ -183,6 +171,12 @@ void ContextManager::InitGeneralResources() {
   std::vector<std::string> path_list;
   std::vector<std::tuple<std::string, std::string, std::string>> resource_list;
   auto &ogre_resource_manager = Ogre::ResourceGroupManager::getSingleton();
+
+#ifndef DEBUG
+  media_location_directory_ = "./";
+#else
+  media_location_directory_ = "../../../";
+#endif
 
   resource_list.push_back({media_location_directory_ + "programs", "FileSystem", default_group_name});
   resource_list.push_back({media_location_directory_ + "scenes", "FileSystem", default_group_name});
@@ -642,7 +636,6 @@ void ContextManager::SetupSDL() {
     if (!sdl_context_) {
       throw Exception("Failed to Create SDL_GL_Context");
     }
-
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -822,26 +815,6 @@ void ContextManager::UpdateCursorStatus(Cursor cursor) {
   SDL_SetRelativeMouseMode(static_cast<SDL_bool>(cursor.relative));
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ContextManager::messageLogged(const std::string &message,
-                                   Ogre::LogMessageLevel lml, bool maskDebug, const std::string &logName,
-                                   bool &skipThisMessage) {
-  switch (lml) {
-    case Ogre::LML_WARNING: break;
-    case Ogre::LML_NORMAL: break;
-    case Ogre::LML_CRITICAL: break;
-    case Ogre::LML_TRIVIAL: break;
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ContextManager::SetupOgreLog() {
-  if (!global_log_enable_) {
-    Ogre::LogManager *logger = new Ogre::LogManager();
-    logger->createLog(ogre_log_name_, true, false, true);
-    Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
-    Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
 void ContextManager::Setup() {
   if (sdl_window_) {
     if (window_position_.f) {
@@ -866,8 +839,6 @@ void ContextManager::RestoreScreenSize() {
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupGlobal() {
   SetupConfigManager();
-  SetupOgreLog();
-  SetupPath();
   SetupInputs();
   SetupSDL();
   SetupOGRE();

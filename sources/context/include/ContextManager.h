@@ -24,10 +24,9 @@ SOFTWARE.
 
 #pragma once
 
-#include <OgreLog.h>
-
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "Singleton.h"
 
@@ -46,6 +45,13 @@ class PSSMShadowCameraSetup;
 namespace Ogre {
 class RenderTarget;
 class Texture;
+class Root;
+class SceneManager;
+class Camera;
+class SceneNode;
+class Viewport;
+class ShadowCameraSetup;
+class RenderWindow;
 }
 
 namespace Context {
@@ -65,19 +71,15 @@ struct Cursor {
   bool relative;
 };
 
-class ContextManager : public Ogre::LogListener, public Singleton {
+class ContextManager : public Singleton {
  private:
   void SetupConfigManager();
-  void SetupPath();
   void SetupInputs();
   void SetupSDL();
   void SetupOGRE();
   void SetupRTSS();
   void SetupShaderResolver();
-  void SetupOgreLog();
   void InitGeneralResources();
-  void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
-        bool maskDebug, const std::string &logName, bool &skipThisMessage) final;
 
  public:
   void Setup();

@@ -134,8 +134,6 @@ class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
   Ogre::SceneNode *attach_node_ = nullptr;
   std::string group_name_;
   std::shared_ptr<Ogre::TerrainGroup> ogre_terrain_group_;
-  std::vector<float> heigh_data_;
-  Ogre::Vector4 terrain_box_;
 
   bool lod_generator_enable_ = false;
   bool physics_enable_ = true;

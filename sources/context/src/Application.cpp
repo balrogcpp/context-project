@@ -70,6 +70,17 @@ void Application::Init_() {
   ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
   ConfiguratorJson::Assign(graphics_vsync_, "graphics_vsync");
   ConfiguratorJson::Assign(application_ask_before_quit_, "application_ask_before_quit");
+
+  if (!global_verbose_) {
+    auto *logger = new Ogre::LogManager();
+    std::string log_name = ConfiguratorJson::GetSingleton().GetString("log_name");
+    if (log_name.empty())
+      log_name = "Ogre.log";
+
+    logger->createLog(log_name, true, false, true);
+    Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+    Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
+  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Render_() {
