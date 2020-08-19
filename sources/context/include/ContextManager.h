@@ -36,10 +36,6 @@ class CameraMan;
 class ShaderResolver;
 }
 
-namespace Ogre::RTSS {
-class PSSMShadowCameraSetup;
-}
-
 namespace Ogre {
 class RenderTarget;
 class Texture;
@@ -49,7 +45,6 @@ class Camera;
 class SceneNode;
 class Viewport;
 class ShadowCameraSetup;
-class RenderWindow;
 }
 
 namespace Context {
@@ -70,7 +65,6 @@ class ContextManager : public Singleton {
   void SetupOGRE();
   void SetupRTSS();
   void SetupShaderResolver();
-  void InitGeneralResources();
   void CreateOgreCamera();
 
  private:
@@ -108,8 +102,6 @@ class ContextManager : public Singleton {
   bool global_particlefx_enable_ = true;
 
   bool physics_enable_ = true;
-  bool IsPhysicsEnable() const;
-  bool IsSoundEnable() const;
   bool sound_enable_ = true;
 
   bool graphics_debug_show_wireframe_ = false;
@@ -141,8 +133,8 @@ class ContextManager : public Singleton {
   std::string graphics_shadows_caster_material_ = "PSSM/shadow_caster";
   std::string graphics_shadows_texture_format_ = "DEPTH32";
   bool graphics_shadows_integrated_ = true;
+
  public:
-  //getters
   Ogre::Root *GetOgreRootPtr() const {
     return ogre_root_;
   }
@@ -167,7 +159,15 @@ class ContextManager : public Singleton {
     return ogre_viewport_;
   }
 
-  const std::shared_ptr<Ogre::ShadowCameraSetup> &GetOgreShadowCameraSetup() const;
+  std::shared_ptr<Ogre::ShadowCameraSetup> GetOgreShadowCameraSetup() const {
+    return ogre_shadow_camera_setup_;
+  }
 
+  bool IsPhysicsEnable() const {
+    return physics_enable_;
+  }
+  bool IsSoundEnable() const {
+    return sound_enable_;
+  }
 }; //class ContextManager
 } //namespace Context

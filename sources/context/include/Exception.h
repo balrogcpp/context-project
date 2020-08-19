@@ -50,7 +50,6 @@ class Exception : public std::exception {
 
  protected:
   std::string description = std::string("Description not specified");
-
   size_t code = 0;
 };
 } //namespace Context

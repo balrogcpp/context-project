@@ -80,7 +80,6 @@ class Window : public NoCopy {
       flags |= SDL_WINDOW_BORDERLESS;
 
     if (f_) {
-//    flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
       flags |= SDL_WINDOW_ALWAYS_ON_TOP;
       flags |= SDL_WINDOW_INPUT_GRABBED;
       flags |= SDL_WINDOW_MOUSE_FOCUS;
@@ -200,6 +199,12 @@ class Window : public NoCopy {
 
   inline void SwapBuffers() const noexcept {
     SDL_GL_SwapWindow(sdl_window_);
+  }
+
+  inline void Resize(uint32_t w, uint32_t h) noexcept {
+    w_ = w;
+    h_ = h;
+    SDL_SetWindowSize(sdl_window_, w_, h_);
   }
 }; //class Window
 } //namespace Context

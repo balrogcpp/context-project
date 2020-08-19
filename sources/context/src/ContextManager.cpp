@@ -27,6 +27,7 @@ SOFTWARE.
 #include "ContextManager.h"
 #include "ConfiguratorJson.h"
 #include "Exception.h"
+#include "Storage.h"
 #include "CameraMan.h"
 #include "ShaderResolver.h"
 #include "PhysicsManager.h"
@@ -87,183 +88,6 @@ void ContextManager::SetupConfigManager() {
   ConfiguratorJson::Assign(graphics_shadows_projection_, "graphics_shadows_projection");
   ConfiguratorJson::Assign(graphics_shadows_material_, "graphics_shadows_material");
   ConfiguratorJson::Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
-}
-//----------------------------------------------------------------------------------------------------------------------
-static bool StringSanityCheck(const std::string &str) {
-  if (str[0] == '#') {
-    return true;
-  }
-
-  for (const auto &it : str) {
-    if (std::isalpha(it) || std::isdigit(it) || it == '.' || it == ',' || it == ';' || it == '_' || it == '-'
-        || it == '/') {
-      //it's Ok
-    } else {
-      return false;
-    }
-  }
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------------------------
-static std::string &LeftTrim(std::string &s) {
-  auto it = std::find_if(s.begin(), s.end(), [](char c) {
-    return !std::isspace<char>(c, std::locale::classic());
-  });
-  s.erase(s.begin(), it);
-  return s;
-}
-//----------------------------------------------------------------------------------------------------------------------
-static std::string &RightTrim(std::string &s) {
-  auto it = std::find_if(s.rbegin(), s.rend(), [](char c) { return !std::isspace<char>(c, std::locale::classic()); });
-  s.erase(it.base(), s.end());
-  return s;
-}
-//----------------------------------------------------------------------------------------------------------------------
-static std::string &TrimString(std::string &s) {
-  return LeftTrim(RightTrim(s));
-}
-//----------------------------------------------------------------------------------------------------------------------
-static void PrintPathList(const std::vector<std::tuple<std::string, std::string, std::string>> &path_list) {
-  std::cout << "Path list:\n";
-
-  for (const auto &it : path_list) {
-    std::cout << "Path: " << std::get<0>(it) << "; Type: " << std::get<1>(it) << "; Group: " << std::get<2>(it)
-              << ";\n";
-  }
-
-  std::cout << '\n';
-}
-//----------------------------------------------------------------------------------------------------------------------
-static void PrintStringList(const std::vector<std::string> &string_list) {
-  std::cout << "Path list:\n";
-
-  for (const auto &it : string_list) {
-    std::cout << "String : " << it << ";\n";
-  }
-
-  std::cout << '\n';
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ContextManager::InitGeneralResources() {
-  namespace fs = std::filesystem;
-  const std::string default_group_name = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
-
-  std::vector<std::string> file_list;
-  std::vector<std::string> path_list;
-  std::vector<std::tuple<std::string, std::string, std::string>> resource_list;
-  auto &ogre_resource_manager = Ogre::ResourceGroupManager::getSingleton();
-
-#ifndef DEBUG
-  media_location_directory_ = "./";
-#else
-  media_location_directory_ = "../../../";
-#endif
-
-  resource_list.push_back({media_location_directory_ + "programs", "FileSystem", default_group_name});
-  resource_list.push_back({media_location_directory_ + "scenes", "FileSystem", default_group_name});
-
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  if (rtss_cache_enable_) {
-    if (!std::filesystem::exists(rtss_cache_dir_)) {
-      std::filesystem::create_directory(rtss_cache_dir_);
-      resource_list.push_back({rtss_cache_dir_, "FileSystem", default_group_name});
-    }
-  }
-#endif
-
-  if (!global_resource_list_file_.empty()) {
-    std::fstream list_file;
-    list_file.open(global_resource_list_file_);
-
-    std::string line;
-    std::string path;
-    std::string type;
-    std::string group;
-
-    if (list_file.is_open()) {
-      while (getline(list_file, line)) {
-        line = TrimString(line);
-
-        if (!StringSanityCheck(line)) {
-          throw Exception(std::string("Sanity check of file ") + global_resource_list_file_ + " is failed. Aborting.");
-        }
-
-        if (line[0] == '#') {
-          continue;
-        }
-
-        std::stringstream ss(line);
-        getline(ss, path, ',');
-        getline(ss, type, ',');
-        getline(ss, group, ';');
-        resource_list.push_back({path, type, group});
-      }
-
-      list_file.close();
-    }
-  }
-
-  if (global_verbose_enable_) {
-    PrintPathList(resource_list);
-  }
-
-  const std::vector<std::string> extensions_list =
-      {".glsl", ".glslt", ".hlsl", ".hlslt", ".gles", ".cg", ".vert", ".frag", ".material", ".compositor", ".particle",
-       ".fx", ".program", ".dds", ".bmp", ".png", ".tga", ".jpg",
-       ".jpeg", ".mesh", ".xml", ".scene", ".json", ".wav", ".ogg", ".mp3", ".flac"};
-
-  for (const auto &it : resource_list) {
-    ogre_resource_manager.addResourceLocation(std::get<0>(it), std::get<1>(it), std::get<2>(it));
-    if (std::find(std::begin(path_list), std::end(path_list), std::get<0>(it)) == std::end(path_list)) {
-      path_list.push_back(std::get<0>(it));
-    } else {
-      throw Exception("Path " + std::get<0>(it) + " already registered. Aborting.");
-    }
-
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-    for (auto jt = fs::recursive_directory_iterator(std::get<0>(it)); jt != fs::recursive_directory_iterator(); ++jt) {
-      const auto file_path = jt->path().string();
-      const auto file_name = jt->path().filename().string();
-
-      if (jt->is_directory()) {
-        if (global_verbose_enable_) {
-          std::cout << "Parsing directory:  " << file_path << '\n';
-        }
-        if (std::find(std::begin(path_list), std::end(path_list), file_name) == std::end(path_list)) {
-          path_list.push_back(file_name);
-        } else {
-          throw Exception("Path " + file_name + " already registered. Aborting.");
-        }
-
-        ogre_resource_manager.addResourceLocation(file_path, "FileSystem", std::get<2>(it));
-
-      } else if (jt->is_regular_file()) {
-        if (global_verbose_enable_) {
-          std::cout << "Parsing file:  " << file_path << '\n';
-        }
-        if (fs::path(file_path).extension() == ".zip") {
-          if (std::find(std::begin(file_list), std::end(file_list), file_name) == std::end(file_list)) {
-            if (std::find(std::begin(extensions_list), std::end(extensions_list), fs::path(file_name).extension())
-                != std::end(extensions_list)) {
-              file_list.push_back(file_name);
-            }
-          } else {
-            throw Exception("File " + file_name + " already exists. Aborting.");
-          }
-
-          ogre_resource_manager.addResourceLocation(file_path, "Zip", std::get<2>(it));
-        }
-      }
-    }
-#else
-    if (std::get<1>(it) == "Filesystem" || std::get<1>(it) == "Zip")
-      ogre_resource_manager.addResourceLocation(std::get<0>(it), std::get<1>(it), std::get<2>(it));
-#endif
-  }
-
-  // load resources
-  Ogre::ResourceGroupManager::getSingletonPtr()->initialiseAllResourceGroups();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::CreateOgreCamera() {
@@ -527,6 +351,7 @@ void ContextManager::SetupOGRE() {
   Ogre::NameValuePairList params;
 
   SDL_SysWMinfo info = window_.GetInfo();
+  window_.Resize(ConfiguratorJson::GetSingleton().GetInt("window_width"), ConfiguratorJson::GetSingleton().GetInt("window_high"));
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   if (!reinterpret_cast<size_t>(info.info.win.window)) {
@@ -642,7 +467,6 @@ void ContextManager::SetupShaderResolver() {
   }
 #endif
 }
-
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::SetupGlobal() {
   SetupConfigManager();
@@ -658,7 +482,7 @@ void ContextManager::SetupGlobal() {
   StaticForest::GetSingleton().SetupGlobal();
   StaticForest::GetSingleton().Setup();
 
-  InitGeneralResources();
+  storage::InitGeneralResources({"../../../programs", "../../../scenes"});
 
   DotSceneLoaderB::GetSingleton().SetupGlobal();
   DotSceneLoaderB::GetSingleton().Setup();
@@ -710,14 +534,4 @@ void ContextManager::Render() {
   window_.SwapBuffers();
 #endif
 }
-//----------------------------------------------------------------------------------------------------------------------
-const std::shared_ptr<Ogre::ShadowCameraSetup> &ContextManager::GetOgreShadowCameraSetup() const {
-  return ogre_shadow_camera_setup_;
-}
-bool ContextManager::IsPhysicsEnable() const {
-  return physics_enable_;
-}
-bool ContextManager::IsSoundEnable() const {
-  return sound_enable_;
-} //class ContextManager
 } //namespace Context
