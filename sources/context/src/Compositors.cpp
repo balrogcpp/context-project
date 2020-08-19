@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "CompositorManager.h"
+#include "Compositors.h"
 #include "Exception.h"
 #include "ConfiguratorJson.h"
 #include "DotSceneLoaderB.h"
@@ -121,25 +121,25 @@ class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
   Ogre::MaterialPtr mGBufRefMat2;
 };
 
-CompositorManager CompositorManager::CompositorManagerSingleton;
+Compositors Compositors::CompositorManagerSingleton;
 //----------------------------------------------------------------------------------------------------------------------
-CompositorManager *CompositorManager::GetSingletonPtr() {
+Compositors *Compositors::GetSingletonPtr() {
   return &CompositorManagerSingleton;
 }
 //----------------------------------------------------------------------------------------------------------------------
-CompositorManager &CompositorManager::GetSingleton() {
+Compositors &Compositors::GetSingleton() {
   return CompositorManagerSingleton;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CompositorManager::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+void Compositors::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
 
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CompositorManager::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+void Compositors::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
 
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CompositorManager::CreateMotionBlurCompositor() {
+void Compositors::CreateMotionBlurCompositor() {
   /// Motion blur effect
   Ogre::CompositorPtr comp3 = Ogre::CompositorManager::getSingleton().create(
       "MotionBlur", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
@@ -211,7 +211,7 @@ void CompositorManager::CreateMotionBlurCompositor() {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CompositorManager::Setup() {
+void Compositors::Setup() {
   ConfiguratorJson::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
   ConfiguratorJson::Assign(compositor_use_bloom_, "compositor_use_bloom");
   ConfiguratorJson::Assign(compositor_use_ssao_, "compositor_use_ssao");
@@ -292,11 +292,11 @@ void CompositorManager::Setup() {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CompositorManager::Reset() {
+void Compositors::Reset() {
 
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CompositorManager::SetCompositor(const std::string &compositor_) {
+void Compositors::SetCompositor(const std::string &compositor_) {
   if (compositor_ != "none") {
     Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, current_post_, false);
     current_compositor_ = compositor_;
@@ -304,7 +304,7 @@ void CompositorManager::SetCompositor(const std::string &compositor_) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CompositorManager::SetPost(const std::string &post_) {
+void Compositors::SetPost(const std::string &post_) {
   if (post_ != "none") {
     Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, current_post_, false);
     current_post_ = post_;

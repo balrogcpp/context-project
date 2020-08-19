@@ -94,7 +94,7 @@ set(CONTEXT_HEADERS
     context/include/Sounds.h
     context/include/Manager.h
     context/include/Context.h
-    context/include/CompositorManager.h
+    context/include/Compositors.h
     context/include/Singleton.h
     context/include/NoCopy.h
     context/include/TerrainMaterialGeneratorB.h
@@ -153,7 +153,7 @@ set(CONTEXT_SOURCES
     context/src/Sounds.cpp
     context/src/Manager.cpp
     context/src/pcheader.cpp
-    context/src/CompositorManager.cpp
+    context/src/Compositors.cpp
     context/src/TerrainMaterialGeneratorB.cpp
     context/src/Gorilla.cpp
     context/src/GorillaOverlay.cpp

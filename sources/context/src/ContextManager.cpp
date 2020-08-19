@@ -33,7 +33,7 @@ SOFTWARE.
 #include "DotSceneLoaderB.h"
 #include "StaticForest.h"
 #include "Sounds.h"
-#include "CompositorManager.h"
+#include "Compositors.h"
 #include "GorillaOverlay.h"
 #include "RtssUtils.h"
 
@@ -372,8 +372,8 @@ void ContextManager::SetupGlobal() {
     Sounds::GetSingleton().Setup();
   }
 
-  CompositorManager::GetSingleton().SetupGlobal();
-  CompositorManager::GetSingleton().Setup();
+  Compositors::GetSingleton().SetupGlobal();
+  Compositors::GetSingleton().Setup();
 
   SetupOgreScenePreconditions();
 
@@ -382,8 +382,8 @@ void ContextManager::SetupGlobal() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ContextManager::ResetGlobals() {
-  CompositorManager::GetSingleton().ResetGlobal();
-  CompositorManager::GetSingleton().Reset();
+  Compositors::GetSingleton().ResetGlobal();
+  Compositors::GetSingleton().Reset();
 
   StaticForest::GetSingleton().ResetGlobal();
   StaticForest::GetSingleton().Reset();

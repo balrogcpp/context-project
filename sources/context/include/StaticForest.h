@@ -60,5 +60,4 @@ class StaticForest : public Manager {
   Ogre::StaticGeometry *mField = nullptr;
   Ogre::StaticGeometry *common = nullptr;
 };
-
 } //Context

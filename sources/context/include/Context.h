@@ -29,7 +29,7 @@
 #include "CameraMan.h"
 #include "Exception.h"
 #include "ContextManager.h"
-#include "CompositorManager.h"
+#include "Compositors.h"
 #include "StaticForest.h"
 #include "Physics.h"
 #include "Sounds.h"

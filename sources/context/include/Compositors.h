@@ -37,13 +37,13 @@ class DepthSchemeHandler;
 
 namespace Context {
 
-class CompositorManager final : public Manager {
+class Compositors final : public Manager {
  private:
-  static CompositorManager CompositorManagerSingleton;
+  static Compositors CompositorManagerSingleton;
 
  public:
-  static CompositorManager *GetSingletonPtr();
-  static CompositorManager &GetSingleton();
+  static Compositors *GetSingletonPtr();
+  static Compositors &GetSingleton();
 
  public:
   void Setup();
