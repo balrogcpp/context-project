@@ -33,7 +33,7 @@ SOFTWARE.
 #include "TerrainMaterialGeneratorB.h"
 #include "CubeMapCamera.h"
 #include "ReflectionCamera.h"
-#include "ContextManager.h"
+#include "Graphics.h"
 
 #include "Utils.h"
 
@@ -709,10 +709,10 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   std::string projectionType = GetAttrib(xml_node, "projectionType", "perspective");
 
   // Create the camera
-  auto *pCamera = ContextManager::GetSingleton().GetOgreCamera();
+  auto *pCamera = Graphics::GetSingleton().GetOgreCamera();
 
-  ContextManager::GetSingleton().GetCameraMan()->UnregCamera();
-  ContextManager::GetSingleton().GetCameraMan()->RegCamera(parent);
+  Graphics::GetSingleton().GetCameraMan()->UnregCamera();
+  Graphics::GetSingleton().GetCameraMan()->RegCamera(parent, pCamera);
 
   auto *actor = scene_->createEntity("Actor", "Icosphere.mesh");
   actor->setCastShadows(false);
@@ -737,7 +737,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   entBody->setActivationState(DISABLE_DEACTIVATION);
   entBody->setFriction(1.0);
   Physics::GetSingleton().AddRigidBody(entBody);
-  ContextManager::GetSingleton().GetCameraMan()->SetRigidBody(entBody);
+  Graphics::GetSingleton().GetCameraMan()->SetRigidBody(entBody);
   // Set the field-of-view
   pCamera->setFOVy(Ogre::Radian(fov));
 
@@ -767,7 +767,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   }
 
   if (auto element = xml_node.child("light")) {
-    ProcessLight_(element, ContextManager::GetSingleton().GetCameraMan()->GetCameraNode());
+    ProcessLight_(element, Graphics::GetSingleton().GetCameraMan()->GetCameraNode());
   }
 
 }

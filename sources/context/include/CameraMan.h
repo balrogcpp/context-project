@@ -24,10 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "IO.h"
-#include "Singleton.h"
-
-#include <Ogre.h>
+#include "IoListeners.h"
 
 namespace Ogre {
 class SceneNode;
@@ -37,7 +34,7 @@ class btRigidBody;
 
 namespace Context {
 
-enum class CameraStyle   // enumerator values for different styles of camera movement
+enum CameraStyle   // enumerator values for different styles of camera movement
 {
   FREELOOK,
   ORBIT,
@@ -45,36 +42,23 @@ enum class CameraStyle   // enumerator values for different styles of camera mov
   MANUAL
 };
 
- class CameraMan : public io::InputListener, public Singleton, public Ogre::FrameListener {
+class CameraMan : public io::InputListener, public Ogre::FrameListener {
  public:
   CameraMan();
-  explicit CameraMan(Ogre::SceneNode *ogre_camera_node);
-  ~CameraMan() override;
+  virtual ~CameraMan();
 
- public:
-  void SetTarget(Ogre::SceneNode *target);
-  Ogre::SceneNode *GetTarget();
-  void SetTopSpeed(float top_speed);
-  float GetTopSpeed();
-  float GetDistToTarget();
-  void SetStyle(CameraStyle style);
-  CameraStyle GetStyle();
-  void Freeze(bool freeze);
-  void RegCamera(Ogre::SceneNode *ogre_camera_node);
-  void UnregCamera();
-  Ogre::SceneNode *GetCameraNode();
-  virtual void SetYawPitchDist(Ogre::Radian yaw, Ogre::Radian pitch, float dist);
+ private:
   void ManualStop();
 
   bool frameRenderingQueued(const Ogre::FrameEvent &event) override;
 
   void Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) override;
-  void LbDown(int x, int y) override;
-  void LbUp(int x, int y) override;
-  void RbDown(int x, int y) override;
-  void RbUp(int x, int y) override;
-  void MbDown(int x, int y) override;
-  void MbUp(int x, int y) override;
+  void LbDown(int x, int y) override {}
+  void LbUp(int x, int y) override {}
+  void RbDown(int x, int y) override {}
+  void RbUp(int x, int y) override {}
+  void MbDown(int x, int y) override {}
+  void MbUp(int x, int y) override {}
   void KeyDown(SDL_Keycode sym) override;
   void KeyUp(SDL_Keycode sym) override;
 
@@ -84,18 +68,11 @@ enum class CameraStyle   // enumerator values for different styles of camera mov
   Ogre::SceneNode *camera_pitch_node_ = nullptr;
   Ogre::SceneNode *camera_roll_node_ = nullptr;
   btRigidBody *rigid_body_ = nullptr;
-
- public:
-  void SetRigidBody(btRigidBody *rigid_body);
-  btRigidBody *GetRigidBody() const;
-
- private:
   Ogre::Degree dx_, dy_;
   Ogre::Camera *ogre_camera_ = nullptr;
   CameraStyle camera_style_ = CameraStyle::FPS;
   Ogre::SceneNode *target_ = nullptr;
   bool orbiting_ = false;
-  bool zoom_ = false;
   bool moving_ = false;
   float top_speed_ = 10.0f;
   float run_speed_ = 20.0f;
@@ -114,6 +91,34 @@ enum class CameraStyle   // enumerator values for different styles of camera mov
   Ogre::Vector3 offset_ = Ogre::Vector3::ZERO;
   Ogre::Vector3 velocity_ = Ogre::Vector3::ZERO;
   Ogre::Vector3 prev_pos_ = Ogre::Vector3::ZERO;
-};
 
+ public:
+  void SetRigidBody(btRigidBody *rigid_body) {
+    rigid_body_ = rigid_body;
+  }
+
+  btRigidBody *GetRigidBody() const {
+    return rigid_body_;
+  }
+
+  Ogre::SceneNode *GetCameraNode() {
+    if (camera_style_ == CameraStyle::FPS) {
+      return camera_roll_node_;
+    } else {
+      return camera_node_;
+    }
+  }
+
+  void RegCamera(Ogre::SceneNode *ogre_camera_node, Ogre::Camera *camera);
+  void UnregCamera();
+
+  void SetStyle(CameraStyle style);
+
+  CameraStyle GetStyle() const {
+    return camera_style_;
+  }
+
+  float GetDistToTarget();
+  virtual void SetYawPitchDist(Ogre::Radian yaw, Ogre::Radian pitch, float dist);
+};
 }

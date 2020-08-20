@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "pcheader.h"
 #include "Utils.h"
-#include "ContextManager.h"
+#include "Graphics.h"
 #include "ConfiguratorJson.h"
 
 using namespace Ogre;
@@ -247,7 +247,7 @@ void UpdatePbrShadowReceiver(MaterialPtr material) {
     shadowed_list.push_back(material_name);
   }
 
-  auto *pssm = dynamic_cast<PSSMShadowCameraSetup *>(ContextManager::GetSingleton().GetOgreShadowCameraSetup().get());
+  auto *pssm = dynamic_cast<PSSMShadowCameraSetup *>(Graphics::GetSingleton().GetOgreShadowCameraSetup().get());
 
   if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
     auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
@@ -279,7 +279,7 @@ void UpdatePbrShadowReceiver(MaterialPtr material) {
         for (int j = 1; j < numTextures; ++j) {
           splitPoints[j - 1] = splitPointList[j];
         }
-        splitPoints[numTextures - 1] = ContextManager::GetSingleton().GetOgreScenePtr()->getShadowFarDistance();
+        splitPoints[numTextures - 1] = Graphics::GetSingleton().GetOgreScenePtr()->getShadowFarDistance();
       }
 
       const int light_count = 5;

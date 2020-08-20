@@ -48,21 +48,22 @@ class ShadowCameraSetup;
 }
 
 namespace Context {
-class ContextManager : public Singleton {
+class Graphics : public Singleton {
  public:
-  static ContextManager &GetSingleton() {
-    static ContextManager singleton;
+  static Graphics &GetSingleton() {
+    static Graphics singleton;
     return singleton;
   }
 
+  Graphics();
+  virtual ~Graphics();
+
   void SetupOgreScenePreconditions();
-  void SetupGlobal();
-  void ResetGlobals();
   void Render();
 
  private:
   void SetupConfigManager();
-  void SetupOGRE();
+  void InitOgre();
   void CreateOgreCamera();
 
  private:
@@ -75,7 +76,7 @@ class ContextManager : public Singleton {
   Ogre::SceneNode *ogre_camera_node_ = nullptr;
   Ogre::Viewport *ogre_viewport_ = nullptr;
   Ogre::Camera *ogre_camera_ = nullptr;
-  std::shared_ptr<CameraMan> camera_man_;
+  CameraMan *camera_man_ = nullptr;
   std::shared_ptr<Ogre::ShadowCameraSetup> ogre_shadow_camera_setup_;
 
   //Global
@@ -127,7 +128,7 @@ class ContextManager : public Singleton {
     return ogre_scene_manager_;
   }
 
-  std::shared_ptr<CameraMan> GetCameraMan() const {
+  CameraMan* GetCameraMan() const {
     return camera_man_;
   }
 

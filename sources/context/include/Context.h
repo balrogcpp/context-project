@@ -28,7 +28,7 @@
 #include "AppState.h"
 #include "CameraMan.h"
 #include "Exception.h"
-#include "ContextManager.h"
+#include "Graphics.h"
 #include "Compositors.h"
 #include "StaticForest.h"
 #include "Physics.h"

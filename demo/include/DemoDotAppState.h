@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "ContextManager.h"
+#include "Graphics.h"
 #include "AppState.h"
 
 #include <memory>

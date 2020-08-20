@@ -83,7 +83,7 @@ set(CONTEXT_HEADERS
     context/include/Exception.h
     context/include/IO.h
     context/include/pcheader.h
-    context/include/ContextManager.h
+    context/include/Graphics.h
     context/include/DummyListener.h
     context/include/ConfiguratorJson.h
     context/include/DotSceneLoaderB.h
@@ -146,7 +146,7 @@ set(CONTEXT_SOURCES
     context/src/Application.cpp
     context/src/AppState.cpp
     context/src/CameraMan.cpp
-    context/src/ContextManager.cpp
+    context/src/Graphics.cpp
     context/src/DotSceneLoaderB.cpp
     context/src/Physics.cpp
     context/src/StaticForest.cpp

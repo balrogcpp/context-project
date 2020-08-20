@@ -28,7 +28,7 @@ SOFTWARE.
 #include "StaticForest.h"
 
 #include "DotSceneLoaderB.h"
-#include "ContextManager.h"
+#include "Graphics.h"
 #include "Utils.h"
 using namespace utils;
 
@@ -126,7 +126,7 @@ void StaticForest::CreateGrassMesh() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void StaticForest::GenerateGrass() {
-  ContextManager &context = Context::ContextManager::GetSingleton();
+  Graphics &context = Context::Graphics::GetSingleton();
   Ogre::SceneManager *sceneMgr = context.GetOgreScenePtr();
   // create our grass mesh, and Create a grass entity from it
   CreateGrassMesh();

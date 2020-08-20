@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "ContextManager.h"
+#include "Graphics.h"
 #include "ConfiguratorJson.h"
 #include "Exception.h"
 #include "Storage.h"
@@ -38,8 +38,46 @@ SOFTWARE.
 #include "RtssUtils.h"
 
 namespace Context {
+Graphics::Graphics() {
+  SetupConfigManager();
+  InitOgre();
+
+  StaticForest::GetSingleton().SetupGlobal();
+  StaticForest::GetSingleton().Setup();
+
+#ifndef DEBUG
+  storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
+#else
+  storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
+#endif
+
+  DotSceneLoaderB::GetSingleton().SetupGlobal();
+  DotSceneLoaderB::GetSingleton().Setup();
+
+  if (physics_enable_) {
+    Physics::GetSingleton().SetupGlobal();
+    Physics::GetSingleton().Setup();
+  }
+
+  if (sound_enable_) {
+    Sounds::GetSingleton().SetupGlobal();
+    Sounds::GetSingleton().Setup();
+  }
+
+  Compositors::GetSingleton().SetupGlobal();
+  Compositors::GetSingleton().Setup();
+
+  SetupOgreScenePreconditions();
+
+  GorillaOverlay::GetSingleton().SetupGlobal();
+  GorillaOverlay::GetSingleton().Setup();
+}
 //----------------------------------------------------------------------------------------------------------------------
-void ContextManager::SetupConfigManager() {
+Graphics::~Graphics() {
+  delete camera_man_;
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Graphics::SetupConfigManager() {
   ConfiguratorJson::Assign(physics_enable_, "physics_enable");
   ConfiguratorJson::Assign(sound_enable_, "sound_enable");
 
@@ -74,7 +112,7 @@ void ContextManager::SetupConfigManager() {
   ConfiguratorJson::Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ContextManager::CreateOgreCamera() {
+void Graphics::CreateOgreCamera() {
   ogre_camera_node_ = ogre_scene_manager_->getRootSceneNode()->createChildSceneNode();
 
   if (!ogre_scene_manager_->hasCamera("Default")) {
@@ -87,10 +125,10 @@ void ContextManager::CreateOgreCamera() {
     ogre_viewport_->setDimensions(0, 0, 1, 1);
   }
   if (!camera_man_) {
-    camera_man_ = std::make_shared<CameraMan>();
+    camera_man_ = new CameraMan();
   }
 
-  camera_man_->RegCamera(ogre_camera_node_);
+  camera_man_->RegCamera(ogre_camera_node_, ogre_camera_);
   camera_man_->SetStyle(CameraStyle::MANUAL);
 
   if (ogre_camera_) {
@@ -98,14 +136,15 @@ void ContextManager::CreateOgreCamera() {
     ogre_camera_->setFarClipDistance(10000.0f);
   }
 
-  ogre_camera_->setAspectRatio(static_cast<float>(ogre_viewport_->getActualWidth()) / static_cast<float>(ogre_viewport_->getActualHeight()));
+  ogre_camera_->setAspectRatio(
+      static_cast<float>(ogre_viewport_->getActualWidth()) / static_cast<float>(ogre_viewport_->getActualHeight()));
 
   ogre_scene_manager_->setSkyBoxEnabled(false);
   ogre_scene_manager_->setSkyDomeEnabled(false);
   ogre_scene_manager_->setAmbientLight(Ogre::ColourValue::Black);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ContextManager::SetupOgreScenePreconditions() {
+void Graphics::SetupOgreScenePreconditions() {
   CreateOgreCamera();
 
   // Texture filtering
@@ -172,10 +211,19 @@ void ContextManager::SetupOgreScenePreconditions() {
       else
         texture_type = Ogre::PF_DEPTH32;
 
-      ogre_scene_manager_->setShadowTextureSettings(graphics_shadows_texture_resolution_, graphics_shadows_texture_count_, texture_type, 0, 2);
+      ogre_scene_manager_->setShadowTextureSettings(graphics_shadows_texture_resolution_,
+                                                    graphics_shadows_texture_count_,
+                                                    texture_type,
+                                                    0,
+                                                    2);
 
       for (int i = 0; i < graphics_shadows_texture_count_; i++) {
-        ogre_scene_manager_->setShadowTextureConfig(i, graphics_shadows_texture_resolution_, graphics_shadows_texture_resolution_, texture_type, 0, 2);
+        ogre_scene_manager_->setShadowTextureConfig(i,
+                                                    graphics_shadows_texture_resolution_,
+                                                    graphics_shadows_texture_resolution_,
+                                                    texture_type,
+                                                    0,
+                                                    2);
       }
 
       ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
@@ -192,7 +240,8 @@ void ContextManager::SetupOgreScenePreconditions() {
       }
 
       if (!graphics_shadows_receiver_material_.empty()) {
-        auto passReceiverMaterial = Ogre::MaterialManager::getSingleton().getByName(graphics_shadows_receiver_material_);
+        auto
+            passReceiverMaterial = Ogre::MaterialManager::getSingleton().getByName(graphics_shadows_receiver_material_);
         ogre_scene_manager_->setShadowTextureReceiverMaterial(passReceiverMaterial);
       }
 
@@ -245,14 +294,13 @@ void ContextManager::SetupOgreScenePreconditions() {
   }
 
   if (graphics_debug_show_wireframe_) {
-    ContextManager::GetSingleton().GetOgreCamera()->setPolygonMode(Ogre::PM_WIREFRAME);
+    ogre_camera_->setPolygonMode(Ogre::PM_WIREFRAME);
   } else {
-    ContextManager::GetSingleton().GetOgreCamera()->setPolygonMode(Ogre::PM_SOLID);
+    ogre_camera_->setPolygonMode(Ogre::PM_SOLID);
   }
-
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ContextManager::SetupOGRE() {
+void Graphics::InitOgre() {
   ogre_root_ = new Ogre::Root("", "", "");
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
@@ -301,7 +349,8 @@ void ContextManager::SetupOGRE() {
   Ogre::NameValuePairList params;
 
   SDL_SysWMinfo info = window_.GetInfo();
-  window_.Resize(ConfiguratorJson::GetSingleton().GetInt("window_width"), ConfiguratorJson::GetSingleton().GetInt("window_high"));
+  window_.Resize(ConfiguratorJson::GetSingleton().GetInt("window_width"),
+                 ConfiguratorJson::GetSingleton().GetInt("window_high"));
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   if (!reinterpret_cast<size_t>(info.info.win.window)) {
@@ -346,63 +395,7 @@ void ContextManager::SetupOGRE() {
 
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ContextManager::SetupGlobal() {
-  SetupConfigManager();
-  SetupOGRE();
-
-  StaticForest::GetSingleton().SetupGlobal();
-  StaticForest::GetSingleton().Setup();
-
-#ifndef DEBUG
-  storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
-#else
-  storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
-#endif
-
-  DotSceneLoaderB::GetSingleton().SetupGlobal();
-  DotSceneLoaderB::GetSingleton().Setup();
-
-  if (physics_enable_) {
-    Physics::GetSingleton().SetupGlobal();
-    Physics::GetSingleton().Setup();
-  }
-
-  if (sound_enable_) {
-    Sounds::GetSingleton().SetupGlobal();
-    Sounds::GetSingleton().Setup();
-  }
-
-  Compositors::GetSingleton().SetupGlobal();
-  Compositors::GetSingleton().Setup();
-
-  SetupOgreScenePreconditions();
-
-  GorillaOverlay::GetSingleton().SetupGlobal();
-  GorillaOverlay::GetSingleton().Setup();
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ContextManager::ResetGlobals() {
-  Compositors::GetSingleton().ResetGlobal();
-  Compositors::GetSingleton().Reset();
-
-  StaticForest::GetSingleton().ResetGlobal();
-  StaticForest::GetSingleton().Reset();
-
-  if (physics_enable_) {
-    Physics::GetSingleton().ResetGlobal();
-    Physics::GetSingleton().Reset();
-  }
-
-  if (sound_enable_) {
-    Sounds::GetSingleton().ResetGlobal();
-    Sounds::GetSingleton().Reset();
-  }
-
-  GorillaOverlay::GetSingleton().ResetGlobal();
-  GorillaOverlay::GetSingleton().Reset();
-}
-//----------------------------------------------------------------------------------------------------------------------
-void ContextManager::Render() {
+void Graphics::Render() {
   ogre_root_->renderOneFrame();
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32

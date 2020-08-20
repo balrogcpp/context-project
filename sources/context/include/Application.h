@@ -37,8 +37,7 @@ class AppState;
 }
 
 namespace Context {
-
- class Application : public io::OtherEventListener, public Ogre::LogListener, public Singleton {
+class Application : public io::OtherEventListener, public Ogre::LogListener, public Singleton {
  public:
   Application();
   virtual ~Application();
@@ -48,7 +47,6 @@ namespace Context {
     return singleton;
   }
 
-  int GetFpsFrames() const;
   static int Main(std::shared_ptr<AppState> scene_ptr);
   void SetCurState(std::shared_ptr<AppState> scene_ptr);
   void SetNextState(std::shared_ptr<AppState> scene_ptr);
@@ -91,5 +89,10 @@ namespace Context {
   bool application_ask_before_quit_ = false;
   bool graphics_vsync_ = true;
   bool global_lock_fps_ = true;
+
+ public:
+  int GetFpsFrames() const {
+    return current_fps_;
+  }
 }; //class Application
 } //namespace Context
