@@ -58,101 +58,27 @@ class Graphics : public Singleton {
   Graphics();
   virtual ~Graphics();
 
-  void SetupOgreScenePreconditions();
+  void CreateScene();
   void Render();
 
  private:
-  void SetupConfigManager();
   void InitOgre();
-  void CreateOgreCamera();
+  void CreateCamera();
 
  private:
   Window window_;
 
-  //OGRE stuff
-  std::string ogre_log_name_ = "Ogre.log";
-  Ogre::Root *ogre_root_ = nullptr;
-  Ogre::SceneManager *ogre_scene_manager_ = nullptr;
-  Ogre::SceneNode *ogre_camera_node_ = nullptr;
-  Ogre::Viewport *ogre_viewport_ = nullptr;
-  Ogre::Camera *ogre_camera_ = nullptr;
+  Ogre::Root *root_ = nullptr;
+  Ogre::SceneManager *scene_ = nullptr;
+  Ogre::SceneNode *camera_node_ = nullptr;
+  Ogre::Viewport *viewport_ = nullptr;
+  Ogre::Camera *camera_ = nullptr;
   CameraMan *camera_man_ = nullptr;
   std::shared_ptr<Ogre::ShadowCameraSetup> ogre_shadow_camera_setup_;
 
-  //Global
-  bool global_sso_enable_ = true;
-  bool global_octree_enable_ = true;
-  bool global_stbi_enable_ = true;
-  bool global_freeimage_enable_ = false;
-  bool global_particlefx_enable_ = true;
-
-  bool physics_enable_ = true;
-  bool sound_enable_ = true;
-
-  bool graphics_debug_show_wireframe_ = false;
-  bool graphics_vsync_ = true;
-  bool graphics_gamma_enable_ = false;
-  int graphics_fsaa_ = 0;
-  int graphics_msaa_ = 0;
-  std::string graphics_filtration_ = "bilinear";
-  int graphics_anisotropy_level_ = 4;
-  int graphics_mipmap_count_ = 10;
-
-  //Shadows
-  bool graphics_shadows_enable_ = true;
-  int graphics_shadows_texture_resolution_ = 1024;
-  int graphics_shadows_texture_count_ = 3;
-  float graphics_shadows_pssm_0_ = 0.0f;
-  float graphics_shadows_pssm_1_ = 0.0f;
-  float graphics_shadows_pssm_2_ = 0.0f;
-  bool graphics_shadows_split_auto_ = false;
-  float graphics_shadows_far_distance_ = 200;
-  bool graphics_shadows_self_shadow_ = true;
-  float graphics_shadows_split_padding_ = 0.0f;
-  bool graphics_shadows_back_faces_ = true;
-  std::string graphics_shadows_tecnique_ = "texture";
-  std::string graphics_shadows_lighting_ = "additive";
-  std::string graphics_shadows_projection_ = "pssm";
-  std::string graphics_shadows_material_ = "default";
-  std::string graphics_shadows_receiver_material_;
-  std::string graphics_shadows_caster_material_ = "PSSM/shadow_caster";
-  std::string graphics_shadows_texture_format_ = "DEPTH32";
-  bool graphics_shadows_integrated_ = true;
-
  public:
-  Ogre::Root *GetOgreRootPtr() const {
-    return ogre_root_;
-  }
-
-  Ogre::SceneManager *GetOgreScenePtr() const {
-    return ogre_scene_manager_;
-  }
-
-  CameraMan* GetCameraMan() const {
+  CameraMan *GetCameraMan() const {
     return camera_man_;
-  }
-
-  Ogre::Camera *GetOgreCamera() const {
-    return ogre_camera_;
-  }
-
-  Ogre::SceneNode *GetCameraNode() const {
-    return ogre_camera_node_;
-  }
-
-  Ogre::Viewport *GetOgreViewport() const {
-    return ogre_viewport_;
-  }
-
-  std::shared_ptr<Ogre::ShadowCameraSetup> GetOgreShadowCameraSetup() const {
-    return ogre_shadow_camera_setup_;
-  }
-
-  bool IsPhysicsEnable() const {
-    return physics_enable_;
-  }
-  bool IsSoundEnable() const {
-    return sound_enable_;
   }
 }; //class ContextManager
 } //namespace Context

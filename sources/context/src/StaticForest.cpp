@@ -126,8 +126,7 @@ void StaticForest::CreateGrassMesh() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void StaticForest::GenerateGrass() {
-  Graphics &context = Context::Graphics::GetSingleton();
-  Ogre::SceneManager *sceneMgr = context.GetOgreScenePtr();
+  Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   // create our grass mesh, and Create a grass entity from it
   CreateGrassMesh();
 
@@ -135,9 +134,9 @@ void StaticForest::GenerateGrass() {
   static const Ogre::uint32 SURFACE_MASK = 0x00F;
   static const Ogre::uint32 WATER_MASK = 0xF00;
 
-  Ogre::Entity *farn = sceneMgr->createEntity("Farn", "farn1.mesh");
+  Ogre::Entity *farn = scene->createEntity("Farn", "farn1.mesh");
   // Create a static geometry field, which we will populate with grass
-  mField = sceneMgr->createStaticGeometry("FarnField");
+  mField = scene->createStaticGeometry("FarnField");
   mField->setRegionDimensions(Ogre::Vector3(20));
 
   const float bounds = 50.0f;

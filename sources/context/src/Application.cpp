@@ -95,19 +95,19 @@ void Application::Render_() {
 void Application::Reset_() {
   StaticForest::GetSingleton().Reset();
   DotSceneLoaderB::GetSingleton().Reset();
-  Graphics::GetSingleton().GetOgreScenePtr()->destroyAllEntities();
-  Graphics::GetSingleton().GetOgreScenePtr()->destroyAllLights();
-  Graphics::GetSingleton().GetOgreScenePtr()->destroyAllParticleSystems();
-  Graphics::GetSingleton().GetOgreScenePtr()->destroyAllAnimations();
-  Graphics::GetSingleton().GetOgreScenePtr()->destroyAllAnimationStates();
-  Graphics::GetSingleton().GetOgreScenePtr()->destroyAllStaticGeometry();
-  Graphics::GetSingleton().GetOgreScenePtr()->destroyAllManualObjects();
-  Graphics::GetSingleton().GetOgreScenePtr()->destroyAllInstanceManagers();
-  Graphics::GetSingleton().GetOgreScenePtr()->destroyAllBillboardChains();
-  Graphics::GetSingleton().GetOgreScenePtr()->destroyAllBillboardSets();
-  Graphics::GetSingleton().GetOgreScenePtr()->destroyAllMovableObjects();
-  Graphics::GetSingleton().GetOgreScenePtr()->destroyAllCameras();
-  Graphics::GetSingleton().GetOgreScenePtr()->getRootSceneNode()->removeAndDestroyAllChildren();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllEntities();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllLights();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllParticleSystems();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllAnimations();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllAnimationStates();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllStaticGeometry();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllManualObjects();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllInstanceManagers();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllBillboardChains();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllBillboardSets();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllMovableObjects();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllCameras();
+  Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->removeAndDestroyAllChildren();
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
   AppStateManager::GetSingleton().ResetGlobals();
 }
@@ -181,24 +181,24 @@ void Application::Loop_() {
             Physics::GetSingleton().Reset();
           }
 
-          Graphics::GetSingleton().GetOgreScenePtr()->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+          Ogre::Root::getSingleton().getSceneManager("Default")->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
 
-          Graphics::GetSingleton().GetOgreScenePtr()->destroyAllEntities();
-          Graphics::GetSingleton().GetOgreScenePtr()->destroyAllLights();
-          Graphics::GetSingleton().GetOgreScenePtr()->destroyAllParticleSystems();
-          Graphics::GetSingleton().GetOgreScenePtr()->destroyAllAnimations();
-          Graphics::GetSingleton().GetOgreScenePtr()->destroyAllAnimationStates();
-          Graphics::GetSingleton().GetOgreScenePtr()->destroyAllStaticGeometry();
-          Graphics::GetSingleton().GetOgreScenePtr()->destroyAllRibbonTrails();
-          Graphics::GetSingleton().GetOgreScenePtr()->destroyAllManualObjects();
-          Graphics::GetSingleton().GetOgreScenePtr()->destroyAllInstanceManagers();
-          Graphics::GetSingleton().GetOgreScenePtr()->destroyAllBillboardChains();
-          Graphics::GetSingleton().GetOgreScenePtr()->destroyAllBillboardSets();
-          Graphics::GetSingleton().GetOgreScenePtr()->destroyAllMovableObjects();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllEntities();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllLights();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllParticleSystems();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllAnimations();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllAnimationStates();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllStaticGeometry();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllRibbonTrails();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllManualObjects();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllInstanceManagers();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllBillboardChains();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllBillboardSets();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllMovableObjects();
 
-          Graphics::GetSingleton().GetOgreScenePtr()->getRootSceneNode()->removeAndDestroyAllChildren();
+          Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->removeAndDestroyAllChildren();
 
-          Graphics::GetSingleton().SetupOgreScenePreconditions();
+          Graphics::GetSingleton().CreateScene();
           AppStateManager::GetSingleton().InitCurrState();
           Physics::GetSingleton().Start();
           AppStateManager::GetSingleton().ClearWaiting();

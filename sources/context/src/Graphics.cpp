@@ -39,7 +39,6 @@ SOFTWARE.
 
 namespace Context {
 Graphics::Graphics() {
-  SetupConfigManager();
   InitOgre();
 
   StaticForest::GetSingleton().SetupGlobal();
@@ -54,6 +53,11 @@ Graphics::Graphics() {
   DotSceneLoaderB::GetSingleton().SetupGlobal();
   DotSceneLoaderB::GetSingleton().Setup();
 
+  bool physics_enable_ = true;
+  bool sound_enable_ = true;
+  ConfiguratorJson::Assign(physics_enable_, "physics_enable");
+  ConfiguratorJson::Assign(sound_enable_, "sound_enable");
+
   if (physics_enable_) {
     Physics::GetSingleton().SetupGlobal();
     Physics::GetSingleton().Setup();
@@ -67,7 +71,7 @@ Graphics::Graphics() {
   Compositors::GetSingleton().SetupGlobal();
   Compositors::GetSingleton().Setup();
 
-  SetupOgreScenePreconditions();
+  CreateScene();
 
   GorillaOverlay::GetSingleton().SetupGlobal();
   GorillaOverlay::GetSingleton().Setup();
@@ -77,75 +81,48 @@ Graphics::~Graphics() {
   delete camera_man_;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Graphics::SetupConfigManager() {
-  ConfiguratorJson::Assign(physics_enable_, "physics_enable");
-  ConfiguratorJson::Assign(sound_enable_, "sound_enable");
+void Graphics::CreateCamera() {
+  camera_node_ = scene_->getRootSceneNode()->createChildSceneNode();
 
-  ConfiguratorJson::Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
-  ConfiguratorJson::Assign(graphics_vsync_, "graphics_vsync");
-  ConfiguratorJson::Assign(graphics_gamma_enable_, "graphics_gamma");
-  ConfiguratorJson::Assign(graphics_fsaa_, "graphics_fsaa");
-  ConfiguratorJson::Assign(graphics_msaa_, "graphics_msaa");
-  ConfiguratorJson::Assign(graphics_filtration_, "graphics_filtration");
-  ConfiguratorJson::Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
-  ConfiguratorJson::Assign(graphics_mipmap_count_, "graphics_mipmap_count");
-
-  ConfiguratorJson::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
-  ConfiguratorJson::Assign(graphics_shadows_pssm_0_, "graphics_shadows_pssm_0");
-  ConfiguratorJson::Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
-  ConfiguratorJson::Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
-  ConfiguratorJson::Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
-  ConfiguratorJson::Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
-  ConfiguratorJson::Assign(graphics_shadows_texture_resolution_, "graphics_shadows_texture_resolution");
-  ConfiguratorJson::Assign(graphics_shadows_split_padding_, "graphics_shadows_split_padding");
-  ConfiguratorJson::Assign(graphics_shadows_texture_count_, "graphics_shadows_texture_count");
-  ConfiguratorJson::Assign(graphics_shadows_far_distance_, "graphics_shadows_far_distance");
-  ConfiguratorJson::Assign(graphics_shadows_self_shadow_, "graphics_shadows_self_shadow");
-  ConfiguratorJson::Assign(graphics_shadows_back_faces_, "graphics_shadows_back_faces");
-  ConfiguratorJson::Assign(graphics_shadows_caster_material_, "graphics_shadows_caster_material");
-  ConfiguratorJson::Assign(graphics_shadows_receiver_material_, "graphics_shadows_receiver_material");
-
-  ConfiguratorJson::Assign(graphics_shadows_tecnique_, "graphics_shadows_tecnique");
-  ConfiguratorJson::Assign(graphics_shadows_lighting_, "graphics_shadows_lighting");
-  ConfiguratorJson::Assign(graphics_shadows_projection_, "graphics_shadows_projection");
-  ConfiguratorJson::Assign(graphics_shadows_material_, "graphics_shadows_material");
-  ConfiguratorJson::Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Graphics::CreateOgreCamera() {
-  ogre_camera_node_ = ogre_scene_manager_->getRootSceneNode()->createChildSceneNode();
-
-  if (!ogre_scene_manager_->hasCamera("Default")) {
-    ogre_camera_ = (ogre_scene_manager_->createCamera("Default"));
-    auto *renderTarget = ogre_root_->getRenderTarget(window_.GetCaption());
+  if (!scene_->hasCamera("Default")) {
+    camera_ = (scene_->createCamera("Default"));
+    auto *renderTarget = root_->getRenderTarget(window_.GetCaption());
     renderTarget->removeViewport(0);
-    ogre_viewport_ = renderTarget->addViewport(ogre_camera_);
-    ogre_viewport_->setBackgroundColour(Ogre::ColourValue::Black);
-    ogre_viewport_->setBackgroundColour(Ogre::ColourValue::Black);
-    ogre_viewport_->setDimensions(0, 0, 1, 1);
+    viewport_ = renderTarget->addViewport(camera_);
+    viewport_->setBackgroundColour(Ogre::ColourValue::Black);
+    viewport_->setBackgroundColour(Ogre::ColourValue::Black);
+    viewport_->setDimensions(0, 0, 1, 1);
   }
   if (!camera_man_) {
     camera_man_ = new CameraMan();
   }
 
-  camera_man_->RegCamera(ogre_camera_node_, ogre_camera_);
+  camera_man_->RegCamera(camera_node_, camera_);
   camera_man_->SetStyle(CameraStyle::MANUAL);
 
-  if (ogre_camera_) {
-    ogre_camera_->setNearClipDistance(0.01f);
-    ogre_camera_->setFarClipDistance(10000.0f);
+  if (camera_) {
+    camera_->setNearClipDistance(0.01f);
+    camera_->setFarClipDistance(10000.0f);
   }
 
-  ogre_camera_->setAspectRatio(
-      static_cast<float>(ogre_viewport_->getActualWidth()) / static_cast<float>(ogre_viewport_->getActualHeight()));
+  camera_->setAspectRatio(
+      static_cast<float>(viewport_->getActualWidth()) / static_cast<float>(viewport_->getActualHeight()));
 
-  ogre_scene_manager_->setSkyBoxEnabled(false);
-  ogre_scene_manager_->setSkyDomeEnabled(false);
-  ogre_scene_manager_->setAmbientLight(Ogre::ColourValue::Black);
+  scene_->setSkyBoxEnabled(false);
+  scene_->setSkyDomeEnabled(false);
+  scene_->setAmbientLight(Ogre::ColourValue::Black);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Graphics::SetupOgreScenePreconditions() {
-  CreateOgreCamera();
+void Graphics::CreateScene() {
+  CreateCamera();
+
+  std::string graphics_filtration_ = "bilinear";
+  int graphics_anisotropy_level_ = 4;
+  int graphics_mipmap_count_ = 10;
+
+  ConfiguratorJson::Assign(graphics_filtration_, "graphics_filtration");
+  ConfiguratorJson::Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
+  ConfiguratorJson::Assign(graphics_mipmap_count_, "graphics_mipmap_count");
 
   // Texture filtering
   if (graphics_filtration_ == "anisotropic") {
@@ -170,6 +147,47 @@ void Graphics::SetupOgreScenePreconditions() {
   }
 
   //Global shadows
+
+  bool graphics_shadows_enable_ = true;
+  int graphics_shadows_texture_resolution_ = 1024;
+  int graphics_shadows_texture_count_ = 3;
+  float graphics_shadows_pssm_0_ = 0.0f;
+  float graphics_shadows_pssm_1_ = 0.0f;
+  float graphics_shadows_pssm_2_ = 0.0f;
+  bool graphics_shadows_split_auto_ = false;
+  float graphics_shadows_far_distance_ = 200;
+  bool graphics_shadows_self_shadow_ = true;
+  float graphics_shadows_split_padding_ = 0.0f;
+  bool graphics_shadows_back_faces_ = true;
+  std::string graphics_shadows_tecnique_ = "texture";
+  std::string graphics_shadows_lighting_ = "additive";
+  std::string graphics_shadows_projection_ = "pssm";
+  std::string graphics_shadows_material_ = "default";
+  std::string graphics_shadows_receiver_material_;
+  std::string graphics_shadows_caster_material_ = "PSSM/shadow_caster";
+  std::string graphics_shadows_texture_format_ = "DEPTH32";
+  bool graphics_shadows_integrated_ = true;
+
+  ConfiguratorJson::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
+  ConfiguratorJson::Assign(graphics_shadows_pssm_0_, "graphics_shadows_pssm_0");
+  ConfiguratorJson::Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
+  ConfiguratorJson::Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
+  ConfiguratorJson::Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
+  ConfiguratorJson::Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
+  ConfiguratorJson::Assign(graphics_shadows_texture_resolution_, "graphics_shadows_texture_resolution");
+  ConfiguratorJson::Assign(graphics_shadows_split_padding_, "graphics_shadows_split_padding");
+  ConfiguratorJson::Assign(graphics_shadows_texture_count_, "graphics_shadows_texture_count");
+  ConfiguratorJson::Assign(graphics_shadows_far_distance_, "graphics_shadows_far_distance");
+  ConfiguratorJson::Assign(graphics_shadows_self_shadow_, "graphics_shadows_self_shadow");
+  ConfiguratorJson::Assign(graphics_shadows_back_faces_, "graphics_shadows_back_faces");
+  ConfiguratorJson::Assign(graphics_shadows_caster_material_, "graphics_shadows_caster_material");
+  ConfiguratorJson::Assign(graphics_shadows_receiver_material_, "graphics_shadows_receiver_material");
+  ConfiguratorJson::Assign(graphics_shadows_tecnique_, "graphics_shadows_tecnique");
+  ConfiguratorJson::Assign(graphics_shadows_lighting_, "graphics_shadows_lighting");
+  ConfiguratorJson::Assign(graphics_shadows_projection_, "graphics_shadows_projection");
+  ConfiguratorJson::Assign(graphics_shadows_material_, "graphics_shadows_material");
+  ConfiguratorJson::Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
+
   if (graphics_shadows_enable_) {
     unsigned shadow_technique = Ogre::SHADOWTYPE_NONE;
 
@@ -189,7 +207,7 @@ void Graphics::SetupOgreScenePreconditions() {
       shadow_technique |= Ogre::SHADOWDETAILTYPE_ADDITIVE;
     }
 
-    ogre_scene_manager_->setShadowTechnique(static_cast<Ogre::ShadowTechnique>(shadow_technique));
+    scene_->setShadowTechnique(static_cast<Ogre::ShadowTechnique>(shadow_technique));
 
     if (graphics_shadows_material_ == "default") {
       Ogre::PixelFormat texture_type;
@@ -211,38 +229,38 @@ void Graphics::SetupOgreScenePreconditions() {
       else
         texture_type = Ogre::PF_DEPTH32;
 
-      ogre_scene_manager_->setShadowTextureSettings(graphics_shadows_texture_resolution_,
-                                                    graphics_shadows_texture_count_,
-                                                    texture_type,
-                                                    0,
-                                                    2);
+      scene_->setShadowTextureSettings(graphics_shadows_texture_resolution_,
+                                       graphics_shadows_texture_count_,
+                                       texture_type,
+                                       0,
+                                       2);
 
       for (int i = 0; i < graphics_shadows_texture_count_; i++) {
-        ogre_scene_manager_->setShadowTextureConfig(i,
-                                                    graphics_shadows_texture_resolution_,
-                                                    graphics_shadows_texture_resolution_,
-                                                    texture_type,
-                                                    0,
-                                                    2);
+        scene_->setShadowTextureConfig(i,
+                                       graphics_shadows_texture_resolution_,
+                                       graphics_shadows_texture_resolution_,
+                                       texture_type,
+                                       0,
+                                       2);
       }
 
-      ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
-      ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
-      ogre_scene_manager_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 6);
-      ogre_scene_manager_->setShadowTextureSelfShadow(graphics_shadows_self_shadow_);
-      ogre_scene_manager_->setShadowCasterRenderBackFaces(graphics_shadows_back_faces_);
-      ogre_scene_manager_->setShadowFarDistance(graphics_shadows_far_distance_);
-      ogre_scene_manager_->setShadowDirectionalLightExtrusionDistance(graphics_shadows_far_distance_);
+      scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
+      scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
+      scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 6);
+      scene_->setShadowTextureSelfShadow(graphics_shadows_self_shadow_);
+      scene_->setShadowCasterRenderBackFaces(graphics_shadows_back_faces_);
+      scene_->setShadowFarDistance(graphics_shadows_far_distance_);
+      scene_->setShadowDirectionalLightExtrusionDistance(graphics_shadows_far_distance_);
 
       if (!graphics_shadows_caster_material_.empty()) {
         auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName(graphics_shadows_caster_material_);
-        ogre_scene_manager_->setShadowTextureCasterMaterial(passCaterMaterial);
+        scene_->setShadowTextureCasterMaterial(passCaterMaterial);
       }
 
       if (!graphics_shadows_receiver_material_.empty()) {
         auto
             passReceiverMaterial = Ogre::MaterialManager::getSingleton().getByName(graphics_shadows_receiver_material_);
-        ogre_scene_manager_->setShadowTextureReceiverMaterial(passReceiverMaterial);
+        scene_->setShadowTextureReceiverMaterial(passReceiverMaterial);
       }
 
       auto pssm_setup = std::make_shared<Ogre::PSSMShadowCameraSetup>();
@@ -251,11 +269,11 @@ void Graphics::SetupOgreScenePreconditions() {
 
       if (!ogre_shadow_camera_setup_) {
         if (graphics_shadows_split_auto_) {
-          pssm_setup->calculateSplitPoints(pssm_splits_, ogre_camera_->getNearClipDistance(),
-                                           ogre_scene_manager_->getShadowFarDistance());
+          pssm_setup->calculateSplitPoints(pssm_splits_, camera_->getNearClipDistance(),
+                                           scene_->getShadowFarDistance());
         } else {
           Ogre::PSSMShadowCameraSetup::SplitPointList split_points =
-              {ogre_camera_->getNearClipDistance(), 10.0, 20.0, ogre_scene_manager_->getShadowFarDistance()};
+              {camera_->getNearClipDistance(), 10.0, 20.0, scene_->getShadowFarDistance()};
           pssm_setup->setSplitPoints(split_points);
         }
 
@@ -286,22 +304,31 @@ void Graphics::SetupOgreScenePreconditions() {
     }
 
     if (ogre_shadow_camera_setup_) {
-      ogre_scene_manager_->setShadowCameraSetup(ogre_shadow_camera_setup_);
+      scene_->setShadowCameraSetup(ogre_shadow_camera_setup_);
     }
 
   } else {
-    ogre_scene_manager_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+    scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   }
 
+  bool graphics_debug_show_wireframe_ = false;
+  ConfiguratorJson::Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
+
   if (graphics_debug_show_wireframe_) {
-    ogre_camera_->setPolygonMode(Ogre::PM_WIREFRAME);
+    camera_->setPolygonMode(Ogre::PM_WIREFRAME);
   } else {
-    ogre_camera_->setPolygonMode(Ogre::PM_SOLID);
+    camera_->setPolygonMode(Ogre::PM_SOLID);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Graphics::InitOgre() {
-  ogre_root_ = new Ogre::Root("", "", "");
+  root_ = new Ogre::Root("", "", "");
+
+  bool global_sso_enable_ = true;
+  bool global_octree_enable_ = true;
+  bool global_stbi_enable_ = true;
+  bool global_freeimage_enable_ = false;
+  bool global_particlefx_enable_ = true;
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
   auto *mGlesRenderSystem = new Ogre::GLES2RenderSystem();
@@ -345,7 +372,7 @@ void Graphics::InitOgre() {
     Ogre::Root::getSingleton().installPlugin(mFreeImageCodec);
   }
 #endif
-  ogre_root_->initialise(false);
+  root_->initialise(false);
   Ogre::NameValuePairList params;
 
   SDL_SysWMinfo info = window_.GetInfo();
@@ -369,34 +396,44 @@ void Graphics::InitOgre() {
   const char true_str[] = "true";
   const char false_str[] = "false";
 
+  bool graphics_vsync_ = true;
+  bool graphics_gamma_enable_ = false;
+  int graphics_fsaa_ = 0;
+  int graphics_msaa_ = 0;
+
+  ConfiguratorJson::Assign(graphics_vsync_, "graphics_vsync");
+  ConfiguratorJson::Assign(graphics_gamma_enable_, "graphics_gamma");
+  ConfiguratorJson::Assign(graphics_fsaa_, "graphics_fsaa");
+  ConfiguratorJson::Assign(graphics_msaa_, "graphics_msaa");
+
   params["vsync"] = graphics_vsync_ ? true_str : false_str;
   params["gamma"] = graphics_gamma_enable_ ? true_str : false_str;
   params["FSAA"] = std::to_string(graphics_fsaa_);
   params["MSAA"] = std::to_string(graphics_msaa_);
 
-  auto *ogre_render_window_ = ogre_root_->createRenderWindow(window_.GetCaption(), window_.GetSize().first, \
+  auto *ogre_render_window_ = root_->createRenderWindow(window_.GetCaption(), window_.GetSize().first, \
                        window_.GetSize().second, false, &params);
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   if (global_octree_enable_) {
-    ogre_scene_manager_ = ogre_root_->createSceneManager("OctreeSceneManager", "Default");
+    scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
   } else {
-    ogre_scene_manager_ = ogre_root_->createSceneManager("Default");
+    scene_ = root_->createSceneManager("Default");
   }
 #else
   scene_mgr_ = ogre_root->createSceneManager();
 #endif
 
-  ogre_camera_ = (ogre_scene_manager_->createCamera("Default"));
-  auto *renderTarget = ogre_root_->getRenderTarget(window_.GetCaption());
+  camera_ = (scene_->createCamera("Default"));
+  auto *renderTarget = root_->getRenderTarget(window_.GetCaption());
 
-  ogre_viewport_ = renderTarget->addViewport(ogre_camera_);
-  ogre_viewport_->setBackgroundColour(Ogre::ColourValue::Black);
+  viewport_ = renderTarget->addViewport(camera_);
+  viewport_->setBackgroundColour(Ogre::ColourValue::Black);
 
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Graphics::Render() {
-  ogre_root_->renderOneFrame();
+  root_->renderOneFrame();
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   window_.SwapBuffers();

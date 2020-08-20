@@ -709,7 +709,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   std::string projectionType = GetAttrib(xml_node, "projectionType", "perspective");
 
   // Create the camera
-  auto *pCamera = Graphics::GetSingleton().GetOgreCamera();
+  auto *pCamera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
   Graphics::GetSingleton().GetCameraMan()->UnregCamera();
   Graphics::GetSingleton().GetCameraMan()->RegCamera(parent, pCamera);
