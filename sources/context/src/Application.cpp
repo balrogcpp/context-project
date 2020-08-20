@@ -60,7 +60,6 @@ Application::~Application() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
-//  Graphics::GetSingleton().SetupGlobal();
   Graphics::GetSingleton();
   AppStateManager::GetSingleton().GetCurState()->SetupGlobals();
 
@@ -260,10 +259,6 @@ void Application::Go_() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::SetCurState(std::shared_ptr<AppState> scene_ptr) {
   AppStateManager::GetSingleton().SetInitialState(scene_ptr);
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::SetNextState(std::shared_ptr<AppState> scene_ptr) {
-  AppStateManager::GetSingleton().SetNextState(scene_ptr);
 }
 //----------------------------------------------------------------------------------------------------------------------
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
