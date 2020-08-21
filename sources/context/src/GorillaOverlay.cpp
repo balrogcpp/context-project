@@ -22,37 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
-#include "GorillaOverlay.hpp"
-#include "Application.hpp"
+#include "GorillaOverlay.h"
+#include "Gorilla.h"
+#include "Application.h"
 
 namespace Context {
-GorillaOverlay GorillaOverlay::GorillaOverlaySingleton;
-//----------------------------------------------------------------------------------------------------------------------
-GorillaOverlay *GorillaOverlay::GetSingletonPtr() {
-  return &GorillaOverlaySingleton;
-}
-//----------------------------------------------------------------------------------------------------------------------
-GorillaOverlay &GorillaOverlay::GetSingleton() {
-  return GorillaOverlaySingleton;
-}
 //----------------------------------------------------------------------------------------------------------------------
 bool GorillaOverlay::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   caption->text(std::to_string(Application::GetSingleton().GetFpsFrames()));
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void GorillaOverlay::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-}
-//----------------------------------------------------------------------------------------------------------------------
-void GorillaOverlay::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-}
-//----------------------------------------------------------------------------------------------------------------------
 void GorillaOverlay::Setup() {
   mSilverback = new Gorilla::Silverback();
   mSilverback->loadAtlas("dejavu");
-  mScreen = mSilverback->createScreen(ogre_viewport_, "dejavu");
+  mScreen = mSilverback->createScreen(viewport_, "dejavu");
   layer = mScreen->createLayer(0);
   Ogre::Real vpW = mScreen->getWidth(), vpH = mScreen->getHeight();
 

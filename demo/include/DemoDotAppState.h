@@ -24,9 +24,8 @@ SOFTWARE.
 
 #pragma once
 
-#include "ContextManager.hpp"
-#include "AppState.hpp"
-#include "SinbadCharacterController.hpp"
+#include "Graphics.h"
+#include "AppState.h"
 
 #include <memory>
 
@@ -40,15 +39,8 @@ class DemoDotAppState : public Context::AppState {
 
  public:
     void Setup() final;
-
     void Reset() final;
-
-    void Next() final {};
-
     void KeyDown(SDL_Keycode sym) final;
-
- private:
-  std::shared_ptr<Context::SinbadCharacterController> sinbad_;
 };
 
 }

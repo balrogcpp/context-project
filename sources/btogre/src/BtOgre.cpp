@@ -13,7 +13,7 @@
  * =============================================================================================
  */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
 #include "BtOgreExtras.h"
 #include "BtOgreGP.h"

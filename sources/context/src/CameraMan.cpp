@@ -22,54 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
-#include "ContextManager.hpp"
-#include "InputManager.hpp"
-#include "CameraMan.hpp"
-#include "DotSceneLoaderB.hpp"
+#include "Graphics.h"
+#include "IO.h"
+#include "CameraMan.h"
+#include "DotSceneLoaderB.h"
 
 namespace Context {
 
 //----------------------------------------------------------------------------------------------------------------------
 CameraMan::CameraMan() {
-  InputManager::GetSingleton().RegisterListener(this);
-  ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
-}
-//----------------------------------------------------------------------------------------------------------------------
-CameraMan::CameraMan(Ogre::SceneNode *ogre_camera_node)
-    : camera_node_(ogre_camera_node) {
-  ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
+  io::InputSequencer::GetSingleton().RegisterListener(this);
+  Ogre::Root::getSingleton().addFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
 CameraMan::~CameraMan() {
-  ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
-}
-//----------------------------------------------------------------------------------------------------------------------
-void CameraMan::SetTarget(Ogre::SceneNode *target) {
-  if (this->target_ != target) {
-    this->target_ = target;
-    if (target) {
-      SetYawPitchDist(Ogre::Degree(0), Ogre::Degree(45), 150);
-      camera_node_->setAutoTracking(true, target);
-    } else {
-      camera_node_->setAutoTracking(false);
-    }
-    prev_pos_ = target->getPosition();
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-Ogre::SceneNode *CameraMan::GetTarget() {
-  return target_;
-}
-//----------------------------------------------------------------------------------------------------------------------
-void CameraMan::SetTopSpeed(float top_speed) {
-  this->top_speed_ = top_speed;
-  this->const_speed_ = top_speed;
-}
-//----------------------------------------------------------------------------------------------------------------------
-float CameraMan::GetTopSpeed() {
-  return top_speed_;
+  Ogre::Root::getSingleton().removeFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
 float CameraMan::GetDistToTarget() {
@@ -83,9 +52,8 @@ float CameraMan::GetDistToTarget() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::SetStyle(CameraStyle style) {
-  if (this->camera_style_ != CameraStyle::ORBIT && style == CameraStyle::ORBIT) {
+  if (camera_style_ != CameraStyle::ORBIT && style == CameraStyle::ORBIT) {
     camera_node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z); // also fix axis with lookAt calls
-//    ogre_camera_node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_X); // also fix axis with lookAt calls
 
     // try to replicate the camera configuration
     float dist = GetDistToTarget();
@@ -93,66 +61,49 @@ void CameraMan::SetStyle(CameraStyle style) {
     SetYawPitchDist(q.getYaw(), q.getPitch(), dist == 0 ? 400 : dist); // enforce some distance
     camera_node_->setAutoTracking(true, target_);
     moving_ = true;
-  } else if (this->camera_style_ != CameraStyle::FREELOOK && style == CameraStyle::FREELOOK) {
+  } else if (camera_style_ != CameraStyle::FREELOOK && style == CameraStyle::FREELOOK) {
     camera_node_->setFixedYawAxis(true); // also fix axis with lookAt calls
     camera_node_->setAutoTracking(false);
-  } else if (this->camera_style_ != CameraStyle::MANUAL && style == CameraStyle::MANUAL) {
+  } else if (camera_style_ != CameraStyle::MANUAL && style == CameraStyle::MANUAL) {
     ManualStop();
     camera_node_->setAutoTracking(false);
-  } else if (this->camera_style_ != CameraStyle::FPS && style == CameraStyle::FPS) {
+  } else if (camera_style_ != CameraStyle::FPS && style == CameraStyle::FPS) {
     camera_node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z); // also fix axis with lookAt calls
     camera_node_->setAutoTracking(false);
   }
 
-  this->camera_style_ = style;
+  camera_style_ = style;
 }
 //----------------------------------------------------------------------------------------------------------------------
-CameraStyle CameraMan::GetStyle() {
-  return camera_style_;
-}
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::Freeze(bool status) {
-  this->stop_ = status;
-}
-//----------------------------------------------------------------------------------------------------------------------
-void CameraMan::RegCamera(Ogre::SceneNode *ogre_camera_node) {
-  this->camera_node_ = ogre_camera_node;
+void CameraMan::RegCamera(Ogre::SceneNode *ogre_camera_node, Ogre::Camera *camera) {
+  camera_node_ = ogre_camera_node;
 
-  this->ogre_camera_ = ContextManager::GetSingleton().GetOgreCamera();
+  ogre_camera_ = camera;
   // Create the camera's yaw node as a child of camera's top node.
-  this->camera_yaw_node_ = this->camera_node_->createChildSceneNode();
+  camera_yaw_node_ = camera_node_->createChildSceneNode();
 
   // Create the camera's pitch node as a child of camera's yaw node.
-  this->camera_pitch_node_ = this->camera_yaw_node_->createChildSceneNode();
+  camera_pitch_node_ = camera_yaw_node_->createChildSceneNode();
 
   // Create the camera's roll node as a child of camera's pitch node
   // and attach the camera to it.
-  this->camera_roll_node_ = this->camera_pitch_node_->createChildSceneNode();
-  this->camera_roll_node_->attachObject(this->ogre_camera_);
-  if (this->camera_style_ == CameraStyle::FPS) {
+  camera_roll_node_ = camera_pitch_node_->createChildSceneNode();
+  camera_roll_node_->attachObject(ogre_camera_);
+  if (camera_style_ == CameraStyle::FPS) {
     ogre_camera_node->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::UnregCamera() {
-  this->camera_roll_node_->detachAllObjects();
-  this->camera_pitch_node_->detachAllObjects();
-  this->camera_yaw_node_->detachAllObjects();
-  this->camera_node_->detachAllObjects();
+  camera_roll_node_->detachAllObjects();
+  camera_pitch_node_->detachAllObjects();
+  camera_yaw_node_->detachAllObjects();
+  camera_node_->detachAllObjects();
   camera_node_ = nullptr;
   camera_yaw_node_ = nullptr;
   camera_pitch_node_ = nullptr;
   camera_roll_node_ = nullptr;
-}
-//----------------------------------------------------------------------------------------------------------------------
-Ogre::SceneNode *CameraMan::GetCameraNode() {
-  if (camera_style_ == CameraStyle::FPS) {
-    return camera_roll_node_;
-  } else {
-    return camera_node_;
-  }
-
-  return nullptr;
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::SetYawPitchDist(Ogre::Radian yaw, Ogre::Radian pitch, float dist) {
@@ -219,8 +170,6 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 
     if (velocity_ != Ogre::Vector3::ZERO) {
       camera_node_->translate(velocity_ * timeSinceLastFrame);
-      float x = camera_node_->getPosition().x;
-      float z = camera_node_->getPosition().z;
     }
     if (target_) {
       Ogre::Vector3 move = target_->getPosition() - prev_pos_;
@@ -260,10 +209,10 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
     Ogre::Real pitchAngleSign;
 
     // Yaws the camera according to the mouse relative movement.
-    this->camera_yaw_node_->yaw(-dx_);
+    camera_yaw_node_->yaw(-dx_);
 
     // Pitches the camera according to the mouse relative movement.
-    this->camera_pitch_node_->pitch(-dy_);
+    camera_pitch_node_->pitch(-dy_);
 
     // Translates the camera according to the translate vector which is
     // controlled by the keyboard arrows.
@@ -278,7 +227,6 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
     if (rigid_body_) {
       if (!velocity_.isZeroLength()) {
         rigid_body_->setLinearVelocity({velocity.x, velocity.y, velocity.z});
-//        rigid_body_->applyCentralImpulse({velocity.x, velocity.y, velocity.z});
         rigid_body_->setFriction(0.0);
       } else {
         rigid_body_->setFriction(10.0);
@@ -300,26 +248,24 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
       animation_time_ = 0.0f;
     }
 
-//    std::cout << speed << std::endl;
-
 //    ogre_camera_->setFOVy(Ogre::Radian(1.0 + 0.25 * (animation_time_ / anim_duration_)));
 
     // Angle of rotation around the X-axis.
-    pitchAngle = (2 * Ogre::Degree(Ogre::Math::ACos(this->camera_pitch_node_->getOrientation().w)).valueDegrees());
+    pitchAngle = (2 * Ogre::Degree(Ogre::Math::ACos(camera_pitch_node_->getOrientation().w)).valueDegrees());
 
     // Just to determine the sign of the angle we pick up above, the
     // value itself does not interest us.
-    pitchAngleSign = this->camera_pitch_node_->getOrientation().x;
+    pitchAngleSign = camera_pitch_node_->getOrientation().x;
 
     // Limit the pitch between -90 degress and +90 degrees, Quake3-style.
     if (pitchAngle > 90.0f) {
       if (pitchAngleSign > 0)
         // Set orientation to 90 degrees on X-axis.
-        this->camera_pitch_node_->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f),
+        camera_pitch_node_->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f),
                                                                   Ogre::Math::Sqrt(0.5f), 0, 0));
       else if (pitchAngleSign < 0)
         // Sets orientation to -90 degrees on X-axis.
-        this->camera_pitch_node_->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f),
+        camera_pitch_node_->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f),
                                                                   -Ogre::Math::Sqrt(0.5f), 0, 0));
     }
 
@@ -336,7 +282,7 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::MouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
+void CameraMan::Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   if (!stop_) {
     if (camera_style_ == CameraStyle::FREELOOK) {
       camera_node_->yaw(Ogre::Degree(-dx));
@@ -376,30 +322,6 @@ void CameraMan::MouseMove(int x, int y, int dx, int dy, bool left, bool right, b
       }
     }
   }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void CameraMan::LeftButtonDown(int x, int y) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void CameraMan::LeftButtonUp(int x, int y) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void CameraMan::RightButtonDown(int x, int y) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void CameraMan::RightButtonUp(int x, int y) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void CameraMan::MiddleButtonDown(int x, int y) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void CameraMan::MiddleButtonUp(int x, int y) {
-  //
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::KeyDown(SDL_Keycode sym) {
@@ -480,15 +402,4 @@ void CameraMan::KeyUp(SDL_Keycode sym) {
     }
   }
 }
-btRigidBody *CameraMan::GetRigidBody() const {
-  if (camera_style_ == CameraStyle::FPS)
-    return rigid_body_;
-  else
-    return nullptr;
-}
-void CameraMan::SetRigidBody(btRigidBody *rigid_body) {
-  if (camera_style_ == CameraStyle::FPS)
-    rigid_body_ = rigid_body;
-}
-
 } //namespace Context

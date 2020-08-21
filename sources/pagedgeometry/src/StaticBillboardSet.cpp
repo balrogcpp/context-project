@@ -14,7 +14,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 //does not allow billboards to be moved or deleted individually in real-time)
 //-------------------------------------------------------------------------------------
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
 using namespace Ogre;
 using namespace Forests;

@@ -22,12 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "MenuAppState.h"
-#include "DummyAppState.hpp"
 #include "DemoDotAppState.h"
-#include "MenuAppState.h"
-
-#include "Context.hpp"
+#include "Context.h"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -52,9 +48,8 @@ INT WINAPI WinMain
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 void android_main(struct android_app *pApp)
 #else
-int main(int argc, char *argv[])
+int main()
 #endif
 {
-//  return Context::Application::Main(std::make_shared<Demo::DemoDotAppState>());
-  Context::Application::Main(std::make_shared<Demo::MenuAppState>());
+  Context::Application::Main(std::make_shared<Demo::DemoDotAppState>());
 }

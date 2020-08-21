@@ -22,54 +22,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
-#include "AppState.hpp"
-#include "ContextManager.hpp"
+#include "AppState.h"
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
-AppState::AppState() {
-}
-//----------------------------------------------------------------------------------------------------------------------
 AppState::~AppState() {
   if (registered_) {
-    ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
+    Ogre::Root::getSingleton().removeFrameListener(this);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::SetupGlobals() {
-  SetOgreScene(ContextManager::GetSingleton().GetOgreScenePtr());
-  SetCameraMan(ContextManager::GetSingleton().GetCameraMan());
-  SetOgreCamera(ContextManager::GetSingleton().GetOgreCamera());
-  SetOgreViewport(ContextManager::GetSingleton().GetOgreViewport());
-  SetOgreRoot(ContextManager::GetSingleton().GetOgreRootPtr());
-  InputManager::GetSingleton().RegisterListener(this);
-  ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
-
+  ogre_scene_manager_ = Ogre::Root::getSingleton().getSceneManager("Default");
+  ogre_camera_ = ogre_scene_manager_->getCamera("Default");
+  ogre_viewport_ = ogre_camera_->getViewport();
+  io::InputSequencer::GetSingleton().RegisterListener(this);
+  Ogre::Root::getSingleton().addFrameListener(this);
   registered_ = true;
-
 }
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::ResetGlobals() {
   if (registered_) {
-    ContextManager::GetSingleton().GetOgreRootPtr()->removeFrameListener(this);
-    InputManager::GetSingleton().UnregisterListener(this);
+    Ogre::Root::getSingleton().removeFrameListener(this);
+    io::InputSequencer::GetSingleton().UnregisterListener(this);
   }
-}
-void AppState::SetOgreRoot(Ogre::Root *ogre_root) {
-  AppState::ogre_root = ogre_root;
-}
-void AppState::SetOgreScene(Ogre::SceneManager *ogre_scene) {
-  ogre_scene_manager_ = ogre_scene;
-}
-void AppState::SetCameraMan(const std::shared_ptr<CameraMan> &camera_man) {
-  camera_man_ = camera_man;
-}
-void AppState::SetOgreCamera(Ogre::Camera *ogre_camera) {
-  ogre_camera_ = ogre_camera;
-}
-void AppState::SetOgreViewport(Ogre::Viewport *ogre_viewport) {
-  ogre_viewport_ = ogre_viewport;
 }
 } //namespace Context

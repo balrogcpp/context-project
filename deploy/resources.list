@@ -1,2 +1,2 @@
-#Example
-#../../../media/cegui/imagesets,FileSystem,Imagesets
+../../../programs/,FileSystem,General
+../../../scenes/,FileSystem,General

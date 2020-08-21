@@ -22,13 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Context.hpp"
+#include "Context.h"
 
 #include "DemoDotAppState.h"
-#include "DotSceneLoaderB.hpp"
-#include "AppStateManager.hpp"
-#include "MenuAppState.h"
-#include "CameraMan.hpp"
+#include "AppStateManager.h"
+#include "CameraMan.h"
 
 namespace Demo {
 
@@ -45,20 +43,23 @@ void DemoDotAppState::KeyDown(SDL_Keycode sym) {
 }
 
 void DemoDotAppState::Reset() {
-  sinbad_.reset();
 }
 
 void DemoDotAppState::Setup() {
-  AppStateManager::GetSingleton().SetNextState(std::make_shared<MenuAppState>());
-  ContextManager::GetSingleton().UpdateCursorStatus({false, true, true});
+//  AppStateManager::GetSingleton().SetNextState(std::make_shared<MenuAppState>());
+//  ContextManager::GetSingleton().UpdateCursorStatus({false, true, true});
 
-  ContextManager::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::FPS);
+  Graphics::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::FPS);
+
+//  Context::DotSceneLoaderB::GetSingleton().load("test.scene",
+//                                              Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+//                                              ogre_scene_manager_->getRootSceneNode());
 
   Ogre::SceneLoaderManager::getSingleton().load("test.scene",
                                                 Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
                                                 ogre_scene_manager_->getRootSceneNode());
 
-  StaticForestManager::GetSingleton().Create();
+  StaticForest::GetSingleton().Create();
 
 //  if (ConfigManager::GetSingleton().GetBool("sound_enable")) {
 //    auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
@@ -77,9 +78,5 @@ void DemoDotAppState::Setup() {
 //  }
 
   ogre_scene_manager_->setShadowColour(Ogre::ColourValue(0.2));
-
-//  DotSceneLoaderB::FixPbrParams("Examples/LightRibbonTrail");
-//  ContextManager::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::MANUAL);
-//  sinbad_ = std::make_shared<SinbadCharacterController>(ogre_camera_);
 }
 }

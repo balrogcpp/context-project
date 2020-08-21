@@ -1,50 +1,47 @@
-FROM ubuntu:20.04
+#MIT License
+#
+#Copyright (c) 2020 Andrey Vasiliev
+#
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
+#
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the Software.
+#
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#SOFTWARE.
+
+FROM balrogcpp/android-ndk:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG CONTEXT_HOME=/mnt/context-demo
+WORKDIR ${CONTEXT_HOME}
 
-RUN apt-get update && \
-    apt-get install -y wget zip openjdk-8-jdk
+ADD sources ./sources
+ADD deploy ./deploy
+ADD CMake ./CMake
+ADD demo ./demo
+ADD doc ./doc
+ADD tests ./tests
+ADD LICENSE .
+ADD android ./android
+ADD programs ./programs
+ADD scenes ./scenes
+ADD CMakeLists.txt .
+ADD thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
+ADD .git ./.git
 
-RUN update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
-
-ARG GRADLE_VERSION=6.4.1
-ARG GRADLE_HOME=/opt/gradle
-RUN cd /tmp && \
-    wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip && \
-    unzip -q gradle-${GRADLE_VERSION}-bin.zip && \
-    mv ./gradle-${GRADLE_VERSION}/ ${GRADLE_HOME} && \
-    rm gradle-${GRADLE_VERSION}-bin.zip
-ENV PATH="${GRADLE_HOME}/bin:${PATH}"
-
-ARG ANDROID_SDK_VERSION=r30.0.1
-ARG ANDROID_NDK_VERSION=r21b
-ARG ANDROID_SDK_HOME=/opt/android-sdk
-RUN mkdir ${ANDROID_SDK_HOME} && \
-    cd /tmp && \
-	wget --output-document=platform-tools.zip --quiet https://dl.google.com/android/repository/platform-tools_r30.0.1-linux.zip && \
-        unzip platform-tools.zip && \
-        mv platform-tools ${ANDROID_SDK_HOME} && \
-        rm platform-tools.zip &&\
-	wget --output-document=tools.zip --quiet https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip && \
-        unzip tools.zip && \
-        mv tools ${ANDROID_SDK_HOME} && \
-        rm tools.zip &&\
-	wget --output-document=platform.zip --quiet https://dl.google.com/android/repository/platform-29_r04.zip && \
-        unzip platform.zip && \
-        mv android-10 android-29 && \
-        mkdir ${ANDROID_SDK_HOME}/platforms && \
-        mv android-29 ${ANDROID_SDK_HOME}/platforms && \
-        rm platform.zip &&\
-	wget --output-document=build-tools.zip --quiet https://dl.google.com/android/repository/build-tools_r29.0.3-linux.zip && \
-        unzip build-tools.zip && \
-        mv android-10 29.0.3 && \
-        mkdir ${ANDROID_SDK_HOME}/build-tools && \
-        mv 29.0.3 ${ANDROID_SDK_HOME}/build-tools && \
-        rm build-tools.zip && \
-    wget -q https://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
-        unzip -q android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
-        mv android-ndk-${ANDROID_NDK_VERSION} ${ANDROID_SDK_HOME}/ndk && \
-        rm android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip
-RUN cd ${ANDROID_SDK_HOME}/tools/bin && yes | ./sdkmanager --licenses
-ENV ANDROID_SDK_ROOT="${ANDROID_SDK_HOME}"
-ENV PATH="${ANDROID_SDK_HOME}/ndk:${PATH}"
+WORKDIR ${CONTEXT_HOME}/build-android
+RUN cmake -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16 -G Ninja .. && \
+    cmake --build . --target context-deps && \
+    cmake -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16 -G Ninja .. && \
+    cmake --build . --target context-demo

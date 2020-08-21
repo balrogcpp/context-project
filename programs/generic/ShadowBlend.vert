@@ -1,12 +1,10 @@
-#ifndef GL_ES
-#version 120
-#else
-#version 100
-#endif
+#include <OgreUnifiedShader.h>
 
 uniform mat4 worldViewProj;
-attribute vec4 vertex;
 
-void main() {
-    gl_Position = worldViewProj*vertex;
+MAIN_PARAMETERS
+IN(vec4 vertex, POSITION)
+MAIN_DECLARATION
+{
+    gl_Position = mul(worldViewProj, vertex);
 }

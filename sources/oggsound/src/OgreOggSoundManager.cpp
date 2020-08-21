@@ -30,7 +30,7 @@
 *
 */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
 #include "OgreOggSoundManager.h"
 #include "OgreOggSound.h"

@@ -26,7 +26,7 @@ compositor Context/Main
 {
     technique
     {
-        texture scene target_width target_height PF_FLOAT16_RGBA chain_scope
+        texture scene target_width target_height PF_FLOAT16_RGB chain_scope
 
         target scene
         {
@@ -94,7 +94,6 @@ compositor Context/SSAO
 {
     technique
     {
-        //texture_ref bloom Context/Bloom bloom
         texture ssao target_width target_height PF_FLOAT16_R chain_scope
 
         target ssao
@@ -112,7 +111,6 @@ compositor Context/Bloom
     technique
     {
         texture bloom target_width target_height PF_FLOAT16_RGB chain_scope
-        //texture bloom target_width target_height PF_BYTE_RGBA chain_scope
 
         target bloom
         {
@@ -184,6 +182,20 @@ compositor Context/Modulate/SSAO
     }
 }
 
+compositor Context/Modulate/Bloom
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material Context/Modulate/Bloom
+            }
+        }
+    }
+}
+
 compositor Context/Modulate/HDR
 {
     technique
@@ -211,6 +223,22 @@ compositor Context/Modulate/SSAO/HDR
             pass render_quad
             {
                 material Context/Modulate/SSAO
+            }
+        }
+    }
+}
+
+compositor Context/Modulate/Bloom/HDR
+{
+    technique
+    {
+        texture hdr target_width target_height PF_FLOAT16_RGB chain_scope
+
+        target hdr
+        {
+            pass render_quad
+            {
+                material Context/Modulate/Bloom
             }
         }
     }

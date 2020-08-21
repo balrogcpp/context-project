@@ -19,7 +19,6 @@
 #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
-#
 
 cmake_minimum_required(VERSION 3.15.1)
 
@@ -40,7 +39,7 @@ set(CMAKE_MODULE_PATH
     "${PROJECT_SOURCE_DIR}/CMake"
     )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 enable_language(C)
 enable_language(CXX)
@@ -144,9 +143,8 @@ if (UNIX OR MINGW)
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -fopenmp")
 
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -g")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -O3")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -std=c++17")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -ffast-math")
+    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -Ofast")
+    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -std=c++20")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -msse4")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -funroll-loops")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -floop-parallelize-all -ftree-parallelize-loops=8")
@@ -155,10 +153,9 @@ if (UNIX OR MINGW)
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -pthread")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -fopenmp")
 
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -O3")
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -std=c++17")
+    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -Ofast")
+    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -std=c++20")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -flto")
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -ffast-math")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -msse4")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -funroll-loops")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -ftree-parallelize-loops=8")
@@ -179,8 +176,7 @@ if (UNIX OR MINGW)
     string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -fopenmp")
 
     string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -g")
-    string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -O3")
-    string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -ffast-math")
+    string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -O2")
     string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -msse4")
     string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -funroll-loops")
     string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -floop-parallelize-all -ftree-parallelize-loops=8")
@@ -189,8 +185,7 @@ if (UNIX OR MINGW)
     string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -pthread")
     string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -fopenmp")
 
-    string(APPEND CONTEXT_GCC_C_Release_FLAGS " -O3")
-    string(APPEND CONTEXT_GCC_C_Release_FLAGS " -ffast-math")
+    string(APPEND CONTEXT_GCC_C_Release_FLAGS " -Ofast")
     string(APPEND CONTEXT_GCC_C_Release_FLAGS " -msse4")
     string(APPEND CONTEXT_GCC_C_Release_FLAGS " -funroll-loops")
     string(APPEND CONTEXT_GCC_C_Release_FLAGS " -floop-parallelize-all -ftree-parallelize-loops=8")
@@ -446,7 +441,7 @@ add_custom_target(context-workspace
 
 set(CONTEXT_PROGRAMS_DIR ${CMAKE_SOURCE_DIR}/programs)
 set(CONTEXT_SCENES_DIR ${CMAKE_SOURCE_DIR}/scenes)
-set(CONTEXT_GUI_DIR ${CMAKE_SOURCE_DIR}/cegui)
+#set(CONTEXT_GUI_DIR ${CMAKE_SOURCE_DIR}/cegui)
 set(CONTEXT_TEMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
 
 macro(subdirlist result curdir)
@@ -488,7 +483,7 @@ endmacro()
 #zipdirlist(${CONTEXT_GUI_DIR} cegui)
 #copydirlist(${CONTEXT_SCENES_DIR} scenes)
 zipdirlist(${CONTEXT_PROGRAMS_DIR} programs)
-zipdirlist(${CONTEXT_GUI_DIR} cegui)
+#zipdirlist(${CONTEXT_GUI_DIR} cegui)
 zipdirlist(${CONTEXT_SCENES_DIR} scenes)
 
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}

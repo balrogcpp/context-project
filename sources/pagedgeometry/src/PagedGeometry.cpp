@@ -12,7 +12,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 //Main source file for the PagedGeometry engine.
 //-------------------------------------------------------------------------------------
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
 using namespace Ogre;
 using namespace std;

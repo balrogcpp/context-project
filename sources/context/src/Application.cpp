@@ -22,16 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.hpp"
+#include "pcheader.h"
 
-#include "Application.hpp"
-#include "ContextManager.hpp"
-
-#include "AppStateManager.hpp"
-#include "ConfigManager.hpp"
-#include "Exception.hpp"
-#include "PhysicsManager.hpp"
-#include "SoundManager.hpp"
+#include "Application.h"
+#include "Graphics.h"
+#include "StaticForest.h"
+#include "Physics.h"
+#include "DotSceneLoaderB.h"
+#include "AppStateManager.h"
+#include "ConfiguratorJson.h"
+#include "Exception.h"
 
 #include <csetjmp>
 #include <csignal>
@@ -55,220 +55,64 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
 namespace Context {
-Application Application::ApplicationSingleton;
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Update(float timeSinceLastFrame) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Setup() {
-  ContextManager::GetSingleton().SetupGlobal();
-  ContextManager::GetSingleton().Setup();
-  ConfigManager::GetSingleton().SetupGlobal();
-  AppStateManager::GetSingleton().cur_state_->SetupGlobals();
+Application::Application() = default;
+Application::~Application() = default;
 
-  ConfigManager::Assign(global_verbose_fps_, "global_verbose_fps");
-  ConfigManager::Assign(global_verbose_, "global_verbose_enable");
-  ConfigManager::Assign(global_verbose_input_, "global_verbose_input");
-  ConfigManager::Assign(application_fkeys_enable_, "application_fkeys_enable");
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Init_() {
+  Graphics::GetSingleton();
+  AppStateManager::GetSingleton().GetCurState()->SetupGlobals();
 
-  ConfigManager::Assign(global_target_fps_, "global_target_fps");
-  ConfigManager::Assign(global_lock_fps_, "global_lock_fps");
-  ConfigManager::Assign(graphics_vsync_, "graphics_vsync");
-  ConfigManager::Assign(application_ask_before_quit_, "application_ask_before_quit");
-  ConfigManager::Assign(application_scene_file_, "application_scene_file");
-  ConfigManager::Assign(application_ambient_sound_file_, "application_ambient_sound_file");
+  ConfiguratorJson::Assign(global_verbose_fps_, "global_verbose_fps");
+  ConfiguratorJson::Assign(global_verbose_, "global_verbose_enable");
+  ConfiguratorJson::Assign(global_verbose_input_, "global_verbose_input");
+  ConfiguratorJson::Assign(application_fkeys_enable_, "application_fkeys_enable");
+
+  ConfiguratorJson::Assign(global_target_fps_, "global_target_fps");
+  ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
+  ConfiguratorJson::Assign(graphics_vsync_, "graphics_vsync");
+  ConfiguratorJson::Assign(application_ask_before_quit_, "application_ask_before_quit");
+
+  io::InputSequencer::GetSingleton().RegEventListener(this);
+
+  if (!global_verbose_) {
+    auto *logger = new Ogre::LogManager();
+    std::string log_name = ConfiguratorJson::GetSingleton().GetString("log_name");
+    if (log_name.empty())
+      log_name = "Ogre.log";
+
+    logger->createLog(log_name, true, false, true);
+    Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+    Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
+  }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Render() {
-  ContextManager::GetSingleton().Render();
+void Application::Render_() {
+  Graphics::GetSingleton().Render();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Reset() {
-  AppStateManager::GetSingleton().Reset();
+void Application::Reset_() {
+  StaticForest::GetSingleton().Reset();
+  DotSceneLoaderB::GetSingleton().Reset();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllEntities();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllLights();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllParticleSystems();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllAnimations();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllAnimationStates();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllStaticGeometry();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllManualObjects();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllInstanceManagers();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllBillboardChains();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllBillboardSets();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllMovableObjects();
+  Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllCameras();
+  Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->removeAndDestroyAllChildren();
+  Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
   AppStateManager::GetSingleton().ResetGlobals();
-  ContextManager::GetSingleton().Reset();
-  ContextManager::GetSingleton().ResetGlobals();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Quit() {
   quit_ = false;
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::WaitFPS() {
-  long delay = static_cast<long> ((1000000 / global_target_fps_) - time_since_last_frame_);
-
-  if (delay > 0) {
-    std::this_thread::sleep_for
-    (std::chrono::microseconds(delay));
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Loop() {
-  while (quit_) {
-    if (AppStateManager::GetSingleton().cur_state_) {
-
-      auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
-      long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
-
-      if (delta_time_ > 1000000) {
-        if (global_verbose_fps_) {
-          std::cout << "FPS " << fps_frames_ << '\n';
-        }
-
-        current_fps_ = fps_frames_;
-        delta_time_ = 0;
-        fps_frames_ = 0;
-      }
-
-      if (delta_time_ > 500000)
-        started_ = true;
-
-      InputManager::GetSingleton().Capture();
-
-      if (!paused_) {
-        AppStateManager::GetSingleton().CleanupResources();
-
-        Render();
-      }
-
-#ifdef DEBUG
-      if (global_verbose_) {
-        std::cout << std::flush;
-      }
-#endif
-
-      auto duration_after_render = std::chrono::system_clock::now().time_since_epoch();
-      long millis_after_render = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_render).count();
-      long render_time = millis_after_render - millis_before_frame;
-
-      if (global_lock_fps_) {
-        long delay = static_cast<long> ((1000000 / global_target_fps_) - render_time);
-        if (delay > 0) {
-          std::this_thread::sleep_for(std::chrono::microseconds (delay));
-        }
-      }
-
-      auto duration_after_loop = std::chrono::system_clock::now().time_since_epoch();
-      long millis_after_loop = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_loop).count();
-
-      time_since_last_frame_ = millis_after_loop - millis_before_frame;
-      delta_time_ += time_since_last_frame_;
-
-      fps_frames_++;
-    } else {
-      Quit();
-    }
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Go() {
-  quit_ = false;
-
-  ConfigManager::GetSingleton().Setup();
-  std::ios_base::sync_with_stdio(false);
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  putenv("LD_LIBRARY_PATH=.");
-#endif
-
-#ifdef DEBUG
-  if (!global_verbose_) {
-#endif
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    putenv("ALROUTER_LOGFILE=/dev/null");
-    putenv("ALSOFT_LOGLEVEL=LOG_NONE");
-#elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-    _putenv("ALROUTER_LOGFILE=/dev/null");
-    _putenv("ALSOFT_LOGLEVEL=LOG_NONE");
-#endif
-#ifdef DEBUG
-  }
-#endif
-
-  if (AppStateManager::GetSingleton().GetCurState()) {
-    InputManager::GetSingletonPtr()->RegisterListener(&dummy_listener_);
-    if (global_verbose_input_) {
-      dummy_listener_.SetPrint(true);
-    }
-
-    Setup();
-    SetupGlobal();
-    InputManager::GetSingletonPtr()->RegisterListener(this);
-    ContextManager::GetSingleton().GetOgreRootPtr()->addFrameListener(this);
-
-    fullscreen_ = ContextManager::GetSingleton().IsFullscreen();
-
-    if (!application_scene_file_.empty()) {
-      Ogre::SceneLoaderManager::getSingleton().load(application_scene_file_,
-                                                    Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-                                                    ogre_scene_manager_->getRootSceneNode());
-    }
-
-    if (!application_ambient_sound_file_.empty()) {
-      auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
-
-      mSoundManager->setResourceGroupName(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-      mSoundManager->createSound("AmbientMusic",
-                                 application_ambient_sound_file_,
-                                 false,
-                                 true,
-                                 true,
-                                 ContextManager::GetSingleton().GetOgreScenePtr());
-
-      if (mSoundManager->getSound("SceneManagerInstance1")) {
-        mSoundManager->getSound("SceneManagerInstance1")->play();
-      }
-    }
-
-    AppStateManager::GetSingleton().cur_state_->Setup();
-
-    quit_ = true;
-
-    Loop();
-
-    InputManager::GetSingleton().StopCapture();
-    InputManager::GetSingleton().Reset();
-    InputManager::GetSingleton().UnregisterListener(&dummy_listener_);
-
-    Reset();
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::SetCurState(std::shared_ptr<AppState> scene_ptr) {
-  AppStateManager::GetSingleton().SetInitialState(scene_ptr);
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::SetNextState(std::shared_ptr<AppState> scene_ptr) {
-  AppStateManager::GetSingleton().SetNextState(scene_ptr);
-}
-//----------------------------------------------------------------------------------------------------------------------
-bool Application::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-  return true;
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::KeyDown(SDL_Keycode sym) {
-  if (application_fkeys_enable_) {
-    if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F12) {
-      Quit();
-    } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F11) {
-      ContextManager::GetSingleton().GetOgreCamera()->setPolygonMode(Ogre::PM_WIREFRAME);
-    } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F10) {
-      ContextManager::GetSingleton().GetOgreCamera()->setPolygonMode(Ogre::PM_SOLID);
-    } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F9) {
-      PhysicsManager::GetSingleton().SetPhysicsDebugShowCollider(true);
-    } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F8) {
-      PhysicsManager::GetSingleton().SetPhysicsDebugShowCollider(false);
-    }
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::KeyUp(SDL_Keycode sym) {
-  //
-}
-//----------------------------------------------------------------------------------------------------------------------
-void mouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
-  //
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
@@ -286,8 +130,8 @@ void Application::Event(const SDL_Event &evt) {
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         paused_ = false;
-        ConfigManager::Assign(global_target_fps_, "global_target_fps");
-        ConfigManager::Assign(global_lock_fps_, "global_lock_fps");
+        ConfiguratorJson::Assign(global_target_fps_, "global_target_fps");
+        ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
       }
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
@@ -297,22 +141,130 @@ void Application::Event(const SDL_Event &evt) {
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         paused_ = false;
-        ConfigManager::Assign(global_target_fps_, "global_target_fps");
-        ConfigManager::Assign(global_lock_fps_, "global_lock_fps");
+        ConfiguratorJson::Assign(global_target_fps_, "global_target_fps");
+        ConfiguratorJson::Assign(global_lock_fps_, "global_lock_fps");
       }
     }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::User(Uint8 type, int code, void *data1, void *data2) {
-  //
+void Application::Other(Uint8 type, int32_t code, void *data1, void *data2) {}
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Loop_() {
+  while (quit_) {
+    if (AppStateManager::GetSingleton().GetCurState()) {
+
+      auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
+      long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
+
+      if (delta_time_ > 1000000) {
+        if (global_verbose_fps_)
+          std::cout << "FPS " << fps_frames_ << '\n';
+
+        current_fps_ = fps_frames_;
+        delta_time_ = 0;
+        fps_frames_ = 0;
+      }
+
+      if (delta_time_ > 500000)
+        started_ = true;
+
+      io::InputSequencer::GetSingleton().Capture();
+
+      if (!paused_) {
+        if (AppStateManager::GetSingleton().IsWaiting()) {
+          StaticForest::GetSingleton().Reset();
+          DotSceneLoaderB::GetSingleton().Reset();
+
+          if (ConfiguratorJson::GetSingleton().GetBool("physics_enable")) {
+            Physics::GetSingleton().Reset();
+          }
+
+          Ogre::Root::getSingleton().getSceneManager("Default")->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllEntities();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllLights();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllParticleSystems();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllAnimations();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllAnimationStates();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllStaticGeometry();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllRibbonTrails();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllManualObjects();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllInstanceManagers();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllBillboardChains();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllBillboardSets();
+          Ogre::Root::getSingleton().getSceneManager("Default")->destroyAllMovableObjects();
+
+          Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->removeAndDestroyAllChildren();
+
+          Graphics::GetSingleton().CreateScene();
+          AppStateManager::GetSingleton().InitCurrState();
+          Physics::GetSingleton().Start();
+          AppStateManager::GetSingleton().ClearWaiting();
+        }
+
+        Render_();
+      }
+
+#ifdef DEBUG
+      if (global_verbose_)
+        std::cout << std::flush;
+#endif
+
+      auto duration_after_render = std::chrono::system_clock::now().time_since_epoch();
+      long millis_after_render = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_render).count();
+      long render_time = millis_after_render - millis_before_frame;
+
+      if (global_lock_fps_) {
+        long delay = static_cast<long> ((1000000 / global_target_fps_) - render_time);
+        if (delay > 0)
+          std::this_thread::sleep_for(std::chrono::microseconds(delay));
+      }
+
+      auto duration_after_loop = std::chrono::system_clock::now().time_since_epoch();
+      long millis_after_loop = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_loop).count();
+
+      time_since_last_frame_ = millis_after_loop - millis_before_frame;
+      delta_time_ += time_since_last_frame_;
+
+      fps_frames_++;
+    } else {
+      Quit();
+    }
+  }
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Go_() {
+  quit_ = false;
+
+  if (AppStateManager::GetSingleton().GetCurState()) {
+    io::InputSequencer::GetSingleton().RegisterListener(&dummy_listener_);
+    if (global_verbose_input_) {
+      dummy_listener_.SetPrint(true);
+    }
+
+    Init_();
+
+    AppStateManager::GetSingleton().GetCurState()->Setup();
+
+    quit_ = true;
+
+    Loop_();
+
+    io::InputSequencer::GetSingleton().Reset();
+
+    Reset_();
+  }
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Application::SetCurState(std::shared_ptr<AppState> scene_ptr) {
+  AppStateManager::GetSingleton().SetInitialState(scene_ptr);
 }
 //----------------------------------------------------------------------------------------------------------------------
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 static sigjmp_buf point;
 
 static void termination_handler(int signum) {
-  ContextManager::GetSingleton().RestoreScreenSize();
 
   printf("\nSegmentation fault occured!\n");
   std::fflush(stdout);
@@ -320,26 +272,15 @@ static void termination_handler(int signum) {
 
   longjmp(point, 1);
 }
-
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 static void termination_handler(int signum) {
-  ContextManager::GetSingleton().RestoreScreenSize();
-
   printf("\nSegmentation fault occured!\n");
   std::fflush(stdout);
   std::fflush(stderr);
 }
 #endif
-
-static void do_segv() {
-  int *segv;
-
-  segv = 0; /* malloc(a_huge_amount); */
-
-  *segv = 1;
-}
-
-int Application::Main(std::shared_ptr<AppState> app_state) {
+//----------------------------------------------------------------------------------------------------------------------
+int Application::Main(std::shared_ptr<AppState> scene_ptr) {
 #ifdef _MSC_VER
   SDL_SetMainReady();
 #endif
@@ -359,9 +300,27 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
   int return_value = 0;
   bool exception_occured = false;
 
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+  putenv("LD_LIBRARY_PATH=.");
+#endif
+
+#ifdef DEBUG
+#endif
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+  putenv("ALROUTER_LOGFILE=/dev/null");
+  putenv("ALSOFT_LOGLEVEL=LOG_NONE");
+#elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+  _putenv("ALROUTER_LOGFILE=/dev/null");
+  _putenv("ALSOFT_LOGLEVEL=LOG_NONE");
+#endif
+#ifdef DEBUG
+#endif
+
+  std::ios_base::sync_with_stdio(false);
+
   try {
-    Application::GetSingleton().SetCurState(app_state);
-    Application::GetSingleton().Go();
+    Application::GetSingleton().SetCurState(scene_ptr);
+    Application::GetSingleton().Go_();
   }
   catch (Exception &e) {
     const std::string caption = "Exception occurred (Context core)";
@@ -413,10 +372,6 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
     exception_occured = true;
   }
 
-  if (exception_occured) {
-    ContextManager::GetSingleton().RestoreScreenSize();
-  }
-
 #if defined _WIN32 && defined DEBUG
   if (ConfigManager::GetSingleton().GetBool("application_ask_before_quit")) {
     std::cout << std::endl;
@@ -430,9 +385,5 @@ int Application::Main(std::shared_ptr<AppState> app_state) {
 #endif
 
   return return_value;
-}
-int Application::GetFpsFrames() const {
-  return current_fps_;
-}
-
-}
+} //class Application
+} //namespace Context
