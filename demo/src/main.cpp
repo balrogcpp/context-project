@@ -25,7 +25,7 @@ SOFTWARE.
 #include "DemoDotAppState.h"
 #include "Context.h"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <locale>
@@ -36,7 +36,7 @@ SOFTWARE.
 #include <jni.h>
 #endif
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#ifdef _MSC_VER
 #define WINAPI_MAIN_FUNC
 INT WINAPI WinMain
 (

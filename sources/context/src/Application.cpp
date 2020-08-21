@@ -37,9 +37,7 @@ SOFTWARE.
 #include <csignal>
 
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <locale>
 #endif
 
 #ifdef _WIN32
@@ -298,7 +296,6 @@ int Application::Main(std::shared_ptr<AppState> scene_ptr) {
 #endif
 
   int return_value = 0;
-  bool exception_occured = false;
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   putenv("LD_LIBRARY_PATH=.");
@@ -334,7 +331,6 @@ int Application::Main(std::shared_ptr<AppState> scene_ptr) {
 #endif
 
     return_value = 1;
-    exception_occured = true;
   }
   catch (Ogre::Exception &e) {
     const std::string caption = "Exception occurred (OGRE)";
@@ -348,7 +344,6 @@ int Application::Main(std::shared_ptr<AppState> scene_ptr) {
 #endif
 
     return_value = 1;
-    exception_occured = true;
   }
   catch (std::exception &e) {
     const std::string caption = "Exception occurred (std::exception)";
@@ -359,7 +354,6 @@ int Application::Main(std::shared_ptr<AppState> scene_ptr) {
 #endif
 
     return_value = 1;
-    exception_occured = true;
   }
   catch (...) {
     const std::string caption = "Unhandled exception occurred\n";
@@ -369,7 +363,6 @@ int Application::Main(std::shared_ptr<AppState> scene_ptr) {
 #endif
 
     return_value = 1;
-    exception_occured = true;
   }
 
 #if defined _WIN32 && defined DEBUG
@@ -378,10 +371,6 @@ int Application::Main(std::shared_ptr<AppState> scene_ptr) {
     std::cout << "Press any key to end program..." << std::endl;
     getchar();
   }
-#endif
-
-#ifdef _WIN32
-  SDL_Quit();
 #endif
 
   return return_value;

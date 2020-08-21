@@ -209,14 +209,6 @@ void DotSceneLoaderB::Setup() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::Reset() {
-  if (Ogre::SceneLoaderManager::getSingleton()._getSceneLoader("DotScene")) {
-    Ogre::SceneLoaderManager::getSingleton().unregisterSceneLoader("DotScene");
-  }
-
-  if (Ogre::SceneLoaderManager::getSingleton()._getSceneLoader("DotSceneB")) {
-    Ogre::SceneLoaderManager::getSingleton().unregisterSceneLoader("DotSceneB");
-  }
-
   if (ogre_terrain_group_) {
     ogre_terrain_group_->removeAllTerrains();
     ogre_terrain_group_.reset();
