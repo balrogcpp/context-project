@@ -30,8 +30,8 @@ ADD ./thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
 ADD CMakeLists.txt .
 ADD ./CMake ./CMake
 
-RUN apt-get install -y git ninja-build libxaw7-dev libxrandr-dev libglew-dev libpulse-dev > /dev/null \
-    && mkdir -p ./build-windows && mkdir -p ./build-linux && mkdir -p ./build-android \
+RUN apt-get install -y git ninja-build libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
+    && mkdir -p ./build-windows ./build-linux \
     && cd ${CONTEXT_HOME}/build-windows \
     && cmake -DCONTEXT_ONLY_DEPS=true -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. \
     && cmake --build . --target context-deps \
@@ -41,4 +41,6 @@ RUN apt-get install -y git ninja-build libxaw7-dev libxrandr-dev libglew-dev lib
     && cmake -DCONTEXT_ONLY_DEPS=true -G Ninja .. \
     && cmake --build . --target context-deps \
     && cd ${CONTEXT_HOME}/thirdparty/external/linux-gcc/Release/ \
-    && rm -rf src
+    && rm -rf src \
+    && cd ${CONTEXT_HOME} \
+    && rm -rf ${CONTEXT_HOME}/build-windows ${CONTEXT_HOME}/build-linux

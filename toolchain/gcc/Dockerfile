@@ -34,9 +34,9 @@ WORKDIR /mnt
 ARG CMAKE_VERSION=3.18.1
 ARG CMAKE_HOME=/opt/cmake
 
-RUN apt-get update &&\
-    apt-get install -y g++ gcc make autoconf libssl1.1 wget ca-certificates zlib1g-dev libssl-dev libgmp-dev libmpfr-dev \
-        libmpc-dev libisl-dev libgmp10 libmpfr6 libmpc3 yasm file patch gperf xz-utils bzip2 zip > /dev/null \
+RUN apt-get update \
+    && apt-get install -y g++ gcc make autoconf libssl1.1 wget ca-certificates zlib1g-dev libssl-dev libgmp-dev libmpfr-dev \
+        libmpc-dev libisl-dev libgmp10 libmpfr6 libmpc3 yasm file patch gperf xz-utils bzip2 zip \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
