@@ -25,7 +25,7 @@ SOFTWARE.
 #pragma once
 
 #include "Manager.h"
-
+#include "ReflectionCamera.h"
 #include <OgreSceneLoader.h>
 #include <OgreVector4.h>
 
@@ -99,6 +99,7 @@ class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
   void InitBlendMaps(Ogre::Terrain *terrain, int layer, const std::string &image);
 
  private:
+  std::unique_ptr<ReflectionCamera> rcamera_;
   Ogre::SceneManager *scene_manager_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;
   std::string group_name_;

@@ -38,11 +38,6 @@ namespace Context {
 
 class ReflectionCamera final : public Ogre::RenderTargetListener, public Ogre::FrameListener {
  public:
-  static ReflectionCamera &GetSingleton() {
-    static ReflectionCamera Singleton;
-    return Singleton;
-  }
-
   ReflectionCamera() {
     Init_();
   }
@@ -52,10 +47,6 @@ class ReflectionCamera final : public Ogre::RenderTargetListener, public Ogre::F
     Init_();
   }
 
-  ReflectionCamera(const ReflectionCamera &) = delete;
-  ReflectionCamera &operator=(const ReflectionCamera &) = delete;
-  ReflectionCamera(Singleton &&) = delete;
-  ReflectionCamera &operator=(ReflectionCamera &&) = delete;
   virtual ~ReflectionCamera() = default;
 
  public:
@@ -71,8 +62,6 @@ class ReflectionCamera final : public Ogre::RenderTargetListener, public Ogre::F
     Ogre::Root::getSingleton().getSceneManager("Default")->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
     camera_->disableReflection();
   }
-//----------------------------------------------------------------------------------------------------------------------
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final { return true; };
 
  private:
 //----------------------------------------------------------------------------------------------------------------------

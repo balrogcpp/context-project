@@ -39,17 +39,10 @@ namespace Context {
 
 class Compositors final : public Manager {
  public:
-  static Compositors &GetSingleton() {
-    static Compositors singleton;
-    return singleton;
-  }
-
   Compositors();
   virtual ~Compositors() = default;
 
  private:
-  void Init_();
-
   std::vector<std::string> compositor_names_;
   std::string current_compositor_;
 

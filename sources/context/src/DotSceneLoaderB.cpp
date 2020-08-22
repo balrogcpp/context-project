@@ -941,6 +941,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   Ogre::Vector3 normal = ParseVector3(xml_node.child("normal"));
   Ogre::Vector3 up = ParseVector3(xml_node.child("upVector"));
   bool reflection = GetAttribBool(xml_node, "reflection", false);
+  if (!rcamera_) rcamera_ = std::make_unique<ReflectionCamera>();
 
   normal = {0, 1, 0};
   up = {0, 0, 1};
@@ -975,13 +976,13 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
     auto material_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("ReflectionMap");
 
     if (material_unit) {
-      material_unit->setTexture(ReflectionCamera::GetSingleton().GetReflectionTex());
+      material_unit->setTexture(rcamera_->GetReflectionTex());
       material_unit->setTextureAddressingMode(Ogre::TAM_CLAMP);
       material_unit->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
     }
   }
 
-  ReflectionCamera::GetSingleton().SetPlane(plane);
+  rcamera_->SetPlane(plane);
   parent->attachObject(entity);
 
   std::unique_ptr<BtOgre::StaticMeshToShapeConverter>

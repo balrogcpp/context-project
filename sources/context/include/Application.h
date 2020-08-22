@@ -34,6 +34,7 @@ SOFTWARE.
 #include "Sounds.h"
 #include "Physics.h"
 #include "DotSceneLoaderB.h"
+#include "Compositors.h"
 #include "Singleton.h"
 
 namespace Context {
@@ -85,6 +86,7 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
   Graphics graphics_;
   Physics physics_;
   Sounds sounds_;
+  std::unique_ptr<Compositors> compositor_;
   DotSceneLoaderB loader_;
 
  public:

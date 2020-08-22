@@ -67,7 +67,7 @@ void Application::Init_() {
   conf.Assign(physics_enable_, "physics_enable");
   conf.Assign(sound_enable_, "sound_enable");
 
-  Compositors::GetSingleton();
+  if (!compositor_) compositor_ = std::make_unique<Compositors>();
   GorillaOverlay::GetSingleton().Setup();
   graphics_.UpdateParams();
 

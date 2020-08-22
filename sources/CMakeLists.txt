@@ -108,6 +108,7 @@ set(CONTEXT_HEADERS
     context/include/Storage.h
     context/include/RtssUtils.h
     context/include/Terrain.h
+    context/include/CompositorHelpers.h
     )
 
 set(HEADER_FILES_CONTEXT_LIB

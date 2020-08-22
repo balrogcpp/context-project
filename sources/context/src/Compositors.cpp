@@ -28,98 +28,9 @@ SOFTWARE.
 #include "Exception.h"
 #include "ConfiguratorJson.h"
 #include "DotSceneLoaderB.h"
+#include "CompositorHelpers.h"
 
 namespace Context {
-
-class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
- public:
-  GBufferSchemeHandler() {
-    mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer");
-    mGBufRefMat->load();
-
-    mGBufRefMat2 = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer_disable");
-    mGBufRefMat2->load();
-  }
-
-  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex,
-                                        const Ogre::String &schemeName,
-                                        Ogre::Material *originalMaterial,
-                                        unsigned short lodIndex,
-                                        const Ogre::Renderable *rend) final {
-    auto *pass = originalMaterial->getTechnique(0)->getPass(0);
-    int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
-    Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
-
-    if (pass->getNumTextureUnitStates() > 0 && alpha_rejection > 0) {
-      gBufferTech->setSchemeName(schemeName);
-      Ogre::Pass *gbufPass = gBufferTech->createPass();
-      *gbufPass = *mGBufRefMat2->getTechnique(0)->getPass(0);
-    } else {
-      gBufferTech->setSchemeName(schemeName);
-      Ogre::Pass *gbufPass = gBufferTech->createPass();
-      *gbufPass = *mGBufRefMat->getTechnique(0)->getPass(0);
-    }
-
-    return gBufferTech;
-  }
-
- private:
-  Ogre::MaterialPtr mGBufRefMat;
-  Ogre::MaterialPtr mGBufRefMat2;
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
- public:
-  DepthSchemeHandler() {
-    mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("Context/depth_alpha");
-    mGBufRefMat->load();
-
-    mGBufRefMat2 = Ogre::MaterialManager::getSingleton().getByName("Context/depth");
-    mGBufRefMat2->load();
-  }
-
-  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex,
-                                        const Ogre::String &schemeName,
-                                        Ogre::Material *originalMaterial,
-                                        unsigned short lodIndex,
-                                        const Ogre::Renderable *rend) final {
-
-    auto *pass = originalMaterial->getTechnique(0)->getPass(0);
-    int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
-
-    if (pass->getNumTextureUnitStates() > 0 && alpha_rejection > 0) {
-      Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
-      gBufferTech->setSchemeName(schemeName);
-      Ogre::Pass *gbufPass = gBufferTech->createPass();
-      *gbufPass = *mGBufRefMat->getTechnique(0)->getPass(0);
-
-      auto *texPtr2 = gbufPass->getTextureUnitState("BaseColor");
-      texPtr2->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-      texPtr2->setTextureFiltering(Ogre::TFO_NONE);
-
-      auto texture_albedo = originalMaterial->getTechnique(0)->getPass(0)->getTextureUnitState("Albedo");
-
-      if (texture_albedo) {
-        auto texture_name = texture_albedo->getTextureName();
-        texPtr2->setTextureName(texture_name);
-      }
-
-      return gBufferTech;
-    } else {
-      Ogre::Technique *gBufferTech2 = originalMaterial->createTechnique();
-      gBufferTech2->setSchemeName(schemeName);
-      Ogre::Pass *gbufPass2 = gBufferTech2->createPass();
-      *gbufPass2 = *mGBufRefMat2->getTechnique(0)->getPass(0);
-
-      return gBufferTech2;
-    }
-  }
-
- private:
-  Ogre::MaterialPtr mGBufRefMat;
-  Ogre::MaterialPtr mGBufRefMat2;
-};
 //----------------------------------------------------------------------------------------------------------------------
 Compositors::Compositors() {
   ConfiguratorJson::GetSingleton().Assign(graphics_shadows_enable_, "graphics_shadows_enable");
