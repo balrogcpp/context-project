@@ -36,10 +36,33 @@ class Sounds : public Manager {
     return singleton;
   }
 
- public:
-  void CreateSound();
-  void StopAllSounds();
-  void Setup() final;
-  void Reset() final;
+  Sounds() {
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+    putenv("ALROUTER_LOGFILE=/dev/null");
+    putenv("ALSOFT_LOGLEVEL=LOG_NONE");
+#elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+    _putenv("ALROUTER_LOGFILE=/dev/null");
+  _putenv("ALSOFT_LOGLEVEL=LOG_NONE");
+#endif
+
+    OgreOggSound::OgreOggSoundFactory *mOgreOggSoundFactory;
+    // Create new factory
+    mOgreOggSoundFactory = OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
+
+    // Register
+    Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
+
+    if (!OgreOggSound::OgreOggSoundManager::getSingleton().init()) {
+      std::cerr << "Failed to initialize OgreOggSoundManager" << std::endl;
+    }
+  }
+
+  virtual ~Sounds() {
+    OgreOggSound::OgreOggSoundManager::getSingleton().stopAllSounds();
+    OgreOggSound::OgreOggSoundManager::getSingleton().destroyAllSounds();
+  }
+
+  void Setup() final {};
+  void Reset() final {};
 }; //class SoundManager
 } //namespace Context

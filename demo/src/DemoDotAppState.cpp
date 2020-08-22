@@ -57,26 +57,24 @@ void DemoDotAppState::Setup() {
 
   Ogre::SceneLoaderManager::getSingleton().load("test.scene",
                                                 Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-                                                ogre_scene_manager_->getRootSceneNode());
+                                                scene_->getRootSceneNode());
 
   StaticForest::GetSingleton().Create();
 
-//  if (ConfigManager::GetSingleton().GetBool("sound_enable")) {
-//    auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
+//  auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
 //
-//    mSoundManager->setResourceGroupName(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-//    mSoundManager->createSound("AmbientMusicDemo",
-//                               "22384__dobroide__20060824-forest03.ogg",
-//                               false,
-//                               true,
-//                               true,
-//                               ContextManager::GetSingleton().GetOgreScenePtr());
+//  mSoundManager->setResourceGroupName(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+//  mSoundManager->createSound("AmbientMusicDemo",
+//                             "22384__dobroide__20060824-forest03.ogg",
+//                             false,
+//                             true,
+//                             true,
+//                             scene_);
 //
-//    if (mSoundManager->getSound("SceneManagerInstance1")) {
-//      mSoundManager->getSound("SceneManagerInstance1")->play();
-//    }
+//  if (mSoundManager->getSound("SceneManagerInstance1")) {
+//    mSoundManager->getSound("SceneManagerInstance1")->play();
 //  }
 
-  ogre_scene_manager_->setShadowColour(Ogre::ColourValue(0.2));
+  scene_->setShadowColour(Ogre::ColourValue(0.2));
 }
 }

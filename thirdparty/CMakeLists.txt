@@ -732,7 +732,7 @@ externalproject_add(target-imgui
                     )
 
 if (ANDROID)
-    set (CEGUI_GIT_TAG -Android)
+    set(CEGUI_GIT_TAG -Android)
 endif ()
 
 externalproject_add(target-cegui

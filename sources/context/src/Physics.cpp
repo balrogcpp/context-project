@@ -34,16 +34,16 @@ std::shared_ptr<btDynamicsWorld> Physics::GetPhyWorld() const {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Setup() {
-  ConfiguratorJson::Assign(physics_skip_frames_, "physics_skip_frames");
-  ConfiguratorJson::Assign(physics_max_sub_steps_, "physics_max_sub_steps");
-  ConfiguratorJson::Assign(physics_debug_show_collider_, "physics_debug_show_collider");
+  ConfiguratorJson::GetSingleton().Assign(physics_skip_frames_, "physics_skip_frames");
+  ConfiguratorJson::GetSingleton().Assign(physics_max_sub_steps_, "physics_max_sub_steps");
+  ConfiguratorJson::GetSingleton().Assign(physics_debug_show_collider_, "physics_debug_show_collider");
 
   float gravity_x = 0;
   float gravity_y = -9.8f;
   float gravity_z = 0;
-  ConfiguratorJson::Assign(gravity_x, "physics_gravity_x");
-  ConfiguratorJson::Assign(gravity_y, "physics_gravity_y");
-  ConfiguratorJson::Assign(gravity_z, "physics_gravity_z");
+  ConfiguratorJson::GetSingleton().Assign(gravity_x, "physics_gravity_x");
+  ConfiguratorJson::GetSingleton().Assign(gravity_y, "physics_gravity_y");
+  ConfiguratorJson::GetSingleton().Assign(gravity_z, "physics_gravity_z");
 
   broadphase_ = std::make_shared<btAxisSweep3>(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000), 1024);
   collision_config_ = std::make_shared<btDefaultCollisionConfiguration>();

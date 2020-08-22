@@ -32,8 +32,7 @@ SOFTWARE.
 #include <iostream>
 #include <tuple>
 
-namespace storage {
-
+namespace Context {
 class StorageException : public std::exception {
  public:
   StorageException() = default;
@@ -57,8 +56,10 @@ class StorageException : public std::exception {
   size_t code = 0;
 };
 
+
+class Storage {
 //----------------------------------------------------------------------------------------------------------------------
-inline bool StringSanityCheck(const std::string &str) {
+inline static bool StringSanityCheck(const std::string &str) {
   if (str[0] == '#') {
     return true;
   }
@@ -73,24 +74,24 @@ inline bool StringSanityCheck(const std::string &str) {
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-inline void LeftTrim(std::string &s) {
+inline static void LeftTrim(std::string &s) {
   auto it = std::find_if(s.begin(), s.end(), [](char c) {
     return !std::isspace<char>(c, std::locale::classic());
   });
   s.erase(s.begin(), it);
 }
 //----------------------------------------------------------------------------------------------------------------------
-inline void RightTrim(std::string &s) {
+inline static void RightTrim(std::string &s) {
   auto it = std::find_if(s.rbegin(), s.rend(), [](char c) { return !std::isspace<char>(c, std::locale::classic()); });
   s.erase(it.base(), s.end());
 }
 //----------------------------------------------------------------------------------------------------------------------
-inline void TrimString(std::string &s) {
+inline static void TrimString(std::string &s) {
   RightTrim(s);
   LeftTrim(s);
 }
 //----------------------------------------------------------------------------------------------------------------------
-inline void PrintPathList(const std::vector<std::tuple<std::string, std::string, std::string>> &path_list) {
+inline static void PrintPathList(const std::vector<std::tuple<std::string, std::string, std::string>> &path_list) {
   std::cout << "Path list:\n";
 
   for (const auto &it : path_list) {
@@ -101,7 +102,7 @@ inline void PrintPathList(const std::vector<std::tuple<std::string, std::string,
   std::cout << '\n';
 }
 //----------------------------------------------------------------------------------------------------------------------
-inline void PrintStringList(const std::vector<std::string> &string_list) {
+inline static void PrintStringList(const std::vector<std::string> &string_list) {
   std::cout << "Path list:\n";
 
   for (const auto &it : string_list) {
@@ -110,9 +111,10 @@ inline void PrintStringList(const std::vector<std::string> &string_list) {
 
   std::cout << '\n';
 }
+ public:
 //----------------------------------------------------------------------------------------------------------------------
 std::vector<std::tuple<std::string, std::string, std::string>>
-InitGeneralResources(const std::vector<std::string> &path_list, const std::string &resource_file = "", bool verbose = false) {
+static InitGeneralResources(const std::vector<std::string> &path_list, const std::string &resource_file = "", bool verbose = false) {
   namespace fs = std::filesystem;
   const std::string default_group_name = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
 
@@ -220,4 +222,5 @@ InitGeneralResources(const std::vector<std::string> &path_list, const std::strin
 
   return resource_list;
 }
-} //namespace storage
+}; //class Storage
+}

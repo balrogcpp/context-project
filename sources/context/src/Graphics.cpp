@@ -45,9 +45,9 @@ Graphics::Graphics() {
   StaticForest::GetSingleton().Setup();
 
 #ifndef DEBUG
-  storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
+  Storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
 #else
-  storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
+  Storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
 #endif
 
   DotSceneLoaderB::GetSingleton().SetupGlobal();
@@ -55,8 +55,9 @@ Graphics::Graphics() {
 
   bool physics_enable_ = true;
   bool sound_enable_ = true;
-  ConfiguratorJson::Assign(physics_enable_, "physics_enable");
-  ConfiguratorJson::Assign(sound_enable_, "sound_enable");
+  auto &conf = ConfiguratorJson::GetSingleton();
+  conf.Assign(physics_enable_, "physics_enable");
+  conf.Assign(sound_enable_, "sound_enable");
 
   if (physics_enable_) {
     Physics::GetSingleton().SetupGlobal();
@@ -119,10 +120,10 @@ void Graphics::CreateScene() {
   std::string graphics_filtration_ = "bilinear";
   int graphics_anisotropy_level_ = 4;
   int graphics_mipmap_count_ = 10;
-
-  ConfiguratorJson::Assign(graphics_filtration_, "graphics_filtration");
-  ConfiguratorJson::Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
-  ConfiguratorJson::Assign(graphics_mipmap_count_, "graphics_mipmap_count");
+  auto &conf = ConfiguratorJson::GetSingleton();
+  conf.Assign(graphics_filtration_, "graphics_filtration");
+  conf.Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
+  conf.Assign(graphics_mipmap_count_, "graphics_mipmap_count");
 
   // Texture filtering
   if (graphics_filtration_ == "anisotropic") {
@@ -168,25 +169,25 @@ void Graphics::CreateScene() {
   std::string graphics_shadows_texture_format_ = "DEPTH32";
   bool graphics_shadows_integrated_ = true;
 
-  ConfiguratorJson::Assign(graphics_shadows_enable_, "graphics_shadows_enable");
-  ConfiguratorJson::Assign(graphics_shadows_pssm_0_, "graphics_shadows_pssm_0");
-  ConfiguratorJson::Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
-  ConfiguratorJson::Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
-  ConfiguratorJson::Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
-  ConfiguratorJson::Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
-  ConfiguratorJson::Assign(graphics_shadows_texture_resolution_, "graphics_shadows_texture_resolution");
-  ConfiguratorJson::Assign(graphics_shadows_split_padding_, "graphics_shadows_split_padding");
-  ConfiguratorJson::Assign(graphics_shadows_texture_count_, "graphics_shadows_texture_count");
-  ConfiguratorJson::Assign(graphics_shadows_far_distance_, "graphics_shadows_far_distance");
-  ConfiguratorJson::Assign(graphics_shadows_self_shadow_, "graphics_shadows_self_shadow");
-  ConfiguratorJson::Assign(graphics_shadows_back_faces_, "graphics_shadows_back_faces");
-  ConfiguratorJson::Assign(graphics_shadows_caster_material_, "graphics_shadows_caster_material");
-  ConfiguratorJson::Assign(graphics_shadows_receiver_material_, "graphics_shadows_receiver_material");
-  ConfiguratorJson::Assign(graphics_shadows_tecnique_, "graphics_shadows_tecnique");
-  ConfiguratorJson::Assign(graphics_shadows_lighting_, "graphics_shadows_lighting");
-  ConfiguratorJson::Assign(graphics_shadows_projection_, "graphics_shadows_projection");
-  ConfiguratorJson::Assign(graphics_shadows_material_, "graphics_shadows_material");
-  ConfiguratorJson::Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
+  conf.Assign(graphics_shadows_enable_, "graphics_shadows_enable");
+  conf.Assign(graphics_shadows_pssm_0_, "graphics_shadows_pssm_0");
+  conf.Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
+  conf.Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
+  conf.Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
+  conf.Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
+  conf.Assign(graphics_shadows_texture_resolution_, "graphics_shadows_texture_resolution");
+  conf.Assign(graphics_shadows_split_padding_, "graphics_shadows_split_padding");
+  conf.Assign(graphics_shadows_texture_count_, "graphics_shadows_texture_count");
+  conf.Assign(graphics_shadows_far_distance_, "graphics_shadows_far_distance");
+  conf.Assign(graphics_shadows_self_shadow_, "graphics_shadows_self_shadow");
+  conf.Assign(graphics_shadows_back_faces_, "graphics_shadows_back_faces");
+  conf.Assign(graphics_shadows_caster_material_, "graphics_shadows_caster_material");
+  conf.Assign(graphics_shadows_receiver_material_, "graphics_shadows_receiver_material");
+  conf.Assign(graphics_shadows_tecnique_, "graphics_shadows_tecnique");
+  conf.Assign(graphics_shadows_lighting_, "graphics_shadows_lighting");
+  conf.Assign(graphics_shadows_projection_, "graphics_shadows_projection");
+  conf.Assign(graphics_shadows_material_, "graphics_shadows_material");
+  conf.Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
 
   if (graphics_shadows_enable_) {
     unsigned shadow_technique = Ogre::SHADOWTYPE_NONE;
@@ -312,7 +313,7 @@ void Graphics::CreateScene() {
   }
 
   bool graphics_debug_show_wireframe_ = false;
-  ConfiguratorJson::Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
+  conf.Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
 
   if (graphics_debug_show_wireframe_) {
     camera_->setPolygonMode(Ogre::PM_WIREFRAME);
@@ -376,8 +377,9 @@ void Graphics::InitOgre() {
   Ogre::NameValuePairList params;
 
   SDL_SysWMinfo info = window_.GetInfo();
-  window_.Resize(ConfiguratorJson::GetSingleton().GetInt("window_width"),
-                 ConfiguratorJson::GetSingleton().GetInt("window_high"));
+  auto &conf = ConfiguratorJson::GetSingleton();
+  window_.Resize(conf.GetInt("window_width"),
+                 conf.GetInt("window_high"));
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   if (!reinterpret_cast<size_t>(info.info.win.window)) {
@@ -400,11 +402,10 @@ void Graphics::InitOgre() {
   bool graphics_gamma_enable_ = false;
   int graphics_fsaa_ = 0;
   int graphics_msaa_ = 0;
-
-  ConfiguratorJson::Assign(graphics_vsync_, "graphics_vsync");
-  ConfiguratorJson::Assign(graphics_gamma_enable_, "graphics_gamma");
-  ConfiguratorJson::Assign(graphics_fsaa_, "graphics_fsaa");
-  ConfiguratorJson::Assign(graphics_msaa_, "graphics_msaa");
+  conf.Assign(graphics_vsync_, "graphics_vsync");
+  conf.Assign(graphics_gamma_enable_, "graphics_gamma");
+  conf.Assign(graphics_fsaa_, "graphics_fsaa");
+  conf.Assign(graphics_msaa_, "graphics_msaa");
 
   params["vsync"] = graphics_vsync_ ? true_str : false_str;
   params["gamma"] = graphics_gamma_enable_ ? true_str : false_str;

@@ -25,7 +25,7 @@ cmake_minimum_required(VERSION 3.15.1)
 find_package(OpenMP REQUIRED)
 if (NOT ANDROID)
     find_package(OpenGL REQUIRED)
-endif()
+endif ()
 
 include(cotire)
 
@@ -150,7 +150,6 @@ set(CONTEXT_SOURCES
     context/src/DotSceneLoaderB.cpp
     context/src/Physics.cpp
     context/src/StaticForest.cpp
-    context/src/Sounds.cpp
     context/src/Manager.cpp
     context/src/pcheader.cpp
     context/src/Compositors.cpp

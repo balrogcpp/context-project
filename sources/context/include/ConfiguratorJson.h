@@ -198,47 +198,47 @@ class ConfiguratorJson {
       return 0;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  static bool Assign(bool &value, const char *parameter) {
-    bool exists = GetSingleton().HasMember(parameter);
+  bool Assign(bool &value, const char *parameter) {
+    bool exists = HasMember(parameter);
 
-    if (GetSingleton().HasMember(parameter))
-      value = GetSingleton().GetBool(parameter);
-
-    return exists;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  static bool Assign(int &value, const char *parameter) {
-    bool exists = GetSingleton().HasMember(parameter);
-
-    if (exists)
-      value = GetSingleton().GetInt(parameter);
+    if (HasMember(parameter))
+      value = GetBool(parameter);
 
     return exists;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  static bool Assign(std::string &value, const char *parameter) {
-    bool exists = GetSingleton().HasMember(parameter);
+  bool Assign(int &value, const char *parameter) {
+    bool exists = HasMember(parameter);
 
     if (exists)
-      value = GetSingleton().GetString(parameter);
+      value = GetInt(parameter);
 
     return exists;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  static bool Assign(float &value, const char *parameter) {
-    bool exists = GetSingleton().HasMember(parameter);
+  bool Assign(std::string &value, const char *parameter) {
+    bool exists = HasMember(parameter);
 
     if (exists)
-      value = GetSingleton().GetFloat(parameter);
+      value = GetString(parameter);
 
     return exists;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  static bool Assign(double &value, const char *parameter) {
-    bool exists = GetSingleton().HasMember(parameter);
+  bool Assign(float &value, const char *parameter) {
+    bool exists = HasMember(parameter);
 
     if (exists)
-      value = GetSingleton().GetDouble(parameter);
+      value = GetFloat(parameter);
+
+    return exists;
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  bool Assign(double &value, const char *parameter) {
+    bool exists = HasMember(parameter);
+
+    if (exists)
+      value = GetDouble(parameter);
 
     return exists;
   }

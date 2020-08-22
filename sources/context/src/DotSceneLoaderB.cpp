@@ -202,10 +202,10 @@ void DotSceneLoaderB::Setup() {
 
   Ogre::SceneLoaderManager::getSingleton().registerSceneLoader("DotSceneB", {".scene", ".xml"}, this);
 
-  ConfiguratorJson::Assign(physics_enable_, "physics_enable");
-  ConfiguratorJson::Assign(lod_generator_enable_, "lod_generator_enable");
-  ConfiguratorJson::Assign(terrain_cast_shadows_, "terrain_cast_shadows");
-  ConfiguratorJson::Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
+  ConfiguratorJson::GetSingleton().Assign(physics_enable_, "physics_enable");
+  ConfiguratorJson::GetSingleton().Assign(lod_generator_enable_, "lod_generator_enable");
+  ConfiguratorJson::GetSingleton().Assign(terrain_cast_shadows_, "terrain_cast_shadows");
+  ConfiguratorJson::GetSingleton().Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::Reset() {
@@ -981,7 +981,7 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
     }
 
     std::string shadow_technique;
-    ConfiguratorJson::Assign(shadow_technique, "graphics_shadows_tecnique");
+    ConfiguratorJson::GetSingleton().Assign(shadow_technique, "graphics_shadows_tecnique");
 
     if (shadow_technique == "stencil") {
       if (!entity->getMesh()->isEdgeListBuilt()) {

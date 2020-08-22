@@ -35,9 +35,9 @@ AppState::~AppState() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::SetupGlobals() {
-  ogre_scene_manager_ = Ogre::Root::getSingleton().getSceneManager("Default");
-  ogre_camera_ = ogre_scene_manager_->getCamera("Default");
-  ogre_viewport_ = ogre_camera_->getViewport();
+  scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
+  camera_ = scene_->getCamera("Default");
+  viewport_ = camera_->getViewport();
   io::InputSequencer::GetSingleton().RegisterListener(this);
   Ogre::Root::getSingleton().addFrameListener(this);
   registered_ = true;
