@@ -51,5 +51,6 @@ void android_main(struct android_app *pApp)
 int main()
 #endif
 {
-  Context::Application::GetSingleton().Main(std::make_shared<Demo::DemoDotAppState>());
+  Context::Application app;
+  app.Main(std::make_shared<Demo::DemoDotAppState>());
 }

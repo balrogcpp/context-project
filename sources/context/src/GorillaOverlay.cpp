@@ -31,7 +31,7 @@ SOFTWARE.
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
 bool GorillaOverlay::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-  caption->text(std::to_string(Application::GetSingleton().GetFpsFrames()));
+//  caption->text(std::to_string(Application::GetSingleton().GetFpsFrames()));
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------

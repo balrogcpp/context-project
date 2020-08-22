@@ -53,6 +53,8 @@ class PbsMaterial;
 }
 
 namespace Context {
+class CameraMan;
+class Physics;
 
 class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
  public:
@@ -100,6 +102,8 @@ class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
 
  private:
   std::unique_ptr<ReflectionCamera> rcamera_;
+  CameraMan *camera_man_ = nullptr;
+  Physics *physics_ = nullptr;
   Ogre::SceneManager *scene_manager_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;
   std::string group_name_;
@@ -110,8 +114,16 @@ class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
 
   bool terrain_cast_shadows_ = false;
   bool terrain_raybox_calculation_ = true;
-  bool terrain_created_ = false;
-  bool manual_terrain_ = false;
   bool terrain_generator_b_ = false;
+  bool terrain_created_ = false;
+
+ public:
+  void SetWorld(Physics *pworld) {
+    physics_ = pworld;
+  }
+
+  void SetCamera(CameraMan *camera) {
+    camera_man_ = camera;
+  }
 }; //class DotSceneLoaderB
 } //namespace Context

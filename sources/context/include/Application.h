@@ -47,10 +47,10 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
   Application();
   virtual ~Application();
 
-  static Application &GetSingleton() {
-    static Application singleton;
-    return singleton;
-  }
+//  static Application &GetSingleton() {
+//    static Application singleton;
+//    return singleton;
+//  }
 
   int Main(std::shared_ptr<AppState> scene_ptr);
   void SetCurState(std::shared_ptr<AppState> scene_ptr);
@@ -92,22 +92,6 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
  public:
   int GetFpsFrames() const {
     return current_fps_;
-  }
-
-  CameraMan *GetCameraMan() {
-    return graphics_.GetCameraMan();
-  }
-
-  std::shared_ptr<btDynamicsWorld> GetPhyWorld() {
-    return physics_.GetPhyWorld();
-  }
-
-  void AddRigidBody(btRigidBody *body) {
-    physics_.AddRigidBody(body);
-  }
-
-  void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node) {
-    physics_.ProcessData(user_data, entity, parent_node);
   }
 }; //class Application
 } //namespace Context

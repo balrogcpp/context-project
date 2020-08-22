@@ -32,6 +32,7 @@ SOFTWARE.
 #include "GorillaOverlay.h"
 #include "ConfiguratorJson.h"
 #include "Exception.h"
+#include "CameraMan.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -70,7 +71,9 @@ void Application::Init_() {
   if (!compositor_) compositor_ = std::make_unique<Compositors>();
   GorillaOverlay::GetSingleton().Setup();
   graphics_.UpdateParams();
-
+  loader_.SetWorld(&physics_);
+  loader_.SetCamera(graphics_.GetCameraMan());
+  graphics_.GetCameraMan()->SetStyle(CameraStyle::FPS);
   conf.Assign(global_verbose_, "global_verbose_enable");
   conf.Assign(target_fps_, "global_target_fps");
   conf.Assign(global_lock_fps_, "global_lock_fps");

@@ -303,10 +303,8 @@ void DotSceneLoaderB::CreateTerrainHeightfieldShape(int size,
   entBody->getWorldTransform().setRotation(BtOgre::Convert::toBullet(Ogre::Quaternion::IDENTITY));
   entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
-  auto phyWorld = Application::GetSingleton().GetPhyWorld();
-
-  phyWorld->addRigidBody(entBody);
-  phyWorld->setForceUpdateAllAabbs(false);
+  physics_->AddRigidBody(entBody);
+  physics_->GetPhyWorld()->setForceUpdateAllAabbs(false);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::GetTerrainImage(bool flipX,
@@ -560,8 +558,8 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   // Create the camera
   auto *pCamera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
-  Application::GetSingleton().GetCameraMan()->UnregCamera();
-  Application::GetSingleton().GetCameraMan()->RegCamera(parent, pCamera);
+  camera_man_->UnregCamera();
+  camera_man_->RegCamera(parent, pCamera);
 
   auto *actor = scene_->createEntity("Actor", "Icosphere.mesh");
   actor->setCastShadows(false);
@@ -585,8 +583,8 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   entBody->forceActivationState(DISABLE_DEACTIVATION);
   entBody->setActivationState(DISABLE_DEACTIVATION);
   entBody->setFriction(1.0);
-  Application::GetSingleton().AddRigidBody(entBody);
-  Application::GetSingleton().GetCameraMan()->SetRigidBody(entBody);
+  physics_->AddRigidBody(entBody);
+  camera_man_->SetRigidBody(entBody);
   // Set the field-of-view
   pCamera->setFOVy(Ogre::Radian(fov));
 
@@ -616,7 +614,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   }
 
   if (auto element = xml_node.child("light")) {
-    ProcessLight_(element, Application::GetSingleton().GetCameraMan()->GetCameraNode());
+    ProcessLight_(element, camera_man_->GetCameraNode());
   }
 
 }
@@ -881,7 +879,7 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
     // Process userDataReference (?)
     if (auto element = xml_node.child("userData")) {
       ProcessUserData_(element, entity->getUserObjectBindings());
-      Application::GetSingleton().ProcessData(entity->getUserObjectBindings(), entity, parent);
+      physics_->ProcessData(entity->getUserObjectBindings(), entity, parent);
     }
 
   }
@@ -992,7 +990,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   auto *bodyState = new BtOgre::RigidBodyState(parent);
   btRigidBody *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
   entBody->setFriction(1);
-  Application::GetSingleton().AddRigidBody(entBody);
+  physics_->AddRigidBody(entBody);
 
   const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
   const Ogre::uint32 SURFACE_MASK = 0x00F;

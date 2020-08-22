@@ -173,7 +173,7 @@ void StaticForest::GenerateGrass() {
   mField->setRegionDimensions(Ogre::Vector3(20));
 
   // add grass uniformly throughout the field, with some random variations
-  for (int i = 0; i < 100000; i++) {
+  for (int i = 0; i < 10000; i++) {
     Ogre::Vector3 pos(Ogre::Math::RangeRandom(-50, 50), 0, Ogre::Math::RangeRandom(-50, 50));
 
 //    pos.y += DotSceneLoaderB::GetSingleton().GetHeigh(pos.x, pos.z);
