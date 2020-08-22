@@ -120,16 +120,6 @@ class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
   Ogre::MaterialPtr mGBufRefMat;
   Ogre::MaterialPtr mGBufRefMat2;
 };
-
-Compositors Compositors::CompositorManagerSingleton;
-//----------------------------------------------------------------------------------------------------------------------
-Compositors *Compositors::GetSingletonPtr() {
-  return &CompositorManagerSingleton;
-}
-//----------------------------------------------------------------------------------------------------------------------
-Compositors &Compositors::GetSingleton() {
-  return CompositorManagerSingleton;
-}
 //----------------------------------------------------------------------------------------------------------------------
 void Compositors::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
 
@@ -220,8 +210,8 @@ void Compositors::Setup() {
   ConfiguratorJson::GetSingleton().Assign(compositor_use_moution_blur_, "compositor_use_moution_blur");
 
   if (compositor_use_ssao_) {
-    ssaog_buffer_scheme_handler_ = std::make_unique<GBufferSchemeHandler>();
-    Ogre::MaterialManager::getSingleton().addListener(ssaog_buffer_scheme_handler_.get(), "GBuffer");
+    ssaog_buffer_scheme_handler_ = new GBufferSchemeHandler();
+    Ogre::MaterialManager::getSingleton().addListener(ssaog_buffer_scheme_handler_, "GBuffer");
   }
 
   if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/Main"))

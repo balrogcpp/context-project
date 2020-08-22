@@ -36,16 +36,6 @@ class AppStateManager : public Singleton {
     static AppStateManager singleton;
     return singleton;
   }
-//----------------------------------------------------------------------------------------------------------------------
-  void ResetGlobals() {
-    if (cur_state_) {
-      cur_state_.reset();
-    }
-
-    if (next_state_) {
-      next_state_.reset();
-    }
-  }
 
  private:
   bool waiting_ = false;
@@ -54,32 +44,22 @@ class AppStateManager : public Singleton {
 
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  void SetInitialState(const std::shared_ptr<AppState> &state) {
-    if (state)
-      cur_state_ = state;
+  void SetInitialState(std::shared_ptr<AppState> state) {
+    cur_state_ = state;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void SetNextState(const std::shared_ptr<AppState> &state) {
-    if (state)
-      next_state_ = state;
+  void SetNextState(std::shared_ptr<AppState> state) {
+    next_state_ = state;
   }
 //----------------------------------------------------------------------------------------------------------------------
   void GoNextState() {
-    if (cur_state_) {
-      cur_state_->Reset();
-      cur_state_->ResetGlobals();
-      cur_state_.reset();
-    }
-
     if (next_state_) {
       cur_state_ = next_state_;
-      next_state_.reset();
       waiting_ = true;
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
   void InitCurrState() {
-    cur_state_->SetupGlobals();
     cur_state_->Setup();
   }
 //----------------------------------------------------------------------------------------------------------------------

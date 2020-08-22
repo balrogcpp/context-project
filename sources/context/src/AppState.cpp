@@ -28,13 +28,7 @@ SOFTWARE.
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
-AppState::~AppState() {
-  if (registered_) {
-    Ogre::Root::getSingleton().removeFrameListener(this);
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void AppState::SetupGlobals() {
+AppState::AppState() {
   scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   camera_ = scene_->getCamera("Default");
   viewport_ = camera_->getViewport();
@@ -43,7 +37,7 @@ void AppState::SetupGlobals() {
   registered_ = true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::ResetGlobals() {
+AppState::~AppState() {
   if (registered_) {
     Ogre::Root::getSingleton().removeFrameListener(this);
     io::InputSequencer::GetSingleton().UnregisterListener(this);

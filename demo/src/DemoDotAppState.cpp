@@ -32,9 +32,8 @@ namespace Demo {
 
 using namespace Context;
 
-DemoDotAppState::~DemoDotAppState() {
-
-}
+DemoDotAppState::DemoDotAppState() {}
+DemoDotAppState::~DemoDotAppState() {}
 
 void DemoDotAppState::KeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {

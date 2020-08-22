@@ -38,12 +38,11 @@ class DepthSchemeHandler;
 namespace Context {
 
 class Compositors final : public Manager {
- private:
-  static Compositors CompositorManagerSingleton;
-
  public:
-  static Compositors *GetSingletonPtr();
-  static Compositors &GetSingleton();
+  static Compositors &GetSingleton() {
+    static Compositors singleton;
+    return singleton;
+  }
 
  public:
   void Setup();
@@ -68,8 +67,8 @@ class Compositors final : public Manager {
   std::string current_post_;
   std::string current_modulate_scene_;
 
-  std::unique_ptr<GBufferSchemeHandler> ssaog_buffer_scheme_handler_;
-  std::unique_ptr<DepthSchemeHandler> depth_scheme_handler_;
+  GBufferSchemeHandler *ssaog_buffer_scheme_handler_;
+  DepthSchemeHandler *depth_scheme_handler_;
 
   //SSAO
   bool graphics_shadows_enable_ = true;

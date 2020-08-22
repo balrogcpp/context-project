@@ -33,8 +33,7 @@ namespace Demo {
 
 class DemoDotAppState : public Context::AppState {
  public:
-   DemoDotAppState() : Context::AppState() {};
-
+   DemoDotAppState();
    ~DemoDotAppState();
 
  public:

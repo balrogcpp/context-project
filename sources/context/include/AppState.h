@@ -37,10 +37,8 @@ namespace Context {
 
 class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener {
  public:
+  AppState();
   virtual ~AppState();
-
-  void SetupGlobals();
-  void ResetGlobals();
 
   virtual void Setup() = 0;
   virtual void Reset() = 0;

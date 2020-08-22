@@ -58,11 +58,10 @@ class Graphics : public Singleton {
   Graphics();
   virtual ~Graphics();
 
-  void CreateScene();
+  void UpdateParams();
   void Render();
 
  private:
-  void InitOgre();
   void CreateCamera();
 
  private:

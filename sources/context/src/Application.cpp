@@ -27,7 +27,6 @@ SOFTWARE.
 #include "Application.h"
 #include "Graphics.h"
 #include "StaticForest.h"
-#include "Sounds.h"
 #include "Compositors.h"
 #include "Physics.h"
 #include "DotSceneLoaderB.h"
@@ -36,9 +35,6 @@ SOFTWARE.
 #include "GorillaOverlay.h"
 #include "ConfiguratorJson.h"
 #include "Exception.h"
-
-#include <csetjmp>
-#include <csignal>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -55,15 +51,37 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
 namespace Context {
-Application::Application() = default;
+Application::Application() {
+  Init_();
+};
 Application::~Application() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
   Graphics::GetSingleton();
-  AppStateManager::GetSingleton().GetCurState()->SetupGlobals();
+  StaticForest::GetSingleton().SetupGlobal();
+  StaticForest::GetSingleton().Setup();
 
+#ifndef DEBUG
+  Storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
+#else
+  Storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
+#endif
+
+  DotSceneLoaderB::GetSingleton().SetupGlobal();
+  DotSceneLoaderB::GetSingleton().Setup();
+
+  bool physics_enable_ = true;
+  bool sound_enable_ = true;
   auto &conf = ConfiguratorJson::GetSingleton();
+  conf.Assign(physics_enable_, "physics_enable");
+  conf.Assign(sound_enable_, "sound_enable");
+
+  Physics::GetSingleton().Setup();
+  Compositors::GetSingleton().Setup();
+  GorillaOverlay::GetSingleton().Setup();
+  Graphics::GetSingleton().UpdateParams();
+
   conf.Assign(global_verbose_fps_, "global_verbose_fps");
   conf.Assign(global_verbose_, "global_verbose_enable");
   conf.Assign(global_verbose_input_, "global_verbose_input");
@@ -109,7 +127,6 @@ void Application::Reset_() {
   root->destroyAllCameras();
   root->getRootSceneNode()->removeAndDestroyAllChildren();
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-  AppStateManager::GetSingleton().ResetGlobals();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Quit() {
@@ -195,7 +212,7 @@ void Application::Loop_() {
           root->destroyAllMovableObjects();
           root->getRootSceneNode()->removeAndDestroyAllChildren();
 
-          Graphics::GetSingleton().CreateScene();
+          Graphics::GetSingleton().UpdateParams();
           AppStateManager::GetSingleton().InitCurrState();
           Physics::GetSingleton().Start();
           AppStateManager::GetSingleton().ClearWaiting();
@@ -241,8 +258,6 @@ void Application::Go_() {
       dummy_listener_.SetPrint(true);
     }
 
-    Init_();
-
     AppStateManager::GetSingleton().GetCurState()->Setup();
 
     quit_ = true;
@@ -267,8 +282,9 @@ int Application::Main(std::shared_ptr<AppState> scene_ptr) {
   std::ios_base::sync_with_stdio(false);
 
   try {
-    Application::GetSingleton().SetCurState(scene_ptr);
-    Application::GetSingleton().Go_();
+//    Application::GetSingleton().Init_();
+    SetCurState(scene_ptr);
+    Go_();
   }
   catch (Exception &e) {
     const std::string caption = "Exception occurred (Context core)";

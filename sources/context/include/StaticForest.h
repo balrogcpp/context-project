@@ -30,18 +30,11 @@ namespace Context {
 
 class StaticForest : public Manager {
  public:
-  static StaticForest *GetSingletonPtr() {
-    return &staticForestManagerSingleton;
+  static StaticForest& GetSingleton() {
+    static StaticForest singleton;
+    return singleton;
   }
 
-  static StaticForest &GetSingleton() {
-    return staticForestManagerSingleton;
-  }
-
- private:
-  static StaticForest staticForestManagerSingleton;
-
- public:
   void Create();
 
   void GenerateGrass();
@@ -53,11 +46,8 @@ class StaticForest : public Manager {
 
  private:
   void CreateGrassMesh();
-
- private:
   const float GRASS_WIDTH = 0.5f;
   const float GRASS_HEIGHT = 0.5f;
   Ogre::StaticGeometry *mField = nullptr;
-  Ogre::StaticGeometry *common = nullptr;
 };
 } //Context

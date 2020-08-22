@@ -47,7 +47,7 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
     return singleton;
   }
 
-  static int Main(std::shared_ptr<AppState> scene_ptr);
+  int Main(std::shared_ptr<AppState> scene_ptr);
   void SetCurState(std::shared_ptr<AppState> scene_ptr);
 
  private:

@@ -33,9 +33,6 @@ SOFTWARE.
 using namespace utils;
 
 namespace Context {
-
-StaticForest StaticForest::staticForestManagerSingleton;
-
 #pragma pack(push, 1)
 struct GrassVertex {
   float x, y, z;

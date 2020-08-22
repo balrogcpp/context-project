@@ -29,53 +29,118 @@ SOFTWARE.
 #include "Exception.h"
 #include "Storage.h"
 #include "CameraMan.h"
-#include "Physics.h"
 #include "DotSceneLoaderB.h"
 #include "StaticForest.h"
-#include "Sounds.h"
-#include "Compositors.h"
-#include "GorillaOverlay.h"
-#include "RtssUtils.h"
 
 namespace Context {
 Graphics::Graphics() {
-  InitOgre();
+  root_ = new Ogre::Root("", "", "");
 
-  StaticForest::GetSingleton().SetupGlobal();
-  StaticForest::GetSingleton().Setup();
+  bool global_sso_enable_ = true;
+  bool global_octree_enable_ = true;
+  bool global_stbi_enable_ = true;
+  bool global_freeimage_enable_ = false;
+  bool global_particlefx_enable_ = true;
 
-#ifndef DEBUG
-  Storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+  auto *mGlesRenderSystem = new Ogre::GLES2RenderSystem();
+  Ogre::Root::getSingleton().setRenderSystem(mGlesRenderSystem);
 #else
-  Storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+  auto *mGL3PlusRenderSystem = new Ogre::GL3PlusRenderSystem();
+  if (global_sso_enable_)
+    mGL3PlusRenderSystem->setConfigOption("Separate Shader Objects", "Yes");
+  else
+    mGL3PlusRenderSystem->setConfigOption("Separate Shader Objects", "No");
+  Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
+#else
+  #ifdef OGRE_BUILD_RENDERSYSTEM_GL
+  auto *mGLRenderSystem = new Ogre::GLRenderSystem();
+  Ogre::Root::getSingleton().setRenderSystem(mGLRenderSystem);
+#endif
+#endif //OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+#endif //OGRE_BUILD_RENDERSYSTEM_GLES2
+#ifdef OGRE_BUILD_PLUGIN_OCTREE
+  if (global_octree_enable_) {
+    auto *mOctreePlugin = new Ogre::OctreeSceneManagerFactory();
+    Ogre::Root::getSingleton().addSceneManagerFactory(mOctreePlugin);
+  }
+#endif // OGRE_BUILD_PLUGIN_OCTREE
+#ifdef OGRE_BUILD_PLUGIN_PFX
+  if (global_particlefx_enable_) {
+    auto *mParticlePlugin = new Ogre::ParticleFXPlugin();
+    Ogre::Root::getSingleton().installPlugin(mParticlePlugin);
+  }
+#endif // OGRE_BUILD_PLUGIN_PFX
+#ifdef OGRE_BUILD_PLUGIN_STBI
+  if (global_stbi_enable_) {
+    auto *mSTBIImageCodec = new Ogre::STBIPlugin();
+    Ogre::Root::getSingleton().installPlugin(mSTBIImageCodec);
+  }
+#endif // OGRE_BUILD_PLUGIN_STBI
+#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
+  if (global_freeimage_enable_) {
+    auto *mFreeImageCodec = new Ogre::FreeImagePlugin();
+    Ogre::Root::getSingleton().installPlugin(mFreeImageCodec);
+  }
+#endif
+  root_->initialise(false);
+  Ogre::NameValuePairList params;
+
+  SDL_SysWMinfo info = window_.GetInfo();
+  auto &conf = ConfiguratorJson::GetSingleton();
+  window_.Resize(conf.GetInt("window_width"),
+                 conf.GetInt("window_high"));
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+  if (!reinterpret_cast<size_t>(info.info.win.window)) {
+    throw Exception("Cast from info.info.win.window to size_t failed");
+  }
+
+  params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(info.info.win.window));
+#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+  if (!reinterpret_cast<unsigned long>(info.info.x11.window)) {
+    throw Exception("Cast from info.info.x11.window to size_t failed");
+  }
+
+  params["externalWindowHandle"] = std::to_string(reinterpret_cast<unsigned long>(info.info.x11.window));
 #endif
 
-  DotSceneLoaderB::GetSingleton().SetupGlobal();
-  DotSceneLoaderB::GetSingleton().Setup();
+  const char true_str[] = "true";
+  const char false_str[] = "false";
 
-  bool physics_enable_ = true;
-  bool sound_enable_ = true;
-  auto &conf = ConfiguratorJson::GetSingleton();
-  conf.Assign(physics_enable_, "physics_enable");
-  conf.Assign(sound_enable_, "sound_enable");
+  bool graphics_vsync_ = true;
+  bool graphics_gamma_enable_ = false;
+  int graphics_fsaa_ = 0;
+  int graphics_msaa_ = 0;
+  conf.Assign(graphics_vsync_, "graphics_vsync");
+  conf.Assign(graphics_gamma_enable_, "graphics_gamma");
+  conf.Assign(graphics_fsaa_, "graphics_fsaa");
+  conf.Assign(graphics_msaa_, "graphics_msaa");
 
-  if (physics_enable_) {
-    Physics::GetSingleton().SetupGlobal();
-    Physics::GetSingleton().Setup();
+  params["vsync"] = graphics_vsync_ ? true_str : false_str;
+  params["gamma"] = graphics_gamma_enable_ ? true_str : false_str;
+  params["FSAA"] = std::to_string(graphics_fsaa_);
+  params["MSAA"] = std::to_string(graphics_msaa_);
+
+  auto *ogre_render_window_ = root_->createRenderWindow(window_.GetCaption(), window_.GetSize().first, \
+                       window_.GetSize().second, false, &params);
+
+#ifdef OGRE_BUILD_PLUGIN_OCTREE
+  if (global_octree_enable_) {
+    scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
+  } else {
+    scene_ = root_->createSceneManager("Default");
   }
+#else
+  scene_mgr_ = ogre_root->createSceneManager();
+#endif
 
-  if (sound_enable_) {
-    Sounds::GetSingleton().SetupGlobal();
-    Sounds::GetSingleton().Setup();
-  }
+  camera_ = (scene_->createCamera("Default"));
+  auto *renderTarget = root_->getRenderTarget(window_.GetCaption());
 
-  Compositors::GetSingleton().SetupGlobal();
-  Compositors::GetSingleton().Setup();
-
-  CreateScene();
-
-  GorillaOverlay::GetSingleton().SetupGlobal();
-  GorillaOverlay::GetSingleton().Setup();
+  viewport_ = renderTarget->addViewport(camera_);
+  viewport_->setBackgroundColour(Ogre::ColourValue::Black);
 }
 //----------------------------------------------------------------------------------------------------------------------
 Graphics::~Graphics() {
@@ -114,7 +179,7 @@ void Graphics::CreateCamera() {
   scene_->setAmbientLight(Ogre::ColourValue::Black);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Graphics::CreateScene() {
+void Graphics::UpdateParams() {
   CreateCamera();
 
   std::string graphics_filtration_ = "bilinear";
@@ -320,117 +385,6 @@ void Graphics::CreateScene() {
   } else {
     camera_->setPolygonMode(Ogre::PM_SOLID);
   }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Graphics::InitOgre() {
-  root_ = new Ogre::Root("", "", "");
-
-  bool global_sso_enable_ = true;
-  bool global_octree_enable_ = true;
-  bool global_stbi_enable_ = true;
-  bool global_freeimage_enable_ = false;
-  bool global_particlefx_enable_ = true;
-
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-  auto *mGlesRenderSystem = new Ogre::GLES2RenderSystem();
-  Ogre::Root::getSingleton().setRenderSystem(mGlesRenderSystem);
-#else
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-  auto *mGL3PlusRenderSystem = new Ogre::GL3PlusRenderSystem();
-  if (global_sso_enable_)
-    mGL3PlusRenderSystem->setConfigOption("Separate Shader Objects", "Yes");
-  else
-    mGL3PlusRenderSystem->setConfigOption("Separate Shader Objects", "No");
-  Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
-#else
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL
-  auto *mGLRenderSystem = new Ogre::GLRenderSystem();
-  Ogre::Root::getSingleton().setRenderSystem(mGLRenderSystem);
-#endif
-#endif //OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-#endif //OGRE_BUILD_RENDERSYSTEM_GLES2
-#ifdef OGRE_BUILD_PLUGIN_OCTREE
-  if (global_octree_enable_) {
-    auto *mOctreePlugin = new Ogre::OctreeSceneManagerFactory();
-    Ogre::Root::getSingleton().addSceneManagerFactory(mOctreePlugin);
-  }
-#endif // OGRE_BUILD_PLUGIN_OCTREE
-#ifdef OGRE_BUILD_PLUGIN_PFX
-  if (global_particlefx_enable_) {
-    auto *mParticlePlugin = new Ogre::ParticleFXPlugin();
-    Ogre::Root::getSingleton().installPlugin(mParticlePlugin);
-  }
-#endif // OGRE_BUILD_PLUGIN_PFX
-#ifdef OGRE_BUILD_PLUGIN_STBI
-  if (global_stbi_enable_) {
-    auto *mSTBIImageCodec = new Ogre::STBIPlugin();
-    Ogre::Root::getSingleton().installPlugin(mSTBIImageCodec);
-  }
-#endif // OGRE_BUILD_PLUGIN_STBI
-#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
-  if (global_freeimage_enable_) {
-    auto *mFreeImageCodec = new Ogre::FreeImagePlugin();
-    Ogre::Root::getSingleton().installPlugin(mFreeImageCodec);
-  }
-#endif
-  root_->initialise(false);
-  Ogre::NameValuePairList params;
-
-  SDL_SysWMinfo info = window_.GetInfo();
-  auto &conf = ConfiguratorJson::GetSingleton();
-  window_.Resize(conf.GetInt("window_width"),
-                 conf.GetInt("window_high"));
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  if (!reinterpret_cast<size_t>(info.info.win.window)) {
-    throw Exception("Cast from info.info.win.window to size_t failed");
-  }
-
-  params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(info.info.win.window));
-#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  if (!reinterpret_cast<unsigned long>(info.info.x11.window)) {
-    throw Exception("Cast from info.info.x11.window to size_t failed");
-  }
-
-  params["externalWindowHandle"] = std::to_string(reinterpret_cast<unsigned long>(info.info.x11.window));
-#endif
-
-  const char true_str[] = "true";
-  const char false_str[] = "false";
-
-  bool graphics_vsync_ = true;
-  bool graphics_gamma_enable_ = false;
-  int graphics_fsaa_ = 0;
-  int graphics_msaa_ = 0;
-  conf.Assign(graphics_vsync_, "graphics_vsync");
-  conf.Assign(graphics_gamma_enable_, "graphics_gamma");
-  conf.Assign(graphics_fsaa_, "graphics_fsaa");
-  conf.Assign(graphics_msaa_, "graphics_msaa");
-
-  params["vsync"] = graphics_vsync_ ? true_str : false_str;
-  params["gamma"] = graphics_gamma_enable_ ? true_str : false_str;
-  params["FSAA"] = std::to_string(graphics_fsaa_);
-  params["MSAA"] = std::to_string(graphics_msaa_);
-
-  auto *ogre_render_window_ = root_->createRenderWindow(window_.GetCaption(), window_.GetSize().first, \
-                       window_.GetSize().second, false, &params);
-
-#ifdef OGRE_BUILD_PLUGIN_OCTREE
-  if (global_octree_enable_) {
-    scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
-  } else {
-    scene_ = root_->createSceneManager("Default");
-  }
-#else
-  scene_mgr_ = ogre_root->createSceneManager();
-#endif
-
-  camera_ = (scene_->createCamera("Default"));
-  auto *renderTarget = root_->getRenderTarget(window_.GetCaption());
-
-  viewport_ = renderTarget->addViewport(camera_);
-  viewport_->setBackgroundColour(Ogre::ColourValue::Black);
-
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Graphics::Render() {
