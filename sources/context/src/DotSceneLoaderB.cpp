@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include "DotSceneLoaderB.h"
 
-#include "Physics.h"
+#include "Application.h"
 #include "CameraMan.h"
 #include "ConfiguratorJson.h"
 #include "TerrainMaterialGeneratorB.h"
@@ -302,7 +302,7 @@ void DotSceneLoaderB::CreateTerrainHeightfieldShape(int size,
   entBody->getWorldTransform().setRotation(BtOgre::Convert::toBullet(Ogre::Quaternion::IDENTITY));
   entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
-  auto phyWorld = Physics::GetSingleton().GetPhyWorld();
+  auto phyWorld = Application::GetSingleton().GetPhyWorld();
 
   phyWorld->addRigidBody(entBody);
   phyWorld->setForceUpdateAllAabbs(false);
@@ -584,7 +584,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   entBody->forceActivationState(DISABLE_DEACTIVATION);
   entBody->setActivationState(DISABLE_DEACTIVATION);
   entBody->setFriction(1.0);
-  Physics::GetSingleton().AddRigidBody(entBody);
+  Application::GetSingleton().AddRigidBody(entBody);
   Application::GetSingleton().GetCameraMan()->SetRigidBody(entBody);
   // Set the field-of-view
   pCamera->setFOVy(Ogre::Radian(fov));
@@ -880,7 +880,7 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
     // Process userDataReference (?)
     if (auto element = xml_node.child("userData")) {
       ProcessUserData_(element, entity->getUserObjectBindings());
-      Physics::GetSingleton().ProcessData(entity->getUserObjectBindings(), entity, parent);
+      Application::GetSingleton().ProcessData(entity->getUserObjectBindings(), entity, parent);
     }
 
   }
@@ -990,7 +990,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   auto *bodyState = new BtOgre::RigidBodyState(parent);
   btRigidBody *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
   entBody->setFriction(1);
-  Physics::GetSingleton().AddRigidBody(entBody);
+  Application::GetSingleton().AddRigidBody(entBody);
 
   const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
   const Ogre::uint32 SURFACE_MASK = 0x00F;

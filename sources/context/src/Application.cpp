@@ -25,10 +25,8 @@ SOFTWARE.
 #include "pcheader.h"
 
 #include "Application.h"
-#include "Graphics.h"
 #include "StaticForest.h"
 #include "Compositors.h"
-#include "Physics.h"
 #include "DotSceneLoaderB.h"
 #include "AppStateManager.h"
 #include "Storage.h"
@@ -177,7 +175,7 @@ void Application::Loop_() {
           StaticForest::GetSingleton().Reset();
           DotSceneLoaderB::GetSingleton().Reset();
 
-          Physics::GetSingleton().Reset();
+          physics_.Reset();
 
           root->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
           root->destroyAllEntities();
@@ -196,7 +194,7 @@ void Application::Loop_() {
 
           graphics_.UpdateParams();
           AppStateManager::GetSingleton().InitCurrState();
-          Physics::GetSingleton().Start();
+          physics_.Start();
           AppStateManager::GetSingleton().ClearWaiting();
         }
 

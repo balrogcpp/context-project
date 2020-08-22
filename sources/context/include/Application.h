@@ -82,6 +82,8 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
   bool global_verbose_ = false;
   bool global_lock_fps_ = true;
   Graphics graphics_;
+  Physics physics_;
+  Sounds sounds_;
 
  public:
   int GetFpsFrames() const {
@@ -90,6 +92,18 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
 
   CameraMan *GetCameraMan() {
     return graphics_.GetCameraMan();
+  }
+
+  std::shared_ptr<btDynamicsWorld> GetPhyWorld() {
+    return physics_.GetPhyWorld();
+  }
+
+  void AddRigidBody(btRigidBody *body) {
+    physics_.AddRigidBody(body);
+  }
+
+  void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node) {
+    physics_.ProcessData(user_data, entity, parent_node);
   }
 }; //class Application
 } //namespace Context

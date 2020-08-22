@@ -50,11 +50,6 @@ namespace Context {
 
 class Physics final : public Manager {
  public:
-  static Physics &GetSingleton() {
-    static Physics singleton;
-    return singleton;
-  }
-
   Physics();
   virtual ~Physics();
 

@@ -31,11 +31,6 @@ namespace Context {
 
 class Sounds : public Manager {
  public:
-  static Sounds &GetSingleton() {
-    static Sounds singleton;
-    return singleton;
-  }
-
   Sounds() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     putenv("ALROUTER_LOGFILE=/dev/null");
