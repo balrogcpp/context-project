@@ -87,7 +87,7 @@ bool Physics::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::Reset() {
+void Physics::Clear() {
   Stop();
   phy_world_->clearForces();
 

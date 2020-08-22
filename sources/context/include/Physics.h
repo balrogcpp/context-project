@@ -53,8 +53,8 @@ class Physics final : public Manager {
   Physics();
   virtual ~Physics();
 
-  void Setup() final {}
-  void Reset() final;
+  void Init() final {}
+  void Clear() final;
   void AddRigidBody(btRigidBody *body);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);
 

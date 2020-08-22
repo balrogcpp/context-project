@@ -67,11 +67,10 @@ void Application::Init_() {
   conf.Assign(sound_enable_, "sound_enable");
 
   if (!compositor_) compositor_ = std::make_unique<Compositors>();
-  overlay_.Setup();
+  overlay_.Init();
   graphics_.UpdateParams();
   loader_.SetWorld(&physics_);
-  loader_.SetCamera(graphics_.GetCameraMan());
-  graphics_.GetCameraMan()->SetStyle(CameraStyle::FPS);
+//  loader_.SetCamera(graphics_.GetCameraMan());
   conf.Assign(verbose_, "global_verbose_enable");
   conf.Assign(target_fps_, "global_target_fps");
   conf.Assign(lock_fps_, "global_lock_fps");
@@ -171,8 +170,8 @@ void Application::Loop_() {
 
       if (!suspend_) {
         if (AppStateManager::GetSingleton().IsWaiting()) {
-          loader_.Reset();
-          physics_.Reset();
+          loader_.Clear();
+          physics_.Clear();
 
           root->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
           root->destroyAllEntities();
@@ -228,7 +227,7 @@ void Application::Loop_() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
   if (AppStateManager::GetSingleton().GetCurState()) {
-    AppStateManager::GetSingleton().GetCurState()->Setup();
+    AppStateManager::GetSingleton().GetCurState()->Init();
     quit_ = true;
     Loop_();
     io::InputSequencer::GetSingleton().Reset();

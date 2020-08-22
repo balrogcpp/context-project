@@ -182,6 +182,10 @@ class Window : public NoCopy {
     return std::make_pair(w_, h_);
   }
 
+  inline float GetRatio() const noexcept {
+    return static_cast<float>(w_) / h_;
+  }
+
   inline bool GetFullscreen() const noexcept {
     return f_;
   }

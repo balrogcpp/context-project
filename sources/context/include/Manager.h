@@ -38,8 +38,8 @@ class Manager
   Manager();
   virtual ~Manager();
 
-  virtual void Setup() {}
-  virtual void Reset() {}
+  virtual void Init() {}
+  virtual void Clear() {}
 
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}

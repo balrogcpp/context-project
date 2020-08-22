@@ -28,6 +28,8 @@ SOFTWARE.
 #include "Gorilla.h"
 #include "Application.h"
 
+using namespace Gorilla;
+
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
 bool Overlay::frameRenderingQueued(const Ogre::FrameEvent &evt) {
@@ -35,8 +37,8 @@ bool Overlay::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Overlay::Setup() {
-  mSilverback = new Gorilla::Silverback();
+void Overlay::Init() {
+  mSilverback = new Silverback();
   mSilverback->loadAtlas("dejavu");
   mScreen = mSilverback->createScreen(viewport_, "dejavu");
   layer = mScreen->createLayer(0);
@@ -45,27 +47,27 @@ void Overlay::Setup() {
   // Create our drawing layer
   layer = mScreen->createLayer(0);
   rect = layer->createRectangle(0, 0, vpW, vpH);
-  //rect->background_gradient(Gorilla::Gradient_Diagonal, Gorilla::rgb(98,0,63), Gorilla::rgb(255,180,174));
-  rect->background_colour(Gorilla::rgb(0, 0, 0, 0));
+  //rect->background_gradient(Gradient_Diagonal, rgb(98,0,63), rgb(255,180,174));
+  rect->background_colour(rgb(0, 0, 0, 0));
 
   markup = layer->createMarkupText(9, 5, 5,
                                    "%@24%Overlay system\n%@14%Text here%@9%\nHello Fuckers");
 
 //  caption = layer->createCaption(9, vpW - 55, 5, "9");
 //  caption->width(50);
-//  caption->align(Gorilla::TextAlign_Right);
+//  caption->align(TextAlign_Right);
 //
 //  caption = layer->createCaption(14, vpW - 55, 18, "14");
 //  caption->width(50);
-//  caption->align(Gorilla::TextAlign_Right);
+//  caption->align(TextAlign_Right);
 
   caption = layer->createCaption(24, vpW - 55, 66, "24");
   caption->width(0);
-  caption->align(Gorilla::TextAlign_Right);
+  caption->align(TextAlign_Right);
   caption->text("1488");
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Overlay::Reset() {
+void Overlay::Clear() {
   mSilverback->destroyScreen(mScreen);
 //  mScreen = mSilverback->createScreen(ogre_viewport_, "dejavu");
 //  layer = mScreen->createLayer(0);

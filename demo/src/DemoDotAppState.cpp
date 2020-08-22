@@ -41,10 +41,10 @@ void DemoDotAppState::KeyDown(SDL_Keycode sym) {
   }
 }
 
-void DemoDotAppState::Reset() {
+void DemoDotAppState::Clear() {
 }
 
-void DemoDotAppState::Setup() {
+void DemoDotAppState::Init() {
   AppStateManager::GetSingleton().SetNextState(std::make_unique<DemoDotAppState>());
 //  ContextManager::GetSingleton().UpdateCursorStatus({false, true, true});
 

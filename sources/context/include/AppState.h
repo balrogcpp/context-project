@@ -40,8 +40,8 @@ class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, 
   AppState();
   virtual ~AppState();
 
-  virtual void Setup() = 0;
-  virtual void Reset() = 0;
+  virtual void Init() = 0;
+  virtual void Clear() = 0;
 
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {};
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {};

@@ -125,5 +125,9 @@ class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
   void SetCamera(std::shared_ptr<CameraMan> camera) {
     camera_man_ = camera;
   }
+
+  std::shared_ptr<CameraMan> GetCameraMan() const {
+    return camera_man_;
+  }
 }; //class DotSceneLoaderB
 } //namespace Context

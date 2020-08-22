@@ -48,8 +48,8 @@ namespace Context {
 
 class Overlay : public Manager {
  public:
-  void Setup() final;
-  void Reset() final;
+  void Init() final;
+  void Clear() final;
 
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
 

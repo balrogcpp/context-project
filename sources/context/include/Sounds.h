@@ -57,7 +57,7 @@ class Sounds : public Manager {
     OgreOggSound::OgreOggSoundManager::getSingleton().destroyAllSounds();
   }
 
-  void Setup() final {};
-  void Reset() final {};
+  void Init() final {};
+  void Clear() final {};
 }; //class SoundManager
 } //namespace Context

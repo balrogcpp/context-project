@@ -140,40 +140,38 @@ Graphics::Graphics() {
   auto *camera = scene_->createCamera("Default");
   auto *renderTarget = root_->getRenderTarget(window_.GetCaption());
 
-  viewport_ = renderTarget->addViewport(camera);
-  viewport_->setBackgroundColour(Ogre::ColourValue::Black);
+  auto *viewport = renderTarget->addViewport(camera);
+  viewport->setBackgroundColour(Ogre::ColourValue::Black);
 }
 //----------------------------------------------------------------------------------------------------------------------
 Graphics::~Graphics() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Graphics::CreateCamera() {
-  auto *camera_node_ = scene_->getRootSceneNode()->createChildSceneNode();
-  Ogre::Camera *camera;
+  auto *camera_node = scene_->getRootSceneNode()->createChildSceneNode();
+  Ogre::Camera *camera = nullptr;
 
   if (!scene_->hasCamera("Default")) {
     camera = scene_->createCamera("Default");
     auto *renderTarget = root_->getRenderTarget(window_.GetCaption());
     renderTarget->removeViewport(0);
-    viewport_ = renderTarget->addViewport(camera);
-    viewport_->setBackgroundColour(Ogre::ColourValue::Black);
-    viewport_->setDimensions(0, 0, 1, 1);
+    auto *viewport = renderTarget->addViewport(camera);
+    viewport->setBackgroundColour(Ogre::ColourValue::Black);
   } else {
     camera = scene_->getCamera("Default");
   }
-  if (!camera_man_) {
-    camera_man_ = std::make_shared<CameraMan>();
-  }
-
-  camera_man_->RegCamera(camera_node_, camera);
-  camera_man_->SetStyle(CameraStyle::MANUAL);
+//  if (!camera_)
+//    camera_ = std::make_shared<CameraMan>();
+//
+//  camera_->RegCamera(camera_node, camera);
+//  camera_->SetStyle(CameraStyle::FPS);
 
   if (camera) {
     camera->setNearClipDistance(0.01f);
     camera->setFarClipDistance(10000.0f);
   }
 
-  camera->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / static_cast<float>(viewport_->getActualHeight()));
+  camera->setAspectRatio(window_.GetRatio());
 
   scene_->setSkyBoxEnabled(false);
   scene_->setSkyDomeEnabled(false);
@@ -190,7 +188,7 @@ void Graphics::UpdateParams() {
   conf.Assign(graphics_filtration_, "graphics_filtration");
   conf.Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
   conf.Assign(graphics_mipmap_count_, "graphics_mipmap_count");
-  auto *camera = camera_man_->GetCamera();
+  auto *camera = scene_->getCamera("Default");
 
   // Texture filtering
   if (graphics_filtration_ == "anisotropic") {
@@ -277,7 +275,7 @@ void Graphics::UpdateParams() {
 
     scene_->setShadowTechnique(static_cast<Ogre::ShadowTechnique>(shadow_technique));
 
-    if (graphics_shadows_material_ == "default") {
+    if (graphics_shadows_material_ != "none") {
       Ogre::PixelFormat texture_type;
 
       if (graphics_shadows_texture_format_ == "F32_R")
@@ -303,15 +301,6 @@ void Graphics::UpdateParams() {
                                        0,
                                        2);
 
-      for (int i = 0; i < graphics_shadows_texture_count_; i++) {
-        scene_->setShadowTextureConfig(i,
-                                       graphics_shadows_texture_resolution_,
-                                       graphics_shadows_texture_resolution_,
-                                       texture_type,
-                                       0,
-                                       2);
-      }
-
       scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
       scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
       scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 6);
@@ -331,49 +320,29 @@ void Graphics::UpdateParams() {
         scene_->setShadowTextureReceiverMaterial(passReceiverMaterial);
       }
 
-      auto pssm_setup = std::make_shared<Ogre::PSSMShadowCameraSetup>();
+      const int pssm_splits_ = 3;
 
-      int pssm_splits_ = 3;
-      if (!ogre_shadow_camera_setup_) {
+      auto pssm_setup_ = std::make_shared<Ogre::PSSMShadowCameraSetup>();
+
         if (graphics_shadows_split_auto_) {
-          pssm_setup->calculateSplitPoints(pssm_splits_, camera->getNearClipDistance(),
-                                           scene_->getShadowFarDistance());
+          pssm_setup_->calculateSplitPoints(pssm_splits_, camera->getNearClipDistance(),scene_->getShadowFarDistance());
         } else {
           Ogre::PSSMShadowCameraSetup::SplitPointList split_points =
               {camera->getNearClipDistance(), 10.0, 20.0, scene_->getShadowFarDistance()};
-          pssm_setup->setSplitPoints(split_points);
+          pssm_setup_->setSplitPoints(split_points);
         }
 
         if (graphics_shadows_split_padding_ == 0) {
-          pssm_setup->setSplitPadding(1.0);
+          pssm_setup_->setSplitPadding(1.0);
         } else {
-          pssm_setup->setSplitPadding(graphics_shadows_split_padding_);
+          pssm_setup_->setSplitPadding(graphics_shadows_split_padding_);
         }
 
-        pssm_setup->setOptimalAdjustFactor(0, graphics_shadows_pssm_0_);
-        pssm_setup->setOptimalAdjustFactor(1, graphics_shadows_pssm_1_);
-        pssm_setup->setOptimalAdjustFactor(2, graphics_shadows_pssm_2_);
-
-        ogre_shadow_camera_setup_ = pssm_setup;
-      }
+      pssm_setup_->setOptimalAdjustFactor(0, graphics_shadows_pssm_0_);
+      pssm_setup_->setOptimalAdjustFactor(1, graphics_shadows_pssm_1_);
+      pssm_setup_->setOptimalAdjustFactor(2, graphics_shadows_pssm_2_);
+      scene_->setShadowCameraSetup(pssm_setup_);
     }
-
-    if (graphics_shadows_projection_ == "uniform") {
-      ogre_shadow_camera_setup_ = Ogre::DefaultShadowCameraSetup::create();
-    } else if (graphics_shadows_projection_ == "uniform_focused") {
-      ogre_shadow_camera_setup_ = Ogre::FocusedShadowCameraSetup::create();
-    } else if (graphics_shadows_projection_ == "lspsm") {
-      ogre_shadow_camera_setup_ = Ogre::LiSPSMShadowCameraSetup::create();
-    } else if (graphics_shadows_projection_ == "pssm") {
-
-    } else {
-      ogre_shadow_camera_setup_ = Ogre::DefaultShadowCameraSetup::create();
-    }
-
-    if (ogre_shadow_camera_setup_) {
-      scene_->setShadowCameraSetup(ogre_shadow_camera_setup_);
-    }
-
   } else {
     scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   }

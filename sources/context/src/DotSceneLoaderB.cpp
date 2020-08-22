@@ -558,8 +558,10 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   // Create the camera
   auto *pCamera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
-  camera_man_->UnregCamera();
+  if (!camera_man_)
+    camera_man_ = std::make_shared<CameraMan>();
   camera_man_->RegCamera(parent, pCamera);
+  camera_man_->SetStyle(CameraStyle::FPS);
 
   auto *actor = scene_->createEntity("Actor", "Icosphere.mesh");
   actor->setCastShadows(false);
