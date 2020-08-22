@@ -33,6 +33,7 @@ SOFTWARE.
 #include "Graphics.h"
 #include "Sounds.h"
 #include "Physics.h"
+#include "DotSceneLoaderB.h"
 #include "Singleton.h"
 
 namespace Context {
@@ -84,6 +85,7 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
   Graphics graphics_;
   Physics physics_;
   Sounds sounds_;
+  DotSceneLoaderB loader_;
 
  public:
   int GetFpsFrames() const {

@@ -41,11 +41,12 @@ using namespace utils;
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
 float DotSceneLoaderB::GetHeigh(float x, float z) {
-  if (terrain_created_) {
-    return DotSceneLoaderB::GetSingleton().ogre_terrain_group_->getHeightAtWorldPosition(x, 1000, z);
-  } else {
-    return 0.0f;
-  }
+//  if (terrain_created_) {
+//    return DotSceneLoaderB::GetSingleton().ogre_terrain_group_->getHeightAtWorldPosition(x, 1000, z);
+//  } else {
+//    return 0.0f;
+//  }
+  return 0.0;
 }
 //----------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::DotSceneLoaderB() {

@@ -143,7 +143,7 @@ void StaticForest::GenerateGrass() {
                       0,
                       Ogre::Math::RangeRandom(-bounds, bounds));
 
-    pos.y += DotSceneLoaderB::GetSingleton().GetHeigh(pos.x, pos.z);
+//    pos.y += DotSceneLoaderB::GetSingleton().GetHeigh(pos.x, pos.z);
 
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);

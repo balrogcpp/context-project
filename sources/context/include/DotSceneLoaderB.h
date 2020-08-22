@@ -56,11 +56,6 @@ namespace Context {
 
 class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
  public:
-  static DotSceneLoaderB &GetSingleton() {
-    static DotSceneLoaderB singleton;
-    return singleton;
-  }
-
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();
 

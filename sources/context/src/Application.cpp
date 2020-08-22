@@ -68,7 +68,7 @@ void Application::Init_() {
   conf.Assign(physics_enable_, "physics_enable");
   conf.Assign(sound_enable_, "sound_enable");
 
-  DotSceneLoaderB::GetSingleton();
+//  DotSceneLoaderB::GetSingleton();
   Compositors::GetSingleton();
   GorillaOverlay::GetSingleton().Setup();
   graphics_.UpdateParams();
@@ -97,7 +97,7 @@ void Application::Render_() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Reset_() {
   StaticForest::GetSingleton().Reset();
-  DotSceneLoaderB::GetSingleton().Reset();
+//  DotSceneLoaderB::GetSingleton().Reset();
   auto *root = Ogre::Root::getSingleton().getSceneManager("Default");
   root->destroyAllEntities();
   root->destroyAllLights();
@@ -173,7 +173,8 @@ void Application::Loop_() {
       if (!suspend_) {
         if (AppStateManager::GetSingleton().IsWaiting()) {
           StaticForest::GetSingleton().Reset();
-          DotSceneLoaderB::GetSingleton().Reset();
+//          DotSceneLoaderB::GetSingleton().Reset();
+          loader_.Reset();
 
           physics_.Reset();
 
