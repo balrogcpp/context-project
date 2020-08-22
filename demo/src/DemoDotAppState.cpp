@@ -58,8 +58,7 @@ void DemoDotAppState::Setup() {
                                                 Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
                                                 scene_->getRootSceneNode());
 
-  StaticForest::GetSingleton().Create();
-
+  forest_.Create();
 //  auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
 //
 //  mSoundManager->setResourceGroupName(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);

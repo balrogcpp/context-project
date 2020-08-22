@@ -53,6 +53,7 @@ class AppStateManager : public Singleton {
   }
 //----------------------------------------------------------------------------------------------------------------------
   void GoNextState() {
+    cur_state_.reset();
     if (next_state_) {
       cur_state_ = next_state_;
       waiting_ = true;

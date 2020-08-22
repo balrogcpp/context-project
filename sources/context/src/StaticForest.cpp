@@ -42,6 +42,9 @@ struct GrassVertex {
 #pragma pack(pop)
 //----------------------------------------------------------------------------------------------------------------------
 void StaticForest::CreateGrassMesh() {
+  if (Ogre::MeshManager::getSingleton().getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
+    return;
+
   Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
 
   // Create a submesh with the grass material
@@ -122,6 +125,13 @@ void StaticForest::CreateGrassMesh() {
   sm->indexData->indexBuffer->unlock(); // commit index changes
 }
 //----------------------------------------------------------------------------------------------------------------------
+StaticForest::StaticForest() = default;
+
+StaticForest::~StaticForest() {
+  if (Ogre::MeshManager::getSingleton().getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
+    Ogre::MeshManager::getSingleton().remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+}
+//----------------------------------------------------------------------------------------------------------------------
 void StaticForest::GenerateGrass() {
   Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   // create our grass mesh, and Create a grass entity from it
@@ -131,55 +141,53 @@ void StaticForest::GenerateGrass() {
   static const Ogre::uint32 SURFACE_MASK = 0x00F;
   static const Ogre::uint32 WATER_MASK = 0xF00;
 
-  Ogre::Entity *farn = scene->createEntity("Farn", "farn1.mesh");
+//  Ogre::Entity *farn = scene->createEntity("Farn", "farn1.mesh");
+//  // Create a static geometry field, which we will populate with grass
+//  mField = scene->createStaticGeometry("FarnField");
+//  mField->setRegionDimensions(Ogre::Vector3(20));
+//
+//  const float bounds = 50.0f;
+//  // add grass uniformly throughout the field, with some random variations
+//  for (int i = 0; i < 1000; i++) {
+//    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds),
+//                      0,
+//                      Ogre::Math::RangeRandom(-bounds, bounds));
+//
+//    Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
+//    Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
+//    scale *= 0.1;
+//    mField->addEntity(farn, pos, ori, scale);
+//  }
+//
+//  mField->setVisibilityFlags(SUBMERGED_MASK);
+//  mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
+//  mField->build(); // build our static geometry (bake the grass into it)
+//  mField->setCastShadows(false);
+
+  auto *grass = scene_->createEntity("Grass", "grass");
   // Create a static geometry field, which we will populate with grass
-  mField = scene->createStaticGeometry("FarnField");
+  mField = scene_->createStaticGeometry("GrassField");
+  UpdatePbrParams("GrassCustom");
+  UpdatePbrShadowReceiver("GrassCustom");
+  grass->setMaterialName("GrassCustom");
   mField->setRegionDimensions(Ogre::Vector3(20));
 
-  const float bounds = 50.0f;
   // add grass uniformly throughout the field, with some random variations
-  for (int i = 0; i < 1000; i++) {
-    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds),
-                      0,
-                      Ogre::Math::RangeRandom(-bounds, bounds));
+  for (int i = 0; i < 100000; i++) {
+    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-50, 50), 0, Ogre::Math::RangeRandom(-50, 50));
 
 //    pos.y += DotSceneLoaderB::GetSingleton().GetHeigh(pos.x, pos.z);
 
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
-    scale *= 0.1;
-    mField->addEntity(farn, pos, ori, scale);
+    scale *= 2.0f;
+    mField->addEntity(grass, pos, ori, scale);
   }
 
   mField->setVisibilityFlags(SUBMERGED_MASK);
   mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
   mField->build(); // build our static geometry (bake the grass into it)
   mField->setCastShadows(false);
-
-//  Ogre::Entity *grass = sceneMgr->createEntity("Grass", "grass");
-//  // Create a static geometry field, which we will populate with grass
-//  mField = sceneMgr->createStaticGeometry("GrassField");
-//  DotSceneLoaderB::FixPbrParams("GrassCustom");
-//  DotSceneLoaderB::FixPbrShadowReceiver("GrassCustom");
-//  grass->setMaterialName("GrassCustom");
-//  mField->setRegionDimensions(Ogre::Vector3(20));
-//
-//  // add grass uniformly throughout the field, with some random variations
-//  for (int i = 0; i < 100000; i++) {
-//    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
-//
-//    pos.y += DotSceneLoaderB::GetSingleton().GetHeigh(pos.x, pos.z);
-//
-//    Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
-//    Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
-//    scale *= 2.0f;
-//    mField->addEntity(grass, pos, ori, scale);
-//  }
-
-//  mField->setVisibilityFlags(SUBMERGED_MASK);
-//  mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
-//  mField->build(); // build our static geometry (bake the grass into it)
-//  mField->setCastShadows(false);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void StaticForest::Create() {
@@ -196,17 +204,4 @@ void StaticForest::Create() {
 //  generateBushes();
   GenerateGrass();
 }
-//----------------------------------------------------------------------------------------------------------------------
-bool StaticForest::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------------------------
-void StaticForest::Reset() {
-  if (Ogre::MeshManager::getSingleton().getByName("grass",
-                                                  Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
-    Ogre::MeshManager::getSingleton().remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-  }
-}
-
 } //namespace Context

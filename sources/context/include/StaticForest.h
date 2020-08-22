@@ -30,19 +30,12 @@ namespace Context {
 
 class StaticForest : public Manager {
  public:
-  static StaticForest& GetSingleton() {
-    static StaticForest singleton;
-    return singleton;
-  }
+  StaticForest();
+  virtual ~StaticForest();
 
   void Create();
 
   void GenerateGrass();
-
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
-
-  void Reset() final;
-  void Setup() final {}
 
  private:
   void CreateGrassMesh();

@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include "Graphics.h"
 #include "AppState.h"
+#include "StaticForest.h"
 
 #include <memory>
 
@@ -36,10 +37,12 @@ class DemoDotAppState : public Context::AppState {
    DemoDotAppState();
    ~DemoDotAppState();
 
- public:
     void Setup() final;
     void Reset() final;
     void KeyDown(SDL_Keycode sym) final;
+
+ private:
+  Context::StaticForest forest_;
 };
 
 }
