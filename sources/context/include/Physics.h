@@ -55,14 +55,16 @@ class Physics final : public Manager {
     return singleton;
   }
 
-  void Setup() final;
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
+  Physics();
+  virtual ~Physics();
+
+  void Setup() final {}
   void Reset() final;
-  void Stop();
-  void Start();
   void AddRigidBody(btRigidBody *body);
-  btRigidBody *GenerateProxy(Ogre::Entity *entity, const std::string &proxy_type, std::string &physics_type);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);
+
+ private:
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
 
  private:
   std::shared_ptr<BtOgre::DebugDrawer> dbg_draw_;
@@ -74,16 +76,20 @@ class Physics final : public Manager {
   std::vector<btCollisionObject *> rigid_bodies_;
   std::vector<btCollisionShape *> collision_shapes_;
 
-  float cumulative_ = 0;
-  int factor_ = 0;
-  int physics_skip_frames_ = 2;
-  int physics_max_sub_steps_ = 8;
+  int skip_frames_ = 2;
+  int sub_steps_ = 8;
   bool stopped_ = false;
   bool physics_debug_show_collider_ = false;
 
  public:
   std::shared_ptr<btDynamicsWorld> GetPhyWorld() const;
 
-  void SetPhysicsDebugShowCollider(bool physics_debug_show_collider);
+  void Start() noexcept {
+    stopped_ = false;
+  }
+
+  void Stop() noexcept {
+    stopped_ = true;
+  }
 }; //class PhysicsManager
 } //namespace Context

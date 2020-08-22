@@ -389,7 +389,6 @@ void Graphics::UpdateParams() {
 //----------------------------------------------------------------------------------------------------------------------
 void Graphics::Render() {
   root_->renderOneFrame();
-
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   window_.SwapBuffers();
 #endif

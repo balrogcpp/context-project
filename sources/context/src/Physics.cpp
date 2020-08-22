@@ -29,13 +29,9 @@ SOFTWARE.
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
-std::shared_ptr<btDynamicsWorld> Physics::GetPhyWorld() const {
-  return phy_world_;
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Physics::Setup() {
-  ConfiguratorJson::GetSingleton().Assign(physics_skip_frames_, "physics_skip_frames");
-  ConfiguratorJson::GetSingleton().Assign(physics_max_sub_steps_, "physics_max_sub_steps");
+Physics::Physics() {
+  ConfiguratorJson::GetSingleton().Assign(skip_frames_, "physics_skip_frames");
+  ConfiguratorJson::GetSingleton().Assign(sub_steps_, "physics_max_sub_steps");
   ConfiguratorJson::GetSingleton().Assign(physics_debug_show_collider_, "physics_debug_show_collider");
 
   float gravity_x = 0;
@@ -60,23 +56,24 @@ void Physics::Setup() {
     dbg_draw_ = std::make_shared<BtOgre::DebugDrawer>(scene_->getRootSceneNode(), phy_world_.get());
     dbg_draw_->setDebugMode(physics_debug_show_collider_);
     phy_world_->setDebugDrawer(dbg_draw_.get());
-
-//#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-//    ShaderResolver::FixMaterial("BtOgre/DebugLines");
-//#endif
   }
 
   stopped_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
+Physics::~Physics() {}
+//----------------------------------------------------------------------------------------------------------------------
 bool Physics::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+  static int factor_;
+  static float cumulative_;
+
   if (!stopped_) {
     factor_++;
     cumulative_ += evt.timeSinceLastFrame;
 
-    if (factor_ == (physics_skip_frames_ - 1)) {
+    if (factor_ == (skip_frames_ - 1)) {
       if (phy_world_) {
-        phy_world_->stepSimulation(cumulative_, physics_max_sub_steps_);
+        phy_world_->stepSimulation(cumulative_, sub_steps_);
       }
       cumulative_ = 0;
       factor_ = 0;
@@ -91,9 +88,8 @@ bool Physics::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Reset() {
-  stopped_ = true;
+  Stop();
   phy_world_->clearForces();
-
 
   //remove the rigidbodies from the dynamics world and delete them
   for (int i = phy_world_->getNumCollisionObjects() - 1; i >= 0; i--) {
@@ -112,39 +108,8 @@ void Physics::Reset() {
   rigid_bodies_.clear();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::Start() {
-  stopped_ = false;
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Physics::Stop() {
-  stopped_ = true;
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Physics::SetPhysicsDebugShowCollider(bool physics_debug_show_collider) {
-  physics_debug_show_collider_ = physics_debug_show_collider;
-}
-//----------------------------------------------------------------------------------------------------------------------
 void Physics::AddRigidBody(btRigidBody *body) {
   phy_world_->addRigidBody(body);
-//  rigid_bodies_.push_back(body);
-}
-//----------------------------------------------------------------------------------------------------------------------
-btRigidBody *Physics::GenerateProxy(Ogre::Entity *entity, const std::string &proxy_type, std::string &physics_type) {
-  const std::string physics_type_static = "STATIC";
-  const std::string physics_type_dynamic = "dynamic";
-  const std::string physics_type_actor = "actor";
-  const std::string physics_type_ghost = "ghost";
-  const std::string physics_type_none = "none";
-  const std::string proxy_box = "box";
-  const std::string proxy_capsule = "capsule";
-  const std::string proxy_sphere = "sphere";
-  const std::string proxy_cylinder = "cylinder";
-  const std::string proxy_trimesh = "trimesh";
-  const std::string proxy_convex = "convex";
-
-  btRigidBody *rigid_body = nullptr;
-
-  return rigid_body;
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
@@ -377,5 +342,9 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
 
     Physics::GetSingleton().AddRigidBody(entBody);
   }
+}
+//----------------------------------------------------------------------------------------------------------------------
+std::shared_ptr<btDynamicsWorld> Physics::GetPhyWorld() const {
+  return phy_world_;
 }
 } //namespace Context

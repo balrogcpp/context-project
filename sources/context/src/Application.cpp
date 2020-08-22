@@ -77,7 +77,6 @@ void Application::Init_() {
   conf.Assign(physics_enable_, "physics_enable");
   conf.Assign(sound_enable_, "sound_enable");
 
-  Physics::GetSingleton().Setup();
   Compositors::GetSingleton().Setup();
   GorillaOverlay::GetSingleton().Setup();
   Graphics::GetSingleton().UpdateParams();

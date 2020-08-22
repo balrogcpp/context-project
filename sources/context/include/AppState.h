@@ -50,6 +50,5 @@ class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, 
   Ogre::SceneManager *scene_ = nullptr;
   Ogre::Camera *camera_ = nullptr;
   Ogre::Viewport *viewport_ = nullptr;
-  bool registered_ = false;
 }; //class AppState
 } //namespace Context
