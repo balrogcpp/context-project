@@ -71,19 +71,12 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
     }
   }
 
-  DummyListener dummy_listener_;
-  bool quit_ = true;
+  bool quit_ = false;
   bool suspend_ = false;
   bool fullscreen_ = false;
   int current_fps_ = 0;
-  int global_target_fps_ = 60;
-  bool started_ = false;
-  bool global_verbose_fps_ = false;
+  int target_fps_ = 60;
   bool global_verbose_ = false;
-  bool global_verbose_input_ = false;
-  bool application_fkeys_enable_ = false;
-  bool application_ask_before_quit_ = false;
-  bool graphics_vsync_ = true;
   bool global_lock_fps_ = true;
 
  public:

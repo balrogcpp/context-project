@@ -77,14 +77,9 @@ void Application::Init_() {
   GorillaOverlay::GetSingleton().Setup();
   Graphics::GetSingleton().UpdateParams();
 
-  conf.Assign(global_verbose_fps_, "global_verbose_fps");
   conf.Assign(global_verbose_, "global_verbose_enable");
-  conf.Assign(global_verbose_input_, "global_verbose_input");
-  conf.Assign(application_fkeys_enable_, "application_fkeys_enable");
-  conf.Assign(global_target_fps_, "global_target_fps");
+  conf.Assign(target_fps_, "global_target_fps");
   conf.Assign(global_lock_fps_, "global_lock_fps");
-  conf.Assign(graphics_vsync_, "graphics_vsync");
-  conf.Assign(application_ask_before_quit_, "application_ask_before_quit");
 
   io::InputSequencer::GetSingleton().RegEventListener(this);
 
@@ -129,9 +124,6 @@ void Application::Quit() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
-  if (!started_)
-    return;
-
   const int fps_inactive = 30;
 
   if (evt.type == SDL_WINDOWEVENT) {
@@ -139,23 +131,23 @@ void Application::Event(const SDL_Event &evt) {
     if (!fullscreen_) {
       if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         suspend_ = true;
-        global_target_fps_ = fps_inactive;
+        target_fps_ = fps_inactive;
         global_lock_fps_ = true;
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
-        conf.Assign(global_target_fps_, "global_target_fps");
+        conf.Assign(target_fps_, "global_target_fps");
         conf.Assign(global_lock_fps_, "global_lock_fps");
       }
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         suspend_ = true;
-        global_target_fps_ = fps_inactive;
+        target_fps_ = fps_inactive;
         global_lock_fps_ = true;
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
-        conf.Assign(global_target_fps_, "global_target_fps");
+        conf.Assign(target_fps_, "global_target_fps");
         conf.Assign(global_lock_fps_, "global_lock_fps");
       }
     }
@@ -175,16 +167,10 @@ void Application::Loop_() {
       long delta_time_;
 
       if (delta_time_ > 1000000) {
-        if (global_verbose_fps_)
-          std::cout << "FPS " << fps_frames_ << '\n';
-
         current_fps_ = fps_frames_;
         delta_time_ = 0;
         fps_frames_ = 0;
       }
-
-      if (delta_time_ > 500000)
-        started_ = true;
 
       io::InputSequencer::GetSingleton().Capture();
 
@@ -229,7 +215,7 @@ void Application::Loop_() {
       long render_time = millis_after_render - millis_before_frame;
 
       if (global_lock_fps_) {
-        long delay = static_cast<long> ((1000000 / global_target_fps_) - render_time);
+        long delay = static_cast<long> ((1000000 / target_fps_) - render_time);
         if (delay > 0)
           std::this_thread::sleep_for(std::chrono::microseconds(delay));
       }
@@ -248,22 +234,11 @@ void Application::Loop_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
-  quit_ = false;
-
   if (AppStateManager::GetSingleton().GetCurState()) {
-    io::InputSequencer::GetSingleton().RegisterListener(&dummy_listener_);
-    if (global_verbose_input_) {
-      dummy_listener_.SetPrint(true);
-    }
-
     AppStateManager::GetSingleton().GetCurState()->Setup();
-
     quit_ = true;
-
     Loop_();
-
     io::InputSequencer::GetSingleton().Reset();
-
     Reset_();
   }
 }
@@ -280,7 +255,6 @@ int Application::Main(std::shared_ptr<AppState> scene_ptr) {
   std::ios_base::sync_with_stdio(false);
 
   try {
-//    Application::GetSingleton().Init_();
     SetCurState(scene_ptr);
     Go_();
   }
