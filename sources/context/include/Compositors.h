@@ -44,10 +44,7 @@ class Compositors final : public Manager {
     return singleton;
   }
 
-  Compositors() {
-    Init_();
-  }
-
+  Compositors();
   virtual ~Compositors() = default;
 
  private:

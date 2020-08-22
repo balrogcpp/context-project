@@ -50,11 +50,6 @@ class ShadowCameraSetup;
 namespace Context {
 class Graphics : public Singleton {
  public:
-  static Graphics &GetSingleton() {
-    static Graphics singleton;
-    return singleton;
-  }
-
   Graphics();
   virtual ~Graphics();
 

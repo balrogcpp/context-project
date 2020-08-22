@@ -32,7 +32,7 @@ SOFTWARE.
 #include "TerrainMaterialGeneratorB.h"
 #include "CubeMapCamera.h"
 #include "ReflectionCamera.h"
-#include "Graphics.h"
+#include "Application.h"
 
 #include "Utils.h"
 
@@ -559,8 +559,8 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   // Create the camera
   auto *pCamera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
-  Graphics::GetSingleton().GetCameraMan()->UnregCamera();
-  Graphics::GetSingleton().GetCameraMan()->RegCamera(parent, pCamera);
+  Application::GetSingleton().GetCameraMan()->UnregCamera();
+  Application::GetSingleton().GetCameraMan()->RegCamera(parent, pCamera);
 
   auto *actor = scene_->createEntity("Actor", "Icosphere.mesh");
   actor->setCastShadows(false);
@@ -585,7 +585,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   entBody->setActivationState(DISABLE_DEACTIVATION);
   entBody->setFriction(1.0);
   Physics::GetSingleton().AddRigidBody(entBody);
-  Graphics::GetSingleton().GetCameraMan()->SetRigidBody(entBody);
+  Application::GetSingleton().GetCameraMan()->SetRigidBody(entBody);
   // Set the field-of-view
   pCamera->setFOVy(Ogre::Radian(fov));
 
@@ -615,7 +615,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   }
 
   if (auto element = xml_node.child("light")) {
-    ProcessLight_(element, Graphics::GetSingleton().GetCameraMan()->GetCameraNode());
+    ProcessLight_(element, Application::GetSingleton().GetCameraMan()->GetCameraNode());
   }
 
 }

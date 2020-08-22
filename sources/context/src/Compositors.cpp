@@ -121,7 +121,7 @@ class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
   Ogre::MaterialPtr mGBufRefMat2;
 };
 //----------------------------------------------------------------------------------------------------------------------
-void Compositors::Init_() {
+Compositors::Compositors() {
   ConfiguratorJson::GetSingleton().Assign(graphics_shadows_enable_, "graphics_shadows_enable");
   ConfiguratorJson::GetSingleton().Assign(compositor_use_bloom_, "compositor_use_bloom");
   ConfiguratorJson::GetSingleton().Assign(compositor_use_ssao_, "compositor_use_ssao");

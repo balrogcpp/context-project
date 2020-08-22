@@ -48,7 +48,7 @@ void DemoDotAppState::Setup() {
   AppStateManager::GetSingleton().SetNextState(std::make_shared<DemoDotAppState>());
 //  ContextManager::GetSingleton().UpdateCursorStatus({false, true, true});
 
-  Graphics::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::FPS);
+  Application::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::FPS);
 
 //  Context::DotSceneLoaderB::GetSingleton().load("test.scene",
 //                                              Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,

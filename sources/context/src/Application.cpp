@@ -58,8 +58,6 @@ Application::~Application() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
-  Graphics::GetSingleton();
-
 #ifndef DEBUG
   Storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
 #else
@@ -75,7 +73,7 @@ void Application::Init_() {
   DotSceneLoaderB::GetSingleton();
   Compositors::GetSingleton();
   GorillaOverlay::GetSingleton().Setup();
-  Graphics::GetSingleton().UpdateParams();
+  graphics_.UpdateParams();
 
   conf.Assign(global_verbose_, "global_verbose_enable");
   conf.Assign(target_fps_, "global_target_fps");
@@ -96,7 +94,7 @@ void Application::Init_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Render_() {
-  Graphics::GetSingleton().Render();
+  graphics_.Render();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Reset_() {
@@ -196,7 +194,7 @@ void Application::Loop_() {
           root->destroyAllMovableObjects();
           root->getRootSceneNode()->removeAndDestroyAllChildren();
 
-          Graphics::GetSingleton().UpdateParams();
+          graphics_.UpdateParams();
           AppStateManager::GetSingleton().InitCurrState();
           Physics::GetSingleton().Start();
           AppStateManager::GetSingleton().ClearWaiting();

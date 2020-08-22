@@ -340,7 +340,7 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
       entBody->setFriction(friction_x);
     }
 
-    Physics::GetSingleton().AddRigidBody(entBody);
+    AddRigidBody(entBody);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------

@@ -32,20 +32,9 @@ namespace Context {
 class CubeMapCamera final : public Ogre::RenderTargetListener, public Ogre::FrameListener {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  static CubeMapCamera &GetSingleton() {
-    static CubeMapCamera Singleton;
-    return Singleton;
-  }
-
-//----------------------------------------------------------------------------------------------------------------------
   CubeMapCamera() {
     Init_();
   }
-
-  CubeMapCamera(const CubeMapCamera &) = delete;
-  CubeMapCamera &operator=(const CubeMapCamera &) = delete;
-  CubeMapCamera(Singleton &&) = delete;
-  CubeMapCamera &operator=(CubeMapCamera &&) = delete;
 
   virtual ~CubeMapCamera() {
     if (camera_node_) {

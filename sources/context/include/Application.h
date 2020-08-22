@@ -30,6 +30,9 @@ SOFTWARE.
 
 #include "IoListeners.h"
 #include "DummyListener.h"
+#include "Graphics.h"
+#include "Sounds.h"
+#include "Physics.h"
 #include "Singleton.h"
 
 namespace Context {
@@ -78,10 +81,15 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
   int target_fps_ = 60;
   bool global_verbose_ = false;
   bool global_lock_fps_ = true;
+  Graphics graphics_;
 
  public:
   int GetFpsFrames() const {
     return current_fps_;
+  }
+
+  CameraMan *GetCameraMan() {
+    return graphics_.GetCameraMan();
   }
 }; //class Application
 } //namespace Context
