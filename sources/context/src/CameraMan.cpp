@@ -43,45 +43,45 @@ CameraMan::~CameraMan() {
 //----------------------------------------------------------------------------------------------------------------------
 float CameraMan::GetDistToTarget() {
   if (target_) {
-    Ogre::Vector3 offset = camera_node_->getPosition() - target_->_getDerivedPosition() - offset;
+    Ogre::Vector3 offset = node_->getPosition() - target_->_getDerivedPosition() - offset;
     return offset.length();
   } else {
-    Ogre::Vector3 offset = camera_node_->getPosition() - offset;
+    Ogre::Vector3 offset = node_->getPosition() - offset;
     return offset.length();
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::SetStyle(CameraStyle style) {
-  if (camera_style_ != CameraStyle::ORBIT && style == CameraStyle::ORBIT) {
-    camera_node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z); // also fix axis with lookAt calls
+  if (style_ != CameraStyle::ORBIT && style == CameraStyle::ORBIT) {
+    node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z); // also fix axis with lookAt calls
 
     // try to replicate the camera configuration
     float dist = GetDistToTarget();
-    const Ogre::Quaternion &q = camera_node_->getOrientation();
+    const Ogre::Quaternion &q = node_->getOrientation();
     SetYawPitchDist(q.getYaw(), q.getPitch(), dist == 0 ? 400 : dist); // enforce some distance
-    camera_node_->setAutoTracking(true, target_);
+    node_->setAutoTracking(true, target_);
     moving_ = true;
-  } else if (camera_style_ != CameraStyle::FREELOOK && style == CameraStyle::FREELOOK) {
-    camera_node_->setFixedYawAxis(true); // also fix axis with lookAt calls
-    camera_node_->setAutoTracking(false);
-  } else if (camera_style_ != CameraStyle::MANUAL && style == CameraStyle::MANUAL) {
+  } else if (style_ != CameraStyle::FREELOOK && style == CameraStyle::FREELOOK) {
+    node_->setFixedYawAxis(true); // also fix axis with lookAt calls
+    node_->setAutoTracking(false);
+  } else if (style_ != CameraStyle::MANUAL && style == CameraStyle::MANUAL) {
     ManualStop();
-    camera_node_->setAutoTracking(false);
-  } else if (camera_style_ != CameraStyle::FPS && style == CameraStyle::FPS) {
-    camera_node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z); // also fix axis with lookAt calls
-    camera_node_->setAutoTracking(false);
+    node_->setAutoTracking(false);
+  } else if (style_ != CameraStyle::FPS && style == CameraStyle::FPS) {
+    node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z); // also fix axis with lookAt calls
+    node_->setAutoTracking(false);
   }
 
-  camera_style_ = style;
+  style_ = style;
 }
 //----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::RegCamera(Ogre::SceneNode *ogre_camera_node, Ogre::Camera *camera) {
-  camera_node_ = ogre_camera_node;
+  node_ = ogre_camera_node;
 
-  ogre_camera_ = camera;
+  camera_ = camera;
   // Create the camera's yaw node as a child of camera's top node.
-  camera_yaw_node_ = camera_node_->createChildSceneNode();
+  camera_yaw_node_ = node_->createChildSceneNode();
 
   // Create the camera's pitch node as a child of camera's yaw node.
   camera_pitch_node_ = camera_yaw_node_->createChildSceneNode();
@@ -89,8 +89,8 @@ void CameraMan::RegCamera(Ogre::SceneNode *ogre_camera_node, Ogre::Camera *camer
   // Create the camera's roll node as a child of camera's pitch node
   // and attach the camera to it.
   camera_roll_node_ = camera_pitch_node_->createChildSceneNode();
-  camera_roll_node_->attachObject(ogre_camera_);
-  if (camera_style_ == CameraStyle::FPS) {
+  camera_roll_node_->attachObject(camera_);
+  if (style_ == CameraStyle::FPS) {
     ogre_camera_node->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
   }
 }
@@ -99,8 +99,8 @@ void CameraMan::UnregCamera() {
   camera_roll_node_->detachAllObjects();
   camera_pitch_node_->detachAllObjects();
   camera_yaw_node_->detachAllObjects();
-  camera_node_->detachAllObjects();
-  camera_node_ = nullptr;
+  node_->detachAllObjects();
+  node_ = nullptr;
   camera_yaw_node_ = nullptr;
   camera_pitch_node_ = nullptr;
   camera_roll_node_ = nullptr;
@@ -108,16 +108,16 @@ void CameraMan::UnregCamera() {
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::SetYawPitchDist(Ogre::Radian yaw, Ogre::Radian pitch, float dist) {
   if (target_) {
-    camera_node_->setPosition(target_->_getDerivedPosition());
-    camera_node_->setOrientation(target_->_getDerivedOrientation());
+    node_->setPosition(target_->_getDerivedPosition());
+    node_->setOrientation(target_->_getDerivedOrientation());
   }
-  camera_node_->yaw(yaw);
-  camera_node_->pitch(-pitch);
-  camera_node_->translate(Ogre::Vector3(0, dist, 0), Ogre::Node::TS_LOCAL);
+  node_->yaw(yaw);
+  node_->pitch(-pitch);
+  node_->translate(Ogre::Vector3(0, dist, 0), Ogre::Node::TS_LOCAL);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::ManualStop() {
-  if (camera_style_ == CameraStyle::FREELOOK) {
+  if (style_ == CameraStyle::FREELOOK) {
     move_forward_ = false;
     move_back_ = false;
     move_left_ = false;
@@ -131,7 +131,7 @@ void CameraMan::ManualStop() {
 bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   float timeSinceLastFrame = evt.timeSinceLastFrame;
 
-  if (camera_style_ == CameraStyle::FREELOOK) {
+  if (style_ == CameraStyle::FREELOOK) {
     top_speed_ = move_fast_ ? run_speed_ : const_speed_;
 
     Ogre::Vector3 accel = Ogre::Vector3::ZERO;
@@ -169,15 +169,15 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
     }
 
     if (velocity_ != Ogre::Vector3::ZERO) {
-      camera_node_->translate(velocity_ * timeSinceLastFrame);
+      node_->translate(velocity_ * timeSinceLastFrame);
     }
     if (target_) {
       Ogre::Vector3 move = target_->getPosition() - prev_pos_;
       prev_pos_ = target_->getPosition();
-      camera_node_->translate(move);
+      node_->translate(move);
     }
 
-  } else if (camera_style_ == CameraStyle::FPS) {
+  } else if (style_ == CameraStyle::FPS) {
     top_speed_ = move_fast_ ? run_speed_ : const_speed_;
 
     velocity_ = {0, 0, 0};
@@ -272,10 +272,10 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
     dx_ = 0;
     dy_ = 0;
 
-  } else if (camera_style_ == CameraStyle::ORBIT) {
-    Ogre::Vector3 move = camera_node_->getPosition() - prev_pos_;
-    prev_pos_ = camera_node_->getPosition();
-    camera_node_->translate(move);
+  } else if (style_ == CameraStyle::ORBIT) {
+    Ogre::Vector3 move = node_->getPosition() - prev_pos_;
+    prev_pos_ = node_->getPosition();
+    node_->translate(move);
 
   }
 
@@ -284,36 +284,36 @@ bool CameraMan::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   if (!stop_) {
-    if (camera_style_ == CameraStyle::FREELOOK) {
-      camera_node_->yaw(Ogre::Degree(-dx));
-      camera_node_->pitch(Ogre::Degree(-dy));
+    if (style_ == CameraStyle::FREELOOK) {
+      node_->yaw(Ogre::Degree(-dx));
+      node_->pitch(Ogre::Degree(-dy));
 
       if (target_) {
         float dist = GetDistToTarget();
-        Ogre::Vector3 delta = camera_node_->getOrientation() * Ogre::Vector3(-dx, dy, 0);
+        Ogre::Vector3 delta = node_->getOrientation() * Ogre::Vector3(-dx, dy, 0);
 
         // the further the camera is, the faster it moves
         delta *= dist / 1000.0f;
         offset_ += delta;
       }
-    } else if (camera_style_ == CameraStyle::FPS) {
+    } else if (style_ == CameraStyle::FPS) {
       dx_ = Ogre::Degree(dx);
       dy_ = Ogre::Degree(dy);
-    } else if (camera_style_ == CameraStyle::ORBIT) {
+    } else if (style_ == CameraStyle::ORBIT) {
       float dist = GetDistToTarget();
 
       if (orbiting_)   // yaw around the target, and pitch locally
       {
-        camera_node_->setPosition(target_->_getDerivedPosition() + offset_);
+        node_->setPosition(target_->_getDerivedPosition() + offset_);
 
-        camera_node_->yaw(Ogre::Degree(-dx * 0.25f), Ogre::Node::TS_PARENT);
-        camera_node_->pitch(Ogre::Degree(-dy * 0.25f));
+        node_->yaw(Ogre::Degree(-dx * 0.25f), Ogre::Node::TS_PARENT);
+        node_->pitch(Ogre::Degree(-dy * 0.25f));
 
-        camera_node_->translate(Ogre::Vector3(0, 0, dist), Ogre::Node::TS_LOCAL);
+        node_->translate(Ogre::Vector3(0, 0, dist), Ogre::Node::TS_LOCAL);
         // don't let the camera Go over the top or around the bottom of the target
       } else if (moving_)  // move the camera along the image plane
       {
-        Ogre::Vector3 delta = camera_node_->getOrientation() * Ogre::Vector3(-dx, dy, 0);
+        Ogre::Vector3 delta = node_->getOrientation() * Ogre::Vector3(-dx, dy, 0);
 
         // the further the camera is, the faster it moves
         delta *= dist / 1000.0f;
@@ -328,7 +328,7 @@ void CameraMan::KeyDown(SDL_Keycode sym) {
   SDL_Scancode code = SDL_GetScancodeFromKey(sym);
 
   if (!stop_) {
-    if (camera_style_ == CameraStyle::FREELOOK) {
+    if (style_ == CameraStyle::FREELOOK) {
       if (code == SDL_SCANCODE_W || sym == SDLK_UP)
         move_forward_ = true;
       else if (code == SDL_SCANCODE_S || sym == SDLK_DOWN)
@@ -343,7 +343,7 @@ void CameraMan::KeyDown(SDL_Keycode sym) {
         move_down_ = true;
       else if (sym == SDLK_LSHIFT)
         move_fast_ = true;
-    } else if (camera_style_ == CameraStyle::FPS) {
+    } else if (style_ == CameraStyle::FPS) {
       if (code == SDL_SCANCODE_W || sym == SDLK_UP)
         move_forward_ = true;
       else if (code == SDL_SCANCODE_S || sym == SDLK_DOWN)
@@ -367,7 +367,7 @@ void CameraMan::KeyUp(SDL_Keycode sym) {
   SDL_Scancode code = SDL_GetScancodeFromKey(sym);
 
   if (!stop_) {
-    if (camera_style_ == CameraStyle::FREELOOK) {
+    if (style_ == CameraStyle::FREELOOK) {
       if (code == SDL_SCANCODE_W || sym == SDLK_UP)
         move_forward_ = false;
       else if (code == SDL_SCANCODE_S || sym == SDLK_DOWN)
@@ -383,7 +383,7 @@ void CameraMan::KeyUp(SDL_Keycode sym) {
       else if (sym == SDLK_LSHIFT)
         move_fast_ = false;
 
-    } else if (camera_style_ == CameraStyle::FPS) {
+    } else if (style_ == CameraStyle::FPS) {
       if (code == SDL_SCANCODE_W || sym == SDLK_UP)
         move_forward_ = false;
       else if (code == SDL_SCANCODE_S || sym == SDLK_DOWN)

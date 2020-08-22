@@ -63,14 +63,14 @@ class CameraMan : public io::InputListener, public Ogre::FrameListener {
   void KeyUp(SDL_Keycode sym) override;
 
  private:
-  Ogre::SceneNode *camera_node_ = nullptr;
+  Ogre::SceneNode *node_ = nullptr;
   Ogre::SceneNode *camera_yaw_node_ = nullptr;
   Ogre::SceneNode *camera_pitch_node_ = nullptr;
   Ogre::SceneNode *camera_roll_node_ = nullptr;
   btRigidBody *rigid_body_ = nullptr;
   Ogre::Degree dx_, dy_;
-  Ogre::Camera *ogre_camera_ = nullptr;
-  CameraStyle camera_style_ = CameraStyle::FPS;
+  Ogre::Camera *camera_ = nullptr;
+  CameraStyle style_ = CameraStyle::FPS;
   Ogre::SceneNode *target_ = nullptr;
   bool orbiting_ = false;
   bool moving_ = false;
@@ -101,12 +101,16 @@ class CameraMan : public io::InputListener, public Ogre::FrameListener {
     return rigid_body_;
   }
 
-  Ogre::SceneNode *GetCameraNode() {
-    if (camera_style_ == CameraStyle::FPS) {
+  Ogre::SceneNode *GetCameraNode() const {
+    if (style_ == CameraStyle::FPS) {
       return camera_roll_node_;
     } else {
-      return camera_node_;
+      return node_;
     }
+  }
+
+  Ogre::Camera *GetCamera() const {
+    return camera_;
   }
 
   void RegCamera(Ogre::SceneNode *ogre_camera_node, Ogre::Camera *camera);
@@ -115,7 +119,7 @@ class CameraMan : public io::InputListener, public Ogre::FrameListener {
   void SetStyle(CameraStyle style);
 
   CameraStyle GetStyle() const {
-    return camera_style_;
+    return style_;
   }
 
   float GetDistToTarget();

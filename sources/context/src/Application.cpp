@@ -25,11 +25,9 @@ SOFTWARE.
 #include "pcheader.h"
 
 #include "Application.h"
-#include "StaticForest.h"
-#include "Compositors.h"
 #include "AppStateManager.h"
 #include "Storage.h"
-#include "GorillaOverlay.h"
+#include "Overlay.h"
 #include "ConfiguratorJson.h"
 #include "Exception.h"
 #include "CameraMan.h"
@@ -69,7 +67,7 @@ void Application::Init_() {
   conf.Assign(sound_enable_, "sound_enable");
 
   if (!compositor_) compositor_ = std::make_unique<Compositors>();
-  GorillaOverlay::GetSingleton().Setup();
+  overlay_.Setup();
   graphics_.UpdateParams();
   loader_.SetWorld(&physics_);
   loader_.SetCamera(graphics_.GetCameraMan());

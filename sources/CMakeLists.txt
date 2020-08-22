@@ -101,7 +101,7 @@ set(CONTEXT_HEADERS
     context/include/CubeMapCamera.h
     context/include/ReflectionCamera.h
     context/include/Gorilla.h
-    context/include/GorillaOverlay.h
+    context/include/Overlay.h
     context/include/IoListeners.h
     context/include/Window.h
     context/include/Utils.h
@@ -161,7 +161,7 @@ set(CONTEXT_SOURCES
     context/src/Compositors.cpp
     context/src/TerrainMaterialGeneratorB.cpp
     context/src/Gorilla.cpp
-    context/src/GorillaOverlay.cpp
+    context/src/Overlay.cpp
     context/src/Utils.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB

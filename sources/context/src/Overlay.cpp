@@ -24,18 +24,18 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "GorillaOverlay.h"
+#include "Overlay.h"
 #include "Gorilla.h"
 #include "Application.h"
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
-bool GorillaOverlay::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+bool Overlay::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 //  caption->text(std::to_string(Application::GetSingleton().GetFpsFrames()));
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void GorillaOverlay::Setup() {
+void Overlay::Setup() {
   mSilverback = new Gorilla::Silverback();
   mSilverback->loadAtlas("dejavu");
   mScreen = mSilverback->createScreen(viewport_, "dejavu");
@@ -65,7 +65,7 @@ void GorillaOverlay::Setup() {
   caption->text("1488");
 }
 //----------------------------------------------------------------------------------------------------------------------
-void GorillaOverlay::Reset() {
+void Overlay::Reset() {
   mSilverback->destroyScreen(mScreen);
 //  mScreen = mSilverback->createScreen(ogre_viewport_, "dejavu");
 //  layer = mScreen->createLayer(0);

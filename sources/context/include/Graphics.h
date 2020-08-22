@@ -64,14 +64,12 @@ class Graphics : public Singleton {
 
   Ogre::Root *root_ = nullptr;
   Ogre::SceneManager *scene_ = nullptr;
-  Ogre::SceneNode *camera_node_ = nullptr;
   Ogre::Viewport *viewport_ = nullptr;
-  Ogre::Camera *camera_ = nullptr;
-  CameraMan *camera_man_ = nullptr;
+  std::shared_ptr<CameraMan> camera_man_;
   std::shared_ptr<Ogre::ShadowCameraSetup> ogre_shadow_camera_setup_;
 
  public:
-  CameraMan *GetCameraMan() const {
+  std::shared_ptr<CameraMan> GetCameraMan() const {
     return camera_man_;
   }
 

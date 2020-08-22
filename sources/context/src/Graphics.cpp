@@ -137,43 +137,43 @@ Graphics::Graphics() {
   scene_mgr_ = ogre_root->createSceneManager();
 #endif
 
-  camera_ = (scene_->createCamera("Default"));
+  auto *camera = scene_->createCamera("Default");
   auto *renderTarget = root_->getRenderTarget(window_.GetCaption());
 
-  viewport_ = renderTarget->addViewport(camera_);
+  viewport_ = renderTarget->addViewport(camera);
   viewport_->setBackgroundColour(Ogre::ColourValue::Black);
 }
 //----------------------------------------------------------------------------------------------------------------------
 Graphics::~Graphics() {
-  delete camera_man_;
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Graphics::CreateCamera() {
-  camera_node_ = scene_->getRootSceneNode()->createChildSceneNode();
+  auto *camera_node_ = scene_->getRootSceneNode()->createChildSceneNode();
+  Ogre::Camera *camera;
 
   if (!scene_->hasCamera("Default")) {
-    camera_ = (scene_->createCamera("Default"));
+    camera = scene_->createCamera("Default");
     auto *renderTarget = root_->getRenderTarget(window_.GetCaption());
     renderTarget->removeViewport(0);
-    viewport_ = renderTarget->addViewport(camera_);
-    viewport_->setBackgroundColour(Ogre::ColourValue::Black);
+    viewport_ = renderTarget->addViewport(camera);
     viewport_->setBackgroundColour(Ogre::ColourValue::Black);
     viewport_->setDimensions(0, 0, 1, 1);
+  } else {
+    camera = scene_->getCamera("Default");
   }
   if (!camera_man_) {
-    camera_man_ = new CameraMan();
+    camera_man_ = std::make_shared<CameraMan>();
   }
 
-  camera_man_->RegCamera(camera_node_, camera_);
+  camera_man_->RegCamera(camera_node_, camera);
   camera_man_->SetStyle(CameraStyle::MANUAL);
 
-  if (camera_) {
-    camera_->setNearClipDistance(0.01f);
-    camera_->setFarClipDistance(10000.0f);
+  if (camera) {
+    camera->setNearClipDistance(0.01f);
+    camera->setFarClipDistance(10000.0f);
   }
 
-  camera_->setAspectRatio(
-      static_cast<float>(viewport_->getActualWidth()) / static_cast<float>(viewport_->getActualHeight()));
+  camera->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / static_cast<float>(viewport_->getActualHeight()));
 
   scene_->setSkyBoxEnabled(false);
   scene_->setSkyDomeEnabled(false);
@@ -190,6 +190,7 @@ void Graphics::UpdateParams() {
   conf.Assign(graphics_filtration_, "graphics_filtration");
   conf.Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
   conf.Assign(graphics_mipmap_count_, "graphics_mipmap_count");
+  auto *camera = camera_man_->GetCamera();
 
   // Texture filtering
   if (graphics_filtration_ == "anisotropic") {
@@ -333,14 +334,13 @@ void Graphics::UpdateParams() {
       auto pssm_setup = std::make_shared<Ogre::PSSMShadowCameraSetup>();
 
       int pssm_splits_ = 3;
-
       if (!ogre_shadow_camera_setup_) {
         if (graphics_shadows_split_auto_) {
-          pssm_setup->calculateSplitPoints(pssm_splits_, camera_->getNearClipDistance(),
+          pssm_setup->calculateSplitPoints(pssm_splits_, camera->getNearClipDistance(),
                                            scene_->getShadowFarDistance());
         } else {
           Ogre::PSSMShadowCameraSetup::SplitPointList split_points =
-              {camera_->getNearClipDistance(), 10.0, 20.0, scene_->getShadowFarDistance()};
+              {camera->getNearClipDistance(), 10.0, 20.0, scene_->getShadowFarDistance()};
           pssm_setup->setSplitPoints(split_points);
         }
 
@@ -382,9 +382,9 @@ void Graphics::UpdateParams() {
   conf.Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
 
   if (graphics_debug_show_wireframe_) {
-    camera_->setPolygonMode(Ogre::PM_WIREFRAME);
+    camera->setPolygonMode(Ogre::PM_WIREFRAME);
   } else {
-    camera_->setPolygonMode(Ogre::PM_SOLID);
+    camera->setPolygonMode(Ogre::PM_SOLID);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------

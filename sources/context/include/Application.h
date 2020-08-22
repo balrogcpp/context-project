@@ -36,6 +36,7 @@ SOFTWARE.
 #include "DotSceneLoaderB.h"
 #include "Compositors.h"
 #include "Singleton.h"
+#include "Overlay.h"
 
 namespace Context {
 class AppState;
@@ -80,6 +81,7 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
   Graphics graphics_;
   Physics physics_;
   Sounds sounds_;
+  Overlay overlay_;
   std::unique_ptr<Compositors> compositor_;
   DotSceneLoaderB loader_;
 }; //class Application

@@ -102,7 +102,7 @@ class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
 
  private:
   std::unique_ptr<ReflectionCamera> rcamera_;
-  CameraMan *camera_man_ = nullptr;
+  std::shared_ptr<CameraMan> camera_man_;
   Physics *physics_ = nullptr;
   Ogre::SceneManager *scene_manager_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;
@@ -122,7 +122,7 @@ class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
     physics_ = pworld;
   }
 
-  void SetCamera(CameraMan *camera) {
+  void SetCamera(std::shared_ptr<CameraMan> camera) {
     camera_man_ = camera;
   }
 }; //class DotSceneLoaderB

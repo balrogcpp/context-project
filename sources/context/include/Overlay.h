@@ -46,13 +46,8 @@ class MarkupText;
 
 namespace Context {
 
-class GorillaOverlay : public Manager {
+class Overlay : public Manager {
  public:
-  static GorillaOverlay &GetSingleton() {
-    static GorillaOverlay singleton;
-    return singleton;
-  }
-
   void Setup() final;
   void Reset() final;
 
