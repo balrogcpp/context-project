@@ -52,5 +52,5 @@ int main()
 #endif
 {
   Context::Application app;
-  app.Main(std::make_shared<Demo::DemoDotAppState>());
+  app.Main(std::make_unique<Demo::DemoDotAppState>());
 }

@@ -47,8 +47,8 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
   Application();
   virtual ~Application();
 
-  int Main(std::shared_ptr<AppState> scene_ptr);
-  void SetCurState(std::shared_ptr<AppState> scene_ptr);
+  int Main(std::unique_ptr<AppState> &&scene_ptr);
+  void SetCurState(std::unique_ptr<AppState> &&scene_ptr);
 
  private:
   void Init_();

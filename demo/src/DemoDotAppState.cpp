@@ -45,7 +45,7 @@ void DemoDotAppState::Reset() {
 }
 
 void DemoDotAppState::Setup() {
-  AppStateManager::GetSingleton().SetNextState(std::make_shared<DemoDotAppState>());
+  AppStateManager::GetSingleton().SetNextState(std::make_unique<DemoDotAppState>());
 //  ContextManager::GetSingleton().UpdateCursorStatus({false, true, true});
 
 //  Application::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::FPS);

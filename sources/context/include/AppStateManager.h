@@ -39,23 +39,22 @@ class AppStateManager : public Singleton {
 
  private:
   bool waiting_ = false;
-  std::shared_ptr<AppState> cur_state_;
-  std::shared_ptr<AppState> next_state_;
+  std::unique_ptr<AppState> cur_state_;
+  std::unique_ptr<AppState> next_state_;
 
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  void SetInitialState(std::shared_ptr<AppState> state) {
-    cur_state_ = state;
+  void SetInitialState(std::unique_ptr<AppState> &&state) {
+    cur_state_ = move(state);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void SetNextState(std::shared_ptr<AppState> state) {
-    next_state_ = state;
+  void SetNextState(std::unique_ptr<AppState> &&state) {
+    next_state_ = move(state);
   }
 //----------------------------------------------------------------------------------------------------------------------
   void GoNextState() {
-    cur_state_.reset();
     if (next_state_) {
-      cur_state_ = next_state_;
+      cur_state_ = move(next_state_);
       waiting_ = true;
     }
   }
@@ -64,12 +63,12 @@ class AppStateManager : public Singleton {
     cur_state_->Setup();
   }
 //----------------------------------------------------------------------------------------------------------------------
-  std::shared_ptr<AppState> GetCurState() {
-    return cur_state_;
+  AppState* GetCurState() {
+    return cur_state_.get();
   }
 
-  std::shared_ptr<AppState> GetNextState() {
-    return next_state_;
+  AppState* GetNextState() {
+    return next_state_.get();
   }
 
   bool IsWaiting() const noexcept {

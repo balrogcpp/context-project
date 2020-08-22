@@ -238,11 +238,11 @@ void Application::Go_() {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::SetCurState(std::shared_ptr<AppState> scene_ptr) {
-  AppStateManager::GetSingleton().SetInitialState(scene_ptr);
+void Application::SetCurState(std::unique_ptr<AppState> &&scene_ptr) {
+  AppStateManager::GetSingleton().SetInitialState(move(scene_ptr));
 }
 //----------------------------------------------------------------------------------------------------------------------
-int Application::Main(std::shared_ptr<AppState> scene_ptr) {
+int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
 #ifdef _MSC_VER
   SDL_SetMainReady();
 #endif
@@ -250,7 +250,7 @@ int Application::Main(std::shared_ptr<AppState> scene_ptr) {
   std::ios_base::sync_with_stdio(false);
 
   try {
-    SetCurState(scene_ptr);
+    SetCurState(move(scene_ptr));
     Go_();
   }
   catch (Exception &e) {
