@@ -44,22 +44,15 @@ class Compositors final : public Manager {
     return singleton;
   }
 
- public:
-  void Setup();
-  void Reset();
+  Compositors() {
+    Init_();
+  }
 
- public:
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt);
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt);
+  virtual ~Compositors() = default;
 
  private:
-  void CreateMotionBlurCompositor();
+  void Init_();
 
- public:
-  void SetCompositor(const std::string &compositor_);
-  void SetPost(const std::string &post_);
-
- private:
   std::vector<std::string> compositor_names_;
   std::string current_compositor_;
 
@@ -77,5 +70,9 @@ class Compositors final : public Manager {
   bool compositor_use_blur_ = true;
   bool compositor_use_hdr_ = true;
   bool compositor_use_moution_blur_ = false;
+
+ public:
+  void SetCompositor(const std::string &compositor_);
+  void SetPost(const std::string &post_);
 }; //class CompositorManager
 } //namespace Context

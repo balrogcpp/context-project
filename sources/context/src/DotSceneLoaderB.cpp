@@ -48,7 +48,7 @@ float DotSceneLoaderB::GetHeigh(float x, float z) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::Setup() {
+DotSceneLoaderB::DotSceneLoaderB() {
   if (Ogre::SceneLoaderManager::getSingleton()._getSceneLoader("DotScene")) {
     Ogre::SceneLoaderManager::getSingleton().unregisterSceneLoader("DotScene");
   }
@@ -64,7 +64,7 @@ void DotSceneLoaderB::Setup() {
   ConfiguratorJson::GetSingleton().Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::Reset() {
+DotSceneLoaderB::~DotSceneLoaderB() {
   if (ogre_terrain_group_) {
     ogre_terrain_group_->removeAllTerrains();
     ogre_terrain_group_.reset();

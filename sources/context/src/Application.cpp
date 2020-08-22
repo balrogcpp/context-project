@@ -59,8 +59,6 @@ Application::~Application() = default;
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
   Graphics::GetSingleton();
-  StaticForest::GetSingleton().SetupGlobal();
-  StaticForest::GetSingleton().Setup();
 
 #ifndef DEBUG
   Storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
@@ -68,16 +66,14 @@ void Application::Init_() {
   Storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
 #endif
 
-  DotSceneLoaderB::GetSingleton().SetupGlobal();
-  DotSceneLoaderB::GetSingleton().Setup();
-
   bool physics_enable_ = true;
   bool sound_enable_ = true;
   auto &conf = ConfiguratorJson::GetSingleton();
   conf.Assign(physics_enable_, "physics_enable");
   conf.Assign(sound_enable_, "sound_enable");
 
-  Compositors::GetSingleton().Setup();
+  DotSceneLoaderB::GetSingleton();
+  Compositors::GetSingleton();
   GorillaOverlay::GetSingleton().Setup();
   Graphics::GetSingleton().UpdateParams();
 
@@ -142,23 +138,23 @@ void Application::Event(const SDL_Event &evt) {
     auto &conf = ConfiguratorJson::GetSingleton();
     if (!fullscreen_) {
       if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
-        paused_ = true;
+        suspend_ = true;
         global_target_fps_ = fps_inactive;
         global_lock_fps_ = true;
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
-        paused_ = false;
+        suspend_ = false;
         conf.Assign(global_target_fps_, "global_target_fps");
         conf.Assign(global_lock_fps_, "global_lock_fps");
       }
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
-        paused_ = true;
+        suspend_ = true;
         global_target_fps_ = fps_inactive;
         global_lock_fps_ = true;
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
-        paused_ = false;
+        suspend_ = false;
         conf.Assign(global_target_fps_, "global_target_fps");
         conf.Assign(global_lock_fps_, "global_lock_fps");
       }
@@ -175,6 +171,9 @@ void Application::Loop_() {
       auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
       long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
 
+      int fps_frames_;
+      long delta_time_;
+
       if (delta_time_ > 1000000) {
         if (global_verbose_fps_)
           std::cout << "FPS " << fps_frames_ << '\n';
@@ -189,7 +188,7 @@ void Application::Loop_() {
 
       io::InputSequencer::GetSingleton().Capture();
 
-      if (!paused_) {
+      if (!suspend_) {
         if (AppStateManager::GetSingleton().IsWaiting()) {
           StaticForest::GetSingleton().Reset();
           DotSceneLoaderB::GetSingleton().Reset();
@@ -238,7 +237,7 @@ void Application::Loop_() {
       auto duration_after_loop = std::chrono::system_clock::now().time_since_epoch();
       long millis_after_loop = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_loop).count();
 
-      time_since_last_frame_ = millis_after_loop - millis_before_frame;
+      long time_since_last_frame_ = millis_after_loop - millis_before_frame;
       delta_time_ += time_since_last_frame_;
 
       fps_frames_++;

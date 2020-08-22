@@ -61,11 +61,11 @@ class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
     return singleton;
   }
 
+  DotSceneLoaderB();
+  virtual ~DotSceneLoaderB();
+
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
   void Load(const std::string &filename, const std::string &group_name, Ogre::SceneNode *root_node);
-
-  void Setup() final;
-  void Reset() final;
 
   float GetHeigh(float x, float z);
 

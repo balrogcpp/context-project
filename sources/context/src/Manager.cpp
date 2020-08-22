@@ -26,6 +26,7 @@ SOFTWARE.
 #include "pcheader.h"
 
 #include "Manager.h"
+#include "Application.h"
 #include "IO.h"
 
 namespace Context {
@@ -36,29 +37,11 @@ Manager::Manager() {
   viewport_ = camera_->getViewport();
   io::InputSequencer::GetSingleton().RegisterListener(this);
   Ogre::Root::getSingleton().addFrameListener(this);
-  registered_ = true;
 }
 //----------------------------------------------------------------------------------------------------------------------
 Manager::~Manager() {
-  if (registered_) {
-    Ogre::Root::getSingleton().removeFrameListener(this);
-    io::InputSequencer::GetSingleton().UnregisterListener(this);
-  }
+  Ogre::Root::getSingleton().removeFrameListener(this);
+  io::InputSequencer::GetSingleton().UnregisterListener(this);
 }
-//----------------------------------------------------------------------------------------------------------------------
-void Manager::SetupGlobal() {
-//  scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
-//  camera_ = scene_->getCamera("Default");
-//  viewport_ = camera_->getViewport();
-//  io::InputSequencer::GetSingleton().RegisterListener(this);
-//  Ogre::Root::getSingleton().addFrameListener(this);
-//  registered_ = true;
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Manager::ResetGlobal() {
-//  if (registered_) {
-//    Ogre::Root::getSingleton().removeFrameListener(this);
-//    io::InputSequencer::GetSingleton().UnregisterListener(this);
-//  }
-} //class Manager
+//class Manager
 } //namespace Context

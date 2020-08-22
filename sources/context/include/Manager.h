@@ -38,11 +38,8 @@ class Manager
   Manager();
   virtual ~Manager();
 
-  void SetupGlobal();
-  void ResetGlobal();
-
-  virtual void Setup() = 0;
-  virtual void Reset() = 0;
+  virtual void Setup() {}
+  virtual void Reset() {}
 
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}
@@ -52,6 +49,5 @@ class Manager
   Ogre::SceneManager *scene_ = nullptr;
   Ogre::Camera *camera_ = nullptr;
   Ogre::Viewport *viewport_ = nullptr;
-  bool registered_ = false;
 };
 }

@@ -103,7 +103,12 @@ set(CONTEXT_HEADERS
     context/include/Gorilla.h
     context/include/GorillaOverlay.h
     context/include/IoListeners.h
-    context/include/Window.h context/include/Utils.h context/include/Storage.h context/include/RtssUtils.h)
+    context/include/Window.h
+    context/include/Utils.h
+    context/include/Storage.h
+    context/include/RtssUtils.h
+    context/include/Terrain.h
+    )
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}

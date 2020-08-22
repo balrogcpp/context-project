@@ -121,87 +121,7 @@ class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
   Ogre::MaterialPtr mGBufRefMat2;
 };
 //----------------------------------------------------------------------------------------------------------------------
-void Compositors::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Compositors::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Compositors::CreateMotionBlurCompositor() {
-  /// Motion blur effect
-  Ogre::CompositorPtr comp3 = Ogre::CompositorManager::getSingleton().create(
-      "MotionBlur", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
-  );
-  Ogre::CompositionTechnique *t = comp3->createTechnique();
-  {
-    Ogre::CompositionTechnique::TextureDefinition *def = t->createTextureDefinition("scene");
-    def->width = 0;
-    def->height = 0;
-    def->formatList.push_back(Ogre::PF_R8G8B8);
-  }
-  {
-    Ogre::CompositionTechnique::TextureDefinition *def = t->createTextureDefinition("sum");
-    def->width = 0;
-    def->height = 0;
-    def->formatList.push_back(Ogre::PF_R8G8B8);
-  }
-  {
-    Ogre::CompositionTechnique::TextureDefinition *def = t->createTextureDefinition("temp");
-    def->width = 0;
-    def->height = 0;
-    def->formatList.push_back(Ogre::PF_R8G8B8);
-  }
-  /// Render scene
-  {
-    Ogre::CompositionTargetPass *tp = t->createTargetPass();
-    tp->setInputMode(Ogre::CompositionTargetPass::IM_PREVIOUS);
-    tp->setOutputName("scene");
-  }
-  /// Initialisation pass for sum texture
-  {
-    Ogre::CompositionTargetPass *tp = t->createTargetPass();
-    tp->setInputMode(Ogre::CompositionTargetPass::IM_PREVIOUS);
-    tp->setOutputName("sum");
-    tp->setOnlyInitial(true);
-  }
-  /// Do the motion blur
-  {
-    Ogre::CompositionTargetPass *tp = t->createTargetPass();
-    tp->setInputMode(Ogre::CompositionTargetPass::IM_NONE);
-    tp->setOutputName("temp");
-    {
-      Ogre::CompositionPass *pass = tp->createPass(Ogre::CompositionPass::PT_RENDERQUAD);
-      pass->setMaterialName("Ogre/Compositor/Combine");
-      pass->setInput(0, "scene");
-      pass->setInput(1, "sum");
-    }
-  }
-  /// Copy back sum texture
-  {
-    Ogre::CompositionTargetPass *tp = t->createTargetPass();
-    tp->setInputMode(Ogre::CompositionTargetPass::IM_NONE);
-    tp->setOutputName("sum");
-    {
-      Ogre::CompositionPass *pass = tp->createPass(Ogre::CompositionPass::PT_RENDERQUAD);
-      pass->setMaterialName("Ogre/Compositor/Copyback");
-      pass->setInput(0, "temp");
-    }
-  }
-  /// Display result
-  {
-    Ogre::CompositionTargetPass *tp = t->getOutputTargetPass();
-    tp->setInputMode(Ogre::CompositionTargetPass::IM_NONE);
-    {
-      Ogre::CompositionPass *pass = tp->createPass(Ogre::CompositionPass::PT_RENDERQUAD);
-      pass->setMaterialName("Ogre/Compositor/MotionBlur");
-      pass->setInput(0, "sum");
-    }
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Compositors::Setup() {
+void Compositors::Init_() {
   ConfiguratorJson::GetSingleton().Assign(graphics_shadows_enable_, "graphics_shadows_enable");
   ConfiguratorJson::GetSingleton().Assign(compositor_use_bloom_, "compositor_use_bloom");
   ConfiguratorJson::GetSingleton().Assign(compositor_use_ssao_, "compositor_use_ssao");
@@ -252,16 +172,6 @@ void Compositors::Setup() {
     }
   }
 
-  if (compositor_use_moution_blur_) {
-    throw Exception("Motion blur not implemented!");
-    CreateMotionBlurCompositor();
-
-    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "MotionBlur"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "MotionBlur", true);
-    else
-      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
-  }
-
   std::string modulate_compositor = "Context/Modulate";
 
   modulate_compositor += compositor_use_bloom_ ? "/Bloom" : "";
@@ -282,10 +192,6 @@ void Compositors::Setup() {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Compositors::Reset() {
-
-}
-//----------------------------------------------------------------------------------------------------------------------
 void Compositors::SetCompositor(const std::string &compositor_) {
   if (compositor_ != "none") {
     Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, current_post_, false);
@@ -301,5 +207,4 @@ void Compositors::SetPost(const std::string &post_) {
     Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, current_post_, true);
   }
 }
-
 } //namespace Context
