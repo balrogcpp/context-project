@@ -72,52 +72,50 @@ class Window : public NoCopy {
     bool factual_fullscreen =
         (w_ == screen_w_ && h_ == screen_h_);
 
-    uint32_t flags = 0x0;
-
-    flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+    flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
 
     if (factual_fullscreen)
-      flags |= SDL_WINDOW_BORDERLESS;
+      flags_ |= SDL_WINDOW_BORDERLESS;
 
     if (f_) {
-      flags |= SDL_WINDOW_ALWAYS_ON_TOP;
-      flags |= SDL_WINDOW_INPUT_GRABBED;
-      flags |= SDL_WINDOW_MOUSE_FOCUS;
+      flags_ |= SDL_WINDOW_ALWAYS_ON_TOP;
+      flags_ |= SDL_WINDOW_INPUT_GRABBED;
+      flags_ |= SDL_WINDOW_MOUSE_FOCUS;
     }
 
-    sdl_window_ = SDL_CreateWindow(caption_.c_str(),
-                                   SDL_WINDOWPOS_CENTERED,
-                                   SDL_WINDOWPOS_CENTERED,
-                                   w_,
-                                   h_,
-                                   flags);
+    window_ = SDL_CreateWindow(caption_.c_str(),
+                               SDL_WINDOWPOS_CENTERED,
+                               SDL_WINDOWPOS_CENTERED,
+                               w_,
+                               h_,
+                               flags_);
 
-    if (sdl_window_) {
+    if (window_) {
       SDL_SetRelativeMouseMode(SDL_TRUE);
     } else {
       throw Exception("Failed to Create SDL_Window");
     }
 
-    if (gl_) {
+    if (gl_force_) {
       constexpr std::pair<int, int> versions[]{{4, 5}, {4, 4}, {4, 3}, {4, 2}, {4, 1},
                                                {4, 0}, {3, 3}, {3, 2}, {3, 1}, {3, 0}};
 
-      if (gl_) {
+      if (gl_force_) {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_major);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor);
 
-        sdl_context_ = SDL_GL_CreateContext(sdl_window_);
+        context_ = SDL_GL_CreateContext(window_);
 
-        if (!sdl_context_) {
+        if (!context_) {
           for (const auto &it : versions) {
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, it.first);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, it.second);
 
-            sdl_context_ = SDL_GL_CreateContext(sdl_window_);
+            context_ = SDL_GL_CreateContext(window_);
 
-            if (!sdl_context_) {
+            if (!context_) {
               continue;
             } else {
               gl_major = it.first;
@@ -132,9 +130,9 @@ class Window : public NoCopy {
           SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, it.first);
           SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, it.second);
 
-          sdl_context_ = SDL_GL_CreateContext(sdl_window_);
+          context_ = SDL_GL_CreateContext(window_);
 
-          if (!sdl_context_) {
+          if (!context_) {
             continue;
           } else {
             gl_major = it.first;
@@ -144,35 +142,35 @@ class Window : public NoCopy {
         }
       }
 
-      if (!sdl_context_)
+      if (!context_)
         throw Exception("Failed to Create SDL_GL_Context");
     }
 
-    if (sdl_window_ && f_) {
-      SDL_SetWindowSize(sdl_window_, screen_w_, screen_h_);
-      SDL_SetWindowFullscreen(sdl_window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
-      SDL_SetWindowSize(sdl_window_, screen_w_, screen_h_);
+    if (window_ && f_) {
+      SDL_SetWindowSize(window_, screen_w_, screen_h_);
+      SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
   virtual ~Window() {
     if (f_)
-      SDL_SetWindowFullscreen(sdl_window_, SDL_FALSE);
-    SDL_DestroyWindow(sdl_window_);
+      SDL_SetWindowFullscreen(window_, SDL_FALSE);
+    SDL_DestroyWindow(window_);
   }
 
  private:
-  SDL_Window *sdl_window_ = nullptr;
-  SDL_GLContext sdl_context_ = nullptr;
+  SDL_Window *window_ = nullptr;
+  uint32_t flags_ = 0;
+  SDL_GLContext context_ = nullptr;
   std::string caption_ = "My Demo";
   bool f_ = false;
-  uint32_t w_ = 1024;
-  uint32_t h_ = 768;
-  uint32_t screen_w_;
-  uint32_t screen_h_;
-  bool gl_ = false;
-  uint32_t gl_minor = 3;
-  uint32_t gl_major = 3;
+  int32_t w_ = 1024;
+  int32_t h_ = 768;
+  int32_t screen_w_;
+  int32_t screen_h_;
+  bool gl_force_ = false;
+  int32_t gl_minor = 3;
+  int32_t gl_major = 3;
 
  public:
 //----------------------------------------------------------------------------------------------------------------------
@@ -184,27 +182,43 @@ class Window : public NoCopy {
     return std::make_pair(w_, h_);
   }
 
+  inline bool GetFullscreen() const noexcept {
+    return f_;
+  }
+
   inline SDL_SysWMinfo GetInfo() const noexcept {
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
-    SDL_GetWindowWMInfo(sdl_window_, &info);
+    SDL_GetWindowWMInfo(window_, &info);
     return info;
   }
 
-  inline void UpdateCursorStatus(bool show, bool grab, bool relative) const noexcept {
+  inline void UpdateCursor(bool show, bool grab, bool relative) const noexcept {
     SDL_ShowCursor(show);
-    SDL_SetWindowGrab(sdl_window_, static_cast<SDL_bool>(grab));
+    SDL_SetWindowGrab(window_, static_cast<SDL_bool>(grab));
     SDL_SetRelativeMouseMode(static_cast<SDL_bool>(relative));
   }
 
   inline void SwapBuffers() const noexcept {
-    SDL_GL_SwapWindow(sdl_window_);
+    SDL_GL_SwapWindow(window_);
   }
 
-  inline void Resize(uint32_t w, uint32_t h) noexcept {
+  inline void Resize(int32_t w, int32_t h) noexcept {
     w_ = w;
     h_ = h;
-    SDL_SetWindowSize(sdl_window_, w_, h_);
+    SDL_SetWindowPosition(window_, (screen_w_ - w_) / 2, (screen_h_ - h_) / 2);
+    SDL_SetWindowSize(window_, w_, h_);
+  }
+
+  inline void Fullscreen(bool f) noexcept {
+    f_ = f;
+    if (f) {
+      SDL_SetWindowSize(window_, screen_w_, screen_h_);
+      SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_FULLSCREEN_DESKTOP);
+    } else {
+      SDL_SetWindowFullscreen(window_, flags_);
+      SDL_SetWindowSize(window_, w_, h_);
+    }
   }
 }; //class Window
 } //namespace Context

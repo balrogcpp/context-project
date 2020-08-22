@@ -74,13 +74,13 @@ void Application::Init_() {
   loader_.SetWorld(&physics_);
   loader_.SetCamera(graphics_.GetCameraMan());
   graphics_.GetCameraMan()->SetStyle(CameraStyle::FPS);
-  conf.Assign(global_verbose_, "global_verbose_enable");
+  conf.Assign(verbose_, "global_verbose_enable");
   conf.Assign(target_fps_, "global_target_fps");
-  conf.Assign(global_lock_fps_, "global_lock_fps");
+  conf.Assign(lock_fps_, "global_lock_fps");
 
   io::InputSequencer::GetSingleton().RegEventListener(this);
 
-  if (!global_verbose_) {
+  if (!verbose_) {
     auto *logger = new Ogre::LogManager();
     std::string log_name = conf.GetString("log_name");
     if (log_name.empty())
@@ -123,27 +123,29 @@ void Application::Event(const SDL_Event &evt) {
 
   if (evt.type == SDL_WINDOWEVENT) {
     auto &conf = ConfiguratorJson::GetSingleton();
-    if (!fullscreen_) {
+    static bool fullscreen = graphics_.GetWindow().GetFullscreen();
+
+    if (!fullscreen) {
       if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         suspend_ = true;
         target_fps_ = fps_inactive;
-        global_lock_fps_ = true;
+        lock_fps_ = true;
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
         conf.Assign(target_fps_, "global_target_fps");
-        conf.Assign(global_lock_fps_, "global_lock_fps");
+        conf.Assign(lock_fps_, "global_lock_fps");
       }
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         suspend_ = true;
         target_fps_ = fps_inactive;
-        global_lock_fps_ = true;
+        lock_fps_ = true;
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
         conf.Assign(target_fps_, "global_target_fps");
-        conf.Assign(global_lock_fps_, "global_lock_fps");
+        conf.Assign(lock_fps_, "global_lock_fps");
       }
     }
   }
@@ -199,7 +201,7 @@ void Application::Loop_() {
       }
 
 #ifdef DEBUG
-      if (global_verbose_)
+      if (verbose_)
         std::cout << std::flush;
 #endif
 
@@ -207,7 +209,7 @@ void Application::Loop_() {
       long millis_after_render = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_render).count();
       long render_time = millis_after_render - millis_before_frame;
 
-      if (global_lock_fps_) {
+      if (lock_fps_) {
         long delay = static_cast<long> ((1000000 / target_fps_) - render_time);
         if (delay > 0)
           std::this_thread::sleep_for(std::chrono::microseconds(delay));

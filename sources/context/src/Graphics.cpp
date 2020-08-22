@@ -91,7 +91,8 @@ Graphics::Graphics() {
   auto &conf = ConfiguratorJson::GetSingleton();
   window_.Resize(conf.GetInt("window_width"),
                  conf.GetInt("window_high"));
-
+  if (conf.GetBool("window_fullscreen"))
+    window_.Fullscreen(true);
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   if (!reinterpret_cast<size_t>(info.info.win.window)) {
     throw Exception("Cast from info.info.win.window to size_t failed");

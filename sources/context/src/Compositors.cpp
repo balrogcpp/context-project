@@ -31,8 +31,15 @@ SOFTWARE.
 #include "CompositorHelpers.h"
 
 namespace Context {
+Compositors::~Compositors() noexcept {}
 //----------------------------------------------------------------------------------------------------------------------
-Compositors::Compositors() {
+Compositors::Compositors() {  bool graphics_shadows_enable_ = true;
+  bool compositor_use_bloom_ = false;
+  bool compositor_use_ssao_ = false;
+  bool compositor_use_blur_ = true;
+  bool compositor_use_hdr_ = true;
+  bool compositor_use_moution_blur_ = false;
+
   ConfiguratorJson::GetSingleton().Assign(graphics_shadows_enable_, "graphics_shadows_enable");
   ConfiguratorJson::GetSingleton().Assign(compositor_use_bloom_, "compositor_use_bloom");
   ConfiguratorJson::GetSingleton().Assign(compositor_use_ssao_, "compositor_use_ssao");

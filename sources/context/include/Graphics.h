@@ -74,5 +74,9 @@ class Graphics : public Singleton {
   CameraMan *GetCameraMan() const {
     return camera_man_;
   }
+
+  Window &GetWindow() {
+    return window_;
+  }
 }; //class ContextManager
 } //namespace Context

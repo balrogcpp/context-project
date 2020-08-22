@@ -40,7 +40,7 @@ namespace Context {
 class Compositors final : public Manager {
  public:
   Compositors();
-  virtual ~Compositors() = default;
+  virtual ~Compositors();
 
  private:
   std::vector<std::string> compositor_names_;
@@ -52,14 +52,6 @@ class Compositors final : public Manager {
 
   GBufferSchemeHandler *ssaog_buffer_scheme_handler_;
   DepthSchemeHandler *depth_scheme_handler_;
-
-  //SSAO
-  bool graphics_shadows_enable_ = true;
-  bool compositor_use_bloom_ = false;
-  bool compositor_use_ssao_ = false;
-  bool compositor_use_blur_ = true;
-  bool compositor_use_hdr_ = true;
-  bool compositor_use_moution_blur_ = false;
 
  public:
   void SetCompositor(const std::string &compositor_);

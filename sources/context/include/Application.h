@@ -47,11 +47,6 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
   Application();
   virtual ~Application();
 
-//  static Application &GetSingleton() {
-//    static Application singleton;
-//    return singleton;
-//  }
-
   int Main(std::shared_ptr<AppState> scene_ptr);
   void SetCurState(std::shared_ptr<AppState> scene_ptr);
 
@@ -78,20 +73,14 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
 
   bool quit_ = false;
   bool suspend_ = false;
-  bool fullscreen_ = false;
   int current_fps_ = 0;
   int target_fps_ = 60;
-  bool global_verbose_ = false;
-  bool global_lock_fps_ = true;
+  bool verbose_ = false;
+  bool lock_fps_ = true;
   Graphics graphics_;
   Physics physics_;
   Sounds sounds_;
   std::unique_ptr<Compositors> compositor_;
   DotSceneLoaderB loader_;
-
- public:
-  int GetFpsFrames() const {
-    return current_fps_;
-  }
 }; //class Application
 } //namespace Context
