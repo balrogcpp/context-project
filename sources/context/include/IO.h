@@ -61,88 +61,67 @@ class InputSequencer {
   OtherListenersList other_listeners_;
   const size_t reserve_ = 16;
 
-  template<typename T>
-  auto find_(std::vector<T> v, T t) -> decltype(v.begin()) {
-    return std::find(v.begin(), v.end(), t);
-  }
-
  public:
-  void RegKbListener(KeyboardListener *l) {
-    if (l && find(kb_listeners_.begin(), kb_listeners_.end(), l) == kb_listeners_.end()) {
-      kb_listeners_.push_back(l);
+  void RegKbListener(KeyboardListener *p) {
+    kb_listeners_.push_back(p);
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void UnregKbListener(KeyboardListener *p) {
+    auto it = find(kb_listeners_.begin(), kb_listeners_.end(), p);
+    if (it != kb_listeners_.end()) {
+      iter_swap(it, prev(kb_listeners_.end()));
+      kb_listeners_.pop_back();
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void UnregKbListener(KeyboardListener *l) {
-    if (!kb_listeners_.empty()) {
-      auto it = find(kb_listeners_.begin(), kb_listeners_.end(), l);
-      if (l && it != kb_listeners_.end()) {
-        iter_swap(it, prev(kb_listeners_.end()));
-        kb_listeners_.pop_back();
-      }
+  void RegMsListener(MouseListener *p) {
+    ms_listeners_.push_back(p);
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void UnregMsListener(MouseListener *p) {
+    auto it = find(ms_listeners_.begin(), ms_listeners_.end(), p);
+    if (it != ms_listeners_.end()) {
+      iter_swap(it, prev(ms_listeners_.end()));
+      ms_listeners_.pop_back();
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void RegMsListener(MouseListener *l) {
-    if (l && find(ms_listeners_.begin(), ms_listeners_.end(), l) == ms_listeners_.end()) {
-      ms_listeners_.push_back(l);
+  void RegJoyListener(JoyListener *p) {
+    joy_listeners_.push_back(p);
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void UnregJoyListener(JoyListener *p) {
+    auto it = find(joy_listeners_.begin(), joy_listeners_.end(), p);
+    if (it != joy_listeners_.end()) {
+      iter_swap(it, prev(joy_listeners_.end()));
+      joy_listeners_.pop_back();
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void UnregMsListener(MouseListener *l) {
-    if (!ms_listeners_.empty()) {
-      auto it = find(ms_listeners_.begin(), ms_listeners_.end(), l);
-      if (l && it != ms_listeners_.end()) {
-        iter_swap(it, prev(ms_listeners_.end()));
-        ms_listeners_.pop_back();
-      }
+  void RegEventListener(OtherEventListener *p) {
+    other_listeners_.push_back(p);
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void UnregEventListener(OtherEventListener *p) {
+    auto it = find(other_listeners_.begin(), other_listeners_.end(), p);
+    if (it != other_listeners_.end()) {
+      iter_swap(it, prev(other_listeners_.end()));
+      other_listeners_.pop_back();
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void RegJoyListener(JoyListener *l) {
-    if (l && find(joy_listeners_.begin(), joy_listeners_.end(), l) == joy_listeners_.end()) {
-      joy_listeners_.push_back(l);
-    }
+  void RegisterListener(InputListener *p) {
+    RegKbListener(p);
+    RegMsListener(p);
+    RegJoyListener(p);
+    RegEventListener(p);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void UnregJoyListener(JoyListener *l) {
-    if (!joy_listeners_.empty()) {
-      auto it = find(joy_listeners_.begin(), joy_listeners_.end(), l);
-      if (l && it != joy_listeners_.end()) {
-        iter_swap(it, prev(joy_listeners_.end()));
-        joy_listeners_.pop_back();
-      }
-    }
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void RegEventListener(OtherEventListener *l) {
-    if (l && find(other_listeners_.begin(), other_listeners_.end(), l) == other_listeners_.end()) {
-      other_listeners_.push_back(l);
-    }
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void UnregEventListener(OtherEventListener *l) {
-    if (!other_listeners_.empty()) {
-      auto it = find(other_listeners_.begin(), other_listeners_.end(), l);
-      if (l && it != other_listeners_.end()) {
-        iter_swap(it, prev(other_listeners_.end()));
-        other_listeners_.pop_back();
-      }
-    }
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void RegisterListener(InputListener *l) {
-    RegKbListener(l);
-    RegMsListener(l);
-    RegJoyListener(l);
-    RegEventListener(l);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void UnregisterListener(InputListener *l) {
-    UnregKbListener(l);
-    UnregMsListener(l);
-    UnregJoyListener(l);
-    UnregEventListener(l);
+  void UnregisterListener(InputListener *p) {
+    UnregKbListener(p);
+    UnregMsListener(p);
+    UnregJoyListener(p);
+    UnregEventListener(p);
   }
 //----------------------------------------------------------------------------------------------------------------------
   void Reset() {

@@ -28,6 +28,7 @@ SOFTWARE.
 #include <OgreRenderTargetListener.h>
 
 #include "IO.h"
+#include "NoCopy.h"
 
 namespace Context {
 class CameraMan;
@@ -35,7 +36,7 @@ class CameraMan;
 
 namespace Context {
 
-class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener {
+class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener, public NoCopy {
  public:
   AppState();
   virtual ~AppState();

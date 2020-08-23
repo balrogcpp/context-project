@@ -768,14 +768,14 @@ void main()
 #endif
     }
 
-        // Calculate lighting contribution from image based lighting source (IBL)
+    // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection);
 #else
     total_colour += ((uSurfaceAmbientColour + uAmbientLightColour) * baseColor.rgb);
 #endif
 
-        // Apply optional PBR terms for additional (optional) shading
+    // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
     total_colour *= texture2D(uOcclusionSampler, tex_coord).r;
 #endif

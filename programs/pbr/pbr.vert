@@ -164,7 +164,7 @@ if (uv0 == vec2(0, 0))
 
 #ifdef SHADOWRECEIVER
 // Calculate the position of vertex in light space
-for (int i = 0; i < int(2*3);  i += 3) {
+for (int i = 0; i < int(3*3);  i += 3) {
   lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * mypos;
   lightSpacePosArray[i + 1] = uTexWorldViewProjMatrixArray[i + 1] * mypos;
   lightSpacePosArray[i + 2] = uTexWorldViewProjMatrixArray[i + 2] * mypos;
