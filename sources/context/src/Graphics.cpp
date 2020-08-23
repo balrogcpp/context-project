@@ -143,12 +143,9 @@ Graphics::Graphics() {
   auto *viewport = renderTarget->addViewport(camera);
   viewport->setBackgroundColour(Ogre::ColourValue::Black);
 }
-//----------------------------------------------------------------------------------------------------------------------
-Graphics::~Graphics() {
-}
+Graphics::~Graphics() {}
 //----------------------------------------------------------------------------------------------------------------------
 void Graphics::CreateCamera() {
-  auto *camera_node = scene_->getRootSceneNode()->createChildSceneNode();
   Ogre::Camera *camera = nullptr;
 
   if (!scene_->hasCamera("Default")) {
@@ -160,11 +157,6 @@ void Graphics::CreateCamera() {
   } else {
     camera = scene_->getCamera("Default");
   }
-//  if (!camera_)
-//    camera_ = std::make_shared<CameraMan>();
-//
-//  camera_->RegCamera(camera_node, camera);
-//  camera_->SetStyle(CameraStyle::FPS);
 
   if (camera) {
     camera->setNearClipDistance(0.01f);
@@ -213,7 +205,6 @@ void Graphics::UpdateParams() {
   }
 
   //Global shadows
-
   bool graphics_shadows_enable_ = true;
   int graphics_shadows_texture_resolution_ = 1024;
   int graphics_shadows_texture_count_ = 3;

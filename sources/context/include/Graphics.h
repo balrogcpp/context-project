@@ -37,14 +37,8 @@ class ShaderResolver;
 }
 
 namespace Ogre {
-class RenderTarget;
-class Texture;
 class Root;
 class SceneManager;
-class Camera;
-class SceneNode;
-class Viewport;
-class ShadowCameraSetup;
 }
 
 namespace Context {

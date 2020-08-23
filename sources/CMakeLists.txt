@@ -151,7 +151,6 @@ set(PAGEDGEOMETRY_SOURCES
 set(CONTEXT_SOURCES
     context/src/Application.cpp
     context/src/AppState.cpp
-    context/src/CameraMan.cpp
     context/src/Graphics.cpp
     context/src/DotSceneLoaderB.cpp
     context/src/Physics.cpp
@@ -162,7 +161,8 @@ set(CONTEXT_SOURCES
     context/src/TerrainMaterialGeneratorB.cpp
     context/src/Gorilla.cpp
     context/src/Overlay.cpp
-    context/src/Utils.cpp)
+    context/src/Utils.cpp
+    )
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}

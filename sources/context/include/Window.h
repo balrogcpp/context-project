@@ -40,6 +40,22 @@ class Window : public NoCopy {
  public:
 //----------------------------------------------------------------------------------------------------------------------
   Window() {
+    Init_();
+  }
+
+  explicit Window(int32_t w, int32_t h) : w_(w), h_(h) {
+    Init_();
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  virtual ~Window() {
+    if (f_)
+      SDL_SetWindowFullscreen(window_, SDL_FALSE);
+    SDL_DestroyWindow(window_);
+  }
+
+ private:
+//----------------------------------------------------------------------------------------------------------------------
+  void Init_() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
       throw Exception("Failed to init SDL2");
 
@@ -151,14 +167,8 @@ class Window : public NoCopy {
       SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
   }
-//----------------------------------------------------------------------------------------------------------------------
-  virtual ~Window() {
-    if (f_)
-      SDL_SetWindowFullscreen(window_, SDL_FALSE);
-    SDL_DestroyWindow(window_);
-  }
 
- private:
+//----------------------------------------------------------------------------------------------------------------------
   SDL_Window *window_ = nullptr;
   uint32_t flags_ = 0;
   SDL_GLContext context_ = nullptr;
