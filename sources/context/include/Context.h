@@ -33,6 +33,7 @@
 #include "Forest.h"
 #include "Physic.h"
 #include "Sound.h"
+#include "PagedGeometryHeaders.h"
 #include "DotSceneLoaderB.h"
 #include "OgreHeaders.h"
 #include "BulletHeaders.h"

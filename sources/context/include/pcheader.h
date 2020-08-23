@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "PagedGeometryCommon.h"
+#include "PagedGeometryHeaders.h"
 #include "OgreHeaders.h"
 #include "BulletHeaders.h"
 #include <pugixml.hpp>

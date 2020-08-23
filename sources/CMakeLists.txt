@@ -174,7 +174,7 @@ set(SOURCE_FILES_CONTEXT_LIB
 include_directories(context-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 
 add_library(context-lib-static STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
-add_library(context-lib-dynamic SHARED EXCLUDE_FROM_ALL ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB} pagedgeometry/include/PagedGeometryCommon.h)
+add_library(context-lib-dynamic SHARED EXCLUDE_FROM_ALL ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB} pagedgeometry/include/PagedGeometryHeaders.h)
 
 target_link_directories(context-lib-dynamic PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE)
 target_link_libraries(context-lib-dynamic PUBLIC ${CONTEXT_STATIC_DEPENDENCY_LIBS})
