@@ -28,10 +28,10 @@ SOFTWARE.
 
 namespace Context {
 
-class StaticForest : public Manager {
+class Forest : public Manager {
  public:
-  StaticForest();
-  virtual ~StaticForest();
+  Forest();
+  virtual ~Forest();
 
   void Create();
 

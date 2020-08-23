@@ -21,8 +21,8 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-docker build . -f Docker/android/Dockerfile -t balrogcpp/context-droid &&\
+docker build . -f Docker/android/Dockerfile -t balrogcpp/android-ndk &&\
 docker login &&\
-docker push balrogcpp/context-droid &&\
+docker push balrogcpp/android-ndk
 
 exit 0

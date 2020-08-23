@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "StaticForest.h"
+#include "Forest.h"
 
 #include "DotSceneLoaderB.h"
 #include "Graphics.h"
@@ -41,7 +41,7 @@ struct GrassVertex {
 };
 #pragma pack(pop)
 //----------------------------------------------------------------------------------------------------------------------
-void StaticForest::CreateGrassMesh() {
+void Forest::CreateGrassMesh() {
   if (Ogre::MeshManager::getSingleton().getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
     return;
 
@@ -125,14 +125,14 @@ void StaticForest::CreateGrassMesh() {
   sm->indexData->indexBuffer->unlock(); // commit index changes
 }
 //----------------------------------------------------------------------------------------------------------------------
-StaticForest::StaticForest() = default;
+Forest::Forest() = default;
 
-StaticForest::~StaticForest() {
+Forest::~Forest() {
   if (Ogre::MeshManager::getSingleton().getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
     Ogre::MeshManager::getSingleton().remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void StaticForest::GenerateGrass() {
+void Forest::GenerateGrass() {
   Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   // create our grass mesh, and Create a grass entity from it
   CreateGrassMesh();
@@ -190,7 +190,7 @@ void StaticForest::GenerateGrass() {
   mField->setCastShadows(false);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void StaticForest::Create() {
+void Forest::Create() {
   UpdatePbrParams("3D-Diggers/farn01");
   UpdatePbrShadowReceiver("3D-Diggers/farn01");
   UpdatePbrParams("3D-Diggers/farn02");

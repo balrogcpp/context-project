@@ -30,7 +30,7 @@ SOFTWARE.
 #include "Storage.h"
 #include "CameraMan.h"
 #include "DotSceneLoaderB.h"
-#include "StaticForest.h"
+#include "Forest.h"
 
 namespace Context {
 Graphics::Graphics() {

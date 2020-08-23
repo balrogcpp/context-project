@@ -87,11 +87,11 @@ set(CONTEXT_HEADERS
     context/include/DummyListener.h
     context/include/ConfiguratorJson.h
     context/include/DotSceneLoaderB.h
-    context/include/StaticForest.h
-    context/include/Physics.h
+    context/include/Forest.h
+    context/include/Physic.h
     context/include/BulletHeaders.h
     context/include/OgreHeaders.h
-    context/include/Sounds.h
+    context/include/Sound.h
     context/include/Manager.h
     context/include/Context.h
     context/include/Compositors.h
@@ -108,7 +108,7 @@ set(CONTEXT_HEADERS
     context/include/Storage.h
     context/include/RtssUtils.h
     context/include/Terrain.h
-    context/include/CompositorHelpers.h
+    context/include/CompositorHelper.h
     )
 
 set(HEADER_FILES_CONTEXT_LIB
@@ -153,8 +153,8 @@ set(CONTEXT_SOURCES
     context/src/AppState.cpp
     context/src/Graphics.cpp
     context/src/DotSceneLoaderB.cpp
-    context/src/Physics.cpp
-    context/src/StaticForest.cpp
+    context/src/Physic.cpp
+    context/src/Forest.cpp
     context/src/Manager.cpp
     context/src/pcheader.cpp
     context/src/Compositors.cpp

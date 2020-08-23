@@ -48,10 +48,10 @@ class btCollisionObject;
 
 namespace Context {
 
-class Physics final : public Manager {
+class Physic final : public Manager {
  public:
-  Physics();
-  virtual ~Physics();
+  Physic();
+  virtual ~Physic();
 
   void Init() final {}
   void Clear() final;

@@ -31,8 +31,8 @@ SOFTWARE.
 #include "IoListeners.h"
 #include "DummyListener.h"
 #include "Graphics.h"
-#include "Sounds.h"
-#include "Physics.h"
+#include "Sound.h"
+#include "Physic.h"
 #include "DotSceneLoaderB.h"
 #include "Compositors.h"
 #include "Singleton.h"
@@ -79,8 +79,8 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
   bool verbose_ = false;
   bool lock_fps_ = true;
   Graphics graphics_;
-  Physics physics_;
-  Sounds sounds_;
+  Physic physics_;
+  Sound sounds_;
   Overlay overlay_;
   std::unique_ptr<Compositors> compositor_;
   DotSceneLoaderB loader_;

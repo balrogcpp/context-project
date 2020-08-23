@@ -28,7 +28,7 @@ SOFTWARE.
 #include "Exception.h"
 #include "ConfiguratorJson.h"
 #include "DotSceneLoaderB.h"
-#include "CompositorHelpers.h"
+#include "CompositorHelper.h"
 
 namespace Context {
 Compositors::~Compositors() noexcept {}

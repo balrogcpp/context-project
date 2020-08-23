@@ -29,9 +29,9 @@ SOFTWARE.
 
 namespace Context {
 
-class Sounds : public Manager {
+class Sound : public Manager {
  public:
-  Sounds() {
+  Sound() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     putenv("ALROUTER_LOGFILE=/dev/null");
     putenv("ALSOFT_LOGLEVEL=LOG_NONE");
@@ -52,7 +52,7 @@ class Sounds : public Manager {
     }
   }
 
-  virtual ~Sounds() {
+  virtual ~Sound() {
     OgreOggSound::OgreOggSoundManager::getSingleton().stopAllSounds();
     OgreOggSound::OgreOggSoundManager::getSingleton().destroyAllSounds();
   }

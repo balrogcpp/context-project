@@ -24,12 +24,12 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "Physics.h"
+#include "Physic.h"
 #include "ConfiguratorJson.h"
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
-Physics::Physics() {
+Physic::Physic() {
   ConfiguratorJson::GetSingleton().Assign(skip_frames_, "physics_skip_frames");
   ConfiguratorJson::GetSingleton().Assign(sub_steps_, "physics_max_sub_steps");
   ConfiguratorJson::GetSingleton().Assign(physics_debug_show_collider_, "physics_debug_show_collider");
@@ -61,9 +61,9 @@ Physics::Physics() {
   stopped_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
-Physics::~Physics() {}
+Physic::~Physic() {}
 //----------------------------------------------------------------------------------------------------------------------
-bool Physics::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+bool Physic::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   static int factor_;
   static float cumulative_;
 
@@ -87,7 +87,7 @@ bool Physics::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::Clear() {
+void Physic::Clear() {
   Stop();
   phy_world_->clearForces();
 
@@ -108,13 +108,13 @@ void Physics::Clear() {
   rigid_bodies_.clear();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::AddRigidBody(btRigidBody *body) {
+void Physic::AddRigidBody(btRigidBody *body) {
   phy_world_->addRigidBody(body);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
-                          Ogre::Entity *entity,
-                          Ogre::SceneNode *parent_node) {
+void Physic::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
+                         Ogre::Entity *entity,
+                         Ogre::SceneNode *parent_node) {
   const std::string physics_type_static = "STATIC";
   const std::string physics_type_dynamic = "dynamic";
   const std::string physics_type_actor = "actor";
@@ -344,7 +344,7 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-std::shared_ptr<btDynamicsWorld> Physics::GetPhyWorld() const {
+std::shared_ptr<btDynamicsWorld> Physic::GetPhyWorld() const {
   return phy_world_;
 }
 } //namespace Context
