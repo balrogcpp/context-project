@@ -37,7 +37,7 @@ namespace Context {
 class ConfiguratorJson {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  static ConfiguratorJson &GetSingleton() {
+  static ConfiguratorJson &Instance() {
     static ConfiguratorJson ConfigManagerSingleton;
     return ConfigManagerSingleton;
   }

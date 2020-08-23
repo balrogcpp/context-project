@@ -32,7 +32,7 @@ namespace Context {
 class AppStateManager : public Singleton {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  static AppStateManager &GetSingleton() {
+  static AppStateManager &Instance() {
     static AppStateManager singleton;
     return singleton;
   }

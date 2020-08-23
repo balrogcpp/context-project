@@ -83,7 +83,7 @@ class CubeMapCamera final : public Ogre::RenderTargetListener, public Ogre::Fram
       camera_->setFarClipDistance(10000);
     }
 
-//    camera_node_ = ContextManager::GetSingleton().GetCameraMan()->GetCameraNode()->createChildSceneNode();
+//    camera_node_ = ContextManager::Instance().GetCameraMan()->GetCameraNode()->createChildSceneNode();
     camera_node_->attachObject(camera_);
 
     if (!cubemap_) {

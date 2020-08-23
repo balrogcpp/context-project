@@ -37,7 +37,7 @@ DemoDotAppState::~DemoDotAppState() {}
 
 void DemoDotAppState::KeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
-    AppStateManager::GetSingleton().GoNextState();
+    AppStateManager::Instance().GoNextState();
   }
 }
 
@@ -45,12 +45,12 @@ void DemoDotAppState::Clear() {
 }
 
 void DemoDotAppState::Init() {
-  AppStateManager::GetSingleton().SetNextState(std::make_unique<DemoDotAppState>());
-//  ContextManager::GetSingleton().UpdateCursorStatus({false, true, true});
+  AppStateManager::Instance().SetNextState(std::make_unique<DemoDotAppState>());
+//  ContextManager::Instance().UpdateCursorStatus({false, true, true});
 
-//  Application::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::FPS);
+//  Application::Instance().GetCameraMan()->SetStyle(CameraStyle::FPS);
 
-//  Context::DotSceneLoaderB::GetSingleton().load("test.scene",
+//  Context::DotSceneLoaderB::Instance().load("test.scene",
 //                                              Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
 //                                              ogre_scene_manager_->getRootSceneNode());
 

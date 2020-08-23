@@ -33,7 +33,7 @@ using namespace Gorilla;
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
 bool Overlay::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-//  caption->text(std::to_string(Application::GetSingleton().GetFpsFrames()));
+//  caption->text(std::to_string(Application::Instance().GetFpsFrames()));
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------

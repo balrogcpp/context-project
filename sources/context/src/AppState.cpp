@@ -32,12 +32,12 @@ AppState::AppState() {
   scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   camera_ = scene_->getCamera("Default");
   viewport_ = camera_->getViewport();
-  io::InputSequencer::GetSingleton().RegisterListener(this);
+  io::InputSequencer::Instance().RegisterListener(this);
   Ogre::Root::getSingleton().addFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
 AppState::~AppState() {
   Ogre::Root::getSingleton().removeFrameListener(this);
-  io::InputSequencer::GetSingleton().UnregisterListener(this);
+  io::InputSequencer::Instance().UnregisterListener(this);
 }
 } //namespace Context

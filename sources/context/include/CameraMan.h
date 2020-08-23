@@ -44,7 +44,7 @@ class CameraMan : public io::InputListener, public Ogre::FrameListener {
   };
 
   CameraMan() {
-    io::InputSequencer::GetSingleton().RegisterListener(this);
+    io::InputSequencer::Instance().RegisterListener(this);
     Ogre::Root::getSingleton().addFrameListener(this);
   }
 //----------------------------------------------------------------------------------------------------------------------

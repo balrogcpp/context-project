@@ -78,7 +78,7 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
                                                                          Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
     }
 
-    bool verbose = ConfiguratorJson::GetSingleton().GetBool("global_verbose_enable");
+    bool verbose = ConfiguratorJson::Instance().GetBool("global_verbose_enable");
 
     if (!originalMaterial) {
       if (verbose)

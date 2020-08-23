@@ -88,7 +88,7 @@ Graphics::Graphics() {
   Ogre::NameValuePairList params;
 
   SDL_SysWMinfo info = window_.GetInfo();
-  auto &conf = ConfiguratorJson::GetSingleton();
+  auto &conf = ConfiguratorJson::Instance();
   window_.Resize(conf.GetInt("window_width"),
                  conf.GetInt("window_high"));
   if (conf.GetBool("window_fullscreen"))
@@ -176,7 +176,7 @@ void Graphics::UpdateParams() {
   std::string graphics_filtration_ = "bilinear";
   int graphics_anisotropy_level_ = 4;
   int graphics_mipmap_count_ = 10;
-  auto &conf = ConfiguratorJson::GetSingleton();
+  auto &conf = ConfiguratorJson::Instance();
   conf.Assign(graphics_filtration_, "graphics_filtration");
   conf.Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
   conf.Assign(graphics_mipmap_count_, "graphics_mipmap_count");

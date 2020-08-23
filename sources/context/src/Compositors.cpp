@@ -40,12 +40,12 @@ Compositors::Compositors() {  bool graphics_shadows_enable_ = true;
   bool compositor_use_hdr_ = true;
   bool compositor_use_moution_blur_ = false;
 
-  ConfiguratorJson::GetSingleton().Assign(graphics_shadows_enable_, "graphics_shadows_enable");
-  ConfiguratorJson::GetSingleton().Assign(compositor_use_bloom_, "compositor_use_bloom");
-  ConfiguratorJson::GetSingleton().Assign(compositor_use_ssao_, "compositor_use_ssao");
-  ConfiguratorJson::GetSingleton().Assign(compositor_use_blur_, "compositor_use_blur");
-  ConfiguratorJson::GetSingleton().Assign(compositor_use_hdr_, "compositor_use_hdr");
-  ConfiguratorJson::GetSingleton().Assign(compositor_use_moution_blur_, "compositor_use_moution_blur");
+  ConfiguratorJson::Instance().Assign(graphics_shadows_enable_, "graphics_shadows_enable");
+  ConfiguratorJson::Instance().Assign(compositor_use_bloom_, "compositor_use_bloom");
+  ConfiguratorJson::Instance().Assign(compositor_use_ssao_, "compositor_use_ssao");
+  ConfiguratorJson::Instance().Assign(compositor_use_blur_, "compositor_use_blur");
+  ConfiguratorJson::Instance().Assign(compositor_use_hdr_, "compositor_use_hdr");
+  ConfiguratorJson::Instance().Assign(compositor_use_moution_blur_, "compositor_use_moution_blur");
 
   if (compositor_use_ssao_) {
     ssaog_buffer_scheme_handler_ = new GBufferSchemeHandler();

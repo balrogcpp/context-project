@@ -28,7 +28,7 @@ SOFTWARE.
 #include <OgreRenderTargetListener.h>
 #include <OgreLog.h>
 
-#include "IoListeners.h"
+#include "IO.h"
 #include "DummyListener.h"
 #include "Graphics.h"
 #include "Sound.h"

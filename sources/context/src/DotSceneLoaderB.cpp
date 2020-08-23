@@ -32,8 +32,6 @@ SOFTWARE.
 #include "TerrainMaterialGeneratorB.h"
 #include "CubeMapCamera.h"
 #include "ReflectionCamera.h"
-#include "Application.h"
-
 #include "Utils.h"
 
 using namespace utils;
@@ -42,7 +40,7 @@ namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
 float DotSceneLoaderB::GetHeigh(float x, float z) {
 //  if (terrain_created_) {
-//    return DotSceneLoaderB::GetSingleton().ogre_terrain_group_->getHeightAtWorldPosition(x, 1000, z);
+//    return DotSceneLoaderB::Instance().ogre_terrain_group_->getHeightAtWorldPosition(x, 1000, z);
 //  } else {
 //    return 0.0f;
 //  }
@@ -59,10 +57,10 @@ DotSceneLoaderB::DotSceneLoaderB() {
 
   Ogre::SceneLoaderManager::getSingleton().registerSceneLoader("DotSceneB", {".scene", ".xml"}, this);
 
-  ConfiguratorJson::GetSingleton().Assign(physics_enable_, "physics_enable");
-  ConfiguratorJson::GetSingleton().Assign(lod_generator_enable_, "lod_generator_enable");
-  ConfiguratorJson::GetSingleton().Assign(terrain_cast_shadows_, "terrain_cast_shadows");
-  ConfiguratorJson::GetSingleton().Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
+  ConfiguratorJson::Instance().Assign(physics_enable_, "physics_enable");
+  ConfiguratorJson::Instance().Assign(lod_generator_enable_, "lod_generator_enable");
+  ConfiguratorJson::Instance().Assign(terrain_cast_shadows_, "terrain_cast_shadows");
+  ConfiguratorJson::Instance().Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
 }
 //----------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::~DotSceneLoaderB() {
@@ -838,7 +836,7 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
     }
 
     std::string shadow_technique;
-    ConfiguratorJson::GetSingleton().Assign(shadow_technique, "graphics_shadows_tecnique");
+    ConfiguratorJson::Instance().Assign(shadow_technique, "graphics_shadows_tecnique");
 
     if (shadow_technique == "stencil") {
       if (!entity->getMesh()->isEdgeListBuilt()) {
@@ -1001,7 +999,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessForest_(pugi::xml_node &xml_node) {
-//  StaticForest::GetSingleton().Create();
+//  StaticForest::Instance().Create();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessFog_(pugi::xml_node &xml_node) {

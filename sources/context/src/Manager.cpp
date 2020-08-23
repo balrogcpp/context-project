@@ -35,13 +35,13 @@ Manager::Manager() {
   scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   camera_ = scene_->getCamera("Default");
   viewport_ = camera_->getViewport();
-  io::InputSequencer::GetSingleton().RegisterListener(this);
+  io::InputSequencer::Instance().RegisterListener(this);
   Ogre::Root::getSingleton().addFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
 Manager::~Manager() {
   Ogre::Root::getSingleton().removeFrameListener(this);
-  io::InputSequencer::GetSingleton().UnregisterListener(this);
+  io::InputSequencer::Instance().UnregisterListener(this);
 }
 //class Manager
 } //namespace Context

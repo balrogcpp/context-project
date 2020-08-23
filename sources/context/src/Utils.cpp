@@ -153,7 +153,7 @@ void UpdatePbrParams(MaterialPtr material) {
     const bool realtime_cubemap = false;
 //    if (ibl_texture) {
 //      if (realtime_cubemap) {
-//        ibl_texture->setTexture(CubeMapCamera::GetSingleton().GetDyncubemap());
+//        ibl_texture->setTexture(CubeMapCamera::Instance().GetDyncubemap());
 //      } else {
 //        std::string skybox_cubemap =
 //            MaterialManager::getSingleton().getByName("SkyBox")->getTechnique(0)->getPass(0)->getTextureUnitState(
@@ -207,10 +207,10 @@ void UpdatePbrShadowReceiver(MaterialPtr material) {
     auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     auto pass = material->getTechnique(0)->getPass(0);
 
-    if (ConfiguratorJson::GetSingleton().GetBool("graphics_shadows_enable")) {
+    if (ConfiguratorJson::Instance().GetBool("graphics_shadows_enable")) {
       uint numTextures = 3;
       Vector4 splitPoints;
-      if (ConfiguratorJson::GetSingleton().GetString("graphics_shadows_projection") == "pssm") {
+      if (ConfiguratorJson::Instance().GetString("graphics_shadows_projection") == "pssm") {
         const PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
         for (int j = 1; j < numTextures; ++j) {
           splitPoints[j - 1] = splitPointList[j];
