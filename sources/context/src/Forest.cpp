@@ -26,9 +26,6 @@ SOFTWARE.
 #include "pcheader.h"
 
 #include "Forest.h"
-
-#include "DotSceneLoaderB.h"
-#include "Graphics.h"
 #include "Utils.h"
 using namespace utils;
 

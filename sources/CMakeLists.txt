@@ -53,22 +53,6 @@ set(OGGSOUND_HEADERS
     oggsound/include/OgreOggStreamWavSound.h
     )
 
-set(PAGEDGEOMETRY_HEADERS
-    pagedgeometry/include/BatchedGeometry.h
-    pagedgeometry/include/BatchPage.h
-    pagedgeometry/include/GrassLoader.h
-    pagedgeometry/include/ImpostorPage.h
-    pagedgeometry/include/PagedGeometry.h
-    pagedgeometry/include/PagedGeometryConfig.h
-    pagedgeometry/include/PropertyMaps.h
-    pagedgeometry/include/RandomTable.h
-    pagedgeometry/include/StaticBillboardSet.h
-    pagedgeometry/include/TreeLoader2D.h
-    pagedgeometry/include/TreeLoader3D.h
-    pagedgeometry/include/WindBatchedGeometry.h
-    pagedgeometry/include/WindBatchPage.h
-    )
-
 set(BTOGRE_HEADERS
     btogre/include/BtOgreExtras.h
     btogre/include/BtOgreGP.h
@@ -114,7 +98,6 @@ set(CONTEXT_HEADERS
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
     ${OGGSOUND_HEADERS}
-    ${PAGEDGEOMETRY_HEADERS}
     ${CONTEXT_HEADERS}
     )
 
@@ -132,20 +115,6 @@ set(OGGSOUND_SOURCES
     oggsound/src/OgreOggStaticWavSound.cpp
     oggsound/src/OgreOggStreamSound.cpp
     oggsound/src/OgreOggStreamWavSound.cpp
-    )
-
-set(PAGEDGEOMETRY_SOURCES
-    pagedgeometry/src/BatchedGeometry.cpp
-    pagedgeometry/src/BatchPage.cpp
-    pagedgeometry/src/GrassLoader.cpp
-    pagedgeometry/src/ImpostorPage.cpp
-    pagedgeometry/src/PagedGeometry.cpp
-    pagedgeometry/src/PropertyMaps.cpp
-    pagedgeometry/src/StaticBillboardSet.cpp
-    pagedgeometry/src/TreeLoader2D.cpp
-    pagedgeometry/src/TreeLoader3D.cpp
-    pagedgeometry/src/WindBatchedGeometry.cpp
-    pagedgeometry/src/WindBatchPage.cpp
     )
 
 set(CONTEXT_SOURCES
@@ -167,14 +136,13 @@ set(CONTEXT_SOURCES
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}
     ${OGGSOUND_SOURCES}
-    ${PAGEDGEOMETRY_SOURCES}
     ${CONTEXT_SOURCES}
     )
 
 include_directories(context-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 
 add_library(context-lib-static STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
-add_library(context-lib-dynamic SHARED EXCLUDE_FROM_ALL ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB} pagedgeometry/include/PagedGeometryHeaders.h)
+add_library(context-lib-dynamic SHARED EXCLUDE_FROM_ALL ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
 
 target_link_directories(context-lib-dynamic PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE)
 target_link_libraries(context-lib-dynamic PUBLIC ${CONTEXT_STATIC_DEPENDENCY_LIBS})
