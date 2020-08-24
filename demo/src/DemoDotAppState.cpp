@@ -53,10 +53,11 @@ void DemoDotAppState::Init() {
 //                                              Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
 //                                              ogre_scene_manager_->getRootSceneNode());
 
-  Ogre::SceneLoaderManager::getSingleton().load("test.scene",
-                                                Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-                                                scene_->getRootSceneNode());
+//  Ogre::SceneLoaderManager::getSingleton().load("test.scene",
+//                                                Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+//                                                scene_->getRootSceneNode());
 
+  Load("test.scene");
   forest_.Create();
 //  auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
 //
@@ -72,6 +73,6 @@ void DemoDotAppState::Init() {
 //    mSoundManager->getSound("SceneManagerInstance1")->play();
 //  }
 
-  scene_->setShadowColour(Ogre::ColourValue(0.2));
+//  scene_->setShadowColour(Ogre::ColourValue(0.2));
 }
 }

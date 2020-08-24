@@ -28,7 +28,7 @@ SOFTWARE.
 
 namespace Context {
 
-class Forest : public System {
+class Forest final : public System {
  public:
   Forest();
   virtual ~Forest();

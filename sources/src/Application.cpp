@@ -51,8 +51,8 @@ Application::~Application() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
-  renderer_ = std::make_unique<Renderer>();
   conf_ = std::make_unique<ConfiguratorJson>();
+  renderer_ = std::make_unique<Renderer>();
   physics_ = std::make_unique<Physic>();
   sounds_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();
@@ -100,6 +100,14 @@ void Application::Reset_() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::InitCurrState_() {
   cur_state_->Init();
+  cur_state_->GetComponents(conf_.get(), renderer_.get(), physics_.get(), sounds_.get(), overlay_.get(), loader_.get());
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Application::GoNextState_() {
+  if (next_state_) {
+    cur_state_ = move(next_state_);
+    waiting_ = true;
+  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Quit() {
@@ -142,7 +150,7 @@ void Application::Other(Uint8 type, int32_t code, void *data1, void *data2) {}
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Loop_() {
   while (quit_) {
-    if (GetCurState()) {
+    if (cur_state_) {
       auto *root = Ogre::Root::getSingleton().getSceneManager("Default");
       auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
       long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
@@ -216,8 +224,8 @@ void Application::Loop_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
-  if (GetCurState()) {
-    GetCurState()->Init();
+  if (cur_state_) {
+    cur_state_->Init();
     quit_ = true;
     Loop_();
     io::InputSequencer::Instance().Reset();

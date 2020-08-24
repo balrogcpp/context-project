@@ -163,6 +163,10 @@ RUN apt-get update \
     && rm -rf gcc-${GCC_VERSION} \
     && rm -rf gcc-mingw32 \
     && rm -rf gcc-linux \
+    && apt-get -y purge libssl1.1 wget ca-certificates zlib1g-dev libssl-dev libgmp-dev libmpfr-dev \
+                             libmpc-dev libisl-dev xz-utils bzip2 zip \
+    && apt-get -y autoremove \
+    && apt-get clean \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 10000 \
         --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++ \
     && update-alternatives --install /usr/bin/mingw32-gcc mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc 10000 \

@@ -40,4 +40,24 @@ AppState::~AppState() {
   Ogre::Root::getSingleton().removeFrameListener(this);
   io::InputSequencer::Instance().UnregisterListener(this);
 }
+//----------------------------------------------------------------------------------------------------------------------
+void AppState::Load(const std::string &file_name) {
+  Ogre::SceneLoaderManager::getSingleton().load(file_name,
+                                                Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+                                                scene_->getRootSceneNode());
+}
+//----------------------------------------------------------------------------------------------------------------------
+void AppState::GetComponents(ConfiguratorJson *conf,
+                             Renderer *renderer,
+                             Physic *physics,
+                             Sound *sounds,
+                             Overlay *overlay,
+                             DotSceneLoaderB *loader) {
+  conf_ = conf;
+  renderer_ = renderer;
+  physics_ = physics;
+  sounds_ = sounds;
+  overlay_ = overlay;
+  loader_ = loader;
+}
 } //namespace Context

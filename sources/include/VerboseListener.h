@@ -30,7 +30,7 @@ SOFTWARE.
 
 namespace Context {
 
-class DummyListener final : public io::InputListener {
+class VerboseListener final : public io::InputListener {
  private:
 //----------------------------------------------------------------------------------------------------------------------
   void KeyDown(SDL_Keycode sym) final {

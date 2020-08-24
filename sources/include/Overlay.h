@@ -46,7 +46,7 @@ class MarkupText;
 
 namespace Context {
 
-class Overlay : public System {
+class Overlay final : public System {
  public:
   Overlay();
   ~Overlay();

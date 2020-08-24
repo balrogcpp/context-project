@@ -67,7 +67,7 @@ set(CONTEXT_HEADERS
     include/IO.h
     include/pcheader.h
     include/Renderer.h
-    include/DummyListener.h
+    include/VerboseListener.h
     include/ConfiguratorJson.h
     include/DotSceneLoaderB.h
     include/Forest.h

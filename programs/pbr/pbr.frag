@@ -84,6 +84,8 @@ out vec4 gl_FragColor;
 #endif
 #endif
 
+#define MAX_LIGHTS 5
+
 #ifdef SHADOWCASTER_ALPHA
 in vec2 vUV0;
 uniform sampler2D uBaseColorSampler;
@@ -95,7 +97,6 @@ in vec4 vUV0;
 uniform sampler2D uBaseColorSampler;
 #endif
 
-#define MAX_LIGHTS 5
 uniform float uAlphaRejection;
 uniform vec3 uSurfaceAmbientColour;
 uniform vec4 uSurfaceDiffuseColour;
@@ -153,7 +154,7 @@ uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
 uniform vec4 pssmSplitPoints;
 uniform float uShadowColour;
-in vec4 lightSpacePosArray[2 * 3];
+in vec4 lightSpacePosArray[3 * MAX_LIGHTS];
 #endif
 
 in vec3 vPosition;

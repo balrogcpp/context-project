@@ -38,7 +38,7 @@ SOFTWARE.
 
 namespace Context {
 class ConfiguratorJson;
-class Application : public io::OtherEventListener, public Ogre::LogListener, public Singleton {
+class Application final : public io::OtherEventListener, public Ogre::LogListener, public Singleton {
  public:
   Application();
   virtual ~Application();
@@ -53,6 +53,7 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
   void Loop_();
   void Go_();
   void InitCurrState_();
+  void GoNextState_();
 
   void Event(const SDL_Event &evt) override;
   void Other(Uint8 type, int32_t code, void *data1, void *data2) override;
@@ -93,21 +94,6 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
 //----------------------------------------------------------------------------------------------------------------------
   void SetNextState(std::unique_ptr<AppState> &&state) {
     next_state_ = move(state);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void GoNextState() {
-    if (next_state_) {
-      cur_state_ = move(next_state_);
-      waiting_ = true;
-    }
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  AppState* GetCurState() {
-    return cur_state_.get();
-  }
-
-  AppState* GetNextState() {
-    return next_state_.get();
   }
 }; //class Application
 } //namespace Context

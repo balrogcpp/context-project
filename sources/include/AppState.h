@@ -31,24 +31,40 @@ SOFTWARE.
 #include "NoCopy.h"
 
 namespace Context {
-class CameraMan;
-}
+class ConfiguratorJson;
+class Renderer;
+class Physic;
+class Sound;
+class Overlay;
+class DotSceneLoaderB;
 
-namespace Context {
-
-class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener, public NoCopy {
+class AppState
+    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener, public NoCopy {
  public:
   AppState();
   virtual ~AppState();
 
+  void GetComponents(ConfiguratorJson *conf,
+                     Renderer *renderer,
+                     Physic *physics,
+                     Sound *sounds_,
+                     Overlay *overlay_,
+                     DotSceneLoaderB *loader_);
+
   virtual void Init() = 0;
   virtual void Clear() = 0;
 
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {};
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {};
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) override { return true; };
+  void Load(const std::string &file_name);
 
  protected:
+  ConfiguratorJson *conf_ = nullptr;
+  Renderer *renderer_ = nullptr;
+  Physic *physics_ = nullptr;
+  Sound *sounds_ = nullptr;
+  Overlay *overlay_ = nullptr;
+  DotSceneLoaderB *loader_ = nullptr;
+
+ private:
   Ogre::SceneManager *scene_ = nullptr;
   Ogre::Camera *camera_ = nullptr;
   Ogre::Viewport *viewport_ = nullptr;
