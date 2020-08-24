@@ -24,31 +24,47 @@ SOFTWARE.
 
 #pragma once
 
-#include "Exception.h"
-
-#include <rapidjson/document.h>
-#include <rapidjson/istreamwrapper.h>
 #include <filesystem>
 #include <string>
 #include <iostream>
+#include <exception>
+#include <rapidjson/document.h>
+#include <rapidjson/istreamwrapper.h>
 
 namespace Context {
+class ParserException : public std::exception {
+ public:
+  ParserException() = default;
+
+  explicit ParserException(std::string description)
+      : description(std::move(description)) {};
+
+  ~ParserException() noexcept override = default;
+
+ public:
+  std::string getDescription() const noexcept {
+    return description;
+  }
+
+  const char *what() const noexcept override {
+    return description.c_str();
+  }
+
+ protected:
+  std::string description = std::string("Description not specified");
+  size_t code = 0;
+};
 
 class ConfiguratorJson {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  static ConfiguratorJson &Instance() {
-    static ConfiguratorJson ConfigManagerSingleton;
-    return ConfigManagerSingleton;
-  }
-
   ConfiguratorJson() {
     Init_();
   }
 
   ConfiguratorJson(const ConfiguratorJson &) = delete;
   ConfiguratorJson &operator=(const ConfiguratorJson &) = delete;
-  ConfiguratorJson(Singleton &&) = delete;
+  ConfiguratorJson(ConfiguratorJson &&) = delete;
   ConfiguratorJson &operator=(ConfiguratorJson &&) = delete;
   ~ConfiguratorJson() = default;
 
@@ -104,7 +120,7 @@ class ConfiguratorJson {
       file_name_ = std::string("../") + file_name_;
 
       if (!std::filesystem::exists(file_name_)) {
-        throw Exception("Error during parsing of " + file_name_ + " : file not exist");
+        throw ParserException("Error during parsing of " + file_name_ + " : file not exist");
       }
     }
 #endif
@@ -116,10 +132,10 @@ class ConfiguratorJson {
     if (ifs.is_open())
       ifs.close();
     else
-      throw Exception("Error during parsing of " + file_name_ + " : can't open file");
+      throw ParserException("Error during parsing of " + file_name_ + " : can't open file");
 
     if (!document_.IsObject())
-      throw Exception("Error during parsing of " + file_name_ + " : file is empty or incorrect");
+      throw ParserException("Error during parsing of " + file_name_ + " : file is empty or incorrect");
   }
 
   std::string file_name_ = "config.json";

@@ -25,7 +25,6 @@ SOFTWARE.
 #pragma once
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 
-#include "ConfiguratorJson.h"
 #include <RTShaderSystem/OgreShaderGenerator.h>
 #include <exception>
 
@@ -78,7 +77,7 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
                                                                          Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
     }
 
-    bool verbose = ConfiguratorJson::Instance().GetBool("global_verbose_enable");
+    bool verbose = false;
 
     if (!originalMaterial) {
       if (verbose)

@@ -22,11 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Context.h"
-
+#include "Application.h"
 #include "DemoDotAppState.h"
-#include "AppStateManager.h"
 #include "CameraMan.h"
+#include <OgreSceneLoaderManager.h>
 
 namespace Demo {
 
@@ -37,7 +36,7 @@ DemoDotAppState::~DemoDotAppState() {}
 
 void DemoDotAppState::KeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
-    AppStateManager::Instance().GoNextState();
+    Application::Instance().GoNextState();
   }
 }
 
@@ -45,7 +44,7 @@ void DemoDotAppState::Clear() {
 }
 
 void DemoDotAppState::Init() {
-  AppStateManager::Instance().SetNextState(std::make_unique<DemoDotAppState>());
+  Application::Instance().SetNextState(std::make_unique<DemoDotAppState>());
 //  ContextManager::Instance().UpdateCursorStatus({false, true, true});
 
 //  Application::Instance().GetCameraMan()->SetStyle(CameraStyle::FPS);

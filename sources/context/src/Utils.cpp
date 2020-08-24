@@ -24,8 +24,7 @@ SOFTWARE.
 
 #include "pcheader.h"
 #include "Utils.h"
-#include "Graphics.h"
-#include "ConfiguratorJson.h"
+#include "Renderer.h"
 
 using namespace Ogre;
 using namespace Context;
@@ -183,7 +182,8 @@ void UpdatePbrShadowReceiver(MaterialPtr material) {
     shadowed_list.push_back(material_name);
   }
 
-  auto *pssm = dynamic_cast<PSSMShadowCameraSetup *>(Ogre::Root::getSingleton().getSceneManager("Default")->getShadowCameraSetup().get());
+  auto *pssm =
+      dynamic_cast<PSSMShadowCameraSetup *>(Ogre::Root::getSingleton().getSceneManager("Default")->getShadowCameraSetup().get());
 
   if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
     auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
@@ -207,40 +207,36 @@ void UpdatePbrShadowReceiver(MaterialPtr material) {
     auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     auto pass = material->getTechnique(0)->getPass(0);
 
-    if (ConfiguratorJson::Instance().GetBool("graphics_shadows_enable")) {
-      uint numTextures = 3;
-      Vector4 splitPoints;
-      if (ConfiguratorJson::Instance().GetString("graphics_shadows_projection") == "pssm") {
-        const PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
-        for (int j = 1; j < numTextures; ++j) {
-          splitPoints[j - 1] = splitPointList[j];
-        }
-        splitPoints[numTextures - 1] = Ogre::Root::getSingleton().getSceneManager("Default")->getShadowFarDistance();
-      }
+    uint numTextures = 3;
+    Vector4 splitPoints;
+    const PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
+    for (int j = 1; j < numTextures; ++j) {
+      splitPoints[j - 1] = splitPointList[j];
+    }
+    splitPoints[numTextures - 1] = Ogre::Root::getSingleton().getSceneManager("Default")->getShadowFarDistance();
 
-      const int light_count = 5;
-      auto &constants = frag_params->getConstantDefinitions();
-      if (constants.map.count("pssmSplitPoints") != 0) {
-        frag_params->setNamedConstant("pssmSplitPoints", splitPoints);
-        AddGpuConstParameterAuto(frag_params, "uShadowColour", GpuProgramParameters::ACT_SHADOW_COLOUR);
-        AddGpuConstParameterAuto(frag_params, "uLightCastsShadowsArray",
-                                 GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY,
-                                 light_count);
+    const int light_count = 5;
+    auto &constants = frag_params->getConstantDefinitions();
+    if (constants.map.count("pssmSplitPoints") != 0) {
+      frag_params->setNamedConstant("pssmSplitPoints", splitPoints);
+      AddGpuConstParameterAuto(frag_params, "uShadowColour", GpuProgramParameters::ACT_SHADOW_COLOUR);
+      AddGpuConstParameterAuto(frag_params, "uLightCastsShadowsArray",
+                               GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY,
+                               light_count);
 
-        int texture_count = pass->getNumTextureUnitStates();
+      int texture_count = pass->getNumTextureUnitStates();
 
-        if (!registered) {
-          for (int k = 0; k < 3; k++) {
-            TextureUnitState *tu = pass->createTextureUnitState();
-            tu->setContentType(TextureUnitState::CONTENT_SHADOW);
-            tu->setTextureAddressingMode(TextureUnitState::TAM_BORDER);
-            tu->setTextureBorderColour(ColourValue::White);
-            tu->setTextureFiltering(FO_LINEAR, FO_LINEAR, FO_POINT);
-            frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);
+      if (!registered) {
+        for (int k = 0; k < 3; k++) {
+          TextureUnitState *tu = pass->createTextureUnitState();
+          tu->setContentType(TextureUnitState::CONTENT_SHADOW);
+          tu->setTextureAddressingMode(TextureUnitState::TAM_BORDER);
+          tu->setTextureBorderColour(ColourValue::White);
+          tu->setTextureFiltering(FO_LINEAR, FO_LINEAR, FO_POINT);
+          frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);
 //            frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
 //                                    GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
 //                                    texture_count + k);
-          }
         }
       }
     }

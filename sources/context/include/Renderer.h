@@ -24,15 +24,45 @@ SOFTWARE.
 
 #pragma once
 
-#include "Application.h"
-#include "AppState.h"
-#include "CameraMan.h"
-#include "Exception.h"
-#include "Graphics.h"
-#include "Compositors.h"
-#include "Forest.h"
-#include "Physic.h"
-#include "Sound.h"
-#include "DotSceneLoaderB.h"
-#include "OgreHeaders.h"
-#include "BulletHeaders.h"
+#include <vector>
+#include <string>
+#include <memory>
+
+#include "NoCopy.h"
+#include "Window.h"
+
+namespace Context {
+class CameraMan;
+class ShaderResolver;
+}
+
+namespace Ogre {
+class Root;
+class SceneManager;
+}
+
+namespace Context {
+class Renderer : public NoCopy {
+ public:
+  Renderer();
+  virtual ~Renderer();
+
+  void UpdateParams();
+  void Render();
+
+ private:
+  void CreateCamera();
+
+ private:
+  Window window_;
+
+  Ogre::Root *root_ = nullptr;
+  Ogre::SceneManager *scene_ = nullptr;
+
+ public:
+
+  Window &GetWindow() {
+    return window_;
+  }
+}; //class ContextManager
+} //namespace Context

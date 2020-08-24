@@ -48,6 +48,7 @@ class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, 
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {};
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) override { return true; };
 
+ protected:
   Ogre::SceneManager *scene_ = nullptr;
   Ogre::Camera *camera_ = nullptr;
   Ogre::Viewport *viewport_ = nullptr;

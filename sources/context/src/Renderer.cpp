@@ -24,16 +24,14 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "Graphics.h"
-#include "ConfiguratorJson.h"
+#include "Renderer.h"
 #include "Exception.h"
 #include "Storage.h"
-#include "CameraMan.h"
 #include "DotSceneLoaderB.h"
 #include "Forest.h"
 
 namespace Context {
-Graphics::Graphics() {
+Renderer::Renderer() {
   root_ = new Ogre::Root("", "", "");
 
   bool global_sso_enable_ = true;
@@ -88,11 +86,10 @@ Graphics::Graphics() {
   Ogre::NameValuePairList params;
 
   SDL_SysWMinfo info = window_.GetInfo();
-  auto &conf = ConfiguratorJson::Instance();
-  window_.Resize(conf.GetInt("window_width"),
-                 conf.GetInt("window_high"));
-  if (conf.GetBool("window_fullscreen"))
-    window_.Fullscreen(true);
+//  window_.Resize(conf.GetInt("window_width"),
+//                 conf.GetInt("window_high"));
+//  if (conf.GetBool("window_fullscreen"))
+//    window_.Fullscreen(true);
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   if (!reinterpret_cast<size_t>(info.info.win.window)) {
     throw Exception("Cast from info.info.win.window to size_t failed");
@@ -114,10 +111,10 @@ Graphics::Graphics() {
   bool graphics_gamma_enable_ = false;
   int graphics_fsaa_ = 0;
   int graphics_msaa_ = 0;
-  conf.Assign(graphics_vsync_, "graphics_vsync");
-  conf.Assign(graphics_gamma_enable_, "graphics_gamma");
-  conf.Assign(graphics_fsaa_, "graphics_fsaa");
-  conf.Assign(graphics_msaa_, "graphics_msaa");
+//  conf.Assign(graphics_vsync_, "graphics_vsync");
+//  conf.Assign(graphics_gamma_enable_, "graphics_gamma");
+//  conf.Assign(graphics_fsaa_, "graphics_fsaa");
+//  conf.Assign(graphics_msaa_, "graphics_msaa");
 
   params["vsync"] = graphics_vsync_ ? true_str : false_str;
   params["gamma"] = graphics_gamma_enable_ ? true_str : false_str;
@@ -143,9 +140,9 @@ Graphics::Graphics() {
   auto *viewport = renderTarget->addViewport(camera);
   viewport->setBackgroundColour(Ogre::ColourValue::Black);
 }
-Graphics::~Graphics() {}
+Renderer::~Renderer() {}
 //----------------------------------------------------------------------------------------------------------------------
-void Graphics::CreateCamera() {
+void Renderer::CreateCamera() {
   Ogre::Camera *camera = nullptr;
 
   if (!scene_->hasCamera("Default")) {
@@ -170,16 +167,16 @@ void Graphics::CreateCamera() {
   scene_->setAmbientLight(Ogre::ColourValue::Black);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Graphics::UpdateParams() {
+void Renderer::UpdateParams() {
   CreateCamera();
 
   std::string graphics_filtration_ = "bilinear";
   int graphics_anisotropy_level_ = 4;
   int graphics_mipmap_count_ = 10;
-  auto &conf = ConfiguratorJson::Instance();
-  conf.Assign(graphics_filtration_, "graphics_filtration");
-  conf.Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
-  conf.Assign(graphics_mipmap_count_, "graphics_mipmap_count");
+//  auto &conf = ConfiguratorJson::Instance();
+//  conf.Assign(graphics_filtration_, "graphics_filtration");
+//  conf.Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
+//  conf.Assign(graphics_mipmap_count_, "graphics_mipmap_count");
   auto *camera = scene_->getCamera("Default");
 
   // Texture filtering
@@ -225,25 +222,25 @@ void Graphics::UpdateParams() {
   std::string graphics_shadows_texture_format_ = "DEPTH32";
   bool graphics_shadows_integrated_ = true;
 
-  conf.Assign(graphics_shadows_enable_, "graphics_shadows_enable");
-  conf.Assign(graphics_shadows_pssm_0_, "graphics_shadows_pssm_0");
-  conf.Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
-  conf.Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
-  conf.Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
-  conf.Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
-  conf.Assign(graphics_shadows_texture_resolution_, "graphics_shadows_texture_resolution");
-  conf.Assign(graphics_shadows_split_padding_, "graphics_shadows_split_padding");
-  conf.Assign(graphics_shadows_texture_count_, "graphics_shadows_texture_count");
-  conf.Assign(graphics_shadows_far_distance_, "graphics_shadows_far_distance");
-  conf.Assign(graphics_shadows_self_shadow_, "graphics_shadows_self_shadow");
-  conf.Assign(graphics_shadows_back_faces_, "graphics_shadows_back_faces");
-  conf.Assign(graphics_shadows_caster_material_, "graphics_shadows_caster_material");
-  conf.Assign(graphics_shadows_receiver_material_, "graphics_shadows_receiver_material");
-  conf.Assign(graphics_shadows_tecnique_, "graphics_shadows_tecnique");
-  conf.Assign(graphics_shadows_lighting_, "graphics_shadows_lighting");
-  conf.Assign(graphics_shadows_projection_, "graphics_shadows_projection");
-  conf.Assign(graphics_shadows_material_, "graphics_shadows_material");
-  conf.Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
+//  conf.Assign(graphics_shadows_enable_, "graphics_shadows_enable");
+//  conf.Assign(graphics_shadows_pssm_0_, "graphics_shadows_pssm_0");
+//  conf.Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
+//  conf.Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
+//  conf.Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
+//  conf.Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
+//  conf.Assign(graphics_shadows_texture_resolution_, "graphics_shadows_texture_resolution");
+//  conf.Assign(graphics_shadows_split_padding_, "graphics_shadows_split_padding");
+//  conf.Assign(graphics_shadows_texture_count_, "graphics_shadows_texture_count");
+//  conf.Assign(graphics_shadows_far_distance_, "graphics_shadows_far_distance");
+//  conf.Assign(graphics_shadows_self_shadow_, "graphics_shadows_self_shadow");
+//  conf.Assign(graphics_shadows_back_faces_, "graphics_shadows_back_faces");
+//  conf.Assign(graphics_shadows_caster_material_, "graphics_shadows_caster_material");
+//  conf.Assign(graphics_shadows_receiver_material_, "graphics_shadows_receiver_material");
+//  conf.Assign(graphics_shadows_tecnique_, "graphics_shadows_tecnique");
+//  conf.Assign(graphics_shadows_lighting_, "graphics_shadows_lighting");
+//  conf.Assign(graphics_shadows_projection_, "graphics_shadows_projection");
+//  conf.Assign(graphics_shadows_material_, "graphics_shadows_material");
+//  conf.Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
 
   if (graphics_shadows_enable_) {
     unsigned shadow_technique = Ogre::SHADOWTYPE_NONE;
@@ -339,7 +336,7 @@ void Graphics::UpdateParams() {
   }
 
   bool graphics_debug_show_wireframe_ = false;
-  conf.Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
+//  conf.Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
 
   if (graphics_debug_show_wireframe_) {
     camera->setPolygonMode(Ogre::PM_WIREFRAME);
@@ -348,7 +345,7 @@ void Graphics::UpdateParams() {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Graphics::Render() {
+void Renderer::Render() {
   root_->renderOneFrame();
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   window_.SwapBuffers();

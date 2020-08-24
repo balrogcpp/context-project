@@ -24,22 +24,22 @@ SOFTWARE.
 
 #pragma once
 
-#include <OgreFrameListener.h>
-#include <OgreRenderTargetListener.h>
-#include <OgreLog.h>
-
-#include "IO.h"
-#include "DummyListener.h"
-#include "Graphics.h"
+#include "Renderer.h"
 #include "Sound.h"
 #include "Physic.h"
 #include "DotSceneLoaderB.h"
 #include "Compositors.h"
 #include "Singleton.h"
 #include "Overlay.h"
+#include "AppState.h"
+
+#include <OgreFrameListener.h>
+#include <OgreRenderTargetListener.h>
+#include <OgreLog.h>
 
 namespace Context {
 class AppState;
+class ConfiguratorJson;
 }
 
 namespace Context {
@@ -47,6 +47,11 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
  public:
   Application();
   virtual ~Application();
+
+  static Application &Instance() {
+    static Application instance;
+    return instance;
+  }
 
   int Main(std::unique_ptr<AppState> &&scene_ptr);
   void SetCurState(std::unique_ptr<AppState> &&scene_ptr);
@@ -72,17 +77,59 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
     }
   }
 
+  std::unique_ptr<ConfiguratorJson> config_;
+  Renderer graphics_;
+  Physic physics_;
+  Sound sounds_;
+  Overlay overlay_;
+  std::unique_ptr<Compositors> compositor_;
+  DotSceneLoaderB loader_;
+  bool waiting_ = false;
+  std::unique_ptr<AppState> cur_state_;
+  std::unique_ptr<AppState> next_state_;
+
   bool quit_ = false;
   bool suspend_ = false;
   int current_fps_ = 0;
   int target_fps_ = 60;
   bool verbose_ = false;
   bool lock_fps_ = true;
-  Graphics graphics_;
-  Physic physics_;
-  Sound sounds_;
-  Overlay overlay_;
-  std::unique_ptr<Compositors> compositor_;
-  DotSceneLoaderB loader_;
+
+ public:
+  //----------------------------------------------------------------------------------------------------------------------
+  void SetInitialState(std::unique_ptr<AppState> &&state) {
+    cur_state_ = move(state);
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void SetNextState(std::unique_ptr<AppState> &&state) {
+    next_state_ = move(state);
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void GoNextState() {
+    if (next_state_) {
+      cur_state_ = move(next_state_);
+      waiting_ = true;
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void InitCurrState() {
+    cur_state_->Init();
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  AppState* GetCurState() {
+    return cur_state_.get();
+  }
+
+  AppState* GetNextState() {
+    return next_state_.get();
+  }
+
+  bool IsWaiting() const noexcept {
+    return waiting_;
+  }
+
+  void ClearWaiting() {
+    waiting_ = false;
+  }
 }; //class Application
 } //namespace Context

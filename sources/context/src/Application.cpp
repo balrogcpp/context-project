@@ -25,12 +25,10 @@ SOFTWARE.
 #include "pcheader.h"
 
 #include "Application.h"
-#include "AppStateManager.h"
 #include "Storage.h"
-#include "Overlay.h"
-#include "ConfiguratorJson.h"
 #include "Exception.h"
 #include "CameraMan.h"
+#include "ConfiguratorJson.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -60,28 +58,21 @@ void Application::Init_() {
   Storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
 #endif
 
-  bool physics_enable_ = true;
-  bool sound_enable_ = true;
-  auto &conf = ConfiguratorJson::Instance();
-  conf.Assign(physics_enable_, "physics_enable");
-  conf.Assign(sound_enable_, "sound_enable");
+  config_ = std::make_unique<ConfiguratorJson>();
 
   if (!compositor_) compositor_ = std::make_unique<Compositors>();
   overlay_.Init();
   graphics_.UpdateParams();
   loader_.SetWorld(&physics_);
-//  loader_.SetCamera(graphics_.GetCameraMan());
-  conf.Assign(verbose_, "global_verbose_enable");
-  conf.Assign(target_fps_, "global_target_fps");
-  conf.Assign(lock_fps_, "global_lock_fps");
+  config_->Assign(verbose_, "global_verbose_enable");
+  config_->Assign(target_fps_, "global_target_fps");
+  config_->Assign(lock_fps_, "global_lock_fps");
 
   io::InputSequencer::Instance().RegEventListener(this);
 
   if (!verbose_) {
     auto *logger = new Ogre::LogManager();
-    std::string log_name = conf.GetString("log_name");
-    if (log_name.empty())
-      log_name = "Ogre.log";
+    std::string log_name = "Ogre.log";
 
     logger->createLog(log_name, true, false, true);
     Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
@@ -119,7 +110,6 @@ void Application::Event(const SDL_Event &evt) {
   const int fps_inactive = 30;
 
   if (evt.type == SDL_WINDOWEVENT) {
-    auto &conf = ConfiguratorJson::Instance();
     static bool fullscreen = graphics_.GetWindow().GetFullscreen();
 
     if (!fullscreen) {
@@ -130,8 +120,8 @@ void Application::Event(const SDL_Event &evt) {
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
-        conf.Assign(target_fps_, "global_target_fps");
-        conf.Assign(lock_fps_, "global_lock_fps");
+        config_->Assign(target_fps_, "global_target_fps");
+        config_->Assign(lock_fps_, "global_lock_fps");
       }
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
@@ -141,8 +131,8 @@ void Application::Event(const SDL_Event &evt) {
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
-        conf.Assign(target_fps_, "global_target_fps");
-        conf.Assign(lock_fps_, "global_lock_fps");
+        config_->Assign(target_fps_, "global_target_fps");
+        config_->Assign(lock_fps_, "global_lock_fps");
       }
     }
   }
@@ -152,7 +142,7 @@ void Application::Other(Uint8 type, int32_t code, void *data1, void *data2) {}
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Loop_() {
   while (quit_) {
-    if (AppStateManager::Instance().GetCurState()) {
+    if (GetCurState()) {
       auto *root = Ogre::Root::getSingleton().getSceneManager("Default");
       auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
       long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
@@ -169,7 +159,7 @@ void Application::Loop_() {
       io::InputSequencer::Instance().Capture();
 
       if (!suspend_) {
-        if (AppStateManager::Instance().IsWaiting()) {
+        if (IsWaiting()) {
           loader_.Clear();
           physics_.Clear();
 
@@ -189,9 +179,9 @@ void Application::Loop_() {
           root->getRootSceneNode()->removeAndDestroyAllChildren();
 
           graphics_.UpdateParams();
-          AppStateManager::Instance().InitCurrState();
+          InitCurrState();
           physics_.Start();
-          AppStateManager::Instance().ClearWaiting();
+          ClearWaiting();
         }
 
         Render_();
@@ -226,8 +216,8 @@ void Application::Loop_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
-  if (AppStateManager::Instance().GetCurState()) {
-    AppStateManager::Instance().GetCurState()->Init();
+  if (GetCurState()) {
+    GetCurState()->Init();
     quit_ = true;
     Loop_();
     io::InputSequencer::Instance().Reset();
@@ -236,7 +226,7 @@ void Application::Go_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::SetCurState(std::unique_ptr<AppState> &&scene_ptr) {
-  AppStateManager::Instance().SetInitialState(move(scene_ptr));
+  SetInitialState(move(scene_ptr));
 }
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
@@ -297,7 +287,7 @@ int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
   }
 
 #if defined _WIN32 && defined DEBUG
-  if (ConfigManager::Instance().GetBool("application_ask_before_quit")) {
+  if (config_igManager::Instance().GetBool("application_ask_before_quit")) {
     std::cout << std::endl;
     std::cout << "Press any key to end program..." << std::endl;
     getchar();

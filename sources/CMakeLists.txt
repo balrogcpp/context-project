@@ -62,12 +62,11 @@ set(BTOGRE_HEADERS
 set(CONTEXT_HEADERS
     context/include/Application.h
     context/include/AppState.h
-    context/include/AppStateManager.h
     context/include/CameraMan.h
     context/include/Exception.h
     context/include/IO.h
     context/include/pcheader.h
-    context/include/Graphics.h
+    context/include/Renderer.h
     context/include/DummyListener.h
     context/include/ConfiguratorJson.h
     context/include/DotSceneLoaderB.h
@@ -77,7 +76,6 @@ set(CONTEXT_HEADERS
     context/include/OgreHeaders.h
     context/include/Sound.h
     context/include/Manager.h
-    context/include/Context.h
     context/include/Compositors.h
     context/include/Singleton.h
     context/include/NoCopy.h
@@ -119,7 +117,7 @@ set(OGGSOUND_SOURCES
 set(CONTEXT_SOURCES
     context/src/Application.cpp
     context/src/AppState.cpp
-    context/src/Graphics.cpp
+    context/src/Renderer.cpp
     context/src/DotSceneLoaderB.cpp
     context/src/Physic.cpp
     context/src/Forest.cpp

@@ -26,8 +26,6 @@ SOFTWARE.
 
 #include "Compositors.h"
 #include "Exception.h"
-#include "ConfiguratorJson.h"
-#include "DotSceneLoaderB.h"
 #include "CompositorHelper.h"
 
 namespace Context {
@@ -36,16 +34,7 @@ Compositors::~Compositors() noexcept {}
 Compositors::Compositors() {  bool graphics_shadows_enable_ = true;
   bool compositor_use_bloom_ = false;
   bool compositor_use_ssao_ = false;
-  bool compositor_use_blur_ = true;
-  bool compositor_use_hdr_ = true;
-  bool compositor_use_moution_blur_ = false;
-
-  ConfiguratorJson::Instance().Assign(graphics_shadows_enable_, "graphics_shadows_enable");
-  ConfiguratorJson::Instance().Assign(compositor_use_bloom_, "compositor_use_bloom");
-  ConfiguratorJson::Instance().Assign(compositor_use_ssao_, "compositor_use_ssao");
-  ConfiguratorJson::Instance().Assign(compositor_use_blur_, "compositor_use_blur");
-  ConfiguratorJson::Instance().Assign(compositor_use_hdr_, "compositor_use_hdr");
-  ConfiguratorJson::Instance().Assign(compositor_use_moution_blur_, "compositor_use_moution_blur");
+  bool compositor_use_hdr_ = false;
 
   if (compositor_use_ssao_) {
     ssaog_buffer_scheme_handler_ = new GBufferSchemeHandler();

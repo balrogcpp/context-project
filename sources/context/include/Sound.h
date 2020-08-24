@@ -47,9 +47,7 @@ class Sound : public Manager {
     // Register
     Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
 
-    if (!OgreOggSound::OgreOggSoundManager::getSingleton().init()) {
-      std::cerr << "Failed to initialize OgreOggSoundManager" << std::endl;
-    }
+    OgreOggSound::OgreOggSoundManager::getSingleton().init();
   }
 
   virtual ~Sound() {

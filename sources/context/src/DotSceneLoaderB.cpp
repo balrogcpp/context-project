@@ -28,7 +28,6 @@ SOFTWARE.
 
 #include "Application.h"
 #include "CameraMan.h"
-#include "ConfiguratorJson.h"
 #include "TerrainMaterialGeneratorB.h"
 #include "CubeMapCamera.h"
 #include "ReflectionCamera.h"
@@ -57,10 +56,10 @@ DotSceneLoaderB::DotSceneLoaderB() {
 
   Ogre::SceneLoaderManager::getSingleton().registerSceneLoader("DotSceneB", {".scene", ".xml"}, this);
 
-  ConfiguratorJson::Instance().Assign(physics_enable_, "physics_enable");
-  ConfiguratorJson::Instance().Assign(lod_generator_enable_, "lod_generator_enable");
-  ConfiguratorJson::Instance().Assign(terrain_cast_shadows_, "terrain_cast_shadows");
-  ConfiguratorJson::Instance().Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
+//  ConfiguratorJson::Instance().Assign(physics_enable_, "physics_enable");
+//  ConfiguratorJson::Instance().Assign(lod_generator_enable_, "lod_generator_enable");
+//  ConfiguratorJson::Instance().Assign(terrain_cast_shadows_, "terrain_cast_shadows");
+//  ConfiguratorJson::Instance().Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
 }
 //----------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::~DotSceneLoaderB() {
@@ -835,8 +834,8 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
       }
     }
 
-    std::string shadow_technique;
-    ConfiguratorJson::Instance().Assign(shadow_technique, "graphics_shadows_tecnique");
+    std::string shadow_technique = "texture";
+//    ConfiguratorJson::Instance().Assign(shadow_technique, "graphics_shadows_tecnique");
 
     if (shadow_technique == "stencil") {
       if (!entity->getMesh()->isEdgeListBuilt()) {

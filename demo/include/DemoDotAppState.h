@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "Graphics.h"
+#include "Renderer.h"
 #include "AppState.h"
 #include "Forest.h"
 
