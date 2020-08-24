@@ -60,35 +60,35 @@ set(BTOGRE_HEADERS
     )
 
 set(CONTEXT_HEADERS
-    context/include/Application.h
-    context/include/AppState.h
-    context/include/CameraMan.h
-    context/include/Exception.h
-    context/include/IO.h
-    context/include/pcheader.h
-    context/include/Renderer.h
-    context/include/DummyListener.h
-    context/include/ConfiguratorJson.h
-    context/include/DotSceneLoaderB.h
-    context/include/Forest.h
-    context/include/Physic.h
-    context/include/OgreHeaders.h
-    context/include/Sound.h
-    context/include/System.h
-    context/include/Compositor.h
-    context/include/Singleton.h
-    context/include/NoCopy.h
-    context/include/TerrainMaterialGeneratorB.h
-    context/include/CubeMapCamera.h
-    context/include/ReflectionCamera.h
-    context/include/Gorilla.h
-    context/include/Overlay.h
-    context/include/Window.h
-    context/include/Utils.h
-    context/include/Storage.h
-    context/include/RtssUtils.h
-    context/include/Terrain.h
-    context/include/CompositorHelper.h
+    include/Application.h
+    include/AppState.h
+    include/CameraMan.h
+    include/Exception.h
+    include/IO.h
+    include/pcheader.h
+    include/Renderer.h
+    include/DummyListener.h
+    include/ConfiguratorJson.h
+    include/DotSceneLoaderB.h
+    include/Forest.h
+    include/Physic.h
+    include/OgreHeaders.h
+    include/Sound.h
+    include/System.h
+    include/Compositor.h
+    include/Singleton.h
+    include/NoCopy.h
+    include/TerrainMaterialGeneratorB.h
+    include/CubeMapCamera.h
+    include/ReflectionCamera.h
+    include/Gorilla.h
+    include/Overlay.h
+    include/Window.h
+    include/Utils.h
+    include/Storage.h
+    include/RtssUtils.h
+    include/Terrain.h
+    include/CompositorHelper.h
     )
 
 set(HEADER_FILES_CONTEXT_LIB
@@ -114,19 +114,19 @@ set(OGGSOUND_SOURCES
     )
 
 set(CONTEXT_SOURCES
-    context/src/Application.cpp
-    context/src/AppState.cpp
-    context/src/Renderer.cpp
-    context/src/DotSceneLoaderB.cpp
-    context/src/Physic.cpp
-    context/src/Forest.cpp
-    context/src/System.cpp
-    context/src/pcheader.cpp
-    context/src/Compositor.cpp
-    context/src/TerrainMaterialGeneratorB.cpp
-    context/src/Gorilla.cpp
-    context/src/Overlay.cpp
-    context/src/Utils.cpp
+    src/Application.cpp
+    src/AppState.cpp
+    src/Renderer.cpp
+    src/DotSceneLoaderB.cpp
+    src/Physic.cpp
+    src/Forest.cpp
+    src/System.cpp
+    src/pcheader.cpp
+    src/Compositor.cpp
+    src/TerrainMaterialGeneratorB.cpp
+    src/Gorilla.cpp
+    src/Overlay.cpp
+    src/Utils.cpp
     )
 
 set(SOURCE_FILES_CONTEXT_LIB
@@ -138,16 +138,8 @@ set(SOURCE_FILES_CONTEXT_LIB
 include_directories(context-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 
 add_library(context-lib-static STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
-add_library(context-lib-dynamic SHARED EXCLUDE_FROM_ALL ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
-
-target_link_directories(context-lib-dynamic PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE)
-target_link_libraries(context-lib-dynamic PUBLIC ${CONTEXT_STATIC_DEPENDENCY_LIBS})
 
 set_target_properties(context-lib-static PROPERTIES OUTPUT_NAME "context-static")
-set_target_properties(context-lib-dynamic PROPERTIES OUTPUT_NAME "context")
-if (WIN32)
-    set_target_properties(context-lib-dynamic PROPERTIES PREFIX "")
-endif ()
 
 set(CMAKE_CXX_FLAGS ${CONTEXT_CXX_FLAGS})
 set(CMAKE_C_FLAGS ${CONTEXT_C_FLAGS})
@@ -156,14 +148,6 @@ set(CMAKE_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS})
 set(CMAKE_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS})
 
 if (NOT MSVC AND NOT ANDROID)
-    set_target_properties(context-lib-dynamic PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "context/include/pcheader.h")
-    set_target_properties(context-lib-static PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "context/include/pcheader.h")
-    #    cotire(context-lib-dynamic)
+    set_target_properties(context-lib-static PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "include/pcheader.h")
     cotire(context-lib-static)
 endif ()
-
-# install(TARGETS context-lib-dynamic
-#         CONFIGURATIONS Release
-#         RUNTIME DESTINATION bin
-#         LIBRARY DESTINATION bin
-#         )
