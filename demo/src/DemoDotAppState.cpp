@@ -36,7 +36,7 @@ DemoDotAppState::~DemoDotAppState() {}
 
 void DemoDotAppState::KeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
-    Application::Instance().GoNextState();
+//    Application::Instance().GoNextState();
   }
 }
 
@@ -44,7 +44,7 @@ void DemoDotAppState::Clear() {
 }
 
 void DemoDotAppState::Init() {
-  Application::Instance().SetNextState(std::make_unique<DemoDotAppState>());
+//  Application::Instance().SetNextState(std::make_unique<DemoDotAppState>());
 //  ContextManager::Instance().UpdateCursorStatus({false, true, true});
 
 //  Application::Instance().GetCameraMan()->SetStyle(CameraStyle::FPS);

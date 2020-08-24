@@ -51,6 +51,6 @@ void android_main(struct android_app *pApp)
 int main()
 #endif
 {
-  using namespace Context;
-  Application::Instance().Main(std::make_unique<Demo::DemoDotAppState>());
+  Context::Application app;
+  app.Main(std::make_unique<Demo::DemoDotAppState>());
 }

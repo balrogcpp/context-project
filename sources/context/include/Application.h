@@ -47,11 +47,6 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
   Application();
   virtual ~Application();
 
-  static Application &Instance() {
-    static Application instance;
-    return instance;
-  }
-
   int Main(std::unique_ptr<AppState> &&scene_ptr);
   void SetCurState(std::unique_ptr<AppState> &&scene_ptr);
 
