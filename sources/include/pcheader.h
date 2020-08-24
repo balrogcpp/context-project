@@ -25,22 +25,20 @@ SOFTWARE.
 #pragma once
 
 #include "OgreHeaders.h"
-#include <pugixml.hpp>
+#include "BtOgreExtras.h"
+#include "BtOgreGP.h"
+#include "BtOgrePG.h"
+#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/istreamwrapper.h>
-
-#include "BtOgreExtras.h"
-#include "BtOgreGP.h"
-#include "BtOgrePG.h"
-#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
-
+#include <pugixml.hpp>
 #include <yaml-cpp/yaml.h>
-
 #include <angelscript.h>
+#include <lua.hpp>
 
 #include <string>
 #include <iostream>
@@ -61,5 +59,8 @@ SOFTWARE.
 #include <thread>
 #include <filesystem>
 #include <cstdlib>
-
 #include <omp.h>
+
+extern "C" {
+#include <SDL2/SDL.h>
+}
