@@ -203,19 +203,17 @@ externalproject_add(target-ois
                     -G "${CMAKE_GENERATOR}"
                     )
 
-if (ANDROID)
-    externalproject_add(target-iconv
-                        EXCLUDE_FROM_ALL true
-                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                        GIT_REPOSITORY https://github.com/roninest/iconv-android.git
-                        GIT_TAG 7d729796e02da9360018d63d7f853dcd4121cce7
-                        GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                        GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ./configure --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ndk-build
-                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv/obj/local/arm64-v8a ${CMAKE_COMMAND} -E copy libiconv.a ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libiconv.a
-                        )
-endif ()
+externalproject_add(target-iconv
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/roninest/iconv-android.git
+                    GIT_TAG 7d729796e02da9360018d63d7f853dcd4121cce7
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ./configure --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ndk-build
+                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv/obj/local/arm64-v8a ${CMAKE_COMMAND} -E copy libiconv.a ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libiconv.a
+                    )
 
 externalproject_add(target-cpuinfo
                     EXCLUDE_FROM_ALL true
@@ -731,10 +729,6 @@ externalproject_add(target-imgui
                     -G "${CMAKE_GENERATOR}"
                     )
 
-if (ANDROID)
-    set(CEGUI_GIT_TAG -Android)
-endif ()
-
 externalproject_add(target-cegui
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-freetype target-ogre1
@@ -968,7 +962,6 @@ list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-angelscript)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre1)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre1)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-lua)
 add_custom_target(context-deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
 
@@ -1065,19 +1058,6 @@ endif ()
 list(APPEND OGRE_LIBRARIES OgreGLSupport${SUFFIX_LIB_OGRE})
 list(APPEND OGRE_LIBRARIES OgreMain${SUFFIX_LIB_OGRE})
 
-#set(SUFFIX_LIB_CEGUI "")
-#if (WIN32)
-#    if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
-#        string(APPEND SUFFIX_LIB_OGRE _d)
-#    endif ()
-#endif ()
-#
-#list(APPEND CEGUI_LIBRARIES CEGUIOgreRenderer-0${SUFFIX_LIB_CEGUI})
-#list(APPEND CEGUI_LIBRARIES CEGUIBase-0${SUFFIX_LIB_CEGUI})
-#list(APPEND CEGUI_LIBRARIES CEGUICoreWindowRendererSet${SUFFIX_LIB_CEGUI})
-#list(APPEND CEGUI_LIBRARIES CEGUIRapidXMLParser${SUFFIX_LIB_CEGUI})
-#list(APPEND CEGUI_LIBRARIES CEGUISTBImageCodec${SUFFIX_LIB_CEGUI})
-
 list(APPEND STATIC_LIBRARIES pugixml)
 list(APPEND STATIC_LIBRARIES zzip)
 list(APPEND STATIC_LIBRARIES freetype)
@@ -1141,7 +1121,5 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OG
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GL)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2/GLSLES)
-if (ANDROID)
-    list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_ROOT_DIR}/android/include/)
-endif ()
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_ROOT_DIR}/android/include/)
 set(CONTEXT_DEPENDENCY_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIRS} CACHE INTERNAL "")
