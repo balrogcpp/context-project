@@ -76,7 +76,7 @@ set(CONTEXT_HEADERS
     context/include/OgreHeaders.h
     context/include/Sound.h
     context/include/Manager.h
-    context/include/Compositors.h
+    context/include/Compositor.h
     context/include/Singleton.h
     context/include/NoCopy.h
     context/include/TerrainMaterialGeneratorB.h
@@ -123,7 +123,7 @@ set(CONTEXT_SOURCES
     context/src/Forest.cpp
     context/src/Manager.cpp
     context/src/pcheader.cpp
-    context/src/Compositors.cpp
+    context/src/Compositor.cpp
     context/src/TerrainMaterialGeneratorB.cpp
     context/src/Gorilla.cpp
     context/src/Overlay.cpp

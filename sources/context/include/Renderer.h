@@ -30,6 +30,7 @@ SOFTWARE.
 
 #include "NoCopy.h"
 #include "Window.h"
+#include "Compositor.h"
 
 namespace Context {
 class CameraMan;
@@ -55,6 +56,7 @@ class Renderer : public NoCopy {
 
  private:
   Window window_;
+  std::unique_ptr<Compositor> compositor_;
 
   Ogre::Root *root_ = nullptr;
   Ogre::SceneManager *scene_ = nullptr;

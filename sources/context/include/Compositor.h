@@ -37,10 +37,10 @@ class DepthSchemeHandler;
 
 namespace Context {
 
-class Compositors final : public Manager {
+class Compositor final : public Manager {
  public:
-  Compositors();
-  virtual ~Compositors();
+  Compositor();
+  virtual ~Compositor();
 
  private:
   std::vector<std::string> compositor_names_;

@@ -28,7 +28,6 @@ SOFTWARE.
 #include "Sound.h"
 #include "Physic.h"
 #include "DotSceneLoaderB.h"
-#include "Compositors.h"
 #include "Singleton.h"
 #include "Overlay.h"
 #include "AppState.h"
@@ -77,17 +76,16 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
     }
   }
 
-  std::unique_ptr<ConfiguratorJson> config_;
-  Renderer graphics_;
-  Physic physics_;
-  Sound sounds_;
-  Overlay overlay_;
-  std::unique_ptr<Compositors> compositor_;
-  DotSceneLoaderB loader_;
-  bool waiting_ = false;
+  std::unique_ptr<ConfiguratorJson> conf_;
+  std::unique_ptr<Renderer> renderer_;
+  std::unique_ptr<Physic> physics_;
+  std::unique_ptr<Sound> sounds_;
+  std::unique_ptr<Overlay> overlay_;
+  std::unique_ptr<DotSceneLoaderB> loader_;
   std::unique_ptr<AppState> cur_state_;
   std::unique_ptr<AppState> next_state_;
 
+  bool waiting_ = false;
   bool quit_ = false;
   bool suspend_ = false;
   int current_fps_ = 0;

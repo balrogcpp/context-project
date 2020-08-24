@@ -111,10 +111,6 @@ Renderer::Renderer() {
   bool graphics_gamma_enable_ = false;
   int graphics_fsaa_ = 0;
   int graphics_msaa_ = 0;
-//  conf.Assign(graphics_vsync_, "graphics_vsync");
-//  conf.Assign(graphics_gamma_enable_, "graphics_gamma");
-//  conf.Assign(graphics_fsaa_, "graphics_fsaa");
-//  conf.Assign(graphics_msaa_, "graphics_msaa");
 
   params["vsync"] = graphics_vsync_ ? true_str : false_str;
   params["gamma"] = graphics_gamma_enable_ ? true_str : false_str;
@@ -139,6 +135,14 @@ Renderer::Renderer() {
 
   auto *viewport = renderTarget->addViewport(camera);
   viewport->setBackgroundColour(Ogre::ColourValue::Black);
+
+#ifndef DEBUG
+  Storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
+#else
+  Storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
+#endif
+
+  compositor_ = std::make_unique<Compositor>();
 }
 Renderer::~Renderer() {}
 //----------------------------------------------------------------------------------------------------------------------

@@ -52,21 +52,18 @@ Application::~Application() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
-#ifndef DEBUG
-  Storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
-#else
-  Storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
-#endif
-
-  config_ = std::make_unique<ConfiguratorJson>();
-
-  if (!compositor_) compositor_ = std::make_unique<Compositors>();
-  overlay_.Init();
-  graphics_.UpdateParams();
-  loader_.SetWorld(&physics_);
-  config_->Assign(verbose_, "global_verbose_enable");
-  config_->Assign(target_fps_, "global_target_fps");
-  config_->Assign(lock_fps_, "global_lock_fps");
+  renderer_ = std::make_unique<Renderer>();
+  conf_ = std::make_unique<ConfiguratorJson>();
+  physics_ = std::make_unique<Physic>();
+  sounds_ = std::make_unique<Sound>();
+  overlay_ = std::make_unique<Overlay>();
+  loader_ = std::make_unique<DotSceneLoaderB>();
+  overlay_->Init();
+  renderer_->UpdateParams();
+  loader_->SetWorld(physics_.get());
+  conf_->Assign(verbose_, "global_verbose_enable");
+  conf_->Assign(target_fps_, "global_target_fps");
+  conf_->Assign(lock_fps_, "global_lock_fps");
 
   io::InputSequencer::Instance().RegEventListener(this);
 
@@ -81,7 +78,7 @@ void Application::Init_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Render_() {
-  graphics_.Render();
+  renderer_->Render();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Reset_() {
@@ -110,7 +107,7 @@ void Application::Event(const SDL_Event &evt) {
   const int fps_inactive = 30;
 
   if (evt.type == SDL_WINDOWEVENT) {
-    static bool fullscreen = graphics_.GetWindow().GetFullscreen();
+    static bool fullscreen = renderer_->GetWindow().GetFullscreen();
 
     if (!fullscreen) {
       if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
@@ -120,8 +117,8 @@ void Application::Event(const SDL_Event &evt) {
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
-        config_->Assign(target_fps_, "global_target_fps");
-        config_->Assign(lock_fps_, "global_lock_fps");
+        conf_->Assign(target_fps_, "global_target_fps");
+        conf_->Assign(lock_fps_, "global_lock_fps");
       }
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
@@ -131,8 +128,8 @@ void Application::Event(const SDL_Event &evt) {
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
-        config_->Assign(target_fps_, "global_target_fps");
-        config_->Assign(lock_fps_, "global_lock_fps");
+        conf_->Assign(target_fps_, "global_target_fps");
+        conf_->Assign(lock_fps_, "global_lock_fps");
       }
     }
   }
@@ -160,8 +157,8 @@ void Application::Loop_() {
 
       if (!suspend_) {
         if (IsWaiting()) {
-          loader_.Clear();
-          physics_.Clear();
+          loader_->Clear();
+          physics_->Clear();
 
           root->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
           root->destroyAllEntities();
@@ -178,9 +175,9 @@ void Application::Loop_() {
           root->destroyAllMovableObjects();
           root->getRootSceneNode()->removeAndDestroyAllChildren();
 
-          graphics_.UpdateParams();
+          renderer_->UpdateParams();
           InitCurrState();
-          physics_.Start();
+          physics_->Start();
           ClearWaiting();
         }
 

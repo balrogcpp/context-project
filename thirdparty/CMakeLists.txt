@@ -877,13 +877,15 @@ externalproject_add(target-glm
 externalproject_add(target-lua
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/LuaDist/lua.git
-                    GIT_TAG 5.3.2
+                    GIT_REPOSITORY https://github.com/balrogcpp/lua-cmake.git
+                    GIT_TAG 5.4.0
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DLUA_EXE=false
+                    -DLUA_DOC=false
                     -DLUA_BUILD_WLUA=false
                     -DBUILD_SHARED_LIBS=false
                     -DLUA_USE_READLINE=false

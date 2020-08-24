@@ -24,14 +24,14 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "Compositors.h"
+#include "Compositor.h"
 #include "Exception.h"
 #include "CompositorHelper.h"
 
 namespace Context {
-Compositors::~Compositors() noexcept {}
+Compositor::~Compositor() noexcept {}
 //----------------------------------------------------------------------------------------------------------------------
-Compositors::Compositors() {  bool graphics_shadows_enable_ = true;
+Compositor::Compositor() {  bool graphics_shadows_enable_ = true;
   bool compositor_use_bloom_ = false;
   bool compositor_use_ssao_ = false;
   bool compositor_use_hdr_ = false;
@@ -99,7 +99,7 @@ Compositors::Compositors() {  bool graphics_shadows_enable_ = true;
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Compositors::SetCompositor(const std::string &compositor_) {
+void Compositor::SetCompositor(const std::string &compositor_) {
   if (compositor_ != "none") {
     Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, current_post_, false);
     current_compositor_ = compositor_;
@@ -107,7 +107,7 @@ void Compositors::SetCompositor(const std::string &compositor_) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Compositors::SetPost(const std::string &post_) {
+void Compositor::SetPost(const std::string &post_) {
   if (post_ != "none") {
     Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, current_post_, false);
     current_post_ = post_;
