@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "Manager.h"
+#include "System.h"
 #include "ReflectionCamera.h"
 #include <OgreSceneLoader.h>
 #include <OgreVector4.h>
@@ -56,7 +56,7 @@ namespace Context {
 class CameraMan;
 class Physic;
 
-class DotSceneLoaderB final : public Manager, public Ogre::SceneLoader {
+class DotSceneLoaderB final : public System, public Ogre::SceneLoader {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();

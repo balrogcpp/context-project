@@ -25,7 +25,6 @@ SOFTWARE.
 #pragma once
 
 #include "OgreHeaders.h"
-#include "BulletHeaders.h"
 #include <pugixml.hpp>
 
 #include <rapidjson/rapidjson.h>
@@ -33,6 +32,11 @@ SOFTWARE.
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/istreamwrapper.h>
+
+#include "BtOgreExtras.h"
+#include "BtOgreGP.h"
+#include "BtOgrePG.h"
+#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 
 #include <yaml-cpp/yaml.h>
 

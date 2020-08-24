@@ -24,38 +24,35 @@ SOFTWARE.
 
 #pragma once
 
+#include <OgreFrameListener.h>
+#include <OgreRenderTargetListener.h>
+#include <OgreLog.h>
+#include "IO.h"
+#include "Singleton.h"
 #include "Renderer.h"
 #include "Sound.h"
 #include "Physic.h"
 #include "DotSceneLoaderB.h"
-#include "Singleton.h"
 #include "Overlay.h"
 #include "AppState.h"
 
-#include <OgreFrameListener.h>
-#include <OgreRenderTargetListener.h>
-#include <OgreLog.h>
-
 namespace Context {
-class AppState;
 class ConfiguratorJson;
-}
-
-namespace Context {
 class Application : public io::OtherEventListener, public Ogre::LogListener, public Singleton {
  public:
   Application();
   virtual ~Application();
 
   int Main(std::unique_ptr<AppState> &&scene_ptr);
-  void SetCurState(std::unique_ptr<AppState> &&scene_ptr);
 
  private:
   void Init_();
+  void SetCurState_(std::unique_ptr<AppState> &&scene_ptr);
   void Reset_();
   void Render_();
   void Loop_();
   void Go_();
+  void InitCurrState_();
 
   void Event(const SDL_Event &evt) override;
   void Other(Uint8 type, int32_t code, void *data1, void *data2) override;
@@ -89,7 +86,7 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
   bool lock_fps_ = true;
 
  public:
-  //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
   void SetInitialState(std::unique_ptr<AppState> &&state) {
     cur_state_ = move(state);
   }
@@ -105,24 +102,12 @@ class Application : public io::OtherEventListener, public Ogre::LogListener, pub
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void InitCurrState() {
-    cur_state_->Init();
-  }
-//----------------------------------------------------------------------------------------------------------------------
   AppState* GetCurState() {
     return cur_state_.get();
   }
 
   AppState* GetNextState() {
     return next_state_.get();
-  }
-
-  bool IsWaiting() const noexcept {
-    return waiting_;
-  }
-
-  void ClearWaiting() {
-    waiting_ = false;
   }
 }; //class Application
 } //namespace Context

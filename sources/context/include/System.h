@@ -32,11 +32,11 @@ SOFTWARE.
 
 namespace Context {
 
-class Manager
+class System
  : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener, public Singleton {
  public:
-  Manager();
-  virtual ~Manager();
+  System();
+  virtual ~System();
 
   virtual void Init() {}
   virtual void Clear() {}

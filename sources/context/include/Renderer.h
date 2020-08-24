@@ -32,18 +32,13 @@ SOFTWARE.
 #include "Window.h"
 #include "Compositor.h"
 
-namespace Context {
-class CameraMan;
-class ShaderResolver;
-}
-
 namespace Ogre {
 class Root;
 class SceneManager;
 }
 
 namespace Context {
-class Renderer : public NoCopy {
+class Renderer final : public NoCopy {
  public:
   Renderer();
   virtual ~Renderer();
@@ -62,7 +57,6 @@ class Renderer : public NoCopy {
   Ogre::SceneManager *scene_ = nullptr;
 
  public:
-
   Window &GetWindow() {
     return window_;
   }

@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "Manager.h"
+#include "System.h"
 
 #include <OgreAny.h>
 
@@ -48,7 +48,7 @@ class btCollisionObject;
 
 namespace Context {
 
-class Physic final : public Manager {
+class Physic final : public System {
  public:
   Physic();
   virtual ~Physic();

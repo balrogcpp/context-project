@@ -27,7 +27,6 @@ SOFTWARE.
 #include "Application.h"
 #include "Storage.h"
 #include "Exception.h"
-#include "CameraMan.h"
 #include "ConfiguratorJson.h"
 
 #ifdef _WIN32
@@ -99,6 +98,10 @@ void Application::Reset_() {
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
+void Application::InitCurrState_() {
+  cur_state_->Init();
+}
+//----------------------------------------------------------------------------------------------------------------------
 void Application::Quit() {
   quit_ = false;
 }
@@ -156,7 +159,7 @@ void Application::Loop_() {
       io::InputSequencer::Instance().Capture();
 
       if (!suspend_) {
-        if (IsWaiting()) {
+        if (waiting_) {
           loader_->Clear();
           physics_->Clear();
 
@@ -176,9 +179,9 @@ void Application::Loop_() {
           root->getRootSceneNode()->removeAndDestroyAllChildren();
 
           renderer_->UpdateParams();
-          InitCurrState();
+          InitCurrState_();
           physics_->Start();
-          ClearWaiting();
+          waiting_ = false;
         }
 
         Render_();
@@ -222,7 +225,7 @@ void Application::Go_() {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::SetCurState(std::unique_ptr<AppState> &&scene_ptr) {
+void Application::SetCurState_(std::unique_ptr<AppState> &&scene_ptr) {
   SetInitialState(move(scene_ptr));
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -234,7 +237,7 @@ int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
   std::ios_base::sync_with_stdio(false);
 
   try {
-    SetCurState(move(scene_ptr));
+    SetCurState_(move(scene_ptr));
     Go_();
   }
   catch (Exception &e) {

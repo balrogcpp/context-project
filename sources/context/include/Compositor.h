@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "Manager.h"
+#include "System.h"
 
 namespace Ogre {
 class Material;
@@ -37,7 +37,7 @@ class DepthSchemeHandler;
 
 namespace Context {
 
-class Compositor final : public Manager {
+class Compositor final : public System {
  public:
   Compositor();
   virtual ~Compositor();

@@ -84,19 +84,18 @@ class ConfiguratorJson {
         const char true_string[] = "True";
         const char false_string[] = "False";
 
-        if (it->IsString()) {
+        if (it->IsString())
           std::cout << it->GetString();
-        } else if (it->IsBool()) {
+        else if (it->IsBool())
           std::cout << (it->GetBool() ? true_string : false_string);
-        } else if (it->IsInt()) {
+        else if (it->IsInt())
           std::cout << it->GetInt();
-        } else if (it->IsInt64()) {
+        else if (it->IsInt64())
           std::cout << it->GetInt64();
-        } else if (it->IsFloat()) {
+        else if (it->IsFloat())
           std::cout << it->GetFloat();
-        } else if (it->IsDouble()) {
+        else if (it->IsDouble())
           std::cout << it->GetDouble();
-        }
 
         if (counter == 0) {
           std::cout << " | value: ";

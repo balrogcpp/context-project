@@ -25,13 +25,13 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "Manager.h"
+#include "System.h"
 #include "Application.h"
 #include "IO.h"
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
-Manager::Manager() {
+System::System() {
   scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   camera_ = scene_->getCamera("Default");
   viewport_ = camera_->getViewport();
@@ -39,7 +39,7 @@ Manager::Manager() {
   Ogre::Root::getSingleton().addFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
-Manager::~Manager() {
+System::~System() {
   Ogre::Root::getSingleton().removeFrameListener(this);
   io::InputSequencer::Instance().UnregisterListener(this);
 }

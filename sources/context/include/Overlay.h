@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "Manager.h"
+#include "System.h"
 
 namespace Ogre {
 class RenderTarget;
@@ -46,8 +46,11 @@ class MarkupText;
 
 namespace Context {
 
-class Overlay : public Manager {
+class Overlay : public System {
  public:
+  Overlay();
+  ~Overlay();
+
   void Init() final;
   void Clear() final;
 

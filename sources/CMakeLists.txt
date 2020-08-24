@@ -72,10 +72,9 @@ set(CONTEXT_HEADERS
     context/include/DotSceneLoaderB.h
     context/include/Forest.h
     context/include/Physic.h
-    context/include/BulletHeaders.h
     context/include/OgreHeaders.h
     context/include/Sound.h
-    context/include/Manager.h
+    context/include/System.h
     context/include/Compositor.h
     context/include/Singleton.h
     context/include/NoCopy.h
@@ -121,7 +120,7 @@ set(CONTEXT_SOURCES
     context/src/DotSceneLoaderB.cpp
     context/src/Physic.cpp
     context/src/Forest.cpp
-    context/src/Manager.cpp
+    context/src/System.cpp
     context/src/pcheader.cpp
     context/src/Compositor.cpp
     context/src/TerrainMaterialGeneratorB.cpp
