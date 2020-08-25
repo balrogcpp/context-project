@@ -237,11 +237,21 @@ void Application::SetCurState_(std::unique_ptr<AppState> &&scene_ptr) {
   SetInitialState(move(scene_ptr));
 }
 //----------------------------------------------------------------------------------------------------------------------
+int Application::Message_(const std::string &caption, const std::string &message) {
+  std::cerr << caption << '\n';
+  std::cerr << message << '\n';
+
+#ifdef _WIN32
+  MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
+#endif
+
+  return 1;
+}
+//----------------------------------------------------------------------------------------------------------------------
 int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
 #ifdef _MSC_VER
   SDL_SetMainReady();
 #endif
-  int return_value = 0;
   std::ios_base::sync_with_stdio(false);
 
   try {
@@ -249,59 +259,18 @@ int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
     Go_();
   }
   catch (Exception &e) {
-    const std::string caption = "Exception occurred (Context core)";
-    std::cerr << caption << std::endl;
-    std::stringstream message;
-    message << e.getDescription() << std::endl;
-    std::cerr << message.str();
-
-#ifdef _WIN32
-    MessageBox(nullptr, message.str().c_str(), caption.c_str(), MB_ICONERROR);
-#endif
-
-    return_value = 1;
+    return Message_("Exception occurred (Context core)", e.getDescription());
   }
   catch (Ogre::Exception &e) {
-    const std::string caption = "Exception occurred (OGRE)";
-    std::cerr << caption << std::endl;
-    std::stringstream message;
-    message << e.getFullDescription() << std::endl;
-    std::cerr << message.str();
-
-#ifdef _WIN32
-    MessageBox(nullptr, message.str().c_str(), caption.c_str(), MB_ICONERROR);
-#endif
-
-    return_value = 1;
+    return Message_("Exception occurred (OGRE)", e.getFullDescription());
   }
   catch (std::exception &e) {
-    const std::string caption = "Exception occurred (std::exception)";
-    std::cerr << caption << std::endl;
-    std::cerr << e.what() << std::endl;
-#ifdef _WIN32
-    MessageBox(nullptr, e.what(), caption.c_str(), MB_ICONERROR);
-#endif
-
-    return_value = 1;
+    return Message_("Exception occurred (std::exception)", e.what());
   }
   catch (...) {
-    const std::string caption = "Unhandled exception occurred\n";
-    std::cerr << caption << std::endl;
-#ifdef _WIN32
-    MessageBox(nullptr, caption.c_str(), caption.c_str(), MB_ICONERROR);
-#endif
-
-    return_value = 1;
+    return Message_("Unhandled exception occurred");
   }
 
-#if defined _WIN32 && defined DEBUG
-  if (config_igManager::Instance().GetBool("application_ask_before_quit")) {
-    std::cout << std::endl;
-    std::cout << "Press any key to end program..." << std::endl;
-    getchar();
-  }
-#endif
-
-  return return_value;
+  return 0;
 } //class Application
 } //namespace Context

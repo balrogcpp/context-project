@@ -54,6 +54,7 @@ class Application final : public io::OtherEventListener, public Ogre::LogListene
   void Go_();
   void InitCurrState_();
   void GoNextState_();
+  int Message_(const std::string &caption, const std::string &message = "");
 
   void Event(const SDL_Event &evt) override;
   void Other(Uint8 type, int32_t code, void *data1, void *data2) override;
