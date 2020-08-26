@@ -155,14 +155,14 @@ class InputSequencer {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void RegisterListener(InputListener *p) {
+  void RegListener(InputListener *p) {
     RegKbListener(p);
     RegMsListener(p);
     RegJoyListener(p);
     RegEventListener(p);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void UnregisterListener(InputListener *p) {
+  void UnregListener(InputListener *p) {
     UnregKbListener(p);
     UnregMsListener(p);
     UnregJoyListener(p);

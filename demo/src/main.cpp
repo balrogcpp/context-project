@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "DemoDotAppState.h"
 #include "Application.h"
-
+#include <iostream>
 #ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -51,6 +51,11 @@ void android_main(struct android_app *pApp)
 int main()
 #endif
 {
-  Context::Application app;
-  app.Main(std::make_unique<Demo::DemoDotAppState>());
+  try {
+    Context::Application app;
+    auto state = std::make_unique<Demo::DemoDotAppState>();
+    app.Main(move(state));
+  }
+  catch (...) {
+  }
 }

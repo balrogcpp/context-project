@@ -56,9 +56,9 @@ class Application final : public io::OtherEventListener, public Ogre::LogListene
   void GoNextState_();
   int Message_(const std::string &caption, const std::string &message = "");
 
-  void Event(const SDL_Event &evt) override;
-  void Other(Uint8 type, int32_t code, void *data1, void *data2) override;
-  void Quit() override;
+  void Event(const SDL_Event &evt) final;
+  void Other(Uint8 type, int32_t code, void *data1, void *data2) final;
+  void Quit() final;
 
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const std::string &logName, bool &skipThisMessage) final {

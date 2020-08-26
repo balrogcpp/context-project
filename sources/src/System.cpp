@@ -35,13 +35,13 @@ System::System() {
   scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   camera_ = scene_->getCamera("Default");
   viewport_ = camera_->getViewport();
-  io::InputSequencer::Instance().RegisterListener(this);
+  io::InputSequencer::Instance().RegListener(this);
   Ogre::Root::getSingleton().addFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
 System::~System() {
   Ogre::Root::getSingleton().removeFrameListener(this);
-  io::InputSequencer::Instance().UnregisterListener(this);
+  io::InputSequencer::Instance().UnregListener(this);
 }
 //class Manager
 } //namespace Context

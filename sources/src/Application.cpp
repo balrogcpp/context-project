@@ -45,10 +45,23 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 namespace Context {
 Application::Application() {
-  Init_();
+  try {
+    Init_();
+  }
+  catch (Exception &e) {
+    Message_("Exception occurred (Context core)", e.getDescription());
+    throw e;
+  }
+  catch (Ogre::Exception &e) {
+    Message_("Exception occurred (OGRE)", e.getFullDescription());
+    throw e;
+  }
+  catch (std::exception &e) {
+    Message_("Exception occurred (std::exception)", e.what());
+    throw e;
+  }
 };
 Application::~Application() = default;
-
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
   conf_ = std::make_unique<ConfiguratorJson>();
@@ -240,11 +253,9 @@ void Application::SetCurState_(std::unique_ptr<AppState> &&scene_ptr) {
 int Application::Message_(const std::string &caption, const std::string &message) {
   std::cerr << caption << '\n';
   std::cerr << message << '\n';
-
 #ifdef _WIN32
   MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
 #endif
-
   return 1;
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -252,9 +263,8 @@ int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
 #ifdef _MSC_VER
   SDL_SetMainReady();
 #endif
-  std::ios_base::sync_with_stdio(false);
-
   try {
+    std::ios_base::sync_with_stdio(false);
     SetCurState_(move(scene_ptr));
     Go_();
   }
@@ -266,9 +276,6 @@ int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
   }
   catch (std::exception &e) {
     return Message_("Exception occurred (std::exception)", e.what());
-  }
-  catch (...) {
-    return Message_("Unhandled exception occurred");
   }
 
   return 0;
