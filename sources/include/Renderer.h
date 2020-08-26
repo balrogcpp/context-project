@@ -24,13 +24,13 @@ SOFTWARE.
 
 #pragma once
 
+#include "NoCopy.h"
+#include "Window.h"
+#include "ShadowSettings.h"
+#include "Compositor.h"
 #include <vector>
 #include <string>
 #include <memory>
-
-#include "NoCopy.h"
-#include "Window.h"
-#include "Compositor.h"
 
 namespace Ogre {
 class Root;
@@ -52,7 +52,7 @@ class Renderer final : public NoCopy {
  private:
   void CreateCamera();
   Window window_;
-  std::vector<float> pssm_split_;
+  std::unique_ptr<ShadowSettings> shadow_;
   std::unique_ptr<Compositor> compositor_;
 
   Ogre::Root *root_ = nullptr;

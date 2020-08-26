@@ -88,7 +88,7 @@ set(CONTEXT_HEADERS
     include/RtssUtils.h
     include/Terrain.h
     include/CompositorHelper.h
-    )
+    include/ShadowSettings.h)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}

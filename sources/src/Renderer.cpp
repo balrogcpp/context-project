@@ -23,12 +23,9 @@ SOFTWARE.
 */
 
 #include "pcheader.h"
-
 #include "Renderer.h"
 #include "Exception.h"
 #include "Storage.h"
-#include "DotSceneLoaderB.h"
-#include "Forest.h"
 
 namespace Context {
 Renderer::Renderer() {
@@ -193,132 +190,7 @@ void Renderer::UpdateParams() {
     Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
   }
 
-  if (graphics_mipmap_count_ > 0) {
-    if (graphics_mipmap_count_ != 999) {
-      Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(graphics_mipmap_count_);
-    } else {
-      Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
-    }
-  }
-
-  //Global shadows
-  bool graphics_shadows_enable_ = true;
-  int graphics_shadows_texture_resolution_ = 1024;
-  int graphics_shadows_texture_count_ = 3;
-  float graphics_shadows_pssm_0_ = 0.0f;
-  float graphics_shadows_pssm_1_ = 0.0f;
-  float graphics_shadows_pssm_2_ = 0.0f;
-  bool graphics_shadows_split_auto_ = false;
-  float graphics_shadows_far_distance_ = 500;
-  bool graphics_shadows_self_shadow_ = true;
-  float graphics_shadows_split_padding_ = 1.0f;
-  bool graphics_shadows_back_faces_ = true;
-  std::string graphics_shadows_tecnique_ = "texture";
-  std::string graphics_shadows_lighting_ = "additive";
-  std::string graphics_shadows_projection_ = "pssm";
-  std::string graphics_shadows_material_ = "default";
-  std::string graphics_shadows_receiver_material_;
-  std::string graphics_shadows_caster_material_ = "PSSM/shadow_caster";
-  std::string graphics_shadows_texture_format_ = "DEPTH32";
-  bool graphics_shadows_integrated_ = true;
-
-  if (graphics_shadows_enable_) {
-    unsigned shadow_technique = Ogre::SHADOWTYPE_NONE;
-
-    if (graphics_shadows_tecnique_ == "stencil") {
-      shadow_technique = Ogre::SHADOWDETAILTYPE_STENCIL;
-    } else if (graphics_shadows_tecnique_ == "texture") {
-      shadow_technique = Ogre::SHADOWDETAILTYPE_TEXTURE;
-
-      if (graphics_shadows_integrated_) {
-        shadow_technique |= Ogre::SHADOWDETAILTYPE_INTEGRATED;
-      }
-    }
-
-    if (graphics_shadows_lighting_ == "modulative") {
-      shadow_technique |= Ogre::SHADOWDETAILTYPE_MODULATIVE;
-    } else if (graphics_shadows_lighting_ == "additive") {
-      shadow_technique |= Ogre::SHADOWDETAILTYPE_ADDITIVE;
-    }
-
-    scene_->setShadowTechnique(static_cast<Ogre::ShadowTechnique>(shadow_technique));
-
-    if (graphics_shadows_material_ != "none") {
-      Ogre::PixelFormat texture_type;
-
-      if (graphics_shadows_texture_format_ == "F32_R")
-        texture_type = Ogre::PF_FLOAT32_R;
-      else if (graphics_shadows_texture_format_ == "F16_R")
-        texture_type = Ogre::PF_FLOAT16_R;
-      else if (graphics_shadows_texture_format_ == "F32_GR")
-        texture_type = Ogre::PF_FLOAT32_GR;
-      else if (graphics_shadows_texture_format_ == "F16_GR")
-        texture_type = Ogre::PF_FLOAT16_GR;
-      else if (graphics_shadows_texture_format_ == "DEPTH16")
-        texture_type = Ogre::PF_DEPTH16;
-      else if (graphics_shadows_texture_format_ == "DEPTH32")
-        texture_type = Ogre::PF_DEPTH32;
-      else if (graphics_shadows_texture_format_ == "DEPTH32F")
-        texture_type = Ogre::PF_DEPTH32F;
-      else
-        texture_type = Ogre::PF_DEPTH32;
-
-      scene_->setShadowTextureSettings(graphics_shadows_texture_resolution_,
-                                       graphics_shadows_texture_count_,
-                                       texture_type,
-                                       0,
-                                       2);
-
-      scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
-      scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
-      scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 6);
-      scene_->setShadowTextureSelfShadow(graphics_shadows_self_shadow_);
-      scene_->setShadowCasterRenderBackFaces(graphics_shadows_back_faces_);
-      scene_->setShadowFarDistance(graphics_shadows_far_distance_);
-      scene_->setShadowDirectionalLightExtrusionDistance(graphics_shadows_far_distance_);
-
-      if (!graphics_shadows_caster_material_.empty()) {
-        auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName(graphics_shadows_caster_material_);
-        scene_->setShadowTextureCasterMaterial(passCaterMaterial);
-      }
-
-      if (!graphics_shadows_receiver_material_.empty()) {
-        auto
-            passReceiverMaterial = Ogre::MaterialManager::getSingleton().getByName(graphics_shadows_receiver_material_);
-        scene_->setShadowTextureReceiverMaterial(passReceiverMaterial);
-      }
-
-      const int pssm_splits_ = 3;
-
-      auto pssm_setup_ = std::make_shared<Ogre::PSSMShadowCameraSetup>();
-
-      if (graphics_shadows_split_auto_) {
-        pssm_setup_->calculateSplitPoints(pssm_splits_, camera->getNearClipDistance(), scene_->getShadowFarDistance());
-      } else {
-        Ogre::PSSMShadowCameraSetup::SplitPointList split_points =
-            {camera->getNearClipDistance(), 10.0, 20.0, scene_->getShadowFarDistance()};
-        pssm_setup_->setSplitPoints(split_points);
-      }
-
-      pssm_split_ = pssm_setup_->getSplitPoints();
-      pssm_setup_->setSplitPadding(graphics_shadows_split_padding_);
-
-      pssm_setup_->setOptimalAdjustFactor(0, graphics_shadows_pssm_0_);
-      pssm_setup_->setOptimalAdjustFactor(1, graphics_shadows_pssm_1_);
-      pssm_setup_->setOptimalAdjustFactor(2, graphics_shadows_pssm_2_);
-      scene_->setShadowCameraSetup(pssm_setup_);
-    }
-  } else {
-    scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  }
-
-  bool graphics_debug_show_wireframe_ = false;
-
-  if (graphics_debug_show_wireframe_) {
-    camera->setPolygonMode(Ogre::PM_WIREFRAME);
-  } else {
-    camera->setPolygonMode(Ogre::PM_SOLID);
-  }
+  shadow_ = std::make_unique<ShadowSettings>();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Resize(int32_t w, int32_t h) {

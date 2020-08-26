@@ -84,7 +84,6 @@ void Application::Init_() {
   lock_fps_ = conf_->GetBool("global_lock_fps");
   target_fps_ = conf_->GetInt("global_target_fps");
   io_->RegEventListener(this);
-  renderer_->Resize(1920, 1080);
 
   if (!verbose_) {
     auto *logger = new Ogre::LogManager();
