@@ -85,8 +85,7 @@ class Window : public NoCopy {
       f_ = true;
     }
 
-    bool factual_fullscreen =
-        (w_ == screen_w_ && h_ == screen_h_);
+    bool factual_fullscreen = (w_ == screen_w_ && h_ == screen_h_);
 
     flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
 
@@ -99,12 +98,7 @@ class Window : public NoCopy {
       flags_ |= SDL_WINDOW_MOUSE_FOCUS;
     }
 
-    window_ = SDL_CreateWindow(caption_.c_str(),
-                               SDL_WINDOWPOS_CENTERED,
-                               SDL_WINDOWPOS_CENTERED,
-                               w_,
-                               h_,
-                               flags_);
+    window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w_, h_, flags_);
 
     if (window_) {
       SDL_SetRelativeMouseMode(SDL_TRUE);

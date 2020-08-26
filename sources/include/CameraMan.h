@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include <OgreRoot.h>
 #include "IO.h"
+#include "Object.h"
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 
 namespace Ogre {
@@ -34,7 +35,7 @@ class SceneNode;
 
 namespace Context {
 
-class CameraMan final : public io::InputListener, public Ogre::FrameListener {
+class CameraMan final :public Object, public io::InputListener, public Ogre::FrameListener {
  public:
   enum   // enumerator values for different styles of camera movement
   {
