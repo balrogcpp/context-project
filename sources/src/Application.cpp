@@ -30,15 +30,9 @@ SOFTWARE.
 #include "ConfiguratorJson.h"
 
 #ifdef _WIN32
-#include <windows.h>
-
 extern "C"
 {
 __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
-}
-
-extern "C"
-{
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 #endif
@@ -253,16 +247,10 @@ void Application::SetCurState_(std::unique_ptr<AppState> &&scene_ptr) {
 int Application::Message_(const std::string &caption, const std::string &message) {
   std::cerr << caption << '\n';
   std::cerr << message << '\n';
-#ifdef _WIN32
-  MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
-#endif
   return 1;
 }
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
-#ifdef _MSC_VER
-  SDL_SetMainReady();
-#endif
   try {
     std::ios_base::sync_with_stdio(false);
     SetCurState_(move(scene_ptr));

@@ -25,27 +25,11 @@ SOFTWARE.
 #include "DemoDotAppState.h"
 #include "Application.h"
 #include <iostream>
-#ifdef _MSC_VER
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <locale>
-#endif
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include <android_native_app_glue.h>
 #include <jni.h>
-#endif
 
-#ifdef _MSC_VER
-#define WINAPI_MAIN_FUNC
-INT WINAPI WinMain
-(
-    _In_ HINSTANCE hInstance,
-    _In_opt_ HINSTANCE hPrevInstance,
-    _In_ LPSTR lpCmdLine,
-    _In_ int nShowCmd
-)
-#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 void android_main(struct android_app *pApp)
 #else
 int main()

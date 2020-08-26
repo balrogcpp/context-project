@@ -33,11 +33,9 @@ class Sound final : public System {
  public:
   Sound() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    putenv("ALROUTER_LOGFILE=/dev/null");
     putenv("ALSOFT_LOGLEVEL=LOG_NONE");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-    _putenv("ALROUTER_LOGFILE=/dev/null");
-  _putenv("ALSOFT_LOGLEVEL=LOG_NONE");
+    _putenv("ALSOFT_LOGLEVEL=LOG_NONE");
 #endif
 
     OgreOggSound::OgreOggSoundFactory *mOgreOggSoundFactory;
