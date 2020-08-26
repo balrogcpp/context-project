@@ -94,7 +94,7 @@ set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
     ${OGGSOUND_HEADERS}
     ${CONTEXT_HEADERS}
-    )
+    include/Object.h)
 
 set(BTOGRE_SOURCES
     btogre/src/BtOgre.cpp
@@ -114,12 +114,10 @@ set(OGGSOUND_SOURCES
 
 set(CONTEXT_SOURCES
     src/Application.cpp
-    src/AppState.cpp
     src/Renderer.cpp
     src/DotSceneLoaderB.cpp
     src/Physic.cpp
     src/Forest.cpp
-    src/System.cpp
     src/pcheader.cpp
     src/Compositor.cpp
     src/TerrainMaterialGeneratorB.cpp

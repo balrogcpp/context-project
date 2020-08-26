@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include "NoCopy.h"
 
+#include <OgreRoot.h>
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 
@@ -34,8 +35,17 @@ namespace Context {
 class System
  : public Ogre::RenderTargetListener, public Ogre::FrameListener, public NoCopy {
  public:
-  System();
-  virtual ~System();
+//----------------------------------------------------------------------------------------------------------------------
+  System() {
+    scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
+    camera_ = scene_->getCamera("Default");
+    viewport_ = camera_->getViewport();
+    Ogre::Root::getSingleton().addFrameListener(this);
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  virtual ~System() {
+    Ogre::Root::getSingleton().removeFrameListener(this);
+  }
 
   virtual void Init() {}
   virtual void Clear() {}

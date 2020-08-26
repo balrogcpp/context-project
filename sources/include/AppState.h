@@ -29,6 +29,8 @@ SOFTWARE.
 
 #include "IO.h"
 #include "NoCopy.h"
+#include <OgreRoot.h>
+#include <OgreSceneLoaderManager.h>
 
 namespace Context {
 class ConfiguratorJson;
@@ -41,24 +43,44 @@ class DotSceneLoaderB;
 class AppState
     : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener, public NoCopy {
  public:
-  AppState();
-  virtual ~AppState();
-
+//----------------------------------------------------------------------------------------------------------------------
+  AppState() {
+    Ogre::Root::getSingleton().addFrameListener(this);
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  virtual ~AppState() {
+    Ogre::Root::getSingleton().removeFrameListener(this);
+  }
+//----------------------------------------------------------------------------------------------------------------------
   void GetComponents(ConfiguratorJson *conf,
                      io::InputSequencer *io,
                      Renderer *renderer,
                      Physic *physics,
                      Sound *sounds,
                      Overlay *overlay,
-                     DotSceneLoaderB *loader
-  );
+                     DotSceneLoaderB *loader) {
+    conf_ = conf;
+    io_ = io;
+    io_->RegEventListener(this);
+    renderer_ = renderer;
+    physics_ = physics;
+    sounds_ = sounds;
+    overlay_ = overlay;
+    loader_ = loader;
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void Load(const std::string &file_name) {
+    auto *scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
+    Ogre::SceneLoaderManager::getSingleton().load(file_name,
+                                                  Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+                                                  scene_->getRootSceneNode());
+  }
 
   virtual void Init() = 0;
   virtual void Clear() = 0;
 
-  void Load(const std::string &file_name);
+ protected:// private:
 
- protected:
   ConfiguratorJson *conf_ = nullptr;
   Renderer *renderer_ = nullptr;
   Physic *physics_ = nullptr;
@@ -66,10 +88,5 @@ class AppState
   Overlay *overlay_ = nullptr;
   DotSceneLoaderB *loader_ = nullptr;
   io::InputSequencer *io_ = nullptr;
-
- private:
-  Ogre::SceneManager *scene_ = nullptr;
-  Ogre::Camera *camera_ = nullptr;
-  Ogre::Viewport *viewport_ = nullptr;
 }; //class AppState
 } //namespace Context

@@ -1,4 +1,3 @@
-//Cpp file for dummy context2_deps target
 /*
 MIT License
 
@@ -23,23 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.h"
-
-#include "System.h"
-#include "Application.h"
-#include "IO.h"
+#pragma once
 
 namespace Context {
-//----------------------------------------------------------------------------------------------------------------------
-System::System() {
-  scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
-  camera_ = scene_->getCamera("Default");
-  viewport_ = camera_->getViewport();
-  Ogre::Root::getSingleton().addFrameListener(this);
+class Object {
+
+};
 }
-//----------------------------------------------------------------------------------------------------------------------
-System::~System() {
-  Ogre::Root::getSingleton().removeFrameListener(this);
-}
-//class Manager
-} //namespace Context
