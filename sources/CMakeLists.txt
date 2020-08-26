@@ -68,7 +68,7 @@ set(CONTEXT_HEADERS
     include/pcheader.h
     include/Render.h
     include/VerboseListener.h
-    include/ConfiguratorJson.h
+    include/JsonConfigurator.h
     include/DotSceneLoaderB.h
     include/Forest.h
     include/Physics.h
@@ -88,7 +88,7 @@ set(CONTEXT_HEADERS
     include/RtssUtils.h
     include/Terrain.h
     include/CompositorHelper.h
-    include/ShadowSettings.h)
+    include/ShadowSettings.h include/YamlConfigurator.h)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}

@@ -34,9 +34,10 @@ SOFTWARE.
 #include "DotSceneLoaderB.h"
 #include "Overlay.h"
 #include "AppState.h"
+#include "YamlConfigurator.h"
 
 namespace Context {
-class ConfiguratorJson;
+class JsonConfigurator;
 class Application final : public io::WindowObserver, public Ogre::LogListener {
  public:
   Application();
@@ -68,7 +69,8 @@ class Application final : public io::WindowObserver, public Ogre::LogListener {
     }
   }
 
-  std::unique_ptr<ConfiguratorJson> conf_;
+//  std::unique_ptr<JsonConfigurator> conf_;
+  YamlConfigurator conf_;
   std::unique_ptr<io::InputSequencer> io_;
   std::unique_ptr<Render> renderer_;
   std::unique_ptr<Physics> physics_;

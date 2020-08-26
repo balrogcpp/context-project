@@ -48,7 +48,8 @@ class VertexDeclaration;
 
 namespace Context {
 class CameraMan;
-class ConfiguratorJson;
+class JsonConfigurator;
+class YamlConfigurator;
 class Render;
 class Physics;
 class Sound;
@@ -107,7 +108,7 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   std::string group_name_;
   std::shared_ptr<Ogre::TerrainGroup> ogre_terrain_group_;
 
-  ConfiguratorJson *conf_ = nullptr;
+  YamlConfigurator *conf_ = nullptr;
   Render *renderer_ = nullptr;
   Physics *physics_ = nullptr;
   Sound *sounds_ = nullptr;
@@ -124,7 +125,7 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   bool terrain_created_ = false;
 
  public:
-  void GetComponents(ConfiguratorJson *conf,
+  void GetComponents(YamlConfigurator *conf,
                      io::InputSequencer *io,
                      Render *renderer,
                      Physics *physics,

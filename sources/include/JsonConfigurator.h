@@ -26,20 +26,19 @@ SOFTWARE.
 
 #include <filesystem>
 #include <string>
-#include <iostream>
 #include <exception>
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
 
 namespace Context {
-class ParserException : public std::exception {
+class JsonParserException : public std::exception {
  public:
-  ParserException() = default;
+  JsonParserException() = default;
 
-  explicit ParserException(std::string description)
+  explicit JsonParserException(std::string description)
       : description(std::move(description)) {};
 
-  ~ParserException() noexcept override = default;
+  ~JsonParserException() noexcept override = default;
 
  public:
   std::string getDescription() const noexcept {
@@ -55,108 +54,44 @@ class ParserException : public std::exception {
   size_t code = 0;
 };
 
-class ConfiguratorJson {
+class JsonConfigurator {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  ConfiguratorJson() {
-    Init_();
-  }
-
-  ConfiguratorJson(const ConfiguratorJson &) = delete;
-  ConfiguratorJson &operator=(const ConfiguratorJson &) = delete;
-  ConfiguratorJson(ConfiguratorJson &&) = delete;
-  ConfiguratorJson &operator=(ConfiguratorJson &&) = delete;
-  ~ConfiguratorJson() = default;
-
-//----------------------------------------------------------------------------------------------------------------------
-  void Print() {
-    if (GetBool("global_verbose_enable")) {
-
-      std::cout << "Global config variables:\n";
-      std::cout << "--------------------------------------------\n";
-
-      int counter = 0;
-      for (auto it = document_.Begin(); it != document_.End(); ++it) {
-        if (counter == 0) {
-          std::cout << "variable: ";
-        }
-
-        const char true_string[] = "True";
-        const char false_string[] = "False";
-
-        if (it->IsString())
-          std::cout << it->GetString();
-        else if (it->IsBool())
-          std::cout << (it->GetBool() ? true_string : false_string);
-        else if (it->IsInt())
-          std::cout << it->GetInt();
-        else if (it->IsInt64())
-          std::cout << it->GetInt64();
-        else if (it->IsFloat())
-          std::cout << it->GetFloat();
-        else if (it->IsDouble())
-          std::cout << it->GetDouble();
-
-        if (counter == 0) {
-          std::cout << " | value: ";
-          counter++;
-        } else if (counter == 1) {
-          std::cout << '\n';
-          counter = 0;
-        }
-      }
-
-      std::cout << '\n';
-    }
-  }
-
- private:
-  //----------------------------------------------------------------------------------------------------------------------
-  void Init_() {
+  JsonConfigurator() {
 //Because Android cland does not support std filesystem
 #ifndef __ANDROID__
-    if (!std::filesystem::exists(file_name_)) {
-      file_name_ = std::string("../") + file_name_;
+    if (!std::filesystem::exists(file_)) {
+      file_ = std::string("../") + file_;
 
-      if (!std::filesystem::exists(file_name_)) {
-        throw ParserException("Error during parsing of " + file_name_ + " : file not exist");
+      if (!std::filesystem::exists(file_)) {
+        throw JsonParserException("Error during parsing of " + file_ + " : file not exist");
       }
     }
 #endif
 
-    std::ifstream ifs(file_name_);
+    std::ifstream ifs(file_);
     rapidjson::IStreamWrapper isw(ifs);
     document_.ParseStream(isw);
 
     if (ifs.is_open())
       ifs.close();
     else
-      throw ParserException("Error during parsing of " + file_name_ + " : can't open file");
+      throw JsonParserException("Error during parsing of " + file_ + " : can't open file");
 
     if (!document_.IsObject())
-      throw ParserException("Error during parsing of " + file_name_ + " : file is empty or incorrect");
+      throw JsonParserException("Error during parsing of " + file_ + " : file is empty or incorrect");
   }
 
-  std::string file_name_ = "config.json";
+  JsonConfigurator(const JsonConfigurator &) = delete;
+  JsonConfigurator &operator=(const JsonConfigurator &) = delete;
+  virtual ~JsonConfigurator() {};
+
+ private:
+//----------------------------------------------------------------------------------------------------------------------
+  std::string file_ = "config.json";
   rapidjson::Document document_;
 
  public:
-//----------------------------------------------------------------------------------------------------------------------
-  template<typename T>
-  void AddMember(const char *name, T &&value) {
-    static auto &allocator = document_.GetAllocator();
-    if (!document_.HasMember(name)) {
-      document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name), value, allocator);
-    }
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  template<typename T>
-  void AddMember(char *name, T &&value) {
-    static auto &allocator = document_.GetAllocator();
-    if (!document_.HasMember(name)) {
-      document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name), value, allocator);
-    }
-  }
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
   void AddMember(const std::string &name, T &&value) {
@@ -167,46 +102,51 @@ class ConfiguratorJson {
   }
 //----------------------------------------------------------------------------------------------------------------------
   std::string GetFileName() const {
-    return file_name_;
+    return file_;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void SetConfigFileName(const std::string &config_file_name) {
-    file_name_ = config_file_name;
+  void SetFileName(const std::string &file) {
+    file_ = file;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  bool HasMember(const char *parameter) {
+  bool HasMember(const std::string &parameter) {
     return document_.HasMember(parameter);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  int GetInt(const char *parameter) {
+  template<typename T>
+  T as(const std::string &str) {
+    return document_[str].Get<T>();
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  int GetInt(const std::string &parameter) {
     if (document_[parameter].IsInt())
       return document_[parameter].GetInt();
     else
       return 0;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  bool GetBool(const char *parameter) {
+  bool GetBool(const std::string &parameter) {
     if (document_[parameter].IsBool())
       return document_[parameter].GetBool();
     else
       return false;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  std::string GetString(const char *parameter) {
+  std::string GetString(const std::string &parameter) {
     if (document_[parameter].IsString())
       return document_[parameter].GetString();
     else
       return std::string();
   }
 //----------------------------------------------------------------------------------------------------------------------
-  float GetFloat(const char *parameter) {
+  float GetFloat(const std::string &parameter) {
     if (document_[parameter].IsFloat())
       return document_[parameter].GetFloat();
     else
       return 0;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  double GetDouble(const char *parameter) {
+  double GetDouble(const std::string &parameter) {
     if (document_[parameter].IsDouble())
       return document_[parameter].GetDouble();
     else

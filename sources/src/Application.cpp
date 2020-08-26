@@ -27,7 +27,7 @@ SOFTWARE.
 #include "Application.h"
 #include "Storage.h"
 #include "Exception.h"
-#include "ConfiguratorJson.h"
+#include "JsonConfigurator.h"
 
 #ifdef _WIN32
 extern "C"
@@ -58,7 +58,7 @@ Application::Application() {
 Application::~Application() = default;
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
-  conf_ = std::make_unique<ConfiguratorJson>();
+//  conf_ = std::make_unique<JsonConfigurator>();
   io_ = std::make_unique<io::InputSequencer>();
   renderer_ = std::make_unique<Render>();
   physics_ = std::make_unique<Physics>();
@@ -67,9 +67,9 @@ void Application::Init_() {
   loader_ = std::make_unique<DotSceneLoaderB>();
   overlay_->Init();
   renderer_->Refresh();
-
+  
   // Texture filtering
-  std::string graphics_filtration = conf_->GetString("graphics_filtration");
+  std::string graphics_filtration = conf_.as<std::string>("graphics_filtration");
   Ogre::TextureFilterOptions tfo = Ogre::TFO_BILINEAR;
   if (graphics_filtration == "anisotropic")
     tfo = Ogre::TFO_ANISOTROPIC;
@@ -80,12 +80,12 @@ void Application::Init_() {
   else if (graphics_filtration == "none")
     tfo = Ogre::TFO_NONE;
 
-  renderer_->UpdateParams(tfo, conf_->GetInt("graphics_anisotropy_level"));
+  renderer_->UpdateParams(tfo, conf_.as<int>("graphics_anisotropy_level"));
 
-  bool shadow_enable = conf_->GetBool("graphics_shadows_enable");
-  float shadow_far = conf_->GetFloat("graphics_shadows_far_distance");
-  int16_t tex_size = conf_->GetInt("graphics_shadows_texture_resolution");
-  std::string tex_format_str = conf_->GetString("graphics_shadows_texture_format");
+  bool shadow_enable = conf_.as<bool>("graphics_shadows_enable");
+  float shadow_far = conf_.as<float>("graphics_shadows_far_distance");
+  int16_t tex_size = conf_.as<int>("graphics_shadows_texture_resolution");
+  std::string tex_format_str = conf_.as<std::string>("graphics_shadows_texture_format");
   Ogre::PixelFormat tex_format = Ogre::PF_DEPTH16;
 
   if (tex_format_str == "F32_R")
@@ -105,18 +105,18 @@ void Application::Init_() {
 
   renderer_->GetShadowSettings()->UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
-  loader_->GetComponents(conf_.get(),
+  loader_->GetComponents(&conf_,
                          io_.get(),
                          renderer_.get(),
                          physics_.get(),
                          sounds_.get(),
                          overlay_.get(),
                          loader_.get());
-  verbose_ = conf_->GetBool("global_verbose_enable");
-  lock_fps_ = conf_->GetBool("global_lock_fps");
-  target_fps_ = conf_->GetInt("global_target_fps");
+  verbose_ = conf_.as<bool>("global_verbose_enable");
+  lock_fps_ = conf_.as<bool>("global_lock_fps");
+  target_fps_ = conf_.as<int>("global_target_fps");
   io_->RegWinObserver(this);
-  renderer_->Resize(conf_->GetInt("window_width"), conf_->GetInt("window_high"), conf_->GetBool("window_fullscreen"));
+  renderer_->Resize(conf_.as<int>("window_width"), conf_.as<int>("window_high"), conf_.as<bool>("window_fullscreen"));
   if (!verbose_) {
     auto *logger = new Ogre::LogManager();
     std::string log_name = "Ogre.log";
@@ -148,7 +148,7 @@ void Application::Reset_() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::InitCurrState_() {
   cur_state_->Init();
-  cur_state_->GetComponents(conf_.get(),
+  cur_state_->GetComponents(&conf_,
                             io_.get(),
                             renderer_.get(),
                             physics_.get(),

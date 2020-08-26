@@ -33,7 +33,8 @@ SOFTWARE.
 #include <OgreSceneLoaderManager.h>
 
 namespace Context {
-class ConfiguratorJson;
+class JsonConfigurator;
+class YamlConfigurator;
 class Render;
 class Physics;
 class Sound;
@@ -54,7 +55,7 @@ class AppState
       io_->UnregObserver(this);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void GetComponents(ConfiguratorJson *conf,
+  void GetComponents(YamlConfigurator *conf,
                      io::InputSequencer *io,
                      Render *renderer,
                      Physics *physics,
@@ -83,7 +84,7 @@ class AppState
   virtual void Clear() = 0;
 
  protected:
-  ConfiguratorJson *conf_ = nullptr;
+  YamlConfigurator *conf_ = nullptr;
   Render *renderer_ = nullptr;
   Physics *physics_ = nullptr;
   Sound *sounds_ = nullptr;

@@ -1,0 +1,95 @@
+/*
+MIT License
+
+Copyright (c) 2020 Andrey Vasiliev
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+#pragma once
+
+#include <yaml-cpp/yaml.h>
+#include <filesystem>
+#include <string>
+
+namespace Context {
+class YamlParserException : public std::exception {
+ public:
+  YamlParserException() = default;
+
+  explicit YamlParserException(std::string description)
+      : description(std::move(description)) {};
+
+  ~YamlParserException() noexcept override = default;
+
+ public:
+  std::string getDescription() const noexcept {
+    return description;
+  }
+
+  const char *what() const noexcept override {
+    return description.c_str();
+  }
+
+ protected:
+  std::string description = std::string("Description not specified");
+  size_t code = 0;
+};
+
+class YamlConfigurator {
+ public:
+  YamlConfigurator() {
+    //Because Android clang does not support std filesystem
+#ifndef __ANDROID__
+    if (!std::filesystem::exists(file_)) {
+      file_ = std::string("../") + file_;
+
+      if (!std::filesystem::exists(file_)) {
+        throw YamlParserException("Error during parsing of " + file_ + " : file not exist");
+      }
+    }
+#endif
+
+    document_ = YAML::LoadFile(file_);
+  }
+
+  YamlConfigurator(const YamlConfigurator &) = delete;
+  YamlConfigurator &operator=(const YamlConfigurator &) = delete;
+  virtual ~YamlConfigurator() {};
+
+ private:
+  std::string file_ = "config.yaml";
+  YAML::Node document_;
+
+ public:
+//----------------------------------------------------------------------------------------------------------------------
+  std::string GetFileName() const {
+    return file_;
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void SetFileName(const std::string &file) {
+    file_ = file;
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  template<typename T>
+  T as(const std::string &str) {
+    return document_[str].as<T>();
+  }
+};
+}
