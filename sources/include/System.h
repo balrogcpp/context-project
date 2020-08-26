@@ -24,8 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "Singleton.h"
-#include "IO.h"
+#include "NoCopy.h"
 
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
@@ -33,7 +32,7 @@ SOFTWARE.
 namespace Context {
 
 class System
- : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener, public Singleton {
+ : public Ogre::RenderTargetListener, public Ogre::FrameListener, public NoCopy {
  public:
   System();
   virtual ~System();

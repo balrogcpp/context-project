@@ -76,7 +76,6 @@ set(CONTEXT_HEADERS
     include/Sound.h
     include/System.h
     include/Compositor.h
-    include/Singleton.h
     include/NoCopy.h
     include/TerrainMaterialGeneratorB.h
     include/CubeMapCamera.h

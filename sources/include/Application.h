@@ -28,7 +28,6 @@ SOFTWARE.
 #include <OgreRenderTargetListener.h>
 #include <OgreLog.h>
 #include "IO.h"
-#include "Singleton.h"
 #include "Renderer.h"
 #include "Sound.h"
 #include "Physic.h"
@@ -38,7 +37,7 @@ SOFTWARE.
 
 namespace Context {
 class ConfiguratorJson;
-class Application final : public io::OtherEventListener, public Ogre::LogListener, public Singleton {
+class Application final : public io::OtherEventListener, public Ogre::LogListener {
  public:
   Application();
   virtual ~Application();
@@ -71,6 +70,7 @@ class Application final : public io::OtherEventListener, public Ogre::LogListene
   }
 
   std::unique_ptr<ConfiguratorJson> conf_;
+  std::unique_ptr<io::InputSequencer> io_;
   std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<Physic> physics_;
   std::unique_ptr<Sound> sounds_;

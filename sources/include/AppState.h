@@ -45,11 +45,13 @@ class AppState
   virtual ~AppState();
 
   void GetComponents(ConfiguratorJson *conf,
+                     io::InputSequencer *io,
                      Renderer *renderer,
                      Physic *physics,
-                     Sound *sounds_,
-                     Overlay *overlay_,
-                     DotSceneLoaderB *loader_);
+                     Sound *sounds,
+                     Overlay *overlay,
+                     DotSceneLoaderB *loader
+  );
 
   virtual void Init() = 0;
   virtual void Clear() = 0;
@@ -63,6 +65,7 @@ class AppState
   Sound *sounds_ = nullptr;
   Overlay *overlay_ = nullptr;
   DotSceneLoaderB *loader_ = nullptr;
+  io::InputSequencer *io_ = nullptr;
 
  private:
   Ogre::SceneManager *scene_ = nullptr;

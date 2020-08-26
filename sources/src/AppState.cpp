@@ -32,13 +32,11 @@ AppState::AppState() {
   scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   camera_ = scene_->getCamera("Default");
   viewport_ = camera_->getViewport();
-  io::InputSequencer::Instance().RegListener(this);
   Ogre::Root::getSingleton().addFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
 AppState::~AppState() {
   Ogre::Root::getSingleton().removeFrameListener(this);
-  io::InputSequencer::Instance().UnregListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::Load(const std::string &file_name) {
@@ -48,12 +46,15 @@ void AppState::Load(const std::string &file_name) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::GetComponents(ConfiguratorJson *conf,
+                             io::InputSequencer *io,
                              Renderer *renderer,
                              Physic *physics,
                              Sound *sounds,
                              Overlay *overlay,
                              DotSceneLoaderB *loader) {
   conf_ = conf;
+  io_ = io;
+  io_->RegEventListener(this);
   renderer_ = renderer;
   physics_ = physics;
   sounds_ = sounds;

@@ -65,6 +65,7 @@ Application::~Application() = default;
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
   conf_ = std::make_unique<ConfiguratorJson>();
+  io_ = std::make_unique<io::InputSequencer>();
   renderer_ = std::make_unique<Renderer>();
   physics_ = std::make_unique<Physic>();
   sounds_ = std::make_unique<Sound>();
@@ -77,7 +78,7 @@ void Application::Init_() {
   conf_->Assign(target_fps_, "global_target_fps");
   conf_->Assign(lock_fps_, "global_lock_fps");
 
-  io::InputSequencer::Instance().RegEventListener(this);
+  io_->RegEventListener(this);
 
   if (!verbose_) {
     auto *logger = new Ogre::LogManager();
@@ -113,7 +114,13 @@ void Application::Reset_() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::InitCurrState_() {
   cur_state_->Init();
-  cur_state_->GetComponents(conf_.get(), renderer_.get(), physics_.get(), sounds_.get(), overlay_.get(), loader_.get());
+  cur_state_->GetComponents(conf_.get(),
+                            io_.get(),
+                            renderer_.get(),
+                            physics_.get(),
+                            sounds_.get(),
+                            overlay_.get(),
+                            loader_.get());
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::GoNextState_() {
@@ -177,7 +184,7 @@ void Application::Loop_() {
         fps_frames_ = 0;
       }
 
-      io::InputSequencer::Instance().Capture();
+      io_->Capture();
 
       if (!suspend_) {
         if (waiting_) {
@@ -241,7 +248,7 @@ void Application::Go_() {
     cur_state_->Init();
     quit_ = true;
     Loop_();
-    io::InputSequencer::Instance().Reset();
+    io_->Reset();
     Reset_();
   }
 }

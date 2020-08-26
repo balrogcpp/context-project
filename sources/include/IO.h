@@ -87,11 +87,6 @@ class InputSequencer {
   InputSequencer(InputSequencer &&) = delete;
   InputSequencer &operator=(InputSequencer &&) = delete;
 
-  static InputSequencer &Instance() {
-    static InputSequencer InputSingleton;
-    return InputSingleton;
-  }
-
   InputSequencer() {
     kb_listeners_.reserve(reserve_);
     ms_listeners_.reserve(reserve_);
