@@ -66,19 +66,57 @@ void Application::Init_() {
   overlay_ = std::make_unique<Overlay>();
   loader_ = std::make_unique<DotSceneLoaderB>();
   overlay_->Init();
-  renderer_->UpdateParams();
+  renderer_->Refresh();
+
+  // Texture filtering
+  std::string graphics_filtration = conf_->GetString("graphics_filtration");
+  Ogre::TextureFilterOptions tfo = Ogre::TFO_BILINEAR;
+  if (graphics_filtration == "anisotropic")
+    tfo = Ogre::TFO_ANISOTROPIC;
+  else if (graphics_filtration == "bilinear")
+    tfo = Ogre::TFO_BILINEAR;
+  else if (graphics_filtration == "trilinear")
+    tfo = Ogre::TFO_TRILINEAR;
+  else if (graphics_filtration == "none")
+    tfo = Ogre::TFO_NONE;
+
+  renderer_->UpdateParams(tfo, conf_->GetInt("graphics_anisotropy_level"));
+
+  bool shadow_enable = conf_->GetBool("graphics_shadows_enable");
+  float shadow_far = conf_->GetFloat("graphics_shadows_far_distance");
+  int16_t tex_size = conf_->GetInt("graphics_shadows_texture_resolution");
+  std::string tex_format_str = conf_->GetString("graphics_shadows_texture_format");
+  Ogre::PixelFormat tex_format = Ogre::PF_DEPTH16;
+
+  if (tex_format_str == "F32_R")
+    tex_format = Ogre::PF_FLOAT32_R;
+  else if (tex_format_str == "F16_R")
+    tex_format = Ogre::PF_FLOAT16_R;
+  else if (tex_format_str == "F32_GR")
+    tex_format = Ogre::PF_FLOAT32_GR;
+  else if (tex_format_str == "F16_GR")
+    tex_format = Ogre::PF_FLOAT16_GR;
+  else if (tex_format_str == "DEPTH16")
+    tex_format = Ogre::PF_DEPTH16;
+  else if (tex_format_str == "DEPTH32")
+    tex_format = Ogre::PF_DEPTH32;
+  else if (tex_format_str == "DEPTH32F")
+    tex_format = Ogre::PF_DEPTH32F;
+
+  renderer_->GetShadowSettings()->UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
+
   loader_->GetComponents(conf_.get(),
-                            io_.get(),
-                            renderer_.get(),
-                            physics_.get(),
-                            sounds_.get(),
-                            overlay_.get(),
-                            loader_.get());
+                         io_.get(),
+                         renderer_.get(),
+                         physics_.get(),
+                         sounds_.get(),
+                         overlay_.get(),
+                         loader_.get());
   verbose_ = conf_->GetBool("global_verbose_enable");
   lock_fps_ = conf_->GetBool("global_lock_fps");
   target_fps_ = conf_->GetInt("global_target_fps");
   io_->RegWinObserver(this);
-
+  renderer_->Resize(conf_->GetInt("window_width"), conf_->GetInt("window_high"), conf_->GetBool("window_fullscreen"));
   if (!verbose_) {
     auto *logger = new Ogre::LogManager();
     std::string log_name = "Ogre.log";
@@ -194,7 +232,7 @@ void Application::Loop_() {
           root->destroyAllMovableObjects();
           root->getRootSceneNode()->removeAndDestroyAllChildren();
 
-          renderer_->UpdateParams();
+          renderer_->Refresh();
           InitCurrState_();
           physics_->Start();
           waiting_ = false;

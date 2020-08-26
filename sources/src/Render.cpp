@@ -83,10 +83,6 @@ Render::Render() {
   Ogre::NameValuePairList params;
 
   SDL_SysWMinfo info = window_.GetInfo();
-//  window_.Resize(conf.GetInt("window_width"),
-//                 conf.GetInt("window_high"));
-//  if (conf.GetBool("window_fullscreen"))
-//    window_.Fullscreen(true);
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   if (!reinterpret_cast<size_t>(info.info.win.window)) {
     throw Exception("Cast from info.info.win.window to size_t failed");
@@ -161,46 +157,33 @@ void Render::CreateCamera() {
     camera->setFarClipDistance(10000.0f);
   }
 
-//  camera->setAspectRatio(window_.GetRatio());
   camera->setAutoAspectRatio(true);
   scene_->setSkyBoxEnabled(false);
   scene_->setSkyDomeEnabled(false);
   scene_->setAmbientLight(Ogre::ColourValue::Black);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Render::UpdateParams() {
+void Render::Refresh() {
   CreateCamera();
-
-  std::string graphics_filtration_ = "bilinear";
-  int graphics_anisotropy_level_ = 4;
-  int graphics_mipmap_count_ = 10;
-  auto *camera = scene_->getCamera("Default");
-
-  // Texture filtering
-  if (graphics_filtration_ == "anisotropic") {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_ANISOTROPIC);
-    Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(graphics_anisotropy_level_);
-  } else if (graphics_filtration_ == "bilinear") {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
-  } else if (graphics_filtration_ == "trilinear") {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_TRILINEAR);
-  } else if (graphics_filtration_ == "none") {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_NONE);
-  } else {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
-  }
-
   shadow_ = std::make_unique<ShadowSettings>();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Render::Resize(int32_t w, int32_t h) {
-  window_.Resize(w, h);
-  ogre_->resize(w, h);
+void Render::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
+  // Texture filtering
+  Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
+  if (filtering == Ogre::TFO_ANISOTROPIC)
+    Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Render::Fullscreen(bool f) {
-  window_.Fullscreen(f);
-  ogre_->setFullscreen(f, window_.GetSize().first, window_.GetSize().second);
+void Render::Resize(int32_t w, int32_t h, bool f) {
+  if (f) {
+    window_.Fullscreen(f);
+    ogre_->resize(window_.GetSize().first, window_.GetSize().second);
+    ogre_->setFullscreen(f, window_.GetSize().first, window_.GetSize().second);
+  } else {
+    window_.Resize(w, h);
+    ogre_->resize(w, h);
+  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Render::RenderOneFrame() {

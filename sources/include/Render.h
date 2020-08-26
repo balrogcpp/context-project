@@ -44,10 +44,11 @@ class Render final : public NoCopy {
   Render();
   virtual ~Render();
 
-  void UpdateParams();
+  void Refresh();
+  void UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy);
+  void UpdateShadow(bool enable, float distance, int16_t tex_size, Ogre::PixelFormat tex_format);
   void RenderOneFrame();
-  void Resize(int32_t w, int32_t h);
-  void Fullscreen(bool f);
+  void Resize(int32_t w, int32_t h, bool f);
 
  private:
   void CreateCamera();
@@ -62,6 +63,14 @@ class Render final : public NoCopy {
  public:
   Window &GetWindow() {
     return window_;
+  }
+
+  ShadowSettings *GetShadowSettings() {
+    return shadow_.get();
+  }
+
+  Compositor *GetCompositor() {
+    return compositor_.get();
   }
 }; //class ContextManager
 } //namespace Context

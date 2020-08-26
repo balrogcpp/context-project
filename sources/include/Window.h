@@ -201,7 +201,7 @@ class Window : public NoCopy {
     return info;
   }
 
-  inline void UpdateCursor(bool show, bool grab, bool relative) const noexcept {
+  inline void UpdateCursor(bool show, bool grab, bool relative) noexcept {
     SDL_ShowCursor(show);
     SDL_SetWindowGrab(window_, static_cast<SDL_bool>(grab));
     SDL_SetRelativeMouseMode(static_cast<SDL_bool>(relative));
@@ -221,6 +221,8 @@ class Window : public NoCopy {
   inline void Fullscreen(bool f) noexcept {
     f_ = f;
     if (f) {
+      w_ = screen_w_;
+      h_ = screen_h_;
       SDL_SetWindowSize(window_, screen_w_, screen_h_);
       SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_FULLSCREEN_DESKTOP);
     } else {
