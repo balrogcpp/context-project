@@ -560,7 +560,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
 
   if (!camera_man_) {
     camera_man_ = std::make_shared<CameraMan>();
-    io_->RegListener(camera_man_.get());
+    io_->RegObserver(camera_man_.get());
   }
   camera_man_->RegCamera(parent, pCamera);
   camera_man_->SetStyle(CameraMan::FPS);

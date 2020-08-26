@@ -27,7 +27,7 @@ SOFTWARE.
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 #include <OgreLog.h>
-#include "IO.h"
+#include "Input.h"
 #include "Render.h"
 #include "Sound.h"
 #include "Physics.h"

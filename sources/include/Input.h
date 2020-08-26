@@ -29,9 +29,11 @@ extern "C" {
 #include <SDL2/SDL_events.h>
 }
 #include <cstdint>
+#include <iostream>
 #include <vector>
 
 namespace io {
+class InputSequencer;
 //----------------------------------------------------------------------------------------------------------------------
 class InputObserver {
  public:
@@ -86,11 +88,11 @@ class InputSequencer {
   const size_t reserve_ = 16;
 
  public:
-  void RegListener(InputObserver *p) {
+  void RegObserver(InputObserver *p) {
     io_listeners.push_back(p);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void UnregListener(InputObserver *p) {
+  void UnregObserver(InputObserver *p) {
     auto it = find(io_listeners.begin(), io_listeners.end(), p);
     if (it != io_listeners.end()) {
       iter_swap(it, prev(io_listeners.end()));
@@ -98,11 +100,11 @@ class InputSequencer {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void RegWinListener(WindowObserver *p) {
+  void RegWinObserver(WindowObserver *p) {
     win_listeners.push_back(p);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void UnregWinListener(WindowObserver *p) {
+  void UnregWinObserver(WindowObserver *p) {
     auto it = find(win_listeners.begin(), win_listeners.end(), p);
     if (it != win_listeners.end()) {
       iter_swap(it, prev(win_listeners.end()));
@@ -113,6 +115,11 @@ class InputSequencer {
   void Reset() {
     io_listeners.clear();
     win_listeners.clear();
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void Reserve(size_t size) {
+    io_listeners.reserve(size);
+    win_listeners.reserve(size);
   }
 //----------------------------------------------------------------------------------------------------------------------
   void Capture() {

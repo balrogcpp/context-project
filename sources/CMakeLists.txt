@@ -64,7 +64,7 @@ set(CONTEXT_HEADERS
     include/AppState.h
     include/CameraMan.h
     include/Exception.h
-    include/IO.h
+    include/Input.h
     include/pcheader.h
     include/Render.h
     include/VerboseListener.h

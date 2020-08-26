@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include "Component.h"
 #include "ReflectionCamera.h"
-#include "IO.h"
+#include "Input.h"
 #include <OgreSceneLoader.h>
 #include <OgreVector4.h>
 

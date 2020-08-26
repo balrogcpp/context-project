@@ -25,7 +25,7 @@ SOFTWARE.
 #pragma once
 
 #include <OgreRoot.h>
-#include "IO.h"
+#include "Input.h"
 #include "Object.h"
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 

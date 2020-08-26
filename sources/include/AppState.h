@@ -27,7 +27,7 @@ SOFTWARE.
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 
-#include "IO.h"
+#include "Input.h"
 #include "NoCopy.h"
 #include <OgreRoot.h>
 #include <OgreSceneLoaderManager.h>
@@ -50,6 +50,8 @@ class AppState
 //----------------------------------------------------------------------------------------------------------------------
   virtual ~AppState() {
     Ogre::Root::getSingleton().removeFrameListener(this);
+    if (registered)
+      io_->UnregObserver(this);
   }
 //----------------------------------------------------------------------------------------------------------------------
   void GetComponents(ConfiguratorJson *conf,
@@ -61,12 +63,13 @@ class AppState
                      DotSceneLoaderB *loader) {
     conf_ = conf;
     io_ = io;
-    io_->RegListener(this);
+    io_->RegObserver(this);
     renderer_ = renderer;
     physics_ = physics;
     sounds_ = sounds;
     overlay_ = overlay;
     loader_ = loader;
+    registered = true;
   }
 //----------------------------------------------------------------------------------------------------------------------
   void Load(const std::string &file_name) {
@@ -87,5 +90,6 @@ class AppState
   Overlay *overlay_ = nullptr;
   DotSceneLoaderB *loader_ = nullptr;
   io::InputSequencer *io_ = nullptr;
+  bool registered = false;
 }; //class AppState
 } //namespace Context

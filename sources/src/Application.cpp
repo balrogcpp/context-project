@@ -77,7 +77,7 @@ void Application::Init_() {
   verbose_ = conf_->GetBool("global_verbose_enable");
   lock_fps_ = conf_->GetBool("global_lock_fps");
   target_fps_ = conf_->GetInt("global_target_fps");
-  io_->RegWinListener(this);
+  io_->RegWinObserver(this);
 
   if (!verbose_) {
     auto *logger = new Ogre::LogManager();
@@ -90,6 +90,7 @@ void Application::Init_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Reset_() {
+  io_->UnregWinObserver(this);
   auto *root = Ogre::Root::getSingleton().getSceneManager("Default");
   root->destroyAllEntities();
   root->destroyAllLights();
