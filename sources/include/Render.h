@@ -39,13 +39,13 @@ class RenderWindow;
 }
 
 namespace Context {
-class Renderer final : public NoCopy {
+class Render final : public NoCopy {
  public:
-  Renderer();
-  virtual ~Renderer();
+  Render();
+  virtual ~Render();
 
   void UpdateParams();
-  void Render();
+  void RenderOneFrame();
   void Resize(int32_t w, int32_t h);
   void Fullscreen(bool f);
 

@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "pcheader.h"
 #include "Utils.h"
-#include "Renderer.h"
+#include "Render.h"
 
 using namespace Ogre;
 using namespace Context;

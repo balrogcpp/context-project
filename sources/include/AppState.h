@@ -34,8 +34,8 @@ SOFTWARE.
 
 namespace Context {
 class ConfiguratorJson;
-class Renderer;
-class Physic;
+class Render;
+class Physics;
 class Sound;
 class Overlay;
 class DotSceneLoaderB;
@@ -54,8 +54,8 @@ class AppState
 //----------------------------------------------------------------------------------------------------------------------
   void GetComponents(ConfiguratorJson *conf,
                      io::InputSequencer *io,
-                     Renderer *renderer,
-                     Physic *physics,
+                     Render *renderer,
+                     Physics *physics,
                      Sound *sounds,
                      Overlay *overlay,
                      DotSceneLoaderB *loader) {
@@ -81,8 +81,8 @@ class AppState
 
  protected:
   ConfiguratorJson *conf_ = nullptr;
-  Renderer *renderer_ = nullptr;
-  Physic *physics_ = nullptr;
+  Render *renderer_ = nullptr;
+  Physics *physics_ = nullptr;
   Sound *sounds_ = nullptr;
   Overlay *overlay_ = nullptr;
   DotSceneLoaderB *loader_ = nullptr;

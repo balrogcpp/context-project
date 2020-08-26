@@ -66,12 +66,12 @@ set(CONTEXT_HEADERS
     include/Exception.h
     include/IO.h
     include/pcheader.h
-    include/Renderer.h
+    include/Render.h
     include/VerboseListener.h
     include/ConfiguratorJson.h
     include/DotSceneLoaderB.h
     include/Forest.h
-    include/Physic.h
+    include/Physics.h
     include/OgreHeaders.h
     include/Sound.h
     include/System.h
@@ -114,9 +114,9 @@ set(OGGSOUND_SOURCES
 
 set(CONTEXT_SOURCES
     src/Application.cpp
-    src/Renderer.cpp
+    src/Render.cpp
     src/DotSceneLoaderB.cpp
-    src/Physic.cpp
+    src/Physics.cpp
     src/Forest.cpp
     src/pcheader.cpp
     src/Compositor.cpp

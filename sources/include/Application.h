@@ -28,9 +28,9 @@ SOFTWARE.
 #include <OgreRenderTargetListener.h>
 #include <OgreLog.h>
 #include "IO.h"
-#include "Renderer.h"
+#include "Render.h"
 #include "Sound.h"
-#include "Physic.h"
+#include "Physics.h"
 #include "DotSceneLoaderB.h"
 #include "Overlay.h"
 #include "AppState.h"
@@ -70,8 +70,8 @@ class Application final : public io::OtherEventListener, public Ogre::LogListene
 
   std::unique_ptr<ConfiguratorJson> conf_;
   std::unique_ptr<io::InputSequencer> io_;
-  std::unique_ptr<Renderer> renderer_;
-  std::unique_ptr<Physic> physics_;
+  std::unique_ptr<Render> renderer_;
+  std::unique_ptr<Physics> physics_;
   std::unique_ptr<Sound> sounds_;
   std::unique_ptr<Overlay> overlay_;
   std::unique_ptr<DotSceneLoaderB> loader_;

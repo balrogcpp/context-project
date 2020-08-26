@@ -43,21 +43,14 @@ class SceneNode;
 class Terrain;
 class TerrainGroup;
 class TerrainGlobalOptions;
-class TerrainPaging;
-class ShadowCameraSetup;
 class VertexDeclaration;
-}
-
-namespace Ogre {
-class HlmsManager;
-class PbsMaterial;
 }
 
 namespace Context {
 class CameraMan;
 class ConfiguratorJson;
-class Renderer;
-class Physic;
+class Render;
+class Physics;
 class Sound;
 class Overlay;
 class DotSceneLoaderB;
@@ -115,8 +108,8 @@ class DotSceneLoaderB final : public System, public Ogre::SceneLoader {
   std::shared_ptr<Ogre::TerrainGroup> ogre_terrain_group_;
 
   ConfiguratorJson *conf_ = nullptr;
-  Renderer *renderer_ = nullptr;
-  Physic *physics_ = nullptr;
+  Render *renderer_ = nullptr;
+  Physics *physics_ = nullptr;
   Sound *sounds_ = nullptr;
   Overlay *overlay_ = nullptr;
   DotSceneLoaderB *loader_ = nullptr;
@@ -133,8 +126,8 @@ class DotSceneLoaderB final : public System, public Ogre::SceneLoader {
  public:
   void GetComponents(ConfiguratorJson *conf,
                      io::InputSequencer *io,
-                     Renderer *renderer,
-                     Physic *physics,
+                     Render *renderer,
+                     Physics *physics,
                      Sound *sounds,
                      Overlay *overlay,
                      DotSceneLoaderB *loader) {

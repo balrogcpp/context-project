@@ -23,12 +23,12 @@ SOFTWARE.
 */
 
 #include "pcheader.h"
-#include "Renderer.h"
+#include "Render.h"
 #include "Exception.h"
 #include "Storage.h"
 
 namespace Context {
-Renderer::Renderer() {
+Render::Render() {
   root_ = new Ogre::Root("", "", "");
 
   bool global_sso_enable_ = true;
@@ -141,9 +141,9 @@ Renderer::Renderer() {
 
   compositor_ = std::make_unique<Compositor>();
 }
-Renderer::~Renderer() {}
+Render::~Render() {}
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::CreateCamera() {
+void Render::CreateCamera() {
   Ogre::Camera *camera = nullptr;
 
   if (!scene_->hasCamera("Default")) {
@@ -168,7 +168,7 @@ void Renderer::CreateCamera() {
   scene_->setAmbientLight(Ogre::ColourValue::Black);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::UpdateParams() {
+void Render::UpdateParams() {
   CreateCamera();
 
   std::string graphics_filtration_ = "bilinear";
@@ -193,17 +193,17 @@ void Renderer::UpdateParams() {
   shadow_ = std::make_unique<ShadowSettings>();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::Resize(int32_t w, int32_t h) {
+void Render::Resize(int32_t w, int32_t h) {
   window_.Resize(w, h);
   ogre_->resize(w, h);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::Fullscreen(bool f) {
+void Render::Fullscreen(bool f) {
   window_.Fullscreen(f);
   ogre_->setFullscreen(f, window_.GetSize().first, window_.GetSize().second);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::Render() {
+void Render::RenderOneFrame() {
   root_->renderOneFrame();
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   window_.SwapBuffers();

@@ -24,11 +24,11 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "Physic.h"
+#include "Physics.h"
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
-Physic::Physic() {
+Physics::Physics() {
   float gravity_x = 0;
   float gravity_y = -9.8f;
   float gravity_z = 0;
@@ -53,9 +53,9 @@ Physic::Physic() {
   stopped_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
-Physic::~Physic() {}
+Physics::~Physics() {}
 //----------------------------------------------------------------------------------------------------------------------
-bool Physic::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+bool Physics::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   static int factor_;
   static float cumulative_;
 
@@ -79,7 +79,7 @@ bool Physic::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Physic::Clear() {
+void Physics::Clear() {
   Stop();
   phy_world_->clearForces();
 
@@ -100,13 +100,13 @@ void Physic::Clear() {
   rigid_bodies_.clear();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Physic::AddRigidBody(btRigidBody *body) {
+void Physics::AddRigidBody(btRigidBody *body) {
   phy_world_->addRigidBody(body);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Physic::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
-                         Ogre::Entity *entity,
-                         Ogre::SceneNode *parent_node) {
+void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
+                          Ogre::Entity *entity,
+                          Ogre::SceneNode *parent_node) {
   const std::string physics_type_static = "STATIC";
   const std::string physics_type_dynamic = "dynamic";
   const std::string physics_type_actor = "actor";
@@ -336,7 +336,7 @@ void Physic::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-std::shared_ptr<btDynamicsWorld> Physic::GetPhyWorld() const {
+std::shared_ptr<btDynamicsWorld> Physics::GetPhyWorld() const {
   return phy_world_;
 }
 } //namespace Context

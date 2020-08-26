@@ -24,7 +24,6 @@ SOFTWARE.
 
 #include "DemoDotAppState.h"
 #include "Application.h"
-#include <iostream>
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include <android_native_app_glue.h>

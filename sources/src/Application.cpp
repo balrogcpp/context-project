@@ -60,8 +60,8 @@ Application::~Application() = default;
 void Application::Init_() {
   conf_ = std::make_unique<ConfiguratorJson>();
   io_ = std::make_unique<io::InputSequencer>();
-  renderer_ = std::make_unique<Renderer>();
-  physics_ = std::make_unique<Physic>();
+  renderer_ = std::make_unique<Render>();
+  physics_ = std::make_unique<Physics>();
   sounds_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();
   loader_ = std::make_unique<DotSceneLoaderB>();
@@ -199,7 +199,7 @@ void Application::Loop_() {
           waiting_ = false;
         }
 
-        renderer_->Render();
+        renderer_->RenderOneFrame();
       }
 
 #ifdef DEBUG
