@@ -74,7 +74,7 @@ set(CONTEXT_HEADERS
     include/Physics.h
     include/OgreHeaders.h
     include/Sound.h
-    include/System.h
+    include/Component.h
     include/Compositor.h
     include/NoCopy.h
     include/TerrainMaterialGeneratorB.h

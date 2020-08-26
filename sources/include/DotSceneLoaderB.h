@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "System.h"
+#include "Component.h"
 #include "ReflectionCamera.h"
 #include "IO.h"
 #include <OgreSceneLoader.h>
@@ -55,7 +55,7 @@ class Sound;
 class Overlay;
 class DotSceneLoaderB;
 
-class DotSceneLoaderB final : public System, public Ogre::SceneLoader {
+class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();

@@ -35,7 +35,7 @@ class SceneNode;
 
 namespace Context {
 
-class CameraMan final :public Object, public io::InputListener, public Ogre::FrameListener {
+class CameraMan final :public Object, public io::InputObserver, public Ogre::FrameListener {
  public:
   enum   // enumerator values for different styles of camera movement
   {

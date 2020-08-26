@@ -32,15 +32,15 @@ SOFTWARE.
 
 namespace Context {
 
-class System
+class Component
  : public Ogre::RenderTargetListener, public Ogre::FrameListener, public NoCopy {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  System() {
+  Component() {
     Ogre::Root::getSingleton().addFrameListener(this);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual ~System() {
+  virtual ~Component() {
     Ogre::Root::getSingleton().removeFrameListener(this);
   }
 

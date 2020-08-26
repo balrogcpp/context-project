@@ -41,7 +41,7 @@ class Overlay;
 class DotSceneLoaderB;
 
 class AppState
-    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputListener, public NoCopy {
+    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputObserver, public NoCopy {
  public:
 //----------------------------------------------------------------------------------------------------------------------
   AppState() {
@@ -61,7 +61,7 @@ class AppState
                      DotSceneLoaderB *loader) {
     conf_ = conf;
     io_ = io;
-    io_->RegEventListener(this);
+    io_->RegListener(this);
     renderer_ = renderer;
     physics_ = physics;
     sounds_ = sounds;

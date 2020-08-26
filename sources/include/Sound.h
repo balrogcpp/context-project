@@ -24,12 +24,12 @@ SOFTWARE.
 
 #pragma once
 
-#include "System.h"
+#include "Component.h"
 #include "OgreOggSound.h"
 
 namespace Context {
 
-class Sound final : public System {
+class Sound final : public Component {
  public:
   Sound() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX

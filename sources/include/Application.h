@@ -37,7 +37,7 @@ SOFTWARE.
 
 namespace Context {
 class ConfiguratorJson;
-class Application final : public io::OtherEventListener, public Ogre::LogListener {
+class Application final : public io::WindowObserver, public Ogre::LogListener {
  public:
   Application();
   virtual ~Application();

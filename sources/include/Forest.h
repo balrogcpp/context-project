@@ -24,11 +24,11 @@ SOFTWARE.
 
 #pragma once
 
-#include "System.h"
+#include "Component.h"
 
 namespace Context {
 
-class Forest final : public System {
+class Forest final : public Component {
  public:
   Forest();
   virtual ~Forest();
