@@ -43,7 +43,8 @@ bool Overlay::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 void Overlay::Init() {
   mSilverback = new Silverback();
   mSilverback->loadAtlas("dejavu");
-  mScreen = mSilverback->createScreen(viewport_, "dejavu");
+  auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
+  mScreen = mSilverback->createScreen(viewport, "dejavu");
   layer = mScreen->createLayer(0);
   Ogre::Real vpW = mScreen->getWidth(), vpH = mScreen->getHeight();
 

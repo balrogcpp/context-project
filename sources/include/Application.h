@@ -48,7 +48,6 @@ class Application final : public io::OtherEventListener, public Ogre::LogListene
   void Init_();
   void SetCurState_(std::unique_ptr<AppState> &&scene_ptr);
   void Reset_();
-  void Render_();
   void Loop_();
   void Go_();
   void InitCurrState_();

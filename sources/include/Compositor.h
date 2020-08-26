@@ -53,8 +53,5 @@ class Compositor final : public System {
   GBufferSchemeHandler *ssaog_buffer_scheme_handler_;
   DepthSchemeHandler *depth_scheme_handler_;
 
- public:
-  void SetCompositor(const std::string &compositor_);
-  void SetPost(const std::string &post_);
 }; //class CompositorManager
 } //namespace Context

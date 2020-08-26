@@ -218,6 +218,8 @@ void DotSceneLoaderB::ProcessExternals_(pugi::xml_node &xml_node) {
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessEnvironment_(pugi::xml_node &xml_node) {
   // Process camera (?)
+  auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
+
   if (auto element = xml_node.child("camera")) {
     ProcessCamera_(element);
   }
@@ -249,7 +251,7 @@ void DotSceneLoaderB::ProcessEnvironment_(pugi::xml_node &xml_node) {
 
   // Process colourBackground (?)
   if (auto element = xml_node.child("colourBackground")) {
-    viewport_->setBackgroundColour(ParseColour(element));
+    viewport->setBackgroundColour(ParseColour(element));
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -480,10 +482,11 @@ void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
 void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   // Process attributes
   static long counter = 0;
+  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   std::string name = GetAttrib(xml_node, "name");
 
   if (!parent) {
-    parent = scene_->createSceneNode();
+    parent = scene->createSceneNode();
   }
 
   // Create the light
@@ -555,12 +558,15 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   // Create the camera
   auto *pCamera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
-  if (!camera_man_)
+  if (!camera_man_) {
     camera_man_ = std::make_shared<CameraMan>();
+    io_->RegListener(camera_man_.get());
+  }
   camera_man_->RegCamera(parent, pCamera);
   camera_man_->SetStyle(CameraMan::FPS);
 
-  auto *actor = scene_->createEntity("Actor", "Icosphere.mesh");
+  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+  auto *actor = scene->createEntity("Actor", "Icosphere.mesh");
   actor->setCastShadows(false);
   actor->setVisible(false);
   parent->attachObject(actor);
@@ -821,13 +827,13 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
         Ogre::MeshLodGenerator().generateAutoconfiguredLodLevels(mesh);
 
         if (!lodConfig.advanced.useBackgroundQueue) {
-
+          auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
           if (entity) {
-            scene_->destroyEntity(entity);
+            scene->destroyEntity(entity);
             entity = nullptr; // createEntity may throw exception, so it is safer to reset to 0.
           }
 
-          entity = scene_->createEntity(name, lodConfig.mesh);
+          entity = scene->createEntity(name, lodConfig.mesh);
           entity->setCastShadows(castShadows);
           parent->attachObject(entity);
         }
@@ -909,7 +915,8 @@ void DotSceneLoaderB::ProcessParticleSystem_(pugi::xml_node &xml_node, Ogre::Sce
     pParticles->setVisibilityFlags(WATER_MASK);
 
     if (attachedCamera) {
-      camera_->getParentSceneNode()->createChildSceneNode(Ogre::Vector3{0, 10, 0})->attachObject(pParticles);
+      auto *camera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
+      camera->getParentSceneNode()->createChildSceneNode(Ogre::Vector3{0, 10, 0})->attachObject(pParticles);
     } else {
       parent->attachObject(pParticles);
     }

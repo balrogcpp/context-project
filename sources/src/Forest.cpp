@@ -161,9 +161,9 @@ void Forest::GenerateGrass() {
 //  mField->build(); // build our static geometry (bake the grass into it)
 //  mField->setCastShadows(false);
 
-  auto *grass = scene_->createEntity("Grass", "grass");
+  auto *grass = scene->createEntity("Grass", "grass");
   // Create a static geometry field, which we will populate with grass
-  mField = scene_->createStaticGeometry("GrassField");
+  mField = scene->createStaticGeometry("GrassField");
   UpdatePbrParams("GrassCustom");
   UpdatePbrShadowReceiver("GrassCustom");
   grass->setMaterialName("GrassCustom");

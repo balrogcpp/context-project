@@ -79,8 +79,7 @@ class AppState
   virtual void Init() = 0;
   virtual void Clear() = 0;
 
- protected:// private:
-
+ protected:
   ConfiguratorJson *conf_ = nullptr;
   Renderer *renderer_ = nullptr;
   Physic *physics_ = nullptr;

@@ -37,9 +37,6 @@ class System
  public:
 //----------------------------------------------------------------------------------------------------------------------
   System() {
-    scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
-    camera_ = scene_->getCamera("Default");
-    viewport_ = camera_->getViewport();
     Ogre::Root::getSingleton().addFrameListener(this);
   }
 //----------------------------------------------------------------------------------------------------------------------
@@ -53,10 +50,5 @@ class System
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) override { return true; }
-
- public:
-  Ogre::SceneManager *scene_ = nullptr;
-  Ogre::Camera *camera_ = nullptr;
-  Ogre::Viewport *viewport_ = nullptr;
 };
 }

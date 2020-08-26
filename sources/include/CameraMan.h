@@ -45,7 +45,6 @@ class CameraMan final : public io::InputListener, public Ogre::FrameListener {
   };
 
   CameraMan() {
-//    io::InputSequencer::Instance().RegListener(this);
     Ogre::Root::getSingleton().addFrameListener(this);
   }
 //----------------------------------------------------------------------------------------------------------------------
@@ -112,24 +111,18 @@ class CameraMan final : public io::InputListener, public Ogre::FrameListener {
       top_speed_ = move_fast_ ? run_speed_ : const_speed_;
 
       velocity_ = {0, 0, 0};
-      if (move_forward_) {
+      if (move_forward_)
         velocity_.z = -run_speed_;
-      }
-      if (move_back_) {
+      if (move_back_)
         velocity_.z = run_speed_;
-      }
-      if (move_right_) {
+      if (move_right_)
         velocity_.x = run_speed_;
-      }
-      if (move_left_) {
+      if (move_left_)
         velocity_.x = -run_speed_;
-      }
-      if (move_up_) {
+      if (move_up_)
         velocity_.y = run_speed_;
-      }
-      if (move_down_) {
+      if (move_down_)
         velocity_.y = -run_speed_;
-      }
 
       if (velocity_.squaredLength() > top_speed_ * top_speed_) {
         velocity_.normalise();

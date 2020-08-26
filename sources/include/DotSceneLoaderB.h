@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include "System.h"
 #include "ReflectionCamera.h"
+#include "IO.h"
 #include <OgreSceneLoader.h>
 #include <OgreVector4.h>
 
@@ -54,7 +55,12 @@ class PbsMaterial;
 
 namespace Context {
 class CameraMan;
+class ConfiguratorJson;
+class Renderer;
 class Physic;
+class Sound;
+class Overlay;
+class DotSceneLoaderB;
 
 class DotSceneLoaderB final : public System, public Ogre::SceneLoader {
  public:
@@ -103,11 +109,18 @@ class DotSceneLoaderB final : public System, public Ogre::SceneLoader {
  private:
   std::unique_ptr<ReflectionCamera> rcamera_;
   std::shared_ptr<CameraMan> camera_man_;
-  Physic *physics_ = nullptr;
   Ogre::SceneManager *scene_manager_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;
   std::string group_name_;
   std::shared_ptr<Ogre::TerrainGroup> ogre_terrain_group_;
+
+  ConfiguratorJson *conf_ = nullptr;
+  Renderer *renderer_ = nullptr;
+  Physic *physics_ = nullptr;
+  Sound *sounds_ = nullptr;
+  Overlay *overlay_ = nullptr;
+  DotSceneLoaderB *loader_ = nullptr;
+  io::InputSequencer *io_ = nullptr;
 
   bool lod_generator_enable_ = false;
   bool physics_enable_ = true;
@@ -118,16 +131,20 @@ class DotSceneLoaderB final : public System, public Ogre::SceneLoader {
   bool terrain_created_ = false;
 
  public:
-  void SetWorld(Physic *pworld) {
-    physics_ = pworld;
-  }
-
-  void SetCamera(std::shared_ptr<CameraMan> camera) {
-    camera_man_ = camera;
-  }
-
-  std::shared_ptr<CameraMan> GetCameraMan() const {
-    return camera_man_;
+  void GetComponents(ConfiguratorJson *conf,
+                     io::InputSequencer *io,
+                     Renderer *renderer,
+                     Physic *physics,
+                     Sound *sounds,
+                     Overlay *overlay,
+                     DotSceneLoaderB *loader) {
+    conf_ = conf;
+    io_ = io;
+    renderer_ = renderer;
+    physics_ = physics;
+    sounds_ = sounds;
+    overlay_ = overlay;
+    loader_ = loader;
   }
 }; //class DotSceneLoaderB
 } //namespace Context

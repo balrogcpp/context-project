@@ -166,7 +166,7 @@ class ConfiguratorJson {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  std::string GetConfigFileName() const {
+  std::string GetFileName() const {
     return file_name_;
   }
 //----------------------------------------------------------------------------------------------------------------------
@@ -211,51 +211,6 @@ class ConfiguratorJson {
       return document_[parameter].GetDouble();
     else
       return 0;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  bool Assign(bool &value, const char *parameter) {
-    bool exists = HasMember(parameter);
-
-    if (HasMember(parameter))
-      value = GetBool(parameter);
-
-    return exists;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  bool Assign(int &value, const char *parameter) {
-    bool exists = HasMember(parameter);
-
-    if (exists)
-      value = GetInt(parameter);
-
-    return exists;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  bool Assign(std::string &value, const char *parameter) {
-    bool exists = HasMember(parameter);
-
-    if (exists)
-      value = GetString(parameter);
-
-    return exists;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  bool Assign(float &value, const char *parameter) {
-    bool exists = HasMember(parameter);
-
-    if (exists)
-      value = GetFloat(parameter);
-
-    return exists;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  bool Assign(double &value, const char *parameter) {
-    bool exists = HasMember(parameter);
-
-    if (exists)
-      value = GetDouble(parameter);
-
-    return exists;
   }
 }; //class ConfigManager
 } //namespace Context

@@ -35,6 +35,7 @@ SOFTWARE.
 namespace Ogre {
 class Root;
 class SceneManager;
+class RenderWindow;
 }
 
 namespace Context {
@@ -45,16 +46,18 @@ class Renderer final : public NoCopy {
 
   void UpdateParams();
   void Render();
+  void Resize(int32_t w, int32_t h);
+  void Fullscreen(bool f);
 
  private:
   void CreateCamera();
-
- private:
   Window window_;
+  std::vector<float> pssm_split_;
   std::unique_ptr<Compositor> compositor_;
 
   Ogre::Root *root_ = nullptr;
   Ogre::SceneManager *scene_ = nullptr;
+  Ogre::RenderWindow *ogre_ = nullptr;
 
  public:
   Window &GetWindow() {

@@ -73,12 +73,18 @@ void Application::Init_() {
   loader_ = std::make_unique<DotSceneLoaderB>();
   overlay_->Init();
   renderer_->UpdateParams();
-  loader_->SetWorld(physics_.get());
-  conf_->Assign(verbose_, "global_verbose_enable");
-  conf_->Assign(target_fps_, "global_target_fps");
-  conf_->Assign(lock_fps_, "global_lock_fps");
-
+  loader_->GetComponents(conf_.get(),
+                            io_.get(),
+                            renderer_.get(),
+                            physics_.get(),
+                            sounds_.get(),
+                            overlay_.get(),
+                            loader_.get());
+  verbose_ = conf_->GetBool("global_verbose_enable");
+  lock_fps_ = conf_->GetBool("global_lock_fps");
+  target_fps_ = conf_->GetInt("global_target_fps");
   io_->RegEventListener(this);
+  renderer_->Resize(1920, 1080);
 
   if (!verbose_) {
     auto *logger = new Ogre::LogManager();
@@ -88,10 +94,6 @@ void Application::Init_() {
     Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
     Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
   }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Render_() {
-  renderer_->Render();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Reset_() {
@@ -135,32 +137,24 @@ void Application::Quit() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
-  const int fps_inactive = 30;
-
   if (evt.type == SDL_WINDOWEVENT) {
     static bool fullscreen = renderer_->GetWindow().GetFullscreen();
 
     if (!fullscreen) {
       if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         suspend_ = true;
-        target_fps_ = fps_inactive;
         lock_fps_ = true;
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
-        conf_->Assign(target_fps_, "global_target_fps");
-        conf_->Assign(lock_fps_, "global_lock_fps");
       }
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         suspend_ = true;
-        target_fps_ = fps_inactive;
         lock_fps_ = true;
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
-        conf_->Assign(target_fps_, "global_target_fps");
-        conf_->Assign(lock_fps_, "global_lock_fps");
       }
     }
   }
@@ -212,7 +206,7 @@ void Application::Loop_() {
           waiting_ = false;
         }
 
-        Render_();
+        renderer_->Render();
       }
 
 #ifdef DEBUG

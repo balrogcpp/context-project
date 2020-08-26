@@ -44,11 +44,11 @@ Physic::Physic() {
 
   phy_world_->setGravity(btVector3(0.0, gravity_y, 0.0));
 
-  if (physics_debug_show_collider_) {
-    dbg_draw_ = std::make_shared<BtOgre::DebugDrawer>(scene_->getRootSceneNode(), phy_world_.get());
-    dbg_draw_->setDebugMode(physics_debug_show_collider_);
-    phy_world_->setDebugDrawer(dbg_draw_.get());
-  }
+//  if (physics_debug_show_collider_) {
+//    dbg_draw_ = std::make_shared<BtOgre::DebugDrawer>(scene_->getRootSceneNode(), phy_world_.get());
+//    dbg_draw_->setDebugMode(physics_debug_show_collider_);
+//    phy_world_->setDebugDrawer(dbg_draw_.get());
+//  }
 
   stopped_ = false;
 }

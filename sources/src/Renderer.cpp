@@ -52,7 +52,7 @@ Renderer::Renderer() {
     mGL3PlusRenderSystem->setConfigOption("Separate Shader Objects", "No");
   Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
 #else
-  #ifdef OGRE_BUILD_RENDERSYSTEM_GL
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL
   auto *mGLRenderSystem = new Ogre::GLRenderSystem();
   Ogre::Root::getSingleton().setRenderSystem(mGLRenderSystem);
 #endif
@@ -117,7 +117,7 @@ Renderer::Renderer() {
   params["FSAA"] = std::to_string(graphics_fsaa_);
   params["MSAA"] = std::to_string(graphics_msaa_);
 
-  auto *ogre_render_window_ = root_->createRenderWindow(window_.GetCaption(), window_.GetSize().first, \
+  ogre_ = root_->createRenderWindow(window_.GetCaption(), window_.GetSize().first, \
                        window_.GetSize().second, false, &params);
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
@@ -164,8 +164,8 @@ void Renderer::CreateCamera() {
     camera->setFarClipDistance(10000.0f);
   }
 
-  camera->setAspectRatio(window_.GetRatio());
-
+//  camera->setAspectRatio(window_.GetRatio());
+  camera->setAutoAspectRatio(true);
   scene_->setSkyBoxEnabled(false);
   scene_->setSkyDomeEnabled(false);
   scene_->setAmbientLight(Ogre::ColourValue::Black);
@@ -177,10 +177,6 @@ void Renderer::UpdateParams() {
   std::string graphics_filtration_ = "bilinear";
   int graphics_anisotropy_level_ = 4;
   int graphics_mipmap_count_ = 10;
-//  auto &conf = ConfiguratorJson::Instance();
-//  conf.Assign(graphics_filtration_, "graphics_filtration");
-//  conf.Assign(graphics_anisotropy_level_, "graphics_anisotropy_level");
-//  conf.Assign(graphics_mipmap_count_, "graphics_mipmap_count");
   auto *camera = scene_->getCamera("Default");
 
   // Texture filtering
@@ -213,9 +209,9 @@ void Renderer::UpdateParams() {
   float graphics_shadows_pssm_1_ = 0.0f;
   float graphics_shadows_pssm_2_ = 0.0f;
   bool graphics_shadows_split_auto_ = false;
-  float graphics_shadows_far_distance_ = 200;
+  float graphics_shadows_far_distance_ = 500;
   bool graphics_shadows_self_shadow_ = true;
-  float graphics_shadows_split_padding_ = 0.0f;
+  float graphics_shadows_split_padding_ = 1.0f;
   bool graphics_shadows_back_faces_ = true;
   std::string graphics_shadows_tecnique_ = "texture";
   std::string graphics_shadows_lighting_ = "additive";
@@ -225,26 +221,6 @@ void Renderer::UpdateParams() {
   std::string graphics_shadows_caster_material_ = "PSSM/shadow_caster";
   std::string graphics_shadows_texture_format_ = "DEPTH32";
   bool graphics_shadows_integrated_ = true;
-
-//  conf.Assign(graphics_shadows_enable_, "graphics_shadows_enable");
-//  conf.Assign(graphics_shadows_pssm_0_, "graphics_shadows_pssm_0");
-//  conf.Assign(graphics_shadows_pssm_1_, "graphics_shadows_pssm_1");
-//  conf.Assign(graphics_shadows_pssm_2_, "graphics_shadows_pssm_2");
-//  conf.Assign(graphics_shadows_split_auto_, "graphics_shadows_split_auto");
-//  conf.Assign(graphics_shadows_texture_format_, "graphics_shadows_texture_format");
-//  conf.Assign(graphics_shadows_texture_resolution_, "graphics_shadows_texture_resolution");
-//  conf.Assign(graphics_shadows_split_padding_, "graphics_shadows_split_padding");
-//  conf.Assign(graphics_shadows_texture_count_, "graphics_shadows_texture_count");
-//  conf.Assign(graphics_shadows_far_distance_, "graphics_shadows_far_distance");
-//  conf.Assign(graphics_shadows_self_shadow_, "graphics_shadows_self_shadow");
-//  conf.Assign(graphics_shadows_back_faces_, "graphics_shadows_back_faces");
-//  conf.Assign(graphics_shadows_caster_material_, "graphics_shadows_caster_material");
-//  conf.Assign(graphics_shadows_receiver_material_, "graphics_shadows_receiver_material");
-//  conf.Assign(graphics_shadows_tecnique_, "graphics_shadows_tecnique");
-//  conf.Assign(graphics_shadows_lighting_, "graphics_shadows_lighting");
-//  conf.Assign(graphics_shadows_projection_, "graphics_shadows_projection");
-//  conf.Assign(graphics_shadows_material_, "graphics_shadows_material");
-//  conf.Assign(graphics_shadows_integrated_, "graphics_shadows_integrated");
 
   if (graphics_shadows_enable_) {
     unsigned shadow_technique = Ogre::SHADOWTYPE_NONE;
@@ -316,19 +292,16 @@ void Renderer::UpdateParams() {
 
       auto pssm_setup_ = std::make_shared<Ogre::PSSMShadowCameraSetup>();
 
-        if (graphics_shadows_split_auto_) {
-          pssm_setup_->calculateSplitPoints(pssm_splits_, camera->getNearClipDistance(),scene_->getShadowFarDistance());
-        } else {
-          Ogre::PSSMShadowCameraSetup::SplitPointList split_points =
-              {camera->getNearClipDistance(), 10.0, 20.0, scene_->getShadowFarDistance()};
-          pssm_setup_->setSplitPoints(split_points);
-        }
+      if (graphics_shadows_split_auto_) {
+        pssm_setup_->calculateSplitPoints(pssm_splits_, camera->getNearClipDistance(), scene_->getShadowFarDistance());
+      } else {
+        Ogre::PSSMShadowCameraSetup::SplitPointList split_points =
+            {camera->getNearClipDistance(), 10.0, 20.0, scene_->getShadowFarDistance()};
+        pssm_setup_->setSplitPoints(split_points);
+      }
 
-        if (graphics_shadows_split_padding_ == 0) {
-          pssm_setup_->setSplitPadding(1.0);
-        } else {
-          pssm_setup_->setSplitPadding(graphics_shadows_split_padding_);
-        }
+      pssm_split_ = pssm_setup_->getSplitPoints();
+      pssm_setup_->setSplitPadding(graphics_shadows_split_padding_);
 
       pssm_setup_->setOptimalAdjustFactor(0, graphics_shadows_pssm_0_);
       pssm_setup_->setOptimalAdjustFactor(1, graphics_shadows_pssm_1_);
@@ -340,13 +313,22 @@ void Renderer::UpdateParams() {
   }
 
   bool graphics_debug_show_wireframe_ = false;
-//  conf.Assign(graphics_debug_show_wireframe_, "graphics_debug_show_wireframe");
 
   if (graphics_debug_show_wireframe_) {
     camera->setPolygonMode(Ogre::PM_WIREFRAME);
   } else {
     camera->setPolygonMode(Ogre::PM_SOLID);
   }
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Renderer::Resize(int32_t w, int32_t h) {
+  window_.Resize(w, h);
+  ogre_->resize(w, h);
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Renderer::Fullscreen(bool f) {
+  window_.Fullscreen(f);
+  ogre_->setFullscreen(f, window_.GetSize().first, window_.GetSize().second);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Render() {
