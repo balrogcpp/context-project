@@ -544,7 +544,7 @@ if (NOT CONTEXT_ONLY_DEPS)
                       )
 
     add_custom_target(context-install-zip
-                      COMMAND zip -r ${CONTEXT_ZIP_NAME}.zip ${CONTEXT_ZIP_NAME}
+                      COMMAND ${CMAKE_COMMAND} -E tar cf ${CONTEXT_ZIP_NAME}.zip --format=zip ${CONTEXT_ZIP_NAME}
                       WORKING_DIRECTORY ${CONTEXT_INSTALL_PATH}
                       COMMENT "Create zip..."
                       VERBATIM

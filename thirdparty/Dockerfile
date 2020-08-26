@@ -43,4 +43,5 @@ RUN apt-get install -y git ninja-build libxaw7-dev libxrandr-dev libglew-dev lib
     && cmake --build . --target context-deps \
     && cd ${CONTEXT_HOME}/thirdparty/external/windows-mingw/Release/ \
     && rm -rf src \
-    && rm -rf ${CONTEXT_HOME}/build-windows ${CONTEXT_HOME}/build-linux
+    && rm -rf ${CONTEXT_HOME}/build-windows ${CONTEXT_HOME}/build-linux \
+    && rm -rf ${CONTEXT_HOME}/CMake ${CONTEXT_HOME}/CMakeLists.txt ${CONTEXT_HOME}/thirdparty/CMakeLists.txt
