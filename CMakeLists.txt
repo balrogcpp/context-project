@@ -479,14 +479,10 @@ if (NOT CONTEXT_ONLY_DEPS)
         execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${curdir} ${CONTEXT_TEMP_DIR}/${destination})
     endmacro()
 
-    #copydirlist(${CONTEXT_PROGRAMS_DIR} programs)
-    #zipdirlist(${CONTEXT_GUI_DIR} cegui)
-    #copydirlist(${CONTEXT_SCENES_DIR} scenes)
     zipdirlist(${CONTEXT_PROGRAMS_DIR} programs)
-    #zipdirlist(${CONTEXT_GUI_DIR} cegui)
     zipdirlist(${CONTEXT_SCENES_DIR} scenes)
 
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
             CONFIGURATIONS Release
             PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
             DESTINATION .
