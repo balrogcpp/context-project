@@ -255,61 +255,10 @@ void DotSceneLoaderB::ProcessEnvironment_(pugi::xml_node &xml_node) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::CreateTerrainHeightfieldShape(int size,
-                                                    float *data,
-                                                    const float &min_height,
-                                                    const float &max_height,
-                                                    const Ogre::Vector3 &position,
-                                                    const float &scale) {
-  // Convert height data in a format suitable for the physics engine
-  auto *terrainHeights = new float[size * size];
-  assert(terrainHeights != 0);
-
-  for (int i = 0; i < size; i++) {
-    memcpy(terrainHeights + size * i, data + size * (size - i - 1), sizeof(float) * size);
-  }
-
-  const btScalar heightScale = 1.0f;
-
-  btVector3 localScaling(scale, heightScale, scale);
-
-  auto *terrainShape = new btHeightfieldTerrainShape(size,
-                                                     size,
-                                                     terrainHeights,
-                                                     1,
-                                                     min_height,
-                                                     max_height,
-                                                     1,
-                                                     PHY_FLOAT,
-                                                     false);
-
-  terrainShape->setUseDiamondSubdivision(true);
-  terrainShape->setLocalScaling(localScaling);
-
-  auto *groundMotionState =
-      new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(size / 2, 0, size / 2)));
-  btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, terrainShape, btVector3(0, 0, 0));
-
-  //Create Rigid Body using 0 mass so it is static
-  auto *entBody = new btRigidBody(groundRigidBodyCI);
-
-  entBody->setFriction(0.8f);
-  entBody->setHitFraction(0.8f);
-  entBody->setRestitution(0.6f);
-  entBody->getWorldTransform().setOrigin(btVector3(position.x,
-                                                   position.y + (max_height - min_height) / 2 - 0.5,
-                                                   position.z));
-  entBody->getWorldTransform().setRotation(BtOgre::Convert::toBullet(Ogre::Quaternion::IDENTITY));
-  entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
-
-  physics_->AddRigidBody(entBody);
-  physics_->GetPhyWorld()->setForceUpdateAllAabbs(false);
-}
-//----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::GetTerrainImage(bool flipX,
-                                      bool flipY,
-                                      Ogre::Image &ogre_image,
-                                      const std::string &filename = "terrain.dds") {
+void DotSceneLoaderB::GetTerrainImage_(bool flipX,
+                                       bool flipY,
+                                       Ogre::Image &ogre_image,
+                                       const std::string &filename = "terrain.dds") {
   ogre_image.load(filename, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 
   if (flipX) {
@@ -321,7 +270,7 @@ void DotSceneLoaderB::GetTerrainImage(bool flipX,
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::DefineTerrain(long x, long y, bool flat, const std::string &filename = "terrain.dds") {
+void DotSceneLoaderB::DefineTerrain_(long x, long y, bool flat, const std::string &filename = "terrain.dds") {
   // if a file is available, use it
   // if not, generate file from import
 
@@ -334,7 +283,7 @@ void DotSceneLoaderB::DefineTerrain(long x, long y, bool flat, const std::string
   }
 
   Ogre::Image image;
-  GetTerrainImage(x % 2 != 0, y % 2 != 0, image, filename);
+  GetTerrainImage_(x % 2 != 0, y % 2 != 0, image, filename);
 
   std::string cached = ogre_terrain_group_->generateFilename(x, y);
   if (Ogre::ResourceGroupManager::getSingleton().resourceExists(ogre_terrain_group_->getResourceGroup(),
@@ -345,9 +294,9 @@ void DotSceneLoaderB::DefineTerrain(long x, long y, bool flat, const std::string
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::InitBlendMaps(Ogre::Terrain *terrain,
-                                    int layer,
-                                    const std::string &image = "terrain_blendmap.dds") {
+void DotSceneLoaderB::InitBlendMaps_(Ogre::Terrain *terrain,
+                                     int layer,
+                                     const std::string &image = "terrain_blendmap.dds") {
   Ogre::TerrainLayerBlendMap *blendMap = terrain->getLayerBlendMap(layer);
   auto *pBlend1 = blendMap->getBlendPointer();
 
@@ -400,8 +349,8 @@ void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
   OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
   terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
-  terrain_global_options->setCastsDynamicShadows(terrain_cast_shadows_);
-  terrain_global_options->setUseRayBoxDistanceCalculation(terrain_raybox_calculation_);
+  terrain_global_options->setCastsDynamicShadows(false);
+  terrain_global_options->setUseRayBoxDistanceCalculation(true);
   terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
 
   ogre_terrain_group_ =
@@ -423,7 +372,7 @@ void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
     int pageY = Ogre::StringConverter::parseInt(pPageElement.attribute("y").value());
 
     std::string heighmap = pPageElement.attribute("heightmap").value();
-    DefineTerrain(pageX, pageY, false, heighmap);
+    DefineTerrain_(pageX, pageY, false, heighmap);
     ogre_terrain_group_->loadTerrain(pageX, pageY, true);
     ogre_terrain_group_->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
 
@@ -448,9 +397,9 @@ void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
     for (auto pLayerElement : pPageElement.children("layer")) {
       layer_counter++;
       if (layer_counter != layers_count) {
-        InitBlendMaps(ogre_terrain_group_->getTerrain(pageX, pageY),
-                      layer_counter,
-                      pLayerElement.attribute("blendmap").value());
+        InitBlendMaps_(ogre_terrain_group_->getTerrain(pageX, pageY),
+                       layer_counter,
+                       pLayerElement.attribute("blendmap").value());
       }
 
     }
@@ -458,25 +407,19 @@ void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
 
   ogre_terrain_group_->freeTemporaryResources();
 
-  bool terrain_collider = physics_enable_;
+  auto terrainIterator = ogre_terrain_group_->getTerrainIterator();
 
-  if (physics_enable_ && terrain_collider) {
-    auto terrainIterator = ogre_terrain_group_->getTerrainIterator();
+  while (terrainIterator.hasMoreElements()) {
+    auto *terrain = terrainIterator.getNext()->instance;
 
-    while (terrainIterator.hasMoreElements()) {
-      auto *terrain = terrainIterator.getNext()->instance;
-
-      CreateTerrainHeightfieldShape(terrain->getSize(),
-                                    terrain->getHeightData(),
-                                    terrain->getMinHeight(),
-                                    terrain->getMaxHeight(),
-                                    terrain->getPosition(),
-                                    terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1))
-      );
-    }
+    physics_->CreateTerrainHeightfieldShape(terrain->getSize(),
+                                            terrain->getHeightData(),
+                                            terrain->getMinHeight(),
+                                            terrain->getMaxHeight(),
+                                            terrain->getPosition(),
+                                            terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1))
+    );
   }
-
-  terrain_created_ = true;
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {

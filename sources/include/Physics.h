@@ -57,11 +57,16 @@ class Physics final : public Component {
   void Clear() final;
   void AddRigidBody(btRigidBody *body);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);
+  void CreateTerrainHeightfieldShape(int size,
+                                float *data,
+                                const float &min_height,
+                                const float &max_height,
+                                const Ogre::Vector3 &position,
+                                const float &scale);
 
  private:
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
 
- private:
   std::shared_ptr<BtOgre::DebugDrawer> dbg_draw_;
   std::shared_ptr<btAxisSweep3> broadphase_;
   std::shared_ptr<btDefaultCollisionConfiguration> collision_config_;
@@ -71,20 +76,17 @@ class Physics final : public Component {
   std::vector<btCollisionObject *> rigid_bodies_;
   std::vector<btCollisionShape *> collision_shapes_;
 
-  int skip_frames_ = 2;
   int sub_steps_ = 8;
-  bool stopped_ = false;
+  bool pause_ = false;
   bool physics_debug_show_collider_ = false;
 
  public:
-  std::shared_ptr<btDynamicsWorld> GetPhyWorld() const;
-
   void Start() noexcept {
-    stopped_ = false;
+    pause_ = false;
   }
 
-  void Stop() noexcept {
-    stopped_ = true;
+  void Pause() noexcept {
+    pause_ = true;
   }
-}; //class PhysicsManager
+};
 }

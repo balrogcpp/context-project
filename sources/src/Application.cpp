@@ -109,8 +109,7 @@ void Application::Init_() {
                          renderer_.get(),
                          physics_.get(),
                          sounds_.get(),
-                         overlay_.get(),
-                         loader_.get());
+                         overlay_.get());
   verbose_ = conf_->Get<bool>("global_verbose_enable");
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");

@@ -90,17 +90,10 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   void ProcessLightRange_(pugi::xml_node &xml_node, Ogre::Light *light);
   void ProcessLightAttenuation_(pugi::xml_node &xml_node, Ogre::Light *light);
 
-  void CreateTerrainHeightfieldShape(int size,
-                                     float *data,
-                                     const float &min_height,
-                                     const float &max_height,
-                                     const Ogre::Vector3 &position,
-                                     const float &scale);
-  void GetTerrainImage(bool flipX, bool flipY, Ogre::Image &ogre_image, const std::string &filename);
-  void DefineTerrain(long x, long y, bool flat, const std::string &filename);
-  void InitBlendMaps(Ogre::Terrain *terrain, int layer, const std::string &image);
+  void GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image, const std::string &filename);
+  void DefineTerrain_(long x, long y, bool flat, const std::string &filename);
+  void InitBlendMaps_(Ogre::Terrain *terrain, int layer, const std::string &image);
 
- private:
   std::unique_ptr<ReflectionCamera> rcamera_;
   std::shared_ptr<CameraMan> camera_man_;
   Ogre::SceneManager *scene_manager_ = nullptr;
@@ -117,12 +110,6 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   io::InputSequencer *io_ = nullptr;
 
   bool lod_generator_enable_ = false;
-  bool physics_enable_ = true;
-
-  bool terrain_cast_shadows_ = false;
-  bool terrain_raybox_calculation_ = true;
-  bool terrain_generator_b_ = false;
-  bool terrain_created_ = false;
 
  public:
   void GetComponents(YamlConfigurator *conf,
@@ -130,15 +117,13 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
                      Render *renderer,
                      Physics *physics,
                      Sound *sounds,
-                     Overlay *overlay,
-                     DotSceneLoaderB *loader) {
+                     Overlay *overlay) {
     conf_ = conf;
     io_ = io;
     renderer_ = renderer;
     physics_ = physics;
     sounds_ = sounds;
     overlay_ = overlay;
-    loader_ = loader;
   }
-}; //class DotSceneLoaderB
+};
 }

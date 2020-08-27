@@ -23,16 +23,11 @@ SOFTWARE.
 */
 
 #include "pcheader.h"
-
 #include "Physics.h"
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
 Physics::Physics() {
-  float gravity_x = 0;
-  float gravity_y = -9.8f;
-  float gravity_z = 0;
-
   broadphase_ = std::make_shared<btAxisSweep3>(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000), 1024);
   collision_config_ = std::make_shared<btDefaultCollisionConfiguration>();
   dispatcher_ = std::make_shared<btCollisionDispatcher>(collision_config_.get());
@@ -42,7 +37,7 @@ Physics::Physics() {
                                                          solver_.get(),
                                                          collision_config_.get());
 
-  phy_world_->setGravity(btVector3(0.0, gravity_y, 0.0));
+  phy_world_->setGravity(btVector3(0.0, -9.8, 0.0));
 
 //  if (physics_debug_show_collider_) {
 //    dbg_draw_ = std::make_shared<BtOgre::DebugDrawer>(scene_->getRootSceneNode(), phy_world_.get());
@@ -50,26 +45,14 @@ Physics::Physics() {
 //    phy_world_->setDebugDrawer(dbg_draw_.get());
 //  }
 
-  stopped_ = false;
+  pause_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
 Physics::~Physics() {}
 //----------------------------------------------------------------------------------------------------------------------
 bool Physics::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-  static int factor_;
-  static float cumulative_;
-
-  if (!stopped_) {
-    factor_++;
-    cumulative_ += evt.timeSinceLastFrame;
-
-    if (factor_ == (skip_frames_ - 1)) {
-      if (phy_world_) {
-        phy_world_->stepSimulation(cumulative_, sub_steps_);
-      }
-      cumulative_ = 0;
-      factor_ = 0;
-    }
+  if (!pause_ && phy_world_) {
+    phy_world_->stepSimulation(evt.timeSinceLastFrame, sub_steps_);
   }
 
   if (physics_debug_show_collider_ && dbg_draw_) {
@@ -80,7 +63,7 @@ bool Physics::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Clear() {
-  Stop();
+  Pause();
   phy_world_->clearForces();
 
   //remove the rigidbodies from the dynamics world and delete them
@@ -102,6 +85,57 @@ void Physics::Clear() {
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::AddRigidBody(btRigidBody *body) {
   phy_world_->addRigidBody(body);
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Physics::CreateTerrainHeightfieldShape(int size,
+                                                    float *data,
+                                                    const float &min_height,
+                                                    const float &max_height,
+                                                    const Ogre::Vector3 &position,
+                                                    const float &scale) {
+  // Convert height data in a format suitable for the physics engine
+  auto *terrainHeights = new float[size * size];
+  assert(terrainHeights != 0);
+
+  for (int i = 0; i < size; i++) {
+    memcpy(terrainHeights + size * i, data + size * (size - i - 1), sizeof(float) * size);
+  }
+
+  const btScalar heightScale = 1.0f;
+
+  btVector3 localScaling(scale, heightScale, scale);
+
+  auto *terrainShape = new btHeightfieldTerrainShape(size,
+                                                     size,
+                                                     terrainHeights,
+                                                     1,
+                                                     min_height,
+                                                     max_height,
+                                                     1,
+                                                     PHY_FLOAT,
+                                                     false);
+
+  terrainShape->setUseDiamondSubdivision(true);
+  terrainShape->setLocalScaling(localScaling);
+
+  auto *groundMotionState =
+      new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(size / 2, 0, size / 2)));
+  btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, terrainShape, btVector3(0, 0, 0));
+
+  //Create Rigid Body using 0 mass so it is static
+  auto *entBody = new btRigidBody(groundRigidBodyCI);
+
+  entBody->setFriction(0.8f);
+  entBody->setHitFraction(0.8f);
+  entBody->setRestitution(0.6f);
+  entBody->getWorldTransform().setOrigin(btVector3(position.x,
+                                                   position.y + (max_height - min_height) / 2 - 0.5,
+                                                   position.z));
+  entBody->getWorldTransform().setRotation(BtOgre::Convert::toBullet(Ogre::Quaternion::IDENTITY));
+  entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+
+  AddRigidBody(entBody);
+  phy_world_->setForceUpdateAllAabbs(false);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
@@ -334,9 +368,5 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
 
     AddRigidBody(entBody);
   }
-}
-//----------------------------------------------------------------------------------------------------------------------
-std::shared_ptr<btDynamicsWorld> Physics::GetPhyWorld() const {
-  return phy_world_;
 }
 }

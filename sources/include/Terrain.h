@@ -23,3 +23,11 @@ SOFTWARE.
 */
 
 #pragma once
+
+#include "Component.h"
+
+namespace Context {
+class Terrain final : public Component {
+
+};
+}
