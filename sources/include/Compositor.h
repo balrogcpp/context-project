@@ -54,4 +54,4 @@ class Compositor final : public Component {
   DepthSchemeHandler *depth_scheme_handler_;
 
 }; //class CompositorManager
-} //namespace Context
+}

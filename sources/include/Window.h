@@ -231,4 +231,4 @@ class Window : public NoCopy {
     }
   }
 }; //class Window
-} //namespace Context
+}

@@ -37,7 +37,6 @@ SOFTWARE.
 #include "YamlConfigurator.h"
 
 namespace Context {
-class JsonConfigurator;
 class Application final : public io::WindowObserver, public Ogre::LogListener {
  public:
   Application();
@@ -69,8 +68,7 @@ class Application final : public io::WindowObserver, public Ogre::LogListener {
     }
   }
 
-//  std::unique_ptr<JsonConfigurator> conf_;
-  YamlConfigurator conf_;
+  std::unique_ptr<YamlConfigurator> conf_;
   std::unique_ptr<io::InputSequencer> io_;
   std::unique_ptr<Render> renderer_;
   std::unique_ptr<Physics> physics_;
@@ -98,4 +96,4 @@ class Application final : public io::WindowObserver, public Ogre::LogListener {
     next_state_ = move(state);
   }
 }; //class Application
-} //namespace Context
+}

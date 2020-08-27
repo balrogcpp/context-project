@@ -93,4 +93,4 @@ class AppState
   io::InputSequencer *io_ = nullptr;
   bool registered = false;
 }; //class AppState
-} //namespace Context
+}

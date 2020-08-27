@@ -101,4 +101,4 @@ Compositor::Compositor() {  bool graphics_shadows_enable_ = true;
     }
   }
 }
-} //namespace Context
+}

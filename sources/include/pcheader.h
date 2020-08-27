@@ -28,7 +28,6 @@ SOFTWARE.
 #include "BtOgreExtras.h"
 #include "BtOgreGP.h"
 #include "BtOgrePG.h"
-
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
@@ -38,7 +37,6 @@ SOFTWARE.
 #include <yaml-cpp/yaml.h>
 #include <angelscript.h>
 #include <lua.hpp>
-
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -59,7 +57,6 @@ SOFTWARE.
 #include <filesystem>
 #include <cstdlib>
 #include <omp.h>
-
 extern "C" {
 #include <SDL2/SDL.h>
 }

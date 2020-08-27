@@ -73,4 +73,4 @@ class Render final : public NoCopy {
     return compositor_.get();
   }
 }; //class ContextManager
-} //namespace Context
+}

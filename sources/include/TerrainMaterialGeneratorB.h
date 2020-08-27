@@ -80,4 +80,4 @@ class TerrainMaterialGeneratorB : public TerrainMaterialGenerator {
     void setLightmapEnabled(bool enabled) final;
   };
 };
-} //namespace Context
+}

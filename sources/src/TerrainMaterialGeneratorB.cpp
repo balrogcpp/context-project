@@ -132,4 +132,4 @@ void TerrainMaterialGeneratorB::SM2Profile::updateParams(const Ogre::MaterialPtr
 void TerrainMaterialGeneratorB::SM2Profile::updateParamsForCompositeMap(const Ogre::MaterialPtr &mat,
                                                                         const Ogre::Terrain *terrain) {
 }
-} //namespace Context
+}

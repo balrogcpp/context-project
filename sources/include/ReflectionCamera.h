@@ -151,4 +151,4 @@ class ReflectionCamera final : public Ogre::RenderTargetListener, public Ogre::F
     return refraction_tex_;
   }
 };
-} //namespace Context
+}

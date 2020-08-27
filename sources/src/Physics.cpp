@@ -339,4 +339,4 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
 std::shared_ptr<btDynamicsWorld> Physics::GetPhyWorld() const {
   return phy_world_;
 }
-} //namespace Context
+}

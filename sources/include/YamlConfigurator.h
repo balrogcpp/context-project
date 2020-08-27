@@ -54,41 +54,37 @@ class YamlParserException : public std::exception {
 
 class YamlConfigurator {
  public:
-  YamlConfigurator() {
-    //Because Android clang does not support std filesystem
-#ifndef __ANDROID__
-    if (!std::filesystem::exists(file_)) {
-      file_ = std::string("../") + file_;
-
-      if (!std::filesystem::exists(file_)) {
-        throw YamlParserException("Error during parsing of " + file_ + " : file not exist");
-      }
-    }
-#endif
-
-    document_ = YAML::LoadFile(file_);
+  explicit YamlConfigurator(const std::string &file = "config.yaml") {
+    Load(file);
   }
 
   YamlConfigurator(const YamlConfigurator &) = delete;
   YamlConfigurator &operator=(const YamlConfigurator &) = delete;
-  virtual ~YamlConfigurator() {};
+  virtual ~YamlConfigurator() {}
 
+  void Load(const std::string &file) {
+    //Because Android clang does not support std filesystem
+#ifndef __ANDROID__
+    std::string path = file;
+    if (!std::filesystem::exists(file)) {
+      path = std::string("../") + file;
+
+      if (!std::filesystem::exists(path)) {
+        throw YamlParserException("Error during parsing of " + file + " : file not found");
+      }
+    }
+#endif
+
+    document_.reset();
+    document_ = YAML::LoadFile(file);
+  }
  private:
-  std::string file_ = "config.yaml";
   YAML::Node document_;
 
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  std::string GetFileName() const {
-    return file_;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void SetFileName(const std::string &file) {
-    file_ = file;
-  }
-//----------------------------------------------------------------------------------------------------------------------
   template<typename T>
-  T as(const std::string &str) {
+  T Get(const std::string &str) {
     return document_[str].as<T>();
   }
 };

@@ -115,4 +115,4 @@ class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
   Ogre::MaterialPtr mGBufRefMat;
   Ogre::MaterialPtr mGBufRefMat2;
 };
-} //namespace Context
+}

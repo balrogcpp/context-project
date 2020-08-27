@@ -87,4 +87,4 @@ class Physics final : public Component {
     stopped_ = true;
   }
 }; //class PhysicsManager
-} //namespace Context
+}

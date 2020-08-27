@@ -192,4 +192,4 @@ void Render::RenderOneFrame() {
   window_.SwapBuffers();
 #endif
 }
-} //namespace Context
+}

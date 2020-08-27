@@ -121,4 +121,4 @@ class CubeMapCamera final : public Ogre::RenderTargetListener, public Ogre::Fram
     return cubemap_;
   }
 };
-} //namespace Context
+}

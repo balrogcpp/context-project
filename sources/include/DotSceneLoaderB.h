@@ -141,4 +141,4 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
     loader_ = loader;
   }
 }; //class DotSceneLoaderB
-} //namespace Context
+}

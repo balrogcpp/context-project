@@ -68,4 +68,4 @@ class Overlay final : public Component {
   Gorilla::MarkupText *markup = nullptr;
 };
 
-} //namespace Context
+}

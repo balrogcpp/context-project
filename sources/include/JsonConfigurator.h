@@ -57,38 +57,41 @@ class JsonParserException : public std::exception {
 class JsonConfigurator {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  JsonConfigurator() {
-//Because Android cland does not support std filesystem
-#ifndef __ANDROID__
-    if (!std::filesystem::exists(file_)) {
-      file_ = std::string("../") + file_;
-
-      if (!std::filesystem::exists(file_)) {
-        throw JsonParserException("Error during parsing of " + file_ + " : file not exist");
-      }
-    }
-#endif
-
-    std::ifstream ifs(file_);
-    rapidjson::IStreamWrapper isw(ifs);
-    document_.ParseStream(isw);
-
-    if (ifs.is_open())
-      ifs.close();
-    else
-      throw JsonParserException("Error during parsing of " + file_ + " : can't open file");
-
-    if (!document_.IsObject())
-      throw JsonParserException("Error during parsing of " + file_ + " : file is empty or incorrect");
+  explicit JsonConfigurator(const std::string &file = "config.json") {
+    Load(file);
   }
 
   JsonConfigurator(const JsonConfigurator &) = delete;
   JsonConfigurator &operator=(const JsonConfigurator &) = delete;
   virtual ~JsonConfigurator() {};
 
+  void Load(const std::string &file) {
+//Because Android clang does not support std filesystem
+#ifndef __ANDROID__
+    std::string path;
+    if (!std::filesystem::exists(file)) {
+      path = std::string("../") + file;
+
+      if (!std::filesystem::exists(path)) {
+        throw JsonParserException("Error during parsing of " + file + " : file not found");
+      }
+    }
+#endif
+
+    std::ifstream ifs(file);
+    rapidjson::IStreamWrapper isw(ifs);
+    document_.ParseStream(isw);
+
+    if (ifs.is_open())
+      ifs.close();
+    else
+      throw JsonParserException("Error during parsing of " + file + " : can't open file");
+
+    if (!document_.IsObject())
+      throw JsonParserException("Error during parsing of " + file + " : file is empty or incorrect");
+  }
+
  private:
-//----------------------------------------------------------------------------------------------------------------------
-  std::string file_ = "config.json";
   rapidjson::Document document_;
 
  public:
@@ -101,56 +104,9 @@ class JsonConfigurator {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  std::string GetFileName() const {
-    return file_;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void SetFileName(const std::string &file) {
-    file_ = file;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  bool HasMember(const std::string &parameter) {
-    return document_.HasMember(parameter);
-  }
-//----------------------------------------------------------------------------------------------------------------------
   template<typename T>
-  T as(const std::string &str) {
+  T Get(const std::string &str) {
     return document_[str].Get<T>();
   }
-//----------------------------------------------------------------------------------------------------------------------
-  int GetInt(const std::string &parameter) {
-    if (document_[parameter].IsInt())
-      return document_[parameter].GetInt();
-    else
-      return 0;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  bool GetBool(const std::string &parameter) {
-    if (document_[parameter].IsBool())
-      return document_[parameter].GetBool();
-    else
-      return false;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  std::string GetString(const std::string &parameter) {
-    if (document_[parameter].IsString())
-      return document_[parameter].GetString();
-    else
-      return std::string();
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  float GetFloat(const std::string &parameter) {
-    if (document_[parameter].IsFloat())
-      return document_[parameter].GetFloat();
-    else
-      return 0;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  double GetDouble(const std::string &parameter) {
-    if (document_[parameter].IsDouble())
-      return document_[parameter].GetDouble();
-    else
-      return 0;
-  }
-}; //class ConfigManager
-} //namespace Context
+};
+}
