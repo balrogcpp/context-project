@@ -55,7 +55,9 @@ class ShadowSettings : public NoCopy {
     pssm_->setOptimalAdjustFactor(2, 0.0);
     scene->setShadowCameraSetup(pssm_);
   }
-//----------------------------------------------------------------------------------------------------------------------
+  virtual ~ShadowSettings() {}
+
+  //----------------------------------------------------------------------------------------------------------------------
   void UpdateParams(bool enable, float far, int16_t tex_size, Ogre::PixelFormat tex_format) {
     auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
     int tex_count = 12;
@@ -89,8 +91,11 @@ class ShadowSettings : public NoCopy {
     split_points_ = split_points;
     pssm_->setSplitPoints(split_points);
   }
-
-  virtual ~ShadowSettings() {}
+//----------------------------------------------------------------------------------------------------------------------
+  const std::vector<float> &GetSplitPoints() {
+//    return pssm_->getSplitPoints();
+  return split_points_;
+  }
 
  private:
   int16_t split_count_ = 3;

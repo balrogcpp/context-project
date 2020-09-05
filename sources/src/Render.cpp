@@ -26,6 +26,7 @@ SOFTWARE.
 #include "Render.h"
 #include "Exception.h"
 #include "Storage.h"
+#include "RtssUtils.h"
 
 namespace Context {
 Render::Render() {
@@ -135,6 +136,7 @@ Render::Render() {
   Storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
 #endif
 
+  rtss::InitRtss();
   compositor_ = std::make_unique<Compositor>();
 }
 Render::~Render() {}
@@ -146,8 +148,7 @@ void Render::CreateCamera() {
     camera = scene_->createCamera("Default");
     auto *renderTarget = root_->getRenderTarget(window_.GetCaption());
     renderTarget->removeViewport(0);
-    auto *viewport = renderTarget->addViewport(camera);
-    viewport->setBackgroundColour(Ogre::ColourValue::Black);
+    renderTarget->addViewport(camera);
   } else {
     camera = scene_->getCamera("Default");
   }
@@ -166,6 +167,7 @@ void Render::CreateCamera() {
 void Render::Refresh() {
   CreateCamera();
   shadow_ = std::make_unique<ShadowSettings>();
+  rtss::RtssPssm(shadow_->GetSplitPoints());
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Render::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {

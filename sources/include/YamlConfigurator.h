@@ -34,9 +34,9 @@ class YamlParserException : public std::exception {
   YamlParserException() = default;
 
   explicit YamlParserException(std::string description)
-      : description(std::move(description)) {};
+      : description(std::move(description)) {}
 
-  ~YamlParserException() noexcept override = default;
+  virtual ~YamlParserException() {}
 
  public:
   std::string getDescription() const noexcept {
@@ -63,18 +63,6 @@ class YamlConfigurator {
   virtual ~YamlConfigurator() {}
 
   void Load(const std::string &file) {
-    //Because Android clang does not support std filesystem
-#ifndef __ANDROID__
-    std::string path = file;
-    if (!std::filesystem::exists(file)) {
-      path = std::string("../") + file;
-
-      if (!std::filesystem::exists(path)) {
-        throw YamlParserException("Error during parsing of " + file + " : file not found");
-      }
-    }
-#endif
-
     document_.reset();
     document_ = YAML::LoadFile(file);
   }

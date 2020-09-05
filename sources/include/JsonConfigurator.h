@@ -63,21 +63,9 @@ class JsonConfigurator {
 
   JsonConfigurator(const JsonConfigurator &) = delete;
   JsonConfigurator &operator=(const JsonConfigurator &) = delete;
-  virtual ~JsonConfigurator() {};
+  virtual ~JsonConfigurator() {}
 
   void Load(const std::string &file) {
-//Because Android clang does not support std filesystem
-#ifndef __ANDROID__
-    std::string path;
-    if (!std::filesystem::exists(file)) {
-      path = std::string("../") + file;
-
-      if (!std::filesystem::exists(path)) {
-        throw JsonParserException("Error during parsing of " + file + " : file not found");
-      }
-    }
-#endif
-
     std::ifstream ifs(file);
     rapidjson::IStreamWrapper isw(ifs);
     document_.ParseStream(isw);

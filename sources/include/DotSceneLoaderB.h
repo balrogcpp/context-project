@@ -64,8 +64,6 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
   void Load(const std::string &filename, const std::string &group_name, Ogre::SceneNode *root_node);
 
-  float GetHeigh(float x, float z);
-
  private:
   void ProcessScene_(pugi::xml_node &xml_root);
   void ProcessNodes_(pugi::xml_node &xml_node);

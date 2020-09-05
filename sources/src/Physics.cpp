@@ -39,11 +39,11 @@ Physics::Physics() {
 
   phy_world_->setGravity(btVector3(0.0, -9.8, 0.0));
 
-//  if (physics_debug_show_collider_) {
-//    dbg_draw_ = std::make_shared<BtOgre::DebugDrawer>(scene_->getRootSceneNode(), phy_world_.get());
-//    dbg_draw_->setDebugMode(physics_debug_show_collider_);
-//    phy_world_->setDebugDrawer(dbg_draw_.get());
-//  }
+  if (physics_debug_show_collider_) {
+    dbg_draw_ = std::make_shared<BtOgre::DebugDrawer>(Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode(), phy_world_.get());
+    dbg_draw_->setDebugMode(physics_debug_show_collider_);
+    phy_world_->setDebugDrawer(dbg_draw_.get());
+  }
 
   pause_ = false;
 }
@@ -55,9 +55,8 @@ bool Physics::frameRenderingQueued(const Ogre::FrameEvent &evt) {
     phy_world_->stepSimulation(evt.timeSinceLastFrame, sub_steps_);
   }
 
-  if (physics_debug_show_collider_ && dbg_draw_) {
+  if (physics_debug_show_collider_)
     dbg_draw_->step();
-  }
 
   return true;
 }
@@ -88,11 +87,11 @@ void Physics::AddRigidBody(btRigidBody *body) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::CreateTerrainHeightfieldShape(int size,
-                                                    float *data,
-                                                    const float &min_height,
-                                                    const float &max_height,
-                                                    const Ogre::Vector3 &position,
-                                                    const float &scale) {
+                                            float *data,
+                                            const float &min_height,
+                                            const float &max_height,
+                                            const Ogre::Vector3 &position,
+                                            const float &scale) {
   // Convert height data in a format suitable for the physics engine
   auto *terrainHeights = new float[size * size];
   assert(terrainHeights != 0);
@@ -154,9 +153,8 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
   const std::string proxy_convex = "convex";
 
   std::string proxy_type;
-  if (user_object_bindings.getUserAny("proxy").has_value()) {
+  if (user_object_bindings.getUserAny("proxy").has_value())
     proxy_type = Ogre::any_cast<std::string>(user_object_bindings.getUserAny("proxy"));
-  }
 
   std::string physics_type = Ogre::any_cast<std::string>(user_object_bindings.getUserAny("physics_type"));
   float mass = Ogre::any_cast<float>(user_object_bindings.getUserAny("mass"));
@@ -181,12 +179,10 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
   if (physics_type == physics_type_static) {
     std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
 
-    if (entity->getNumManualLodLevels() > 0) {
-      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(
-          entity->getNumManualLodLevels() - 1));
-    } else {
+    if (entity->getNumManualLodLevels() > 0)
+      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(entity->getNumManualLodLevels() - 1));
+    else
       converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
-    }
 
     if (proxy_type == proxy_capsule) {
       auto *entShape = converter->createCapsule();

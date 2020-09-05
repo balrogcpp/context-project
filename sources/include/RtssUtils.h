@@ -182,8 +182,8 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
     return shader_generator_;
   }
 }; //namespace ShaderResolver
-
-void InitRtss() {
+//----------------------------------------------------------------------------------------------------------------------
+inline void InitRtss() {
   if (!Ogre::RTShader::ShaderGenerator::initialize()) {
     throw RtssException("RTTS System failed to initialize");
   }
@@ -202,9 +202,9 @@ void InitRtss() {
   shader_generator->setShaderCachePath("./");
   Ogre::MaterialManager::getSingleton().addListener(new ShaderResolver(shader_generator));
 }
-
-void RtssPssm(const std::vector<float> &split_points) {
-    Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
+//----------------------------------------------------------------------------------------------------------------------
+inline void RtssPssm(const std::vector<float> &split_points) {
+  Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
 
   auto subRenderState = rtShaderGen.createSubRenderState<Ogre::RTShader::IntegratedPSSM3>();
   Ogre::RTShader::RenderState

@@ -37,15 +37,6 @@ using namespace utils;
 
 namespace Context {
 //----------------------------------------------------------------------------------------------------------------------
-float DotSceneLoaderB::GetHeigh(float x, float z) {
-//  if (terrain_created_) {
-//    return DotSceneLoaderB::Instance().ogre_terrain_group_->getHeightAtWorldPosition(x, 1000, z);
-//  } else {
-//    return 0.0f;
-//  }
-  return 0.0;
-}
-//----------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::DotSceneLoaderB() {
   if (Ogre::SceneLoaderManager::getSingleton()._getSceneLoader("DotScene")) {
     Ogre::SceneLoaderManager::getSingleton().unregisterSceneLoader("DotScene");
@@ -55,11 +46,6 @@ DotSceneLoaderB::DotSceneLoaderB() {
   }
 
   Ogre::SceneLoaderManager::getSingleton().registerSceneLoader("DotSceneB", {".scene", ".xml"}, this);
-
-//  ConfiguratorJson::Instance().Assign(physics_enable_, "physics_enable");
-//  ConfiguratorJson::Instance().Assign(lod_generator_enable_, "lod_generator_enable");
-//  ConfiguratorJson::Instance().Assign(terrain_cast_shadows_, "terrain_cast_shadows");
-//  ConfiguratorJson::Instance().Assign(terrain_raybox_calculation_, "terrain_raybox_calculation");
 }
 //----------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::~DotSceneLoaderB() {
