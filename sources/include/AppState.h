@@ -45,32 +45,30 @@ class AppState
     : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputObserver, public NoCopy {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  AppState() {
-    Ogre::Root::getSingleton().addFrameListener(this);
+  void SwitchNextState(std::unique_ptr<AppState> &&app_state) {
+    next_ = std::move(app_state);
+    waiting_ = true;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  virtual ~AppState() {
-    Ogre::Root::getSingleton().removeFrameListener(this);
-    if (registered)
-      io_->UnregObserver(this);
+  std::unique_ptr<AppState> &&GetNextState() {
+    waiting_ = false;
+    return move(next_);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void GetComponents(YamlConfigurator *conf,
-                     io::InputSequencer *io,
-                     Render *renderer,
-                     Physics *physics,
-                     Sound *sounds,
-                     Overlay *overlay,
-                     DotSceneLoaderB *loader) {
+  void LocateComponents(YamlConfigurator *conf,
+                        io::InputSequencer *io,
+                        Render *renderer,
+                        Physics *physics,
+                        Sound *sounds,
+                        Overlay *overlay,
+                        DotSceneLoaderB *loader) {
     conf_ = conf;
     io_ = io;
-    io_->RegObserver(this);
     renderer_ = renderer;
     physics_ = physics;
     sounds_ = sounds;
     overlay_ = overlay;
     loader_ = loader;
-    registered = true;
   }
 //----------------------------------------------------------------------------------------------------------------------
   void Load(const std::string &file_name) {
@@ -80,8 +78,12 @@ class AppState
                                                   scene_->getRootSceneNode());
   }
 
-  virtual void Init() = 0;
+  virtual void Create() = 0;
   virtual void Clear() = 0;
+
+  bool Loop() {
+    return waiting_;
+  }
 
  protected:
   YamlConfigurator *conf_ = nullptr;
@@ -91,6 +93,7 @@ class AppState
   Overlay *overlay_ = nullptr;
   DotSceneLoaderB *loader_ = nullptr;
   io::InputSequencer *io_ = nullptr;
-  bool registered = false;
+  std::unique_ptr<AppState> next_;
+  bool waiting_ = false;
 }; //class AppState
 }

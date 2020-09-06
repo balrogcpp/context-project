@@ -66,7 +66,7 @@ void Application::Init_() {
   loader_ = std::make_unique<DotSceneLoaderB>();
   overlay_->Init();
   renderer_->Refresh();
-  
+
   // Texture filtering
   std::string graphics_filtration = conf_->Get<std::string>("graphics_filtration");
   Ogre::TextureFilterOptions tfo = Ogre::TFO_BILINEAR;
@@ -104,12 +104,12 @@ void Application::Init_() {
 
   renderer_->GetShadowSettings()->UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
-  loader_->GetComponents(conf_.get(),
-                         io_.get(),
-                         renderer_.get(),
-                         physics_.get(),
-                         sounds_.get(),
-                         overlay_.get());
+  loader_->LocateComponents(conf_.get(),
+                            io_.get(),
+                            renderer_.get(),
+                            physics_.get(),
+                            sounds_.get(),
+                            overlay_.get());
   verbose_ = conf_->Get<bool>("global_verbose_enable");
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");
@@ -146,25 +146,14 @@ void Application::Reset_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::InitCurrState_() {
-  cur_state_->Init();
-  cur_state_->GetComponents(conf_.get(),
-                            io_.get(),
-                            renderer_.get(),
-                            physics_.get(),
-                            sounds_.get(),
-                            overlay_.get(),
-                            loader_.get());
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::GoNextState_() {
-  if (next_state_) {
-    cur_state_ = move(next_state_);
-    waiting_ = true;
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Quit() {
-  quit_ = false;
+  cur_state_->Create();
+  cur_state_->LocateComponents(conf_.get(),
+                               io_.get(),
+                               renderer_.get(),
+                               physics_.get(),
+                               sounds_.get(),
+                               overlay_.get(),
+                               loader_.get());
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
@@ -212,7 +201,7 @@ void Application::Loop_() {
       io_->Capture();
 
       if (!suspend_) {
-        if (waiting_) {
+        if (cur_state_->Loop()) {
           loader_->Clear();
           physics_->Clear();
 
@@ -232,9 +221,16 @@ void Application::Loop_() {
           root->getRootSceneNode()->removeAndDestroyAllChildren();
 
           renderer_->Refresh();
+
+          Ogre::Root::getSingleton().removeFrameListener(cur_state_.get());
+          io_->UnregObserver(cur_state_.get());
+          cur_state_ = move(cur_state_->GetNextState());
+          io_->RegObserver(cur_state_.get());
+          Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
+
           InitCurrState_();
+
           physics_->Start();
-          waiting_ = false;
         }
 
         renderer_->RenderOneFrame();
@@ -263,23 +259,19 @@ void Application::Loop_() {
 
       fps_frames_++;
     } else {
-      Quit();
+      quit_ = false;
     }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
   if (cur_state_) {
-    cur_state_->Init();
+    cur_state_->Create();
     quit_ = true;
     Loop_();
     io_->Reset();
     Reset_();
   }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Application::SetCurState_(std::unique_ptr<AppState> &&scene_ptr) {
-  SetInitialState(move(scene_ptr));
 }
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Message_(const std::string &caption, const std::string &message) {
@@ -291,7 +283,7 @@ int Application::Message_(const std::string &caption, const std::string &message
 int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
   try {
     std::ios_base::sync_with_stdio(false);
-    SetCurState_(move(scene_ptr));
+    SetInitialState(move(scene_ptr));
     Go_();
   }
   catch (Exception &e) {

@@ -176,12 +176,7 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
 
  private:
   Ogre::RTShader::ShaderGenerator *shader_generator_;
-
- public:
-  Ogre::RTShader::ShaderGenerator *GetMShaderGenerator() const {
-    return shader_generator_;
-  }
-}; //namespace ShaderResolver
+};
 //----------------------------------------------------------------------------------------------------------------------
 inline void InitRtss() {
   if (!Ogre::RTShader::ShaderGenerator::initialize()) {
@@ -199,19 +194,41 @@ inline void InitRtss() {
   viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
   // Create and register the material manager listener if it doesn't exist yet.
-  shader_generator->setShaderCachePath("./");
+  shader_generator->setShaderCachePath("");
   Ogre::MaterialManager::getSingleton().addListener(new ShaderResolver(shader_generator));
 }
 //----------------------------------------------------------------------------------------------------------------------
-inline void RtssPssm(const std::vector<float> &split_points) {
+inline void InitPssm(const std::vector<float> &split_points) {
   Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
-
   auto subRenderState = rtShaderGen.createSubRenderState<Ogre::RTShader::IntegratedPSSM3>();
-  Ogre::RTShader::RenderState
-      *schemRenderState = rtShaderGen.getRenderState(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
-
+  Ogre::RTShader::RenderState *schemRenderState = rtShaderGen.getRenderState(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
   subRenderState->setSplitPoints(split_points);
   schemRenderState->addTemplateSubRenderState(subRenderState);
+}
+//----------------------------------------------------------------------------------------------------------------------
+inline void InitInstansing() {
+  auto *scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
+  auto *camera_ = scene_->getCamera("Default");
+  auto *viewport_ = camera_->getViewport();
+  Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
+  viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+  Ogre::RTShader::RenderState* schemRenderState = rtShaderGen.getRenderState(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+  Ogre::RTShader::SubRenderState* subRenderState = rtShaderGen.createSubRenderState<Ogre::RTShader::IntegratedPSSM3>();
+  schemRenderState->addTemplateSubRenderState(subRenderState);
+
+  //Add the hardware skinning to the shader generator default render state
+  subRenderState = rtShaderGen.createSubRenderState<Ogre::RTShader::HardwareSkinning>();
+  schemRenderState->addTemplateSubRenderState(subRenderState);
+
+  // increase max bone count for higher efficiency
+  Ogre::RTShader::HardwareSkinningFactory::getSingleton().setMaxCalculableBoneCount(80);
+
+  // re-generate shaders to include new SRSs
+  rtShaderGen.invalidateScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+  rtShaderGen.validateScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+
+  // update scheme for FFP supporting rendersystems
+  Ogre::MaterialManager::getSingleton().setActiveScheme(viewport_->getMaterialScheme());
 }
 } //namespace rtss
 #endif

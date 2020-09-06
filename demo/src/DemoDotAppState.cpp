@@ -36,31 +36,17 @@ DemoDotAppState::~DemoDotAppState() {}
 
 void DemoDotAppState::KeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
-//    Application::Instance().GoNextState();
+    SwitchNextState(std::make_unique<DemoDotAppState>());
   }
 }
 
 void DemoDotAppState::Clear() {
 }
 
-void DemoDotAppState::Init() {
-//  Application::Instance().SetNextState(std::make_unique<DemoDotAppState>());
-//  ContextManager::Instance().UpdateCursorStatus({false, true, true});
-
-//  Application::Instance().GetCameraMan()->SetStyle(CameraStyle::FPS);
-
-//  Context::DotSceneLoaderB::Instance().load("test.scene",
-//                                              Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-//                                              ogre_scene_manager_->getRootSceneNode());
-
-//  Ogre::SceneLoaderManager::getSingleton().load("test.scene",
-//                                                Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-//                                                scene_->getRootSceneNode());
-
+void DemoDotAppState::Create() {
   Load("test.scene");
   forest_.Create();
 //  auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
-//
 //  mSoundManager->setResourceGroupName(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 //  mSoundManager->createSound("AmbientMusicDemo",
 //                             "22384__dobroide__20060824-forest03.ogg",
@@ -72,7 +58,5 @@ void DemoDotAppState::Init() {
 //  if (mSoundManager->getSound("SceneManagerInstance1")) {
 //    mSoundManager->getSound("SceneManagerInstance1")->play();
 //  }
-
-//  scene_->setShadowColour(Ogre::ColourValue(0.2));
 }
 }

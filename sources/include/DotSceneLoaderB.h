@@ -106,11 +106,10 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   Overlay *overlay_ = nullptr;
   DotSceneLoaderB *loader_ = nullptr;
   io::InputSequencer *io_ = nullptr;
-
   bool lod_generator_enable_ = false;
 
  public:
-  void GetComponents(YamlConfigurator *conf,
+  void LocateComponents(YamlConfigurator *conf,
                      io::InputSequencer *io,
                      Render *renderer,
                      Physics *physics,

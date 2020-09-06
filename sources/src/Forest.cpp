@@ -172,9 +172,6 @@ void Forest::GenerateGrass() {
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 10000; i++) {
     Ogre::Vector3 pos(Ogre::Math::RangeRandom(-50, 50), 0, Ogre::Math::RangeRandom(-50, 50));
-
-//    pos.y += DotSceneLoaderB::Instance().GetHeigh(pos.x, pos.z);
-
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
     scale *= 2.0f;

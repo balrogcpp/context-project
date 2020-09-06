@@ -137,8 +137,10 @@ Render::Render() {
 #endif
 
   rtss::InitRtss();
+  rtss::InitInstansing();
   compositor_ = std::make_unique<Compositor>();
 }
+
 Render::~Render() {}
 //----------------------------------------------------------------------------------------------------------------------
 void Render::CreateCamera() {
@@ -167,11 +169,10 @@ void Render::CreateCamera() {
 void Render::Refresh() {
   CreateCamera();
   shadow_ = std::make_unique<ShadowSettings>();
-  rtss::RtssPssm(shadow_->GetSplitPoints());
+  rtss::InitPssm(shadow_->GetSplitPoints());
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Render::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
-  // Texture filtering
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
   if (filtering == Ogre::TFO_ANISOTROPIC)
     Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
