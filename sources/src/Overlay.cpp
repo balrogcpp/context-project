@@ -35,6 +35,10 @@ Overlay::Overlay() {}
 Overlay::~Overlay() {}
 
 //----------------------------------------------------------------------------------------------------------------------
+void Overlay::Update(float time) {
+
+}
+//----------------------------------------------------------------------------------------------------------------------
 void Overlay::Create() {
   mSilverback = new Silverback();
   mSilverback->loadAtlas("dejavu");
@@ -46,7 +50,7 @@ void Overlay::Create() {
   // Create our drawing layer
   layer = mScreen->createLayer(0);
   rect = layer->createRectangle(0, 0, vpW, vpH);
-  //rect->background_gradient(Gradient_Diagonal, rgb(98,0,63), rgb(255,180,174));
+//  rect->background_gradient(Gradient_Diagonal, rgb(98,0,63), rgb(255,180,174));
   rect->background_colour(rgb(0, 0, 0, 0));
 
   markup = layer->createMarkupText(9, 5, 5,
@@ -63,7 +67,10 @@ void Overlay::Create() {
   caption = layer->createCaption(24, vpW - 55, 66, "24");
   caption->width(0);
   caption->align(TextAlign_Right);
-  caption->text("1488");
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Overlay::Text(const std::string &str) {
+  caption->text(str);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Clear() {

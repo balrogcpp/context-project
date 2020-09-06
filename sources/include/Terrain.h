@@ -45,12 +45,13 @@ class Terrain final : public ComponentLocator {
   virtual ~Terrain ();
 
   void ProcessTerrainGroup(pugi::xml_node &xml_node);
+  float GetHeigh(float x, float z);
 
  private:
   void GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image, const std::string &filename);
   void DefineTerrain_(long x, long y, bool flat, const std::string &filename);
   void InitBlendMaps_(Ogre::Terrain *terrain, int layer, const std::string &image);
 
-  std::unique_ptr<Ogre::TerrainGroup> ogre_terrain_group_;
+  std::unique_ptr<Ogre::TerrainGroup> terrain_;
 };
 }

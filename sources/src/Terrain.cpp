@@ -33,9 +33,9 @@ namespace xio {
 Terrain::Terrain() {}
 
 Terrain::~Terrain() {
-  if (ogre_terrain_group_) {
-    ogre_terrain_group_->removeAllTerrains();
-    ogre_terrain_group_.reset();
+  if (terrain_) {
+    terrain_->removeAllTerrains();
+    terrain_.reset();
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -60,19 +60,19 @@ void Terrain::DefineTerrain_(long x, long y, bool flat, const std::string &filen
   // available or not; I'm doing it this way to save distribution size
 
   if (flat) {
-    ogre_terrain_group_->defineTerrain(x, y, 0.0f);
+    terrain_->defineTerrain(x, y, 0.0f);
     return;
   }
 
   Ogre::Image image;
   GetTerrainImage_(x % 2 != 0, y % 2 != 0, image, filename);
 
-  std::string cached = ogre_terrain_group_->generateFilename(x, y);
-  if (Ogre::ResourceGroupManager::getSingleton().resourceExists(ogre_terrain_group_->getResourceGroup(),
+  std::string cached = terrain_->generateFilename(x, y);
+  if (Ogre::ResourceGroupManager::getSingleton().resourceExists(terrain_->getResourceGroup(),
                                                                 cached)) {
-    ogre_terrain_group_->defineTerrain(x, y);
+    terrain_->defineTerrain(x, y);
   } else {
-    ogre_terrain_group_->defineTerrain(x, y, &image);
+    terrain_->defineTerrain(x, y, &image);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -136,12 +136,12 @@ void Terrain::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
 
   auto *scene_manager = Ogre::Root::getSingleton().getSceneManager("Default");
-  ogre_terrain_group_ = std::make_unique<Ogre::TerrainGroup>(scene_manager, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
-  ogre_terrain_group_->setFilenameConvention("terrain", "bin");
-  ogre_terrain_group_->setOrigin(Ogre::Vector3::ZERO);
-  ogre_terrain_group_->setResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  terrain_ = std::make_unique<Ogre::TerrainGroup>(scene_manager, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
+  terrain_->setFilenameConvention("terrain", "bin");
+  terrain_->setOrigin(Ogre::Vector3::ZERO);
+  terrain_->setResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
-  Ogre::Terrain::ImportData &defaultimp = ogre_terrain_group_->getDefaultImportSettings();
+  Ogre::Terrain::ImportData &defaultimp = terrain_->getDefaultImportSettings();
 
   defaultimp.terrainSize = mapSize;
   defaultimp.worldSize = worldSize;
@@ -155,8 +155,8 @@ void Terrain::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 
     std::string heighmap = pPageElement.attribute("heightmap").value();
     DefineTerrain_(pageX, pageY, false, heighmap);
-    ogre_terrain_group_->loadTerrain(pageX, pageY, true);
-    ogre_terrain_group_->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
+    terrain_->loadTerrain(pageX, pageY, true);
+    terrain_->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
 
     int layers_count = 0;
     for (const auto &pLayerElement : pPageElement.children("layer")) {
@@ -179,7 +179,7 @@ void Terrain::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     for (auto pLayerElement : pPageElement.children("layer")) {
       layer_counter++;
       if (layer_counter != layers_count) {
-        InitBlendMaps_(ogre_terrain_group_->getTerrain(pageX, pageY),
+        InitBlendMaps_(terrain_->getTerrain(pageX, pageY),
                        layer_counter,
                        pLayerElement.attribute("blendmap").value());
       }
@@ -187,9 +187,9 @@ void Terrain::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     }
   }
 
-  ogre_terrain_group_->freeTemporaryResources();
+  terrain_->freeTemporaryResources();
 
-  auto terrainIterator = ogre_terrain_group_->getTerrainIterator();
+  auto terrainIterator = terrain_->getTerrainIterator();
 
   while (terrainIterator.hasMoreElements()) {
     auto *terrain = terrainIterator.getNext()->instance;
@@ -202,5 +202,12 @@ void Terrain::ProcessTerrainGroup(pugi::xml_node &xml_node) {
                                             terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1))
     );
   }
+}
+//----------------------------------------------------------------------------------------------------------------------
+float Terrain::GetHeigh(float x, float z) {
+  if (terrain_)
+    return terrain_->getHeightAtWorldPosition(x, 1000, z);
+  else
+    return 0.0f;
 }
 }

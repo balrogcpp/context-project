@@ -201,6 +201,7 @@ void Application::Loop_() {
 
       if (delta_time_ > 1000000) {
         current_fps_ = fps_frames_;
+        overlay_->Text(std::to_string(current_fps_));
         delta_time_ = 0;
         fps_frames_ = 0;
       }

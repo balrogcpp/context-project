@@ -79,11 +79,16 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   bool suspend_ = false;
   long time_of_last_frame = 0;
   int current_fps_ = 0;
+ private:
   int target_fps_ = 60;
   bool verbose_ = false;
   bool lock_fps_ = true;
 
  public:
+//----------------------------------------------------------------------------------------------------------------------
+  int GetCurrentFps() const {
+    return current_fps_;
+  }
 //----------------------------------------------------------------------------------------------------------------------
   void SetInitialState(std::unique_ptr<AppState> &&state) {
     cur_state_ = move(state);

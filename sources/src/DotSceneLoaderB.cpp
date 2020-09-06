@@ -110,6 +110,13 @@ void DotSceneLoaderB::Load(const std::string &filename, const std::string &group
   ProcessScene_(XMLRoot);
 }
 ///----------------------------------------------------------------------------------------------------------------------
+float DotSceneLoaderB::GetHeigh(float x, float z) {
+  if (terrain_)
+    return terrain_->GetHeigh(x, z);
+  else
+    return 0.0;
+};
+///----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessScene_(pugi::xml_node &xml_root) {
   /// Process the scene parameters
   std::string version = GetAttrib(xml_root, "formatVersion", "unknown");
@@ -134,7 +141,7 @@ void DotSceneLoaderB::ProcessScene_(pugi::xml_node &xml_root) {
     ProcessEnvironment_(element);
 
   if (auto element = xml_root.child("terrainGroup")) {
-    terrain_ = std::make_unique<Terrain>();
+    if (!terrain_) terrain_ = std::make_unique<Terrain>();
     terrain_->LocateComponents(conf_, io_, renderer_, physics_, sounds_, overlay_);
     terrain_->ProcessTerrainGroup(element);
   }
@@ -744,7 +751,8 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 }
 ///----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessForest_(pugi::xml_node &xml_node) {
-///  StaticForest::Instance().Create();
+  if (!forest_) forest_ = std::make_unique<Forest>();
+  forest_->Create();
 }
 ///----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessFog_(pugi::xml_node &xml_node) {

@@ -22,9 +22,11 @@
 #SOFTWARE.
 
 docker build . -f Docker/gcc/Dockerfile -t balrogcpp/gcc-mingw-x86_64 &&\
-docker build . -f thirdparty/Dockerfile -t balrogcpp/context-project-dependencies &&\
+docker build . -f Docker/doxygen/Dockerfile -t balrogcpp/doxygen &&\
+docker build . -f thirdparty/Dockerfile -t balrogcpp/xio-dependencies &&\
 docker login &&\
 docker push balrogcpp/gcc-mingw-x86_64 &&\
-docker push balrogcpp/context-project-dependencies
+docker push balrogcpp/xio-dependencies && \
+docker push balrogcpp/doxygen
 
 exit 0
