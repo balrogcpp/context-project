@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include "Component.h"
 #include "Terrain.h"
-#include "Forest.h"
+#include "Field.h"
 #include "ReflectionCamera.h"
 #include "CubeMapCamera.h"
 #include "Input.h"
@@ -111,7 +111,7 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   std::unique_ptr<ReflectionCamera> rcamera_;
   std::unique_ptr<CubeMapCamera> cmcamera_;
   std::unique_ptr<Terrain> terrain_;
-  std::unique_ptr<Forest> forest_;
+  std::unique_ptr<Field> forest_;
   std::unique_ptr<Camera> camera_;
   Ogre::SceneManager *scene_manager_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;

@@ -70,7 +70,7 @@ set(CONTEXT_HEADERS
     include/VerboseListener.h
     include/JsonConfigurator.h
     include/DotSceneLoaderB.h
-    include/Forest.h
+    include/Field.h
     include/Physics.h
     include/OgreHeaders.h
     include/Sound.h
@@ -117,7 +117,7 @@ set(CONTEXT_SOURCES
     src/Render.cpp
     src/DotSceneLoaderB.cpp
     src/Physics.cpp
-    src/Forest.cpp
+    src/Field.cpp
     src/pcheader.cpp
     src/Compositor.cpp
     src/TerrainMaterialGeneratorB.cpp

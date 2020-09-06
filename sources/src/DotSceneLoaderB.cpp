@@ -751,7 +751,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 }
 ///----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessForest_(pugi::xml_node &xml_node) {
-  if (!forest_) forest_ = std::make_unique<Forest>();
+  if (!forest_) forest_ = std::make_unique<Field>();
   forest_->Create();
 }
 ///----------------------------------------------------------------------------------------------------------------------

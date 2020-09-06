@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include "Render.h"
 #include "AppState.h"
-#include "Forest.h"
+#include "Field.h"
 
 #include <memory>
 
@@ -42,7 +42,7 @@ class DemoDotAppState : public xio::AppState {
     void KeyDown(SDL_Keycode sym) final;
 
  private:
-  xio::Forest forest_;
+  xio::Field forest_;
 };
 
 }

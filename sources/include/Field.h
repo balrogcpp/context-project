@@ -27,10 +27,10 @@ SOFTWARE.
 #include "Component.h"
 
 namespace xio {
-class Forest final : public Component {
+class Field final : public Component {
  public:
-  Forest();
-  virtual ~Forest();
+  Field();
+  virtual ~Field();
 
   void Create() final;
   void Clear() final {}

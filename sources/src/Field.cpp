@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include "pcheader.h"
 
-#include "Forest.h"
+#include "Field.h"
 #include "PbrUtils.h"
 using namespace xio;
 
@@ -38,7 +38,7 @@ struct GrassVertex {
 };
 #pragma pack(pop)
 //----------------------------------------------------------------------------------------------------------------------
-void Forest::CreateGrassMesh(float heigh) {
+void Field::CreateGrassMesh(float heigh) {
   if (Ogre::MeshManager::getSingleton().getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
     return;
 
@@ -122,14 +122,14 @@ void Forest::CreateGrassMesh(float heigh) {
   sm->indexData->indexBuffer->unlock(); // commit index changes
 }
 //----------------------------------------------------------------------------------------------------------------------
-Forest::Forest() = default;
+Field::Field() = default;
 
-Forest::~Forest() {
+Field::~Field() {
   if (Ogre::MeshManager::getSingleton().getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
     Ogre::MeshManager::getSingleton().remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Forest::GenerateGrass() {
+void Field::GenerateGrass() {
   Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   // create our grass mesh, and Create a grass entity from it
   CreateGrassMesh(0.5);
@@ -174,25 +174,16 @@ void Forest::GenerateGrass() {
     Ogre::Vector3 pos(Ogre::Math::RangeRandom(-50, 50), 0, Ogre::Math::RangeRandom(-50, 50));
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
-    scale *= 2.0f;
     mField->addEntity(grass, pos, ori, scale);
   }
 
   mField->setVisibilityFlags(SUBMERGED_MASK);
-  mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
+//  mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
   mField->build(); // build our static geometry (bake the grass into it)
   mField->setCastShadows(false);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Forest::Create() {
-  UpdatePbrParams("3D-Diggers/farn01");
-  UpdatePbrShadowReceiver("3D-Diggers/farn01");
-  UpdatePbrParams("3D-Diggers/farn02");
-  UpdatePbrParams("3D-Diggers/fir01");
-  UpdatePbrParams("3D-Diggers/fir02");
-  UpdatePbrParams("3D-Diggers/plant1");
-  UpdatePbrParams("3D-Diggers/plant2");
-
+void Field::Create() {
 //  GenerateTrees();
 //  GeneratePlants();
 //  generateBushes();
