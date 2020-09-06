@@ -26,7 +26,9 @@ SOFTWARE.
 
 #include "Component.h"
 #include "Terrain.h"
+#include "Forest.h"
 #include "ReflectionCamera.h"
+#include "CubeMapCamera.h"
 #include "Input.h"
 #include <OgreSceneLoader.h>
 #include <OgreVector4.h>
@@ -63,7 +65,7 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   virtual ~DotSceneLoaderB();
 
   void Create() final {}
-  void Clear() final {}
+  void Clear() final {terrain_.reset();}
   void Update(float time) final {}
 
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
@@ -107,7 +109,9 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   void ProcessLightAttenuation_(pugi::xml_node &xml_node, Ogre::Light *light);
 
   std::unique_ptr<ReflectionCamera> rcamera_;
+  std::unique_ptr<CubeMapCamera> cmcamera_;
   std::unique_ptr<Terrain> terrain_;
+  std::unique_ptr<Forest> forest_;
   std::unique_ptr<Camera> camera_;
   Ogre::SceneManager *scene_manager_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;

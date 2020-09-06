@@ -131,6 +131,7 @@ void Application::Init_() {
 void Application::Reset_() {
   io_->UnregWinObserver(this);
   auto *root = Ogre::Root::getSingleton().getSceneManager("Default");
+  loader_->Clear();
   root->destroyAllEntities();
   root->destroyAllLights();
   root->destroyAllParticleSystems();

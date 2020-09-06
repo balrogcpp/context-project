@@ -25,7 +25,6 @@ SOFTWARE.
 #pragma once
 
 #include <OgrePlane.h>
-#include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 
 namespace Ogre {
@@ -36,7 +35,7 @@ class SceneNode;
 
 namespace xio {
 
-class ReflectionCamera final : public Ogre::RenderTargetListener, public Ogre::FrameListener {
+class ReflectionCamera final : public Ogre::RenderTargetListener {
  public:
   ReflectionCamera() {
     Init_();

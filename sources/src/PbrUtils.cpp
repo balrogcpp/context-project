@@ -23,7 +23,7 @@ SOFTWARE.
 */
 
 #include "pcheader.h"
-#include "Utils.h"
+#include "PbrUtils.h"
 #include "Render.h"
 
 using namespace Ogre;
@@ -76,7 +76,6 @@ void UpdatePbrParams(MaterialPtr material) {
 
   if (std::find(material_list.begin(), material_list.end(), material_name) != material_list.end()) {
     registered = true;
-//    return;
   } else {
     material_list.push_back(material_name);
   }
@@ -150,16 +149,16 @@ void UpdatePbrParams(MaterialPtr material) {
 
     auto ibl_texture = pass->getTextureUnitState("IBL_Specular");
     const bool realtime_cubemap = false;
-//    if (ibl_texture) {
-//      if (realtime_cubemap) {
+    if (ibl_texture) {
+      if (realtime_cubemap) {
 //        ibl_texture->setTexture(CubeMapCamera::Instance().GetDyncubemap());
-//      } else {
-//        std::string skybox_cubemap =
-//            MaterialManager::getSingleton().getByName("SkyBox")->getTechnique(0)->getPass(0)->getTextureUnitState(
-//                "CubeMap")->getTextureName();
-//        ibl_texture->setTextureName(skybox_cubemap);
-//      }
-//    }
+      } else {
+        std::string skybox_cubemap =
+            MaterialManager::getSingleton().getByName("SkyBox")->getTechnique(0)->getPass(0)->getTextureUnitState(
+                "CubeMap")->getTextureName();
+        ibl_texture->setTextureName(skybox_cubemap);
+      }
+    }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -177,7 +176,6 @@ void UpdatePbrShadowReceiver(MaterialPtr material) {
 
   if (std::find(shadowed_list.begin(), shadowed_list.end(), material_name) != shadowed_list.end()) {
     registered = true;
-//    return;
   } else {
     shadowed_list.push_back(material_name);
   }
@@ -234,9 +232,6 @@ void UpdatePbrShadowReceiver(MaterialPtr material) {
           tu->setTextureBorderColour(ColourValue::White);
           tu->setTextureFiltering(FO_LINEAR, FO_LINEAR, FO_POINT);
           frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);
-//            frag_params->setNamedAutoConstant("inverseShadowmapSize" + std::to_string(k),
-//                                    GpuProgramParameters::ACT_INVERSE_TEXTURE_SIZE,
-//                                    texture_count + k);
         }
       }
     }

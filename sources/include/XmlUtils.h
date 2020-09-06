@@ -24,84 +24,11 @@ SOFTWARE.
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <memory>
-
-#include <OgreGpuProgramParams.h>
-#include <OgreVector.h>
-
 namespace xio {
-void UpdatePbrShadowCaster(Ogre::MaterialPtr material);
-
-//----------------------------------------------------------------------------------------------------------------------
-inline void AddGpuConstParameterAuto(const Ogre::GpuProgramParametersSharedPtr &parameters,
-                                     const std::string &parameter_name,
-                                     const Ogre::GpuProgramParameters::AutoConstantType value_name,
-                                     const int info = 0) {
-  const auto &constants = parameters->getConstantDefinitions();
-
-  if (constants.map.count(parameter_name) > 0)
-    parameters->setNamedAutoConstant(parameter_name, value_name, info);
-}
-//----------------------------------------------------------------------------------------------------------------------
-inline void AddGpuConstParameter(const Ogre::GpuProgramParametersSharedPtr &parameters,
-                                 const std::string &parameter_name,
-                                 Ogre::Vector4 value) {
-  const auto &constants = parameters->getConstantDefinitions();
-
-  if (constants.map.count(parameter_name) > 0)
-    parameters->setNamedConstant(parameter_name, value);
-}
-//----------------------------------------------------------------------------------------------------------------------
-inline void AddGpuConstParameter(const Ogre::GpuProgramParametersSharedPtr &parameters,
-                                 const std::string &parameter_name,
-                                 Ogre::Vector3 value) {
-  const auto &constants = parameters->getConstantDefinitions();
-
-  if (constants.map.count(parameter_name) > 0)
-    parameters->setNamedConstant(parameter_name, value);
-}
-//----------------------------------------------------------------------------------------------------------------------
-inline void AddGpuConstParameter(const Ogre::GpuProgramParametersSharedPtr &parameters,
-                          const std::string &parameter_name,
-                          Ogre::Vector2 value) {
-  const auto &constants = parameters->getConstantDefinitions();
-
-  if (constants.map.count(parameter_name) > 0)
-    parameters->setNamedConstant(parameter_name, value);
-}
-//----------------------------------------------------------------------------------------------------------------------
-inline void AddGpuConstParameter(const Ogre::GpuProgramParametersSharedPtr &parameters,
-                                 const std::string &parameter_name,
-                                 float value) {
-  const auto &constants = parameters->getConstantDefinitions();
-
-  if (constants.map.count(parameter_name) > 0)
-    parameters->setNamedConstant(parameter_name, value);
-}
-//----------------------------------------------------------------------------------------------------------------------
-inline void AddGpuConstParameter(const Ogre::GpuProgramParametersSharedPtr &parameters,
-                                 const std::string &parameter_name,
-                                 int value) {
-  const auto &constants = parameters->getConstantDefinitions();
-
-  if (constants.map.count(parameter_name) > 0)
-    parameters->setNamedConstant(parameter_name, value);
-}
-//----------------------------------------------------------------------------------------------------------------------
-inline void AddGpuConstParameter(const Ogre::GpuProgramParametersSharedPtr &parameters,
-                                 const std::string &parameter_name,
-                                 unsigned int value) {
-  const auto &constants = parameters->getConstantDefinitions();
-
-  if (constants.map.count(parameter_name) > 0)
-    parameters->setNamedConstant(parameter_name, value);
-}
 //----------------------------------------------------------------------------------------------------------------------
 inline std::string GetAttrib(const pugi::xml_node &xml_node,
-                      const std::string &attrib,
-                      const std::string &defaultValue = "") {
+                             const std::string &attrib,
+                             const std::string &defaultValue = "") {
   if (auto anode = xml_node.attribute(attrib.c_str())) {
     return anode.value();
   } else {
@@ -234,19 +161,4 @@ inline Ogre::ColourValue ParseProperty(pugi::xml_node &xml_node) {
                            xml_node.attribute("a")
                            ? Ogre::StringConverter::parseReal(xml_node.attribute("a").value()) : 1);
 }
-
-void UpdatePbrParams(Ogre::MaterialPtr material);
-void UpdatePbrParams(const std::string &material);
-
-void UpdatePbrShadowReceiver(Ogre::MaterialPtr material);
-void UpdatePbrShadowReceiver(const std::string &material);
-
-void UpdatePbrShadowCaster(Ogre::MaterialPtr material);
-void UpdatePbrShadowCaster(const std::string &material);
-
-void UpdateForestParams(Ogre::MaterialPtr material);
-void UpdateForestParams(const std::string &material);
-
-void EnsureHasTangents(Ogre::MeshPtr mesh_ptr);
-bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration);
 }

@@ -26,7 +26,7 @@ SOFTWARE.
 #include "pcheader.h"
 
 #include "Forest.h"
-#include "Utils.h"
+#include "PbrUtils.h"
 using namespace xio;
 
 namespace xio {

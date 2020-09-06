@@ -24,11 +24,10 @@ SOFTWARE.
 
 #pragma once
 
-#include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 
 namespace xio {
-class CubeMapCamera final : public Ogre::RenderTargetListener, public Ogre::FrameListener {
+class CubeMapCamera final : public Ogre::RenderTargetListener {
  public:
 //----------------------------------------------------------------------------------------------------------------------
   CubeMapCamera() {
@@ -66,8 +65,6 @@ class CubeMapCamera final : public Ogre::RenderTargetListener, public Ogre::Fram
     Ogre::Root::getSingleton().getSceneManager("Default")->
         setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
   }
-//----------------------------------------------------------------------------------------------------------------------
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final { return true; };
 
  private:
 //----------------------------------------------------------------------------------------------------------------------

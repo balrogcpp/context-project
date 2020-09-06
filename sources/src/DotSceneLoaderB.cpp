@@ -30,7 +30,8 @@ SOFTWARE.
 #include "Camera.h"
 #include "CubeMapCamera.h"
 #include "ReflectionCamera.h"
-#include "Utils.h"
+#include "PbrUtils.h"
+#include "XmlUtils.h"
 
 using namespace xio;
 

@@ -83,12 +83,12 @@ set(CONTEXT_HEADERS
     include/Gorilla.h
     include/Overlay.h
     include/Window.h
-    include/Utils.h
+    include/PbrUtils.h
     include/Storage.h
     include/RtssUtils.h
     include/Terrain.h
     include/CompositorHelper.h
-    include/ShadowSettings.h include/YamlConfigurator.h include/ComponentLocator.h)
+    include/ShadowSettings.h include/YamlConfigurator.h include/ComponentLocator.h include/XmlUtils.h)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
@@ -123,7 +123,7 @@ set(CONTEXT_SOURCES
     src/TerrainMaterialGeneratorB.cpp
     src/Gorilla.cpp
     src/Overlay.cpp
-    src/Utils.cpp
+    src/PbrUtils.cpp
     src/Terrain.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB

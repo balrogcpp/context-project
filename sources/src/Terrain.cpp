@@ -26,7 +26,8 @@ SOFTWARE.
 #include "Terrain.h"
 #include "Physics.h"
 #include "TerrainMaterialGeneratorB.h"
-#include "Utils.h"
+#include "PbrUtils.h"
+#include "XmlUtils.h"
 
 namespace xio {
 Terrain::Terrain() {}
