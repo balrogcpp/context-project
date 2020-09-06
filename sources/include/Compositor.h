@@ -24,8 +24,6 @@ SOFTWARE.
 
 #pragma once
 
-#include "Component.h"
-
 namespace Ogre {
 class Material;
 }
@@ -37,13 +35,11 @@ class DepthSchemeHandler;
 
 namespace xio {
 
-class Compositor final : public Component {
+class Compositor {
  public:
   Compositor();
   virtual ~Compositor();
 
-  void Create() final {}
-  void Clear() final {}
  private:
   std::vector<std::string> compositor_names_;
   std::string current_compositor_;

@@ -31,7 +31,7 @@ SOFTWARE.
 #include <OgreGpuProgramParams.h>
 #include <OgreVector.h>
 
-namespace utils {
+namespace xio {
 void UpdatePbrShadowCaster(Ogre::MaterialPtr material);
 
 //----------------------------------------------------------------------------------------------------------------------

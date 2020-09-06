@@ -37,7 +37,7 @@ SOFTWARE.
 #include "YamlConfigurator.h"
 
 namespace xio {
-class Application final : public io::WindowObserver, public Ogre::LogListener {
+class Application final : public WindowObserver, public Ogre::LogListener {
  public:
   Application();
   virtual ~Application();
@@ -67,7 +67,7 @@ class Application final : public io::WindowObserver, public Ogre::LogListener {
   }
 
   std::unique_ptr<YamlConfigurator> conf_;
-  std::unique_ptr<io::InputSequencer> io_;
+  std::unique_ptr<xio::InputSequencer> io_;
   std::unique_ptr<Render> renderer_;
   std::unique_ptr<Physics> physics_;
   std::unique_ptr<Sound> sounds_;
@@ -77,6 +77,7 @@ class Application final : public io::WindowObserver, public Ogre::LogListener {
 
   bool quit_ = false;
   bool suspend_ = false;
+  long time_of_last_frame = 0;
   int current_fps_ = 0;
   int target_fps_ = 60;
   bool verbose_ = false;

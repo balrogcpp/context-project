@@ -26,14 +26,13 @@ SOFTWARE.
 
 #include "DotSceneLoaderB.h"
 
-#include "Application.h"
+#include "Physics.h"
 #include "Camera.h"
-#include "TerrainMaterialGeneratorB.h"
 #include "CubeMapCamera.h"
 #include "ReflectionCamera.h"
 #include "Utils.h"
 
-using namespace utils;
+using namespace xio;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
@@ -48,12 +47,7 @@ DotSceneLoaderB::DotSceneLoaderB() {
   Ogre::SceneLoaderManager::getSingleton().registerSceneLoader("DotSceneB", {".scene", ".xml"}, this);
 }
 //----------------------------------------------------------------------------------------------------------------------
-DotSceneLoaderB::~DotSceneLoaderB() {
-  if (ogre_terrain_group_) {
-    ogre_terrain_group_->removeAllTerrains();
-    ogre_terrain_group_.reset();
-  }
-}
+DotSceneLoaderB::~DotSceneLoaderB() {}
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const std::string &groupName, Ogre::SceneNode *rootNode) {
   group_name_ = groupName;
@@ -138,8 +132,11 @@ void DotSceneLoaderB::ProcessScene_(pugi::xml_node &xml_root) {
   if (auto element = xml_root.child("environment"))
     ProcessEnvironment_(element);
 
-  if (auto element = xml_root.child("terrainGroup"))
-    ProcessTerrainGroup_(element);
+  if (auto element = xml_root.child("terrainGroup")) {
+    terrain_ = std::make_unique<Terrain>();
+    terrain_->LocateComponents(conf_, io_, renderer_, physics_, sounds_, overlay_);
+    terrain_->ProcessTerrainGroup(element);
+  }
 
   if (auto element = xml_root.child("nodes"))
     ProcessNodes_(element);
@@ -221,171 +218,6 @@ void DotSceneLoaderB::ProcessEnvironment_(pugi::xml_node &xml_node) {
     viewport->setBackgroundColour(ParseColour(element));
 }
 //----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::GetTerrainImage_(bool flipX,
-                                       bool flipY,
-                                       Ogre::Image &ogre_image,
-                                       const std::string &filename = "terrain.dds") {
-  ogre_image.load(filename, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-
-  if (flipX)
-    ogre_image.flipAroundY();
-
-  if (flipY)
-    ogre_image.flipAroundX();
-}
-//----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::DefineTerrain_(long x, long y, bool flat, const std::string &filename = "terrain.dds") {
-  // if a file is available, use it
-  // if not, generate file from import
-
-  // Usually in a real project you'll know whether the compact terrain data is
-  // available or not; I'm doing it this way to save distribution size
-
-  if (flat) {
-    ogre_terrain_group_->defineTerrain(x, y, 0.0f);
-    return;
-  }
-
-  Ogre::Image image;
-  GetTerrainImage_(x % 2 != 0, y % 2 != 0, image, filename);
-
-  std::string cached = ogre_terrain_group_->generateFilename(x, y);
-  if (Ogre::ResourceGroupManager::getSingleton().resourceExists(ogre_terrain_group_->getResourceGroup(),
-                                                                cached)) {
-    ogre_terrain_group_->defineTerrain(x, y);
-  } else {
-    ogre_terrain_group_->defineTerrain(x, y, &image);
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::InitBlendMaps_(Ogre::Terrain *terrain,
-                                     int layer,
-                                     const std::string &image = "terrain_blendmap.dds") {
-  Ogre::TerrainLayerBlendMap *blendMap = terrain->getLayerBlendMap(layer);
-  auto *pBlend1 = blendMap->getBlendPointer();
-
-  Ogre::Image img;
-  img.load(image, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-
-  int bmSize = terrain->getLayerBlendMapSize();
-
-  for (int y = 0; y < bmSize; ++y) {
-    for (int x = 0; x < bmSize; ++x) {
-      float tx = static_cast<float>(x) / static_cast<float>(bmSize);
-      float ty = static_cast<float>(y) / static_cast<float>(bmSize);
-      int ix = static_cast<int>(img.getWidth() * tx);
-      int iy = static_cast<int >(img.getWidth() * ty);
-
-      Ogre::ColourValue cv = Ogre::ColourValue::Black;
-      cv = img.getColourAt(ix, iy, 0);
-//            Ogre::Real val = cv[0]*opacity[bi];
-      float val = cv[0];
-      *pBlend1++ = val;
-    }
-  }
-
-  blendMap->dirty();
-  blendMap->update();
-
-  // set up a colour map
-  if (terrain->getGlobalColourMapEnabled()) {
-    Ogre::Image colourMap;
-    colourMap.load("testcolourmap.dds", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-    terrain->getGlobalColourMap()->loadImage(colourMap);
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessTerrainGroup_(pugi::xml_node &xml_node) {
-  float worldSize = GetAttribReal(xml_node, "worldSize");
-  int mapSize = GetAttribInt(xml_node, "mapSize");
-  int minBatchSize = Ogre::StringConverter::parseInt(xml_node.attribute("minBatchSize").value());
-  int maxBatchSize = Ogre::StringConverter::parseInt(xml_node.attribute("maxBatchSize").value());
-  int inputScale = Ogre::StringConverter::parseInt(xml_node.attribute("inputScale").value());
-  int tuningCompositeMapDistance =
-      Ogre::StringConverter::parseInt(xml_node.attribute("tuningCompositeMapDistance").value());
-  int tuningMaxPixelError = GetAttribInt(xml_node, "tuningMaxPixelError", 8);
-  auto *terrain_global_options = Ogre::TerrainGlobalOptions::getSingletonPtr();
-
-  if (!terrain_global_options) {
-    terrain_global_options = new Ogre::TerrainGlobalOptions();
-  }
-
-  OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
-  terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
-  terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
-  terrain_global_options->setCastsDynamicShadows(false);
-  terrain_global_options->setUseRayBoxDistanceCalculation(true);
-  terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
-
-  ogre_terrain_group_ =
-      std::make_shared<Ogre::TerrainGroup>(scene_manager_, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
-  ogre_terrain_group_->setFilenameConvention("terrain", "bin");
-  ogre_terrain_group_->setOrigin(Ogre::Vector3::ZERO);
-  ogre_terrain_group_->setResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-
-  Ogre::Terrain::ImportData &defaultimp = ogre_terrain_group_->getDefaultImportSettings();
-
-  defaultimp.terrainSize = mapSize;
-  defaultimp.worldSize = worldSize;
-  defaultimp.inputScale = inputScale;
-  defaultimp.minBatchSize = minBatchSize;
-  defaultimp.maxBatchSize = maxBatchSize;
-
-  for (auto pPageElement : xml_node.children("terrain")) {
-    int pageX = Ogre::StringConverter::parseInt(pPageElement.attribute("x").value());
-    int pageY = Ogre::StringConverter::parseInt(pPageElement.attribute("y").value());
-
-    std::string heighmap = pPageElement.attribute("heightmap").value();
-    DefineTerrain_(pageX, pageY, false, heighmap);
-    ogre_terrain_group_->loadTerrain(pageX, pageY, true);
-    ogre_terrain_group_->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
-
-    int layers_count = 0;
-    for (const auto &pLayerElement : pPageElement.children("layer")) {
-      layers_count++;
-    }
-
-    defaultimp.layerList.resize(layers_count);
-
-    int layer_counter = 0;
-    for (auto pLayerElement : pPageElement.children("layer")) {
-      defaultimp.layerList[layer_counter].worldSize =
-          Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
-      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
-      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
-
-      layer_counter++;
-    }
-
-    layer_counter = 0;
-    for (auto pLayerElement : pPageElement.children("layer")) {
-      layer_counter++;
-      if (layer_counter != layers_count) {
-        InitBlendMaps_(ogre_terrain_group_->getTerrain(pageX, pageY),
-                       layer_counter,
-                       pLayerElement.attribute("blendmap").value());
-      }
-
-    }
-  }
-
-  ogre_terrain_group_->freeTemporaryResources();
-
-  auto terrainIterator = ogre_terrain_group_->getTerrainIterator();
-
-  while (terrainIterator.hasMoreElements()) {
-    auto *terrain = terrainIterator.getNext()->instance;
-
-    physics_->CreateTerrainHeightfieldShape(terrain->getSize(),
-                                            terrain->getHeightData(),
-                                            terrain->getMinHeight(),
-                                            terrain->getMaxHeight(),
-                                            terrain->getPosition(),
-                                            terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1))
-    );
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   // Process attributes
   static long counter = 0;
@@ -465,12 +297,12 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   // Create the camera
   auto *pCamera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
-  if (!camera_man_) {
-    camera_man_ = std::make_shared<Camera>();
-    io_->RegObserver(camera_man_.get());
+  if (!camera_) {
+    camera_ = std::make_unique<Camera>();
+    io_->RegObserver(camera_.get());
   }
-  camera_man_->RegCamera(parent, pCamera);
-  camera_man_->SetStyle(Camera::FPS);
+  camera_->RegCamera(parent, pCamera);
+  camera_->SetStyle(Camera::FPS);
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *actor = scene->createEntity("Actor", "Icosphere.mesh");
@@ -496,7 +328,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   entBody->setActivationState(DISABLE_DEACTIVATION);
   entBody->setFriction(1.0);
   physics_->AddRigidBody(entBody);
-  camera_man_->SetRigidBody(entBody);
+  camera_->SetRigidBody(entBody);
   // Set the field-of-view
   pCamera->setFOVy(Ogre::Radian(fov));
 
@@ -526,7 +358,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   }
 
   if (auto element = xml_node.child("light")) {
-    ProcessLight_(element, camera_man_->GetCameraNode());
+    ProcessLight_(element, camera_->GetCameraNode());
   }
 
 }
@@ -920,7 +752,7 @@ void DotSceneLoaderB::ProcessFog_(pugi::xml_node &xml_node) {
   float expDensity = GetAttribReal(xml_node, "density", 0.001);
   float linearStart = GetAttribReal(xml_node, "start", 0.0);
   float linearEnd = GetAttribReal(xml_node, "end", 1.0);
-  Ogre::ColourValue colour = ColourValue::White;
+  Ogre::ColourValue colour = Ogre::ColourValue::White;
 
   Ogre::FogMode mode = Ogre::FOG_NONE;
   std::string sMode = GetAttrib(xml_node, "mode");

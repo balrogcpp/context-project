@@ -28,6 +28,7 @@ SOFTWARE.
 #include "Window.h"
 #include "ShadowSettings.h"
 #include "Compositor.h"
+#include "Component.h"
 #include <vector>
 #include <string>
 #include <memory>
@@ -39,10 +40,14 @@ class RenderWindow;
 }
 
 namespace xio {
-class Render final : public NoCopy {
+class Render final : public Component {
  public:
   Render();
   virtual ~Render();
+
+  void Create() final {}
+  void Clear() final {}
+  void Update(float time) final {}
 
   void Refresh();
   void UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy);

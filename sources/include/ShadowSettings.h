@@ -93,8 +93,7 @@ class ShadowSettings : public NoCopy {
   }
 //----------------------------------------------------------------------------------------------------------------------
   const std::vector<float> &GetSplitPoints() {
-//    return pssm_->getSplitPoints();
-  return split_points_;
+    return split_points_;
   }
 
  private:

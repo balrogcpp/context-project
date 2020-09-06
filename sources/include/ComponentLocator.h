@@ -24,37 +24,37 @@ SOFTWARE.
 
 #pragma once
 
-#include "Component.h"
-#include "OgreOggSound.h"
-
 namespace xio {
+class JsonConfigurator;
+class YamlConfigurator;
+class Render;
+class Physics;
+class Sound;
+class Overlay;
+class InputSequencer;
 
-class Sound final : public Component {
+class ComponentLocator {
  public:
-  Sound() {
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    putenv("ALSOFT_LOGLEVEL=LOG_NONE");
-#elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-    _putenv("ALSOFT_LOGLEVEL=LOG_NONE");
-#endif
-
-    OgreOggSound::OgreOggSoundFactory *mOgreOggSoundFactory;
-    // Create new factory
-    mOgreOggSoundFactory = OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
-
-    // Register
-    Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
-
-    OgreOggSound::OgreOggSoundManager::getSingleton().init();
+  void LocateComponents(YamlConfigurator *conf,
+                        InputSequencer *io,
+                        Render *renderer,
+                        Physics *physics,
+                        Sound *sounds,
+                        Overlay *overlay) {
+    conf_ = conf;
+    io_ = io;
+    renderer_ = renderer;
+    physics_ = physics;
+    sounds_ = sounds;
+    overlay_ = overlay;
   }
 
-  virtual ~Sound() {
-    OgreOggSound::OgreOggSoundManager::getSingleton().stopAllSounds();
-    OgreOggSound::OgreOggSoundManager::getSingleton().destroyAllSounds();
-  }
-
-  void Create() final {}
-  void Clear() final {}
-  void Update(float time) final {}
+ protected:
+  YamlConfigurator *conf_ = nullptr;
+  Render *renderer_ = nullptr;
+  Physics *physics_ = nullptr;
+  Sound *sounds_ = nullptr;
+  Overlay *overlay_ = nullptr;
+  xio::InputSequencer *io_ = nullptr;
 };
 }

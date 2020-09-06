@@ -30,26 +30,24 @@ namespace Ogre {
 class PSSMShadowCameraSetup;
 };
 
-using namespace Ogre;
-
 namespace xio {
-class TerrainMaterialGeneratorB : public TerrainMaterialGenerator {
+class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
  public:
   TerrainMaterialGeneratorB();
   ~TerrainMaterialGeneratorB() override;
 
-  class SM2Profile : public TerrainMaterialGenerator::Profile {
+  class SM2Profile : public Ogre::TerrainMaterialGenerator::Profile {
    public:
-    SM2Profile(TerrainMaterialGenerator *parent,
-               const String &name,
-               const String &desc);
+    SM2Profile(Ogre::TerrainMaterialGenerator *parent,
+               const Ogre::String &name,
+               const Ogre::String &desc);
     ~SM2Profile() override;
-    MaterialPtr generate(const Terrain *terrain) final;
-    MaterialPtr generateForCompositeMap(const Terrain *terrain) final;
-    uint8 getMaxLayers(const Terrain *terrain) const final;
-    void updateParams(const MaterialPtr &mat, const Terrain *terrain) final;
-    void updateParamsForCompositeMap(const MaterialPtr &mat, const Terrain *terrain) final;
-    void requestOptions(Terrain *terrain) final;
+    Ogre::MaterialPtr generate(const Ogre::Terrain *terrain) final;
+    Ogre::MaterialPtr generateForCompositeMap(const Ogre::Terrain *terrain) final;
+    Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const final;
+    void updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) final;
+    void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) final;
+    void requestOptions(Ogre::Terrain *terrain) final;
     bool isVertexCompressionSupported() const final;
     void setLightmapEnabled(bool enabled) final;
   };

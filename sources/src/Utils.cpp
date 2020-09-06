@@ -29,7 +29,7 @@ SOFTWARE.
 using namespace Ogre;
 using namespace xio;
 
-namespace utils {
+namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 void UpdatePbrShadowCaster(MaterialPtr material) {
   std::string material_name = material->getName();

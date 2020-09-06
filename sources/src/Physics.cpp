@@ -28,11 +28,11 @@ SOFTWARE.
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 Physics::Physics() {
-  broadphase_ = std::make_shared<btAxisSweep3>(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000), 1024);
-  collision_config_ = std::make_shared<btDefaultCollisionConfiguration>();
-  dispatcher_ = std::make_shared<btCollisionDispatcher>(collision_config_.get());
-  solver_ = std::make_shared<btSequentialImpulseConstraintSolver>();
-  phy_world_ = std::make_shared<btDiscreteDynamicsWorld>(dispatcher_.get(),
+  broadphase_ = std::make_unique<btAxisSweep3>(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000), 1024);
+  collision_config_ = std::make_unique<btDefaultCollisionConfiguration>();
+  dispatcher_ = std::make_unique<btCollisionDispatcher>(collision_config_.get());
+  solver_ = std::make_unique<btSequentialImpulseConstraintSolver>();
+  phy_world_ = std::make_unique<btDiscreteDynamicsWorld>(dispatcher_.get(),
                                                          broadphase_.get(),
                                                          solver_.get(),
                                                          collision_config_.get());
@@ -40,26 +40,23 @@ Physics::Physics() {
   phy_world_->setGravity(btVector3(0.0, -9.8, 0.0));
 
   if (physics_debug_show_collider_) {
-    dbg_draw_ = std::make_shared<BtOgre::DebugDrawer>(Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode(), phy_world_.get());
+    dbg_draw_ = std::make_unique<BtOgre::DebugDrawer>(Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode(), phy_world_.get());
     dbg_draw_->setDebugMode(physics_debug_show_collider_);
     phy_world_->setDebugDrawer(dbg_draw_.get());
   }
 
-  Ogre::Root::getSingleton().addFrameListener(this);
   pause_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
 Physics::~Physics() {}
 //----------------------------------------------------------------------------------------------------------------------
-bool Physics::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-  if (!pause_ && phy_world_) {
-    phy_world_->stepSimulation(evt.timeSinceLastFrame, sub_steps_);
+void Physics::Update(float time) {
+  if (!pause_) {
+    phy_world_->stepSimulation(time, sub_steps_);
   }
 
   if (physics_debug_show_collider_)
     dbg_draw_->step();
-
-  return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Clear() {
@@ -81,7 +78,6 @@ void Physics::Clear() {
 
   collision_shapes_.clear();
   rigid_bodies_.clear();
-  Ogre::Root::getSingleton().removeFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::AddRigidBody(btRigidBody *body) {

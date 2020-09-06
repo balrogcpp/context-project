@@ -34,6 +34,7 @@ class Forest final : public Component {
 
   void Create() final;
   void Clear() final {}
+  void Update(float time) final {}
 
   void GenerateGrass();
 

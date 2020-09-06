@@ -32,7 +32,7 @@ extern "C" {
 #include <iostream>
 #include <vector>
 
-namespace io {
+namespace xio {
 class InputSequencer;
 //----------------------------------------------------------------------------------------------------------------------
 class InputObserver {

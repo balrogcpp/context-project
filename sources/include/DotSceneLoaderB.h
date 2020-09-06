@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma once
 
 #include "Component.h"
+#include "Terrain.h"
 #include "ReflectionCamera.h"
 #include "Input.h"
 #include <OgreSceneLoader.h>
@@ -63,16 +64,30 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
 
   void Create() final {}
   void Clear() final {}
+  void Update(float time) final {}
 
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
   void Load(const std::string &filename, const std::string &group_name, Ogre::SceneNode *root_node);
+
+  void LocateComponents(YamlConfigurator *conf,
+                        xio::InputSequencer *io,
+                        Render *renderer,
+                        Physics *physics,
+                        Sound *sounds,
+                        Overlay *overlay) {
+    conf_ = conf;
+    io_ = io;
+    renderer_ = renderer;
+    physics_ = physics;
+    sounds_ = sounds;
+    overlay_ = overlay;
+  }
 
  private:
   void ProcessScene_(pugi::xml_node &xml_root);
   void ProcessNodes_(pugi::xml_node &xml_node);
   void ProcessExternals_(pugi::xml_node &xml_node);
   void ProcessEnvironment_(pugi::xml_node &xml_node);
-  void ProcessTerrainGroup_(pugi::xml_node &xml_node);
   void ProcessUserData_(pugi::xml_node &xml_node, Ogre::UserObjectBindings &user_object_bindings);
   void ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
   void ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
@@ -91,39 +106,19 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   void ProcessLightRange_(pugi::xml_node &xml_node, Ogre::Light *light);
   void ProcessLightAttenuation_(pugi::xml_node &xml_node, Ogre::Light *light);
 
-  void GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image, const std::string &filename);
-  void DefineTerrain_(long x, long y, bool flat, const std::string &filename);
-  void InitBlendMaps_(Ogre::Terrain *terrain, int layer, const std::string &image);
-
   std::unique_ptr<ReflectionCamera> rcamera_;
-  std::shared_ptr<Camera> camera_man_;
+  std::unique_ptr<Terrain> terrain_;
+  std::unique_ptr<Camera> camera_;
   Ogre::SceneManager *scene_manager_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;
   std::string group_name_;
-  std::shared_ptr<Ogre::TerrainGroup> ogre_terrain_group_;
 
   YamlConfigurator *conf_ = nullptr;
   Render *renderer_ = nullptr;
   Physics *physics_ = nullptr;
   Sound *sounds_ = nullptr;
   Overlay *overlay_ = nullptr;
-  DotSceneLoaderB *loader_ = nullptr;
-  io::InputSequencer *io_ = nullptr;
+  xio::InputSequencer *io_ = nullptr;
   bool lod_generator_enable_ = false;
-
- public:
-  void LocateComponents(YamlConfigurator *conf,
-                     io::InputSequencer *io,
-                     Render *renderer,
-                     Physics *physics,
-                     Sound *sounds,
-                     Overlay *overlay) {
-    conf_ = conf;
-    io_ = io;
-    renderer_ = renderer;
-    physics_ = physics;
-    sounds_ = sounds;
-    overlay_ = overlay;
-  }
 };
 }

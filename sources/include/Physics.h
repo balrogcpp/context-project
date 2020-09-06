@@ -49,13 +49,15 @@ class btCollisionObject;
 
 namespace xio {
 
-class Physics final : public Component, public Ogre::FrameListener{
+class Physics final : public Component{
  public:
   Physics();
   virtual ~Physics();
 
   void Create() final {}
   void Clear() final;
+  void Update(float time) final;
+
   void AddRigidBody(btRigidBody *body);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);
   void CreateTerrainHeightfieldShape(int size,
@@ -66,14 +68,12 @@ class Physics final : public Component, public Ogre::FrameListener{
                                 const float &scale);
 
  private:
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
-
-  std::shared_ptr<BtOgre::DebugDrawer> dbg_draw_;
-  std::shared_ptr<btAxisSweep3> broadphase_;
-  std::shared_ptr<btDefaultCollisionConfiguration> collision_config_;
-  std::shared_ptr<btCollisionDispatcher> dispatcher_;
-  std::shared_ptr<btSequentialImpulseConstraintSolver> solver_;
-  std::shared_ptr<btDynamicsWorld> phy_world_;
+  std::unique_ptr<BtOgre::DebugDrawer> dbg_draw_;
+  std::unique_ptr<btAxisSweep3> broadphase_;
+  std::unique_ptr<btDefaultCollisionConfiguration> collision_config_;
+  std::unique_ptr<btCollisionDispatcher> dispatcher_;
+  std::unique_ptr<btSequentialImpulseConstraintSolver> solver_;
+  std::unique_ptr<btDynamicsWorld> phy_world_;
   std::vector<btCollisionObject *> rigid_bodies_;
   std::vector<btCollisionShape *> collision_shapes_;
 

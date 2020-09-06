@@ -25,9 +25,32 @@ SOFTWARE.
 #pragma once
 
 #include "Component.h"
+#include "ComponentLocator.h"
+#include <memory>
+
+namespace Ogre {
+class Terrain;
+class TerrainGroup;
+class TerrainGlobalOptions;
+}
+
+namespace pugi {
+class xml_node;
+}
 
 namespace xio {
-class Terrain final : public Component {
+class Terrain final : public ComponentLocator {
+ public:
+  Terrain ();
+  virtual ~Terrain ();
 
+  void ProcessTerrainGroup(pugi::xml_node &xml_node);
+
+ private:
+  void GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image, const std::string &filename);
+  void DefineTerrain_(long x, long y, bool flat, const std::string &filename);
+  void InitBlendMaps_(Ogre::Terrain *terrain, int layer, const std::string &image);
+
+  std::unique_ptr<Ogre::TerrainGroup> ogre_terrain_group_;
 };
 }

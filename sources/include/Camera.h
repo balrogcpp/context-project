@@ -34,8 +34,7 @@ class SceneNode;
 }
 
 namespace xio {
-
-class Camera final : public Entity, public io::InputObserver, public Ogre::FrameListener {
+class Camera final : public Entity, public xio::InputObserver, public Ogre::FrameListener {
  public:
   enum   // enumerator values for different styles of camera movement
   {
@@ -68,7 +67,7 @@ class Camera final : public Entity, public io::InputObserver, public Ogre::Frame
   }
 //----------------------------------------------------------------------------------------------------------------------
   bool frameRenderingQueued(const Ogre::FrameEvent &event) override {
-    float elapsed = event.timeSinceLastFrame;
+    float time = event.timeSinceLastFrame;
 
     if (style_ == FREELOOK) {
       top_speed_ = move_fast_ ? run_speed_ : const_speed_;
@@ -91,9 +90,9 @@ class Camera final : public Entity, public io::InputObserver, public Ogre::Frame
 
       if (accel.squaredLength() != 0) {
         accel.normalise();
-        velocity_ += accel * top_speed_ * elapsed * 10;
+        velocity_ += accel * top_speed_ * time * 10;
       } else {
-        velocity_ -= velocity_ * elapsed * 10;
+        velocity_ -= velocity_ * time * 10;
       }
 
       if (velocity_.squaredLength() > top_speed_ * top_speed_) {
@@ -102,7 +101,7 @@ class Camera final : public Entity, public io::InputObserver, public Ogre::Frame
       }
 
       if (velocity_ != Ogre::Vector3::ZERO)
-        node_->translate(velocity_ * elapsed);
+        node_->translate(velocity_ * time);
       if (target_) {
         Ogre::Vector3 move = target_->getPosition() - prev_pos_;
         prev_pos_ = target_->getPosition();

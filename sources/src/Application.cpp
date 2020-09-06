@@ -58,7 +58,7 @@ Application::~Application() = default;
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
   conf_ = std::make_unique<YamlConfigurator>("config.yaml");
-  io_ = std::make_unique<io::InputSequencer>();
+  io_ = std::make_unique<InputSequencer>();
   renderer_ = std::make_unique<Render>();
   physics_ = std::make_unique<Physics>();
   sounds_ = std::make_unique<Sound>();
@@ -239,6 +239,12 @@ void Application::Loop_() {
           physics_->Start();
         }
 
+        auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
+        long millis_before_update = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
+        float frame_time = static_cast<float>(millis_before_update - time_of_last_frame) / 1000000;
+        time_of_last_frame = millis_before_update;
+
+        physics_->Update(frame_time);
         renderer_->RenderOneFrame();
       }
 
@@ -274,6 +280,8 @@ void Application::Go_() {
   if (cur_state_) {
     cur_state_->Create();
     quit_ = true;
+    auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
+    time_of_last_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
     Loop_();
     io_->Reset();
     Reset_();

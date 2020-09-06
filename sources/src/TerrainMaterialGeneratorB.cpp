@@ -27,7 +27,7 @@
 #include "DotSceneLoaderB.h"
 
 #include "Utils.h"
-using namespace utils;
+using namespace xio;
 
 namespace xio {
 //---------------------------------------------------------------------

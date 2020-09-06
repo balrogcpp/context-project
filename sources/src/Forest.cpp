@@ -27,7 +27,7 @@ SOFTWARE.
 
 #include "Forest.h"
 #include "Utils.h"
-using namespace utils;
+using namespace xio;
 
 namespace xio {
 #pragma pack(push, 1)

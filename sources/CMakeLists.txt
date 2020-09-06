@@ -88,7 +88,7 @@ set(CONTEXT_HEADERS
     include/RtssUtils.h
     include/Terrain.h
     include/CompositorHelper.h
-    include/ShadowSettings.h include/YamlConfigurator.h)
+    include/ShadowSettings.h include/YamlConfigurator.h include/ComponentLocator.h)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
@@ -124,7 +124,7 @@ set(CONTEXT_SOURCES
     src/Gorilla.cpp
     src/Overlay.cpp
     src/Utils.cpp
-    )
+    src/Terrain.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}

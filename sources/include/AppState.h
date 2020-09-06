@@ -42,7 +42,7 @@ class Overlay;
 class DotSceneLoaderB;
 
 class AppState
-    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public io::InputObserver, public NoCopy {
+    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public xio::InputObserver, public NoCopy {
  public:
 //----------------------------------------------------------------------------------------------------------------------
   void SwitchNextState(std::unique_ptr<AppState> &&app_state) {
@@ -56,7 +56,7 @@ class AppState
   }
 //----------------------------------------------------------------------------------------------------------------------
   void LocateComponents(YamlConfigurator *conf,
-                        io::InputSequencer *io,
+                        xio::InputSequencer *io,
                         Render *renderer,
                         Physics *physics,
                         Sound *sounds,
@@ -92,7 +92,7 @@ class AppState
   Sound *sounds_ = nullptr;
   Overlay *overlay_ = nullptr;
   DotSceneLoaderB *loader_ = nullptr;
-  io::InputSequencer *io_ = nullptr;
+  xio::InputSequencer *io_ = nullptr;
   std::unique_ptr<AppState> next_;
   bool waiting_ = false;
 };
