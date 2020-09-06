@@ -51,7 +51,7 @@ class Overlay final : public Component {
   Overlay();
   ~Overlay();
 
-  void Init() final;
+  void Create() final;
   void Clear() final;
 
   bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;

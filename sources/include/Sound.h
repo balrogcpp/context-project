@@ -53,7 +53,7 @@ class Sound final : public Component {
     OgreOggSound::OgreOggSoundManager::getSingleton().destroyAllSounds();
   }
 
-  void Init() final {};
+  void Create() final {};
   void Clear() final {};
 };
 }

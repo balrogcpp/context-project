@@ -40,7 +40,7 @@ bool Overlay::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   return true;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Overlay::Init() {
+void Overlay::Create() {
   mSilverback = new Silverback();
   mSilverback->loadAtlas("dejavu");
   auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();

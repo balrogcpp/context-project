@@ -53,7 +53,7 @@ class Physics final : public Component {
   Physics();
   virtual ~Physics();
 
-  void Init() final {}
+  void Create() final {}
   void Clear() final;
   void AddRigidBody(btRigidBody *body);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);

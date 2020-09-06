@@ -44,7 +44,7 @@ class Component
     Ogre::Root::getSingleton().removeFrameListener(this);
   }
 
-  virtual void Init() {}
+  virtual void Create() {}
   virtual void Clear() {}
 
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}

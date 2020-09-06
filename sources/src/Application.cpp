@@ -64,7 +64,7 @@ void Application::Init_() {
   sounds_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();
   loader_ = std::make_unique<DotSceneLoaderB>();
-  overlay_->Init();
+  overlay_->Create();
   renderer_->Refresh();
 
   // Texture filtering
