@@ -301,4 +301,4 @@ bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
 
   return !hasTangents && hasUVs;
 }
-} //namespace utils
+}

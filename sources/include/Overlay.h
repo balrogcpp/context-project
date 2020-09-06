@@ -67,5 +67,4 @@ class Overlay final : public Component {
   Gorilla::QuadList *quads = nullptr;
   Gorilla::MarkupText *markup = nullptr;
 };
-
 }

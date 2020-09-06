@@ -28,7 +28,6 @@ SOFTWARE.
 #include <OgreRenderTargetListener.h>
 
 namespace Context {
-
 class CubeMapCamera final : public Ogre::RenderTargetListener, public Ogre::FrameListener {
  public:
 //----------------------------------------------------------------------------------------------------------------------

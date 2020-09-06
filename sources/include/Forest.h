@@ -43,4 +43,4 @@ class Forest final : public Component {
   const float GRASS_HEIGHT = 0.5f;
   Ogre::StaticGeometry *mField = nullptr;
 };
-} //Context
+}

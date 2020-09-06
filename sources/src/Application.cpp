@@ -156,6 +156,10 @@ void Application::InitCurrState_() {
                                loader_.get());
 }
 //----------------------------------------------------------------------------------------------------------------------
+void Application::Quit() {
+  quit_ = false;
+}
+//----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
   if (evt.type == SDL_WINDOWEVENT) {
     static bool fullscreen = renderer_->GetWindow().GetFullscreen();
@@ -259,7 +263,7 @@ void Application::Loop_() {
 
       fps_frames_++;
     } else {
-      quit_ = false;
+      quit_ = true;
     }
   }
 }
@@ -297,5 +301,5 @@ int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
   }
 
   return 0;
-} //class Application
+}
 }

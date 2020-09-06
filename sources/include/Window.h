@@ -230,5 +230,5 @@ class Window : public NoCopy {
       SDL_SetWindowSize(window_, w_, h_);
     }
   }
-}; //class Window
+};
 }

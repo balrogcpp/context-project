@@ -230,5 +230,5 @@ inline void InitInstansing() {
   // update scheme for FFP supporting rendersystems
   Ogre::MaterialManager::getSingleton().setActiveScheme(viewport_->getMaterialScheme());
 }
-} //namespace rtss
+}
 #endif

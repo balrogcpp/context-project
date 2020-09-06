@@ -95,5 +95,5 @@ class AppState
   io::InputSequencer *io_ = nullptr;
   std::unique_ptr<AppState> next_;
   bool waiting_ = false;
-}; //class AppState
+};
 }

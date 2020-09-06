@@ -53,5 +53,5 @@ class Compositor final : public Component {
   GBufferSchemeHandler *ssaog_buffer_scheme_handler_;
   DepthSchemeHandler *depth_scheme_handler_;
 
-}; //class CompositorManager
+};
 }

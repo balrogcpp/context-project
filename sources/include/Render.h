@@ -72,5 +72,5 @@ class Render final : public NoCopy {
   Compositor *GetCompositor() {
     return compositor_.get();
   }
-}; //class ContextManager
+};
 }

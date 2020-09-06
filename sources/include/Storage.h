@@ -222,5 +222,5 @@ static InitGeneralResources(const std::vector<std::string> &path_list, const std
 
   return resource_list;
 }
-}; //class Storage
+};
 }

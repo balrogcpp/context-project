@@ -233,5 +233,5 @@ class VerboseListener final : public io::InputObserver {
   void SetPrint(bool print) noexcept {
     print_ = print;
   }
-}; //class DummyListener
+};
 }

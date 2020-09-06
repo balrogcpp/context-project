@@ -54,6 +54,7 @@ class Application final : public io::WindowObserver, public Ogre::LogListener {
 
   void Event(const SDL_Event &evt) final;
   void Other(Uint8 type, int32_t code, void *data1, void *data2) final;
+  void Quit() final;
 
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const std::string &logName, bool &skipThisMessage) final {
@@ -88,5 +89,5 @@ class Application final : public io::WindowObserver, public Ogre::LogListener {
     io_->RegObserver(cur_state_.get());
     Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
   }
-}; //class Application
+};
 }

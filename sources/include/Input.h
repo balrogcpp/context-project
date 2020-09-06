@@ -232,5 +232,5 @@ class InputSequencer {
       }
     }
   }
-}; //class InputSequencer
-} //namespace io
+};
+}
