@@ -238,9 +238,6 @@ void UpdatePbrShadowReceiver(MaterialPtr material) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void UpdateForestParams(MaterialPtr material) {
-}
-//----------------------------------------------------------------------------------------------------------------------
 void UpdatePbrParams(const std::string &material) {
   UpdatePbrParams(MaterialManager::getSingleton().getByName(material));
 }
@@ -251,10 +248,6 @@ void UpdatePbrShadowReceiver(const std::string &material) {
 //----------------------------------------------------------------------------------------------------------------------
 void UpdatePbrShadowCaster(const std::string &material) {
   UpdatePbrShadowCaster(MaterialManager::getSingleton().getByName(material));
-}
-//----------------------------------------------------------------------------------------------------------------------
-void UpdateForestParams(const std::string &material) {
-  UpdateForestParams(MaterialManager::getSingleton().getByName(material));
 }
 //----------------------------------------------------------------------------------------------------------------------
 void EnsureHasTangents(Ogre::MeshPtr mesh_ptr) {
@@ -281,17 +274,17 @@ bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
   bool hasTangents = false;
   bool hasUVs = false;
   const Ogre::VertexDeclaration::VertexElementList &elementList = vertex_declaration->getElements();
-  auto itor = elementList.begin();
+  auto iter = elementList.begin();
   auto end = elementList.end();
 
-  while (itor != end && !hasTangents) {
-    const Ogre::VertexElement &vertexElem = *itor;
+  while (iter != end && !hasTangents) {
+    const Ogre::VertexElement &vertexElem = *iter;
     if (vertexElem.getSemantic() == Ogre::VES_TANGENT)
       hasTangents = true;
     if (vertexElem.getSemantic() == Ogre::VES_TEXTURE_COORDINATES)
       hasUVs = true;
 
-    ++itor;
+    ++iter;
   }
 
   return !hasTangents && hasUVs;

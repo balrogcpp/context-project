@@ -24,12 +24,12 @@ SOFTWARE.
 
 #pragma once
 
+#include <OgreGpuProgramParams.h>
+#include <OgreMaterial.h>
+#include <OgreVector.h>
 #include <string>
 #include <vector>
 #include <memory>
-
-#include <OgreGpuProgramParams.h>
-#include <OgreVector.h>
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
@@ -105,9 +105,6 @@ void UpdatePbrShadowReceiver(const std::string &material);
 
 void UpdatePbrShadowCaster(Ogre::MaterialPtr material);
 void UpdatePbrShadowCaster(const std::string &material);
-
-void UpdateForestParams(Ogre::MaterialPtr material);
-void UpdateForestParams(const std::string &material);
 
 void EnsureHasTangents(Ogre::MeshPtr mesh_ptr);
 bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration);
