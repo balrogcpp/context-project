@@ -26,29 +26,13 @@ SOFTWARE.
 
 #include "NoCopy.h"
 
-#include <OgreRoot.h>
-#include <OgreFrameListener.h>
-#include <OgreRenderTargetListener.h>
-
 namespace Context {
-
-class Component
- : public Ogre::RenderTargetListener, public Ogre::FrameListener, public NoCopy {
+class Component : public NoCopy {
  public:
-//----------------------------------------------------------------------------------------------------------------------
-  Component() {
-    Ogre::Root::getSingleton().addFrameListener(this);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  virtual ~Component() {
-    Ogre::Root::getSingleton().removeFrameListener(this);
-  }
+  Component() {}
+  virtual ~Component() {}
 
-  virtual void Create() {}
-  virtual void Clear() {}
-
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override {}
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) override { return true; }
+  virtual void Create() = 0;
+  virtual void Clear() = 0;
 };
 }

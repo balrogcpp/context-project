@@ -42,6 +42,8 @@ class Compositor final : public Component {
   Compositor();
   virtual ~Compositor();
 
+  void Create() final {}
+  void Clear() final {}
  private:
   std::vector<std::string> compositor_names_;
   std::string current_compositor_;
@@ -52,6 +54,5 @@ class Compositor final : public Component {
 
   GBufferSchemeHandler *ssaog_buffer_scheme_handler_;
   DepthSchemeHandler *depth_scheme_handler_;
-
 };
 }

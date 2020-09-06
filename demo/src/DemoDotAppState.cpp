@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "Application.h"
 #include "DemoDotAppState.h"
-#include "CameraMan.h"
+#include "Camera.h"
 #include <OgreSceneLoaderManager.h>
 
 namespace Demo {
@@ -45,7 +45,7 @@ void DemoDotAppState::Clear() {
 
 void DemoDotAppState::Create() {
   Load("test.scene");
-  forest_.Create();
+//  forest_.Create();
 //  auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
 //  mSoundManager->setResourceGroupName(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 //  mSoundManager->createSound("AmbientMusicDemo",

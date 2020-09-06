@@ -27,20 +27,18 @@ SOFTWARE.
 #include "Component.h"
 
 namespace Context {
-
 class Forest final : public Component {
  public:
   Forest();
   virtual ~Forest();
 
-  void Create();
+  void Create() final;
+  void Clear() final {}
 
   void GenerateGrass();
 
  private:
-  void CreateGrassMesh();
-  const float GRASS_WIDTH = 0.5f;
-  const float GRASS_HEIGHT = 0.5f;
+  void CreateGrassMesh(float heigh);
   Ogre::StaticGeometry *mField = nullptr;
 };
 }

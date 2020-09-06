@@ -54,8 +54,6 @@ class Overlay final : public Component {
   void Create() final;
   void Clear() final;
 
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) final;
-
  private:
   Gorilla::Silverback *mSilverback = nullptr;
   Gorilla::Screen *mScreen = nullptr;

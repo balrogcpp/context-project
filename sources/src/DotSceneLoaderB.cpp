@@ -27,7 +27,7 @@ SOFTWARE.
 #include "DotSceneLoaderB.h"
 
 #include "Application.h"
-#include "CameraMan.h"
+#include "Camera.h"
 #include "TerrainMaterialGeneratorB.h"
 #include "CubeMapCamera.h"
 #include "ReflectionCamera.h"
@@ -132,45 +132,29 @@ void DotSceneLoaderB::ProcessScene_(pugi::xml_node &xml_root) {
 
   Ogre::LogManager::getSingleton().logMessage(message);
 
-  // Process environment
-  // Process terrain
-  // Process light
-  if (auto element = xml_root.child("light")) {
+  if (auto element = xml_root.child("light"))
     ProcessLight_(element);
-  }
 
-  if (auto element = xml_root.child("environment")) {
+  if (auto element = xml_root.child("environment"))
     ProcessEnvironment_(element);
-  }
 
-  if (auto element = xml_root.child("terrainGroup")) {
+  if (auto element = xml_root.child("terrainGroup"))
     ProcessTerrainGroup_(element);
-  }
 
-  // Process nodes
-  if (auto element = xml_root.child("nodes")) {
+  if (auto element = xml_root.child("nodes"))
     ProcessNodes_(element);
-  }
 
-  // Process externals
-  if (auto element = xml_root.child("externals")) {
+  if (auto element = xml_root.child("externals"))
     ProcessExternals_(element);
-  }
 
-  // Process externals
-  if (auto element = xml_root.child("forest")) {
+  if (auto element = xml_root.child("forest"))
     ProcessForest_(element);
-  }
 
-  // Process userDataReference
-  if (auto element = xml_root.child("userData")) {
+  if (auto element = xml_root.child("userData"))
     ProcessUserData_(element, attach_node_->getUserObjectBindings());
-  }
 
-  // Process camera
-  if (auto element = xml_root.child("camera")) {
+  if (auto element = xml_root.child("camera"))
     ProcessCamera_(element);
-  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessNodes_(pugi::xml_node &xml_node) {
@@ -243,13 +227,11 @@ void DotSceneLoaderB::GetTerrainImage_(bool flipX,
                                        const std::string &filename = "terrain.dds") {
   ogre_image.load(filename, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 
-  if (flipX) {
+  if (flipX)
     ogre_image.flipAroundY();
-  }
 
-  if (flipY) {
+  if (flipY)
     ogre_image.flipAroundX();
-  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::DefineTerrain_(long x, long y, bool flat, const std::string &filename = "terrain.dds") {
@@ -484,11 +466,11 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   auto *pCamera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
   if (!camera_man_) {
-    camera_man_ = std::make_shared<CameraMan>();
+    camera_man_ = std::make_shared<Camera>();
     io_->RegObserver(camera_man_.get());
   }
   camera_man_->RegCamera(parent, pCamera);
-  camera_man_->SetStyle(CameraMan::FPS);
+  camera_man_->SetStyle(Camera::FPS);
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *actor = scene->createEntity("Actor", "Icosphere.mesh");

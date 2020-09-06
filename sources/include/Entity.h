@@ -25,7 +25,7 @@ SOFTWARE.
 #pragma once
 
 namespace Context {
-class Object {
+class Entity {
 
 };
 }

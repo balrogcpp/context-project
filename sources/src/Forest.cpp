@@ -38,7 +38,7 @@ struct GrassVertex {
 };
 #pragma pack(pop)
 //----------------------------------------------------------------------------------------------------------------------
-void Forest::CreateGrassMesh() {
+void Forest::CreateGrassMesh(float heigh) {
   if (Ogre::MeshManager::getSingleton().getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
     return;
 
@@ -74,15 +74,15 @@ void Forest::CreateGrassMesh() {
   for (int i = 0; i < 2; i++)  // each grass mesh consists of 3 planes
   {
     // planes intersect along the Y axis with 60 degrees between them
-    float x = Ogre::Math::Cos(Ogre::Degree(i * 60)) * GRASS_WIDTH / 2;
-    float z = Ogre::Math::Sin(Ogre::Degree(i * 60)) * GRASS_WIDTH / 2;
+    float x = Ogre::Math::Cos(Ogre::Degree(i * 60)) * heigh/2.0;
+    float z = Ogre::Math::Sin(Ogre::Degree(i * 60)) * heigh/2.0;
 
     for (int j = 0; j < 4; j++)  // each plane has 4 vertices
     {
       GrassVertex &vert = verts[i * 4 + j];
 
       vert.x = j < 2 ? -x : x;
-      vert.y = j % 2 ? 0 : GRASS_HEIGHT;
+      vert.y = j % 2 ? 0 : heigh;
       vert.z = j < 2 ? -z : z;
 
       // all normals point straight up
@@ -132,7 +132,7 @@ Forest::~Forest() {
 void Forest::GenerateGrass() {
   Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   // create our grass mesh, and Create a grass entity from it
-  CreateGrassMesh();
+  CreateGrassMesh(0.5);
 
   static const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
   static const Ogre::uint32 SURFACE_MASK = 0x00F;

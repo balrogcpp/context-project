@@ -62,7 +62,7 @@ set(BTOGRE_HEADERS
 set(CONTEXT_HEADERS
     include/Application.h
     include/AppState.h
-    include/CameraMan.h
+    include/Camera.h
     include/Exception.h
     include/Input.h
     include/pcheader.h
@@ -94,7 +94,7 @@ set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
     ${OGGSOUND_HEADERS}
     ${CONTEXT_HEADERS}
-    include/Object.h)
+    include/Entity.h)
 
 set(BTOGRE_SOURCES
     btogre/src/BtOgre.cpp

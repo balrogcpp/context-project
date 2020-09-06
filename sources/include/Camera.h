@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include <OgreRoot.h>
 #include "Input.h"
-#include "Object.h"
+#include "Entity.h"
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 
 namespace Ogre {
@@ -35,7 +35,7 @@ class SceneNode;
 
 namespace Context {
 
-class CameraMan final :public Object, public io::InputObserver, public Ogre::FrameListener {
+class Camera final : public Entity, public io::InputObserver, public Ogre::FrameListener {
  public:
   enum   // enumerator values for different styles of camera movement
   {
@@ -45,11 +45,11 @@ class CameraMan final :public Object, public io::InputObserver, public Ogre::Fra
     MANUAL
   };
 
-  CameraMan() {
+  Camera() {
     Ogre::Root::getSingleton().addFrameListener(this);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  ~CameraMan() {
+  ~Camera() {
     Ogre::Root::getSingleton().removeFrameListener(this);
   }
 

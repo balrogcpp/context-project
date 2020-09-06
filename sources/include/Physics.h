@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma once
 
 #include "Component.h"
+#include <OgreFrameListener.h>
 
 #include <OgreAny.h>
 
@@ -48,7 +49,7 @@ class btCollisionObject;
 
 namespace Context {
 
-class Physics final : public Component {
+class Physics final : public Component, public Ogre::FrameListener{
  public:
   Physics();
   virtual ~Physics();

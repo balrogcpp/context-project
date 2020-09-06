@@ -35,11 +35,6 @@ Overlay::Overlay() {}
 Overlay::~Overlay() {}
 
 //----------------------------------------------------------------------------------------------------------------------
-bool Overlay::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-//  caption->text(std::to_string(Application::Instance().GetFpsFrames()));
-  return true;
-}
-//----------------------------------------------------------------------------------------------------------------------
 void Overlay::Create() {
   mSilverback = new Silverback();
   mSilverback->loadAtlas("dejavu");

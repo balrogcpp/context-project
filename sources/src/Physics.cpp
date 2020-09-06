@@ -45,6 +45,7 @@ Physics::Physics() {
     phy_world_->setDebugDrawer(dbg_draw_.get());
   }
 
+  Ogre::Root::getSingleton().addFrameListener(this);
   pause_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -80,6 +81,7 @@ void Physics::Clear() {
 
   collision_shapes_.clear();
   rigid_bodies_.clear();
+  Ogre::Root::getSingleton().removeFrameListener(this);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::AddRigidBody(btRigidBody *body) {

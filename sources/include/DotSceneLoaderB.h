@@ -47,7 +47,7 @@ class VertexDeclaration;
 }
 
 namespace Context {
-class CameraMan;
+class Camera;
 class JsonConfigurator;
 class YamlConfigurator;
 class Render;
@@ -60,6 +60,9 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();
+
+  void Create() final {}
+  void Clear() final {}
 
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
   void Load(const std::string &filename, const std::string &group_name, Ogre::SceneNode *root_node);
@@ -93,7 +96,7 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   void InitBlendMaps_(Ogre::Terrain *terrain, int layer, const std::string &image);
 
   std::unique_ptr<ReflectionCamera> rcamera_;
-  std::shared_ptr<CameraMan> camera_man_;
+  std::shared_ptr<Camera> camera_man_;
   Ogre::SceneManager *scene_manager_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;
   std::string group_name_;
