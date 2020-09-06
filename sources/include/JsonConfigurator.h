@@ -30,7 +30,7 @@ SOFTWARE.
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
 
-namespace Context {
+namespace xio {
 class JsonParserException : public std::exception {
  public:
   JsonParserException() = default;

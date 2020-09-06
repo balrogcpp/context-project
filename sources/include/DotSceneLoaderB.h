@@ -46,7 +46,7 @@ class TerrainGlobalOptions;
 class VertexDeclaration;
 }
 
-namespace Context {
+namespace xio {
 class Camera;
 class JsonConfigurator;
 class YamlConfigurator;

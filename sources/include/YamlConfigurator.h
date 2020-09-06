@@ -28,7 +28,7 @@ SOFTWARE.
 #include <filesystem>
 #include <string>
 
-namespace Context {
+namespace xio {
 class YamlParserException : public std::exception {
  public:
   YamlParserException() = default;

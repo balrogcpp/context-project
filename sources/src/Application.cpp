@@ -36,7 +36,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 #endif
 
-namespace Context {
+namespace xio {
 Application::Application() {
   try {
     Init_();
@@ -116,6 +116,8 @@ void Application::Init_() {
   io_->RegWinObserver(this);
   renderer_->Resize(conf_->Get<int>("window_width"),
                     conf_->Get<int>("window_high"), conf_->Get<bool>("window_fullscreen"));
+  renderer_->GetWindow().SetCaption(conf_->Get<std::string>("window_caption"));
+
   if (!verbose_) {
     auto *logger = new Ogre::LogManager();
     std::string log_name = "Ogre.log";

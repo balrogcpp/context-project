@@ -32,7 +32,7 @@ SOFTWARE.
 
 namespace Demo {
 
-class DemoDotAppState : public Context::AppState {
+class DemoDotAppState : public xio::AppState {
  public:
    DemoDotAppState();
    ~DemoDotAppState();
@@ -42,7 +42,7 @@ class DemoDotAppState : public Context::AppState {
     void KeyDown(SDL_Keycode sym) final;
 
  private:
-  Context::Forest forest_;
+  xio::Forest forest_;
 };
 
 }

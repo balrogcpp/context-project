@@ -32,7 +32,7 @@ SOFTWARE.
 #include <OgreRoot.h>
 #include <OgreSceneLoaderManager.h>
 
-namespace Context {
+namespace xio {
 class JsonConfigurator;
 class YamlConfigurator;
 class Render;

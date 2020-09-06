@@ -33,7 +33,7 @@ namespace Ogre {
 class SceneNode;
 }
 
-namespace Context {
+namespace xio {
 
 class Camera final : public Entity, public io::InputObserver, public Ogre::FrameListener {
  public:

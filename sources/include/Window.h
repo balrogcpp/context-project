@@ -35,7 +35,7 @@ extern "C" {
 #include <string>
 #include <cinttypes>
 
-namespace Context {
+namespace xio {
 class Window : public NoCopy {
  public:
 //----------------------------------------------------------------------------------------------------------------------
@@ -166,7 +166,7 @@ class Window : public NoCopy {
   SDL_Window *window_ = nullptr;
   uint32_t flags_ = 0;
   SDL_GLContext context_ = nullptr;
-  std::string caption_ = "My Demo";
+  std::string caption_;
   bool f_ = false;
   int32_t w_ = 1024;
   int32_t h_ = 768;
@@ -180,6 +180,11 @@ class Window : public NoCopy {
 //----------------------------------------------------------------------------------------------------------------------
   inline std::string GetCaption() const noexcept {
     return caption_;
+  }
+
+  inline void SetCaption(const std::string &caption) {
+    caption_ = caption;
+    SDL_SetWindowTitle(window_, caption.c_str());
   }
 
   inline std::pair<uint32_t, uint32_t> GetSize() const noexcept {

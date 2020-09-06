@@ -29,7 +29,7 @@
 #include "Utils.h"
 using namespace utils;
 
-namespace Context {
+namespace xio {
 //---------------------------------------------------------------------
 TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
   mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));

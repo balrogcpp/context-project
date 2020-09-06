@@ -38,7 +38,7 @@ class SceneManager;
 class RenderWindow;
 }
 
-namespace Context {
+namespace xio {
 class Render final : public NoCopy {
  public:
   Render();

@@ -28,7 +28,7 @@ SOFTWARE.
 #include <exception>
 #include <utility>
 
-namespace Context {
+namespace xio {
 
 class Exception : public std::exception {
  public:

@@ -28,7 +28,7 @@ SOFTWARE.
 #include "Storage.h"
 #include "RtssUtils.h"
 
-namespace Context {
+namespace xio {
 Render::Render() {
   root_ = new Ogre::Root("", "", "");
 

@@ -44,7 +44,7 @@ class QuadList;
 class MarkupText;
 }
 
-namespace Context {
+namespace xio {
 
 class Overlay final : public Component {
  public:

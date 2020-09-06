@@ -30,7 +30,7 @@ SOFTWARE.
 
 using namespace Gorilla;
 
-namespace Context {
+namespace xio {
 Overlay::Overlay() {}
 Overlay::~Overlay() {}
 

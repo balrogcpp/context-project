@@ -29,7 +29,7 @@ SOFTWARE.
 #include "Utils.h"
 using namespace utils;
 
-namespace Context {
+namespace xio {
 #pragma pack(push, 1)
 struct GrassVertex {
   float x, y, z;

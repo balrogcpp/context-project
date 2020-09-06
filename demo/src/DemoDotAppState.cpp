@@ -29,7 +29,7 @@ SOFTWARE.
 
 namespace Demo {
 
-using namespace Context;
+using namespace xio;
 
 DemoDotAppState::DemoDotAppState() {}
 DemoDotAppState::~DemoDotAppState() {}

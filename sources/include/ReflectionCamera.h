@@ -34,7 +34,7 @@ class Texture;
 class SceneNode;
 }
 
-namespace Context {
+namespace xio {
 
 class ReflectionCamera final : public Ogre::RenderTargetListener, public Ogre::FrameListener {
  public:

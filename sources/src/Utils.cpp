@@ -27,7 +27,7 @@ SOFTWARE.
 #include "Render.h"
 
 using namespace Ogre;
-using namespace Context;
+using namespace xio;
 
 namespace utils {
 //----------------------------------------------------------------------------------------------------------------------

@@ -30,12 +30,12 @@ namespace Ogre {
 class Material;
 }
 
-namespace Context {
+namespace xio {
 class GBufferSchemeHandler;
 class DepthSchemeHandler;
 }
 
-namespace Context {
+namespace xio {
 
 class Compositor final : public Component {
  public:

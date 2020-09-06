@@ -32,7 +32,7 @@ SOFTWARE.
 #include <iostream>
 #include <tuple>
 
-namespace Context {
+namespace xio {
 class StorageException : public std::exception {
  public:
   StorageException() = default;

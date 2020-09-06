@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include "NoCopy.h"
 
-namespace Context {
+namespace xio {
 class Component : public NoCopy {
  public:
   Component() {}

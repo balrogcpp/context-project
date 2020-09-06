@@ -47,7 +47,7 @@ class btRigidBody;
 class btCollisionShape;
 class btCollisionObject;
 
-namespace Context {
+namespace xio {
 
 class Physics final : public Component, public Ogre::FrameListener{
  public:

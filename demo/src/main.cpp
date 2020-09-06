@@ -35,7 +35,7 @@ int main()
 #endif
 {
   try {
-    Context::Application app;
+    xio::Application app;
     auto state = std::make_unique<Demo::DemoDotAppState>();
     app.Main(move(state));
   }

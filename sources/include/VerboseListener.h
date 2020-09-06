@@ -28,7 +28,7 @@ SOFTWARE.
 
 #include <iostream>
 
-namespace Context {
+namespace xio {
 
 class VerboseListener final : public io::InputObserver {
  private:

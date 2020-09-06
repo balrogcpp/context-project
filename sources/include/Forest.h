@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include "Component.h"
 
-namespace Context {
+namespace xio {
 class Forest final : public Component {
  public:
   Forest();

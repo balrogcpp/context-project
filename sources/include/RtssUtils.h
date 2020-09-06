@@ -60,7 +60,7 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
   }
 //----------------------------------------------------------------------------------------------------------------------
   static bool FixMaterial(const std::string &material_name) {
-    using namespace Context;
+    using namespace xio;
     static std::vector<std::string> material_list_;
 
     if (find(material_list_.begin(), material_list_.end(), material_name) == material_list_.end())

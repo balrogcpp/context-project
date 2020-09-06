@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-namespace Context {
+namespace xio {
 class Entity {
 
 };

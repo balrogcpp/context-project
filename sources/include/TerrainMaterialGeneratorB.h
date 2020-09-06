@@ -32,7 +32,7 @@ class PSSMShadowCameraSetup;
 
 using namespace Ogre;
 
-namespace Context {
+namespace xio {
 class TerrainMaterialGeneratorB : public TerrainMaterialGenerator {
  public:
   TerrainMaterialGeneratorB();

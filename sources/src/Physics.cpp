@@ -25,7 +25,7 @@ SOFTWARE.
 #include "pcheader.h"
 #include "Physics.h"
 
-namespace Context {
+namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 Physics::Physics() {
   broadphase_ = std::make_shared<btAxisSweep3>(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000), 1024);

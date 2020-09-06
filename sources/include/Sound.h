@@ -27,7 +27,7 @@ SOFTWARE.
 #include "Component.h"
 #include "OgreOggSound.h"
 
-namespace Context {
+namespace xio {
 
 class Sound final : public Component {
  public:

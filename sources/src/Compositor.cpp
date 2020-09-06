@@ -28,7 +28,7 @@ SOFTWARE.
 #include "Exception.h"
 #include "CompositorHelper.h"
 
-namespace Context {
+namespace xio {
 Compositor::~Compositor() noexcept {}
 //----------------------------------------------------------------------------------------------------------------------
 Compositor::Compositor() {  bool graphics_shadows_enable_ = true;

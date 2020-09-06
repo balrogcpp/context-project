@@ -36,7 +36,7 @@ SOFTWARE.
 #include "AppState.h"
 #include "YamlConfigurator.h"
 
-namespace Context {
+namespace xio {
 class Application final : public io::WindowObserver, public Ogre::LogListener {
  public:
   Application();
@@ -50,7 +50,7 @@ class Application final : public io::WindowObserver, public Ogre::LogListener {
   void Loop_();
   void Go_();
   void InitCurrState_();
-  int Message_(const std::string &caption, const std::string &message = "");
+  int Message_(const std::string &caption, const std::string &message);
 
   void Event(const SDL_Event &evt) final;
   void Other(Uint8 type, int32_t code, void *data1, void *data2) final;

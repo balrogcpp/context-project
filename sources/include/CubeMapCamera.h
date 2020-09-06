@@ -27,7 +27,7 @@ SOFTWARE.
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 
-namespace Context {
+namespace xio {
 class CubeMapCamera final : public Ogre::RenderTargetListener, public Ogre::FrameListener {
  public:
 //----------------------------------------------------------------------------------------------------------------------

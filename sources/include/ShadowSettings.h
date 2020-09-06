@@ -30,7 +30,7 @@ SOFTWARE.
 #include <OgreShadowCameraSetupPSSM.h>
 #include <vector>
 
-namespace Context {
+namespace xio {
 class ShadowSettings : public NoCopy {
  public:
   ShadowSettings() {

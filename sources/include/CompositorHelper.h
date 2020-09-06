@@ -27,7 +27,7 @@ SOFTWARE.
 #include <OgreMaterial.h>
 #include <OgreMaterialManager.h>
 
-namespace Context {
+namespace xio {
 class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   GBufferSchemeHandler() {

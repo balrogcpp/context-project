@@ -35,7 +35,7 @@ SOFTWARE.
 
 using namespace utils;
 
-namespace Context {
+namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::DotSceneLoaderB() {
   if (Ogre::SceneLoaderManager::getSingleton()._getSceneLoader("DotScene")) {
