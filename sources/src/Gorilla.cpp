@@ -36,7 +36,7 @@
 #if OGRE_VERSION < 67584 // 1.8.0
 template<> Gorilla::Silverback* Ogre::Singleton<Gorilla::Silverback>::ms_Singleton = 0;
 #else
-template<> Gorilla::Silverback* Ogre::Singleton<Gorilla::Silverback>::msSingleton = 0;
+template<> Gorilla::Silverback *Ogre::Singleton<Gorilla::Silverback>::msSingleton = 0;
 #endif
 
 #define PUSH_VERTEX(VERTICES, VERTEX, X, Y, UV, COLOUR)   \
@@ -71,23 +71,21 @@ template<> Gorilla::Silverback* Ogre::Singleton<Gorilla::Silverback>::msSingleto
   PUSH_VERTEX(VERTICES, VERTEX, POSITIONS[2].x, POSITIONS[2].y, UV[2], COLOUR) \
   PUSH_VERTEX(VERTICES, VERTEX, POSITIONS[1].x, POSITIONS[1].y, UV[1], COLOUR)
 
+namespace Gorilla {
 
-namespace Gorilla
-{
-
-enum
-{
+enum {
   SCREEN_RENDERQUEUE = Ogre::RENDER_QUEUE_OVERLAY
 };
 
-Ogre::ColourValue rgb(Ogre::uchar r, Ogre::uchar g, Ogre::uchar b, Ogre::uchar a )
-{
+Ogre::ColourValue rgb(Ogre::uchar r, Ogre::uchar g, Ogre::uchar b, Ogre::uchar a) {
   static const Ogre::Real inv255 = Ogre::Real(0.00392156863);
-  return Ogre::ColourValue(Ogre::Real(r) * inv255, Ogre::Real(g) * inv255, Ogre::Real(b) * inv255, Ogre::Real(a) * inv255);
+  return Ogre::ColourValue(Ogre::Real(r) * inv255,
+                           Ogre::Real(g) * inv255,
+                           Ogre::Real(b) * inv255,
+                           Ogre::Real(a) * inv255);
 }
 
-Ogre::ColourValue webcolour(Colours::Colour web_colour, Ogre::Real alpha)
-{
+Ogre::ColourValue webcolour(Colours::Colour web_colour, Ogre::Real alpha) {
   static const Ogre::Real inv255 = Ogre::Real(0.00392156863);
   Ogre::ColourValue ret;
   ret.b = Ogre::Real(web_colour & 0xFF) * inv255;
@@ -97,8 +95,7 @@ Ogre::ColourValue webcolour(Colours::Colour web_colour, Ogre::Real alpha)
   return ret;
 }
 
-TextureAtlas::TextureAtlas(const Ogre::String& gorillaFile, const Ogre::String& groupName)
-{
+TextureAtlas::TextureAtlas(const Ogre::String &gorillaFile, const Ogre::String &groupName) {
 
   _reset();
   _load(gorillaFile, groupName);
@@ -107,71 +104,58 @@ TextureAtlas::TextureAtlas(const Ogre::String& gorillaFile, const Ogre::String& 
   _create3DMaterial();
 }
 
-TextureAtlas::~TextureAtlas()
-{
-  for (std::map<Ogre::uint, GlyphData*>::iterator it = mGlyphData.begin(); it != mGlyphData.end(); it++)
-  {
+TextureAtlas::~TextureAtlas() {
+  for (std::map<Ogre::uint, GlyphData *>::iterator it = mGlyphData.begin(); it != mGlyphData.end(); it++) {
     OGRE_DELETE (*it).second;
   }
 
-  for (std::map<Ogre::String, Sprite*>::iterator it = mSprites.begin(); it != mSprites.end(); it++)
-  {
+  for (std::map<Ogre::String, Sprite *>::iterator it = mSprites.begin(); it != mSprites.end(); it++) {
     OGRE_DELETE (*it).second;
   }
 
 }
 
-void  TextureAtlas::_reset()
-{
+void TextureAtlas::_reset() {
   refreshMarkupColours();
 }
 
-void  TextureAtlas::_load(const Ogre::String& gorillaFile, const Ogre::String& groupName)
-{
+void TextureAtlas::_load(const Ogre::String &gorillaFile, const Ogre::String &groupName) {
 
   Ogre::ConfigFile f;
   f.loadFromResourceSystem(gorillaFile, groupName, " ", true);
   Ogre::ConfigFile::SectionIterator seci = f.getSectionIterator();
 
   Ogre::String secName;
-  while (seci.hasMoreElements())
-  {
+  while (seci.hasMoreElements()) {
 
     secName = seci.peekNextKey();
     Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
 
     Ogre::StringUtil::toLowerCase(secName);
 
-    if (secName == "texture")
-    {
+    if (secName == "texture") {
       settings->find("file")->second.append("~" + groupName);
       _loadTexture(settings);
-    }
-    else if (Ogre::StringUtil::startsWith(secName, "font.", false))
-    {
+    } else if (Ogre::StringUtil::startsWith(secName, "font.", false)) {
       Ogre::uint index = Ogre::StringConverter::parseUnsignedInt(secName.substr(5));
-      GlyphData* glyphData = OGRE_NEW GlyphData();
+      GlyphData *glyphData = OGRE_NEW GlyphData();
       mGlyphData[index] = glyphData;
 
       _loadGlyphs(settings, glyphData);
       _loadKerning(settings, glyphData);
       _loadVerticalOffsets(settings, glyphData);
-    }
-    else if (secName == "sprites")
+    } else if (secName == "sprites")
       _loadSprites(settings);
 
   }
 
 }
 
-void  TextureAtlas::_loadTexture(Ogre::ConfigFile::SettingsMultiMap* settings)
-{
-
+void TextureAtlas::_loadTexture(Ogre::ConfigFile::SettingsMultiMap *settings) {
 
   Ogre::String name, data;
   Ogre::ConfigFile::SettingsMultiMap::iterator i;
-  for (i = settings->begin(); i != settings->end(); ++i)
-  {
+  for (i = settings->begin(); i != settings->end(); ++i) {
     name = i->first;
     data = i->second;
 
@@ -184,15 +168,13 @@ void  TextureAtlas::_loadTexture(Ogre::ConfigFile::SettingsMultiMap* settings)
     // file texturename ~groupname
     // >  file myatlas.png
     // >  file myatlas.png ~loadinggroup
-    if (name == "file")
-    {
+    if (name == "file") {
       Ogre::String textureName = data;
       Ogre::String groupName = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
       size_t groupSplit = data.find_first_of('~');
-      if (groupSplit != std::string::npos)
-      {
+      if (groupSplit != std::string::npos) {
         textureName = data.substr(0, groupSplit);
-        groupName = data.substr(groupSplit+1);
+        groupName = data.substr(groupSplit + 1);
         Ogre::StringUtil::trim(textureName);
         Ogre::StringUtil::trim(groupName);
       }
@@ -211,8 +193,7 @@ void  TextureAtlas::_loadTexture(Ogre::ConfigFile::SettingsMultiMap* settings)
     }
       // layer x y
       // >  layer 100 105
-    else if (name == "whitepixel")
-    {
+    else if (name == "whitepixel") {
       mWhitePixel = Ogre::StringConverter::parseVector2(data);
       mWhitePixel.x *= mInverseTextureSize.x;
       mWhitePixel.y *= mInverseTextureSize.y;
@@ -220,19 +201,16 @@ void  TextureAtlas::_loadTexture(Ogre::ConfigFile::SettingsMultiMap* settings)
 
   }
 
-
 }
 
-void  TextureAtlas::_loadGlyphs(Ogre::ConfigFile::SettingsMultiMap* settings, GlyphData* glyphData)
-{
+void TextureAtlas::_loadGlyphs(Ogre::ConfigFile::SettingsMultiMap *settings, GlyphData *glyphData) {
 
   Ogre::String name, data;
   Ogre::ConfigFile::SettingsMultiMap::iterator i;
 
   Ogre::StringVector str_values;
-  Ogre::Vector2  offset(0,0);
-  for (i = settings->begin(); i != settings->end(); ++i)
-  {
+  Ogre::Vector2 offset(0, 0);
+  for (i = settings->begin(); i != settings->end(); ++i) {
 
     name = i->first;
     data = i->second;
@@ -245,67 +223,57 @@ void  TextureAtlas::_loadGlyphs(Ogre::ConfigFile::SettingsMultiMap* settings, Gl
 
     // lineheight x y
     // >  offset 0 80
-    if (name == "offset")
-    {
+    if (name == "offset") {
       offset = Ogre::StringConverter::parseVector2(data);
       continue;
     }
       // lineheight lineheight
       // >  lineheight 15
-    else if (name == "lineheight")
-    {
+    else if (name == "lineheight") {
       glyphData->mLineHeight = Ogre::StringConverter::parseReal(data);
       continue;
     }
       // spacelength spacelength
       // >  spacelength 3
-    else if (name == "spacelength")
-    {
+    else if (name == "spacelength") {
       glyphData->mSpaceLength = Ogre::StringConverter::parseReal(data);
       continue;
     }
       // baseline baseline
       // >  baseline 3
-    else if (name == "baseline")
-    {
+    else if (name == "baseline") {
       glyphData->mBaseline = Ogre::StringConverter::parseReal(data);
       continue;
     }
       // linespacing linespacing
       // >  linespacing 2
-    else if (name == "linespacing")
-    {
+    else if (name == "linespacing") {
       glyphData->mLineSpacing = Ogre::StringConverter::parseReal(data);
       continue;
     }
       // monowidth width
       // >  monowidth 3
-    else if (name == "monowidth")
-    {
+    else if (name == "monowidth") {
       glyphData->mMonoWidth = Ogre::StringConverter::parseReal(data);
       continue;
     }
       // range lower upper
       // >  range 33 126
-    else if (name == "range")
-    {
+    else if (name == "range") {
       Ogre::Vector2 t = Ogre::StringConverter::parseVector2(data);
       glyphData->mRangeBegin = t.x;
       glyphData->mRangeEnd = t.y;
     }
       // kerning kerning
       // >  kerning -1
-    else if (name == "letterspacing")
-    {
+    else if (name == "letterspacing") {
       glyphData->mLetterSpacing = Ogre::StringConverter::parseReal(data);
     }
   }
 
+  for (Ogre::uint index = glyphData->mRangeBegin; index <= glyphData->mRangeEnd; index++) {
 
-  for (Ogre::uint index = glyphData->mRangeBegin; index <= glyphData->mRangeEnd; index++)
-  {
-
-    Glyph* glyph = OGRE_NEW Glyph();
+    Glyph *glyph = OGRE_NEW Glyph();
     glyphData->mGlyphs.push_back(glyph);
 
     std::stringstream s;
@@ -317,31 +285,28 @@ void  TextureAtlas::_loadGlyphs(Ogre::ConfigFile::SettingsMultiMap* settings, Gl
 
     str_values = Ogre::StringUtil::split((*i).second, " ", 5);
 
-    if (str_values.size() < 4)
-    {
+    if (str_values.size() < 4) {
       //std::cout << "[Gorilla] Glyph #" << (*i).second << " does not have enough properties.\n";
       continue;
     }
 
-    glyph->uvLeft    = offset.x + Ogre::StringConverter::parseReal(  str_values[0]  );
-    glyph->uvTop     = offset.y + Ogre::StringConverter::parseReal(  str_values[1]  );
-    glyph->uvWidth   = Ogre::StringConverter::parseReal(  str_values[2]  );
-    glyph->uvHeight  = Ogre::StringConverter::parseReal(  str_values[3]  );
-    glyph->uvRight   = glyph->uvLeft + glyph->uvWidth;
-    glyph->uvBottom  = glyph->uvTop + glyph->uvHeight;
+    glyph->uvLeft = offset.x + Ogre::StringConverter::parseReal(str_values[0]);
+    glyph->uvTop = offset.y + Ogre::StringConverter::parseReal(str_values[1]);
+    glyph->uvWidth = Ogre::StringConverter::parseReal(str_values[2]);
+    glyph->uvHeight = Ogre::StringConverter::parseReal(str_values[3]);
+    glyph->uvRight = glyph->uvLeft + glyph->uvWidth;
+    glyph->uvBottom = glyph->uvTop + glyph->uvHeight;
 
     if (str_values.size() == 5)
-      glyph->glyphAdvance = Ogre::StringConverter::parseInt(  str_values[4]  );
+      glyph->glyphAdvance = Ogre::StringConverter::parseInt(str_values[4]);
     else
       glyph->glyphAdvance = glyph->uvWidth;
-
 
   }
 
 }
 
-void  TextureAtlas::_loadKerning(Ogre::ConfigFile::SettingsMultiMap* settings, GlyphData* glyphData)
-{
+void TextureAtlas::_loadKerning(Ogre::ConfigFile::SettingsMultiMap *settings, GlyphData *glyphData) {
 
   Ogre::String left_name, data;
   Ogre::ConfigFile::SettingsMultiMap::iterator i;
@@ -350,14 +315,13 @@ void  TextureAtlas::_loadKerning(Ogre::ConfigFile::SettingsMultiMap* settings, G
   int kerning;
   Ogre::StringVector str_values;
 
-  for (i = settings->begin(); i != settings->end(); ++i)
-  {
+  for (i = settings->begin(); i != settings->end(); ++i) {
 
     left_name = i->first;
     data = i->second;
     Ogre::StringUtil::toLowerCase(left_name);
 
-    if (left_name.substr(0,6) != "kerning_")
+    if (left_name.substr(0, 6) != "kerning_")
       continue;
 
     size_t comment = data.find_first_of('#');
@@ -369,8 +333,7 @@ void  TextureAtlas::_loadKerning(Ogre::ConfigFile::SettingsMultiMap* settings, G
 
     str_values = Ogre::StringUtil::split(data, " ", 2);
 
-    if (str_values.size() != 2)
-    {
+    if (str_values.size() != 2) {
       //std::cout << "[Gorilla] Kerning Glyph #" << left_name << " does not have enough properties\n";
       continue;
     }
@@ -378,29 +341,26 @@ void  TextureAtlas::_loadKerning(Ogre::ConfigFile::SettingsMultiMap* settings, G
     right_glyph_id = Ogre::StringConverter::parseUnsignedInt(str_values[0]);
     kerning = Ogre::StringConverter::parseInt(str_values[1]);
 
-
     glyphData->mGlyphs[right_glyph_id - glyphData->mRangeBegin]->kerning.push_back(Kerning(left_glyph_id, kerning));
 
   }
 
 }
 
-void  TextureAtlas::_loadVerticalOffsets(Ogre::ConfigFile::SettingsMultiMap* settings, GlyphData* glyphData)
-{
+void TextureAtlas::_loadVerticalOffsets(Ogre::ConfigFile::SettingsMultiMap *settings, GlyphData *glyphData) {
 
   Ogre::String left_name, data;
   Ogre::ConfigFile::SettingsMultiMap::iterator i;
   Ogre::uint glyph_id;
   int verticalOffset;
 
-  for (i = settings->begin(); i != settings->end(); ++i)
-  {
+  for (i = settings->begin(); i != settings->end(); ++i) {
 
     left_name = i->first;
     data = i->second;
     Ogre::StringUtil::toLowerCase(left_name);
 
-    if (left_name.substr(0,15) != "verticaloffset_")
+    if (left_name.substr(0, 15) != "verticaloffset_")
       continue;
 
     size_t comment = data.find_first_of('#');
@@ -418,15 +378,13 @@ void  TextureAtlas::_loadVerticalOffsets(Ogre::ConfigFile::SettingsMultiMap* set
 
 }
 
-void  TextureAtlas::_loadSprites(Ogre::ConfigFile::SettingsMultiMap* settings)
-{
+void TextureAtlas::_loadSprites(Ogre::ConfigFile::SettingsMultiMap *settings) {
 
   Ogre::String sprite_name, data;
   Ogre::ConfigFile::SettingsMultiMap::iterator i;
 
   Ogre::StringVector str_values;
-  for (i = settings->begin(); i != settings->end(); ++i)
-  {
+  for (i = settings->begin(); i != settings->end(); ++i) {
 
     sprite_name = i->first;
     data = i->second;
@@ -437,13 +395,12 @@ void  TextureAtlas::_loadSprites(Ogre::ConfigFile::SettingsMultiMap* settings)
 
     str_values = Ogre::StringUtil::split(data, " ", 4);
 
-    if (str_values.size() != 4)
-    {
+    if (str_values.size() != 4) {
       //std::cout << "[Gorilla] Sprite #" << sprite_name << " does not have enough properties\n" << data << "\n";
       continue;
     }
 
-    Sprite* sprite = OGRE_NEW Sprite();
+    Sprite *sprite = OGRE_NEW Sprite();
 
     sprite->uvLeft = Ogre::StringConverter::parseUnsignedInt(str_values[0]);
     sprite->uvTop = Ogre::StringConverter::parseUnsignedInt(str_values[1]);
@@ -456,22 +413,17 @@ void  TextureAtlas::_loadSprites(Ogre::ConfigFile::SettingsMultiMap* settings)
 
 }
 
-
-Ogre::MaterialPtr TextureAtlas::createOrGet2DMasterMaterial()
-{
+Ogre::MaterialPtr TextureAtlas::createOrGet2DMasterMaterial() {
   Ogre::MaterialPtr d2Material = Ogre::MaterialManager::getSingletonPtr()->getByName("Gorilla2D");
-  if (d2Material.isNull() == false)
-  {
-    Ogre::Pass* pass = d2Material->getTechnique(0)->getPass(0);
+  if (d2Material.isNull() == false) {
+    Ogre::Pass *pass = d2Material->getTechnique(0)->getPass(0);
 
-    if(pass->hasVertexProgram())
-    {
+    if (pass->hasVertexProgram()) {
       Ogre::GpuProgramPtr gpuPtr = pass->getVertexProgram();
       gpuPtr->load();
     }
 
-    if(pass->hasFragmentProgram())
-    {
+    if (pass->hasFragmentProgram()) {
       Ogre::GpuProgramPtr gpuPtr = pass->getFragmentProgram();
       gpuPtr->load();
     }
@@ -479,36 +431,33 @@ Ogre::MaterialPtr TextureAtlas::createOrGet2DMasterMaterial()
     return d2Material;
   }
 
-  d2Material = Ogre::MaterialManager::getSingletonPtr()->create("Gorilla2D", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-  Ogre::Pass* pass = d2Material->getTechnique(0)->getPass(0);
+  d2Material = Ogre::MaterialManager::getSingletonPtr()->create("Gorilla2D",
+                                                                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  Ogre::Pass *pass = d2Material->getTechnique(0)->getPass(0);
   pass->setCullingMode(Ogre::CULL_NONE);
   pass->setDepthCheckEnabled(false);
   pass->setDepthWriteEnabled(false);
   pass->setLightingEnabled(false);
   pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 
-  Ogre::TextureUnitState* texUnit = pass->createTextureUnitState();
+  Ogre::TextureUnitState *texUnit = pass->createTextureUnitState();
   texUnit->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
   texUnit->setTextureFiltering(Ogre::FO_NONE, Ogre::FO_NONE, Ogre::FO_NONE);
 
   return d2Material;
 }
 
-Ogre::MaterialPtr TextureAtlas::createOrGet3DMasterMaterial()
-{
+Ogre::MaterialPtr TextureAtlas::createOrGet3DMasterMaterial() {
   Ogre::MaterialPtr d3Material = Ogre::MaterialManager::getSingletonPtr()->getByName("Gorilla3D");
-  if (d3Material.isNull() == false)
-  {
-    Ogre::Pass* pass = d3Material->getTechnique(0)->getPass(0);
+  if (d3Material.isNull() == false) {
+    Ogre::Pass *pass = d3Material->getTechnique(0)->getPass(0);
 
-    if(pass->hasVertexProgram())
-    {
+    if (pass->hasVertexProgram()) {
       Ogre::GpuProgramPtr gpuPtr = pass->getVertexProgram();
       gpuPtr->load();
     }
 
-    if(pass->hasFragmentProgram())
-    {
+    if (pass->hasFragmentProgram()) {
       Ogre::GpuProgramPtr gpuPtr = pass->getFragmentProgram();
       gpuPtr->load();
     }
@@ -516,24 +465,23 @@ Ogre::MaterialPtr TextureAtlas::createOrGet3DMasterMaterial()
     return d3Material;
   }
 
-  d3Material = Ogre::MaterialManager::getSingletonPtr()->create("Gorilla3D", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-  Ogre::Pass* pass = d3Material->getTechnique(0)->getPass(0);
+  d3Material = Ogre::MaterialManager::getSingletonPtr()->create("Gorilla3D",
+                                                                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  Ogre::Pass *pass = d3Material->getTechnique(0)->getPass(0);
   pass->setCullingMode(Ogre::CULL_NONE);
   pass->setDepthCheckEnabled(false);
   pass->setDepthWriteEnabled(false);
   pass->setLightingEnabled(false);
   pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 
-  Ogre::TextureUnitState* texUnit = pass->createTextureUnitState();
+  Ogre::TextureUnitState *texUnit = pass->createTextureUnitState();
   texUnit->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
   texUnit->setTextureFiltering(Ogre::FO_ANISOTROPIC, Ogre::FO_ANISOTROPIC, Ogre::FO_ANISOTROPIC);
 
   return d3Material;
 }
 
-
-void  TextureAtlas::_create2DMaterial()
-{
+void TextureAtlas::_create2DMaterial() {
 
   std::string matName = "Gorilla2D." + mTexture->getName();
   m2DMaterial = Ogre::MaterialManager::getSingletonPtr()->getByName(matName);
@@ -546,8 +494,7 @@ void  TextureAtlas::_create2DMaterial()
 
 }
 
-void  TextureAtlas::_create3DMaterial()
-{
+void TextureAtlas::_create3DMaterial() {
 
   std::string matName = "Gorilla3D." + mTexture->getName();
   m3DMaterial = Ogre::MaterialManager::getSingletonPtr()->getByName(matName);
@@ -560,28 +507,26 @@ void  TextureAtlas::_create3DMaterial()
 
 }
 
-void  TextureAtlas::_calculateCoordinates()
-{
+void TextureAtlas::_calculateCoordinates() {
 
-  Ogre::RenderSystem* rs = Ogre::Root::getSingletonPtr()->getRenderSystem();
+  Ogre::RenderSystem *rs = Ogre::Root::getSingletonPtr()->getRenderSystem();
 
-  Ogre::Real texelX =  rs->getHorizontalTexelOffset(),
-      texelY =  rs->getVerticalTexelOffset();
+  Ogre::Real texelX = rs->getHorizontalTexelOffset(),
+      texelY = rs->getVerticalTexelOffset();
 
-  for (std::map<Ogre::uint, GlyphData*>::iterator gd_it = mGlyphData.begin(); gd_it != mGlyphData.end(); gd_it++)
-  {
-    for(std::vector<Glyph*>::iterator it = (*gd_it).second->mGlyphs.begin(); it != (*gd_it).second->mGlyphs.end(); it++)
-    {
+  for (std::map<Ogre::uint, GlyphData *>::iterator gd_it = mGlyphData.begin(); gd_it != mGlyphData.end(); gd_it++) {
+    for (std::vector<Glyph *>::iterator it = (*gd_it).second->mGlyphs.begin(); it != (*gd_it).second->mGlyphs.end();
+         it++) {
 
-      (*it)->uvLeft        -= texelX;
-      (*it)->uvTop         -= texelY;
-      (*it)->uvRight       += texelX;
-      (*it)->uvBottom      += texelY;
+      (*it)->uvLeft -= texelX;
+      (*it)->uvTop -= texelY;
+      (*it)->uvRight += texelX;
+      (*it)->uvBottom += texelY;
 
-      (*it)->uvLeft        *= mInverseTextureSize.x;
-      (*it)->uvTop         *= mInverseTextureSize.y;
-      (*it)->uvRight       *= mInverseTextureSize.x;
-      (*it)->uvBottom      *= mInverseTextureSize.y;
+      (*it)->uvLeft *= mInverseTextureSize.x;
+      (*it)->uvTop *= mInverseTextureSize.y;
+      (*it)->uvRight *= mInverseTextureSize.x;
+      (*it)->uvBottom *= mInverseTextureSize.y;
 
       (*it)->texCoords[TopLeft].x = (*it)->uvLeft;
       (*it)->texCoords[TopLeft].y = (*it)->uvTop;
@@ -592,21 +537,20 @@ void  TextureAtlas::_calculateCoordinates()
       (*it)->texCoords[BottomLeft].x = (*it)->uvLeft;
       (*it)->texCoords[BottomLeft].y = (*it)->uvBottom;
 
-      (*it)->glyphWidth     = (*it)->uvWidth;
-      (*it)->glyphHeight    = (*it)->uvHeight;
+      (*it)->glyphWidth = (*it)->uvWidth;
+      (*it)->glyphHeight = (*it)->uvHeight;
 
     }
   }
 
-  for (std::map<Ogre::String, Sprite*>::iterator it = mSprites.begin(); it != mSprites.end(); it++)
-  {
-    (*it).second->uvRight    = (*it).second->uvLeft + (*it).second->spriteWidth;
-    (*it).second->uvBottom   = (*it).second->uvTop  + (*it).second->spriteHeight;
+  for (std::map<Ogre::String, Sprite *>::iterator it = mSprites.begin(); it != mSprites.end(); it++) {
+    (*it).second->uvRight = (*it).second->uvLeft + (*it).second->spriteWidth;
+    (*it).second->uvBottom = (*it).second->uvTop + (*it).second->spriteHeight;
 
-    (*it).second->uvLeft    *= mInverseTextureSize.x;
-    (*it).second->uvTop     *= mInverseTextureSize.y;
-    (*it).second->uvRight   *= mInverseTextureSize.x;
-    (*it).second->uvBottom  *= mInverseTextureSize.y;
+    (*it).second->uvLeft *= mInverseTextureSize.x;
+    (*it).second->uvTop *= mInverseTextureSize.y;
+    (*it).second->uvRight *= mInverseTextureSize.x;
+    (*it).second->uvBottom *= mInverseTextureSize.y;
 
     (*it).second->texCoords[TopLeft].x = (*it).second->uvLeft;
     (*it).second->texCoords[TopLeft].y = (*it).second->uvTop;
@@ -621,30 +565,27 @@ void  TextureAtlas::_calculateCoordinates()
 
 }
 
-void   TextureAtlas::refreshMarkupColours()
-{
+void TextureAtlas::refreshMarkupColours() {
   mMarkupColour[0] = rgb(255, 255, 255);
   mMarkupColour[1] = rgb(0, 0, 0);
   mMarkupColour[2] = rgb(204, 204, 204);
   mMarkupColour[3] = rgb(254, 220, 129);
   mMarkupColour[4] = rgb(254, 138, 129);
   mMarkupColour[5] = rgb(123, 236, 110);
-  mMarkupColour[6] = rgb(44,  192, 171);
-  mMarkupColour[7] = rgb(199, 93,  142);
+  mMarkupColour[6] = rgb(44, 192, 171);
+  mMarkupColour[7] = rgb(199, 93, 142);
   mMarkupColour[8] = rgb(254, 254, 254);
-  mMarkupColour[9] = rgb(13,  13,  13);
+  mMarkupColour[9] = rgb(13, 13, 13);
 }
 
-void   TextureAtlas::setMarkupColour(Ogre::uint index, const Ogre::ColourValue& colour)
-{
+void TextureAtlas::setMarkupColour(Ogre::uint index, const Ogre::ColourValue &colour) {
   if (index > 9)
     return;
 
   mMarkupColour[index] = colour;
 }
 
-const Ogre::ColourValue &TextureAtlas::getMarkupColour(Ogre::uint index) const
-{
+const Ogre::ColourValue &TextureAtlas::getMarkupColour(Ogre::uint index) const {
   if (index > 9)
     return Ogre::ColourValue::White;
 
@@ -659,81 +600,70 @@ GlyphData::GlyphData()
       mBaseline(0),
       mLineSpacing(0),
       mLetterSpacing(0),
-      mMonoWidth(0)
-{
+      mMonoWidth(0) {
 }
 
-GlyphData::~GlyphData()
-{
+GlyphData::~GlyphData() {
 
-  for (std::vector<Glyph*>::iterator it = mGlyphs.begin(); it != mGlyphs.end(); it++)
-  {
+  for (std::vector<Glyph *>::iterator it = mGlyphs.begin(); it != mGlyphs.end(); it++) {
     OGRE_DELETE (*it);
   }
 
 }
 
-
-Silverback::Silverback()
-{
+Silverback::Silverback() {
 
   Ogre::Root::getSingletonPtr()->addFrameListener(this);
 
 }
 
-Silverback::~Silverback()
-{
+Silverback::~Silverback() {
 
   Ogre::Root::getSingletonPtr()->removeFrameListener(this);
 
   // Delete Screens.
-  for (std::vector<Screen*>::iterator it = mScreens.begin(); it != mScreens.end(); it++)
+  for (std::vector<Screen *>::iterator it = mScreens.begin(); it != mScreens.end(); it++)
     OGRE_DELETE (*it);
 
   mScreens.clear();
 
   // Delete Screens.
-  for (std::vector<ScreenRenderable*>::iterator it = mScreenRenderables.begin(); it != mScreenRenderables.end(); it++)
+  for (std::vector<ScreenRenderable *>::iterator it = mScreenRenderables.begin(); it != mScreenRenderables.end(); it++)
     OGRE_DELETE (*it);
 
   mScreenRenderables.clear();
 
   // Delete Atlases.
-  for (std::map<Ogre::String, TextureAtlas*>::iterator it = mAtlases.begin(); it != mAtlases.end(); it++)
+  for (std::map<Ogre::String, TextureAtlas *>::iterator it = mAtlases.begin(); it != mAtlases.end(); it++)
     OGRE_DELETE (*it).second;
   mAtlases.clear();
 
 }
 
-void Silverback::loadAtlas(const Ogre::String &name, const Ogre::String &group)
-{
-  TextureAtlas* atlas = OGRE_NEW TextureAtlas(name + ".gorilla", group);
+void Silverback::loadAtlas(const Ogre::String &name, const Ogre::String &group) {
+  TextureAtlas *atlas = OGRE_NEW TextureAtlas(name + ".gorilla", group);
   mAtlases[name] = atlas;
 }
 
-Screen* Silverback::createScreen(Ogre::Viewport* viewport, const Ogre::String& atlas_name)
-{
-  TextureAtlas* atlas = (*mAtlases.find(atlas_name)).second;
+Screen *Silverback::createScreen(Ogre::Viewport *viewport, const Ogre::String &atlas_name) {
+  TextureAtlas *atlas = (*mAtlases.find(atlas_name)).second;
   return createScreen(viewport, atlas);
 }
 
-Screen* Silverback::createScreen(Ogre::Viewport *viewport, TextureAtlas *atlas)
-{
-  Screen* screen = OGRE_NEW Screen(viewport, atlas);
+Screen *Silverback::createScreen(Ogre::Viewport *viewport, TextureAtlas *atlas) {
+  Screen *screen = OGRE_NEW Screen(viewport, atlas);
   mScreens.push_back(screen);
   return screen;
 }
 
-ScreenRenderable* Silverback::createScreenRenderable(const Ogre::Vector2& maxSize, const Ogre::String& atlas_name)
-{
-  TextureAtlas* atlas = (*mAtlases.find(atlas_name)).second;
-  ScreenRenderable* screen = OGRE_NEW ScreenRenderable(maxSize, atlas);
+ScreenRenderable *Silverback::createScreenRenderable(const Ogre::Vector2 &maxSize, const Ogre::String &atlas_name) {
+  TextureAtlas *atlas = (*mAtlases.find(atlas_name)).second;
+  ScreenRenderable *screen = OGRE_NEW ScreenRenderable(maxSize, atlas);
   mScreenRenderables.push_back(screen);
   return screen;
 }
 
-void Silverback::destroyScreen(Screen* screen)
-{
+void Silverback::destroyScreen(Screen *screen) {
   if (screen == 0)
     return;
 
@@ -741,46 +671,40 @@ void Silverback::destroyScreen(Screen* screen)
   OGRE_DELETE screen;
 }
 
-void Silverback::destroyScreenRenderable(ScreenRenderable* screen_renderables)
-{
+void Silverback::destroyScreenRenderable(ScreenRenderable *screen_renderables) {
   mScreenRenderables.erase(std::find(mScreenRenderables.begin(), mScreenRenderables.end(), screen_renderables));
   OGRE_DELETE screen_renderables;
 }
 
-bool Silverback::frameStarted(const Ogre::FrameEvent& evt)
-{
-  for (std::vector<ScreenRenderable*>::iterator it = mScreenRenderables.begin(); it != mScreenRenderables.end(); it++)
+bool Silverback::frameStarted(const Ogre::FrameEvent &evt) {
+  for (std::vector<ScreenRenderable *>::iterator it = mScreenRenderables.begin(); it != mScreenRenderables.end(); it++)
     (*it)->frameStarted();
 
   return true;
 }
 
-LayerContainer::LayerContainer(TextureAtlas* atlas)
-    : mIndexRedrawAll(false), mAtlas(atlas)
-{
+LayerContainer::LayerContainer(TextureAtlas *atlas)
+    : mIndexRedrawAll(false), mAtlas(atlas) {
 }
 
-LayerContainer::~LayerContainer()
-{
-  for (std::vector<Layer*>::iterator it = mLayers.begin(); it != mLayers.end(); it++)
+LayerContainer::~LayerContainer() {
+  for (std::vector<Layer *>::iterator it = mLayers.begin(); it != mLayers.end(); it++)
     OGRE_DELETE (*it);
 
   _destroyVertexBuffer();
 }
 
-Layer* LayerContainer::createLayer(Ogre::uint index)
-{
-  Layer* layer = OGRE_NEW Layer(index, this);
+Layer *LayerContainer::createLayer(Ogre::uint index) {
+  Layer *layer = OGRE_NEW Layer(index, this);
   mLayers.push_back(layer);
 
-  std::map<Ogre::uint, IndexData*>::iterator index_data = mIndexData.find( layer->getIndex() );
-  if (index_data == mIndexData.end())
-  {
+  std::map<Ogre::uint, IndexData *>::iterator index_data = mIndexData.find(layer->getIndex());
+  if (index_data == mIndexData.end()) {
     mIndexData[layer->getIndex()] = OGRE_NEW IndexData();
-    index_data = mIndexData.find( layer->getIndex() );
+    index_data = mIndexData.find(layer->getIndex());
   }
 
-  (*index_data).second->mLayers.push_back( layer );
+  (*index_data).second->mLayers.push_back(layer);
   (*index_data).second->mRedrawNeeded = true;
 
   mIndexRedrawNeeded = true;
@@ -792,22 +716,19 @@ Layer* LayerContainer::createLayer(Ogre::uint index)
     desc.
         Destroy a layer and it's contents.
 */
-void LayerContainer::destroy(Layer* layer)
-{
+void LayerContainer::destroy(Layer *layer) {
   if (layer == 0)
     return;
 
-  std::map<Ogre::uint, IndexData*>::iterator index_data = mIndexData.find( layer->getIndex() );
+  std::map<Ogre::uint, IndexData *>::iterator index_data = mIndexData.find(layer->getIndex());
 
   // Remove layer from index, and delete index if index is empty.
-  if (index_data != mIndexData.end())
-  {
-    IndexData* indexData = (*index_data).second;
+  if (index_data != mIndexData.end()) {
+    IndexData *indexData = (*index_data).second;
     indexData->mLayers.erase(std::find(indexData->mLayers.begin(), indexData->mLayers.end(), layer));
     indexData->mRedrawNeeded = true;
     mIndexRedrawNeeded = true;
-    if (indexData->mLayers.size() == 0)
-    {
+    if (indexData->mLayers.size() == 0) {
       mIndexData.erase(index_data);
       OGRE_DELETE indexData;
     }
@@ -817,17 +738,16 @@ void LayerContainer::destroy(Layer* layer)
   OGRE_DELETE layer;
 }
 
-void LayerContainer::_createVertexBuffer(size_t initialSize = 32)
-{
+void LayerContainer::_createVertexBuffer(size_t initialSize = 32) {
   mVertexBufferSize = initialSize * 6;
   mRenderOpPtr->vertexData = OGRE_NEW Ogre::VertexData;
   mRenderOpPtr->vertexData->vertexStart = 0;
 
-  Ogre::VertexDeclaration* vertexDecl = mRenderOpPtr->vertexData->vertexDeclaration;
+  Ogre::VertexDeclaration *vertexDecl = mRenderOpPtr->vertexData->vertexDeclaration;
   size_t offset = 0;
 
   // Position.
-  vertexDecl->addElement(0,0, Ogre::VET_FLOAT3, Ogre::VES_POSITION);
+  vertexDecl->addElement(0, 0, Ogre::VET_FLOAT3, Ogre::VES_POSITION);
   offset += Ogre::VertexElement::getTypeSize(Ogre::VET_FLOAT3);
 
   // Colour
@@ -850,25 +770,22 @@ void LayerContainer::_createVertexBuffer(size_t initialSize = 32)
   mRenderOpPtr->useIndexes = false;
 }
 
-void LayerContainer::_destroyVertexBuffer()
-{
+void LayerContainer::_destroyVertexBuffer() {
   OGRE_DELETE mRenderOpPtr->vertexData;
   mRenderOpPtr->vertexData = 0;
   mVertexBuffer.setNull();
   mVertexBufferSize = 0;
 }
 
-void LayerContainer::_resizeVertexBuffer(size_t requestedSize)
-{
+void LayerContainer::_resizeVertexBuffer(size_t requestedSize) {
 
   if (mVertexBufferSize == 0)
     _createVertexBuffer();
 
-  if (requestedSize > mVertexBufferSize)
-  {
+  if (requestedSize > mVertexBufferSize) {
     size_t newVertexBufferSize = 1;
 
-    while(newVertexBufferSize < requestedSize)
+    while (newVertexBufferSize < requestedSize)
       newVertexBufferSize <<= 1;
 
     mVertexBuffer = Ogre::HardwareBufferManager::getSingletonPtr()->createVertexBuffer(
@@ -884,42 +801,37 @@ void LayerContainer::_resizeVertexBuffer(size_t requestedSize)
 
 }
 
-void LayerContainer::_recalculateIndexes()
-{
+void LayerContainer::_recalculateIndexes() {
 
-  std::map<Ogre::uint, IndexData*>::iterator index_data;
+  std::map<Ogre::uint, IndexData *>::iterator index_data;
 
   // Clear all index data.
-  for(std::map< Ogre::uint, IndexData* >::iterator index_data = mIndexData.begin(); index_data != mIndexData.end(); index_data++)
-  {
+  for (std::map<Ogre::uint, IndexData *>::iterator index_data = mIndexData.begin(); index_data != mIndexData.end();
+       index_data++) {
     (*index_data).second->mVertices.remove_all();
     (*index_data).second->mLayers.clear();
     (*index_data).second->mRedrawNeeded = false;
   }
 
   // Loop through layers, and add them to IndexData
-  for(std::vector<Layer*>::iterator layer = mLayers.begin(); layer != mLayers.end(); layer++)
-  {
-    index_data = mIndexData.find( (*layer)->getIndex() );
-    if (index_data == mIndexData.end())
-    {
+  for (std::vector<Layer *>::iterator layer = mLayers.begin(); layer != mLayers.end(); layer++) {
+    index_data = mIndexData.find((*layer)->getIndex());
+    if (index_data == mIndexData.end()) {
       mIndexData[(*layer)->getIndex()] = OGRE_NEW IndexData();
-      index_data = mIndexData.find( (*layer)->getIndex() );
+      index_data = mIndexData.find((*layer)->getIndex());
     }
 
-    (*index_data).second->mLayers.push_back( (*layer) );
+    (*index_data).second->mLayers.push_back((*layer));
   }
 
   // Prune any index data that is not.
   bool deleted = false;
 
-  while(0xDEADBEEF)
-  {
+  while (0xDEADBEEF) {
     deleted = false;
-    for(std::map< Ogre::uint, IndexData* >::iterator index_data = mIndexData.begin(); index_data != mIndexData.end(); index_data++)
-    {
-      if (  (*index_data).second->mLayers.size() == 0)
-      {
+    for (std::map<Ogre::uint, IndexData *>::iterator index_data = mIndexData.begin(); index_data != mIndexData.end();
+         index_data++) {
+      if ((*index_data).second->mLayers.size() == 0) {
         OGRE_DELETE (*index_data).second;
         mIndexData.erase(index_data);
         deleted = true;
@@ -936,29 +848,26 @@ void LayerContainer::_recalculateIndexes()
 
 }
 
-void LayerContainer::_redrawIndex(Ogre::uint index, bool force)
-{
+void LayerContainer::_redrawIndex(Ogre::uint index, bool force) {
 
-  std::map<Ogre::uint, IndexData*>::iterator it = mIndexData.find( index );
+  std::map<Ogre::uint, IndexData *>::iterator it = mIndexData.find(index);
   if (it == mIndexData.end())
     return;
 
-  IndexData* indexData = (*it).second;
+  IndexData *indexData = (*it).second;
 
   indexData->mVertices.remove_all();
   indexData->mRedrawNeeded = false;
 
-  for (size_t i=0;i < indexData->mLayers.size();i++)
-  {
+  for (size_t i = 0; i < indexData->mLayers.size(); i++) {
     if (indexData->mLayers[i]->mVisible)
-      indexData->mLayers[i]->_render( indexData->mVertices, force );
+      indexData->mLayers[i]->_render(indexData->mVertices, force);
   }
 
 }
 
-void LayerContainer::_requestIndexRedraw(Ogre::uint index)
-{
-  std::map<Ogre::uint, IndexData*>::iterator it = mIndexData.find( index );
+void LayerContainer::_requestIndexRedraw(Ogre::uint index) {
+  std::map<Ogre::uint, IndexData *>::iterator it = mIndexData.find(index);
   if (it == mIndexData.end())
     return;
 
@@ -966,30 +875,25 @@ void LayerContainer::_requestIndexRedraw(Ogre::uint index)
   mIndexRedrawNeeded = true;
 }
 
-void LayerContainer::_redrawAllIndexes(bool force)
-{
+void LayerContainer::_redrawAllIndexes(bool force) {
   mIndexRedrawNeeded = false;
-  for(std::map<Ogre::uint, IndexData*>::iterator it = mIndexData.begin(); it != mIndexData.end();it++)
-  {
-    IndexData* indexData = (*it).second;
-    if (indexData->mRedrawNeeded || force)
-    {
+  for (std::map<Ogre::uint, IndexData *>::iterator it = mIndexData.begin(); it != mIndexData.end(); it++) {
+    IndexData *indexData = (*it).second;
+    if (indexData->mRedrawNeeded || force) {
       //std::cout << "+++ Drawing Index: " << (*it).first;
       indexData->mVertices.remove_all();
       indexData->mRedrawNeeded = false;
 
-      for (size_t i=0;i < indexData->mLayers.size();i++)
-      {
+      for (size_t i = 0; i < indexData->mLayers.size(); i++) {
         if (indexData->mLayers[i]->mVisible)
-          indexData->mLayers[i]->_render( indexData->mVertices, force );
+          indexData->mLayers[i]->_render(indexData->mVertices, force);
       }
     }
 
   }
 }
 
-void LayerContainer::_renderVertices(bool force)
-{
+void LayerContainer::_renderVertices(bool force) {
 
   if (mIndexRedrawNeeded == false)
     if (!force)
@@ -999,20 +903,18 @@ void LayerContainer::_renderVertices(bool force)
 
   size_t knownVertexCount = 0;
 
-  for(std::map<Ogre::uint, IndexData*>::iterator it = mIndexData.begin(); it != mIndexData.end();it++)
+  for (std::map<Ogre::uint, IndexData *>::iterator it = mIndexData.begin(); it != mIndexData.end(); it++)
     knownVertexCount += (*it).second->mVertices.size();
 
   _resizeVertexBuffer(knownVertexCount);
   //std::cout << "+++ Known Vertex Count is: " << knownVertexCount << "\n";
-  Vertex* writeIterator = (Vertex*) mVertexBuffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
+  Vertex *writeIterator = (Vertex *) mVertexBuffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
 
   size_t i = 0;
-  IndexData* indexData = 0;
-  for(std::map<Ogre::uint, IndexData*>::iterator it = mIndexData.begin(); it != mIndexData.end();it++)
-  {
+  IndexData *indexData = 0;
+  for (std::map<Ogre::uint, IndexData *>::iterator it = mIndexData.begin(); it != mIndexData.end(); it++) {
     indexData = (*it).second;
-    for (i=0;i < indexData->mVertices.size();i++)
-    {
+    for (i = 0; i < indexData->mVertices.size(); i++) {
       *writeIterator++ = indexData->mVertices[i];
     }
   }
@@ -1021,10 +923,8 @@ void LayerContainer::_renderVertices(bool force)
   mRenderOpPtr->vertexData->vertexCount = knownVertexCount;
 }
 
-
-Screen::Screen(Ogre::Viewport* viewport, TextureAtlas* atlas)
-    : LayerContainer(atlas), mViewport(viewport), mScale(1,1,1), mIsVisible(true), mCanRender(false)
-{
+Screen::Screen(Ogre::Viewport *viewport, TextureAtlas *atlas)
+    : LayerContainer(atlas), mViewport(viewport), mScale(1, 1, 1), mIsVisible(true), mCanRender(false) {
   mRenderOpPtr = &mRenderOp;
   mSceneMgr = mViewport->getCamera()->getSceneManager();
 
@@ -1042,36 +942,31 @@ Screen::Screen(Ogre::Viewport* viewport, TextureAtlas* atlas)
   mInvWidth = 1.0f / mWidth;
   mInvHeight = 1.0f / mHeight;
 
-  mVertexTransform.makeTransform(Ogre::Vector3::ZERO, mScale, Ogre::Quaternion(1,0,0,0));
+  mVertexTransform.makeTransform(Ogre::Vector3::ZERO, mScale, Ogre::Quaternion(1, 0, 0, 0));
 
   mSceneMgr->addRenderQueueListener(this);
   _createVertexBuffer();
 }
 
-Screen::~Screen()
-{
+Screen::~Screen() {
   mSceneMgr->removeRenderQueueListener(this);
 }
 
-
-void Screen::renderQueueEnded(Ogre::uint8 queueGroupId, const Ogre::String& invocation, bool& repeatThisInvocation)
-{
+void Screen::renderQueueEnded(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &repeatThisInvocation) {
   if (mRenderSystem->_getViewport() != mViewport || queueGroupId != SCREEN_RENDERQUEUE)
     return;
   if (mIsVisible && mLayers.size())
     renderOnce();
 }
 
-void Screen::_prepareRenderSystem()
-{
-  mRenderSystem->_setWorldMatrix( Ogre::Matrix4::IDENTITY );
-  mRenderSystem->_setProjectionMatrix( Ogre::Matrix4::IDENTITY );
-  mRenderSystem->_setViewMatrix( Ogre::Matrix4::IDENTITY );
+void Screen::_prepareRenderSystem() {
+  mRenderSystem->_setWorldMatrix(Ogre::Matrix4::IDENTITY);
+  mRenderSystem->_setProjectionMatrix(Ogre::Matrix4::IDENTITY);
+  mRenderSystem->_setViewMatrix(Ogre::Matrix4::IDENTITY);
   mSceneMgr->_setPass(mAtlas->get2DPass());
 }
 
-void Screen::renderOnce()
-{
+void Screen::renderOnce() {
   bool force = false;
   // force == true if viewport size changed.
   if (mWidth != mViewport->getActualWidth() || mHeight != mViewport->getActualHeight()
@@ -1080,8 +975,7 @@ void Screen::renderOnce()
 #else
       || mOrientationChanged
 #endif
-      )
-  {
+      ) {
     mWidth = mViewport->getActualWidth();
     mHeight = mViewport->getActualHeight();
 
@@ -1091,8 +985,7 @@ void Screen::renderOnce()
 #if OGRE_NO_VIEWPORT_ORIENTATIONMODE == 0
     mOrientation = mViewport->getOrientationMode();
 #else
-    if (mOrientation == Ogre::OR_DEGREE_90 || mOrientation == Ogre::OR_DEGREE_270)
-    {
+    if (mOrientation == Ogre::OR_DEGREE_90 || mOrientation == Ogre::OR_DEGREE_270) {
       std::swap(mWidth, mHeight);
       std::swap(mInvWidth, mInvHeight);
     }
@@ -1100,49 +993,46 @@ void Screen::renderOnce()
 #endif
 
     if (mOrientation == Ogre::OR_DEGREE_90)
-      mVertexTransform.makeTransform(Ogre::Vector3::ZERO, mScale, Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z));
+      mVertexTransform.makeTransform(Ogre::Vector3::ZERO,
+                                     mScale,
+                                     Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z));
     else if (mOrientation == Ogre::OR_DEGREE_180)
-      mVertexTransform.makeTransform(Ogre::Vector3::ZERO, mScale, Ogre::Quaternion(Ogre::Degree(180), Ogre::Vector3::UNIT_Z));
+      mVertexTransform.makeTransform(Ogre::Vector3::ZERO,
+                                     mScale,
+                                     Ogre::Quaternion(Ogre::Degree(180), Ogre::Vector3::UNIT_Z));
     else if (mOrientation == Ogre::OR_DEGREE_270)
-      mVertexTransform.makeTransform(Ogre::Vector3::ZERO, mScale, Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_Z));
+      mVertexTransform.makeTransform(Ogre::Vector3::ZERO,
+                                     mScale,
+                                     Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_Z));
     else
-      mVertexTransform.makeTransform(Ogre::Vector3::ZERO, mScale, Ogre::Quaternion(1,0,0,0));
-
+      mVertexTransform.makeTransform(Ogre::Vector3::ZERO, mScale, Ogre::Quaternion(1, 0, 0, 0));
 
     force = true;
   }
 
   _renderVertices(force);
-  if (mRenderOp.vertexData->vertexCount)
-  {
+  if (mRenderOp.vertexData->vertexCount) {
     _prepareRenderSystem();
     mRenderSystem->_render(mRenderOp);
   }
 }
 
-void  Screen::_transform(buffer<Vertex>& vertices, size_t begin, size_t end)
-{
+void Screen::_transform(buffer<Vertex> &vertices, size_t begin, size_t end) {
 
-
-  for (size_t i = begin; i < end; i++)
-  {
+  for (size_t i = begin; i < end; i++) {
     vertices[i].position.x = ((vertices[i].position.x) * mInvWidth) * 2 - 1;
     vertices[i].position.y = ((vertices[i].position.y) * mInvHeight) * -2 + 1;
   }
 
-  if (mVertexTransform != Ogre::Matrix4::IDENTITY)
-  {
+  if (mVertexTransform != Ogre::Matrix4::IDENTITY) {
     for (size_t i = begin; i < end; i++)
       vertices[i].position = mVertexTransform * vertices[i].position;
   }
 
 }
 
-
-
-ScreenRenderable::ScreenRenderable(const Ogre::Vector2& maxSize, TextureAtlas* atlas)
-    : LayerContainer(atlas), mMaxSize(maxSize)
-{
+ScreenRenderable::ScreenRenderable(const Ogre::Vector2 &maxSize, TextureAtlas *atlas)
+    : LayerContainer(atlas), mMaxSize(maxSize) {
   mRenderOpPtr = &mRenderOp;
 
   mBox.setInfinite();
@@ -1151,68 +1041,55 @@ ScreenRenderable::ScreenRenderable(const Ogre::Vector2& maxSize, TextureAtlas* a
   _createVertexBuffer();
 }
 
-ScreenRenderable::~ScreenRenderable()
-{
+ScreenRenderable::~ScreenRenderable() {
 }
 
-void ScreenRenderable::frameStarted()
-{
+void ScreenRenderable::frameStarted() {
   renderOnce();
 }
 
-void ScreenRenderable::renderOnce()
-{
-  if (mIndexRedrawNeeded)
-  {
+void ScreenRenderable::renderOnce() {
+  if (mIndexRedrawNeeded) {
     _renderVertices(false);
     calculateBoundingBox();
   }
 }
 
-void ScreenRenderable::calculateBoundingBox()
-{
-  IndexData* indexData = 0;
-  mBox.setExtents(0,0,0,0,0,0);
+void ScreenRenderable::calculateBoundingBox() {
+  IndexData *indexData = 0;
+  mBox.setExtents(0, 0, 0, 0, 0, 0);
   size_t i = 0;
-  for(std::map<Ogre::uint, IndexData*>::iterator it = mIndexData.begin(); it != mIndexData.end();it++)
-  {
+  for (std::map<Ogre::uint, IndexData *>::iterator it = mIndexData.begin(); it != mIndexData.end(); it++) {
     indexData = (*it).second;
-    for (i=0;i < indexData->mVertices.size();i++)
-    {
-      mBox.merge( indexData->mVertices[i].position );
+    for (i = 0; i < indexData->mVertices.size(); i++) {
+      mBox.merge(indexData->mVertices[i].position);
     }
   }
-  if (mBox.isNull() == false)
-  {
-    mBox.merge(Ogre::Vector3(0,0,-0.25f));
-    mBox.merge(Ogre::Vector3(0,0, 0.25f));
+  if (mBox.isNull() == false) {
+    mBox.merge(Ogre::Vector3(0, 0, -0.25f));
+    mBox.merge(Ogre::Vector3(0, 0, 0.25f));
 
   }
 
-  Ogre::SceneNode* node = getParentSceneNode();
+  Ogre::SceneNode *node = getParentSceneNode();
   if (node)
     node->_updateBounds();
 
 }
 
-void ScreenRenderable::_transform(buffer<Vertex>& vertices, size_t begin, size_t end)
-{
+void ScreenRenderable::_transform(buffer<Vertex> &vertices, size_t begin, size_t end) {
   Ogre::Vector2 halfSize = mMaxSize * 0.5;
-  for (size_t i = begin; i < end; i++)
-  {
+  for (size_t i = begin; i < end; i++) {
     vertices[i].position.x = (vertices[i].position.x * 0.01f) - halfSize.x;
     vertices[i].position.y = (vertices[i].position.y * -0.01f) + halfSize.y;
   }
 }
 
-
-Layer::Layer(Ogre::uint index, LayerContainer* parent)
-    : mIndex(index), mParent(parent), mVisible(true), mAlphaModifier(1.0f)
-{
+Layer::Layer(Ogre::uint index, LayerContainer *parent)
+    : mIndex(index), mParent(parent), mVisible(true), mAlphaModifier(1.0f) {
 }
 
-Layer::~Layer()
-{
+Layer::~Layer() {
   destroyAllRectangles();
   destroyAllPolygons();
   destroyAllLineLists();
@@ -1221,20 +1098,17 @@ Layer::~Layer()
   destroyAllMarkupTexts();
 }
 
-void Layer::_markDirty()
-{
+void Layer::_markDirty() {
   mParent->_requestIndexRedraw(mIndex);
 }
 
-Rectangle* Layer::createRectangle(Ogre::Real left, Ogre::Real top, Ogre::Real width, Ogre::Real height)
-{
-  Rectangle* rectangle = OGRE_NEW Rectangle(left, top, width, height, this);
+Rectangle *Layer::createRectangle(Ogre::Real left, Ogre::Real top, Ogre::Real width, Ogre::Real height) {
+  Rectangle *rectangle = OGRE_NEW Rectangle(left, top, width, height, this);
   mRectangles.push_back(rectangle);
   return rectangle;
 }
 
-void Layer::destroyRectangle(Rectangle* rectangle)
-{
+void Layer::destroyRectangle(Rectangle *rectangle) {
   if (rectangle == 0)
     return;
 
@@ -1243,29 +1117,25 @@ void Layer::destroyRectangle(Rectangle* rectangle)
   _markDirty();
 }
 
-void Layer::destroyAllRectangles()
-{
+void Layer::destroyAllRectangles() {
 
-  for (Rectangles::iterator it = mRectangles.begin(); it != mRectangles.end(); it++)
-  {
+  for (Rectangles::iterator it = mRectangles.begin(); it != mRectangles.end(); it++) {
     OGRE_DELETE (*it);
   }
 
   mRectangles.clear();
 }
 
-Polygon* Layer::createPolygon(Ogre::Real left, Ogre::Real top, Ogre::Real radius, Ogre::uint sides)
-{
+Polygon *Layer::createPolygon(Ogre::Real left, Ogre::Real top, Ogre::Real radius, Ogre::uint sides) {
   if (sides < 3)
     sides = 3;
 
-  Polygon* polygon = OGRE_NEW Polygon(left, top, radius, sides, this);
+  Polygon *polygon = OGRE_NEW Polygon(left, top, radius, sides, this);
   mPolygons.push_back(polygon);
   return polygon;
 }
 
-void Layer::destroyPolygon(Polygon* polygon)
-{
+void Layer::destroyPolygon(Polygon *polygon) {
   if (polygon == 0)
     return;
 
@@ -1274,26 +1144,22 @@ void Layer::destroyPolygon(Polygon* polygon)
   _markDirty();
 }
 
-void Layer::destroyAllPolygons()
-{
+void Layer::destroyAllPolygons() {
 
-  for (Polygons::iterator it = mPolygons.begin(); it != mPolygons.end(); it++)
-  {
+  for (Polygons::iterator it = mPolygons.begin(); it != mPolygons.end(); it++) {
     OGRE_DELETE (*it);
   }
 
   mPolygons.clear();
 }
 
-LineList* Layer::createLineList()
-{
-  LineList* linelist = OGRE_NEW LineList(this);
+LineList *Layer::createLineList() {
+  LineList *linelist = OGRE_NEW LineList(this);
   mLineLists.push_back(linelist);
   return linelist;
 }
 
-void Layer::destroyLineList(LineList* linelist)
-{
+void Layer::destroyLineList(LineList *linelist) {
   if (linelist == 0)
     return;
 
@@ -1302,26 +1168,22 @@ void Layer::destroyLineList(LineList* linelist)
   _markDirty();
 }
 
-void Layer::destroyAllLineLists()
-{
+void Layer::destroyAllLineLists() {
 
-  for (LineLists::iterator it = mLineLists.begin(); it != mLineLists.end(); it++)
-  {
+  for (LineLists::iterator it = mLineLists.begin(); it != mLineLists.end(); it++) {
     OGRE_DELETE (*it);
   }
 
   mLineLists.clear();
 }
 
-QuadList* Layer::createQuadList()
-{
-  QuadList* quadlist = OGRE_NEW QuadList(this);
+QuadList *Layer::createQuadList() {
+  QuadList *quadlist = OGRE_NEW QuadList(this);
   mQuadLists.push_back(quadlist);
   return quadlist;
 }
 
-void Layer::destroyQuadList(QuadList* quadlist)
-{
+void Layer::destroyQuadList(QuadList *quadlist) {
   if (quadlist == 0)
     return;
 
@@ -1330,26 +1192,22 @@ void Layer::destroyQuadList(QuadList* quadlist)
   _markDirty();
 }
 
-void Layer::destroyAllQuadLists()
-{
+void Layer::destroyAllQuadLists() {
 
-  for (QuadLists::iterator it = mQuadLists.begin(); it != mQuadLists.end(); it++)
-  {
+  for (QuadLists::iterator it = mQuadLists.begin(); it != mQuadLists.end(); it++) {
     OGRE_DELETE (*it);
   }
 
   mQuadLists.clear();
 }
 
-Caption* Layer::createCaption(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, const Ogre::String& text)
-{
-  Caption* caption = OGRE_NEW Caption(glyphDataIndex,x, y, text, this);
+Caption *Layer::createCaption(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, const Ogre::String &text) {
+  Caption *caption = OGRE_NEW Caption(glyphDataIndex, x, y, text, this);
   mCaptions.push_back(caption);
   return caption;
 }
 
-void Layer::destroyCaption(Caption* caption)
-{
+void Layer::destroyCaption(Caption *caption) {
   if (caption == 0)
     return;
 
@@ -1358,26 +1216,25 @@ void Layer::destroyCaption(Caption* caption)
   _markDirty();
 }
 
-void Layer::destroyAllCaptions()
-{
+void Layer::destroyAllCaptions() {
 
-  for (Captions::iterator it = mCaptions.begin(); it != mCaptions.end(); it++)
-  {
+  for (Captions::iterator it = mCaptions.begin(); it != mCaptions.end(); it++) {
     OGRE_DELETE (*it);
   }
 
   mCaptions.clear();
 }
 
-MarkupText* Layer::createMarkupText(Ogre::uint defaultGlyphIndex, Ogre::Real x, Ogre::Real y, const Ogre::String& text)
-{
-  MarkupText* markuptext = OGRE_NEW MarkupText(defaultGlyphIndex, x, y, text, this);
+MarkupText *Layer::createMarkupText(Ogre::uint defaultGlyphIndex,
+                                    Ogre::Real x,
+                                    Ogre::Real y,
+                                    const Ogre::String &text) {
+  MarkupText *markuptext = OGRE_NEW MarkupText(defaultGlyphIndex, x, y, text, this);
   mMarkupTexts.push_back(markuptext);
   return markuptext;
 }
 
-void Layer::destroyMarkupText(MarkupText* markuptext)
-{
+void Layer::destroyMarkupText(MarkupText *markuptext) {
   if (markuptext == 0)
     return;
 
@@ -1386,19 +1243,16 @@ void Layer::destroyMarkupText(MarkupText* markuptext)
   _markDirty();
 }
 
-void Layer::destroyAllMarkupTexts()
-{
+void Layer::destroyAllMarkupTexts() {
 
-  for (MarkupTexts::iterator it = mMarkupTexts.begin(); it != mMarkupTexts.end(); it++)
-  {
+  for (MarkupTexts::iterator it = mMarkupTexts.begin(); it != mMarkupTexts.end(); it++) {
     OGRE_DELETE (*it);
   }
 
   mMarkupTexts.clear();
 }
 
-void Layer::_render(buffer<Vertex>& vertices, bool force)
-{
+void Layer::_render(buffer<Vertex> &vertices, bool force) {
 
   if (mAlphaModifier == 0.0f)
     return;
@@ -1407,68 +1261,62 @@ void Layer::_render(buffer<Vertex>& vertices, bool force)
   size_t i = 0;
 
   // Render/redraw rectangles
-  for (Rectangles::iterator it = mRectangles.begin(); it != mRectangles.end(); it++)
-  {
+  for (Rectangles::iterator it = mRectangles.begin(); it != mRectangles.end(); it++) {
 
     if ((*it)->mDirty || force)
       (*it)->_redraw();
 
-    for (i=0; i < (*it)->mVertices.size(); i++)
+    for (i = 0; i < (*it)->mVertices.size(); i++)
       vertices.push_back((*it)->mVertices[i]);
 
   }
 
   // Render/redraw polygons
-  for (Polygons::iterator it = mPolygons.begin(); it != mPolygons.end(); it++)
-  {
+  for (Polygons::iterator it = mPolygons.begin(); it != mPolygons.end(); it++) {
 
     if ((*it)->mDirty || force)
       (*it)->_redraw();
 
-    for (i=0; i < (*it)->mVertices.size(); i++)
+    for (i = 0; i < (*it)->mVertices.size(); i++)
       vertices.push_back((*it)->mVertices[i]);
 
   }
 
   // Render/redraw line lists
-  for (LineLists::iterator it = mLineLists.begin(); it != mLineLists.end(); it++)
-  {
+  for (LineLists::iterator it = mLineLists.begin(); it != mLineLists.end(); it++) {
 
     if ((*it)->mDirty || force)
       (*it)->_redraw();
 
-    for (i=0; i < (*it)->mVertices.size(); i++)
+    for (i = 0; i < (*it)->mVertices.size(); i++)
       vertices.push_back((*it)->mVertices[i]);
 
   }
 
   // Render/redraw quad lists
-  for (QuadLists::iterator it = mQuadLists.begin(); it != mQuadLists.end(); it++)
-  {
+  for (QuadLists::iterator it = mQuadLists.begin(); it != mQuadLists.end(); it++) {
 
     if ((*it)->mDirty || force)
       (*it)->_redraw();
 
-    for (i=0; i < (*it)->mVertices.size(); i++)
+    for (i = 0; i < (*it)->mVertices.size(); i++)
       vertices.push_back((*it)->mVertices[i]);
 
   }
 
   // Render/redraw caption
-  for (Captions::iterator it = mCaptions.begin(); it != mCaptions.end(); it++)
-  {
+  for (Captions::iterator it = mCaptions.begin(); it != mCaptions.end(); it++) {
 
     if ((*it)->mDirty || force)
       (*it)->_redraw();
 
-    for (i=0; i < (*it)->mVertices.size(); i++)
+    for (i = 0; i < (*it)->mVertices.size(); i++)
       vertices.push_back((*it)->mVertices[i]);
 
   }
 
   // Render/redraw caption
-  for (MarkupTexts::iterator it = mMarkupTexts.begin(); it != mMarkupTexts.end(); it++)
-  {
+  for (MarkupTexts::iterator it = mMarkupTexts.begin(); it != mMarkupTexts.end(); it++) {
 
     if ((*it)->mTextDirty || force)
       (*it)->_calculateCharacters();
@@ -1476,14 +1324,13 @@ void Layer::_render(buffer<Vertex>& vertices, bool force)
     if ((*it)->mDirty || force)
       (*it)->_redraw();
 
-    for (i=0; i < (*it)->mVertices.size(); i++)
+    for (i = 0; i < (*it)->mVertices.size(); i++)
       vertices.push_back((*it)->mVertices[i]);
 
   }
 
-  if (mAlphaModifier != 1.0f)
-  {
-    for (i=begin;i < vertices.size();i++)
+  if (mAlphaModifier != 1.0f) {
+    for (i = begin; i < vertices.size(); i++)
       vertices[i].colour.a *= mAlphaModifier;
   }
 
@@ -1491,23 +1338,20 @@ void Layer::_render(buffer<Vertex>& vertices, bool force)
 
 }
 
-
-Rectangle::Rectangle(Ogre::Real left, Ogre::Real top, Ogre::Real width, Ogre::Real height, Layer* layer) : mLayer(layer)
-{
-  mDirty       = true;
-  mLeft        = left;
-  mTop         = top;
-  mRight       = left + width;
-  mBottom      = top + height;
+Rectangle::Rectangle(Ogre::Real left, Ogre::Real top, Ogre::Real width, Ogre::Real height, Layer *layer)
+    : mLayer(layer) {
+  mDirty = true;
+  mLeft = left;
+  mTop = top;
+  mRight = left + width;
+  mBottom = top + height;
   mBorderWidth = 0.0f;
-  mBackgroundColour[0] = mBackgroundColour[1] =  mBackgroundColour[2] = mBackgroundColour[3] = Ogre::ColourValue::White;
+  mBackgroundColour[0] = mBackgroundColour[1] = mBackgroundColour[2] = mBackgroundColour[3] = Ogre::ColourValue::White;
   mUV[0] = mUV[1] = mUV[2] = mUV[3] = mLayer->_getSolidUV();
 
 }
 
-
-void  Rectangle::_redraw()
-{
+void Rectangle::_redraw() {
 
   if (mDirty == false)
     return;
@@ -1516,19 +1360,26 @@ void  Rectangle::_redraw()
 
   Ogre::Real texelOffsetX = mLayer->_getTexelX(), texelOffsetY = mLayer->_getTexelY();
   Ogre::Vector2 a, b, c, d;
-  a.x = mLeft  + texelOffsetX; a.y = mTop    + texelOffsetY;
-  b.x = mRight + texelOffsetX; b.y = mTop    + texelOffsetY;
-  c.x = mLeft  + texelOffsetX; c.y = mBottom + texelOffsetY;
-  d.x = mRight + texelOffsetX; d.y = mBottom + texelOffsetY;
+  a.x = mLeft + texelOffsetX;
+  a.y = mTop + texelOffsetY;
+  b.x = mRight + texelOffsetX;
+  b.y = mTop + texelOffsetY;
+  c.x = mLeft + texelOffsetX;
+  c.y = mBottom + texelOffsetY;
+  d.x = mRight + texelOffsetX;
+  d.y = mBottom + texelOffsetY;
 
   // Border
-  if (mBorderWidth != 0)
-  {
+  if (mBorderWidth != 0) {
     Ogre::Vector2 i = a, j = b, k = c, l = d;
-    i.x -= mBorderWidth;    i.y -= mBorderWidth;
-    j.x += mBorderWidth;    j.y -= mBorderWidth;
-    k.x -= mBorderWidth;    k.y += mBorderWidth;
-    l.x += mBorderWidth;    l.y += mBorderWidth;
+    i.x -= mBorderWidth;
+    i.y -= mBorderWidth;
+    j.x += mBorderWidth;
+    j.y -= mBorderWidth;
+    k.x -= mBorderWidth;
+    k.y += mBorderWidth;
+    l.x += mBorderWidth;
+    l.y += mBorderWidth;
 
     Vertex temp;
     Ogre::Vector2 uv = mLayer->_getSolidUV();
@@ -1552,8 +1403,7 @@ void  Rectangle::_redraw()
   }
 
   // Fill
-  if (mBackgroundColour[0].a != 0)
-  {
+  if (mBackgroundColour[0].a != 0) {
     Vertex temp;
     // Triangle A
     PUSH_VERTEX(mVertices, temp, c.x, c.y, mUV[3], mBackgroundColour[3]);    // Left/Bottom  3
@@ -1570,22 +1420,20 @@ void  Rectangle::_redraw()
 
 }
 
-Polygon::Polygon(Ogre::Real left, Ogre::Real top, Ogre::Real radius, size_t sides, Layer* layer)
-    : mLayer(layer), mSprite(0)
-{
-  mDirty        = true;
+Polygon::Polygon(Ogre::Real left, Ogre::Real top, Ogre::Real radius, size_t sides, Layer *layer)
+    : mLayer(layer), mSprite(0) {
+  mDirty = true;
   mLayer->_markDirty();
-  mLeft           = left;
-  mTop            = top;
-  mRadius         = radius;
-  mSides          = sides;
-  mBackgroundColour         = Ogre::ColourValue::White;
+  mLeft = left;
+  mTop = top;
+  mRadius = radius;
+  mSides = sides;
+  mBackgroundColour = Ogre::ColourValue::White;
   mBorderColour.a = 0;
-  mBorderWidth    = 0;
+  mBorderWidth = 0;
 }
 
-void  Polygon::_redraw()
-{
+void Polygon::_redraw() {
 
   if (mDirty == false)
     return;
@@ -1601,8 +1449,7 @@ void  Polygon::_redraw()
   lastVertex.y = mTop + (mRadius * sin(theta));
   Ogre::Vector2 thisVertex;
 
-  if (mBorderWidth != 0)
-  {
+  if (mBorderWidth != 0) {
 
     Ogre::Vector2 lastOuterVertex, outerVertex, thisVertex, uv;
     uv = mLayer->_getSolidUV();
@@ -1610,9 +1457,7 @@ void  Polygon::_redraw()
     lastOuterVertex.x = mLeft + ((mRadius + mBorderWidth) * cos(theta));
     lastOuterVertex.y = mTop + ((mRadius + mBorderWidth) * sin(theta));
 
-
-    for (size_t i=0;i < mSides;i++)
-    {
+    for (size_t i = 0; i < mSides; i++) {
       theta += inc;
       thisVertex.x = mLeft + (mRadius * Ogre::Math::Cos(theta));
       thisVertex.y = mTop + (mRadius * Ogre::Math::Sin(theta));
@@ -1627,10 +1472,8 @@ void  Polygon::_redraw()
     }
   }
 
-  if (mBackgroundColour.a != 0)
-  {
-    if (mSprite)
-    {
+  if (mBackgroundColour.a != 0) {
+    if (mSprite) {
       Ogre::Real xRadius = mSprite->spriteWidth * 0.5f;
       Ogre::Real yRadius = mSprite->spriteHeight * 0.5f;
 
@@ -1646,8 +1489,7 @@ void  Polygon::_redraw()
       lastUV.y = baseUV.y + (yRadius * Ogre::Math::Sin(theta));
       lastUV /= texSize;
 
-      for (size_t i=0;i < mSides;i++)
-      {
+      for (size_t i = 0; i < mSides; i++) {
         PUSH_VERTEX(mVertices, temp, mLeft, mTop, centerUV, mBackgroundColour);
         theta += inc;
         thisVertex.x = mLeft + (mRadius * Ogre::Math::Cos(theta));
@@ -1660,13 +1502,10 @@ void  Polygon::_redraw()
         lastVertex = thisVertex;
         lastUV = thisUV;
       }
-    }
-    else
-    {
+    } else {
       Ogre::Vector2 uv = uv = mLayer->_getSolidUV();
 
-      for (size_t i=0;i < mSides;i++)
-      {
+      for (size_t i = 0; i < mSides; i++) {
         PUSH_VERTEX(mVertices, temp, mLeft, mTop, uv, mBackgroundColour);
         theta += inc;
         thisVertex.x = mLeft + (mRadius * Ogre::Math::Cos(theta));
@@ -1682,39 +1521,31 @@ void  Polygon::_redraw()
 
 }
 
-
-
-LineList::LineList(Layer* layer) : mLayer(layer)
-{
+LineList::LineList(Layer *layer) : mLayer(layer) {
   mDirty = false;
 }
 
-void  LineList::begin(Ogre::Real lineThickness, const Ogre::ColourValue& colour)
-{
+void LineList::begin(Ogre::Real lineThickness, const Ogre::ColourValue &colour) {
   mDirty = false;
   mPositions.remove_all();
   mThickness = lineThickness;
   mColour = colour;
 }
 
-void  LineList::position(Ogre::Real x, Ogre::Real y)
-{
-  mPositions.push_back(Ogre::Vector2(x,y));
+void LineList::position(Ogre::Real x, Ogre::Real y) {
+  mPositions.push_back(Ogre::Vector2(x, y));
 }
 
-void  LineList::position(const Ogre::Vector2& position)
-{
+void LineList::position(const Ogre::Vector2 &position) {
   mPositions.push_back(position);
 }
 
-void  LineList::end(bool closed)
-{
+void LineList::end(bool closed) {
   mIsClosed = closed;
   mDirty = true;
 }
 
-void  LineList::_redraw()
-{
+void LineList::_redraw() {
   if (mDirty == false)
     return;
 
@@ -1731,13 +1562,12 @@ void  LineList::_redraw()
 
   size_t i = 1;
 
-  for (;i < mPositions.size();i++)
-  {
+  for (; i < mPositions.size(); i++) {
 
-    perp      = (mPositions[i] - mPositions[i-1]).perpendicular().normalisedCopy();
-    lastLeft  = mPositions[i-1] - perp * halfThickness;
-    lastRight = mPositions[i-1] + perp * halfThickness;
-    thisLeft  = mPositions[i] - perp * halfThickness;
+    perp = (mPositions[i] - mPositions[i - 1]).perpendicular().normalisedCopy();
+    lastLeft = mPositions[i - 1] - perp * halfThickness;
+    lastRight = mPositions[i - 1] + perp * halfThickness;
+    thisLeft = mPositions[i] - perp * halfThickness;
     thisRight = mPositions[i] + perp * halfThickness;
 
     // Triangle A
@@ -1751,13 +1581,12 @@ void  LineList::_redraw()
 
   }
 
-  if (mIsClosed)
-  {
+  if (mIsClosed) {
     i = mPositions.size() - 1;
-    perp      = (mPositions[0] - mPositions[i]).perpendicular().normalisedCopy();
-    lastLeft  = mPositions[i] - perp * halfThickness;
+    perp = (mPositions[0] - mPositions[i]).perpendicular().normalisedCopy();
+    lastLeft = mPositions[i] - perp * halfThickness;
     lastRight = mPositions[i] + perp * halfThickness;
-    thisLeft  = mPositions[0] - perp * halfThickness;
+    thisLeft = mPositions[0] - perp * halfThickness;
     thisRight = mPositions[0] + perp * halfThickness;
 
     // Triangle A
@@ -1773,47 +1602,47 @@ void  LineList::_redraw()
 
 }
 
-QuadList::QuadList(Layer* layer)
-    : mLayer(layer)
-{
+QuadList::QuadList(Layer *layer)
+    : mLayer(layer) {
   mWhiteUV = mLayer->_getSolidUV();
 }
 
-void  QuadList::begin()
-{
+void QuadList::begin() {
   mQuads.remove_all();
   mDirty = false;
 }
 
-void  QuadList::rectangle(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, const Ogre::ColourValue colour)
-{
+void QuadList::rectangle(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, const Ogre::ColourValue colour) {
   Quad q;
-  q.mPosition[TopLeft].x = x; q.mPosition[TopLeft].y = y;
-  q.mPosition[TopRight].x = x + w; q.mPosition[TopRight].y = y;
-  q.mPosition[BottomRight].x = x + w; q.mPosition[BottomRight].y = y + h;
-  q.mPosition[BottomLeft].x = x; q.mPosition[BottomLeft].y = y + h;
-
+  q.mPosition[TopLeft].x = x;
+  q.mPosition[TopLeft].y = y;
+  q.mPosition[TopRight].x = x + w;
+  q.mPosition[TopRight].y = y;
+  q.mPosition[BottomRight].x = x + w;
+  q.mPosition[BottomRight].y = y + h;
+  q.mPosition[BottomLeft].x = x;
+  q.mPosition[BottomLeft].y = y + h;
 
   q.mColour[0] = q.mColour[1] = q.mColour[2] = q.mColour[3] = colour;
   q.mUV[0] = q.mUV[1] = q.mUV[2] = q.mUV[3] = mWhiteUV;
   mQuads.push_back(q);
 }
 
-void  QuadList::gradient(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, Gradient gradient, const Ogre::ColourValue& colourA, const Ogre::ColourValue& colourB)
-{
+void QuadList::gradient(Ogre::Real x,
+                        Ogre::Real y,
+                        Ogre::Real w,
+                        Ogre::Real h,
+                        Gradient gradient,
+                        const Ogre::ColourValue &colourA,
+                        const Ogre::ColourValue &colourB) {
   Quad q;
-  if (gradient == Gradient_NorthSouth)
-  {
+  if (gradient == Gradient_NorthSouth) {
     q.mColour[0] = q.mColour[1] = colourA;
     q.mColour[2] = q.mColour[3] = colourB;
-  }
-  else if (gradient == Gradient_WestEast)
-  {
+  } else if (gradient == Gradient_WestEast) {
     q.mColour[0] = q.mColour[3] = colourA;
     q.mColour[1] = q.mColour[2] = colourB;
-  }
-  else if (gradient == Gradient_Diagonal)
-  {
+  } else if (gradient == Gradient_Diagonal) {
     Ogre::ColourValue avg;
     avg.r = (colourA.r + colourB.r) * 0.5f;
     avg.g = (colourA.g + colourB.g) * 0.5f;
@@ -1824,22 +1653,25 @@ void  QuadList::gradient(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h,
     q.mColour[2] = colourB;
   }
 
-  q.mPosition[TopLeft].x = x; q.mPosition[TopLeft].y = y;
-  q.mPosition[TopRight].x = x + w; q.mPosition[TopRight].y = y;
-  q.mPosition[BottomRight].x = x + w; q.mPosition[BottomRight].y = y + h;
-  q.mPosition[BottomLeft].x = x; q.mPosition[BottomLeft].y = y + h;
+  q.mPosition[TopLeft].x = x;
+  q.mPosition[TopLeft].y = y;
+  q.mPosition[TopRight].x = x + w;
+  q.mPosition[TopRight].y = y;
+  q.mPosition[BottomRight].x = x + w;
+  q.mPosition[BottomRight].y = y + h;
+  q.mPosition[BottomLeft].x = x;
+  q.mPosition[BottomLeft].y = y + h;
 
   q.mUV[0] = q.mUV[1] = q.mUV[2] = q.mUV[3] = mWhiteUV;
   mQuads.push_back(q);
 }
 
-void  QuadList::sprite(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, Sprite* sprite)
-{
+void QuadList::sprite(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, Sprite *sprite) {
   Quad q;
-  q.mPosition[TopLeft].x     = q.mPosition[BottomLeft].x    = x;
-  q.mPosition[TopLeft].y     = q.mPosition[TopRight].y      = y;
-  q.mPosition[TopRight].x    = q.mPosition[BottomRight].x   = x + w;
-  q.mPosition[BottomRight].y = q.mPosition[BottomLeft].y    = y + h;
+  q.mPosition[TopLeft].x = q.mPosition[BottomLeft].x = x;
+  q.mPosition[TopLeft].y = q.mPosition[TopRight].y = y;
+  q.mPosition[TopRight].x = q.mPosition[BottomRight].x = x + w;
+  q.mPosition[BottomRight].y = q.mPosition[BottomLeft].y = y + h;
   q.mColour[0] = q.mColour[1] = q.mColour[2] = q.mColour[3] = Ogre::ColourValue::White;
 
   q.mUV[TopLeft].x = sprite->uvLeft;
@@ -1857,20 +1689,35 @@ void  QuadList::sprite(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, S
 
 }
 
-void  QuadList::border(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, Ogre::Real thickness, const Ogre::ColourValue& colour)
-{
-  border(x,y,w,h,thickness,colour,colour,colour,colour);
+void QuadList::border(Ogre::Real x,
+                      Ogre::Real y,
+                      Ogre::Real w,
+                      Ogre::Real h,
+                      Ogre::Real thickness,
+                      const Ogre::ColourValue &colour) {
+  border(x, y, w, h, thickness, colour, colour, colour, colour);
 }
 
-void  QuadList::border(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, Ogre::Real thickness, const Ogre::ColourValue& northColour, const Ogre::ColourValue& eastColour, const Ogre::ColourValue& southColour, const Ogre::ColourValue& westColour)
-{
+void QuadList::border(Ogre::Real x,
+                      Ogre::Real y,
+                      Ogre::Real w,
+                      Ogre::Real h,
+                      Ogre::Real thickness,
+                      const Ogre::ColourValue &northColour,
+                      const Ogre::ColourValue &eastColour,
+                      const Ogre::ColourValue &southColour,
+                      const Ogre::ColourValue &westColour) {
 
-  Ogre::Vector2 a(x,y), b(x+w,y), c(x,y+h), d(x+w,y+h),
+  Ogre::Vector2 a(x, y), b(x + w, y), c(x, y + h), d(x + w, y + h),
       i = a, j = b, k = c, l = d;
-  i.x -= thickness;    i.y -= thickness;
-  j.x += thickness;    j.y -= thickness;
-  k.x -= thickness;    k.y += thickness;
-  l.x += thickness;    l.y += thickness;
+  i.x -= thickness;
+  i.y -= thickness;
+  j.x += thickness;
+  j.y -= thickness;
+  k.x -= thickness;
+  k.y += thickness;
+  l.x += thickness;
+  l.y += thickness;
 
   Vertex temp;
 
@@ -1912,11 +1759,13 @@ void  QuadList::border(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, O
 
 }
 
-void  QuadList::glyph(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, unsigned char character, const Ogre::ColourValue& colour)
-{
-  GlyphData* glyphData = mLayer->_getGlyphData(glyphDataIndex);
-  if (glyphData == 0)
-  {
+void QuadList::glyph(Ogre::uint glyphDataIndex,
+                     Ogre::Real x,
+                     Ogre::Real y,
+                     unsigned char character,
+                     const Ogre::ColourValue &colour) {
+  GlyphData *glyphData = mLayer->_getGlyphData(glyphDataIndex);
+  if (glyphData == 0) {
 #if GORILLA_USES_EXCEPTIONS == 1
     OGRE_EXCEPT( Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __FUNC__ );
 #else
@@ -1924,7 +1773,7 @@ void  QuadList::glyph(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, uns
 #endif
   }
 
-  Glyph* glyph = glyphData->getGlyph(character);
+  Glyph *glyph = glyphData->getGlyph(character);
   if (glyph == 0)
     return;
 
@@ -1957,11 +1806,15 @@ void  QuadList::glyph(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, uns
   mQuads.push_back(q);
 }
 
-void  QuadList::glyph(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, unsigned char character, const Ogre::ColourValue& colour)
-{
-  GlyphData* glyphData = mLayer->_getGlyphData(glyphDataIndex);
-  if (glyphData == 0)
-  {
+void QuadList::glyph(Ogre::uint glyphDataIndex,
+                     Ogre::Real x,
+                     Ogre::Real y,
+                     Ogre::Real w,
+                     Ogre::Real h,
+                     unsigned char character,
+                     const Ogre::ColourValue &colour) {
+  GlyphData *glyphData = mLayer->_getGlyphData(glyphDataIndex);
+  if (glyphData == 0) {
 #if GORILLA_USES_EXCEPTIONS == 1
     OGRE_EXCEPT( Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __FUNC__ );
 #else
@@ -1969,7 +1822,7 @@ void  QuadList::glyph(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, Ogr
 #endif
   }
 
-  Glyph* glyph = glyphData->getGlyph(character);
+  Glyph *glyph = glyphData->getGlyph(character);
   if (glyph == 0)
     return;
 
@@ -2002,80 +1855,70 @@ void  QuadList::glyph(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, Ogr
   mQuads.push_back(q);
 }
 
-void  QuadList::end()
-{
+void QuadList::end() {
   mDirty = true;
   mLayer->_markDirty();
 }
 
-void  QuadList::_redraw()
-{
+void QuadList::_redraw() {
   if (mDirty == false)
     return;
 
   mVertices.remove_all();
   Vertex temp;
 
-  for (size_t i=0;i < mQuads.size();i++)
-  {
+  for (size_t i = 0; i < mQuads.size(); i++) {
     PUSH_QUAD(mVertices, temp, mQuads[i].mPosition, mQuads[i].mColour, mQuads[i].mUV)
   }
 
   mDirty = false;
 }
 
-
-Caption::Caption(Ogre::uint glyphDataIndex, Ogre::Real left, Ogre::Real top, const Ogre::String& caption, Layer* layer)
-    : mLayer(layer)
-{
-  mGlyphData      = mLayer->_getGlyphData(glyphDataIndex);
-  if (mGlyphData == 0)
-  {
-    mDirty        = false;
+Caption::Caption(Ogre::uint glyphDataIndex, Ogre::Real left, Ogre::Real top, const Ogre::String &caption, Layer *layer)
+    : mLayer(layer) {
+  mGlyphData = mLayer->_getGlyphData(glyphDataIndex);
+  if (mGlyphData == 0) {
+    mDirty = false;
 #if GORILLA_USES_EXCEPTIONS == 1
     OGRE_EXCEPT( Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __FUNC__ );
 #else
     return;
 #endif
   }
-  mDirty        = true;
+  mDirty = true;
   mLayer->_markDirty();
-  mLeft           = left;
-  mTop            = top;
-  mWidth          = 0.0f;
-  mHeight         = 0.0f;
-  mText           = caption;
-  mColour         = Ogre::ColourValue::White;
-  mBackground.a   = 0.0f;
-  mAlignment      = TextAlign_Left;
-  mVerticalAlign  = VerticalAlign_Top;
-  mFixedWidth     = false;
+  mLeft = left;
+  mTop = top;
+  mWidth = 0.0f;
+  mHeight = 0.0f;
+  mText = caption;
+  mColour = Ogre::ColourValue::White;
+  mBackground.a = 0.0f;
+  mAlignment = TextAlign_Left;
+  mVerticalAlign = VerticalAlign_Top;
+  mFixedWidth = false;
 }
 
-void Caption::_calculateDrawSize(Ogre::Vector2& retSize)
-{
+void Caption::_calculateDrawSize(Ogre::Vector2 &retSize) {
 
   Ogre::Real cursor = 0,
       kerning = 0;
 
   unsigned char thisChar = 0, lastChar = 0;
-  Glyph* glyph = 0;
+  Glyph *glyph = 0;
   retSize.x = 0;
   retSize.y = mGlyphData->mLineHeight;
 
-  for (size_t i=0;i < mText.length();i++)
-  {
+  for (size_t i = 0; i < mText.length(); i++) {
     thisChar = mText[i];
 
-    if (thisChar == ' ')
-    {
+    if (thisChar == ' ') {
       lastChar = thisChar;
       cursor += mGlyphData->mSpaceLength;
       continue;
     }
 
-    if (  thisChar < mGlyphData->mRangeBegin || thisChar > mGlyphData->mRangeEnd  )
-    {
+    if (thisChar < mGlyphData->mRangeBegin || thisChar > mGlyphData->mRangeEnd) {
       lastChar = 0;
       continue;
     }
@@ -2087,7 +1930,7 @@ void Caption::_calculateDrawSize(Ogre::Vector2& retSize)
     if (kerning == 0)
       kerning = mGlyphData->mLetterSpacing;
 
-    cursor  += _getAdvance(glyph, kerning);
+    cursor += _getAdvance(glyph, kerning);
     lastChar = thisChar;
 
   } // for
@@ -2095,8 +1938,7 @@ void Caption::_calculateDrawSize(Ogre::Vector2& retSize)
   retSize.x = cursor - kerning;
 }
 
-void Caption::_redraw()
-{
+void Caption::_redraw() {
 
   if (mDirty == false)
     return;
@@ -2105,56 +1947,52 @@ void Caption::_redraw()
 
   Ogre::Vector2 uv = mLayer->_getSolidUV();
 
-  if (mBackground.a > 0)
-  {
-    Ogre::Vector2  a, b, c, d;
-    a.x = mLeft;  a.y = mTop;
-    b.x = mLeft + mWidth; b.y = mTop;
-    c.x = mLeft;  c.y = mTop + mHeight;
-    d.x = mLeft + mWidth; d.y = c.y = mTop + mHeight;
+  if (mBackground.a > 0) {
+    Ogre::Vector2 a, b, c, d;
+    a.x = mLeft;
+    a.y = mTop;
+    b.x = mLeft + mWidth;
+    b.y = mTop;
+    c.x = mLeft;
+    c.y = mTop + mHeight;
+    d.x = mLeft + mWidth;
+    d.y = c.y = mTop + mHeight;
     Vertex temp;
     PUSH_TRIANGLE(mVertices, temp, c, b, a, uv, mBackground);
     PUSH_TRIANGLE(mVertices, temp, c, d, b, uv, mBackground);
   }
 
-  Ogre::Real left = 0, top = 0, right = 0, bottom = 0, cursorX = 0, cursorY = 0, kerning = 0, texelOffsetX = mLayer->_getTexelX(), texelOffsetY = mLayer->_getTexelY();
+  Ogre::Real left = 0, top = 0, right = 0, bottom = 0, cursorX = 0, cursorY = 0, kerning = 0,
+      texelOffsetX = mLayer->_getTexelX(), texelOffsetY = mLayer->_getTexelY();
   Ogre::Vector2 knownSize;
-  Glyph* glyph = 0;
+  Glyph *glyph = 0;
 
   bool clipLeft = false, clipRight = false;
   Ogre::Real clipLeftPos = 0, clipRightPos = 0;
 
-  if (mAlignment == TextAlign_Left)
-  {
+  if (mAlignment == TextAlign_Left) {
     cursorX = mLeft;
 
-    if (mWidth)
-    {
+    if (mWidth) {
       clipRight = true;
       clipRightPos = mLeft + mWidth;
     }
 
-  }
-  else if (mAlignment == TextAlign_Centre)
-  {
+  } else if (mAlignment == TextAlign_Centre) {
     _calculateDrawSize(knownSize);
     cursorX = mLeft + (mWidth * 0.5f) - (knownSize.x * 0.5f);
 
-    if (mWidth)
-    {
+    if (mWidth) {
       clipLeft = true;
       clipLeftPos = mLeft;
       clipRight = true;
       clipRightPos = mLeft + mWidth;
     }
 
-  }
-  else if (mAlignment == TextAlign_Right)
-  {
+  } else if (mAlignment == TextAlign_Right) {
     _calculateDrawSize(knownSize);
     cursorX = mLeft + mWidth - knownSize.x;
-    if (mWidth)
-    {
+    if (mWidth) {
       clipLeft = true;
       clipLeftPos = mLeft;
     }
@@ -2165,29 +2003,26 @@ void Caption::_redraw()
   else if (mVerticalAlign == VerticalAlign_Middle)
     cursorY = mTop + (mHeight * 0.5) - (mGlyphData->mLineHeight * 0.5);
   else if (mVerticalAlign == VerticalAlign_Bottom)
-    cursorY = mTop +  mHeight - mGlyphData->mLineHeight;
+    cursorY = mTop + mHeight - mGlyphData->mLineHeight;
 
   unsigned char thisChar = 0, lastChar = 0;
   Vertex temp;
   mClippedLeftIndex = std::string::npos;
   mClippedRightIndex = std::string::npos;
 
-  cursorX = Ogre::Math::Floor( cursorX );
-  cursorY = Ogre::Math::Floor( cursorY );
+  cursorX = Ogre::Math::Floor(cursorX);
+  cursorY = Ogre::Math::Floor(cursorY);
 
-  for (size_t i=0;i < mText.size();i++)
-  {
+  for (size_t i = 0; i < mText.size(); i++) {
     thisChar = mText[i];
 
-    if (thisChar == ' ')
-    {
+    if (thisChar == ' ') {
       lastChar = thisChar;
       cursorX += mGlyphData->mSpaceLength;
       continue;
     }
 
-    if (  thisChar < mGlyphData->mRangeBegin || thisChar > mGlyphData->mRangeEnd  )
-    {
+    if (thisChar < mGlyphData->mRangeBegin || thisChar > mGlyphData->mRangeEnd) {
       lastChar = 0;
       continue;
     }
@@ -2204,32 +2039,27 @@ void Caption::_redraw()
     right = left + glyph->glyphWidth + texelOffsetX;
     bottom = top + glyph->glyphHeight + texelOffsetY;
 
-    if (clipLeft)
-    {
-      if (left < clipLeftPos)
-      {
+    if (clipLeft) {
+      if (left < clipLeftPos) {
         if (mClippedLeftIndex == std::string::npos)
           mClippedLeftIndex = i;
-        cursorX  += _getAdvance(glyph, kerning);
+        cursorX += _getAdvance(glyph, kerning);
         lastChar = thisChar;
         continue;
       }
     }
 
-    if (clipRight)
-    {
-      if (right > clipRightPos)
-      {
+    if (clipRight) {
+      if (right > clipRightPos) {
         if (mClippedRightIndex == std::string::npos)
           mClippedRightIndex = i;
-        cursorX  += _getAdvance(glyph, kerning);
+        cursorX += _getAdvance(glyph, kerning);
         lastChar = thisChar;
         continue;
       }
     }
 
-    if(fixedWidth())
-    {
+    if (fixedWidth()) {
       Ogre::Real offset = std::floor((mGlyphData->mMonoWidth - glyph->glyphWidth) / 2.0f);
       left += offset;
       right += offset;
@@ -2246,7 +2076,7 @@ void Caption::_redraw()
     PUSH_VERTEX(mVertices, temp, right, top, glyph->texCoords[TopRight], mColour);    // Right/Top    1
 
 
-    cursorX  += _getAdvance(glyph, kerning);
+    cursorX += _getAdvance(glyph, kerning);
     lastChar = thisChar;
 
   } // for
@@ -2255,25 +2085,24 @@ void Caption::_redraw()
   mDirty = false;
 }
 
-
-Ogre::Real Caption::_getAdvance(Glyph* glyph, Ogre::Real kerning)
-{
-  if(mFixedWidth)
+Ogre::Real Caption::_getAdvance(Glyph *glyph, Ogre::Real kerning) {
+  if (mFixedWidth)
     return mGlyphData->mMonoWidth;
   else
     return glyph->glyphAdvance + kerning;
 }
 
-
-MarkupText::MarkupText(Ogre::uint defaultGlyphIndex, Ogre::Real left, Ogre::Real top, const Ogre::String& text, Layer* parent)
-    : mLayer(parent)
-{
+MarkupText::MarkupText(Ogre::uint defaultGlyphIndex,
+                       Ogre::Real left,
+                       Ogre::Real top,
+                       const Ogre::String &text,
+                       Layer *parent)
+    : mLayer(parent) {
   mDefaultGlyphData = mLayer->_getGlyphData(defaultGlyphIndex);
 
-  if (mDefaultGlyphData == 0)
-  {
-    mDirty          = false;
-    mTextDirty      = false;
+  if (mDefaultGlyphData == 0) {
+    mDirty = false;
+    mTextDirty = false;
 #if GORILLA_USES_EXCEPTIONS == 1
     OGRE_EXCEPT( Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __FUNC__ );
 #else
@@ -2281,26 +2110,26 @@ MarkupText::MarkupText(Ogre::uint defaultGlyphIndex, Ogre::Real left, Ogre::Real
 #endif
   }
 
-  mDirty          = true;
-  mTextDirty      = true;
+  mDirty = true;
+  mTextDirty = true;
   mLayer->_markDirty();
-  mLeft           = left;
-  mTop            = top;
-  mWidth          = 0.0f;
-  mHeight         = 0.0f;
-  mText           = text;
-  mBackground.a   = 0.0f;
+  mLeft = left;
+  mTop = top;
+  mWidth = 0.0f;
+  mHeight = 0.0f;
+  mText = text;
+  mBackground.a = 0.0f;
 
 }
 
-void MarkupText::_calculateCharacters()
-{
+void MarkupText::_calculateCharacters() {
   if (mTextDirty == false)
     return;
 
-  Ogre::Real cursorX = mLeft, cursorY = mTop, kerning = 0, texelOffsetX = mLayer->_getTexelX(), texelOffsetY = mLayer->_getTexelY(), right = 0, bottom = 0, left = 0, top = 0;
+  Ogre::Real cursorX = mLeft, cursorY = mTop, kerning = 0, texelOffsetX = mLayer->_getTexelX(),
+      texelOffsetY = mLayer->_getTexelY(), right = 0, bottom = 0, left = 0, top = 0;
   unsigned int thisChar = 0, lastChar = 0;
-  Glyph* glyph = 0;
+  Glyph *glyph = 0;
 
   mMaxTextWidth = 0;
 
@@ -2310,23 +2139,20 @@ void MarkupText::_calculateCharacters()
   Ogre::ColourValue colour = mLayer->_getMarkupColour(0);
   bool fixedWidth = false;
 
-  GlyphData* glyphData = mDefaultGlyphData;
+  GlyphData *glyphData = mDefaultGlyphData;
   Ogre::Real lineHeight = glyphData->mLineHeight;
 
-  for(size_t i=0;i < mText.length();i++)
-  {
+  for (size_t i = 0; i < mText.length(); i++) {
 
     thisChar = mText[i];
 
-    if (thisChar == ' ')
-    {
+    if (thisChar == ' ') {
       lastChar = thisChar;
       cursorX += glyphData->mSpaceLength;
       continue;
     }
 
-    if (thisChar == '\n')
-    {
+    if (thisChar == '\n') {
       lastChar = thisChar;
       cursorX = mLeft;
       cursorY += lineHeight;
@@ -2334,49 +2160,34 @@ void MarkupText::_calculateCharacters()
       continue;
     }
 
-    if (  thisChar < glyphData->mRangeBegin || thisChar > glyphData->mRangeEnd  )
-    {
+    if (thisChar < glyphData->mRangeBegin || thisChar > glyphData->mRangeEnd) {
       lastChar = 0;
       continue;
     }
 
-    if (thisChar == '%' && markupMode == false)
-    {
+    if (thisChar == '%' && markupMode == false) {
       markupMode = true;
       continue;
     }
 
-    if (markupMode == true)
-    {
-      if (thisChar == '%')
-      {
+    if (markupMode == true) {
+      if (thisChar == '%') {
         // Escape Character.
-      }
-      else
-      {
+      } else {
         markupMode = false;
 
-        if (thisChar >= '0' && thisChar <= '9')
-        {
+        if (thisChar >= '0' && thisChar <= '9') {
           colour = mLayer->_getMarkupColour(thisChar - 48);
-        }
-        else if (thisChar == 'R' || thisChar == 'r')
-        {
+        } else if (thisChar == 'R' || thisChar == 'r') {
           colour = mLayer->_getMarkupColour(0);
-        }
-        else if (thisChar == 'M' || thisChar == 'm')
-        {
+        } else if (thisChar == 'M' || thisChar == 'm') {
           fixedWidth = !fixedWidth;
-        }
-        else if (thisChar == '@')
-        {
+        } else if (thisChar == '@') {
           markupMode = false;
           bool foundIt = false;
           size_t begin = i;
-          while(i < mText.size())
-          {
-            if (mText[i] == '%')
-            {
+          while (i < mText.size()) {
+            if (mText[i] == '%') {
               foundIt = true;
               break;
             }
@@ -2386,22 +2197,18 @@ void MarkupText::_calculateCharacters()
           if (foundIt == false)
             return;
 
-          Ogre::uint index = Ogre::StringConverter::parseUnsignedInt(mText.substr(begin+1, i - begin - 1));
+          Ogre::uint index = Ogre::StringConverter::parseUnsignedInt(mText.substr(begin + 1, i - begin - 1));
           glyphData = mLayer->_getGlyphData(index);
           if (glyphData == 0)
             return;
           lineHeight = std::max(lineHeight, glyphData->mLineHeight);
           continue;
-        }
-        else if (thisChar == ':')
-        {
+        } else if (thisChar == ':') {
           markupMode = false;
           bool foundIt = false;
           size_t begin = i;
-          while(i < mText.size())
-          {
-            if (mText[i] == '%')
-            {
+          while (i < mText.size()) {
+            if (mText[i] == '%') {
               foundIt = true;
               break;
             }
@@ -2411,9 +2218,9 @@ void MarkupText::_calculateCharacters()
           if (foundIt == false)
             return;
 
-          Ogre::String sprite_name = mText.substr(begin+1, i - begin - 1);
+          Ogre::String sprite_name = mText.substr(begin + 1, i - begin - 1);
 
-          Sprite* sprite = mLayer->_getSprite(sprite_name);
+          Sprite *sprite = mLayer->_getSprite(sprite_name);
           if (sprite == 0)
             continue;
 
@@ -2440,13 +2247,12 @@ void MarkupText::_calculateCharacters()
 
           mCharacters.push_back(c);
 
-          cursorX  += sprite->spriteWidth;
+          cursorX += sprite->spriteWidth;
 
           lineHeight = std::max(lineHeight, sprite->spriteHeight);
 
           continue;
         }
-
 
         continue;
       }
@@ -2455,8 +2261,7 @@ void MarkupText::_calculateCharacters()
 
     glyph = glyphData->getGlyph(thisChar);
 
-    if (!fixedWidth)
-    {
+    if (!fixedWidth) {
       kerning = glyph->getKerning(lastChar);
       if (kerning == 0)
         kerning = glyphData->mLetterSpacing;
@@ -2467,9 +2272,7 @@ void MarkupText::_calculateCharacters()
     right = cursorX + glyph->glyphWidth + texelOffsetX;
     bottom = top + glyph->glyphHeight + texelOffsetY;
 
-
-    if (fixedWidth)
-    {
+    if (fixedWidth) {
       Ogre::Real offset = std::floor((glyphData->mMonoWidth - glyph->glyphWidth) / 2.0f);
       left += offset;
       right += offset;
@@ -2494,11 +2297,11 @@ void MarkupText::_calculateCharacters()
     mCharacters.push_back(c);
 
     if (fixedWidth)
-      cursorX  += glyphData->mMonoWidth;
+      cursorX += glyphData->mMonoWidth;
     else
-      cursorX  += glyph->glyphAdvance + kerning;
+      cursorX += glyph->glyphAdvance + kerning;
 
-    if( cursorX > mMaxTextWidth )
+    if (cursorX > mMaxTextWidth)
       mMaxTextWidth = cursorX;
 
     lastChar = thisChar;
@@ -2509,8 +2312,7 @@ void MarkupText::_calculateCharacters()
   mTextDirty = false;
 }
 
-void  MarkupText::_redraw()
-{
+void MarkupText::_redraw() {
 
   if (mDirty == false)
     return;
@@ -2518,8 +2320,7 @@ void  MarkupText::_redraw()
   mVertices.remove_all();
 
   Vertex temp;
-  for (size_t i=0; i < mCharacters.size();i++)
-  {
+  for (size_t i = 0; i < mCharacters.size(); i++) {
     PUSH_QUAD2(mVertices, temp, mCharacters[i].mPosition, mCharacters[i].mColour, mCharacters[i].mUV);
   }
 
@@ -2529,30 +2330,28 @@ void  MarkupText::_redraw()
 #if OGRE_VERSION < 67584 // 1.8.0
 template<> OgreConsole* Ogre::Singleton<OgreConsole>::ms_Singleton=0;
 #else
-template<> OgreConsole* Ogre::Singleton<OgreConsole>::msSingleton=0;
+template<> OgreConsole *Ogre::Singleton<OgreConsole>::msSingleton = 0;
 #endif
 
 #define CONSOLE_FONT_INDEX 14
 
 #define CONSOLE_LINE_LENGTH 85
 #define CONSOLE_LINE_COUNT 15
-static const unsigned char legalchars[]="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890+!\"'#%&/()=?[]\\*-_.:,; ";
+static const unsigned char
+    legalchars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890+!\"'#%&/()=?[]\\*-_.:,; ";
 
 OgreConsole::OgreConsole()
-    : mIsVisible(true), mIsInitialised(false), mScreen(0), mUpdateConsole(false), mUpdatePrompt(false), mStartline(0)
-{
+    : mIsVisible(true), mIsInitialised(false), mScreen(0), mUpdateConsole(false), mUpdatePrompt(false), mStartline(0) {
 }
 
-OgreConsole::~OgreConsole()
-{
+OgreConsole::~OgreConsole() {
   if (mIsInitialised)
     shutdown();
 }
 
-void OgreConsole::init(Gorilla::Screen* screen)
-{
+void OgreConsole::init(Gorilla::Screen *screen) {
 
-  if(mIsInitialised)
+  if (mIsInitialised)
     shutdown();
 
   Ogre::Root::getSingletonPtr()->addFrameListener(this);
@@ -2563,21 +2362,22 @@ void OgreConsole::init(Gorilla::Screen* screen)
   mLayer = mScreen->createLayer(15);
   mGlyphData = mLayer->_getGlyphData(CONSOLE_FONT_INDEX); // Font.CONSOLE_FONT_INDEX
 
-  mConsoleText = mLayer->createMarkupText(CONSOLE_FONT_INDEX,  10,10, Ogre::StringUtil::BLANK);
+  mConsoleText = mLayer->createMarkupText(CONSOLE_FONT_INDEX, 10, 10, Ogre::StringUtil::BLANK);
   mConsoleText->width(mScreen->getWidth() - 10);
-  mPromptText = mLayer->createCaption(CONSOLE_FONT_INDEX,  10,10, "> _");
-  mDecoration = mLayer->createRectangle(8,8, mScreen->getWidth() - 16, mGlyphData->mLineHeight );
-  mDecoration->background_gradient(Gorilla::Gradient_NorthSouth, Gorilla::rgb(128,128,128,128), Gorilla::rgb(64,64,64,128));
-  mDecoration->border(2, Gorilla::rgb(128,128,128,128));
+  mPromptText = mLayer->createCaption(CONSOLE_FONT_INDEX, 10, 10, "> _");
+  mDecoration = mLayer->createRectangle(8, 8, mScreen->getWidth() - 16, mGlyphData->mLineHeight);
+  mDecoration->background_gradient(Gorilla::Gradient_NorthSouth,
+                                   Gorilla::rgb(128, 128, 128, 128),
+                                   Gorilla::rgb(64, 64, 64, 128));
+  mDecoration->border(2, Gorilla::rgb(128, 128, 128, 128));
 
   mIsInitialised = true;
 
   print("%5Ogre%R%6Console%0 Activated. Press F1 to show/hide.%R");
 }
 
-void OgreConsole::shutdown()
-{
-  if(!mIsInitialised)
+void OgreConsole::shutdown() {
+  if (!mIsInitialised)
     return;
 
   mIsInitialised = false;
@@ -2589,27 +2389,23 @@ void OgreConsole::shutdown()
 
 }
 
+void OgreConsole::onKeyPressed(const SDL_Keycode arg) {
 
-void OgreConsole::onKeyPressed(const SDL_Keycode arg)
-{
-
-  if(!mIsVisible)
+  if (!mIsVisible)
     return;
 
-  if (arg == SDLK_RETURN)
-  {
+  if (arg == SDLK_RETURN) {
 
     print("%3> " + prompt + "%R");
 
     //split the parameter list
     Ogre::StringVector params = Ogre::StringUtil::split(prompt, " ");
 
-    if (params.size())
-    {
+    if (params.size()) {
       std::map<Ogre::String, OgreConsoleFunctionPtr>::iterator i;
-      for(i=commands.begin();i!=commands.end();i++){
-        if((*i).first==params[0]){
-          if((*i).second)
+      for (i = commands.begin(); i != commands.end(); i++) {
+        if ((*i).first == params[0]) {
+          if ((*i).second)
             (*i).second(params);
           break;
         }
@@ -2618,35 +2414,23 @@ void OgreConsole::onKeyPressed(const SDL_Keycode arg)
       mUpdateConsole = true;
       mUpdatePrompt = true;
     }
-  }
-
-  else if (arg == SDLK_AC_BACK)
-  {
-    if (prompt.size())
-    {
+  } else if (arg == SDLK_AC_BACK) {
+    if (prompt.size()) {
       prompt.erase(prompt.end() - 1); //=prompt.substr(0,prompt.length()-1);
       mUpdatePrompt = true;
     }
-  }
-  else if (arg == SDLK_PAGEUP)
-  {
-    if(mStartline>0)
+  } else if (arg == SDLK_PAGEUP) {
+    if (mStartline > 0)
       mStartline--;
     mUpdateConsole = true;
-  }
-
-  else if (arg == SDLK_PAGEDOWN)
-  {
-    if(mStartline<lines.size())
+  } else if (arg == SDLK_PAGEDOWN) {
+    if (mStartline < lines.size())
       mStartline++;
     mUpdateConsole = true;
-  }
-
-  else
-  {
-    for(unsigned int c=0;c<sizeof(legalchars);c++){
-      if(legalchars[c]==arg){
-        prompt+=arg;
+  } else {
+    for (unsigned int c = 0; c < sizeof(legalchars); c++) {
+      if (legalchars[c] == arg) {
+        prompt += arg;
         break;
       }
     }
@@ -2655,9 +2439,8 @@ void OgreConsole::onKeyPressed(const SDL_Keycode arg)
 
 }
 
-bool OgreConsole::frameStarted(const Ogre::FrameEvent &evt)
-{
-  if(mUpdateConsole)
+bool OgreConsole::frameStarted(const Ogre::FrameEvent &evt) {
+  if (mUpdateConsole)
     updateConsole();
 
   if (mUpdatePrompt)
@@ -2666,31 +2449,29 @@ bool OgreConsole::frameStarted(const Ogre::FrameEvent &evt)
   return true;
 }
 
-void OgreConsole::updateConsole()
-{
+void OgreConsole::updateConsole() {
 
   mUpdateConsole = false;
 
   std::stringstream text;
-  std::list<Ogre::String>::iterator i,start,end;
+  std::list<Ogre::String>::iterator i, start, end;
 
   //make sure is in range
-  if(mStartline>lines.size())
-    mStartline=lines.size();
+  if (mStartline > lines.size())
+    mStartline = lines.size();
 
-  int lcount=0;
-  start=lines.begin();
-  for(unsigned int c=0;c<mStartline;c++)
+  int lcount = 0;
+  start = lines.begin();
+  for (unsigned int c = 0; c < mStartline; c++)
     start++;
-  end=start;
-  for(unsigned int c=0;c<CONSOLE_LINE_COUNT;c++){
-    if(end==lines.end())
+  end = start;
+  for (unsigned int c = 0; c < CONSOLE_LINE_COUNT; c++) {
+    if (end == lines.end())
       break;
     end++;
   }
 
-  for(i=start;i!=end;i++)
-  {
+  for (i = start; i != end; i++) {
     lcount++;
     text << (*i) << "\n";
   }
@@ -2700,7 +2481,7 @@ void OgreConsole::updateConsole()
   mPromptText->top(10 + (lcount * mGlyphData->mLineHeight));
 
   // Change background height so it covers the text and prompt
-  mDecoration->height(((lcount+1) * mGlyphData->mLineHeight) + 4);
+  mDecoration->height(((lcount + 1) * mGlyphData->mLineHeight) + 4);
 
   mConsoleText->width(mScreen->getWidth() - 20);
   mDecoration->width(mScreen->getWidth() - 16);
@@ -2708,55 +2489,49 @@ void OgreConsole::updateConsole()
 
 }
 
-void OgreConsole::updatePrompt()
-{
+void OgreConsole::updatePrompt() {
   mUpdatePrompt = false;
   std::stringstream text;
   text << "> " << prompt << "_";
   mPromptText->text(text.str());
 }
 
-void OgreConsole::print(const Ogre::String &text)
-{
+void OgreConsole::print(const Ogre::String &text) {
   //subdivide it into lines
-  const char *str=text.c_str();
-  int len=text.length();
+  const char *str = text.c_str();
+  int len = text.length();
   Ogre::String line;
-  for(int c=0;c<len;c++){
-    if(str[c]=='\n'||line.length()>=CONSOLE_LINE_LENGTH){
+  for (int c = 0; c < len; c++) {
+    if (str[c] == '\n' || line.length() >= CONSOLE_LINE_LENGTH) {
       lines.push_back(line);
-      line="";
+      line = "";
     }
-    if(str[c]!='\n')
-      line+=str[c];
+    if (str[c] != '\n')
+      line += str[c];
   }
-  if(line.length())
+  if (line.length())
     lines.push_back(line);
-  if(lines.size()>CONSOLE_LINE_COUNT)
-    mStartline=lines.size()-CONSOLE_LINE_COUNT;
+  if (lines.size() > CONSOLE_LINE_COUNT)
+    mStartline = lines.size() - CONSOLE_LINE_COUNT;
   else
-    mStartline=0;
-  mUpdateConsole=true;
+    mStartline = 0;
+  mUpdateConsole = true;
 }
 
-bool OgreConsole::frameEnded(const Ogre::FrameEvent &evt)
-{
+bool OgreConsole::frameEnded(const Ogre::FrameEvent &evt) {
   return true;
 }
 
-void OgreConsole::setVisible(bool isVisible)
-{
+void OgreConsole::setVisible(bool isVisible) {
   mIsVisible = isVisible;
   mLayer->setVisible(mIsVisible);
 }
 
-void OgreConsole::addCommand(const Ogre::String &command, OgreConsoleFunctionPtr func)
-{
-  commands[command]=func;
+void OgreConsole::addCommand(const Ogre::String &command, OgreConsoleFunctionPtr func) {
+  commands[command] = func;
 }
 
-void OgreConsole::removeCommand(const Ogre::String &command)
-{
+void OgreConsole::removeCommand(const Ogre::String &command) {
   commands.erase(commands.find(command));
 }
 
@@ -2764,7 +2539,11 @@ void OgreConsole::removeCommand(const Ogre::String &command)
 void OgreConsole::messageLogged( const Ogre::String& message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName )
 #else
 // "bool& skip" added in Ogre 1.8
-void OgreConsole::messageLogged( const Ogre::String& message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName, bool &skip )
+void OgreConsole::messageLogged(const Ogre::String &message,
+                                Ogre::LogMessageLevel lml,
+                                bool maskDebug,
+                                const Ogre::String &logName,
+                                bool &skip)
 #endif
 {
   print(message);
