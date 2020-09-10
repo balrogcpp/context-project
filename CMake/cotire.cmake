@@ -1724,7 +1724,7 @@ function (cotire_add_pch_compilation_flags _language _compilerID _compilerVersio
 			# /TC process all source or unrecognized file types as C source files
 			# /TP process all source or unrecognized file types as C++ source files
 			# /Zs syntax check only
-			# /Wpch-messages enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Update 2)
+			# /Wpch-messages enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Loop 2)
 			set (_sourceFileTypeC "/TC")
 			set (_sourceFileTypeCXX "/TP")
 			if (_flags)
@@ -1747,7 +1747,7 @@ function (cotire_add_pch_compilation_flags _language _compilerID _compilerVersio
 			# -pch-create name of the precompiled header (PCH) to create
 			# -Kc++ process all source or unrecognized file types as C++ source files
 			# -fsyntax-only check only for correct syntax
-			# -Wpch-messages enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Update 2)
+			# -Wpch-messages enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Loop 2)
 			get_filename_component(_pchDir "${_pchFile}" DIRECTORY)
 			get_filename_component(_pchName "${_pchFile}" NAME)
 			set (_xLanguage_C "c-header")
@@ -1872,7 +1872,7 @@ function (cotire_add_prefix_pch_inclusion_flags _language _compilerID _compilerV
 			# /Yu use a precompiled header (PCH) file
 			# /Fp specify a path or file name for precompiled header files
 			# /FI tells the preprocessor to include a specified file name as the header file
-			# /Wpch-messages enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Update 2)
+			# /Wpch-messages enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Loop 2)
 			if (_pchFile)
 				file (TO_NATIVE_PATH "${_pchFile}" _pchFileNative)
 				if (_flags)
@@ -1903,7 +1903,7 @@ function (cotire_add_prefix_pch_inclusion_flags _language _compilerID _compilerV
 			# -pch-dir location for precompiled header files
 			# -pch-use name of the precompiled header (PCH) to use
 			# -include process include file as the first line of the primary source file
-			# -Wpch-messages enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Update 2)
+			# -Wpch-messages enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Loop 2)
 			if (_pchFile)
 				get_filename_component(_pchDir "${_pchFile}" DIRECTORY)
 				get_filename_component(_pchName "${_pchFile}" NAME)

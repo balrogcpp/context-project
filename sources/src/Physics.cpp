@@ -26,47 +26,72 @@ SOFTWARE.
 #include "Physics.h"
 
 namespace xio {
+static std::vector<btVector3> collisions;
+static void TickCallback(btDynamicsWorld *dynamicsWorld, btScalar timeStep) {
+  collisions.clear();
+  int numManifolds = dynamicsWorld->getDispatcher()->getNumManifolds();
+  for (int i = 0; i < numManifolds; i++) {
+    btPersistentManifold *contactManifold = dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+    // TODO those are unused. What can be done with them?
+    // I think they are the same objects as those in the main loop
+    // dynamicsWorld->getCollisionObjectArray() and we could compare
+    // the pointers to see which object collided with which.
+    {
+      const btCollisionObject *objA = contactManifold->getBody0();
+      const btCollisionObject *objB = contactManifold->getBody1();
+    }
+    int numContacts = contactManifold->getNumContacts();
+    for (int j = 0; j < numContacts; j++) {
+      btManifoldPoint& pt = contactManifold->getContactPoint(j);
+      collisions.push_back(pt.getPositionWorldOnA());
+      collisions.push_back(pt.getPositionWorldOnB());
+      collisions.push_back(pt.m_normalWorldOnB);
+    }
+  }
+}
 //----------------------------------------------------------------------------------------------------------------------
 Physics::Physics() {
   broadphase_ = std::make_unique<btAxisSweep3>(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000), 1024);
-  collision_config_ = std::make_unique<btDefaultCollisionConfiguration>();
-  dispatcher_ = std::make_unique<btCollisionDispatcher>(collision_config_.get());
+  configurator_ = std::make_unique<btDefaultCollisionConfiguration>();
+  dispatcher_ = std::make_unique<btCollisionDispatcher>(configurator_.get());
   solver_ = std::make_unique<btSequentialImpulseConstraintSolver>();
-  phy_world_ = std::make_unique<btDiscreteDynamicsWorld>(dispatcher_.get(),
-                                                         broadphase_.get(),
-                                                         solver_.get(),
-                                                         collision_config_.get());
+  world_ = std::make_unique<btDiscreteDynamicsWorld>(dispatcher_.get(),
+                                                     broadphase_.get(),
+                                                     solver_.get(),
+                                                     configurator_.get());
 
-  phy_world_->setGravity(btVector3(0.0, -9.8, 0.0));
+  world_->setGravity(btVector3(0.0, -9.8, 0.0));
 
-  if (physics_debug_show_collider_) {
-    dbg_draw_ = std::make_unique<BtOgre::DebugDrawer>(Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode(), phy_world_.get());
-    dbg_draw_->setDebugMode(physics_debug_show_collider_);
-    phy_world_->setDebugDrawer(dbg_draw_.get());
+  if (debug_) {
+    auto *node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
+    dbg_draw_ = std::make_unique<BtOgre::DebugDrawer>(node, world_.get());
+    dbg_draw_->setDebugMode(debug_);
+    world_->setDebugDrawer(dbg_draw_.get());
   }
 
+  world_->setInternalTickCallback(TickCallback);
   pause_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
 Physics::~Physics() {}
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::Update(float time) {
+void Physics::Loop(float time) {
   if (!pause_) {
-    phy_world_->stepSimulation(time, sub_steps_);
+    world_->stepSimulation(time, steps_);
   }
 
-  if (physics_debug_show_collider_)
+  if (debug_)
     dbg_draw_->step();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Clear() {
   Pause();
-  phy_world_->clearForces();
+  world_->clearForces();
 
   //remove the rigidbodies from the dynamics world and delete them
-  for (int i = phy_world_->getNumCollisionObjects() - 1; i >= 0; i--) {
-    btCollisionObject *obj = phy_world_->getCollisionObjectArray()[i];
-    phy_world_->removeCollisionObject(obj);
+  for (int i = world_->getNumCollisionObjects() - 1; i >= 0; i--) {
+    btCollisionObject *obj = world_->getCollisionObjectArray()[i];
+    world_->removeCollisionObject(obj);
     delete obj;
   }
 
@@ -81,7 +106,7 @@ void Physics::Clear() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::AddRigidBody(btRigidBody *body) {
-  phy_world_->addRigidBody(body);
+  world_->addRigidBody(body);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::CreateTerrainHeightfieldShape(int size,
@@ -132,7 +157,7 @@ void Physics::CreateTerrainHeightfieldShape(int size,
   entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
   AddRigidBody(entBody);
-  phy_world_->setForceUpdateAllAabbs(false);
+  world_->setForceUpdateAllAabbs(false);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,

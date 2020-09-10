@@ -121,7 +121,7 @@ MovableObject *OgreOggSoundFactory::createInstanceImpl(const String &name, const
     return OgreOggSoundManager::getSingletonPtr()->_createSoundImpl(scnMgr, reName, id, fileName, stream, loop, preBuffer, immediate);
 #else
     return OgreOggSoundManager::getSingletonPtr()->_createSoundImpl(scnMgr,
-                                                                    reName,
+                                                                    name,
                                                                     fileName,
                                                                     stream,
                                                                     loop,

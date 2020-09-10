@@ -26,7 +26,6 @@ SOFTWARE.
 
 #include "Component.h"
 #include <OgreFrameListener.h>
-
 #include <OgreAny.h>
 
 namespace BtOgre {
@@ -48,7 +47,6 @@ class btCollisionShape;
 class btCollisionObject;
 
 namespace xio {
-
 class Physics final : public Component{
  public:
   Physics();
@@ -56,7 +54,7 @@ class Physics final : public Component{
 
   void Create() final {}
   void Clear() final;
-  void Update(float time) final;
+  void Loop(float time) final;
 
   void AddRigidBody(btRigidBody *body);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);
@@ -70,16 +68,16 @@ class Physics final : public Component{
  private:
   std::unique_ptr<BtOgre::DebugDrawer> dbg_draw_;
   std::unique_ptr<btAxisSweep3> broadphase_;
-  std::unique_ptr<btDefaultCollisionConfiguration> collision_config_;
+  std::unique_ptr<btDefaultCollisionConfiguration> configurator_;
   std::unique_ptr<btCollisionDispatcher> dispatcher_;
   std::unique_ptr<btSequentialImpulseConstraintSolver> solver_;
-  std::unique_ptr<btDynamicsWorld> phy_world_;
+  std::unique_ptr<btDynamicsWorld> world_;
   std::vector<btCollisionObject *> rigid_bodies_;
   std::vector<btCollisionShape *> collision_shapes_;
 
-  int sub_steps_ = 8;
+  int steps_ = 8;
   bool pause_ = false;
-  bool physics_debug_show_collider_ = false;
+  bool debug_ = false;
 
  public:
   void Start() noexcept {

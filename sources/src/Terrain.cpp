@@ -124,15 +124,14 @@ void Terrain::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   int tuningMaxPixelError = GetAttribInt(xml_node, "tuningMaxPixelError", 8);
   auto *terrain_global_options = Ogre::TerrainGlobalOptions::getSingletonPtr();
 
-  if (!terrain_global_options) {
+  if (!terrain_global_options)
     terrain_global_options = new Ogre::TerrainGlobalOptions();
-  }
 
   OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
   terrain_global_options->setCompositeMapDistance(static_cast<float>(tuningCompositeMapDistance));
   terrain_global_options->setCastsDynamicShadows(false);
-  terrain_global_options->setUseRayBoxDistanceCalculation(true);
+  terrain_global_options->setUseRayBoxDistanceCalculation(false);
   terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
 
   auto *scene_manager = Ogre::Root::getSingleton().getSceneManager("Default");

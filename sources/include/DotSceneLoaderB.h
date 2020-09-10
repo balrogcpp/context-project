@@ -66,7 +66,7 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
 
   void Create() final {}
   void Clear() final {terrain_.reset();}
-  void Update(float time) final {}
+  void Loop(float time) final {}
 
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
   void Load(const std::string &filename, const std::string &group_name, Ogre::SceneNode *root_node);
@@ -123,6 +123,5 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   Sound *sounds_ = nullptr;
   Overlay *overlay_ = nullptr;
   xio::InputSequencer *io_ = nullptr;
-  bool lod_generator_enable_ = false;
 };
 }

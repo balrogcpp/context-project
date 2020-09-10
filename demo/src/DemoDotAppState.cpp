@@ -45,18 +45,7 @@ void DemoDotAppState::Clear() {
 
 void DemoDotAppState::Create() {
   Load("test.scene");
-//  forest_.Create();
-//  auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
-//  mSoundManager->setResourceGroupName(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-//  mSoundManager->createSound("AmbientMusicDemo",
-//                             "22384__dobroide__20060824-forest03.ogg",
-//                             false,
-//                             true,
-//                             true,
-//                             scene_);
-//
-//  if (mSoundManager->getSound("SceneManagerInstance1")) {
-//    mSoundManager->getSound("SceneManagerInstance1")->play();
-//  }
+  sound_->CreateSound("ambient", "22384__dobroide__20060824-forest03.ogg");
+  sound_->PlaySound("ambient");
 }
 }

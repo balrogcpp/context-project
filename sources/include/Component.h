@@ -34,6 +34,6 @@ class Component : public NoCopy {
 
   virtual void Create() = 0;
   virtual void Clear() = 0;
-  virtual void Update(float time) = 0;
+  virtual void Loop(float time) = 0;
 };
 }

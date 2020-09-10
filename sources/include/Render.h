@@ -47,7 +47,7 @@ class Render final : public Component {
 
   void Create() final {}
   void Clear() final {}
-  void Update(float time) final {}
+  void Loop(float time) final {}
 
   void Refresh();
   void UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy);

@@ -50,14 +50,12 @@ set(OGGSOUND_HEADERS
     oggsound/include/OgreOggStaticSound.h
     oggsound/include/OgreOggStaticWavSound.h
     oggsound/include/OgreOggStreamSound.h
-    oggsound/include/OgreOggStreamWavSound.h
-    )
+    oggsound/include/OgreOggStreamWavSound.h)
 
 set(BTOGRE_HEADERS
     btogre/include/BtOgreExtras.h
     btogre/include/BtOgreGP.h
-    btogre/include/BtOgrePG.h
-    )
+    btogre/include/BtOgrePG.h)
 
 set(CONTEXT_HEADERS
     include/Application.h
@@ -88,7 +86,10 @@ set(CONTEXT_HEADERS
     include/RtssUtils.h
     include/Terrain.h
     include/CompositorHelper.h
-    include/ShadowSettings.h include/YamlConfigurator.h include/ComponentLocator.h include/XmlUtils.h)
+    include/ShadowSettings.h
+    include/YamlConfigurator.h
+    include/ComponentLocator.h
+    include/XmlUtils.h)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
@@ -97,8 +98,7 @@ set(HEADER_FILES_CONTEXT_LIB
     include/Entity.h)
 
 set(BTOGRE_SOURCES
-    btogre/src/BtOgre.cpp
-    )
+    btogre/src/BtOgre.cpp)
 
 set(OGGSOUND_SOURCES
     oggsound/src/OgreOggISound.cpp
@@ -109,8 +109,7 @@ set(OGGSOUND_SOURCES
     oggsound/src/OgreOggStaticSound.cpp
     oggsound/src/OgreOggStaticWavSound.cpp
     oggsound/src/OgreOggStreamSound.cpp
-    oggsound/src/OgreOggStreamWavSound.cpp
-    )
+    oggsound/src/OgreOggStreamWavSound.cpp)
 
 set(CONTEXT_SOURCES
     src/Application.cpp
@@ -124,13 +123,12 @@ set(CONTEXT_SOURCES
     src/Gorilla.cpp
     src/Overlay.cpp
     src/PbrUtils.cpp
-    src/Terrain.cpp)
+    src/Terrain.cpp src/Sound.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}
     ${OGGSOUND_SOURCES}
-    ${CONTEXT_SOURCES}
-    )
+    ${CONTEXT_SOURCES})
 
 include_directories(context-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 

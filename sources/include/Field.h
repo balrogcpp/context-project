@@ -34,7 +34,7 @@ class Field final : public Component {
 
   void Create() final;
   void Clear() final {}
-  void Update(float time) final {}
+  void Loop(float time) final {}
 
   void GenerateGrass();
 

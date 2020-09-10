@@ -28,33 +28,19 @@ SOFTWARE.
 #include "OgreOggSound.h"
 
 namespace xio {
-
 class Sound final : public Component {
  public:
-  Sound() {
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    putenv("ALSOFT_LOGLEVEL=LOG_NONE");
-#elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-    _putenv("ALSOFT_LOGLEVEL=LOG_NONE");
-#endif
+  Sound();
+  virtual ~Sound();
 
-    OgreOggSound::OgreOggSoundFactory *mOgreOggSoundFactory;
-    // Create new factory
-    mOgreOggSoundFactory = OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
-
-    // Register
-    Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
-
-    OgreOggSound::OgreOggSoundManager::getSingleton().init();
-  }
-
-  virtual ~Sound() {
-    OgreOggSound::OgreOggSoundManager::getSingleton().stopAllSounds();
-    OgreOggSound::OgreOggSoundManager::getSingleton().destroyAllSounds();
-  }
+  void CreateSound(const std::string &name, const std::string &file);
+  void PlaySound(const std::string &name);
 
   void Create() final {}
-  void Clear() final {}
-  void Update(float time) final {}
+  void Clear() final;
+  void Loop(float time) final {}
+
+ private:
+  OgreOggSound::OgreOggSoundManager *manager_ = nullptr;
 };
 }

@@ -66,7 +66,7 @@ class AppState
     io_ = io;
     renderer_ = renderer;
     physics_ = physics;
-    sounds_ = sounds;
+    sound_ = sounds;
     overlay_ = overlay;
     loader_ = loader;
   }
@@ -89,7 +89,7 @@ class AppState
   YamlConfigurator *conf_ = nullptr;
   Render *renderer_ = nullptr;
   Physics *physics_ = nullptr;
-  Sound *sounds_ = nullptr;
+  Sound *sound_ = nullptr;
   Overlay *overlay_ = nullptr;
   DotSceneLoaderB *loader_ = nullptr;
   xio::InputSequencer *io_ = nullptr;

@@ -301,7 +301,7 @@ class Camera final : public Entity, public xio::InputObserver, public Ogre::Fram
   float run_speed_ = 20.0f;
   float animation_time_ = 0.0f;
   float anim_duration_ = .5f;//ms
-  float const_speed_ = 1.5f;
+  float const_speed_ = 5.;
   float heigh_ = 1.5f;
   bool move_forward_ = false;
   bool move_back_ = false;

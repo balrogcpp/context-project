@@ -35,9 +35,7 @@ Overlay::Overlay() {}
 Overlay::~Overlay() {}
 
 //----------------------------------------------------------------------------------------------------------------------
-void Overlay::Update(float time) {
-
-}
+void Overlay::Loop(float time) {}
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Create() {
   mSilverback = new Silverback();
@@ -50,37 +48,23 @@ void Overlay::Create() {
   // Create our drawing layer
   layer = mScreen->createLayer(0);
   rect = layer->createRectangle(0, 0, vpW, vpH);
-//  rect->background_gradient(Gradient_Diagonal, rgb(98,0,63), rgb(255,180,174));
   rect->background_colour(rgb(0, 0, 0, 0));
-
-  markup = layer->createMarkupText(9, 5, 5,
-                                   "%@24%Overlay system\n%@14%Text here%@9%\nHello Fuckers");
-
-//  caption = layer->createCaption(9, vpW - 55, 5, "9");
-//  caption->width(50);
-//  caption->align(TextAlign_Right);
-//
-//  caption = layer->createCaption(14, vpW - 55, 18, "14");
-//  caption->width(50);
-//  caption->align(TextAlign_Right);
-
-  caption = layer->createCaption(24, vpW - 55, 66, "24");
+  caption = layer->createCaption(24, vpW - 55, 66, "");
   caption->width(0);
   caption->align(TextAlign_Right);
 
-  auto *mPowerPanel = new D3Panel(mSilverback, Ogre::Root::getSingleton().getSceneManager("Default"), Ogre::Vector2(4,1));
+  auto *parent = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getParentSceneNode();
+  auto *mPowerPanel = new D3Panel(mSilverback, Ogre::Root::getSingleton().getSceneManager("Default"), Ogre::Vector2(4,1), parent);
   mPowerPanel->mNode->setPosition(Ogre::Vector3(0,1.5f,0));
   Gorilla::Caption* caption = mPowerPanel->makeCaption(0,4, "Power Level");
   caption->width(400);
   caption->align(Gorilla::TextAlign_Centre);
-
   auto *mPowerValueBackground = mPowerPanel->mGUILayer->createRectangle(10,35,380,10);
   mPowerValueBackground->background_colour(Gorilla::rgb(255,255,255,100));
-
   auto *mPowerValue = mPowerPanel->mGUILayer->createRectangle(10,35,200,10);
   mPowerValue->background_gradient(Gorilla::Gradient_NorthSouth, Gorilla::rgb(255,255,255,200), Gorilla::rgb(64,64,64,200));
-  auto *mPowerDownButton = mPowerPanel->makeButton(10, 65, "-");
-  auto *mPowerUpButton = mPowerPanel->makeButton(84, 65, "+");
+  mPowerPanel->makeButton(10, 65, "-");
+  mPowerPanel->makeButton(84, 65, "+");
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Text(const std::string &str) {
@@ -89,7 +73,5 @@ void Overlay::Text(const std::string &str) {
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Clear() {
   mSilverback->destroyScreen(mScreen);
-//  mScreen = mSilverback->createScreen(ogre_viewport_, "dejavu");
-//  layer = mScreen->createLayer(0);
 }
 }

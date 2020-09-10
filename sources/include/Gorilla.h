@@ -2923,11 +2923,15 @@ class Button {
 
 class D3Panel {
  public:
-  D3Panel(Gorilla::Silverback *silverback, Ogre::SceneManager *sceneMgr, const Ogre::Vector2 &size)
-      : mSize(size) {
+  D3Panel(Gorilla::Silverback *silverback, Ogre::SceneManager *sceneMgr, const Ogre::Vector2 &size, Ogre::SceneNode* parent = nullptr)
+      : mSize(size), mNode(parent) {
 
     mScreen = silverback->createScreenRenderable(Ogre::Vector2(mSize.x, mSize.y), "dejavu");
-    mNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
+    if (!mNode)
+      mNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
+    else
+      mNode = parent->createChildSceneNode();
+
     mNode->attachObject(mScreen);
 
     mGUILayer = mScreen->createLayer(0);

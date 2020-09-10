@@ -53,7 +53,7 @@ class Overlay final : public Component {
 
   void Create() final;
   void Clear() final;
-  void Update(float time) final;
+  void Loop(float time) final;
   void Text(const std::string &str);
 
  private:

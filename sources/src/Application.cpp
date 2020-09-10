@@ -42,7 +42,7 @@ Application::Application() {
     Init_();
   }
   catch (Exception &e) {
-    Message_("Exception occurred (Context core)", e.getDescription());
+    Message_("Exception occurred", e.getDescription());
     throw e;
   }
   catch (Ogre::Exception &e) {
@@ -149,7 +149,6 @@ void Application::Reset_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::InitCurrState_() {
-  cur_state_->Create();
   cur_state_->LocateComponents(conf_.get(),
                                io_.get(),
                                renderer_.get(),
@@ -157,6 +156,8 @@ void Application::InitCurrState_() {
                                sounds_.get(),
                                overlay_.get(),
                                loader_.get());
+
+  cur_state_->Create();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Quit() {
@@ -246,7 +247,7 @@ void Application::Loop_() {
         float frame_time = static_cast<float>(millis_before_update - time_of_last_frame) / 1000000;
         time_of_last_frame = millis_before_update;
 
-        physics_->Update(frame_time);
+        physics_->Loop(frame_time);
         renderer_->RenderOneFrame();
       }
 
@@ -280,7 +281,7 @@ void Application::Loop_() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
   if (cur_state_) {
-    cur_state_->Create();
+    InitCurrState_();
     quit_ = true;
     auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
     time_of_last_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
@@ -303,7 +304,7 @@ int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
     Go_();
   }
   catch (Exception &e) {
-    return Message_("Exception occurred (Context core)", e.getDescription());
+    return Message_("Exception occurred", e.getDescription());
   }
   catch (Ogre::Exception &e) {
     return Message_("Exception occurred (OGRE)", e.getFullDescription());
