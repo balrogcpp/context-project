@@ -62,7 +62,7 @@ class Overlay final : public Component {
   Gorilla::Layer *layer = nullptr;
   Gorilla::Polygon *poly = nullptr;
   Gorilla::LineList *list = nullptr;
-  Gorilla::Caption *caption = nullptr;
+  Gorilla::Caption *caption_ = nullptr;
   Gorilla::Rectangle *rect = nullptr;
   Gorilla::QuadList *quads = nullptr;
   Gorilla::MarkupText *markup = nullptr;

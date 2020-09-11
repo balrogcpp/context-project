@@ -64,6 +64,13 @@ void Application::Init_() {
   sounds_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();
   loader_ = std::make_unique<DotSceneLoaderB>();
+
+  components_.push_back(loader_.get());
+  components_.push_back(physics_.get());
+  components_.push_back(sounds_.get());
+  components_.push_back(renderer_.get());
+  components_.push_back(overlay_.get());
+
   overlay_->Create();
   renderer_->Refresh();
 
@@ -197,12 +204,11 @@ void Application::Loop_() {
       auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
       long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
 
-      int fps_frames_;
-      long delta_time_;
+      int fps_frames_ = 0;
+      long delta_time_ = 0;
 
       if (delta_time_ > 1000000) {
         current_fps_ = fps_frames_;
-        overlay_->Text(std::to_string(current_fps_));
         delta_time_ = 0;
         fps_frames_ = 0;
       }
@@ -243,11 +249,14 @@ void Application::Loop_() {
         }
 
         auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
-        long millis_before_update = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
-        float frame_time = static_cast<float>(millis_before_update - time_of_last_frame) / 1000000;
-        time_of_last_frame = millis_before_update;
+        long millis_before_update =
+            std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
+        float frame_time = static_cast<float>(millis_before_update - time_of_last_frame_) / 1000000;
+        time_of_last_frame_ = millis_before_update;
 
-        physics_->Loop(frame_time);
+        for (auto *it : components_)
+          it->Loop(frame_time);
+
         renderer_->RenderOneFrame();
       }
 
@@ -284,7 +293,7 @@ void Application::Go_() {
     InitCurrState_();
     quit_ = true;
     auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
-    time_of_last_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
+    time_of_last_frame_ = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
     Loop_();
     io_->Reset();
     Reset_();

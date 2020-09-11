@@ -334,6 +334,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   entBody->forceActivationState(DISABLE_DEACTIVATION);
   entBody->setActivationState(DISABLE_DEACTIVATION);
   entBody->setFriction(1.0);
+  entBody->setUserIndex(1);
   physics_->AddRigidBody(entBody);
   camera_->SetRigidBody(entBody);
   /// Set the field-of-view

@@ -26,29 +26,6 @@ SOFTWARE.
 #include "Physics.h"
 
 namespace xio {
-static std::vector<btVector3> collisions;
-static void TickCallback(btDynamicsWorld *dynamicsWorld, btScalar timeStep) {
-  collisions.clear();
-  int numManifolds = dynamicsWorld->getDispatcher()->getNumManifolds();
-  for (int i = 0; i < numManifolds; i++) {
-    btPersistentManifold *contactManifold = dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
-    // TODO those are unused. What can be done with them?
-    // I think they are the same objects as those in the main loop
-    // dynamicsWorld->getCollisionObjectArray() and we could compare
-    // the pointers to see which object collided with which.
-    {
-      const btCollisionObject *objA = contactManifold->getBody0();
-      const btCollisionObject *objB = contactManifold->getBody1();
-    }
-    int numContacts = contactManifold->getNumContacts();
-    for (int j = 0; j < numContacts; j++) {
-      btManifoldPoint& pt = contactManifold->getContactPoint(j);
-      collisions.push_back(pt.getPositionWorldOnA());
-      collisions.push_back(pt.getPositionWorldOnB());
-      collisions.push_back(pt.m_normalWorldOnB);
-    }
-  }
-}
 //----------------------------------------------------------------------------------------------------------------------
 Physics::Physics() {
   broadphase_ = std::make_unique<btAxisSweep3>(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000), 1024);
@@ -69,19 +46,53 @@ Physics::Physics() {
     world_->setDebugDrawer(dbg_draw_.get());
   }
 
-  world_->setInternalTickCallback(TickCallback);
   pause_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
 Physics::~Physics() {}
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Loop(float time) {
-  if (!pause_) {
+  if (!pause_)
     world_->stepSimulation(time, steps_);
-  }
-
   if (debug_)
     dbg_draw_->step();
+
+  static std::set<int> persistent;
+  static std::set<int> collisions;
+
+  int numManifolds = world_->getDispatcher()->getNumManifolds();
+  for (int i = 0; i < numManifolds; i++) {
+    btPersistentManifold *contactManifold = world_->getDispatcher()->getManifoldByIndexInternal(i);
+    // TODO those are unused. What can be done with them?
+    // I think they are the same objects as those in the main loop
+    // dynamicsWorld->getCollisionObjectArray() and we could compare
+    // the pointers to see which object collided with which.
+    const btCollisionObject *objA = contactManifold->getBody0();
+    const btCollisionObject *objB = contactManifold->getBody1();
+    if (find(collisions.begin(), collisions.end(), objA->getUserIndex()) == collisions.end()) {
+      auto it = find(persistent.begin(), persistent.end(), objA->getUserIndex());
+      if (it != persistent.end()) {
+        std::iter_swap(it, std::prev(persistent.end()));
+        persistent.pop_back();
+      } else {
+        collisions.push_back(objA->getUserIndex());
+      }
+    } else {
+      if (find(persistent.begin(), persistent.end(), objA->getUserIndex()) == persistent.end()) {
+        collisions.push_back(objA->getUserIndex());
+      } else {
+        std::cout << "BOOOOOOM " << objA->getUserIndex() << '\n';
+      }
+    }
+
+    int numContacts = contactManifold->getNumContacts();
+    for (int j = 0; j < numContacts; j++) {
+      btManifoldPoint& pt = contactManifold->getContactPoint(j);
+//      collisions.push_back(pt.getPositionWorldOnA());
+//      collisions.push_back(pt.getPositionWorldOnB());
+//      collisions.push_back(pt.m_normalWorldOnB);
+    }
+  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Clear() {
@@ -156,6 +167,7 @@ void Physics::CreateTerrainHeightfieldShape(int size,
   entBody->getWorldTransform().setRotation(BtOgre::Convert::toBullet(Ogre::Quaternion::IDENTITY));
   entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
+  entBody->setUserIndex(0);
   AddRigidBody(entBody);
   world_->setForceUpdateAllAabbs(false);
 }
@@ -385,6 +397,9 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
       entBody->setFriction(friction_x);
     }
 
+    static int counter = 10;
+    entBody->setUserIndex(counter);
+    counter++;
     AddRigidBody(entBody);
   }
 }
