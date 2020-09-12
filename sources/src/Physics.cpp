@@ -72,14 +72,13 @@ void Physics::Loop(float time) {
     if (find(collisions.begin(), collisions.end(), objA->getUserIndex()) == collisions.end()) {
       auto it = find(persistent.begin(), persistent.end(), objA->getUserIndex());
       if (it != persistent.end()) {
-        std::iter_swap(it, std::prev(persistent.end()));
-        persistent.pop_back();
+        persistent.erase(it);
       } else {
-        collisions.push_back(objA->getUserIndex());
+        collisions.insert(objA->getUserIndex());
       }
     } else {
       if (find(persistent.begin(), persistent.end(), objA->getUserIndex()) == persistent.end()) {
-        collisions.push_back(objA->getUserIndex());
+        collisions.insert(objA->getUserIndex());
       } else {
         std::cout << "BOOOOOOM " << objA->getUserIndex() << '\n';
       }
@@ -88,9 +87,6 @@ void Physics::Loop(float time) {
     int numContacts = contactManifold->getNumContacts();
     for (int j = 0; j < numContacts; j++) {
       btManifoldPoint& pt = contactManifold->getContactPoint(j);
-//      collisions.push_back(pt.getPositionWorldOnA());
-//      collisions.push_back(pt.getPositionWorldOnB());
-//      collisions.push_back(pt.m_normalWorldOnB);
     }
   }
 }
