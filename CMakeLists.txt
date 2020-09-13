@@ -526,7 +526,7 @@ if (NOT CONTEXT_ONLY_DEPS)
                       VERBATIM
                       )
 
-    add_custom_target(xio-install-zip
+    add_custom_target(xio-zip
                       COMMAND ${CMAKE_COMMAND} -E tar cf ${CONTEXT_ZIP_NAME}.zip --format=zip ${CONTEXT_ZIP_NAME}
                       WORKING_DIRECTORY ${CONTEXT_INSTALL_PATH}
                       COMMENT "Create zip..."
