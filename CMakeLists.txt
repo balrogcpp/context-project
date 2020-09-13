@@ -28,7 +28,7 @@ set(PROJECT_VERSION_MINOR 1 CACHE STRING "Project minor version number.")
 set(PROJECT_VERSION_PATCH 0 CACHE STRING "Project patch version number.")
 mark_as_advanced(PROJECT_VERSION_MAJOR PROJECT_VERSION_MINOR PROJECT_VERSION_PATCH)
 
-project(context)
+project(xio)
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -382,7 +382,7 @@ set(CONTEXT_SOURCE_DIR ${CONTEXT_ROOT_DIR}/sources CACHE PATH "")
 set(CONTEXT_WORK_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
 set(CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CONTEXT_BUILD_PLATFORM})
 set(CONTEXT_BIN_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
-set(CONTEXT_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/context CACHE PATH "")
+set(CONTEXT_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/xio CACHE PATH "")
 set(CONTEXT_INCLUDE_DIR ${CONTEXT_SOURCE_DIR}/include CACHE PATH "")
 
 set(CONTEXT_THIRDPARTY_ROOT ${CONTEXT_ROOT_DIR}/sources CACHE PATH "")
@@ -415,8 +415,8 @@ if (NOT CONTEXT_ONLY_DEPS)
 
     list(APPEND CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 
-    #add_dependencies(context-lib-static context-deps)
-    add_dependencies(context-demo context-lib-static)
+    #add_dependencies(xio-lib xio-deps)
+    add_dependencies(xio-demo xio-lib)
 
     add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
 
@@ -430,17 +430,8 @@ if (NOT CONTEXT_ONLY_DEPS)
         file(GLOB EXTERNAL_DLL_GLOB ${EXTERNAL_DLL_LOCATION}/*dll)
     endif ()
 
-    add_custom_target(context-workspace
-                      COMMAND ${CMAKE_COMMAND} -E copy_directory ${CONTEXT_DEPLOY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/demo
-                      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${EXTERNAL_DLL_GLOB} ${CMAKE_CURRENT_BINARY_DIR}/demo
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                      COMMENT "Copying files to development workspace..."
-                      VERBATIM
-                      )
-
     set(CONTEXT_PROGRAMS_DIR ${CMAKE_SOURCE_DIR}/programs)
     set(CONTEXT_SCENES_DIR ${CMAKE_SOURCE_DIR}/scenes)
-    #set(CONTEXT_GUI_DIR ${CMAKE_SOURCE_DIR}/cegui)
     set(CONTEXT_TEMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
 
     macro(subdirlist result curdir)
@@ -513,7 +504,7 @@ if (NOT CONTEXT_ONLY_DEPS)
 
     set(CPACK_NSIS_DISPLAY_NAME "Context Demo")
     set(CPACK_NSIS_PACKAGE_NAME "Context Demo")
-    set(CPACK_NSIS_MENU_LINKS "context-demo.exe" "ContextProjectDemo")
+    set(CPACK_NSIS_MENU_LINKS "xio-demo.exe" "ContextProjectDemo")
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL true)
 
     if (UNIX)
@@ -524,21 +515,21 @@ if (NOT CONTEXT_ONLY_DEPS)
 
     include(CPack)
 
-    add_custom_target(context-package
+    add_custom_target(xio-package
                       COMMAND ${CMAKE_COMMAND} --build . --target package
                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/..
                       COMMENT "Creating packages..."
                       VERBATIM
                       )
 
-    add_custom_target(context-install
+    add_custom_target(xio-install
                       COMMAND ${CMAKE_COMMAND} --build . --target install
                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/..
                       COMMENT "Installing..."
                       VERBATIM
                       )
 
-    add_custom_target(context-install-zip
+    add_custom_target(xio-install-zip
                       COMMAND ${CMAKE_COMMAND} -E tar cf ${CONTEXT_ZIP_NAME}.zip --format=zip ${CONTEXT_ZIP_NAME}
                       WORKING_DIRECTORY ${CONTEXT_INSTALL_PATH}
                       COMMENT "Create zip..."

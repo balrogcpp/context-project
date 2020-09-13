@@ -24,7 +24,7 @@ cmake_minimum_required(VERSION 3.15.1)
 
 include(CMakeDependentOption)
 
-project(context-deps)
+project(xio-deps)
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -963,7 +963,7 @@ list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-angelscript)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre1)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-lua)
-add_custom_target(context-deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
+add_custom_target(xio-deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
 
 if (WIN32)
     if (${CMAKE_BUILD_TYPE} STREQUAL Debug)

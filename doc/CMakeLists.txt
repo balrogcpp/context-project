@@ -22,7 +22,7 @@
 
 cmake_minimum_required(VERSION 3.15.1)
 
-project(context-doxygen)
+project(xio-doxygen)
 
 find_package(Doxygen)
 find_package(Doxygen COMPONENTS dot)
@@ -39,7 +39,7 @@ if (${DOXYGEN_DOT_FOUND})
     configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
     message("Doxygen build started")
 
-    add_custom_target(context-doxygen
+    add_custom_target(xio-doxygen
                       COMMAND ${CMAKE_COMMAND} -E make_directory ${CONTEXT_ARTIFACT_DIR}
                       COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
                       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -54,8 +54,8 @@ if (${DOXYGEN_DOT_FOUND})
     endif ()
 
     if (${LATEX_PDFLATEX_FOUND})
-        add_custom_target(context-pdf
-                          DEPENDS context-doxygen
+        add_custom_target(xio-pdf
+                          DEPENDS xio-doxygen
                           COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ARTIFACT_DIR}/Doxygen/latex ${DOXYGEN_MAKE_COMMAND}
                           COMMAND ${CMAKE_COMMAND} -E copy ${CONTEXT_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${CONTEXT_ARTIFACT_DIR}
                           WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

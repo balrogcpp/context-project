@@ -29,7 +29,7 @@ endif ()
 
 include(cotire)
 
-project(context-lib)
+project(xio-lib)
 
 set(CMAKE_MODULE_PATH
     "${CONTEXT_ROOT_DIR}/CMake"
@@ -123,18 +123,19 @@ set(CONTEXT_SOURCES
     src/Gorilla.cpp
     src/Overlay.cpp
     src/PbrUtils.cpp
-    src/Terrain.cpp src/Sound.cpp)
+    src/Terrain.cpp
+    src/Sound.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}
     ${OGGSOUND_SOURCES}
     ${CONTEXT_SOURCES})
 
-include_directories(context-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+include_directories(xio-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 
-add_library(context-lib-static STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
+add_library(xio-lib STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
 
-set_target_properties(context-lib-static PROPERTIES OUTPUT_NAME "context-static")
+set_target_properties(xio-lib PROPERTIES OUTPUT_NAME "xio-static")
 
 set(CMAKE_CXX_FLAGS ${CONTEXT_CXX_FLAGS})
 set(CMAKE_C_FLAGS ${CONTEXT_C_FLAGS})
@@ -143,6 +144,6 @@ set(CMAKE_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS})
 set(CMAKE_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS})
 
 if (NOT MSVC AND NOT ANDROID)
-    set_target_properties(context-lib-static PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "include/pcheader.h")
-    cotire(context-lib-static)
+    set_target_properties(xio-lib PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "include/pcheader.h")
+    cotire(xio-lib)
 endif ()
