@@ -20,10 +20,10 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-FROM balrogcpp/context-project-dependencies:latest
+FROM balrogcpp/xio-dependencies:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/context-demo
+ARG CONTEXT_HOME=/mnt/xio-demo
 WORKDIR ${CONTEXT_HOME}
 
 ADD sources ./sources
@@ -43,4 +43,4 @@ ADD .git ./.git
 RUN mkdir -p ./build-windows && mkdir -p ./build-linux && \
     cd ${CONTEXT_HOME}/build-linux && cmake -G Ninja .. && cmake --build . --target install && \
     cd ${CONTEXT_HOME}/build-windows && cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target install && \
-    cmake --build . --target context-install-zip
+    cmake --build . --target xio-install-zip
