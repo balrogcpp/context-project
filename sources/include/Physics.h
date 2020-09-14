@@ -27,6 +27,7 @@ SOFTWARE.
 #include "Component.h"
 #include <OgreFrameListener.h>
 #include <OgreAny.h>
+#include <map>
 
 namespace BtOgre {
 class DebugDrawer;
@@ -47,7 +48,7 @@ class btCollisionShape;
 class btCollisionObject;
 
 namespace xio {
-class Physics final : public Component{
+class Physics final : public Component {
  public:
   Physics();
   virtual ~Physics();
@@ -59,11 +60,11 @@ class Physics final : public Component{
   void AddRigidBody(btRigidBody *body);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);
   void CreateTerrainHeightfieldShape(int size,
-                                float *data,
-                                const float &min_height,
-                                const float &max_height,
-                                const Ogre::Vector3 &position,
-                                const float &scale);
+                                     float *data,
+                                     const float &min_height,
+                                     const float &max_height,
+                                     const Ogre::Vector3 &position,
+                                     const float &scale);
 
  private:
   std::unique_ptr<BtOgre::DebugDrawer> dbg_draw_;
@@ -74,7 +75,9 @@ class Physics final : public Component{
   std::unique_ptr<btDynamicsWorld> world_;
   std::vector<btCollisionObject *> rigid_bodies_;
   std::vector<btCollisionShape *> collision_shapes_;
-
+  std::map<const btCollisionObject *, const btCollisionObject *> contacts_;
+  std::function<void(int a, int b)> callback_;
+ private:
   int steps_ = 8;
   bool pause_ = false;
   bool debug_ = false;
@@ -83,9 +86,11 @@ class Physics final : public Component{
   void Start() noexcept {
     pause_ = false;
   }
-
   void Pause() noexcept {
     pause_ = true;
+  }
+  void SetCallback(const std::function<void(int a, int b)> &callback) {
+    callback_ = callback;
   }
 };
 }

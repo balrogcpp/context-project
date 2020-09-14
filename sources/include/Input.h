@@ -112,7 +112,7 @@ class InputSequencer {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Reset() {
+  void Clear() {
     io_listeners.clear();
     win_listeners.clear();
   }

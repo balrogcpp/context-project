@@ -22,25 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-
-#include "Component.h"
-#include "OgreOggSound.h"
+#include "pcheader.h"
+#include "AppState.h"
 
 namespace xio {
-class Sound final : public Component {
- public:
-  Sound();
-  virtual ~Sound();
-
-  void CreateSound(const std::string &name, const std::string &file, bool loop = false);
-  void PlaySound(const std::string &name);
-
-  void Create() final {}
-  void Clear() final;
-  void Loop(float time) final {}
-
- private:
-  OgreOggSound::OgreOggSoundManager *manager_ = nullptr;
-};
+YamlConfigurator *AppState::conf_ = nullptr;
+Render *AppState::renderer_ = nullptr;
+Physics *AppState::physics_ = nullptr;
+Sound *AppState::sound_ = nullptr;
+Overlay *AppState::overlay_ = nullptr;
+DotSceneLoaderB *AppState::loader_ = nullptr;
+InputSequencer *AppState::io_ = nullptr;
 }

@@ -24,10 +24,9 @@ SOFTWARE.
 
 #pragma once
 
-#include "Render.h"
+#include "Renderer.h"
 #include "AppState.h"
 #include "Field.h"
-
 #include <memory>
 
 namespace Demo {
@@ -39,10 +38,9 @@ class DemoDotAppState : public xio::AppState {
 
     void Create() final;
     void Clear() final;
+    void Loop() final;
+
     void KeyDown(SDL_Keycode sym) final;
-
- private:
-  xio::Field forest_;
+    static void Callback(int a, int b);
 };
-
 }

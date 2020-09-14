@@ -52,43 +52,55 @@ Physics::Physics() {
 Physics::~Physics() {}
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Loop(float time) {
+  if (pause_)
+    return;
   if (!pause_)
     world_->stepSimulation(time, steps_);
   if (debug_)
     dbg_draw_->step();
 
-  static std::set<int> persistent;
-  static std::set<int> collisions;
+  std::map<const btCollisionObject *, const btCollisionObject *> new_contacts;
 
-  int numManifolds = world_->getDispatcher()->getNumManifolds();
-  for (int i = 0; i < numManifolds; i++) {
+  /* Browse all collision pairs */
+  for (size_t i = 0; i < world_->getDispatcher()->getNumManifolds(); i++) {
     btPersistentManifold *contactManifold = world_->getDispatcher()->getManifoldByIndexInternal(i);
-    // TODO those are unused. What can be done with them?
-    // I think they are the same objects as those in the main loop
-    // dynamicsWorld->getCollisionObjectArray() and we could compare
-    // the pointers to see which object collided with which.
-    const btCollisionObject *objA = contactManifold->getBody0();
-    const btCollisionObject *objB = contactManifold->getBody1();
-    if (find(collisions.begin(), collisions.end(), objA->getUserIndex()) == collisions.end()) {
-      auto it = find(persistent.begin(), persistent.end(), objA->getUserIndex());
-      if (it != persistent.end()) {
-        persistent.erase(it);
-      } else {
-        collisions.insert(objA->getUserIndex());
-      }
-    } else {
-      if (find(persistent.begin(), persistent.end(), objA->getUserIndex()) == persistent.end()) {
-        collisions.insert(objA->getUserIndex());
-      } else {
-        std::cout << "BOOOOOOM " << objA->getUserIndex() << '\n';
-      }
-    }
+    auto *obA = contactManifold->getBody0();
+    auto *obB = contactManifold->getBody1();
 
+    /* Check all contacts points */
     int numContacts = contactManifold->getNumContacts();
     for (int j = 0; j < numContacts; j++) {
-      btManifoldPoint& pt = contactManifold->getContactPoint(j);
+      btManifoldPoint &pt = contactManifold->getContactPoint(j);
+      if (pt.getDistance() < 0.000001) {
+        const btVector3 &ptA = pt.getPositionWorldOnA();
+        const btVector3 &ptB = pt.getPositionWorldOnB();
+        const btVector3 &normalOnB = pt.m_normalWorldOnB;
+
+        if (new_contacts.find(obB) == new_contacts.end()) {
+          new_contacts[obB] = obA;
+        }
+      }
     }
   }
+
+  /* Check for added contacts ... */
+  for (const auto &it : new_contacts) {
+    if (contacts_.find(it.first) == contacts_.end()) {
+      if (callback_) callback_(it.first->getUserIndex(), it.second->getUserIndex());
+      // TODO: signal
+    } else {
+      // Remove to filter no more active contacts
+      contacts_.erase(it.first);
+    }
+  }
+
+  /* ... and removed contacts */
+  for (const auto &it : contacts_) {
+    // TODO: signal
+  }
+  contacts_.clear();
+
+  contacts_ = new_contacts;
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Clear() {
@@ -211,7 +223,8 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
     std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
 
     if (entity->getNumManualLodLevels() > 0)
-      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(entity->getNumManualLodLevels() - 1));
+      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(
+          entity->getNumManualLodLevels() - 1));
     else
       converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
 

@@ -80,19 +80,20 @@ class AppState
 
   virtual void Create() = 0;
   virtual void Clear() = 0;
+  virtual void Loop() = 0;
 
-  bool Loop() {
+  bool Waiting() {
     return waiting_;
   }
 
  protected:
-  YamlConfigurator *conf_ = nullptr;
-  Render *renderer_ = nullptr;
-  Physics *physics_ = nullptr;
-  Sound *sound_ = nullptr;
-  Overlay *overlay_ = nullptr;
-  DotSceneLoaderB *loader_ = nullptr;
-  xio::InputSequencer *io_ = nullptr;
+  static YamlConfigurator *conf_;
+  static Render *renderer_ ;
+  static Physics *physics_;
+  static Sound *sound_;
+  static Overlay *overlay_;
+  static DotSceneLoaderB *loader_;
+  static InputSequencer *io_;
   std::unique_ptr<AppState> next_;
   bool waiting_ = false;
 };

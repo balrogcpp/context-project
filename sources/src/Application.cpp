@@ -71,7 +71,8 @@ void Application::Init_() {
   components_.push_back(renderer_.get());
   components_.push_back(overlay_.get());
 
-  overlay_->Create();
+  for (auto &it : components_)
+    it->Create();
   renderer_->Refresh();
 
   // Texture filtering
@@ -135,23 +136,11 @@ void Application::Init_() {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Reset_() {
+void Application::Clear_() {
   io_->UnregWinObserver(this);
-  auto *root = Ogre::Root::getSingleton().getSceneManager("Default");
-  loader_->Clear();
-  root->destroyAllEntities();
-  root->destroyAllLights();
-  root->destroyAllParticleSystems();
-  root->destroyAllAnimations();
-  root->destroyAllAnimationStates();
-  root->destroyAllStaticGeometry();
-  root->destroyAllManualObjects();
-  root->destroyAllInstanceManagers();
-  root->destroyAllBillboardChains();
-  root->destroyAllBillboardSets();
-  root->destroyAllMovableObjects();
-  root->destroyAllCameras();
-  root->getRootSceneNode()->removeAndDestroyAllChildren();
+  for (auto &it : components_)
+    it->Clear();
+
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -200,7 +189,6 @@ void Application::Other(Uint8 type, int32_t code, void *data1, void *data2) {}
 void Application::Loop_() {
   while (quit_) {
     if (cur_state_) {
-      auto *root = Ogre::Root::getSingleton().getSceneManager("Default");
       auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
       long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
 
@@ -216,25 +204,11 @@ void Application::Loop_() {
       io_->Capture();
 
       if (!suspend_) {
-        if (cur_state_->Loop()) {
+        cur_state_->Loop();
+        if (cur_state_->Waiting()) {
           loader_->Clear();
           physics_->Clear();
-
-          root->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-          root->destroyAllEntities();
-          root->destroyAllLights();
-          root->destroyAllParticleSystems();
-          root->destroyAllAnimations();
-          root->destroyAllAnimationStates();
-          root->destroyAllStaticGeometry();
-          root->destroyAllRibbonTrails();
-          root->destroyAllManualObjects();
-          root->destroyAllInstanceManagers();
-          root->destroyAllBillboardChains();
-          root->destroyAllBillboardSets();
-          root->destroyAllMovableObjects();
-          root->getRootSceneNode()->removeAndDestroyAllChildren();
-
+          cur_state_->Clear();
           renderer_->Refresh();
 
           Ogre::Root::getSingleton().removeFrameListener(cur_state_.get());
@@ -249,8 +223,7 @@ void Application::Loop_() {
         }
 
         auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
-        long millis_before_update =
-            std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
+        long millis_before_update = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
         float frame_time = static_cast<float>(millis_before_update - time_of_last_frame_) / 1000000;
         time_of_last_frame_ = millis_before_update;
 
@@ -295,8 +268,8 @@ void Application::Go_() {
     auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
     time_of_last_frame_ = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
     Loop_();
-    io_->Reset();
-    Reset_();
+    io_->Clear();
+    Clear_();
   }
 }
 //----------------------------------------------------------------------------------------------------------------------

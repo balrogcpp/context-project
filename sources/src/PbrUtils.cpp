@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "pcheader.h"
 #include "PbrUtils.h"
-#include "Render.h"
+#include "Renderer.h"
 
 using namespace Ogre;
 using namespace xio;

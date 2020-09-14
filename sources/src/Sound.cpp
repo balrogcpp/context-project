@@ -56,9 +56,9 @@ void Sound::Clear() {
   OgreOggSound::OgreOggSoundManager::getSingleton().destroyAllSounds();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::CreateSound(const std::string &name, const std::string &file) {
-  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  manager_->createSound(name, file, false, true, true, scene);
+void Sound::CreateSound(const std::string &name, const std::string &file, bool loop) {
+//  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+  manager_->createSound(name, file, false, loop, true, nullptr);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Sound::PlaySound(const std::string &name) {

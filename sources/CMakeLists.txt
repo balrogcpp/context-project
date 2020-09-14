@@ -64,7 +64,7 @@ set(CONTEXT_HEADERS
     include/Exception.h
     include/Input.h
     include/pcheader.h
-    include/Render.h
+    include/Renderer.h
     include/VerboseListener.h
     include/JsonConfigurator.h
     include/DotSceneLoaderB.h
@@ -113,7 +113,7 @@ set(OGGSOUND_SOURCES
 
 set(CONTEXT_SOURCES
     src/Application.cpp
-    src/Render.cpp
+    src/Renderer.cpp
     src/DotSceneLoaderB.cpp
     src/Physics.cpp
     src/Field.cpp
@@ -124,7 +124,7 @@ set(CONTEXT_SOURCES
     src/Overlay.cpp
     src/PbrUtils.cpp
     src/Terrain.cpp
-    src/Sound.cpp)
+    src/Sound.cpp src/AppState.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}

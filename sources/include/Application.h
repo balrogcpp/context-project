@@ -28,7 +28,7 @@ SOFTWARE.
 #include <OgreRenderTargetListener.h>
 #include <OgreLog.h>
 #include "Input.h"
-#include "Render.h"
+#include "Renderer.h"
 #include "Sound.h"
 #include "Physics.h"
 #include "DotSceneLoaderB.h"
@@ -46,7 +46,7 @@ class Application final : public WindowObserver, public Ogre::LogListener {
 
  private:
   void Init_();
-  void Reset_();
+  void Clear_();
   void Loop_();
   void Go_();
   void InitCurrState_();

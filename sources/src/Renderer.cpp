@@ -23,7 +23,7 @@ SOFTWARE.
 */
 
 #include "pcheader.h"
-#include "Render.h"
+#include "Renderer.h"
 #include "Exception.h"
 #include "Storage.h"
 #include "RtssUtils.h"
