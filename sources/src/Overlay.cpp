@@ -26,7 +26,6 @@ SOFTWARE.
 
 #include "Overlay.h"
 #include "Gorilla.h"
-#include "Application.h"
 
 using namespace Gorilla;
 
@@ -40,10 +39,10 @@ void Overlay::Loop(float time) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Create() {
-  mSilverback = new Silverback();
-  mSilverback->loadAtlas("dejavu");
+  atlas_ = new Silverback();
+  atlas_->loadAtlas("dejavu");
   auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
-  screen_ = mSilverback->createScreen(viewport, "dejavu");
+  screen_ = atlas_->createScreen(viewport, "dejavu");
   layer_ = screen_->createLayer(0);
   Ogre::Real vpW = screen_->getWidth(), vpH = screen_->getHeight();
 
@@ -55,9 +54,9 @@ void Overlay::Create() {
   caption_->width(0);
   caption_->align(TextAlign_Right);
 
-  auto *console = new OgreConsole();
-  console->init(screen_);
-  console->setVisible(true);
+  console_ = std::make_unique<OgreConsole>();
+  console_->init(screen_);
+  console_->setVisible(true);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Text(const std::string &str) {
@@ -65,6 +64,7 @@ void Overlay::Text(const std::string &str) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Clear() {
-  mSilverback->destroyScreen(screen_);
+  console_.reset();
+  atlas_->destroyScreen(screen_);
 }
 }

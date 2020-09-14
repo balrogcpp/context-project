@@ -67,9 +67,24 @@ void Sound::PlaySound(const std::string &name) {
     manager_->getSound(name)->stop();
     manager_->getSound(name)->setPosition({});
     manager_->getSound(name)->play();
-  }
-  else {
+  } else {
     throw Exception(std::string("Sound \"") + name + "\" not found. Aborting.\n");
+  }
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Sound::SetMasterVolume(float volume) {
+  manager_->setMasterVolume(volume);
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Sound::SetMaxVolume(const std::string &name, float volume) {
+  if (manager_->getSound(name)) {
+    manager_->getSound(name)->setMaxVolume(volume);
+  }
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Sound::SetVolume(const std::string &name, float gain) {
+  if (manager_->getSound(name)) {
+    manager_->getSound(name)->setVolume(gain);
   }
 }
 }

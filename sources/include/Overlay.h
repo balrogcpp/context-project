@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma once
 
 #include "Component.h"
+#include <memory>
 
 namespace Ogre {
 class RenderTarget;
@@ -42,10 +43,10 @@ class Caption;
 class Rectangle;
 class QuadList;
 class MarkupText;
+class OgreConsole;
 }
 
 namespace xio {
-
 class Overlay final : public Component {
  public:
   Overlay();
@@ -58,14 +59,16 @@ class Overlay final : public Component {
   void Text(const std::string &str);
 
  private:
-  Gorilla::Silverback *mSilverback = nullptr;
+  Gorilla::Silverback *atlas_ = nullptr;
   Gorilla::Screen *screen_ = nullptr;
   Gorilla::Layer *layer_ = nullptr;
-  Gorilla::Polygon *poly_ = nullptr;
-  Gorilla::LineList *list_ = nullptr;
   Gorilla::Caption *caption_ = nullptr;
   Gorilla::Rectangle *rect_ = nullptr;
-  Gorilla::QuadList *quads_ = nullptr;
-  Gorilla::MarkupText *markup_ = nullptr;
+  std::unique_ptr<Gorilla::OgreConsole> console_;
+
+ public:
+  Gorilla::OgreConsole* GetConsole() {
+    return console_.get();
+  }
 };
 }

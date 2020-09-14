@@ -2389,7 +2389,7 @@ void OgreConsole::shutdown() {
 
 }
 
-void OgreConsole::onKeyPressed(const SDL_Keycode arg) {
+void OgreConsole::KeyDown(SDL_Keycode arg) {
 
   if (!mIsVisible)
     return;

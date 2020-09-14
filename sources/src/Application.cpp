@@ -27,6 +27,7 @@ SOFTWARE.
 #include "Application.h"
 #include "Storage.h"
 #include "Exception.h"
+#include "Overlay.h"
 
 #ifdef _WIN32
 extern "C"
@@ -73,6 +74,8 @@ void Application::Init_() {
 
   for (auto &it : components_)
     it->Create();
+
+//  io_->RegObserver(reinterpret_cast<InputObserver *>(overlay_->GetConsole()));
   renderer_->Refresh();
 
   // Texture filtering
@@ -209,8 +212,6 @@ void Application::Loop_() {
           for (auto &it : components_)
             it->Clean();
 
-//          loader_->Clear();
-//          physics_->Clear();
           cur_state_->Clear();
           renderer_->Refresh();
 

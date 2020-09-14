@@ -29,8 +29,7 @@
 
 */
 
-#ifndef GORILLA_H
-#define GORILLA_H
+#pragma once
 
 #include "OGRE/Ogre.h"
 #include <SDL2/SDL_keycode.h>
@@ -71,7 +70,7 @@ struct VectorType {
 
 namespace Colours {
 enum Colour {
-  None = 0, // No Colour.
+  NoColor = 0, // No Colour.
   AliceBlue = 0xf0f8ff, Gainsboro = 0xdcdcdc, MistyRose = 0xffe4e1,
   AntiqueWhite = 0xfaebd7, GhostWhite = 0xf8f8ff, Moccasin = 0xffe4b5,
   Aqua = 0x00ffff, Gold = 0xffd700, NavajoWhite = 0xffdead,
@@ -1999,7 +1998,7 @@ class Polygon : public Ogre::GeneralAllocatedObject {
           Set the border width and colour
   */
   void border(Ogre::Real width, Gorilla::Colours::Colour colour) {
-    if (colour == Gorilla::Colours::None) {
+    if (colour == Gorilla::Colours::NoColor) {
       mBorderColour.a = 0;
       mBorderWidth = 0;
     } else {
@@ -2033,7 +2032,7 @@ class Polygon : public Ogre::GeneralAllocatedObject {
           Set the border colour
   */
   void border_colour(Gorilla::Colours::Colour colour) {
-    if (colour == Gorilla::Colours::None) {
+    if (colour == Gorilla::Colours::NoColor) {
       mBorderColour.a = 0;
     } else {
       mBorderColour = webcolour(colour);
@@ -2625,7 +2624,7 @@ class Caption : public Ogre::GeneralAllocatedObject {
           Set the background colour
   */
   void background(Gorilla::Colours::Colour background) {
-    if (background == Colours::None)
+    if (background == Colours::NoColor)
       mBackground.a = 0;
     else
       mBackground = webcolour(background);
@@ -2849,7 +2848,7 @@ class MarkupText : public Ogre::GeneralAllocatedObject {
           Set the background colour
   */
   void background(Gorilla::Colours::Colour background) {
-    if (background == Colours::None)
+    if (background == Colours::NoColor)
       mBackground.a = 0;
     else
       mBackground = webcolour(background);
@@ -3022,7 +3021,7 @@ class D3Panel {
 
 typedef void (*OgreConsoleFunctionPtr)(Ogre::StringVector &);
 
-class OgreConsole : public Ogre::Singleton<OgreConsole>, Ogre::FrameListener, Ogre::LogListener {
+ class OgreConsole : public Ogre::Singleton<OgreConsole>, public Ogre::FrameListener, public Ogre::LogListener {
 
  public:
 
@@ -3038,10 +3037,10 @@ class OgreConsole : public Ogre::Singleton<OgreConsole>, Ogre::FrameListener, Og
 
   void print(const Ogre::String &text);
 
-  virtual bool frameStarted(const Ogre::FrameEvent &evt);
-  virtual bool frameEnded(const Ogre::FrameEvent &evt);
+  bool frameStarted(const Ogre::FrameEvent &evt) override;
+  bool frameEnded(const Ogre::FrameEvent &evt) override;
 
-  void onKeyPressed(const SDL_Keycode arg);
+  void KeyDown(SDL_Keycode arg);
 
   void addCommand(const Ogre::String &command, OgreConsoleFunctionPtr);
   void removeCommand(const Ogre::String &command);
@@ -3081,4 +3080,3 @@ class OgreConsole : public Ogre::Singleton<OgreConsole>, Ogre::FrameListener, Og
 
 };
 }
-#endif

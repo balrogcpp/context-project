@@ -35,6 +35,9 @@ class Sound final : public Component {
 
   void CreateSound(const std::string &name, const std::string &file, bool loop = false);
   void PlaySound(const std::string &name);
+  void SetMasterVolume(float volume);
+  void SetMaxVolume(const std::string &name, float volume);
+  void SetVolume(const std::string &name, float gain);
 
   void Create() final {}
   void Clear() final {}
