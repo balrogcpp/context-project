@@ -53,7 +53,7 @@ namespace xio {
 class Camera;
 class JsonConfigurator;
 class YamlConfigurator;
-class Render;
+class Renderer;
 class Physics;
 class Sound;
 class Overlay;
@@ -65,7 +65,8 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   virtual ~DotSceneLoaderB();
 
   void Create() final {}
-  void Clear() final {terrain_.reset();}
+  void Clear() final {}
+  void Clean() final;
   void Loop(float time) final {}
 
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
@@ -73,7 +74,7 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   float GetHeigh(float x, float z);
   void LocateComponents(YamlConfigurator *conf,
                         xio::InputSequencer *io,
-                        Render *renderer,
+                        Renderer *renderer,
                         Physics *physics,
                         Sound *sounds,
                         Overlay *overlay) {
@@ -118,7 +119,7 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   std::string group_name_;
 
   YamlConfigurator *conf_ = nullptr;
-  Render *renderer_ = nullptr;
+  Renderer *renderer_ = nullptr;
   Physics *physics_ = nullptr;
   Sound *sounds_ = nullptr;
   Overlay *overlay_ = nullptr;

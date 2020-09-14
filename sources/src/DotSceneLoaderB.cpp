@@ -50,6 +50,26 @@ DotSceneLoaderB::DotSceneLoaderB() {
 ///---------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::~DotSceneLoaderB() {}
 ///---------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::Clean() {
+  terrain_.reset();
+
+  auto *root = Ogre::Root::getSingleton().getSceneManager("Default");
+  root->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+  root->destroyAllEntities();
+  root->destroyAllLights();
+  root->destroyAllParticleSystems();
+  root->destroyAllAnimations();
+  root->destroyAllAnimationStates();
+  root->destroyAllStaticGeometry();
+  root->destroyAllRibbonTrails();
+  root->destroyAllManualObjects();
+  root->destroyAllInstanceManagers();
+  root->destroyAllBillboardChains();
+  root->destroyAllBillboardSets();
+  root->destroyAllMovableObjects();
+  root->getRootSceneNode()->removeAndDestroyAllChildren();
+}
+///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const std::string &groupName, Ogre::SceneNode *rootNode) {
   group_name_ = groupName;
   scene_manager_ = rootNode->getCreator();

@@ -54,12 +54,13 @@ Physics::~Physics() {}
 void Physics::Loop(float time) {
   if (pause_)
     return;
-  if (!pause_)
-    world_->stepSimulation(time, steps_);
+
+  world_->stepSimulation(time, steps_);
+
   if (debug_)
     dbg_draw_->step();
 
-  std::map<const btCollisionObject *, const btCollisionObject *> new_contacts;
+  std::map<const btCollisionObject *, int> new_contacts;
 
   /* Browse all collision pairs */
   for (size_t i = 0; i < world_->getDispatcher()->getNumManifolds(); i++) {
@@ -77,7 +78,7 @@ void Physics::Loop(float time) {
         const btVector3 &normalOnB = pt.m_normalWorldOnB;
 
         if (new_contacts.find(obB) == new_contacts.end()) {
-          new_contacts[obB] = obA;
+          new_contacts[obB] = numContacts;
         }
       }
     }
@@ -85,25 +86,29 @@ void Physics::Loop(float time) {
 
   /* Check for added contacts ... */
   for (const auto &it : new_contacts) {
+    bool detected = false;
     if (contacts_.find(it.first) == contacts_.end()) {
-      if (callback_) callback_(it.first->getUserIndex(), it.second->getUserIndex());
-      // TODO: signal
+      detected = true;
     } else {
-      // Remove to filter no more active contacts
-      contacts_.erase(it.first);
+      if (new_contacts[it.first] == contacts_[it.first]) {
+        contacts_.erase(it.first);
+      } else {
+        detected = true;
+      }
     }
+
+    if (detected && callback_)
+      callback_(it.first->getUserIndex(), it.first->getUserIndex());
   }
 
   /* ... and removed contacts */
   for (const auto &it : contacts_) {
-    // TODO: signal
   }
   contacts_.clear();
-
   contacts_ = new_contacts;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::Clear() {
+void Physics::Clean() {
   Pause();
   world_->clearForces();
 

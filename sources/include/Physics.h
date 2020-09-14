@@ -54,7 +54,8 @@ class Physics final : public Component {
   virtual ~Physics();
 
   void Create() final {}
-  void Clear() final;
+  void Clear() final {}
+  void Clean() final;
   void Loop(float time) final;
 
   void AddRigidBody(btRigidBody *body);
@@ -75,7 +76,7 @@ class Physics final : public Component {
   std::unique_ptr<btDynamicsWorld> world_;
   std::vector<btCollisionObject *> rigid_bodies_;
   std::vector<btCollisionShape *> collision_shapes_;
-  std::map<const btCollisionObject *, const btCollisionObject *> contacts_;
+  std::map<const btCollisionObject *, int> contacts_;
   std::function<void(int a, int b)> callback_;
  private:
   int steps_ = 8;

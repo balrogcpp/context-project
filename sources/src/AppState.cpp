@@ -27,7 +27,7 @@ SOFTWARE.
 
 namespace xio {
 YamlConfigurator *AppState::conf_ = nullptr;
-Render *AppState::renderer_ = nullptr;
+Renderer *AppState::renderer_ = nullptr;
 Physics *AppState::physics_ = nullptr;
 Sound *AppState::sound_ = nullptr;
 Overlay *AppState::overlay_ = nullptr;

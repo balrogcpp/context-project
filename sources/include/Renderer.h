@@ -40,13 +40,14 @@ class RenderWindow;
 }
 
 namespace xio {
-class Render final : public Component {
+class Renderer final : public Component {
  public:
-  Render();
-  virtual ~Render();
+  Renderer();
+  virtual ~Renderer();
 
   void Create() final {}
   void Clear() final {}
+  void Clean() final {}
   void Loop(float time) final {}
 
   void Refresh();

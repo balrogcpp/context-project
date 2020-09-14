@@ -41,35 +41,22 @@ void DemoDotAppState::KeyDown(SDL_Keycode sym) {
 }
 
 void DemoDotAppState::Clear() {
-  auto *root = Ogre::Root::getSingleton().getSceneManager("Default");
-  root->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  root->destroyAllEntities();
-  root->destroyAllLights();
-  root->destroyAllParticleSystems();
-  root->destroyAllAnimations();
-  root->destroyAllAnimationStates();
-  root->destroyAllStaticGeometry();
-  root->destroyAllRibbonTrails();
-  root->destroyAllManualObjects();
-  root->destroyAllInstanceManagers();
-  root->destroyAllBillboardChains();
-  root->destroyAllBillboardSets();
-  root->destroyAllMovableObjects();
-  root->getRootSceneNode()->removeAndDestroyAllChildren();
 }
+
 void DemoDotAppState::Loop() {
-  sound_->PlaySound("hit");
+
 }
 
 void DemoDotAppState::Callback(int a, int b) {
-
+//  sound_->PlaySound("?hit");
   std::cout << "Bang! " << a << ' ' << b << '\n';
 }
 
 void DemoDotAppState::Create() {
   Load("test.scene");
-  sound_->CreateSound("ambient", "22384__dobroide__20060824-forest03.ogg", true);
-  sound_->CreateSound("hit", "406344__basharov__glass-on-glasshit-1.wav");
-  physics_->SetCallback(Callback);
+//  sound_->CreateSound("ambient", "22384__dobroide__20060824-forest03.ogg", true);
+//  sound_->PlaySound("ambient");
+//  sound_->CreateSound("hit", "406344__basharov__glass-on-glasshit-1.wav");
+//  physics_->SetCallback(Callback);
 }
 }

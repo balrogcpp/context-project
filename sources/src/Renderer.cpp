@@ -29,7 +29,7 @@ SOFTWARE.
 #include "RtssUtils.h"
 
 namespace xio {
-Render::Render() {
+Renderer::Renderer() {
   root_ = new Ogre::Root("", "", "");
 
   bool global_sso_enable_ = true;
@@ -141,9 +141,9 @@ Render::Render() {
   compositor_ = std::make_unique<Compositor>();
 }
 
-Render::~Render() {}
+Renderer::~Renderer() {}
 //----------------------------------------------------------------------------------------------------------------------
-void Render::CreateCamera() {
+void Renderer::CreateCamera() {
   Ogre::Camera *camera = nullptr;
 
   if (!scene_->hasCamera("Default")) {
@@ -166,19 +166,19 @@ void Render::CreateCamera() {
   scene_->setAmbientLight(Ogre::ColourValue::Black);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Render::Refresh() {
+void Renderer::Refresh() {
   CreateCamera();
   shadow_ = std::make_unique<ShadowSettings>();
   rtss::InitPssm(shadow_->GetSplitPoints());
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Render::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
+void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
   if (filtering == Ogre::TFO_ANISOTROPIC)
     Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Render::Resize(int32_t w, int32_t h, bool f) {
+void Renderer::Resize(int32_t w, int32_t h, bool f) {
   if (f) {
     window_.Fullscreen(f);
     ogre_->resize(window_.GetSize().first, window_.GetSize().second);
@@ -189,7 +189,7 @@ void Render::Resize(int32_t w, int32_t h, bool f) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Render::RenderOneFrame() {
+void Renderer::RenderOneFrame() {
   root_->renderOneFrame();
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   window_.SwapBuffers();

@@ -68,7 +68,7 @@ class Application final : public WindowObserver, public Ogre::LogListener {
 
   std::unique_ptr<YamlConfigurator> conf_;
   std::unique_ptr<xio::InputSequencer> io_;
-  std::unique_ptr<Render> renderer_;
+  std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<Physics> physics_;
   std::unique_ptr<Sound> sounds_;
   std::unique_ptr<Overlay> overlay_;

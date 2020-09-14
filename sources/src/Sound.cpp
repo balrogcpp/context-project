@@ -35,14 +35,16 @@ Sound::Sound() {
   _putenv("ALSOFT_LOGLEVEL=LOG_NONE");
 #endif
 
-  OgreOggSound::OgreOggSoundFactory *mOgreOggSoundFactory;
   // Create new factory
-  mOgreOggSoundFactory = OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
+  auto *mOgreOggSoundFactory = OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
 
   // Register
   Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
-
-  OgreOggSound::OgreOggSoundManager::getSingleton().init();
+  const std::string DEVICE_NAME = "";
+  const unsigned int MAX_SOURCES = 100;
+  const unsigned int QUEUE_LIST_SIZE = 100;
+  OgreOggSound::OgreOggSoundManager::getSingleton().init(DEVICE_NAME, MAX_SOURCES, QUEUE_LIST_SIZE);
+  OgreOggSound::OgreOggSoundManager::getSingleton().setDistanceModel(AL_LINEAR_DISTANCE);
   manager_ = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
   manager_->setResourceGroupName(Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
@@ -51,20 +53,23 @@ Sound::~Sound() {
   Clear();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::Clear() {
+void Sound::Clean() {
   OgreOggSound::OgreOggSoundManager::getSingleton().stopAllSounds();
   OgreOggSound::OgreOggSoundManager::getSingleton().destroyAllSounds();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Sound::CreateSound(const std::string &name, const std::string &file, bool loop) {
-//  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   manager_->createSound(name, file, false, loop, true, nullptr);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Sound::PlaySound(const std::string &name) {
-  if (manager_->getSound(name))
+  if (manager_->getSound(name)) {
+    manager_->getSound(name)->stop();
+    manager_->getSound(name)->setPosition({});
     manager_->getSound(name)->play();
-  else
-    throw Exception(std::string("Sound \"" ) + name + "\" not found. Aborting.\n");
+  }
+  else {
+    throw Exception(std::string("Sound \"") + name + "\" not found. Aborting.\n");
+  }
 }
 }

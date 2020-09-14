@@ -35,7 +35,7 @@ SOFTWARE.
 namespace xio {
 class JsonConfigurator;
 class YamlConfigurator;
-class Render;
+class Renderer;
 class Physics;
 class Sound;
 class Overlay;
@@ -57,7 +57,7 @@ class AppState
 //----------------------------------------------------------------------------------------------------------------------
   void LocateComponents(YamlConfigurator *conf,
                         xio::InputSequencer *io,
-                        Render *renderer,
+                        Renderer *renderer,
                         Physics *physics,
                         Sound *sounds,
                         Overlay *overlay,
@@ -88,7 +88,7 @@ class AppState
 
  protected:
   static YamlConfigurator *conf_;
-  static Render *renderer_ ;
+  static Renderer *renderer_ ;
   static Physics *physics_;
   static Sound *sound_;
   static Overlay *overlay_;

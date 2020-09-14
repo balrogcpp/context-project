@@ -37,7 +37,8 @@ class Sound final : public Component {
   void PlaySound(const std::string &name);
 
   void Create() final {}
-  void Clear() final;
+  void Clear() final {}
+  void Clean() final;
   void Loop(float time) final {}
 
  private:

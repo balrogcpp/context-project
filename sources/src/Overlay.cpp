@@ -43,30 +43,21 @@ void Overlay::Create() {
   mSilverback = new Silverback();
   mSilverback->loadAtlas("dejavu");
   auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
-  mScreen = mSilverback->createScreen(viewport, "dejavu");
-  layer = mScreen->createLayer(0);
-  Ogre::Real vpW = mScreen->getWidth(), vpH = mScreen->getHeight();
+  screen_ = mSilverback->createScreen(viewport, "dejavu");
+  layer_ = screen_->createLayer(0);
+  Ogre::Real vpW = screen_->getWidth(), vpH = screen_->getHeight();
 
   // Create our drawing layer
-  layer = mScreen->createLayer(0);
-  rect = layer->createRectangle(0, 0, vpW, vpH);
-  rect->background_colour(rgb(0, 0, 0, 0));
-  caption_ = layer->createCaption(24, vpW - 55, 66, "");
+  layer_ = screen_->createLayer(0);
+  rect_ = layer_->createRectangle(0, 0, vpW, vpH);
+  rect_->background_colour(rgb(0, 0, 0, 0));
+  caption_ = layer_->createCaption(24, vpW - 55, 66, "");
   caption_->width(0);
   caption_->align(TextAlign_Right);
 
-//  auto *parent = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getParentSceneNode();
-//  auto *mPowerPanel = new D3Panel(mSilverback, Ogre::Root::getSingleton().getSceneManager("Default"), Ogre::Vector2(4,1), parent);
-//  mPowerPanel->mNode->setPosition(Ogre::Vector3(0,1.5f,0));
-//  Gorilla::Caption* caption = mPowerPanel->makeCaption(0,4, "Power Level");
-//  caption->width(400);
-//  caption->align(Gorilla::TextAlign_Centre);
-//  auto *mPowerValueBackground = mPowerPanel->mGUILayer->createRectangle(10,35,380,10);
-//  mPowerValueBackground->background_colour(Gorilla::rgb(255,255,255,100));
-//  auto *mPowerValue = mPowerPanel->mGUILayer->createRectangle(10,35,200,10);
-//  mPowerValue->background_gradient(Gorilla::Gradient_NorthSouth, Gorilla::rgb(255,255,255,200), Gorilla::rgb(64,64,64,200));
-//  mPowerPanel->makeButton(10, 65, "-");
-//  mPowerPanel->makeButton(84, 65, "+");
+  auto *console = new OgreConsole();
+  console->init(screen_);
+  console->setVisible(true);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Text(const std::string &str) {
@@ -74,6 +65,6 @@ void Overlay::Text(const std::string &str) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Clear() {
-  mSilverback->destroyScreen(mScreen);
+  mSilverback->destroyScreen(screen_);
 }
 }

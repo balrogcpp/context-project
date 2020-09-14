@@ -59,7 +59,7 @@ Application::~Application() = default;
 void Application::Init_() {
   conf_ = std::make_unique<YamlConfigurator>("config.yaml");
   io_ = std::make_unique<InputSequencer>();
-  renderer_ = std::make_unique<Render>();
+  renderer_ = std::make_unique<Renderer>();
   physics_ = std::make_unique<Physics>();
   sounds_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();
@@ -206,8 +206,11 @@ void Application::Loop_() {
       if (!suspend_) {
         cur_state_->Loop();
         if (cur_state_->Waiting()) {
-          loader_->Clear();
-          physics_->Clear();
+          for (auto &it : components_)
+            it->Clean();
+
+//          loader_->Clear();
+//          physics_->Clear();
           cur_state_->Clear();
           renderer_->Refresh();
 

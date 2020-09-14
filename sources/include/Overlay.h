@@ -53,18 +53,19 @@ class Overlay final : public Component {
 
   void Create() final;
   void Clear() final;
+  void Clean() final {}
   void Loop(float time) final;
   void Text(const std::string &str);
 
  private:
   Gorilla::Silverback *mSilverback = nullptr;
-  Gorilla::Screen *mScreen = nullptr;
-  Gorilla::Layer *layer = nullptr;
-  Gorilla::Polygon *poly = nullptr;
-  Gorilla::LineList *list = nullptr;
+  Gorilla::Screen *screen_ = nullptr;
+  Gorilla::Layer *layer_ = nullptr;
+  Gorilla::Polygon *poly_ = nullptr;
+  Gorilla::LineList *list_ = nullptr;
   Gorilla::Caption *caption_ = nullptr;
-  Gorilla::Rectangle *rect = nullptr;
-  Gorilla::QuadList *quads = nullptr;
-  Gorilla::MarkupText *markup = nullptr;
+  Gorilla::Rectangle *rect_ = nullptr;
+  Gorilla::QuadList *quads_ = nullptr;
+  Gorilla::MarkupText *markup_ = nullptr;
 };
 }
