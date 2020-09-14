@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma once
 
 #include "Component.h"
+#include "Gorilla.h"
 #include <memory>
 
 namespace Ogre {
@@ -33,24 +34,11 @@ class Texture;
 class SceneNode;
 }
 
-namespace Gorilla {
-class Silverback;
-class Screen;
-class Layer;
-class Polygon;
-class LineList;
-class Caption;
-class Rectangle;
-class QuadList;
-class MarkupText;
-class OgreConsole;
-}
-
 namespace xio {
 class Overlay final : public Component {
  public:
   Overlay();
-  ~Overlay();
+  virtual ~Overlay();
 
   void Create() final;
   void Clear() final;

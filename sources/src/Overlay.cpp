@@ -56,7 +56,7 @@ void Overlay::Create() {
 
   console_ = std::make_unique<OgreConsole>();
   console_->init(screen_);
-  console_->setVisible(true);
+  console_->setVisible(false);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Text(const std::string &str) {

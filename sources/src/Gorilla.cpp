@@ -2390,6 +2390,8 @@ void OgreConsole::shutdown() {
 }
 
 void OgreConsole::KeyDown(SDL_Keycode arg) {
+  if (arg == SDLK_BACKQUOTE)
+    setVisible(!isVisible());
 
   if (!mIsVisible)
     return;
@@ -2415,18 +2417,20 @@ void OgreConsole::KeyDown(SDL_Keycode arg) {
       mUpdatePrompt = true;
     }
   } else if (arg == SDLK_AC_BACK) {
-    if (prompt.size()) {
-      prompt.erase(prompt.end() - 1); //=prompt.substr(0,prompt.length()-1);
-      mUpdatePrompt = true;
-    }
+    if (!prompt.empty())
+      prompt.pop_back();
+    mUpdatePrompt = true;
   } else if (arg == SDLK_PAGEUP) {
     if (mStartline > 0)
       mStartline--;
     mUpdateConsole = true;
   } else if (arg == SDLK_PAGEDOWN) {
     if (mStartline < lines.size())
-      mStartline++;
-    mUpdateConsole = true;
+      mUpdateConsole = true;
+  } else if (arg == SDLK_BACKSPACE) {
+    if (!prompt.empty())
+      prompt.pop_back();
+    mUpdatePrompt = true;
   } else {
     for (unsigned int c = 0; c < sizeof(legalchars); c++) {
       if (legalchars[c] == arg) {
@@ -2436,7 +2440,6 @@ void OgreConsole::KeyDown(SDL_Keycode arg) {
     }
     mUpdatePrompt = true;
   }
-
 }
 
 bool OgreConsole::frameStarted(const Ogre::FrameEvent &evt) {

@@ -75,7 +75,7 @@ void Application::Init_() {
   for (auto &it : components_)
     it->Create();
 
-//  io_->RegObserver(reinterpret_cast<InputObserver *>(overlay_->GetConsole()));
+  io_->RegObserver(overlay_->GetConsole());
   renderer_->Refresh();
 
   // Texture filtering

@@ -3021,7 +3021,8 @@ class D3Panel {
 
 typedef void (*OgreConsoleFunctionPtr)(Ogre::StringVector &);
 
- class OgreConsole : public Ogre::Singleton<OgreConsole>, public Ogre::FrameListener, public Ogre::LogListener {
+#include "Input.h"
+ class OgreConsole : public Ogre::Singleton<OgreConsole>, public Ogre::FrameListener, public Ogre::LogListener, public xio::InputObserver {
 
  public:
 
@@ -3040,7 +3041,7 @@ typedef void (*OgreConsoleFunctionPtr)(Ogre::StringVector &);
   bool frameStarted(const Ogre::FrameEvent &evt) override;
   bool frameEnded(const Ogre::FrameEvent &evt) override;
 
-  void KeyDown(SDL_Keycode arg);
+  void KeyDown(SDL_Keycode arg) override;
 
   void addCommand(const Ogre::String &command, OgreConsoleFunctionPtr);
   void removeCommand(const Ogre::String &command);
