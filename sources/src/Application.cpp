@@ -94,7 +94,7 @@ void Application::Init_() {
 
   bool shadow_enable = conf_->Get<bool>("graphics_shadows_enable");
   float shadow_far = conf_->Get<float>("graphics_shadows_far_distance");
-  int16_t tex_size = conf_->Get<int>("graphics_shadows_texture_resolution");
+  int16_t tex_size = conf_->Get<int16_t>("graphics_shadows_texture_resolution");
   std::string tex_format_str = conf_->Get<std::string>("graphics_shadows_texture_format");
   Ogre::PixelFormat tex_format = Ogre::PF_DEPTH16;
 
@@ -115,18 +115,12 @@ void Application::Init_() {
 
   renderer_->GetShadowSettings()->UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
-  loader_->LocateComponents(conf_.get(),
-                            io_.get(),
-                            renderer_.get(),
-                            physics_.get(),
-                            sounds_.get(),
-                            overlay_.get());
+  loader_->LocateComponents(conf_.get(),io_.get(),renderer_.get(),physics_.get(),sounds_.get(),overlay_.get());
   verbose_ = conf_->Get<bool>("global_verbose_enable");
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");
   io_->RegWinObserver(this);
-  renderer_->Resize(conf_->Get<int>("window_width"),
-                    conf_->Get<int>("window_high"), conf_->Get<bool>("window_fullscreen"));
+  renderer_->Resize(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"), conf_->Get<bool>("window_fullscreen"));
   renderer_->GetWindow().SetCaption(conf_->Get<std::string>("window_caption"));
 
   if (!verbose_) {
@@ -143,19 +137,11 @@ void Application::Clear_() {
   io_->UnregWinObserver(this);
   for (auto &it : components_)
     it->Clear();
-
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::InitCurrState_() {
-  cur_state_->LocateComponents(conf_.get(),
-                               io_.get(),
-                               renderer_.get(),
-                               physics_.get(),
-                               sounds_.get(),
-                               overlay_.get(),
-                               loader_.get());
-
+  cur_state_->LocateComponents(conf_.get(),io_.get(),renderer_.get(),physics_.get(),sounds_.get(),overlay_.get(),loader_.get());
   cur_state_->Create();
 }
 //----------------------------------------------------------------------------------------------------------------------

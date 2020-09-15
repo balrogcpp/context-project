@@ -38,7 +38,7 @@ class Locator {
  public:
 //----------------------------------------------------------------------------------------------------------------------
   void LocateComponents(YamlConfigurator *conf,
-                        xio::InputSequencer *io,
+                        InputSequencer *io,
                         Renderer *renderer,
                         Physics *physics,
                         Sound *sounds,

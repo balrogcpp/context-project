@@ -30,7 +30,7 @@ SOFTWARE.
 
 namespace xio {
 
-class VerboseListener final : public xio::InputObserver {
+class VerboseListener final : public InputObserver {
  private:
 //----------------------------------------------------------------------------------------------------------------------
   void KeyDown(SDL_Keycode sym) final {

@@ -34,7 +34,7 @@ class SceneNode;
 }
 
 namespace xio {
-class Camera final : public Entity, public xio::InputObserver, public Ogre::FrameListener {
+class Camera final : public Entity, public InputObserver, public Ogre::FrameListener {
  public:
   enum   // enumerator values for different styles of camera movement
   {

@@ -34,7 +34,7 @@ SOFTWARE.
 
 namespace xio {
 class AppState
-    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public xio::InputObserver, public NoCopy, public Locator {
+    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputObserver, public NoCopy, public Locator {
  public:
 //----------------------------------------------------------------------------------------------------------------------
   void SwitchNextState(std::unique_ptr<AppState> &&app_state) {

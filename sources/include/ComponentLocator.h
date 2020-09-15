@@ -55,6 +55,6 @@ class ComponentLocator {
   Physics *physics_ = nullptr;
   Sound *sounds_ = nullptr;
   Overlay *overlay_ = nullptr;
-  xio::InputSequencer *io_ = nullptr;
+  InputSequencer *io_ = nullptr;
 };
 }

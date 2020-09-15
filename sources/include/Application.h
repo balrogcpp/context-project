@@ -41,9 +41,7 @@ class Application final : public WindowObserver, public Ogre::LogListener {
  public:
   Application();
   virtual ~Application();
-
   int Main(std::unique_ptr<AppState> &&scene_ptr);
-
  private:
   void Init_();
   void Clear_();
@@ -51,11 +49,10 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   void Go_();
   void InitCurrState_();
   int Message_(const std::string &caption, const std::string &message);
-
   void Event(const SDL_Event &evt) final;
   void Other(Uint8 type, int32_t code, void *data1, void *data2) final;
   void Quit() final;
-
+//----------------------------------------------------------------------------------------------------------------------
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const std::string &logName, bool &skipThisMessage) final {
     switch (lml) {
@@ -67,14 +64,13 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   }
 
   std::unique_ptr<YamlConfigurator> conf_;
-  std::unique_ptr<xio::InputSequencer> io_;
+  std::unique_ptr<InputSequencer> io_;
   std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<Physics> physics_;
   std::unique_ptr<Sound> sounds_;
   std::unique_ptr<Overlay> overlay_;
   std::unique_ptr<DotSceneLoaderB> loader_;
   std::unique_ptr<AppState> cur_state_;
-
   bool quit_ = false;
   bool suspend_ = false;
   long time_of_last_frame_ = 0;

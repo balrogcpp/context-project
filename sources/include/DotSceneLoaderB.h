@@ -73,7 +73,7 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   void Load(const std::string &filename, const std::string &group_name, Ogre::SceneNode *root_node);
   float GetHeigh(float x, float z);
   void LocateComponents(YamlConfigurator *conf,
-                        xio::InputSequencer *io,
+                        InputSequencer *io,
                         Renderer *renderer,
                         Physics *physics,
                         Sound *sounds,
@@ -123,6 +123,6 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   Physics *physics_ = nullptr;
   Sound *sounds_ = nullptr;
   Overlay *overlay_ = nullptr;
-  xio::InputSequencer *io_ = nullptr;
+  InputSequencer *io_ = nullptr;
 };
 }
