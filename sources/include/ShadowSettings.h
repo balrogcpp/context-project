@@ -56,8 +56,7 @@ class ShadowSettings : public NoCopy {
     scene->setShadowCameraSetup(pssm_);
   }
   virtual ~ShadowSettings() {}
-
-  //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
   void UpdateParams(bool enable, float far, int16_t tex_size, Ogre::PixelFormat tex_format) {
     auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
     int tex_count = 12;

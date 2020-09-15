@@ -60,26 +60,27 @@ void Physics::Loop(float time) {
   if (debug_)
     dbg_draw_->step();
 
-  std::map<const btCollisionObject *, int> new_contacts;
+  DispatchCollisions();
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Physics::DispatchCollisions() {
+  std::map<const btCollisionObject *, Contact> new_contacts;
 
   /* Browse all collision pairs */
   for (size_t i = 0; i < world_->getDispatcher()->getNumManifolds(); i++) {
-    btPersistentManifold *contactManifold = world_->getDispatcher()->getManifoldByIndexInternal(i);
-    auto *obA = contactManifold->getBody0();
-    auto *obB = contactManifold->getBody1();
+    btPersistentManifold *manifold = world_->getDispatcher()->getManifoldByIndexInternal(i);
+    auto *obA = manifold->getBody0();
+    auto *obB = manifold->getBody1();
 
     /* Check all contacts points */
-    int numContacts = contactManifold->getNumContacts();
-    for (int j = 0; j < numContacts; j++) {
-      btManifoldPoint &pt = contactManifold->getContactPoint(j);
+    for (size_t j = 0; j < manifold->getNumContacts(); j++) {
+      btManifoldPoint &pt = manifold->getContactPoint(j);
       if (pt.getDistance() < 1E-6) {
         const btVector3 &ptA = pt.getPositionWorldOnA();
         const btVector3 &ptB = pt.getPositionWorldOnB();
         const btVector3 &normalOnB = pt.m_normalWorldOnB;
-
-        if (new_contacts.find(obB) == new_contacts.end()) {
-          new_contacts[obB] = numContacts;
-        }
+        if (new_contacts.find(obA) == new_contacts.end())
+          new_contacts[obA] = {obB, manifold->getNumContacts()};
       }
     }
   }
@@ -90,11 +91,12 @@ void Physics::Loop(float time) {
     if (contacts_.find(it.first) == contacts_.end()) {
       detected = true;
     } else {
-      if (new_contacts[it.first] == contacts_[it.first]) {
-        contacts_.erase(it.first);
-      } else {
-        detected = true;
-      }
+      contacts_.erase(it.first);
+//      if (new_contacts[it.first].points_ == contacts_[it.first].points_) {
+//        contacts_.erase(it.first);
+//      } else {
+//        detected = true;
+//      }
     }
 
     if (detected && callback_)
@@ -102,8 +104,7 @@ void Physics::Loop(float time) {
   }
 
   /* ... and removed contacts */
-  for (const auto &it : contacts_) {
-  }
+  for (const auto &it : contacts_) {}
   contacts_.clear();
   contacts_ = new_contacts;
 }
@@ -119,13 +120,6 @@ void Physics::Clean() {
     delete obj;
   }
 
-  //delete collision shapes
-  for (int j = 0; j < collision_shapes_.size(); j++) {
-    btCollisionShape *shape = collision_shapes_[j];
-    delete shape;
-  }
-
-  collision_shapes_.clear();
   rigid_bodies_.clear();
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -228,7 +222,8 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
     std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
 
     if (entity->getNumManualLodLevels() > 0)
-      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(entity->getNumManualLodLevels() - 1));
+      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(
+          entity->getNumManualLodLevels() - 1));
     else
       converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
 

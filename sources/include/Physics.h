@@ -44,10 +44,21 @@ class btCollisionDispatcher;
 class btSequentialImpulseConstraintSolver;
 class btDynamicsWorld;
 class btRigidBody;
-class btCollisionShape;
 class btCollisionObject;
 
 namespace xio {
+struct Contact {
+  Contact() = default;
+  Contact(const btCollisionObject *a, int points)
+    : a_(a), points_(points)
+  {}
+
+  Contact& operator= (const Contact& that) = default;
+
+  const btCollisionObject * a_;
+  int points_;
+};
+
 class Physics final : public Component {
  public:
   Physics();
@@ -57,7 +68,7 @@ class Physics final : public Component {
   void Clear() final {}
   void Clean() final;
   void Loop(float time) final;
-
+  void DispatchCollisions();
   void AddRigidBody(btRigidBody *body);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);
   void CreateTerrainHeightfieldShape(int size,
@@ -75,8 +86,7 @@ class Physics final : public Component {
   std::unique_ptr<btSequentialImpulseConstraintSolver> solver_;
   std::unique_ptr<btDynamicsWorld> world_;
   std::vector<btCollisionObject *> rigid_bodies_;
-  std::vector<btCollisionShape *> collision_shapes_;
-  std::map<const btCollisionObject *, int> contacts_;
+  std::map<const btCollisionObject *, Contact> contacts_;
   std::function<void(int a, int b)> callback_;
  private:
   int steps_ = 8;

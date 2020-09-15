@@ -46,7 +46,7 @@ void DemoDotAppState::Loop() {
 }
 
 void DemoDotAppState::Callback(int a, int b) {
-//  sound_->PlaySound("hit");
+  sound_->PlaySound("hit");
   std::cout << "Bang! " << a << ' ' << b << '\n';
 }
 
@@ -55,8 +55,8 @@ void DemoDotAppState::Create() {
 //  sound_->CreateSound("ambient", "22384__dobroide__20060824-forest03.ogg", true);
 //  sound_->PlaySound("ambient");
 //  sound_->SetVolume("ambient", 0.5);
-//  sound_->CreateSound("hit", "406344__basharov__glass-on-glasshit-1.wav");
-//  sound_->SetVolume("hit", 0.1);
+  sound_->CreateSound("hit", "406344__basharov__glass-on-glasshit-1.wav");
+  sound_->SetVolume("hit", 0.1);
   physics_->SetCallback(Callback);
 }
 }
