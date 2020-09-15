@@ -94,7 +94,15 @@ class JsonConfigurator {
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
   T Get(const std::string &str) {
-    return document_[str].Get<T>();
+    T t;
+
+    try {
+      t = document_[str].Get<T>();
+    } catch (std::exception &e) {
+      //ignore
+    }
+
+    return t;
   }
 };
 }

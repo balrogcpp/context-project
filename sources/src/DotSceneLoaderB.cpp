@@ -573,7 +573,8 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
 
   /// Create the entity
   Ogre::Entity *entity = nullptr;
-
+  if (terrain_)
+    parent->translate(Ogre::Vector3::UNIT_Y * terrain_->GetHeigh(parent->getPosition().x, parent->getPosition().z));
   try {
     name += std::to_string(counter);
     counter++;
@@ -743,8 +744,11 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 ///  entity->setVisibilityFlags(WATER_MASK);
 }
 ///---------------------------------------------------------------------------------------------------------------------
+std::unique_ptr<Terrain> DotSceneLoaderB::terrain_;
+std::unique_ptr<Field> DotSceneLoaderB::forest_;
 void DotSceneLoaderB::ProcessForest_(pugi::xml_node &xml_node) {
   if (!forest_) forest_ = std::make_unique<Field>();
+  if (terrain_) forest_->SetHeighFunc([](float x, float z){return terrain_->GetHeigh(x, z);});
   forest_->Create();
 }
 ///---------------------------------------------------------------------------------------------------------------------

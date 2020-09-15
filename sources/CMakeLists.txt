@@ -89,7 +89,7 @@ set(CONTEXT_HEADERS
     include/ShadowSettings.h
     include/YamlConfigurator.h
     include/ComponentLocator.h
-    include/XmlUtils.h)
+    include/XmlUtils.h include/Locator.h)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
@@ -124,7 +124,7 @@ set(CONTEXT_SOURCES
     src/Overlay.cpp
     src/PbrUtils.cpp
     src/Terrain.cpp
-    src/Sound.cpp src/AppState.cpp)
+    src/Sound.cpp src/Locator.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}

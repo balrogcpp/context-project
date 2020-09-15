@@ -22,30 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-
-#include "Component.h"
+#include "pcheader.h"
+#include "Locator.h"
 
 namespace xio {
-class Field final : public Component {
- public:
-  Field();
-  virtual ~Field();
-
-  void Create() final;
-  void Clear() final {}
-  void Clean() final {}
-  void Loop(float time) final {}
-
-  void GenerateGrass();
-
- private:
-  void CreateGrassMesh_(float heigh);
-  Ogre::StaticGeometry *mField = nullptr;
-  std::function<float(float, float)> heigh_func_;
- public:
-  void SetHeighFunc(const std::function<float(float, float)> &heigh_func) {
-    heigh_func_ = heigh_func;
-  }
-};
+YamlConfigurator *Locator::conf_ = nullptr;
+Renderer *Locator::renderer_ = nullptr;
+Physics *Locator::physics_ = nullptr;
+Sound *Locator::sound_ = nullptr;
+Overlay *Locator::overlay_ = nullptr;
+DotSceneLoaderB *Locator::loader_ = nullptr;
+InputSequencer *Locator::io_ = nullptr;
 }

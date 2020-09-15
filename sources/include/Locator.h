@@ -22,15 +22,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "pcheader.h"
-#include "AppState.h"
+#pragma once
 
 namespace xio {
-YamlConfigurator *AppState::conf_ = nullptr;
-Renderer *AppState::renderer_ = nullptr;
-Physics *AppState::physics_ = nullptr;
-Sound *AppState::sound_ = nullptr;
-Overlay *AppState::overlay_ = nullptr;
-DotSceneLoaderB *AppState::loader_ = nullptr;
-InputSequencer *AppState::io_ = nullptr;
+class JsonConfigurator;
+class YamlConfigurator;
+class Renderer;
+class Physics;
+class Sound;
+class Overlay;
+class DotSceneLoaderB;
+class InputSequencer;
+
+class Locator {
+ public:
+//----------------------------------------------------------------------------------------------------------------------
+  void LocateComponents(YamlConfigurator *conf,
+                        xio::InputSequencer *io,
+                        Renderer *renderer,
+                        Physics *physics,
+                        Sound *sounds,
+                        Overlay *overlay,
+                        DotSceneLoaderB *loader) {
+    conf_ = conf;
+    io_ = io;
+    renderer_ = renderer;
+    physics_ = physics;
+    sound_ = sounds;
+    overlay_ = overlay;
+    loader_ = loader;
+  }
+
+ protected:
+  static YamlConfigurator *conf_;
+  static Renderer *renderer_ ;
+  static Physics *physics_;
+  static Sound *sound_;
+  static Overlay *overlay_;
+  static DotSceneLoaderB *loader_;
+  static InputSequencer *io_;
+};
 }

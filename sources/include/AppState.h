@@ -24,25 +24,17 @@ SOFTWARE.
 
 #pragma once
 
+#include "NoCopy.h"
+#include "Input.h"
+#include "Locator.h"
+#include <OgreRoot.h>
+#include <OgreSceneLoaderManager.h>
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 
-#include "Input.h"
-#include "NoCopy.h"
-#include <OgreRoot.h>
-#include <OgreSceneLoaderManager.h>
-
 namespace xio {
-class JsonConfigurator;
-class YamlConfigurator;
-class Renderer;
-class Physics;
-class Sound;
-class Overlay;
-class DotSceneLoaderB;
-
 class AppState
-    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public xio::InputObserver, public NoCopy {
+    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public xio::InputObserver, public NoCopy, public Locator {
  public:
 //----------------------------------------------------------------------------------------------------------------------
   void SwitchNextState(std::unique_ptr<AppState> &&app_state) {
@@ -53,22 +45,6 @@ class AppState
   std::unique_ptr<AppState> &&GetNextState() {
     waiting_ = false;
     return move(next_);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void LocateComponents(YamlConfigurator *conf,
-                        xio::InputSequencer *io,
-                        Renderer *renderer,
-                        Physics *physics,
-                        Sound *sounds,
-                        Overlay *overlay,
-                        DotSceneLoaderB *loader) {
-    conf_ = conf;
-    io_ = io;
-    renderer_ = renderer;
-    physics_ = physics;
-    sound_ = sounds;
-    overlay_ = overlay;
-    loader_ = loader;
   }
 //----------------------------------------------------------------------------------------------------------------------
   void Load(const std::string &file_name) {
@@ -87,13 +63,6 @@ class AppState
   }
 
  protected:
-  static YamlConfigurator *conf_;
-  static Renderer *renderer_ ;
-  static Physics *physics_;
-  static Sound *sound_;
-  static Overlay *overlay_;
-  static DotSceneLoaderB *loader_;
-  static InputSequencer *io_;
   std::unique_ptr<AppState> next_;
   bool waiting_ = false;
 };

@@ -73,7 +73,15 @@ class YamlConfigurator {
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
   T Get(const std::string &str) {
-    return document_[str].as<T>();
+    T t;
+
+    try {
+      t = document_[str].as<T>();
+    } catch (std::exception &e) {
+      //ignore
+    }
+
+    return t;
   }
 };
 }

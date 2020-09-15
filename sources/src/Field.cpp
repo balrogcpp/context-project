@@ -38,7 +38,7 @@ struct GrassVertex {
 };
 #pragma pack(pop)
 //----------------------------------------------------------------------------------------------------------------------
-void Field::CreateGrassMesh(float heigh) {
+void Field::CreateGrassMesh_(float heigh) {
   if (Ogre::MeshManager::getSingleton().getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
     return;
 
@@ -132,34 +132,34 @@ Field::~Field() {
 void Field::GenerateGrass() {
   Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   // create our grass mesh, and Create a grass entity from it
-  CreateGrassMesh(0.5);
+  CreateGrassMesh_(2.0);
 
-  static const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
-  static const Ogre::uint32 SURFACE_MASK = 0x00F;
-  static const Ogre::uint32 WATER_MASK = 0xF00;
+  const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
+  const Ogre::uint32 SURFACE_MASK = 0x00F;
+  const Ogre::uint32 WATER_MASK = 0xF00;
 
-//  Ogre::Entity *farn = scene->createEntity("Farn", "farn1.mesh");
-//  // Create a static geometry field, which we will populate with grass
-//  mField = scene->createStaticGeometry("FarnField");
-//  mField->setRegionDimensions(Ogre::Vector3(20));
-//
-//  const float bounds = 50.0f;
-//  // add grass uniformly throughout the field, with some random variations
-//  for (int i = 0; i < 1000; i++) {
-//    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds),
-//                      0,
-//                      Ogre::Math::RangeRandom(-bounds, bounds));
-//
-//    Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
-//    Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
+  Ogre::Entity *farn = scene->createEntity("Farn", "farn1.mesh");
+  // Create a static geometry field, which we will populate with grass
+  mField = scene->createStaticGeometry("FarnField");
+  mField->setRegionDimensions(Ogre::Vector3(20));
+
+  // add grass uniformly throughout the field, with some random variations
+  for (int i = 0; i < 1000; i++) {
+    float x = Ogre::Math::RangeRandom(-50, 50);
+    float z = Ogre::Math::RangeRandom(-50, 50);
+    float y = heigh_func_ ? heigh_func_(x, z) : 0.0;
+    Ogre::Vector3 pos(x, y, z);
+
+    Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
+    Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
 //    scale *= 0.1;
-//    mField->addEntity(farn, pos, ori, scale);
-//  }
-//
-//  mField->setVisibilityFlags(SUBMERGED_MASK);
+    mField->addEntity(farn, pos, ori, scale);
+  }
+
+  mField->setVisibilityFlags(SUBMERGED_MASK);
 //  mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
-//  mField->build(); // build our static geometry (bake the grass into it)
-//  mField->setCastShadows(false);
+  mField->build(); // build our static geometry (bake the grass into it)
+  mField->setCastShadows(false);
 
   auto *grass = scene->createEntity("Grass", "grass");
   // Create a static geometry field, which we will populate with grass
@@ -171,7 +171,10 @@ void Field::GenerateGrass() {
 
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 10000; i++) {
-    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-50, 50), 0, Ogre::Math::RangeRandom(-50, 50));
+    float x = Ogre::Math::RangeRandom(-50, 50);
+    float z = Ogre::Math::RangeRandom(-50, 50);
+    float y = heigh_func_ ? heigh_func_(x, z) : 0.0;
+    Ogre::Vector3 pos(x, y, z);
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
     mField->addEntity(grass, pos, ori, scale);
@@ -184,9 +187,6 @@ void Field::GenerateGrass() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Field::Create() {
-//  GenerateTrees();
-//  GeneratePlants();
-//  generateBushes();
   GenerateGrass();
 }
 }

@@ -111,8 +111,8 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
 
   std::unique_ptr<ReflectionCamera> rcamera_;
   std::unique_ptr<CubeMapCamera> cmcamera_;
-  std::unique_ptr<Terrain> terrain_;
-  std::unique_ptr<Field> forest_;
+  static std::unique_ptr<Terrain> terrain_;
+  static std::unique_ptr<Field> forest_;
   std::unique_ptr<Camera> camera_;
   Ogre::SceneManager *scene_manager_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;
