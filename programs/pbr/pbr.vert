@@ -71,6 +71,7 @@ precision highp float;
 #endif
 
 in vec4 position;
+in vec4 colour;
 uniform mat4 uMVPMatrix;
 
 #ifdef SHADOWCASTER_ALPHA
@@ -110,6 +111,7 @@ uniform float fadeRange;
 uniform float uTime;
 
 out vec3 vPosition;
+out vec3 vColor;
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -141,6 +143,7 @@ if (uv0 == vec2(0, 0))
 #endif
 
 #ifndef SHADOWCASTER
+  vColor = colour.rgb;
   vec4 pos = uModelMatrix * position;
   vPosition = vec3(pos.xyz) / pos.w;
 

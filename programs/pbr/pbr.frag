@@ -158,6 +158,7 @@ in vec4 lightSpacePosArray[3 * MAX_LIGHTS];
 #endif
 
 in vec3 vPosition;
+in vec3 vColor;
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -641,6 +642,7 @@ void main()
     float alpha = baseColor.a;
 
 #ifdef FADE
+    baseColor.rgb *= vColor;
     alpha *= vUV0.w;
 #endif
 

@@ -24,19 +24,17 @@ SOFTWARE.
 */
 
 #include "pcheader.h"
-
 #include "Field.h"
 #include "PbrUtils.h"
-using namespace xio;
+#include "PagedGeometry.h"
+using namespace Forests;
 
 namespace xio {
-#pragma pack(push, 1)
 struct GrassVertex {
   float x, y, z;
   float nx, ny, nz;
   float u, v;
 };
-#pragma pack(pop)
 //----------------------------------------------------------------------------------------------------------------------
 void Field::CreateGrassMesh_(float heigh) {
   if (Ogre::MeshManager::getSingleton().getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
@@ -186,7 +184,27 @@ void Field::GenerateGrass() {
   mField->setCastShadows(false);
 }
 //----------------------------------------------------------------------------------------------------------------------
+std::function<float(float, float)> Field::heigh_func_;
 void Field::Create() {
-  GenerateGrass();
+  PagedGeometry *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 50);
+  grass->addDetailLevel<GrassPage>(100);//Draw grass up to 100
+  GrassLoader *grassLoader = new GrassLoader(grass);
+  grass->setPageLoader(grassLoader);
+  grassLoader->setHeightFunction([](float x, float z, void*){return Ogre::Real(heigh_func_(x, z) - 0.1);});
+  UpdatePbrParams("GrassCustom");
+  UpdatePbrShadowReceiver("GrassCustom");
+  GrassLayer *layer = grassLoader->addLayer("GrassCustom");
+  layer->setFadeTechnique(FADETECH_GROW);
+  layer->setRenderTechnique(GRASSTECH_CROSSQUADS);
+  layer->setMinimumSize(2.0f, 2.0f);
+  layer->setAnimationEnabled(true);
+  layer->setSwayDistribution(10.0f);
+  layer->setSwayLength(1.0f);
+  layer->setSwaySpeed(0.5f);
+  layer->setDensity(1.5f);
+  layer->setMapBounds(TBounds(-100, -100, 100, 100));
+//  layer->setDensityMap("new_terrain.png");
+  layer->setColorMap("Sand_Diffuse.dds");
+  grass->update();
 }
 }

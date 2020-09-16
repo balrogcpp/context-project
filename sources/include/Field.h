@@ -23,7 +23,6 @@ SOFTWARE.
 */
 
 #pragma once
-
 #include "Component.h"
 
 namespace xio {
@@ -42,9 +41,9 @@ class Field final : public Component {
  private:
   void CreateGrassMesh_(float heigh);
   Ogre::StaticGeometry *mField = nullptr;
-  std::function<float(float, float)> heigh_func_;
+  static std::function<float(float, float)> heigh_func_;
  public:
-  void SetHeighFunc(const std::function<float(float, float)> &heigh_func) {
+  static void SetHeighFunc(const std::function<float(float, float)> &heigh_func) {
     heigh_func_ = heigh_func;
   }
 };
