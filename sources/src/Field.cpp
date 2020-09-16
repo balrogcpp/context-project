@@ -139,7 +139,7 @@ void Field::GenerateGrass() {
   const Ogre::uint32 WATER_MASK = 0xF00;
 
   Ogre::Entity *farn = scene->createEntity("Farn", "farn1.mesh");
-  // Create a static geometry field, which we will populate with grass
+  // Create a static pgeometry field, which we will populate with grass
   mField = scene->createStaticGeometry("FarnField");
   mField->setRegionDimensions(Ogre::Vector3(20));
 
@@ -158,11 +158,11 @@ void Field::GenerateGrass() {
 
   mField->setVisibilityFlags(SUBMERGED_MASK);
 //  mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
-  mField->build(); // build our static geometry (bake the grass into it)
+  mField->build(); // build our static pgeometry (bake the grass into it)
   mField->setCastShadows(false);
 
   auto *grass = scene->createEntity("Grass", "grass");
-  // Create a static geometry field, which we will populate with grass
+  // Create a static pgeometry field, which we will populate with grass
   mField = scene->createStaticGeometry("GrassField");
   UpdatePbrParams("GrassCustom");
   UpdatePbrShadowReceiver("GrassCustom");
@@ -182,7 +182,7 @@ void Field::GenerateGrass() {
 
   mField->setVisibilityFlags(SUBMERGED_MASK);
 //  mField->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
-  mField->build(); // build our static geometry (bake the grass into it)
+  mField->build(); // build our static pgeometry (bake the grass into it)
   mField->setCastShadows(false);
 }
 //----------------------------------------------------------------------------------------------------------------------

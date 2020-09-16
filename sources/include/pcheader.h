@@ -28,6 +28,7 @@ SOFTWARE.
 #include "BtOgreExtras.h"
 #include "BtOgreGP.h"
 #include "BtOgrePG.h"
+#include "OgreOggSound.h"
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
@@ -56,6 +57,7 @@ SOFTWARE.
 #include <thread>
 #include <filesystem>
 #include <cstdlib>
+#include <limits>
 #include <omp.h>
 extern "C" {
 #include <SDL2/SDL.h>

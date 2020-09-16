@@ -57,6 +57,12 @@ set(BTOGRE_HEADERS
     btogre/include/BtOgreGP.h
     btogre/include/BtOgrePG.h)
 
+set(PAGED_HEADERS
+    pgeometry/include/GrassLoader.h
+    pgeometry/include/PagedGeometry.h
+    pgeometry/include/PropertyMaps.h
+    pgeometry/include/StaticBillboardSet.h)
+
 set(CONTEXT_HEADERS
     include/Application.h
     include/AppState.h
@@ -76,6 +82,7 @@ set(CONTEXT_HEADERS
     include/Compositor.h
     include/NoCopy.h
     include/TerrainMaterialGeneratorB.h
+    include/Entity.h
     include/CubeMapCamera.h
     include/ReflectionCamera.h
     include/Gorilla.h
@@ -89,16 +96,24 @@ set(CONTEXT_HEADERS
     include/ShadowSettings.h
     include/YamlConfigurator.h
     include/ComponentLocator.h
-    include/XmlUtils.h include/Locator.h include/PropertyMaps.h)
+    include/XmlUtils.h
+    include/Locator.h
+    )
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
+    ${PAGED_HEADERS}
     ${OGGSOUND_HEADERS}
-    ${CONTEXT_HEADERS}
-    include/Entity.h)
+    ${CONTEXT_HEADERS})
 
 set(BTOGRE_SOURCES
     btogre/src/BtOgre.cpp)
+
+set(PAGED_SOURCES
+    pgeometry/src/GrassLoader.cpp
+    pgeometry/src/PagedGeometry.cpp
+    pgeometry/src/PropertyMaps.cpp
+    pgeometry/src/StaticBillboardSet.cpp)
 
 set(OGGSOUND_SOURCES
     oggsound/src/OgreOggISound.cpp
@@ -124,10 +139,12 @@ set(CONTEXT_SOURCES
     src/Overlay.cpp
     src/PbrUtils.cpp
     src/Terrain.cpp
-    src/Sound.cpp src/Locator.cpp src/PropertyMaps.cpp)
+    src/Sound.cpp
+    src/Locator.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}
+    ${PAGED_SOURCES}
     ${OGGSOUND_SOURCES}
     ${CONTEXT_SOURCES})
 
