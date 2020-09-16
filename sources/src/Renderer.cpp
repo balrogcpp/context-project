@@ -140,8 +140,14 @@ Renderer::Renderer() {
   rtss::InitInstansing();
   compositor_ = std::make_unique<Compositor>();
 }
-
 Renderer::~Renderer() {}
+//----------------------------------------------------------------------------------------------------------------------
+void Renderer::Create() {
+  compositor_->EnableEffect("ssao", conf_->Get<bool>("compositor_use_ssao"));
+  compositor_->EnableEffect("bloom", conf_->Get<bool>("compositor_use_bloom"));
+  compositor_->EnableEffect("hdr", conf_->Get<bool>("compositor_use_hdr"));
+  compositor_->Init();
+}
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::CreateCamera() {
   Ogre::Camera *camera = nullptr;

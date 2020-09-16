@@ -45,7 +45,7 @@ class Renderer final : public Component {
   Renderer();
   virtual ~Renderer();
 
-  void Create() final {}
+  void Create() final;
   void Clear() final {}
   void Clean() final {}
   void Loop(float time) final {}

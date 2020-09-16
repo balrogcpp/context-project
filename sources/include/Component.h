@@ -23,8 +23,8 @@ SOFTWARE.
 */
 
 #pragma once
-
 #include "NoCopy.h"
+#include "YamlConfigurator.h"
 
 namespace xio {
 class Component : public NoCopy {
@@ -36,5 +36,12 @@ class Component : public NoCopy {
   virtual void Clear() = 0;
   virtual void Clean() = 0;
   virtual void Loop(float time) = 0;
+
+ protected:
+  static YamlConfigurator* conf_;
+ public:
+  static void SetConf(YamlConfigurator *conf) {
+    conf_ = conf;
+  }
 };
 }

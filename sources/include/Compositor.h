@@ -23,6 +23,8 @@ SOFTWARE.
 */
 
 #pragma once
+#include <map>
+#include <string>
 
 namespace Ogre {
 class Material;
@@ -40,15 +42,13 @@ class Compositor {
   Compositor();
   virtual ~Compositor();
 
+  void EnableEffect(const std::string &name, bool enable) {
+    effects_[name] = enable;
+  }
+
+  void Init();
  private:
-  std::vector<std::string> compositor_names_;
-  std::string current_compositor_;
-
-  std::vector<std::string> post_names_;
-  std::string current_post_;
-  std::string current_modulate_scene_;
-
-  GBufferSchemeHandler *ssaog_buffer_scheme_handler_;
-  DepthSchemeHandler *depth_scheme_handler_;
+  std::map<std::string, bool> effects_;
+  GBufferSchemeHandler *gbuff_handler_ = nullptr;
 };
 }

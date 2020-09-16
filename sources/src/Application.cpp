@@ -72,8 +72,10 @@ void Application::Init_() {
   components_.push_back(renderer_.get());
   components_.push_back(overlay_.get());
 
-  for (auto &it : components_)
+  for (auto &it : components_) {
     it->Create();
+    it->SetConf(conf_.get());
+  }
 
   io_->RegObserver(overlay_->GetConsole());
   renderer_->Refresh();

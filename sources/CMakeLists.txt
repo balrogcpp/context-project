@@ -140,7 +140,7 @@ set(CONTEXT_SOURCES
     src/PbrUtils.cpp
     src/Terrain.cpp
     src/Sound.cpp
-    src/Locator.cpp)
+    src/Locator.cpp src/Component.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}

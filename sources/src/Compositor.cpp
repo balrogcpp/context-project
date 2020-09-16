@@ -31,14 +31,16 @@ SOFTWARE.
 namespace xio {
 Compositor::~Compositor() noexcept {}
 //----------------------------------------------------------------------------------------------------------------------
-Compositor::Compositor() {  bool graphics_shadows_enable_ = true;
-  bool compositor_use_bloom_ = false;
-  bool compositor_use_ssao_ = false;
-  bool compositor_use_hdr_ = false;
-
-  if (compositor_use_ssao_) {
-    ssaog_buffer_scheme_handler_ = new GBufferSchemeHandler();
-    Ogre::MaterialManager::getSingleton().addListener(ssaog_buffer_scheme_handler_, "GBuffer");
+Compositor::Compositor() {
+  effects_["bloom"] = false;
+  effects_["ssao"] = false;
+  effects_["hdr"] = false;
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Compositor::Init() {
+  if (effects_["ssao"]) {
+    gbuff_handler_ = new GBufferSchemeHandler();
+    Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_, "GBuffer");
   }
     auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
     auto *camera = scene->getCamera("Default");
@@ -49,21 +51,21 @@ Compositor::Compositor() {  bool graphics_shadows_enable_ = true;
   else
     Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Context/Main compositor\n");
 
-  if (compositor_use_ssao_) {
+  if (effects_["ssao"]) {
     if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, "Context/GBuffer"))
       Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, "Context/GBuffer", true);
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
   }
 
-  if (compositor_use_bloom_) {
+  if (effects_["bloom"]) {
     if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, "Context/Bloom"))
       Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, "Context/Bloom", true);
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
   }
 
-  if (compositor_use_ssao_) {
+  if (effects_["ssao"]) {
     if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, "Context/SSAO"))
       Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, "Context/SSAO", true);
     else
@@ -84,16 +86,16 @@ Compositor::Compositor() {  bool graphics_shadows_enable_ = true;
 
   std::string modulate_compositor = "Context/Modulate";
 
-  modulate_compositor += compositor_use_bloom_ ? "/Bloom" : "";
-  modulate_compositor += compositor_use_ssao_ ? "/SSAO" : "";
-  modulate_compositor += compositor_use_hdr_ ? "/HDR" : "";
+  modulate_compositor += effects_["bloom"] ? "/Bloom" : "";
+  modulate_compositor += effects_["ssao"] ? "/SSAO" : "";
+  modulate_compositor += effects_["hdr"] ? "/HDR" : "";
 
   if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, modulate_compositor))
     Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, modulate_compositor, true);
   else
     Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
 
-  if (compositor_use_hdr_) {
+  if (effects_["hdr"]) {
     if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, "Context/HDR")) {
       Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, "Context/HDR", true);
     } else {

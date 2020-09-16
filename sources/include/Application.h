@@ -54,14 +54,7 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   void Quit() final;
 //----------------------------------------------------------------------------------------------------------------------
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
-        bool maskDebug, const std::string &logName, bool &skipThisMessage) final {
-    switch (lml) {
-      case Ogre::LML_WARNING: break;
-      case Ogre::LML_NORMAL: break;
-      case Ogre::LML_CRITICAL: break;
-      case Ogre::LML_TRIVIAL: break;
-    }
-  }
+        bool maskDebug, const std::string &logName, bool &skipThisMessage) final {}
 
   std::unique_ptr<YamlConfigurator> conf_;
   std::unique_ptr<InputSequencer> io_;
