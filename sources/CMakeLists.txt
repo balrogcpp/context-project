@@ -66,8 +66,6 @@ set(PAGED_HEADERS
     pgeometry/include/TreeLoader3D.h
     pgeometry/include/BatchPage.h
     pgeometry/include/BatchedGeometry.h
-    pgeometry/include/WindBatchedGeometry.h
-    pgeometry/include/WindBatchPage.h
     )
 
 set(CONTEXT_HEADERS
@@ -125,8 +123,6 @@ set(PAGED_SOURCES
     pgeometry/src/TreeLoader3D.cpp
     pgeometry/src/BatchPage.cpp
     pgeometry/src/BatchedGeometry.cpp
-    pgeometry/src/WindBatchedGeometry.cpp
-    pgeometry/src/WindBatchPage.cpp
     )
 
 set(OGGSOUND_SOURCES

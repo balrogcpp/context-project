@@ -23,7 +23,6 @@ SOFTWARE.
 */
 
 #pragma once
-
 #include "OgreHeaders.h"
 #include "BtOgreExtras.h"
 #include "BtOgreGP.h"
@@ -33,6 +32,8 @@ SOFTWARE.
 #include "GrassLoader.h"
 #include "TreeLoader2D.h"
 #include "TreeLoader3D.h"
+#include "BatchPage.h"
+#include "BatchedGeometry.h"
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
