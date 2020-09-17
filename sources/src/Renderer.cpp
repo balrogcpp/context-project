@@ -29,9 +29,10 @@ SOFTWARE.
 #include "RtssUtils.h"
 
 namespace xio {
-Renderer::Renderer() {
+Renderer::Renderer(int32_t w, int32_t h, bool f)
+{
+  window_ = std::make_unique<Window>(w, h, f);
   root_ = new Ogre::Root("", "", "");
-
   bool global_sso_enable_ = true;
   bool global_octree_enable_ = true;
   bool global_stbi_enable_ = true;
@@ -83,7 +84,7 @@ Renderer::Renderer() {
   root_->initialise(false);
   Ogre::NameValuePairList params;
 
-  SDL_SysWMinfo info = window_.GetInfo();
+  SDL_SysWMinfo info = window_->GetInfo();
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   if (!reinterpret_cast<size_t>(info.info.win.window)) {
     throw Exception("Cast from info.info.win.window to size_t failed");
@@ -111,8 +112,8 @@ Renderer::Renderer() {
   params["FSAA"] = std::to_string(graphics_fsaa_);
   params["MSAA"] = std::to_string(graphics_msaa_);
 
-  ogre_ = root_->createRenderWindow(window_.GetCaption(), window_.GetSize().first, \
-                       window_.GetSize().second, false, &params);
+  ogre_ = root_->createRenderWindow(window_->GetCaption(), window_->GetSize().first, \
+                       window_->GetSize().second, false, &params);
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   if (global_octree_enable_) {
@@ -125,10 +126,12 @@ Renderer::Renderer() {
 #endif
 
   auto *camera = scene_->createCamera("Default");
-  auto *renderTarget = root_->getRenderTarget(window_.GetCaption());
+  auto *renderTarget = root_->getRenderTarget(window_->GetCaption());
 
   auto *viewport = renderTarget->addViewport(camera);
   viewport->setBackgroundColour(Ogre::ColourValue::Black);
+  camera->setAspectRatio(static_cast<float>(viewport->getActualWidth()) / viewport->getActualHeight());
+  camera->setAutoAspectRatio(true);
 
 #ifndef DEBUG
   Storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
@@ -154,7 +157,7 @@ void Renderer::CreateCamera() {
 
   if (!scene_->hasCamera("Default")) {
     camera = scene_->createCamera("Default");
-    auto *renderTarget = root_->getRenderTarget(window_.GetCaption());
+    auto *renderTarget = root_->getRenderTarget(window_->GetCaption());
     renderTarget->removeViewport(0);
     renderTarget->addViewport(camera);
   } else {
@@ -186,11 +189,11 @@ void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Resize(int32_t w, int32_t h, bool f) {
   if (f) {
-    window_.Fullscreen(f);
-    ogre_->resize(window_.GetSize().first, window_.GetSize().second);
-    ogre_->setFullscreen(f, window_.GetSize().first, window_.GetSize().second);
+    window_->Fullscreen(f);
+    ogre_->resize(window_->GetSize().first, window_->GetSize().second);
+    ogre_->setFullscreen(f, window_->GetSize().first, window_->GetSize().second);
   } else {
-    window_.Resize(w, h);
+    window_->Resize(w, h);
     ogre_->resize(w, h);
   }
 }
@@ -198,7 +201,7 @@ void Renderer::Resize(int32_t w, int32_t h, bool f) {
 void Renderer::RenderOneFrame() {
   root_->renderOneFrame();
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  window_.SwapBuffers();
+  window_->SwapBuffers();
 #endif
 }
 }

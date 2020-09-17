@@ -42,7 +42,7 @@ class RenderWindow;
 namespace xio {
 class Renderer final : public Component {
  public:
-  Renderer();
+  Renderer(int32_t w, int32_t h, bool f);
   virtual ~Renderer();
 
   void Create() final;
@@ -58,7 +58,7 @@ class Renderer final : public Component {
 
  private:
   void CreateCamera();
-  Window window_;
+  std::unique_ptr<Window> window_;
   std::unique_ptr<ShadowSettings> shadow_;
   std::unique_ptr<Compositor> compositor_;
 
@@ -68,15 +68,15 @@ class Renderer final : public Component {
 
  public:
   Window &GetWindow() {
-    return window_;
+    return *window_;
   }
 
-  ShadowSettings *GetShadowSettings() {
-    return shadow_.get();
+  ShadowSettings &GetShadowSettings() {
+    return *shadow_;
   }
 
-  Compositor *GetCompositor() {
-    return compositor_.get();
+  Compositor &GetCompositor() {
+    return *compositor_;
   }
 };
 }

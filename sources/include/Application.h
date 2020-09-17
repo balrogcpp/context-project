@@ -50,7 +50,7 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   void InitCurrState_();
   int Message_(const std::string &caption, const std::string &message);
   void Event(const SDL_Event &evt) final;
-  void Other(Uint8 type, int32_t code, void *data1, void *data2) final;
+  void Other(uint8_t type, int32_t code, void *data1, void *data2) final;
   void Quit() final;
 //----------------------------------------------------------------------------------------------------------------------
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \

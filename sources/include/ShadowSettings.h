@@ -57,18 +57,28 @@ class ShadowSettings : public NoCopy {
   }
   virtual ~ShadowSettings() {}
 //----------------------------------------------------------------------------------------------------------------------
-  void UpdateParams(bool enable, float far, int16_t tex_size, Ogre::PixelFormat tex_format) {
+  void UpdateParams(bool enable, float far_distance, int tex_size, int tex_format = 16) {
     auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+    if (!enable) {
+      scene->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+      return;
+    }
     int tex_count = 12;
     scene->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-    Ogre::PixelFormat texture_type = tex_format;
+    Ogre::PixelFormat texture_type;
+    if (tex_format == 32)
+      texture_type = Ogre::PixelFormat::PF_DEPTH32;
+    else if (tex_format == 16)
+      texture_type = Ogre::PixelFormat::PF_DEPTH16;
+    else
+      throw Exception("Unknown texture format, aborting");
     scene->setShadowTextureSettings(tex_size, tex_count, texture_type);
     scene->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
     scene->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
     scene->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 6);
     scene->setShadowTextureSelfShadow(true);
     scene->setShadowCasterRenderBackFaces(true);
-    scene->setShadowFarDistance(far);
+    scene->setShadowFarDistance(far_distance);
     auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     scene->setShadowTextureCasterMaterial(passCaterMaterial);
     auto pssm_ = std::make_shared<Ogre::PSSMShadowCameraSetup>();
@@ -86,7 +96,7 @@ class ShadowSettings : public NoCopy {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void ManualSplits(const std::vector<float> &split_points) {
+  void SetManualSplits(const std::vector<float> &split_points) {
     split_points_ = split_points;
     pssm_->setSplitPoints(split_points);
   }

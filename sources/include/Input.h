@@ -64,7 +64,7 @@ class WindowObserver {
  public:
   virtual void Event(const SDL_Event &evt) {}
   virtual void Quit() {}
-  virtual void Other(Uint8 type, int32_t code, void *data1, void *data2) {}
+  virtual void Other(uint8_t type, int32_t code, void *data1, void *data2) {}
 };
 //----------------------------------------------------------------------------------------------------------------------
 class InputSequencer {

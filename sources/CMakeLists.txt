@@ -22,11 +22,6 @@
 
 cmake_minimum_required(VERSION 3.15.1)
 
-find_package(OpenMP REQUIRED)
-if (NOT ANDROID)
-    find_package(OpenGL REQUIRED)
-endif ()
-
 include(cotire)
 
 project(xio-lib)
@@ -150,7 +145,8 @@ set(CONTEXT_SOURCES
     src/PbrUtils.cpp
     src/Terrain.cpp
     src/Sound.cpp
-    src/Locator.cpp src/Component.cpp)
+    src/Locator.cpp
+    src/Component.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}
@@ -163,12 +159,6 @@ include_directories(xio-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 add_library(xio-lib STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
 
 set_target_properties(xio-lib PROPERTIES OUTPUT_NAME "xio-static")
-
-set(CMAKE_CXX_FLAGS ${CONTEXT_CXX_FLAGS})
-set(CMAKE_C_FLAGS ${CONTEXT_C_FLAGS})
-set(CMAKE_EXE_LINKER_FLAGS ${CONTEXT_EXE_LINKER_FLAGS})
-set(CMAKE_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS})
-set(CMAKE_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS})
 
 if (NOT MSVC AND NOT ANDROID)
     set_target_properties(xio-lib PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "include/pcheader.h")

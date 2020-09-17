@@ -60,7 +60,7 @@ Application::~Application() = default;
 void Application::Init_() {
   conf_ = std::make_unique<YamlConfigurator>("config.yaml");
   io_ = std::make_unique<InputSequencer>();
-  renderer_ = std::make_unique<Renderer>();
+  renderer_ = std::make_unique<Renderer>(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"), conf_->Get<bool>("window_fullscreen"));
   physics_ = std::make_unique<Physics>();
   sounds_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();
@@ -98,24 +98,14 @@ void Application::Init_() {
   float shadow_far = conf_->Get<float>("graphics_shadows_far_distance");
   int16_t tex_size = conf_->Get<int16_t>("graphics_shadows_texture_resolution");
   std::string tex_format_str = conf_->Get<std::string>("graphics_shadows_texture_format");
-  Ogre::PixelFormat tex_format = Ogre::PF_DEPTH16;
 
-  if (tex_format_str == "F32_R")
-    tex_format = Ogre::PF_FLOAT32_R;
-  else if (tex_format_str == "F16_R")
-    tex_format = Ogre::PF_FLOAT16_R;
-  else if (tex_format_str == "F32_GR")
-    tex_format = Ogre::PF_FLOAT32_GR;
-  else if (tex_format_str == "F16_GR")
-    tex_format = Ogre::PF_FLOAT16_GR;
-  else if (tex_format_str == "DEPTH16")
-    tex_format = Ogre::PF_DEPTH16;
-  else if (tex_format_str == "DEPTH32")
-    tex_format = Ogre::PF_DEPTH32;
-  else if (tex_format_str == "DEPTH32F")
-    tex_format = Ogre::PF_DEPTH32F;
+  int tex_format;
+  if (tex_format_str == "DEPTH16")
+    tex_format = 16;
+  else if (tex_format_str == "DEPTH32" || tex_format_str == "DEPTH32F")
+    tex_format = 32;
 
-  renderer_->GetShadowSettings()->UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
+  renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
   loader_->LocateComponents(conf_.get(),io_.get(),renderer_.get(),physics_.get(),sounds_.get(),overlay_.get());
   verbose_ = conf_->Get<bool>("global_verbose_enable");
@@ -128,7 +118,6 @@ void Application::Init_() {
   if (!verbose_) {
     auto *logger = new Ogre::LogManager();
     std::string log_name = "Ogre.log";
-
     logger->createLog(log_name, true, false, true);
     Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
     Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
@@ -175,7 +164,7 @@ void Application::Event(const SDL_Event &evt) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Other(Uint8 type, int32_t code, void *data1, void *data2) {}
+void Application::Other(uint8_t type, int32_t code, void *data1, void *data2) {}
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Loop_() {
   while (quit_) {

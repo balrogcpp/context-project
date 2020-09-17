@@ -1,4 +1,3 @@
-#!/bin/bash
 #MIT License
 #
 #Copyright (c) 2020 Andrey Vasiliev
@@ -21,10 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-docker build . -t balrogcpp/context-project-demo
-docker create -ti --name abc balrogcpp/context-project-demo bash
-mkdir artifacts
-docker cp abc:/mnt/xio/install/ContextProjectDemo-Release-`git rev-parse -q HEAD`.zip artifacts
-docker rm -f abc
+FROM ubuntu:20.04
 
-exit 0
+ARG DEBIAN_FRONTEND=noninteractive
+

@@ -62,11 +62,12 @@ void Sound::CreateSound(const std::string &name, const std::string &file, bool l
   manager_->createSound(name, file, false, loop, true, nullptr);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::PlaySound(const std::string &name) {
-  if (manager_->getSound(name)) {
-    manager_->getSound(name)->stop();
-    manager_->getSound(name)->setPosition({});
-    manager_->getSound(name)->play();
+void Sound::PlaySound(const std::string &name, bool immediate) {
+  auto *sound = manager_->getSound(name);
+  if (sound) {
+    if (immediate)
+      sound->stop();
+    sound->play();
   } else {
     throw Exception(std::string("Sound \"") + name + "\" not found. Aborting.\n");
   }

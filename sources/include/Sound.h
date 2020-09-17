@@ -23,9 +23,9 @@ SOFTWARE.
 */
 
 #pragma once
-
 #include "Component.h"
 #include "OgreOggSound.h"
+#include <string>
 
 namespace xio {
 class Sound final : public Component {
@@ -34,7 +34,7 @@ class Sound final : public Component {
   virtual ~Sound();
 
   void CreateSound(const std::string &name, const std::string &file, bool loop = false);
-  void PlaySound(const std::string &name);
+  void PlaySound(const std::string &name, bool immediate = true);
   void SetMasterVolume(float volume);
   void SetMaxVolume(const std::string &name, float volume);
   void SetVolume(const std::string &name, float gain);
