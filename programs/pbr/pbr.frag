@@ -614,7 +614,6 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
     return texCoords - p;
 }
 #endif
-
 #endif //!SHADOWCASTER
 
 void main()

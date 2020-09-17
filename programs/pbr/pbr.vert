@@ -131,7 +131,7 @@ void main()
   vec4 mypos = position;
 
 #ifdef FOREST
-if (uv0 == vec2(0, 0))
+if (uv0.y == 0.0)
 {
   float radiusCoeff = 0.25;
   float heightCoeff = 0.25;
