@@ -20,10 +20,10 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-FROM balrogcpp/context-project-dependencies:latest
+FROM balrogcpp/xio-dependencies:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/context-demo
+ARG CONTEXT_HOME=/mnt/xio
 WORKDIR ${CONTEXT_HOME}
 
 ADD sources ./sources
@@ -40,9 +40,7 @@ ADD CMakeLists.txt .
 ADD thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
 ADD .git ./.git
 
-RUN mkdir -p ./build-windows && mkdir -p ./build-linux && mkdir -p ./build-android && \
-    cd ${CONTEXT_HOME}/build-windows && \
-    cmake -DCONTEXT_ONLY_DEPS=false -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target install && \
-    cd ${CONTEXT_HOME}/build-linux && \
-    cmake -DCONTEXT_ONLY_DEPS=false -G Ninja .. && cmake --build . --target install && \
-    cmake --build . --target context-install-zip
+RUN mkdir -p ./build-windows && mkdir -p ./build-linux && \
+    cd ${CONTEXT_HOME}/build-linux && cmake -G Ninja .. && cmake --build . --target install && \
+    cd ${CONTEXT_HOME}/build-windows && cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target install && \
+    cmake --build . --target xio-zip

@@ -22,7 +22,7 @@
 
 cmake_minimum_required(VERSION 3.15.1)
 
-project(context-tests)
+project(xio-tests)
 
 enable_testing()
 

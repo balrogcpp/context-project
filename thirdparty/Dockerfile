@@ -23,22 +23,26 @@
 FROM balrogcpp/gcc-mingw-x86_64:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/context-demo
+ARG CONTEXT_HOME=/mnt/xio
 WORKDIR ${CONTEXT_HOME}
 
 ADD ./thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
 ADD CMakeLists.txt .
 ADD ./CMake ./CMake
 
-RUN apt-get install -y git ninja-build libxaw7-dev libxrandr-dev libglew-dev libpulse-dev > /dev/null \
-    && mkdir -p ./build-windows && mkdir -p ./build-linux && mkdir -p ./build-android \
-    && cd ${CONTEXT_HOME}/build-windows \
-    && cmake -DCONTEXT_ONLY_DEPS=true -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. \
-    && cmake --build . --target context-deps \
-    && cd ${CONTEXT_HOME}/thirdparty/external/windows-mingw/Release/ \
-    && rm -rf src \
+RUN apt-get update && apt-get install -y git gnutls-bin ninja-build libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
+    && git config --global http.postBuffer 1048576000 \
+    && mkdir -p ./build-windows ./build-linux \
     && cd ${CONTEXT_HOME}/build-linux \
     && cmake -DCONTEXT_ONLY_DEPS=true -G Ninja .. \
-    && cmake --build . --target context-deps \
+    && cmake --build . --target xio-deps \
     && cd ${CONTEXT_HOME}/thirdparty/external/linux-gcc/Release/ \
-    && rm -rf src
+    && rm -rf src \
+    && cd ${CONTEXT_HOME} \
+    && cd ${CONTEXT_HOME}/build-windows \
+    && cmake -DCONTEXT_ONLY_DEPS=true -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. \
+    && cmake --build . --target xio-deps \
+    && cd ${CONTEXT_HOME}/thirdparty/external/windows-mingw/Release/ \
+    && rm -rf src \
+    && rm -rf ${CONTEXT_HOME}/build-windows ${CONTEXT_HOME}/build-linux \
+    && rm -rf ${CONTEXT_HOME}/CMake ${CONTEXT_HOME}/CMakeLists.txt ${CONTEXT_HOME}/thirdparty/CMakeLists.txt

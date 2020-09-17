@@ -24,7 +24,7 @@ cmake_minimum_required(VERSION 3.15.1)
 
 include(CMakeDependentOption)
 
-project(context-deps)
+project(xio-deps)
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -32,13 +32,7 @@ endif ()
 
 include(ExternalProject)
 
-find_package(OpenMP REQUIRED)
-if (NOT ANDROID)
-    find_package(OpenGL REQUIRED)
-endif ()
 find_package(Git REQUIRED)
-find_package(Subversion)
-find_package(Hg)
 
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 
@@ -203,19 +197,17 @@ externalproject_add(target-ois
                     -G "${CMAKE_GENERATOR}"
                     )
 
-if (ANDROID)
-    externalproject_add(target-iconv
-                        EXCLUDE_FROM_ALL true
-                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                        GIT_REPOSITORY https://github.com/roninest/iconv-android.git
-                        GIT_TAG 7d729796e02da9360018d63d7f853dcd4121cce7
-                        GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                        GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ./configure --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ndk-build
-                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv/obj/local/arm64-v8a ${CMAKE_COMMAND} -E copy libiconv.a ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libiconv.a
-                        )
-endif ()
+externalproject_add(target-iconv
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/roninest/iconv-android.git
+                    GIT_TAG 7d729796e02da9360018d63d7f853dcd4121cce7
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ./configure --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv ndk-build
+                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-iconv/obj/local/arm64-v8a ${CMAKE_COMMAND} -E copy libiconv.a ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libiconv.a
+                    )
 
 externalproject_add(target-cpuinfo
                     EXCLUDE_FROM_ALL true
@@ -731,10 +723,6 @@ externalproject_add(target-imgui
                     -G "${CMAKE_GENERATOR}"
                     )
 
-if (ANDROID)
-    set (CEGUI_GIT_TAG -Android)
-endif ()
-
 externalproject_add(target-cegui
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-freetype target-ogre1
@@ -877,13 +865,15 @@ externalproject_add(target-glm
 externalproject_add(target-lua
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/LuaDist/lua.git
-                    GIT_TAG 5.3.2
+                    GIT_REPOSITORY https://github.com/balrogcpp/lua-cmake.git
+                    GIT_TAG 5.4.0
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DLUA_EXE=false
+                    -DLUA_DOC=false
                     -DLUA_BUILD_WLUA=false
                     -DBUILD_SHARED_LIBS=false
                     -DLUA_USE_READLINE=false
@@ -966,12 +956,8 @@ list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-angelscript)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre1)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre1)
-#list(APPEND CONTEXT_DEPENDENCY_TARGETS target-glm)
-#list(APPEND CONTEXT_DEPENDENCY_TARGETS target-lua)
-#list(APPEND CONTEXT_DEPENDENCY_TARGETS target-opennn)
-#list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cegui)
-add_custom_target(context-deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-lua)
+add_custom_target(xio-deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
 
 if (WIN32)
     if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
@@ -1003,9 +989,7 @@ endif ()
 
 set(OGG_LIBRARIES ogg)
 
-if (NOT ANDROID)
-    set(LUA_LIBRARIES lua)
-endif ()
+set(LUA_LIBRARIES lua)
 set(ANGELSCRIPT_LIBRARIES angelscript${SUFFIX_LIB_SDL})
 
 set(VORBISFILE_LIBRARIES vorbisfile vorbis vorbisenc)
@@ -1066,22 +1050,9 @@ endif ()
 list(APPEND OGRE_LIBRARIES OgreGLSupport${SUFFIX_LIB_OGRE})
 list(APPEND OGRE_LIBRARIES OgreMain${SUFFIX_LIB_OGRE})
 
-#set(SUFFIX_LIB_CEGUI "")
-#if (WIN32)
-#    if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
-#        string(APPEND SUFFIX_LIB_OGRE _d)
-#    endif ()
-#endif ()
-#
-#list(APPEND CEGUI_LIBRARIES CEGUIOgreRenderer-0${SUFFIX_LIB_CEGUI})
-#list(APPEND CEGUI_LIBRARIES CEGUIBase-0${SUFFIX_LIB_CEGUI})
-#list(APPEND CEGUI_LIBRARIES CEGUICoreWindowRendererSet${SUFFIX_LIB_CEGUI})
-#list(APPEND CEGUI_LIBRARIES CEGUIRapidXMLParser${SUFFIX_LIB_CEGUI})
-#list(APPEND CEGUI_LIBRARIES CEGUISTBImageCodec${SUFFIX_LIB_CEGUI})
-
 list(APPEND STATIC_LIBRARIES pugixml)
-list(APPEND STATIC_LIBRARIES zzip)
-list(APPEND STATIC_LIBRARIES freetype)
+list(APPEND STATIC_LIBRARIES "zzip")
+list(APPEND STATIC_LIBRARIES "freetype")
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     if (UNIX OR MINGW AND NOT ANDROID)
         list(APPEND JEMALLOC_LIBRARIES jemalloc)
@@ -1096,7 +1067,6 @@ if (UNIX AND NOT ANDROID)
     list(APPEND STATIC_LIBRARIES dl)
     list(APPEND STATIC_LIBRARIES yaml-cpp)
 elseif (ANDROID)
-    list(APPEND STATIC_LIBRARIES iconv)
     list(APPEND STATIC_LIBRARIES z.a)
     list(APPEND STATIC_LIBRARIES log)
     list(APPEND STATIC_LIBRARIES android)
@@ -1108,11 +1078,26 @@ elseif (ANDROID)
     list(APPEND STATIC_LIBRARIES m.a)
     list(APPEND STATIC_LIBRARIES hidapi)
     list(APPEND STATIC_LIBRARIES ndk_compat)
+    list(APPEND STATIC_LIBRARIES yaml-cpp)
 elseif (MINGW)
     list(APPEND STATIC_LIBRARIES zlibstatic)
     list(APPEND STATIC_LIBRARIES opengl32)
     list(APPEND STATIC_LIBRARIES yaml-cpp)
-    list(APPEND STATIC_LIBRARIES imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
+    list(APPEND STATIC_LIBRARIES imagehlp)
+    list(APPEND STATIC_LIBRARIES dinput8)
+    list(APPEND STATIC_LIBRARIES dxguid)
+    list(APPEND STATIC_LIBRARIES dxerr8)
+    list(APPEND STATIC_LIBRARIES user32)
+    list(APPEND STATIC_LIBRARIES gdi32)
+    list(APPEND STATIC_LIBRARIES imm32)
+    list(APPEND STATIC_LIBRARIES winmm)
+    list(APPEND STATIC_LIBRARIES ole32)
+    list(APPEND STATIC_LIBRARIES oleaut32)
+    list(APPEND STATIC_LIBRARIES shell32)
+    list(APPEND STATIC_LIBRARIES version)
+    list(APPEND STATIC_LIBRARIES uuid)
+    list(APPEND STATIC_LIBRARIES setupapi)
+    list(APPEND STATIC_LIBRARIES hid)
 endif ()
 
 set(CONTEXT_STATIC_DEPENDENCY_LIBS
@@ -1123,18 +1108,17 @@ set(CONTEXT_STATIC_DEPENDENCY_LIBS
     ${OGG_LIBRARIES}
     ${OPENAL_LIBRARY}
     ${SDL_LIBRARIES}
+    ${LUA_LIBRARIES}
     ${ANGELSCRIPT_LIBRARIES}
     ${BULLET_LIBRARIES}
     ${STATIC_LIBRARIES}
-    ${STANDART_LIBRARIES}
     ${JEMALLOC_LIBRARIES}
-    CACHE INTERNAL ""
-    )
+    CACHE INTERNAL "")
 
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR})
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/btogre/include)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/oggsound/include)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/pagedgeometry/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/pgeometry/include)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/bullet)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE)
@@ -1142,7 +1126,5 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OG
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GL)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2)
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2/GLSLES)
-if (ANDROID)
-    list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_ROOT_DIR}/android/include/)
-endif ()
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_ROOT_DIR}/android/include/)
 set(CONTEXT_DEPENDENCY_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIRS} CACHE INTERNAL "")

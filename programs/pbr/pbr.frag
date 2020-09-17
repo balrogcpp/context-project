@@ -84,6 +84,9 @@ out vec4 gl_FragColor;
 #endif
 #endif
 
+#define MAX_LIGHTS 5
+#define MAX_SHADOWS 1
+
 #ifdef SHADOWCASTER_ALPHA
 in vec2 vUV0;
 uniform sampler2D uBaseColorSampler;
@@ -95,7 +98,6 @@ in vec4 vUV0;
 uniform sampler2D uBaseColorSampler;
 #endif
 
-#define MAX_LIGHTS 5
 uniform float uAlphaRejection;
 uniform vec3 uSurfaceAmbientColour;
 uniform vec4 uSurfaceDiffuseColour;
@@ -153,10 +155,11 @@ uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
 uniform vec4 pssmSplitPoints;
 uniform float uShadowColour;
-in vec4 lightSpacePosArray[2 * 3];
+in vec4 lightSpacePosArray[3 * MAX_SHADOWS];
 #endif
 
 in vec3 vPosition;
+in vec3 vColor;
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -213,7 +216,7 @@ float ESM(float depth, float compare){
     }
 }
 #endif
-
+#ifdef SHADOWRECEIVER_PCF
 vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
 {
     const float GoldenAngle = 2.4;
@@ -269,7 +272,7 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
         return 0.0f;
     }
 }
-
+#endif
 #ifndef SHADOWRECEIVER_PCF
 // Returns a random number based on a vec3 and an int.
 float random(vec3 seed, int i)
@@ -329,7 +332,7 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv)
     for (int i = 0; i < iterations; i++)
     {
         float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
-        float penumbra = Penumbra(shadowMap, gradientNoise, uv.xy, compare, 16);
+//        float penumbra = Penumbra(shadowMap, gradientNoise, uv.xy, compare, 16);
         shadow += (texture2D(shadowMap, uv.xy + VogelDiskSample(i, 16, gradientNoise) * 0.002).r > compare ? 1.0 / float(iterations) : 0.0);
     }
 #endif
@@ -612,7 +615,6 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
     return texCoords - p;
 }
 #endif
-
 #endif //!SHADOWCASTER
 
 void main()
@@ -640,6 +642,7 @@ void main()
     float alpha = baseColor.a;
 
 #ifdef FADE
+    baseColor.rgb *= vColor;
     alpha *= vUV0.w;
 #endif
 
@@ -768,14 +771,14 @@ void main()
 #endif
     }
 
-        // Calculate lighting contribution from image based lighting source (IBL)
+    // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection);
 #else
     total_colour += ((uSurfaceAmbientColour + uAmbientLightColour) * baseColor.rgb);
 #endif
 
-        // Apply optional PBR terms for additional (optional) shading
+    // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
     total_colour *= texture2D(uOcclusionSampler, tex_coord).r;
 #endif
@@ -823,8 +826,8 @@ void main()
     float depth = gl_FragCoord.z;
     gl_FragColor = vec4(depth, depth * depth, 0.0, 1.0);
 #else
-    float depth = gl_FragCoord.z - 0.001;
-    gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
+    const float offset = 0.000;
+    gl_FragColor = vec4(gl_FragCoord.z - offset, 0.0, 0.0, 1.0);
 #endif
 #endif //SHADOWCASTER
 }

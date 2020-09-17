@@ -22,14 +22,9 @@
 
 cmake_minimum_required(VERSION 3.15.1)
 
-find_package(OpenMP REQUIRED)
-if (NOT ANDROID)
-    find_package(OpenGL REQUIRED)
-endif()
-
 include(cotire)
 
-project(context-lib)
+project(xio-lib)
 
 set(CMAKE_MODULE_PATH
     "${CONTEXT_ROOT_DIR}/CMake"
@@ -50,70 +45,79 @@ set(OGGSOUND_HEADERS
     oggsound/include/OgreOggStaticSound.h
     oggsound/include/OgreOggStaticWavSound.h
     oggsound/include/OgreOggStreamSound.h
-    oggsound/include/OgreOggStreamWavSound.h
-    )
-
-set(PAGEDGEOMETRY_HEADERS
-    pagedgeometry/include/BatchedGeometry.h
-    pagedgeometry/include/BatchPage.h
-    pagedgeometry/include/GrassLoader.h
-    pagedgeometry/include/ImpostorPage.h
-    pagedgeometry/include/PagedGeometry.h
-    pagedgeometry/include/PagedGeometryConfig.h
-    pagedgeometry/include/PropertyMaps.h
-    pagedgeometry/include/RandomTable.h
-    pagedgeometry/include/StaticBillboardSet.h
-    pagedgeometry/include/TreeLoader2D.h
-    pagedgeometry/include/TreeLoader3D.h
-    pagedgeometry/include/WindBatchedGeometry.h
-    pagedgeometry/include/WindBatchPage.h
-    )
+    oggsound/include/OgreOggStreamWavSound.h)
 
 set(BTOGRE_HEADERS
     btogre/include/BtOgreExtras.h
     btogre/include/BtOgreGP.h
-    btogre/include/BtOgrePG.h
+    btogre/include/BtOgrePG.h)
+
+set(PAGED_HEADERS
+    pgeometry/include/GrassLoader.h
+    pgeometry/include/PagedGeometry.h
+    pgeometry/include/PropertyMaps.h
+    pgeometry/include/StaticBillboardSet.h
+    pgeometry/include/TreeLoader2D.h
+    pgeometry/include/TreeLoader3D.h
+    pgeometry/include/BatchPage.h
+    pgeometry/include/BatchedGeometry.h
     )
 
 set(CONTEXT_HEADERS
-    context/include/Application.h
-    context/include/AppState.h
-    context/include/AppStateManager.h
-    context/include/CameraMan.h
-    context/include/Exception.h
-    context/include/IO.h
-    context/include/pcheader.h
-    context/include/Graphics.h
-    context/include/DummyListener.h
-    context/include/ConfiguratorJson.h
-    context/include/DotSceneLoaderB.h
-    context/include/StaticForest.h
-    context/include/Physics.h
-    context/include/BulletHeaders.h
-    context/include/OgreHeaders.h
-    context/include/Sounds.h
-    context/include/Manager.h
-    context/include/Context.h
-    context/include/Compositors.h
-    context/include/Singleton.h
-    context/include/NoCopy.h
-    context/include/TerrainMaterialGeneratorB.h
-    context/include/CubeMapCamera.h
-    context/include/ReflectionCamera.h
-    context/include/Gorilla.h
-    context/include/GorillaOverlay.h
-    context/include/IoListeners.h
-    context/include/Window.h context/include/Utils.h context/include/Storage.h context/include/RtssUtils.h)
+    include/Application.h
+    include/AppState.h
+    include/Camera.h
+    include/Exception.h
+    include/Input.h
+    include/pcheader.h
+    include/Renderer.h
+    include/VerboseListener.h
+    include/JsonConfigurator.h
+    include/DotSceneLoaderB.h
+    include/Field.h
+    include/Physics.h
+    include/OgreHeaders.h
+    include/Sound.h
+    include/Component.h
+    include/Compositor.h
+    include/NoCopy.h
+    include/TerrainMaterialGeneratorB.h
+    include/Entity.h
+    include/CubeMapCamera.h
+    include/ReflectionCamera.h
+    include/Gorilla.h
+    include/Overlay.h
+    include/Window.h
+    include/PbrUtils.h
+    include/Storage.h
+    include/RtssUtils.h
+    include/Terrain.h
+    include/CompositorHelper.h
+    include/ShadowSettings.h
+    include/YamlConfigurator.h
+    include/ComponentLocator.h
+    include/XmlUtils.h
+    include/Locator.h
+    )
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
+    ${PAGED_HEADERS}
     ${OGGSOUND_HEADERS}
-    ${PAGEDGEOMETRY_HEADERS}
-    ${CONTEXT_HEADERS}
-    )
+    ${CONTEXT_HEADERS})
 
 set(BTOGRE_SOURCES
-    btogre/src/BtOgre.cpp
+    btogre/src/BtOgre.cpp)
+
+set(PAGED_SOURCES
+    pgeometry/src/GrassLoader.cpp
+    pgeometry/src/PagedGeometry.cpp
+    pgeometry/src/PropertyMaps.cpp
+    pgeometry/src/StaticBillboardSet.cpp
+    pgeometry/src/TreeLoader2D.cpp
+    pgeometry/src/TreeLoader3D.cpp
+    pgeometry/src/BatchPage.cpp
+    pgeometry/src/BatchedGeometry.cpp
     )
 
 set(OGGSOUND_SOURCES
@@ -125,76 +129,38 @@ set(OGGSOUND_SOURCES
     oggsound/src/OgreOggStaticSound.cpp
     oggsound/src/OgreOggStaticWavSound.cpp
     oggsound/src/OgreOggStreamSound.cpp
-    oggsound/src/OgreOggStreamWavSound.cpp
-    )
-
-set(PAGEDGEOMETRY_SOURCES
-    pagedgeometry/src/BatchedGeometry.cpp
-    pagedgeometry/src/BatchPage.cpp
-    pagedgeometry/src/GrassLoader.cpp
-    pagedgeometry/src/ImpostorPage.cpp
-    pagedgeometry/src/PagedGeometry.cpp
-    pagedgeometry/src/PropertyMaps.cpp
-    pagedgeometry/src/StaticBillboardSet.cpp
-    pagedgeometry/src/TreeLoader2D.cpp
-    pagedgeometry/src/TreeLoader3D.cpp
-    pagedgeometry/src/WindBatchedGeometry.cpp
-    pagedgeometry/src/WindBatchPage.cpp
-    )
+    oggsound/src/OgreOggStreamWavSound.cpp)
 
 set(CONTEXT_SOURCES
-    context/src/Application.cpp
-    context/src/AppState.cpp
-    context/src/CameraMan.cpp
-    context/src/Graphics.cpp
-    context/src/DotSceneLoaderB.cpp
-    context/src/Physics.cpp
-    context/src/StaticForest.cpp
-    context/src/Sounds.cpp
-    context/src/Manager.cpp
-    context/src/pcheader.cpp
-    context/src/Compositors.cpp
-    context/src/TerrainMaterialGeneratorB.cpp
-    context/src/Gorilla.cpp
-    context/src/GorillaOverlay.cpp
-    context/src/Utils.cpp)
+    src/Application.cpp
+    src/Renderer.cpp
+    src/DotSceneLoaderB.cpp
+    src/Physics.cpp
+    src/Field.cpp
+    src/pcheader.cpp
+    src/Compositor.cpp
+    src/TerrainMaterialGeneratorB.cpp
+    src/Gorilla.cpp
+    src/Overlay.cpp
+    src/PbrUtils.cpp
+    src/Terrain.cpp
+    src/Sound.cpp
+    src/Locator.cpp
+    src/Component.cpp)
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}
+    ${PAGED_SOURCES}
     ${OGGSOUND_SOURCES}
-    ${PAGEDGEOMETRY_SOURCES}
-    ${CONTEXT_SOURCES}
-    )
+    ${CONTEXT_SOURCES})
 
-include_directories(context-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+include_directories(xio-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 
-add_library(context-lib-static STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
-add_library(context-lib-dynamic SHARED EXCLUDE_FROM_ALL ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB} pagedgeometry/include/PagedGeometryCommon.h)
+add_library(xio-lib STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
 
-target_link_directories(context-lib-dynamic PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE)
-target_link_libraries(context-lib-dynamic PUBLIC ${CONTEXT_STATIC_DEPENDENCY_LIBS})
-
-set_target_properties(context-lib-static PROPERTIES OUTPUT_NAME "context-static")
-set_target_properties(context-lib-dynamic PROPERTIES OUTPUT_NAME "context")
-if (WIN32)
-    set_target_properties(context-lib-dynamic PROPERTIES PREFIX "")
-endif ()
-
-set(CMAKE_CXX_FLAGS ${CONTEXT_CXX_FLAGS})
-set(CMAKE_C_FLAGS ${CONTEXT_C_FLAGS})
-set(CMAKE_EXE_LINKER_FLAGS ${CONTEXT_EXE_LINKER_FLAGS})
-set(CMAKE_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS})
-set(CMAKE_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS})
+set_target_properties(xio-lib PROPERTIES OUTPUT_NAME "xio-static")
 
 if (NOT MSVC AND NOT ANDROID)
-    set_target_properties(context-lib-dynamic PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "context/include/pcheader.h")
-    set_target_properties(context-lib-static PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "context/include/pcheader.h")
-    #    cotire(context-lib-dynamic)
-    cotire(context-lib-static)
+    set_target_properties(xio-lib PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "include/pcheader.h")
+    cotire(xio-lib)
 endif ()
-
-# install(TARGETS context-lib-dynamic
-#         CONFIGURATIONS Release
-#         RUNTIME DESTINATION bin
-#         LIBRARY DESTINATION bin
-#         )

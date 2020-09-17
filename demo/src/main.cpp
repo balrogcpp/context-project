@@ -23,33 +23,22 @@ SOFTWARE.
 */
 
 #include "DemoDotAppState.h"
-#include "Context.h"
-
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <locale>
-#endif
+#include "Application.h"
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include <android_native_app_glue.h>
 #include <jni.h>
-#endif
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-#define WINAPI_MAIN_FUNC
-INT WINAPI WinMain
-(
-    _In_ HINSTANCE hInstance,
-    _In_opt_ HINSTANCE hPrevInstance,
-    _In_ LPSTR lpCmdLine,
-    _In_ int nShowCmd
-)
-#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 void android_main(struct android_app *pApp)
 #else
 int main()
 #endif
 {
-  Context::Application::Main(std::make_shared<Demo::DemoDotAppState>());
+  try {
+    xio::Application app;
+    auto state = std::make_unique<Demo::DemoDotAppState>();
+    app.Main(move(state));
+  }
+  catch (...) {
+  }
 }

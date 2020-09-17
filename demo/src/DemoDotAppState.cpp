@@ -22,61 +22,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Context.h"
-
+#include "Application.h"
 #include "DemoDotAppState.h"
-#include "AppStateManager.h"
-#include "CameraMan.h"
+#include "Camera.h"
+#include <OgreSceneLoaderManager.h>
 
 namespace Demo {
+using namespace xio;
 
-using namespace Context;
-
-DemoDotAppState::~DemoDotAppState() {
-
-}
+DemoDotAppState::DemoDotAppState() {}
+DemoDotAppState::~DemoDotAppState() {}
 
 void DemoDotAppState::KeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
-    AppStateManager::GetSingleton().GoNextState();
+    SwitchNextState(std::make_unique<DemoDotAppState>());
   }
 }
 
-void DemoDotAppState::Reset() {
+void DemoDotAppState::Clear() {
 }
 
-void DemoDotAppState::Setup() {
-//  AppStateManager::GetSingleton().SetNextState(std::make_shared<MenuAppState>());
-//  ContextManager::GetSingleton().UpdateCursorStatus({false, true, true});
+void DemoDotAppState::Loop() {
+}
 
-  Graphics::GetSingleton().GetCameraMan()->SetStyle(CameraStyle::FPS);
+void DemoDotAppState::Callback(int a, int b) {
+//  sound_->PlaySound("hit");
+  std::cout << "Bang! " << a << ' ' << b << '\n';
+}
 
-//  Context::DotSceneLoaderB::GetSingleton().load("test.scene",
-//                                              Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-//                                              ogre_scene_manager_->getRootSceneNode());
-
-  Ogre::SceneLoaderManager::getSingleton().load("test.scene",
-                                                Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-                                                ogre_scene_manager_->getRootSceneNode());
-
-  StaticForest::GetSingleton().Create();
-
-//  if (ConfigManager::GetSingleton().GetBool("sound_enable")) {
-//    auto *mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
-//
-//    mSoundManager->setResourceGroupName(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-//    mSoundManager->createSound("AmbientMusicDemo",
-//                               "22384__dobroide__20060824-forest03.ogg",
-//                               false,
-//                               true,
-//                               true,
-//                               ContextManager::GetSingleton().GetOgreScenePtr());
-//
-//    if (mSoundManager->getSound("SceneManagerInstance1")) {
-//      mSoundManager->getSound("SceneManagerInstance1")->play();
-//    }
-//  }
-
-  ogre_scene_manager_->setShadowColour(Ogre::ColourValue(0.2));
+void DemoDotAppState::Create() {
+  Load("test.scene");
+  sound_->CreateSound("ambient", "22384__dobroide__20060824-forest03.ogg", true);
+  sound_->SetVolume("ambient", 0.5);
+//  sound_->PlaySound("ambient");
+//  sound_->CreateSound("hit", "406344__basharov__glass-on-glasshit-1.wav");
+//  sound_->SetVolume("hit", 0.1);
+//  physics_->SetCallback(Callback);
 }
 }

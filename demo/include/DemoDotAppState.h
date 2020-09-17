@@ -24,23 +24,23 @@ SOFTWARE.
 
 #pragma once
 
-#include "Graphics.h"
+#include "Renderer.h"
 #include "AppState.h"
-
+#include "Field.h"
 #include <memory>
 
 namespace Demo {
 
-class DemoDotAppState : public Context::AppState {
+class DemoDotAppState : public xio::AppState {
  public:
-   DemoDotAppState() : Context::AppState() {};
-
+   DemoDotAppState();
    ~DemoDotAppState();
 
- public:
-    void Setup() final;
-    void Reset() final;
-    void KeyDown(SDL_Keycode sym) final;
-};
+    void Create() final;
+    void Clear() final;
+    void Loop() final;
 
+    void KeyDown(SDL_Keycode sym) final;
+    static void Callback(int a, int b);
+};
 }
