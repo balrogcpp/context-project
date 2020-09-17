@@ -31,6 +31,8 @@ SOFTWARE.
 #include "OgreOggSound.h"
 #include "PagedGeometry.h"
 #include "GrassLoader.h"
+#include "TreeLoader2D.h"
+#include "TreeLoader3D.h"
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>

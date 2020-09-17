@@ -61,7 +61,14 @@ set(PAGED_HEADERS
     pgeometry/include/GrassLoader.h
     pgeometry/include/PagedGeometry.h
     pgeometry/include/PropertyMaps.h
-    pgeometry/include/StaticBillboardSet.h)
+    pgeometry/include/StaticBillboardSet.h
+    pgeometry/include/TreeLoader2D.h
+    pgeometry/include/TreeLoader3D.h
+    pgeometry/include/BatchPage.h
+    pgeometry/include/BatchedGeometry.h
+    pgeometry/include/WindBatchedGeometry.h
+    pgeometry/include/WindBatchPage.h
+    )
 
 set(CONTEXT_HEADERS
     include/Application.h
@@ -113,7 +120,14 @@ set(PAGED_SOURCES
     pgeometry/src/GrassLoader.cpp
     pgeometry/src/PagedGeometry.cpp
     pgeometry/src/PropertyMaps.cpp
-    pgeometry/src/StaticBillboardSet.cpp)
+    pgeometry/src/StaticBillboardSet.cpp
+    pgeometry/src/TreeLoader2D.cpp
+    pgeometry/src/TreeLoader3D.cpp
+    pgeometry/src/BatchPage.cpp
+    pgeometry/src/BatchedGeometry.cpp
+    pgeometry/src/WindBatchedGeometry.cpp
+    pgeometry/src/WindBatchPage.cpp
+    )
 
 set(OGGSOUND_SOURCES
     oggsound/src/OgreOggISound.cpp

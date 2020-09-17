@@ -36,10 +36,7 @@ class Field final : public Component {
   void Clean() final {}
   void Loop(float time) final {}
 
-  void GenerateGrass();
-
  private:
-  void CreateGrassMesh_(float heigh);
   Ogre::StaticGeometry *mField = nullptr;
   static std::function<float(float, float)> heigh_func_;
  public:
