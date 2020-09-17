@@ -78,7 +78,7 @@ class DensityMap {
   video card until you call PagedGeometry::reloadGeometry(). If you don't, the grass you see
   will remain unchanged. */
   Ogre::PixelBox getPixelBox() {
-    assert(pixels);
+    OgreAssert((pixels), R"(pixels)");
     return *pixels;
   }
 
@@ -149,7 +149,7 @@ class ColorMap {
   video card until you call PagedGeometry::reloadGeometry(). If you don't, the grass you see
   will remain unchanged. */
   Ogre::PixelBox getPixelBox() {
-    assert(pixels);
+    OgreAssert((pixels), R"(pixels)");
     return *pixels;
   }
 

@@ -135,7 +135,7 @@ void Physics::CreateTerrainHeightfieldShape(int size,
                                             const float &scale) {
   // Convert height data in a format suitable for the physics engine
   auto *terrainHeights = new float[size * size];
-  assert(terrainHeights != 0);
+  OgreAssert((terrainHeights != 0), R"(terrainHeights != 0)");
 
   for (int i = 0; i < size; i++) {
     memcpy(terrainHeights + size * i, data + size * (size - i - 1), sizeof(float) * size);

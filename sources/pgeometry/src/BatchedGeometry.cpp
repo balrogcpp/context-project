@@ -61,7 +61,7 @@ BatchedGeometry::BatchedGeometry(Ogre::SceneManager *mgr, Ogre::SceneNode *rootS
     m_Built(false),
     m_vecCenter(Ogre::Vector3::ZERO),
     m_BoundsUndefined(true) {
-  assert(rootSceneNode);
+  OgreAssert((rootSceneNode), R"(rootSceneNode)");
 }
 
 //-----------------------------------------------------------------------------
@@ -362,7 +362,7 @@ void BatchedGeometry::clear() {
 //-----------------------------------------------------------------------------
 ///
 void BatchedGeometry::_updateRenderQueue(RenderQueue *queue) {
-  assert(isVisible() && "Ogre core code must detect that this MovableObject invisible");
+  OgreAssert((isVisible() && "Ogre core code must detect that this MovableObject invisible"), R"(isVisible() && "Ogre core code must detect that this MovableObject invisible")");
 
   // SVA speed up adding
   Ogre::RenderQueueGroup *rqg = queue->getQueueGroup(getRenderQueueGroup());
@@ -427,7 +427,7 @@ BatchedGeometry::SubBatch::SubBatch(BatchedGeometry *parent, SubEntity *ent) :
     m_RequireVertexColors(false),
     m_pSubMesh(0),
     m_pParentGeom(parent) {
-  assert(ent);
+  OgreAssert((ent), R"(ent)");
   m_pSubMesh = ent->getSubMesh();
 
   const Ogre::MaterialPtr &parentMaterial = ent->getMaterial();
@@ -489,7 +489,7 @@ BatchedGeometry::SubBatch::~SubBatch() {
 void BatchedGeometry::SubBatch::addSubEntity(SubEntity *ent, const Vector3 &position,
                                              const Quaternion &orientation, const Vector3 &scale,
                                              const Ogre::ColourValue &color, void *userData) {
-  assert(!m_Built);
+  OgreAssert((!m_Built), R"(!m_Built)");
 
   //Add this submesh to the queue
   QueuedMesh newMesh(ent->getSubMesh(), position, orientation, scale, color, userData);
@@ -515,7 +515,7 @@ void BatchedGeometry::SubBatch::addSubEntity(SubEntity *ent, const Vector3 &posi
 //-----------------------------------------------------------------------------
 ///
 void BatchedGeometry::SubBatch::build() {
-  assert(!m_Built);
+  OgreAssert((!m_Built), R"(!m_Built)");
 
   HardwareIndexBuffer::IndexType srcIndexType = m_pSubMesh->indexData->indexBuffer->getType();
   HardwareIndexBuffer::IndexType destIndexType =                             // type of index buffer

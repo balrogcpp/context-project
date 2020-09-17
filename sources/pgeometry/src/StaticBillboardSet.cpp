@@ -63,7 +63,7 @@ StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNo
     mBBOrigin(BBO_CENTER),
     mFadeVisibleDist(0.f),
     mFadeInvisibleDist(0.f) {
-  assert(rootSceneNode);
+  OgreAssert((rootSceneNode), R"(rootSceneNode)");
 
   //Fall back to BB_METHOD_COMPATIBLE if vertex shaders are not available
   if (method == BB_METHOD_ACCELERATED) {
@@ -161,7 +161,7 @@ StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNo
           vertexShader->setParameter("profiles", "vs_1_1 arbvp1");
           vertexShader->setParameter("entry_point", "Sprite_vp");
         } else {
-          assert(false && "Unknown shader language");
+          OgreAssert((false && "Unknown shader language"), R"(false && "Unknown shader language")");
         }
       }
 
@@ -541,7 +541,7 @@ void StaticBillboardSet::setMaterial(const String &materialName, const Ogre::Str
   if (mRenderMethod == BB_METHOD_ACCELERATED) {
     //Update material reference list
     if (mFadeEnabled) {
-      assert(mPtrFadeMaterial);
+      OgreAssert((mPtrFadeMaterial), R"(mPtrFadeMaterial)");
       SBMaterialRef::removeMaterialRef(mPtrFadeMaterial);
     } else if (mPtrMaterial)
       SBMaterialRef::removeMaterialRef(mPtrMaterial);
@@ -578,10 +578,10 @@ void StaticBillboardSet::setFade(bool enabled, Real visibleDist, Real invisibleD
 
       //Update material reference list
       if (mFadeEnabled) {
-        assert(mPtrFadeMaterial);
+        OgreAssert((mPtrFadeMaterial), R"(mPtrFadeMaterial)");
         SBMaterialRef::removeMaterialRef(mPtrFadeMaterial);
       } else {
-        assert(mPtrMaterial);
+        OgreAssert((mPtrMaterial), R"(mPtrMaterial)");
         SBMaterialRef::removeMaterialRef(mPtrMaterial);
       }
 
@@ -599,8 +599,8 @@ void StaticBillboardSet::setFade(bool enabled, Real visibleDist, Real invisibleD
     {
       if (mFadeEnabled) {
         //Update material reference list
-        assert(mPtrFadeMaterial);
-        assert(mPtrMaterial);
+        OgreAssert((mPtrFadeMaterial), R"(mPtrFadeMaterial)");
+        OgreAssert((mPtrMaterial), R"(mPtrMaterial)");
         SBMaterialRef::removeMaterialRef(mPtrFadeMaterial);
         SBMaterialRef::addMaterialRef(mPtrMaterial, mBBOrigin);
 
@@ -619,7 +619,7 @@ void StaticBillboardSet::setFade(bool enabled, Real visibleDist, Real invisibleD
 //-----------------------------------------------------------------------------
 ///
 void StaticBillboardSet::setTextureStacksAndSlices(Ogre::uint16 stacks, Ogre::uint16 slices) {
-  assert(stacks != 0 && slices != 0 && "division by zero");
+  OgreAssert((stacks != 0 && slices != 0 && "division by zero"), R"(stacks != 0 && slices != 0 && "division by zero")");
   mfUFactor = 1.0f / slices;
   mfVFactor = 1.0f / stacks;
 }
@@ -628,7 +628,7 @@ void StaticBillboardSet::setTextureStacksAndSlices(Ogre::uint16 stacks, Ogre::ui
 ///
 MaterialPtr StaticBillboardSet::getFadeMaterial(const Ogre::MaterialPtr &protoMaterial,
                                                 Real visibleDist_, Real invisibleDist_) {
-  assert(protoMaterial);
+  OgreAssert((protoMaterial), R"(protoMaterial)");
 
   Ogre::StringStream materialSignature;
   materialSignature << mEntityName << "|";

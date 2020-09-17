@@ -575,7 +575,7 @@ void OgreOggStreamWavSound::_dequeue() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamWavSound::_pauseImpl() {
-  assert(mState != SS_DESTROYED);
+  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
 
   if (mSource == AL_NONE) return;
 
@@ -587,7 +587,7 @@ void OgreOggStreamWavSound::_pauseImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamWavSound::_playImpl() {
-  assert(mState != SS_DESTROYED);
+  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
 
   if (isPlaying()) return;
 
@@ -669,7 +669,7 @@ void OgreOggStreamWavSound::_updatePlayPosition() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamWavSound::_stopImpl() {
-  assert(mState != SS_DESTROYED);
+  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
 
   if (mSource != AL_NONE) {
     // Remove audio data from source

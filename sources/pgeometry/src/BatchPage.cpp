@@ -39,7 +39,7 @@ BatchPage::BatchPage() :
 //-----------------------------------------------------------------------------
 ///
 void BatchPage::init(PagedGeometry *geom_, const Any &data) {
-  assert(geom_ && "Can any code set null pointer?");
+  OgreAssert((geom_ && "Can any code set null pointer?"), R"(geom_ && "Can any code set null pointer?")");
 
   int datacast = data.has_value() ? Ogre::any_cast<int>(data) : 0;
 #ifdef _DEBUG

@@ -386,7 +386,7 @@ void OgreOggStaticWavSound::setSource(ALuint &src) {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStaticWavSound::_pauseImpl() {
-  assert(mState != SS_DESTROYED);
+  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
 
   if (mSource == AL_NONE) return;
 
@@ -398,7 +398,7 @@ void OgreOggStaticWavSound::_pauseImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStaticWavSound::_playImpl() {
-  assert(mState != SS_DESTROYED);
+  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
 
   if (isPlaying())
     return;
@@ -419,7 +419,7 @@ void OgreOggStaticWavSound::_playImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStaticWavSound::_stopImpl() {
-  assert(mState != SS_DESTROYED);
+  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
 
   if (mSource == AL_NONE) return;
 

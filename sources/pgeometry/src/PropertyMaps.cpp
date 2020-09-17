@@ -59,7 +59,7 @@ void DensityMap::unload() {
 }
 
 DensityMap::~DensityMap() {
-  assert(pixels);
+  OgreAssert((pixels), R"(pixels)");
   delete[] static_cast<uint8 *>(pixels->data);
   delete pixels;
 
@@ -68,7 +68,7 @@ DensityMap::~DensityMap() {
 }
 
 DensityMap::DensityMap(TexturePtr map, MapChannel channel) {
-  assert(map.isNull() == false);
+  OgreAssert((map.isNull() == false), R"(map.isNull() == false)");
   filter = MAPFILTER_BILINEAR;
 
   //Add self to selfList
@@ -125,7 +125,7 @@ DensityMap::DensityMap(TexturePtr map, MapChannel channel) {
 //Returns the density map value at the given location
 //Make sure a density map exists before calling this.
 Ogre::Real DensityMap::_getDensityAt_Unfiltered(Ogre::Real x, Ogre::Real z, const TRect<Real> &mapBounds) {
-  assert(pixels);
+  OgreAssert((pixels), R"(pixels)");
 
   // Early out if the coordinates are outside map bounds.
   if (x < mapBounds.left || x >= mapBounds.right || z < mapBounds.top || z >= mapBounds.bottom)
@@ -151,7 +151,7 @@ Ogre::Real DensityMap::_getDensityAt_Unfiltered(Ogre::Real x, Ogre::Real z, cons
 //Returns the density map value at the given location with bilinear filtering
 //Make sure a density map exists before calling this.
 Ogre::Real DensityMap::_getDensityAt_Bilinear(Ogre::Real x, Ogre::Real z, const TRect<Ogre::Real> &mapBounds) {
-  assert(pixels);
+  OgreAssert((pixels), R"(pixels)");
 
   // Early out if the coordinates are outside map bounds.
   if (x < mapBounds.left || x >= mapBounds.right || z < mapBounds.top || z >= mapBounds.bottom)
@@ -231,7 +231,7 @@ void ColorMap::unload() {
 }
 
 ColorMap::~ColorMap() {
-  assert(pixels);
+  OgreAssert((pixels), R"(pixels)");
   delete[] static_cast<uint8 *>(pixels->data);
   delete pixels;
 
@@ -240,7 +240,7 @@ ColorMap::~ColorMap() {
 }
 
 ColorMap::ColorMap(TexturePtr map, MapChannel channel) {
-  assert(map.isNull() == false);
+  OgreAssert((map.isNull() == false), R"(map.isNull() == false)");
   filter = MAPFILTER_BILINEAR;
 
   //Add self to selfList
@@ -317,7 +317,7 @@ ColorMap::ColorMap(TexturePtr map, MapChannel channel) {
 
 //Returns the color map value at the given location
 uint32 ColorMap::_getColorAt(Ogre::Real x, Ogre::Real z, const TRect<Real> &mapBounds) {
-  assert(pixels);
+  OgreAssert((pixels), R"(pixels)");
 
   // Early out if the coordinates are outside map bounds.
   if (x < mapBounds.left || x >= mapBounds.right || z < mapBounds.top || z >= mapBounds.bottom) {
@@ -354,7 +354,7 @@ uint32 ColorMap::_interpolateColor(uint32 color1, uint32 color2, Ogre::Real rati
 }
 
 uint32 ColorMap::_getColorAt_Bilinear(Ogre::Real x, Ogre::Real z, const TRect<Real> &mapBounds) {
-  assert(pixels);
+  OgreAssert((pixels), R"(pixels)");
 
   // Early out if the coordinates are outside map bounds.
   if (x < mapBounds.left || x >= mapBounds.right || z < mapBounds.top || z >= mapBounds.bottom) {

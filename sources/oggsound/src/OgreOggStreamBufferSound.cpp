@@ -117,7 +117,7 @@ void OgreOggStreamBufferSound::insertData(char *data, size_t dataLen, bool start
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamBufferSound::_pauseImpl() {
-  assert(mState != SS_DESTROYED);
+  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
 
   if (mSource == AL_NONE) return;
 
@@ -130,7 +130,7 @@ void OgreOggStreamBufferSound::_pauseImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamBufferSound::_playImpl() {
-  assert(mState != SS_DESTROYED);
+  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
 
   if (isPlaying())
     return;
@@ -148,7 +148,7 @@ void OgreOggStreamBufferSound::_playImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamBufferSound::_stopImpl() {
-  assert(mState != SS_DESTROYED);
+  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
 
   if (mSource == AL_NONE || isStopped()) return;
 
