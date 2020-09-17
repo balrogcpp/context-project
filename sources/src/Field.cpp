@@ -47,7 +47,7 @@ void Field::Create() {
   UpdatePbrParams("GrassCustom");
   UpdatePbrShadowReceiver("GrassCustom");
   GrassLayer *layer = grassLoader->addLayer("GrassCustom");
-  layer->setFadeTechnique(FADETECH_GROW);
+  layer->setFadeTechnique(FADETECH_ALPHAGROW);
   layer->setRenderTechnique(GRASSTECH_CROSSQUADS);
   layer->setMinimumSize(2.0f, 2.0f);
   layer->setAnimationEnabled(true);

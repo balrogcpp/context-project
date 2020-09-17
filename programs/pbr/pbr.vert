@@ -81,7 +81,11 @@ out vec2 vUV0;
 
 #ifndef SHADOWCASTER
 uniform mat4 uModelMatrix;
-
+uniform vec3 uCameraPosition;
+#ifdef FADE
+uniform float fadeRange;
+#endif
+uniform float uTime;
 #ifdef HAS_UV
 in vec2 uv0;
 #endif
@@ -95,21 +99,16 @@ in vec4 normal;
 in vec4 tangent;
 #endif
 
-uniform float uLightCount;
-uniform vec3 uCameraPosition;
 
 #define MAX_LIGHTS 5
+#define MAX_SHADOWS 1
 
 #ifdef SHADOWRECEIVER
-uniform float uLightCastsShadowsArray[MAX_LIGHTS];
-uniform mat4 uTexWorldViewProjMatrixArray[3 * MAX_LIGHTS];
-out vec4 lightSpacePosArray[3 * MAX_LIGHTS];
+uniform float uLightCastsShadowsArray[MAX_SHADOWS];
+uniform mat4 uTexWorldViewProjMatrixArray[3 * MAX_SHADOWS];
+out vec4 lightSpacePosArray[3 * MAX_SHADOWS];
 #endif
 
-#ifdef FADE
-uniform float fadeRange;
-#endif
-uniform float uTime;
 
 out vec3 vPosition;
 out vec3 vColor;
@@ -145,7 +144,7 @@ if (uv0.y == 0.0)
 
 #ifndef SHADOWCASTER
   vColor = colour.rgb;
-  vec4 pos = uModelMatrix * position;
+  vec4 pos = uModelMatrix * mypos;
   vPosition = vec3(pos.xyz) / pos.w;
 
 #ifdef HAS_NORMALS
@@ -159,24 +158,21 @@ if (uv0.y == 0.0)
 #endif
 #else
 #endif
-
 #ifdef HAS_UV
   vUV0.xy = uv0;
 #else
   vUV0.xy = vec2(0.0);
 #endif
 #ifdef FADE
-  float dist = (uMVPMatrix * mypos).z;
+  float dist = distance(uCameraPosition.xz, vPosition.xz);
   vUV0.w = 2.0f - (2.0f * dist * fadeRange);
   float offset = (2.0f * dist * fadeRange) - 1.0f;
   mypos.y -= 2.0f * clamp(offset, 0, 1);
-#else
-  vUV0.w = 1.0;
 #endif
 
 #ifdef SHADOWRECEIVER
 // Calculate the position of vertex in light space
-for (int i = 0; i < int(MAX_LIGHTS);  i += 3) {
+for (int i = 0; i < int(3 * MAX_SHADOWS);  i += 3) {
   lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * mypos;
   lightSpacePosArray[i + 1] = uTexWorldViewProjMatrixArray[i + 1] * mypos;
   lightSpacePosArray[i + 2] = uTexWorldViewProjMatrixArray[i + 2] * mypos;

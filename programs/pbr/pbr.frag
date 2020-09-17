@@ -85,6 +85,7 @@ out vec4 gl_FragColor;
 #endif
 
 #define MAX_LIGHTS 5
+#define MAX_SHADOWS 1
 
 #ifdef SHADOWCASTER_ALPHA
 in vec2 vUV0;
@@ -154,7 +155,7 @@ uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
 uniform vec4 pssmSplitPoints;
 uniform float uShadowColour;
-in vec4 lightSpacePosArray[3 * MAX_LIGHTS];
+in vec4 lightSpacePosArray[3 * MAX_SHADOWS];
 #endif
 
 in vec3 vPosition;
@@ -825,7 +826,7 @@ void main()
     float depth = gl_FragCoord.z;
     gl_FragColor = vec4(depth, depth * depth, 0.0, 1.0);
 #else
-    const float offset = 0.001;
+    const float offset = 0.000;
     gl_FragColor = vec4(gl_FragCoord.z - offset, 0.0, 0.0, 1.0);
 #endif
 #endif //SHADOWCASTER

@@ -92,11 +92,10 @@ void UpdatePbrParams(MaterialPtr material) {
 
     AddGpuConstParameterAuto(vert_params, "uMVPMatrix", GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
     AddGpuConstParameterAuto(vert_params, "uModelMatrix", GpuProgramParameters::ACT_WORLD_MATRIX);
-    AddGpuConstParameterAuto(vert_params, "uLightCount", GpuProgramParameters::ACT_LIGHT_COUNT);
-    AddGpuConstParameterAuto(vert_params, "uCameraPosition;", GpuProgramParameters::ACT_CAMERA_POSITION);
+    AddGpuConstParameterAuto(vert_params, "uCameraPosition", GpuProgramParameters::ACT_CAMERA_POSITION);
 
     if (constants.map.count("fadeRange") > 0)
-      AddGpuConstParameter(vert_params, "fadeRange", 1.0f / 100.0f);
+      AddGpuConstParameter(vert_params, "fadeRange", 1.0f / 200.0f);
 
     if (constants.map.count("uTime") > 0)
       vert_params->setNamedConstantFromTime("uTime", 1);
