@@ -32,10 +32,6 @@ endif ()
 
 include(ExternalProject)
 
-find_package(OpenMP REQUIRED)
-if (NOT ANDROID)
-    find_package(OpenGL REQUIRED)
-endif ()
 find_package(Git REQUIRED)
 
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
