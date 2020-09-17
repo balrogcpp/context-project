@@ -37,7 +37,6 @@ class Field final : public Component {
   void Loop(float time) final {}
 
  private:
-  Ogre::StaticGeometry *mField = nullptr;
   static std::function<float(float, float)> heigh_func_;
  public:
   static void SetHeighFunc(const std::function<float(float, float)> &heigh_func) {

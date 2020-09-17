@@ -96,6 +96,7 @@ in vec4 tangent;
 #endif
 
 uniform float uLightCount;
+uniform vec3 uCameraPosition;
 
 #define MAX_LIGHTS 5
 
@@ -164,6 +165,12 @@ if (uv0.y == 0.0)
 #else
   vUV0.xy = vec2(0.0);
 #endif
+#ifdef FADE
+  float dist = (uMVPMatrix * mypos).z;
+  vUV0.w = 2.0f - (2.0f * dist * fadeRange);
+  float offset = (2.0f * dist * fadeRange) - 1.0f;
+  mypos.y -= 2.0f * clamp(offset, 0, 1);
+#endif
 
 #ifdef SHADOWRECEIVER
 // Calculate the position of vertex in light space
@@ -184,7 +191,6 @@ for (int i = 0; i < int(MAX_LIGHTS);  i += 3) {
                         0.5, 0.5, 0.5, 1.0);
   projectionCoord = scalemat * gl_Position;
 #endif
-
 #else //SHADOWCASTER
 
 #ifdef SHADOWCASTER_ALPHA
@@ -193,8 +199,4 @@ for (int i = 0; i < int(MAX_LIGHTS);  i += 3) {
 
   gl_Position = uMVPMatrix * mypos;
 #endif //SHADOWCASTER
-
-#ifdef FADE
-  vUV0.w = 1.0 - clamp(gl_Position.z * fadeRange, 0.0, 1.0);
-#endif
 }

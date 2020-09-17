@@ -25,7 +25,6 @@ SOFTWARE.
 #pragma once
 
 namespace xio {
-
 class NoCopy {
  public:
   NoCopy() = default;

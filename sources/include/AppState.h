@@ -39,11 +39,11 @@ class AppState
 //----------------------------------------------------------------------------------------------------------------------
   void SwitchNextState(std::unique_ptr<AppState> &&app_state) {
     next_ = std::move(app_state);
-    waiting_ = true;
+    dirty_ = true;
   }
 //----------------------------------------------------------------------------------------------------------------------
   std::unique_ptr<AppState> &&GetNextState() {
-    waiting_ = false;
+    dirty_ = false;
     return move(next_);
   }
 //----------------------------------------------------------------------------------------------------------------------
@@ -59,11 +59,11 @@ class AppState
   virtual void Loop() = 0;
 
   bool Waiting() {
-    return waiting_;
+    return dirty_;
   }
 
  protected:
   std::unique_ptr<AppState> next_;
-  bool waiting_ = false;
+  bool dirty_ = false;
 };
 }
