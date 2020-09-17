@@ -23,7 +23,7 @@
 FROM balrogcpp/xio-dependencies:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/xio-demo
+ARG CONTEXT_HOME=/mnt/xio
 WORKDIR ${CONTEXT_HOME}
 
 ADD sources ./sources

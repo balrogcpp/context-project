@@ -37,8 +37,6 @@ if (NOT ANDROID)
     find_package(OpenGL REQUIRED)
 endif ()
 find_package(Git REQUIRED)
-find_package(Subversion)
-find_package(Hg)
 
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 

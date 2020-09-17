@@ -23,14 +23,15 @@
 FROM balrogcpp/gcc-mingw-x86_64:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/xio-demo
+ARG CONTEXT_HOME=/mnt/xio
 WORKDIR ${CONTEXT_HOME}
 
 ADD ./thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
 ADD CMakeLists.txt .
 ADD ./CMake ./CMake
 
-RUN apt-get install -y git ninja-build libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
+RUN apt-get update && apt-get install -y git gnutls-bin ninja-build libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
+    && git config --global http.postBuffer 1048576000 \
     && mkdir -p ./build-windows ./build-linux \
     && cd ${CONTEXT_HOME}/build-linux \
     && cmake -DCONTEXT_ONLY_DEPS=true -G Ninja .. \

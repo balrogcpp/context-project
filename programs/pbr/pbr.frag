@@ -215,7 +215,7 @@ float ESM(float depth, float compare){
     }
 }
 #endif
-
+#ifdef SHADOWRECEIVER_PCF
 vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
 {
     const float GoldenAngle = 2.4;
@@ -271,7 +271,7 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
         return 0.0f;
     }
 }
-
+#endif
 #ifndef SHADOWRECEIVER_PCF
 // Returns a random number based on a vec3 and an int.
 float random(vec3 seed, int i)
@@ -825,8 +825,8 @@ void main()
     float depth = gl_FragCoord.z;
     gl_FragColor = vec4(depth, depth * depth, 0.0, 1.0);
 #else
-    float depth = gl_FragCoord.z - 0.001;
-    gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
+    const float offset = 0.001;
+    gl_FragColor = vec4(gl_FragCoord.z - offset, 0.0, 0.0, 1.0);
 #endif
 #endif //SHADOWCASTER
 }

@@ -170,6 +170,8 @@ if (uv0.y == 0.0)
   vUV0.w = 2.0f - (2.0f * dist * fadeRange);
   float offset = (2.0f * dist * fadeRange) - 1.0f;
   mypos.y -= 2.0f * clamp(offset, 0, 1);
+#else
+  vUV0.w = 1.0;
 #endif
 
 #ifdef SHADOWRECEIVER
