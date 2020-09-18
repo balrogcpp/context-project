@@ -31,8 +31,6 @@ ARG MINGW_VERSION=7.0.0
 ARG GCC_VERSION=10.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
 WORKDIR /mnt
-ARG CMAKE_VERSION=3.18.1
-ARG CMAKE_HOME=/opt/cmake
 
 RUN apt-get update \
     && apt-get install -y g++ gcc make autoconf libssl1.1 wget ca-certificates zlib1g-dev libssl-dev libgmp-dev libmpfr-dev \
@@ -41,8 +39,6 @@ RUN apt-get update \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
     && wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
-    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
-               -O /tmp/cmake-install.sh \
     && mkdir -p ${MINGW}/include ${MINGW}/lib/pkgconfig \
     && cd pkg-config-${PKG_CONFIG_VERSION} \
     && ./configure \
@@ -170,10 +166,6 @@ RUN apt-get update \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 10000 \
         --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++ \
     && update-alternatives --install /usr/bin/mingw32-gcc mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc 10000 \
-        --slave /usr/bin/mingw32-g++ mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++ \
-    && chmod u+x /tmp/cmake-install.sh \
-    && mkdir /opt/cmake \
-    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
-    && rm /tmp/cmake-install.sh
+        --slave /usr/bin/mingw32-g++ mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++
 
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"

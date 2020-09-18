@@ -30,7 +30,7 @@ ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 ADD CMakeLists.txt .
 ADD ./CMake ./CMake
 
-RUN apt-get update && apt-get install -y git gnutls-bin ninja-build libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
+RUN apt-get update && apt-get install -y git gnutls-bin cmake ninja-build libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
     && git config --global http.postBuffer 1048576000 \
     && mkdir -p ./build-windows ./build-linux \
     && cd ${CONTEXT_HOME}/build-linux \

@@ -39,8 +39,6 @@
 #include <rapidjson/istreamwrapper.h>
 #include <pugixml.hpp>
 #include <yaml-cpp/yaml.h>
-#include <angelscript.h>
-#include <lua.hpp>
 #include <string>
 #include <iostream>
 #include <fstream>
