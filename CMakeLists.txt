@@ -371,9 +371,13 @@ set(CONTEXT_THIRDPARTY_DIR ${CONTEXT_THIRDPARTY_ROOT} CACHE PATH "")
 add_subdirectory(${CONTEXT_ROOT_DIR}/thirdparty ${CONTEXT_WORK_DIR}/thirdparty)
 
 if (NOT CONTEXT_ONLY_DEPS)
-    include(GetGitRevisionDescription)
+    execute_process(
+            COMMAND git log -1 --format=%h
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_VARIABLE GIT_SHA1
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
 
-    get_git_head_revision(GIT_REFSPEC GIT_SHA1)
     set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
     set(CONTEXT_ZIP_NAME ContextProjectDemo-${CMAKE_BUILD_TYPE}-${GIT_SHA1} CACHE PATH "")
     set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
