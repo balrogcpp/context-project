@@ -1,4 +1,4 @@
-/thirdparty/external/
+/dependencies/external/
 /cmake-build-debug/
 /cmake-build-release/
 /cmake-build-relwithdebinfo/

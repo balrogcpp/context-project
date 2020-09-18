@@ -347,7 +347,7 @@ set(CONTEXT_INCLUDE_DIR ${CONTEXT_SOURCE_DIR}/include CACHE PATH "")
 set(CONTEXT_THIRDPARTY_ROOT ${CONTEXT_ROOT_DIR}/sources CACHE PATH "")
 set(CONTEXT_THIRDPARTY_DIR ${CONTEXT_THIRDPARTY_ROOT} CACHE PATH "")
 
-add_subdirectory(${CONTEXT_ROOT_DIR}/thirdparty ${CONTEXT_WORK_DIR}/thirdparty)
+add_subdirectory(${CONTEXT_ROOT_DIR}/dependencies ${CONTEXT_WORK_DIR}/dependencies)
 
 if (NOT CONTEXT_ONLY_DEPS)
     execute_process(

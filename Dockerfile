@@ -37,7 +37,7 @@ ADD android ./android
 ADD programs ./programs
 ADD scenes ./scenes
 ADD CMakeLists.txt .
-ADD thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
+ADD dependencies ./dependencies/CMakeLists.txt
 ADD .git ./.git
 
 RUN mkdir -p ./build-windows && mkdir -p ./build-linux && \
