@@ -400,6 +400,9 @@ if (NOT CONTEXT_ONLY_DEPS)
     list(APPEND CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 
     add_dependencies(xio-demo xio-lib)
+    if (${CMAKE_BUILD_TYPE} STREQUAL Release)
+        add_dependencies(xio-demo zip-deps)
+    endif ()
 
     add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
 
@@ -413,47 +416,12 @@ if (NOT CONTEXT_ONLY_DEPS)
         file(GLOB EXTERNAL_DLL_GLOB ${EXTERNAL_DLL_LOCATION}/*dll)
     endif ()
 
-    set(CONTEXT_PROGRAMS_DIR ${CMAKE_SOURCE_DIR}/programs)
-    set(CONTEXT_SCENES_DIR ${CMAKE_SOURCE_DIR}/scenes)
-    set(CONTEXT_TEMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
-
-    macro(subdirlist result curdir)
-        file(GLOB children RELATIVE ${curdir}/*)
-        set(dirlist "")
-        foreach (child ${children})
-            if (IS_DIRECTORY ${curdir}/${child})
-                list(APPEND dirlist ${child})
-            endif ()
-        endforeach ()
-        set(${result} ${dirlist})
-    endmacro()
-
-    macro(zipdirlist curdir destination)
-        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CONTEXT_TEMP_DIR}/${destination})
-        file(GLOB children RELATIVE ${curdir} ${curdir}/*)
-        set(dirlist "")
-        foreach (child ${children})
-            set(filelist "")
-            if (IS_DIRECTORY ${curdir}/${child})
-                file(GLOB children2 RELATIVE ${curdir}/${child} ${curdir}/${child}/*)
-                foreach (child2 ${children2})
-                    if (NOT IS_DIRECTORY ${curdir}/${child}/${child2})
-                        list(APPEND filelist ${child2})
-                    endif ()
-                endforeach ()
-                list(APPEND dirlist ${child})
-                execute_process(COMMAND ${CMAKE_COMMAND} -E chdir "${curdir}/${child}/" ${CMAKE_COMMAND} -E tar "cf" "${CONTEXT_TEMP_DIR}/${destination}/${child}.zip" --format=zip ${filelist})
-            endif ()
-        endforeach ()
-    endmacro()
-
-    macro(copydirlist curdir destination)
-        execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CONTEXT_TEMP_DIR}/${destination})
-        execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${curdir} ${CONTEXT_TEMP_DIR}/${destination})
-    endmacro()
-
-    zipdirlist(${CONTEXT_PROGRAMS_DIR} programs)
-    zipdirlist(${CONTEXT_SCENES_DIR} scenes)
+    add_custom_target(zip-deps
+                      COMMAND ${CMAKE_COMMAND} -DCMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR} -P CMake/zipdir.cmake
+                      WORKING_DIRECTORY ${CONTEXT_ROOT_DIR}
+                      COMMENT "Zipping dependencies..."
+                      VERBATIM
+                      )
 
     install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
             CONFIGURATIONS Release
@@ -490,27 +458,11 @@ if (NOT CONTEXT_ONLY_DEPS)
     set(CPACK_NSIS_MENU_LINKS "xio-demo.exe" "ContextProjectDemo")
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL true)
 
-    if (UNIX)
-        set(CPACK_GENERATOR "TGZ")
-    elseif (WIN32 OR MINGW)
-        set(CPACK_GENERATOR "ZIP" "NSIS")
+    if (WIN32 OR MINGW)
+        set(CPACK_GENERATOR "NSIS")
     endif ()
 
     include(CPack)
-
-    add_custom_target(xio-package
-                      COMMAND ${CMAKE_COMMAND} --build . --target package
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/..
-                      COMMENT "Creating packages..."
-                      VERBATIM
-                      )
-
-    add_custom_target(xio-install
-                      COMMAND ${CMAKE_COMMAND} --build . --target install
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/..
-                      COMMENT "Installing..."
-                      VERBATIM
-                      )
 
     add_custom_target(xio-zip
                       COMMAND ${CMAKE_COMMAND} -E tar cf ${CONTEXT_ZIP_NAME}.zip --format=zip ${CONTEXT_ZIP_NAME}
@@ -518,6 +470,7 @@ if (NOT CONTEXT_ONLY_DEPS)
                       COMMENT "Create zip..."
                       VERBATIM
                       )
+    add_dependencies(xio-zip install)
 
     add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
 endif ()
