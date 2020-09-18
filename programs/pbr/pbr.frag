@@ -1,26 +1,24 @@
-/*
-MIT License
-
-Copyright (c) 2020 Andrey Vasiliev
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+//MIT License
+//
+//Copyright (c) 2020 Andrey Vasiliev
+//
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+//
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+//
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
 
 // The MIT License
 // Copyright (c) 2016-2017 Mohamad Moneimne and Contributors
@@ -83,21 +81,21 @@ precision highp float;
 out vec4 gl_FragColor;
 #endif
 #endif
+#define SHADOWRECEIVER_PCF
+#undef SHADOWRECEIVER_VSM
+#undef SHADOWRECEIVER_ESM
 
 #define MAX_LIGHTS 5
 #define MAX_SHADOWS 1
-
 #ifdef SHADOWCASTER_ALPHA
 in vec2 vUV0;
 uniform sampler2D uBaseColorSampler;
 #endif
-
 #ifndef SHADOWCASTER
 in vec4 vUV0;
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D uBaseColorSampler;
 #endif
-
 uniform float uAlphaRejection;
 uniform vec3 uSurfaceAmbientColour;
 uniform vec4 uSurfaceDiffuseColour;
@@ -117,13 +115,11 @@ uniform float uLightCastsShadowsArray[MAX_LIGHTS];
 uniform vec3 uFogColour;
 uniform vec4 uFogParams;
 uniform vec3 uCameraPosition;
-
 #ifdef USE_IBL
 uniform samplerCube uDiffuseEnvSampler;
 uniform samplerCube uSpecularEnvSampler;
 uniform sampler2D ubrdfLUT;
 #endif
-
 #ifdef TERRAIN_GLOBAL_NORMALMAP
 uniform sampler2D uGlobalNormalSampler;
 #endif
@@ -148,7 +144,6 @@ uniform sampler2D uOcclusionSampler;
 #ifdef HAS_SEPARATE_PARALLAXMAP
 uniform sampler2D uOffsetSampler;
 #endif
-
 #ifdef SHADOWRECEIVER
 uniform sampler2D shadowMap0;
 uniform sampler2D shadowMap1;
@@ -157,10 +152,8 @@ uniform vec4 pssmSplitPoints;
 uniform float uShadowColour;
 in vec4 lightSpacePosArray[3 * MAX_SHADOWS];
 #endif
-
 in vec3 vPosition;
 in vec3 vColor;
-
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 in mat3 vTBN;
@@ -173,10 +166,6 @@ uniform sampler2D uReflectionMap;
 uniform sampler2D uNoiseMap;
 in vec4 projectionCoord;
 #endif
-
-#define SHADOWRECEIVER_PCF
-#undef SHADOWRECEIVER_VSM
-#undef SHADOWRECEIVER_ESM
 
 #ifdef SHADOWRECEIVER
 #ifdef SHADOWRECEIVER_VSM

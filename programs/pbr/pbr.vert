@@ -1,26 +1,24 @@
-/*
-MIT License
-
-Copyright (c) 2020 Andrey Vasiliev
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+//MIT License
+//
+//Copyright (c) 2020 Andrey Vasiliev
+//
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+//
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+//
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
 
 // The MIT License
 // Copyright (c) 2016-2017 Mohamad Moneimne and Contributors
@@ -70,15 +68,16 @@ precision highp float;
 #endif
 #endif
 
+#define MAX_LIGHTS 5
+#define MAX_SHADOWS 1
+
 in vec4 position;
 in vec4 colour;
 uniform mat4 uMVPMatrix;
-
 #ifdef SHADOWCASTER_ALPHA
 in vec2 uv0;
 out vec2 vUV0;
 #endif
-
 #ifndef SHADOWCASTER
 uniform mat4 uModelMatrix;
 uniform vec3 uCameraPosition;
@@ -89,30 +88,20 @@ uniform float uTime;
 #ifdef HAS_UV
 in vec2 uv0;
 #endif
-
 out vec4 vUV0;
-
 #ifdef HAS_NORMALS
 in vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
 in vec4 tangent;
 #endif
-
-
-#define MAX_LIGHTS 5
-#define MAX_SHADOWS 1
-
 #ifdef SHADOWRECEIVER
 uniform float uLightCastsShadowsArray[MAX_SHADOWS];
 uniform mat4 uTexWorldViewProjMatrixArray[3 * MAX_SHADOWS];
 out vec4 lightSpacePosArray[3 * MAX_SHADOWS];
 #endif
-
-
 out vec3 vPosition;
 out vec3 vColor;
-
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 out mat3 vTBN;
@@ -123,7 +112,6 @@ out vec3 vNormal;
 #ifdef REFLECTION
 out vec4 projectionCoord;
 #endif
-
 #endif //SHADOWCASTER
 
 void main()
