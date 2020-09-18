@@ -23,7 +23,7 @@
 FROM balrogcpp/xio-dependencies:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/xio
+ARG CONTEXT_HOME=/mnt/build
 WORKDIR ${CONTEXT_HOME}
 
 ADD sources ./sources
@@ -43,4 +43,4 @@ ADD .git ./.git
 RUN mkdir -p ./build-windows && mkdir -p ./build-linux && \
     cd ${CONTEXT_HOME}/build-linux && cmake -G Ninja .. && cmake --build . --target install && \
     cd ${CONTEXT_HOME}/build-windows && cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target install && \
-    cmake --build . --target xio-zip
+    cmake --build . --target install-zip

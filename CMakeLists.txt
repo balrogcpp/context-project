@@ -438,7 +438,7 @@ if (NOT CONTEXT_ONLY_DEPS)
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL true)
 
     if (UNIX)
-        set(CPACK_GENERATOR "SH")
+        set(CPACK_GENERATOR "TGZ")
     elseif (WIN32 OR MINGW)
         set(CPACK_GENERATOR "NSIS")
     endif ()

@@ -23,7 +23,7 @@
 FROM balrogcpp/gcc-mingw-x86_64:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/xio
+ARG CONTEXT_HOME=/mnt/build
 WORKDIR ${CONTEXT_HOME}
 
 ADD ./thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
@@ -35,13 +35,13 @@ RUN apt-get update && apt-get install -y git gnutls-bin ninja-build libxaw7-dev 
     && mkdir -p ./build-windows ./build-linux \
     && cd ${CONTEXT_HOME}/build-linux \
     && cmake -DCONTEXT_ONLY_DEPS=true -G Ninja .. \
-    && cmake --build . --target xio-deps \
+    && cmake --build . --target deps \
     && cd ${CONTEXT_HOME}/thirdparty/external/linux-gcc/Release/ \
     && rm -rf src \
     && cd ${CONTEXT_HOME} \
     && cd ${CONTEXT_HOME}/build-windows \
     && cmake -DCONTEXT_ONLY_DEPS=true -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. \
-    && cmake --build . --target xio-deps \
+    && cmake --build . --target deps \
     && cd ${CONTEXT_HOME}/thirdparty/external/windows-mingw/Release/ \
     && rm -rf src \
     && rm -rf ${CONTEXT_HOME}/build-windows ${CONTEXT_HOME}/build-linux \
