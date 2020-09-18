@@ -20,9 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-cmake_minimum_required(VERSION 3.15.1)
-
-include(cotire)
+cmake_minimum_required(VERSION 3.16.3)
 
 project(ContextProjectDemo)
 
@@ -44,7 +42,6 @@ endif ()
 set(CONTEXT_LIBRARIES xio-static)
 
 target_link_directories(xio-demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
-
 target_link_libraries(xio-demo PUBLIC ${CONTEXT_LIBRARIES} ${CONTEXT_STATIC_DEPENDENCY_LIBS})
 
 set(CMAKE_CXX_FLAGS ${CONTEXT_CXX_FLAGS})

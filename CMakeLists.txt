@@ -20,7 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-cmake_minimum_required(VERSION 3.15.1)
+cmake_minimum_required(VERSION 3.16.3)
 
 # The project version number.
 set(PROJECT_VERSION_MAJOR 0 CACHE STRING "Project major version number.")
@@ -33,36 +33,15 @@ project(xio)
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif ()
-message("CMake project configured with build type ${CMAKE_BUILD_TYPE}")
 
-set(CMAKE_MODULE_PATH
-    "${PROJECT_SOURCE_DIR}/CMake"
-    )
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
 
 set(CMAKE_CXX_STANDARD 20)
 
 enable_language(C)
 enable_language(CXX)
-
-include(CheckFunctionExists)
-include(CheckLibraryExists)
-include(CheckIncludeFile)
-include(CheckIncludeFiles)
-include(CheckSymbolExists)
-include(CheckCCompilerFlag)
-include(CheckCXXCompilerFlag)
-include(CheckCSourceCompiles)
-include(CheckStructHasMember)
-include(CMakeDependentOption)
-include(CheckIncludeFileCXX)
 include(CheckTypeSize)
-include(TestBigEndian)
 include(ProcessorCount)
-
-test_big_endian(CONTEXT_BIG_ENDIAN)
-if (${CONTEXT_BIG_ENDIAN})
-    message(SEND_ERROR "Big endian systemd not supported!")
-endif ()
 
 check_type_size("void*" PTR_SIZE BUILTIN_TYPES_ONLY)
 
@@ -162,10 +141,10 @@ if (UNIX OR MINGW)
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -Wall")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -pthread")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -fopenmp")
+    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -DNDEBUG")
     if (MINGW)
         string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -mwindows")
     endif ()
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -DNDEBUG")
 
     set(CONTEXT_GCC_C_Debug_FLAGS "${CONTEXT_GCC_C_FLAGS}" CACHE STRING "")
     set(CONTEXT_GCC_C_RelWithDebInfo_FLAGS "${CONTEXT_GCC_C_FLAGS}" CACHE STRING "")
