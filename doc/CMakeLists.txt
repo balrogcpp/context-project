@@ -20,8 +20,6 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-cmake_minimum_required(VERSION 3.15.1)
-
 project(xio-doc)
 
 find_package(Doxygen)
@@ -54,7 +52,7 @@ if (${DOXYGEN_DOT_FOUND})
     endif ()
 
     if (${LATEX_PDFLATEX_FOUND})
-        add_custom_target(xio-doc
+        add_custom_target(pdf
                           DEPENDS doxygen
                           COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ARTIFACT_DIR}/Doxygen/latex ${DOXYGEN_MAKE_COMMAND}
                           COMMAND ${CMAKE_COMMAND} -E copy ${CONTEXT_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${CONTEXT_ARTIFACT_DIR}

@@ -3,21 +3,21 @@
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
   <component name="CidrRootsConfiguration">
     <libraryRoots>
-      <file path="$PROJECT_DIR$/thirdparty/external/unix-gnu/Debug/sdk" />
-      <file path="$PROJECT_DIR$/thirdparty/external/unix-gnu/RelWithDebInfo/sdk" />
-      <file path="$PROJECT_DIR$/thirdparty/external/unix-gnu/Release/sdk" />
-      <file path="$PROJECT_DIR$/thirdparty/external/windows-mingw/Debug/sdk" />
-      <file path="$PROJECT_DIR$/thirdparty/external/windows-mingw/RelWithDebInfo/sdk" />
-      <file path="$PROJECT_DIR$/thirdparty/external/windows-mingw/Release/sdk" />
-      <file path="$PROJECT_DIR$/thirdparty/external/windows-msvc/Debug/sdk" />
-      <file path="$PROJECT_DIR$/thirdparty/external/windows-msvc/RelWithDebInfo/sdk" />
-      <file path="$PROJECT_DIR$/thirdparty/external/windows-msvc/Release/sdk" />
+      <file path="$PROJECT_DIR$/dependencies/external/unix-gnu/Debug/sdk" />
+      <file path="$PROJECT_DIR$/dependencies/external/unix-gnu/RelWithDebInfo/sdk" />
+      <file path="$PROJECT_DIR$/dependencies/external/unix-gnu/Release/sdk" />
+      <file path="$PROJECT_DIR$/dependencies/external/windows-mingw/Debug/sdk" />
+      <file path="$PROJECT_DIR$/dependencies/external/windows-mingw/RelWithDebInfo/sdk" />
+      <file path="$PROJECT_DIR$/dependencies/external/windows-mingw/Release/sdk" />
+      <file path="$PROJECT_DIR$/dependencies/external/windows-msvc/Debug/sdk" />
+      <file path="$PROJECT_DIR$/dependencies/external/windows-msvc/RelWithDebInfo/sdk" />
+      <file path="$PROJECT_DIR$/dependencies/external/windows-msvc/Release/sdk" />
     </libraryRoots>
     <excludeRoots>
       <file path="$PROJECT_DIR$/artifacts" />
       <file path="$PROJECT_DIR$/cmake-build-android" />
+      <file path="$PROJECT_DIR$/dependencies/external" />
       <file path="$PROJECT_DIR$/install" />
-      <file path="$PROJECT_DIR$/thirdparty/external" />
       <file path="$PROJECT_DIR$/tmp" />
     </excludeRoots>
   </component>

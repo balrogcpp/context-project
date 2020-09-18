@@ -20,17 +20,9 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-cmake_minimum_required(VERSION 3.15.1)
-
-include(cotire)
-
 project(xio-lib)
 
-set(CMAKE_MODULE_PATH
-    "${CONTEXT_ROOT_DIR}/CMake"
-    )
-
-include(cotire)
+set(CMAKE_MODULE_PATH "${CONTEXT_ROOT_DIR}/CMake")
 
 set(OGGSOUND_HEADERS
     oggsound/include/LocklessQueue.h
@@ -160,7 +152,4 @@ add_library(xio-lib STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LI
 
 set_target_properties(xio-lib PROPERTIES OUTPUT_NAME "xio-static")
 
-if (NOT MSVC AND NOT ANDROID)
-    set_target_properties(xio-lib PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "include/pcheader.h")
-    cotire(xio-lib)
-endif ()
+target_precompile_headers(xio-lib PUBLIC include/pcheader.h)

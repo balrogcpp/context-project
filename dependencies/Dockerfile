@@ -23,26 +23,26 @@
 FROM balrogcpp/gcc-mingw-x86_64:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/xio
+ARG CONTEXT_HOME=/mnt/build
 WORKDIR ${CONTEXT_HOME}
 
-ADD ./thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
+ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 ADD CMakeLists.txt .
 ADD ./CMake ./CMake
 
-RUN apt-get update && apt-get install -y git gnutls-bin ninja-build libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
+RUN apt-get update && apt-get install -y git gnutls-bin cmake ninja-build libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
     && git config --global http.postBuffer 1048576000 \
     && mkdir -p ./build-windows ./build-linux \
     && cd ${CONTEXT_HOME}/build-linux \
     && cmake -DCONTEXT_ONLY_DEPS=true -G Ninja .. \
-    && cmake --build . --target xio-deps \
-    && cd ${CONTEXT_HOME}/thirdparty/external/linux-gcc/Release/ \
+    && cmake --build . --target deps \
+    && cd ${CONTEXT_HOME}/dependencies/external/linux-gcc/Release/ \
     && rm -rf src \
     && cd ${CONTEXT_HOME} \
     && cd ${CONTEXT_HOME}/build-windows \
     && cmake -DCONTEXT_ONLY_DEPS=true -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. \
-    && cmake --build . --target xio-deps \
-    && cd ${CONTEXT_HOME}/thirdparty/external/windows-mingw/Release/ \
+    && cmake --build . --target deps \
+    && cd ${CONTEXT_HOME}/dependencies/external/windows-mingw/Release/ \
     && rm -rf src \
     && rm -rf ${CONTEXT_HOME}/build-windows ${CONTEXT_HOME}/build-linux \
-    && rm -rf ${CONTEXT_HOME}/CMake ${CONTEXT_HOME}/CMakeLists.txt ${CONTEXT_HOME}/thirdparty/CMakeLists.txt
+    && rm -rf ${CONTEXT_HOME}/CMake ${CONTEXT_HOME}/CMakeLists.txt ${CONTEXT_HOME}/dependencies/CMakeLists.txt
