@@ -437,19 +437,21 @@ if (NOT CONTEXT_ONLY_DEPS)
     set(CPACK_NSIS_MENU_LINKS "xio-demo.exe" "ContextProjectDemo")
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL true)
 
-    if (WIN32 OR MINGW)
+    if (UNIX)
+        set(CPACK_GENERATOR "SH")
+    elseif (WIN32 OR MINGW)
         set(CPACK_GENERATOR "NSIS")
     endif ()
 
     include(CPack)
 
-    add_custom_target(xio-zip
+    add_custom_target(install-zip
                       COMMAND ${CMAKE_COMMAND} -E tar cf ${CONTEXT_ZIP_NAME}.zip --format=zip ${CONTEXT_ZIP_NAME}
                       WORKING_DIRECTORY ${CONTEXT_INSTALL_PATH}
                       COMMENT "Create zip..."
                       VERBATIM
                       )
-    add_dependencies(xio-zip install)
+    add_dependencies(install-zip install)
 
     add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
 endif ()
