@@ -351,7 +351,7 @@ add_subdirectory(${CONTEXT_ROOT_DIR}/dependencies ${CONTEXT_WORK_DIR}/dependenci
 
 if (NOT CONTEXT_ONLY_DEPS)
     execute_process(
-            COMMAND git log -1 --format=%h
+            COMMAND git rev-parse --short=8 HEAD
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             OUTPUT_VARIABLE GIT_SHA1
             OUTPUT_STRIP_TRAILING_WHITESPACE

@@ -24,7 +24,7 @@
 docker build . -t balrogcpp/context-project-demoта п
 docker create -ti --name abc balrogcpp/context-project-demo bash
 mkdir artifacts
-docker cp abc:/mnt/build/install/ContextProjectDemo-Release-`git rev-parse --short HEAD`.zip artifacts
+docker cp abc:/mnt/build/install/ContextProjectDemo-Release-`git rev-parse --short=8 HEAD`.zip artifacts
 docker rm -f abc
 
 exit 0
