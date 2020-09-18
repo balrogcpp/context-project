@@ -12,7 +12,7 @@ build:
     - docker build . -t context
     - docker create -ti --name abc context bash
     - mkdir artifacts
-    - docker cp abc:/mnt/context-demo/install/ContextProjectDemo-Release-$CI_COMMIT_SHA.zip .
+    - docker cp abc:/mnt/xio/install/ContextProjectDemo-Release-$CI_COMMIT_SHA.zip .
     - docker rm -f abc
   artifacts:
     paths:
