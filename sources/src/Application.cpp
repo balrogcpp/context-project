@@ -57,6 +57,7 @@ Application::~Application() = default;
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
   conf_ = std::make_unique<YamlConfigurator>("config.yaml");
+  Renderer::SetConfigurator(conf_.get());
   io_ = std::make_unique<InputSequencer>();
   renderer_ = std::make_unique<Renderer>(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"), conf_->Get<bool>("window_fullscreen"));
   physics_ = std::make_unique<Physics>();
@@ -72,7 +73,6 @@ void Application::Init_() {
 
   for (auto &it : components_) {
     it->Create();
-    it->SetConf(conf_.get());
   }
 
   io_->RegObserver(overlay_->GetConsole());

@@ -67,7 +67,7 @@ material PbrTerrain
 
         vertex_program_ref PbrTerrain_vs {}
 
-        texture_unit AlbedoParallax {}
+        texture_unit Albedo {}
         texture_unit Normal {}
         texture_unit MetallicRougness {}
         texture_unit GlobalNormal {}

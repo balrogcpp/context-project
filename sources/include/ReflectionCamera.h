@@ -91,22 +91,22 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
     rtt1->addListener(this);
     vp1->setVisibilityMask(SURFACE_MASK);
 
-//    refraction_tex_ = Ogre::TextureManager::getSingleton().createManual("Refraction",
-//                                                                        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-//                                                                        Ogre::TEX_TYPE_2D,
-//                                                                        tex_size,
-//                                                                        tex_size,
-//                                                                        0,
-//                                                                        Ogre::PF_R8G8B8,
-//                                                                        Ogre::TU_RENDERTARGET);
-//
-//    Ogre::RenderTarget *rtt2 = refraction_tex_->getBuffer()->getRenderTarget();
-//    Ogre::Viewport *vp2 = rtt2->addViewport(camera);
-//    vp2->setOverlaysEnabled(false);
-//    vp2->setShadowsEnabled(false);
-//    // toggle reflection in camera
-//    rtt2->addListener(this);
-//    vp2->setVisibilityMask(SUBMERGED_MASK);
+    refraction_tex_ = Ogre::TextureManager::getSingleton().createManual("Refraction",
+                                                                        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                                                                        Ogre::TEX_TYPE_2D,
+                                                                        tex_size,
+                                                                        tex_size,
+                                                                        0,
+                                                                        Ogre::PF_R8G8B8,
+                                                                        Ogre::TU_RENDERTARGET);
+
+    Ogre::RenderTarget *rtt2 = refraction_tex_->getBuffer()->getRenderTarget();
+    Ogre::Viewport *vp2 = rtt2->addViewport(camera);
+    vp2->setOverlaysEnabled(false);
+    vp2->setShadowsEnabled(false);
+    // toggle refraction in camera
+    rtt2->addListener(this);
+    vp2->setVisibilityMask(SUBMERGED_MASK);
 
     rcamera_->setAutoAspectRatio(true);
   }
@@ -115,7 +115,6 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   std::shared_ptr<Ogre::Texture> refraction_tex_;
   Ogre::Plane plane_;
   Ogre::Camera *rcamera_ = nullptr;
-  Ogre::SceneNode *rcamera_node_ = nullptr;
   Ogre::SceneManager *scene_ = nullptr;
 
   const uint32_t SUBMERGED_MASK = 0x0F0;
@@ -123,15 +122,15 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   const uint32_t WATER_MASK = 0xF00;
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  void SetPlane(Ogre::Plane plane) {
+  inline void SetPlane(Ogre::Plane plane) {
     plane_ = plane;
   }
 
-  std::shared_ptr<Ogre::Texture> GetReflectionTex() const {
+  inline std::shared_ptr<Ogre::Texture> GetReflectionTex() const {
     return reflection_tex_;
   }
 
-  std::shared_ptr<Ogre::Texture> GetRefractionTex() const {
+  inline std::shared_ptr<Ogre::Texture> GetRefractionTex() const {
     return refraction_tex_;
   }
 };

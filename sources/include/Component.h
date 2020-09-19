@@ -38,7 +38,7 @@ class Component : public NoCopy {
  protected:
   static YamlConfigurator* conf_;
  public:
-  static void SetConf(YamlConfigurator *conf) {
+  static void SetConfigurator(YamlConfigurator *conf) {
     conf_ = conf;
   }
 };

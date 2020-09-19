@@ -36,7 +36,7 @@ endif ()
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 enable_language(C)
 enable_language(CXX)
@@ -378,7 +378,7 @@ if (NOT CONTEXT_ONLY_DEPS)
 
     list(APPEND CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 
-    add_dependencies(demo xio-lib)
+    add_dependencies(demo lib-static)
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
         add_dependencies(demo zip-deps)
     endif ()

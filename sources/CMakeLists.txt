@@ -20,7 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-project(xio-lib)
+project(lib-static)
 
 set(CMAKE_MODULE_PATH "${CONTEXT_ROOT_DIR}/CMake")
 
@@ -145,10 +145,10 @@ set(SOURCE_FILES_CONTEXT_LIB
     ${OGGSOUND_SOURCES}
     ${CONTEXT_SOURCES})
 
-include_directories(xio-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+include_directories(lib-static ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 
-add_library(xio-lib STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
+add_library(lib-static STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
 
-set_target_properties(xio-lib PROPERTIES OUTPUT_NAME "xio-static")
+set_target_properties(lib-static PROPERTIES OUTPUT_NAME "xio-static")
 
-target_precompile_headers(xio-lib PUBLIC include/pcheader.h)
+target_precompile_headers(lib-static PUBLIC include/pcheader.h)

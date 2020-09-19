@@ -22,27 +22,26 @@
 
 #pragma once
 
-#include <OgreRenderTargetListener.h>
+#include <Ogre.h>
 
 namespace xio {
 class CubeMapCamera final : public Ogre::RenderTargetListener {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  CubeMapCamera() {
-    Init_();
+  CubeMapCamera(Ogre::SceneNode *creator, uint32_t tex_size) {
+    Init_(creator, tex_size);
   }
 
   virtual ~CubeMapCamera() {
-    if (camera_node_) {
-      camera_node_->detachAllObjects();
-    }
+    Clear_();
   }
 
   //----------------------------------------------------------------------------------------------------------------------
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
     // point the camera in the right direction based on which face of the cubemap this is
+    scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+
     camera_node_->setOrientation(Ogre::Quaternion::IDENTITY);
-    Ogre::Root::getSingleton().getSceneManager("Default")->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
 
     if (evt.source == targets_[0]) {
       camera_node_->setOrientation(0, 1, 0, 0);
@@ -60,55 +59,63 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   }
 //----------------------------------------------------------------------------------------------------------------------
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
-    Ogre::Root::getSingleton().getSceneManager("Default")->
-        setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    scene_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
   }
 
  private:
 //----------------------------------------------------------------------------------------------------------------------
-  void Init_() {
-    if (!camera_) {
-      camera_ = Ogre::Root::getSingleton().getSceneManager("Default")->createCamera("CubeMapCamera");
-      camera_->setProjectionType(Ogre::PT_PERSPECTIVE);
-      camera_->setFOVy(Ogre::Degree(90));
-      camera_->setAspectRatio(1);
-      camera_->setLodBias(0.2);
-      camera_->setNearClipDistance(1);
-      camera_->setFarClipDistance(10000);
+  void Clear_() {
+    if (cubemap_) {
+      for (auto it : targets_) {
+        it->removeAllListeners();
+        it->removeAllViewports();
+      }
+
+      Ogre::TextureManager::getSingleton().remove(cubemap_);
     }
 
-//    camera_node_ = ContextManager::Instance().GetCameraMan()->GetCameraNode()->createChildSceneNode();
+    if (camera_node_) {
+      camera_node_->detachAllObjects();
+    }
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  void Init_(Ogre::SceneNode *creator, uint32_t tex_size) {
+    scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
+    auto *main_camera = scene_->getCamera("Default");
+    camera_ = scene_->createCamera("CubeMapCamera");
+    camera_->setProjectionType(Ogre::PT_PERSPECTIVE);
+    camera_->setFOVy(Ogre::Degree(90.0));
+    camera_->setAspectRatio(1.0);
+    camera_->setLodBias(0.2);
+    camera_->setNearClipDistance(main_camera->getNearClipDistance());
+    camera_->setFarClipDistance(main_camera->getFarClipDistance());
+    camera_node_ = creator;
     camera_node_->attachObject(camera_);
-
-    if (!cubemap_) {
-      cubemap_ = Ogre::TextureManager::getSingleton().createManual("dyncubemap",
-                                                                   Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                                                                   Ogre::TEX_TYPE_CUBE_MAP,
-                                                                   128,
-                                                                   128,
-                                                                   0,
-                                                                   Ogre::PF_R8G8B8,
-                                                                   Ogre::TU_RENDERTARGET);
-    }
+    cubemap_ = Ogre::TextureManager::getSingleton().createManual("dyncubemap",
+                                                                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                                                                 Ogre::TEX_TYPE_CUBE_MAP,
+                                                                 tex_size,
+                                                                 tex_size,
+                                                                 0,
+                                                                 Ogre::PF_R8G8B8,
+                                                                 Ogre::TU_RENDERTARGET);
 
     // assign our camera to all 6 render targets of the texture (1 for each direction)
-    for (unsigned int i = 0; i < 6; i++) {
+    for (int i = 0; i < 6; i++) {
       targets_[i] = cubemap_->getBuffer(i)->getRenderTarget();
-
-      if (!targets_[i]->getViewport(0)) {
-        Ogre::Viewport *vp = targets_[i]->addViewport(camera_);
-        vp->setShadowsEnabled(false);
-        vp->setVisibilityMask(0xF0);
-        vp->setOverlaysEnabled(false);
-        targets_[i]->addListener(this);
-      }
+      Ogre::Viewport *vp = targets_[i]->addViewport(camera_);
+      vp->setShadowsEnabled(false);
+      vp->setVisibilityMask(0xF0);
+      vp->setOverlaysEnabled(false);
+      targets_[i]->addListener(this);
     }
   }
 
+  Ogre::SceneManager *scene_ = nullptr;
   Ogre::Camera *camera_ = nullptr;
   Ogre::SceneNode *camera_node_ = nullptr;
   std::shared_ptr<Ogre::Texture> cubemap_;
-  Ogre::RenderTarget *targets_[6] {nullptr};
+  Ogre::RenderTarget *targets_[6]{nullptr};
 
  public:
   inline std::shared_ptr<Ogre::Texture> GetDyncubemap() const {

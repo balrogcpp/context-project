@@ -197,11 +197,11 @@ float calcPSSMDepthShadow()
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 //----------------------------------------------------------------------------------------------------------------------
-vec3 getNormal(vec2 uv)
+mat3 getTgn()
 {
-    // Retrieve the tangent space matrix
+// Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
-    vec3 t = vec3(1.0, 0.0, 0.0);
+    vec3 t = vec3(1, 0, 0);
     vec3 pos_dx = dFdx(vPosition);
     vec3 pos_dy = dFdy(vPosition);
 
@@ -213,11 +213,16 @@ vec3 getNormal(vec2 uv)
 
     vec3 b = normalize(cross(ng, t));
     t = normalize(cross(ng ,b));
-    mat3 tbn = mat3(t, b, ng);
+    return mat3(t, b, ng);
 
 #else //HAS_TANGENTS
-    mat3 tbn = vTBN;
+    return vTBN;
 #endif //!HAS_TANGENTS
+}
+
+vec3 getNormal(vec2 uv)
+{
+    mat3 tbn = getTgn();
 
 #ifdef HAS_NORMALMAP
     vec3 n = texture2D(uNormalSampler, uv).rgb;
@@ -258,14 +263,21 @@ vec3 getNormalTerrain(vec2 uv)
 //----------------------------------------------------------------------------------------------------------------------
 vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
 {
-#ifdef HAS_SEPARATE_PARALLAXMAP
-    float height =  texture2D(uOffsetSampler, texCoords).r;
-#else
-    float height =  texture2D(uBaseColorSampler, texCoords).a;
+    const float scale = 0.0001;
+    const float offset = 0.0;
+//    const float scale = 0.03;
+//    const float offset = -0.04;
+
+//#ifdef HAS_SEPARATE_PARALLAXMAP
+//    float displacement =  texture2D(uOffsetSampler, texCoords).r * scale + offset;
+//#else
+#ifdef HAS_NORMALMAP
+    float displacement =  texture2D(uNormalSampler, texCoords).a * scale + offset;
 #endif
-    const float height_scale = 0.01;
-    vec2 p = viewDir.xy * (height * height_scale);
-    return texCoords - p;
+//#endif
+
+    return texCoords - viewDir.xy * displacement;
+//    return texCoords;
 }
 #endif
 #endif
@@ -401,7 +413,7 @@ void main()
 #endif
 
 #ifdef TERRAIN
-    tex_coord *= 32.0;
+    tex_coord *= 64.0;
 #endif
 
     // The albedo may be defined from a base texture or a flat color
@@ -468,6 +480,7 @@ void main()
 #else
     vec3 n = getNormalTerrain(tex_coord);// normal at surface point
 #endif
+
     float NdotV = abs(dot(n, v)) + 0.001;
     vec3 reflection = -normalize(reflect(v, n));
 
