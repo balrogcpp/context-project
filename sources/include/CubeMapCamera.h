@@ -69,14 +69,18 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
       for (auto it : targets_) {
         it->removeAllListeners();
         it->removeAllViewports();
+        it = nullptr;
       }
 
       Ogre::TextureManager::getSingleton().remove(cubemap_);
     }
 
-    if (camera_node_) {
-      camera_node_->detachAllObjects();
+    if (camera_) {
+      scene_->destroyCamera(camera_);
+      camera_ = nullptr;
     }
+
+    camera_node_ = nullptr;
   }
 //----------------------------------------------------------------------------------------------------------------------
   void Init_(Ogre::SceneNode *creator, uint32_t tex_size) {
@@ -105,7 +109,6 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
       targets_[i] = cubemap_->getBuffer(i)->getRenderTarget();
       Ogre::Viewport *vp = targets_[i]->addViewport(camera_);
       vp->setShadowsEnabled(false);
-      vp->setVisibilityMask(0xF0);
       vp->setOverlaysEnabled(false);
       targets_[i]->addListener(this);
     }
