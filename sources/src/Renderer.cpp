@@ -100,9 +100,9 @@ Renderer::Renderer(int32_t w, int32_t h, bool f)
   const char true_str[] = "true";
   const char false_str[] = "false";
 
-  bool graphics_vsync_ = true;
-  bool graphics_gamma_enable_ = false;
-  int graphics_fsaa_ = 0;
+  bool graphics_vsync_ = conf_->Get<bool>("graphics_vsync");
+  bool graphics_gamma_enable_ = conf_->Get<bool>("graphics_gamma_enable");
+  int graphics_fsaa_ = conf_->Get<bool>("graphics_fsaa");
   int graphics_msaa_ = 0;
 
   params["vsync"] = graphics_vsync_ ? true_str : false_str;

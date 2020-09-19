@@ -41,4 +41,6 @@ class Field final : public Component {
     heigh_func_ = heigh_func;
   }
 };
+
+__attribute__((weak)) std::function<float(float, float)> Field::heigh_func_;
 }

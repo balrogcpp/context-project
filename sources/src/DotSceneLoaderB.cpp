@@ -571,8 +571,7 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
 
   /// Create the entity
   Ogre::Entity *entity = nullptr;
-  if (terrain_)
-    parent->translate(Ogre::Vector3::UNIT_Y * terrain_->GetHeigh(parent->getPosition().x, parent->getPosition().z));
+  parent->translate(Ogre::Vector3::UNIT_Y * GetHeigh(parent->getPosition().x, parent->getPosition().z));
   try {
     name += std::to_string(counter);
     counter++;
@@ -683,33 +682,38 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   Ogre::Vector3 normal = ParseVector3(xml_node.child("normal"));
   Ogre::Vector3 up = ParseVector3(xml_node.child("upVector"));
   bool reflection = GetAttribBool(xml_node, "reflection", false);
-  if (!rcamera_) rcamera_ = std::make_unique<ReflectionCamera>();
 
   normal = {0, 1, 0};
   up = {0, 0, 1};
-
   Ogre::Plane plane(normal, distance);
+
+  rcamera_.reset();
+  rcamera_ = std::make_unique<ReflectionCamera>(plane, 1024);
+
 
   std::string mesh_name = name + "mesh";
 
-  Ogre::MeshPtr terrain_mesh = Ogre::MeshManager::getSingleton().getByName(mesh_name,
-                                                                           Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-  if (terrain_mesh)
-    Ogre::MeshManager::getSingleton().remove(terrain_mesh);
+  Ogre::MeshPtr plane_mesh = Ogre::MeshManager::getSingleton().getByName(mesh_name,
+                                                                         Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+  if (plane_mesh)
+    Ogre::MeshManager::getSingleton().remove(plane_mesh);
   Ogre::MeshPtr res =
       Ogre::MeshManager::getSingletonPtr()->createPlane(mesh_name, group_name_, plane, width, height, xSegments,
                                                         ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
   res->buildTangentVectors();
   Ogre::Entity *entity = scene_manager_->createEntity(name, mesh_name);
+  entity->setCastShadows(false);
 
   if (material.empty())
     return;
 
   if (!material.empty()) {
     entity->setMaterialName(material);
+    Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
     UpdatePbrParams(material);
-    UpdatePbrShadowReceiver(material);
-    UpdatePbrShadowCaster(material);
+    if (material_ptr->getReceiveShadows())
+      UpdatePbrShadowReceiver(material);
+//    UpdatePbrShadowCaster(material);
   }
 
   if (reflection) {
@@ -736,10 +740,8 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   entBody->setFriction(1);
   physics_->AddRigidBody(entBody);
 
-  const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
-  const Ogre::uint32 SURFACE_MASK = 0x00F;
   const Ogre::uint32 WATER_MASK = 0xF00;
-///  entity->setVisibilityFlags(WATER_MASK);
+//  entity->setVisibilityFlags(WATER_MASK);
 }
 ///---------------------------------------------------------------------------------------------------------------------
 std::unique_ptr<Terrain> DotSceneLoaderB::terrain_;

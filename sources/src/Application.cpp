@@ -126,6 +126,7 @@ void Application::Clear_() {
   io_->UnregWinObserver(this);
   for (auto &it : components_)
     it->Clear();
+
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 }
 //----------------------------------------------------------------------------------------------------------------------

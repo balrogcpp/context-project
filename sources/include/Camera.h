@@ -144,17 +144,17 @@ class Camera final : public Entity, public InputObserver, public Ogre::FrameList
       // quaternion to translate the camera accoding to the camera's
       // orientation around the Y-axis and the X-axis.
       Ogre::Vector3 velocity = camera_yaw_node_->getOrientation() * camera_pitch_node_->getOrientation() * velocity_;
+      float speed_y = rigid_->getLinearVelocity().y();
+      rigid_->setFriction(1.0);
+
       if (rigid_) {
         if (!velocity_.isZeroLength()) {
-          rigid_->setLinearVelocity({velocity.x, velocity.y, velocity.z});
-          rigid_->setFriction(0.0);
+          rigid_->setLinearVelocity({velocity.x, speed_y, velocity.z});
         } else {
-          rigid_->setFriction(10.0);
         }
       }
 
       float speed = rigid_->getLinearVelocity().length();
-
       if (speed > (run_speed_ + run_speed_) / 2.0f) {
         animation_time_ += event.timeSinceLastFrame;
       } else {

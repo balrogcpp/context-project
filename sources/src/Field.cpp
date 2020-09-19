@@ -35,19 +35,19 @@ Field::~Field() {
     Ogre::MeshManager::getSingleton().remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
-std::function<float(float, float)> Field::heigh_func_;
 void Field::Create() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 50);
   grass->addDetailLevel<GrassPage>(100);//Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
   grass->setPageLoader(grassLoader);
-  grassLoader->setHeightFunction([](float x, float z, void*){return Ogre::Real(heigh_func_(x, z) - 0.1);});
+  if (heigh_func_)
+    grassLoader->setHeightFunction([](float x, float z, void*){return Ogre::Real(heigh_func_(x, z) - 0.1);});
   UpdatePbrParams("GrassCustom");
   UpdatePbrShadowReceiver("GrassCustom");
   GrassLayer *layer = grassLoader->addLayer("GrassCustom");
   layer->setFadeTechnique(FADETECH_ALPHAGROW);
   layer->setRenderTechnique(GRASSTECH_CROSSQUADS);
-  layer->setMinimumSize(2.0f, 2.0f);
+  layer->setMaximumSize(1.0f, 1.0f);
   layer->setAnimationEnabled(true);
   layer->setSwayDistribution(10.0f);
   layer->setSwayLength(1.0f);
@@ -62,7 +62,8 @@ void Field::Create() {
   auto *trees = new Forests::PagedGeometry(scene->getCamera("Default"), 100);
   trees->addDetailLevel<Forests::BatchPage>(100, 50);
   auto *treeLoader = new Forests::TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
-  treeLoader->setHeightFunction([](float x, float z, void*){return Ogre::Real(heigh_func_(x, z) - 0.1);});
+  if (heigh_func_)
+    treeLoader->setHeightFunction([](float x, float z, void*){return Ogre::Real(heigh_func_(x, z) - 0.1);});
   trees->setPageLoader(treeLoader);
   Ogre::Entity *fir1EntPtr = scene->createEntity("fir1", "fir05_30.mesh");
   Ogre::Entity *fir2EntPtr = scene->createEntity("fir2", "fir06_30.mesh");
