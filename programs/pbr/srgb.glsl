@@ -1,3 +1,10 @@
+#ifndef SRGB_GLSL
+#define SRGB_GLSL
+
+#define MANUAL_SRGB
+#define SRGB_FAST_APPROXIMATION
+#undef SRGB_SQRT
+//----------------------------------------------------------------------------------------------------------------------
 vec4 SRGBtoLINEAR(vec4 srgbIn)
 {
 #ifdef MANUAL_SRGB
@@ -16,7 +23,7 @@ vec4 SRGBtoLINEAR(vec4 srgbIn)
   return srgbIn;
 #endif //MANUAL_SRGB
 }
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 vec3 SRGBtoLINEAR(vec3 srgbIn)
 {
 #ifdef MANUAL_SRGB
@@ -35,7 +42,7 @@ vec3 SRGBtoLINEAR(vec3 srgbIn)
   return srgbIn;
 #endif //MANUAL_SRGB
 }
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 vec4 LINEARtoSRGB(vec4 srgbIn)
 {
 #ifdef MANUAL_SRGB
@@ -48,7 +55,7 @@ vec4 LINEARtoSRGB(vec4 srgbIn)
   return srgbIn;
 #endif
 }
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 vec3 LINEARtoSRGB(vec3 srgbIn)
 {
 #ifdef MANUAL_SRGB
@@ -61,3 +68,4 @@ vec3 LINEARtoSRGB(vec3 srgbIn)
   return srgbIn;
 #endif
 }
+#endif //SRGB_GLSL

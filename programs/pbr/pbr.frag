@@ -165,18 +165,12 @@ in vec4 projectionCoord;
 #endif
 
 //SRGB corretion
-#define MANUAL_SRGB
-#define SRGB_FAST_APPROXIMATION
-#undef SRGB_SQRT
 #include "srgb.glsl"
 
 //Shadows block
 #ifdef SHADOWRECEIVER
-#define SHADOWRECEIVER_PCF
-#undef SHADOWRECEIVER_VSM
-#undef SHADOWRECEIVER_ESM
 #include "receiver.glsl"
-
+//----------------------------------------------------------------------------------------------------------------------
 float calcPSSMDepthShadow()
 {
     float camDepth = vUV0.z;
@@ -202,6 +196,7 @@ float calcPSSMDepthShadow()
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
+//----------------------------------------------------------------------------------------------------------------------
 vec3 getNormal(vec2 uv)
 {
     // Retrieve the tangent space matrix
@@ -233,9 +228,9 @@ vec3 getNormal(vec2 uv)
 
     return n;
 }
-
 //Terrain block
 #ifdef TERRAIN
+//----------------------------------------------------------------------------------------------------------------------
 vec3 getNormalTerrain(vec2 uv)
 {
 // Retrieve the tangent space matrix
@@ -260,6 +255,7 @@ vec3 getNormalTerrain(vec2 uv)
     return n;
 }
 #ifdef HAS_PARALLAXMAP
+//----------------------------------------------------------------------------------------------------------------------
 vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
 {
 #ifdef HAS_SEPARATE_PARALLAXMAP
@@ -277,6 +273,7 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
 // Encapsulate the various inputs used by the various functions in the shading equation
 // We store values in this struct to simplify the integration of alternative implementations
 // of the shading terms, outlined in the Readme.MD Appendix.
+//----------------------------------------------------------------------------------------------------------------------
 struct PBRInfo
 {
     float NdotL;                  // cos angle between normal and light direction
@@ -299,6 +296,7 @@ const float c_MinRoughness = 0.04;
 // Basic Lambertian diffuse
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
 // See also [1], Equation 1
+//----------------------------------------------------------------------------------------------------------------------
 vec3 diffuse(PBRInfo pbrInputs)
 {
     return pbrInputs.diffuseColor / M_PI;
@@ -306,6 +304,7 @@ vec3 diffuse(PBRInfo pbrInputs)
 
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
+//----------------------------------------------------------------------------------------------------------------------
 vec3 specularReflection(PBRInfo pbrInputs)
 {
     return pbrInputs.reflectance0 + (pbrInputs.reflectance90 - pbrInputs.reflectance0) * pow(clamp(1.0 - pbrInputs.VdotH, 0.0, 1.0), 5.0);
@@ -315,6 +314,7 @@ vec3 specularReflection(PBRInfo pbrInputs)
 // where rougher material will reflect less light back to the viewer.
 // This implementation is based on [1] Equation 4, and we adopt their modifications to
 // alphaRoughness as input as originally proposed in [2].
+//----------------------------------------------------------------------------------------------------------------------
 float geometricOcclusion(PBRInfo pbrInputs)
 {
     float NdotL = pbrInputs.NdotL;
@@ -329,6 +329,7 @@ float geometricOcclusion(PBRInfo pbrInputs)
 // The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())
 // Implementation from "Average Irregularity Representation of a Roughened Surface for Ray Reflection" by T. S. Trowbridge, and K. P. Reitz
 // Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.
+//----------------------------------------------------------------------------------------------------------------------
 float microfacetDistribution(PBRInfo pbrInputs)
 {
     float roughnessSq = pbrInputs.alphaRoughness * pbrInputs.alphaRoughness;
@@ -343,6 +344,7 @@ float microfacetDistribution(PBRInfo pbrInputs)
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
+//----------------------------------------------------------------------------------------------------------------------
 vec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)
 {
     float mipCount = 9.0;// resolution of 512x512
@@ -365,6 +367,7 @@ vec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
+//----------------------------------------------------------------------------------------------------------------------
 vec3 getIBLContribution(vec3 diffuseColor, vec3 specularColor, float perceptualRoughness, float NdotV, vec3 n, vec3 reflection)
 {
     float mipCount = 9.0;// resolution of 512x512
@@ -595,10 +598,11 @@ void main()
 #endif //SHADOWCASTER_ALPHA
 
 #ifdef SHADOWRECEIVER_VSM
-    float depth = gl_FragCoord.z;
+    const float offset = 0.001;
+    float depth = gl_FragCoord.z - offset;
     gl_FragColor = vec4(depth, depth * depth, 0.0, 1.0);
 #else //!SHADOWRECEIVER_VSM
-    const float offset = 0.000;
+    const float offset = 0.001;
     gl_FragColor = vec4(gl_FragCoord.z - offset, 0.0, 0.0, 1.0);
 #endif //SHADOWRECEIVER_VSM
 #endif //SHADOWCASTER
