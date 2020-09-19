@@ -378,9 +378,9 @@ if (NOT CONTEXT_ONLY_DEPS)
 
     list(APPEND CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 
-    add_dependencies(xio-demo xio-lib)
+    add_dependencies(demo xio-lib)
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-        add_dependencies(xio-demo zip-deps)
+        add_dependencies(demo zip-deps)
     endif ()
 
     add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
@@ -434,7 +434,7 @@ if (NOT CONTEXT_ONLY_DEPS)
 
     set(CPACK_NSIS_DISPLAY_NAME "Context Demo")
     set(CPACK_NSIS_PACKAGE_NAME "Context Demo")
-    set(CPACK_NSIS_MENU_LINKS "xio-demo.exe" "ContextProjectDemo")
+    set(CPACK_NSIS_MENU_LINKS "demo.exe" "ContextProjectDemo")
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL true)
 
     if (UNIX)

@@ -528,7 +528,6 @@ externalproject_add(target-jemalloc
                     INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
                     )
 
-
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     if (UNIX OR MINGW AND NOT ANDROID)
         list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
