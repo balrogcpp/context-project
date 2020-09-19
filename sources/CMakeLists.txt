@@ -129,7 +129,6 @@ set(CONTEXT_SOURCES
     src/DotSceneLoaderB.cpp
     src/Physics.cpp
     src/Field.cpp
-    src/pcheader.cpp
     src/Compositor.cpp
     src/TerrainMaterialGeneratorB.cpp
     src/Gorilla.cpp
