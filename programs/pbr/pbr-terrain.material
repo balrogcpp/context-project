@@ -23,13 +23,13 @@
 vertex_program PbrTerrain_vs_glsl glsl
 {
 	source pbr.vert
-    preprocessor_defines HAS_UV,SHADOWRECEIVER,TERRAIN
+    preprocessor_defines HAS_UV,SHADOWRECEIVER,VERTEX_COMPRESSION
 }
 
 vertex_program PbrTerrain_vs_glsles glsles
 {
 	source pbr.vert
-    preprocessor_defines HAS_UV,SHADOWRECEIVER,TERRAIN
+    preprocessor_defines HAS_UV,SHADOWRECEIVER,VERTEX_COMPRESSION
 }
 
 vertex_program PbrTerrain_vs unified

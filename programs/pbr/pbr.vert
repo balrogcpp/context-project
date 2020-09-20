@@ -70,15 +70,22 @@ precision highp float;
 
 #define MAX_LIGHTS 5
 #define MAX_SHADOWS 1
+#define HAS_UV
 
+#ifndef VERTEX_COMPRESSION
 in vec4 position;
-#ifdef HAS_UV
 in vec2 uv0;
+#else
+in vec2 vertex; // VES_POSITION
+in float uv0; // VES_TEXTURE_COORDINATES0
+uniform mat4 posIndexToObjectSpace;
+uniform float baseUVScale;
 #endif
-in vec4 colour;
+
 uniform mat4 uMVPMatrix;
 
 #ifndef SHADOWCASTER_ALPHA
+in vec4 colour;
 uniform mat4 uModelMatrix;
 uniform vec3 uCameraPosition;
 #ifdef FADE
@@ -111,16 +118,21 @@ out vec3 vNormal;
 out vec4 projectionCoord;
 #endif
 #else //SHADOWCASTER
-in vec2 uv0;
+//in vec2 uv0;
 out vec2 vUV0;
 #endif
 
 void main()
 {
+#ifndef VERTEX_COMPRESSION
   vec4 new_position = position;
-#ifdef HAS_UV
-  vUV0.xy = uv0;
+#else
+  vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0, 1.0);
+#define uv0 _uv0
+  vec2 uv0 = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
+
+  vUV0.xy = uv0;
 
 #ifdef FOREST
 if (uv0.y == 0.0)

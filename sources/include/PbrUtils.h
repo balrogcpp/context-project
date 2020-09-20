@@ -60,6 +60,15 @@ inline void AddGpuConstParameter(const Ogre::GpuProgramParametersSharedPtr &para
 }
 //----------------------------------------------------------------------------------------------------------------------
 inline void AddGpuConstParameter(const Ogre::GpuProgramParametersSharedPtr &parameters,
+                                 const std::string &parameter_name,
+                                 Ogre::Matrix4 value) {
+  const auto &constants = parameters->getConstantDefinitions();
+
+  if (constants.map.count(parameter_name) > 0)
+    parameters->setNamedConstant(parameter_name, value);
+}
+//----------------------------------------------------------------------------------------------------------------------
+inline void AddGpuConstParameter(const Ogre::GpuProgramParametersSharedPtr &parameters,
                           const std::string &parameter_name,
                           Ogre::Vector2 value) {
   const auto &constants = parameters->getConstantDefinitions();

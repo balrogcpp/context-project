@@ -59,10 +59,25 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrai
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *terrain) {
   std::string material_name = "Terrain";
+
   UpdatePbrParams(material_name);
   UpdatePbrShadowReceiver(material_name);
-  static long long counter = 0;
+  if (vertex_compression_) {
+    auto material = Ogre::MaterialManager::getSingleton().getByName(material_name);
+    if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
+      auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+      auto &constants = vert_params->getConstantDefinitions();
+      Ogre::Matrix4 posIndexToObjectSpace;
+      terrain->getPointTransform(&posIndexToObjectSpace);
 
+      AddGpuConstParameter(vert_params, "posIndexToObjectSpace", posIndexToObjectSpace);
+
+      Ogre::Real baseUVScale = 1.0f / (terrain->getSize() - 1);
+      AddGpuConstParameter(vert_params, "baseUVScale", baseUVScale);
+    }
+  }
+
+  static long long counter = 0;
   auto normalmap = terrain->getTerrainNormalMap();
 
   auto new_material = Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(counter));

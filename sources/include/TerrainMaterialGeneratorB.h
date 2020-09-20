@@ -57,7 +57,7 @@ class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
 
    private:
     int8_t max_layers_ = 8;
-    bool vertex_compression_ = false;
+    bool vertex_compression_ = true;
   };
 };
 }
