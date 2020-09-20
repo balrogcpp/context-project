@@ -72,22 +72,19 @@ precision highp float;
 #define MAX_SHADOWS 1
 
 in vec4 position;
+#ifdef HAS_UV
+in vec2 uv0;
+#endif
 in vec4 colour;
 uniform mat4 uMVPMatrix;
-#ifdef SHADOWCASTER_ALPHA
-in vec2 uv0;
-out vec2 vUV0;
-#endif
-#ifndef SHADOWCASTER
+
+#ifndef SHADOWCASTER_ALPHA
 uniform mat4 uModelMatrix;
 uniform vec3 uCameraPosition;
 #ifdef FADE
 uniform float fadeRange;
 #endif
 uniform float uTime;
-#ifdef HAS_UV
-in vec2 uv0;
-#endif
 out vec4 vUV0;
 #ifdef HAS_NORMALS
 in vec4 normal;
@@ -113,11 +110,17 @@ out vec3 vNormal;
 #ifdef REFLECTION
 out vec4 projectionCoord;
 #endif
-#endif //SHADOWCASTER
+#else //SHADOWCASTER
+in vec2 uv0;
+out vec2 vUV0;
+#endif
 
 void main()
 {
   vec4 new_position = position;
+#ifdef HAS_UV
+  vUV0.xy = uv0;
+#endif
 
 #ifdef FOREST
 if (uv0.y == 0.0)
@@ -150,11 +153,6 @@ if (uv0.y == 0.0)
   vNormal = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
 #endif
 #else
-#endif
-#ifdef HAS_UV
-  vUV0.xy = uv0;
-#else
-  vUV0.xy = vec2(0.0);
 #endif
 
   gl_Position = uMVPMatrix * new_position;
