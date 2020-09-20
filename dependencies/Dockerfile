@@ -44,5 +44,6 @@ RUN apt-get update && apt-get install -y git gnutls-bin cmake ninja-build libxaw
     && cmake --build . --target deps \
     && cd ${CONTEXT_HOME}/dependencies/external/windows-mingw/Release/ \
     && rm -rf src \
+    && cd ${CONTEXT_HOME} \
     && rm -rf ${CONTEXT_HOME}/build-windows ${CONTEXT_HOME}/build-linux \
     && rm -rf ${CONTEXT_HOME}/CMake ${CONTEXT_HOME}/CMakeLists.txt ${CONTEXT_HOME}/dependencies/CMakeLists.txt
