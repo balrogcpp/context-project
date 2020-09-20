@@ -22,40 +22,10 @@
 
 #pragma once
 
-#include "Component.h"
-#include "Singleton.h"
-#include "Gorilla.h"
-#include <memory>
+#include <Ogre.h>
 
-namespace Ogre {
-class RenderTarget;
-class Texture;
-class SceneNode;
-}
+namespace xio{
+class HwCheck{
 
-namespace xio {
-class Overlay final : public Component, public Singleton<Overlay> {
- public:
-  Overlay();
-  virtual ~Overlay();
-
-  void Create() final;
-  void Clear() final;
-  void Clean() final {}
-  void Loop(float time) final;
-  void Text(const std::string &str);
-
- private:
-  Gorilla::Silverback *atlas_ = nullptr;
-  Gorilla::Screen *screen_ = nullptr;
-  Gorilla::Layer *layer_ = nullptr;
-  Gorilla::Caption *caption_ = nullptr;
-  Gorilla::Rectangle *rect_ = nullptr;
-  std::unique_ptr<Gorilla::OgreConsole> console_;
-
- public:
-  Gorilla::OgreConsole* GetConsole() {
-    return console_.get();
-  }
 };
 }

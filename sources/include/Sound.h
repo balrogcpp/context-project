@@ -22,11 +22,12 @@
 
 #pragma once
 #include "Component.h"
+#include "Singleton.h"
 #include "OgreOggSound.h"
 #include <string>
 
 namespace xio {
-class Sound final : public Component {
+class Sound final : public Component, public Singleton<Sound> {
  public:
   Sound();
   virtual ~Sound();

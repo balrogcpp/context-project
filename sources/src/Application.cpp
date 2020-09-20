@@ -59,7 +59,10 @@ void Application::Init_() {
   conf_ = std::make_unique<YamlConfigurator>("config.yaml");
   Renderer::SetConfigurator(conf_.get());
   io_ = std::make_unique<InputSequencer>();
-  renderer_ = std::make_unique<Renderer>(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"), conf_->Get<bool>("window_fullscreen"));
+  int window_width = conf_->Get<int>("window_width");
+  int window_high = conf_->Get<int>("window_high");
+  bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
+  renderer_ = std::make_unique<Renderer>(window_width,window_high, window_fullscreen);
   physics_ = std::make_unique<Physics>();
   sounds_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();

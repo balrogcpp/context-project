@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Component.h"
+#include "Singleton.h"
 #include <OgreFrameListener.h>
 #include <OgreAny.h>
 #include <map>
@@ -57,7 +58,7 @@ struct Contact {
   int points_;
 };
 
-class Physics final : public Component {
+class Physics final : public Component, public Singleton<Physics> {
  public:
   Physics();
   virtual ~Physics();

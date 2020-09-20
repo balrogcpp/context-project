@@ -22,40 +22,46 @@
 
 #pragma once
 
-#include "Component.h"
-#include "Singleton.h"
-#include "Gorilla.h"
-#include <memory>
+#include "NoCopy.h"
+#include <string>
+#include <exception>
 
-namespace Ogre {
-class RenderTarget;
-class Texture;
-class SceneNode;
-}
-
-namespace xio {
-class Overlay final : public Component, public Singleton<Overlay> {
+namespace xio{
+class SingleInstanceException : public std::exception {
  public:
-  Overlay();
-  virtual ~Overlay();
+  SingleInstanceException() = default;
 
-  void Create() final;
-  void Clear() final;
-  void Clean() final {}
-  void Loop(float time) final;
-  void Text(const std::string &str);
+  explicit SingleInstanceException(std::string description)
+      : description(std::move(description)) {}
 
- private:
-  Gorilla::Silverback *atlas_ = nullptr;
-  Gorilla::Screen *screen_ = nullptr;
-  Gorilla::Layer *layer_ = nullptr;
-  Gorilla::Caption *caption_ = nullptr;
-  Gorilla::Rectangle *rect_ = nullptr;
-  std::unique_ptr<Gorilla::OgreConsole> console_;
+  virtual ~SingleInstanceException() {}
 
  public:
-  Gorilla::OgreConsole* GetConsole() {
-    return console_.get();
+  std::string getDescription() const noexcept {
+    return description;
   }
+
+  const char *what() const noexcept override {
+    return description.c_str();
+  }
+
+ protected:
+  std::string description = std::string("Description not specified");
+  size_t code = 0;
+};
+
+template <typename T>
+class Singleton : public NoCopy{
+ public:
+  Singleton() {
+    if (instanced_)
+      throw SingleInstanceException("Only one instance can be created!\n");
+
+    instanced_ = true;
+  }
+
+  virtual ~Singleton() {}
+ protected:
+  inline static bool instanced_ = false;
 };
 }

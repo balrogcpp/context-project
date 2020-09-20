@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Component.h"
+#include "Singleton.h"
 #include "Terrain.h"
 #include "Field.h"
 #include "ReflectionCamera.h"
@@ -57,7 +58,7 @@ class Sound;
 class Overlay;
 class DotSceneLoaderB;
 
-class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
+class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB>, public Ogre::SceneLoader {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();

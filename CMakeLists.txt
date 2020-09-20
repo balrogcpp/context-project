@@ -20,7 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-cmake_minimum_required(VERSION 3.16.3)
+cmake_minimum_required(VERSION 3.16.1)
 
 # The project version number.
 set(PROJECT_VERSION_MAJOR 0 CACHE STRING "Project major version number.")
@@ -115,7 +115,6 @@ if (UNIX OR MINGW)
 
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -g")
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -O0")
-    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -std=c++20")
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -Wall")
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -pthread")
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -fopenmp")
@@ -123,7 +122,6 @@ if (UNIX OR MINGW)
 
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -g")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -Ofast")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -std=c++20")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -msse4")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -funroll-loops")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -floop-parallelize-all -ftree-parallelize-loops=8")
@@ -133,7 +131,6 @@ if (UNIX OR MINGW)
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -DDEBUG")
 
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -Ofast")
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -std=c++20")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -msse4")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -funroll-loops")
@@ -218,13 +215,10 @@ if (UNIX OR MINGW)
 
         string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -pthread")
         string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -fopenmp")
-        string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -std=c++20")
         string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -pthread")
         string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -fopenmp")
-        string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -std=c++20")
         string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -pthread")
         string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -fopenmp")
-        string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -std=c++20")
 
         if (NOT ANDROID)
             string(APPEND CONTEXT_Clang_STATIC_LINKER_Debug_FLAGS " -lstdc++fs")

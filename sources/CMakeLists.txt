@@ -90,7 +90,8 @@ set(CONTEXT_HEADERS
     include/ComponentLocator.h
     include/XmlUtils.h
     include/Locator.h
-    )
+    include/HwCheck.h
+    include/Singleton.h)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}

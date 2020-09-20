@@ -24,6 +24,7 @@
 #include "DemoDotAppState.h"
 #include "Camera.h"
 #include <OgreSceneLoaderManager.h>
+#include <iostream>
 
 namespace Demo {
 using namespace xio;

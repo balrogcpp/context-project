@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include "NoCopy.h"
 #include <yaml-cpp/yaml.h>
 #include <filesystem>
 #include <string>
@@ -50,7 +51,7 @@ class YamlParserException : public std::exception {
   size_t code = 0;
 };
 
-class YamlConfigurator {
+class YamlConfigurator : public NoCopy {
  public:
   explicit YamlConfigurator(const std::string &file = "config.yaml") {
     Load(file);
