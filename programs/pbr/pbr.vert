@@ -118,7 +118,6 @@ out vec3 vNormal;
 out vec4 projectionCoord;
 #endif
 #else //SHADOWCASTER
-//in vec2 uv0;
 out vec2 vUV0;
 #endif
 

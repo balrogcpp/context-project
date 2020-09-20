@@ -366,16 +366,8 @@ void BatchedGeometry::_updateRenderQueue(RenderQueue *queue) {
 
   // SVA speed up adding
   Ogre::RenderQueueGroup *rqg = queue->getQueueGroup(getRenderQueueGroup());
-  for (TSubBatchMap::const_iterator i = m_mapSubBatch.begin(), iend = m_mapSubBatch.end(); i != iend; ++i)
-    i->second->addSelfToRenderQueue(rqg);
-
-  ////If visible...
-  //if (isVisible()){
-  //   //Ask each batch to add itself to the render queue if appropriate
-  //   for (SubBatchMap::iterator i = subBatchMap.begin(); i != subBatchMap.end(); ++i){
-  //      i->second->addSelfToRenderQueue(queue, getRenderQueueGroup());
-  //   }
-  //}
+  for (const auto &it : m_mapSubBatch)
+      it.second->addSelfToRenderQueue(rqg);
 }
 
 //-----------------------------------------------------------------------------
