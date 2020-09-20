@@ -52,12 +52,12 @@ class Locator {
   }
 
  protected:
-  static YamlConfigurator *conf_;
-  static Renderer *renderer_ ;
-  static Physics *physics_;
-  static Sound *sound_;
-  static Overlay *overlay_;
-  static DotSceneLoaderB *loader_;
-  static InputSequencer *io_;
+  inline static YamlConfigurator *conf_ = nullptr;
+  inline static Renderer *renderer_ = nullptr;
+  inline static Physics *physics_ = nullptr;
+  inline static Sound *sound_ = nullptr;
+  inline static Overlay *overlay_ = nullptr;
+  inline static DotSceneLoaderB *loader_ = nullptr;
+  inline static InputSequencer *io_ = nullptr;
 };
 }

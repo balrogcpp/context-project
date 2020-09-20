@@ -39,6 +39,8 @@
 #include <rapidjson/istreamwrapper.h>
 #include <pugixml.hpp>
 #include <yaml-cpp/yaml.h>
+#include <lua.hpp>
+#include <sol.hpp>
 #include <string>
 #include <iostream>
 #include <fstream>

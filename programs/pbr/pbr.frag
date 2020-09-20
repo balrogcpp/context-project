@@ -138,7 +138,7 @@ uniform sampler2D uMetallicRoughnessSampler;
 #ifdef HAS_OCCLUSIONMAP
 uniform sampler2D uOcclusionSampler;
 #endif
-#ifdef HAS_SEPARATE_PARALLAXMAP
+#ifdef HAS_PARALLAXMAP
 uniform sampler2D uOffsetSampler;
 #endif
 #ifdef SHADOWRECEIVER
@@ -265,19 +265,8 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
 {
     const float scale = 0.0001;
     const float offset = 0.0;
-//    const float scale = 0.03;
-//    const float offset = -0.04;
-
-//#ifdef HAS_SEPARATE_PARALLAXMAP
-//    float displacement =  texture2D(uOffsetSampler, texCoords).r * scale + offset;
-//#else
-#ifdef HAS_NORMALMAP
-    float displacement =  texture2D(uNormalSampler, texCoords).a * scale + offset;
-#endif
-//#endif
-
+    float displacement =  texture2D(uOffsetSampler, texCoords).r * scale + offset;
     return texCoords - viewDir.xy * displacement;
-//    return texCoords;
 }
 #endif
 #endif

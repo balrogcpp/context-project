@@ -36,7 +36,7 @@ class Component : public NoCopy {
   virtual void Loop(float time) = 0;
 
  protected:
-  static YamlConfigurator* conf_;
+  inline static YamlConfigurator* conf_ = nullptr;
  public:
   static void SetConfigurator(YamlConfigurator *conf) {
     conf_ = conf;

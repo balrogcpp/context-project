@@ -96,7 +96,8 @@ in vec4 normal;
 in vec4 tangent;
 #endif
 #ifdef SHADOWRECEIVER
-uniform float uLightCastsShadowsArray[MAX_SHADOWS];
+uniform float uLightCount;
+uniform float uLightCastsShadowsArray[MAX_LIGHTS];
 uniform mat4 uTexWorldViewProjMatrixArray[3 * MAX_SHADOWS];
 out vec4 lightSpacePosArray[3 * MAX_SHADOWS];
 #endif
@@ -116,31 +117,35 @@ out vec4 projectionCoord;
 
 void main()
 {
-  vec4 mypos = position;
+  vec4 new_position = position;
 
 #ifdef FOREST
 if (uv0.y == 0.0)
 {
-  float radiusCoeff = 0.25;
-  float heightCoeff = 0.25;
-  float factorX = 1.0;
-  float factorY = 1.0;
-  mypos.y += sin(uTime + mypos.z + mypos.y + mypos.x) * radiusCoeff * radiusCoeff * factorY;
-  mypos.x += sin(uTime + mypos.z) * heightCoeff * heightCoeff * factorX;
+  float kradius = 0.25;
+  float kheigh = 0.25;
+  float kx = 1.0;
+  float ky = 1.0;
+  new_position.y += sin(uTime + new_position.z + new_position.y + new_position.x) * kradius * kradius * ky;
+  new_position.x += sin(uTime + new_position.z) * kheigh * kheigh * kx;
 }
 #endif
-
 #ifndef SHADOWCASTER
   vColor = colour.rgb;
-  vec4 pos = uModelMatrix * mypos;
-  vPosition = vec3(pos.xyz) / pos.w;
-
+  vec4 model_position = uModelMatrix * new_position;
+  vPosition = model_position.xyz / model_position.w;
+#ifdef FADE
+  float dist = distance(uCameraPosition.xz, vPosition.xz);
+  vUV0.w = 2.0f - (2.0f * dist * fadeRange);
+  float offset = (2.0f * dist * fadeRange) - 1.0f;
+  new_position.y -= 2.0f * clamp(offset, 0, 1);
+#endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-  vec3 normalW = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
-  vec3 tangentW = normalize(vec3(uModelMatrix * vec4(tangent.xyz, 0.0)));
-  vec3 bitangentW = cross(normalW, tangentW) * tangent.w;
-  vTBN = mat3(tangentW, bitangentW, normalW);
+  vec3 n = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
+  vec3 t = normalize(vec3(uModelMatrix * vec4(tangent.xyz, 0.0)));
+  vec3 b = cross(n, t) * tangent.w;
+  vTBN = mat3(t, b, n);
 #else // HAS_TANGENTS != 1
   vNormal = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
 #endif
@@ -151,25 +156,9 @@ if (uv0.y == 0.0)
 #else
   vUV0.xy = vec2(0.0);
 #endif
-#ifdef FADE
-  float dist = distance(uCameraPosition.xz, vPosition.xz);
-  vUV0.w = 2.0f - (2.0f * dist * fadeRange);
-  float offset = (2.0f * dist * fadeRange) - 1.0f;
-  mypos.y -= 2.0f * clamp(offset, 0, 1);
-#endif
 
-#ifdef SHADOWRECEIVER
-// Calculate the position of vertex in light space
-for (int i = 0; i < int(3 * MAX_SHADOWS);  i += 3) {
-  lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * mypos;
-  lightSpacePosArray[i + 1] = uTexWorldViewProjMatrixArray[i + 1] * mypos;
-  lightSpacePosArray[i + 2] = uTexWorldViewProjMatrixArray[i + 2] * mypos;
-}
-#endif
-
-  gl_Position = uMVPMatrix * mypos;
+  gl_Position = uMVPMatrix * new_position;
   vUV0.z = gl_Position.z;
-
 #ifdef REFLECTION
   const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
                         0.0, 0.5, 0.0, 0.0,
@@ -177,12 +166,23 @@ for (int i = 0; i < int(3 * MAX_SHADOWS);  i += 3) {
                         0.5, 0.5, 0.5, 1.0);
   projectionCoord = scalemat * gl_Position;
 #endif
-#else //SHADOWCASTER
+#ifdef SHADOWRECEIVER
+  // Calculate the position of vertex in light space
+  int j = 0;
+  for (int i = 0; i < int(uLightCount);  i++) {
+    if (uLightCastsShadowsArray[i] == 1.0) {
+      lightSpacePosArray[j] = uTexWorldViewProjMatrixArray[j] * new_position;
+      lightSpacePosArray[j + 1] = uTexWorldViewProjMatrixArray[j + 1] * new_position;
+      lightSpacePosArray[j + 2] = uTexWorldViewProjMatrixArray[j + 2] * new_position;
+    }
+    j += 3;
+  }
+#endif
 
+#else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
   vUV0.xy = uv0;
 #endif
-
-  gl_Position = uMVPMatrix * mypos;
+  gl_Position = uMVPMatrix * new_position;
 #endif //SHADOWCASTER
 }

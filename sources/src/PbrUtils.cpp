@@ -188,7 +188,7 @@ void UpdatePbrShadowReceiver(MaterialPtr material) {
     if (constants.map.count("uTexWorldViewProjMatrixArray") == 0) {
       return;
     }
-
+    AddGpuConstParameterAuto(vert_params, "uLightCount", GpuProgramParameters::ACT_LIGHT_COUNT);
     AddGpuConstParameterAuto(vert_params,
                              "uTexWorldViewProjMatrixArray",
                              GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY,

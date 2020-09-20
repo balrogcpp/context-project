@@ -57,20 +57,8 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrai
   terrain->_setCompositeMapRequired(false);
 }
 //---------------------------------------------------------------------
-bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const {
-  return false;
-}
-//---------------------------------------------------------------------
-void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) {
-}
-//---------------------------------------------------------------------
-Ogre::uint8 TerrainMaterialGeneratorB::SM2Profile::getMaxLayers(const Ogre::Terrain *terrain) const {
-  // count the texture units free
-  return 16;
-}
-//---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *terrain) {
-  std::string material_name = "Plane";
+  std::string material_name = "Terrain";
   UpdatePbrParams(material_name);
   UpdatePbrShadowReceiver(material_name);
   static long long counter = 0;
@@ -90,19 +78,12 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
 }
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Ogre::Terrain *terrain) {
-  std::string material_name = "Plane";
+  std::string material_name = "Terrain";
   UpdatePbrParams(material_name);
   UpdatePbrShadowReceiver(material_name);
 
   static long long counter = 0;
   counter++;
   return Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(counter));
-}
-//---------------------------------------------------------------------
-void TerrainMaterialGeneratorB::SM2Profile::updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) {
-}
-//---------------------------------------------------------------------
-void TerrainMaterialGeneratorB::SM2Profile::updateParamsForCompositeMap(const Ogre::MaterialPtr &mat,
-                                                                        const Ogre::Terrain *terrain) {
 }
 }

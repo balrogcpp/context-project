@@ -30,10 +30,7 @@ namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 Field::Field() = default;
 
-Field::~Field() {
-  if (Ogre::MeshManager::getSingleton().getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
-    Ogre::MeshManager::getSingleton().remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-}
+Field::~Field() {}
 //----------------------------------------------------------------------------------------------------------------------
 void Field::Create() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 50);
@@ -58,47 +55,47 @@ void Field::Create() {
   layer->setColorMap("terrain2.png");
   grass->update();
 
-  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  auto *trees = new Forests::PagedGeometry(scene->getCamera("Default"), 100);
-  trees->addDetailLevel<Forests::BatchPage>(100, 50);
-  auto *treeLoader = new Forests::TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
-  if (heigh_func_)
-    treeLoader->setHeightFunction([](float x, float z, void*){return Ogre::Real(heigh_func_(x, z) - 0.1);});
-  trees->setPageLoader(treeLoader);
-  Ogre::Entity *fir1EntPtr = scene->createEntity("fir1", "fir05_30.mesh");
-  Ogre::Entity *fir2EntPtr = scene->createEntity("fir2", "fir06_30.mesh");
-  Ogre::Entity *fir3EntPtr = scene->createEntity("fir3", "fir14_25.mesh");
-
-//Add trees
-  float x = 0, y = 0, z = 0, yaw, scale;
-  for (int i = 0; i < 50; i++) {
-    yaw = Ogre::Math::RangeRandom(0, 360);
-    if (Ogre::Math::RangeRandom(0, 1) <= 0.8f) {
-      x = Ogre::Math::RangeRandom(-200, 200);
-      z = Ogre::Math::RangeRandom(-200, 200);
-      if (x < -200) x = -200; else if (x > 200) x = 200;
-      if (z < -200) z = -200; else if (z > 200) z = 200;
-    }
-    else {
-      x = Ogre::Math::RangeRandom(-200, 200);
-      z = Ogre::Math::RangeRandom(-200, 200);
-    }
-    y = 0;
-    scale = Ogre::Math::RangeRandom(0.9f, 1.1f);
-    scale *= 0.2;
-    Ogre::Quaternion quat;
-    quat.FromAngleAxis(Ogre::Degree(yaw), Ogre::Vector3::UNIT_Y);
-
-    if (i % 2 == 0) {
-      treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
-    }
-    else if (i % 3 == 0) {
-      treeLoader->addTree(fir2EntPtr, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
-    }
-    else {
-      treeLoader->addTree(fir3EntPtr, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
-    }
-  }
-  trees->update();
+//  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+//  auto *trees = new Forests::PagedGeometry(scene->getCamera("Default"), 100);
+//  trees->addDetailLevel<Forests::BatchPage>(100, 50);
+//  auto *treeLoader = new Forests::TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
+//  if (heigh_func_)
+//    treeLoader->setHeightFunction([](float x, float z, void*){return Ogre::Real(heigh_func_(x, z) - 0.1);});
+//  trees->setPageLoader(treeLoader);
+//  Ogre::Entity *fir1EntPtr = scene->createEntity("fir1", "fir05_30.mesh");
+//  Ogre::Entity *fir2EntPtr = scene->createEntity("fir2", "fir06_30.mesh");
+//  Ogre::Entity *fir3EntPtr = scene->createEntity("fir3", "fir14_25.mesh");
+//
+////Add trees
+//  float x = 0, y = 0, z = 0, yaw, scale;
+//  for (int i = 0; i < 50; i++) {
+//    yaw = Ogre::Math::RangeRandom(0, 360);
+//    if (Ogre::Math::RangeRandom(0, 1) <= 0.8f) {
+//      x = Ogre::Math::RangeRandom(-200, 200);
+//      z = Ogre::Math::RangeRandom(-200, 200);
+//      if (x < -200) x = -200; else if (x > 200) x = 200;
+//      if (z < -200) z = -200; else if (z > 200) z = 200;
+//    }
+//    else {
+//      x = Ogre::Math::RangeRandom(-200, 200);
+//      z = Ogre::Math::RangeRandom(-200, 200);
+//    }
+//    y = 0;
+//    scale = Ogre::Math::RangeRandom(0.9f, 1.1f);
+//    scale *= 0.2;
+//    Ogre::Quaternion quat;
+//    quat.FromAngleAxis(Ogre::Degree(yaw), Ogre::Vector3::UNIT_Y);
+//
+//    if (i % 2 == 0) {
+//      treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
+//    }
+//    else if (i % 3 == 0) {
+//      treeLoader->addTree(fir2EntPtr, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
+//    }
+//    else {
+//      treeLoader->addTree(fir3EntPtr, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
+//    }
+//  }
+//  trees->update();
 }
 }
