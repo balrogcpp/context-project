@@ -9,15 +9,10 @@ Permission is granted to anyone to use this software for any purpose, including 
 -------------------------------------------------------------------------------------*/
 
 #pragma once
-
 #include <OgrePrerequisites.h>
 #include <OgreMath.h>
-
 #include <random>
-#ifdef _WIN32
-#define _WIN32_WINNT 0x0600
-#include <windows.h>
-#endif
+#include <chrono>
 
 // random table class that speeds up PG a bit
 class RandomTable {
@@ -68,6 +63,9 @@ inline float RandomTable::getRangeRandom(float start, float end) {
 inline void RandomTable::generateRandomNumbers() {
   // using our Mersenne Twister (preferred way)
   std::mt19937 rng;
+  auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
+  long millis = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
+  rng.seed(millis);
   for (unsigned long i = 0; i < tableSize; i++)
     table[i] = float(rng()) / rng.max();
 }

@@ -23,9 +23,9 @@
 #include "pcheader.h"
 
 #include "Application.h"
-#include "Storage.h"
 #include "Exception.h"
 #include "Overlay.h"
+#include "HwCheck.h"
 
 #ifdef _WIN32
 extern "C"
@@ -58,11 +58,16 @@ Application::~Application() = default;
 void Application::Init_() {
   conf_ = std::make_unique<YamlConfigurator>("config.yaml");
   Renderer::SetConfigurator(conf_.get());
-  io_ = std::make_unique<InputSequencer>();
   int window_width = conf_->Get<int>("window_width");
   int window_high = conf_->Get<int>("window_high");
   bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
   renderer_ = std::make_unique<Renderer>(window_width,window_high, window_fullscreen);
+
+  if (!TestCapabilities({Ogre::RSC_TESSELLATION_HULL_PROGRAM, Ogre::RSC_TESSELLATION_DOMAIN_PROGRAM})) {
+    throw Exception("Capabilities RSC_TESSELLATION_HULL_PROGRAM and RSC_TESSELLATION_DOMAIN_PROGRAM not supported\n");
+  }
+
+  io_ = std::make_unique<InputSequencer>();
   physics_ = std::make_unique<Physics>();
   sounds_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();

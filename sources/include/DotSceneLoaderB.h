@@ -111,6 +111,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   std::unique_ptr<ReflectionCamera> rcamera_;
   std::unique_ptr<CubeMapCamera> cmcamera_;
   static std::unique_ptr<Terrain> terrain_;
+ private:
   static std::unique_ptr<Field> forest_;
   std::unique_ptr<Camera> camera_;
   Ogre::SceneManager *scene_manager_ = nullptr;
@@ -123,5 +124,13 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   Sound *sounds_ = nullptr;
   Overlay *overlay_ = nullptr;
   InputSequencer *io_ = nullptr;
+
+ public:
+  static const Terrain& GetTerrain() {
+    return *terrain_;
+  }
+  static const Field& GetForest() {
+    return *forest_;
+  }
 };
 }
