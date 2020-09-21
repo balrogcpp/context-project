@@ -22,16 +22,16 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include "Pages.h"
+#include "Forest.h"
 #include "PbrUtils.h"
 using namespace Forests;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
-Pages::Pages() {}
-Pages::~Pages() {}
+Forest::Forest() {}
+Forest::~Forest() {}
 //----------------------------------------------------------------------------------------------------------------------
-void Pages::Create() {
+void Forest::Create() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 50);
   grass->addDetailLevel<GrassPage>(100);//Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);

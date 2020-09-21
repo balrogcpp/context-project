@@ -25,10 +25,10 @@
 #include <functional>
 
 namespace xio {
-class Pages final : public Component {
+class Forest final : public Component {
  public:
-  Pages();
-  virtual ~Pages();
+  Forest();
+  virtual ~Forest();
 
   void Create() final;
   void Clear() final {}

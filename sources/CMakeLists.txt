@@ -68,7 +68,7 @@ set(CONTEXT_HEADERS
     include/VerboseListener.h
     include/JsonConfigurator.h
     include/DotSceneLoaderB.h
-    include/Pages.h
+    include/Forest.h
     include/Physics.h
     include/OgreHeaders.h
     include/Sound.h
@@ -135,7 +135,7 @@ set(CONTEXT_SOURCES
     src/Renderer.cpp
     src/DotSceneLoaderB.cpp
     src/Physics.cpp
-    src/Pages.cpp
+    src/Forest.cpp
     src/Compositor.cpp
     src/TerrainMaterialGeneratorB.cpp
     src/Gorilla.cpp
