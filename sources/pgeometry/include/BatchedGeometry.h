@@ -86,8 +86,9 @@ class BatchedGeometry : public Ogre::MovableObject {
 
     /// Get material name. Be careful, resource group name missing
     const Ogre::String &getMaterialName() const { return m_ptrMaterial->getName(); }
-    Ogre::Technique *getTechnique() const { return m_pBestTechnique; }
-    const Ogre::MaterialPtr &getMaterial(void) const { return m_ptrMaterial; }
+    Ogre::Technique *getTechnique() const final { return m_ptrMaterial->getBestTechnique(m_ptrMaterial->getLodIndex(
+          m_pParentGeom->m_fMinDistanceSquared * m_pParentGeom->m_fMinDistanceSquared)); }
+    const Ogre::MaterialPtr &getMaterial(void) const final { return m_ptrMaterial; }
     void getWorldTransforms(Ogre::Matrix4 *xform) const { *xform = m_pParentGeom->_getParentNodeFullTransform(); }
     const Ogre::Quaternion &getWorldOrientation(void) const { return m_pParentGeom->m_pSceneNode->_getDerivedOrientation(); }
     const Ogre::Vector3 &getWorldPosition(void) const { return m_pParentGeom->m_pSceneNode->_getDerivedPosition(); }

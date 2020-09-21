@@ -25,7 +25,7 @@
 #include "Component.h"
 #include "Singleton.h"
 #include "Terrain.h"
-#include "Field.h"
+#include "Pages.h"
 #include "ReflectionCamera.h"
 #include "CubeMapCamera.h"
 #include "Input.h"
@@ -112,7 +112,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   std::unique_ptr<CubeMapCamera> cmcamera_;
   static std::unique_ptr<Terrain> terrain_;
  private:
-  static std::unique_ptr<Field> forest_;
+  static std::unique_ptr<Pages> forest_;
   std::unique_ptr<Camera> camera_;
   Ogre::SceneManager *scene_manager_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;
@@ -129,7 +129,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   static const Terrain& GetTerrain() {
     return *terrain_;
   }
-  static const Field& GetForest() {
+  static const Pages& GetForest() {
     return *forest_;
   }
 };

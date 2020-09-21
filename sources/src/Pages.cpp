@@ -22,17 +22,16 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include "Field.h"
+#include "Pages.h"
 #include "PbrUtils.h"
 using namespace Forests;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
-Field::Field() = default;
-
-Field::~Field() {}
+Pages::Pages() {}
+Pages::~Pages() {}
 //----------------------------------------------------------------------------------------------------------------------
-void Field::Create() {
+void Pages::Create() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 50);
   grass->addDetailLevel<GrassPage>(100);//Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
@@ -78,9 +77,9 @@ void Field::Create() {
   grass2->update();
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  auto *trees = new Forests::PagedGeometry(scene->getCamera("Default"), 100);
-  trees->addDetailLevel<Forests::BatchPage>(100, 50);
-  auto *treeLoader = new Forests::TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
+  auto *trees = new PagedGeometry(scene->getCamera("Default"), 100);
+  trees->addDetailLevel<BatchPage>(100, 50);
+  auto *treeLoader = new TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
   if (heigh_func_)
     treeLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z) - 0.1); });
   trees->setPageLoader(treeLoader);

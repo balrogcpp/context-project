@@ -22,12 +22,13 @@
 
 #pragma once
 #include "Component.h"
+#include <functional>
 
 namespace xio {
-class Field final : public Component {
+class Pages final : public Component {
  public:
-  Field();
-  virtual ~Field();
+  Pages();
+  virtual ~Pages();
 
   void Create() final;
   void Clear() final {}
@@ -35,12 +36,10 @@ class Field final : public Component {
   void Loop(float time) final {}
 
  private:
-  static std::function<float(float, float)> heigh_func_;
+  inline static std::function<float(float, float)> heigh_func_;
  public:
   static void SetHeighFunc(const std::function<float(float, float)> &heigh_func) {
     heigh_func_ = heigh_func;
   }
 };
-
-__attribute__((weak)) std::function<float(float, float)> Field::heigh_func_;
 }

@@ -44,6 +44,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <functional>
 #include <sstream>
 #include <memory>
 #include <vector>

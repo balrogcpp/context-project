@@ -745,9 +745,9 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 }
 ///---------------------------------------------------------------------------------------------------------------------
 std::unique_ptr<Terrain> DotSceneLoaderB::terrain_;
-std::unique_ptr<Field> DotSceneLoaderB::forest_;
+std::unique_ptr<Pages> DotSceneLoaderB::forest_;
 void DotSceneLoaderB::ProcessForest_(pugi::xml_node &xml_node) {
-  if (!forest_) forest_ = std::make_unique<Field>();
+  if (!forest_) forest_ = std::make_unique<Pages>();
   if (terrain_) forest_->SetHeighFunc([](float x, float z){return terrain_->GetHeigh(x, z);});
   forest_->Create();
 }
