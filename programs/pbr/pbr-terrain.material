@@ -41,13 +41,13 @@ vertex_program PbrTerrain_vs unified
 fragment_program PbrTerrain_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines TERRAIN,HAS_PARALLAXMAP,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
+    preprocessor_defines TERRAIN,HAS_PARALLAXMAP,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,SHADOWRECEIVER
 }
 
 fragment_program PbrTerrain_fs_glsles glsles
 {
 	source pbr.frag
-    preprocessor_defines TERRAIN,HAS_PARALLAXMAP,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALROUGHNESSMAP,SHADOWRECEIVER
+    preprocessor_defines TERRAIN,HAS_PARALLAXMAP,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,SHADOWRECEIVER
 }
 
 fragment_program PbrTerrain_fs unified

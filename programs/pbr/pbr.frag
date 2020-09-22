@@ -126,14 +126,17 @@ uniform sampler2D uNormalSampler;
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D uEmissiveSampler;
 #endif
-#ifdef HAS_METALROUGHNESSMAP
-#ifdef HAS_SEPARATE_ROUGHNESSMAP
+#ifdef UNREAL
+#ifdef HAS_METALLICMAP
 uniform sampler2D uMetallicSampler;
+#endif
+#ifdef HAS_ROUGHNESSMAP
 uniform sampler2D uRoughnessSampler;
-#else
-uniform sampler2D uMetallicRoughnessSampler;
 #endif
 #else
+#ifdef HAS_METALLICMAP
+uniform sampler2D uMetallicRoughnessSampler;
+#endif
 #endif
 #ifdef HAS_OCCLUSIONMAP
 uniform sampler2D uOcclusionSampler;
@@ -163,6 +166,9 @@ uniform sampler2D uReflectionMap;
 uniform sampler2D uNoiseMap;
 in vec4 projectionCoord;
 #endif
+
+const float M_PI = 3.141592653589793;
+const float c_MinRoughness = 0.04;
 
 //SRGB corretion
 #include "srgb.glsl"
@@ -259,6 +265,33 @@ vec3 getNormalTerrain(vec2 uv)
 
     return n;
 }
+#endif
+//----------------------------------------------------------------------------------------------------------------------
+float getMetallic(vec2 uv) {
+#ifdef HAS_METALLICMAP
+#ifdef UNREAL
+    return texture2D(uMetallicSampler, uv).r * uSurfaceShininessColour;
+#else
+    return texture2D(uMetallicRoughnessSampler, uv).r * uSurfaceShininessColour;
+#endif
+#else
+    return uSurfaceShininessColour;
+#endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+float getRoughness(vec2 uv) {
+#ifdef HAS_ROUGHNESSMAP
+#ifdef UNREAL
+    return texture2D(uRoughnessSampler, uv).r * uSurfaceSpecularColour;
+#else
+    return texture2D(uMetallicRoughnessSampler, uv).a * uSurfaceSpecularColour;
+#endif
+#else
+    return uSurfaceSpecularColour;
+#endif
+}
+
 #ifdef HAS_PARALLAXMAP
 //----------------------------------------------------------------------------------------------------------------------
 vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
@@ -268,7 +301,6 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
     float displacement =  texture2D(uOffsetSampler, texCoords).r * scale + offset;
     return texCoords - viewDir.xy * displacement;
 }
-#endif
 #endif
 
 // Encapsulate the various inputs used by the various functions in the shading equation
@@ -290,9 +322,6 @@ struct PBRInfo
     vec3 diffuseColor;            // color contribution from diffuse lighting
     vec3 specularColor;           // color contribution from specular lighting
 };
-
-const float M_PI = 3.141592653589793;
-const float c_MinRoughness = 0.04;
 
 // Basic Lambertian diffuse
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
@@ -423,32 +452,14 @@ void main()
         discard;
     }
 
-    float metallic = 1.0;
-    float perceptualRoughness = 1.0;
+    float metallic = getMetallic(tex_coord);
+    float roughness = getRoughness(tex_coord);
 
-#ifdef HAS_METALROUGHNESSMAP
-#ifdef HAS_SEPARATE_ROUGHNESSMAP
-    vec4 mrSampleMetallic = texture2D(uMetallicSampler, tex_coord);
-    vec4 mrSampleRoughness = texture2D(uRoughnessSampler, tex_coord);
-    perceptualRoughness = mrSampleRoughness.r * uSurfaceSpecularColour;
-    metallic = mrSampleMetallic.r * uSurfaceShininessColour;
-#else
-    // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
-    // This layout intentionally reserves the 'r' channel for (optional) occlusion map data
-    vec4 mrSample = texture2D(uMetallicRoughnessSampler, tex_coord);
-    metallic = mrSample.r * uSurfaceShininessColour;
-    perceptualRoughness = mrSample.a * uSurfaceSpecularColour;
-#endif
-#else
-    metallic = uSurfaceShininessColour;
-    perceptualRoughness = uSurfaceSpecularColour;
-#endif
-
-    perceptualRoughness = clamp(perceptualRoughness, c_MinRoughness, 1.0);
+    roughness = clamp(roughness, c_MinRoughness, 1.0);
     metallic = clamp(metallic, 0.0, 1.0);
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
-    float alphaRoughness = perceptualRoughness * perceptualRoughness;
+    float alphaRoughness = roughness * roughness;
 
     const vec3 f0 = vec3(0.04);
     vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0);
@@ -474,7 +485,6 @@ void main()
     vec3 reflection = -normalize(reflect(v, n));
 
     vec3 total_colour = vec3(0.0);
-    float attenuation = 1.0;
 
     for (int i = 0; i < int(uLightCount); i++) {
         vec3 l = -normalize(uLightDirectionArray[i]);// Vector from surface point to light
@@ -515,7 +525,7 @@ void main()
         NdotH,
         LdotH,
         VdotH,
-        perceptualRoughness,
+        roughness,
         metallic,
         specularEnvironmentR0,
         specularEnvironmentR90,
@@ -537,20 +547,17 @@ void main()
         vec3 color = tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
 #ifdef SHADOWRECEIVER
-        float shadow = 1.0;
         if (uLightCastsShadowsArray[i] * tmp > 0.001) {
-            shadow = calcPSSMDepthShadow();
-            attenuation = shadow;
+            color *= calcPSSMDepthShadow();
         }
-        total_colour += (color * shadow);
-#else
-        total_colour += color;
 #endif
+
+        total_colour += color;
     }
 
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
-    total_colour += getIBLContribution(diffuseColor, specularColor, perceptualRoughness, NdotV, n, reflection);
+    total_colour += getIBLContribution(diffuseColor, specularColor, roughness, NdotV, n, reflection);
 #else
     total_colour += ((uSurfaceAmbientColour + uAmbientLightColour) * baseColor.rgb);
 #endif
