@@ -61,7 +61,7 @@ void Application::Init_() {
   int window_width = conf_->Get<int>("window_width");
   int window_high = conf_->Get<int>("window_high");
   bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
-  renderer_ = std::make_unique<Renderer>(window_width,window_high, window_fullscreen);
+  renderer_ = std::make_unique<Renderer>(window_width, window_high, window_fullscreen);
 
   if (!TestCapabilities({Ogre::RSC_TESSELLATION_HULL_PROGRAM, Ogre::RSC_TESSELLATION_DOMAIN_PROGRAM})) {
     throw Exception("Capabilities RSC_TESSELLATION_HULL_PROGRAM and RSC_TESSELLATION_DOMAIN_PROGRAM not supported\n");
@@ -113,12 +113,14 @@ void Application::Init_() {
 
   renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
-  loader_->LocateComponents(conf_.get(),io_.get(),renderer_.get(),physics_.get(),sounds_.get(),overlay_.get());
+  loader_->LocateComponents(conf_.get(), io_.get(), renderer_.get(), physics_.get(), sounds_.get(), overlay_.get());
   verbose_ = conf_->Get<bool>("global_verbose_enable");
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");
   io_->RegWinObserver(this);
-  renderer_->Resize(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"), conf_->Get<bool>("window_fullscreen"));
+  renderer_->Resize(conf_->Get<int>("window_width"),
+                    conf_->Get<int>("window_high"),
+                    conf_->Get<bool>("window_fullscreen"));
   renderer_->GetWindow().SetCaption(conf_->Get<std::string>("window_caption"));
 
   if (!verbose_) {
@@ -131,15 +133,36 @@ void Application::Init_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Clear_() {
+  io_->Clear();
   io_->UnregWinObserver(this);
+
   for (auto &it : components_)
-    it->Clear();
+    it->Clean();
+  for (auto &it : components_)
+    it->Reset();
 
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::InitCurrState_() {
-  cur_state_->LocateComponents(conf_.get(),io_.get(),renderer_.get(),physics_.get(),sounds_.get(),overlay_.get(),loader_.get());
+void Application::InitState_(std::unique_ptr<AppState> &&next_state) {
+  if (cur_state_) {
+    cur_state_->Clear();
+    renderer_->Refresh();
+    Ogre::Root::getSingleton().removeFrameListener(cur_state_.get());
+    io_->UnregObserver(cur_state_.get());
+  }
+
+  cur_state_ = move(next_state);
+  io_->RegObserver(cur_state_.get());
+  Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
+
+  cur_state_->LocateComponents(conf_.get(),
+                               io_.get(),
+                               renderer_.get(),
+                               physics_.get(),
+                               sounds_.get(),
+                               overlay_.get(),
+                               loader_.get());
   cur_state_->Create();
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -192,26 +215,18 @@ void Application::Loop_() {
 
       if (!suspend_) {
         cur_state_->Loop();
-        if (cur_state_->Waiting()) {
+        if (cur_state_->IsDirty()) {
           for (auto &it : components_)
             it->Clean();
 
-          cur_state_->Clear();
-          renderer_->Refresh();
-
-          Ogre::Root::getSingleton().removeFrameListener(cur_state_.get());
-          io_->UnregObserver(cur_state_.get());
-          cur_state_ = move(cur_state_->GetNextState());
-          io_->RegObserver(cur_state_.get());
-          Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
-
-          InitCurrState_();
+          InitState_(move(cur_state_->GetNextState()));
 
           physics_->Start();
         }
 
         auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
-        long millis_before_update = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
+        long millis_before_update =
+            std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
         float frame_time = static_cast<float>(millis_before_update - time_of_last_frame_) / 1000000;
         time_of_last_frame_ = millis_before_update;
 
@@ -251,12 +266,11 @@ void Application::Loop_() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
   if (cur_state_) {
-    InitCurrState_();
+    InitState_(move(cur_state_));
     quit_ = true;
     auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
     time_of_last_frame_ = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
     Loop_();
-    io_->Clear();
     Clear_();
   }
 }
@@ -269,7 +283,9 @@ int Application::Message_(const std::string &caption, const std::string &message
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
   try {
+#ifndef DEBUG
     std::ios_base::sync_with_stdio(false);
+#endif
     SetInitialState(move(scene_ptr));
     Go_();
   }

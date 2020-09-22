@@ -45,7 +45,7 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   void Clear_();
   void Loop_();
   void Go_();
-  void InitCurrState_();
+  void InitState_(std::unique_ptr<AppState> &&next_state);
   int Message_(const std::string &caption, const std::string &message);
   void Event(const SDL_Event &evt) final;
   void Other(uint8_t type, int32_t code, void *data1, void *data2) final;
