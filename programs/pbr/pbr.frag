@@ -148,7 +148,7 @@ uniform sampler2D uOffsetSampler;
 uniform sampler2D shadowMap0;
 uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
-uniform vec4 pssmSplitPoints;
+uniform vec3 pssmSplitPoints;
 uniform float uShadowColour;
 in vec4 lightSpacePosArray[3 * MAX_SHADOWS];
 #endif
@@ -319,6 +319,30 @@ vec4 GetDiffuse(vec2 uv) {
 
     return vec4(base_color, alpha);
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 ApplyFog(vec3 color) {
+    float exponent = vUV0.z * uFogParams.x;
+    float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
+    return mix(color, uFogColour, fog_value);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+#ifdef REFLECTION
+vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
+    vec4 projection = projectionCoord;
+    const float fresnelBias = 0.1;
+    const float fresnelScale = 1.8;
+    const float fresnelPower = 8.0;
+    float cosa = dot(n, -v);
+    float fresnel = fresnelBias + fresnelScale * pow(1.0 + cosa, fresnelPower);
+    fresnel = clamp(fresnel, 0.0, 1.0);
+    vec2 noise = texture2D(uNoiseMap, vUV0.xy).xy - 0.5;
+    projection.xy += (0.1 * noise);
+    vec3 reflectionColour = texture2DProj(uReflectionMap, projection).rgb;
+    return mix(color, reflectionColour, fresnel * metallic);
+}
+#endif
 
 #ifdef HAS_PARALLAXMAP
 //----------------------------------------------------------------------------------------------------------------------
@@ -584,27 +608,10 @@ void main()
 #endif
 
 #ifdef REFLECTION
-    vec4 projection = projectionCoord;
-
-    const float fresnelBias = 0.1;
-    const float fresnelScale = 1.8;
-    const float fresnelPower = 8.0;
-    float cosa = dot(n, -v);
-    float fresnel = fresnelBias + fresnelScale * pow(1.0 + cosa, fresnelPower);
-    fresnel = clamp(fresnel, 0.0, 1.0);
-
-    vec2 noise = texture2D(uNoiseMap, vUV0.xy).xy - 0.5;
-    noise *= 0.1;
-    projection.xy += noise;
-    vec3 reflectionColour = texture2DProj(uReflectionMap, projection).rgb;
-
-    total_colour = mix(total_colour, reflectionColour, fresnel * metallic);
+    total_colour = ApplyReflection(total_colour, n, v, metallic);
 #endif //REFLECTION
 
-    float exponent = vUV0.z * uFogParams.x;
-    float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
-    total_colour = mix(total_colour, uFogColour, fog_value);
-
+    total_colour = ApplyFog(total_colour);
     gl_FragColor = vec4(total_colour, baseColor.a);
 
 #else //SHADOWCASTER
