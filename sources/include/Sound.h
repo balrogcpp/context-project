@@ -39,7 +39,7 @@ class Sound final : public Component, public Singleton<Sound> {
   void SetVolume(const std::string &name, float gain);
 
   void Create() final {}
-  void Clear() final {}
+  void Reset() final {}
   void Clean() final;
   void Loop(float time) final {}
 

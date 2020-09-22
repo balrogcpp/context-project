@@ -40,7 +40,7 @@ class Overlay final : public Component, public Singleton<Overlay> {
   virtual ~Overlay();
 
   void Create() final;
-  void Clear() final;
+  void Reset() final;
   void Clean() final {}
   void Loop(float time) final;
   void Text(const std::string &str);

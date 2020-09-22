@@ -31,7 +31,7 @@ class Forest final : public Component {
   virtual ~Forest();
 
   void Create() final;
-  void Clear() final {}
+  void Reset() final {}
   void Clean() final {}
   void Loop(float time) final {}
 
