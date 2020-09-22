@@ -298,19 +298,26 @@ float GetRoughness(vec2 uv) {
 
 //----------------------------------------------------------------------------------------------------------------------
 vec4 GetDiffuse(vec2 uv) {
-    vec4 base_color = vec4(0.0, 0.0, 0.0, 1.0);
+    vec3 base_color = vec3(0.0);
+    float alpha = 1.0;
 #ifdef HAS_BASECOLORMAP
-    base_color = SRGBtoLINEAR(texture2D(uBaseColorSampler, uv));
-    base_color.rgb *= uSurfaceDiffuseColour;
+    vec4 tmp = texture2D(uBaseColorSampler, uv);
+    base_color = SRGBtoLINEAR(tmp.rgb);
+    alpha = tmp.a;
+    base_color *= uSurfaceDiffuseColour;
 #else
     base_color.rgb = SRGBtoLINEAR(uSurfaceDiffuseColour);
 #endif
 #ifdef FADE
     base_color.rgb *= vColor;
-    base_color.a *= vUV0.w;
+    alpha *= vUV0.w;
 #endif
 
-    return base_color;
+    if (alpha < uAlphaRejection) {
+        discard;
+    }
+
+    return vec4(base_color, alpha);
 }
 
 #ifdef HAS_PARALLAXMAP
@@ -457,12 +464,6 @@ void main()
 
     // The albedo may be defined from a base texture or a flat color
     vec4 baseColor = GetDiffuse(tex_coord);
-    float alpha = baseColor.a;
-
-    if (alpha < uAlphaRejection) {
-        discard;
-    }
-
     float metallic = GetMetallic(tex_coord);
     float roughness = GetRoughness(tex_coord);
 
@@ -604,7 +605,7 @@ void main()
     float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
     total_colour = mix(total_colour, uFogColour, fog_value);
 
-    gl_FragColor = vec4(total_colour, alpha);
+    gl_FragColor = vec4(total_colour, baseColor.a);
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
