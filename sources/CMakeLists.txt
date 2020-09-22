@@ -22,8 +22,6 @@
 
 project(lib-static)
 
-set(CMAKE_MODULE_PATH "${CONTEXT_ROOT_DIR}/CMake")
-
 set(OGGSOUND_HEADERS
     oggsound/include/LocklessQueue.h
     oggsound/include/OgreOggISound.h
