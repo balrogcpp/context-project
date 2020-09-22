@@ -95,7 +95,7 @@ uniform sampler2D uBaseColorSampler;
 #endif
 uniform float uAlphaRejection;
 uniform vec3 uSurfaceAmbientColour;
-uniform vec4 uSurfaceDiffuseColour;
+uniform vec3 uSurfaceDiffuseColour;
 uniform float uSurfaceSpecularColour;
 uniform float uSurfaceShininessColour;
 uniform vec3 uSurfaceEmissiveColour;
@@ -168,7 +168,6 @@ in vec4 projectionCoord;
 #endif
 
 const float M_PI = 3.141592653589793;
-const float c_MinRoughness = 0.04;
 
 //SRGB corretion
 #include "srgb.glsl"
@@ -267,29 +266,51 @@ vec3 getNormalTerrain(vec2 uv)
 }
 #endif
 //----------------------------------------------------------------------------------------------------------------------
-float getMetallic(vec2 uv) {
+float GetMetallic(vec2 uv) {
+    float metallic = uSurfaceShininessColour;
+
 #ifdef HAS_METALLICMAP
 #ifdef UNREAL
-    return texture2D(uMetallicSampler, uv).r * uSurfaceShininessColour;
+    metallic = texture2D(uMetallicSampler, uv).r * uSurfaceShininessColour;
 #else
-    return texture2D(uMetallicRoughnessSampler, uv).r * uSurfaceShininessColour;
+    metallic = texture2D(uMetallicRoughnessSampler, uv).r * uSurfaceShininessColour;
 #endif
-#else
-    return uSurfaceShininessColour;
 #endif
+
+    return metallic;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float getRoughness(vec2 uv) {
+float GetRoughness(vec2 uv) {
+    const float c_MinRoughness = 0.04;
+    float roughness = uSurfaceSpecularColour;
+
 #ifdef HAS_ROUGHNESSMAP
 #ifdef UNREAL
-    return texture2D(uRoughnessSampler, uv).r * uSurfaceSpecularColour;
+    roughness = texture2D(uRoughnessSampler, uv).r * uSurfaceSpecularColour;
 #else
-    return texture2D(uMetallicRoughnessSampler, uv).a * uSurfaceSpecularColour;
+    roughness = texture2D(uMetallicRoughnessSampler, uv).a * uSurfaceSpecularColour;
 #endif
+#endif
+
+    return clamp(roughness, c_MinRoughness, 1.0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+vec4 GetDiffuse(vec2 uv) {
+    vec4 base_color = vec4(0.0, 0.0, 0.0, 1.0);
+#ifdef HAS_BASECOLORMAP
+    base_color = SRGBtoLINEAR(texture2D(uBaseColorSampler, uv));
+    base_color.rgb *= uSurfaceDiffuseColour;
 #else
-    return uSurfaceSpecularColour;
+    base_color.rgb = SRGBtoLINEAR(uSurfaceDiffuseColour);
 #endif
+#ifdef FADE
+    base_color.rgb *= vColor;
+    base_color.a *= vUV0.w;
+#endif
+
+    return base_color;
 }
 
 #ifdef HAS_PARALLAXMAP
@@ -435,28 +456,16 @@ void main()
 #endif
 
     // The albedo may be defined from a base texture or a flat color
-#ifdef HAS_BASECOLORMAP
-    vec4 baseColor = SRGBtoLINEAR(texture2D(uBaseColorSampler, tex_coord)) * uSurfaceDiffuseColour;
-#else
-    vec4 baseColor = SRGBtoLINEAR(uSurfaceDiffuseColour);
-#endif
-
+    vec4 baseColor = GetDiffuse(tex_coord);
     float alpha = baseColor.a;
-
-#ifdef FADE
-    baseColor.rgb *= vColor;
-    alpha *= vUV0.w;
-#endif
 
     if (alpha < uAlphaRejection) {
         discard;
     }
 
-    float metallic = getMetallic(tex_coord);
-    float roughness = getRoughness(tex_coord);
+    float metallic = GetMetallic(tex_coord);
+    float roughness = GetRoughness(tex_coord);
 
-    roughness = clamp(roughness, c_MinRoughness, 1.0);
-    metallic = clamp(metallic, 0.0, 1.0);
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
     float alphaRoughness = roughness * roughness;
