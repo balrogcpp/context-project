@@ -41,7 +41,7 @@ namespace OgreOggSound {
 #	ifdef POCO_THREAD
 Poco::Mutex OgreOggSound::OgreOggListener::mMutex;
 #	else
-boost::recursive_mutex OgreOggSound::OgreOggListener::mMutex;
+std::recursive_mutex OgreOggSound::OgreOggListener::mMutex;
 #	endif
 #endif
 
@@ -51,7 +51,7 @@ void OgreOggListener::setPosition(ALfloat x, ALfloat y, ALfloat z) {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock l(mMutex);
 #	else
-  boost::recursive_mutex::scoped_lock lock(mMutex);
+  std::lock_guard lock(mMutex);
 #	endif
 #endif
   mPosition.x = x;
@@ -65,7 +65,7 @@ void OgreOggListener::setPosition(const Ogre::Vector3 &pos) {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock l(mMutex);
 #	else
-  boost::recursive_mutex::scoped_lock lock(mMutex);
+  std::lock_guard lock(mMutex);
 #	endif
 #endif
   mPosition = pos;
@@ -101,7 +101,7 @@ void OgreOggListener::setOrientation(ALfloat x, ALfloat y, ALfloat z, ALfloat up
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock l(mMutex);
 #	else
-  boost::recursive_mutex::scoped_lock lock(mMutex);
+  std::lock_guard lock(mMutex);
 #	endif
 #endif
   mOrientation[0] = x;
@@ -118,7 +118,7 @@ void OgreOggListener::setOrientation(const Ogre::Quaternion &q) {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock l(mMutex);
 #	else
-  boost::recursive_mutex::scoped_lock lock(mMutex);
+  std::lock_guard lock(mMutex);
 #	endif
 #endif
 #if OGRE_VERSION_MAJOR == 2

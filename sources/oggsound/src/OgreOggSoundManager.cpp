@@ -46,10 +46,10 @@ Poco::Mutex OgreOggSound::OgreOggSoundManager::mMutex;
 Poco::Mutex OgreOggSound::OgreOggSoundManager::mSoundMutex;
 Poco::Mutex OgreOggSound::OgreOggSoundManager::mResourceGroupNameMutex;
 #   else
-boost::thread *OgreOggSound::OgreOggSoundManager::mUpdateThread = 0;
-boost::recursive_mutex OgreOggSound::OgreOggSoundManager::mMutex;
-boost::recursive_mutex OgreOggSound::OgreOggSoundManager::mSoundMutex;
-boost::recursive_mutex OgreOggSound::OgreOggSoundManager::mResourceGroupNameMutex;
+std::thread *OgreOggSound::OgreOggSoundManager::mUpdateThread = 0;
+std::recursive_mutex OgreOggSound::OgreOggSoundManager::mMutex;
+std::recursive_mutex OgreOggSound::OgreOggSoundManager::mSoundMutex;
+std::recursive_mutex OgreOggSound::OgreOggSoundManager::mResourceGroupNameMutex;
 #	endif
 bool OgreOggSound::OgreOggSoundManager::mShuttingDown = false;
 #endif
@@ -444,7 +444,8 @@ bool OgreOggSoundManager::init(const std::string &deviceName,
   mUpdateThread->start(*mUpdater);
   Ogre::LogManager::getSingleton().logMessage("*** --- Using POCO threads for streaming", Ogre::LML_NORMAL);
 #	else
-  mUpdateThread = OGRE_NEW_T(boost::thread, Ogre::MEMCATEGORY_GENERAL)(boost::function0<void>(&OgreOggSoundManager::threadUpdate, this));
+//  mUpdateThread = OGRE_NEW_T(std::thread, Ogre::MEMCATEGORY_GENERAL)(std::function0<void>(&OgreOggSoundManager::threadUpdate, this));
+  mUpdateThread = OGRE_NEW_T(std::thread, Ogre::MEMCATEGORY_GENERAL)(OgreOggSoundManager::threadUpdate);
   Ogre::LogManager::getSingleton().logMessage("*** --- Using BOOST threads for streaming", Ogre::LML_NORMAL);
 #	endif
 #endif
@@ -536,7 +537,7 @@ const StringVector OgreOggSoundManager::getSoundList() const {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock soundLock(mSoundMutex);
 #else
-  boost::recursive_mutex::scoped_lock soundLock(mSoundMutex);
+  std::lock_guard soundLock(mSoundMutex);
 #	endif
 #endif
 
@@ -748,7 +749,7 @@ OgreOggISound *OgreOggSoundManager::getSound(const std::string &name) {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock soundLock(mSoundMutex);
 #else
-  boost::recursive_mutex::scoped_lock soundLock(mSoundMutex);
+  std::lock_guard soundLock(mSoundMutex);
 #	endif
 #endif
 
@@ -769,7 +770,7 @@ bool OgreOggSoundManager::hasSound(const std::string &name) {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock soundLock(mSoundMutex);
 #else
-  boost::recursive_mutex::scoped_lock soundLock(mSoundMutex);
+  std::lock_guard soundLock(mSoundMutex);
 #	endif
 #endif
 
@@ -943,7 +944,7 @@ void OgreOggSoundManager::setResourceGroupName(const Ogre::String &group) {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock l(mResourceGroupNameMutex);
 #else
-  boost::recursive_mutex::scoped_lock l(mResourceGroupNameMutex);
+  std::lock_guard l(mResourceGroupNameMutex);
 #	endif
 #endif
 
@@ -955,7 +956,7 @@ Ogre::String OgreOggSoundManager::getResourceGroupName() const {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock l(mResourceGroupNameMutex);
 #else
-  boost::recursive_mutex::scoped_lock l(mResourceGroupNameMutex);
+  std::lock_guard l(mResourceGroupNameMutex);
 #	endif
 #endif
 
@@ -2103,7 +2104,7 @@ void OgreOggSoundManager::_destroyAllSoundsImpl() {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock l(mMutex);
 #else
-  boost::recursive_mutex::scoped_lock lock(mMutex);
+  std::lock_guard lock(mMutex);
 #	endif
 #endif
   // Destroy all sounds
@@ -2113,7 +2114,7 @@ void OgreOggSoundManager::_destroyAllSoundsImpl() {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock soundLock(mSoundMutex);
 #else
-  boost::recursive_mutex::scoped_lock soundLock(mSoundMutex);
+  std::lock_guard soundLock(mSoundMutex);
 #	endif
 #endif
 
@@ -2163,7 +2164,7 @@ void OgreOggSoundManager::_setGlobalPitchImpl() {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock soundLock(mSoundMutex);
 #else
-  boost::recursive_mutex::scoped_lock soundLock(mSoundMutex);
+  std::lock_guard soundLock(mSoundMutex);
 #	endif
 #endif
 
@@ -2287,7 +2288,7 @@ void OgreOggSoundManager::_releaseSoundImpl(OgreOggISound *sound) {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock l(mMutex);
 #	else
-  boost::recursive_mutex::scoped_lock lock(mMutex);
+  std::lock_guard lock(mMutex);
 #	endif
 #endif
   // Delete sound buffer
@@ -2302,7 +2303,7 @@ void OgreOggSoundManager::_releaseSoundImpl(OgreOggISound *sound) {
 #	ifdef POCO_THREAD
   Poco::Mutex::ScopedLock soundLock(mSoundMutex);
 #else
-  boost::recursive_mutex::scoped_lock soundLock(mSoundMutex);
+  std::lock_guard soundLock(mSoundMutex);
 #	endif
 #endif
 
@@ -2331,7 +2332,7 @@ void OgreOggSoundManager::_destroyListener() {
 #	ifdef POCO_THREAD
     Poco::Mutex::ScopedLock l(mMutex);
 #else
-    boost::recursive_mutex::scoped_lock lock(mMutex);
+    std::lock_guard lock(mMutex);
 #	endif
 #endif
 
@@ -2809,7 +2810,7 @@ void OgreOggSoundManager::_requestSoundAction(const SoundAction& action)
 #ifdef POCO_THREAD
         Poco::Mutex::ScopedLock l(mMutex);
 #else
-        boost::recursive_mutex::scoped_lock lock(mMutex);
+        std::lock_guard lock(mMutex);
 #endif
         _performAction(action);
         return;

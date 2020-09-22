@@ -42,7 +42,7 @@
 #	ifdef POCO_THREAD
 #		include "Poco/Mutex.hpp"
 #	else 
-#		include <boost/thread/recursive_mutex.hpp>
+#		include <mutex>
 #	endif
 #endif
 
@@ -208,7 +208,7 @@ class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
 #	if POCO_THREAD
   static Poco::Mutex mMutex;
 #	else
-  static boost::recursive_mutex mMutex;
+  static std::recursive_mutex mMutex;
 #	endif
 #endif
 
