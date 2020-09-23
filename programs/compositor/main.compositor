@@ -65,29 +65,6 @@ compositor Context/GBuffer
     }
 }
 
-compositor Context/Depth
-{
-    technique
-    {
-        texture depth target_width target_height PF_FLOAT16_R chain_scope
-
-        target depth
-        {
-            input none
-            shadows off
-            material_scheme Depth
-
-            pass clear
-			{
-			    buffers colour depth stencil
-				depth_value 1.0
-			}
-
-            pass render_scene {}
-        }
-    }
-}
-
 compositor Context/SSAO
 {
     technique
@@ -189,82 +166,6 @@ compositor Context/Modulate/Bloom
             pass render_quad
             {
                 material Context/Modulate/Bloom
-            }
-        }
-    }
-}
-
-compositor Context/Modulate/HDR
-{
-    technique
-    {
-        texture hdr target_width target_height PF_FLOAT16_RGB chain_scope
-
-        target hdr
-        {
-            pass render_quad
-            {
-                material Context/Modulate
-            }
-        }
-    }
-}
-
-compositor Context/Modulate/SSAO/HDR
-{
-    technique
-    {
-        texture hdr target_width target_height PF_FLOAT16_RGB chain_scope
-
-        target hdr
-        {
-            pass render_quad
-            {
-                material Context/Modulate/SSAO
-            }
-        }
-    }
-}
-
-compositor Context/Modulate/Bloom/HDR
-{
-    technique
-    {
-        texture hdr target_width target_height PF_FLOAT16_RGB chain_scope
-
-        target hdr
-        {
-            pass render_quad
-            {
-                material Context/Modulate/Bloom
-            }
-        }
-    }
-}
-
-compositor Context/HDR
-{
-    technique
-    {
-        target_output
-        {
-            pass render_quad
-            {
-                material Context/HDR
-            }
-        }
-    }
-}
-
-compositor Context/Bypass
-{
-    technique
-    {
-        target_output
-        {
-            pass render_quad
-            {
-                material Context/Bypass
             }
         }
     }
