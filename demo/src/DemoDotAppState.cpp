@@ -24,7 +24,6 @@
 #include "DemoDotAppState.h"
 #include "Camera.h"
 #include <OgreSceneLoaderManager.h>
-#include <iostream>
 
 namespace Demo {
 using namespace xio;
@@ -45,8 +44,8 @@ void DemoDotAppState::Loop() {
 }
 
 void DemoDotAppState::Callback(int a, int b) {
-  sound_->PlaySound("hit");
-  std::cout << "Bang! " << a << ' ' << b << '\n';
+//  sound_->PlaySound("hit");
+//  std::cout << "Bang! " << a << ' ' << b << '\n';
 }
 
 void DemoDotAppState::Create() {
@@ -55,8 +54,8 @@ void DemoDotAppState::Create() {
   sound_->CreateSound("ambient", "test.ogg", true);
   sound_->SetVolume("ambient", 0.5);
   sound_->PlaySound("ambient");
-  sound_->CreateSound("hit", "406344__basharov__glass-on-glasshit-1.wav");
-  sound_->SetVolume("hit", 0.1);
-  physics_->SetCallback(Callback);
+//  sound_->CreateSound("hit", "406344__basharov__glass-on-glasshit-1.wav");
+//  sound_->SetVolume("hit", 0.1);
+//  physics_->SetCallback(Callback);
 }
 }
