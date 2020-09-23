@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Component.h"
+#include "Singleton.h"
 #include "Gorilla.h"
 #include <memory>
 
@@ -33,13 +34,13 @@ class SceneNode;
 }
 
 namespace xio {
-class Overlay final : public Component {
+class Overlay final : public Component, public Singleton<Overlay> {
  public:
   Overlay();
   virtual ~Overlay();
 
   void Create() final;
-  void Clear() final;
+  void Reset() final;
   void Clean() final {}
   void Loop(float time) final;
   void Text(const std::string &str);

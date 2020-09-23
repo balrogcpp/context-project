@@ -85,32 +85,6 @@ if (ANDROID)
     set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=/opt/android-ndk -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16)
 endif ()
 
-externalproject_add(target-yamlcpp
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-                    GIT_TAG yaml-cpp-0.6.3
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DYAML_BUILD_SHARED_LIBS=false
-                    -DYAML_CPP_BUILD_CONTRIB=false
-                    -DYAML_CPP_BUILD_TESTS=false
-                    -DYAML_CPP_BUILD_TOOLS=false
-                    -DMSVC_SHARED_RT=false
-                    -DMSVC_STHREADED_RT=false
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS} -I /opt/android-ndk/sources/android/cpufeatures
-                    -G "${CMAKE_GENERATOR}"
-                    )
-
 externalproject_add(target-sdl
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -414,6 +388,32 @@ externalproject_add(target-rapidjson
                     -G "${CMAKE_GENERATOR}"
                     )
 
+externalproject_add(target-yamlcpp
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+                    GIT_TAG yaml-cpp-0.6.3
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DYAML_BUILD_SHARED_LIBS=false
+                    -DYAML_CPP_BUILD_CONTRIB=false
+                    -DYAML_CPP_BUILD_TESTS=false
+                    -DYAML_CPP_BUILD_TOOLS=false
+                    -DMSVC_SHARED_RT=false
+                    -DMSVC_STHREADED_RT=false
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS} -I /opt/android-ndk/sources/android/cpufeatures
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
 externalproject_add(target-pugixml
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -455,6 +455,7 @@ option(CONTEXT_OGRE_BUILD_FREEIMAGE "CONTEXT_OGRE_BUILD_FREEIMAGE" false)
 option(CONTEXT_OGRE_BUILD_EXRCODEC "CONTEXT_OGRE_BUILD_EXRCODEC" false)
 option(CONTEXT_OGRE_BUILD_VOLUME "CONTEXT_OGRE_BUILD_VOLUME" false)
 option(CONTEXT_OGRE_BUILD_MESHLODGENERATOR "CONTEXT_OGRE_BUILD_MESHLODGENERATOR" false)
+option(CONTEXT_OGRE_BUILD_ASSIMP "CONTEXT_OGRE_BUILD_ASSIMP" false)
 
 externalproject_add(target-ogre1
                     EXCLUDE_FROM_ALL true
@@ -492,6 +493,7 @@ externalproject_add(target-ogre1
                     -DOGRE_BUILD_PLUGIN_CG=false
                     -DOGRE_BUILD_PLUGIN_FREEIMAGE=${CONTEXT_OGRE_BUILD_FREEIMAGE}
                     -DOGRE_BUILD_PLUGIN_EXRCODEC=${CONTEXT_OGRE_BUILD_EXRCODEC}
+                    -DOGRE_BUILD_PLUGIN_ASSIMP=${CONTEXT_OGRE_BUILD_ASSIMP}
                     -DOGRE_BUILD_PLUGIN_STBI=${CONTEXT_OGRE_BUILD_STBI}
                     -DOGRE_BUILD_PLUGIN_BSP=${CONTEXT_OGRE_BUILD_BSP}
                     -DOGRE_BUILD_PLUGIN_PCZ=${CONTEXT_OGRE_BUILD_PCZ}
@@ -528,6 +530,51 @@ externalproject_add(target-jemalloc
                     INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
                     )
 
+externalproject_add(target-lua
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/balrogcpp/lua-cmake.git
+                    GIT_TAG 5.4.0
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DLUA_EXE=false
+                    -DLUA_DOC=false
+                    -DLUA_BUILD_WLUA=false
+                    -DBUILD_SHARED_LIBS=false
+                    -DLUA_USE_READLINE=false
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
+externalproject_add(target-sol
+                    EXCLUDE_FROM_ALL true
+                    DEPENDS target-lua
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/ThePhD/sol2.git
+                    GIT_TAG v3.2.1
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
 
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     if (UNIX OR MINGW AND NOT ANDROID)
@@ -537,6 +584,7 @@ endif ()
 
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rapidjson)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-pugixml)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
@@ -567,15 +615,16 @@ endif ()
 
 set(SDL_LIBRARIES SDL2${SUFFIX_LIB_SDL})
 
+set(OGG_LIBRARIES ogg)
+set(LUA_LIBRARIES lua)
+set(VORBISFILE_LIBRARIES vorbisfile vorbis vorbisenc)
+
 if (WIN32)
     set(OPENAL_LIBRARY OpenAL32)
 elseif (UNIX)
     set(OPENAL_LIBRARY openal)
 endif ()
 
-set(OGG_LIBRARIES ogg)
-
-set(VORBISFILE_LIBRARIES vorbisfile vorbis vorbisenc)
 
 set(SUFFIX_LIB_OGRE Static)
 if (WIN32)
@@ -691,21 +740,8 @@ set(CONTEXT_STATIC_DEPENDENCY_LIBS
     ${OGG_LIBRARIES}
     ${OPENAL_LIBRARY}
     ${SDL_LIBRARIES}
+    ${LUA_LIBRARIES}
     ${BULLET_LIBRARIES}
     ${STATIC_LIBRARIES}
     ${JEMALLOC_LIBRARIES}
     CACHE INTERNAL "")
-
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR})
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/btogre/include)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/oggsound/include)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/pgeometry/include)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/bullet)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GL3Plus)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GL)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2/GLSLES)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_ROOT_DIR}/android/include/)
-set(CONTEXT_DEPENDENCY_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIRS} CACHE INTERNAL "")

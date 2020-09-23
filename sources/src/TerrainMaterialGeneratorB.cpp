@@ -57,24 +57,27 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrai
   terrain->_setCompositeMapRequired(false);
 }
 //---------------------------------------------------------------------
-bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const {
-  return false;
-}
-//---------------------------------------------------------------------
-void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) {
-}
-//---------------------------------------------------------------------
-Ogre::uint8 TerrainMaterialGeneratorB::SM2Profile::getMaxLayers(const Ogre::Terrain *terrain) const {
-  // count the texture units free
-  return 16;
-}
-//---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *terrain) {
-  std::string material_name = "Plane";
+  std::string material_name = "Terrain";
+
   UpdatePbrParams(material_name);
   UpdatePbrShadowReceiver(material_name);
-  static long long counter = 0;
+  if (vertex_compression_) {
+    auto material = Ogre::MaterialManager::getSingleton().getByName(material_name);
+    if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
+      auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+      auto &constants = vert_params->getConstantDefinitions();
+      Ogre::Matrix4 posIndexToObjectSpace;
+      terrain->getPointTransform(&posIndexToObjectSpace);
 
+      AddGpuConstParameter(vert_params, "posIndexToObjectSpace", posIndexToObjectSpace);
+
+      Ogre::Real baseUVScale = 1.0f / (terrain->getSize() - 1);
+      AddGpuConstParameter(vert_params, "baseUVScale", baseUVScale);
+    }
+  }
+
+  static long long counter = 0;
   auto normalmap = terrain->getTerrainNormalMap();
 
   auto new_material = Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(counter));
@@ -90,19 +93,12 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
 }
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Ogre::Terrain *terrain) {
-  std::string material_name = "Plane";
+  std::string material_name = "Terrain";
   UpdatePbrParams(material_name);
   UpdatePbrShadowReceiver(material_name);
 
   static long long counter = 0;
   counter++;
   return Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(counter));
-}
-//---------------------------------------------------------------------
-void TerrainMaterialGeneratorB::SM2Profile::updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) {
-}
-//---------------------------------------------------------------------
-void TerrainMaterialGeneratorB::SM2Profile::updateParamsForCompositeMap(const Ogre::MaterialPtr &mat,
-                                                                        const Ogre::Terrain *terrain) {
 }
 }

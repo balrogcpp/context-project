@@ -22,11 +22,12 @@
 
 #pragma once
 #include "Component.h"
+#include "Singleton.h"
 #include "OgreOggSound.h"
 #include <string>
 
 namespace xio {
-class Sound final : public Component {
+class Sound final : public Component, public Singleton<Sound> {
  public:
   Sound();
   virtual ~Sound();
@@ -38,7 +39,7 @@ class Sound final : public Component {
   void SetVolume(const std::string &name, float gain);
 
   void Create() final {}
-  void Clear() final {}
+  void Reset() final {}
   void Clean() final;
   void Loop(float time) final {}
 

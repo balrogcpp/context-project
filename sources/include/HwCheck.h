@@ -21,24 +21,29 @@
 //SOFTWARE.
 
 #pragma once
-#include "Component.h"
+#include <Ogre.h>
+#include <vector>
+#include <string>
+#include <iostream>
 
-namespace xio {
-class Field final : public Component {
- public:
-  Field();
-  virtual ~Field();
-
-  void Create() final;
-  void Clear() final {}
-  void Clean() final {}
-  void Loop(float time) final {}
-
- private:
-  static std::function<float(float, float)> heigh_func_;
- public:
-  static void SetHeighFunc(const std::function<float(float, float)> &heigh_func) {
-    heigh_func_ = heigh_func;
+namespace xio{
+inline bool TestCapabilities(const std::vector<Ogre::Capabilities> &capabilities) {
+  auto *caps = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
+  for (const auto &it : capabilities) {
+    bool result = caps->hasCapability(it);
+    if (!result) return result;
   }
-};
+
+  return true;
+}
+//----------------------------------------------------------------------------------------------------------------------
+inline bool ShaderSupported(const std::vector<std::string> &v) {
+  auto &gpu = Ogre::GpuProgramManager::getSingleton();
+  for (const auto &it : v) {
+    bool result = gpu.isSyntaxSupported(it);
+    if (!result) return result;
+  }
+
+  return true;
+}
 }

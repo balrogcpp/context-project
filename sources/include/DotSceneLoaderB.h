@@ -23,8 +23,9 @@
 #pragma once
 
 #include "Component.h"
+#include "Singleton.h"
 #include "Terrain.h"
-#include "Field.h"
+#include "Forest.h"
 #include "ReflectionCamera.h"
 #include "CubeMapCamera.h"
 #include "Input.h"
@@ -57,13 +58,13 @@ class Sound;
 class Overlay;
 class DotSceneLoaderB;
 
-class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
+class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB>, public Ogre::SceneLoader {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();
 
   void Create() final {}
-  void Clear() final {}
+  void Reset() final {}
   void Clean() final;
   void Loop(float time) final {}
 
@@ -110,7 +111,8 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   std::unique_ptr<ReflectionCamera> rcamera_;
   std::unique_ptr<CubeMapCamera> cmcamera_;
   static std::unique_ptr<Terrain> terrain_;
-  static std::unique_ptr<Field> forest_;
+ private:
+  static std::unique_ptr<Forest> forest_;
   std::unique_ptr<Camera> camera_;
   Ogre::SceneManager *scene_manager_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;
@@ -122,5 +124,13 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader {
   Sound *sounds_ = nullptr;
   Overlay *overlay_ = nullptr;
   InputSequencer *io_ = nullptr;
+
+ public:
+  static const Terrain& GetTerrain() {
+    return *terrain_;
+  }
+  static const Forest& GetForest() {
+    return *forest_;
+  }
 };
 }

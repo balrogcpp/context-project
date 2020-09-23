@@ -1,5 +1,45 @@
 include(ExternalProject)
 
+externalproject_add(target-gtest
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/google/googletest.git
+                    GIT_TAG release-1.8.1
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
+externalproject_add(target-gbenchmark
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/google/benchmark.git
+                    GIT_TAG v1.5.0
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
 externalproject_add(target-glm
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -50,51 +90,6 @@ externalproject_add(target-angelscript
                     ${CMAKE_COMMAND} --build ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-angelscript-build
                     INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-angelscript-build
                     ${CMAKE_COMMAND} --build ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-angelscript-build --target install
-                    )
-
-externalproject_add(target-lua
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/balrogcpp/lua-cmake.git
-                    GIT_TAG 5.4.0
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DLUA_EXE=false
-                    -DLUA_DOC=false
-                    -DLUA_BUILD_WLUA=false
-                    -DBUILD_SHARED_LIBS=false
-                    -DLUA_USE_READLINE=false
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
-                    )
-
-externalproject_add(target-chaiscript
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/ChaiScript/ChaiScript.git
-                    GIT_TAG v6.1.0
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
                     )
 
 externalproject_add(target-cegui

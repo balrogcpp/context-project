@@ -27,8 +27,8 @@ extern "C" {
 #include <SDL2/SDL_events.h>
 }
 #include <cstdint>
-#include <iostream>
 #include <vector>
+#include <exception>
 
 namespace xio {
 class InputSequencer;
@@ -65,25 +65,51 @@ class WindowObserver {
   virtual void Other(uint8_t type, int32_t code, void *data1, void *data2) {}
 };
 //----------------------------------------------------------------------------------------------------------------------
+class InputException : public std::exception {
+ public:
+  InputException() = default;
+
+  explicit InputException(std::string description)
+      : description(std::move(description)) {}
+
+  virtual ~InputException() {}
+
+ public:
+  std::string getDescription() const noexcept {
+    return description;
+  }
+
+  const char *what() const noexcept override {
+    return description.c_str();
+  }
+
+ protected:
+  std::string description = std::string("Description not specified");
+  size_t code = 0;
+};
+//----------------------------------------------------------------------------------------------------------------------
 class InputSequencer {
  public:
   using KeyboardListenersList = std::vector<InputObserver *>;
   using OtherListenersList = std::vector<WindowObserver *>;
 
+  //Copy not allowed
   InputSequencer(const InputSequencer &) = delete;
   InputSequencer &operator=(const InputSequencer &) = delete;
-  InputSequencer(InputSequencer &&) = delete;
-  InputSequencer &operator=(InputSequencer &&) = delete;
 
   InputSequencer() {
+    if (instanced_)
+      throw InputException("Only one instance of InputSequencer is allowed!\n");
     io_listeners.reserve(reserve_);
     win_listeners.reserve(reserve_);
+    instanced_ = true;
   }
 
  private:
   KeyboardListenersList io_listeners;
   OtherListenersList win_listeners;
   const size_t reserve_ = 16;
+  inline static bool instanced_ = false;
 
  public:
   void RegObserver(InputObserver *p) {

@@ -41,8 +41,10 @@ void UpdatePbrShadowCaster(MaterialPtr material) {
 
   auto *pass = material->getTechnique(0)->getPass(0);
   int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
+  bool transparency_casts_shadows = material->getTransparencyCastsShadows();
+  int num_textures = pass->getNumTextureUnitStates();
 
-  if (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0 && alpha_rejection > 0) {
+  if (num_textures > 0 && alpha_rejection > 0 && transparency_casts_shadows) {
     auto caster_material = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     auto new_caster = caster_material->clone("PSSM/shadow_caster" + std::to_string(material_list.size()));
     material->getTechnique(0)->setShadowCasterMaterial(new_caster);
@@ -188,7 +190,7 @@ void UpdatePbrShadowReceiver(MaterialPtr material) {
     if (constants.map.count("uTexWorldViewProjMatrixArray") == 0) {
       return;
     }
-
+    AddGpuConstParameterAuto(vert_params, "uLightCount", GpuProgramParameters::ACT_LIGHT_COUNT);
     AddGpuConstParameterAuto(vert_params,
                              "uTexWorldViewProjMatrixArray",
                              GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY,

@@ -31,14 +31,14 @@ class Component : public NoCopy {
   virtual ~Component() {}
 
   virtual void Create() = 0;
-  virtual void Clear() = 0;
+  virtual void Reset() = 0;
   virtual void Clean() = 0;
   virtual void Loop(float time) = 0;
 
  protected:
-  static YamlConfigurator* conf_;
+  inline static YamlConfigurator* conf_ = nullptr;
  public:
-  static void SetConf(YamlConfigurator *conf) {
+  static void SetConfigurator(YamlConfigurator *conf) {
     conf_ = conf;
   }
 };

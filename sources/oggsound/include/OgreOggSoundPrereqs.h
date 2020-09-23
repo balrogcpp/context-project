@@ -115,8 +115,5 @@ typedef std::map<std::string, sharedAudioBuffer *> SharedBufferList;
  * 0 - No multithreading
  * 1 - BOOST/POCO multithreaded
  */
-#ifndef OGGSOUND_THREADED
-#define OGGSOUND_THREADED 0
-#endif
 
-
+#define OGGSOUND_THREADED 1

@@ -20,15 +20,26 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "pcheader.h"
-#include "Locator.h"
+#pragma once
+#include "Component.h"
+#include <functional>
 
 namespace xio {
-YamlConfigurator *Locator::conf_ = nullptr;
-Renderer *Locator::renderer_ = nullptr;
-Physics *Locator::physics_ = nullptr;
-Sound *Locator::sound_ = nullptr;
-Overlay *Locator::overlay_ = nullptr;
-DotSceneLoaderB *Locator::loader_ = nullptr;
-InputSequencer *Locator::io_ = nullptr;
+class Forest final : public Component {
+ public:
+  Forest();
+  virtual ~Forest();
+
+  void Create() final;
+  void Reset() final {}
+  void Clean() final {}
+  void Loop(float time) final {}
+
+ private:
+  inline static std::function<float(float, float)> heigh_func_;
+ public:
+  static void SetHeighFunc(const std::function<float(float, float)> &heigh_func) {
+    heigh_func_ = heigh_func;
+  }
+};
 }

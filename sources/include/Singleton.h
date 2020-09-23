@@ -20,9 +20,48 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "pcheader.h"
-#include "Component.h"
+#pragma once
+
+#include "NoCopy.h"
+#include <string>
+#include <exception>
 
 namespace xio{
-YamlConfigurator* Component::conf_ = nullptr;
+class SingleInstanceException : public std::exception {
+ public:
+  SingleInstanceException() = default;
+
+  explicit SingleInstanceException(std::string description)
+      : description(std::move(description)) {}
+
+  virtual ~SingleInstanceException() {}
+
+ public:
+  std::string getDescription() const noexcept {
+    return description;
+  }
+
+  const char *what() const noexcept override {
+    return description.c_str();
+  }
+
+ protected:
+  std::string description = std::string("Description not specified");
+  size_t code = 0;
+};
+
+template <typename T>
+class Singleton : public NoCopy{
+ public:
+  Singleton() {
+    if (instanced_)
+      throw SingleInstanceException("Only one instance can be created!\n");
+
+    instanced_ = true;
+  }
+
+  virtual ~Singleton() {}
+ protected:
+  inline static bool instanced_ = false;
+};
 }

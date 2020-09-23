@@ -20,9 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-project(xio-lib)
-
-set(CMAKE_MODULE_PATH "${CONTEXT_ROOT_DIR}/CMake")
+project(lib-static)
 
 set(OGGSOUND_HEADERS
     oggsound/include/LocklessQueue.h
@@ -37,12 +35,14 @@ set(OGGSOUND_HEADERS
     oggsound/include/OgreOggStaticSound.h
     oggsound/include/OgreOggStaticWavSound.h
     oggsound/include/OgreOggStreamSound.h
-    oggsound/include/OgreOggStreamWavSound.h)
+    oggsound/include/OgreOggStreamWavSound.h
+    )
 
 set(BTOGRE_HEADERS
     btogre/include/BtOgreExtras.h
     btogre/include/BtOgreGP.h
-    btogre/include/BtOgrePG.h)
+    btogre/include/BtOgrePG.h
+    )
 
 set(PAGED_HEADERS
     pgeometry/include/GrassLoader.h
@@ -66,7 +66,7 @@ set(CONTEXT_HEADERS
     include/VerboseListener.h
     include/JsonConfigurator.h
     include/DotSceneLoaderB.h
-    include/Field.h
+    include/Forest.h
     include/Physics.h
     include/OgreHeaders.h
     include/Sound.h
@@ -90,16 +90,20 @@ set(CONTEXT_HEADERS
     include/ComponentLocator.h
     include/XmlUtils.h
     include/Locator.h
+    include/HwCheck.h
+    include/Singleton.h
     )
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
     ${PAGED_HEADERS}
     ${OGGSOUND_HEADERS}
-    ${CONTEXT_HEADERS})
+    ${CONTEXT_HEADERS}
+    )
 
 set(BTOGRE_SOURCES
-    btogre/src/BtOgre.cpp)
+    btogre/src/BtOgre.cpp
+    )
 
 set(PAGED_SOURCES
     pgeometry/src/GrassLoader.cpp
@@ -121,15 +125,15 @@ set(OGGSOUND_SOURCES
     oggsound/src/OgreOggStaticSound.cpp
     oggsound/src/OgreOggStaticWavSound.cpp
     oggsound/src/OgreOggStreamSound.cpp
-    oggsound/src/OgreOggStreamWavSound.cpp)
+    oggsound/src/OgreOggStreamWavSound.cpp
+    )
 
 set(CONTEXT_SOURCES
     src/Application.cpp
     src/Renderer.cpp
     src/DotSceneLoaderB.cpp
     src/Physics.cpp
-    src/Field.cpp
-    src/pcheader.cpp
+    src/Forest.cpp
     src/Compositor.cpp
     src/TerrainMaterialGeneratorB.cpp
     src/Gorilla.cpp
@@ -137,19 +141,31 @@ set(CONTEXT_SOURCES
     src/PbrUtils.cpp
     src/Terrain.cpp
     src/Sound.cpp
-    src/Locator.cpp
-    src/Component.cpp)
+    )
 
 set(SOURCE_FILES_CONTEXT_LIB
     ${BTOGRE_SOURCES}
     ${PAGED_SOURCES}
     ${OGGSOUND_SOURCES}
-    ${CONTEXT_SOURCES})
+    ${CONTEXT_SOURCES}
+    )
 
-include_directories(xio-lib ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR})
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/btogre/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/oggsound/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/pgeometry/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/sol)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/bullet)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GL3Plus)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GL)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2/GLSLES)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_ROOT_DIR}/android/include/)
+set(CONTEXT_DEPENDENCY_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIRS} CACHE INTERNAL "")
 
-add_library(xio-lib STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
-
-set_target_properties(xio-lib PROPERTIES OUTPUT_NAME "xio-static")
-
-target_precompile_headers(xio-lib PUBLIC include/pcheader.h)
+include_directories(lib-static ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+add_library(lib-static STATIC ${SOURCE_FILES_CONTEXT_LIB} ${HEADER_FILES_CONTEXT_LIB})
+set_target_properties(lib-static PROPERTIES OUTPUT_NAME "xio-static")
+target_precompile_headers(lib-static PUBLIC include/pcheader.h)

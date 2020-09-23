@@ -319,8 +319,8 @@ void BatchedGeometry::build() {
     m_pSceneNode = m_pParentSceneNode->createChildSceneNode(m_vecCenter);
 
     //Build each batch
-    for (TSubBatchMap::iterator i = m_mapSubBatch.begin(), iend = m_mapSubBatch.end(); i != iend; ++i)
-      i->second->build();
+    for (auto &it : m_mapSubBatch)
+      it.second->build();
 
     m_pSceneNode->attachObject(this);   // Attach the batch to the scene node
 
@@ -352,8 +352,8 @@ void BatchedGeometry::clear() {
   m_fRadius = 0.f;
 
   //Delete each batch
-  for (TSubBatchMap::iterator i = m_mapSubBatch.begin(), iend = m_mapSubBatch.end(); i != iend; ++i)
-    delete i->second;
+  for (auto &it : m_mapSubBatch)
+    delete it.second;
   m_mapSubBatch.clear();
 
   m_Built = false;
@@ -362,20 +362,13 @@ void BatchedGeometry::clear() {
 //-----------------------------------------------------------------------------
 ///
 void BatchedGeometry::_updateRenderQueue(RenderQueue *queue) {
-  OgreAssert((isVisible() && "Ogre core code must detect that this MovableObject invisible"), R"(isVisible() && "Ogre core code must detect that this MovableObject invisible")");
+  OgreAssert(isVisible(), "Ogre core code must detect that this MovableObject invisible");
+  for (const auto &it : m_mapSubBatch)
+    queue->addRenderable(it.second);
 
-  // SVA speed up adding
-  Ogre::RenderQueueGroup *rqg = queue->getQueueGroup(getRenderQueueGroup());
-  for (TSubBatchMap::const_iterator i = m_mapSubBatch.begin(), iend = m_mapSubBatch.end(); i != iend; ++i)
-    i->second->addSelfToRenderQueue(rqg);
-
-  ////If visible...
-  //if (isVisible()){
-  //   //Ask each batch to add itself to the render queue if appropriate
-  //   for (SubBatchMap::iterator i = subBatchMap.begin(); i != subBatchMap.end(); ++i){
-  //      i->second->addSelfToRenderQueue(queue, getRenderQueueGroup());
-  //   }
-  //}
+//  Ogre::RenderQueueGroup *rqg = queue->getQueueGroup(getRenderQueueGroup());
+//  for (const auto &it : m_mapSubBatch)
+//      it.second->addSelfToRenderQueue(rqg);
 }
 
 //-----------------------------------------------------------------------------
@@ -440,8 +433,8 @@ BatchedGeometry::SubBatch::SubBatch(BatchedGeometry *parent, SubEntity *ent) :
   // that the user may be using somewhere else).
   {
     Ogre::String newName = parentMaterial->getName() + "_Batched";
-    m_ptrMaterial = Ogre::static_pointer_cast<Material>(MaterialManager::getSingleton().getByName(newName,
-                                                                                                  parentMaterial->getGroup()));
+    auto material = MaterialManager::getSingleton().getByName(newName, parentMaterial->getGroup());
+    m_ptrMaterial = Ogre::static_pointer_cast<Material>(material);
     if (!m_ptrMaterial)
       m_ptrMaterial = parentMaterial->clone(newName);
   }

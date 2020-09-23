@@ -20,7 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-cmake_minimum_required(VERSION 3.16.3)
+cmake_minimum_required(VERSION 3.16.1)
 
 # The project version number.
 set(PROJECT_VERSION_MAJOR 0 CACHE STRING "Project major version number.")
@@ -36,7 +36,7 @@ endif ()
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 enable_language(C)
 enable_language(CXX)
@@ -115,7 +115,6 @@ if (UNIX OR MINGW)
 
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -g")
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -O0")
-    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -std=c++20")
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -Wall")
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -pthread")
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -fopenmp")
@@ -123,7 +122,6 @@ if (UNIX OR MINGW)
 
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -g")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -Ofast")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -std=c++20")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -msse4")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -funroll-loops")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -floop-parallelize-all -ftree-parallelize-loops=8")
@@ -133,7 +131,6 @@ if (UNIX OR MINGW)
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -DDEBUG")
 
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -Ofast")
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -std=c++20")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -msse4")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -funroll-loops")
@@ -218,13 +215,10 @@ if (UNIX OR MINGW)
 
         string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -pthread")
         string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -fopenmp")
-        string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -std=c++20")
         string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -pthread")
         string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -fopenmp")
-        string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -std=c++20")
         string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -pthread")
         string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -fopenmp")
-        string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -std=c++20")
 
         if (NOT ANDROID)
             string(APPEND CONTEXT_Clang_STATIC_LINKER_Debug_FLAGS " -lstdc++fs")
@@ -349,109 +343,108 @@ set(CONTEXT_THIRDPARTY_DIR ${CONTEXT_THIRDPARTY_ROOT} CACHE PATH "")
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/dependencies ${CONTEXT_WORK_DIR}/dependencies)
 
-if (NOT CONTEXT_ONLY_DEPS)
-    execute_process(
-            COMMAND git rev-parse --short=8 HEAD
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            OUTPUT_VARIABLE GIT_SHA1
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-
-    set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
-    set(CONTEXT_ZIP_NAME ContextProjectDemo-${CMAKE_BUILD_TYPE}-${GIT_SHA1} CACHE PATH "")
-    set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
-
-    if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
-        message(SEND_ERROR "In-source builds are not allowed!")
-    endif ()
-
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release" "RelWithDebInfo" "Debug")
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "CMake build type")
-
-    option(CONTEXT_MAKEFILE_VERBOSE "Verbose mode for make" false)
-    if (CONTEXT_MAKEFILE_VERBOSE)
-        set(CMAKE_VERBOSE_MAKEFILE true)
-    endif ()
-
-    add_subdirectory(${CONTEXT_ROOT_DIR}/sources ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME})
-    add_subdirectory(${CONTEXT_ROOT_DIR}/demo ${CMAKE_CURRENT_BINARY_DIR}/demo)
-
-    list(APPEND CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
-
-    add_dependencies(xio-demo xio-lib)
-    if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-        add_dependencies(xio-demo zip-deps)
-    endif ()
-
-    add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
-
-    set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
-
-    if (UNIX)
-        set(EXTERNAL_DLL_LOCATION ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib)
-        file(GLOB EXTERNAL_DLL_GLOB ${EXTERNAL_DLL_LOCATION}/*.so*)
-    elseif (WIN32)
-        set(EXTERNAL_DLL_LOCATION ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin)
-        file(GLOB EXTERNAL_DLL_GLOB ${EXTERNAL_DLL_LOCATION}/*dll)
-    endif ()
-
-    add_custom_target(zip-deps
-                      COMMAND ${CMAKE_COMMAND} -DCMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR} -P CMake/zipdir.cmake
-                      WORKING_DIRECTORY ${CONTEXT_ROOT_DIR}
-                      COMMENT "Zipping dependencies..."
-                      VERBATIM
-                      )
-
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
-            CONFIGURATIONS Release
-            PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
-            DESTINATION .
-            )
-    file(GLOB CONTEXT_MEDIA_FILES ${CMAKE_SOURCE_DIR}/tmp/*)
-    install(DIRECTORY ${CONTEXT_MEDIA_FILES}
-            CONFIGURATIONS Release
-            DESTINATION .
-            )
-    if (UNIX AND NOT MINGW)
-        install(FILES ${CMAKE_SOURCE_DIR}/deploy/start.sh
-                CONFIGURATIONS Release
-                PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ
-                DESTINATION .
-                )
-    endif ()
-
-    set(CONTEXT_PACKAGE_NAME "ContextProjectDemo")
-    set(CONTEXT_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts)
-    set(CONTEXT_ARTIFACT_NAME ${CONTEXT_PACKAGE_NAME}-${CMAKE_BUILD_TYPE}-${CONTEXT_OS}-${CONTEXT_BUILD_PLATFORM})
-
-    set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-    set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-    set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-    set(CPACK_PACKAGE_DIRECTORY ${CONTEXT_ARTIFACT_DIR})
-    set(CPACK_PACKAGE_NAME ${CONTEXT_ARTIFACT_NAME})
-    set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
-    set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
-
-    set(CPACK_NSIS_DISPLAY_NAME "Context Demo")
-    set(CPACK_NSIS_PACKAGE_NAME "Context Demo")
-    set(CPACK_NSIS_MENU_LINKS "xio-demo.exe" "ContextProjectDemo")
-    set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL true)
-
-    if (UNIX)
-        set(CPACK_GENERATOR "TGZ")
-    elseif (WIN32 OR MINGW)
-        set(CPACK_GENERATOR "NSIS")
-    endif ()
-
-    include(CPack)
-
-    add_custom_target(install-zip
-                      COMMAND ${CMAKE_COMMAND} -E tar cf ${CONTEXT_ZIP_NAME}.zip --format=zip ${CONTEXT_ZIP_NAME}
-                      WORKING_DIRECTORY ${CONTEXT_INSTALL_PATH}
-                      COMMENT "Create zip..."
-                      VERBATIM
-                      )
-    add_dependencies(install-zip install)
-
-    add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
+if (CONTEXT_ONLY_DEPS)
+    return()
 endif ()
+
+execute_process(
+        COMMAND git rev-parse --short=8 HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_SHA1
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
+set(CONTEXT_ZIP_NAME ContextProjectDemo-${CMAKE_BUILD_TYPE}-${GIT_SHA1} CACHE PATH "")
+set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
+
+if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
+    message(SEND_ERROR "In-source builds are not allowed!")
+endif ()
+
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release" "RelWithDebInfo" "Debug")
+set(CMAKE_BUILD_TYPE "Release" CACHE STRING "CMake build type")
+
+option(CONTEXT_MAKEFILE_VERBOSE "Verbose mode for make" false)
+if (CONTEXT_MAKEFILE_VERBOSE)
+    set(CMAKE_VERBOSE_MAKEFILE true)
+endif ()
+
+add_subdirectory(${CONTEXT_ROOT_DIR}/sources ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME})
+add_subdirectory(${CONTEXT_ROOT_DIR}/demo ${CMAKE_CURRENT_BINARY_DIR}/demo)
+add_dependencies(demo lib-static)
+if (${CMAKE_BUILD_TYPE} STREQUAL Release)
+    add_dependencies(demo zip-deps)
+endif ()
+
+add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
+
+set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
+
+if (UNIX)
+    set(EXTERNAL_DLL_LOCATION ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib)
+    file(GLOB EXTERNAL_DLL_GLOB ${EXTERNAL_DLL_LOCATION}/*.so*)
+elseif (WIN32)
+    set(EXTERNAL_DLL_LOCATION ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin)
+    file(GLOB EXTERNAL_DLL_GLOB ${EXTERNAL_DLL_LOCATION}/*dll)
+endif ()
+
+add_custom_target(zip-deps
+                  COMMAND ${CMAKE_COMMAND} -DCMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR} -P CMake/zipdir.cmake
+                  WORKING_DIRECTORY ${CONTEXT_ROOT_DIR}
+                  COMMENT "Zipping dependencies..."
+                  VERBATIM
+                  )
+
+install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
+        CONFIGURATIONS Release
+        PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
+        DESTINATION .
+        )
+file(GLOB CONTEXT_MEDIA_FILES ${CMAKE_SOURCE_DIR}/tmp/*)
+install(DIRECTORY ${CONTEXT_MEDIA_FILES}
+        CONFIGURATIONS Release
+        DESTINATION .
+        )
+if (UNIX AND NOT MINGW)
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/start.sh
+            CONFIGURATIONS Release
+            PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ
+            DESTINATION .
+            )
+endif ()
+
+set(CONTEXT_PACKAGE_NAME "ContextProjectDemo")
+set(CONTEXT_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts)
+set(CONTEXT_ARTIFACT_NAME ${CONTEXT_PACKAGE_NAME}-${CMAKE_BUILD_TYPE}-${CONTEXT_OS}-${CONTEXT_BUILD_PLATFORM})
+
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_DIRECTORY ${CONTEXT_ARTIFACT_DIR})
+set(CPACK_PACKAGE_NAME ${CONTEXT_ARTIFACT_NAME})
+set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
+set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
+
+set(CPACK_NSIS_DISPLAY_NAME "Context Demo")
+set(CPACK_NSIS_PACKAGE_NAME "Context Demo")
+set(CPACK_NSIS_MENU_LINKS "demo.exe" "ContextProjectDemo")
+set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL true)
+
+if (UNIX)
+    set(CPACK_GENERATOR "TGZ")
+elseif (WIN32 OR MINGW)
+    set(CPACK_GENERATOR "NSIS")
+endif ()
+
+include(CPack)
+
+add_custom_target(install-zip
+                  COMMAND ${CMAKE_COMMAND} -E tar cf ${CONTEXT_ZIP_NAME}.zip --format=zip ${CONTEXT_ZIP_NAME}
+                  WORKING_DIRECTORY ${CONTEXT_INSTALL_PATH}
+                  COMMENT "Create zip..."
+                  VERBATIM
+                  )
+add_dependencies(install-zip install)
+
+add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)

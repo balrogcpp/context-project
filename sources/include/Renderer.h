@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "NoCopy.h"
+#include "Singleton.h"
 #include "Window.h"
 #include "ShadowSettings.h"
 #include "Compositor.h"
@@ -38,13 +38,13 @@ class RenderWindow;
 }
 
 namespace xio {
-class Renderer final : public Component {
+class Renderer final : public Component, public Singleton<Renderer> {
  public:
   Renderer(int32_t w, int32_t h, bool f);
   virtual ~Renderer();
 
   void Create() final;
-  void Clear() final {}
+  void Reset() final {}
   void Clean() final {}
   void Loop(float time) final {}
 

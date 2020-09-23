@@ -22,7 +22,7 @@
 
 cmake_minimum_required(VERSION 3.16.3)
 
-project(ContextProjectDemo)
+project(xio-demo)
 
 set(HEADER_FILES_context-demo
     include/DemoDotAppState.h
@@ -32,17 +32,17 @@ set(SOURCE_FILES_context-demo
     src/main.cpp
     src/DemoDotAppState.cpp
     )
-include_directories(xio-demo ${CMAKE_CURRENT_SOURCE_DIR}/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+include_directories(demo ${CMAKE_CURRENT_SOURCE_DIR}/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 
 if (NOT ANDROID)
-    add_executable(xio-demo ${SOURCE_FILES_context-demo} ${HEADER_FILES_context-demo})
+    add_executable(demo ${SOURCE_FILES_context-demo} ${HEADER_FILES_context-demo})
 else ()
-    add_library(xio-demo SHARED ${SOURCE_FILES_context-demo} ${HEADER_FILES_context-demo})
+    add_library(demo SHARED ${SOURCE_FILES_context-demo} ${HEADER_FILES_context-demo})
 endif ()
 set(CONTEXT_LIBRARIES xio-static)
 
-target_link_directories(xio-demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
-target_link_libraries(xio-demo PUBLIC ${CONTEXT_LIBRARIES} ${CONTEXT_STATIC_DEPENDENCY_LIBS})
+target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
+target_link_libraries(demo PUBLIC ${CONTEXT_LIBRARIES} ${CONTEXT_STATIC_DEPENDENCY_LIBS})
 
 set(CMAKE_CXX_FLAGS ${CONTEXT_CXX_FLAGS})
 set(CMAKE_C_FLAGS ${CONTEXT_C_FLAGS})
@@ -50,7 +50,7 @@ set(CMAKE_EXE_LINKER_FLAGS ${CONTEXT_EXE_LINKER_FLAGS})
 set(CMAKE_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS})
 set(CMAKE_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS})
 
-install(TARGETS xio-demo
+install(TARGETS demo
         CONFIGURATIONS Release
         RUNTIME DESTINATION .
         )

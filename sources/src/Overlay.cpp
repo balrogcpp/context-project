@@ -61,7 +61,7 @@ void Overlay::Text(const std::string &str) {
   caption_->text(str);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Overlay::Clear() {
+void Overlay::Reset() {
   console_.reset();
   atlas_->destroyScreen(screen_);
 }

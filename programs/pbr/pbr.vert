@@ -1,26 +1,24 @@
-/*
-MIT License
-
-Copyright (c) 2020 Andrey Vasiliev
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+//MIT License
+//
+//Copyright (c) 2020 Andrey Vasiliev
+//
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+//
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+//
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
 
 // The MIT License
 // Copyright (c) 2016-2017 Mohamad Moneimne and Contributors
@@ -70,49 +68,45 @@ precision highp float;
 #endif
 #endif
 
-in vec4 position;
-in vec4 colour;
-uniform mat4 uMVPMatrix;
+#define MAX_LIGHTS 5
+#define MAX_SHADOWS 1
+#define HAS_UV
 
-#ifdef SHADOWCASTER_ALPHA
+#ifndef VERTEX_COMPRESSION
+in vec4 position;
 in vec2 uv0;
-out vec2 vUV0;
+#else
+in vec2 vertex; // VES_POSITION
+in float uv0; // VES_TEXTURE_COORDINATES0
+uniform mat4 posIndexToObjectSpace;
+uniform float baseUVScale;
 #endif
 
-#ifndef SHADOWCASTER
+uniform mat4 uMVPMatrix;
+
+#ifndef SHADOWCASTER_ALPHA
+in vec4 colour;
 uniform mat4 uModelMatrix;
 uniform vec3 uCameraPosition;
 #ifdef FADE
 uniform float fadeRange;
 #endif
 uniform float uTime;
-#ifdef HAS_UV
-in vec2 uv0;
-#endif
-
 out vec4 vUV0;
-
 #ifdef HAS_NORMALS
 in vec4 normal;
 #endif
 #ifdef HAS_TANGENTS
 in vec4 tangent;
 #endif
-
-
-#define MAX_LIGHTS 5
-#define MAX_SHADOWS 1
-
 #ifdef SHADOWRECEIVER
-uniform float uLightCastsShadowsArray[MAX_SHADOWS];
+uniform float uLightCount;
+uniform float uLightCastsShadowsArray[MAX_LIGHTS];
 uniform mat4 uTexWorldViewProjMatrixArray[3 * MAX_SHADOWS];
 out vec4 lightSpacePosArray[3 * MAX_SHADOWS];
 #endif
-
-
 out vec3 vPosition;
 out vec3 vColor;
-
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 out mat3 vTBN;
@@ -123,65 +117,57 @@ out vec3 vNormal;
 #ifdef REFLECTION
 out vec4 projectionCoord;
 #endif
-
-#endif //SHADOWCASTER
+#else //SHADOWCASTER
+out vec2 vUV0;
+#endif
 
 void main()
 {
-  vec4 mypos = position;
+#ifndef VERTEX_COMPRESSION
+  vec4 new_position = position;
+#else
+  vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0, 1.0);
+#define uv0 _uv0
+  vec2 uv0 = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
+#endif
+
+  vUV0.xy = uv0;
 
 #ifdef FOREST
 if (uv0.y == 0.0)
 {
-  float radiusCoeff = 0.25;
-  float heightCoeff = 0.25;
-  float factorX = 1.0;
-  float factorY = 1.0;
-  mypos.y += sin(uTime + mypos.z + mypos.y + mypos.x) * radiusCoeff * radiusCoeff * factorY;
-  mypos.x += sin(uTime + mypos.z) * heightCoeff * heightCoeff * factorX;
+  float kradius = 0.25;
+  float kheigh = 0.25;
+  float kx = 1.0;
+  float ky = 1.0;
+  new_position.y += sin(uTime + new_position.z + new_position.y + new_position.x) * kradius * kradius * ky;
+  new_position.x += sin(uTime + new_position.z) * kheigh * kheigh * kx;
 }
 #endif
-
 #ifndef SHADOWCASTER
   vColor = colour.rgb;
-  vec4 pos = uModelMatrix * mypos;
-  vPosition = vec3(pos.xyz) / pos.w;
-
+  vec4 model_position = uModelMatrix * new_position;
+  vPosition = model_position.xyz / model_position.w;
+#ifdef FADE
+  float dist = distance(uCameraPosition.xz, vPosition.xz);
+  vUV0.w = 2.0f - (2.0f * dist * fadeRange);
+  float offset = (2.0f * dist * fadeRange) - 1.0f;
+  new_position.y -= 2.0f * clamp(offset, 0, 1);
+#endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-  vec3 normalW = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
-  vec3 tangentW = normalize(vec3(uModelMatrix * vec4(tangent.xyz, 0.0)));
-  vec3 bitangentW = cross(normalW, tangentW) * tangent.w;
-  vTBN = mat3(tangentW, bitangentW, normalW);
+  vec3 n = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
+  vec3 t = normalize(vec3(uModelMatrix * vec4(tangent.xyz, 0.0)));
+  vec3 b = cross(n, t) * tangent.w;
+  vTBN = mat3(t, b, n);
 #else // HAS_TANGENTS != 1
   vNormal = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
 #endif
 #else
 #endif
-#ifdef HAS_UV
-  vUV0.xy = uv0;
-#else
-  vUV0.xy = vec2(0.0);
-#endif
-#ifdef FADE
-  float dist = distance(uCameraPosition.xz, vPosition.xz);
-  vUV0.w = 2.0f - (2.0f * dist * fadeRange);
-  float offset = (2.0f * dist * fadeRange) - 1.0f;
-  mypos.y -= 2.0f * clamp(offset, 0, 1);
-#endif
 
-#ifdef SHADOWRECEIVER
-// Calculate the position of vertex in light space
-for (int i = 0; i < int(3 * MAX_SHADOWS);  i += 3) {
-  lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * mypos;
-  lightSpacePosArray[i + 1] = uTexWorldViewProjMatrixArray[i + 1] * mypos;
-  lightSpacePosArray[i + 2] = uTexWorldViewProjMatrixArray[i + 2] * mypos;
-}
-#endif
-
-  gl_Position = uMVPMatrix * mypos;
+  gl_Position = uMVPMatrix * new_position;
   vUV0.z = gl_Position.z;
-
 #ifdef REFLECTION
   const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
                         0.0, 0.5, 0.0, 0.0,
@@ -189,12 +175,23 @@ for (int i = 0; i < int(3 * MAX_SHADOWS);  i += 3) {
                         0.5, 0.5, 0.5, 1.0);
   projectionCoord = scalemat * gl_Position;
 #endif
-#else //SHADOWCASTER
+#ifdef SHADOWRECEIVER
+  // Calculate the position of vertex in light space
+  int j = 0;
+  for (int i = 0; i < int(uLightCount);  i++) {
+    if (uLightCastsShadowsArray[i] == 1.0) {
+      lightSpacePosArray[j] = uTexWorldViewProjMatrixArray[j] * new_position;
+      lightSpacePosArray[j + 1] = uTexWorldViewProjMatrixArray[j + 1] * new_position;
+      lightSpacePosArray[j + 2] = uTexWorldViewProjMatrixArray[j + 2] * new_position;
+    }
+    j += 3;
+  }
+#endif
 
+#else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
   vUV0.xy = uv0;
 #endif
-
-  gl_Position = uMVPMatrix * mypos;
+  gl_Position = uMVPMatrix * new_position;
 #endif //SHADOWCASTER
 }

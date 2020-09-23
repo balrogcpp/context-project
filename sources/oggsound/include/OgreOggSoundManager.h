@@ -49,10 +49,10 @@
 #		include "Poco/Thread.hpp"
 #		include "Poco/Mutex.hpp"
 #	else 
-#		include <boost/thread/thread.hpp>
-#		include <boost/function/function0.hpp>
-#		include <boost/thread/recursive_mutex.hpp>
-#		include <boost/thread/xtime.hpp>
+#include <thread>
+#include <mutex>
+#include <chrono>
+#include <functional>
 #	endif
 #endif
 
@@ -638,9 +638,9 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   static Poco::Mutex mSoundMutex;
   static Poco::Mutex mResourceGroupNameMutex;
 #	else
-  static boost::recursive_mutex mMutex;
-  static boost::recursive_mutex mSoundMutex;
-  static boost::recursive_mutex mResourceGroupNameMutex;
+  static std::recursive_mutex mMutex;
+  static std::recursive_mutex mSoundMutex;
+  static std::recursive_mutex mResourceGroupNameMutex;
 #	endif
 
   /** Pushes a sound action request onto the queue
@@ -690,7 +690,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   friend class Updater;
   static Updater* mUpdater;
 #else
-  static boost::thread* mUpdateThread;
+  static std::thread* mUpdateThread;
 #endif
   static bool mShuttingDown;
 
@@ -729,7 +729,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
 #ifdef POCO_THREAD
               Poco::Mutex::ScopedLock l(OgreOggSoundManager::getSingletonPtr()->mMutex);
 #else
-              boost::recursive_mutex::scoped_lock lock(OgreOggSoundManager::getSingletonPtr()->mMutex);
+              std::lock_guard lock(OgreOggSoundManager::getSingletonPtr()->mMutex);
 #endif
               OgreOggSoundManager::getSingletonPtr()->_updateBuffers();
               OgreOggSoundManager::getSingletonPtr()->_processQueuedSounds();
@@ -737,7 +737,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
 #ifdef POCO_THREAD
           Poco::Thread::sleep(10);
 #else
-          boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+          std::this_thread::sleep_for(std::chrono::milliseconds (10));
 #endif
       }
   }

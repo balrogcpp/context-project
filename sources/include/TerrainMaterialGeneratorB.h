@@ -39,15 +39,25 @@ class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
     SM2Profile(Ogre::TerrainMaterialGenerator *parent,
                const Ogre::String &name,
                const Ogre::String &desc);
-    ~SM2Profile() override;
+    virtual ~SM2Profile();
+
     Ogre::MaterialPtr generate(const Ogre::Terrain *terrain) final;
     Ogre::MaterialPtr generateForCompositeMap(const Ogre::Terrain *terrain) final;
-    Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const final;
-    void updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) final;
-    void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) final;
+
+    inline Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const final {
+      return max_layers_;
+    }
+    inline void updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) final {}
+    inline void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) final {}
     void requestOptions(Ogre::Terrain *terrain) final;
-    bool isVertexCompressionSupported() const final;
-    void setLightmapEnabled(bool enabled) final;
+    inline bool isVertexCompressionSupported() const final {
+      return vertex_compression_;
+    }
+    inline void setLightmapEnabled(bool enabled) final {}
+
+   private:
+    int8_t max_layers_ = 8;
+    bool vertex_compression_ = true;
   };
 };
 }
