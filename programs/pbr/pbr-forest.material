@@ -24,13 +24,13 @@
 vertex_program PbrForest_vs_glsl glsl
 {
 	source pbr.vert
-    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV
 }
 
 vertex_program PbrForest_vs_glsles glsles
 {
 	source pbr.vert
-    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV
 }
 
 vertex_program PbrForest_vs unified
@@ -42,13 +42,13 @@ vertex_program PbrForest_vs unified
 fragment_program PbrForest_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
 }
 
 fragment_program PbrForest_fs_glsles glsles
 {
 	source pbr.frag
-    preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
 }
 
 fragment_program PbrForest_fs unified
@@ -84,13 +84,13 @@ material PbrForest
 fragment_program PbrForest_Shadowed_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
 }
 
 fragment_program PbrForest_Shadowed_fs_glsles glsles
 {
 	source pbr.frag
-    preprocessor_defines FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
 }
 
 fragment_program PbrForest_Shadowed_fs unified
@@ -102,13 +102,13 @@ fragment_program PbrForest_Shadowed_fs unified
 vertex_program PbrForest_Shadowed_vs_glsl glsl
 {
 	source pbr.vert
-    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
 }
 
 vertex_program PbrForest_Shadowed_vs_glsles glsles
 {
 	source pbr.vert
-    preprocessor_defines FOREST,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
 }
 
 vertex_program PbrForest_Shadowed_vs unified

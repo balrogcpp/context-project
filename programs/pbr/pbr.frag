@@ -295,7 +295,7 @@ vec4 GetDiffuse(vec2 uv) {
 #else
     base_color.rgb = SRGBtoLINEAR(uSurfaceDiffuseColour);
 #endif
-#ifdef FADE
+#ifdef PAGED_GEOMETRY
     base_color.rgb *= vColor;
     alpha *= vUV0.w;
 #endif
