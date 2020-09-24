@@ -406,13 +406,6 @@ install(DIRECTORY ${CONTEXT_MEDIA_FILES}
         CONFIGURATIONS Release
         DESTINATION .
         )
-if (UNIX AND NOT MINGW)
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/start.sh
-            CONFIGURATIONS Release
-            PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ
-            DESTINATION .
-            )
-endif ()
 
 set(CONTEXT_PACKAGE_NAME "ContextProjectDemo")
 set(CONTEXT_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts)
