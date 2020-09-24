@@ -126,17 +126,11 @@ uniform sampler2D uNormalSampler;
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D uEmissiveSampler;
 #endif
-#ifdef UNREAL
 #ifdef HAS_METALLICMAP
 uniform sampler2D uMetallicSampler;
 #endif
 #ifdef HAS_ROUGHNESSMAP
 uniform sampler2D uRoughnessSampler;
-#endif
-#else
-#ifdef HAS_METALLICMAP
-uniform sampler2D uMetallicRoughnessSampler;
-#endif
 #endif
 #ifdef HAS_OCCLUSIONMAP
 uniform sampler2D uOcclusionSampler;
@@ -271,11 +265,7 @@ float GetMetallic(vec2 uv) {
     float metallic = uSurfaceShininessColour;
 
 #ifdef HAS_METALLICMAP
-#ifdef UNREAL
     metallic = texture2D(uMetallicSampler, uv).r * uSurfaceShininessColour;
-#else
-    metallic = texture2D(uMetallicRoughnessSampler, uv).r * uSurfaceShininessColour;
-#endif
 #endif
 
     return metallic;
@@ -287,14 +277,10 @@ float GetRoughness(vec2 uv) {
     float roughness = uSurfaceSpecularColour;
 
 #ifdef HAS_ROUGHNESSMAP
-#ifdef UNREAL
     roughness = texture2D(uRoughnessSampler, uv).r * uSurfaceSpecularColour;
-#else
-    roughness = texture2D(uMetallicRoughnessSampler, uv).a * uSurfaceSpecularColour;
-#endif
 #endif
 
-    return clamp(roughness, c_MinRoughness, 1.0);
+    return roughness > c_MinRoughness ? roughness : c_MinRoughness;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

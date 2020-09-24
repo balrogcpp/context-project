@@ -1,5 +1,126 @@
-import PbrBasic from pbr-basic.material
+//MIT License
+//
+//Copyright (c) 2020 Andrey Vasiliev
+//
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+//
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+//
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
 
+
+vertex_program PbrBasic_vs_glsl glsl
+{
+	source pbr.vert
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV
+}
+
+vertex_program PbrBasic_vs_glsles glsles
+{
+	source pbr.vert
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV
+}
+
+vertex_program PbrBasic_vs unified
+{
+	delegate PbrBasic_vs_glsl
+	delegate PbrBasic_vs_glsles
+}
+
+
+fragment_program PbrBasic_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+}
+
+fragment_program PbrBasic_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+}
+
+fragment_program PbrBasic_fs unified
+{
+	delegate PbrBasic_fs_glsl
+	delegate PbrBasic_fs_glsles
+}
+
+material PbrBasic
+{
+    receive_shadows off
+
+    technique
+    {
+      pass
+      {
+            specular 1 1 1 1
+            ambient 0 0 0
+
+            texture_unit Albedo {}
+
+            vertex_program_ref PbrBasic_vs {}
+
+			fragment_program_ref PbrBasic_fs
+			{
+                param_named uBaseColorSampler int 0
+			}
+        }
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program PbrBasicShadow_fs_glsl glsl
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
+}
+
+fragment_program PbrBasicShadow_fs_glsles glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+}
+
+fragment_program PbrBasicShadow_fs unified
+{
+	delegate PbrBasicShadow_fs_glsl
+	delegate PbrBasicShadow_fs_glsles
+}
+
+material PbrBasicShadow
+{
+    technique
+    {
+      pass
+      {
+            specular 1 1 1 1
+            ambient 0 0 0
+
+            texture_unit Albedo {}
+
+            vertex_program_ref Pbr_vs {}
+
+			fragment_program_ref PbrBasicShadow_fs
+			{
+                param_named uBaseColorSampler   int 0
+			}
+        }
+    }
+}
 fragment_program droplet_fs_glsl glsl
 {
 	source pbr.frag

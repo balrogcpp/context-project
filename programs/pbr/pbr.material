@@ -20,25 +20,25 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-fragment_program PbrIbl_Unity_fs_glsl glsl
+fragment_program PbrIbl_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,USE_IBL
 }
 
-fragment_program PbrIbl_Unity_fs_glsles glsles
+fragment_program PbrIbl_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,USE_IBL
 }
 
-fragment_program PbrIbl_Unity_fs unified
+fragment_program PbrIbl_fs unified
 {
-	delegate PbrIbl_Unity_fs_glsl
-	delegate PbrIbl_Unity_fs_glsles
+	delegate PbrIbl_fs_glsl
+	delegate PbrIbl_fs_glsles
 }
 
-material PbrIbl/Unity
+material PbrIbl
 {
     receive_shadows off
 
@@ -51,7 +51,8 @@ material PbrIbl/Unity
 
             texture_unit Albedo {}
             texture_unit Normal {}
-            texture_unit MetallicRougness {}
+            texture_unit Metalness {}
+            texture_unit Roughness {}
             texture_unit IBL_Diffuse
             {
                 texture diffuse.dds cubic
@@ -67,38 +68,39 @@ material PbrIbl/Unity
 
             vertex_program_ref Pbr_vs {}
 
-			fragment_program_ref PbrIbl_Unity_fs
+			fragment_program_ref PbrIbl_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
-                param_named uMetallicRoughnessSampler int 2
-                param_named uDiffuseEnvSampler  int 3
-                param_named uSpecularEnvSampler int 4
-                param_named ubrdfLUT            int 5
+                param_named uMetallicSampler int 2
+                param_named uRoughnessSampler int 3
+                param_named uDiffuseEnvSampler  int 4
+                param_named uSpecularEnvSampler int 5
+                param_named ubrdfLUT            int 6
 			}
         }
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PbrExtIbl_Unity_fs_glsl glsl
+fragment_program PbrExtIbl_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
 }
 
-fragment_program PbrExtIbl_Unity_fs_glsles glsles
+fragment_program PbrExtIbl_fs_glsles glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
 }
 
-fragment_program PbrExtIbl_Unity_fs unified
+fragment_program PbrExtIbl_fs unified
 {
-	delegate PbrExtIbl_Unity_fs_glsl
-	delegate PbrExtIbl_Unity_fs_glsles
+	delegate PbrExtIbl_fs_glsl
+	delegate PbrExtIbl_fs_glsles
 }
 
-material PbrExtIbl/Unity
+material PbrExtIbl
 {
     receive_shadows off
 
@@ -111,7 +113,8 @@ material PbrExtIbl/Unity
 
             texture_unit Albedo {}
             texture_unit Normal {}
-            texture_unit MetallicRougness {}
+            texture_unit Metalness {}
+            texture_unit Roughness {}
             texture_unit Emissive
             {
                 texture black.dds
@@ -135,42 +138,43 @@ material PbrExtIbl/Unity
 
             vertex_program_ref Pbr_vs {}
 
-			fragment_program_ref PbrExtIbl_Unity_fs
+			fragment_program_ref PbrExtIbl_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
-                param_named uMetallicRoughnessSampler int 2
-                param_named uEmissiveSampler      int 3
-                param_named uOcclusionSampler   int 4
-                param_named uDiffuseEnvSampler  int 5
-                param_named uSpecularEnvSampler int 6
-                param_named ubrdfLUT            int 7
+                param_named uMetallicSampler int 2
+                param_named uRoughnessSampler int 3
+                param_named uEmissiveSampler      int 4
+                param_named uOcclusionSampler   int 5
+                param_named uDiffuseEnvSampler  int 6
+                param_named uSpecularEnvSampler int 7
+                param_named ubrdfLUT            int 8
 			}
         }
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program Pbr_Unity_fs_glsl glsl
+fragment_program Pbr_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,SHADOWRECEIVER
 }
 
-fragment_program Pbr_Unity_fs_glsles glsles
+fragment_program Pbr_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,SHADOWRECEIVER
 }
 
-fragment_program Pbr_Unity_fs unified
+fragment_program Pbr_fs unified
 {
-	delegate Pbr_Unity_fs_glsl
-	delegate Pbr_Unity_fs_glsles
+	delegate Pbr_fs_glsl
+	delegate Pbr_fs_glsles
 }
 
 
-material Pbr/Unity
+material Pbr
 {
     technique
     {
@@ -181,41 +185,42 @@ material Pbr/Unity
 
             texture_unit Albedo {}
             texture_unit Normal {}
-            texture_unit MetallicRougness {}
+            texture_unit Metalness {}
+            texture_unit Roughness {}
 
             vertex_program_ref Pbr_vs {}
 
-			fragment_program_ref Pbr_Unity_fs
+			fragment_program_ref Pbr_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
-                param_named uMetallicRoughnessSampler int 2
+                param_named uMetallicSampler int 2
+                param_named uRoughnessSampler int 3
 			}
         }
     }
 }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PbrExt_Unity_fs_glsl glsl
+fragment_program PbrExt_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,,HAS_OCCLUSIONMAP,SHADOWRECEIVER
 }
 
-fragment_program PbrExt_Unity_fs_glsles glsles
+fragment_program PbrExt_fs_glsles glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,,HAS_OCCLUSIONMAP,SHADOWRECEIVER
 }
 
-fragment_program PbrExt_Unity_fs unified
+fragment_program PbrExt_fs unified
 {
-	delegate PbrExt_Unity_fs_glsl
-	delegate PbrExt_Unity_fs_glsles
+	delegate PbrExt_fs_glsl
+	delegate PbrExt_fs_glsles
 }
 
 
-material PbrExt/Unity
+material PbrExt
 {
     technique
     {
@@ -226,45 +231,46 @@ material PbrExt/Unity
 
             texture_unit Albedo {}
             texture_unit Normal {}
-            texture_unit MetallicRougness {}
+            texture_unit Metalness {}
+            texture_unit Roughness {}
             texture_unit Emissive {}
             texture_unit AmbientOcclusion {}
 
             vertex_program_ref Pbr_vs {}
 
-			fragment_program_ref PbrExt_Unity_fs
+			fragment_program_ref PbrExt_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
-                param_named uMetallicRoughnessSampler int 2
-                param_named uEmissiveSampler      int 3
-                param_named uOcclusionSampler   int 4
+                param_named uMetallicSampler int 2
+                param_named uRoughnessSampler int 3
+                param_named uEmissiveSampler      int 4
+                param_named uOcclusionSampler   int 5
 			}
         }
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PbrReflection_Unity_fs_glsl glsl
+fragment_program PbrReflection_fs_glsl glsl
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,REFLECTION,SHADOWRECEIVER
 }
 
-fragment_program PbrReflection_Unity_fs_glsles glsles
+fragment_program PbrReflection_fs_glsles glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,REFLECTION,SHADOWRECEIVER
 }
 
-fragment_program PbrReflection_Unity_fs unified
+fragment_program PbrReflection_fs unified
 {
-	delegate PbrReflection_Unity_fs_glsl
-	delegate PbrReflection_Unity_fs_glsles
+	delegate PbrReflection_fs_glsl
+	delegate PbrReflection_fs_glsles
 }
 
-
-material PbrReflection/Unity
+material PbrReflection
 {
     technique
     {
@@ -275,7 +281,8 @@ material PbrReflection/Unity
 
             texture_unit Albedo {}
             texture_unit Normal {}
-            texture_unit MetallicRougness {}
+            texture_unit Metalness {}
+            texture_unit Roughness {}
             texture_unit ReflectionMap {}
             texture_unit NoiseMap
             {
@@ -285,13 +292,14 @@ material PbrReflection/Unity
 
             vertex_program_ref PbrReflection_vs {}
 
-			fragment_program_ref PbrReflection_Unity_fs
+			fragment_program_ref PbrReflection_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
-                param_named uMetallicRoughnessSampler int 2
-                param_named uReflectionMap int 3
-                param_named uNoiseMap int 4
+                param_named uMetallicSampler int 2
+                param_named uRoughnessSampler int 3
+                param_named uReflectionMap int 4
+                param_named uNoiseMap int 5
 			}
         }
     }

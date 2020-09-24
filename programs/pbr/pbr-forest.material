@@ -39,7 +39,6 @@ vertex_program PbrForest_vs unified
 	delegate PbrForest_vs_glsles
 }
 
-
 fragment_program PbrForest_fs_glsl glsl
 {
 	source pbr.frag
