@@ -88,7 +88,7 @@ uniform mat4 uMVPMatrix;
 in vec4 colour;
 uniform mat4 uModelMatrix;
 uniform vec3 uCameraPosition;
-#ifdef FADE
+#ifdef PAGED_GEOMETRY
 uniform float fadeRange;
 #endif
 uniform float uTime;
@@ -133,7 +133,7 @@ void main()
 
   vUV0.xy = uv0;
 
-#ifdef FOREST
+#ifdef PAGED_GEOMETRY
 if (uv0.y == 0.0)
 {
   float kradius = 0.25;
@@ -148,7 +148,7 @@ if (uv0.y == 0.0)
   vColor = colour.rgb;
   vec4 model_position = uModelMatrix * new_position;
   vPosition = model_position.xyz / model_position.w;
-#ifdef FADE
+#ifdef PAGED_GEOMETRY
   float dist = distance(uCameraPosition.xz, vPosition.xz);
   vUV0.w = 2.0f - (2.0f * dist * fadeRange);
   float offset = (2.0f * dist * fadeRange) - 1.0f;

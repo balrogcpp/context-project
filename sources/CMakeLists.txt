@@ -92,6 +92,7 @@ set(CONTEXT_HEADERS
     include/Locator.h
     include/HwCheck.h
     include/Singleton.h
+    include/DesktopIcon.h
     )
 
 set(HEADER_FILES_CONTEXT_LIB

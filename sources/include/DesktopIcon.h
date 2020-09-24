@@ -20,45 +20,28 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-fragment_program Context/bypass_fsGLSL glsl
-{
-	source bypass.frag
-}
+#pragma once
+#include "NoCopy.h"
+#include <string>
 
-fragment_program Context/bypass_fsGLSLES glsles
-{
-	source bypass.frag
-}
+namespace xio {
+class DesktopIcon : public NoCopy{
+ public:
 
-fragment_program Context/bypass_fs unified
-{
-	delegate Context/bypass_fsGLSL
-	delegate Context/bypass_fsGLSLES
-
-	default_params
-	{
-		param_named SceneSampler int 0
-	}
-}
-
-material Context/Bypass
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref Context/bypass_fs {}
-
-			texture_unit
-            {
-                content_type compositor Context/Modulate/Hdr hdr
-                filtering none
-            }
-		}
-	}
+ private:
+  const std::string ICON_SKELETON = "[Desktop Entry]\n"
+                                    "Comment=\n"
+                                    "Encoding=UTF-8\n"
+                                    "Exec=${ICON_EXEC}\n"
+                                    "GenericName=\n"
+                                    "Icon=${PATH_ICON}\n"
+                                    "MimeType=\n"
+                                    "Name=${ICON_NAME}\n"
+                                    "Path=${ICON_PATH}\n"
+                                    "StartupNotify=true\n"
+                                    "Terminal=false\n"
+                                    "Type=Application\n"
+                                    "TerminalOptions=\n"
+                                    "Version=${ICON_VERSION}\n";
+};
 }

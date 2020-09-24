@@ -34,6 +34,8 @@
 namespace Ogre {
 class Root;
 class SceneManager;
+class Camera;
+class Viewport;
 class RenderWindow;
 }
 
@@ -62,6 +64,8 @@ class Renderer final : public Component, public Singleton<Renderer> {
 
   Ogre::Root *root_ = nullptr;
   Ogre::SceneManager *scene_ = nullptr;
+  Ogre::Camera *camera_ = nullptr;
+  Ogre::Viewport *viewport_ = nullptr;
   Ogre::RenderWindow *ogre_ = nullptr;
 
  public:

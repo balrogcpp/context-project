@@ -126,17 +126,11 @@ uniform sampler2D uNormalSampler;
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D uEmissiveSampler;
 #endif
-#ifdef UNREAL
 #ifdef HAS_METALLICMAP
 uniform sampler2D uMetallicSampler;
 #endif
 #ifdef HAS_ROUGHNESSMAP
 uniform sampler2D uRoughnessSampler;
-#endif
-#else
-#ifdef HAS_METALLICMAP
-uniform sampler2D uMetallicRoughnessSampler;
-#endif
 #endif
 #ifdef HAS_OCCLUSIONMAP
 uniform sampler2D uOcclusionSampler;
@@ -192,7 +186,8 @@ float calcPSSMDepthShadow()
     else if (camDepth <= pssmSplitPoints.z)
     {
         return calcDepthShadow(shadowMap2, lightSpacePosArray[2]);
-    } else
+    }
+    else
     {
         return 1.0;
     }
@@ -270,11 +265,7 @@ float GetMetallic(vec2 uv) {
     float metallic = uSurfaceShininessColour;
 
 #ifdef HAS_METALLICMAP
-#ifdef UNREAL
     metallic = texture2D(uMetallicSampler, uv).r * uSurfaceShininessColour;
-#else
-    metallic = texture2D(uMetallicRoughnessSampler, uv).r * uSurfaceShininessColour;
-#endif
 #endif
 
     return metallic;
@@ -286,14 +277,10 @@ float GetRoughness(vec2 uv) {
     float roughness = uSurfaceSpecularColour;
 
 #ifdef HAS_ROUGHNESSMAP
-#ifdef UNREAL
     roughness = texture2D(uRoughnessSampler, uv).r * uSurfaceSpecularColour;
-#else
-    roughness = texture2D(uMetallicRoughnessSampler, uv).a * uSurfaceSpecularColour;
-#endif
 #endif
 
-    return clamp(roughness, c_MinRoughness, 1.0);
+    return roughness > c_MinRoughness ? roughness : c_MinRoughness;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -308,7 +295,7 @@ vec4 GetDiffuse(vec2 uv) {
 #else
     base_color.rgb = SRGBtoLINEAR(uSurfaceDiffuseColour);
 #endif
-#ifdef FADE
+#ifdef PAGED_GEOMETRY
     base_color.rgb *= vColor;
     alpha *= vUV0.w;
 #endif
@@ -578,15 +565,18 @@ void main()
         vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
 
         float tmp = NdotL * fSpotT * fAtten;
-        vec3 color = tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
 #ifdef SHADOWRECEIVER
         if (uLightCastsShadowsArray[i] * tmp > 0.001) {
-            color *= calcPSSMDepthShadow();
+            float shadow = calcPSSMDepthShadow();
+            shadow = clamp(shadow, 0.0, 1.0);
+            specContrib *= shadow;
+            shadow = clamp(shadow + uShadowColour, 0.0, 1.0);
+            diffuseContrib *= shadow;
         }
 #endif
 
-        total_colour += color;
+        total_colour += (tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib));
     }
 
 // Calculate lighting contribution from image based lighting source (IBL)
@@ -616,20 +606,9 @@ void main()
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
-    float alpha = texture2D(uBaseColorSampler, vUV0.xy).a;
-
-    if (alpha < 0.5) {
+    if (texture2D(uBaseColorSampler, vUV0.xy).a < 0.5) {
         discard;
     }
 #endif //SHADOWCASTER_ALPHA
-
-#ifdef SHADOWRECEIVER_VSM
-    const float offset = 0.001;
-    float depth = gl_FragCoord.z - offset;
-    gl_FragColor = vec4(depth, depth * depth, 0.0, 1.0);
-#else //!SHADOWRECEIVER_VSM
-    const float offset = 0.001;
-    gl_FragColor = vec4(gl_FragCoord.z - offset, 0.0, 0.0, 1.0);
-#endif //SHADOWRECEIVER_VSM
 #endif //SHADOWCASTER
 }

@@ -68,13 +68,13 @@ material Context/Modulate
 fragment_program Modulate_Bloom_fsGLSL glsl
 {
 	source modulate.frag
-	preprocessor_defines Bloom
+	preprocessor_defines BLOOM
 }
 
 fragment_program Modulate_Bloom_fsGLSLES glsles
 {
 	source modulate.frag
-	preprocessor_defines Bloom
+	preprocessor_defines BLOOM
 }
 
 fragment_program Modulate_Bloom_fs unified
@@ -118,6 +118,8 @@ material Context/Modulate/Bloom
 	}
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 fragment_program Modulate_SSAO_fsGLSL glsl
 {
 	source modulate.frag
@@ -143,7 +145,6 @@ fragment_program Modulate_SSAO_fs unified
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 material Context/Modulate/SSAO
 {
 	technique
@@ -167,6 +168,67 @@ material Context/Modulate/SSAO
             {
                 content_type compositor Context/SSAO ssao
                 filtering none
+            }
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program Modulate_BLOOM_SSAO_fsGLSL glsl
+{
+	source modulate.frag
+	preprocessor_defines BLOOM,SSAO
+}
+
+fragment_program Modulate_BLOOM_SSAO_fsGLSLES glsles
+{
+	source modulate.frag
+	preprocessor_defines BLOOM,SSAO
+}
+
+fragment_program Modulate_BLOOM_SSAO_fs unified
+{
+	delegate Modulate_BLOOM_SSAO_fsGLSL
+	delegate Modulate_BLOOM_SSAO_fsGLSLES
+
+	default_params
+	{
+		param_named SceneSampler int 0
+		param_named BloomSampler int 1
+		param_named SsaoSampler int 2
+		param_named exposure float 1
+	}
+}
+
+material Context/Modulate/Bloom/SSAO
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Modulate_BLOOM_SSAO_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/Main scene
+                filtering linear linear none
+            }
+
+			texture_unit
+            {
+                content_type compositor Context/Bloom bloom
+                filtering linear linear none
+            }
+
+			texture_unit
+            {
+                content_type compositor Context/SSAO ssao
+                filtering linear linear none
             }
 		}
 	}

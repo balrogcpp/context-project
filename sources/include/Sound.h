@@ -23,8 +23,11 @@
 #pragma once
 #include "Component.h"
 #include "Singleton.h"
-#include "OgreOggSound.h"
 #include <string>
+
+namespace OgreOggSound{
+  class OgreOggSoundManager;
+}
 
 namespace xio {
 class Sound final : public Component, public Singleton<Sound> {
@@ -32,17 +35,16 @@ class Sound final : public Component, public Singleton<Sound> {
   Sound();
   virtual ~Sound();
 
-  void CreateSound(const std::string &name, const std::string &file, bool loop = false);
-  void PlaySound(const std::string &name, bool immediate = true);
-  void SetMasterVolume(float volume);
-  void SetMaxVolume(const std::string &name, float volume);
-  void SetVolume(const std::string &name, float gain);
-
   void Create() final {}
   void Reset() final {}
   void Clean() final;
   void Loop(float time) final {}
 
+  void CreateSound(const std::string &name, const std::string &file, bool loop = false);
+  void PlaySound(const std::string &name, bool immediate = true);
+  void SetMasterVolume(float volume);
+  void SetMaxVolume(const std::string &name, float volume);
+  void SetVolume(const std::string &name, float gain);
  private:
   OgreOggSound::OgreOggSoundManager *manager_ = nullptr;
 };

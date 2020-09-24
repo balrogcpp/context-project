@@ -26,6 +26,7 @@
 #include "Exception.h"
 #include "Overlay.h"
 #include "HwCheck.h"
+#include "DesktopIcon.h"
 
 #ifdef _WIN32
 extern "C"
@@ -63,9 +64,12 @@ void Application::Init_() {
   bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
   renderer_ = std::make_unique<Renderer>(window_width, window_high, window_fullscreen);
 
-  if (!TestCapabilities({Ogre::RSC_TESSELLATION_HULL_PROGRAM, Ogre::RSC_TESSELLATION_DOMAIN_PROGRAM})) {
-    throw Exception("Capabilities RSC_TESSELLATION_HULL_PROGRAM and RSC_TESSELLATION_DOMAIN_PROGRAM not supported\n");
-  }
+  // Shadows param
+  bool shadow_enable = conf_->Get<bool>("graphics_shadows_enable");
+  float shadow_far = conf_->Get<float>("graphics_shadows_far_distance");
+  int16_t tex_size = conf_->Get<int16_t>("graphics_shadows_texture_resolution");
+  int tex_format = conf_->Get<int>("graphics_shadows_texture_format");
+  renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
   io_ = std::make_unique<InputSequencer>();
   physics_ = std::make_unique<Physics>();
@@ -99,19 +103,6 @@ void Application::Init_() {
     tfo = Ogre::TFO_NONE;
 
   renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
-
-  bool shadow_enable = conf_->Get<bool>("graphics_shadows_enable");
-  float shadow_far = conf_->Get<float>("graphics_shadows_far_distance");
-  int16_t tex_size = conf_->Get<int16_t>("graphics_shadows_texture_resolution");
-  std::string tex_format_str = conf_->Get<std::string>("graphics_shadows_texture_format");
-
-  int tex_format;
-  if (tex_format_str == "DEPTH16")
-    tex_format = 16;
-  else if (tex_format_str == "DEPTH32" || tex_format_str == "DEPTH32F")
-    tex_format = 32;
-
-  renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
   loader_->LocateComponents(conf_.get(), io_.get(), renderer_.get(), physics_.get(), sounds_.get(), overlay_.get());
   verbose_ = conf_->Get<bool>("global_verbose_enable");

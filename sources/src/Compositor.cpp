@@ -32,7 +32,6 @@ Compositor::~Compositor() noexcept {}
 Compositor::Compositor() {
   effects_["bloom"] = false;
   effects_["ssao"] = false;
-  effects_["hdr"] = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Init() {
@@ -60,7 +59,19 @@ void Compositor::Init() {
     if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, "Context/Bloom"))
       Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, "Context/Bloom", true);
     else
-      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
+      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Bloom compositor\n");
+
+    for (int i = 0; i < 1; i++) {
+      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, "Context/FilterY/Bloom"))
+        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, "Context/FilterY/Bloom", true);
+      else
+        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
+
+      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, "Context/FilterX/Bloom"))
+        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, "Context/FilterX/Bloom", true);
+      else
+        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
+    }
   }
 
   if (effects_["ssao"]) {
@@ -70,35 +81,25 @@ void Compositor::Init() {
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
 
     for (int i = 0; i < 1; i++) {
-      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, "Context/FilterY"))
-        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, "Context/FilterY", true);
+      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, "Context/FilterY/SSAO"))
+        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, "Context/FilterY/SSAO", true);
       else
         Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
 
-      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, "Context/FilterX"))
-        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, "Context/FilterX", true);
+      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, "Context/FilterX/SSAO"))
+        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, "Context/FilterX/SSAO", true);
       else
         Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
     }
   }
 
   std::string modulate_compositor = "Context/Modulate";
-
   modulate_compositor += effects_["bloom"] ? "/Bloom" : "";
   modulate_compositor += effects_["ssao"] ? "/SSAO" : "";
-  modulate_compositor += effects_["hdr"] ? "/HDR" : "";
 
   if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, modulate_compositor))
     Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, modulate_compositor, true);
   else
     Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
-
-  if (effects_["hdr"]) {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport, "Context/HDR")) {
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport, "Context/HDR", true);
-    } else {
-      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
-    }
-  }
 }
 }

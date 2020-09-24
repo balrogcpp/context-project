@@ -42,7 +42,7 @@ fragment_program Context/filter5y_fs unified
     }
 }
 
-material Context/filter5Y
+material Context/SSAO/filter5Y
 {
 	technique
 	{
@@ -58,7 +58,7 @@ material Context/filter5Y
 			texture_unit
             {
                 content_type compositor Context/SSAO ssao
-                filtering none
+                filtering linear linear none
             }
 		}
 	}
@@ -86,7 +86,7 @@ fragment_program Context/filter5x_fs unified
     }
 }
 
-material Context/filter5X
+material Context/SSAO/filter5X
 {
 	technique
 	{
@@ -102,7 +102,7 @@ material Context/filter5X
 			texture_unit
             {
                 content_type compositor Context/SSAO ssao
-                filtering none
+                filtering linear linear none
             }
 		}
 	}
@@ -133,7 +133,7 @@ fragment_program Context/filter3y_fs unified
     }
 }
 
-material Context/filter3Y
+material Context/SSAO/filter3Y
 {
 	technique
 	{
@@ -149,7 +149,7 @@ material Context/filter3Y
 			texture_unit
             {
                 content_type compositor Context/SSAO ssao
-                filtering none
+                filtering linear linear none
             }
 		}
 	}
@@ -177,7 +177,7 @@ fragment_program Context/filter3x_fs unified
     }
 }
 
-material Context/filter3X
+material Context/SSAO/filter3X
 {
 	technique
 	{
@@ -193,7 +193,99 @@ material Context/filter3X
 			texture_unit
             {
                 content_type compositor Context/SSAO ssao
-                filtering none
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+material Context/Bloom/filter5Y
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Context/filter5y_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/Bloom bloom
+                filtering linear linear none
+            }
+		}
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+material Context/Bloom/filter5X
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Context/filter5x_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/Bloom bloom
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+material Context/Bloom/filter3Y
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Context/filter3y_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/Bloom bloom
+                filtering linear linear none
+            }
+		}
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+material Context/Bloom/filter3X
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Context/filter3x_fs {}
+
+			texture_unit
+            {
+                content_type compositor Context/Bloom bloom
+                filtering linear linear none
             }
 		}
 	}

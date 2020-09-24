@@ -49,7 +49,7 @@ void DemoDotAppState::Callback(int a, int b) {
 }
 
 void DemoDotAppState::Create() {
-  Load("test.scene");
+  Load("1.scene");
 
 //  sound_->CreateSound("ambient", "test.ogg", true);
 //  sound_->SetVolume("ambient", 0.5);
