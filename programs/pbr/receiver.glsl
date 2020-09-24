@@ -70,9 +70,9 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv)
   {
     float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 //    float penumbra = Penumbra(shadowMap, gradientNoise, uv.xy, compare, 16);
-    shadow += (texture2D(shadowMap, uv.xy + VogelDiskSample(i, 16, gradientNoise) * 0.002).r > compare ? 1.0 / float(iterations) : 0.0);
+    shadow += (texture2D(shadowMap, uv.xy + VogelDiskSample(i, 16, gradientNoise) * 0.001).r > compare ? 1.0 / float(iterations) : 0.0);
   }
 
-  return clamp(shadow + uShadowColour, 0, 1);;
+  return shadow;
 }
 #endif //RECEIVER_GLSL

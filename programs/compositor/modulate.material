@@ -68,13 +68,13 @@ material Context/Modulate
 fragment_program Modulate_Bloom_fsGLSL glsl
 {
 	source modulate.frag
-	preprocessor_defines Bloom
+	preprocessor_defines BLOOM
 }
 
 fragment_program Modulate_Bloom_fsGLSLES glsles
 {
 	source modulate.frag
-	preprocessor_defines Bloom
+	preprocessor_defines BLOOM
 }
 
 fragment_program Modulate_Bloom_fs unified

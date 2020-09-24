@@ -579,15 +579,18 @@ void main()
         vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
 
         float tmp = NdotL * fSpotT * fAtten;
-        vec3 color = tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
 #ifdef SHADOWRECEIVER
         if (uLightCastsShadowsArray[i] * tmp > 0.001) {
-            color *= calcPSSMDepthShadow();
+            float shadow = calcPSSMDepthShadow();
+            shadow = clamp(shadow, 0.0, 1.0);
+            specContrib *= shadow;
+            shadow = clamp(shadow + uShadowColour, 0.0, 1.0);
+            diffuseContrib *= shadow;
         }
 #endif
 
-        total_colour += color;
+        total_colour += (tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib));
     }
 
 // Calculate lighting contribution from image based lighting source (IBL)
@@ -617,20 +620,9 @@ void main()
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
-    float alpha = texture2D(uBaseColorSampler, vUV0.xy).a;
-
-    if (alpha < 0.5) {
+    if (texture2D(uBaseColorSampler, vUV0.xy).a < 0.5) {
         discard;
     }
 #endif //SHADOWCASTER_ALPHA
-
-#ifdef SHADOWRECEIVER_VSM
-    const float offset = 0.001;
-    float depth = gl_FragCoord.z - offset;
-    gl_FragColor = vec4(depth, depth * depth, 0.0, 1.0);
-#else //!SHADOWRECEIVER_VSM
-    const float offset = 0.001;
-    gl_FragColor = vec4(gl_FragCoord.z - offset, 0.0, 0.0, 1.0);
-#endif //SHADOWRECEIVER_VSM
 #endif //SHADOWCASTER
 }
