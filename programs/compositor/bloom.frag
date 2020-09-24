@@ -71,12 +71,12 @@ uniform sampler2D SceneSampler;
 
 void main()
 {
-  vec4 color = texture2D(SceneSampler, oUv0);
+  vec3 color = texture2D(SceneSampler, oUv0).rgb;
   vec3 bloom = vec3(0.0);
 
-  float brightness = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+  float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
   if(brightness > 0.9)
-    bloom = color.rgb;
+    bloom = color;
 
   gl_FragColor = vec4(bloom, 1.0);
 }

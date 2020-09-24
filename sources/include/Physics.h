@@ -67,6 +67,7 @@ class Physics final : public Component, public Singleton<Physics> {
   void Reset() final {}
   void Clean() final;
   void Loop(float time) final;
+
   void DispatchCollisions();
   void AddRigidBody(btRigidBody *body);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);

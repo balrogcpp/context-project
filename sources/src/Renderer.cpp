@@ -27,8 +27,7 @@
 #include "RtssUtils.h"
 
 namespace xio {
-Renderer::Renderer(int32_t w, int32_t h, bool f)
-{
+Renderer::Renderer(int32_t w, int32_t h, bool f) {
   window_ = std::make_unique<Window>(w, h, f);
   root_ = new Ogre::Root("", "", "");
   bool global_sso_enable_ = true;
@@ -117,19 +116,18 @@ Renderer::Renderer(int32_t w, int32_t h, bool f)
   if (global_octree_enable_) {
     scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
   } else {
-    scene_ = root_->createSceneManager("Default");
+    scene_ = root_->createSceneManager("Default", "Default");
   }
 #else
-  scene_mgr_ = ogre_root->createSceneManager();
+  scene_ = root_->createSceneManager("Default", "Default");
 #endif
 
-  auto *camera = scene_->createCamera("Default");
+  camera_ = scene_->createCamera("Default");
   auto *renderTarget = root_->getRenderTarget(window_->GetCaption());
-
-  auto *viewport = renderTarget->addViewport(camera);
-  viewport->setBackgroundColour(Ogre::ColourValue::Black);
-  camera->setAspectRatio(static_cast<float>(viewport->getActualWidth()) / viewport->getActualHeight());
-  camera->setAutoAspectRatio(true);
+  viewport_ = renderTarget->addViewport(camera_);
+  viewport_->setBackgroundColour(Ogre::ColourValue::Black);
+  camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / viewport_->getActualHeight());
+  camera_->setAutoAspectRatio(true);
 
 #ifndef DEBUG
   Storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
@@ -139,6 +137,8 @@ Renderer::Renderer(int32_t w, int32_t h, bool f)
 
   rtss::InitRtss();
   rtss::InitInstansing();
+
+  shadow_ = std::make_unique<ShadowSettings>();
   compositor_ = std::make_unique<Compositor>();
 }
 Renderer::~Renderer() {}
@@ -148,26 +148,25 @@ void Renderer::Create() {
   compositor_->EnableEffect("bloom", conf_->Get<bool>("compositor_use_bloom"));
   compositor_->EnableEffect("hdr", conf_->Get<bool>("compositor_use_hdr"));
   compositor_->Init();
+  rtss::InitPssm(shadow_->GetSplitPoints());
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::CreateCamera() {
-  Ogre::Camera *camera = nullptr;
-
   if (!scene_->hasCamera("Default")) {
-    camera = scene_->createCamera("Default");
+    camera_ = scene_->createCamera("Default");
     auto *renderTarget = root_->getRenderTarget(window_->GetCaption());
     renderTarget->removeViewport(0);
-    renderTarget->addViewport(camera);
+    renderTarget->addViewport(camera_);
   } else {
-    camera = scene_->getCamera("Default");
+    camera_ = scene_->getCamera("Default");
   }
 
-  if (camera) {
-    camera->setNearClipDistance(0.01f);
-    camera->setFarClipDistance(10000.0f);
+  if (camera_) {
+    camera_->setNearClipDistance(0.1f);
+    camera_->setFarClipDistance(10000.0f);
   }
 
-  camera->setAutoAspectRatio(true);
+  camera_->setAutoAspectRatio(true);
   scene_->setSkyBoxEnabled(false);
   scene_->setSkyDomeEnabled(false);
   scene_->setAmbientLight(Ogre::ColourValue::Black);
@@ -175,8 +174,6 @@ void Renderer::CreateCamera() {
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Refresh() {
   CreateCamera();
-  shadow_ = std::make_unique<ShadowSettings>();
-  rtss::InitPssm(shadow_->GetSplitPoints());
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {

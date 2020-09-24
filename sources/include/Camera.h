@@ -88,9 +88,9 @@ class Camera final : public Entity, public InputObserver, public Ogre::FrameList
 
       if (accel.squaredLength() != 0) {
         accel.normalise();
-        velocity_ += accel * top_speed_ * time * 10;
+        velocity_ += accel * top_speed_ * time;
       } else {
-        velocity_ -= velocity_ * time * 10;
+        velocity_ -= velocity_ * time;
       }
 
       if (velocity_.squaredLength() > top_speed_ * top_speed_) {
@@ -145,12 +145,15 @@ class Camera final : public Entity, public InputObserver, public Ogre::FrameList
       // orientation around the Y-axis and the X-axis.
       Ogre::Vector3 velocity = camera_yaw_node_->getOrientation() * camera_pitch_node_->getOrientation() * velocity_;
       float speed_y = rigid_->getLinearVelocity().y();
-      rigid_->setFriction(1.0);
 
       if (rigid_) {
         if (!velocity_.isZeroLength()) {
-          rigid_->setLinearVelocity({velocity.x, speed_y, velocity.z});
+          rigid_->setFriction(1.0);
+          float speed = rigid_->getLinearVelocity().length();
+          if (speed < const_speed_)
+            rigid_->applyCentralForce(btVector3(velocity.x, 0, velocity.z).normalize() * 10000.0f);
         } else {
+          rigid_->setFriction(10.0);
         }
       }
 

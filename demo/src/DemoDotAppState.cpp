@@ -49,11 +49,11 @@ void DemoDotAppState::Callback(int a, int b) {
 }
 
 void DemoDotAppState::Create() {
-  Load("test.scene");
+  Load("1.scene");
 
-  sound_->CreateSound("ambient", "test.ogg", true);
-  sound_->SetVolume("ambient", 0.5);
-  sound_->PlaySound("ambient");
+//  sound_->CreateSound("ambient", "test.ogg", true);
+//  sound_->SetVolume("ambient", 0.5);
+//  sound_->PlaySound("ambient");
 //  sound_->CreateSound("hit", "406344__basharov__glass-on-glasshit-1.wav");
 //  sound_->SetVolume("hit", 0.1);
 //  physics_->SetCallback(Callback);

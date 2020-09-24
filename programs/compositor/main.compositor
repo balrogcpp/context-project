@@ -85,7 +85,7 @@ compositor Context/Bloom
 {
     technique
     {
-        texture bloom target_width target_height PF_FLOAT16_RGB chain_scope
+        texture bloom 320 240 PF_FLOAT16_RGB chain_scope
 
         target bloom
         {
@@ -97,7 +97,7 @@ compositor Context/Bloom
     }
 }
 
-compositor Context/FilterY
+compositor Context/FilterY/SSAO
 {
     technique
     {
@@ -107,13 +107,13 @@ compositor Context/FilterY
         {
             pass render_quad
             {
-                material Context/filter5Y
+                material Context/SSAO/filter5Y
             }
         }
     }
 }
 
-compositor Context/FilterX
+compositor Context/FilterX/SSAO
 {
     technique
     {
@@ -123,7 +123,39 @@ compositor Context/FilterX
         {
             pass render_quad
             {
-                material Context/filter5X
+                material Context/SSAO/filter5X
+            }
+        }
+    }
+}
+
+compositor Context/FilterY/Bloom
+{
+    technique
+    {
+        texture_ref bloom Context/Bloom bloom
+
+        target bloom
+        {
+            pass render_quad
+            {
+                material Context/Bloom/filter5Y
+            }
+        }
+    }
+}
+
+compositor Context/FilterX/Bloom
+{
+    technique
+    {
+        texture_ref bloom Context/Bloom bloom
+
+        target bloom
+        {
+            pass render_quad
+            {
+                material Context/Bloom/filter5X
             }
         }
     }
@@ -166,6 +198,20 @@ compositor Context/Modulate/Bloom
             pass render_quad
             {
                 material Context/Modulate/Bloom
+            }
+        }
+    }
+}
+
+compositor Context/Modulate/Bloom/SSAO
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material Context/Modulate/Bloom/SSAO
             }
         }
     }

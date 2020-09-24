@@ -175,9 +175,6 @@ void DotSceneLoaderB::ProcessScene_(pugi::xml_node &xml_root) {
 
   if (auto element = xml_root.child("userData"))
     ProcessUserData_(element, attach_node_->getUserObjectBindings());
-
-  if (auto element = xml_root.child("camera"))
-    ProcessCamera_(element);
 }
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessNodes_(pugi::xml_node &xml_node) {
@@ -212,9 +209,6 @@ void DotSceneLoaderB::ProcessExternals_(pugi::xml_node &xml_node) {
 void DotSceneLoaderB::ProcessEnvironment_(pugi::xml_node &xml_node) {
   /// Process camera
   auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
-
-  if (auto element = xml_node.child("camera"))
-    ProcessCamera_(element);
 
   /// Process fog
   if (auto element = xml_node.child("fog"))
@@ -355,6 +349,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   entBody->setUserIndex(1);
   physics_->AddRigidBody(entBody);
   camera_->SetRigidBody(entBody);
+
   /// Set the field-of-view
   pCamera->setFOVy(Ogre::Radian(fov));
 
@@ -418,7 +413,9 @@ void DotSceneLoaderB::ProcessNode_(pugi::xml_node &xml_node, Ogre::SceneNode *pa
 
   /// Process position
   if (auto element = xml_node.child("position")) {
-    node->setPosition(ParsePosition(element));
+    Ogre::Vector3 position = ParsePosition(element);
+    position.y += GetHeigh(position.x, position.z);
+    node->setPosition(position);
     node->setInitialState();
   }
 
@@ -571,7 +568,6 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
 
   /// Create the entity
   Ogre::Entity *entity = nullptr;
-  parent->translate(Ogre::Vector3::UNIT_Y * GetHeigh(parent->getPosition().x, parent->getPosition().z));
   try {
     name += std::to_string(counter);
     counter++;
@@ -690,7 +686,6 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   rcamera_.reset();
   rcamera_ = std::make_unique<ReflectionCamera>(plane, 1024);
 
-
   std::string mesh_name = name + "mesh";
 
   Ogre::MeshPtr plane_mesh = Ogre::MeshManager::getSingleton().getByName(mesh_name,
@@ -786,7 +781,7 @@ void DotSceneLoaderB::ProcessSkyBox_(pugi::xml_node &xml_node) {
   /// Process attributes
   std::string material = GetAttrib(xml_node, "material", "Skybox");
   std::string cubemap = GetAttrib(xml_node, "cubemap", "OutputCube.dds");
-  float distance = GetAttribReal(xml_node, "distance", 1000);
+  float distance = GetAttribReal(xml_node, "distance", 500);
   bool drawFirst = GetAttribBool(xml_node, "drawFirst", true);
   bool active = GetAttribBool(xml_node, "active", true);
 
@@ -820,7 +815,7 @@ void DotSceneLoaderB::ProcessSkyDome_(pugi::xml_node &xml_node) {
   std::string material = xml_node.attribute("material").value();
   float curvature = GetAttribReal(xml_node, "curvature", 10);
   float tiling = GetAttribReal(xml_node, "tiling", 8);
-  float distance = GetAttribReal(xml_node, "distance", 1000);
+  float distance = GetAttribReal(xml_node, "distance", 500);
   bool drawFirst = GetAttribBool(xml_node, "drawFirst", true);
   bool active = GetAttribBool(xml_node, "active", false);
 
