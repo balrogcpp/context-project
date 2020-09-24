@@ -20,39 +20,28 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-vertex_program Pbr_vs_glsl glsl
-{
-	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
-}
+#pragma once
+#include "NoCopy.h"
+#include <string>
 
-vertex_program Pbr_vs_glsles glsles
-{
-	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
-}
+namespace xio {
+class DesktopIcon : public NoCopy{
+ public:
 
-vertex_program Pbr_vs unified
-{
-	delegate Pbr_vs_glsl
-	delegate Pbr_vs_glsles
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program PbrReflection_vs_glsl glsl
-{
-	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,REFLECTION,SHADOWRECEIVER
-}
-
-vertex_program PbrReflection_vs_glsles glsles
-{
-	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,REFLECTION,SHADOWRECEIVER
-}
-
-vertex_program PbrReflection_vs unified
-{
-	delegate PbrReflection_vs_glsl
-	delegate PbrReflection_vs_glsles
+ private:
+  const std::string ICON_SKELETON = "[Desktop Entry]\n"
+                                    "Comment=\n"
+                                    "Encoding=UTF-8\n"
+                                    "Exec=${ICON_EXEC}\n"
+                                    "GenericName=\n"
+                                    "Icon=${PATH_ICON}\n"
+                                    "MimeType=\n"
+                                    "Name=${ICON_NAME}\n"
+                                    "Path=${ICON_PATH}\n"
+                                    "StartupNotify=true\n"
+                                    "Terminal=false\n"
+                                    "Type=Application\n"
+                                    "TerminalOptions=\n"
+                                    "Version=${ICON_VERSION}\n";
+};
 }

@@ -71,7 +71,10 @@ material PbrTerrain
         texture_unit Normal {}
         texture_unit Metalness {}
         texture_unit Roughness {}
-        texture_unit OffsetSampler {}
+        texture_unit OffsetSampler
+        {
+            texture black.dds
+        }
         texture_unit GlobalNormal {}
 
         fragment_program_ref PbrTerrain_fs

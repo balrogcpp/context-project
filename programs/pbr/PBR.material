@@ -20,6 +20,24 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+vertex_program Pbr_vs_glsl glsl
+{
+	source pbr.vert
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
+}
+
+vertex_program Pbr_vs_glsles glsles
+{
+	source pbr.vert
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
+}
+
+vertex_program Pbr_vs unified
+{
+	delegate Pbr_vs_glsl
+	delegate Pbr_vs_glsles
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 fragment_program Pbr_fs_glsl glsl
 {
@@ -138,60 +156,6 @@ material PbrIbl
                 param_named uDiffuseEnvSampler  int 6
                 param_named uSpecularEnvSampler int 7
                 param_named ubrdfLUT            int 8
-			}
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PbrReflection_fs_glsl glsl
-{
-	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,REFLECTION,SHADOWRECEIVER
-}
-
-fragment_program PbrReflection_fs_glsles glsles
-{
-	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,REFLECTION,SHADOWRECEIVER
-}
-
-fragment_program PbrReflection_fs unified
-{
-	delegate PbrReflection_fs_glsl
-	delegate PbrReflection_fs_glsles
-}
-
-material PbrReflection
-{
-    technique
-    {
-      pass
-      {
-            ambient 0 0 0
-            specular 1 1 1 1
-
-            texture_unit Albedo {}
-            texture_unit Normal {}
-            texture_unit Metalness {}
-            texture_unit Roughness {}
-            texture_unit ReflectionMap {}
-            texture_unit NoiseMap
-            {
-                texture noise_fresnel.dds
-                filtering linear linear linear
-            }
-
-            vertex_program_ref PbrReflection_vs {}
-
-			fragment_program_ref PbrReflection_fs
-			{
-                param_named uBaseColorSampler   int 0
-                param_named uNormalSampler    int 1
-                param_named uMetallicSampler int 2
-                param_named uRoughnessSampler int 3
-                param_named uReflectionMap int 4
-                param_named uNoiseMap int 5
 			}
         }
     }
