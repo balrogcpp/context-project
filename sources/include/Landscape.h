@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include "Component.h"
 #include "ComponentLocator.h"
 #include <memory>
@@ -37,10 +36,10 @@ class xml_node;
 }
 
 namespace xio {
-class Terrain final : public ComponentLocator {
+class Landscape final : public ComponentLocator {
  public:
-  Terrain ();
-  virtual ~Terrain ();
+  Landscape ();
+  virtual ~Landscape ();
 
   void ProcessTerrainGroup(pugi::xml_node &xml_node);
   float GetHeigh(float x, float z);

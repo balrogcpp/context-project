@@ -159,7 +159,7 @@ void DotSceneLoaderB::ProcessScene_(pugi::xml_node &xml_root) {
     ProcessEnvironment_(element);
 
   if (auto element = xml_root.child("terrainGroup")) {
-    if (!terrain_) terrain_ = std::make_unique<Terrain>();
+    if (!terrain_) terrain_ = std::make_unique<Landscape>();
     terrain_->LocateComponents(conf_, io_, renderer_, physics_, sounds_, overlay_);
     terrain_->ProcessTerrainGroup(element);
   }
@@ -739,7 +739,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 //  entity->setVisibilityFlags(WATER_MASK);
 }
 ///---------------------------------------------------------------------------------------------------------------------
-std::unique_ptr<Terrain> DotSceneLoaderB::terrain_;
+std::unique_ptr<Landscape> DotSceneLoaderB::terrain_;
 std::unique_ptr<Forest> DotSceneLoaderB::forest_;
 void DotSceneLoaderB::ProcessForest_(pugi::xml_node &xml_node) {
   if (!forest_) forest_ = std::make_unique<Forest>();

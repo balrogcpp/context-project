@@ -24,7 +24,7 @@
 
 #include "Compositor.h"
 #include "Exception.h"
-#include "CompositorHelper.h"
+#include "CompositorHelpers.h"
 
 namespace xio {
 Compositor::~Compositor() noexcept {}

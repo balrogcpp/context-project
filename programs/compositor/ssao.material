@@ -86,7 +86,7 @@ material Context/SsaoCrytek
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------------------------------
 fragment_program Context/Crease_fp_glsl glsl
 {
     source crease.frag
@@ -140,13 +140,6 @@ material Context/SsaoCrease
                 tex_address_mode clamp
                 filtering none
             }
-
-            /*texture_unit
-            {
-                texture rand1x32.dds
-                tex_address_mode wrap
-                filtering none
-            }*/
 
             texture_unit
             {

@@ -20,6 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+//----------------------------------------------------------------------------------------------------------------------
 vertex_program gbuffer_vp_glsl glsl
 {
  	source gbuffer.vert
@@ -59,8 +60,6 @@ material Context/gbuffer
     {
         pass
         {
-            texture_unit BaseColor {}
-
             vertex_program_ref gbuffer_vp
             {
                 param_named_auto cWorldViewProj worldviewproj_matrix
@@ -76,38 +75,103 @@ material Context/gbuffer
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------------------------------
+vertex_program gbuffer_alpha_vp_glsl glsl
+{
+ 	source gbuffer.vert
+ 	preprocessor_defines ALPHA
+}
+
+vertex_program gbuffer_alpha_vp_glsles glsles
+{
+ 	source gbuffer.vert
+ 	preprocessor_defines ALPHA
+}
+
+fragment_program gbuffer_alpha_fp_glsl glsl
+{
+	source gbuffer.frag
+	preprocessor_defines ALPHA
+}
+
+fragment_program gbuffer_alpha_fp_glsles glsles
+{
+	source gbuffer.frag
+	preprocessor_defines ALPHA
+}
+
+vertex_program gbuffer_alpha_vp unified
+{
+	delegate gbuffer_alpha_vp_glsl
+    delegate gbuffer_alpha_vp_glsles
+}
+
+fragment_program gbuffer_alpha_fp unified
+{
+	delegate gbuffer_alpha_fp_glsl
+	delegate gbuffer_alpha_fp_glsles
+}
+
+material Context/gbuffer_alpha
+{
+    technique
+    {
+        pass
+        {
+            texture_unit BaseColor {}
+
+            vertex_program_ref gbuffer_alpha_vp
+            {
+                param_named_auto cWorldViewProj worldviewproj_matrix
+                param_named_auto cWorldView worldview_matrix
+            }
+
+            fragment_program_ref gbuffer_alpha_fp
+            {
+                param_named_auto cNearClipDistance near_clip_distance
+                param_named_auto cFarClipDistance far_clip_distance
+                param_named baseColor int 0
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 vertex_program gbuffer_disable_vp_glsl glsl
 {
- 	source gbuffer_disable.vert
+ 	source gbuffer.vert
 }
 
 vertex_program gbuffer_disable_vp_glsles glsles
 {
- 	source gbuffer_disable.vert
+ 	source gbuffer.vert
 }
 
 fragment_program gbuffer_disable_fp_glsl glsl
 {
-	source gbuffer_disable.frag
+	source gbuffer.frag
 }
 
 
 fragment_program gbuffer_disable_fp_glsles glsles
 {
-	source gbuffer_disable.frag
+	source gbuffer.frag
 }
 
 vertex_program gbuffer_disable_vp unified
 {
 	delegate gbuffer_disable_vp_glsl
     delegate gbuffer_disable_vp_glsles
+
+    preprocessor_defines DISABLE
 }
 
 fragment_program gbuffer_disable_fp unified
 {
 	delegate gbuffer_disable_fp_glsl
 	delegate gbuffer_disable_fp_glsles
+
+	preprocessor_defines DISABLE
 }
 
 material Context/gbuffer_disable

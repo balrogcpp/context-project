@@ -42,13 +42,13 @@ vertex_program Pbr_vs unified
 fragment_program Pbr_fs_glsl glsl
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,,HAS_OCCLUSIONMAP,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,SHADOWRECEIVER
 }
 
 fragment_program Pbr_fs_glsles glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,,HAS_OCCLUSIONMAP,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,SHADOWRECEIVER
 }
 
 fragment_program Pbr_fs unified
@@ -70,8 +70,14 @@ material Pbr
             texture_unit Normal {}
             texture_unit Metalness {}
             texture_unit Roughness {}
-            texture_unit Emissive {}
-            texture_unit AmbientOcclusion {}
+            texture_unit Emissive
+            {
+                texture black.dds
+            }
+            texture_unit AmbientOcclusion
+            {
+                texture white.dds
+            }
 
             vertex_program_ref Pbr_vs {}
 

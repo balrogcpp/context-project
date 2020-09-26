@@ -134,8 +134,7 @@ void main()
   vUV0.xy = uv0;
 
 #ifdef PAGED_GEOMETRY
-if (uv0.y == 0.0)
-{
+if (uv0.y == 0.0) {
   float kradius = 0.25;
   float kheigh = 0.25;
   float kx = 1.0;

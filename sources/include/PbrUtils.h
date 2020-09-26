@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include <OgreGpuProgramParams.h>
 #include <OgreMaterial.h>
 #include <OgreVector.h>

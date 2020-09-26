@@ -24,7 +24,7 @@
 
 #include "Component.h"
 #include "Singleton.h"
-#include "Terrain.h"
+#include "Landscape.h"
 #include "Forest.h"
 #include "ReflectionCamera.h"
 #include "CubeMapCamera.h"
@@ -110,7 +110,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
 
   std::unique_ptr<ReflectionCamera> rcamera_;
   std::unique_ptr<CubeMapCamera> cmcamera_;
-  static std::unique_ptr<Terrain> terrain_;
+  static std::unique_ptr<Landscape> terrain_;
  private:
   static std::unique_ptr<Forest> forest_;
   std::unique_ptr<Camera> camera_;
@@ -126,7 +126,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   InputSequencer *io_ = nullptr;
 
  public:
-  static const Terrain& GetTerrain() {
+  static const Landscape& GetTerrain() {
     return *terrain_;
   }
   static const Forest& GetForest() {
