@@ -592,7 +592,7 @@ void main()
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord).rgb);
+    total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord).rgb + uSurfaceEmissiveColour);
 #else
     total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour);
 #endif
@@ -610,5 +610,6 @@ void main()
         discard;
     }
 #endif //SHADOWCASTER_ALPHA
+    gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
 #endif //SHADOWCASTER
 }
