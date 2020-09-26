@@ -146,19 +146,6 @@ void UpdatePbrParams(MaterialPtr material) {
     AddGpuConstParameterAuto(frag_params, "uFogColour", GpuProgramParameters::ACT_FOG_COLOUR);
     AddGpuConstParameterAuto(frag_params, "uFogParams", GpuProgramParameters::ACT_FOG_PARAMS);
     AddGpuConstParameterAuto(frag_params, "uCameraPosition", GpuProgramParameters::ACT_CAMERA_POSITION);
-
-    auto ibl_texture = pass->getTextureUnitState("IBL_Specular");
-    const bool realtime_cubemap = false;
-    if (ibl_texture) {
-      if (realtime_cubemap) {
-//        ibl_texture->setTexture(CubeMapCamera::Instance().GetDyncubemap());
-      } else {
-        std::string skybox_cubemap =
-            MaterialManager::getSingleton().getByName("SkyBox")->getTechnique(0)->getPass(0)->getTextureUnitState(
-                "CubeMap")->getTextureName();
-        ibl_texture->setTextureName(skybox_cubemap);
-      }
-    }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -238,8 +225,51 @@ void UpdatePbrShadowReceiver(MaterialPtr material) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
+void UpdatePbrIbl(MaterialPtr material) {
+  std::string material_name = material->getName();
+  bool registered = false;
+  static std::vector<std::string> material_list;
+
+  if (std::find(material_list.begin(), material_list.end(), material_name) != material_list.end()) {
+    registered = true;
+  } else {
+    material_list.push_back(material_name);
+  }
+
+  auto ibl_texture = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
+  auto ibl_texture2 = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Diffuse");
+  const bool realtime_cubemap = true;
+  if (realtime_cubemap) {
+    if (ibl_texture) {
+      ibl_texture->setTexture(Ogre::TextureManager::getSingleton().getByName("dyncubemap",
+                                                                             Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME));
+
+    }
+    if (ibl_texture2) {
+      ibl_texture2->setTexture(Ogre::TextureManager::getSingleton().getByName("dyncubemap",
+                                                                              Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME));
+
+    }
+  } else {
+    auto skybox = MaterialManager::getSingleton().getByName("SkyBox");
+    if (!skybox)
+      return;
+    auto cubemap = skybox->getTechnique(0)->getPass(0)->getTextureUnitState("CubeMap");
+    if (!cubemap)
+      return;
+    if (ibl_texture)
+      ibl_texture->setTextureName(cubemap->getName());
+    if (ibl_texture2)
+      ibl_texture2->setTextureName(cubemap->getName());
+  }
+}
+//----------------------------------------------------------------------------------------------------------------------
 void UpdatePbrParams(const std::string &material) {
   UpdatePbrParams(MaterialManager::getSingleton().getByName(material));
+}
+//----------------------------------------------------------------------------------------------------------------------
+void UpdatePbrIbl(const std::string &material) {
+  UpdatePbrIbl(MaterialManager::getSingleton().getByName(material));
 }
 //----------------------------------------------------------------------------------------------------------------------
 void UpdatePbrShadowReceiver(const std::string &material) {
@@ -273,7 +303,7 @@ void EnsureHasTangents(Ogre::MeshPtr mesh_ptr) {
 bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
   bool hasTangents = false;
   bool hasUVs = false;
-  const Ogre::VertexDeclaration::VertexElementList &elementList = vertex_declaration->getElements();
+  auto &elementList = vertex_declaration->getElements();
   auto iter = elementList.begin();
   auto end = elementList.end();
 
