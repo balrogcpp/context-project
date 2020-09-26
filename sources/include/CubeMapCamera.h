@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include <Ogre.h>
 
 namespace xio {
@@ -40,22 +39,12 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
     // point the camera in the right direction based on which face of the cubemap this is
     scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-
     camera_node_->setOrientation(Ogre::Quaternion::IDENTITY);
-
-    if (evt.source == targets_[0]) {
-      camera_node_->setOrientation(0, 1, 0, 0);
-    } else if (evt.source == targets_[1]) {
-      camera_node_->setOrientation(0, 1, 0, 0);
-    } else if (evt.source == targets_[2]) {
-      camera_node_->setOrientation(0, 1, 0, 0);
-    } else if (evt.source == targets_[3]) {
-      camera_node_->setOrientation(0, 1, 0, 0);
-    } else if (evt.source == targets_[4]) {
-      camera_node_->setOrientation(0, 1, 0, 0);
-    } else if (evt.source == targets_[5]) {
-      camera_node_->setOrientation(0, 1, 0, 0);
-    }
+    if (evt.source == targets_[0]) camera_node_->yaw(Ogre::Degree(-90));
+    else if (evt.source == targets_[1]) camera_node_->yaw(Ogre::Degree(90));
+    else if (evt.source == targets_[2]) camera_node_->pitch(Ogre::Degree(90));
+    else if (evt.source == targets_[3]) camera_node_->pitch(Ogre::Degree(-90));
+    else if (evt.source == targets_[5]) camera_node_->yaw(Ogre::Degree(180));
   }
 //----------------------------------------------------------------------------------------------------------------------
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
@@ -93,7 +82,8 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
     camera_->setLodBias(0.2);
     camera_->setNearClipDistance(main_camera->getNearClipDistance());
     camera_->setFarClipDistance(main_camera->getFarClipDistance());
-    camera_node_ = creator;
+    camera_node_ = creator->createChildSceneNode();
+    camera_node_->setFixedYawAxis(false);
     camera_node_->attachObject(camera_);
     cubemap_ = Ogre::TextureManager::getSingleton().createManual("dyncubemap",
                                                                  Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,

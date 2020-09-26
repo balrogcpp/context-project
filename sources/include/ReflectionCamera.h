@@ -117,10 +117,11 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   Ogre::Camera *rcamera_ = nullptr;
   Ogre::SceneManager *scene_ = nullptr;
 
+ public:
   const uint32_t SUBMERGED_MASK = 0x0F0;
   const uint32_t SURFACE_MASK = 0x00F;
   const uint32_t WATER_MASK = 0xF00;
- public:
+
 //----------------------------------------------------------------------------------------------------------------------
   inline void SetPlane(Ogre::Plane plane) {
     plane_ = plane;
