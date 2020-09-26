@@ -119,6 +119,7 @@ if (UNIX OR MINGW)
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -pthread")
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -fopenmp")
     string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -DDEBUG")
+    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -D_DEBUG")
 
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -g")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -Ofast")
@@ -129,6 +130,7 @@ if (UNIX OR MINGW)
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -pthread")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -fopenmp")
     string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -DDEBUG")
+    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -D_DEBUG")
 
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -Ofast")
     string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
@@ -153,6 +155,7 @@ if (UNIX OR MINGW)
     string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -pthread")
     string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -fopenmp")
     string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -DDEBUG")
+    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -D_DEBUG")
 
     string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -g")
     string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -O2")
@@ -163,6 +166,7 @@ if (UNIX OR MINGW)
     string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -pthread")
     string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -fopenmp")
     string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -DDEBUG")
+    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -D_DEBUG")
 
     string(APPEND CONTEXT_GCC_C_Release_FLAGS " -Ofast")
     string(APPEND CONTEXT_GCC_C_Release_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
@@ -406,13 +410,6 @@ install(DIRECTORY ${CONTEXT_MEDIA_FILES}
         CONFIGURATIONS Release
         DESTINATION .
         )
-if (UNIX AND NOT MINGW)
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/start.sh
-            CONFIGURATIONS Release
-            PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_WRITE GROUP_READ
-            DESTINATION .
-            )
-endif ()
 
 set(CONTEXT_PACKAGE_NAME "ContextProjectDemo")
 set(CONTEXT_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts)

@@ -232,7 +232,8 @@ void BatchPage::_updateShaders() {
       shaderLanguage = "cg";
 
     //If the shader hasn't been created yet, create it
-    if (!HighLevelGpuProgramManager::getSingleton().getByName(vertexProgName, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
+    if (!HighLevelGpuProgramManager::getSingleton().getByName(vertexProgName,
+                                                              ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
       Pass *pass = ptrMat->getTechnique(0)->getPass(0);
       String vertexProgSource;
 

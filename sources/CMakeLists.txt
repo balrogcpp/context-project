@@ -53,6 +53,9 @@ set(PAGED_HEADERS
     pgeometry/include/TreeLoader3D.h
     pgeometry/include/BatchPage.h
     pgeometry/include/BatchedGeometry.h
+    pgeometry/include/ImpostorPage.h
+    pgeometry/include/WindBatchedGeometry.h
+    pgeometry/include/WindBatchPage.h
     )
 
 set(CONTEXT_HEADERS
@@ -83,8 +86,8 @@ set(CONTEXT_HEADERS
     include/PbrUtils.h
     include/Storage.h
     include/RtssUtils.h
-    include/Terrain.h
-    include/CompositorHelper.h
+    include/Landscape.h
+    include/CompositorHelpers.h
     include/ShadowSettings.h
     include/YamlConfigurator.h
     include/ComponentLocator.h
@@ -115,6 +118,10 @@ set(PAGED_SOURCES
     pgeometry/src/TreeLoader3D.cpp
     pgeometry/src/BatchPage.cpp
     pgeometry/src/BatchedGeometry.cpp
+    pgeometry/src/ImpostorPage.cpp
+    pgeometry/src/WindBatchedGeometry.cpp
+    pgeometry/src/WindBatchPage.cpp
+
     )
 
 set(OGGSOUND_SOURCES
@@ -140,7 +147,7 @@ set(CONTEXT_SOURCES
     src/Gorilla.cpp
     src/Overlay.cpp
     src/PbrUtils.cpp
-    src/Terrain.cpp
+    src/Landscape.cpp
     src/Sound.cpp
     )
 
