@@ -25,6 +25,7 @@
 #include <OgreRoot.h>
 #include "Input.h"
 #include "Entity.h"
+#include "ComponentLocator.h"
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 
 namespace Ogre {

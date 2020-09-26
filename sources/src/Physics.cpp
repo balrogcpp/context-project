@@ -62,7 +62,7 @@ void Physics::Loop(float time) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::DispatchCollisions() {
-  std::map<const btCollisionObject *, Contact> new_contacts;
+  std::map<const btCollisionObject *, ContactInfo> new_contacts;
 
   /* Browse all collision pairs */
   for (size_t i = 0; i < world_->getDispatcher()->getNumManifolds(); i++) {

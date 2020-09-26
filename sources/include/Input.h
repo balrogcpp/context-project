@@ -100,15 +100,14 @@ class InputSequencer {
   InputSequencer() {
     if (instanced_)
       throw InputException("Only one instance of InputSequencer is allowed!\n");
-    io_listeners.reserve(reserve_);
-    win_listeners.reserve(reserve_);
+    Reserve(RESERVE_SIZE);
     instanced_ = true;
   }
 
  private:
   KeyboardListenersList io_listeners;
   OtherListenersList win_listeners;
-  const size_t reserve_ = 16;
+  const size_t RESERVE_SIZE = 16;
   inline static bool instanced_ = false;
 
  public:
@@ -138,7 +137,9 @@ class InputSequencer {
 //----------------------------------------------------------------------------------------------------------------------
   void Clear() {
     io_listeners.clear();
+    io_listeners.shrink_to_fit();
     win_listeners.clear();
+    win_listeners.shrink_to_fit();
   }
 //----------------------------------------------------------------------------------------------------------------------
   void Reserve(size_t size) {

@@ -27,6 +27,7 @@
 #include "Overlay.h"
 #include "HwCheck.h"
 #include "DesktopIcon.h"
+#include "ComponentLocator.h"
 
 #ifdef _WIN32
 extern "C"
@@ -73,15 +74,17 @@ void Application::Init_() {
 
   io_ = std::make_unique<InputSequencer>();
   physics_ = std::make_unique<Physics>();
-  sounds_ = std::make_unique<Sound>();
+  sounds_ = std::make_unique<Sound>(15, 15);
   overlay_ = std::make_unique<Overlay>();
   loader_ = std::make_unique<DotSceneLoaderB>();
 
+  components_.push_back(sounds_.get());
   components_.push_back(loader_.get());
   components_.push_back(physics_.get());
-  components_.push_back(sounds_.get());
   components_.push_back(renderer_.get());
   components_.push_back(overlay_.get());
+
+  ComponentLocator::LocateComponents(conf_.get(), io_.get(), renderer_.get(), physics_.get(), sounds_.get(), overlay_.get(), loader_.get());
 
   for (auto &it : components_) {
     it->Create();
@@ -129,8 +132,16 @@ void Application::Clear_() {
 
   for (auto &it : components_)
     it->Clean();
+
   for (auto &it : components_)
     it->Reset();
+
+  renderer_.reset();
+  io_.reset();
+  physics_.reset();
+  sounds_ .reset();
+  overlay_.reset();
+  loader_ .reset();
 
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 }

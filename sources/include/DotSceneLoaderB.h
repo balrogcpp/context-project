@@ -81,7 +81,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
     io_ = io;
     renderer_ = renderer;
     physics_ = physics;
-    sounds_ = sounds;
+    sound_ = sounds;
     overlay_ = overlay;
   }
 
@@ -114,14 +114,16 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
  private:
   static std::unique_ptr<Forest> forest_;
   std::unique_ptr<Camera> camera_;
-  Ogre::SceneManager *scene_manager_ = nullptr;
+  Ogre::SceneManager *scene_ = nullptr;
+  Ogre::Root *root_ = nullptr;
+  Ogre::SceneNode *root_node_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;
   std::string group_name_;
 
   YamlConfigurator *conf_ = nullptr;
   Renderer *renderer_ = nullptr;
   Physics *physics_ = nullptr;
-  Sound *sounds_ = nullptr;
+  Sound *sound_ = nullptr;
   Overlay *overlay_ = nullptr;
   InputSequencer *io_ = nullptr;
 

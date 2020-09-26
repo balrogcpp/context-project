@@ -92,7 +92,7 @@ set(CONTEXT_HEADERS
     include/YamlConfigurator.h
     include/ComponentLocator.h
     include/XmlUtils.h
-    include/Locator.h
+    include/ComponentLocator.h
     include/HwCheck.h
     include/Singleton.h
     include/DesktopIcon.h

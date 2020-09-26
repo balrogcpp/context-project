@@ -32,7 +32,7 @@ namespace OgreOggSound{
 namespace xio {
 class Sound final : public Component, public Singleton<Sound> {
  public:
-  Sound();
+  explicit Sound(unsigned int max_sources, unsigned int queue_list_size);
   virtual ~Sound();
 
   void Create() final {}
@@ -45,6 +45,7 @@ class Sound final : public Component, public Singleton<Sound> {
   void SetMasterVolume(float volume);
   void SetMaxVolume(const std::string &name, float volume);
   void SetVolume(const std::string &name, float gain);
+  void SetListener(Ogre::SceneNode *parent);
  private:
   OgreOggSound::OgreOggSoundManager *manager_ = nullptr;
 };
