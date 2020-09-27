@@ -21,18 +21,38 @@
 //SOFTWARE.
 
 #pragma once
-#include "xio_deps.h"
-#include "BtOgreExtras.h"
-#include "BtOgreGP.h"
-#include "BtOgrePG.h"
-#include "OgreOggSound.h"
-#include "PagedGeometry.h"
-#include "GrassLoader.h"
-#include "TreeLoader2D.h"
-#include "TreeLoader3D.h"
-#include "BatchPage.h"
-#include "BatchedGeometry.h"
-#include "ImpostorPage.h"
-#include "WindBatchPage.h"
-#include "WindBatchedGeometry.h"
-#include "BatchedGeometry.h"
+#include "OgreHeaders.h"
+#include <rapidjson/rapidjson.h>
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/istreamwrapper.h>
+#include <pugixml.hpp>
+#include <yaml-cpp/yaml.h>
+#include <lua.hpp>
+#include <sol.hpp>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <functional>
+#include <sstream>
+#include <memory>
+#include <vector>
+#include <list>
+#include <deque>
+#include <queue>
+#include <stack>
+#include <set>
+#include <unordered_set>
+#include <unordered_map>
+#include <map>
+#include <algorithm>
+#include <chrono>
+#include <thread>
+#include <filesystem>
+#include <cstdlib>
+#include <limits>
+#include <omp.h>
+extern "C" {
+#include <SDL2/SDL.h>
+}

@@ -75,7 +75,7 @@ class PagedGeometry {
 
   \see setCamera(), setPageSize(), setBounds(), setInfinite(), setPageLoader()
   */
-  PagedGeometry(Ogre::Camera *cam = NULL,
+  PagedGeometry(Ogre::Camera *cam = nullptr,
                 Ogre::Real pageSize = 100,
                 Ogre::RenderQueueGroupID queue = Ogre::RENDER_QUEUE_6);
 
@@ -119,10 +119,10 @@ class PagedGeometry {
   \returns A SceneManager
 
   This function simply returns the SceneManager that this PagedGeometry object
-  is using. If no camera has been set yet, this will return NULL, since PagedGeometry
+  is using. If no camera has been set yet, this will return nullptr, since PagedGeometry
   has no way of knowing which SceneManager to use. However, once a camera is set,
   the SceneManager this function returns will always remain the same - even if the
-  camera is later set to NULL.
+  camera is later set to nullptr.
   */
   inline Ogre::SceneManager *getSceneManager() const {
     return sceneMgr;
@@ -143,10 +143,10 @@ class PagedGeometry {
   features - it's primary use is for PagedGeometry's internal subsystems to be able
   to create pgeometry using the proper scene node.
 
-  \warning If no camera has been set yet, this will return NULL, since PagedGeometry
+  \warning If no camera has been set yet, this will return nullptr, since PagedGeometry
   can't create the SceneNode until it know which SceneManager to use (which is determined
   from the assigned camera). However, once a camera is set, the SceneNode this function
-  returns will always remain the same - even if the camera is later set to NULL.
+  returns will always remain the same - even if the camera is later set to nullptr.
   */
   inline Ogre::SceneNode *getSceneNode() const {
     return rootNode;
@@ -717,7 +717,7 @@ There are several virtual member functions you will need to implement in your cl
 \code
 virtual void init(SceneManager *mgr, Camera *cam) = 0;
 virtual void setRegion(Real left, Real top, Real right, Real bottom) = 0;
-virtual void addEntity(Entity *ent, const Vector3 &position, const Quaternion &rotation, const Vector3 &scale, const Ogre::ColourValue &color, void* userData = NULL) = 0;
+virtual void addEntity(Entity *ent, const Vector3 &position, const Quaternion &rotation, const Vector3 &scale, const Ogre::ColourValue &color, void* userData = nullptr) = 0;
 virtual void build() {}
 virtual void removeEntities() = 0;
 virtual void setVisible(bool visible) = 0;
@@ -970,7 +970,7 @@ class GeometryPage {
 
   /**
   \brief Constructor
-  Initialise everything to zero, false or NULL except for _trueBoundsUndefined that is set to true.
+  Initialise everything to zero, false or nullptr except for _trueBoundsUndefined that is set to true.
   */
   GeometryPage();
 
@@ -1063,7 +1063,7 @@ struct PageInfo {
   allocated during the loading of a page. You can later retreive this data in
   PageLoader::unloadPage() in order to deallocate the data if desired.
 
-  \warning After a page is unloaded, userData becomes NULL. Don't attempt to
+  \warning After a page is unloaded, userData becomes nullptr. Don't attempt to
   use userData to reference an object longer than the page's life span;
   anything userData points to should be fully deallocated when
   PageLoader::unloadPage() is called.

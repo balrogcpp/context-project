@@ -61,7 +61,7 @@ class BatchedGeometry : public Ogre::MovableObject {
     ///
     void addSubEntity(Ogre::SubEntity *ent, const Ogre::Vector3 &position,
                       const Ogre::Quaternion &orientation, const Ogre::Vector3 &scale,
-                      const Ogre::ColourValue &color = Ogre::ColourValue::White, void *userData = NULL);
+                      const Ogre::ColourValue &color = Ogre::ColourValue::White, void *userData = nullptr);
 
     /// Build (assemble a vertex/index buffers) geometry for rendering
     virtual void build();

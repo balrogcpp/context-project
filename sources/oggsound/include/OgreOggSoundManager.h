@@ -638,9 +638,9 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   static Poco::Mutex mSoundMutex;
   static Poco::Mutex mResourceGroupNameMutex;
 #	else
-  static std::recursive_mutex mMutex;
-  static std::recursive_mutex mSoundMutex;
-  static std::recursive_mutex mResourceGroupNameMutex;
+  static std::mutex mMutex;
+  static std::mutex mSoundMutex;
+  static std::mutex mResourceGroupNameMutex;
 #	endif
 
   /** Pushes a sound action request onto the queue

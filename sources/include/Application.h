@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 #include <OgreLog.h>

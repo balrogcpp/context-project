@@ -32,7 +32,7 @@ namespace OgreOggSound{
 namespace xio {
 class Sound final : public Component, public Singleton<Sound> {
  public:
-  explicit Sound(unsigned int max_sources, unsigned int queue_list_size);
+  explicit Sound(unsigned int max_sources = 100, unsigned int queue_list_size = 100);
   virtual ~Sound();
 
   void Create() final {}

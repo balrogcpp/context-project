@@ -48,13 +48,13 @@ BatchPage to the PagedGeometry project.
 */
 class WindBatchPage : public BatchPage {
  public:
-  WindBatchPage() : m_pPagedGeom(NULL) { /* empty */ }
+  WindBatchPage() : m_pPagedGeom(nullptr) { /* empty */ }
 
   ///
   void init(PagedGeometry *geom, const Ogre::Any &data);
 
  protected:
-  void _updateShaders();
+  void _updateShaders() override;
 
  private:
   Ogre::String m_strEntityName;     ///<

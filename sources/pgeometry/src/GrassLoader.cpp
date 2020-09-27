@@ -26,8 +26,8 @@ GrassLoader::GrassLoader(PagedGeometry *geom) {
   // generate some random numbers
   rTable = new RandomTable();
 
-  heightFunction = NULL;
-  heightFunctionUserData = NULL;
+  heightFunction = nullptr;
+  heightFunctionUserData = nullptr;
 
   windDir = Vector3::UNIT_X;
   densityFactor = 1.0f;
@@ -128,7 +128,7 @@ void GrassLoader::loadPage(PageInfo &page) {
 
     //Don't build a mesh unless it contains something
     if (grassCount != 0) {
-      Mesh *mesh = NULL;
+      Mesh *mesh = nullptr;
       switch (layer->renderTechnique) {
         case GRASSTECH_QUAD: mesh = generateGrass_QUAD(page, layer, position, grassCount);
           break;
@@ -806,9 +806,9 @@ GrassLayer::GrassLayer(PagedGeometry *geom, GrassLoader *ldr) {
   lighting = false;
   shaderNeedsUpdate = true;
 
-  densityMap = NULL;
+  densityMap = nullptr;
   densityMapFilter = MAPFILTER_BILINEAR;
-  colorMap = NULL;
+  colorMap = nullptr;
   colorMapFilter = MAPFILTER_BILINEAR;
 }
 
@@ -872,7 +872,7 @@ void GrassLayer::setLightingEnabled(bool enabled) {
 void GrassLayer::setDensityMap(const String &mapFile, MapChannel channel) {
   if (densityMap) {
     densityMap->unload();
-    densityMap = NULL;
+    densityMap = nullptr;
   }
   if (mapFile != "") {
     densityMap = DensityMap::load(mapFile, channel);
@@ -882,7 +882,7 @@ void GrassLayer::setDensityMap(const String &mapFile, MapChannel channel) {
 void GrassLayer::setDensityMap(TexturePtr map, MapChannel channel) {
   if (densityMap) {
     densityMap->unload();
-    densityMap = NULL;
+    densityMap = nullptr;
   }
   if (map) {
     densityMap = DensityMap::load(map, channel);
@@ -1090,7 +1090,7 @@ unsigned int GrassLayer::_populateGrassList_BilinearDM(PageInfo page, float *pos
 void GrassLayer::setColorMap(const String &mapFile, MapChannel channel) {
   if (colorMap) {
     colorMap->unload();
-    colorMap = NULL;
+    colorMap = nullptr;
   }
   if (mapFile != "") {
     colorMap = ColorMap::load(mapFile, channel);
@@ -1101,7 +1101,7 @@ void GrassLayer::setColorMap(const String &mapFile, MapChannel channel) {
 void GrassLayer::setColorMap(TexturePtr map, MapChannel channel) {
   if (colorMap) {
     colorMap->unload();
-    colorMap = NULL;
+    colorMap = nullptr;
   }
   if (map) {
     colorMap = ColorMap::load(map, channel);

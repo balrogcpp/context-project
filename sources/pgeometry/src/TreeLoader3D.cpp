@@ -38,7 +38,7 @@ TreeLoader3D::TreeLoader3D(PagedGeometry *geom, const TBounds &bounds) {
   pageGridZ = (int) Math::Ceil(gridBounds.height() / pageSize) + 1;
 
   //Reset color map
-  colorMap = NULL;
+  colorMap = nullptr;
   colorMapFilter = MAPFILTER_NONE;
 
   //Default scale range
@@ -169,7 +169,7 @@ TreeLoader3D::deleteTrees(const Vector3 &position, Real radius, Entity *type) {
   if (maxPageZ < 0) maxPageZ = 0; else if (maxPageZ >= pageGridZ) maxPageZ = pageGridZ - 1;
 
   PageGridListIterator it, end;
-  if (type == NULL) {
+  if (type == nullptr) {
     //Scan all entity types
     it = pageGridList.begin();
     end = pageGridList.end();
@@ -261,7 +261,7 @@ TreeLoader3D::deleteTrees(TBounds area, Ogre::Entity *type) {
   if (maxPageZ < 0) maxPageZ = 0; else if (maxPageZ >= pageGridZ) maxPageZ = pageGridZ - 1;
 
   PageGridListIterator it, end;
-  if (type == NULL) {
+  if (type == nullptr) {
     //Scan all entity types
     it = pageGridList.begin();
     end = pageGridList.end();
@@ -355,7 +355,7 @@ std::vector<void*> TreeLoader3D::findTrees(const Ogre::Vector3 &position, Real r
     if (maxPageZ < 0) maxPageZ = 0; else if (maxPageZ >= pageGridZ) maxPageZ = pageGridZ-1;
 
     PageGridListIterator it, end;
-    if (type == NULL){
+    if (type == nullptr){
         //Scan all entity types
         it = pageGridList.begin();
         end = pageGridList.end();
@@ -402,7 +402,7 @@ std::vector<void*> TreeLoader3D::findTrees(const Ogre::Vector3 &position, Real r
 void TreeLoader3D::setColorMap(const String &mapFile, MapChannel channel) {
   if (colorMap) {
     colorMap->unload();
-    colorMap = NULL;
+    colorMap = nullptr;
   }
   if (mapFile != "") {
     colorMap = ColorMap::load(mapFile, channel);
@@ -413,7 +413,7 @@ void TreeLoader3D::setColorMap(const String &mapFile, MapChannel channel) {
 void TreeLoader3D::setColorMap(TexturePtr map, MapChannel channel) {
   if (colorMap) {
     colorMap->unload();
-    colorMap = NULL;
+    colorMap = nullptr;
   }
   if (map) {
     colorMap = ColorMap::load(map, channel);

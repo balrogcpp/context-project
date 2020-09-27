@@ -26,6 +26,7 @@
 #include "Singleton.h"
 #include "Landscape.h"
 #include "Forest.h"
+#include "Camera.h"
 #include "ReflectionCamera.h"
 #include "CubeMapCamera.h"
 #include "Input.h"
@@ -49,7 +50,6 @@ class VertexDeclaration;
 }
 
 namespace xio {
-class Camera;
 class JsonConfigurator;
 class YamlConfigurator;
 class Renderer;

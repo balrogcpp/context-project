@@ -29,8 +29,8 @@ BillboardOrigin Forests::ImpostorPage::s_impostorPivot = BBO_CENTER;
 //-----------------------------------------------------------------------------
 /// Default constructor
 ImpostorPage::ImpostorPage() :
-    m_pSceneMgr(NULL),
-    m_pPagedGeom(NULL),
+    m_pSceneMgr(nullptr),
+    m_pPagedGeom(nullptr),
     m_blendMode(ALPHA_REJECT_IMPOSTOR),
     m_nInstanceID(0),
     m_nAveCount(0),
@@ -191,8 +191,8 @@ void ImpostorPage::update() {
 }
 
 void ImpostorPage::regenerate(Entity *ent) {
-  ImpostorTexture *tex = ImpostorTexture::getTexture(NULL, ent);
-  if (tex != NULL)
+  ImpostorTexture *tex = ImpostorTexture::getTexture(nullptr, ent);
+  if (tex != nullptr)
     tex->regenerate();
 }
 
@@ -206,7 +206,7 @@ void ImpostorPage::regenerateAll() {
 unsigned long ImpostorBatch::GUID = 0;
 
 ImpostorBatch::ImpostorBatch(ImpostorPage *group, Entity *entity) :
-    m_pTexture(NULL) {
+    m_pTexture(nullptr) {
   // Render impostor texture for this entity
   m_pTexture = ImpostorTexture::getTexture(group, entity);
 
@@ -654,7 +654,7 @@ ImpostorTexture *ImpostorTexture::getTexture(ImpostorPage *group, Entity *entity
       return (new ImpostorTexture(group, entity));
     } else {
       //But if group is null, return null
-      return NULL;
+      return nullptr;
     }
   }
 }

@@ -47,9 +47,9 @@ Poco::Mutex OgreOggSound::OgreOggSoundManager::mSoundMutex;
 Poco::Mutex OgreOggSound::OgreOggSoundManager::mResourceGroupNameMutex;
 #   else
 std::thread *OgreOggSound::OgreOggSoundManager::mUpdateThread = 0;
-std::recursive_mutex OgreOggSound::OgreOggSoundManager::mMutex;
-std::recursive_mutex OgreOggSound::OgreOggSoundManager::mSoundMutex;
-std::recursive_mutex OgreOggSound::OgreOggSoundManager::mResourceGroupNameMutex;
+std::mutex OgreOggSound::OgreOggSoundManager::mMutex;
+std::mutex OgreOggSound::OgreOggSoundManager::mSoundMutex;
+std::mutex OgreOggSound::OgreOggSoundManager::mResourceGroupNameMutex;
 #	endif
 bool OgreOggSound::OgreOggSoundManager::mShuttingDown = false;
 #endif

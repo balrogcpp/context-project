@@ -74,7 +74,7 @@ void Application::Init_() {
 
   io_ = std::make_unique<InputSequencer>();
   physics_ = std::make_unique<Physics>();
-  sounds_ = std::make_unique<Sound>(15, 15);
+  sounds_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();
   loader_ = std::make_unique<DotSceneLoaderB>();
 
@@ -143,7 +143,7 @@ void Application::Clear_() {
   overlay_.reset();
   loader_ .reset();
 
-  Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::InitState_(std::unique_ptr<AppState> &&next_state) {

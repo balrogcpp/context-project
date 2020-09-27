@@ -42,7 +42,6 @@ void WindBatchPage::init(PagedGeometry *geom, const Any &data) {
   m_bFadeEnabled = false;
 
   const RenderSystemCapabilities *caps = Root::getSingleton().getRenderSystem()->getCapabilities();
-  m_bShadersSupported = caps->hasCapability(RSC_VERTEX_PROGRAM) ? true : false;    // <-- DELETE THIS
 
   ++s_nRefCount;
 }
@@ -81,7 +80,7 @@ void WindBatchPage::_updateShaders() {
       tmpName << "fade_";
     if (lightingEnabled)
       tmpName << "lit_";
-    if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != NULL)
+    if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr)
       tmpName << "clr_";
 
     for (unsigned short i = 0; i < subBatch->m_pVertexData->vertexDeclaration->getElementCount(); ++i) {
@@ -130,7 +129,7 @@ void WindBatchPage::_updateShaders() {
             "	float3 normal	 : NORMAL, \n"
             "	out float4 oPosition : POSITION, \n";
 
-        if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != NULL) {
+        if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) {
           vertexProgSource +=
               "	float4 iColor	 : COLOR, \n";
         }
@@ -209,7 +208,7 @@ void WindBatchPage::_updateShaders() {
               "	float3 light = normalize(objSpaceLight.xyz - (iPosition.xyz * objSpaceLight.w)); \n"
               "	float diffuseFactor = max(dot(normal, light), 0); \n";
 
-          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != NULL) {
+          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) {
             vertexProgSource +=
                 "	oColor = (lightAmbient + diffuseFactor * lightDiffuse) * iColor; \n";
           } else {
@@ -217,7 +216,7 @@ void WindBatchPage::_updateShaders() {
                 "	oColor = (lightAmbient + diffuseFactor * lightDiffuse); \n";
           }
         } else {
-          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != NULL) {
+          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) {
             vertexProgSource +=
                 "	oColor = iColor; \n";
           } else {
@@ -322,7 +321,7 @@ void WindBatchPage::_updateShaders() {
               "	vec3 light = normalize(objSpaceLight.xyz - (gl_Vertex.xyz * objSpaceLight.w)); \n"
               "	float diffuseFactor = max(dot(gl_Normal.xyz, light), 0.0); \n";
 
-          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != NULL) {
+          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) {
             vertexProgSource +=
                 "	gl_FrontColor = (lightAmbient + diffuseFactor * lightDiffuse) * gl_Color; \n";
           } else {
@@ -330,7 +329,7 @@ void WindBatchPage::_updateShaders() {
                 "	gl_FrontColor = (lightAmbient + diffuseFactor * lightDiffuse); \n";
           }
         } else {
-          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != NULL) {
+          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) {
             vertexProgSource += "	gl_FrontColor = gl_Color; \n";
           } else {
             vertexProgSource += "	gl_FrontColor = vec4(1.0, 1.0, 1.0, 1.0); \n";

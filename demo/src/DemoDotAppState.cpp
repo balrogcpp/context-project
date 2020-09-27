@@ -20,9 +20,8 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "Application.h"
+#include "pcheader.h"
 #include "DemoDotAppState.h"
-#include "Camera.h"
 
 namespace Demo {
 using namespace xio;

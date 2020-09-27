@@ -35,7 +35,7 @@ void WindBatchedGeometry::addEntity(Entity *ent,
                                     const Vector3 &scale,
                                     const ColourValue &color) {
   MeshPtr mesh = ent->getMesh();
-  if (mesh->sharedVertexData != NULL)
+  if (mesh->sharedVertexData != nullptr)
     OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Shared vertex data not allowed", "BatchedGeometry::addEntity()");
 
   //For each subentity
@@ -45,7 +45,7 @@ void WindBatchedGeometry::addEntity(Entity *ent,
     SubMesh *subMesh = subEntity->getSubMesh();
 
     //Generate a format string that uniquely identifies this material & vertex/index format
-    if (subMesh->vertexData == NULL)
+    if (subMesh->vertexData == nullptr)
       OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, "SubMesh vertex data not found!", "BatchedGeometry::addEntity()");
 
     String formatStr = getFormatString(subEntity);

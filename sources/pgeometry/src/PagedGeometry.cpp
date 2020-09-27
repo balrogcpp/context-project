@@ -36,12 +36,12 @@ PagedGeometry::PagedGeometry(Camera *cam, const Real pageSize, Ogre::RenderQueue
     rootNode = sceneMgr->getRootSceneNode();
 #endif
   } else {
-    sceneCam = NULL;
-    sceneMgr = NULL;
-    rootNode = NULL;
+    sceneCam = nullptr;
+    sceneMgr = nullptr;
+    rootNode = nullptr;
     oldCamPos = Vector3::ZERO;
   }
-  lastSceneCam = NULL;
+  lastSceneCam = nullptr;
   lastOldCamPos = Vector3::ZERO;
 
 #ifdef PAGEDGEOMETRY_ALTERNATE_COORDSYSTEM
@@ -58,7 +58,7 @@ PagedGeometry::PagedGeometry(Camera *cam, const Real pageSize, Ogre::RenderQueue
   m_bounds = TBounds(0, 0, 0, 0);
 
   //Misc.
-  pageLoader = NULL;
+  pageLoader = nullptr;
   geometryAllowedVisible = true;
   tempdir = ""; // empty for current working directory
   shadersEnabled = true; // enable shaders by default
@@ -84,9 +84,9 @@ void PagedGeometry::setPageLoader(PageLoader *loader) {
 }
 
 void PagedGeometry::setCamera(Camera *cam) {
-  if (cam == NULL) {
+  if (cam == nullptr) {
     //Simply set camera to null
-    sceneCam = NULL;
+    sceneCam = nullptr;
   } else {
     if (sceneMgr && cam->getSceneManager() != sceneMgr)
       OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
@@ -103,15 +103,15 @@ void PagedGeometry::setCamera(Camera *cam) {
       sceneCam = cam;
     }
 
-    //If sceneMgre is NULL (this only occurs the first time a camera is set),
+    //If sceneMgre is nullptr (this only occurs the first time a camera is set),
     //then set the scene manager (it won't change after this point).
-    if (sceneMgr == NULL)
+    if (sceneMgr == nullptr)
       sceneMgr = sceneCam->getSceneManager();
 
-    //If rootNode is NULL (this also only occurs the first time a camera is set),
+    //If rootNode is nullptr (this also only occurs the first time a camera is set),
     //the create a scene node (it won't change after this point) for the coordinate
     //system translations.
-    if (rootNode == NULL) {
+    if (rootNode == nullptr) {
 #ifdef PAGEDGEOMETRY_ALTERNATE_COORDSYSTEM
       rootNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
       rootNode->setOrientation(coordinateSystemQuat);
@@ -202,7 +202,7 @@ void PagedGeometry::removeDetailLevels() {
 
 void PagedGeometry::update() {
   //If no camera has been set, then return without doing anything
-  if (sceneCam == NULL)
+  if (sceneCam == nullptr)
     return;
 
   //Calculate time since last update
@@ -230,7 +230,7 @@ void PagedGeometry::update() {
     //Update all the page managers
     bool enableCache = true;
     std::list<GeometryPageManager *>::iterator it;
-    GeometryPageManager *prevMgr = NULL;
+    GeometryPageManager *prevMgr = nullptr;
     for (it = managerList.begin(); it != managerList.end(); ++it) {
       GeometryPageManager *mgr = *it;
       mgr->update(deltaTime, camPos, camSpeed, enableCache, prevMgr);
@@ -387,7 +387,7 @@ float PagedGeometry::getCustomParam(const Ogre::String &paramName, float default
 
 GeometryPageManager::GeometryPageManager(PagedGeometry *mainGeom)
     : mainGeom(mainGeom), cacheTimer(0) // Reset the cache timer
-    , scrollBuffer(NULL), geomGrid(NULL), geomGridX(0), geomGridZ(0) {
+    , scrollBuffer(nullptr), geomGrid(nullptr), geomGridX(0), geomGridZ(0) {
   //Use default cache speeds
   setCacheSpeed();
 
@@ -1004,7 +1004,7 @@ GeometryPage::GeometryPage() {
   _inactiveTime = 0;
   _xIndex = _zIndex = 0;
   _centerPoint = Ogre::Vector3::ZERO;
-  _userData = NULL;
+  _userData = nullptr;
   mHasQueryFlag = false;
   mQueryFlag = 0;
 }

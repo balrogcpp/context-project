@@ -103,7 +103,7 @@ class ImpostorPage : public GeometryPage {
   ///
   ImpostorBatch *getImpostorBatch(const Ogre::String &key) const {
     TImpostorBatchs::const_iterator it = m_mapImpostorBatches.find(key);
-    return it != m_mapImpostorBatches.end() ? it->second : NULL;
+    return it != m_mapImpostorBatches.end() ? it->second : nullptr;
   }
 
   ///

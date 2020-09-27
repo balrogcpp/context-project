@@ -55,7 +55,7 @@ BatchedGeometry::BatchedGeometry(Ogre::SceneManager *mgr, Ogre::SceneNode *rootS
     m_fRadius(0.f),
     m_fMinDistanceSquared(0.f),
     m_pSceneMgr(mgr),
-    m_pSceneNode(NULL),
+    m_pSceneNode(nullptr),
     m_pParentSceneNode(rootSceneNode),
     m_bWithinFarDistance(false),
     m_Built(false),
@@ -95,7 +95,7 @@ void BatchedGeometry::addEntity(Entity *ent, const Vector3 &position,
     SubMesh *subMesh = subEntity->getSubMesh();
 
     //Generate a format string that uniquely identifies this material & vertex/index format
-    if (subMesh->vertexData == NULL)
+    if (subMesh->vertexData == nullptr)
       OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, "SubMesh vertex data not found!", "BatchedGeometry::addEntity()");
     String formatStr = getFormatString(subEntity);
 
@@ -276,7 +276,7 @@ void BatchedGeometry::extractVertexDataFromShared(const Ogre::MeshPtr &mesh) {
 
   // Release shared vertex data
   delete mesh->sharedVertexData;
-  mesh->sharedVertexData = NULL;
+  mesh->sharedVertexData = nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -413,7 +413,7 @@ Ogre::Vector3 BatchedGeometry::_convertToLocal(const Vector3 &globalVec) const {
 //-----------------------------------------------------------------------------
 ///
 BatchedGeometry::SubBatch::SubBatch(BatchedGeometry *parent, SubEntity *ent) :
-    m_pBestTechnique(NULL),
+    m_pBestTechnique(nullptr),
     m_pVertexData(0),
     m_pIndexData(0),
     m_Built(false),
