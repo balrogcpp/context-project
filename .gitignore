@@ -4,6 +4,7 @@
 /cmake-build-relwithdebinfo/
 /cmake-build-minsizerel/
 /install/
+/build/
 /Release/
 /RelWithDebInfo/
 /Debug/
@@ -11,3 +12,6 @@
 /Doxygen/
 /tmp/
 /cmake-build-android/
+/.cxx/
+/.gradle/
+/local.properties/

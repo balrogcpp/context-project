@@ -82,14 +82,14 @@ set(EXTERNAL_GIT_PROGRESS false)
 
 set(CONTEXT_CMAKE_EXTRA_FLAGS " ${CONTEXT_CMAKE_EXTRA_FLAGS}")
 if (ANDROID)
-    set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=/opt/android-ndk -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16)
+    set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
 
 externalproject_add(target-sdl
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/SDL-mirror/SDL.git
-                    GIT_TAG release-2.0.12
+                    GIT_TAG fe4dad61797e0c358538c30289c7af137d9c8813
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -103,21 +103,6 @@ externalproject_add(target-sdl
                     -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
                     -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS} -I /opt/android-ndk/sources/android/cpufeatures
-                    -G "${CMAKE_GENERATOR}"
-                    )
-
-externalproject_add(target-cpuinfo
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/google/cpu_features.git
-                    GIT_TAG v0.4.1
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -582,7 +567,6 @@ if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     endif ()
 endif ()
 
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rapidjson)
@@ -624,7 +608,6 @@ if (WIN32)
 elseif (UNIX)
     set(OPENAL_LIBRARY openal)
 endif ()
-
 
 set(SUFFIX_LIB_OGRE Static)
 if (WIN32)
@@ -684,7 +667,11 @@ list(APPEND OGRE_LIBRARIES OgreMain${SUFFIX_LIB_OGRE})
 
 list(APPEND STATIC_LIBRARIES pugixml)
 list(APPEND STATIC_LIBRARIES "zzip")
-list(APPEND STATIC_LIBRARIES "freetype")
+if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    list(APPEND STATIC_LIBRARIES "freetyped")
+else ()
+    list(APPEND STATIC_LIBRARIES "freetype")
+endif ()
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     if (UNIX OR MINGW AND NOT ANDROID)
         list(APPEND JEMALLOC_LIBRARIES jemalloc)
@@ -709,7 +696,6 @@ elseif (ANDROID)
     list(APPEND STATIC_LIBRARIES dl)
     list(APPEND STATIC_LIBRARIES m.a)
     list(APPEND STATIC_LIBRARIES hidapi)
-    list(APPEND STATIC_LIBRARIES ndk_compat)
     list(APPEND STATIC_LIBRARIES yaml-cpp)
 elseif (MINGW)
     list(APPEND STATIC_LIBRARIES zlibstatic)

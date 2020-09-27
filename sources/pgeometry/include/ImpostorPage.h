@@ -42,7 +42,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 //When IMPOSTOR_FILE_SAVE is defined, impostor textures will be read and saved to disc; if not, they will stay
 //in memory and need to be regenerated each time the application is run (remove or comment out the line below if this
 //is desired)
-#define IMPOSTOR_FILE_SAVE
+//#define IMPOSTOR_FILE_SAVE
 
 namespace Forests {
 // Forward declaration
@@ -356,7 +356,7 @@ class ImpostorTexture {
   }
 
   //This will only be used when IMPOSTOR_FILE_SAVE is set to 0
-  std::auto_ptr<ImpostorTextureResourceLoader> loader;
+  std::shared_ptr<ImpostorTextureResourceLoader> loader;
 };
 
 //-------------------------------------------------------------------------------------

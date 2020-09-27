@@ -34,6 +34,9 @@ set(SOURCE_FILES_context-demo
     src/DemoDotAppState.cpp
     )
 
+if (ANDROID)
+    list(APPEND SOURCE_FILES_context ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+endif ()
 
 set(CMAKE_CXX_FLAGS ${CONTEXT_CXX_FLAGS})
 set(CMAKE_C_FLAGS ${CONTEXT_C_FLAGS})
@@ -48,11 +51,12 @@ else ()
 endif ()
 set(CONTEXT_LIBRARIES xio-static)
 
-include_directories(demo ${CMAKE_CURRENT_SOURCE_DIR}/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+include_directories(demo ${CMAKE_CURRENT_SOURCE_DIR}/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
 target_link_libraries(demo PUBLIC ${CONTEXT_LIBRARIES} ${CONTEXT_STATIC_DEPENDENCY_LIBS})
-target_precompile_headers(demo PUBLIC include/pcheader.h)
-
+if (NOT ANDROID)
+    target_precompile_headers(demo PUBLIC include/pcheader.h)
+endif ()
 install(TARGETS demo
         CONFIGURATIONS Release
         RUNTIME DESTINATION .
