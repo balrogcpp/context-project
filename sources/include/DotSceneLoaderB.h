@@ -71,19 +71,6 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
   void Load(const std::string &filename, const std::string &group_name, Ogre::SceneNode *root_node);
   float GetHeigh(float x, float z);
-  void LocateComponents(YamlConfigurator *conf,
-                        InputSequencer *io,
-                        Renderer *renderer,
-                        Physics *physics,
-                        Sound *sounds,
-                        Overlay *overlay) {
-    conf_ = conf;
-    io_ = io;
-    renderer_ = renderer;
-    physics_ = physics;
-    sound_ = sounds;
-    overlay_ = overlay;
-  }
 
  private:
   void ProcessScene_(pugi::xml_node &xml_root);
@@ -110,28 +97,40 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
 
   std::unique_ptr<ReflectionCamera> rcamera_;
   std::unique_ptr<CubeMapCamera> cmcamera_;
-  static std::unique_ptr<Landscape> terrain_;
- private:
-  static std::unique_ptr<Forest> forest_;
+  static inline std::unique_ptr<Landscape> terrain_;
+  static inline std::unique_ptr<Forest> forest_;
   std::unique_ptr<Camera> camera_;
   Ogre::SceneManager *scene_ = nullptr;
   Ogre::Root *root_ = nullptr;
   Ogre::SceneNode *root_node_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;
   std::string group_name_;
-
-  YamlConfigurator *conf_ = nullptr;
-  Renderer *renderer_ = nullptr;
-  Physics *physics_ = nullptr;
-  Sound *sound_ = nullptr;
-  Overlay *overlay_ = nullptr;
-  InputSequencer *io_ = nullptr;
+  static inline YamlConfigurator *conf_ = nullptr;
+  static inline Renderer *renderer_ = nullptr;
+  static inline Physics *physics_ = nullptr;
+  static inline Sound *sound_ = nullptr;
+  static inline Overlay *overlay_ = nullptr;
+  static inline InputSequencer *io_ = nullptr;
 
  public:
-  static const Landscape& GetTerrain() {
+  static void LocateComponents(YamlConfigurator *conf,
+                               InputSequencer *io,
+                               Renderer *renderer,
+                               Physics *physics,
+                               Sound *sounds,
+                               Overlay *overlay) {
+    conf_ = conf;
+    io_ = io;
+    renderer_ = renderer;
+    physics_ = physics;
+    sound_ = sounds;
+    overlay_ = overlay;
+  }
+
+  static const Landscape &GetTerrain() {
     return *terrain_;
   }
-  static const Forest& GetForest() {
+  static const Forest &GetForest() {
     return *forest_;
   }
 };

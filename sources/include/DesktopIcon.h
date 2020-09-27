@@ -22,26 +22,65 @@
 
 #pragma once
 #include "NoCopy.h"
+#include <map>
 #include <string>
+#include <regex>
+#include <filesystem>
+#include <fstream>
 
 namespace xio {
-class DesktopIcon : public NoCopy{
+class DesktopIcon : public NoCopy {
  public:
+  void Init() {
+    run_dir_ = std::filesystem::current_path().string();
+    skeleton = std::regex_replace(skeleton, std::regex("EXEC"), run_dir_ + "/" + exec_);
+    skeleton = std::regex_replace(skeleton, std::regex("PATH"), run_dir_);
+    skeleton = std::regex_replace(skeleton, std::regex("ICON"), icon_);
+    skeleton = std::regex_replace(skeleton, std::regex("NAME"), name_);
+    skeleton = std::regex_replace(skeleton, std::regex("COMMENT"), name_);
+    skeleton = std::regex_replace(skeleton, std::regex("VERSION"), version);
+  }
+
+  void Save(const std::string &icon_name) {
+    std::string home_dir = std::string(getenv("HOME"));
+    std::string path = home_dir + "/.local/share/applications/" + icon_name + ".desktop";
+
+    std::ifstream in;
+    in.open(path);
+    if (in.is_open()) {
+      std::string s;
+      getline(in, s, '\0');
+      in.close();
+
+      if (s == skeleton)
+        return;
+    }
+
+    std::ofstream out;
+    out.open(path);
+    if (out.is_open()) {
+      out << skeleton;
+      out.close();
+    }
+  }
 
  private:
-  const std::string ICON_SKELETON = "[Desktop Entry]\n"
-                                    "Comment=\n"
-                                    "Encoding=UTF-8\n"
-                                    "Exec=${ICON_EXEC}\n"
-                                    "GenericName=\n"
-                                    "Icon=${PATH_ICON}\n"
-                                    "MimeType=\n"
-                                    "Name=${ICON_NAME}\n"
-                                    "Path=${ICON_PATH}\n"
-                                    "StartupNotify=true\n"
-                                    "Terminal=false\n"
-                                    "Type=Application\n"
-                                    "TerminalOptions=\n"
-                                    "Version=${ICON_VERSION}\n";
+  std::string run_dir_;
+  std::string exec_ = "demo";
+  std::string icon_;
+  std::string version = "1.0";
+  std::string name_ = "XioDemo";
+  std::map<std::string, std::string> properties;
+  std::string skeleton = "[Desktop Entry]\n"
+                         "Version=VERSION\n"
+                         "Name=NAME\n"
+                         "Comment=COMMENT\n"
+                         "TryExec=EXEC\n"
+                         "Exec=EXEC\n"
+                         "GenericName=NAME\n"
+                         "Icon=ICON\n"
+                         "Path=PATH\n"
+                         "Terminal=false\n"
+                         "Type=Application\n";
 };
 }

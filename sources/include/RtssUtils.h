@@ -25,6 +25,7 @@
 
 #include <RTShaderSystem/OgreShaderGenerator.h>
 #include <exception>
+#include <filesystem>
 
 namespace rtss {
 class RtssException : public std::exception {
@@ -176,7 +177,7 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
   Ogre::RTShader::ShaderGenerator *shader_generator_;
 };
 //----------------------------------------------------------------------------------------------------------------------
-inline void InitRtss() {
+inline void InitRtss(const std::string &cache_path = "") {
   if (!Ogre::RTShader::ShaderGenerator::initialize()) {
     throw RtssException("RTTS System failed to initialize");
   }
@@ -192,7 +193,11 @@ inline void InitRtss() {
   viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
   // Create and register the material manager listener if it doesn't exist yet.
-  shader_generator->setShaderCachePath("");
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  if (!std::filesystem::exists(cache_path) && !cache_path.empty())
+    std::filesystem::create_directories(cache_path);
+#endif
+  shader_generator->setShaderCachePath(cache_path);
   Ogre::MaterialManager::getSingleton().addListener(new ShaderResolver(shader_generator));
 }
 //----------------------------------------------------------------------------------------------------------------------

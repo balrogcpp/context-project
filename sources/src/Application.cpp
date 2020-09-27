@@ -28,6 +28,7 @@
 #include "HwCheck.h"
 #include "DesktopIcon.h"
 #include "ComponentLocator.h"
+#include "DesktopIcon.h"
 
 #ifdef _WIN32
 extern "C"
@@ -58,6 +59,10 @@ Application::Application() {
 Application::~Application() = default;
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
+  DesktopIcon icon;
+  icon.Init();
+  icon.Save("XioDemo");
+
   conf_ = std::make_unique<YamlConfigurator>("config.yaml");
   Renderer::SetConfigurator(conf_.get());
   int window_width = conf_->Get<int>("window_width");
@@ -179,18 +184,20 @@ void Application::Event(const SDL_Event &evt) {
     if (!fullscreen) {
       if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         suspend_ = true;
-        lock_fps_ = true;
+        renderer_->GetWindow().SetCursorStatus(true, false, false);
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
+        renderer_->GetWindow().SetCursorStatus(false, true, true);
       }
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         suspend_ = true;
-        lock_fps_ = true;
+        renderer_->GetWindow().SetCursorStatus(true, false, false);
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
+        renderer_->GetWindow().SetCursorStatus(false, true, true);
       }
     }
   }
@@ -222,8 +229,6 @@ void Application::Loop_() {
             it->Clean();
 
           InitState_(move(cur_state_->GetNextState()));
-
-          physics_->Start();
         }
 
         auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
@@ -280,6 +285,9 @@ void Application::Go_() {
 int Application::Message_(const std::string &caption, const std::string &message) {
   std::cerr << caption << '\n';
   std::cerr << message << '\n';
+#ifdef _WIN32
+  MessageBox(nullptr, caption.c_str(), message.c_str(), MB_ICONERROR);
+#endif
   return 1;
 }
 //----------------------------------------------------------------------------------------------------------------------

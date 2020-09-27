@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include "PbrUtils.h"
+#include "ShaderUtils.h"
 #include "Renderer.h"
 
 using namespace Ogre;

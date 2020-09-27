@@ -23,7 +23,7 @@
 #include "pcheader.h"
 #include "DotSceneLoaderB.h"
 #include "Physics.h"
-#include "PbrUtils.h"
+#include "ShaderUtils.h"
 #include "XmlUtils.h"
 #include "Sound.h"
 
@@ -361,10 +361,6 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   if (auto element = xml_node.child("userData")) {
     ProcessUserData_(element, static_cast<Ogre::MovableObject *>(pCamera)->getUserObjectBindings());
   }
-
-//  if (auto element = xml_node.child("light")) {
-//    ProcessLight_(element, camera_->GetCameraNode());
-//  }
 }
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessNode_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
@@ -732,8 +728,6 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 //  entity->setVisibilityFlags(WATER_MASK);
 }
 ///---------------------------------------------------------------------------------------------------------------------
-std::unique_ptr<Landscape> DotSceneLoaderB::terrain_;
-std::unique_ptr<Forest> DotSceneLoaderB::forest_;
 void DotSceneLoaderB::ProcessForest_(pugi::xml_node &xml_node) {
   if (!forest_) forest_ = std::make_unique<Forest>();
   if (terrain_) forest_->SetHeighFunc([](float x, float z){return terrain_->GetHeigh(x, z);});

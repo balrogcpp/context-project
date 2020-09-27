@@ -45,10 +45,7 @@ Sound::Sound(unsigned int max_sources, unsigned int queue_list_size) {
 //----------------------------------------------------------------------------------------------------------------------
 Sound::~Sound() {}
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::Clean() {
-  OgreOggSound::OgreOggSoundManager::getSingleton().stopAllSounds();
-//  OgreOggSound::OgreOggSoundManager::getSingleton().destroyAllSounds();
-}
+void Sound::Clean() {}
 //----------------------------------------------------------------------------------------------------------------------
 void Sound::CreateSound(const std::string &name, const std::string &file, bool loop) {
   auto *sound = manager_->createSound(name, file, true, loop, true, nullptr);

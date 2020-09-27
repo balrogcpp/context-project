@@ -83,7 +83,7 @@ set(CONTEXT_HEADERS
     include/Gorilla.h
     include/Overlay.h
     include/Window.h
-    include/PbrUtils.h
+    include/ShaderUtils.h
     include/Storage.h
     include/RtssUtils.h
     include/Landscape.h
@@ -146,7 +146,7 @@ set(CONTEXT_SOURCES
     src/TerrainMaterialGeneratorB.cpp
     src/Gorilla.cpp
     src/Overlay.cpp
-    src/PbrUtils.cpp
+    src/ShaderUtils.cpp
     src/Landscape.cpp
     src/Sound.cpp
     )

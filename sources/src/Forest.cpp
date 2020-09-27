@@ -23,7 +23,7 @@
 
 #include "pcheader.h"
 #include "Forest.h"
-#include "PbrUtils.h"
+#include "ShaderUtils.h"
 using namespace Forests;
 
 namespace xio {
@@ -85,7 +85,8 @@ void Forest::Create() {
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *trees = new PagedGeometry(scene->getCamera("Default"), 100);
-  trees->addDetailLevel<BatchPage>(100, 50);
+  trees->addDetailLevel<BatchPage>(100, 20);
+//  trees->addDetailLevel<ImpostorPage>(200, 50);
   auto *treeLoader = new TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
   if (heigh_func_)
     treeLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z) - 0.1); });

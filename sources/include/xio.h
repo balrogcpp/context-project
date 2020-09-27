@@ -41,7 +41,7 @@
 #include "NoCopy.h"
 #include "OgreHeaders.h"
 #include "Overlay.h"
-#include "PbrUtils.h"
+#include "ShaderUtils.h"
 #include "Physics.h"
 #include "ReflectionCamera.h"
 #include "Renderer.h"

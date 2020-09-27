@@ -84,7 +84,6 @@ class Physics final : public Component, public Singleton<Physics> {
   std::unique_ptr<btCollisionDispatcher> dispatcher_;
   std::unique_ptr<btSequentialImpulseConstraintSolver> solver_;
   std::unique_ptr<btDynamicsWorld> world_;
-  std::vector<btCollisionObject *> rigid_bodies_;
   std::map<const btCollisionObject *, ContactInfo> contacts_;
   std::function<void(int a, int b)> callback_;
  private:
@@ -93,7 +92,7 @@ class Physics final : public Component, public Singleton<Physics> {
   bool debug_ = false;
 
  public:
-  void Start() noexcept {
+  void Unpause() noexcept {
     pause_ = false;
   }
   void Pause() noexcept {

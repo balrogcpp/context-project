@@ -265,7 +265,7 @@ float GetMetallic(vec2 uv) {
     float metallic = uSurfaceShininessColour;
 
 #ifdef HAS_METALLICMAP
-    metallic = texture2D(uMetallicSampler, uv).r * uSurfaceShininessColour;
+    metallic *= texture2D(uMetallicSampler, uv).r;
 #endif
 
     return metallic;
@@ -277,7 +277,7 @@ float GetRoughness(vec2 uv) {
     float roughness = uSurfaceSpecularColour;
 
 #ifdef HAS_ROUGHNESSMAP
-    roughness = texture2D(uRoughnessSampler, uv).r * uSurfaceSpecularColour;
+    roughness *= texture2D(uRoughnessSampler, uv).r;
 #endif
 
     return roughness > c_MinRoughness ? roughness : c_MinRoughness;

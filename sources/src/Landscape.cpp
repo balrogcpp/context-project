@@ -24,7 +24,7 @@
 #include "Landscape.h"
 #include "Physics.h"
 #include "TerrainMaterialGeneratorB.h"
-#include "PbrUtils.h"
+#include "ShaderUtils.h"
 #include "XmlUtils.h"
 
 namespace xio {

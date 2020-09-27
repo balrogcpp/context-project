@@ -26,7 +26,7 @@
 #include "TerrainMaterialGeneratorB.h"
 #include "DotSceneLoaderB.h"
 
-#include "PbrUtils.h"
+#include "ShaderUtils.h"
 using namespace xio;
 
 namespace xio {

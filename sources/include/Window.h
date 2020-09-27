@@ -201,7 +201,7 @@ class Window : public NoCopy {
     return info;
   }
 
-  inline void UpdateCursor(bool show, bool grab, bool relative) noexcept {
+  inline void SetCursorStatus(bool show, bool grab, bool relative) noexcept {
     SDL_ShowCursor(show);
     SDL_SetWindowGrab(window_, static_cast<SDL_bool>(grab));
     SDL_SetRelativeMouseMode(static_cast<SDL_bool>(relative));

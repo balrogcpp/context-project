@@ -108,7 +108,6 @@ void Physics::DispatchCollisions() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Clean() {
-  Pause();
   world_->clearForces();
 
   //remove the rigidbodies from the dynamics world and delete them
@@ -118,7 +117,11 @@ void Physics::Clean() {
     delete obj;
   }
 
-  rigid_bodies_.clear();
+  for (int i = world_->getNumConstraints() - 1; i >= 0; i--) {
+    btTypedConstraint *constraint = world_->getConstraint(i);
+    world_->removeConstraint(constraint);
+    delete constraint;
+  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::AddRigidBody(btRigidBody *body) {
