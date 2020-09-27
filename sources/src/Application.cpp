@@ -59,9 +59,11 @@ Application::Application() {
 Application::~Application() = default;
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   DesktopIcon icon;
   icon.Init();
   icon.Save("XioDemo");
+#endif
 
   conf_ = std::make_unique<YamlConfigurator>("config.yaml");
   Renderer::SetConfigurator(conf_.get());
@@ -286,7 +288,7 @@ int Application::Message_(const std::string &caption, const std::string &message
   std::cerr << caption << '\n';
   std::cerr << message << '\n';
 #ifdef _WIN32
-  MessageBox(nullptr, caption.c_str(), message.c_str(), MB_ICONERROR);
+  MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
 #endif
   return 1;
 }
