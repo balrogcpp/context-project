@@ -38,6 +38,8 @@ class Sound final : public Component, public Singleton<Sound> {
   void Create() final {}
   void Reset() final {}
   void Clean() final;
+  void Pause() final;
+  void Resume() final;
   void Loop(float time) final {}
 
   void CreateSound(const std::string &name, const std::string &file, bool loop = false);

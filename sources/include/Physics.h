@@ -66,6 +66,12 @@ class Physics final : public Component, public Singleton<Physics> {
   void Reset() final {}
   void Clean() final;
   void Loop(float time) final;
+  void Resume() final {
+    pause_ = false;
+  }
+  void Pause() final {
+    pause_ = true;
+  }
 
   void DispatchCollisions();
   void AddRigidBody(btRigidBody *body);
@@ -86,18 +92,11 @@ class Physics final : public Component, public Singleton<Physics> {
   std::unique_ptr<btDynamicsWorld> world_;
   std::map<const btCollisionObject *, ContactInfo> contacts_;
   std::function<void(int a, int b)> callback_;
- private:
   int steps_ = 8;
   bool pause_ = false;
   bool debug_ = false;
 
  public:
-  void Unpause() noexcept {
-    pause_ = false;
-  }
-  void Pause() noexcept {
-    pause_ = true;
-  }
   void SetCallback(const std::function<void(int a, int b)> &callback) {
     callback_ = callback;
   }

@@ -47,6 +47,14 @@ Sound::~Sound() {}
 //----------------------------------------------------------------------------------------------------------------------
 void Sound::Clean() {}
 //----------------------------------------------------------------------------------------------------------------------
+void Sound::Pause() {
+  manager_->pauseAllSounds();
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Sound::Resume() {
+  manager_->resumeAllPausedSounds();
+}
+//----------------------------------------------------------------------------------------------------------------------
 void Sound::CreateSound(const std::string &name, const std::string &file, bool loop) {
   auto *sound = manager_->createSound(name, file, true, loop, true, nullptr);
   Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->createChildSceneNode()->attachObject(sound);

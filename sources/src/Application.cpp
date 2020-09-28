@@ -81,17 +81,18 @@ void Application::Init_() {
 
   io_ = std::make_unique<InputSequencer>();
   physics_ = std::make_unique<Physics>();
-  sounds_ = std::make_unique<Sound>();
+  sound_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();
   loader_ = std::make_unique<DotSceneLoaderB>();
 
-  components_.push_back(sounds_.get());
+  components_.push_back(sound_.get());
   components_.push_back(loader_.get());
   components_.push_back(physics_.get());
   components_.push_back(renderer_.get());
   components_.push_back(overlay_.get());
 
-  ComponentLocator::LocateComponents(conf_.get(), io_.get(), renderer_.get(), physics_.get(), sounds_.get(), overlay_.get(), loader_.get());
+  ComponentLocator::LocateComponents(
+      conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
 
   for (auto &it : components_) {
     it->Create();
@@ -114,7 +115,7 @@ void Application::Init_() {
 
   renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
 
-  loader_->LocateComponents(conf_.get(), io_.get(), renderer_.get(), physics_.get(), sounds_.get(), overlay_.get());
+  loader_->LocateComponents(conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
   verbose_ = conf_->Get<bool>("global_verbose_enable");
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");
@@ -146,9 +147,9 @@ void Application::Clear_() {
   renderer_.reset();
   io_.reset();
   physics_.reset();
-  sounds_ .reset();
+  sound_.reset();
   overlay_.reset();
-  loader_ .reset();
+  loader_.reset();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
 }
@@ -165,13 +166,8 @@ void Application::InitState_(std::unique_ptr<AppState> &&next_state) {
   io_->RegObserver(cur_state_.get());
   Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
 
-  cur_state_->LocateComponents(conf_.get(),
-                               io_.get(),
-                               renderer_.get(),
-                               physics_.get(),
-                               sounds_.get(),
-                               overlay_.get(),
-                               loader_.get());
+  cur_state_->LocateComponents(
+      conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
   cur_state_->Create();
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -210,8 +206,8 @@ void Application::Other(uint8_t type, int32_t code, void *data1, void *data2) {}
 void Application::Loop_() {
   while (quit_) {
     if (cur_state_) {
-      auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
-      long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
+      auto before_frame = std::chrono::system_clock::now().time_since_epoch();
+      long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(before_frame).count();
 
       int fps_frames_ = 0;
       long delta_time_ = 0;
@@ -231,11 +227,13 @@ void Application::Loop_() {
             it->Clean();
 
           InitState_(move(cur_state_->GetNextState()));
+        } else {
+          for (auto &it : components_)
+            it->Resume();
         }
 
-        auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
-        long millis_before_update =
-            std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
+        auto before_update = std::chrono::system_clock::now().time_since_epoch();
+        long millis_before_update = std::chrono::duration_cast<std::chrono::microseconds>(before_update).count();
         float frame_time = static_cast<float>(millis_before_update - time_of_last_frame_) / 1000000;
         time_of_last_frame_ = millis_before_update;
 
@@ -243,6 +241,9 @@ void Application::Loop_() {
           it->Loop(frame_time);
 
         renderer_->RenderOneFrame();
+      } else {
+        for (auto &it : components_)
+          it->Pause();
       }
 
 #ifdef DEBUG
