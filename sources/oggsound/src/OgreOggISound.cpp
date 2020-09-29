@@ -136,7 +136,7 @@ OgreOggISound::OgreOggISound(
 }
 /*/////////////////////////////////////////////////////////////////*/
 OgreOggISound::~OgreOggISound() {
-  mAudioStream.reset();
+  OgreOggSoundManager::getSingletonPtr()->_releaseSoundImpl(this);
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::_getSharedProperties(BufferListPtr &buffers, float &length, ALenum &format) {
