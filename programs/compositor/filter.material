@@ -20,20 +20,20 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-fragment_program Context/filter5y_fsGLSL glsl
+fragment_program Context/filtery_fsGLSL glsl
 {
-	source filter5y.frag
+	source filtery.frag
 }
 
-fragment_program Context/filter5y_fsGLSLES glsles
+fragment_program Context/filtery_fsGLSLES glsles
 {
-	source filter5y.frag
+	source filtery.frag
 }
 
-fragment_program Context/filter5y_fs unified
+fragment_program Context/filtery_fs unified
 {
-	delegate Context/filter5y_fsGLSL
-	delegate Context/filter5y_fsGLSLES
+	delegate Context/filtery_fsGLSL
+	delegate Context/filtery_fsGLSLES
 
     default_params
     {
@@ -42,7 +42,7 @@ fragment_program Context/filter5y_fs unified
     }
 }
 
-material Context/SSAO/filter5Y
+material Context/SSAO/filtery
 {
 	technique
 	{
@@ -53,7 +53,7 @@ material Context/SSAO/filter5Y
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filter5y_fs {}
+			fragment_program_ref Context/filtery_fs {}
 
 			texture_unit
             {
@@ -64,20 +64,20 @@ material Context/SSAO/filter5Y
 	}
 }
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program Context/filter5x_fsGLSL glsl
+fragment_program Context/filterx_fsGLSL glsl
 {
-	source filter5x.frag
+	source filterx.frag
 }
 
-fragment_program Context/filter5x_fsGLSLES glsles
+fragment_program Context/filterx_fsGLSLES glsles
 {
-	source filter5x.frag
+	source filterx.frag
 }
 
-fragment_program Context/filter5x_fs unified
+fragment_program Context/filterx_fs unified
 {
-	delegate Context/filter5x_fsGLSL
-	delegate Context/filter5x_fsGLSLES
+	delegate Context/filterx_fsGLSL
+	delegate Context/filterx_fsGLSLES
 
     default_params
     {
@@ -86,7 +86,7 @@ fragment_program Context/filter5x_fs unified
     }
 }
 
-material Context/SSAO/filter5X
+material Context/SSAO/filterx
 {
 	technique
 	{
@@ -97,96 +97,7 @@ material Context/SSAO/filter5X
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filter5x_fs {}
-
-			texture_unit
-            {
-                content_type compositor Context/SSAO ssao
-                filtering linear linear none
-            }
-		}
-	}
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program Context/filter3y_fsGLSL glsl
-{
-	source filter3y.frag
-}
-
-fragment_program Context/filter3y_fsGLSLES glsles
-{
-	source filter3y.frag
-}
-
-fragment_program Context/filter3y_fs unified
-{
-	delegate Context/filter3y_fsGLSL
-	delegate Context/filter3y_fsGLSLES
-
-    default_params
-    {
-        param_named_auto screenSize viewport_size
-        param_named AttenuationSampler int 0
-    }
-}
-
-material Context/SSAO/filter3Y
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref Context/filter3y_fs {}
-
-			texture_unit
-            {
-                content_type compositor Context/SSAO ssao
-                filtering linear linear none
-            }
-		}
-	}
-}
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program Context/filter3x_fsGLSL glsl
-{
-	source filter3x.frag
-}
-
-fragment_program Context/filter3x_fsGLSLES glsles
-{
-	source filter3x.frag
-}
-
-fragment_program Context/filter3x_fs unified
-{
-	delegate Context/filter3x_fsGLSL
-	delegate Context/filter3x_fsGLSLES
-
-    default_params
-    {
-        param_named_auto screenSize viewport_size
-        param_named AttenuationSampler int 0
-    }
-}
-
-material Context/SSAO/filter3X
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref Context/filter3x_fs {}
+			fragment_program_ref Context/filterx_fs {}
 
 			texture_unit
             {
@@ -198,7 +109,7 @@ material Context/SSAO/filter3X
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-material Context/Bloom/filter5Y
+material Context/Bloom/filtery
 {
 	technique
 	{
@@ -209,7 +120,7 @@ material Context/Bloom/filter5Y
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filter5y_fs {}
+			fragment_program_ref Context/filtery_fs {}
 
 			texture_unit
             {
@@ -220,7 +131,7 @@ material Context/Bloom/filter5Y
 	}
 }
 //----------------------------------------------------------------------------------------------------------------------
-material Context/Bloom/filter5X
+material Context/Bloom/filterx
 {
 	technique
 	{
@@ -231,53 +142,7 @@ material Context/Bloom/filter5X
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filter5x_fs {}
-
-			texture_unit
-            {
-                content_type compositor Context/Bloom bloom
-                filtering linear linear none
-            }
-		}
-	}
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-material Context/Bloom/filter3Y
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref Context/filter3y_fs {}
-
-			texture_unit
-            {
-                content_type compositor Context/Bloom bloom
-                filtering linear linear none
-            }
-		}
-	}
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-material Context/Bloom/filter3X
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref Context/filter3x_fs {}
+			fragment_program_ref Context/filterx_fs {}
 
 			texture_unit
             {

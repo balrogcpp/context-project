@@ -67,22 +67,24 @@ precision highp float;
 
 #ifndef DISABLE
 in vec4 vertex;
-in vec3 normal;
+#ifdef ALPHA
 in vec2 uv0;
-
+#endif
 uniform mat4 cWorldViewProj;
 uniform mat4 cWorldView;
 
 out vec3 oViewPos;
-out vec3 oNormal;
+#ifdef ALPHA
 out vec2 vUV;
+#endif
 #endif
 void main()
 {
 #ifndef DISABLE
     oViewPos = (cWorldView * vertex).xyz;// transform the vertex position to the view space
-    oNormal = (cWorldView * vec4(normal, 0)).xyz;// transform the vertex normal to view space
+#ifdef ALPHA
     vUV = uv0;
+#endif
     gl_Position = cWorldViewProj * vertex;
 #else
     gl_Position = vec4(0.0);
