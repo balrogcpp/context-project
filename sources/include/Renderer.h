@@ -48,11 +48,13 @@ class Renderer final : public Component, public Singleton<Renderer> {
   void Create() final;
   void Reset() final {}
   void Clean() final {}
-  void Loop(float time) final {}
+  void Pause() final {}
+  void Resume() final {}
+  void Loop(float time) final {compositor_->Loop(time);};
 
   void Refresh();
   void UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy);
-  void UpdateShadow(bool enable, float distance, int16_t tex_size, Ogre::PixelFormat tex_format);
+  void UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format);
   void RenderOneFrame();
   void Resize(int32_t w, int32_t h, bool f);
 

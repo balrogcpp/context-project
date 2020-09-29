@@ -38,7 +38,7 @@ void DemoDotAppState::KeyDown(SDL_Keycode sym) {
 void DemoDotAppState::Clear() {
 }
 
-void DemoDotAppState::Loop() {
+void DemoDotAppState::Loop(float time) {
 }
 
 void DemoDotAppState::Callback(int a, int b) {

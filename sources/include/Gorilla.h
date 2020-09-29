@@ -2513,6 +2513,21 @@ class Caption : public Ogre::GeneralAllocatedObject {
     mDirty = true;
     mLayer->_markDirty();
   }
+  /*! function. alignment
+      desc.
+          Set the text to show.
+  */
+  inline void text(double text) {
+    mText = std::to_string(text);
+    mDirty = true;
+    mLayer->_markDirty();
+  }
+
+  inline void text(long text) {
+    mText = std::to_string(text);
+    mDirty = true;
+    mLayer->_markDirty();
+  }
 
   /*! function. alignment
       desc.

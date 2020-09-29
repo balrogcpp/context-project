@@ -96,7 +96,11 @@ set(CONTEXT_HEADERS
     include/HwCheck.h
     include/Singleton.h
     include/DesktopIcon.h
-    include/xio.h include/xio_deps.h)
+    include/xio.h
+    include/xio_deps.h
+    include/LuaServer.h
+    include/LuaConsole.h
+    )
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}

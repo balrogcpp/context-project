@@ -33,8 +33,8 @@ class Component : public NoCopy {
   virtual void Create() = 0;
   virtual void Reset() = 0;
   virtual void Clean() = 0;
-  virtual void Pause() {}
-  virtual void Resume() {}
+  virtual void Pause() = 0;
+  virtual void Resume() = 0;
   virtual void Loop(float time) = 0;
 
  protected:

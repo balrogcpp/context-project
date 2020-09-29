@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-
 #include "Application.h"
 #include "Exception.h"
 #include "Overlay.h"
@@ -134,7 +133,7 @@ void Application::Init_() {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Clear_() {
+void Application::Reset_() {
   io_->Clear();
   io_->UnregWinObserver(this);
 
@@ -221,7 +220,6 @@ void Application::Loop_() {
       io_->Capture();
 
       if (!suspend_) {
-        cur_state_->Loop();
         if (cur_state_->IsDirty()) {
           for (auto &it : components_)
             it->Clean();
@@ -236,6 +234,7 @@ void Application::Loop_() {
         long millis_before_update = std::chrono::duration_cast<std::chrono::microseconds>(before_update).count();
         float frame_time = static_cast<float>(millis_before_update - time_of_last_frame_) / 1000000;
         time_of_last_frame_ = millis_before_update;
+        cur_state_->Loop(frame_time);
 
         for (auto *it : components_)
           it->Loop(frame_time);
@@ -281,7 +280,7 @@ void Application::Go_() {
     auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
     time_of_last_frame_ = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
     Loop_();
-    Clear_();
+    Reset_();
   }
 }
 //----------------------------------------------------------------------------------------------------------------------

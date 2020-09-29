@@ -33,6 +33,8 @@ class Forest final : public Component {
   void Create() final;
   void Reset() final {}
   void Clean() final {}
+  void Pause() final {}
+  void Resume() final {}
   void Loop(float time) final {}
 
  private:

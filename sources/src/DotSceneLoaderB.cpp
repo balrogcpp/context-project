@@ -598,9 +598,9 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
         auto ibl_texture = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
         auto ibl_texture2 = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Diffuse");
         if (ibl_texture || ibl_texture2) {
-          if (!cmcamera_) {
+          if (!ccamera_) {
             auto *root = root_node_->createChildSceneNode(Ogre::Vector3{0, GetHeigh(0, 0) + 1, 0});
-            cmcamera_ = std::make_unique<CubeMapCamera>(root, 256);
+            ccamera_ = std::make_unique<CubeMapCamera>(root, 256);
           }
 
           UpdatePbrIbl(material_ptr);

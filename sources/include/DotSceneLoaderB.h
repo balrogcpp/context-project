@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include "Component.h"
 #include "Singleton.h"
 #include "Landscape.h"
@@ -32,7 +31,6 @@
 #include "Input.h"
 #include <OgreSceneLoader.h>
 #include <OgreVector4.h>
-
 #include <vector>
 #include <string>
 
@@ -50,7 +48,6 @@ class VertexDeclaration;
 }
 
 namespace xio {
-class JsonConfigurator;
 class YamlConfigurator;
 class Renderer;
 class Physics;
@@ -66,6 +63,8 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   void Create() final {}
   void Reset() final {}
   void Clean() final;
+  void Pause() final {}
+  void Resume() final {}
   void Loop(float time) final {}
 
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
@@ -96,7 +95,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   void ProcessLightAttenuation_(pugi::xml_node &xml_node, Ogre::Light *light);
 
   std::unique_ptr<ReflectionCamera> rcamera_;
-  std::unique_ptr<CubeMapCamera> cmcamera_;
+  std::unique_ptr<CubeMapCamera> ccamera_;
   static inline std::unique_ptr<Landscape> terrain_;
   static inline std::unique_ptr<Forest> forest_;
   std::unique_ptr<Camera> camera_;
@@ -111,8 +110,8 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   static inline Sound *sound_ = nullptr;
   static inline Overlay *overlay_ = nullptr;
   static inline InputSequencer *io_ = nullptr;
-
  public:
+//----------------------------------------------------------------------------------------------------------------------
   static void LocateComponents(YamlConfigurator *conf,
                                InputSequencer *io,
                                Renderer *renderer,
@@ -126,10 +125,11 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
     sound_ = sounds;
     overlay_ = overlay;
   }
-
+//----------------------------------------------------------------------------------------------------------------------
   static const Landscape &GetTerrain() {
     return *terrain_;
   }
+//----------------------------------------------------------------------------------------------------------------------
   static const Forest &GetForest() {
     return *forest_;
   }

@@ -176,6 +176,10 @@ void Renderer::Refresh() {
   CreateCamera();
 }
 //----------------------------------------------------------------------------------------------------------------------
+void Renderer::UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format){
+  shadow_->UpdateParams(enable, far_distance, tex_size, tex_format);
+}
+//----------------------------------------------------------------------------------------------------------------------
 void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
   if (filtering == Ogre::TFO_ANISOTROPIC)

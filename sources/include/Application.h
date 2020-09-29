@@ -41,7 +41,7 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   int Main(std::unique_ptr<AppState> &&scene_ptr);
  private:
   void Init_();
-  void Clear_();
+  void Reset_();
   void Loop_();
   void Go_();
   void InitState_(std::unique_ptr<AppState> &&next_state);

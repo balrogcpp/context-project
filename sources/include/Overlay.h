@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include "Component.h"
 #include "Singleton.h"
 #include "Gorilla.h"
@@ -42,11 +41,15 @@ class Overlay final : public Component, public Singleton<Overlay> {
   void Create() final;
   void Reset() final;
   void Clean() final {}
+  void Pause() final {}
+  void Resume() final {}
   void Loop(float time) final;
   void Text(const std::string &str);
+  void Show();
+  void Hide();
 
  private:
-  Gorilla::Silverback *atlas_ = nullptr;
+  std::unique_ptr<Gorilla::Silverback> atlas_;
   Gorilla::Screen *screen_ = nullptr;
   Gorilla::Layer *layer_ = nullptr;
   Gorilla::Caption *caption_ = nullptr;
