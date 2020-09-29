@@ -2310,7 +2310,7 @@ void OgreOggSoundManager::_releaseSoundImpl(OgreOggISound *sound) {
   mSoundMap.erase(i);
 
   // Delete sound
-  OGRE_DELETE_T(sound, OgreOggISound, Ogre::MEMCATEGORY_GENERAL);
+  delete sound;
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggSoundManager::_destroySoundImpl(OgreOggISound *sound) {
@@ -2335,8 +2335,8 @@ void OgreOggSoundManager::_destroyListener() {
 #	endif
 #endif
 
-  OGRE_DELETE_T(mListener, OgreOggListener, Ogre::MEMCATEGORY_GENERAL);
-  mListener = 0;
+  delete mListener;
+  mListener = nullptr;
 }
 /*/////////////////////////////////////////////////////////////////*/
 Ogre::Real OgreOggSoundManager::_calculateDistanceToListener(OgreOggISound *sound, const Ogre::Vector3 &listenerPos) {

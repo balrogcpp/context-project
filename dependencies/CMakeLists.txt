@@ -28,32 +28,9 @@ endif ()
 
 include(CMakeDependentOption)
 include(ExternalProject)
-
 find_package(Git REQUIRED)
 
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
-
-if (WIN32)
-    set(CONTEXT_EXTERNAL_TOOLCHAIN "windows")
-elseif (ANDROID)
-    set(CONTEXT_EXTERNAL_TOOLCHAIN "android")
-elseif (APPLE)
-    set(CONTEXT_EXTERNAL_TOOLCHAIN "apple")
-elseif (UNIX)
-    set(CONTEXT_EXTERNAL_TOOLCHAIN "linux")
-endif ()
-
-if (MINGW)
-    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-mingw")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-gcc")
-elseif (MSVC)
-    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-msvc")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-clang")
-else ()
-    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-${CMAKE_CXX_COMPILER_ID}")
-endif ()
 
 if (UNIX)
     set(CONTEXT_STATIC_LIBRARY_PREFIX lib)
@@ -75,12 +52,10 @@ set(CONTEXT_EXTERNAL_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION} CACHE PATH "")
 set(CONTEXT_EXTERNAL_INCLUDE_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include CACHE PATH "")
 set(CONTEXT_EXTERNAL_LIB_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib CACHE PATH "")
 set(CONTEXT_EXTERNAL_BIN_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin CACHE PATH "")
-
 set(EXTERNAL_BUILD_TYPE ${CMAKE_BUILD_TYPE})
 set(EXTERNAL_GIT_SHALLOW true)
 set(EXTERNAL_GIT_PROGRESS false)
 
-set(CONTEXT_CMAKE_EXTRA_FLAGS " ${CONTEXT_CMAKE_EXTRA_FLAGS}")
 if (ANDROID)
     set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
@@ -90,7 +65,7 @@ externalproject_add(target-sdl
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/SDL-mirror/SDL.git
                     GIT_TAG fe4dad61797e0c358538c30289c7af137d9c8813
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_SHALLOW false
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -447,8 +422,8 @@ externalproject_add(target-ogre1
                     DEPENDS target-zlib target-zzip target-freetype target-pugixml target-sdl
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v1.12.8
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_TAG 9b31d4de5a571e3669eaf178c3425f5d4cbfbaf1
+                    GIT_SHALLOW false
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}

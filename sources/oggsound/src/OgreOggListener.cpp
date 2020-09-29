@@ -41,7 +41,7 @@ namespace OgreOggSound {
 #	ifdef POCO_THREAD
 Poco::Mutex OgreOggSound::OgreOggListener::mMutex;
 #	else
-std::recursive_mutex OgreOggSound::OgreOggListener::mMutex;
+std::mutex OgreOggSound::OgreOggListener::mMutex;
 #	endif
 #endif
 
