@@ -1051,6 +1051,5 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   OgreOggListener *mListener;                // InputListener object
 
   friend class OgreOggSoundFactory;
-  friend class OgreOggISound;
 };
 }

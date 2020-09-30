@@ -228,7 +228,6 @@ OgreOggSoundManager::~OgreOggSoundManager() {
   if (mListener) {
     Ogre::SceneManager *s = mListener->getSceneManager();
     s->destroyAllMovableObjectsByType("OgreOggISound");
-    _destroyListener();
   }
 }
 /*/////////////////////////////////////////////////////////////////*/
@@ -521,7 +520,15 @@ const StringVector OgreOggSoundManager::getDeviceList() const {
 /*/////////////////////////////////////////////////////////////////*/
 bool OgreOggSoundManager::createListener() {
   if (mListener) return true;
-  return (mListener = _createListener()) != 0;
+
+  // Create a listener
+  return ((mListener = dynamic_cast<OgreOggListener *>(
+#if OGRE_VERSION_MAJOR == 2
+      mSceneMgr->createMovableObject(OgreOggSoundFactory::FACTORY_TYPE_NAME, &(mSceneMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0)
+#else
+      mSceneMgr->createMovableObject("OgreOggSoundListener", OgreOggSoundFactory::FACTORY_TYPE_NAME, 0)
+#endif
+  )) != 0);
 }
 /*/////////////////////////////////////////////////////////////////*/
 const StringVector OgreOggSoundManager::getSoundList() const {
@@ -2303,7 +2310,7 @@ void OgreOggSoundManager::_releaseSoundImpl(OgreOggISound *sound) {
   mSoundMap.erase(i);
 
   // Delete sound
-//  delete sound;
+  delete sound;
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggSoundManager::_destroySoundImpl(OgreOggISound *sound) {

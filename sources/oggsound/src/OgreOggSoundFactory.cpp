@@ -128,7 +128,18 @@ MovableObject *OgreOggSoundFactory::createInstanceImpl(const String &name, const
                                                                     preBuffer,
                                                                     immediate);
 #endif
+  } else
+    return OgreOggSoundManager::getSingletonPtr()->_createListener();
 
   return 0;
 }
+//-----------------------------------------------------------------------
+void OgreOggSoundFactory::destroyInstance(MovableObject *obj) {
+  auto *listener = dynamic_cast<OgreOggListener *>(obj);
+  auto *sound = dynamic_cast<OgreOggISound *>(obj);
+  if (listener)
+    OgreOggSoundManager::getSingletonPtr()->_destroyListener();
+  else if (sound)
+    OgreOggSoundManager::getSingletonPtr()->_releaseSoundImpl(sound);
+//-----------------------------------------------------------------------
 }

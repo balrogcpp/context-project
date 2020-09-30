@@ -422,8 +422,8 @@ externalproject_add(target-ogre1
                     DEPENDS target-zlib target-zzip target-freetype target-pugixml target-sdl
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v1.12.9
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_TAG 9b31d4de5a571e3669eaf178c3425f5d4cbfbaf1
+                    GIT_SHALLOW false
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
@@ -478,18 +478,6 @@ externalproject_add(target-ogre1
                     -G "${CMAKE_GENERATOR}"
                     )
 
-externalproject_add(target-jemalloc
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/jemalloc/jemalloc.git
-                    GIT_TAG 5.2.1
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./autogen.sh
-                    BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./configure --disable-stats --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
-                    )
-
 externalproject_add(target-lua
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -535,12 +523,6 @@ externalproject_add(target-sol
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     )
-
-if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-    if (UNIX OR MINGW AND NOT ANDROID)
-        list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
-    endif ()
-endif ()
 
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
@@ -646,11 +628,6 @@ if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
     list(APPEND STATIC_LIBRARIES "freetyped")
 else ()
     list(APPEND STATIC_LIBRARIES "freetype")
-endif ()
-if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-    if (UNIX OR MINGW AND NOT ANDROID)
-        list(APPEND JEMALLOC_LIBRARIES jemalloc)
-    endif ()
 endif ()
 if (UNIX AND NOT ANDROID)
     list(APPEND STATIC_LIBRARIES z)
