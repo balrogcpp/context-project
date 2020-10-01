@@ -120,12 +120,12 @@ static InitGeneralResources(const std::vector<std::string> &path_list, const std
   std::vector<std::string> dir_list;
   std::vector<std::tuple<std::string, std::string, std::string>> resource_list;
   auto &ogre_resource_manager = Ogre::ResourceGroupManager::getSingleton();
-
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   for (const auto &it : path_list) {
     if (fs::exists(it))
       resource_list.push_back({it, "FileSystem", default_group_name});
   }
-
+#endif
   if (!resource_file.empty()) {
     std::fstream list_file;
     list_file.open(resource_file);

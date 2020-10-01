@@ -47,6 +47,21 @@ if (ANDROID)
     set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
 
+externalproject_add(target-cpuinfo
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/google/cpu_features.git
+                    GIT_TAG v0.4.1
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
 externalproject_add(target-sdl
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -510,7 +525,9 @@ externalproject_add(target-sol
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     )
-
+if (ANDROID)
+    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
+endif ()
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rapidjson)
@@ -622,6 +639,7 @@ if (UNIX AND NOT ANDROID)
     list(APPEND STATIC_LIBRARIES dl)
     list(APPEND STATIC_LIBRARIES yaml-cpp)
 elseif (ANDROID)
+    list(APPEND STATIC_LIBRARIES yaml-cpp)
     list(APPEND STATIC_LIBRARIES z.a)
     list(APPEND STATIC_LIBRARIES log)
     list(APPEND STATIC_LIBRARIES android)
@@ -632,7 +650,8 @@ elseif (ANDROID)
     list(APPEND STATIC_LIBRARIES dl)
     list(APPEND STATIC_LIBRARIES m.a)
     list(APPEND STATIC_LIBRARIES hidapi)
-    list(APPEND STATIC_LIBRARIES yaml-cpp)
+    list(APPEND STATIC_LIBRARIES ndk_compat)
+    list(APPEND STATIC_LIBRARIES omp)
 elseif (MINGW)
     list(APPEND STATIC_LIBRARIES zlibstatic)
     list(APPEND STATIC_LIBRARIES opengl32)

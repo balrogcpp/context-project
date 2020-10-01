@@ -15,3 +15,5 @@
 /.cxx/
 /.gradle/
 /local.properties/
+/gradlew/
+/gradlew.bat/

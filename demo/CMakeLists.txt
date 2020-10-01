@@ -36,6 +36,7 @@ set(SOURCE_FILES_context-demo
 
 if (ANDROID)
     list(APPEND SOURCE_FILES_context ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+    list(APPEND SOURCE_FILES_context ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
 endif ()
 
 set(CMAKE_CXX_FLAGS ${CONTEXT_CXX_FLAGS})
