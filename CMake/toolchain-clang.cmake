@@ -20,12 +20,10 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-# which compilers to use for C and C++
-# cross compilers to use for C, C++ and Fortrans
-set(CMAKE_C_COMPILER clang-11)
-set(CMAKE_CXX_COMPILER clang++-11)
-set(CMAKE_AR llvm-ar-11)
-set(CMAKE_LINKER llvm-ld-11)
-set(CMAKE_NM llvm-nm-11)
-set(CMAKE_OBJDUMP llvm-objdump-11)
-set(CMAKE_RANLIB llvm-ranlib-11)
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_AR llvm-ar)
+set(CMAKE_LINKER llvm-ld)
+set(CMAKE_NM llvm-nm)
+set(CMAKE_OBJDUMP llvm-objdump)
+set(CMAKE_RANLIB llvm-ranlib)

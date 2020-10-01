@@ -32,8 +32,8 @@ find_package(Git REQUIRED)
 
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 
-set(CONTEXT_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CONTEXT_EXTERNAL_TOOLCHAIN}/${CMAKE_BUILD_TYPE}/src/${CONTEXT_BUILD_PLATFORM} CACHE PATH "")
-set(CONTEXT_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CONTEXT_EXTERNAL_TOOLCHAIN}/${CMAKE_BUILD_TYPE}/sdk/${CONTEXT_BUILD_PLATFORM} CACHE PATH "")
+set(CONTEXT_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN}/ CACHE PATH "")
+set(CONTEXT_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN}/sdk/ CACHE PATH "")
 set(CONTEXT_EXTERNAL_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/patch CACHE PATH "")
 set(CONTEXT_EXTERNAL_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION} CACHE PATH "")
 set(CONTEXT_EXTERNAL_INCLUDE_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include CACHE PATH "")
@@ -51,8 +51,8 @@ externalproject_add(target-sdl
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/SDL-mirror/SDL.git
-                    GIT_TAG fe4dad61797e0c358538c30289c7af137d9c8813
-                    GIT_SHALLOW false
+                    GIT_TAG release-2.0.12
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -408,9 +408,9 @@ externalproject_add(target-ogre1
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-zzip target-freetype target-pugixml target-sdl
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG 9b31d4de5a571e3669eaf178c3425f5d4cbfbaf1
-                    GIT_SHALLOW false
+                    GIT_REPOSITORY https://github.com/balrogcpp/ogre.git #will come with v1.12.10
+                    GIT_TAG MovableObjectFactory-patch
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}

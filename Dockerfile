@@ -41,5 +41,5 @@ ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 ADD .git ./.git
 
 RUN mkdir -p ./build-windows && mkdir -p ./build-linux && \
-    cd ${CONTEXT_HOME}/build-linux && cmake -G Ninja .. && cmake --build . --target install && \
-    cd ${CONTEXT_HOME}/build-windows && cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target install-zip
+    cd ${CONTEXT_HOME}/build-windows && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && cmake --build . --target install && \
+    cd ${CONTEXT_HOME}/build-linux && cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. && cmake --build . --target install-zip
