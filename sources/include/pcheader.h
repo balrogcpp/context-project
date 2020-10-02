@@ -35,4 +35,3 @@
 #include "ImpostorPage.h"
 #include "WindBatchPage.h"
 #include "WindBatchedGeometry.h"
-#include "BatchedGeometry.h"

@@ -22,7 +22,14 @@
 
 #pragma once
 #include "Component.h"
+#include "PagedGeometry.h"
+#include "GrassLoader.h"
+#include "TreeLoader2D.h"
+#include "TreeLoader3D.h"
+#include "BatchPage.h"
+#include "BatchedGeometry.h"
 #include <functional>
+#include <memory>
 
 namespace xio {
 class Forest final : public Component {
@@ -32,13 +39,17 @@ class Forest final : public Component {
 
   void Create() final;
   void Reset() final {}
-  void Clean() final {}
+  void Clean() final;
   void Pause() final {}
   void Resume() final {}
   void Loop(float time) final {}
 
  private:
   inline static std::function<float(float, float)> heigh_func_;
+  std::vector<Forests::PagedGeometry *> pgeometry_;
+  std::vector<Forests::PageLoader *> ploaders_;
+  std::vector<Forests::GeometryPage *> gpages_;
+
  public:
   static void SetHeighFunc(const std::function<float(float, float)> &heigh_func) {
     heigh_func_ = heigh_func;

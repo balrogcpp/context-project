@@ -28,7 +28,7 @@ android {
         targetSdkVersion 30
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_STL=c++_static -DANDROID_ARM_NEON=ON'
+                arguments '-DANDROID_ARM_NEON=ON'
             }
         }
     }

@@ -46,6 +46,7 @@ DotSceneLoaderB::~DotSceneLoaderB() {}
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::Clean() {
   terrain_.reset();
+  forest_->Clean();
   scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   scene_->clearScene();
 }

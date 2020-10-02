@@ -113,7 +113,6 @@ void Application::Init_() {
     tfo = Ogre::TFO_NONE;
 
   renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
-
   loader_->LocateComponents(conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
   verbose_ = conf_->Get<bool>("global_verbose_enable");
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
