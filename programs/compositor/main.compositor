@@ -46,7 +46,7 @@ compositor Context/GBuffer
         // performance!
         // ---------------------------------------------------------------------
         texture mrt target_width target_height PF_FLOAT16_R chain_scope
-        //texture mrt target_width target_height PF_FLOAT32_RGBA PF_FLOAT32_RGB chain_scope
+        //texture mrt target_width target_height PF_FLOAT16_R PF_FLOAT16_GR chain_scope
 
         target mrt
         {
@@ -85,7 +85,7 @@ compositor Context/Bloom
 {
     technique
     {
-        texture bloom 320 240 PF_FLOAT16_RGB chain_scope
+        texture bloom target_width_scaled 0.15 target_height_scaled 0.15 PF_FLOAT16_RGB chain_scope
 
         target bloom
         {
