@@ -20,32 +20,29 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-FROM balrogcpp/xio-dependencies:latest
+set(CMAKE_SYSTEM_NAME Windows)
+set(CMAKE_SYSTEM_PROCESSOR x86_64)
+set(CMAKE_CROSSCOMPILING ON)
 
-ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/build
-WORKDIR ${CONTEXT_HOME}
+# which compilers to use for C and C++
+# cross compilers to use for C, C++ and Fortran
+set(TOOLCHAIN_PREFIX x86_64-w64-mingw32)
+set(CONTEXT_MINGW_FIND_ROOT_PATH /usr/${TOOLCHAIN_PREFIX})
 
-ADD sources ./sources
-ADD deploy ./deploy
-ADD CMake ./CMake
-ADD demo ./demo
-ADD doc ./doc
-ADD tests ./tests
-ADD LICENSE .
-ADD android ./android
-ADD programs ./programs
-ADD scenes ./scenes
-ADD CMakeLists.txt .
-ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
-ADD .git ./.git
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_AR llvm-ar)
+set(CMAKE_LINKER llvm-ld)
+set(CMAKE_NM llvm-nm)
+set(CMAKE_OBJDUMP llvm-objdump)
+set(CMAKE_RANLIB llvm-ranlib)
+set(CMAKE_RC_COMPILER ${TOOLCHAIN_PREFIX}-windres)
 
-RUN mkdir -p build-windows && mkdir -p build-linux && mkdir -p build-android && \
-    cd build-windows && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && \
-    cmake --build . --target install-zip && cd .. && \
-    cd build-linux && \
-    cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. && \
-    cmake --build . --target install && \
-    cmake --build . --target install-zip && cd .. && \
-    rm -rf build-windows build-linux build-android
+# target environment on the build host system
+
+# adjust the default behaviour of the FIND_XXX() commands:
+# search headers and libraries in the target environment, search
+# programs in the host environment
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)

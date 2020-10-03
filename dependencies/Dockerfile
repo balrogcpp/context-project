@@ -33,7 +33,7 @@ ADD ./CMake ./CMake
 RUN apt-get update && apt-get install -y git gnutls-bin openssl cmake ninja-build libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
     && git config --global http.sslVerify false \
     && git config --global http.postBuffer 1048576000 \
-    && mkdir -p ./build-windows ./build-linux \
+    && mkdir -p build-windows build-linux build-android \
     && cd ${CONTEXT_HOME}/build-windows \
     && cmake -DCONTEXT_ONLY_DEPS=true -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. \
     && cmake --build . --target deps \
@@ -45,5 +45,5 @@ RUN apt-get update && apt-get install -y git gnutls-bin openssl cmake ninja-buil
     && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-gcc-x64 \
     && rm -rf src tmp \
     && cd ${CONTEXT_HOME} \
-    && rm -rf ${CONTEXT_HOME}/build-windows ${CONTEXT_HOME}/build-linux \
-    && rm -rf ${CONTEXT_HOME}/CMake ${CONTEXT_HOME}/CMakeLists.txt ${CONTEXT_HOME}/dependencies/CMakeLists.txt \
+    && rm -rf build-windows build-linux build-android \
+    && rm -rf CMake CMakeLists.txt dependencies/CMakeLists.txt \
