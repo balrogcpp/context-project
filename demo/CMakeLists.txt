@@ -26,13 +26,24 @@ project(xio-demo)
 
 set(HEADER_FILES_context-demo
     include/DemoDotAppState.h
+    include/pcheader.h
     )
 
 set(SOURCE_FILES_context-demo
     src/main.cpp
     src/DemoDotAppState.cpp
     )
-include_directories(demo ${CMAKE_CURRENT_SOURCE_DIR}/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+
+if (ANDROID)
+    list(APPEND SOURCE_FILES_context ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+    list(APPEND SOURCE_FILES_context ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
+endif ()
+
+set(CMAKE_CXX_FLAGS ${CONTEXT_CXX_FLAGS})
+set(CMAKE_C_FLAGS ${CONTEXT_C_FLAGS})
+set(CMAKE_EXE_LINKER_FLAGS ${CONTEXT_EXE_LINKER_FLAGS})
+set(CMAKE_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS})
+set(CMAKE_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS})
 
 if (NOT ANDROID)
     add_executable(demo ${SOURCE_FILES_context-demo} ${HEADER_FILES_context-demo})
@@ -41,15 +52,10 @@ else ()
 endif ()
 set(CONTEXT_LIBRARIES xio-static)
 
+include_directories(demo ${CMAKE_CURRENT_SOURCE_DIR}/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
 target_link_libraries(demo PUBLIC ${CONTEXT_LIBRARIES} ${CONTEXT_STATIC_DEPENDENCY_LIBS})
-
-set(CMAKE_CXX_FLAGS ${CONTEXT_CXX_FLAGS})
-set(CMAKE_C_FLAGS ${CONTEXT_C_FLAGS})
-set(CMAKE_EXE_LINKER_FLAGS ${CONTEXT_EXE_LINKER_FLAGS})
-set(CMAKE_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS})
-set(CMAKE_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS})
-
+target_precompile_headers(demo PUBLIC include/pcheader.h)
 install(TARGETS demo
         CONFIGURATIONS Release
         RUNTIME DESTINATION .

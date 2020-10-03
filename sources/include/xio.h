@@ -21,43 +21,36 @@
 //SOFTWARE.
 
 #pragma once
-
-namespace xio {
-class JsonConfigurator;
-class YamlConfigurator;
-class Renderer;
-class Physics;
-class Sound;
-class Overlay;
-class DotSceneLoaderB;
-class InputSequencer;
-
-class Locator {
- public:
-//----------------------------------------------------------------------------------------------------------------------
-  void LocateComponents(YamlConfigurator *conf,
-                        InputSequencer *io,
-                        Renderer *renderer,
-                        Physics *physics,
-                        Sound *sounds,
-                        Overlay *overlay,
-                        DotSceneLoaderB *loader) {
-    conf_ = conf;
-    io_ = io;
-    renderer_ = renderer;
-    physics_ = physics;
-    sound_ = sounds;
-    overlay_ = overlay;
-    loader_ = loader;
-  }
-
- protected:
-  inline static YamlConfigurator *conf_ = nullptr;
-  inline static Renderer *renderer_ = nullptr;
-  inline static Physics *physics_ = nullptr;
-  inline static Sound *sound_ = nullptr;
-  inline static Overlay *overlay_ = nullptr;
-  inline static DotSceneLoaderB *loader_ = nullptr;
-  inline static InputSequencer *io_ = nullptr;
-};
-}
+#include "Application.h"
+#include "AppState.h"
+#include "Camera.h"
+#include "Component.h"
+#include "ComponentLocator.h"
+#include "Compositor.h"
+#include "CompositorHelpers.h"
+#include "CubeMapCamera.h"
+#include "DesktopIcon.h"
+#include "DotSceneLoaderB.h"
+#include "Entity.h"
+#include "Exception.h"
+#include "Forest.h"
+#include "Gorilla.h"
+#include "HwCheck.h"
+#include "Input.h"
+#include "Landscape.h"
+#include "NoCopy.h"
+#include "OgreHeaders.h"
+#include "Overlay.h"
+#include "ShaderUtils.h"
+#include "Physics.h"
+#include "ReflectionCamera.h"
+#include "Renderer.h"
+#include "RtssUtils.h"
+#include "ShadowSettings.h"
+#include "Singleton.h"
+#include "Sound.h"
+#include "Storage.h"
+#include "TerrainMaterialGeneratorB.h"
+#include "VerboseListener.h"
+#include "Window.h"
+#include "YamlConfigurator.h"

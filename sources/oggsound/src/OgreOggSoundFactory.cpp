@@ -135,11 +135,11 @@ MovableObject *OgreOggSoundFactory::createInstanceImpl(const String &name, const
 }
 //-----------------------------------------------------------------------
 void OgreOggSoundFactory::destroyInstance(MovableObject *obj) {
-  if (dynamic_cast<OgreOggListener *>(obj))
-    // destroy the listener
+  auto *listener = dynamic_cast<OgreOggListener *>(obj);
+  auto *sound = dynamic_cast<OgreOggISound *>(obj);
+  if (listener)
     OgreOggSoundManager::getSingletonPtr()->_destroyListener();
-  else
-    // destroy the sound
-    OgreOggSoundManager::getSingletonPtr()->_releaseSoundImpl(static_cast<OgreOggISound *>(obj));
-}
+  else if (sound)
+    OgreOggSoundManager::getSingletonPtr()->_releaseSoundImpl(sound);
 //-----------------------------------------------------------------------
+}

@@ -53,6 +53,9 @@ set(PAGED_HEADERS
     pgeometry/include/TreeLoader3D.h
     pgeometry/include/BatchPage.h
     pgeometry/include/BatchedGeometry.h
+    pgeometry/include/ImpostorPage.h
+    pgeometry/include/WindBatchedGeometry.h
+    pgeometry/include/WindBatchPage.h
     )
 
 set(CONTEXT_HEADERS
@@ -80,19 +83,23 @@ set(CONTEXT_HEADERS
     include/Gorilla.h
     include/Overlay.h
     include/Window.h
-    include/PbrUtils.h
+    include/ShaderUtils.h
     include/Storage.h
     include/RtssUtils.h
-    include/Terrain.h
-    include/CompositorHelper.h
+    include/Landscape.h
+    include/CompositorHelpers.h
     include/ShadowSettings.h
     include/YamlConfigurator.h
     include/ComponentLocator.h
     include/XmlUtils.h
-    include/Locator.h
+    include/ComponentLocator.h
     include/HwCheck.h
     include/Singleton.h
     include/DesktopIcon.h
+    include/xio.h
+    include/xio_deps.h
+    include/LuaServer.h
+    include/LuaConsole.h
     )
 
 set(HEADER_FILES_CONTEXT_LIB
@@ -115,6 +122,10 @@ set(PAGED_SOURCES
     pgeometry/src/TreeLoader3D.cpp
     pgeometry/src/BatchPage.cpp
     pgeometry/src/BatchedGeometry.cpp
+    pgeometry/src/ImpostorPage.cpp
+    pgeometry/src/WindBatchedGeometry.cpp
+    pgeometry/src/WindBatchPage.cpp
+
     )
 
 set(OGGSOUND_SOURCES
@@ -139,8 +150,8 @@ set(CONTEXT_SOURCES
     src/TerrainMaterialGeneratorB.cpp
     src/Gorilla.cpp
     src/Overlay.cpp
-    src/PbrUtils.cpp
-    src/Terrain.cpp
+    src/ShaderUtils.cpp
+    src/Landscape.cpp
     src/Sound.cpp
     )
 

@@ -28,62 +28,51 @@ endif ()
 
 include(CMakeDependentOption)
 include(ExternalProject)
-
 find_package(Git REQUIRED)
 
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 
-if (WIN32)
-    set(CONTEXT_EXTERNAL_TOOLCHAIN "windows")
-elseif (ANDROID)
-    set(CONTEXT_EXTERNAL_TOOLCHAIN "android")
-elseif (APPLE)
-    set(CONTEXT_EXTERNAL_TOOLCHAIN "apple")
-elseif (UNIX)
-    set(CONTEXT_EXTERNAL_TOOLCHAIN "linux")
-endif ()
-
-if (MINGW)
-    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-mingw")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-gcc")
-elseif (MSVC)
-    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-msvc")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-clang")
-else ()
-    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-${CMAKE_CXX_COMPILER_ID}")
-endif ()
-
-if (UNIX)
-    set(CONTEXT_STATIC_LIBRARY_PREFIX lib)
-    set(CONTEXT_SHARED_LIBRARY_PREFIX lib)
-    set(CONTEXT_STATIC_LIBRARY_SUFFIX .a)
-    set(CONTEXT_SHARED_LIBRARY_SUFFIX .so)
-elseif (MINGW)
-    set(CONTEXT_STATIC_LIBRARY_SUFFIX .a)
-    set(CONTEXT_SHARED_LIBRARY_SUFFIX .dll)
-elseif (MSVC)
-    set(CONTEXT_STATIC_LIBRARY_SUFFIX .lib)
-    set(CONTEXT_SHARED_LIBRARY_SUFFIX .dll)
-endif ()
-
-set(CONTEXT_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CONTEXT_EXTERNAL_TOOLCHAIN}/${CMAKE_BUILD_TYPE}/src/${CONTEXT_BUILD_PLATFORM} CACHE PATH "")
-set(CONTEXT_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CONTEXT_EXTERNAL_TOOLCHAIN}/${CMAKE_BUILD_TYPE}/sdk/${CONTEXT_BUILD_PLATFORM} CACHE PATH "")
+set(CONTEXT_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN}/ CACHE PATH "")
+set(CONTEXT_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN}/sdk/ CACHE PATH "")
 set(CONTEXT_EXTERNAL_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/patch CACHE PATH "")
 set(CONTEXT_EXTERNAL_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION} CACHE PATH "")
 set(CONTEXT_EXTERNAL_INCLUDE_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include CACHE PATH "")
 set(CONTEXT_EXTERNAL_LIB_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib CACHE PATH "")
 set(CONTEXT_EXTERNAL_BIN_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin CACHE PATH "")
-
 set(EXTERNAL_BUILD_TYPE ${CMAKE_BUILD_TYPE})
 set(EXTERNAL_GIT_SHALLOW true)
 set(EXTERNAL_GIT_PROGRESS false)
 
-set(CONTEXT_CMAKE_EXTRA_FLAGS " ${CONTEXT_CMAKE_EXTRA_FLAGS}")
 if (ANDROID)
-    set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=/opt/android-ndk -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16)
+    set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
+
+externalproject_add(target-jemalloc
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/jemalloc/jemalloc.git
+                    GIT_TAG 5.2.1
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./autogen.sh
+                    BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./configure --disable-stats --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
+                    )
+
+externalproject_add(target-cpuinfo
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/google/cpu_features.git
+                    GIT_TAG v0.4.1
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
 
 externalproject_add(target-sdl
                     EXCLUDE_FROM_ALL true
@@ -103,21 +92,6 @@ externalproject_add(target-sdl
                     -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
                     -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS} -I /opt/android-ndk/sources/android/cpufeatures
-                    -G "${CMAKE_GENERATOR}"
-                    )
-
-externalproject_add(target-cpuinfo
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/google/cpu_features.git
-                    GIT_TAG v0.4.1
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -518,18 +492,6 @@ externalproject_add(target-ogre1
                     -G "${CMAKE_GENERATOR}"
                     )
 
-externalproject_add(target-jemalloc
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/jemalloc/jemalloc.git
-                    GIT_TAG 5.2.1
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./autogen.sh
-                    BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./configure --disable-stats --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
-                    )
-
 externalproject_add(target-lua
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -575,14 +537,11 @@ externalproject_add(target-sol
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     )
-
-if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-    if (UNIX OR MINGW AND NOT ANDROID)
-        list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
-    endif ()
+if (ANDROID)
+    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
+else ()
+    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
 endif ()
-
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rapidjson)
@@ -625,7 +584,6 @@ elseif (UNIX)
     set(OPENAL_LIBRARY openal)
 endif ()
 
-
 set(SUFFIX_LIB_OGRE Static)
 if (WIN32)
     if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
@@ -655,9 +613,6 @@ endif ()
 if (CONTEXT_OGRE_BUILD_PFX)
     list(APPEND OGRE_PLUGINS Plugin_ParticleFX${SUFFIX_LIB_OGRE})
 endif ()
-if (CONTEXT_OGRE_BUILD_OCTREE)
-    list(APPEND OGRE_PLUGINS Plugin_OctreeSceneManager${SUFFIX_LIB_OGRE})
-endif ()
 if (CONTEXT_OGRE_BUILD_RTSS)
     list(APPEND OGRE_LIBRARIES OgreRTShaderSystem${SUFFIX_LIB_OGRE})
 endif ()
@@ -683,38 +638,17 @@ list(APPEND OGRE_LIBRARIES OgreGLSupport${SUFFIX_LIB_OGRE})
 list(APPEND OGRE_LIBRARIES OgreMain${SUFFIX_LIB_OGRE})
 
 list(APPEND STATIC_LIBRARIES pugixml)
+list(APPEND STATIC_LIBRARIES yaml-cpp)
 list(APPEND STATIC_LIBRARIES "zzip")
-list(APPEND STATIC_LIBRARIES "freetype")
-if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-    if (UNIX OR MINGW AND NOT ANDROID)
-        list(APPEND JEMALLOC_LIBRARIES jemalloc)
-    endif ()
+if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    list(APPEND STATIC_LIBRARIES "freetyped")
+else ()
+    list(APPEND STATIC_LIBRARIES "freetype")
 endif ()
-if (UNIX AND NOT ANDROID)
-    list(APPEND STATIC_LIBRARIES z)
-    list(APPEND STATIC_LIBRARIES OpenGL)
-    list(APPEND STATIC_LIBRARIES GLX)
-    list(APPEND STATIC_LIBRARIES X11)
-    list(APPEND STATIC_LIBRARIES Xrandr)
-    list(APPEND STATIC_LIBRARIES dl)
-    list(APPEND STATIC_LIBRARIES yaml-cpp)
-elseif (ANDROID)
-    list(APPEND STATIC_LIBRARIES z.a)
-    list(APPEND STATIC_LIBRARIES log)
-    list(APPEND STATIC_LIBRARIES android)
-    list(APPEND STATIC_LIBRARIES EGL)
-    list(APPEND STATIC_LIBRARIES GLESv2)
-    list(APPEND STATIC_LIBRARIES GLESv1_CM)
-    list(APPEND STATIC_LIBRARIES OpenSLES)
-    list(APPEND STATIC_LIBRARIES dl)
-    list(APPEND STATIC_LIBRARIES m.a)
-    list(APPEND STATIC_LIBRARIES hidapi)
-    list(APPEND STATIC_LIBRARIES ndk_compat)
-    list(APPEND STATIC_LIBRARIES yaml-cpp)
-elseif (MINGW)
+
+if (MINGW)
     list(APPEND STATIC_LIBRARIES zlibstatic)
     list(APPEND STATIC_LIBRARIES opengl32)
-    list(APPEND STATIC_LIBRARIES yaml-cpp)
     list(APPEND STATIC_LIBRARIES imagehlp)
     list(APPEND STATIC_LIBRARIES dinput8)
     list(APPEND STATIC_LIBRARIES dxguid)
@@ -730,10 +664,31 @@ elseif (MINGW)
     list(APPEND STATIC_LIBRARIES uuid)
     list(APPEND STATIC_LIBRARIES setupapi)
     list(APPEND STATIC_LIBRARIES hid)
+    list(APPEND STATIC_LIBRARIES jemalloc)
+elseif (UNIX AND NOT ANDROID)
+    list(APPEND STATIC_LIBRARIES z)
+    list(APPEND STATIC_LIBRARIES OpenGL)
+    list(APPEND STATIC_LIBRARIES GLX)
+    list(APPEND STATIC_LIBRARIES X11)
+    list(APPEND STATIC_LIBRARIES Xrandr)
+    list(APPEND STATIC_LIBRARIES dl)
+    list(APPEND STATIC_LIBRARIES jemalloc)
+elseif (ANDROID)
+    list(APPEND STATIC_LIBRARIES z.a)
+    list(APPEND STATIC_LIBRARIES log)
+    list(APPEND STATIC_LIBRARIES android)
+    list(APPEND STATIC_LIBRARIES EGL)
+    list(APPEND STATIC_LIBRARIES GLESv2)
+    list(APPEND STATIC_LIBRARIES GLESv1_CM)
+    list(APPEND STATIC_LIBRARIES OpenSLES)
+    list(APPEND STATIC_LIBRARIES dl)
+    list(APPEND STATIC_LIBRARIES m.a)
+    list(APPEND STATIC_LIBRARIES hidapi)
+    list(APPEND STATIC_LIBRARIES ndk_compat)
+    list(APPEND STATIC_LIBRARIES omp)
 endif ()
 
 set(CONTEXT_STATIC_DEPENDENCY_LIBS
-    ${CEGUI_LIBRARIES}
     ${OGRE_PLUGINS}
     ${OGRE_LIBRARIES}
     ${VORBISFILE_LIBRARIES}
@@ -743,5 +698,4 @@ set(CONTEXT_STATIC_DEPENDENCY_LIBS
     ${LUA_LIBRARIES}
     ${BULLET_LIBRARIES}
     ${STATIC_LIBRARIES}
-    ${JEMALLOC_LIBRARIES}
     CACHE INTERNAL "")

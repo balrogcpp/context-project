@@ -71,8 +71,8 @@ class YamlConfigurator : public NoCopy {
  public:
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
-  T Get(const std::string &str) {
-    T t;
+  inline T Get(const std::string &str) {
+    T t{};
 
     try {
       t = document_[str].as<T>();

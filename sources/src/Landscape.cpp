@@ -21,26 +21,26 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include "Terrain.h"
+#include "Landscape.h"
 #include "Physics.h"
 #include "TerrainMaterialGeneratorB.h"
-#include "PbrUtils.h"
+#include "ShaderUtils.h"
 #include "XmlUtils.h"
 
 namespace xio {
-Terrain::Terrain() {}
+Landscape::Landscape() {}
 
-Terrain::~Terrain() {
+Landscape::~Landscape() {
   if (terrain_) {
     terrain_->removeAllTerrains();
     terrain_.reset();
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Terrain::GetTerrainImage_(bool flipX,
-                                       bool flipY,
-                                       Ogre::Image &ogre_image,
-                                       const std::string &filename = "terrain.dds") {
+void Landscape::GetTerrainImage_(bool flipX,
+                                 bool flipY,
+                                 Ogre::Image &ogre_image,
+                                 const std::string &filename = "terrain.dds") {
   ogre_image.load(filename, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 
   if (flipX)
@@ -50,7 +50,7 @@ void Terrain::GetTerrainImage_(bool flipX,
     ogre_image.flipAroundX();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Terrain::DefineTerrain_(long x, long y, bool flat, const std::string &filename = "terrain.dds") {
+void Landscape::DefineTerrain_(long x, long y, bool flat, const std::string &filename = "terrain.dds") {
   // if a file is available, use it
   // if not, generate file from import
 
@@ -74,9 +74,9 @@ void Terrain::DefineTerrain_(long x, long y, bool flat, const std::string &filen
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Terrain::InitBlendMaps_(Ogre::Terrain *terrain,
-                                     int layer,
-                                     const std::string &image = "terrain_blendmap.dds") {
+void Landscape::InitBlendMaps_(Ogre::Terrain *terrain,
+                               int layer,
+                               const std::string &image = "terrain_blendmap.dds") {
   Ogre::TerrainLayerBlendMap *blendMap = terrain->getLayerBlendMap(layer);
   auto *pBlend1 = blendMap->getBlendPointer();
 
@@ -111,7 +111,7 @@ void Terrain::InitBlendMaps_(Ogre::Terrain *terrain,
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Terrain::ProcessTerrainGroup(pugi::xml_node &xml_node) {
+void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   float worldSize = GetAttribReal(xml_node, "worldSize");
   int mapSize = GetAttribInt(xml_node, "mapSize");
   int minBatchSize = Ogre::StringConverter::parseInt(xml_node.attribute("minBatchSize").value());
@@ -201,7 +201,7 @@ void Terrain::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-float Terrain::GetHeigh(float x, float z) {
+float Landscape::GetHeigh(float x, float z) {
   if (terrain_)
     return terrain_->getHeightAtWorldPosition(x, 1000, z);
   else

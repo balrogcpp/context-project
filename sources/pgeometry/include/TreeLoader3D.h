@@ -59,7 +59,7 @@ class TreeLoader3D : public PageLoader {
                const Ogre::Vector3 &position,
                Ogre::Degree yaw = Ogre::Degree(0),
                Ogre::Real scale = 1.0f,
-               void *userData = NULL);
+               void *userData = nullptr);
 
   /** \brief Deletes trees within a certain radius of the given coordinates.
   \param position The coordinate of the tree(s) to delete
@@ -73,7 +73,7 @@ class TreeLoader3D : public PageLoader {
 #else
   void
 #endif
-  deleteTrees(const Ogre::Vector3 &position, Ogre::Real radius, Ogre::Entity *type = NULL);
+  deleteTrees(const Ogre::Vector3 &position, Ogre::Real radius, Ogre::Entity *type = nullptr);
 
 #ifdef PAGEDGEOMETRY_USER_DATA
   /** \brief Find trees within a certain radius of the given coordinates.
@@ -83,7 +83,7 @@ class TreeLoader3D : public PageLoader {
 
       \note If the "type" parameter is set to an entity, only trees created with that entity
       will be found. */
-  std::vector<void*> findTrees(const Ogre::Vector3 &position, float radius, Ogre::Entity *type = NULL);
+  std::vector<void*> findTrees(const Ogre::Vector3 &position, float radius, Ogre::Entity *type = nullptr);
 #endif
 
 
@@ -98,7 +98,7 @@ class TreeLoader3D : public PageLoader {
 #else
   void
 #endif
-  deleteTrees(TBounds area, Ogre::Entity *type = NULL);
+  deleteTrees(TBounds area, Ogre::Entity *type = nullptr);
 
   /** \brief Gets an iterator which can be used to access all added trees.
 

@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 #include <OgreLog.h>
@@ -42,7 +41,7 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   int Main(std::unique_ptr<AppState> &&scene_ptr);
  private:
   void Init_();
-  void Clear_();
+  void Reset_();
   void Loop_();
   void Go_();
   void InitState_(std::unique_ptr<AppState> &&next_state);
@@ -58,7 +57,7 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   std::unique_ptr<InputSequencer> io_;
   std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<Physics> physics_;
-  std::unique_ptr<Sound> sounds_;
+  std::unique_ptr<Sound> sound_;
   std::unique_ptr<Overlay> overlay_;
   std::unique_ptr<DotSceneLoaderB> loader_;
   std::unique_ptr<AppState> cur_state_;

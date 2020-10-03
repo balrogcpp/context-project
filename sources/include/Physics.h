@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include "Component.h"
 #include "Singleton.h"
 #include <OgreFrameListener.h>
@@ -46,13 +45,13 @@ class btRigidBody;
 class btCollisionObject;
 
 namespace xio {
-struct Contact {
-  Contact() = default;
-  Contact(const btCollisionObject *a, int points)
+struct ContactInfo {
+  ContactInfo() = default;
+  ContactInfo(const btCollisionObject *a, int points)
     : a_(a), points_(points)
   {}
 
-  Contact& operator= (const Contact& that) = default;
+  ContactInfo& operator= (const ContactInfo& that) = default;
 
   const btCollisionObject * a_;
   int points_;
@@ -67,6 +66,12 @@ class Physics final : public Component, public Singleton<Physics> {
   void Reset() final {}
   void Clean() final;
   void Loop(float time) final;
+  void Resume() final {
+    pause_ = false;
+  }
+  void Pause() final {
+    pause_ = true;
+  }
 
   void DispatchCollisions();
   void AddRigidBody(btRigidBody *body);
@@ -85,21 +90,13 @@ class Physics final : public Component, public Singleton<Physics> {
   std::unique_ptr<btCollisionDispatcher> dispatcher_;
   std::unique_ptr<btSequentialImpulseConstraintSolver> solver_;
   std::unique_ptr<btDynamicsWorld> world_;
-  std::vector<btCollisionObject *> rigid_bodies_;
-  std::map<const btCollisionObject *, Contact> contacts_;
+  std::map<const btCollisionObject *, ContactInfo> contacts_;
   std::function<void(int a, int b)> callback_;
- private:
   int steps_ = 8;
   bool pause_ = false;
   bool debug_ = false;
 
  public:
-  void Start() noexcept {
-    pause_ = false;
-  }
-  void Pause() noexcept {
-    pause_ = true;
-  }
   void SetCallback(const std::function<void(int a, int b)> &callback) {
     callback_ = callback;
   }

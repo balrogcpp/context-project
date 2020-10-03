@@ -21,20 +21,31 @@
 //SOFTWARE.
 
 #pragma once
+#include "Component.h"
+#include "Singleton.h"
+#include "CompositorHelpers.h"
+#include <OgreMatrix4.h>
+#include <OgreMaterial.h>
 #include <map>
 #include <string>
 
 namespace Ogre {
-class Material;
+class Camera;
+class Viewport;
 }
 
 namespace xio {
-class GBufferSchemeHandler;
-
-class Compositor {
+class Compositor : public Component, public Singleton<Compositor> {
  public:
   Compositor();
   virtual ~Compositor();
+
+  void Create() final {}
+  void Reset() final {}
+  void Clean() final {}
+  void Pause() final {}
+  void Resume() final {}
+  void Loop(float time) final;
 
   void EnableEffect(const std::string &name, bool enable) {
     effects_[name] = enable;
@@ -44,5 +55,10 @@ class Compositor {
  private:
   std::map<std::string, bool> effects_;
   GBufferSchemeHandler *gbuff_handler_ = nullptr;
+  SBufferSchemeHandler *sbuff_handler_ = nullptr;
+  Ogre::Camera *camera_ = nullptr;
+  Ogre::Viewport *viewport_ = nullptr;
+  Ogre::Matrix4 mvp_;
+  Ogre::Matrix4 mvp_prev_;
 };
 }

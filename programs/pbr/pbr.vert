@@ -131,11 +131,10 @@ void main()
   vec2 uv0 = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
-  vUV0.xy = uv0;
+  vUV0.xy = uv0.xy;
 
 #ifdef PAGED_GEOMETRY
-if (uv0.y == 0.0)
-{
+if (uv0.y == 0.0) {
   float kradius = 0.25;
   float kheigh = 0.25;
   float kx = 1.0;
@@ -177,20 +176,24 @@ if (uv0.y == 0.0)
 #endif
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
-  int j = 0;
+  int k0= 0;
+  int k1= 1;
+  int k2= 2;
   for (int i = 0; i < int(uLightCount);  i++) {
-    if (uLightCastsShadowsArray[i] == 1.0) {
-      lightSpacePosArray[j] = uTexWorldViewProjMatrixArray[j] * new_position;
-      lightSpacePosArray[j + 1] = uTexWorldViewProjMatrixArray[j + 1] * new_position;
-      lightSpacePosArray[j + 2] = uTexWorldViewProjMatrixArray[j + 2] * new_position;
+    if (uLightCastsShadowsArray[i] > 0) {
+      lightSpacePosArray[k0] = uTexWorldViewProjMatrixArray[k0] * new_position;
+      lightSpacePosArray[k1] = uTexWorldViewProjMatrixArray[k1] * new_position;
+      lightSpacePosArray[k2] = uTexWorldViewProjMatrixArray[k2] * new_position;
     }
-    j += 3;
+    k0 += 3;
+    k1 += 3;
+    k2 += 3;
   }
 #endif
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
-  vUV0.xy = uv0;
+  vUV0.xy = uv0.xy;
 #endif
   gl_Position = uMVPMatrix * new_position;
 #endif //SHADOWCASTER

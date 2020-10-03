@@ -638,9 +638,9 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   static Poco::Mutex mSoundMutex;
   static Poco::Mutex mResourceGroupNameMutex;
 #	else
-  static std::recursive_mutex mMutex;
-  static std::recursive_mutex mSoundMutex;
-  static std::recursive_mutex mResourceGroupNameMutex;
+  static std::mutex mMutex;
+  static std::mutex mSoundMutex;
+  static std::mutex mResourceGroupNameMutex;
 #	endif
 
   /** Pushes a sound action request onto the queue
@@ -737,7 +737,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
 #ifdef POCO_THREAD
           Poco::Thread::sleep(10);
 #else
-          std::this_thread::sleep_for(std::chrono::milliseconds (10));
+          std::this_thread::sleep_for(std::chrono::microseconds(OGGSOUND_UTIME));
 #endif
       }
   }
@@ -950,6 +950,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   Ogre::Real mFadeTimer;                    // Timer for fade
   bool mFadeIn;                            // Direction fade in/out
   bool mFadeVolume;                        // Flag for fading
+  long update_time = 10;
 
   ALCchar *mDeviceStrings;                // List of available devices strings
   unsigned int mNumSources;                // Number of sources available for sounds

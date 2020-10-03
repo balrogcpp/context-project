@@ -21,19 +21,19 @@
 //SOFTWARE.
 
 #pragma once
-
 #include <OgreMaterial.h>
 #include <OgreMaterialManager.h>
+#include "ShaderUtils.h"
 
 namespace xio {
 class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   GBufferSchemeHandler() {
-    mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer");
-    mGBufRefMat->load();
+    ref_mat_ = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer");
+    ref_mat_->load();
 
-    mGBufRefMat2 = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer_disable");
-    mGBufRefMat2->load();
+    ref_mat2_ = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer_alpha");
+    ref_mat2_->load();
   }
 
   Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex,
@@ -48,29 +48,44 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     if (pass->getNumTextureUnitStates() > 0 && alpha_rejection > 0) {
       gBufferTech->setSchemeName(schemeName);
       Ogre::Pass *gbufPass = gBufferTech->createPass();
-      *gbufPass = *mGBufRefMat2->getTechnique(0)->getPass(0);
+      *gbufPass = *ref_mat2_->getTechnique(0)->getPass(0);
+
+      auto texture_albedo = pass->getTextureUnitState("Albedo");
+      if (texture_albedo) {
+        std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
+        auto *texPtr3 = gBufferTech->getPass(0)->getTextureUnitState("BaseColor");
+
+        if (texPtr3) {
+          texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+          texPtr3->setTextureAddressingMode(Ogre::TextureAddressingMode::TAM_CLAMP);
+          texPtr3->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
+          texPtr3->setTextureName(texture_name);
+        }
+      }
     } else {
       gBufferTech->setSchemeName(schemeName);
       Ogre::Pass *gbufPass = gBufferTech->createPass();
-      *gbufPass = *mGBufRefMat->getTechnique(0)->getPass(0);
+      *gbufPass = *ref_mat_->getTechnique(0)->getPass(0);
     }
 
     return gBufferTech;
   }
 
  private:
-  Ogre::MaterialPtr mGBufRefMat;
-  Ogre::MaterialPtr mGBufRefMat2;
+  Ogre::MaterialPtr ref_mat_;
+  Ogre::MaterialPtr ref_mat2_;
 };
-//----------------------------------------------------------------------------------------------------------------------
-class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
- public:
-  DepthSchemeHandler() {
-    mGBufRefMat = Ogre::MaterialManager::getSingleton().getByName("Context/depth_alpha");
-    mGBufRefMat->load();
 
-    mGBufRefMat2 = Ogre::MaterialManager::getSingleton().getByName("Context/depth");
-    mGBufRefMat2->load();
+//----------------------------------------------------------------------------------------------------------------------
+class SBufferSchemeHandler : public Ogre::MaterialManager::Listener {
+ public:
+  SBufferSchemeHandler() {
+    ref_mat_ = Ogre::MaterialManager::getSingleton().getByName("Context/sbuffer");
+    ref_mat_->load();
+  }
+
+  void Update(Ogre::Matrix4 mvp_prev) {
+//    parameters_->setNamedConstant("cWorldViewProjPrev", mvp_prev);
   }
 
   Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex,
@@ -78,39 +93,14 @@ class DepthSchemeHandler : public Ogre::MaterialManager::Listener {
                                         Ogre::Material *originalMaterial,
                                         unsigned short lodIndex,
                                         const Ogre::Renderable *rend) final {
-
-    auto *pass = originalMaterial->getTechnique(0)->getPass(0);
-    int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
-
-    if (pass->getNumTextureUnitStates() > 0 && alpha_rejection > 0) {
-      Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
-      gBufferTech->setSchemeName(schemeName);
-      Ogre::Pass *gbufPass = gBufferTech->createPass();
-      *gbufPass = *mGBufRefMat->getTechnique(0)->getPass(0);
-
-      auto *texPtr2 = gbufPass->getTextureUnitState("BaseColor");
-      texPtr2->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-      texPtr2->setTextureFiltering(Ogre::TFO_NONE);
-
-      auto texture_albedo = originalMaterial->getTechnique(0)->getPass(0)->getTextureUnitState("Albedo");
-
-      if (texture_albedo) {
-        auto texture_name = texture_albedo->getTextureName();        texPtr2->setTextureName(texture_name);
-      }
-
-      return gBufferTech;
-    } else {
-      Ogre::Technique *gBufferTech2 = originalMaterial->createTechnique();
-      gBufferTech2->setSchemeName(schemeName);
-      Ogre::Pass *gbufPass2 = gBufferTech2->createPass();
-      *gbufPass2 = *mGBufRefMat2->getTechnique(0)->getPass(0);
-
-      return gBufferTech2;
-    }
+    Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
+    gBufferTech->setSchemeName(schemeName);
+    Ogre::Pass *gbufPass = gBufferTech->createPass();
+    *gbufPass = *ref_mat_->getTechnique(0)->getPass(0);
+    return gBufferTech;
   }
 
  private:
-  Ogre::MaterialPtr mGBufRefMat;
-  Ogre::MaterialPtr mGBufRefMat2;
+  Ogre::MaterialPtr ref_mat_;
 };
 }

@@ -33,7 +33,8 @@
 
 #include "OGRE/Ogre.h"
 #include <SDL2/SDL_keycode.h>
-
+#include "Input.h"
+#include "Singleton.h"
 #ifndef GORILLA_USES_EXCEPTIONS
 #  define GORILLA_USES_EXCEPTIONS 0
 #endif
@@ -2512,6 +2513,21 @@ class Caption : public Ogre::GeneralAllocatedObject {
     mDirty = true;
     mLayer->_markDirty();
   }
+  /*! function. alignment
+      desc.
+          Set the text to show.
+  */
+  inline void text(double text) {
+    mText = std::to_string(text);
+    mDirty = true;
+    mLayer->_markDirty();
+  }
+
+  inline void text(long text) {
+    mText = std::to_string(text);
+    mDirty = true;
+    mLayer->_markDirty();
+  }
 
   /*! function. alignment
       desc.
@@ -3021,8 +3037,7 @@ class D3Panel {
 
 typedef void (*OgreConsoleFunctionPtr)(Ogre::StringVector &);
 
-#include "Input.h"
- class OgreConsole : public Ogre::Singleton<OgreConsole>, public Ogre::FrameListener, public Ogre::LogListener, public xio::InputObserver {
+ class OgreConsole : public xio::Singleton<OgreConsole>, public Ogre::FrameListener, public Ogre::LogListener, public xio::InputObserver {
 
  public:
 

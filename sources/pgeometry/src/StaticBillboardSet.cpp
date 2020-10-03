@@ -55,11 +55,11 @@ StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNo
     mFadeEnabled(false),
     mRenderMethod(method),
     mpSceneMgr(mgr),
-    mpSceneNode(NULL),
-    mpEntity(NULL),
+    mpSceneNode(nullptr),
+    mpEntity(nullptr),
     mfUFactor(1.f),
     mfVFactor(1.f),
-    mpFallbackBillboardSet(NULL),
+    mpFallbackBillboardSet(nullptr),
     mBBOrigin(BBO_CENTER),
     mFadeVisibleDist(0.f),
     mFadeInvisibleDist(0.f) {
@@ -320,7 +320,7 @@ void StaticBillboardSet::clear() {
       //Delete entity
       mpSceneNode->detachAllObjects();
       mpEntity->_getManager()->destroyEntity(mpEntity);
-      mpEntity = NULL;
+      mpEntity = nullptr;
 
       //Delete mesh
       MeshManager::getSingleton().remove(mPtrMesh);
@@ -346,7 +346,7 @@ void StaticBillboardSet::build() {
       //Delete entity
       mpSceneNode->detachAllObjects();
       mpEntity->_getManager()->destroyEntity(mpEntity);
-      mpEntity = NULL;
+      mpEntity = nullptr;
 
       //Delete mesh
       MeshManager::getSingleton().remove(mPtrMesh);

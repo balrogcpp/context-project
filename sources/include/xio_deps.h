@@ -21,35 +21,38 @@
 //SOFTWARE.
 
 #pragma once
-
-#include "Component.h"
-#include "ComponentLocator.h"
+#include "OgreHeaders.h"
+#include <rapidjson/rapidjson.h>
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/istreamwrapper.h>
+#include <pugixml.hpp>
+#include <yaml-cpp/yaml.h>
+#include <lua.hpp>
+#include <sol.hpp>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <functional>
+#include <sstream>
 #include <memory>
-
-namespace Ogre {
-class Terrain;
-class TerrainGroup;
-class TerrainGlobalOptions;
-}
-
-namespace pugi {
-class xml_node;
-}
-
-namespace xio {
-class Terrain final : public ComponentLocator {
- public:
-  Terrain ();
-  virtual ~Terrain ();
-
-  void ProcessTerrainGroup(pugi::xml_node &xml_node);
-  float GetHeigh(float x, float z);
-
- private:
-  void GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image, const std::string &filename);
-  void DefineTerrain_(long x, long y, bool flat, const std::string &filename);
-  void InitBlendMaps_(Ogre::Terrain *terrain, int layer, const std::string &image);
-
-  std::unique_ptr<Ogre::TerrainGroup> terrain_;
-};
+#include <vector>
+#include <list>
+#include <deque>
+#include <queue>
+#include <stack>
+#include <set>
+#include <unordered_set>
+#include <unordered_map>
+#include <map>
+#include <algorithm>
+#include <chrono>
+#include <thread>
+#include <filesystem>
+#include <cstdlib>
+#include <limits>
+#include <omp.h>
+extern "C" {
+#include <SDL2/SDL.h>
 }

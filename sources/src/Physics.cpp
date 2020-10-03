@@ -62,7 +62,7 @@ void Physics::Loop(float time) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::DispatchCollisions() {
-  std::map<const btCollisionObject *, Contact> new_contacts;
+  std::map<const btCollisionObject *, ContactInfo> new_contacts;
 
   /* Browse all collision pairs */
   for (size_t i = 0; i < world_->getDispatcher()->getNumManifolds(); i++) {
@@ -108,7 +108,6 @@ void Physics::DispatchCollisions() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Clean() {
-  Pause();
   world_->clearForces();
 
   //remove the rigidbodies from the dynamics world and delete them
@@ -118,7 +117,11 @@ void Physics::Clean() {
     delete obj;
   }
 
-  rigid_bodies_.clear();
+  for (int i = world_->getNumConstraints() - 1; i >= 0; i--) {
+    btTypedConstraint *constraint = world_->getConstraint(i);
+    world_->removeConstraint(constraint);
+    delete constraint;
+  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::AddRigidBody(btRigidBody *body) {

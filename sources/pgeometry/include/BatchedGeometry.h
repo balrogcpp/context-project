@@ -61,7 +61,7 @@ class BatchedGeometry : public Ogre::MovableObject {
     ///
     void addSubEntity(Ogre::SubEntity *ent, const Ogre::Vector3 &position,
                       const Ogre::Quaternion &orientation, const Ogre::Vector3 &scale,
-                      const Ogre::ColourValue &color = Ogre::ColourValue::White, void *userData = NULL);
+                      const Ogre::ColourValue &color = Ogre::ColourValue::White, void *userData = nullptr);
 
     /// Build (assemble a vertex/index buffers) geometry for rendering
     virtual void build();
@@ -86,8 +86,10 @@ class BatchedGeometry : public Ogre::MovableObject {
 
     /// Get material name. Be careful, resource group name missing
     const Ogre::String &getMaterialName() const { return m_ptrMaterial->getName(); }
-    Ogre::Technique *getTechnique() const final { return m_ptrMaterial->getBestTechnique(m_ptrMaterial->getLodIndex(
-          m_pParentGeom->m_fMinDistanceSquared * m_pParentGeom->m_fMinDistanceSquared)); }
+    Ogre::Technique *getTechnique() const final {
+      return m_ptrMaterial->getBestTechnique(m_ptrMaterial->getLodIndex(
+          m_pParentGeom->m_fMinDistanceSquared * m_pParentGeom->m_fMinDistanceSquared));
+    }
     const Ogre::MaterialPtr &getMaterial(void) const final { return m_ptrMaterial; }
     void getWorldTransforms(Ogre::Matrix4 *xform) const { *xform = m_pParentGeom->_getParentNodeFullTransform(); }
     const Ogre::Quaternion &getWorldOrientation(void) const { return m_pParentGeom->m_pSceneNode->_getDerivedOrientation(); }

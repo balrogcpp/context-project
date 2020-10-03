@@ -26,7 +26,7 @@
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
-Sound::Sound() {
+Sound::Sound(unsigned int max_sources, unsigned int queue_list_size) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   putenv("ALSOFT_LOGLEVEL=LOG_NONE");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
@@ -38,26 +38,35 @@ Sound::Sound() {
 
   // Register
   Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
-  const std::string DEVICE_NAME = "";
-  const unsigned int MAX_SOURCES = 100;
-  const unsigned int QUEUE_LIST_SIZE = 100;
-  OgreOggSound::OgreOggSoundManager::getSingleton().init(DEVICE_NAME, MAX_SOURCES, QUEUE_LIST_SIZE);
-  OgreOggSound::OgreOggSoundManager::getSingleton().setDistanceModel(AL_LINEAR_DISTANCE);
+  OgreOggSound::OgreOggSoundManager::getSingleton().init("", max_sources, queue_list_size);
   manager_ = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
   manager_->setResourceGroupName(Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
-Sound::~Sound() {
-  Reset();
+Sound::~Sound() {}
+//----------------------------------------------------------------------------------------------------------------------
+void Sound::Clean() {}
+//----------------------------------------------------------------------------------------------------------------------
+void Sound::Pause() {
+  manager_->pauseAllSounds();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::Clean() {
-  OgreOggSound::OgreOggSoundManager::getSingleton().stopAllSounds();
-  OgreOggSound::OgreOggSoundManager::getSingleton().destroyAllSounds();
+void Sound::Resume() {
+  manager_->resumeAllPausedSounds();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Sound::CreateSound(const std::string &name, const std::string &file, bool loop) {
-  manager_->createSound(name, file, false, loop, true, nullptr);
+  auto *sound = manager_->createSound(name, file, true, loop, true, nullptr);
+  Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->createChildSceneNode()->attachObject(sound);
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Sound::SetListener(Ogre::SceneNode *parent) {
+  auto *listener = manager_->getListener();
+  if (!listener) {
+    manager_->createListener();
+    listener = manager_->getListener();
+  }
+  parent->attachObject(listener);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Sound::PlaySound(const std::string &name, bool immediate) {

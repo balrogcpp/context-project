@@ -21,9 +21,16 @@
 //SOFTWARE.
 
 #pragma once
+#include "ComponentLocator.h"
 
 namespace xio {
-class Entity {
+class Entity : public ComponentLocator {
+ public:
+  void AddAsSoundListener() {
+
+  }
+
+ protected:
 
 };
 }

@@ -22,8 +22,8 @@ TreeLoader2D::TreeLoader2D(PagedGeometry *geom, const TBounds &bounds) {
   pageSize = geom->getPageSize();
 
   //Reset height function
-  heightFunction = NULL;
-  heightFunctionUserData = NULL;
+  heightFunction = nullptr;
+  heightFunctionUserData = nullptr;
 
   //Make sure the bounds are aligned with PagedGeometry's grid, so the TreeLoader's grid tiles will have a 1:1 relationship
   actualBounds = bounds;
@@ -41,7 +41,7 @@ TreeLoader2D::TreeLoader2D(PagedGeometry *geom, const TBounds &bounds) {
   pageGridZ = (int) Math::Ceil(gridBounds.height() / pageSize) + 1;
 
   //Reset color map
-  colorMap = NULL;
+  colorMap = nullptr;
   colorMapFilter = MAPFILTER_NONE;
 
   //Default scale range
@@ -174,7 +174,7 @@ TreeLoader2D::deleteTrees(const Ogre::Vector3 &position, Ogre::Real radius, Enti
   if (maxPageZ < 0) maxPageZ = 0; else if (maxPageZ >= pageGridZ) maxPageZ = pageGridZ - 1;
 
   PageGridListIterator it, end;
-  if (type == NULL) {
+  if (type == nullptr) {
     //Scan all entity types
     it = pageGridList.begin();
     end = pageGridList.end();
@@ -266,7 +266,7 @@ TreeLoader2D::deleteTrees(TBounds area, Ogre::Entity *type) {
   if (maxPageZ < 0) maxPageZ = 0; else if (maxPageZ >= pageGridZ) maxPageZ = pageGridZ - 1;
 
   PageGridListIterator it, end;
-  if (type == NULL) {
+  if (type == nullptr) {
     //Scan all entity types
     it = pageGridList.begin();
     end = pageGridList.end();
@@ -360,7 +360,7 @@ std::vector<void*> TreeLoader2D::findTrees(const Ogre::Vector3 &position, Real r
     if (maxPageZ < 0) maxPageZ = 0; else if (maxPageZ >= pageGridZ) maxPageZ = pageGridZ-1;
 
     PageGridListIterator it, end;
-    if (type == NULL){
+    if (type == nullptr){
         //Scan all entity types
         it = pageGridList.begin();
         end = pageGridList.end();
@@ -407,7 +407,7 @@ std::vector<void*> TreeLoader2D::findTrees(const Ogre::Vector3 &position, Real r
 void TreeLoader2D::setColorMap(const Ogre::String &mapFile, MapChannel channel) {
   if (colorMap) {
     colorMap->unload();
-    colorMap = NULL;
+    colorMap = nullptr;
   }
   if (mapFile != "") {
     colorMap = ColorMap::load(mapFile, channel);
@@ -418,7 +418,7 @@ void TreeLoader2D::setColorMap(const Ogre::String &mapFile, MapChannel channel) 
 void TreeLoader2D::setColorMap(Ogre::TexturePtr map, MapChannel channel) {
   if (colorMap) {
     colorMap->unload();
-    colorMap = NULL;
+    colorMap = nullptr;
   }
   if (map) {
     colorMap = ColorMap::load(map, channel);
@@ -452,7 +452,7 @@ void TreeLoader2D::loadPage(PageInfo &page) {
       pos.z = page.bounds.top + ((Real) o->zPos / 65535) * pageSize;
 
       //Calculate terrain height at pos.x / pos.z to get pos.y
-      if (heightFunction != NULL)
+      if (heightFunction != nullptr)
         pos.y = heightFunction(pos.x, pos.z, heightFunctionUserData);
       else
         pos.y = 0.0f;
@@ -567,7 +567,7 @@ void TreeIterator2D::_readTree() {
   currentTreeDat.position.z = boundsTop + ((Real) treeDef.zPos / 65535) * trees->pageSize;
 
   //Calculate terrain height at x / z to get y
-  if (trees->heightFunction != NULL)
+  if (trees->heightFunction != nullptr)
     currentTreeDat.position.y =
         trees->heightFunction(currentTreeDat.position.x, currentTreeDat.position.z, trees->heightFunctionUserData);
   else

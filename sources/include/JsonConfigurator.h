@@ -21,9 +21,9 @@
 //SOFTWARE.
 
 #pragma once
-
 #include <filesystem>
 #include <string>
+#include <fstream>
 #include <exception>
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
@@ -91,8 +91,8 @@ class JsonConfigurator {
   }
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
-  T Get(const std::string &str) {
-    T t;
+  inline T Get(const std::string &str) {
+    T t{};
 
     try {
       t = document_[str].Get<T>();

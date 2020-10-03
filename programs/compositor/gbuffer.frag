@@ -66,26 +66,28 @@ out vec4 gl_FragColor;
 #endif
 #endif
 
-in    vec3 oViewPos;
-in    vec3 oNormal;
-in     vec2 vUV;
-
+#ifndef DISABLE
+in vec3 oViewPos;
 uniform float cNearClipDistance;
 uniform float cFarClipDistance;// !!! might be 0 for infinite view projection.
-//uniform sampler2D baseColor;
-
+#ifdef ALPHA
+in vec2 vUV;
+uniform sampler2D baseColor;
+#endif
+#endif
 void main()
 {
-//    vec4 color = texture2D(baseColor, vUV);
-//    if (color.a < 1.0) {
-//        discard;
-//    }
-
+#ifndef DISABLE
+#ifdef ALPHA
+    if (texture2D(baseColor, vUV).a < 0.5) {
+        discard;
+    }
+#endif
     float distance = length(oViewPos);
     float clipDistance = cFarClipDistance - cNearClipDistance;
 
-    gl_FragColor = vec4((distance - cNearClipDistance) / clipDistance, 0, 0, 1);
-
-//    gl_FragData[0] = vec4(normalize(oNormal).xyz, (distance - cNearClipDistance) / clipDistance);// normal + linear depth [0, 1]
-//    gl_FragData[1] = vec4(oViewPos, 0.0);// view space position
+    gl_FragColor = vec4((distance - cNearClipDistance) / clipDistance, 0.0, 0.0, 1.0);
+#else
+    gl_FragColor = vec4(vec3(0.0), 1.0);
+#endif
 }

@@ -24,7 +24,7 @@
 
 #include "NoCopy.h"
 #include "Input.h"
-#include "Locator.h"
+#include "ComponentLocator.h"
 #include <OgreRoot.h>
 #include <OgreSceneLoaderManager.h>
 #include <OgreFrameListener.h>
@@ -32,7 +32,7 @@
 
 namespace xio {
 class AppState
-    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputObserver, public NoCopy, public Locator {
+    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputObserver, public NoCopy, public ComponentLocator {
  public:
 //----------------------------------------------------------------------------------------------------------------------
   void SwitchNextState(std::unique_ptr<AppState> &&app_state) {
@@ -54,7 +54,7 @@ class AppState
 
   virtual void Create() = 0;
   virtual void Clear() = 0;
-  virtual void Loop() = 0;
+  virtual void Loop(float time) = 0;
 
   bool IsDirty() {
     return dirty_;

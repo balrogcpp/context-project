@@ -25,9 +25,9 @@ unsigned long BatchPage::s_nGUID = 0;
 //-----------------------------------------------------------------------------
 /// Default constructor
 BatchPage::BatchPage() :
-    m_pPagedGeom(NULL),
-    m_pSceneMgr(NULL),
-    m_pBatchGeom(NULL),
+    m_pPagedGeom(nullptr),
+    m_pSceneMgr(nullptr),
+    m_pBatchGeom(nullptr),
     m_nLODLevel(0),
     m_bFadeEnabled(false),
     m_bShadersSupported(false),
@@ -196,7 +196,7 @@ void BatchPage::_updateShaders() {
       tmpName << "fade_";
     if (lightingEnabled)
       tmpName << "lit_";
-    if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != NULL)
+    if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr)
       tmpName << "clr_";
 
     for (size_t i = 0, iCnt = subBatch->m_pVertexData->vertexDeclaration->getElementCount(); i < iCnt; ++i) {
@@ -232,7 +232,8 @@ void BatchPage::_updateShaders() {
       shaderLanguage = "cg";
 
     //If the shader hasn't been created yet, create it
-    if (!HighLevelGpuProgramManager::getSingleton().getByName(vertexProgName, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
+    if (!HighLevelGpuProgramManager::getSingleton().getByName(vertexProgName,
+                                                              ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
       Pass *pass = ptrMat->getTechnique(0)->getPass(0);
       String vertexProgSource;
 
@@ -244,7 +245,7 @@ void BatchPage::_updateShaders() {
             "	float3 normal    : NORMAL,	\n"
             "	out float4 oPosition : POSITION, \n";
 
-        if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != NULL)
+        if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr)
           vertexProgSource +=
               "	float4 iColor    : COLOR, \n";
 
@@ -300,12 +301,12 @@ void BatchPage::_updateShaders() {
           vertexProgSource +=
               "	float3 light = normalize(objSpaceLight.xyz - (iPosition.xyz * objSpaceLight.w)); \n"
               "	float diffuseFactor = max(dot(normal, light), 0); \n";
-          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != NULL)
+          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr)
             vertexProgSource += "oColor = (lightAmbient + diffuseFactor * lightDiffuse) * iColor; \n";
           else
             vertexProgSource += "oColor = (lightAmbient + diffuseFactor * lightDiffuse); \n";
         } else {
-          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != NULL)
+          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr)
             vertexProgSource += "oColor = iColor; \n";
           else
             vertexProgSource += "oColor = float4(1, 1, 1, 1); \n";
@@ -359,13 +360,13 @@ void BatchPage::_updateShaders() {
           vertexProgSource +=
               "   vec3 light = normalize(objSpaceLight.xyz - (gl_Vertex.xyz * objSpaceLight.w)); \n"
               "   float diffuseFactor = max(dot(gl_Normal, light), 0.0); \n";
-          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != NULL) {
+          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) {
             vertexProgSource += "   gl_FrontColor = (lightAmbient + diffuseFactor * lightDiffuse) * gl_Color; \n";
           } else {
             vertexProgSource += "   gl_FrontColor = (lightAmbient + diffuseFactor * lightDiffuse); \n";
           }
         } else {
-          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != NULL) {
+          if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) {
             vertexProgSource += "   gl_FrontColor = gl_Color; \n";
           } else {
             vertexProgSource += "   gl_FrontColor = vec4(1.0, 1.0, 1.0, 1.0); \n";

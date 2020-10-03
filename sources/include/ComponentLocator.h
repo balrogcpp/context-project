@@ -29,30 +29,35 @@ class Renderer;
 class Physics;
 class Sound;
 class Overlay;
+class DotSceneLoaderB;
 class InputSequencer;
 
 class ComponentLocator {
  public:
-  void LocateComponents(YamlConfigurator *conf,
+//----------------------------------------------------------------------------------------------------------------------
+  static void LocateComponents(YamlConfigurator *conf,
                         InputSequencer *io,
                         Renderer *renderer,
                         Physics *physics,
                         Sound *sounds,
-                        Overlay *overlay) {
+                        Overlay *overlay,
+                        DotSceneLoaderB *loader) {
     conf_ = conf;
     io_ = io;
     renderer_ = renderer;
     physics_ = physics;
-    sounds_ = sounds;
+    sound_ = sounds;
     overlay_ = overlay;
+    loader_ = loader;
   }
 
  protected:
-  YamlConfigurator *conf_ = nullptr;
-  Renderer *renderer_ = nullptr;
-  Physics *physics_ = nullptr;
-  Sound *sounds_ = nullptr;
-  Overlay *overlay_ = nullptr;
-  InputSequencer *io_ = nullptr;
+  inline static YamlConfigurator *conf_ = nullptr;
+  inline static Renderer *renderer_ = nullptr;
+  inline static Physics *physics_ = nullptr;
+  inline static Sound *sound_ = nullptr;
+  inline static Overlay *overlay_ = nullptr;
+  inline static DotSceneLoaderB *loader_ = nullptr;
+  inline static InputSequencer *io_ = nullptr;
 };
 }

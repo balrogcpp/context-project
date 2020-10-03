@@ -21,11 +21,12 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-
 #include "Application.h"
 #include "Exception.h"
 #include "Overlay.h"
 #include "HwCheck.h"
+#include "DesktopIcon.h"
+#include "ComponentLocator.h"
 #include "DesktopIcon.h"
 
 #ifdef _WIN32
@@ -57,6 +58,12 @@ Application::Application() {
 Application::~Application() = default;
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+  DesktopIcon icon;
+  icon.Init();
+  icon.Save("XioDemo");
+#endif
+
   conf_ = std::make_unique<YamlConfigurator>("config.yaml");
   Renderer::SetConfigurator(conf_.get());
   int window_width = conf_->Get<int>("window_width");
@@ -73,15 +80,18 @@ void Application::Init_() {
 
   io_ = std::make_unique<InputSequencer>();
   physics_ = std::make_unique<Physics>();
-  sounds_ = std::make_unique<Sound>();
+  sound_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();
   loader_ = std::make_unique<DotSceneLoaderB>();
 
+  components_.push_back(sound_.get());
   components_.push_back(loader_.get());
   components_.push_back(physics_.get());
-  components_.push_back(sounds_.get());
   components_.push_back(renderer_.get());
   components_.push_back(overlay_.get());
+
+  ComponentLocator::LocateComponents(
+      conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
 
   for (auto &it : components_) {
     it->Create();
@@ -103,8 +113,7 @@ void Application::Init_() {
     tfo = Ogre::TFO_NONE;
 
   renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
-
-  loader_->LocateComponents(conf_.get(), io_.get(), renderer_.get(), physics_.get(), sounds_.get(), overlay_.get());
+  loader_->LocateComponents(conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
   verbose_ = conf_->Get<bool>("global_verbose_enable");
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");
@@ -123,16 +132,24 @@ void Application::Init_() {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Clear_() {
+void Application::Reset_() {
   io_->Clear();
   io_->UnregWinObserver(this);
 
   for (auto &it : components_)
     it->Clean();
+
   for (auto &it : components_)
     it->Reset();
 
-  Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  renderer_.reset();
+  io_.reset();
+  physics_.reset();
+  sound_.reset();
+  overlay_.reset();
+  loader_.reset();
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::InitState_(std::unique_ptr<AppState> &&next_state) {
@@ -147,13 +164,8 @@ void Application::InitState_(std::unique_ptr<AppState> &&next_state) {
   io_->RegObserver(cur_state_.get());
   Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
 
-  cur_state_->LocateComponents(conf_.get(),
-                               io_.get(),
-                               renderer_.get(),
-                               physics_.get(),
-                               sounds_.get(),
-                               overlay_.get(),
-                               loader_.get());
+  cur_state_->LocateComponents(
+      conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
   cur_state_->Create();
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -168,18 +180,20 @@ void Application::Event(const SDL_Event &evt) {
     if (!fullscreen) {
       if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         suspend_ = true;
-        lock_fps_ = true;
+        renderer_->GetWindow().SetCursorStatus(true, false, false);
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
+        renderer_->GetWindow().SetCursorStatus(false, true, true);
       }
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         suspend_ = true;
-        lock_fps_ = true;
+        renderer_->GetWindow().SetCursorStatus(true, false, false);
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
+        renderer_->GetWindow().SetCursorStatus(false, true, true);
       }
     }
   }
@@ -190,8 +204,8 @@ void Application::Other(uint8_t type, int32_t code, void *data1, void *data2) {}
 void Application::Loop_() {
   while (quit_) {
     if (cur_state_) {
-      auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
-      long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
+      auto before_frame = std::chrono::system_clock::now().time_since_epoch();
+      long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(before_frame).count();
 
       int fps_frames_ = 0;
       long delta_time_ = 0;
@@ -205,26 +219,29 @@ void Application::Loop_() {
       io_->Capture();
 
       if (!suspend_) {
-        cur_state_->Loop();
         if (cur_state_->IsDirty()) {
           for (auto &it : components_)
             it->Clean();
 
           InitState_(move(cur_state_->GetNextState()));
-
-          physics_->Start();
+        } else {
+          for (auto &it : components_)
+            it->Resume();
         }
 
-        auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
-        long millis_before_update =
-            std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
+        auto before_update = std::chrono::system_clock::now().time_since_epoch();
+        long millis_before_update = std::chrono::duration_cast<std::chrono::microseconds>(before_update).count();
         float frame_time = static_cast<float>(millis_before_update - time_of_last_frame_) / 1000000;
         time_of_last_frame_ = millis_before_update;
+        cur_state_->Loop(frame_time);
 
         for (auto *it : components_)
           it->Loop(frame_time);
 
         renderer_->RenderOneFrame();
+      } else {
+        for (auto &it : components_)
+          it->Pause();
       }
 
 #ifdef DEBUG
@@ -262,13 +279,16 @@ void Application::Go_() {
     auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
     time_of_last_frame_ = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
     Loop_();
-    Clear_();
+    Reset_();
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Message_(const std::string &caption, const std::string &message) {
   std::cerr << caption << '\n';
   std::cerr << message << '\n';
+#ifdef _WIN32
+  MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
+#endif
   return 1;
 }
 //----------------------------------------------------------------------------------------------------------------------

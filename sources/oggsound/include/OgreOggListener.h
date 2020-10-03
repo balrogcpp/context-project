@@ -208,7 +208,7 @@ class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
 #	if POCO_THREAD
   static Poco::Mutex mMutex;
 #	else
-  static std::recursive_mutex mMutex;
+  static std::mutex mMutex;
 #	endif
 #endif
 

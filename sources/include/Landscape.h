@@ -20,52 +20,35 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#ifndef GL_ES
-#define VERSION 120
-#version VERSION
-#define USE_TEX_LOD
-#if VERSION != 120
-#define attribute in
-#define varying out
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-#else
-#define in attribute
-#define out varying
-#endif
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : require
-#endif
-#else
-#define VERSION 300
-#version VERSION es
-#extension GL_OES_standard_derivatives : enable
-#extension GL_EXT_shader_texture_lod: enable
-#define textureCubeLod textureLodEXT
-precision highp float;
-#if VERSION == 100
-#define in attribute
-#define out varying
-#else
-#define attribute in
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-#endif
-#endif
+#pragma once
+#include "Component.h"
+#include "ComponentLocator.h"
+#include <memory>
 
-void main()
-{
-  gl_Position = vec4(0.0);
+namespace Ogre {
+class Terrain;
+class TerrainGroup;
+class TerrainGlobalOptions;
+}
+
+namespace pugi {
+class xml_node;
+}
+
+namespace xio {
+class Landscape final : public ComponentLocator {
+ public:
+  Landscape ();
+  virtual ~Landscape ();
+
+  void ProcessTerrainGroup(pugi::xml_node &xml_node);
+  float GetHeigh(float x, float z);
+
+ private:
+  void GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image, const std::string &filename);
+  void DefineTerrain_(long x, long y, bool flat, const std::string &filename);
+  void InitBlendMaps_(Ogre::Terrain *terrain, int layer, const std::string &image);
+
+  std::unique_ptr<Ogre::TerrainGroup> terrain_;
+};
 }

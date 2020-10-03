@@ -265,7 +265,7 @@ float GetMetallic(vec2 uv) {
     float metallic = uSurfaceShininessColour;
 
 #ifdef HAS_METALLICMAP
-    metallic = texture2D(uMetallicSampler, uv).r * uSurfaceShininessColour;
+    metallic *= texture2D(uMetallicSampler, uv).r;
 #endif
 
     return metallic;
@@ -277,7 +277,7 @@ float GetRoughness(vec2 uv) {
     float roughness = uSurfaceSpecularColour;
 
 #ifdef HAS_ROUGHNESSMAP
-    roughness = texture2D(uRoughnessSampler, uv).r * uSurfaceSpecularColour;
+    roughness *= texture2D(uRoughnessSampler, uv).r;
 #endif
 
     return roughness > c_MinRoughness ? roughness : c_MinRoughness;
@@ -592,7 +592,7 @@ void main()
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord).rgb);
+    total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord).rgb + uSurfaceEmissiveColour);
 #else
     total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour);
 #endif
@@ -610,5 +610,6 @@ void main()
         discard;
     }
 #endif //SHADOWCASTER_ALPHA
+    gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
 #endif //SHADOWCASTER
 }

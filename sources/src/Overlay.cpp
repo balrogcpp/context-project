@@ -33,11 +33,11 @@ Overlay::~Overlay() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Loop(float time) {
-  caption_->text(std::to_string(1.0 / time));
+  caption_->text((1.0 / time));
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Create() {
-  atlas_ = new Silverback();
+  atlas_ = std::make_unique<Silverback>();
   atlas_->loadAtlas("dejavu");
   auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
   screen_ = atlas_->createScreen(viewport, "dejavu");
@@ -59,6 +59,14 @@ void Overlay::Create() {
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Text(const std::string &str) {
   caption_->text(str);
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Overlay::Show() {
+  screen_->show();
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Overlay::Hide() {
+  screen_->hide();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Reset() {

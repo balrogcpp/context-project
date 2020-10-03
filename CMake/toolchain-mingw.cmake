@@ -22,6 +22,7 @@
 
 set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
+set(CMAKE_CROSSCOMPILING ON)
 
 # which compilers to use for C and C++
 # cross compilers to use for C, C++ and Fortran

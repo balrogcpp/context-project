@@ -47,9 +47,9 @@ Poco::Mutex OgreOggSound::OgreOggSoundManager::mSoundMutex;
 Poco::Mutex OgreOggSound::OgreOggSoundManager::mResourceGroupNameMutex;
 #   else
 std::thread *OgreOggSound::OgreOggSoundManager::mUpdateThread = 0;
-std::recursive_mutex OgreOggSound::OgreOggSoundManager::mMutex;
-std::recursive_mutex OgreOggSound::OgreOggSoundManager::mSoundMutex;
-std::recursive_mutex OgreOggSound::OgreOggSoundManager::mResourceGroupNameMutex;
+std::mutex OgreOggSound::OgreOggSoundManager::mMutex;
+std::mutex OgreOggSound::OgreOggSoundManager::mSoundMutex;
+std::mutex OgreOggSound::OgreOggSoundManager::mResourceGroupNameMutex;
 #	endif
 bool OgreOggSound::OgreOggSoundManager::mShuttingDown = false;
 #endif
@@ -444,7 +444,6 @@ bool OgreOggSoundManager::init(const std::string &deviceName,
   mUpdateThread->start(*mUpdater);
   Ogre::LogManager::getSingleton().logMessage("*** --- Using POCO threads for streaming", Ogre::LML_NORMAL);
 #	else
-//  mUpdateThread = OGRE_NEW_T(std::thread, Ogre::MEMCATEGORY_GENERAL)(std::function0<void>(&OgreOggSoundManager::threadUpdate, this));
   mUpdateThread = OGRE_NEW_T(std::thread, Ogre::MEMCATEGORY_GENERAL)(OgreOggSoundManager::threadUpdate);
   Ogre::LogManager::getSingleton().logMessage("*** --- Using BOOST threads for streaming", Ogre::LML_NORMAL);
 #	endif
@@ -2311,7 +2310,7 @@ void OgreOggSoundManager::_releaseSoundImpl(OgreOggISound *sound) {
   mSoundMap.erase(i);
 
   // Delete sound
-  OGRE_DELETE_T(sound, OgreOggISound, Ogre::MEMCATEGORY_GENERAL);
+  delete sound;
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggSoundManager::_destroySoundImpl(OgreOggISound *sound) {
@@ -2336,8 +2335,8 @@ void OgreOggSoundManager::_destroyListener() {
 #	endif
 #endif
 
-  OGRE_DELETE_T(mListener, OgreOggListener, Ogre::MEMCATEGORY_GENERAL);
-  mListener = 0;
+  delete mListener;
+  mListener = nullptr;
 }
 /*/////////////////////////////////////////////////////////////////*/
 Ogre::Real OgreOggSoundManager::_calculateDistanceToListener(OgreOggISound *sound, const Ogre::Vector3 &listenerPos) {

@@ -23,18 +23,35 @@
 
 #include "pcheader.h"
 #include "Forest.h"
-#include "PbrUtils.h"
+#include "ShaderUtils.h"
 using namespace Forests;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 Forest::Forest() {}
-Forest::~Forest() {}
+Forest::~Forest() {
+  Clean();
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Forest::Clean() {
+  for (auto it : pgeometry_)
+    delete it;
+  for (auto it : ploaders_)
+    delete it;
+  for (auto it : gpages_)
+    delete it;
+
+  pgeometry_.clear();
+  ploaders_.clear();
+  gpages_.clear();
+}
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::Create() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 50);
+  pgeometry_.push_back(grass);
   grass->addDetailLevel<GrassPage>(100);//Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
+  ploaders_.push_back(grassLoader);
   grass->setPageLoader(grassLoader);
   if (heigh_func_)
     grassLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z) - 0.1); });
@@ -53,6 +70,7 @@ void Forest::Create() {
   layer->setDensityMap("terrain2.png");
   layer->setColorMap("terrain2.png");
   grass->update();
+
   UpdatePbrParams("GrassCustom");
   UpdatePbrShadowReceiver("GrassCustom");
 
@@ -85,8 +103,10 @@ void Forest::Create() {
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *trees = new PagedGeometry(scene->getCamera("Default"), 100);
-  trees->addDetailLevel<BatchPage>(100, 50);
+  pgeometry_.push_back(trees);
+  trees->addDetailLevel<BatchPage>(100, 20);
   auto *treeLoader = new TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
+  ploaders_.push_back(treeLoader);
   if (heigh_func_)
     treeLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z) - 0.1); });
   trees->setPageLoader(treeLoader);

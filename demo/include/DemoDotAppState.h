@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include "Renderer.h"
 #include "AppState.h"
 #include "Forest.h"
@@ -36,7 +35,7 @@ class DemoDotAppState : public xio::AppState {
 
     void Create() final;
     void Clear() final;
-    void Loop() final;
+    void Loop(float time) final;
 
     void KeyDown(SDL_Keycode sym) final;
     static void Callback(int a, int b);

@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include <OgreGpuProgramParams.h>
 #include <OgreMaterial.h>
 #include <OgreVector.h>
@@ -106,6 +105,9 @@ inline void AddGpuConstParameter(const Ogre::GpuProgramParametersSharedPtr &para
 
 void UpdatePbrParams(Ogre::MaterialPtr material);
 void UpdatePbrParams(const std::string &material);
+
+void UpdatePbrIbl(Ogre::MaterialPtr material);
+void UpdatePbrIbl(const std::string &material);
 
 void UpdatePbrShadowReceiver(Ogre::MaterialPtr material);
 void UpdatePbrShadowReceiver(const std::string &material);

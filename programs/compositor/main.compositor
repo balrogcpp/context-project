@@ -107,7 +107,7 @@ compositor Context/FilterY/SSAO
         {
             pass render_quad
             {
-                material Context/SSAO/filter5Y
+                material Context/SSAO/filtery
             }
         }
     }
@@ -123,7 +123,7 @@ compositor Context/FilterX/SSAO
         {
             pass render_quad
             {
-                material Context/SSAO/filter5X
+                material Context/SSAO/filterx
             }
         }
     }
@@ -139,7 +139,7 @@ compositor Context/FilterY/Bloom
         {
             pass render_quad
             {
-                material Context/Bloom/filter5Y
+                material Context/Bloom/filtery
             }
         }
     }
@@ -155,7 +155,7 @@ compositor Context/FilterX/Bloom
         {
             pass render_quad
             {
-                material Context/Bloom/filter5X
+                material Context/Bloom/filterx
             }
         }
     }

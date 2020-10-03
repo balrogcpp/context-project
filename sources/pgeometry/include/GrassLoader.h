@@ -166,7 +166,7 @@ class GrassLoader : public PageLoader {
   the event that your height function needs extra contextual data.
   */
   void setHeightFunction(Ogre::Real (*heightFunction)(Ogre::Real x, Ogre::Real z, void *userData),
-                         void *userData = NULL) {
+                         void *userData = nullptr) {
     this->heightFunction = heightFunction;
     heightFunctionUserData = userData;
   }
