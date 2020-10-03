@@ -301,11 +301,12 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   /// Create the camera
   auto *pCamera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
-  camera_.reset();
-  camera_ = std::make_unique<Camera>();
-  io_->RegObserver(camera_.get());
-  camera_->SetStyle(Camera::FPS);
+  if (!camera_) {
+    camera_ = std::make_unique<Camera>();
+    io_->RegObserver(camera_.get());
+  }
   camera_->RegCamera(parent, pCamera);
+  camera_->SetStyle(Camera::FPS);
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *actor = scene->createEntity("Actor", "Icosphere.mesh");

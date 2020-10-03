@@ -41,19 +41,20 @@ class xml_node;
 namespace Ogre {
 class SceneManager;
 class SceneNode;
-class Terrain;
+class Landscape;
 class TerrainGroup;
 class TerrainGlobalOptions;
 class VertexDeclaration;
 }
 
 namespace xio {
+class Camera;
+class JsonConfigurator;
 class YamlConfigurator;
 class Renderer;
 class Physics;
 class Sound;
 class Overlay;
-class DotSceneLoaderB;
 
 class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB>, public Ogre::SceneLoader {
  public:
