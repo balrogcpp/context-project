@@ -75,32 +75,4 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
   Ogre::MaterialPtr ref_mat_;
   Ogre::MaterialPtr ref_mat2_;
 };
-
-//----------------------------------------------------------------------------------------------------------------------
-class SBufferSchemeHandler : public Ogre::MaterialManager::Listener {
- public:
-  SBufferSchemeHandler() {
-    ref_mat_ = Ogre::MaterialManager::getSingleton().getByName("Context/sbuffer");
-    ref_mat_->load();
-  }
-
-  void Update(Ogre::Matrix4 mvp_prev) {
-//    parameters_->setNamedConstant("cWorldViewProjPrev", mvp_prev);
-  }
-
-  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex,
-                                        const Ogre::String &schemeName,
-                                        Ogre::Material *originalMaterial,
-                                        unsigned short lodIndex,
-                                        const Ogre::Renderable *rend) final {
-    Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
-    gBufferTech->setSchemeName(schemeName);
-    Ogre::Pass *gbufPass = gBufferTech->createPass();
-    *gbufPass = *ref_mat_->getTechnique(0)->getPass(0);
-    return gBufferTech;
-  }
-
- private:
-  Ogre::MaterialPtr ref_mat_;
-};
 }

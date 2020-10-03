@@ -23,7 +23,7 @@
 #pragma once
 #include "Component.h"
 #include "Singleton.h"
-#include "CompositorHelpers.h"
+#include "CompositorHelper.h"
 #include <OgreMatrix4.h>
 #include <OgreMaterial.h>
 #include <map>

@@ -23,7 +23,7 @@
 #include "pcheader.h"
 #include "Compositor.h"
 #include "Exception.h"
-#include "CompositorHelpers.h"
+#include "CompositorHelper.h"
 
 namespace xio {
 Compositor::~Compositor() noexcept {}
