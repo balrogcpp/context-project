@@ -47,6 +47,18 @@ if (ANDROID)
     set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
 
+externalproject_add(target-jemalloc
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/jemalloc/jemalloc.git
+                    GIT_TAG 5.2.1
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./autogen.sh
+                    BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./configure --disable-stats --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
+                    )
+
 externalproject_add(target-cpuinfo
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -527,6 +539,8 @@ externalproject_add(target-sol
                     )
 if (ANDROID)
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
+else ()
+    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
 endif ()
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
@@ -650,6 +664,7 @@ if (MINGW)
     list(APPEND STATIC_LIBRARIES uuid)
     list(APPEND STATIC_LIBRARIES setupapi)
     list(APPEND STATIC_LIBRARIES hid)
+    list(APPEND STATIC_LIBRARIES jemalloc)
 elseif (UNIX AND NOT ANDROID)
     list(APPEND STATIC_LIBRARIES z)
     list(APPEND STATIC_LIBRARIES OpenGL)
@@ -657,6 +672,7 @@ elseif (UNIX AND NOT ANDROID)
     list(APPEND STATIC_LIBRARIES X11)
     list(APPEND STATIC_LIBRARIES Xrandr)
     list(APPEND STATIC_LIBRARIES dl)
+    list(APPEND STATIC_LIBRARIES jemalloc)
 elseif (ANDROID)
     list(APPEND STATIC_LIBRARIES z.a)
     list(APPEND STATIC_LIBRARIES log)
