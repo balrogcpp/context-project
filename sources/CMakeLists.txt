@@ -87,7 +87,7 @@ set(CONTEXT_HEADERS
     include/Storage.h
     include/RtssUtils.h
     include/Landscape.h
-    include/CompositorHelpers.h
+    include/CompositorHelper.h
     include/ShadowSettings.h
     include/YamlConfigurator.h
     include/ComponentLocator.h

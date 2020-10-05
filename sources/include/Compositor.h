@@ -23,7 +23,7 @@
 #pragma once
 #include "Component.h"
 #include "Singleton.h"
-#include "CompositorHelpers.h"
+#include "CompositorHelper.h"
 #include <OgreMatrix4.h>
 #include <OgreMaterial.h>
 #include <map>
@@ -55,7 +55,6 @@ class Compositor : public Component, public Singleton<Compositor> {
  private:
   std::map<std::string, bool> effects_;
   GBufferSchemeHandler *gbuff_handler_ = nullptr;
-  SBufferSchemeHandler *sbuff_handler_ = nullptr;
   Ogre::Camera *camera_ = nullptr;
   Ogre::Viewport *viewport_ = nullptr;
   Ogre::Matrix4 mvp_;

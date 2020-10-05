@@ -181,19 +181,23 @@ void Application::Event(const SDL_Event &evt) {
       if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         suspend_ = true;
         renderer_->GetWindow().SetCursorStatus(true, false, false);
+        cur_state_->Pause();
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
         renderer_->GetWindow().SetCursorStatus(false, true, true);
+        cur_state_->Unpause();
       }
     } else {
       if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
         suspend_ = true;
         renderer_->GetWindow().SetCursorStatus(true, false, false);
+        cur_state_->Pause();
       } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
           || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
         suspend_ = false;
         renderer_->GetWindow().SetCursorStatus(false, true, true);
+        cur_state_->Unpause();
       }
     }
   }

@@ -35,6 +35,8 @@ class DemoDotAppState : public xio::AppState {
 
     void Create() final;
     void Clear() final;
+    void Pause() final {}
+    void Unpause() final {}
     void Loop(float time) final;
 
     void KeyDown(SDL_Keycode sym) final;

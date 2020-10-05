@@ -27,7 +27,7 @@
 #include "Component.h"
 #include "ComponentLocator.h"
 #include "Compositor.h"
-#include "CompositorHelpers.h"
+#include "CompositorHelper.h"
 #include "CubeMapCamera.h"
 #include "DesktopIcon.h"
 #include "DotSceneLoaderB.h"

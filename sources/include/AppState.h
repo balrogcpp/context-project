@@ -54,6 +54,8 @@ class AppState
 
   virtual void Create() = 0;
   virtual void Clear() = 0;
+  virtual void Pause() = 0;
+  virtual void Unpause() = 0;
   virtual void Loop(float time) = 0;
 
   bool IsDirty() {

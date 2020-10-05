@@ -23,7 +23,7 @@
 #include "pcheader.h"
 #include "Compositor.h"
 #include "Exception.h"
-#include "CompositorHelpers.h"
+#include "CompositorHelper.h"
 
 namespace xio {
 Compositor::~Compositor() noexcept {}
@@ -37,22 +37,17 @@ Compositor::Compositor() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Loop(float time) {
-  if (effects_["blur"]) {
-    mvp_prev_ = mvp_;
-    mvp_ = camera_->getProjectionMatrix() * camera_->getViewMatrix();
-    sbuff_handler_->Update(mvp_prev_);
-  }
+//  if (effects_["blur"]) {
+//    mvp_prev_ = mvp_;
+//    mvp_ = camera_->getProjectionMatrix() * camera_->getViewMatrix();
+//    sbuff_handler_->Update(mvp_prev_);
+//  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Init() {
   if (effects_["ssao"]) {
     gbuff_handler_ = new GBufferSchemeHandler();
     Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_, "GBuffer");
-  }
-
-  if (effects_["blur"]) {
-    sbuff_handler_ = new SBufferSchemeHandler();
-    Ogre::MaterialManager::getSingleton().addListener(sbuff_handler_, "SBuffer");
   }
 
   if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/Main"))

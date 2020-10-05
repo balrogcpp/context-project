@@ -435,8 +435,8 @@ externalproject_add(target-ogre1
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-zzip target-freetype target-pugixml target-sdl
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v1.12.8
+                    GIT_REPOSITORY https://github.com/balrogcpp/ogre.git #patch will come with v1.12.10
+                    GIT_TAG MovableObjectFactory-patch
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -537,6 +537,7 @@ externalproject_add(target-sol
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     )
+
 if (ANDROID)
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
 else ()
