@@ -5,8 +5,8 @@ window_high: 768
 window_fullscreen: false
 global_verbose_enable: true
 global_log_enable: true
-compositor_use_bloom: true
-compositor_use_ssao: true
+compositor_use_bloom: false
+compositor_use_ssao: false
 global_target_fps: 60
 global_lock_fps: true
 graphics_vsync: true

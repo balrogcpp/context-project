@@ -37,16 +37,7 @@ compositor Context/GBuffer
 {
     technique
     {
-        // GBuffer enconding: --------------------------------------------------
-        // mrt0: rgba --> unused in this sample (plain white, (1, 1, 1, 1))
-        // mrt1: xyz --> normals, w --> normalized linear depth [0, 1]
-        // mrt2: xyz --> position in view space
-        //
-        // use a better packing of variables in the mrt to (possibly) increase
-        // performance!
-        // ---------------------------------------------------------------------
         texture mrt target_width target_height PF_FLOAT16_R chain_scope
-        //texture mrt target_width target_height PF_FLOAT16_R PF_FLOAT16_GR chain_scope
 
         target mrt
         {
