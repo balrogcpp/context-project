@@ -101,7 +101,7 @@ externalproject_add(target-bullet3
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
-                    GIT_TAG 2.89
+                    GIT_TAG 3.05
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
