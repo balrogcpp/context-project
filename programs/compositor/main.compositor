@@ -20,7 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-compositor Context/Main
+compositor Main
 {
     technique
     {
@@ -33,7 +33,7 @@ compositor Context/Main
     }
 }
 
-compositor Context/GBuffer
+compositor GBuffer
 {
     technique
     {
@@ -56,7 +56,7 @@ compositor Context/GBuffer
     }
 }
 
-compositor Context/SSAO
+compositor SSAO
 {
     technique
     {
@@ -66,13 +66,13 @@ compositor Context/SSAO
         {
             pass render_quad
             {
-                material Context/SsaoCrytek
+                material SsaoCrytek
             }
         }
     }
 }
 
-compositor Context/Bloom
+compositor Bloom
 {
     technique
     {
@@ -82,77 +82,77 @@ compositor Context/Bloom
         {
             pass render_quad
             {
-                material Context/bloom
+                material bloom
             }
         }
     }
 }
 
-compositor Context/FilterY/SSAO
+compositor FilterY/SSAO
 {
     technique
     {
-        texture_ref ssao Context/SSAO ssao
+        texture_ref ssao SSAO ssao
 
         target ssao
         {
             pass render_quad
             {
-                material Context/SSAO/filtery
+                material SSAO/filtery
             }
         }
     }
 }
 
-compositor Context/FilterX/SSAO
+compositor FilterX/SSAO
 {
     technique
     {
-        texture_ref ssao Context/SSAO ssao
+        texture_ref ssao SSAO ssao
 
         target ssao
         {
             pass render_quad
             {
-                material Context/SSAO/filterx
+                material SSAO/filterx
             }
         }
     }
 }
 
-compositor Context/FilterY/Bloom
+compositor FilterY/Bloom
 {
     technique
     {
-        texture_ref bloom Context/Bloom bloom
+        texture_ref bloom Bloom bloom
 
         target bloom
         {
             pass render_quad
             {
-                material Context/Bloom/filtery
+                material Bloom/filtery
             }
         }
     }
 }
 
-compositor Context/FilterX/Bloom
+compositor FilterX/Bloom
 {
     technique
     {
-        texture_ref bloom Context/Bloom bloom
+        texture_ref bloom Bloom bloom
 
         target bloom
         {
             pass render_quad
             {
-                material Context/Bloom/filterx
+                material Bloom/filterx
             }
         }
     }
 }
 
-compositor Context/Modulate
+compositor Modulate
 {
     technique
     {
@@ -160,13 +160,13 @@ compositor Context/Modulate
         {
             pass render_quad
             {
-                material Context/Modulate
+                material Modulate
             }
         }
     }
 }
 
-compositor Context/Modulate/SSAO
+compositor Modulate/SSAO
 {
     technique
     {
@@ -174,13 +174,13 @@ compositor Context/Modulate/SSAO
         {
             pass render_quad
             {
-                material Context/Modulate/SSAO
+                material Modulate/SSAO
             }
         }
     }
 }
 
-compositor Context/Modulate/Bloom
+compositor Modulate/Bloom
 {
     technique
     {
@@ -188,13 +188,13 @@ compositor Context/Modulate/Bloom
         {
             pass render_quad
             {
-                material Context/Modulate/Bloom
+                material Modulate/Bloom
             }
         }
     }
 }
 
-compositor Context/Modulate/Bloom/SSAO
+compositor Modulate/Bloom/SSAO
 {
     technique
     {
@@ -202,7 +202,7 @@ compositor Context/Modulate/Bloom/SSAO
         {
             pass render_quad
             {
-                material Context/Modulate/Bloom/SSAO
+                material Modulate/Bloom/SSAO
             }
         }
     }

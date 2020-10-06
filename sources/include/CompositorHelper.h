@@ -29,10 +29,10 @@ namespace xio {
 class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   GBufferSchemeHandler() {
-    ref_mat_ = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer");
+    ref_mat_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer");
     ref_mat_->load();
 
-    ref_mat2_ = Ogre::MaterialManager::getSingleton().getByName("Context/gbuffer_alpha");
+    ref_mat2_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer_alpha");
     ref_mat2_->load();
   }
 

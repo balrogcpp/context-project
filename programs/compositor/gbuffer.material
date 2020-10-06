@@ -54,7 +54,7 @@ fragment_program gbuffer_fp unified
 	delegate gbuffer_fp_glsles
 }
 
-material Context/gbuffer
+material gbuffer
 {
     technique
     {
@@ -112,7 +112,7 @@ fragment_program gbuffer_alpha_fp unified
 	delegate gbuffer_alpha_fp_glsles
 }
 
-material Context/gbuffer_alpha
+material gbuffer_alpha
 {
     technique
     {
@@ -174,7 +174,7 @@ fragment_program gbuffer_disable_fp unified
 	preprocessor_defines DISABLE
 }
 
-material Context/gbuffer_disable
+material gbuffer_disable
 {
     technique
     {

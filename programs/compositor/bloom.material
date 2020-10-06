@@ -20,20 +20,20 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-fragment_program Context/bloom_fsGLSL glsl
+fragment_program bloom_fsGLSL glsl
 {
 	source bloom.frag
 }
 
-fragment_program Context/bloom_fsGLSLES glsles
+fragment_program bloom_fsGLSLES glsles
 {
 	source bloom.frag
 }
 
-fragment_program Context/bloom_fs unified
+fragment_program bloom_fs unified
 {
-	delegate Context/bloom_fsGLSL
-	delegate Context/bloom_fsGLSLES
+	delegate bloom_fsGLSL
+	delegate bloom_fsGLSLES
 
     default_params
     {
@@ -41,7 +41,7 @@ fragment_program Context/bloom_fs unified
     }
 }
 
-material Context/bloom
+material bloom
 {
 	technique
 	{
@@ -52,11 +52,11 @@ material Context/bloom
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/bloom_fs {}
+			fragment_program_ref bloom_fs {}
 
 			texture_unit
             {
-                content_type compositor Context/Main scene
+                content_type compositor Main scene
                 filtering none
             }
 		}

@@ -20,20 +20,20 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-fragment_program Context/filtery_fsGLSL glsl
+fragment_program filtery_fsGLSL glsl
 {
 	source filtery.frag
 }
 
-fragment_program Context/filtery_fsGLSLES glsles
+fragment_program filtery_fsGLSLES glsles
 {
 	source filtery.frag
 }
 
-fragment_program Context/filtery_fs unified
+fragment_program filtery_fs unified
 {
-	delegate Context/filtery_fsGLSL
-	delegate Context/filtery_fsGLSLES
+	delegate filtery_fsGLSL
+	delegate filtery_fsGLSLES
 
     default_params
     {
@@ -42,7 +42,7 @@ fragment_program Context/filtery_fs unified
     }
 }
 
-material Context/SSAO/filtery
+material SSAO/filtery
 {
 	technique
 	{
@@ -53,31 +53,31 @@ material Context/SSAO/filtery
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filtery_fs {}
+			fragment_program_ref filtery_fs {}
 
 			texture_unit
             {
-                content_type compositor Context/SSAO ssao
+                content_type compositor SSAO ssao
                 filtering linear linear none
             }
 		}
 	}
 }
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program Context/filterx_fsGLSL glsl
+fragment_program filterx_fsGLSL glsl
 {
 	source filterx.frag
 }
 
-fragment_program Context/filterx_fsGLSLES glsles
+fragment_program filterx_fsGLSLES glsles
 {
 	source filterx.frag
 }
 
-fragment_program Context/filterx_fs unified
+fragment_program filterx_fs unified
 {
-	delegate Context/filterx_fsGLSL
-	delegate Context/filterx_fsGLSLES
+	delegate filterx_fsGLSL
+	delegate filterx_fsGLSLES
 
     default_params
     {
@@ -86,7 +86,7 @@ fragment_program Context/filterx_fs unified
     }
 }
 
-material Context/SSAO/filterx
+material SSAO/filterx
 {
 	technique
 	{
@@ -97,11 +97,11 @@ material Context/SSAO/filterx
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filterx_fs {}
+			fragment_program_ref filterx_fs {}
 
 			texture_unit
             {
-                content_type compositor Context/SSAO ssao
+                content_type compositor SSAO ssao
                 filtering linear linear none
             }
 		}
@@ -109,7 +109,7 @@ material Context/SSAO/filterx
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-material Context/Bloom/filtery
+material Bloom/filtery
 {
 	technique
 	{
@@ -120,18 +120,18 @@ material Context/Bloom/filtery
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filtery_fs {}
+			fragment_program_ref filtery_fs {}
 
 			texture_unit
             {
-                content_type compositor Context/Bloom bloom
+                content_type compositor Bloom bloom
                 filtering linear linear none
             }
 		}
 	}
 }
 //----------------------------------------------------------------------------------------------------------------------
-material Context/Bloom/filterx
+material Bloom/filterx
 {
 	technique
 	{
@@ -142,11 +142,11 @@ material Context/Bloom/filterx
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filterx_fs {}
+			fragment_program_ref filterx_fs {}
 
 			texture_unit
             {
-                content_type compositor Context/Bloom bloom
+                content_type compositor Bloom bloom
                 filtering linear linear none
             }
 		}

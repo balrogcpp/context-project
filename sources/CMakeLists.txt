@@ -100,7 +100,7 @@ set(CONTEXT_HEADERS
     include/xio_deps.h
     include/LuaServer.h
     include/LuaConsole.h
-    )
+    include/Sinbad.h)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}

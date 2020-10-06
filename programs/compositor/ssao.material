@@ -20,20 +20,20 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-fragment_program Context/Crytek_fp_glsl glsl
+fragment_program Crytek_fp_glsl glsl
 {
     source crytek.frag
 }
 
-fragment_program Context/Crytek_fp_glsles glsles
+fragment_program Crytek_fp_glsles glsles
 {
     source crytek.frag
 }
 
-fragment_program Context/Crytek_fp unified
+fragment_program Crytek_fp unified
 {
-	delegate Context/Crytek_fp_glsl
-	delegate Context/Crytek_fp_glsles
+	delegate Crytek_fp_glsl
+	delegate Crytek_fp_glsles
 
 	default_params
 	{
@@ -45,7 +45,7 @@ fragment_program Context/Crytek_fp unified
 	}
 }
 
-material Context/SsaoCrytek
+material SsaoCrytek
 {
     technique
     {
@@ -55,7 +55,7 @@ material Context/SsaoCrytek
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-            fragment_program_ref Context/Crytek_fp
+            fragment_program_ref Crytek_fp
             {
 				param_named cSampleInScreenspace float 0
                 param_named cSampleLengthScreenSpace float 0.06
@@ -67,7 +67,7 @@ material Context/SsaoCrytek
 
             texture_unit
             {
-                content_type compositor Context/GBuffer mrt 0
+                content_type compositor GBuffer mrt 0
                 tex_address_mode clamp
                 filtering none
             }

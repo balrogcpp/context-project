@@ -42,7 +42,7 @@ fragment_program Modulate_fs unified
 	}
 }
 
-material Context/Modulate
+material Modulate
 {
 	technique
 	{
@@ -57,7 +57,7 @@ material Context/Modulate
 
 			texture_unit
             {
-                content_type compositor Context/Main scene
+                content_type compositor Main scene
                 filtering none
             }
 		}
@@ -90,7 +90,7 @@ fragment_program Modulate_Bloom_fs unified
 	}
 }
 
-material Context/Modulate/Bloom
+material Modulate/Bloom
 {
 	technique
 	{
@@ -105,13 +105,13 @@ material Context/Modulate/Bloom
 
 			texture_unit
             {
-                content_type compositor Context/Main scene
+                content_type compositor Main scene
                 filtering none
             }
 
 			texture_unit
             {
-                content_type compositor Context/Bloom bloom
+                content_type compositor Bloom bloom
                 filtering none
             }
 		}
@@ -145,7 +145,7 @@ fragment_program Modulate_SSAO_fs unified
 	}
 }
 
-material Context/Modulate/SSAO
+material Modulate/SSAO
 {
 	technique
 	{
@@ -160,13 +160,13 @@ material Context/Modulate/SSAO
 
 			texture_unit
             {
-                content_type compositor Context/Main scene
+                content_type compositor Main scene
                 filtering none
             }
 
 			texture_unit
             {
-                content_type compositor Context/SSAO ssao
+                content_type compositor SSAO ssao
                 filtering none
             }
 		}
@@ -200,7 +200,7 @@ fragment_program Modulate_BLOOM_SSAO_fs unified
 	}
 }
 
-material Context/Modulate/Bloom/SSAO
+material Modulate/Bloom/SSAO
 {
 	technique
 	{
@@ -215,19 +215,19 @@ material Context/Modulate/Bloom/SSAO
 
 			texture_unit
             {
-                content_type compositor Context/Main scene
+                content_type compositor Main scene
                 filtering linear linear none
             }
 
 			texture_unit
             {
-                content_type compositor Context/Bloom bloom
+                content_type compositor Bloom bloom
                 filtering linear linear none
             }
 
 			texture_unit
             {
-                content_type compositor Context/SSAO ssao
+                content_type compositor SSAO ssao
                 filtering linear linear none
             }
 		}

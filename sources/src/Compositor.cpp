@@ -50,57 +50,57 @@ void Compositor::Init() {
     Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_, "GBuffer");
   }
 
-  if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/Main"))
-    Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Context/Main", true);
+  if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Main"))
+    Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Main", true);
   else
-    Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Context/Main compositor\n");
+    Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Main compositor\n");
 
   if (effects_["ssao"]) {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/GBuffer"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Context/GBuffer", true);
+    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "GBuffer"))
+      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "GBuffer", true);
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
   }
 
   if (effects_["bloom"]) {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/Bloom"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Context/Bloom", true);
+    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Bloom"))
+      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Bloom", true);
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Bloom compositor\n");
 
     for (int i = 0; i < 1; i++) {
-      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/FilterY/Bloom"))
-        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Context/FilterY/Bloom", true);
+      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "FilterY/Bloom"))
+        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "FilterY/Bloom", true);
       else
         Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
 
-      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/FilterX/Bloom"))
-        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Context/FilterX/Bloom", true);
+      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "FilterX/Bloom"))
+        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "FilterX/Bloom", true);
       else
         Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
     }
   }
 
   if (effects_["ssao"]) {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/SSAO"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Context/SSAO", true);
+    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "SSAO"))
+      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "SSAO", true);
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
 
     for (int i = 0; i < 1; i++) {
-      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/FilterY/SSAO"))
-        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Context/FilterY/SSAO", true);
+      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "FilterY/SSAO"))
+        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "FilterY/SSAO", true);
       else
         Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
 
-      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Context/FilterX/SSAO"))
-        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Context/FilterX/SSAO", true);
+      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "FilterX/SSAO"))
+        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "FilterX/SSAO", true);
       else
         Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
     }
   }
 
-  std::string modulate_compositor = "Context/Modulate";
+  std::string modulate_compositor = "Modulate";
   modulate_compositor += effects_["bloom"] ? "/Bloom" : "";
   modulate_compositor += effects_["ssao"] ? "/SSAO" : "";
 
