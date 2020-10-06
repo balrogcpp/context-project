@@ -20,15 +20,51 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-compositor Main
+compositor Bloom
 {
     technique
     {
-        texture scene target_width target_height PF_FLOAT16_RGB chain_scope
+        texture bloom target_width_scaled 0.15 target_height_scaled 0.15 PF_FLOAT16_RGB chain_scope
 
-        target scene
+        target bloom
         {
-            input previous
+            pass render_quad
+            {
+                material bloom
+            }
+        }
+    }
+}
+
+
+compositor FilterY/Bloom
+{
+    technique
+    {
+        texture_ref bloom Bloom bloom
+
+        target bloom
+        {
+            pass render_quad
+            {
+                material Bloom/filtery
+            }
+        }
+    }
+}
+
+compositor FilterX/Bloom
+{
+    technique
+    {
+        texture_ref bloom Bloom bloom
+
+        target bloom
+        {
+            pass render_quad
+            {
+                material Bloom/filterx
+            }
         }
     }
 }

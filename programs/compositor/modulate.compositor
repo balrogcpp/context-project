@@ -20,15 +20,58 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-compositor Main
+compositor Modulate
 {
     technique
     {
-        texture scene target_width target_height PF_FLOAT16_RGB chain_scope
-
-        target scene
+        target_output
         {
-            input previous
+            pass render_quad
+            {
+                material Modulate
+            }
+        }
+    }
+}
+
+compositor Modulate/SSAO
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material Modulate/SSAO
+            }
+        }
+    }
+}
+
+compositor Modulate/Bloom
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material Modulate/Bloom
+            }
+        }
+    }
+}
+
+compositor Modulate/Bloom/SSAO
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material Modulate/Bloom/SSAO
+            }
         }
     }
 }
