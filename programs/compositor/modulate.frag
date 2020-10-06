@@ -75,7 +75,6 @@ uniform sampler2D BloomSampler;
 #ifdef SSAO
 uniform sampler2D SsaoSampler;
 #endif
-#define GAMMA
 void main()
 {
     vec3 scene = texture2D(SceneSampler, oUv0).rgb;
@@ -85,10 +84,8 @@ void main()
 #ifdef BLOOM
     scene += (0.1 * texture2D(BloomSampler, oUv0).rgb);
 #endif
-#ifdef GAMMA
     const float gamma = 2.2;
     vec3 mapped = vec3(1.0) - exp(-scene * exposure);
     scene = pow(mapped, vec3(1.0 / gamma));
-#endif
     gl_FragColor = vec4(scene, 1.0);
 }
