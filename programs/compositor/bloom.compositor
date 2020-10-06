@@ -36,7 +36,6 @@ compositor Bloom
     }
 }
 
-
 compositor FilterY/Bloom
 {
     technique

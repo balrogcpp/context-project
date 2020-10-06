@@ -119,7 +119,6 @@ material Modulate/Bloom
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
 fragment_program Modulate_SSAO_fsGLSL glsl
 {
 	source modulate.frag

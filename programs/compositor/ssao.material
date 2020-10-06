@@ -22,12 +22,12 @@
 
 fragment_program Crytek_fp_glsl glsl
 {
-    source crytek.frag
+    source ssao.frag
 }
 
 fragment_program Crytek_fp_glsles glsles
 {
-    source crytek.frag
+    source ssao.frag
 }
 
 fragment_program Crytek_fp unified

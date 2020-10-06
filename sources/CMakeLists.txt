@@ -150,7 +150,6 @@ set(CONTEXT_SOURCES
     src/TerrainMaterialGeneratorB.cpp
     src/Gorilla.cpp
     src/Overlay.cpp
-    src/ShaderUtils.cpp
     src/Landscape.cpp
     src/Sound.cpp
     )

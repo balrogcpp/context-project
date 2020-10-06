@@ -80,18 +80,15 @@ void main()
 {
     vec3 scene = texture2D(SceneSampler, oUv0).rgb;
 #ifdef SSAO
-    float ssao = texture2D(SsaoSampler, oUv0).r;
-    scene *= ssao;
+    scene *= texture2D(SsaoSampler, oUv0).r;
 #endif
 #ifdef BLOOM
-    vec3 bloom = texture2D(BloomSampler, oUv0).rgb;
-    scene += (0.1 * bloom);
+    scene += (0.1 * texture2D(BloomSampler, oUv0).rgb);
 #endif
 #ifdef GAMMA
     const float gamma = 2.2;
     vec3 mapped = vec3(1.0) - exp(-scene * exposure);
     scene = pow(mapped, vec3(1.0 / gamma));
 #endif
-
     gl_FragColor = vec4(scene, 1.0);
 }
