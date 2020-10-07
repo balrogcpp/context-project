@@ -47,6 +47,7 @@ material Output
 			texture_unit
             {
                 content_type compositor Main scene
+                tex_address_mode clamp
                 filtering linear linear none
             }
 		}

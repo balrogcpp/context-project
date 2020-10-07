@@ -103,6 +103,7 @@ material Ssao/filtery
 			texture_unit
             {
                 content_type compositor Ssao ssao
+                tex_address_mode clamp
                 filtering linear linear none
             }
 		}
@@ -125,6 +126,7 @@ material Ssao/filterx
 			texture_unit
             {
                 content_type compositor Ssao ssao
+                tex_address_mode clamp
                 filtering linear linear none
             }
 		}

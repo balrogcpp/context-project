@@ -46,6 +46,7 @@ material bloom
 			texture_unit
             {
                 content_type compositor Main scene
+                tex_address_mode clamp
                 filtering none
             }
 		}
@@ -85,6 +86,7 @@ material Bloom/filtery
 			texture_unit
             {
                 content_type compositor Bloom bloom
+                tex_address_mode clamp
                 filtering linear linear none
             }
 		}
@@ -107,6 +109,7 @@ material Bloom/filterx
 			texture_unit
             {
                 content_type compositor Bloom bloom
+                tex_address_mode clamp
                 filtering linear linear none
             }
 		}
@@ -173,12 +176,14 @@ material Modulate/Bloom
 			texture_unit
             {
                 content_type compositor Main scene
+                tex_address_mode clamp
                 filtering none
             }
 
 			texture_unit
             {
                 content_type compositor Bloom bloom
+                tex_address_mode clamp
                 filtering none
             }
 		}

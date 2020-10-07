@@ -28,7 +28,6 @@ fragment_program motion_blur_fs glsl glsles
     {
         param_named SceneSampler int 0
         param_named uTexMotion int 1
-        param_named_auto uFps fps
     }
 }
 
@@ -48,11 +47,13 @@ material motion_blur
 			texture_unit
             {
                 content_type compositor Main scene
+                tex_address_mode mirror
                 filtering none
             }
 			texture_unit
             {
                 content_type compositor GBuffer mrt 1
+                tex_address_mode mirror
                 filtering none
             }
 		}
