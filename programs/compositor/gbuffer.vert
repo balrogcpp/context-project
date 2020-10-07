@@ -69,12 +69,13 @@ in vec4 vertex;
 #ifdef ALPHA
 in vec2 uv0;
 #endif
+uniform mat4 uModelMatrix;
 uniform mat4 cWorldViewProj;
 uniform mat4 cWorldViewProjPrev;
 uniform mat4 cWorldView;
 out vec3 oViewPos;
 out vec4 vPosition;
-//out vec4 vPrevPosition;
+out vec4 vPrevPosition;
 #ifdef ALPHA
 out vec2 vUV;
 #endif
@@ -85,6 +86,6 @@ void main()
     vUV = uv0;
 #endif
     vPosition = cWorldViewProj * vertex;
-//    vPrevPosition = cWorldViewProjPrev * vertex;
+    vPrevPosition = (cWorldViewProjPrev * uModelMatrix) * vertex;
     gl_Position = vPosition;
 }

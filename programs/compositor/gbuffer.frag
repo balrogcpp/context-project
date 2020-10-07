@@ -68,7 +68,7 @@ out vec4 gl_FragColor;
 
 in vec3 oViewPos;
 in vec4 vPosition;
-//in vec4 vPrevPosition;
+in vec4 vPrevPosition;
 uniform float cNearClipDistance;
 uniform float cFarClipDistance;// !!! might be 0 for infinite view projection.
 #ifdef ALPHA
@@ -86,7 +86,7 @@ void main()
     float clipDistance = cFarClipDistance - cNearClipDistance;
     gl_FragData[0] = vec4((distance - cNearClipDistance) / clipDistance, 0.0, 0.0, 1.0);
 
-//    vec2 a = (vPosition.xy / vPosition.w) * 0.5 + 0.5;
-//    vec2 b = (vPrevPosition.xy / vPrevPosition.w) * 0.5 + 0.5;
-//    gl_FragData[1] = vec4(vec2(a - b), 0.0, 1.0);
+    vec2 a = (vPosition.xz / vPosition.w) * 0.5 + 0.5;
+    vec2 b = (vPrevPosition.xz / vPrevPosition.w) * 0.5 + 0.5;
+    gl_FragData[1] = vec4(vec2(a - b), 0.0, 1.0);
 }

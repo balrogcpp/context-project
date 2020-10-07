@@ -71,20 +71,23 @@ out vec4 gl_FragColor;
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
 uniform sampler2D uTexMotion;
+uniform float uFps;
 
 void main()
 {
-  vec3 scene = texture2D(SceneSampler, oUv0).rgb;
   vec2 texelSize = 1.0 / vec2(textureSize(SceneSampler, 0));
-  vec2 velocity = uVelocityScale * texture2D(uTexMotion, oUv0).rg;
+  float uVelocityScale = uFps / 60;
+  vec2 velocity = 1 * texture2D(uTexMotion, oUv0).rg;
   float speed = length(velocity / texelSize);
   int nSamples = clamp(int(speed), 1, MAX_SAMPLES);
 
+  vec3 scene = texture2D(SceneSampler, oUv0).rgb;
   for (int i = 1; i < nSamples; ++i) {
     vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
     scene += texture2D(SceneSampler, oUv0 + offset).rgb;
   }
 
   scene /= float(nSamples);
+
   gl_FragColor = vec4(scene, 1.0);
 }

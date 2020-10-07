@@ -26,8 +26,7 @@ fragment_program filtery_fs glsl glsles
 
     default_params
     {
-        param_named_auto screenSize viewport_size
-        param_named AttenuationSampler int 0
+        param_named uSampler int 0
     }
 }
 
@@ -37,7 +36,6 @@ fragment_program filterx_fs glsl glsles
 
     default_params
     {
-        param_named_auto screenSize viewport_size
-        param_named AttenuationSampler int 0
+        param_named uSampler int 0
     }
 }

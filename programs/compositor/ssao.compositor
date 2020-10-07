@@ -63,11 +63,7 @@ material SsaoCrytek
 
             texture_unit
             {
-                // texture regularSphere4.dds
                 texture regularSphereJittered4.dds
-                // texture regularSphereOctant4.dds
-                // texture regularSphereJitteredOctant4.dds
-                // texture rand4x4.dds
                 tex_address_mode wrap
                 filtering none
             }

@@ -24,7 +24,7 @@ compositor GBuffer
 {
     technique
     {
-        texture mrt target_width target_height PF_FLOAT16_R chain_scope
+        texture mrt target_width target_height PF_FLOAT16_R PF_FLOAT16_GR chain_scope
 
         target mrt
         {
@@ -62,7 +62,9 @@ material gbuffer
         {
             vertex_program_ref gbuffer_vp
             {
+                param_named_auto uModelMatrix world_matrix
                 param_named_auto cWorldViewProj worldviewproj_matrix
+                param_named cWorldViewProjPrev matrix4x4 0
                 param_named_auto cWorldView worldview_matrix
             }
 
@@ -98,7 +100,9 @@ material gbuffer_alpha
 
             vertex_program_ref gbuffer_alpha_vp
             {
+                param_named_auto uModelMatrix world_matrix
                 param_named_auto cWorldViewProj worldviewproj_matrix
+                param_named cWorldViewProjPrev matrix4x4 0
                 param_named_auto cWorldView worldview_matrix
             }
 

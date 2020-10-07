@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #ifndef GL_ES
-#define VERSION 120
+#define VERSION 130
 #version VERSION
 #define USE_TEX_LOD
 #if VERSION != 120
@@ -67,8 +67,7 @@ out vec4 gl_FragColor;
 #endif
 
 in vec2 oUv0;
-uniform vec4 screenSize;
-uniform sampler2D AttenuationSampler;
+uniform sampler2D uSampler;
 
 void main()
 {
@@ -78,11 +77,11 @@ void main()
   const int radius = 5;
   const float offset[radius] = float[](0.0, 1.0, 2.0, 3.0, 4.0);
   const float weight[radius] = float[](0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162);
-
-  vec4 final_color = texture2D(AttenuationSampler, oUv0) * weight[0];
+  vec2 texelSize = 1.0 / vec2(textureSize(uSampler, 0));
+  vec4 final_color = texture2D(uSampler, oUv0) * weight[0];
   for (int i=1; i<radius; i++) {
-    final_color += texture2D(AttenuationSampler, (oUv0 + vec2(0.0, offset[i]) * screenSize.w) ) * weight[i];
-    final_color += texture2D(AttenuationSampler, (oUv0 - vec2(0.0, offset[i]) * screenSize.w) ) * weight[i];
+    final_color += texture2D(uSampler, (oUv0 + vec2(0.0, offset[i]) * texelSize.y) ) * weight[i];
+    final_color += texture2D(uSampler, (oUv0 - vec2(0.0, offset[i]) * texelSize.y) ) * weight[i];
   }
 
   gl_FragColor = final_color;
