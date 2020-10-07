@@ -75,16 +75,15 @@ uniform sampler2D uTexMotion;
 void main()
 {
   vec2 texelSize = 1.0 / vec2(textureSize(SceneSampler, 0));
-  vec2 screenTexCoords = gl_FragCoord.xy * texelSize;
 
-  vec2 velocity = texture2D(uTexMotion, screenTexCoords).rg;
+  vec2 velocity = texture2D(uTexMotion, oUv0).rg;
   float speed = length(velocity / texelSize);
   int nSamples = clamp(int(speed), 1, MAX_SAMPLES);
 
-  vec3 scene = texture2D(SceneSampler, screenTexCoords).rgb;
+  vec3 scene = texture2D(SceneSampler, oUv0).rgb;
   for (int i = 1; i < nSamples; i++) {
     vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
-    scene += texture2D(SceneSampler, screenTexCoords + offset).rgb;
+    scene += texture2D(SceneSampler, oUv0 + offset).rgb;
   }
 
   scene /= float(nSamples);
