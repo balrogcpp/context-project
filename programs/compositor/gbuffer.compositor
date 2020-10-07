@@ -42,3 +42,72 @@ compositor GBuffer
         }
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+vertex_program gbuffer_vp glsl glsles
+{
+	source gbuffer.vert
+}
+
+fragment_program gbuffer_fp glsl glsles
+{
+	source gbuffer.frag
+}
+
+material gbuffer
+{
+    technique
+    {
+        pass
+        {
+            vertex_program_ref gbuffer_vp
+            {
+                param_named_auto cWorldViewProj worldviewproj_matrix
+                param_named_auto cWorldView worldview_matrix
+            }
+
+            fragment_program_ref gbuffer_fp
+            {
+                param_named_auto cNearClipDistance near_clip_distance
+                param_named_auto cFarClipDistance far_clip_distance
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+vertex_program gbuffer_alpha_vp glsl glsles
+{
+ 	source gbuffer.vert
+ 	preprocessor_defines ALPHA
+}
+
+fragment_program gbuffer_alpha_fp glsl glsles
+{
+	source gbuffer.frag
+	preprocessor_defines ALPHA
+}
+
+material gbuffer_alpha
+{
+    technique
+    {
+        pass
+        {
+            texture_unit BaseColor {}
+
+            vertex_program_ref gbuffer_alpha_vp
+            {
+                param_named_auto cWorldViewProj worldviewproj_matrix
+                param_named_auto cWorldView worldview_matrix
+            }
+
+            fragment_program_ref gbuffer_alpha_fp
+            {
+                param_named_auto cNearClipDistance near_clip_distance
+                param_named_auto cFarClipDistance far_clip_distance
+                param_named baseColor int 0
+            }
+        }
+    }
+}

@@ -20,6 +20,38 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+fragment_program bloom_fs glsl glsles
+{
+	source bloom.frag
+
+    default_params
+    {
+        param_named SceneSampler int 0
+    }
+}
+
+material bloom
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref bloom_fs {}
+
+			texture_unit
+            {
+                content_type compositor Main scene
+                filtering none
+            }
+		}
+	}
+}
+
 compositor Bloom
 {
     technique
@@ -34,6 +66,51 @@ compositor Bloom
             }
         }
     }
+}
+
+
+material Bloom/filtery
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref filtery_fs {}
+
+			texture_unit
+            {
+                content_type compositor Bloom bloom
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+material Bloom/filterx
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref filterx_fs {}
+
+			texture_unit
+            {
+                content_type compositor Bloom bloom
+                filtering linear linear none
+            }
+		}
+	}
 }
 
 compositor FilterY/Bloom
@@ -63,6 +140,61 @@ compositor FilterX/Bloom
             pass render_quad
             {
                 material Bloom/filterx
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program Modulate_BLOOM_fs glsl glsles
+{
+	source modulate.frag
+    preprocessor_defines Bloom
+	default_params
+	{
+		param_named SceneSampler int 0
+		param_named BloomSampler int 1
+	}
+}
+
+material Modulate/Bloom
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Modulate_BLOOM_fs {}
+
+			texture_unit
+            {
+                content_type compositor Main scene
+                filtering none
+            }
+
+			texture_unit
+            {
+                content_type compositor Bloom bloom
+                filtering none
+            }
+		}
+	}
+}
+
+compositor Modulate/Bloom
+{
+    technique
+    {
+        texture_ref scene Main scene
+        target scene
+        {
+            pass render_quad
+            {
+                material Modulate/Bloom
             }
         }
     }

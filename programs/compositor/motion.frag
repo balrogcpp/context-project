@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #ifndef GL_ES
-#define VERSION 120
+#define VERSION 130
 #version VERSION
 #define USE_TEX_LOD
 #if VERSION != 120
@@ -66,22 +66,25 @@ out vec4 gl_FragColor;
 #endif
 #endif
 
+#define MAX_SAMPLES 4
+
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
-#ifdef Bloom
-uniform sampler2D BloomSampler;
-#endif
-#ifdef Ssao
-uniform sampler2D SsaoSampler;
-#endif
+uniform sampler2D uTexMotion;
+
 void main()
 {
-    vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-#ifdef Ssao
-    scene *= texture2D(SsaoSampler, oUv0).r;
-#endif
-#ifdef Bloom
-    scene += (0.1 * texture2D(BloomSampler, oUv0).rgb);
-#endif
-    gl_FragColor = vec4(scene, 1.0);
+  vec3 scene = texture2D(SceneSampler, oUv0).rgb;
+  vec2 texelSize = 1.0 / vec2(textureSize(SceneSampler, 0));
+  vec2 velocity = uVelocityScale * texture2D(uTexMotion, oUv0).rg;
+  float speed = length(velocity / texelSize);
+  int nSamples = clamp(int(speed), 1, MAX_SAMPLES);
+
+  for (int i = 1; i < nSamples; ++i) {
+    vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
+    scene += texture2D(SceneSampler, oUv0 + offset).rgb;
+  }
+
+  scene /= float(nSamples);
+  gl_FragColor = vec4(scene, 1.0);
 }

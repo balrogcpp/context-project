@@ -20,7 +20,62 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-compositor SSAO
+fragment_program Crytek_fp glsl glsles
+{
+	source ssao.frag
+
+	default_params
+	{
+		param_named sSceneDepthSampler int 0
+		param_named sRotSampler4x4 int 1
+        param_named_auto cViewportSize viewport_size
+        param_named_auto farClipDistance far_clip_distance
+        param_named_auto cFov fov
+	}
+}
+
+material SsaoCrytek
+{
+    technique
+    {
+        pass
+        {
+            depth_check off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref Crytek_fp
+            {
+				param_named cSampleInScreenspace float 0
+                param_named cSampleLengthScreenSpace float 0.06
+                param_named cSampleLengthWorldSpace float 2
+				param_named cOffsetScale float 0.05
+				param_named cDefaultAccessibility float 0.5
+				param_named cEdgeHighlight float 2
+            }
+
+            texture_unit
+            {
+                content_type compositor GBuffer mrt 0
+                tex_address_mode clamp
+                filtering none
+            }
+
+            texture_unit
+            {
+                // texture regularSphere4.dds
+                texture regularSphereJittered4.dds
+                // texture regularSphereOctant4.dds
+                // texture regularSphereJitteredOctant4.dds
+                // texture rand4x4.dds
+                tex_address_mode wrap
+                filtering none
+            }
+        }
+    }
+}
+
+compositor Ssao
 {
     technique
     {
@@ -36,33 +91,132 @@ compositor SSAO
     }
 }
 
-compositor FilterY/SSAO
+material Ssao/filtery
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref filtery_fs {}
+
+			texture_unit
+            {
+                content_type compositor Ssao ssao
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+material Ssao/filterx
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref filterx_fs {}
+
+			texture_unit
+            {
+                content_type compositor Ssao ssao
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+compositor FilterY/Ssao
 {
     technique
     {
-        texture_ref ssao SSAO ssao
+        texture_ref ssao Ssao ssao
 
         target ssao
         {
             pass render_quad
             {
-                material SSAO/filtery
+                material Ssao/filtery
             }
         }
     }
 }
 
-compositor FilterX/SSAO
+compositor FilterX/Ssao
 {
     technique
     {
-        texture_ref ssao SSAO ssao
+        texture_ref ssao Ssao ssao
 
         target ssao
         {
             pass render_quad
             {
-                material SSAO/filterx
+                material Ssao/filterx
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program Modulate_SSAO_fs glsl glsles
+{
+	source modulate.frag
+    preprocessor_defines Ssao
+	default_params
+	{
+		param_named SceneSampler int 0
+		param_named SsaoSampler int 1
+	}
+}
+
+material Modulate/Ssao
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Modulate_SSAO_fs {}
+
+			texture_unit
+            {
+                content_type compositor Main scene
+                filtering none
+            }
+
+			texture_unit
+            {
+                content_type compositor Ssao ssao
+                filtering none
+            }
+		}
+	}
+}
+
+compositor Modulate/Ssao
+{
+    technique
+    {
+        texture_ref scene Main scene
+        target scene
+        {
+            pass render_quad
+            {
+                material Modulate/Ssao
             }
         }
     }

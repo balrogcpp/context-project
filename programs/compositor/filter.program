@@ -20,58 +20,24 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-compositor Modulate
+fragment_program filtery_fs glsl glsles
 {
-    technique
+	source filtery.frag
+
+    default_params
     {
-        target_output
-        {
-            pass render_quad
-            {
-                material Modulate
-            }
-        }
+        param_named_auto screenSize viewport_size
+        param_named AttenuationSampler int 0
     }
 }
 
-compositor Modulate/SSAO
+fragment_program filterx_fs glsl glsles
 {
-    technique
-    {
-        target_output
-        {
-            pass render_quad
-            {
-                material Modulate/SSAO
-            }
-        }
-    }
-}
+	source filterx.frag
 
-compositor Modulate/Bloom
-{
-    technique
+    default_params
     {
-        target_output
-        {
-            pass render_quad
-            {
-                material Modulate/Bloom
-            }
-        }
-    }
-}
-
-compositor Modulate/Bloom/SSAO
-{
-    technique
-    {
-        target_output
-        {
-            pass render_quad
-            {
-                material Modulate/Bloom/SSAO
-            }
-        }
+        param_named_auto screenSize viewport_size
+        param_named AttenuationSampler int 0
     }
 }

@@ -20,28 +20,18 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-fragment_program bloom_fsGLSL glsl
+fragment_program Output_fs glsl glsles
 {
-	source bloom.frag
+    source output.frag
+    preprocessor_defines GAMMA
+	default_params
+	{
+		param_named SceneSampler int 0
+		param_named exposure float 1
+	}
 }
 
-fragment_program bloom_fsGLSLES glsles
-{
-	source bloom.frag
-}
-
-fragment_program bloom_fs unified
-{
-	delegate bloom_fsGLSL
-	delegate bloom_fsGLSLES
-
-    default_params
-    {
-        param_named SceneSampler int 0
-    }
-}
-
-material bloom
+material Output
 {
 	technique
 	{
@@ -52,13 +42,27 @@ material bloom
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref bloom_fs {}
+			fragment_program_ref Output_fs {}
 
 			texture_unit
             {
                 content_type compositor Main scene
-                filtering none
+                filtering linear linear none
             }
 		}
 	}
+}
+
+compositor Output
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material Output
+            }
+        }
+    }
 }
