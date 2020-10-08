@@ -70,10 +70,11 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
       Ogre::Matrix4 posIndexToObjectSpace;
       terrain->getPointTransform(&posIndexToObjectSpace);
 
-      AddGpuConstParameter(vert_params, "posIndexToObjectSpace", posIndexToObjectSpace);
+      vert_params->setIgnoreMissingParams(true);
+      vert_params->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
 
       Ogre::Real baseUVScale = 1.0f / (terrain->getSize() - 1);
-      AddGpuConstParameter(vert_params, "baseUVScale", baseUVScale);
+      vert_params->setNamedConstant("baseUVScale", baseUVScale);
     }
   }
 
