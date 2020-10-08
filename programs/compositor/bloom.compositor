@@ -47,7 +47,7 @@ material bloom
             {
                 content_type compositor Main scene
                 tex_address_mode clamp
-                filtering none
+                filtering linear linear none
             }
 		}
 	}
@@ -87,7 +87,7 @@ material Bloom/filtery
             {
                 content_type compositor Bloom bloom
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering none
             }
 		}
 	}
@@ -110,7 +110,7 @@ material Bloom/filterx
             {
                 content_type compositor Bloom bloom
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering none
             }
 		}
 	}
@@ -184,7 +184,7 @@ material Modulate/Bloom
             {
                 content_type compositor Bloom bloom
                 tex_address_mode clamp
-                filtering none
+                filtering linear linear none
             }
 		}
 	}
