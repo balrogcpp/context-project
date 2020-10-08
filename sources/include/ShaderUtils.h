@@ -267,7 +267,7 @@ inline void UpdatePbrShadowReceiver(Ogre::MaterialPtr material) {
     auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
     auto pass = material->getTechnique(0)->getPass(0);
 
-    uint numTextures = 3;
+    Ogre::uint numTextures = 3;
     Ogre::Vector4 splitPoints;
     const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
     for (int j = 1; j < numTextures; ++j) {
