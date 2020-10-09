@@ -569,10 +569,8 @@ void main()
 #ifdef SHADOWRECEIVER
         if (uLightCastsShadowsArray[i] * tmp > 0.001) {
             float shadow = calcPSSMDepthShadow();
-            shadow = clamp(shadow, 0.0, 1.0);
-            specContrib *= shadow;
             shadow = clamp(shadow + uShadowColour, 0.0, 1.0);
-            diffuseContrib *= shadow;
+            tmp *= shadow;
         }
 #endif
 

@@ -20,29 +20,17 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-fragment_program Context/filtery_fsGLSL glsl
+fragment_program bloom_fs glsl glsles
 {
-	source filtery.frag
-}
-
-fragment_program Context/filtery_fsGLSLES glsles
-{
-	source filtery.frag
-}
-
-fragment_program Context/filtery_fs unified
-{
-	delegate Context/filtery_fsGLSL
-	delegate Context/filtery_fsGLSLES
+	source bloom.frag
 
     default_params
     {
-        param_named_auto screenSize viewport_size
-        param_named AttenuationSampler int 0
+        param_named SceneSampler int 0
     }
 }
 
-material Context/SSAO/filtery
+material bloom
 {
 	technique
 	{
@@ -53,40 +41,36 @@ material Context/SSAO/filtery
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filtery_fs {}
+			fragment_program_ref bloom_fs {}
 
 			texture_unit
             {
-                content_type compositor Context/SSAO ssao
+                content_type compositor Main scene
+                tex_address_mode clamp
                 filtering linear linear none
             }
 		}
 	}
 }
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program Context/filterx_fsGLSL glsl
-{
-	source filterx.frag
-}
 
-fragment_program Context/filterx_fsGLSLES glsles
+compositor Bloom
 {
-	source filterx.frag
-}
-
-fragment_program Context/filterx_fs unified
-{
-	delegate Context/filterx_fsGLSL
-	delegate Context/filterx_fsGLSLES
-
-    default_params
+    technique
     {
-        param_named_auto screenSize viewport_size
-        param_named AttenuationSampler int 0
+        texture bloom target_width_scaled 0.15 target_height_scaled 0.15 PF_FLOAT16_RGB chain_scope
+
+        target bloom
+        {
+            pass render_quad
+            {
+                material bloom
+            }
+        }
     }
 }
 
-material Context/SSAO/filterx
+
+material Bloom/filtery
 {
 	technique
 	{
@@ -97,58 +81,126 @@ material Context/SSAO/filterx
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Context/filterx_fs {}
+			fragment_program_ref filtery_fs {}
 
 			texture_unit
             {
-                content_type compositor Context/SSAO ssao
+                content_type compositor Bloom bloom
+                tex_address_mode clamp
+                filtering none
+            }
+		}
+	}
+}
+
+material Bloom/filterx
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref filterx_fs {}
+
+			texture_unit
+            {
+                content_type compositor Bloom bloom
+                tex_address_mode clamp
+                filtering none
+            }
+		}
+	}
+}
+
+compositor FilterY/Bloom
+{
+    technique
+    {
+        texture_ref bloom Bloom bloom
+
+        target bloom
+        {
+            pass render_quad
+            {
+                material Bloom/filtery
+            }
+        }
+    }
+}
+
+compositor FilterX/Bloom
+{
+    technique
+    {
+        texture_ref bloom Bloom bloom
+
+        target bloom
+        {
+            pass render_quad
+            {
+                material Bloom/filterx
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program Modulate_BLOOM_fs glsl glsles
+{
+	source modulate.frag
+    preprocessor_defines Bloom
+	default_params
+	{
+		param_named SceneSampler int 0
+		param_named BloomSampler int 1
+	}
+}
+
+material Modulate/Bloom
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Modulate_BLOOM_fs {}
+
+			texture_unit
+            {
+                content_type compositor Main scene
+                tex_address_mode clamp
+                filtering none
+            }
+
+			texture_unit
+            {
+                content_type compositor Bloom bloom
+                tex_address_mode clamp
                 filtering linear linear none
             }
 		}
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-material Context/Bloom/filtery
+compositor Modulate/Bloom
 {
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref Context/filtery_fs {}
-
-			texture_unit
+    technique
+    {
+        texture_ref scene Main scene
+        target scene
+        {
+            pass render_quad
             {
-                content_type compositor Context/Bloom bloom
-                filtering linear linear none
+                material Modulate/Bloom
             }
-		}
-	}
-}
-//----------------------------------------------------------------------------------------------------------------------
-material Context/Bloom/filterx
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref Context/filterx_fs {}
-
-			texture_unit
-            {
-                content_type compositor Context/Bloom bloom
-                filtering linear linear none
-            }
-		}
-	}
+        }
+    }
 }

@@ -87,7 +87,6 @@ set(CONTEXT_HEADERS
     include/Storage.h
     include/RtssUtils.h
     include/Landscape.h
-    include/CompositorHelper.h
     include/ShadowSettings.h
     include/YamlConfigurator.h
     include/ComponentLocator.h
@@ -100,7 +99,7 @@ set(CONTEXT_HEADERS
     include/xio_deps.h
     include/LuaServer.h
     include/LuaConsole.h
-    )
+    include/Sinbad.h)
 
 set(HEADER_FILES_CONTEXT_LIB
     ${BTOGRE_HEADERS}
@@ -150,7 +149,6 @@ set(CONTEXT_SOURCES
     src/TerrainMaterialGeneratorB.cpp
     src/Gorilla.cpp
     src/Overlay.cpp
-    src/ShaderUtils.cpp
     src/Landscape.cpp
     src/Sound.cpp
     )

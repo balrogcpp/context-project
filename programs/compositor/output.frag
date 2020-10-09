@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #ifndef GL_ES
-#define VERSION 120
+#define VERSION 130
 #version VERSION
 #define USE_TEX_LOD
 #if VERSION != 120
@@ -68,20 +68,16 @@ out vec4 gl_FragColor;
 
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
-#ifdef Bloom
-uniform sampler2D BloomSampler;
-#endif
-#ifdef Ssao
-uniform sampler2D SsaoSampler;
+#ifdef GAMMA
+uniform float exposure;
 #endif
 void main()
 {
-    vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-#ifdef Ssao
-    scene *= texture2D(SsaoSampler, oUv0).r;
+  vec3 scene = texture2D(SceneSampler, oUv0).rgb;
+#ifdef GAMMA
+  const float gamma = 2.2;
+  vec3 mapped = vec3(1.0) - exp(-scene * exposure);
+  scene = pow(mapped, vec3(1.0 / gamma));
 #endif
-#ifdef Bloom
-    scene += (0.1 * texture2D(BloomSampler, oUv0).rgb);
-#endif
-    gl_FragColor = vec4(scene, 1.0);
+  gl_FragColor = vec4(scene, 1.0);
 }

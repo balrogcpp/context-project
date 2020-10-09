@@ -147,6 +147,7 @@ void Renderer::Create() {
   compositor_->EnableEffect("ssao", conf_->Get<bool>("compositor_use_ssao"));
   compositor_->EnableEffect("bloom", conf_->Get<bool>("compositor_use_bloom"));
   compositor_->EnableEffect("hdr", conf_->Get<bool>("compositor_use_hdr"));
+  compositor_->EnableEffect("motion", conf_->Get<bool>("compositor_use_motion"));
   compositor_->Init();
   rtss::InitPssm(shadow_->GetSplitPoints());
 }

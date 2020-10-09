@@ -20,45 +20,22 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-fragment_program Context/bloom_fsGLSL glsl
+fragment_program filtery_fs glsl glsles
 {
-	source bloom.frag
-}
-
-fragment_program Context/bloom_fsGLSLES glsles
-{
-	source bloom.frag
-}
-
-fragment_program Context/bloom_fs unified
-{
-	delegate Context/bloom_fsGLSL
-	delegate Context/bloom_fsGLSLES
+	source filtery.frag
 
     default_params
     {
-        param_named SceneSampler int 0
+        param_named uSampler int 0
     }
 }
 
-material Context/bloom
+fragment_program filterx_fs glsl glsles
 {
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
+	source filterx.frag
 
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref Context/bloom_fs {}
-
-			texture_unit
-            {
-                content_type compositor Context/Main scene
-                filtering none
-            }
-		}
-	}
+    default_params
+    {
+        param_named uSampler int 0
+    }
 }

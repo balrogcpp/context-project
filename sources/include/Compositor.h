@@ -23,7 +23,6 @@
 #pragma once
 #include "Component.h"
 #include "Singleton.h"
-#include "CompositorHelper.h"
 #include <OgreMatrix4.h>
 #include <OgreMaterial.h>
 #include <map>
@@ -32,9 +31,12 @@
 namespace Ogre {
 class Camera;
 class Viewport;
+class SceneManager;
 }
 
 namespace xio {
+class GBufferSchemeHandler;
+
 class Compositor : public Component, public Singleton<Compositor> {
  public:
   Compositor();
@@ -42,7 +44,7 @@ class Compositor : public Component, public Singleton<Compositor> {
 
   void Create() final {}
   void Reset() final {}
-  void Clean() final {}
+  void Clean() final;
   void Pause() final {}
   void Resume() final {}
   void Loop(float time) final;
@@ -55,6 +57,7 @@ class Compositor : public Component, public Singleton<Compositor> {
  private:
   std::map<std::string, bool> effects_;
   GBufferSchemeHandler *gbuff_handler_ = nullptr;
+  Ogre::SceneManager *scene_ = nullptr;
   Ogre::Camera *camera_ = nullptr;
   Ogre::Viewport *viewport_ = nullptr;
   Ogre::Matrix4 mvp_;

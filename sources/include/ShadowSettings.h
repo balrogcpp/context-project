@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include "NoCopy.h"
 #include <OgreRoot.h>
 #include <OgreMaterialManager.h>

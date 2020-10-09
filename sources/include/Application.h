@@ -49,9 +49,12 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   void Event(const SDL_Event &evt) final;
   void Other(uint8_t type, int32_t code, void *data1, void *data2) final;
   void Quit() final;
-//----------------------------------------------------------------------------------------------------------------------
+
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
-        bool maskDebug, const std::string &logName, bool &skipThisMessage) final {}
+        bool maskDebug, const std::string &logName, bool &skipThisMessage) final;
+
+  void WriteLogToFile(const std::string &file_name);
+  void PrintLogToConsole();
 
   std::unique_ptr<YamlConfigurator> conf_;
   std::unique_ptr<InputSequencer> io_;
@@ -65,11 +68,11 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   bool suspend_ = false;
   long time_of_last_frame_ = 0;
   int current_fps_ = 0;
- private:
   int target_fps_ = 60;
   bool verbose_ = false;
   bool lock_fps_ = true;
-  std::vector<Component*> components_;
+  std::vector<Component *> components_;
+  std::string log_;
  public:
 //----------------------------------------------------------------------------------------------------------------------
   int GetCurrentFps() const {

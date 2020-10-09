@@ -23,6 +23,7 @@
 #include "pcheader.h"
 #include "Landscape.h"
 #include "Physics.h"
+#include <Terrain/OgreTerrainMaterialGeneratorA.h>
 #include "TerrainMaterialGeneratorB.h"
 #include "ShaderUtils.h"
 #include "XmlUtils.h"

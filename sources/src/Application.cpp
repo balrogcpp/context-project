@@ -57,12 +57,36 @@ Application::Application() {
 };
 Application::~Application() = default;
 //----------------------------------------------------------------------------------------------------------------------
+void Application::WriteLogToFile(const std::string &file_name) {
+  std::ofstream f;
+  f.open(file_name);
+  if (f.is_open()) {
+    f << log_;
+    f.close();
+  }
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Application::PrintLogToConsole() {
+  std::cout << log_ << std::flush;
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Application::messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
+        bool maskDebug, const std::string &logName, bool &skipThisMessage) {
+  log_.append(message);
+  log_.append("\n");
+}
+//----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  DesktopIcon icon;
-  icon.Init();
-  icon.Save("XioDemo");
-#endif
+  auto *logger = new Ogre::LogManager();
+  logger->createLog("ogre.log", true, false, true);
+  Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+  Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
+
+//#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+//  DesktopIcon icon;
+//  icon.Init();
+//  icon.Save("XioDemo");
+//#endif
 
   conf_ = std::make_unique<YamlConfigurator>("config.yaml");
   Renderer::SetConfigurator(conf_.get());
@@ -118,18 +142,8 @@ void Application::Init_() {
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");
   io_->RegWinObserver(this);
-  renderer_->Resize(conf_->Get<int>("window_width"),
-                    conf_->Get<int>("window_high"),
-                    conf_->Get<bool>("window_fullscreen"));
+  renderer_->Resize(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"),conf_->Get<bool>("window_fullscreen"));
   renderer_->GetWindow().SetCaption(conf_->Get<std::string>("window_caption"));
-
-  if (!verbose_) {
-    auto *logger = new Ogre::LogManager();
-    std::string log_name = "Ogre.log";
-    logger->createLog(log_name, true, false, true);
-    Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
-    Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
-  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Reset_() {
@@ -288,6 +302,8 @@ void Application::Go_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Message_(const std::string &caption, const std::string &message) {
+  WriteLogToFile("ogre.log");
+  PrintLogToConsole();
   std::cerr << caption << '\n';
   std::cerr << message << '\n';
 #ifdef _WIN32

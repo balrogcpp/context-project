@@ -1,0 +1,221 @@
+//MIT License
+//
+//Copyright (c) 2020 Andrey Vasiliev
+//
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+//
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+//
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+
+fragment_program Crytek_fp glsl glsles
+{
+	source ssao.frag
+
+	default_params
+	{
+		param_named sSceneDepthSampler int 0
+		param_named sRotSampler4x4 int 1
+        param_named_auto cViewportSize viewport_size
+        param_named_auto farClipDistance far_clip_distance
+        param_named_auto cFov fov
+	}
+}
+
+material SsaoCrytek
+{
+    technique
+    {
+        pass
+        {
+            depth_check off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref Crytek_fp
+            {
+				param_named cSampleInScreenspace float 0
+                param_named cSampleLengthScreenSpace float 0.06
+                param_named cSampleLengthWorldSpace float 2
+				param_named cOffsetScale float 0.05
+				param_named cDefaultAccessibility float 0.5
+				param_named cEdgeHighlight float 2
+            }
+
+            texture_unit
+            {
+                content_type compositor GBuffer mrt 0
+                tex_address_mode clamp
+                filtering none
+            }
+
+            texture_unit
+            {
+                texture regularSphereJittered4.dds
+                tex_address_mode wrap
+                filtering none
+            }
+        }
+    }
+}
+
+compositor Ssao
+{
+    technique
+    {
+        texture ssao target_width target_height PF_FLOAT16_R chain_scope
+
+        target ssao
+        {
+            pass render_quad
+            {
+                material SsaoCrytek
+            }
+        }
+    }
+}
+
+material Ssao/filtery
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref filtery_fs {}
+
+			texture_unit
+            {
+                content_type compositor Ssao ssao
+                tex_address_mode clamp
+                filtering none
+            }
+		}
+	}
+}
+
+material Ssao/filterx
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref filterx_fs {}
+
+			texture_unit
+            {
+                content_type compositor Ssao ssao
+                tex_address_mode clamp
+                filtering none
+            }
+		}
+	}
+}
+
+compositor FilterY/Ssao
+{
+    technique
+    {
+        texture_ref ssao Ssao ssao
+
+        target ssao
+        {
+            pass render_quad
+            {
+                material Ssao/filtery
+            }
+        }
+    }
+}
+
+compositor FilterX/Ssao
+{
+    technique
+    {
+        texture_ref ssao Ssao ssao
+
+        target ssao
+        {
+            pass render_quad
+            {
+                material Ssao/filterx
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program Modulate_SSAO_fs glsl glsles
+{
+	source modulate.frag
+    preprocessor_defines Ssao
+	default_params
+	{
+		param_named SceneSampler int 0
+		param_named SsaoSampler int 1
+	}
+}
+
+material Modulate/Ssao
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Modulate_SSAO_fs {}
+
+			texture_unit
+            {
+                content_type compositor Main scene
+                filtering none
+            }
+
+			texture_unit
+            {
+                content_type compositor Ssao ssao
+                filtering none
+            }
+		}
+	}
+}
+
+compositor Modulate/Ssao
+{
+    technique
+    {
+        texture_ref scene Main scene
+        target scene
+        {
+            pass render_quad
+            {
+                material Modulate/Ssao
+            }
+        }
+    }
+}
