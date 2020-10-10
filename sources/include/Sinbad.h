@@ -4,15 +4,16 @@
 
 using namespace Ogre;
 
-#define CHAR_HEIGHT 5          // height of character's center of mass above ground
-#define CAM_HEIGHT 2           // height of camera above character's center of mass
-#define RUN_SPEED 17           // character running speed in units per second
+#define SCALE 0.1
+#define CHAR_HEIGHT SCALE*5          // height of character's center of mass above ground
+#define CAM_HEIGHT SCALE*2           // height of camera above character's center of mass
+#define RUN_SPEED SCALE*17           // character running speed in units per second
 #define TURN_SPEED 500.0f      // character turning in degrees per second
 #define ANIM_FADE_SPEED 7.5f   // animation crossfade speed in % of full weight per second
-#define JUMP_ACCEL 30.0f       // character jump acceleration in upward units per squared second
-#define GRAVITY 90.0f          // gravity in downward units per squared second
+#define JUMP_ACCEL SCALE*30.0f       // character jump acceleration in upward units per squared second
+#define GRAVITY SCALE*90.0f          // gravity in downward units per squared second
 
-class SinbadCharacterController {
+class SinbadCharacterController : public xio::InputObserver {
  private:
   // all the animations our character has, and a null ID
   // some of these affect separate body parts and will be blended together
@@ -47,8 +48,7 @@ class SinbadCharacterController {
     updateCamera(deltaTime);
   }
 
-  void injectKeyDown(const KeyboardEvent &evt) {
-    Keycode key = evt.keysym.sym;
+  void KeyDown(const SDL_Keycode key) override {
     if (key == 'q' && (mTopAnimID == ANIM_IDLE_TOP || mTopAnimID == ANIM_RUN_TOP)) {
       // take swords out (or put them back, since it's the same animation but reversed)
       setTopAnimation(ANIM_DRAW_SWORDS, true);
@@ -89,8 +89,7 @@ class SinbadCharacterController {
     }
   }
 
-  void injectKeyUp(const KeyboardEvent &evt) {
-    Keycode key = evt.keysym.sym;
+  void KeyUp(SDL_Keycode key) override {
     // keep track of the player's intended direction
     if (key == 'w' && mKeyDirection.z == -1) mKeyDirection.z = 0;
     else if (key == 'a' && mKeyDirection.x == -1) mKeyDirection.x = 0;
@@ -104,21 +103,28 @@ class SinbadCharacterController {
     }
   }
 
-  void injectMouseMove(const MouseMotionEvent &evt) {
+  void Move(int32_t dx, int32_t dy) override {
     // update camera goal based on mouse movement
-    updateCameraGoal(-0.05f * evt.xrel, -0.05f * evt.yrel, 0);
+    updateCameraGoal(-0.05f * dx, -0.05f * dy, 0);
   }
 
-  void injectMouseWheel(const MouseWheelEvent &evt) {
+  void Wheel(int32_t x, int32_t y) override {
     // update camera goal based on mouse movement
-    updateCameraGoal(0, 0, -0.05f * evt.y);
+    updateCameraGoal(0, 0, -0.05f * y);
   }
 
-  void injectMouseDown(const MouseButtonEvent &evt) {
+  void LbDown(int32_t x, int32_t y) override {
     if (mSwordsDrawn && (mTopAnimID == ANIM_IDLE_TOP || mTopAnimID == ANIM_RUN_TOP)) {
       // if swords are out, and character's not doing something weird, then SLICE!
-      if (evt.button == BUTTON_LEFT) setTopAnimation(ANIM_SLICE_VERTICAL, true);
-      else if (evt.button == BUTTON_RIGHT) setTopAnimation(ANIM_SLICE_HORIZONTAL, true);
+      setTopAnimation(ANIM_SLICE_VERTICAL, true);
+      mTimer = 0;
+    }
+  }
+
+  void RbDown(int32_t x, int32_t y) override {
+    if (mSwordsDrawn && (mTopAnimID == ANIM_IDLE_TOP || mTopAnimID == ANIM_RUN_TOP)) {
+      // if swords are out, and character's not doing something weird, then SLICE!
+      setTopAnimation(ANIM_SLICE_HORIZONTAL, true);
       mTimer = 0;
     }
   }
@@ -130,6 +136,7 @@ class SinbadCharacterController {
     mBodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode(Vector3::UNIT_Y * CHAR_HEIGHT);
     mBodyEnt = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
     mBodyNode->attachObject(mBodyEnt);
+    mBodyNode->scale(Vector3{SCALE});
 
     // create swords and attach to sheath
     LogManager::getSingleton().logMessage("Creating swords");
@@ -145,15 +152,15 @@ class SinbadCharacterController {
     params["maxElements"] = "80";
     mSwordTrail = (RibbonTrail *) sceneMgr->createMovableObject("RibbonTrail", &params);
     mSwordTrail->setMaterialName("Examples/LightRibbonTrail");
-    mSwordTrail->setTrailLength(20);
+    mSwordTrail->setTrailLength(SCALE*20);
     mSwordTrail->setVisible(false);
     sceneMgr->getRootSceneNode()->attachObject(mSwordTrail);
 
     for (int i = 0; i < 2; i++) {
       mSwordTrail->setInitialColour(i, 1, 0.8, 0);
       mSwordTrail->setColourChange(i, 0.75, 1.25, 1.25, 1.25);
-      mSwordTrail->setWidthChange(i, 1);
-      mSwordTrail->setInitialWidth(i, 0.5);
+      mSwordTrail->setWidthChange(i, SCALE*1);
+      mSwordTrail->setInitialWidth(i, SCALE*0.5);
     }
 
     mKeyDirection = Vector3::ZERO;
@@ -190,7 +197,9 @@ class SinbadCharacterController {
     // create a pivot at roughly the character's shoulder
     mCameraPivot = cam->getSceneManager()->getRootSceneNode()->createChildSceneNode();
     // this is where the camera should be soon, and it spins around the pivot
-    mCameraGoal = mCameraPivot->createChildSceneNode(Vector3(0, 0, 15));
+//    mCameraGoal = mCameraPivot->createChildSceneNode(Vector3(0, SCALE*15, 0));
+    mCameraGoal = mCameraPivot->createChildSceneNode(Vector3(0, SCALE*5, SCALE*15));
+//    mCameraGoal = mCameraPivot->createChildSceneNode(Vector3(0, 0, SCALE*15));
     // this is where the camera actually is
     mCameraNode = cam->getParentSceneNode();
     mCameraNode->setPosition(mCameraPivot->getPosition() + mCameraGoal->getPosition());
@@ -201,7 +210,7 @@ class SinbadCharacterController {
 
     // our model is quite small, so reduce the clipping planes
     cam->setNearClipDistance(0.1);
-    cam->setFarClipDistance(100);
+    cam->setFarClipDistance(5000);
 
     mPivotPitch = 0;
   }
@@ -226,12 +235,10 @@ class SinbadCharacterController {
       if (mBaseAnimID == ANIM_JUMP_LOOP) yawAtSpeed *= 0.2f;
 
       // turn as much as we can, but not more than we need to
-      if (yawToGoal < 0) yawToGoal = std::min<Real>(0,
-                                                    std::max<Real>(yawToGoal,
-                                                                   yawAtSpeed)); //yawToGoal = Math::Clamp<Real>(yawToGoal, yawAtSpeed, 0);
-      else if (yawToGoal > 0) yawToGoal = std::max<Real>(0,
-                                                         std::min<Real>(yawToGoal,
-                                                                        yawAtSpeed)); //yawToGoal = Math::Clamp<Real>(yawToGoal, 0, yawAtSpeed);
+      if (yawToGoal < 0)
+        yawToGoal = std::min<Real>(0,std::max<Real>(yawToGoal,yawAtSpeed));
+      else if (yawToGoal > 0)
+        yawToGoal = std::max<Real>(0,std::min<Real>(yawToGoal,yawAtSpeed));
 
       mBodyNode->yaw(Degree(yawToGoal));
 
@@ -381,8 +388,7 @@ class SinbadCharacterController {
     Real distChange = deltaZoom * dist;
 
     // bound the zoom
-    if (!(dist + distChange < 8 && distChange < 0) &&
-        !(dist + distChange > 25 && distChange > 0)) {
+    if (!(dist + distChange < SCALE*8 && distChange < 0) && !(dist + distChange > SCALE*25 && distChange > 0)) {
       mCameraGoal->translate(0, 0, distChange, Node::TS_LOCAL);
     }
   }

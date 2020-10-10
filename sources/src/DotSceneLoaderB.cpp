@@ -26,7 +26,6 @@
 #include "ShaderUtils.h"
 #include "XmlUtils.h"
 #include "Sound.h"
-//#include "Sinbad.h"
 
 using namespace xio;
 
@@ -306,36 +305,33 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
     camera_ = std::make_unique<Camera>();
     io_->RegObserver(camera_.get());
   }
+
+  camera_->SetStyle(Camera::MANUAL);
   camera_->RegCamera(parent, pCamera);
-  camera_->SetStyle(Camera::FPS);
 
-  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  auto *actor = scene->createEntity("Actor", "Icosphere.mesh");
-  actor->setCastShadows(false);
-  actor->setVisible(false);
-  parent->attachObject(actor);
-
-  std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
-  btVector3 inertia;
-  btRigidBody *entBody;
-
-  converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(actor);
-  auto *entShape = converter->createCapsule();
-
-  sound_->SetListener(pCamera->getParentSceneNode());
-
-  float mass = 100.0f;
-  entShape->calculateLocalInertia(mass, inertia);
-  auto *bodyState = new BtOgre::RigidBodyState(parent);
-  entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-  entBody->setAngularFactor(0);
-  entBody->activate(true);
-  entBody->forceActivationState(DISABLE_DEACTIVATION);
-  entBody->setActivationState(DISABLE_DEACTIVATION);
-  entBody->setFriction(1.0);
-  entBody->setUserIndex(1);
-  physics_->AddRigidBody(entBody);
-  camera_->SetRigidBody(entBody);
+//  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+//  auto *actor = scene->createEntity("Actor", "Icosphere.mesh");
+//  actor->setCastShadows(false);
+//  actor->setVisible(false);
+//  parent->attachObject(actor);
+//  std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
+//  btVector3 inertia;
+//  btRigidBody *entBody;
+//  converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(actor);
+//  auto *entShape = converter->createCapsule();
+//  sound_->SetListener(pCamera->getParentSceneNode());
+//  float mass = 100.0f;
+//  entShape->calculateLocalInertia(mass, inertia);
+//  auto *bodyState = new BtOgre::RigidBodyState(parent);
+//  entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+//  entBody->setAngularFactor(0);
+//  entBody->activate(true);
+//  entBody->forceActivationState(DISABLE_DEACTIVATION);
+//  entBody->setActivationState(DISABLE_DEACTIVATION);
+//  entBody->setFriction(1.0);
+//  entBody->setUserIndex(1);
+//  physics_->AddRigidBody(entBody);
+//  camera_->SetRigidBody(entBody);
 
   /// Set the field-of-view
   pCamera->setFOVy(Ogre::Radian(fov));

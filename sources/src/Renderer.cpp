@@ -134,8 +134,9 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
 #else
   Storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
 #endif
-
   rtss::InitRtss();
+  Storage::LoadResources();
+  rtss::CreateRtssShaders();
   rtss::InitInstansing();
 
   shadow_ = std::make_unique<ShadowSettings>();

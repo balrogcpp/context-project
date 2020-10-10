@@ -40,7 +40,7 @@ class InputObserver {
   virtual void KeyUp(SDL_Keycode sym) {}
 
   //Mouse
-  virtual void Move(int32_t x, int32_t y) {}
+  virtual void Move(int32_t dx, int32_t dy) {}
   virtual void Move(int32_t x, int32_t y, int32_t dx, int32_t dy, bool left, bool right, bool middle) {}
   virtual void Wheel(int32_t x, int32_t y) {}
   virtual void LbDown(int32_t x, int32_t y) {}
@@ -163,12 +163,14 @@ class InputSequencer {
           break;
         }
         case SDL_MOUSEMOTION: {
-          for (auto it : io_listeners)
+          for (auto it : io_listeners) {
             it->Move(event.motion.x, event.motion.y,
                      event.motion.xrel, event.motion.yrel,
                      (event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0,
                      (event.motion.state & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0,
                      (event.motion.state & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
+            it->Move(event.motion.xrel, event.motion.yrel);
+          }
           break;
         }
         case SDL_MOUSEBUTTONDOWN: {

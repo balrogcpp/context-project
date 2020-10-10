@@ -24,6 +24,7 @@
 #include "Renderer.h"
 #include "AppState.h"
 #include "Forest.h"
+#include "Sinbad.h"
 #include <memory>
 
 namespace Demo {
@@ -41,5 +42,8 @@ class DemoDotAppState : public xio::AppState {
 
     void KeyDown(SDL_Keycode sym) final;
     static void Callback(int a, int b);
+
+ private:
+  std::unique_ptr<SinbadCharacterController> controller_;
 };
 }

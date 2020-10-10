@@ -102,7 +102,7 @@ void Application::Init_() {
   int tex_format = conf_->Get<int>("graphics_shadows_texture_format");
   renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
-  io_ = std::make_unique<InputSequencer>();
+  input_ = std::make_unique<InputSequencer>();
   physics_ = std::make_unique<Physics>();
   sound_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();
@@ -115,13 +115,13 @@ void Application::Init_() {
   components_.push_back(overlay_.get());
 
   ComponentLocator::LocateComponents(
-      conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
+      conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
 
   for (auto &it : components_) {
     it->Create();
   }
 
-  io_->RegObserver(overlay_->GetConsole());
+  input_->RegObserver(overlay_->GetConsole());
   renderer_->Refresh();
 
   // Texture filtering
@@ -137,18 +137,18 @@ void Application::Init_() {
     tfo = Ogre::TFO_NONE;
 
   renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
-  loader_->LocateComponents(conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
+  loader_->LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
   verbose_ = conf_->Get<bool>("global_verbose_enable");
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");
-  io_->RegWinObserver(this);
+  input_->RegWinObserver(this);
   renderer_->Resize(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"),conf_->Get<bool>("window_fullscreen"));
   renderer_->GetWindow().SetCaption(conf_->Get<std::string>("window_caption"));
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Reset_() {
-  io_->Clear();
-  io_->UnregWinObserver(this);
+  input_->Clear();
+  input_->UnregWinObserver(this);
 
   for (auto &it : components_)
     it->Clean();
@@ -157,7 +157,7 @@ void Application::Reset_() {
     it->Reset();
 
   renderer_.reset();
-  io_.reset();
+  input_.reset();
   physics_.reset();
   sound_.reset();
   overlay_.reset();
@@ -171,15 +171,15 @@ void Application::InitState_(std::unique_ptr<AppState> &&next_state) {
     cur_state_->Clear();
     renderer_->Refresh();
     Ogre::Root::getSingleton().removeFrameListener(cur_state_.get());
-    io_->UnregObserver(cur_state_.get());
+    input_->UnregObserver(cur_state_.get());
   }
 
   cur_state_ = move(next_state);
-  io_->RegObserver(cur_state_.get());
+  input_->RegObserver(cur_state_.get());
   Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
 
   cur_state_->LocateComponents(
-      conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
+      conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
   cur_state_->Create();
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -234,7 +234,7 @@ void Application::Loop_() {
         fps_frames_ = 0;
       }
 
-      io_->Capture();
+      input_->Capture();
 
       if (!suspend_) {
         if (cur_state_->IsDirty()) {
@@ -298,6 +298,8 @@ void Application::Go_() {
     time_of_last_frame_ = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
     Loop_();
     Reset_();
+    WriteLogToFile("ogre.log");
+    PrintLogToConsole();
   }
 }
 //----------------------------------------------------------------------------------------------------------------------

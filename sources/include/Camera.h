@@ -33,7 +33,7 @@ class SceneNode;
 }
 
 namespace xio {
-class Camera final : public Entity, public InputObserver, public Ogre::FrameListener {
+class Camera final : public Entity, public InputObserver {
  public:
   enum   // enumerator values for different styles of camera movement
   {
@@ -43,13 +43,8 @@ class Camera final : public Entity, public InputObserver, public Ogre::FrameList
     MANUAL
   };
 
-  Camera() {
-    Ogre::Root::getSingleton().addFrameListener(this);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  ~Camera() {
-    Ogre::Root::getSingleton().removeFrameListener(this);
-  }
+  Camera() {}
+  virtual ~Camera() {}
 
  private:
 //----------------------------------------------------------------------------------------------------------------------
@@ -65,7 +60,7 @@ class Camera final : public Entity, public InputObserver, public Ogre::FrameList
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  bool frameRenderingQueued(const Ogre::FrameEvent &event) override {
+  bool frameRenderingQueued(const Ogre::FrameEvent &event) {
     float time = event.timeSinceLastFrame;
 
     if (style_ == FREELOOK) {
@@ -294,7 +289,7 @@ class Camera final : public Entity, public InputObserver, public Ogre::FrameList
   btRigidBody *rigid_ = nullptr;
   Ogre::Degree dx_, dy_;
   Ogre::Camera *camera_ = nullptr;
-  int style_ = FPS;
+  int style_ = MANUAL;
   Ogre::SceneNode *target_ = nullptr;
   bool orbiting_ = false;
   bool moving_ = false;
@@ -337,11 +332,13 @@ class Camera final : public Entity, public InputObserver, public Ogre::FrameList
     return camera_;
   }
 
-  void RegCamera(Ogre::SceneNode *ogre_camera_node, Ogre::Camera *camera) {
-    node_ = ogre_camera_node;
-
+  void RegCamera(Ogre::SceneNode *parent, Ogre::Camera *camera) {
+    node_ = parent;
     camera_ = camera;
-    // Create the camera's yaw node as a child of camera's top node.
+    node_->attachObject(camera);
+
+    if (style_ == FPS) {
+      // Create the camera's yaw node as a child of camera's top node.
     camera_yaw_node_ = node_->createChildSceneNode();
 
     // Create the camera's pitch node as a child of camera's yaw node.
@@ -351,8 +348,7 @@ class Camera final : public Entity, public InputObserver, public Ogre::FrameList
     // and attach the camera to it.
     camera_roll_node_ = camera_pitch_node_->createChildSceneNode();
     camera_roll_node_->attachObject(camera_);
-    if (style_ == FPS) {
-      ogre_camera_node->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
+      parent->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
     }
   }
 

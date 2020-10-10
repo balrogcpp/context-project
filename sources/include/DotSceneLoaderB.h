@@ -100,6 +100,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   static inline std::unique_ptr<Landscape> terrain_;
   static inline std::unique_ptr<Forest> forest_;
   std::unique_ptr<Camera> camera_;
+ private:
   Ogre::SceneManager *scene_ = nullptr;
   Ogre::Root *root_ = nullptr;
   Ogre::SceneNode *root_node_ = nullptr;
@@ -129,6 +130,10 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
 //----------------------------------------------------------------------------------------------------------------------
   static const Landscape &GetTerrain() {
     return *terrain_;
+  }
+//----------------------------------------------------------------------------------------------------------------------
+  Camera &GetCamera() const {
+    return *camera_;
   }
 //----------------------------------------------------------------------------------------------------------------------
   static const Forest &GetForest() {
