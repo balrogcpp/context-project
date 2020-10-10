@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #ifndef GL_ES
-#define VERSION 130
+#define VERSION 120
 #version VERSION
 #define USE_TEX_LOD
 #if VERSION != 120
@@ -71,14 +71,15 @@ out vec4 gl_FragColor;
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
 uniform sampler2D uTexMotion;
+uniform vec2 texelSize;
+uniform float uFrameTime;
+uniform float uScale;
 
 void main()
 {
-  vec2 texelSize = 1.0 / vec2(textureSize(SceneSampler, 0));
-
-  vec2 velocity = texture2D(uTexMotion, oUv0).rg;
+  vec2 velocity = uScale * (0.01667/uFrameTime) * texture2D(uTexMotion, oUv0).rg;
   float speed = length(velocity / texelSize);
-  int nSamples = clamp(int(speed), 1, MAX_SAMPLES);
+  int nSamples = int(clamp(speed, 1.0, MAX_SAMPLES));
 
   vec3 scene = texture2D(SceneSampler, oUv0).rgb;
   for (int i = 1; i < nSamples; i++) {
