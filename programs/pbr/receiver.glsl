@@ -25,12 +25,19 @@ float AvgBlockersDepthToPenumbra(float z_shadowMapView, float avgBlockersDepth)
   penumbra *= penumbra;
   return clamp(80.0f * penumbra, 0.0, 1.0);
 }
+
+float AvgBlockersDepthToPenumbra(float lightSize, float z_shadowMapView, float avgBlockersDepth)
+{
+  float penumbra = lightSize * (z_shadowMapView - avgBlockersDepth) / avgBlockersDepth;
+  penumbra *= penumbra;
+  return clamp(penumbra, 0.0, 1.0);
+}
 //----------------------------------------------------------------------------------------------------------------------
 float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float z_shadowMapView, int samplesCount)
 {
   float avgBlockersDepth = 0.0f;
   float blockersCount = 0.0f;
-  const float penumbraFilterMaxSize = 0.001;
+  const float penumbraFilterMaxSize = 0.01;
 
   for(int i = 0; i < samplesCount; i++)
   {
@@ -49,7 +56,7 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
   if(blockersCount > 0.0f)
   {
     avgBlockersDepth /= blockersCount;
-    return AvgBlockersDepthToPenumbra(z_shadowMapView, avgBlockersDepth);
+    return AvgBlockersDepthToPenumbra(10000.0, z_shadowMapView, avgBlockersDepth);
   }
   else
   {
@@ -66,11 +73,15 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv)
   float compare = uv.z;
 
   const int iterations = 16;
+  const float shadowFilterMaxSize = 0.005;
+  float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
+//  float penumbra = Penumbra(shadowMap, gradientNoise, uv.xy, compare, 16);
+
   for (int i = 0; i < iterations; i++)
   {
-    float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
-//    float penumbra = Penumbra(shadowMap, gradientNoise, uv.xy, compare, 16);
-    shadow += (texture2D(shadowMap, uv.xy + VogelDiskSample(i, 16, gradientNoise) * 0.001).r > compare ? 1.0 / float(iterations) : 0.0);
+    uv.xy += VogelDiskSample(i, 16, gradientNoise) * shadowFilterMaxSize;
+//    uv.xy += VogelDiskSample(i, 16, gradientNoise) * penumbra * shadowFilterMaxSize;
+    shadow += (texture2D(shadowMap, uv.xy).r > compare ? 1.0 / float(iterations) : 0.0);
   }
 
   return shadow;
