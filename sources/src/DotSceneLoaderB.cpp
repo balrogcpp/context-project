@@ -32,21 +32,26 @@ using namespace xio;
 namespace xio {
 ///---------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::DotSceneLoaderB() {
-  if (Ogre::SceneLoaderManager::getSingleton()._getSceneLoader("DotScene")) {
+  if (Ogre::SceneLoaderManager::getSingleton()._getSceneLoader("DotScene"))
     Ogre::SceneLoaderManager::getSingleton().unregisterSceneLoader("DotScene");
-  }
-  if (Ogre::SceneLoaderManager::getSingleton()._getSceneLoader("DotSceneB")) {
+
+  if (Ogre::SceneLoaderManager::getSingleton()._getSceneLoader("DotSceneB"))
     Ogre::SceneLoaderManager::getSingleton().unregisterSceneLoader("DotSceneB");
-  }
 
   Ogre::SceneLoaderManager::getSingleton().registerSceneLoader("DotSceneB", {".scene", ".xml"}, this);
 }
 ///---------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::~DotSceneLoaderB() {}
 ///---------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::Create() {
+  if (!terrain_) terrain_ = std::make_unique<Landscape>();
+  if (!forest_) forest_ = std::make_unique<Forest>();
+  forest_->SetHeighFunc([](float x, float z) { return terrain_->GetHeigh(x, z); });
+}
+///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::Clean() {
   terrain_.reset();
-  forest_->Clean();
+  forest_.reset();
   scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   scene_->clearScene();
 }
@@ -69,8 +74,7 @@ void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const std::string &group
 
   /// Validate the File
   if (!XMLRoot.attribute("formatVersion")) {
-    Ogre::LogManager::getSingleton().logError(
-        "[DotSceneLoader] Invalid .scene File. Missing <scene formatVersion='x.y' >");
+    Ogre::LogManager::getSingleton().logError("[DotSceneLoader] Invalid .scene File. Missing <scene formatVersion='x.y' >");
     return;
   }
 
@@ -78,6 +82,8 @@ void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const std::string &group
   attach_node_ = root_node;
   root_ = Ogre::Root::getSingletonPtr();
   root_node_ = attach_node_;
+
+  Create();
 
   /// Process the scene
   ProcessScene_(XMLRoot);
@@ -108,6 +114,8 @@ void DotSceneLoaderB::Load(const std::string &filename, const std::string &group
 
   /// figure out where to attach any nodes we Create
   attach_node_ = root_node;
+
+  Create();
 
   /// Process the scene
   ProcessScene_(XMLRoot);
@@ -143,10 +151,8 @@ void DotSceneLoaderB::ProcessScene_(pugi::xml_node &xml_root) {
   if (auto element = xml_root.child("environment"))
     ProcessEnvironment_(element);
 
-  if (auto element = xml_root.child("terrainGroup")) {
-    if (!terrain_) terrain_ = std::make_unique<Landscape>();
-    terrain_->ProcessTerrainGroup(element);
-  }
+  if (auto element = xml_root.child("terrainGroup"))
+    ProcessLandscape_(element);
 
   if (auto element = xml_root.child("nodes"))
     ProcessNodes_(element);
@@ -728,9 +734,11 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 }
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessForest_(pugi::xml_node &xml_node) {
-  if (!forest_) forest_ = std::make_unique<Forest>();
-  if (terrain_) forest_->SetHeighFunc([](float x, float z){return terrain_->GetHeigh(x, z);});
-  forest_->Create();
+  forest_->ProcessForest();
+}
+///---------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::ProcessLandscape_(pugi::xml_node &xml_node) {
+  if (terrain_) terrain_->ProcessTerrainGroup(xml_node);
 }
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessFog_(pugi::xml_node &xml_node) {

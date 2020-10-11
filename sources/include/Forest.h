@@ -21,28 +21,22 @@
 //SOFTWARE.
 
 #pragma once
-#include "Component.h"
-#include "PagedGeometry.h"
-#include "GrassLoader.h"
-#include "TreeLoader2D.h"
-#include "TreeLoader3D.h"
-#include "BatchPage.h"
-#include "BatchedGeometry.h"
+#include "ComponentLocator.h"
 #include <functional>
 #include <memory>
 
+namespace Forests {
+class PagedGeometry;
+class PageLoader;
+class GeometryPage;
+}
+
 namespace xio {
-class Forest final : public Component {
+class Forest final : public ComponentLocator {
  public:
   Forest();
   virtual ~Forest();
-
-  void Create() final;
-  void Reset() final {}
-  void Clean() final;
-  void Pause() final {}
-  void Resume() final {}
-  void Loop(float time) final {}
+  void ProcessForest();
 
  private:
   inline static std::function<float(float, float)> heigh_func_;

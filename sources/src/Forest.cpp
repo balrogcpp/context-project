@@ -30,10 +30,6 @@ namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 Forest::Forest() {}
 Forest::~Forest() {
-  Clean();
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Forest::Clean() {
   for (auto it : pgeometry_)
     delete it;
   for (auto it : ploaders_)
@@ -46,10 +42,10 @@ void Forest::Clean() {
   gpages_.clear();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Forest::Create() {
+void Forest::ProcessForest() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 50);
   pgeometry_.push_back(grass);
-  grass->addDetailLevel<GrassPage>(100);//Draw grass up to 100
+  grass->addDetailLevel<GrassPage>(50);//Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
   ploaders_.push_back(grassLoader);
   grass->setPageLoader(grassLoader);
@@ -65,7 +61,7 @@ void Forest::Create() {
   layer->setSwayDistribution(10.0f);
   layer->setSwayLength(1.0f);
   layer->setSwaySpeed(0.5f);
-  layer->setDensity(2.0f);
+  layer->setDensity(5.0f);
   layer->setMapBounds(TBounds(-100, -100, 100, 100));
   layer->setDensityMap("terrain2.png");
   layer->setColorMap("terrain2.png");

@@ -23,12 +23,12 @@
 #pragma once
 #include "Component.h"
 #include "Singleton.h"
-#include "Landscape.h"
-#include "Forest.h"
 #include "Camera.h"
 #include "ReflectionCamera.h"
 #include "CubeMapCamera.h"
 #include "Input.h"
+#include "Forest.h"
+#include "Landscape.h"
 #include <OgreSceneLoader.h>
 #include <OgreVector4.h>
 #include <vector>
@@ -41,7 +41,6 @@ class xml_node;
 namespace Ogre {
 class SceneManager;
 class SceneNode;
-class Landscape;
 class TerrainGroup;
 class TerrainGlobalOptions;
 class VertexDeclaration;
@@ -61,7 +60,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();
 
-  void Create() final {}
+  void Create() final;
   void Reset() final {}
   void Clean() final;
   void Pause() final {}
@@ -88,6 +87,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   void ProcessBillboardSet_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
   void ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
   void ProcessForest_(pugi::xml_node &xml_node);
+  void ProcessLandscape_(pugi::xml_node &xml_node);
   void ProcessFog_(pugi::xml_node &xml_node);
   void ProcessSkyBox_(pugi::xml_node &xml_node);
   void ProcessSkyDome_(pugi::xml_node &xml_node);
@@ -100,7 +100,6 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   static inline std::unique_ptr<Landscape> terrain_;
   static inline std::unique_ptr<Forest> forest_;
   std::unique_ptr<Camera> camera_;
- private:
   Ogre::SceneManager *scene_ = nullptr;
   Ogre::Root *root_ = nullptr;
   Ogre::SceneNode *root_node_ = nullptr;
@@ -128,7 +127,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
     overlay_ = overlay;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  static const Landscape &GetTerrain() {
+  static Landscape &GetTerrain() {
     return *terrain_;
   }
 //----------------------------------------------------------------------------------------------------------------------
@@ -136,7 +135,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
     return *camera_;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  static const Forest &GetForest() {
+  static Forest &GetForest() {
     return *forest_;
   }
 };

@@ -1,8 +1,7 @@
 #pragma once
 #include "Ogre.h"
+#include "Entity.h"
 #include "Input.h"
-
-using namespace Ogre;
 
 #define SCALE 0.1
 #define CHAR_HEIGHT SCALE*5          // height of character's center of mass above ground
@@ -13,7 +12,7 @@ using namespace Ogre;
 #define JUMP_ACCEL SCALE*30.0f       // character jump acceleration in upward units per squared second
 #define GRAVITY SCALE*90.0f          // gravity in downward units per squared second
 
-class SinbadCharacterController : public xio::InputObserver {
+class SinbadCharacterController : public xio::Entity, public xio::InputObserver {
  private:
   // all the animations our character has, and a null ID
   // some of these affect separate body parts and will be blended together
@@ -36,13 +35,13 @@ class SinbadCharacterController : public xio::InputObserver {
   };
 
  public:
-  SinbadCharacterController(Camera *cam) : mBaseAnimID(ANIM_NONE), mTopAnimID(ANIM_NONE) {
+  explicit SinbadCharacterController(Ogre::Camera *cam) : mBaseAnimID(ANIM_NONE), mTopAnimID(ANIM_NONE) {
     setupBody(cam->getSceneManager());
     setupCamera(cam);
     setupAnimations();
   }
 
-  void addTime(Real deltaTime) {
+  void addTime(Ogre::Real deltaTime) {
     updateBody(deltaTime);
     updateAnimations(deltaTime);
     updateCamera(deltaTime);
@@ -131,47 +130,47 @@ class SinbadCharacterController : public xio::InputObserver {
 
  private:
 
-  void setupBody(SceneManager *sceneMgr) {
+  void setupBody(Ogre::SceneManager *sceneMgr) {
     // create main model
-    mBodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode(Vector3::UNIT_Y * CHAR_HEIGHT);
+    mBodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * CHAR_HEIGHT);
     mBodyEnt = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
     mBodyNode->attachObject(mBodyEnt);
-    mBodyNode->scale(Vector3{SCALE});
+    mBodyNode->scale(Ogre::Vector3{SCALE});
 
     // create swords and attach to sheath
-    LogManager::getSingleton().logMessage("Creating swords");
+    Ogre::LogManager::getSingleton().logMessage("Creating swords");
     mSword1 = sceneMgr->createEntity("SinbadSword1", "Sword.mesh");
     mSword2 = sceneMgr->createEntity("SinbadSword2", "Sword.mesh");
     mBodyEnt->attachObjectToBone("Sheath.L", mSword1);
     mBodyEnt->attachObjectToBone("Sheath.R", mSword2);
 
-    LogManager::getSingleton().logMessage("Creating the chains");
+    Ogre::LogManager::getSingleton().logMessage("Creating the chains");
     // create a couple of ribbon trails for the swords, just for fun
-    NameValuePairList params;
+    Ogre::NameValuePairList params;
     params["numberOfChains"] = "2";
     params["maxElements"] = "80";
-    mSwordTrail = (RibbonTrail *) sceneMgr->createMovableObject("RibbonTrail", &params);
+    mSwordTrail = (Ogre::RibbonTrail *) sceneMgr->createMovableObject("RibbonTrail", &params);
     mSwordTrail->setMaterialName("Examples/LightRibbonTrail");
-    mSwordTrail->setTrailLength(SCALE*20);
+    mSwordTrail->setTrailLength(SCALE * 20);
     mSwordTrail->setVisible(false);
     sceneMgr->getRootSceneNode()->attachObject(mSwordTrail);
 
     for (int i = 0; i < 2; i++) {
       mSwordTrail->setInitialColour(i, 1, 0.8, 0);
       mSwordTrail->setColourChange(i, 0.75, 1.25, 1.25, 1.25);
-      mSwordTrail->setWidthChange(i, SCALE*1);
-      mSwordTrail->setInitialWidth(i, SCALE*0.5);
+      mSwordTrail->setWidthChange(i, SCALE * 1);
+      mSwordTrail->setInitialWidth(i, SCALE * 0.5);
     }
 
-    mKeyDirection = Vector3::ZERO;
+    mKeyDirection = Ogre::Vector3::ZERO;
     mVerticalVelocity = 0;
   }
 
   void setupAnimations() {
     // this is very important due to the nature of the exported animations
-    mBodyEnt->getSkeleton()->setBlendMode(ANIMBLEND_CUMULATIVE);
+    mBodyEnt->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
 
-    String animNames[NUM_ANIMS] =
+    Ogre::String animNames[NUM_ANIMS] =
         {"IdleBase", "IdleTop", "RunBase", "RunTop", "HandsClosed", "HandsRelaxed", "DrawSwords",
          "SliceVertical", "SliceHorizontal", "Dance", "JumpStart", "JumpLoop", "JumpEnd"};
 
@@ -193,13 +192,11 @@ class SinbadCharacterController : public xio::InputObserver {
     mSwordsDrawn = false;
   }
 
-  void setupCamera(Camera *cam) {
+  void setupCamera(Ogre::Camera *cam) {
     // create a pivot at roughly the character's shoulder
     mCameraPivot = cam->getSceneManager()->getRootSceneNode()->createChildSceneNode();
     // this is where the camera should be soon, and it spins around the pivot
-//    mCameraGoal = mCameraPivot->createChildSceneNode(Vector3(0, SCALE*15, 0));
-    mCameraGoal = mCameraPivot->createChildSceneNode(Vector3(0, SCALE*5, SCALE*15));
-//    mCameraGoal = mCameraPivot->createChildSceneNode(Vector3(0, 0, SCALE*15));
+    mCameraGoal = mCameraPivot->createChildSceneNode(Ogre::Vector3(0, SCALE * 5, SCALE * 15));
     // this is where the camera actually is
     mCameraNode = cam->getParentSceneNode();
     mCameraNode->setPosition(mCameraPivot->getPosition() + mCameraGoal->getPosition());
@@ -215,47 +212,51 @@ class SinbadCharacterController : public xio::InputObserver {
     mPivotPitch = 0;
   }
 
-  void updateBody(Real deltaTime) {
-    mGoalDirection = Vector3::ZERO;   // we will calculate this
+  void updateBody(Ogre::Real deltaTime) {
+    mGoalDirection = Ogre::Vector3::ZERO;   // we will calculate this
+    float x = mBodyNode->getPosition().x;
+    float z = mBodyNode->getPosition().z;
+    float y = loader_->GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
+    mBodyNode->setPosition(x, y, z);
 
-    if (mKeyDirection != Vector3::ZERO && mBaseAnimID != ANIM_DANCE) {
+    if (mKeyDirection != Ogre::Vector3::ZERO && mBaseAnimID != ANIM_DANCE) {
       // calculate actually goal direction in world based on player's key directions
       mGoalDirection += mKeyDirection.z * mCameraNode->getOrientation().zAxis();
       mGoalDirection += mKeyDirection.x * mCameraNode->getOrientation().xAxis();
       mGoalDirection.y = 0;
       mGoalDirection.normalise();
 
-      Quaternion toGoal = mBodyNode->getOrientation().zAxis().getRotationTo(mGoalDirection);
+      Ogre::Quaternion toGoal = mBodyNode->getOrientation().zAxis().getRotationTo(mGoalDirection);
 
       // calculate how much the character has to turn to face goal direction
-      Real yawToGoal = toGoal.getYaw().valueDegrees();
+      Ogre::Real yawToGoal = toGoal.getYaw().valueDegrees();
       // this is how much the character CAN turn this frame
-      Real yawAtSpeed = yawToGoal / Math::Abs(yawToGoal) * deltaTime * TURN_SPEED;
+      Ogre::Real yawAtSpeed = yawToGoal / Ogre::Math::Abs(yawToGoal) * deltaTime * TURN_SPEED;
       // reduce "turnability" if we're in midair
       if (mBaseAnimID == ANIM_JUMP_LOOP) yawAtSpeed *= 0.2f;
 
       // turn as much as we can, but not more than we need to
       if (yawToGoal < 0)
-        yawToGoal = std::min<Real>(0,std::max<Real>(yawToGoal,yawAtSpeed));
+        yawToGoal = std::min<Ogre::Real>(0, std::max<Ogre::Real>(yawToGoal, yawAtSpeed));
       else if (yawToGoal > 0)
-        yawToGoal = std::max<Real>(0,std::min<Real>(yawToGoal,yawAtSpeed));
+        yawToGoal = std::max<Ogre::Real>(0, std::min<Ogre::Real>(yawToGoal, yawAtSpeed));
 
-      mBodyNode->yaw(Degree(yawToGoal));
+      mBodyNode->yaw(Ogre::Degree(yawToGoal));
 
       // move in current body direction (not the goal direction)
       mBodyNode->translate(0, 0, deltaTime * RUN_SPEED * mAnims[mBaseAnimID]->getWeight(),
-                           Node::TS_LOCAL);
+                           Ogre::Node::TS_LOCAL);
     }
 
     if (mBaseAnimID == ANIM_JUMP_LOOP) {
       // if we're jumping, add a vertical offset too, and apply gravity
-      mBodyNode->translate(0, mVerticalVelocity * deltaTime, 0, Node::TS_LOCAL);
+      mBodyNode->translate(0, mVerticalVelocity * deltaTime, 0, Ogre::Node::TS_LOCAL);
       mVerticalVelocity -= GRAVITY * deltaTime;
 
-      Vector3 pos = mBodyNode->getPosition();
-      if (pos.y <= CHAR_HEIGHT) {
+      Ogre::Vector3 pos = mBodyNode->getPosition();
+      if (pos.y <= loader_->GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT) {
         // if we've hit the ground, change to landing state
-        pos.y = CHAR_HEIGHT;
+        pos.y = loader_->GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
         mBodyNode->setPosition(pos);
         setBaseAnimation(ANIM_JUMP_END, true);
         mTimer = 0;
@@ -263,9 +264,9 @@ class SinbadCharacterController : public xio::InputObserver {
     }
   }
 
-  void updateAnimations(Real deltaTime) {
-    Real baseAnimSpeed = 1;
-    Real topAnimSpeed = 1;
+  void updateAnimations(Ogre::Real deltaTime) {
+    Ogre::Real baseAnimSpeed = 1;
+    Ogre::Real topAnimSpeed = 1;
 
     mTimer += deltaTime;
 
@@ -327,7 +328,7 @@ class SinbadCharacterController : public xio::InputObserver {
     } else if (mBaseAnimID == ANIM_JUMP_END) {
       if (mTimer >= mAnims[mBaseAnimID]->getLength()) {
         // safely landed, so go back to running or idling
-        if (mKeyDirection == Vector3::ZERO) {
+        if (mKeyDirection == Ogre::Vector3::ZERO) {
           setBaseAnimation(ANIM_IDLE_BASE);
           setTopAnimation(ANIM_IDLE_TOP);
         } else {
@@ -345,17 +346,17 @@ class SinbadCharacterController : public xio::InputObserver {
     fadeAnimations(deltaTime);
   }
 
-  void fadeAnimations(Real deltaTime) {
+  void fadeAnimations(Ogre::Real deltaTime) {
     for (int i = 0; i < NUM_ANIMS; i++) {
       if (mFadingIn[i]) {
         // slowly fade this animation in until it has full weight
-        Real newWeight = mAnims[i]->getWeight() + deltaTime * ANIM_FADE_SPEED;
-        mAnims[i]->setWeight(Math::Clamp<Real>(newWeight, 0, 1));
+        Ogre::Real newWeight = mAnims[i]->getWeight() + deltaTime * ANIM_FADE_SPEED;
+        mAnims[i]->setWeight(Ogre::Math::Clamp<Ogre::Real>(newWeight, 0, 1));
         if (newWeight >= 1) mFadingIn[i] = false;
       } else if (mFadingOut[i]) {
         // slowly fade this animation out until it has no weight, and then disable it
-        Real newWeight = mAnims[i]->getWeight() - deltaTime * ANIM_FADE_SPEED;
-        mAnims[i]->setWeight(Math::Clamp<Real>(newWeight, 0, 1));
+        Ogre::Real newWeight = mAnims[i]->getWeight() - deltaTime * ANIM_FADE_SPEED;
+        mAnims[i]->setWeight(Ogre::Math::Clamp<Ogre::Real>(newWeight, 0, 1));
         if (newWeight <= 0) {
           mAnims[i]->setEnabled(false);
           mFadingOut[i] = false;
@@ -364,32 +365,32 @@ class SinbadCharacterController : public xio::InputObserver {
     }
   }
 
-  void updateCamera(Real deltaTime) {
+  void updateCamera(Ogre::Real deltaTime) {
     // place the camera pivot roughly at the character's shoulder
-    mCameraPivot->setPosition(mBodyNode->getPosition() + Vector3::UNIT_Y * CAM_HEIGHT);
+    mCameraPivot->setPosition(mBodyNode->getPosition() + Ogre::Vector3::UNIT_Y * CAM_HEIGHT);
     // move the camera smoothly to the goal
-    Vector3 goalOffset = mCameraGoal->_getDerivedPosition() - mCameraNode->getPosition();
+    Ogre::Vector3 goalOffset = mCameraGoal->_getDerivedPosition() - mCameraNode->getPosition();
     mCameraNode->translate(goalOffset * deltaTime * 9.0f);
     // always look at the pivot
-    mCameraNode->lookAt(mCameraPivot->_getDerivedPosition(), Node::TS_PARENT);
+    mCameraNode->lookAt(mCameraPivot->_getDerivedPosition(), Ogre::Node::TS_PARENT);
   }
 
-  void updateCameraGoal(Real deltaYaw, Real deltaPitch, Real deltaZoom) {
-    mCameraPivot->yaw(Degree(deltaYaw), Node::TS_PARENT);
+  void updateCameraGoal(Ogre::Real deltaYaw, Ogre::Real deltaPitch, Ogre::Real deltaZoom) {
+    mCameraPivot->yaw(Ogre::Degree(deltaYaw), Ogre::Node::TS_PARENT);
 
     // bound the pitch
     if (!(mPivotPitch + deltaPitch > 25 && deltaPitch > 0) &&
         !(mPivotPitch + deltaPitch < -60 && deltaPitch < 0)) {
-      mCameraPivot->pitch(Degree(deltaPitch), Node::TS_LOCAL);
+      mCameraPivot->pitch(Ogre::Degree(deltaPitch), Ogre::Node::TS_LOCAL);
       mPivotPitch += deltaPitch;
     }
 
-    Real dist = mCameraGoal->_getDerivedPosition().distance(mCameraPivot->_getDerivedPosition());
-    Real distChange = deltaZoom * dist;
+    Ogre::Real dist = mCameraGoal->_getDerivedPosition().distance(mCameraPivot->_getDerivedPosition());
+    Ogre::Real distChange = deltaZoom * dist;
 
     // bound the zoom
-    if (!(dist + distChange < SCALE*8 && distChange < 0) && !(dist + distChange > SCALE*25 && distChange > 0)) {
-      mCameraGoal->translate(0, 0, distChange, Node::TS_LOCAL);
+    if (!(dist + distChange < SCALE * 8 && distChange < 0) && !(dist + distChange > SCALE * 40 && distChange > 0)) {
+      mCameraGoal->translate(0, 0, distChange, Ogre::Node::TS_LOCAL);
     }
   }
 
@@ -431,23 +432,23 @@ class SinbadCharacterController : public xio::InputObserver {
     }
   }
 
-  SceneNode *mBodyNode;
-  SceneNode *mCameraPivot;
-  SceneNode *mCameraGoal;
-  SceneNode *mCameraNode;
-  Real mPivotPitch;
-  Entity *mBodyEnt;
-  Entity *mSword1;
-  Entity *mSword2;
-  RibbonTrail *mSwordTrail;
-  AnimationState *mAnims[NUM_ANIMS];    // master animation list
+  Ogre::SceneNode *mBodyNode;
+  Ogre::SceneNode *mCameraPivot;
+  Ogre::SceneNode *mCameraGoal;
+  Ogre::SceneNode *mCameraNode;
+  Ogre::Real mPivotPitch;
+  Ogre::Entity *mBodyEnt;
+  Ogre::Entity *mSword1;
+  Ogre::Entity *mSword2;
+  Ogre::RibbonTrail *mSwordTrail;
+  Ogre::AnimationState *mAnims[NUM_ANIMS];    // master animation list
   AnimID mBaseAnimID;                   // current base (full- or lower-body) animation
   AnimID mTopAnimID;                    // current top (upper-body) animation
   bool mFadingIn[NUM_ANIMS];            // which animations are fading in
   bool mFadingOut[NUM_ANIMS];           // which animations are fading out
   bool mSwordsDrawn;
-  Vector3 mKeyDirection;      // player's local intended direction based on WASD keys
-  Vector3 mGoalDirection;     // actual intended direction in world-space
-  Real mVerticalVelocity;     // for jumping
-  Real mTimer;                // general timer to see how long animations have been playing
+  Ogre::Vector3 mKeyDirection;      // player's local intended direction based on WASD keys
+  Ogre::Vector3 mGoalDirection;     // actual intended direction in world-space
+  Ogre::Real mVerticalVelocity;     // for jumping
+  Ogre::Real mTimer;                // general timer to see how long animations have been playing
 };

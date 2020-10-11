@@ -118,8 +118,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   int minBatchSize = Ogre::StringConverter::parseInt(xml_node.attribute("minBatchSize").value());
   int maxBatchSize = Ogre::StringConverter::parseInt(xml_node.attribute("maxBatchSize").value());
   int inputScale = Ogre::StringConverter::parseInt(xml_node.attribute("inputScale").value());
-  int tuningCompositeMapDistance =
-      Ogre::StringConverter::parseInt(xml_node.attribute("tuningCompositeMapDistance").value());
+  int tuningCompositeMapDistance = Ogre::StringConverter::parseInt(xml_node.attribute("tuningCompositeMapDistance").value());
   int tuningMaxPixelError = GetAttribInt(xml_node, "tuningMaxPixelError", 8);
   auto *terrain_global_options = Ogre::TerrainGlobalOptions::getSingletonPtr();
 
@@ -157,16 +156,14 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     terrain_->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
 
     int layers_count = 0;
-    for (const auto &pLayerElement : pPageElement.children("layer")) {
+    for (const auto &pLayerElement : pPageElement.children("layer"))
       layers_count++;
-    }
 
     defaultimp.layerList.resize(layers_count);
 
     int layer_counter = 0;
     for (auto pLayerElement : pPageElement.children("layer")) {
-      defaultimp.layerList[layer_counter].worldSize =
-          Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
+      defaultimp.layerList[layer_counter].worldSize = Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
       defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
       defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
 
