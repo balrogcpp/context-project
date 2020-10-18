@@ -20,40 +20,16 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-vertex_program PbrTerrain_vs_glsl glsl
+vertex_program PbrTerrain_vs glsl glsles
 {
 	source pbr.vert
     preprocessor_defines HAS_UV,SHADOWRECEIVER,VERTEX_COMPRESSION
 }
 
-vertex_program PbrTerrain_vs_glsles glsles
-{
-	source pbr.vert
-    preprocessor_defines HAS_UV,SHADOWRECEIVER,VERTEX_COMPRESSION
-}
-
-vertex_program PbrTerrain_vs unified
-{
-	delegate PbrTerrain_vs_glsl
-	delegate PbrTerrain_vs_glsles
-}
-
-fragment_program PbrTerrain_fs_glsl glsl
+fragment_program PbrTerrain_fs glsl glsles
 {
 	source pbr.frag
     preprocessor_defines TERRAIN,HAS_PARALLAXMAP,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,SHADOWRECEIVER
-}
-
-fragment_program PbrTerrain_fs_glsles glsles
-{
-	source pbr.frag
-    preprocessor_defines TERRAIN,HAS_PARALLAXMAP,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,SHADOWRECEIVER
-}
-
-fragment_program PbrTerrain_fs unified
-{
-	delegate PbrTerrain_fs_glsl
-	delegate PbrTerrain_fs_glsles
 }
 
 material PbrTerrain

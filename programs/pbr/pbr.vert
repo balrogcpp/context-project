@@ -76,8 +76,8 @@ precision highp float;
 in vec4 position;
 in vec2 uv0;
 #else
-in vec2 vertex; // VES_POSITION
-in float uv0; // VES_TEXTURE_COORDINATES0
+in vec2 vertex;
+in float uv0;
 uniform mat4 posIndexToObjectSpace;
 uniform float baseUVScale;
 #endif
@@ -134,11 +134,11 @@ void main()
   vUV0.xy = uv0.xy;
 
 #ifdef PAGED_GEOMETRY
-if (uv0.y == 0.0) {
-  float kradius = 0.25;
-  float kheigh = 0.25;
-  float kx = 1.0;
-  float ky = 1.0;
+if (uv0.xy == vec2(0.0)) {
+  const float kradius = 0.5;
+  const float kheigh = 0.5;
+  const float kx = 1.0;
+  const float ky = 1.0;
   new_position.y += sin(uTime + new_position.z + new_position.y + new_position.x) * kradius * kradius * ky;
   new_position.x += sin(uTime + new_position.z) * kheigh * kheigh * kx;
 }

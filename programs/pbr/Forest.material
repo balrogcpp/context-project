@@ -21,40 +21,16 @@
 //SOFTWARE.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program PbrForest_vs_glsl glsl
+vertex_program PbrForest_vs glsl glsles
 {
 	source pbr.vert
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV
 }
-
-vertex_program PbrForest_vs_glsles glsles
-{
-	source pbr.vert
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV
-}
-
-vertex_program PbrForest_vs unified
-{
-	delegate PbrForest_vs_glsl
-	delegate PbrForest_vs_glsles
-}
-
-fragment_program PbrForest_fs_glsl glsl
+W
+fragment_program PbrForest_fs glsl glsles
 {
 	source pbr.frag
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
-}
-
-fragment_program PbrForest_fs_glsles glsles
-{
-	source pbr.frag
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
-}
-
-fragment_program PbrForest_fs unified
-{
-	delegate PbrForest_fs_glsl
-	delegate PbrForest_fs_glsles
 }
 
 material PbrForest
@@ -81,40 +57,16 @@ material PbrForest
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PbrForest_Shadowed_fs_glsl glsl
+fragment_program PbrForest_Shadowed_fs glsl glsles
 {
 	source pbr.frag
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
 }
 
-fragment_program PbrForest_Shadowed_fs_glsles glsles
-{
-	source pbr.frag
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
-}
-
-fragment_program PbrForest_Shadowed_fs unified
-{
-	delegate PbrForest_Shadowed_fs_glsl
-	delegate PbrForest_Shadowed_fs_glsles
-}
-
-vertex_program PbrForest_Shadowed_vs_glsl glsl
+vertex_program PbrForest_Shadowed_vs glsl glsles
 {
 	source pbr.vert
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
-}
-
-vertex_program PbrForest_Shadowed_vs_glsles glsles
-{
-	source pbr.vert
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
-}
-
-vertex_program PbrForest_Shadowed_vs unified
-{
-	delegate PbrForest_Shadowed_vs_glsl
-	delegate PbrForest_Shadowed_vs_glsles
 }
 
 material PbrForest_Shadowed
