@@ -61,37 +61,14 @@ void Forest::ProcessForest() {
   layer->setSwayDistribution(10.0f);
   layer->setSwayLength(1.0f);
   layer->setSwaySpeed(0.5f);
-  layer->setDensity(5.0f);
-  layer->setMapBounds(TBounds(-100, -100, 100, 100));
+  layer->setDensity(10.0f);
+  layer->setMapBounds(TBounds(-50, -50, 50, 50));
   layer->setDensityMap("terrain2.png");
   layer->setColorMap("terrain2.png");
   grass->update();
 
   UpdatePbrParams("GrassCustom");
   UpdatePbrShadowReceiver("GrassCustom");
-
-//  auto *grass2 = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 50);
-//  grass2->addDetailLevel<GrassPage>(100);//Draw grass up to 100
-//  auto *grassLoader2 = new GrassLoader(grass2);
-//  grass2->setPageLoader(grassLoader2);
-//  if (heigh_func_)
-//    grassLoader2->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z) - 0.1); });
-//  UpdatePbrParams("GrassCustom2");
-//  UpdatePbrShadowReceiver("GrassCustom2");
-//  GrassLayer *layer2 = grassLoader2->addLayer("GrassCustom2");
-//  layer2->setFadeTechnique(FADETECH_ALPHAGROW);
-//  layer2->setRenderTechnique(GRASSTECH_CROSSQUADS);
-//  layer2->setMaximumSize(1.0f, 1.0f);
-//  layer2->setAnimationEnabled(true);
-//  layer2->setSwayDistribution(10.0f);
-//  layer2->setSwayLength(1.0f);
-//  layer2->setSwaySpeed(0.5f);
-//  layer2->setDensity(2.0f);
-//  layer2->setMapBounds(TBounds(-100, -100, 100, 100));
-//  layer2->setDensityMap("new_terrain.png");
-//  layer2->setColorMap("terrain2.png");
-//  grass2->update();
-
   UpdatePbrParams("3D-Diggers/fir01");
   UpdatePbrShadowCaster("3D-Diggers/fir01");
   UpdatePbrParams("3D-Diggers/fir02");

@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include <OgreRoot.h>
 #include "Input.h"
 #include "Entity.h"
@@ -46,7 +45,6 @@ class Camera final : public Entity, public InputObserver {
   Camera() {}
   virtual ~Camera() {}
 
- private:
 //----------------------------------------------------------------------------------------------------------------------
   void ManualStop() {
     if (style_ == FREELOOK) {
@@ -60,9 +58,7 @@ class Camera final : public Entity, public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  bool frameRenderingQueued(const Ogre::FrameEvent &event) {
-    float time = event.timeSinceLastFrame;
-
+  void Update(float time) override {
     if (style_ == FREELOOK) {
       top_speed_ = move_fast_ ? run_speed_ : const_speed_;
 
@@ -154,9 +150,9 @@ class Camera final : public Entity, public InputObserver {
 
       float speed = rigid_->getLinearVelocity().length();
       if (speed > (run_speed_ + run_speed_) / 2.0f) {
-        animation_time_ += event.timeSinceLastFrame;
+        animation_time_ += time;
       } else {
-        animation_time_ -= event.timeSinceLastFrame;
+        animation_time_ -= time;
       }
 
       if (animation_time_ > anim_duration_) {
@@ -186,8 +182,6 @@ class Camera final : public Entity, public InputObserver {
       dx_ = 0;
       dy_ = 0;
     }
-
-    return true;
   }
 //----------------------------------------------------------------------------------------------------------------------
   void Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) override {
@@ -281,7 +275,6 @@ class Camera final : public Entity, public InputObserver {
     }
   }
 
- private:
   Ogre::SceneNode *node_ = nullptr;
   Ogre::SceneNode *camera_yaw_node_ = nullptr;
   Ogre::SceneNode *camera_pitch_node_ = nullptr;
@@ -289,7 +282,7 @@ class Camera final : public Entity, public InputObserver {
   btRigidBody *rigid_ = nullptr;
   Ogre::Degree dx_, dy_;
   Ogre::Camera *camera_ = nullptr;
-  int style_ = MANUAL;
+  int style_ = FPS;
   Ogre::SceneNode *target_ = nullptr;
   bool orbiting_ = false;
   bool moving_ = false;
@@ -335,20 +328,21 @@ class Camera final : public Entity, public InputObserver {
   void RegCamera(Ogre::SceneNode *parent, Ogre::Camera *camera) {
     node_ = parent;
     camera_ = camera;
-    node_->attachObject(camera);
 
     if (style_ == FPS) {
       // Create the camera's yaw node as a child of camera's top node.
-    camera_yaw_node_ = node_->createChildSceneNode();
+      camera_yaw_node_ = node_->createChildSceneNode();
 
-    // Create the camera's pitch node as a child of camera's yaw node.
-    camera_pitch_node_ = camera_yaw_node_->createChildSceneNode();
+      // Create the camera's pitch node as a child of camera's yaw node.
+      camera_pitch_node_ = camera_yaw_node_->createChildSceneNode();
 
-    // Create the camera's roll node as a child of camera's pitch node
-    // and attach the camera to it.
-    camera_roll_node_ = camera_pitch_node_->createChildSceneNode();
-    camera_roll_node_->attachObject(camera_);
+      // Create the camera's roll node as a child of camera's pitch node
+      // and attach the camera to it.
+      camera_roll_node_ = camera_pitch_node_->createChildSceneNode();
+      camera_roll_node_->attachObject(camera_);
       parent->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
+    } else {
+      node_->attachObject(camera);
     }
   }
 

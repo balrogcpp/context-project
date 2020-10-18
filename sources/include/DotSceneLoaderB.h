@@ -65,7 +65,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   void Clean() final;
   void Pause() final {}
   void Resume() final {}
-  void Loop(float time) final {}
+  void Loop(float time);
 
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
   void Load(const std::string &filename, const std::string &group_name, Ogre::SceneNode *root_node);
@@ -110,17 +110,17 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   static inline Physics *physics_ = nullptr;
   static inline Sound *sound_ = nullptr;
   static inline Overlay *overlay_ = nullptr;
-  static inline InputSequencer *io_ = nullptr;
+  static inline InputSequencer *input_ = nullptr;
  public:
 //----------------------------------------------------------------------------------------------------------------------
   static void LocateComponents(YamlConfigurator *conf,
-                               InputSequencer *io,
+                               InputSequencer *input,
                                Renderer *renderer,
                                Physics *physics,
                                Sound *sounds,
                                Overlay *overlay) {
     conf_ = conf;
-    io_ = io;
+    input_ = input;
     renderer_ = renderer;
     physics_ = physics;
     sound_ = sounds;
