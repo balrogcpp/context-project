@@ -62,7 +62,7 @@ class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
 #if OGRE_VERSION_MAJOR == 2
       Ogre::IdType id, Ogre::SceneManager *scnMgr, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
 #else
-      Ogre::SceneManager *scnMgr = NULL
+      Ogre::SceneManager *scnMgr = nullptr
 #endif
   ) :
 #if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0

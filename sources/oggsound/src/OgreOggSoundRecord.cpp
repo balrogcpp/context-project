@@ -80,7 +80,7 @@ void OgreOggSoundRecord::_updateRecording() {
 const OgreOggSoundRecord::RecordDeviceList &OgreOggSoundRecord::getCaptureDeviceList() {
   mDeviceList.clear();
   // Get list of available capture Devices
-  const ALchar *pDeviceList = alcGetString(NULL, ALC_CAPTURE_DEVICE_SPECIFIER);
+  const ALchar *pDeviceList = alcGetString(nullptr, ALC_CAPTURE_DEVICE_SPECIFIER);
   if (pDeviceList) {
     while (*pDeviceList) {
       mDeviceList.push_back(Ogre::String(pDeviceList));
@@ -132,7 +132,7 @@ bool OgreOggSoundRecord::initCaptureDevice(const Ogre::String &deviceName,
   // No device specified - select default
   if (mDeviceName.empty()) {
     // Get the name of the 'default' capture device
-    mDefaultCaptureDevice = alcGetString(NULL, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
+    mDefaultCaptureDevice = alcGetString(nullptr, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
     mDeviceName = mDefaultCaptureDevice;
     LogManager::getSingleton().logMessage("Selected Default Capture Device: " + mDeviceName);
   }
