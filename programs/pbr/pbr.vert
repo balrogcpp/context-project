@@ -135,12 +135,10 @@ void main()
 
 #ifdef PAGED_GEOMETRY
 if (uv0.xy == vec2(0.0)) {
-  const float kradius = 0.5;
-  const float kheigh = 0.5;
-  const float kx = 1.0;
-  const float ky = 1.0;
-  new_position.y += sin(uTime + new_position.z + new_position.y + new_position.x) * kradius * kradius * ky;
-  new_position.x += sin(uTime + new_position.z) * kheigh * kheigh * kx;
+  const float frequency = 4.0;
+  const vec4 direction = vec4(0.2, 0, 0, 0);
+  float offset = sin(uTime + new_position.x * frequency);
+  new_position += direction * offset;
 }
 #endif
 #ifndef SHADOWCASTER

@@ -407,7 +407,6 @@ float microfacetDistribution(PBRInfo pbrInputs)
 }
 #endif //!SHADOWCASTER
 
-
 //IBL PBR extention
 #ifdef USE_IBL
 // Calculation of the lighting contribution from an optional Image Based Light source.
@@ -470,7 +469,7 @@ void main()
 #endif
 
 #ifdef TERRAIN
-    tex_coord *= 64.0;
+    tex_coord *= 128.0;
 #endif
 
     // The albedo may be defined from a base texture or a flat color

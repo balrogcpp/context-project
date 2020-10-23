@@ -38,7 +38,9 @@ material Pbr
     {
       pass
       {
+            diffuse 1 1 1
             specular 1 1 1 1
+            ambient 0 0 0
 
             texture_unit Albedo {}
             texture_unit Normal {}
@@ -83,7 +85,9 @@ material PbrIbl
     {
       pass
       {
+            diffuse 1 1 1
             specular 1 1 1 1
+            ambient 0 0 0
 
             texture_unit Albedo {}
             texture_unit Normal {}

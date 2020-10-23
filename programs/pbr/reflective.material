@@ -20,71 +20,49 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program PbrForest_vs glsl glsles
+vertex_program PbrReflection_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,REFLECTION,SHADOWRECEIVER
 }
-W
-fragment_program PbrForest_fs glsl glsles
+
+fragment_program PbrReflection_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,REFLECTION,SHADOWRECEIVER
 }
 
-material PbrForest
-{
-    receive_shadows off
-
-    technique
-    {
-      pass
-      {
-            specular 1 1 1 1
-            ambient 0 0 0
-
-            texture_unit Albedo {}
-
-			vertex_program_ref PbrForest_vs {}
-
-			fragment_program_ref PbrForest_fs
-			{
-                param_named uBaseColorSampler   int 0
-			}
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PbrForest_Shadowed_fs glsl glsles
-{
-	source pbr.frag
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
-}
-
-vertex_program PbrForest_Shadowed_vs glsl glsles
-{
-	source pbr.vert
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
-}
-
-material PbrForest_Shadowed
+material PbrReflection
 {
     technique
     {
       pass
       {
+            diffuse 1 1 1
             specular 1 1 1 1
             ambient 0 0 0
 
             texture_unit Albedo {}
+            texture_unit Normal {}
+            texture_unit Metalness {}
+            texture_unit Roughness {}
+            texture_unit ReflectionMap {}
+            texture_unit NoiseMap
+            {
+                texture noise_fresnel.dds
+                filtering linear linear linear
+            }
 
-			vertex_program_ref PbrForest_Shadowed_vs {}
+            vertex_program_ref PbrReflection_vs {}
 
-			fragment_program_ref PbrForest_Shadowed_fs
+			fragment_program_ref PbrReflection_fs
 			{
                 param_named uBaseColorSampler   int 0
+                param_named uNormalSampler    int 1
+                param_named uMetallicSampler int 2
+                param_named uRoughnessSampler int 3
+                param_named uReflectionMap int 4
+                param_named uNoiseMap int 5
 			}
         }
     }

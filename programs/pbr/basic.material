@@ -66,6 +66,7 @@ material PbrBasic
       pass
       {
             specular 1 1 1 1
+            diffuse 1 1 1
             ambient 0 0 0
 
             texture_unit Albedo {}
@@ -107,6 +108,7 @@ material PbrBasicShadow
       pass
       {
             specular 1 1 1 1
+            diffuse 1 1 1
             ambient 0 0 0
 
             texture_unit Albedo {}
