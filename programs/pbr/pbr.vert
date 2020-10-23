@@ -133,20 +133,19 @@ void main()
 
   vUV0.xy = uv0.xy;
 
-#ifdef PAGED_GEOMETRY
-if (uv0.xy == vec2(0.0)) {
-  const float frequency = 4.0;
-  const vec4 direction = vec4(0.2, 0, 0, 0);
-  float offset = sin(uTime + new_position.x * frequency);
-  new_position += direction * offset;
-}
-#endif
 #ifndef SHADOWCASTER
   vColor = colour.rgb;
   vec4 model_position = uModelMatrix * new_position;
   vPosition = model_position.xyz / model_position.w;
 #ifdef PAGED_GEOMETRY
   float dist = distance(uCameraPosition.xz, vPosition.xz);
+  if (uv0.xy == vec2(0.0) && dist < 10) {
+    const float frequency = 4.0;
+    const vec4 direction = vec4(0.2, 0.2, 0, 0);
+    float offset = sin(uTime + new_position.x * frequency);
+    new_position += direction * offset;
+  }
+
   vUV0.w = 2.0f - (2.0f * dist * fadeRange);
   float offset = (2.0f * dist * fadeRange) - 1.0f;
   new_position.y -= 2.0f * clamp(offset, 0, 1);
@@ -190,9 +189,6 @@ if (uv0.xy == vec2(0.0)) {
 #endif
 
 #else //SHADOWCASTER
-#ifdef SHADOWCASTER_ALPHA
-  vUV0.xy = uv0.xy;
-#endif
   gl_Position = uMVPMatrix * new_position;
 #endif //SHADOWCASTER
 }

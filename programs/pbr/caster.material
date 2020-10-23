@@ -20,45 +20,22 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-vertex_program PSSM/shadow_caster_vsGLSL glsl
+vertex_program PSSM/shadow_caster_vs glsl glsles
 {
 	source pbr.vert
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
-}
-
-vertex_program PSSM/shadow_caster_vsGLSLES glsles
-{
-	source pbr.vert
-	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
-}
-
-vertex_program PSSM/shadow_caster_vs unified
-{
-	delegate PSSM/shadow_caster_vsGLSL
-	delegate PSSM/shadow_caster_vsGLSLES
 
 	default_params
 	{
 		param_named_auto uMVPMatrix worldviewproj_matrix
+		param_named_auto uModelMatrix world_matrix
 	}
 }
 
-fragment_program PSSM/shadow_caster_fsGLSL glsl
+fragment_program PSSM/shadow_caster_fs glsl glsles
 {
 	source pbr.frag
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
-}
-
-fragment_program PSSM/shadow_caster_fsGLSLES glsles
-{
-	source pbr.frag
-	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
-}
-
-fragment_program PSSM/shadow_caster_fs unified
-{
-	delegate PSSM/shadow_caster_fsGLSL
-	delegate PSSM/shadow_caster_fsGLSLES
 
 	default_params
 	{
@@ -82,45 +59,22 @@ material PSSM/shadow_caster
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program PSSM/NoAlpha/shadow_caster_vsGLSL glsl
+vertex_program PSSM/NoAlpha/shadow_caster_vs glsl glsles
 {
 	source pbr.vert
 	preprocessor_defines SHADOWCASTER
-}
-
-vertex_program PSSM/NoAlpha/shadow_caster_vsGLSLES glsles
-{
-	source pbr.vert
-	preprocessor_defines SHADOWCASTER
-}
-
-vertex_program PSSM/NoAlpha/shadow_caster_vs unified
-{
-	delegate PSSM/NoAlpha/shadow_caster_vsGLSL
-	delegate PSSM/NoAlpha/shadow_caster_vsGLSLES
 
 	default_params
 	{
 		param_named_auto uMVPMatrix worldviewproj_matrix
+		param_named_auto uModelMatrix world_matrix
 	}
 }
 
-fragment_program PSSM/NoAlpha/shadow_caster_fsGLSL glsl
+fragment_program PSSM/NoAlpha/shadow_caster_fs glsl glsles
 {
 	source pbr.frag
 	preprocessor_defines SHADOWCASTER
-}
-
-fragment_program PSSM/NoAlpha/shadow_caster_fsGLSLES glsles
-{
-	source pbr.frag
-	preprocessor_defines SHADOWCASTER
-}
-
-fragment_program PSSM/NoAlpha/shadow_caster_fs unified
-{
-	delegate PSSM/NoAlpha/shadow_caster_fsGLSL
-	delegate PSSM/NoAlpha/shadow_caster_fsGLSLES
 }
 
 material PSSM/NoAlpha/shadow_caster
