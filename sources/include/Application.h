@@ -36,7 +36,7 @@
 namespace xio {
 class Application final : public WindowObserver, public Ogre::LogListener {
  public:
-  Application();
+  explicit Application(int argc, char* argv[]);
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&scene_ptr);
  private:

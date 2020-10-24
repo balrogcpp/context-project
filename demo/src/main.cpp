@@ -29,14 +29,13 @@
 
 void android_main(struct android_app *pApp)
 #else
-int main()
+int main(int argc, char *argv[])
 #endif
 {
   try {
-    xio::Application app;
+    xio::Application app(argc, argv);
     auto state = std::make_unique<Demo::DemoDotAppState>();
     app.Main(move(state));
   }
-  catch (...) {
-  }
+  catch (...) {}
 }

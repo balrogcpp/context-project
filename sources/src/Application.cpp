@@ -38,7 +38,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
 namespace xio {
-Application::Application() {
+Application::Application(int argc, char* argv[]) {
   try {
     Init_();
   }
