@@ -90,6 +90,7 @@ uniform mat4 uModelMatrix;
 uniform vec3 uCameraPosition;
 #ifdef PAGED_GEOMETRY
 uniform float fadeRange;
+uniform float windRange;
 #endif
 uniform float uTime;
 out vec4 vUV0;
@@ -127,7 +128,7 @@ void main()
   vec4 new_position = position;
 #else
   vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0, 1.0);
-#define uv0 _uv0
+  #define uv0 _uv0
   vec2 uv0 = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
@@ -139,7 +140,7 @@ void main()
   vPosition = model_position.xyz / model_position.w;
 #ifdef PAGED_GEOMETRY
   float dist = distance(uCameraPosition.xz, vPosition.xz);
-  if (uv0.xy == vec2(0.0) && dist < 10) {
+  if (uv0.xy == vec2(0.0) && dist < windRange) {
     const float frequency = 4.0;
     const vec4 direction = vec4(0.2, 0.2, 0, 0);
     float offset = sin(uTime + new_position.x * frequency);
