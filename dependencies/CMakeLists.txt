@@ -408,6 +408,30 @@ externalproject_add(target-pugixml
                     -G "${CMAKE_GENERATOR}"
                     )
 
+externalproject_add(target-assimp
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/assimp/assimp.git
+                    GIT_TAG v5.0.1
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DASSIMP_BUILD_TESTS=false
+                    -DBUILD_SHARED_LIBS=false
+                    -DINJECT_DEBUG_POSTFIX=false
+                    -DASSIMP_BUILD_ASSIMP_TOOLS=false
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
 cmake_dependent_option(CONTEXT_OGRE_BUILD_GLES2 "CONTEXT_OGRE_BUILD_GLES2" true "ANDROID;UNIX" false)
 cmake_dependent_option(CONTEXT_OGRE_BUILD_GL3PLUS "CONTEXT_OGRE_BUILD_GL3PLUS" true "NOT ANDROID" false)
 option(CONTEXT_OGRE_BUILD_GL "CONTEXT_OGRE_BUILD_GL" false)
@@ -427,16 +451,17 @@ option(CONTEXT_OGRE_BUILD_BSP "CONTEXT_OGRE_BUILD_BSP" false)
 option(CONTEXT_OGRE_BUILD_PCZ "CONTEXT_OGRE_BUILD_PCZ" false)
 option(CONTEXT_OGRE_BUILD_FREEIMAGE "CONTEXT_OGRE_BUILD_FREEIMAGE" false)
 option(CONTEXT_OGRE_BUILD_EXRCODEC "CONTEXT_OGRE_BUILD_EXRCODEC" false)
-option(CONTEXT_OGRE_BUILD_VOLUME "CONTEXT_OGRE_BUILD_VOLUME" false)
-option(CONTEXT_OGRE_BUILD_MESHLODGENERATOR "CONTEXT_OGRE_BUILD_MESHLODGENERATOR" false)
+option(CONTEXT_OGRE_BUILD_VOLUME "CONTEXT_OGRE_BUILD_VOLUME" true)
+option(CONTEXT_OGRE_BUILD_MESHLODGENERATOR "CONTEXT_OGRE_BUILD_MESHLODGENERATOR" true)
 option(CONTEXT_OGRE_BUILD_ASSIMP "CONTEXT_OGRE_BUILD_ASSIMP" false)
+option(CONTEXT_OGRE_BUILD_PROCEDURAL "CONTEXT_OGRE_BUILD_PROCEDURAL" false)
 
 externalproject_add(target-ogre1
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-zzip target-freetype target-pugixml target-sdl
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/balrogcpp/ogre.git #patch will come with v1.12.10
-                    GIT_TAG MovableObjectFactory-patch
+                    GIT_REPOSITORY https://github.com/OGRECave/ogre.git #patch will come with v1.12.10
+                    GIT_TAG 8f6695f55d1792c77783a595e32c12850b0de424
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -451,9 +476,10 @@ externalproject_add(target-ogre1
                     -DOGRE_BUILD_COMPONENT_JAVA=false
                     -DOGRE_RESOURCEMANAGER_STRICT=1
                     -DOGRE_BUILD_COMPONENT_PYTHON=false
-                    -DOGRE_BUILD_COMPONENT_BITES=false
                     -DOGRE_BUILD_RENDERSYSTEM_D3D11=false
                     -DOGRE_BUILD_RENDERSYSTEM_D3D9=false
+                    -DOGRE_BUILD_PLUGIN_CG=false
+                    -DOGRE_BUILD_COMPONENT_BITES=${CONTEXT_OGRE_BUILD_OVERLAY}
                     -DOGRE_BUILD_RENDERSYSTEM_GL=${CONTEXT_OGRE_BUILD_GL}
                     -DOGRE_BUILD_RENDERSYSTEM_GL3PLUS=${CONTEXT_OGRE_BUILD_GL3PLUS}
                     -DOGRE_BUILD_RENDERSYSTEM_GLES2=${CONTEXT_OGRE_BUILD_GLES2}
@@ -464,7 +490,6 @@ externalproject_add(target-ogre1
                     -DOGRE_BUILD_COMPONENT_PROPERTY=${CONTEXT_OGRE_BUILD_PROPERTY}
                     -DOGRE_BUILD_COMPONENT_VOLUME=${CONTEXT_OGRE_BUILD_VOLUME}
                     -DOGRE_BUILD_COMPONENT_TERRAIN=${CONTEXT_OGRE_BUILD_TERRAIN}
-                    -DOGRE_BUILD_PLUGIN_CG=false
                     -DOGRE_BUILD_PLUGIN_FREEIMAGE=${CONTEXT_OGRE_BUILD_FREEIMAGE}
                     -DOGRE_BUILD_PLUGIN_EXRCODEC=${CONTEXT_OGRE_BUILD_EXRCODEC}
                     -DOGRE_BUILD_PLUGIN_ASSIMP=${CONTEXT_OGRE_BUILD_ASSIMP}
@@ -482,6 +507,30 @@ externalproject_add(target-ogre1
                     -DOGRE_INSTALL_SAMPLES_SOURCE=false
                     -DOGRE_INSTALL_SAMPLES=false
                     -DOGRE_BUILD_TOOLS=false
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
+externalproject_add(target-procedural
+                    EXCLUDE_FROM_ALL true
+                    DEPENDS target-ogre1
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/OGRECave/ogre-procedural.git
+                    GIT_TAG b678da1dd9c7f643e4992e08f8ff46604d7aa209
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DOgreProcedural_BUILD_SAMPLES=false
+                    -DOgreProcedural_BUILD_DOCS=false
+                    -DOgreProcedural_STATIC=true
                     -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
                     -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
                     -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
@@ -551,6 +600,9 @@ list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre1)
+if (CONTEXT_OGRE_BUILD_PROCEDURAL)
+    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-procedural)
+endif ()
 add_custom_target(deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
 
 if (WIN32)
@@ -634,6 +686,14 @@ if (CONTEXT_OGRE_BUILD_OVERLAY)
 endif ()
 if (CONTEXT_OGRE_BUILD_VOLUME)
     list(APPEND OGRE_LIBRARIES OgreVolume${SUFFIX_LIB_OGRE})
+endif ()
+if (CONTEXT_OGRE_BUILD_PROCEDURAL)
+    list(APPEND OGRE_LIBRARIES OgreProcedural)
+endif ()
+if (CONTEXT_OGRE_BUILD_ASSIMP)
+    list(APPEND OGRE_LIBRARIES Codec_AssimpStatic)
+    list(APPEND OGRE_LIBRARIES assimp)
+    list(APPEND OGRE_LIBRARIES IrrXML)
 endif ()
 list(APPEND OGRE_LIBRARIES OgreGLSupport${SUFFIX_LIB_OGRE})
 list(APPEND OGRE_LIBRARIES OgreMain${SUFFIX_LIB_OGRE})
