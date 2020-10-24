@@ -78,6 +78,11 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
     Ogre::Root::getSingleton().installPlugin(mFreeImageCodec);
   }
 #endif
+#ifdef OGRE_BUILD_PLUGIN_ASSIMP
+    auto *assimp_plugin = new Ogre::AssimpPlugin();
+    Ogre::Root::getSingleton().installPlugin(assimp_plugin);
+#endif
+
   root_->initialise(false);
   Ogre::NameValuePairList params;
 

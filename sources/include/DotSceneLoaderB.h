@@ -65,7 +65,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   void Clean() final;
   void Pause() final {}
   void Resume() final {}
-  void Loop(float time);
+  void Loop(float time) final;
 
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
   void Load(const std::string &filename, const std::string &group_name, Ogre::SceneNode *root_node);

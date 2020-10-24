@@ -88,6 +88,10 @@
 #include <Plugins/FreeImageCodec/OgreFreeImageCodec.h>
 #include <Plugins/FreeImageCodec/OgreFreeImageCodecExports.h>
 #endif
+//Assimp
+#ifdef OGRE_BUILD_PLUGIN_ASSIMP
+#include <Plugins/Assimp/OgreAssimpLoader.h>
+#endif
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
 #include <Overlay/OgreOverlay.h>
 #include <Overlay/OgreOverlayManager.h>

@@ -21,6 +21,7 @@
 //SOFTWARE.
 
 #pragma once
+#include "SubComponent.h"
 #include "ComponentLocator.h"
 #include <functional>
 #include <memory>
@@ -32,11 +33,12 @@ class GeometryPage;
 }
 
 namespace xio {
-class Forest final : public ComponentLocator {
+class Forest final : public ComponentLocator, public SubComponent {
  public:
   Forest();
   virtual ~Forest();
   void ProcessForest();
+  void Update(float time) final;
 
  private:
   inline static std::function<float(float, float)> heigh_func_;

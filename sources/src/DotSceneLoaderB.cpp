@@ -27,8 +27,6 @@
 #include "XmlUtils.h"
 #include "Sound.h"
 
-using namespace xio;
-
 namespace xio {
 ///---------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::DotSceneLoaderB() {
@@ -58,6 +56,8 @@ void DotSceneLoaderB::Clean() {
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::Loop(float time) {
   camera_->Update(time);
+  terrain_->Update(time);
+  forest_->Update(time);
 }
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) {
@@ -149,9 +149,6 @@ void DotSceneLoaderB::ProcessScene_(pugi::xml_node &xml_root) {
 
   Ogre::LogManager::getSingleton().logMessage(message);
 
-  if (auto element = xml_root.child("light"))
-    ProcessLight_(element);
-
   if (auto element = xml_root.child("environment"))
     ProcessEnvironment_(element);
 
@@ -238,18 +235,11 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   std::string name = GetAttrib(xml_node, "name");
 
-  if (!parent) {
-    parent = scene->createSceneNode();
-  }
-
   /// Create the light
   name += std::to_string(counter);
   counter++;
   Ogre::Light *light = scene_->createLight(name);
-
-  if (parent) {
-    parent->attachObject(light);
-  }
+  parent->attachObject(light);
 
   std::string sValue = GetAttrib(xml_node, "type");
 
@@ -435,11 +425,6 @@ void DotSceneLoaderB::ProcessNode_(pugi::xml_node &xml_node, Ogre::SceneNode *pa
   if (auto element = xml_node.child("trackTarget"))
     ProcessTrackTarget_(element, node);
 
-  /// Process camera (*)
-  for (auto element : xml_node.children("camera")) {
-    ProcessCamera_(element, node);
-  }
-
   /// Process node (*)
   for (auto element : xml_node.children("node")) {
     ProcessNode_(element, node);
@@ -468,6 +453,11 @@ void DotSceneLoaderB::ProcessNode_(pugi::xml_node &xml_node, Ogre::SceneNode *pa
   /// Process plane (*)
   for (auto element : xml_node.children("plane")) {
     ProcessPlane_(element, node);
+  }
+
+  /// Process camera (*)
+  for (auto element : xml_node.children("camera")) {
+    ProcessCamera_(element, node);
   }
 
   /// Process userDataReference

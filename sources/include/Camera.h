@@ -167,6 +167,8 @@ class Camera final : public Entity, public InputObserver {
       // Just to determine the sign of the angle we pick up above, the
       // value itself does not interest us.
       pitchAngleSign = camera_pitch_node_->getOrientation().x;
+      camera_pitch_node_->translate(Ogre::Vector3{0,0,0.001});
+      camera_pitch_node_->translate(Ogre::Vector3{0,0,-0.001});
 
       // Limit the pitch between -90 degress and +90 degrees, Quake3-style.
       if (pitchAngle > 90.0f) {
@@ -330,19 +332,25 @@ class Camera final : public Entity, public InputObserver {
     camera_ = camera;
 
     if (style_ == FPS) {
+      node_->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
+
       // Create the camera's yaw node as a child of camera's top node.
-      camera_yaw_node_ = node_->createChildSceneNode();
+      camera_yaw_node_ = node_->createChildSceneNode("CameraYaw");
 
       // Create the camera's pitch node as a child of camera's yaw node.
-      camera_pitch_node_ = camera_yaw_node_->createChildSceneNode();
+      camera_pitch_node_ = camera_yaw_node_->createChildSceneNode("CameraPitch");
 
       // Create the camera's roll node as a child of camera's pitch node
       // and attach the camera to it.
-      camera_roll_node_ = camera_pitch_node_->createChildSceneNode();
+      camera_roll_node_ = camera_pitch_node_->createChildSceneNode("CameraRoll");
       camera_roll_node_->attachObject(camera_);
-      parent->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
+
+      for (const auto it : parent->getAttachedObjects()) {
+        parent->detachObject(it);
+        camera_roll_node_->attachObject(it);
+      }
     } else {
-      node_->attachObject(camera);
+      node_->attachObject(camera_);
     }
   }
 

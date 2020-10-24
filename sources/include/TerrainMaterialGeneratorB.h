@@ -19,8 +19,8 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-#pragma once
 
+#pragma once
 #include <Terrain/OgreTerrainPrerequisites.h>
 #include <Terrain/OgreTerrainMaterialGenerator.h>
 
@@ -51,13 +51,12 @@ class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
     inline void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) final {}
     void requestOptions(Ogre::Terrain *terrain) final;
     inline bool isVertexCompressionSupported() const final {
-      return vertex_compression_;
+      return true;
     }
     inline void setLightmapEnabled(bool enabled) final {}
 
    private:
     int8_t max_layers_ = 8;
-    bool vertex_compression_ = true;
   };
 };
 }

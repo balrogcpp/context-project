@@ -62,7 +62,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
 
   UpdatePbrParams(material_name);
   UpdatePbrShadowReceiver(material_name);
-  if (vertex_compression_) {
+  if (isVertexCompressionSupported()) {
     auto material = Ogre::MaterialManager::getSingleton().getByName(material_name);
     if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
       auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
