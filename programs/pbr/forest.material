@@ -26,7 +26,7 @@ vertex_program PbrForest_vs glsl glsles
 	source pbr.vert
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV
 }
-W
+
 fragment_program PbrForest_fs glsl glsles
 {
 	source pbr.frag
@@ -45,7 +45,10 @@ material PbrForest
             diffuse 1 1 1
             ambient 0 0 0
 
-            texture_unit Albedo {}
+            texture_unit Albedo
+            {
+                filtering none
+            }
 
 			vertex_program_ref PbrForest_vs {}
 
@@ -80,7 +83,10 @@ material PbrForest_Shadowed
             diffuse 1 1 1
             ambient 0 0 0
 
-            texture_unit Albedo {}
+            texture_unit Albedo
+            {
+                filtering none
+            }
 
 			vertex_program_ref PbrForest_Shadowed_vs {}
 

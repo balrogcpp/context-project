@@ -29,7 +29,7 @@ vertex_program PbrReflection_vs glsl glsles
 fragment_program PbrReflection_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,REFLECTION,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_PARALLAXMAP,REFLECTION,SHADOWRECEIVER
 }
 
 material PbrReflection
@@ -44,8 +44,18 @@ material PbrReflection
 
             texture_unit Albedo {}
             texture_unit Normal {}
-            texture_unit Metalness {}
-            texture_unit Roughness {}
+            texture_unit Metallic
+            {
+                texture white.dds
+            }
+            texture_unit Roughness
+            {
+                texture white.dds
+            }
+            texture_unit Offset
+            {
+                texture black.dds
+            }
             texture_unit ReflectionMap {}
             texture_unit NoiseMap
             {
@@ -61,8 +71,9 @@ material PbrReflection
                 param_named uNormalSampler    int 1
                 param_named uMetallicSampler int 2
                 param_named uRoughnessSampler int 3
-                param_named uReflectionMap int 4
-                param_named uNoiseMap int 5
+                param_named uOffsetSampler int 4
+                param_named uReflectionMap int 5
+                param_named uNoiseMap int 6
 			}
         }
     }

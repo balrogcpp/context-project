@@ -25,55 +25,18 @@
 
 #ifndef GL_ES
 #define VERSION 120
+#else
+#define VERSION 100
+#endif
 #version VERSION
-#define USE_TEX_LOD
-#if VERSION != 120
-#define attribute in
-#define varying out
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-#else
-#define in attribute
-#define out varying
-#endif
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : require
-#endif
-#else
-#define VERSION 300
-#version VERSION es
-#extension GL_OES_standard_derivatives : enable
-#extension GL_EXT_shader_texture_lod: enable
-#define textureCubeLod textureLodEXT
-precision highp float;
-#if VERSION == 100
-#define in attribute
-#define out varying
-#else
-#define attribute in
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-#endif
-#endif
+#include "header.vert"
 
 #define MAX_LIGHTS 5
 #define MAX_SHADOWS 1
 #define HAS_UV
 
 #ifndef VERTEX_COMPRESSION
-in vec4 position;
+in vec3 position;
 in vec2 uv0;
 #else
 in vec2 vertex;
@@ -85,7 +48,7 @@ uniform float baseUVScale;
 uniform mat4 uMVPMatrix;
 
 #ifndef SHADOWCASTER_ALPHA
-in vec4 colour;
+in vec3 color;
 uniform mat4 uModelMatrix;
 uniform vec3 uCameraPosition;
 #ifdef PAGED_GEOMETRY
@@ -125,17 +88,16 @@ out vec2 vUV0;
 void main()
 {
 #ifndef VERTEX_COMPRESSION
-  vec4 new_position = position;
+  vec4 new_position = vec4(position, 1.0);
 #else
   vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0, 1.0);
-  #define uv0 _uv0
   vec2 uv0 = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
   vUV0.xy = uv0.xy;
 
 #ifndef SHADOWCASTER
-  vColor = colour.rgb;
+  vColor = color.rgb;
   vec4 model_position = uModelMatrix * new_position;
   vPosition = model_position.xyz / model_position.w;
 #ifdef PAGED_GEOMETRY
@@ -147,9 +109,9 @@ void main()
     new_position += direction * offset;
   }
 
-  vUV0.w = 2.0f - (2.0f * dist * fadeRange);
-  float offset = (2.0f * dist * fadeRange) - 1.0f;
-  new_position.y -= 2.0f * clamp(offset, 0, 1);
+  vUV0.w = 2.0 - (2.0 * dist * fadeRange);
+  float offset = (2.0 * dist * fadeRange) - 1.0;
+  new_position.y -= 2.0 * clamp(offset, 0, 1);
 #endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
@@ -178,7 +140,7 @@ void main()
   int k1= 1;
   int k2= 2;
   for (int i = 0; i < int(uLightCount);  i++) {
-    if (uLightCastsShadowsArray[i] > 0) {
+    if (uLightCastsShadowsArray[i] > 0.0) {
       lightSpacePosArray[k0] = uTexWorldViewProjMatrixArray[k0] * new_position;
       lightSpacePosArray[k1] = uTexWorldViewProjMatrixArray[k1] * new_position;
       lightSpacePosArray[k2] = uTexWorldViewProjMatrixArray[k2] * new_position;

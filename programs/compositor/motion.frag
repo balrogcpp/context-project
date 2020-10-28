@@ -22,50 +22,11 @@
 
 #ifndef GL_ES
 #define VERSION 120
+#else
+#define VERSION 100
+#endif
 #version VERSION
-#define USE_TEX_LOD
-#if VERSION != 120
-#define varying in
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-out vec4 gl_FragColor;
-#else
-#define in varying
-#define out varying
-#endif
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : require
-#endif
-#else
-#define VERSION 300
-#version VERSION es
-#extension GL_OES_standard_derivatives : enable
-#extension GL_EXT_shader_texture_lod: enable
-#define textureCubeLod textureLodEXT
-precision highp float;
-#if VERSION == 100
-#define in varying
-#define out varying
-#else
-#define varying in
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-out vec4 gl_FragColor;
-#endif
-#endif
-
+#include "header.frag"
 #define MAX_SAMPLES 8
 
 in vec2 oUv0;
@@ -79,7 +40,7 @@ void main()
 {
   vec2 velocity = uScale * (0.01667/uFrameTime) * texture2D(uTexMotion, oUv0).rg;
   float speed = length(velocity / texelSize);
-  int nSamples = int(clamp(speed, 1.0, MAX_SAMPLES));
+  int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
 
   vec3 scene = texture2D(SceneSampler, oUv0).rgb;
   for (int i = 1; i < nSamples; i++) {

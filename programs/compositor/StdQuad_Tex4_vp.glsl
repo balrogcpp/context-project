@@ -22,51 +22,11 @@
 
 #ifndef GL_ES
 #define VERSION 120
+#else
+#define VERSION 100
+#endif
 #version VERSION
-#define USE_TEX_LOD
-#if VERSION != 120
-#define attribute in
-#define varying out
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-#else
-#define in attribute
-#define out varying
-#if VERSION != 120
-out vec4 gl_FragColor;
-#endif
-#endif
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : require
-#endif
-#else
-#define VERSION 300
-#version VERSION es
-#extension GL_OES_standard_derivatives : enable
-#extension GL_EXT_shader_texture_lod: enable
-#define textureCubeLod textureLodEXT
-precision highp float;
-#if VERSION == 100
-#define in attribute
-#define out varying
-#else
-#define attribute in
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-#endif
-#endif
+#include "header.vert"
 
 uniform mat4 worldViewProj;
 in vec4 vertex;
@@ -74,6 +34,7 @@ in vec2 uv0;
 out vec2 oUv0;
 out vec2 oUv1;
 out vec2 oUv2;
+out vec2 oUv3;
 out vec4 pos;
 
 void main()
@@ -85,5 +46,6 @@ void main()
     oUv0 = uv0;
     oUv1 = oUv0;
     oUv2 = oUv0;
+    oUv3 = oUv0;
     pos = gl_Position;
 }

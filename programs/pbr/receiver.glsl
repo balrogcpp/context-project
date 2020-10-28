@@ -5,8 +5,8 @@ vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
 {
   const float GoldenAngle = 2.4;
 
-  float r = sqrt(sampleIndex + 0.5) / sqrt(samplesCount);
-  float theta = sampleIndex * GoldenAngle + phi;
+  float r = sqrt(float(sampleIndex) + 0.5) / sqrt(float(samplesCount));
+  float theta = float(sampleIndex) * GoldenAngle + phi;
   float sine = sin(theta);
   float cosine = cos(theta);
 
@@ -23,7 +23,7 @@ float AvgBlockersDepthToPenumbra(float z_shadowMapView, float avgBlockersDepth)
 {
   float penumbra = (z_shadowMapView - avgBlockersDepth) / avgBlockersDepth;
   penumbra *= penumbra;
-  return clamp(80.0f * penumbra, 0.0, 1.0);
+  return clamp(80.0 * penumbra, 0.0, 1.0);
 }
 
 float AvgBlockersDepthToPenumbra(float lightSize, float z_shadowMapView, float avgBlockersDepth)
@@ -35,8 +35,8 @@ float AvgBlockersDepthToPenumbra(float lightSize, float z_shadowMapView, float a
 //----------------------------------------------------------------------------------------------------------------------
 float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float z_shadowMapView, int samplesCount)
 {
-  float avgBlockersDepth = 0.0f;
-  float blockersCount = 0.0f;
+  float avgBlockersDepth = 0.0;
+  float blockersCount = 0.0;
   const float penumbraFilterMaxSize = 0.01;
 
   for(int i = 0; i < samplesCount; i++)
@@ -49,18 +49,18 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
     if(sampleDepth < z_shadowMapView)
     {
       avgBlockersDepth += sampleDepth;
-      blockersCount += 1.0f;
+      blockersCount += 1.0;
     }
   }
 
-  if(blockersCount > 0.0f)
+  if(blockersCount > 0.0)
   {
     avgBlockersDepth /= blockersCount;
     return AvgBlockersDepthToPenumbra(10000.0, z_shadowMapView, avgBlockersDepth);
   }
   else
   {
-    return 0.0f;
+    return 0.0;
   }
 }
 //----------------------------------------------------------------------------------------------------------------------

@@ -20,6 +20,72 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+vertex_program PbrBasic_vs glsl glsles
+{
+	source pbr.vert
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV
+}
+
+fragment_program PbrBasic_fs glsl glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+}
+
+material PbrBasic
+{
+    receive_shadows off
+
+    technique
+    {
+      pass
+      {
+            specular 1 1 1 1
+            diffuse 1 1 1
+            ambient 0 0 0
+
+            texture_unit Albedo {}
+
+            vertex_program_ref PbrBasic_vs {}
+
+			fragment_program_ref PbrBasic_fs
+			{
+                param_named uBaseColorSampler int 0
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fragment_program PbrBasicShadow_fs glsl glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
+}
+
+material PbrBasicShadow
+{
+    technique
+    {
+      pass
+      {
+            specular 1 1 1 1
+            diffuse 1 1 1
+            ambient 0 0 0
+
+            texture_unit Albedo {}
+
+            vertex_program_ref PbrBasic_vs {}
+
+			fragment_program_ref PbrBasicShadow_fs
+			{
+                param_named uBaseColorSampler   int 0
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 vertex_program Pbr_vs glsl glsles
 {
 	source pbr.vert
@@ -29,7 +95,7 @@ vertex_program Pbr_vs glsl glsles
 fragment_program Pbr_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,HAS_PARALLAXMAP,SHADOWRECEIVER
 }
 
 material Pbr
@@ -44,15 +110,25 @@ material Pbr
 
             texture_unit Albedo {}
             texture_unit Normal {}
-            texture_unit Metalness {}
-            texture_unit Roughness {}
+            texture_unit Metallic
+            {
+                texture white.dds
+            }
+            texture_unit Roughness
+            {
+                texture white.dds
+            }
             texture_unit Emissive
             {
                 texture black.dds
             }
-            texture_unit AmbientOcclusion
+            texture_unit AO
             {
                 texture white.dds
+            }
+            texture_unit Offset
+            {
+                texture black.dds
             }
 
             vertex_program_ref Pbr_vs {}
@@ -65,6 +141,7 @@ material Pbr
                 param_named uRoughnessSampler int 3
                 param_named uEmissiveSampler      int 4
                 param_named uOcclusionSampler   int 5
+                param_named uOffsetSampler   int 6
 			}
         }
     }
@@ -91,13 +168,19 @@ material PbrIbl
 
             texture_unit Albedo {}
             texture_unit Normal {}
-            texture_unit Metalness {}
-            texture_unit Roughness {}
+            texture_unit Metallic
+            {
+                texture white.dds
+            }
+            texture_unit Roughness
+            {
+                texture white.dds
+            }
             texture_unit Emissive
             {
                 texture black.dds
             }
-            texture_unit AmbientOcclusion
+            texture_unit AO
             {
                 texture white.dds
             }

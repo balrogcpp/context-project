@@ -26,23 +26,17 @@
 #define VERSION 100
 #endif
 #version VERSION
-#include "header.frag"
-in vec2 oUv0;
-uniform sampler2D SceneSampler;
-#ifdef Bloom
-uniform sampler2D BloomSampler;
-#endif
-#ifdef Ssao
-uniform sampler2D SsaoSampler;
-#endif
+#include "header.vert"
+
+layout(location = 0) uniform mat4 worldViewProj;
+
+layout(location = 0) in vec4 vertex;
+layout(location = 8) in vec2 uv0;
+
+layout(location = 0) out vec2 oUv0;
+
 void main()
 {
-    vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-#ifdef Ssao
-    scene *= texture2D(SsaoSampler, oUv0).r;
-#endif
-#ifdef Bloom
-    scene += (0.1 * texture2D(BloomSampler, oUv0).rgb);
-#endif
-    gl_FragColor = vec4(scene, 1.0);
+    gl_Position = worldViewProj * vertex;
+    oUv0 = uv0;
 }
