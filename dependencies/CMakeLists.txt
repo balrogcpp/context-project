@@ -432,8 +432,8 @@ externalproject_add(target-assimp
                     -G "${CMAKE_GENERATOR}"
                     )
 
-cmake_dependent_option(CONTEXT_OGRE_BUILD_GLES2 "CONTEXT_OGRE_BUILD_GLES2" true "ANDROID;UNIX" false)
 cmake_dependent_option(CONTEXT_OGRE_BUILD_GL3PLUS "CONTEXT_OGRE_BUILD_GL3PLUS" true "NOT ANDROID" false)
+option(CONTEXT_OGRE_BUILD_GLES2 "CONTEXT_OGRE_BUILD_GLES2" true)
 option(CONTEXT_OGRE_BUILD_GL "CONTEXT_OGRE_BUILD_GL" false)
 option(CONTEXT_OGRE_BUILD_OCTREE "CONTEXT_OGRE_BUILD_OCTREE" true)
 option(CONTEXT_OGRE_BUILD_PAGING "CONTEXT_OGRE_BUILD_PAGING" true)
@@ -453,12 +453,12 @@ option(CONTEXT_OGRE_BUILD_FREEIMAGE "CONTEXT_OGRE_BUILD_FREEIMAGE" false)
 option(CONTEXT_OGRE_BUILD_EXRCODEC "CONTEXT_OGRE_BUILD_EXRCODEC" false)
 option(CONTEXT_OGRE_BUILD_VOLUME "CONTEXT_OGRE_BUILD_VOLUME" true)
 option(CONTEXT_OGRE_BUILD_MESHLODGENERATOR "CONTEXT_OGRE_BUILD_MESHLODGENERATOR" true)
-option(CONTEXT_OGRE_BUILD_ASSIMP "CONTEXT_OGRE_BUILD_ASSIMP" false)
+option(CONTEXT_OGRE_BUILD_ASSIMP "CONTEXT_OGRE_BUILD_ASSIMP" true)
 option(CONTEXT_OGRE_BUILD_PROCEDURAL "CONTEXT_OGRE_BUILD_PROCEDURAL" false)
 
 externalproject_add(target-ogre1
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zlib target-zzip target-freetype target-pugixml target-sdl
+                    DEPENDS target-zlib target-zzip target-freetype target-pugixml target-sdl target-assimp
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git #patch will come with v1.12.10
                     GIT_TAG 8f6695f55d1792c77783a595e32c12850b0de424
