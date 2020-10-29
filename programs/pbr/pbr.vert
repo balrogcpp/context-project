@@ -25,10 +25,11 @@
 
 #ifndef GL_ES
 #define VERSION 120
+#version VERSION
 #else
 #define VERSION 100
-#endif
 #version VERSION
+#endif
 #include "header.vert"
 
 #define MAX_LIGHTS 5
@@ -127,13 +128,6 @@ void main()
 
   gl_Position = uMVPMatrix * new_position;
   vUV0.z = gl_Position.z;
-#ifdef REFLECTION
-  const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
-                        0.0, 0.5, 0.0, 0.0,
-                        0.0, 0.0, 0.5, 0.0,
-                        0.5, 0.5, 0.5, 1.0);
-  projectionCoord = scalemat * gl_Position;
-#endif
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
   int k0= 0;
@@ -149,6 +143,13 @@ void main()
     k1 += 3;
     k2 += 3;
   }
+#endif
+#ifdef REFLECTION
+  const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
+  0.0, 0.5, 0.0, 0.0,
+  0.0, 0.0, 0.5, 0.0,
+  0.5, 0.5, 0.5, 1.0);
+  projectionCoord = scalemat * gl_Position;
 #endif
 
 #else //SHADOWCASTER

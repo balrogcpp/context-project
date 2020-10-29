@@ -23,7 +23,7 @@
 vertex_program PbrTerrain_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines HAS_UV,SHADOWRECEIVER,VERTEX_COMPRESSION
+    preprocessor_defines SHADOWRECEIVER,VERTEX_COMPRESSION
 }
 
 fragment_program PbrTerrain_fs glsl glsles

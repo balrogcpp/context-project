@@ -23,7 +23,7 @@
 vertex_program PbrReflection_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,REFLECTION,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,REFLECTION,SHADOWRECEIVER
 }
 
 fragment_program PbrReflection_fs glsl glsles
@@ -60,7 +60,7 @@ material PbrReflection
             texture_unit NoiseMap
             {
                 texture noise_fresnel.dds
-                filtering linear linear linear
+                filtering bilinear
             }
 
             vertex_program_ref PbrReflection_vs {}

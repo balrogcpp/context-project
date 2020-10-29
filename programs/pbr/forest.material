@@ -24,7 +24,7 @@
 vertex_program PbrForest_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS
 }
 
 fragment_program PbrForest_fs glsl glsles
@@ -44,10 +44,13 @@ material PbrForest
             specular 1 1 1 1
             diffuse 1 1 1
             ambient 0 0 0
+            cull_hardware none
+            cull_software none
+            alpha_rejection greater_equal 127
 
             texture_unit Albedo
             {
-                filtering none
+                filtering bilinear
             }
 
 			vertex_program_ref PbrForest_vs {}
@@ -61,20 +64,22 @@ material PbrForest
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PbrForest_Shadowed_vs glsl glsles
+{
+	source pbr.vert
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,SHADOWRECEIVER
+}
+
 fragment_program PbrForest_Shadowed_fs glsl glsles
 {
 	source pbr.frag
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
 }
 
-vertex_program PbrForest_Shadowed_vs glsl glsles
-{
-	source pbr.vert
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
-}
-
 material PbrForest_Shadowed
 {
+    receive_shadows on
+
     technique
     {
       pass
@@ -82,17 +87,20 @@ material PbrForest_Shadowed
             specular 1 1 1 1
             diffuse 1 1 1
             ambient 0 0 0
+            cull_hardware none
+            cull_software none
+            alpha_rejection greater_equal 127
 
             texture_unit Albedo
             {
-                filtering none
+                filtering bilinear
             }
 
 			vertex_program_ref PbrForest_Shadowed_vs {}
 
 			fragment_program_ref PbrForest_Shadowed_fs
 			{
-                param_named uBaseColorSampler   int 0
+                param_named uBaseColorSampler int 0
 			}
         }
     }

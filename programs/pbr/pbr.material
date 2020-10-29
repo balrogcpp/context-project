@@ -23,13 +23,13 @@
 vertex_program PbrBasic_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS
 }
 
 fragment_program PbrBasic_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP
 }
 
 material PbrBasic
@@ -43,8 +43,10 @@ material PbrBasic
             specular 1 1 1 1
             diffuse 1 1 1
             ambient 0 0 0
+            alpha_rejection greater_equal 127
 
             texture_unit Albedo {}
+            texture_unit Normal {}
 
             vertex_program_ref PbrBasic_vs {}
 
@@ -72,8 +74,10 @@ material PbrBasicShadow
             specular 1 1 1 1
             diffuse 1 1 1
             ambient 0 0 0
+            alpha_rejection greater_equal 127
 
             texture_unit Albedo {}
+            texture_unit Normal {}
 
             vertex_program_ref PbrBasic_vs {}
 
@@ -89,7 +93,7 @@ material PbrBasicShadow
 vertex_program Pbr_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,SHADOWRECEIVER
 }
 
 fragment_program Pbr_fs glsl glsles
@@ -100,6 +104,8 @@ fragment_program Pbr_fs glsl glsles
 
 material Pbr
 {
+    receive_shadows on
+
     technique
     {
       pass
@@ -107,9 +113,13 @@ material Pbr
             diffuse 1 1 1
             specular 1 1 1 1
             ambient 0 0 0
+            alpha_rejection greater_equal 127
 
             texture_unit Albedo {}
-            texture_unit Normal {}
+            texture_unit Normal
+            {
+                texture red.dds
+            }
             texture_unit Metallic
             {
                 texture white.dds
@@ -165,6 +175,7 @@ material PbrIbl
             diffuse 1 1 1
             specular 1 1 1 1
             ambient 0 0 0
+            alpha_rejection greater_equal 127
 
             texture_unit Albedo {}
             texture_unit Normal {}

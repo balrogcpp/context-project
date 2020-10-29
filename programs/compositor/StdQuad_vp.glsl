@@ -22,10 +22,11 @@
 
 #ifndef GL_ES
 #define VERSION 120
+#version VERSION
 #else
 #define VERSION 100
-#endif
 #version VERSION
+#endif
 #include "header.vert"
 
 in vec4 vertex;

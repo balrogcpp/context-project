@@ -24,8 +24,6 @@
 #define HEADER_VERT
 
 #ifndef GL_ES
-//#define VERSION 120
-//#version VERSION
 #if VERSION != 120
 #define attribute in
 #define varying out
@@ -37,8 +35,6 @@
 #extension GL_ARB_shader_texture_lod : require
 #endif
 #else
-//#define VERSION 100
-//#version VERSION es
 #extension GL_OES_standard_derivatives : enable
 #extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
