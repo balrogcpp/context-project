@@ -37,6 +37,8 @@ class Forest final : public ComponentLocator, public SubComponent {
  public:
   Forest();
   virtual ~Forest();
+  void GenerateGrassStatic();
+  void GenerateGrassPaged();
   void ProcessForest();
   void Update(float time) final;
 
@@ -45,6 +47,10 @@ class Forest final : public ComponentLocator, public SubComponent {
   std::vector<Forests::PagedGeometry *> pgeometry_;
   std::vector<Forests::PageLoader *> ploaders_;
   std::vector<Forests::GeometryPage *> gpages_;
+  Ogre::StaticGeometry *field_ = nullptr;
+  const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
+  const Ogre::uint32 SURFACE_MASK = 0x00F;
+  const Ogre::uint32 WATER_MASK = 0xF00;
 
  public:
   static void SetHeighFunc(const std::function<float(float, float)> &heigh_func) {

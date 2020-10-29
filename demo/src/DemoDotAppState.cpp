@@ -49,7 +49,7 @@ void DemoDotAppState::Callback(int a, int b) {
 
 void DemoDotAppState::Create() {
   Load("1.scene");
-  loader_->GetCamera().SetStyle(xio::Camera::FPS);
+  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
 
 //  controller_ = std::make_unique<SinbadCharacterController>(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"));
 //  input_->RegObserver(controller_.get());

@@ -23,7 +23,7 @@
 #pragma once
 #include "Component.h"
 #include "Singleton.h"
-#include "Camera.h"
+#include "CameraMan.h"
 #include "ReflectionCamera.h"
 #include "CubeMapCamera.h"
 #include "Input.h"
@@ -47,7 +47,7 @@ class VertexDeclaration;
 }
 
 namespace xio {
-class Camera;
+class CameraMan;
 class JsonConfigurator;
 class YamlConfigurator;
 class Renderer;
@@ -99,7 +99,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   std::unique_ptr<CubeMapCamera> ccamera_;
   static inline std::unique_ptr<Landscape> terrain_;
   static inline std::unique_ptr<Forest> forest_;
-  std::unique_ptr<Camera> camera_;
+  std::unique_ptr<CameraMan> camera_;
   Ogre::SceneManager *scene_ = nullptr;
   Ogre::Root *root_ = nullptr;
   Ogre::SceneNode *root_node_ = nullptr;
@@ -131,7 +131,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
     return *terrain_;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  Camera &GetCamera() const {
+  CameraMan &GetCamera() const {
     return *camera_;
   }
 //----------------------------------------------------------------------------------------------------------------------

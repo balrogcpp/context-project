@@ -23,7 +23,7 @@
 #pragma once
 #include "Application.h"
 #include "AppState.h"
-#include "Camera.h"
+#include "CameraMan.h"
 #include "Component.h"
 #include "ComponentLocator.h"
 #include "Compositor.h"

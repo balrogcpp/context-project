@@ -22,11 +22,12 @@
 //
 
 #include "pcheader.h"
-
 #include "TerrainMaterialGeneratorB.h"
 #include "DotSceneLoaderB.h"
-
 #include "ShaderUtils.h"
+#include <random>
+#include <chrono>
+
 using namespace xio;
 
 namespace xio {
@@ -43,18 +44,15 @@ TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB() = default;
 TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent,
                                                   const Ogre::String &name,
                                                   const Ogre::String &desc)
-    : Profile(parent, name, desc)
-{
-}
+    : Profile(parent, name, desc) {}
 //---------------------------------------------------------------------
-TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {
-}
+TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 //---------------------------------------------------------------------
 void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrain) {
   terrain->_setMorphRequired(true);
   terrain->_setNormalMapRequired(true);
-  terrain->_setLightMapRequired(false, false);
-  terrain->_setCompositeMapRequired(false);
+  terrain->_setLightMapRequired(lightmap_, true);
+  terrain->_setCompositeMapRequired(true);
 }
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *terrain) {
@@ -62,6 +60,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
 
   UpdatePbrParams(material_name);
   UpdatePbrShadowReceiver(material_name);
+
   if (isVertexCompressionSupported()) {
     auto material = Ogre::MaterialManager::getSingleton().getByName(material_name);
     if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
@@ -78,17 +77,18 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
     }
   }
 
-  static long long counter = 0;
   auto normalmap = terrain->getTerrainNormalMap();
 
-  auto new_material = Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(counter));
+  unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
+  std::mt19937 generator(seed1);
+
+  auto new_material = Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(generator()));
   auto *texture_state = new_material->getTechnique(0)->getPass(0)->getTextureUnitState("GlobalNormal");
   if (texture_state) {
     texture_state->setTexture(normalmap);
     texture_state->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_NONE);
     texture_state->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
   }
-  counter++;
 
   return new_material;
 }
@@ -96,10 +96,10 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Ogre::Terrain *terrain) {
   std::string material_name = "Terrain";
   UpdatePbrParams(material_name);
-  UpdatePbrShadowReceiver(material_name);
 
-  static long long counter = 0;
-  counter++;
-  return Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(counter));
+  unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
+  std::mt19937 generator(seed1);
+
+  return Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(generator()));
 }
 }

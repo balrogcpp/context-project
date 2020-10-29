@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include <Ogre.h>
 
 namespace xio {
@@ -39,13 +38,15 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
  public:
 //----------------------------------------------------------------------------------------------------------------------
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
-    scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
     rcamera_->enableReflection(plane_);
+    if (scene_->hasLight("Sun"))
+      scene_->getLight("Sun")->setCastShadows(false);
   }
 //----------------------------------------------------------------------------------------------------------------------
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
     rcamera_->disableReflection();
-    scene_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    if (scene_->hasLight("Sun"))
+      scene_->getLight("Sun")->setCastShadows(true);
   }
 
  private:

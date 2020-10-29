@@ -231,13 +231,10 @@ void DotSceneLoaderB::ProcessEnvironment_(pugi::xml_node &xml_node) {
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   /// Process attributes
-  static long counter = 0;
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   std::string name = GetAttrib(xml_node, "name");
 
   /// Create the light
-  name += std::to_string(counter);
-  counter++;
   Ogre::Light *light = scene_->createLight(name);
   parent->attachObject(light);
 
@@ -303,11 +300,11 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   auto *pCamera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
   if (!camera_) {
-    camera_ = std::make_unique<Camera>();
+    camera_ = std::make_unique<CameraMan>();
     input_->RegObserver(camera_.get());
   }
 
-  camera_->SetStyle(Camera::FPS);
+  camera_->SetStyle(CameraMan::FPS);
   camera_->RegCamera(parent, pCamera);
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -365,7 +362,6 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessNode_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   /// Construct the node's name
-  static long counter = 0;
   std::string name = GetAttrib(xml_node, "name");
 
   /// Create the scene node
@@ -380,8 +376,6 @@ void DotSceneLoaderB::ProcessNode_(pugi::xml_node &xml_node, Ogre::SceneNode *pa
     }
   } else {
     /// Provide the name
-    name += std::to_string(counter);
-    counter++;
     if (parent) {
       node = parent->createChildSceneNode(name);
     } else {
@@ -539,7 +533,6 @@ void DotSceneLoaderB::ProcessTrackTarget_(pugi::xml_node &xml_node, Ogre::SceneN
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   /// Process attributes
-  static long long counter = 0;
   std::string name = GetAttrib(xml_node, "name");
   std::string id = GetAttrib(xml_node, "id");
   std::string meshFile = GetAttrib(xml_node, "meshFile");
@@ -549,13 +542,34 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
   /// Create the entity
   Ogre::Entity *entity = nullptr;
   try {
-    name += std::to_string(counter);
-    counter++;
     entity = scene_->createEntity(name, meshFile);
     entity->setCastShadows(castShadows);
     parent->attachObject(entity);
 
-    auto mesh = entity->getMesh();
+    if (entity->getNumManualLodLevels() < 1) {
+//      Ogre::LogManager::getSingleton().stream(Ogre::LML_TRIVIAL) << "[DotSceneLoader] I am here!";
+      Ogre::LodConfig lod_config(const_cast<Ogre::MeshPtr &>(entity->getMesh()));
+//      lod_config.strategy = Ogre::PixelCountLodStrategy::getSingletonPtr();
+      lod_config.advanced = Ogre::LodConfig::Advanced();
+      lod_config.levels.clear();
+      lod_config.advanced.profile.clear();
+      Ogre::MeshLodGenerator::getSingleton().getAutoconfig(lod_config.mesh, lod_config);
+      lod_config.createGeneratedLodLevel(8, 0.10, Ogre::LodLevel::VRM_COLLAPSE_COST);
+      lod_config.createGeneratedLodLevel(9, 0.25, Ogre::LodLevel::VRM_COLLAPSE_COST);
+      lod_config.createGeneratedLodLevel(10, 0.50f, Ogre::LodLevel::VRM_COLLAPSE_COST);
+      lod_config.advanced.outsideWeight = 1.0;
+      lod_config.advanced.useCompression = true;
+      lod_config.advanced.useVertexNormals = true;
+      lod_config.advanced.useBackgroundQueue = true;
+      Ogre::MeshLodGenerator().generateLodLevels(lod_config);
+      delete Ogre::MeshLodGenerator::getSingletonPtr();
+
+      if (!lod_config.advanced.useBackgroundQueue) {
+        scene_->destroyEntity(entity);
+        entity = scene_->createEntity(lod_config.mesh->getName(), lod_config.mesh);
+        parent->attachObject(entity);
+      }
+    }
 
     std::string shadow_technique = "texture";
 
@@ -576,7 +590,7 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
     }
 
     EnsureHasTangents(entity->getMesh());
-    for (auto &submesh : mesh->getSubMeshes()) {
+    for (auto &submesh : entity->getMesh()->getSubMeshes()) {
       Ogre::MaterialPtr material_ptr;
 
       if (!material.empty()) {
@@ -657,11 +671,11 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   float distance = GetAttribReal(xml_node, "distance", 0.0f);
   float width = GetAttribReal(xml_node, "width", 1.0f);
   float height = GetAttribReal(xml_node, "height", width);
-  int xSegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "xSegments"), 10);
-  int ySegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "ySegments"), 10);
+  int xSegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "xSegments"), width / 10.0f);
+  int ySegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "ySegments"), height / 10.0f);
   int numTexCoordSets = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "numTexCoordSets"), 1);
-  float uTile = GetAttribReal(xml_node, "uTile", width / 5.0f);
-  float vTile = GetAttribReal(xml_node, "vTile", height / 5.0f);
+  float uTile = GetAttribReal(xml_node, "uTile", width / 10.0f);
+  float vTile = GetAttribReal(xml_node, "vTile", height / 10.0f);
   std::string material = GetAttrib(xml_node, "material", "BaseWhite");
   bool hasNormals = GetAttribBool(xml_node, "hasNormals", true);
   Ogre::Vector3 normal = ParseVector3(xml_node.child("normal"));
@@ -725,7 +739,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   physics_->AddRigidBody(entBody);
 
   const Ogre::uint32 WATER_MASK = 0xF00;
-//  entity->setVisibilityFlags(WATER_MASK);
+  entity->setVisibilityFlags(WATER_MASK);
 }
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessForest_(pugi::xml_node &xml_node) {

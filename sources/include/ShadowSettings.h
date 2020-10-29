@@ -86,10 +86,14 @@ class ShadowSettings : public NoCopy {
   const std::vector<float> &GetSplitPoints() {
     return split_points_;
   }
+//----------------------------------------------------------------------------------------------------------------------
+  Ogre::PSSMShadowCameraSetup* GetPssmSetup() {
+    return pssm_.get();
+  }
 
  private:
   int16_t split_count_ = 3;
-  int16_t tex_count_ = 12;
+  int16_t tex_count_ = 3;
   std::vector<float> split_points_;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm_;
 };

@@ -53,10 +53,13 @@ class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
     inline bool isVertexCompressionSupported() const final {
       return true;
     }
-    inline void setLightmapEnabled(bool enabled) final {}
+    inline void setLightmapEnabled(bool enabled) final {
+      lightmap_ = enabled;
+    }
 
    private:
-    int8_t max_layers_ = 8;
+    bool lightmap_ = false;
+    int8_t max_layers_ = 4;
   };
 };
 }
