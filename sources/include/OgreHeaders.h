@@ -90,7 +90,6 @@
 #include <Plugins/FreeImageCodec/OgreFreeImageCodecExports.h>
 #endif
 //Assimp
-#define OGRE_BUILD_PLUGIN_ASSIMP
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
 #include <Plugins/Assimp/OgreAssimpLoader.h>
 #endif
