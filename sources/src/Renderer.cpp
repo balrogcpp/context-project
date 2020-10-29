@@ -37,50 +37,41 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
   bool global_particlefx_enable_ = true;
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-  auto *mGlesRenderSystem = new Ogre::GLES2RenderSystem();
-  Ogre::Root::getSingleton().setRenderSystem(mGlesRenderSystem);
+  Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem());
 #else
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-  auto *mGL3PlusRenderSystem = new Ogre::GL3PlusRenderSystem();
+  auto *gl3plus_render_system = new Ogre::GL3PlusRenderSystem();
+
   if (global_sso_enable_)
-    mGL3PlusRenderSystem->setConfigOption("Separate Shader Objects", "Yes");
+    gl3plus_render_system->setConfigOption("Separate Shader Objects", "Yes");
   else
-    mGL3PlusRenderSystem->setConfigOption("Separate Shader Objects", "No");
-  Ogre::Root::getSingleton().setRenderSystem(mGL3PlusRenderSystem);
+    gl3plus_render_system->setConfigOption("Separate Shader Objects", "No");
+
+  Ogre::Root::getSingleton().setRenderSystem(gl3plus_render_system);
 #else
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL
-  auto *mGLRenderSystem = new Ogre::GLRenderSystem();
-  Ogre::Root::getSingleton().setRenderSystem(mGLRenderSystem);
+  Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLRenderSystem());
 #endif
 #endif //OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #endif //OGRE_BUILD_RENDERSYSTEM_GLES2
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
-  if (global_octree_enable_) {
-    auto *mOctreePlugin = new Ogre::OctreeSceneManagerFactory();
-    Ogre::Root::getSingleton().addSceneManagerFactory(mOctreePlugin);
-  }
+  if (global_octree_enable_)
+    Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
 #endif // OGRE_BUILD_PLUGIN_OCTREE
 #ifdef OGRE_BUILD_PLUGIN_PFX
-  if (global_particlefx_enable_) {
-    auto *mParticlePlugin = new Ogre::ParticleFXPlugin();
-    Ogre::Root::getSingleton().installPlugin(mParticlePlugin);
-  }
+  if (global_particlefx_enable_)
+    Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
 #endif // OGRE_BUILD_PLUGIN_PFX
 #ifdef OGRE_BUILD_PLUGIN_STBI
-  if (global_stbi_enable_) {
-    auto *mSTBIImageCodec = new Ogre::STBIPlugin();
-    Ogre::Root::getSingleton().installPlugin(mSTBIImageCodec);
-  }
+  if (global_stbi_enable_)
+    Ogre::Root::getSingleton().installPlugin(new Ogre::STBIPlugin());
 #endif // OGRE_BUILD_PLUGIN_STBI
 #ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
-  if (global_freeimage_enable_) {
-    auto *mFreeImageCodec = new Ogre::FreeImagePlugin();
-    Ogre::Root::getSingleton().installPlugin(mFreeImageCodec);
-  }
+  if (global_freeimage_enable_)
+    Ogre::Root::getSingleton().installPlugin(new Ogre::FreeImagePlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
-    auto *assimp_plugin = new Ogre::AssimpPlugin();
-    Ogre::Root::getSingleton().installPlugin(assimp_plugin);
+  Ogre::Root::getSingleton().installPlugin(new Ogre::AssimpPlugin());
 #endif
 
   root_->initialise(false);
@@ -88,22 +79,19 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
 
   SDL_SysWMinfo info = window_->GetInfo();
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  if (!reinterpret_cast<size_t>(info.info.win.window)) {
+  if (!reinterpret_cast<size_t>(info.info.win.window))
     throw Exception("Cast from info.info.win.window to size_t failed");
-  }
 
   params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  if (!reinterpret_cast<unsigned long>(info.info.x11.window)) {
+  if (!reinterpret_cast<unsigned long>(info.info.x11.window))
     throw Exception("Cast from info.info.x11.window to size_t failed");
-  }
 
   params["externalWindowHandle"] = std::to_string(reinterpret_cast<unsigned long>(info.info.x11.window));
 #endif
 
   const char true_str[] = "true";
   const char false_str[] = "false";
-
   bool vsync_ = conf_->Get<bool>("graphics_vsync");
   bool gamma_ = false;
   int fsaa_ = conf_->Get<int>("graphics_fsaa");
@@ -118,15 +106,15 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
                        window_->GetSize().second, false, &params);
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
-  if (global_octree_enable_) {
+  if (global_octree_enable_)
     scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
-  } else {
-    scene_ = root_->createSceneManager("Default", "Default");
-  }
+  else
+    scene_ = root_->createSceneManager("Default");
 #else
-  scene_ = root_->createSceneManager("Default", "Default");
+  scene_ = root_->createSceneManager("Default");
 #endif
 
+  //Camera block
   camera_ = scene_->createCamera("Default");
   auto *renderTarget = root_->getRenderTarget(window_->GetCaption());
   viewport_ = renderTarget->addViewport(camera_);
@@ -134,17 +122,22 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
   camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / viewport_->getActualHeight());
   camera_->setAutoAspectRatio(true);
 
+  //Resource block
 #ifndef DEBUG
   Storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
 #else
   Storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
 #endif
+
+  //RTSS block
   rtss::InitRtss();
   Storage::LoadResources();
   rtss::CreateRtssShaders();
   rtss::InitInstansing();
 
+  //Shadow block
   shadow_ = std::make_unique<ShadowSettings>();
+  //Compositor block
   compositor_ = std::make_unique<Compositor>();
 }
 Renderer::~Renderer() {}
@@ -169,10 +162,11 @@ void Renderer::CreateCamera() {
   }
 
   if (camera_) {
-    camera_->setNearClipDistance(0.1f);
+    camera_->setNearClipDistance(0.001f);
     camera_->setFarClipDistance(10000.0f);
   }
 
+  camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / viewport_->getActualHeight());
   camera_->setAutoAspectRatio(true);
   scene_->setSkyBoxEnabled(false);
   scene_->setSkyDomeEnabled(false);
@@ -183,7 +177,7 @@ void Renderer::Refresh() {
   CreateCamera();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format){
+void Renderer::UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format) {
   shadow_->UpdateParams(enable, far_distance, tex_size, tex_format);
 }
 //----------------------------------------------------------------------------------------------------------------------

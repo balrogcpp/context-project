@@ -70,6 +70,7 @@
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
 #endif
+#undef OGRE_BUILD_RENDERSYSTEM_GLES2
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
   #include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 #else
@@ -89,6 +90,7 @@
 #include <Plugins/FreeImageCodec/OgreFreeImageCodecExports.h>
 #endif
 //Assimp
+#define OGRE_BUILD_PLUGIN_ASSIMP
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
 #include <Plugins/Assimp/OgreAssimpLoader.h>
 #endif
