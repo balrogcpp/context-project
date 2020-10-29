@@ -410,6 +410,7 @@ externalproject_add(target-pugixml
 
 externalproject_add(target-assimp
                     EXCLUDE_FROM_ALL true
+                    DEPENDS target-zlib target-rapidjson
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/assimp/assimp.git
                     GIT_TAG v5.0.1
@@ -420,8 +421,14 @@ externalproject_add(target-assimp
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                     -DASSIMP_BUILD_TESTS=false
                     -DBUILD_SHARED_LIBS=false
-                    -DINJECT_DEBUG_POSTFIX=false
                     -DASSIMP_BUILD_ASSIMP_TOOLS=false
+                    -DASSIMP_OPT_BUILD_PACKAGES=false
+                    -DASSIMP_BUILD_ZLIB=false
+                    -DASSIMP_NO_EXPORT=true
+                    -DASSIMP_INJECT_DEBUG_POSTFIX=false
+                    -DINJECT_DEBUG_POSTFIX=false
+                    -DASSIMP_BUILD_GLTF_IMPORTER=false
+                    -DASSIMP_BUILD_GLTF_EXPORTER=false
                     -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
                     -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
                     -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
@@ -432,8 +439,8 @@ externalproject_add(target-assimp
                     -G "${CMAKE_GENERATOR}"
                     )
 
+cmake_dependent_option(CONTEXT_OGRE_BUILD_GLES2 "CONTEXT_OGRE_BUILD_GLES2" true "ANDROID" false)
 cmake_dependent_option(CONTEXT_OGRE_BUILD_GL3PLUS "CONTEXT_OGRE_BUILD_GL3PLUS" true "NOT ANDROID" false)
-option(CONTEXT_OGRE_BUILD_GLES2 "CONTEXT_OGRE_BUILD_GLES2" true)
 option(CONTEXT_OGRE_BUILD_GL "CONTEXT_OGRE_BUILD_GL" false)
 option(CONTEXT_OGRE_BUILD_OCTREE "CONTEXT_OGRE_BUILD_OCTREE" true)
 option(CONTEXT_OGRE_BUILD_PAGING "CONTEXT_OGRE_BUILD_PAGING" true)
@@ -453,15 +460,15 @@ option(CONTEXT_OGRE_BUILD_FREEIMAGE "CONTEXT_OGRE_BUILD_FREEIMAGE" false)
 option(CONTEXT_OGRE_BUILD_EXRCODEC "CONTEXT_OGRE_BUILD_EXRCODEC" false)
 option(CONTEXT_OGRE_BUILD_VOLUME "CONTEXT_OGRE_BUILD_VOLUME" true)
 option(CONTEXT_OGRE_BUILD_MESHLODGENERATOR "CONTEXT_OGRE_BUILD_MESHLODGENERATOR" true)
-option(CONTEXT_OGRE_BUILD_ASSIMP "CONTEXT_OGRE_BUILD_ASSIMP" true)
+option(CONTEXT_OGRE_BUILD_ASSIMP "CONTEXT_OGRE_BUILD_ASSIMP" false)
 option(CONTEXT_OGRE_BUILD_PROCEDURAL "CONTEXT_OGRE_BUILD_PROCEDURAL" false)
 
 externalproject_add(target-ogre1
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zlib target-zzip target-freetype target-pugixml target-sdl target-assimp
+                    DEPENDS target-zlib target-zzip target-freetype target-pugixml target-sdl
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/OGRECave/ogre.git #patch will come with v1.12.10
-                    GIT_TAG 8f6695f55d1792c77783a595e32c12850b0de424
+                    GIT_REPOSITORY https://github.com/balrogcpp/ogre.git #patch will come with v1.12.10
+                    GIT_TAG c87ffeb4d7feeee2a1e028c1d50a7f3fc75017cd
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -585,6 +592,33 @@ externalproject_add(target-sol
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
+                    )
+
+externalproject_add(target-rocket
+                    EXCLUDE_FROM_ALL true
+                    DEPENDS target-lua target-freetype
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/libRocket/libRocket.git
+                    GIT_TAG c4384c71f63dc6d1ee3c9726daa637c158b0c3e0
+                    GIT_SHALLOW false
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build
+                    ${CMAKE_COMMAND}
+                    -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DBUILD_SHARED_LIBS=false
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket/Build
+                    BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build ${CMAKE_COMMAND} --build .
+                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build ${CMAKE_COMMAND} --build . --target install
                     )
 
 if (ANDROID)
