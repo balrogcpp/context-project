@@ -74,6 +74,7 @@ void Application::messageLogged(const std::string &message, Ogre::LogMessageLeve
         bool maskDebug, const std::string &logName, bool &skipThisMessage) {
   log_.append(message);
   log_.append("\n");
+  std::cout << message << "\n";
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {

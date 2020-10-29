@@ -1434,8 +1434,6 @@ void GrassLayer::_updateShaders() {
   }
 }
 
-unsigned long GrassPage::GUID = 0;
-
 void GrassPage::init(PagedGeometry *geom, const Ogre::Any &data) {
   sceneMgr = geom->getSceneManager();
   rootNode = geom->getSceneNode();
@@ -1455,6 +1453,7 @@ void GrassPage::addEntity(Entity *entity,
   nodeList.push_back(node);
 
   entity->setCastShadows(false);
+  entity->setVisibilityFlags(0x0F0);
   if (hasQueryFlag())
     entity->setQueryFlags(getQueryFlag());
   entity->setRenderQueueGroup(entity->getRenderQueueGroup());
