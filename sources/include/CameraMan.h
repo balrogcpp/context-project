@@ -32,7 +32,7 @@ class SceneNode;
 }
 
 namespace xio {
-class Camera final : public Entity, public InputObserver {
+class CameraMan final : public Entity, public InputObserver {
  public:
   enum   // enumerator values for different styles of camera movement
   {
@@ -42,8 +42,8 @@ class Camera final : public Entity, public InputObserver {
     MANUAL
   };
 
-  Camera() {}
-  virtual ~Camera() {}
+  CameraMan() {}
+  virtual ~CameraMan() {}
 
 //----------------------------------------------------------------------------------------------------------------------
   void ManualStop() {
@@ -142,7 +142,7 @@ class Camera final : public Entity, public InputObserver {
           rigid_->setFriction(1.0);
           float speed = rigid_->getLinearVelocity().length();
           if (speed < const_speed_)
-            rigid_->applyCentralForce(btVector3(velocity.x, 0, velocity.z).normalize() * 10000.0f);
+            rigid_->applyCentralForce(btVector3(velocity.x, 0, velocity.z).normalize() * 100000.0f);
         } else {
           rigid_->setFriction(10.0);
         }

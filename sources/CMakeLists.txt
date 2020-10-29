@@ -61,7 +61,7 @@ set(PAGED_HEADERS
 set(CONTEXT_HEADERS
     include/Application.h
     include/AppState.h
-    include/Camera.h
+    include/CameraMan.h
     include/Exception.h
     include/Input.h
     include/pcheader.h
