@@ -42,6 +42,7 @@ uniform float cOffsetScale; // [0, 1] The distance of the first sample. samples 
 // placed in [cOffsetScale * cSampleLengthScreenSpace, cSampleLengthScreenSpace]
 uniform float cDefaultAccessibility; // the default value used in the lerp() expression for invalid samples [0, 1]
 uniform float cEdgeHighlight; // multiplier for edge highlighting in [1, 2] 1 is full highlighting 2 is off
+uniform float shadow_colour;
 
 void main()
 {
@@ -109,7 +110,7 @@ void main()
     // normalize, remove edge highlighting
     accessibility *= cEdgeHighlight;
 
-    accessibility = clamp(accessibility, 0.0, 1.0);
+    accessibility = clamp(accessibility + shadow_colour, 0.0, 1.0);
   } else {
     accessibility = 1.0;
   }

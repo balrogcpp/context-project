@@ -31,6 +31,7 @@ fragment_program Crytek_fp glsl glsles
         param_named_auto cViewportSize viewport_size
         param_named_auto farClipDistance far_clip_distance
         param_named_auto cFov fov
+        param_named_auto shadow_colour shadow_colour
 	}
 }
 
@@ -205,6 +206,7 @@ material Modulate/Ssao
 	}
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 compositor Modulate/Ssao
 {
     technique
