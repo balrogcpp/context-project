@@ -50,6 +50,8 @@ out vec4 gl_FragColor;
 #define textureCubeLod textureLodEXT
 #endif
 precision highp float;
+precision highp int;
+precision lowp sampler2D;
 #if VERSION != 100
 #define varying in
 #define texture1D texture

@@ -49,7 +49,7 @@ uniform float baseUVScale;
 uniform mat4 uMVPMatrix;
 
 #ifndef SHADOWCASTER_ALPHA
-in vec3 color;
+in vec3 colour;
 uniform mat4 uModelMatrix;
 uniform vec3 uCameraPosition;
 #ifdef PAGED_GEOMETRY
@@ -98,7 +98,7 @@ void main()
   vUV0.xy = uv0.xy;
 
 #ifndef SHADOWCASTER
-  vColor = color.rgb;
+  vColor = colour.rgb;
   vec4 model_position = uModelMatrix * new_position;
   vPosition = model_position.xyz / model_position.w;
 #ifdef PAGED_GEOMETRY

@@ -39,6 +39,7 @@
 #extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
 precision highp float;
+precision highp int;
 #if VERSION == 100
 #define in attribute
 #define out varying
