@@ -39,6 +39,7 @@ class Forest final : public ComponentLocator, public SubComponent {
   virtual ~Forest();
   void GenerateGrassStatic();
   void GenerateGrassPaged();
+  void GenerateTreesPaged();
   void ProcessForest();
   void Update(float time) final;
 

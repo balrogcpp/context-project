@@ -189,14 +189,11 @@ void Forest::GenerateGrassPaged() {
   layer->setSwaySpeed(0.5f);
   layer->setDensity(2.0f);
   layer->setMapBounds(TBounds(-500, -500, 500, 500));
-  layer->setDensityMap("new_terrain.png");
-  layer->setColorMap("new_terrain.png");
+  layer->setDensityMap("terrain.png");
+  layer->setColorMap("noise.dds");
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Forest::ProcessForest() {
-//  GenerateGrassStatic();
-  GenerateGrassPaged();
-
+void Forest::GenerateTreesPaged() {
   UpdatePbrParams("3D-Diggers/fir01");
   UpdatePbrShadowCaster("3D-Diggers/fir01");
   UpdatePbrParams("3D-Diggers/fir02");
@@ -235,5 +232,11 @@ void Forest::ProcessForest() {
 
     treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
   }
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Forest::ProcessForest() {
+//  GenerateGrassStatic();
+  GenerateGrassPaged();
+  GenerateTreesPaged();
 }
 }

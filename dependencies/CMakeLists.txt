@@ -439,7 +439,7 @@ externalproject_add(target-assimp
                     -G "${CMAKE_GENERATOR}"
                     )
 
-cmake_dependent_option(CONTEXT_OGRE_BUILD_GLES2 "CONTEXT_OGRE_BUILD_GLES2" true "ANDROID" false)
+cmake_dependent_option(CONTEXT_OGRE_BUILD_GLES2 "CONTEXT_OGRE_BUILD_GLES2" true "NOT MINGW; NOT APPLE; NOT RELEASE" false)
 cmake_dependent_option(CONTEXT_OGRE_BUILD_GL3PLUS "CONTEXT_OGRE_BUILD_GL3PLUS" true "NOT ANDROID" false)
 option(CONTEXT_OGRE_BUILD_GL "CONTEXT_OGRE_BUILD_GL" false)
 option(CONTEXT_OGRE_BUILD_OCTREE "CONTEXT_OGRE_BUILD_OCTREE" true)

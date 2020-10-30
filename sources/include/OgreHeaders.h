@@ -70,17 +70,15 @@
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
 #endif
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #undef OGRE_BUILD_RENDERSYSTEM_GLES2
+#include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
+#endif
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL
+#include <RenderSystems/GL/OgreGLRenderSystem.h>
+#endif
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-  #include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
-#else
-  #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-    #include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
-  #else
-    #ifdef OGRE_BUILD_RENDERSYSTEM_GL
-      #include <RenderSystems/GL/OgreGLRenderSystem.h>
-    #endif
-  #endif
+#include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 #endif
 #ifdef OGRE_BUILD_PLUGIN_STBI
 #include <Plugins/STBICodec/OgreSTBICodec.h>
@@ -89,7 +87,6 @@
 #include <Plugins/FreeImageCodec/OgreFreeImageCodec.h>
 #include <Plugins/FreeImageCodec/OgreFreeImageCodecExports.h>
 #endif
-//Assimp
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
 #include <Plugins/Assimp/OgreAssimpLoader.h>
 #endif

@@ -257,11 +257,9 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page,
     *pReal++ = float(x1 - page.centerPoint.x);
     *pReal++ = float(y1 + scaleY);
     *pReal++ = float(z1 - page.centerPoint.z);   //pos
-
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-
     *((uint32 *) pReal++) = color;                 //color
     *pReal++ = 0.f;
     *pReal++ = 0.f;              //uv
@@ -269,11 +267,9 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page,
     *pReal++ = float(x2 - page.centerPoint.x);
     *pReal++ = float(y2 + scaleY);
     *pReal++ = float(z2 - page.centerPoint.z);   //pos
-
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-
     *((uint32 *) pReal++) = color;                 //color
     *pReal++ = 1.f;
     *pReal++ = 0.f;              //uv
@@ -281,11 +277,9 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page,
     *pReal++ = float(x1 - page.centerPoint.x);
     *pReal++ = float(y1);
     *pReal++ = float(z1 - page.centerPoint.z);   //pos
-
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-
     *((uint32 *) pReal++) = color;                 //color
     *pReal++ = 0.f;
     *pReal++ = 1.f;              //uv
@@ -293,11 +287,9 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page,
     *pReal++ = float(x2 - page.centerPoint.x);
     *pReal++ = float(y2);
     *pReal++ = float(z2 - page.centerPoint.z);   //pos
-
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-
     *((uint32 *) pReal++) = color;                 //color
     *pReal++ = 1.f;
     *pReal++ = 1.f;              //uv
