@@ -598,9 +598,9 @@ externalproject_add(target-rocket
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-lua target-freetype
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/libRocket/libRocket.git
+                    GIT_REPOSITORY https://github.com/balrogcpp/libRocket.git
                     GIT_TAG c4384c71f63dc6d1ee3c9726daa637c158b0c3e0
-                    GIT_SHALLOW false
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build
                     ${CMAKE_COMMAND}
