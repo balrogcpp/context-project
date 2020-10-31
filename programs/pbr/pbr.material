@@ -98,22 +98,27 @@ material PBR
             texture_unit Metallic
             {
                 texture white.dds
+                filtering bilinear
             }
             texture_unit Roughness
             {
                 texture white.dds
+                filtering bilinear
             }
             texture_unit Emissive
             {
                 texture black.dds
+                filtering bilinear
             }
             texture_unit AO
             {
                 texture white.dds
+                filtering bilinear
             }
             texture_unit Offset
             {
                 texture black.dds
+                filtering bilinear
             }
 
             vertex_program_ref PBR_vs {}
@@ -158,18 +163,22 @@ material PbrIbl
             texture_unit Metallic
             {
                 texture white.dds
+                filtering bilinear
             }
             texture_unit Roughness
             {
                 texture white.dds
+                filtering bilinear
             }
             texture_unit Emissive
             {
                 texture black.dds
+                filtering bilinear
             }
             texture_unit AO
             {
                 texture white.dds
+                filtering bilinear
             }
             texture_unit IBL_Diffuse
             {
@@ -230,16 +239,22 @@ material PbrReflection
             texture_unit Metallic
             {
                 texture white.dds
+                filtering bilinear
             }
             texture_unit Roughness
             {
                 texture white.dds
+                filtering bilinear
             }
             texture_unit Offset
             {
                 texture black.dds
+                filtering bilinear
             }
-            texture_unit ReflectionMap {}
+            texture_unit ReflectionMap
+            {
+                filtering bilinear
+            }
             texture_unit NoiseMap
             {
                 texture noise_fresnel.dds
@@ -290,25 +305,36 @@ material Terrain
             texture_unit Metallic
             {
                 texture white.dds
+                filtering bilinear
             }
             texture_unit Roughness
             {
                 texture white.dds
+                filtering bilinear
             }
             texture_unit Emissive
             {
                 texture black.dds
+                filtering bilinear
             }
             texture_unit AO
             {
                 texture white.dds
+                filtering bilinear
             }
             texture_unit Offset
             {
                 texture black.dds
+                filtering bilinear
             }
-            texture_unit GlobalNormal {}
-            texture_unit GlobalShadow {}
+            texture_unit GlobalNormal
+            {
+                filtering bilinear
+            }
+            texture_unit GlobalShadow
+            {
+                filtering bilinear
+            }
 
             vertex_program_ref PbrTerrain_vs {}
 
@@ -327,7 +353,6 @@ material Terrain
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 vertex_program PbrPaged_vs glsl glsles
 {
