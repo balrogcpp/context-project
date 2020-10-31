@@ -298,7 +298,7 @@ vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
 //----------------------------------------------------------------------------------------------------------------------
 vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
 {
-    const float scale = 0.01;
+    const float scale = 0.02;
     const float offset = 0.0;
     float displacement =  texture2D(uOffsetSampler, texCoords).r * scale + offset;
     return texCoords - viewDir.xy * displacement;
@@ -514,22 +514,30 @@ void main()
 
         // Calculate the shading terms for the microfacet specular shading model
         vec3 F = SpecularReflection(pbrInputs);
-        float G = GeometricOcclusion(pbrInputs);
-        float D = MicrofacetDistribution(pbrInputs);
 
         // Calculation of analytical lighting contribution
         vec3 diffuseContrib = (1.0 - F) * Diffuse(pbrInputs);
-        vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
+        vec3 specContrib = vec3(0.0);
 
         float tmp = NdotL * fSpotT * fAtten;
+        float attenuation = 1.0;
 
 #ifdef SHADOWRECEIVER
         if (uLightCastsShadowsArray[i] * tmp > 0.001) {
-            float shadow = CalcPSSMDepthShadow();
-            shadow = clamp(shadow + uShadowColour, 0.0, 1.0);
-            tmp *= shadow;
+            attenuation = CalcPSSMDepthShadow();
+            attenuation = clamp(attenuation + uShadowColour, 0.0, 1.0);
+            tmp *= attenuation;
         }
 #endif
+
+#ifndef PAGED_GEOMETRY
+        if (attenuation == 1.0)
+#endif
+        {
+            float G = GeometricOcclusion(pbrInputs);
+            float D = MicrofacetDistribution(pbrInputs);
+            specContrib = F * G * D / (4.0 * NdotL * NdotV);
+        }
 
         total_colour += (tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib));
     }

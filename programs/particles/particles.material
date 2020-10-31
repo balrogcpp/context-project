@@ -58,7 +58,7 @@ material Examples/Droplet
                 filtering none
             }
 
-            vertex_program_ref Pbr_vs {}
+            vertex_program_ref PBR_vs {}
 
 			fragment_program_ref droplet_fs
 			{

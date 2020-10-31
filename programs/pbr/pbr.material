@@ -20,90 +20,62 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 vertex_program PbrBasic_vs glsl glsles
-{
-	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS
-}
-
-fragment_program PbrBasic_fs glsl glsles
-{
-	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP
-}
-
-material PbrBasic
-{
-    receive_shadows off
-
-    technique
-    {
-      pass
-      {
-            specular 1 1 1 1
-            diffuse 1 1 1
-            ambient 0 0 0
-            alpha_rejection greater_equal 127
-
-            texture_unit Albedo {}
-            texture_unit Normal {}
-
-            vertex_program_ref PbrBasic_vs {}
-
-			fragment_program_ref PbrBasic_fs
-			{
-                param_named uBaseColorSampler int 0
-			}
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PbrBasicShadow_fs glsl glsles
-{
-	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
-}
-
-material PbrBasicShadow
-{
-    technique
-    {
-      pass
-      {
-            specular 1 1 1 1
-            diffuse 1 1 1
-            ambient 0 0 0
-            alpha_rejection greater_equal 127
-
-            texture_unit Albedo {}
-            texture_unit Normal {}
-
-            vertex_program_ref PbrBasic_vs {}
-
-			fragment_program_ref PbrBasicShadow_fs
-			{
-                param_named uBaseColorSampler   int 0
-			}
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program Pbr_vs glsl glsles
 {
 	source pbr.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,SHADOWRECEIVER
 }
 
-fragment_program Pbr_fs glsl glsles
+fragment_program PbrBasic_fs glsl glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
+}
+
+material Basic
+{
+    transparency_casts_shadows off
+    receive_shadows on
+
+    technique
+    {
+        pass
+        {
+            specular 1 1 1 1
+            diffuse 1 1 1
+            ambient 0 0 0
+            alpha_rejection greater_equal 127
+
+            texture_unit Albedo {}
+            texture_unit Normal {}
+
+            vertex_program_ref PbrBasic_vs {}
+
+            fragment_program_ref PbrBasic_fs
+            {
+                param_named uBaseColorSampler int 0
+            }
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PBR_vs glsl glsles
+{
+	source pbr.vert
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,SHADOWRECEIVER
+}
+
+fragment_program PBR_fs glsl glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,HAS_PARALLAXMAP,SHADOWRECEIVER
 }
 
-material Pbr
+material PBR
 {
+    transparency_casts_shadows off
     receive_shadows on
 
     technique
@@ -144,9 +116,9 @@ material Pbr
                 texture black.dds
             }
 
-            vertex_program_ref Pbr_vs {}
+            vertex_program_ref PBR_vs {}
 
-			fragment_program_ref Pbr_fs
+			fragment_program_ref PBR_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
@@ -169,6 +141,7 @@ fragment_program PbrIbl_fs glsl glsles
 
 material PbrIbl
 {
+    transparency_casts_shadows off
     receive_shadows off
 
     technique
@@ -211,7 +184,7 @@ material PbrIbl
                 texture brdfLUT.dds
             }
 
-            vertex_program_ref Pbr_vs {}
+            vertex_program_ref PBR_vs {}
 
 			fragment_program_ref PbrIbl_fs
 			{
@@ -224,6 +197,205 @@ material PbrIbl
                 param_named uDiffuseEnvSampler  int 6
                 param_named uSpecularEnvSampler int 7
                 param_named ubrdfLUT            int 8
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PbrReflection_vs glsl glsles
+{
+	source pbr.vert
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,REFLECTION,SHADOWRECEIVER
+}
+
+fragment_program PbrReflection_fs glsl glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_PARALLAXMAP,REFLECTION,SHADOWRECEIVER
+}
+
+material PbrReflection
+{
+    technique
+    {
+      pass
+      {
+            diffuse 1 1 1
+            specular 1 1 1 1
+            ambient 0 0 0
+
+            texture_unit Albedo {}
+            texture_unit Normal {}
+            texture_unit Metallic
+            {
+                texture white.dds
+            }
+            texture_unit Roughness
+            {
+                texture white.dds
+            }
+            texture_unit Offset
+            {
+                texture black.dds
+            }
+            texture_unit ReflectionMap {}
+            texture_unit NoiseMap
+            {
+                texture noise_fresnel.dds
+                filtering bilinear
+            }
+
+            vertex_program_ref PbrReflection_vs {}
+
+			fragment_program_ref PbrReflection_fs
+			{
+                param_named uBaseColorSampler   int 0
+                param_named uNormalSampler    int 1
+                param_named uMetallicSampler int 2
+                param_named uRoughnessSampler int 3
+                param_named uOffsetSampler int 4
+                param_named uReflectionMap int 5
+                param_named uNoiseMap int 6
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PbrTerrain_vs glsl glsles
+{
+	source pbr.vert
+    preprocessor_defines SHADOWRECEIVER,VERTEX_COMPRESSION
+}
+
+fragment_program PbrTerrain_fs glsl glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,HAS_PARALLAXMAP,SHADOWRECEIVER,TERRAIN
+}
+
+material Terrain
+{
+    technique
+    {
+      pass
+      {
+            diffuse 1 1 1
+            specular 1 1 1 1
+            ambient 0 0 0
+
+            texture_unit Albedo {}
+            texture_unit Normal {}
+            texture_unit Metallic
+            {
+                texture white.dds
+            }
+            texture_unit Roughness
+            {
+                texture white.dds
+            }
+            texture_unit Emissive
+            {
+                texture black.dds
+            }
+            texture_unit AO
+            {
+                texture white.dds
+            }
+            texture_unit Offset
+            {
+                texture black.dds
+            }
+            texture_unit GlobalNormal {}
+            texture_unit GlobalShadow {}
+
+            vertex_program_ref PbrTerrain_vs {}
+
+			fragment_program_ref PbrTerrain_fs
+			{
+                param_named uBaseColorSampler   int 0
+                param_named uNormalSampler    int 1
+                param_named uMetallicSampler int 2
+                param_named uRoughnessSampler int 3
+                param_named uEmissiveSampler      int 4
+                param_named uOcclusionSampler   int 5
+                param_named uOffsetSampler   int 6
+                param_named uGlobalNormalSampler int 7
+			}
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PbrPaged_vs glsl glsles
+{
+	source pbr.vert
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,SHADOWRECEIVER
+}
+
+fragment_program PbrPaged_fs glsl glsles
+{
+	source pbr.frag
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
+}
+
+material PbrPaged
+{
+    receive_shadows on
+    transparency_casts_shadows on
+
+    technique
+    {
+      pass
+      {
+            specular 1 1 1 1
+            diffuse 1 1 1
+            ambient 0 0 0
+            alpha_rejection greater_equal 127
+
+            texture_unit Albedo
+            {
+                filtering bilinear
+            }
+
+			vertex_program_ref PbrPaged_vs {}
+
+			fragment_program_ref PbrPaged_fs
+			{
+                param_named uBaseColorSampler   int 0
+			}
+        }
+    }
+}
+
+material PbrGrass
+{
+    receive_shadows on
+    transparency_casts_shadows on
+
+    technique
+    {
+      pass
+      {
+            specular 1 1 1 1
+            diffuse 1 1 1
+            ambient 0 0 0
+            alpha_rejection greater_equal 127
+            cull_hardware none
+            cull_software none
+
+            texture_unit Albedo
+            {
+                filtering bilinear
+            }
+
+			vertex_program_ref PbrPaged_vs {}
+
+			fragment_program_ref PbrPaged_fs
+			{
+                param_named uBaseColorSampler int 0
 			}
         }
     }
