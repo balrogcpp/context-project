@@ -162,7 +162,7 @@ void Renderer::CreateCamera() {
   }
 
   if (camera_) {
-    camera_->setNearClipDistance(0.001f);
+    camera_->setNearClipDistance(0.01f);
     camera_->setFarClipDistance(10000.0f);
   }
 
@@ -171,6 +171,7 @@ void Renderer::CreateCamera() {
   scene_->setSkyBoxEnabled(false);
   scene_->setSkyDomeEnabled(false);
   scene_->setAmbientLight(Ogre::ColourValue::Black);
+//  camera_->setPolygonMode(Ogre::PM_WIREFRAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Refresh() {

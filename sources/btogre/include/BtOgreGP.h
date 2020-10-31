@@ -75,13 +75,15 @@ class VertexIndexToShape {
 class StaticMeshToShapeConverter : public VertexIndexToShape {
  public:
 
-  StaticMeshToShapeConverter(Ogre::Renderable *rend, const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY);
-  StaticMeshToShapeConverter(Ogre::Entity *entity, const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY);
+  explicit StaticMeshToShapeConverter(Ogre::Renderable *rend, const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY);
+  explicit StaticMeshToShapeConverter(Ogre::Entity *entity, Ogre::SceneNode *parent = nullptr, const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY);
+  explicit StaticMeshToShapeConverter(Ogre::Entity *entity, const Ogre::MeshPtr &mesh, Ogre::SceneNode *parent = nullptr, const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY);
   StaticMeshToShapeConverter();
 
-  ~StaticMeshToShapeConverter();
+  virtual ~StaticMeshToShapeConverter();
 
-  void addEntity(Ogre::Entity *entity, const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY);
+  void addEntity(Ogre::Entity *entity, const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY, Ogre::SceneNode *parent = nullptr);
+  void addEntity(Ogre::Entity *entity, const Ogre::MeshPtr &mesh, const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY, Ogre::SceneNode *parent = nullptr);
 
   void addMesh(const Ogre::MeshPtr &mesh, const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY);
 
@@ -95,9 +97,9 @@ class StaticMeshToShapeConverter : public VertexIndexToShape {
 class AnimatedMeshToShapeConverter : public VertexIndexToShape {
  public:
 
-  AnimatedMeshToShapeConverter(Ogre::Entity *entity, const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY);
+  explicit AnimatedMeshToShapeConverter(Ogre::Entity *entity, const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY);
   AnimatedMeshToShapeConverter();
-  ~AnimatedMeshToShapeConverter();
+  virtual ~AnimatedMeshToShapeConverter();
 
   void addEntity(Ogre::Entity *entity, const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY);
   void addMesh(const Ogre::MeshPtr &mesh, const Ogre::Matrix4 &transform);

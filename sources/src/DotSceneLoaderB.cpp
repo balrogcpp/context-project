@@ -546,17 +546,15 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
     entity->setCastShadows(castShadows);
     parent->attachObject(entity);
 
-    if (entity->getNumManualLodLevels() < 1) {
-//      Ogre::LogManager::getSingleton().stream(Ogre::LML_TRIVIAL) << "[DotSceneLoader] I am here!";
+    if (entity->getMesh()->getNumLodLevels() < 2) {
       Ogre::LodConfig lod_config(const_cast<Ogre::MeshPtr &>(entity->getMesh()));
-//      lod_config.strategy = Ogre::PixelCountLodStrategy::getSingletonPtr();
       lod_config.advanced = Ogre::LodConfig::Advanced();
       lod_config.levels.clear();
       lod_config.advanced.profile.clear();
       Ogre::MeshLodGenerator::getSingleton().getAutoconfig(lod_config.mesh, lod_config);
-      lod_config.createGeneratedLodLevel(8, 0.10, Ogre::LodLevel::VRM_COLLAPSE_COST);
-      lod_config.createGeneratedLodLevel(9, 0.25, Ogre::LodLevel::VRM_COLLAPSE_COST);
-      lod_config.createGeneratedLodLevel(10, 0.50f, Ogre::LodLevel::VRM_COLLAPSE_COST);
+      lod_config.createGeneratedLodLevel(1, 0.50, Ogre::LodLevel::VRM_COLLAPSE_COST);
+      lod_config.createGeneratedLodLevel(2, 0.75, Ogre::LodLevel::VRM_COLLAPSE_COST);
+      lod_config.createGeneratedLodLevel(3, 0.99, Ogre::LodLevel::VRM_COLLAPSE_COST);
       lod_config.advanced.outsideWeight = 1.0;
       lod_config.advanced.useCompression = true;
       lod_config.advanced.useVertexNormals = true;

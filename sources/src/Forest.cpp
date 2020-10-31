@@ -25,6 +25,7 @@
 #include "Forest.h"
 #include "ShaderUtils.h"
 #include "DotSceneLoaderB.h"
+#include "Physics.h"
 using namespace Forests;
 
 namespace xio {
@@ -127,8 +128,13 @@ Forest::~Forest() {
     delete it;
 
   pgeometry_.clear();
+  pgeometry_.shrink_to_fit();
   ploaders_.clear();
+  ploaders_.shrink_to_fit();
   gpages_.clear();
+  gpages_.shrink_to_fit();
+  sgeometry_.clear();
+  sgeometry_.shrink_to_fit();
 
   auto &mesh_manager = Ogre::MeshManager::getSingleton();
   if (mesh_manager.getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
@@ -148,8 +154,8 @@ void Forest::GenerateGrassStatic() {
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   Ogre::Entity *grass = scene->createEntity("Grass", "grass");
   // Create a static geometry field, which we will populate with grass
-  field_ = scene->createStaticGeometry("FarnField");
-  field_->setRegionDimensions(Ogre::Vector3(50.0));
+  auto *field = scene->createStaticGeometry("FarnField");
+  field->setRegionDimensions(Ogre::Vector3(50.0));
 
   const float bounds = 500.0f;
   // add grass uniformly throughout the field, with some random variations
@@ -159,13 +165,49 @@ void Forest::GenerateGrassStatic() {
 
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
-    field_->addEntity(grass, pos, ori, scale);
+    field->addEntity(grass, pos, ori, scale);
   }
 
-  field_->setVisibilityFlags(SUBMERGED_MASK);
-  field_->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
-  field_->build(); // build our static geometry (bake the grass into it)
-  field_->setCastShadows(false);
+  field->setVisibilityFlags(SUBMERGED_MASK);
+  field->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
+  field->build();
+  field->setCastShadows(false);
+
+  sgeometry_.push_back(field);
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Forest::GenerateTreesStatic() {
+  // create our grass mesh, and Create a grass entity from it
+  CreateGrassMesh(1.0, 1.0);
+  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+  Ogre::Entity *rock = scene->createEntity("Rock", "rock.mesh");
+  // Create a static geometry field, which we will populate with grass
+  auto *rocks = scene->createStaticGeometry("Rocks");
+  rocks->setRegionDimensions(Ogre::Vector3(50.0));
+  auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
+
+  const float bounds = 200.0f;
+  // add grass uniformly throughout the field, with some random variations
+  for (int i = 0; i < 250; i++) {
+    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
+    pos.y += loader_->GetHeigh(pos.x, pos.z) + 0.5;
+    Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
+    Ogre::Vector3 scale(2.0, 2.0*Ogre::Math::RangeRandom(0.85, 1.15), 2.0);
+
+    auto *node = root_node->createChildSceneNode(pos, ori);
+    node->scale(scale);
+    physics_->ProcessData(rock, node);
+    scene->destroySceneNode(node);
+
+    rocks->addEntity(rock, pos, ori, scale);
+  }
+
+  rocks->setVisibilityFlags(SUBMERGED_MASK);
+  rocks->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
+  rocks->build();
+  rocks->setCastShadows(true);
+
+  sgeometry_.push_back(rocks);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateGrassPaged() {
@@ -190,7 +232,7 @@ void Forest::GenerateGrassPaged() {
   layer->setDensity(2.0f);
   layer->setMapBounds(TBounds(-500, -500, 500, 500));
   layer->setDensityMap("terrain.png");
-  layer->setColorMap("noise.dds");
+  layer->setColorMap("terrain.png");
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateTreesPaged() {
@@ -201,36 +243,44 @@ void Forest::GenerateTreesPaged() {
   UpdatePbrParams("3D-Diggers/plant1");
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  float x = 0, y = 0, z = 0, yaw, scale;
-
-  auto *trees = new PagedGeometry(scene->getCamera("Default"), 100);
+  float x = 0, y = 0, z = 0, yaw, scale = 1.0;
+  auto *trees = new PagedGeometry(scene->getCamera("Default"), 50);
   pgeometry_.push_back(trees);
   trees->addDetailLevel<BatchPage>(100, 20);
-  auto *treeLoader = new TreeLoader2D(trees, TBounds(-500, -500, 500, 500));
+  auto *treeLoader = new TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
   ploaders_.push_back(treeLoader);
   if (heigh_func_)
     treeLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z) - 0.1); });
+
   trees->setPageLoader(treeLoader);
   Ogre::Entity *fir1EntPtr = scene->createEntity("fir1", "fir05_30.mesh");
+  auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
 
-  for (int i = 0; i < 5000; i++) {
+  const float bound = 100;
+
+  for (int i = 0; i < 25; i++) {
     yaw = Ogre::Math::RangeRandom(0, 360);
     if (Ogre::Math::RangeRandom(0, 1) <= 0.8f) {
-      x = Ogre::Math::RangeRandom(-500, 500);
-      z = Ogre::Math::RangeRandom(-500, 500);
-      if (x < -500) x = -500; else if (x > 500) x = 500;
-      if (z < -500) z = -500; else if (z > 500) z = 500;
+      x = Ogre::Math::RangeRandom(-bound, bound);
+      z = Ogre::Math::RangeRandom(-bound, bound);
+      if (x < -bound) x = -bound; else if (x > bound) x = bound;
+      if (z < -bound) z = -bound; else if (z > bound) z = bound;
     } else {
-      x = Ogre::Math::RangeRandom(-500, 500);
-      z = Ogre::Math::RangeRandom(-500, 500);
+      x = Ogre::Math::RangeRandom(-200, 200);
+      z = Ogre::Math::RangeRandom(-200, 200);
     }
-    y = 0;
+    y = heigh_func_(x, z);
     scale = Ogre::Math::RangeRandom(0.9f, 1.1f);
     scale *= 0.1;
     Ogre::Quaternion quat;
     quat.FromAngleAxis(Ogre::Degree(yaw), Ogre::Vector3::UNIT_Y);
 
-    treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
+    auto *node = root_node->createChildSceneNode(Ogre::Vector3(x, y, z), quat);
+    node->scale(Ogre::Vector3(scale));
+    physics_->ProcessData(fir1EntPtr, node, "capsule");
+    scene->destroySceneNode(node);
+
+    treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, 0, z), Ogre::Degree(yaw), scale);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -238,5 +288,6 @@ void Forest::ProcessForest() {
 //  GenerateGrassStatic();
   GenerateGrassPaged();
   GenerateTreesPaged();
+  GenerateTreesStatic();
 }
 }

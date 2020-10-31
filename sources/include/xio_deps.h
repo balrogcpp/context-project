@@ -52,6 +52,7 @@
 #include <filesystem>
 #include <cstdlib>
 #include <limits>
+#include <cctype>
 #include <omp.h>
 extern "C" {
 #include <SDL2/SDL.h>
