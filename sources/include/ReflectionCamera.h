@@ -39,12 +39,14 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
 //----------------------------------------------------------------------------------------------------------------------
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
     rcamera_->enableReflection(plane_);
+    rcamera_->setLodBias(0.1);
     if (scene_->hasLight("Sun"))
       scene_->getLight("Sun")->setCastShadows(false);
   }
 //----------------------------------------------------------------------------------------------------------------------
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
     rcamera_->disableReflection();
+    rcamera_->setLodBias(1.0);
     if (scene_->hasLight("Sun"))
       scene_->getLight("Sun")->setCastShadows(true);
   }

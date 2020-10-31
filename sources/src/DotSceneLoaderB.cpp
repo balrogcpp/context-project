@@ -45,6 +45,8 @@ void DotSceneLoaderB::Create() {
   if (!terrain_) terrain_ = std::make_unique<Landscape>();
   if (!forest_) forest_ = std::make_unique<Forest>();
   forest_->SetHeighFunc([](float x, float z) { return terrain_->GetHeigh(x, z); });
+  if (!camera_) camera_ = std::make_unique<CameraMan>();
+  input_->RegObserver(camera_.get());
 }
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::Clean() {
@@ -297,66 +299,68 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   parent->translate(Ogre::Vector3(0, 1, 0));
 
   /// Create the camera
-  auto *pCamera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
+  auto *camera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
   if (!camera_) {
     camera_ = std::make_unique<CameraMan>();
     input_->RegObserver(camera_.get());
   }
 
-  camera_->SetStyle(CameraMan::FPS);
-  camera_->RegCamera(parent, pCamera);
+  camera_->RegCamera(parent, camera);
+  camera_->UpdateStyle();
 
-  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  auto *actor = scene->createEntity("Actor", "Icosphere.mesh");
-  actor->setCastShadows(false);
-  actor->setVisible(false);
-  parent->attachObject(actor);
-  std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
-  btVector3 inertia;
-  btRigidBody *entBody;
-  converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(actor);
-  auto *entShape = converter->createCapsule();
-  sound_->SetListener(pCamera->getParentSceneNode());
-  float mass = 100.0f;
-  entShape->calculateLocalInertia(mass, inertia);
-  auto *bodyState = new BtOgre::RigidBodyState(parent);
-  entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-  entBody->setAngularFactor(0);
-  entBody->activate(true);
-  entBody->forceActivationState(DISABLE_DEACTIVATION);
-  entBody->setActivationState(DISABLE_DEACTIVATION);
-  entBody->setFriction(1.0);
-  entBody->setUserIndex(1);
-  physics_->AddRigidBody(entBody);
-  camera_->SetRigidBody(entBody);
+  if (camera_->GetStyle() == CameraMan::FPS) {
+    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+    auto *actor = scene->createEntity("Actor", "Icosphere.mesh");
+    actor->setCastShadows(false);
+    actor->setVisible(false);
+    parent->attachObject(actor);
+    std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
+    btVector3 inertia;
+    btRigidBody *entBody;
+    converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(actor);
+    auto *entShape = converter->createCapsule();
+    sound_->SetListener(camera->getParentSceneNode());
+    float mass = 100.0f;
+    entShape->calculateLocalInertia(mass, inertia);
+    auto *bodyState = new BtOgre::RigidBodyState(parent);
+    entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    entBody->setAngularFactor(0);
+    entBody->activate(true);
+    entBody->forceActivationState(DISABLE_DEACTIVATION);
+    entBody->setActivationState(DISABLE_DEACTIVATION);
+    entBody->setFriction(1.0);
+    entBody->setUserIndex(1);
+    physics_->AddRigidBody(entBody);
+    camera_->SetRigidBody(entBody);
+  }
 
   /// Set the field-of-view
-  pCamera->setFOVy(Ogre::Radian(fov));
+  camera->setFOVy(Ogre::Radian(fov));
 
   /// Set the aspect ratio
   if (aspectRatio != 0)
-    pCamera->setAspectRatio(aspectRatio);
+    camera->setAspectRatio(aspectRatio);
 
   /// Set the projection type
   if (projectionType == "perspective") {
-    pCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
+    camera->setProjectionType(Ogre::PT_PERSPECTIVE);
   } else if (projectionType == "orthographic") {
-    pCamera->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
+    camera->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
   }
 
   /// Process clipping
   if (auto element = xml_node.child("clipping")) {
     float nearDist = GetAttribReal(element, "near");
-    pCamera->setNearClipDistance(nearDist);
+    camera->setNearClipDistance(nearDist);
 
     float farDist = GetAttribReal(element, "far");
-    pCamera->setFarClipDistance(farDist);
+    camera->setFarClipDistance(farDist);
   }
 
   /// Process userDataReference
   if (auto element = xml_node.child("userData")) {
-    ProcessUserData_(element, static_cast<Ogre::MovableObject *>(pCamera)->getUserObjectBindings());
+    ProcessUserData_(element, static_cast<Ogre::MovableObject *>(camera)->getUserObjectBindings());
   }
 }
 ///---------------------------------------------------------------------------------------------------------------------
@@ -623,6 +627,8 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
     if (auto element = xml_node.child("userData")) {
       ProcessUserData_(element, entity->getUserObjectBindings());
       physics_->ProcessData(entity->getUserObjectBindings(), entity, parent);
+    } else {
+      physics_->ProcessData(entity, parent);
     }
   }
   catch (Ogre::Exception &e) {
@@ -685,7 +691,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   Ogre::Plane plane(normal, distance);
 
   rcamera_.reset();
-  rcamera_ = std::make_unique<ReflectionCamera>(plane, 1024);
+  rcamera_ = std::make_unique<ReflectionCamera>(plane, 512);
 
   std::string mesh_name = name + "mesh";
 

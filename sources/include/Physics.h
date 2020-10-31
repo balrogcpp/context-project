@@ -104,17 +104,17 @@ class Physics final : public Component, public Singleton<Physics> {
   int steps_ = 8;
   bool pause_ = false;
   bool debug_ = false;
-  const std::string physics_type_static = "static";
-  const std::string physics_type_dynamic = "dynamic";
-  const std::string physics_type_actor = "actor";
-  const std::string physics_type_ghost = "ghost";
-  const std::string physics_type_none = "none";
-  const std::string proxy_box = "box";
-  const std::string proxy_capsule = "capsule";
-  const std::string proxy_sphere = "sphere";
-  const std::string proxy_cylinder = "cylinder";
-  const std::string proxy_trimesh = "trimesh";
-  const std::string proxy_convex = "convex";
+  const std::string TYPE_STATIC = "static";
+  const std::string TYPE_DYNAMIC = "dynamic";
+  const std::string TYPE_ACTOR = "actor";
+  const std::string TYPE_GHOST = "ghost";
+  const std::string TYPE_NONE = "none";
+  const std::string PROXY_BOX = "box";
+  const std::string PROXY_CAPSULE = "capsule";
+  const std::string PROXY_SPHERE = "sphere";
+  const std::string PROXY_CYLINDER = "cylinder";
+  const std::string PROXY_TRIMESH = "trimesh";
+  const std::string PROXY_CONVEX = "convex";
 
  public:
   void SetCallback(const std::function<void(int a, int b)> &callback) {

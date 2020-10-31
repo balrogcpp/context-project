@@ -41,7 +41,7 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
     setupAnimations();
   }
 
-  void addTime(Ogre::Real deltaTime) {
+  void Update(Ogre::Real deltaTime) {
     updateBody(deltaTime);
     updateAnimations(deltaTime);
     updateCamera(deltaTime);

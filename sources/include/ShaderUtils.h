@@ -146,8 +146,7 @@ inline void UpdatePbrShadowReceiver(Ogre::MaterialPtr material) {
     shadowed_list.push_back(material_name);
   }
 
-  auto *pssm =
-      dynamic_cast<Ogre::PSSMShadowCameraSetup *>(Ogre::Root::getSingleton().getSceneManager("Default")->getShadowCameraSetup().get());
+  auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(Ogre::Root::getSingleton().getSceneManager("Default")->getShadowCameraSetup().get());
 
   if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
     auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();

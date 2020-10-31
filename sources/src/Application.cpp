@@ -109,14 +109,14 @@ void Application::Init_() {
   overlay_ = std::make_unique<Overlay>();
   loader_ = std::make_unique<DotSceneLoaderB>();
 
+  ComponentLocator::LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
+  loader_->LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
+
   components_.push_back(sound_.get());
   components_.push_back(loader_.get());
   components_.push_back(physics_.get());
   components_.push_back(renderer_.get());
   components_.push_back(overlay_.get());
-
-  ComponentLocator::LocateComponents(
-      conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
 
   for (auto &it : components_) {
     it->Create();
@@ -138,7 +138,6 @@ void Application::Init_() {
     tfo = Ogre::TFO_NONE;
 
   renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
-  loader_->LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
   verbose_ = conf_->Get<bool>("global_verbose_enable");
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");

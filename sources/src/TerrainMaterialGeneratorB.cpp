@@ -56,7 +56,7 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrai
 }
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *terrain) {
-  std::string material_name = "Terrain";
+  std::string material_name = "TerrainCustom";
 
   UpdatePbrParams(material_name);
   UpdatePbrShadowReceiver(material_name);
@@ -94,7 +94,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
 }
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Ogre::Terrain *terrain) {
-  std::string material_name = "Terrain";
+  std::string material_name = "TerrainCustom";
   UpdatePbrParams(material_name);
 
   unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();

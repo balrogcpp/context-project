@@ -142,7 +142,7 @@ class CameraMan final : public Entity, public InputObserver {
           rigid_->setFriction(1.0);
           float speed = rigid_->getLinearVelocity().length();
           if (speed < const_speed_)
-            rigid_->applyCentralForce(btVector3(velocity.x, 0, velocity.z).normalize() * 100000.0f);
+            rigid_->applyCentralForce(btVector3(velocity.x, 0, velocity.z).normalize() * 10000.0f);
         } else {
           rigid_->setFriction(10.0);
         }
@@ -167,8 +167,8 @@ class CameraMan final : public Entity, public InputObserver {
       // Just to determine the sign of the angle we pick up above, the
       // value itself does not interest us.
       pitchAngleSign = camera_pitch_node_->getOrientation().x;
-      camera_pitch_node_->translate(Ogre::Vector3{0,0,0.001});
-      camera_pitch_node_->translate(Ogre::Vector3{0,0,-0.001});
+      camera_pitch_node_->translate(Ogre::Vector3{1,-1,1});
+      camera_pitch_node_->translate(Ogre::Vector3{-1,1,-1});
 
       // Limit the pitch between -90 degress and +90 degrees, Quake3-style.
       if (pitchAngle > 90.0f) {
@@ -284,7 +284,7 @@ class CameraMan final : public Entity, public InputObserver {
   btRigidBody *rigid_ = nullptr;
   Ogre::Degree dx_, dy_;
   Ogre::Camera *camera_ = nullptr;
-  int style_ = FPS;
+  int style_ = MANUAL;
   Ogre::SceneNode *target_ = nullptr;
   bool orbiting_ = false;
   bool moving_ = false;
@@ -365,18 +365,20 @@ class CameraMan final : public Entity, public InputObserver {
     camera_roll_node_ = nullptr;
   }
 
-  void SetStyle(int style) {
-    if (style_ != FREELOOK && style == FREELOOK) {
+  void UpdateStyle() {
+    if (style_ == FREELOOK) {
       node_->setFixedYawAxis(true); // also fix axis with lookAt calls
       node_->setAutoTracking(false);
-    } else if (style_ != MANUAL && style == MANUAL) {
+    } else if (style_ == MANUAL) {
       ManualStop();
       node_->setAutoTracking(false);
-    } else if (style_ != FPS && style == FPS) {
+    } else if (style_ == FPS) {
       node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z); // also fix axis with lookAt calls
       node_->setAutoTracking(false);
     }
+  }
 
+  void SetStyle(int style) {
     style_ = style;
   }
 
