@@ -123,7 +123,6 @@ void Application::Init_() {
   }
 
   input_->RegObserver(overlay_->GetConsole());
-  renderer_->Refresh();
 
   // Texture filtering
   std::string graphics_filtration = conf_->Get<std::string>("graphics_filtration");
@@ -144,6 +143,7 @@ void Application::Init_() {
   input_->RegWinObserver(this);
   renderer_->Resize(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"),conf_->Get<bool>("window_fullscreen"));
   renderer_->GetWindow().SetCaption(conf_->Get<std::string>("window_caption"));
+  renderer_->Refresh();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Reset_() {
@@ -178,8 +178,7 @@ void Application::InitState_(std::unique_ptr<AppState> &&next_state) {
   input_->RegObserver(cur_state_.get());
   Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
 
-  cur_state_->LocateComponents(
-      conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
+  cur_state_->LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
   cur_state_->Create();
 }
 //----------------------------------------------------------------------------------------------------------------------

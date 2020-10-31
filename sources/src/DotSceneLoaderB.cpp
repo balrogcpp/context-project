@@ -307,7 +307,6 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   }
 
   camera_->RegCamera(parent, camera);
-  camera_->UpdateStyle();
 
   if (camera_->GetStyle() == CameraMan::FPS) {
     auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -735,7 +734,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 
   std::unique_ptr<BtOgre::StaticMeshToShapeConverter>
       converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
-///  auto *entShape = converter->createTrimesh();
+
   auto *entShape = converter->createBox();
   auto *bodyState = new BtOgre::RigidBodyState(parent);
   btRigidBody *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));

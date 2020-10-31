@@ -28,187 +28,153 @@
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
-inline void UpdatePbrShadowCaster(Ogre::MaterialPtr material) {
-  std::string material_name = material->getName();
-  static std::vector<std::string> material_list;
-
-  if (std::find(material_list.begin(), material_list.end(), material_name) != material_list.end()) {
-    return;
-  } else {
-    material_list.push_back(material_name);
-  }
-
+inline void UpdatePbrShadowCaster(Ogre::MaterialPtr &material) {
   auto *pass = material->getTechnique(0)->getPass(0);
   int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
   bool transparency_casts_shadows = material->getTransparencyCastsShadows();
   int num_textures = pass->getNumTextureUnitStates();
+  std::string material_name = material->getName();
 
   if (num_textures > 0 && alpha_rejection > 0 && transparency_casts_shadows) {
     auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
-    auto new_caster = caster_material->clone("PSSM/shadow_caster" + std::to_string(material_list.size()));
-    material->getTechnique(0)->setShadowCasterMaterial(new_caster);
+    std::string caster_name = "PSSM/shadow_caster/" + material_name;
+    Ogre::MaterialPtr new_caster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
 
-    auto texture_albedo = pass->getTextureUnitState("Albedo");
-    if (texture_albedo) {
-      std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
+    if (!new_caster) {
+      new_caster = caster_material->clone(caster_name);
+      auto texture_albedo = pass->getTextureUnitState("Albedo");
+      if (texture_albedo) {
+        std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
 
-      auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
+        auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
 
-      if (texPtr3) {
-        texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-        texPtr3->setTextureAddressingMode(Ogre::TextureAddressingMode::TAM_CLAMP);
-        texPtr3->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
-        texPtr3->setTextureName(texture_name);
+        if (texPtr3) {
+          texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+          texPtr3->setTextureAddressingMode(Ogre::TextureAddressingMode::TAM_CLAMP);
+          texPtr3->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
+          texPtr3->setTextureName(texture_name);
+        }
       }
     }
+
+    material->getTechnique(0)->setShadowCasterMaterial(new_caster);
   } else {
-    auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/NoAlpha/shadow_caster");
-    auto new_caster = caster_material->clone("PSSM/NoAlpha/shadow_caster" + std::to_string(material_list.size()));
+    std::string caster_name = "PSSM/NoAlpha/shadow_caster/" + material_name;
+    Ogre::MaterialPtr new_caster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
+
+    if (!new_caster) {
+      auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/NoAlpha/shadow_caster");
+      new_caster = caster_material->clone(caster_name);
+    }
+
     material->getTechnique(0)->setShadowCasterMaterial(new_caster);
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-inline void UpdatePbrParams(Ogre::MaterialPtr material) {
-  std::string material_name = material->getName();
-  bool registered = false;
-  static std::vector<std::string> material_list;
+inline void UpdatePbrParams(Ogre::MaterialPtr &material) {
+  const int MAX_LIGHT_COUNT = 5;
 
-  if (std::find(material_list.begin(), material_list.end(), material_name) != material_list.end()) {
-    registered = true;
-  } else {
-    material_list.push_back(material_name);
-  }
-
-  const int light_count = 5;
-
-  if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
-    auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
-    vert_params->setIgnoreMissingParams(true);
-
-    auto &constants = vert_params->getConstantDefinitions();
-    if (constants.map.count("uMVPMatrix") == 0) {
-      return;
-    }
-
-    vert_params->setNamedAutoConstant("uMVPMatrix", Ogre::GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
-    vert_params->setNamedAutoConstant("uModelMatrix", Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
-    vert_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
-
-    if (constants.map.count("fadeRange") > 0)
-      vert_params->setNamedConstant("fadeRange", 1.0f / 50.0f);
-    if (constants.map.count("windRange") > 0)
-      vert_params->setNamedConstant("windRange", 10.0f);
-
-    if (constants.map.count("uTime") > 0)
-      vert_params->setNamedConstantFromTime("uTime", 1);
-  }
-
-  if (material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
-    auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    frag_params->setIgnoreMissingParams(true);
-
-    frag_params->setNamedAutoConstant("uAlphaRejection", Ogre::GpuProgramParameters::ACT_SURFACE_ALPHA_REJECTION_VALUE);
-    frag_params->setNamedAutoConstant("uSurfaceAmbientColour", Ogre::GpuProgramParameters::ACT_SURFACE_AMBIENT_COLOUR);
-    frag_params->setNamedAutoConstant("uSurfaceDiffuseColour", Ogre::GpuProgramParameters::ACT_SURFACE_DIFFUSE_COLOUR);
-    frag_params->setNamedAutoConstant("uSurfaceSpecularColour",Ogre::GpuProgramParameters::ACT_SURFACE_SPECULAR_COLOUR);
-    frag_params->setNamedAutoConstant("uSurfaceShininessColour", Ogre::GpuProgramParameters::ACT_SURFACE_SHININESS);
-    frag_params->setNamedAutoConstant("uSurfaceEmissiveColour",Ogre::GpuProgramParameters::ACT_SURFACE_EMISSIVE_COLOUR);
-    frag_params->setNamedAutoConstant("uAmbientLightColour", Ogre::GpuProgramParameters::ACT_AMBIENT_LIGHT_COLOUR);
-    frag_params->setNamedAutoConstant("uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
-    frag_params->setNamedAutoConstant("uLightPositionArray",Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_ARRAY,light_count);
-    frag_params->setNamedAutoConstant("uLightDirectionArray",Ogre::GpuProgramParameters::ACT_LIGHT_DIRECTION_ARRAY,light_count);
-    frag_params->setNamedAutoConstant("uLightDiffuseScaledColourArray",Ogre::GpuProgramParameters::ACT_LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY,light_count);
-    frag_params->setNamedAutoConstant("uLightAttenuationArray",Ogre::GpuProgramParameters::ACT_LIGHT_ATTENUATION_ARRAY,light_count);
-    frag_params->setNamedAutoConstant("uLightSpotParamsArray",Ogre::GpuProgramParameters::ACT_SPOTLIGHT_PARAMS_ARRAY,light_count);
-    frag_params->setNamedAutoConstant("uFogColour", Ogre::GpuProgramParameters::ACT_FOG_COLOUR);
-    frag_params->setNamedAutoConstant("uFogParams", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
-    frag_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-inline void UpdatePbrShadowReceiver(Ogre::MaterialPtr material) {
-  std::string material_name = material->getName();
-  bool registered = false;
-  const int pssm_split_count = 3;
-  const int light_count = 5;
-  const int shadows = pssm_split_count * light_count;
-  static std::vector<std::string> shadowed_list;
-
-  if (!material->getReceiveShadows()) {
+  if (!material->getTechnique(0)->getPass(0)->hasVertexProgram()
+      || !material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
     return;
   }
 
-  if (std::find(shadowed_list.begin(), shadowed_list.end(), material_name) != shadowed_list.end()) {
-    registered = true;
-  } else {
-    shadowed_list.push_back(material_name);
+  auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+  vert_params->setIgnoreMissingParams(true);
+
+  if (vert_params->getConstantDefinitions().map.count("uMVPMatrix") == 0) {
+    return;
+  }
+
+  vert_params->setNamedAutoConstant("uMVPMatrix", Ogre::GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
+  vert_params->setNamedAutoConstant("uModelMatrix", Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
+  vert_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
+  vert_params->setNamedConstant("fadeRange", 1.0f / 50.0f);
+  vert_params->setNamedConstant("windRange", 10.0f);
+  vert_params->setNamedConstantFromTime("uTime", 1.0);
+
+  auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+  frag_params->setIgnoreMissingParams(true);
+
+  frag_params->setNamedAutoConstant("uAlphaRejection", Ogre::GpuProgramParameters::ACT_SURFACE_ALPHA_REJECTION_VALUE);
+  frag_params->setNamedAutoConstant("uSurfaceAmbientColour", Ogre::GpuProgramParameters::ACT_SURFACE_AMBIENT_COLOUR);
+  frag_params->setNamedAutoConstant("uSurfaceDiffuseColour", Ogre::GpuProgramParameters::ACT_SURFACE_DIFFUSE_COLOUR);
+  frag_params->setNamedAutoConstant("uSurfaceSpecularColour",Ogre::GpuProgramParameters::ACT_SURFACE_SPECULAR_COLOUR);
+  frag_params->setNamedAutoConstant("uSurfaceShininessColour", Ogre::GpuProgramParameters::ACT_SURFACE_SHININESS);
+  frag_params->setNamedAutoConstant("uSurfaceEmissiveColour",Ogre::GpuProgramParameters::ACT_SURFACE_EMISSIVE_COLOUR);
+  frag_params->setNamedAutoConstant("uAmbientLightColour", Ogre::GpuProgramParameters::ACT_AMBIENT_LIGHT_COLOUR);
+  frag_params->setNamedAutoConstant("uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
+  frag_params->setNamedAutoConstant("uLightPositionArray", Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_ARRAY, MAX_LIGHT_COUNT);
+  frag_params->setNamedAutoConstant("uLightDirectionArray", Ogre::GpuProgramParameters::ACT_LIGHT_DIRECTION_ARRAY, MAX_LIGHT_COUNT);
+  frag_params->setNamedAutoConstant("uLightDiffuseScaledColourArray", Ogre::GpuProgramParameters::ACT_LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY, MAX_LIGHT_COUNT);
+  frag_params->setNamedAutoConstant("uLightAttenuationArray", Ogre::GpuProgramParameters::ACT_LIGHT_ATTENUATION_ARRAY, MAX_LIGHT_COUNT);
+  frag_params->setNamedAutoConstant("uLightSpotParamsArray", Ogre::GpuProgramParameters::ACT_SPOTLIGHT_PARAMS_ARRAY, MAX_LIGHT_COUNT);
+  frag_params->setNamedAutoConstant("uFogColour", Ogre::GpuProgramParameters::ACT_FOG_COLOUR);
+  frag_params->setNamedAutoConstant("uFogParams", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
+  frag_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+inline void UpdatePbrShadowReceiver(Ogre::MaterialPtr &material) {
+  const int PSSM_SPLIT_COUNT = 3;
+  const int MAX_LIGHT_COUNT = 5;
+
+  if (!material->getReceiveShadows() || !material->getTechnique(0)->getPass(0)->hasVertexProgram()
+      || !material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
+    return;
   }
 
   auto *pssm = dynamic_cast<Ogre::PSSMShadowCameraSetup *>(Ogre::Root::getSingleton().getSceneManager("Default")->getShadowCameraSetup().get());
 
-  if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
-    auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
-    vert_params->setIgnoreMissingParams(true);
+  auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+  vert_params->setIgnoreMissingParams(true);
 
-    auto &constants = vert_params->getConstantDefinitions();
-    if (constants.map.count("uTexWorldViewProjMatrixArray") == 0) {
-      return;
-    }
-    vert_params->setNamedAutoConstant( "uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
-    vert_params->setNamedAutoConstant("uTexWorldViewProjMatrixArray",Ogre::GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY,pssm_split_count);
-    vert_params->setNamedAutoConstant("uLightCastsShadowsArray",Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY,light_count);
+  if (vert_params->getConstantDefinitions().map.count("uTexWorldViewProjMatrixArray") == 0) {
+    return;
   }
 
-  if (material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
-    auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-    frag_params->setIgnoreMissingParams(true);
-    auto pass = material->getTechnique(0)->getPass(0);
+  vert_params->setNamedAutoConstant( "uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
+  vert_params->setNamedAutoConstant("uTexWorldViewProjMatrixArray",Ogre::GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY, PSSM_SPLIT_COUNT);
+  vert_params->setNamedAutoConstant("uLightCastsShadowsArray",Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY, MAX_LIGHT_COUNT);
 
-    Ogre::uint numTextures = 3;
-    Ogre::Vector4 splitPoints;
-    const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
-    for (int j = 1; j < numTextures; ++j) {
-      splitPoints[j - 1] = splitPointList[j];
+  auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+  frag_params->setIgnoreMissingParams(true);
+  auto pass = material->getTechnique(0)->getPass(0);
+
+  Ogre::Vector4 splitPoints;
+  const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
+
+  for (int i = 0; i < PSSM_SPLIT_COUNT; i++) {
+    splitPoints[i] = splitPointList[i+1];
+  }
+
+  if (frag_params->getConstantDefinitions().map.count("pssmSplitPoints") == 0) {
+    return;
+  }
+
+  frag_params->setNamedConstant("pssmSplitPoints", splitPoints);
+  frag_params->setNamedAutoConstant("uShadowColour", Ogre::GpuProgramParameters::ACT_SHADOW_COLOUR);
+  frag_params->setNamedAutoConstant("uLightCastsShadowsArray",Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY, MAX_LIGHT_COUNT);
+
+  int texture_count = pass->getNumTextureUnitStates();
+
+  for (int i = 0; i < PSSM_SPLIT_COUNT; i++) {
+    if (pass->getTextureUnitState("shadowMap" + std::to_string(i))) {
+      continue;
     }
-    splitPoints[numTextures - 1] = Ogre::Root::getSingleton().getSceneManager("Default")->getShadowFarDistance();
-
-    const int light_count = 5;
-    auto &constants = frag_params->getConstantDefinitions();
-    if (constants.map.count("pssmSplitPoints") != 0) {
-      frag_params->setNamedConstant("pssmSplitPoints", splitPoints);
-      frag_params->setNamedAutoConstant("uShadowColour", Ogre::GpuProgramParameters::ACT_SHADOW_COLOUR);
-      frag_params->setNamedAutoConstant("uLightCastsShadowsArray",Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY,light_count);
-
-      int texture_count = pass->getNumTextureUnitStates();
-
-      if (!registered) {
-        for (int k = 0; k < 3; k++) {
-          Ogre::TextureUnitState *tu = pass->createTextureUnitState();
-          tu->setContentType(Ogre::TextureUnitState::CONTENT_SHADOW);
-          tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
-          tu->setTextureBorderColour(Ogre::ColourValue::White);
-          tu->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
-          frag_params->setNamedConstant("shadowMap" + std::to_string(k), texture_count + k);
-        }
-      }
-    }
+    Ogre::TextureUnitState *tu = pass->createTextureUnitState();
+    tu->setName("shadowMap" + std::to_string(i));
+    tu->setContentType(Ogre::TextureUnitState::CONTENT_SHADOW);
+    tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
+    tu->setTextureBorderColour(Ogre::ColourValue::White);
+    tu->setTextureFiltering(Ogre::FO_POINT, Ogre::FO_POINT, Ogre::FO_NONE);
+    frag_params->setNamedConstant("shadowMap" + std::to_string(i), texture_count + i);
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-inline void UpdatePbrIbl(Ogre::MaterialPtr material) {
-  std::string material_name = material->getName();
-  bool registered = false;
-  static std::vector<std::string> material_list;
-
-  if (std::find(material_list.begin(), material_list.end(), material_name) != material_list.end()) {
-    registered = true;
-  } else {
-    material_list.push_back(material_name);
-  }
-
+inline void UpdatePbrIbl(Ogre::MaterialPtr &material) {
   auto ibl_texture = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
   auto ibl_texture2 = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Diffuse");
   const bool realtime_cubemap = true;
@@ -235,22 +201,26 @@ inline void UpdatePbrIbl(Ogre::MaterialPtr material) {
 
 //----------------------------------------------------------------------------------------------------------------------
 inline void UpdatePbrParams(const std::string &material) {
-  UpdatePbrParams(Ogre::MaterialManager::getSingleton().getByName(material));
+  auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+  UpdatePbrParams(material_ptr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 inline void UpdatePbrIbl(const std::string &material) {
-  UpdatePbrIbl(Ogre::MaterialManager::getSingleton().getByName(material));
+  auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+  UpdatePbrIbl(material_ptr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 inline void UpdatePbrShadowReceiver(const std::string &material) {
-  UpdatePbrShadowReceiver(Ogre::MaterialManager::getSingleton().getByName(material));
+  auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+  UpdatePbrShadowReceiver(material_ptr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 inline void UpdatePbrShadowCaster(const std::string &material) {
-  UpdatePbrShadowCaster(Ogre::MaterialManager::getSingleton().getByName(material));
+  auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+  UpdatePbrShadowCaster(material_ptr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

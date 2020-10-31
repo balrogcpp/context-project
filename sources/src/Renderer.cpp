@@ -175,7 +175,8 @@ void Renderer::CreateCamera() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Refresh() {
-  CreateCamera();
+//  CreateCamera();
+  shadow_->UpdateParams();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format) {

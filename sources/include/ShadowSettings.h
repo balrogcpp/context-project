@@ -33,7 +33,16 @@ class ShadowSettings : public NoCopy {
   ShadowSettings() {}
   virtual ~ShadowSettings() {}
 //----------------------------------------------------------------------------------------------------------------------
+  void UpdateParams() {
+    UpdateParams(shadow_enable_, far_distance_, tex_size_, tex_format_);
+  }
+//----------------------------------------------------------------------------------------------------------------------
   void UpdateParams(bool enable, float far_distance, int tex_size, int tex_format = 16) {
+    shadow_enable_ = enable;
+    far_distance_ = far_distance;
+    tex_size_ = tex_size;
+    tex_format_ = tex_format;
+
     auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
     if (!enable) {
       scene->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
@@ -96,5 +105,9 @@ class ShadowSettings : public NoCopy {
   int16_t tex_count_ = 3;
   std::vector<float> split_points_;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm_;
+  bool shadow_enable_ = true;
+  float far_distance_ = 500.0;
+  int16_t tex_size_ = 2048;
+  int tex_format_ = 16;
 };
 }

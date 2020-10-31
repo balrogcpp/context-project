@@ -60,6 +60,7 @@ class Renderer final : public Component, public Singleton<Renderer> {
 
  private:
   void CreateCamera();
+
   std::unique_ptr<Window> window_;
   std::unique_ptr<ShadowSettings> shadow_;
   std::unique_ptr<Compositor> compositor_;

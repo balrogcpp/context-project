@@ -180,7 +180,7 @@ void Forest::GenerateTreesStatic() {
   // create our grass mesh, and Create a grass entity from it
   CreateGrassMesh(1.0, 1.0);
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  Ogre::Entity *rock = scene->createEntity("Rock", "fir05_30.mesh");
+  Ogre::Entity *rock = scene->createEntity("Rock", "rock.mesh");
   // Create a static geometry field, which we will populate with grass
   auto *rocks = scene->createStaticGeometry("Rocks");
   rocks->setRegionDimensions(Ogre::Vector3(50.0));
@@ -193,7 +193,7 @@ void Forest::GenerateTreesStatic() {
     pos.y += loader_->GetHeigh(pos.x, pos.z) + 0.5;
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(2.0, 2.0*Ogre::Math::RangeRandom(0.85, 1.15), 2.0);
-    scale /= 20.0;
+//    scale /= 20.0;
 
     auto *node = root_node->createChildSceneNode(pos, ori);
     node->scale(scale);

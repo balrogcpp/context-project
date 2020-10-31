@@ -22,14 +22,11 @@
 
 #pragma once
 #include <OgreRoot.h>
+#include <OgreSceneNode.h>
 #include "Input.h"
 #include "Entity.h"
 #include "ComponentLocator.h"
 #include "BulletDynamics/Dynamics/btRigidBody.h"
-
-namespace Ogre {
-class SceneNode;
-}
 
 namespace xio {
 class CameraMan final : public Entity, public InputObserver {
@@ -335,7 +332,7 @@ class CameraMan final : public Entity, public InputObserver {
       node_->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
 
       // Create the camera's yaw node as a child of camera's top node.
-      camera_yaw_node_ = node_->createChildSceneNode("CameraYaw");
+      camera_yaw_node_ = parent->createChildSceneNode("CameraYaw");
 
       // Create the camera's pitch node as a child of camera's yaw node.
       camera_pitch_node_ = camera_yaw_node_->createChildSceneNode("CameraPitch");
@@ -349,9 +346,20 @@ class CameraMan final : public Entity, public InputObserver {
         parent->detachObject(it);
         camera_roll_node_->attachObject(it);
       }
+
+      for (const auto it : parent->getChildren()) {
+        if (it == camera_yaw_node_)
+          continue;
+
+        parent->removeChild(it);
+        camera_roll_node_->removeChild(it);
+        camera_roll_node_->addChild(it);
+      }
     } else {
       node_->attachObject(camera_);
     }
+
+    UpdateStyle();
   }
 
   void UnregCamera() {
