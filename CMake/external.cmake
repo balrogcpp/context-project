@@ -92,6 +92,19 @@ externalproject_add(target-angelscript
                     ${CMAKE_COMMAND} --build ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-angelscript-build --target install
                     )
 
+externalproject_add(target-theora
+                    EXCLUDE_FROM_ALL true
+                    DEPENDS target-ogg
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/xiph/theora.git
+                    GIT_TAG v1.2.0alpha1
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-theora ./autogen.sh
+                    BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-theora ${CONTEXT_MAKE}
+                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-theora ${CONTEXT_MAKE} install
+                    )
+
 externalproject_add(target-cegui
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-freetype target-ogre1

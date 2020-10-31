@@ -481,7 +481,7 @@ externalproject_add(target-ogre1
                     -DOGRE_CONFIG_THREAD_PROVIDER=std
                     -DOGRE_BUILD_COMPONENT_PYTHON=false
                     -DOGRE_BUILD_COMPONENT_JAVA=false
-                    -DOGRE_RESOURCEMANAGER_STRICT=1
+                    -DOGRE_RESOURCEMANAGER_STRICT=0
                     -DOGRE_BUILD_COMPONENT_PYTHON=false
                     -DOGRE_BUILD_RENDERSYSTEM_D3D11=false
                     -DOGRE_BUILD_RENDERSYSTEM_D3D9=false
@@ -634,6 +634,7 @@ list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre1)
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rocket)
 if (CONTEXT_OGRE_BUILD_PROCEDURAL)
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-procedural)
 endif ()
