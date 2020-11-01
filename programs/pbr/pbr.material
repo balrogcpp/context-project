@@ -281,7 +281,7 @@ material PbrReflection
 vertex_program PbrTerrain_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines SHADOWRECEIVER,VERTEX_COMPRESSION
+    preprocessor_defines SHADOWRECEIVER
 }
 
 fragment_program PbrTerrain_fs glsl glsles
@@ -357,13 +357,13 @@ material Terrain
 vertex_program PbrPaged_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,SHADOWRECEIVER
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_COLOURS,SHADOWRECEIVER
 }
 
 fragment_program PbrPaged_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,SHADOWRECEIVER
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,SHADOWRECEIVER
 }
 
 material PbrPaged

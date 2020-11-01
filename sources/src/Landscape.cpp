@@ -127,7 +127,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     terrain_global_options = new Ogre::TerrainGlobalOptions();
 
   OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
-  terrain_global_options->setUseVertexCompressionWhenAvailable(true);
+  terrain_global_options->setUseVertexCompressionWhenAvailable(false);
   terrain_global_options->setCastsDynamicShadows(false);
   terrain_global_options->setCompositeMapDistance(100);
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));

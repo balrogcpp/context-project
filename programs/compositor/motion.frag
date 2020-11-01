@@ -28,6 +28,7 @@
 #version VERSION
 #endif
 #include "header.frag"
+
 #define MAX_SAMPLES 8
 
 in vec2 oUv0;

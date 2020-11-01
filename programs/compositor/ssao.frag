@@ -28,8 +28,8 @@
 #version VERSION
 #endif
 #include "header.frag"
-in vec2 oUv0;
 
+in vec2 oUv0;
 uniform sampler2D sSceneDepthSampler;
 uniform sampler2D sRotSampler4x4;
 uniform vec4 cViewportSize; // auto param width/height/inv. width/inv. height
@@ -111,7 +111,8 @@ void main()
     accessibility *= cEdgeHighlight;
 
     accessibility = clamp(accessibility + shadow_colour, 0.0, 1.0);
-  } else {
+  }
+  else {
     accessibility = 1.0;
   }
 

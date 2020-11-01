@@ -28,6 +28,7 @@
 #version VERSION
 #endif
 #include "header.frag"
+
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
 

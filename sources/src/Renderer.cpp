@@ -121,6 +121,7 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
   viewport_->setBackgroundColour(Ogre::ColourValue::Black);
   camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / viewport_->getActualHeight());
   camera_->setAutoAspectRatio(true);
+//  camera_->setPolygonMode(Ogre::PM_WIREFRAME);
 
   //Resource block
 #ifndef DEBUG
@@ -171,11 +172,9 @@ void Renderer::CreateCamera() {
   scene_->setSkyBoxEnabled(false);
   scene_->setSkyDomeEnabled(false);
   scene_->setAmbientLight(Ogre::ColourValue::Black);
-//  camera_->setPolygonMode(Ogre::PM_WIREFRAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Refresh() {
-//  CreateCamera();
   shadow_->UpdateParams();
 }
 //----------------------------------------------------------------------------------------------------------------------

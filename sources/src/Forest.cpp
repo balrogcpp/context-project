@@ -193,7 +193,6 @@ void Forest::GenerateTreesStatic() {
     pos.y += loader_->GetHeigh(pos.x, pos.z) + 0.5;
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(2.0, 2.0*Ogre::Math::RangeRandom(0.85, 1.15), 2.0);
-//    scale /= 20.0;
 
     auto *node = root_node->createChildSceneNode(pos, ori);
     node->scale(scale);
@@ -241,7 +240,6 @@ void Forest::GenerateTreesPaged() {
   UpdatePbrShadowCaster("3D-Diggers/fir01");
   UpdatePbrParams("3D-Diggers/fir02");
   UpdatePbrShadowCaster("3D-Diggers/fir02");
-  UpdatePbrParams("3D-Diggers/plant1");
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;

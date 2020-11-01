@@ -29,27 +29,28 @@
 #endif
 #include "header.vert"
 
-in vec4 vertex;
+in vec4 position;
 #ifdef ALPHA
 in vec2 uv0;
 #endif
 uniform mat4 uModelMatrix;
 uniform mat4 cWorldViewProj;
 uniform mat4 cWorldViewProjPrev;
-uniform mat4 cWorldView;
-out vec3 oViewPos;
+out float distance;
 out vec4 vPosition;
 out vec4 vPrevPosition;
 #ifdef ALPHA
 out vec2 vUV;
 #endif
+
 void main()
 {
-    oViewPos = (cWorldView * vertex).xyz;// transform the vertex position to the view space
 #ifdef ALPHA
     vUV = uv0;
 #endif
-    vPosition = cWorldViewProj * vertex;
-    vPrevPosition = (cWorldViewProjPrev * uModelMatrix) * vertex;
+
+    distance = length((cWorldViewProj * position).xyz);// transform the vertex position to the view space
+    vPosition = cWorldViewProj * position;
+    vPrevPosition = (cWorldViewProjPrev * uModelMatrix) * position;
     gl_Position = vPosition;
 }

@@ -28,7 +28,8 @@
 #version VERSION
 #endif
 #include "header.frag"
-in vec3 oViewPos;
+
+in float distance;
 in vec4 vPosition;
 in vec4 vPrevPosition;
 uniform float cNearClipDistance;
@@ -37,6 +38,7 @@ uniform float cFarClipDistance;// !!! might be 0 for infinite view projection.
 in vec2 vUV;
 uniform sampler2D baseColor;
 #endif
+
 void main()
 {
 #ifdef ALPHA
@@ -44,7 +46,7 @@ void main()
         discard;
     }
 #endif
-    float distance = length(oViewPos);
+
     float clipDistance = cFarClipDistance - cNearClipDistance;
     gl_FragData[0] = vec4((distance - cNearClipDistance) / clipDistance, 0.0, 0.0, 1.0);
 
