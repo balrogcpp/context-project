@@ -31,7 +31,7 @@
 
 uniform mat4 worldViewProj;
 in vec4 position;
-in vec4 uv0;
+in vec3 uv0;
 out vec3 TexCoords; // direction vector representing a 3D texture coordinate
 
 void main() {

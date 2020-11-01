@@ -102,7 +102,6 @@ material gbuffer_alpha
                 param_named_auto uModelMatrix world_matrix
                 param_named_auto cWorldViewProj worldviewproj_matrix
                 param_named cWorldViewProjPrev matrix4x4 0
-                param_named_auto cWorldView worldview_matrix
             }
 
             fragment_program_ref gbuffer_alpha_fp

@@ -46,13 +46,15 @@
 #include "header.frag"
 
 #define MAX_LIGHTS 5
-#define MAX_SHADOWS 1
+#define MAX_SHADOWS 3
 #ifdef SHADOWCASTER_ALPHA
 in vec2 vUV0;
 uniform sampler2D uBaseColorSampler;
 #endif
 #ifndef SHADOWCASTER
-in vec4 vUV0;
+in vec2 vUV0;
+in float vDepth;
+in float vAlpha;
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D uBaseColorSampler;
 #endif
@@ -107,10 +109,12 @@ uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
 uniform vec3 pssmSplitPoints;
 uniform float uShadowColour;
-in vec4 lightSpacePosArray[3 * MAX_SHADOWS];
+in vec4 lightSpacePosArray[MAX_SHADOWS];
 #endif
 in vec3 vPosition;
+#ifdef HAS_COLOURS
 in vec3 vColor;
+#endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 in mat3 vTBN;
@@ -135,7 +139,7 @@ const float M_PI = 3.141592653589793;
 //----------------------------------------------------------------------------------------------------------------------
 float CalcPSSMDepthShadow()
 {
-    float camDepth = vUV0.z;
+    float camDepth = vDepth;
 
     // calculate shadow
     if (camDepth <= pssmSplitPoints.x)
@@ -160,7 +164,7 @@ float CalcPSSMDepthShadow()
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 //----------------------------------------------------------------------------------------------------------------------
-mat3 GetTgn()
+mat3 GetTGN()
 {
 // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
@@ -208,11 +212,11 @@ vec3 GetNormal(vec2 uv)
 #ifdef TERRAIN
     mat3 tbn = GetTgnTerrain();
 #else
-    mat3 tbn = GetTgn();
+    mat3 tbn = GetTGN();
 #endif
 
 #ifdef HAS_NORMALMAP
-    vec3 n = texture2D(uNormalSampler, uv).rgb;
+    vec3 n = texture2D(uNormalSampler, uv).xyz;
     n = normalize(tbn * ((2.0 * n - 1.0)));
 #else //!HAS_NORMALMAP
     vec3 n = tbn[2].xyz;
@@ -259,7 +263,7 @@ vec4 GetDiffuse(vec2 uv) {
     base_color.rgb *= vColor;
 #endif
 #ifdef PAGED_GEOMETRY
-//    alpha *= vUV0.w;
+//    alpha *= vAlpha;
 #endif
 
     if (alpha < uAlphaRejection) {
@@ -272,7 +276,7 @@ vec4 GetDiffuse(vec2 uv) {
 //----------------------------------------------------------------------------------------------------------------------
 vec3 ApplyFog(vec3 color) {
     const float maxy = 500.0;
-    float exponent = vUV0.z * uFogParams.x;
+    float exponent = vDepth * uFogParams.x;
     float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
     fog_value *= ((maxy - vPosition.y) / maxy);
     return mix(color, uFogColour, fog_value);
@@ -462,7 +466,6 @@ void main()
     vec3 n = GetNormal(tex_coord);// normal at surface point
 
     float NdotV = abs(dot(n, v)) + 0.001;
-    vec3 reflection = -normalize(reflect(v, n));
 
     vec3 total_colour = vec3(0.0);
 
@@ -546,6 +549,7 @@ void main()
 
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
+    vec3 reflection = -normalize(reflect(v, n));
     total_colour += GetIBLContribution(diffuseColor, specularColor, roughness, NdotV, n, reflection);
 #else
     total_colour += ((uSurfaceAmbientColour + uAmbientLightColour) * baseColor.rgb);

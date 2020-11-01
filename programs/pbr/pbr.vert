@@ -33,7 +33,7 @@
 #include "header.vert"
 
 #define MAX_LIGHTS 5
-#define MAX_SHADOWS 1
+#define MAX_SHADOWS 3
 #define HAS_UV
 
 #ifndef VERTEX_COMPRESSION
@@ -59,9 +59,11 @@ uniform float fadeRange;
 uniform float windRange;
 #endif
 uniform float uTime;
-out vec4 vUV0;
+out vec2 vUV0;
+out float vDepth;
+out float vAlpha;
 #ifdef HAS_NORMALS
-in vec4 normal;
+in vec3 normal;
 #endif
 #ifdef HAS_TANGENTS
 in vec4 tangent;
@@ -69,11 +71,13 @@ in vec4 tangent;
 #ifdef SHADOWRECEIVER
 uniform float uLightCount;
 uniform float uLightCastsShadowsArray[MAX_LIGHTS];
-uniform mat4 uTexWorldViewProjMatrixArray[3 * MAX_SHADOWS];
-out vec4 lightSpacePosArray[3 * MAX_SHADOWS];
+uniform mat4 uTexWorldViewProjMatrixArray[MAX_SHADOWS];
+out vec4 lightSpacePosArray[MAX_SHADOWS];
 #endif
 out vec3 vPosition;
+#ifdef HAS_COLOURS
 out vec3 vColor;
+#endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 out mat3 vTBN;
@@ -93,7 +97,7 @@ void main()
 #ifndef VERTEX_COMPRESSION
   vec4 new_position = vec4(position, 1.0);
 #else
-  vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0, 1.0);
+  vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0.xy, 1.0);
   vec2 uv0 = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
@@ -115,7 +119,7 @@ void main()
     new_position += direction * offset;
   }
 
-  vUV0.w = 2.0 - (2.0 * dist * fadeRange);
+  vAlpha = 2.0 - (2.0 * dist * fadeRange);
   float offset = (2.0 * dist * fadeRange) - 1.0;
   new_position.y -= 2.0 * clamp(offset, 0, 1);
 #endif
@@ -132,7 +136,8 @@ void main()
 #endif
 
   gl_Position = uMVPMatrix * new_position;
-  vUV0.z = gl_Position.z;
+  vDepth = gl_Position.z;
+
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
   int k0= 0;
@@ -149,11 +154,12 @@ void main()
     k2 += 3;
   }
 #endif
+
 #ifdef REFLECTION
   const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
-  0.0, 0.5, 0.0, 0.0,
-  0.0, 0.0, 0.5, 0.0,
-  0.5, 0.5, 0.5, 1.0);
+                              0.0, 0.5, 0.0, 0.0,
+                              0.0, 0.0, 0.5, 0.0,
+                              0.5, 0.5, 0.5, 1.0);
   projectionCoord = scalemat * gl_Position;
 #endif
 

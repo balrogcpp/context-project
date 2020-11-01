@@ -48,7 +48,10 @@ material Basic
             alpha_rejection greater_equal 127
 
             texture_unit Albedo {}
-            texture_unit Normal {}
+            texture_unit Normal
+            {
+                texture normal.dds
+            }
 
             vertex_program_ref PbrBasic_vs {}
 
@@ -93,7 +96,7 @@ material PBR
             }
             texture_unit Normal
             {
-                texture green.dds
+                texture normal.dds
             }
             texture_unit Metallic
             {
@@ -138,13 +141,19 @@ material PBR
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fragment_program PbrIbl_fs glsl glsles
+vertex_program PBR_IBL_vs glsl glsles
 {
-	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL,SHADOWRECEIVER
+	source pbr.vert
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS
 }
 
-material PbrIbl
+fragment_program PBR_IBL_fs glsl glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,USE_IBL
+}
+
+material PBR_IBL
 {
     transparency_casts_shadows off
     receive_shadows off
@@ -159,7 +168,10 @@ material PbrIbl
             alpha_rejection greater_equal 127
 
             texture_unit Albedo {}
-            texture_unit Normal {}
+            texture_unit Normal
+            {
+                texture normal.dds
+            }
             texture_unit Metallic
             {
                 texture white.dds
@@ -183,19 +195,23 @@ material PbrIbl
             texture_unit IBL_Diffuse
             {
                 texture diffuse.dds cubic
+                tex_address_mode clamp
             }
             texture_unit IBL_Specular
             {
-                texture OutputCube.dds cubic
+                texture specular.dds cubic
+                tex_address_mode clamp
             }
             texture_unit IBL_LUT
             {
+                tex_address_mode clamp
                 texture brdfLUT.dds
+                filtering bilinear
             }
 
-            vertex_program_ref PBR_vs {}
+            vertex_program_ref PBR_IBL_vs {}
 
-			fragment_program_ref PbrIbl_fs
+			fragment_program_ref PBR_IBL_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
@@ -212,19 +228,19 @@ material PbrIbl
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program PbrReflection_vs glsl glsles
+vertex_program PbrReflective_vs glsl glsles
 {
 	source pbr.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,REFLECTION,SHADOWRECEIVER
 }
 
-fragment_program PbrReflection_fs glsl glsles
+fragment_program PbrReflective_fs glsl glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_PARALLAXMAP,REFLECTION,SHADOWRECEIVER
 }
 
-material PbrReflection
+material Reflective
 {
     technique
     {
@@ -235,7 +251,10 @@ material PbrReflection
             ambient 0 0 0
 
             texture_unit Albedo {}
-            texture_unit Normal {}
+            texture_unit Normal
+            {
+                texture normal.dds
+            }
             texture_unit Metallic
             {
                 texture white.dds
@@ -261,9 +280,9 @@ material PbrReflection
                 filtering bilinear
             }
 
-            vertex_program_ref PbrReflection_vs {}
+            vertex_program_ref PbrReflective_vs {}
 
-			fragment_program_ref PbrReflection_fs
+			fragment_program_ref PbrReflective_fs
 			{
                 param_named uBaseColorSampler   int 0
                 param_named uNormalSampler    int 1
@@ -301,7 +320,10 @@ material Terrain
             ambient 0 0 0
 
             texture_unit Albedo {}
-            texture_unit Normal {}
+            texture_unit Normal
+            {
+                texture normal.dds
+            }
             texture_unit Metallic
             {
                 texture white.dds
@@ -357,7 +379,7 @@ material Terrain
 vertex_program PbrPaged_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_COLOURS,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_COLOURS,SHADOWRECEIVER
 }
 
 fragment_program PbrPaged_fs glsl glsles
@@ -366,7 +388,7 @@ fragment_program PbrPaged_fs glsl glsles
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,SHADOWRECEIVER
 }
 
-material PbrPaged
+material Paged
 {
     receive_shadows on
     transparency_casts_shadows on
@@ -395,7 +417,20 @@ material PbrPaged
     }
 }
 
-material PbrGrass
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PbrGrass_vs glsl glsles
+{
+	source pbr.vert
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_COLOURS,SHADOWRECEIVER
+}
+
+fragment_program PbrGrass_fs glsl glsles
+{
+	source pbr.frag
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,SHADOWRECEIVER
+}
+
+material Grass
 {
     receive_shadows on
     transparency_casts_shadows on
@@ -416,9 +451,9 @@ material PbrGrass
                 filtering bilinear
             }
 
-			vertex_program_ref PbrPaged_vs {}
+			vertex_program_ref PbrGrass_vs {}
 
-			fragment_program_ref PbrPaged_fs
+			fragment_program_ref PbrGrass_fs
 			{
                 param_named uBaseColorSampler int 0
 			}
