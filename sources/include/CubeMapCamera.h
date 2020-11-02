@@ -38,7 +38,9 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   //----------------------------------------------------------------------------------------------------------------------
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
     // point the camera in the right direction based on which face of the cubemap this is
-    scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+    if (scene_->hasLight("Sun"))
+      scene_->getLight("Sun")->setCastShadows(false);
+    camera_->setLodBias(0.1);
     camera_node_->setOrientation(Ogre::Quaternion::IDENTITY);
     if (evt.source == targets_[0]) camera_node_->yaw(Ogre::Degree(-90));
     else if (evt.source == targets_[1]) camera_node_->yaw(Ogre::Degree(90));
@@ -48,7 +50,9 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   }
 //----------------------------------------------------------------------------------------------------------------------
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
-    scene_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    camera_->setLodBias(1.0);
+    if (scene_->hasLight("Sun"))
+      scene_->getLight("Sun")->setCastShadows(true);
   }
 
  private:

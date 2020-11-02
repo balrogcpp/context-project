@@ -51,7 +51,7 @@ class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
     inline void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) final {}
     void requestOptions(Ogre::Terrain *terrain) final;
     inline bool isVertexCompressionSupported() const final {
-      return true;
+      return false;
     }
     inline void setLightmapEnabled(bool enabled) final {
       lightmap_ = enabled;

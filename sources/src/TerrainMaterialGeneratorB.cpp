@@ -23,10 +23,7 @@
 
 #include "pcheader.h"
 #include "TerrainMaterialGeneratorB.h"
-#include "DotSceneLoaderB.h"
 #include "ShaderUtils.h"
-#include <random>
-#include <chrono>
 
 using namespace xio;
 
@@ -57,6 +54,7 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrai
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *terrain) {
   std::string material_name = "TerrainCustom";
+  const int GENERATOR = 0;
 
   UpdatePbrParams(material_name);
   UpdatePbrShadowReceiver(material_name);
@@ -78,28 +76,39 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
   }
 
   auto normalmap = terrain->getTerrainNormalMap();
+  std::string new_name = material_name + std::to_string(GENERATOR);
 
-  unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
-  std::mt19937 generator(seed1);
+  if (Ogre::MaterialManager::getSingleton().resourceExists(new_name)) {
+    return Ogre::MaterialManager::getSingleton().getByName(new_name);
+  } else {
 
-  auto new_material = Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(generator()));
-  auto *texture_state = new_material->getTechnique(0)->getPass(0)->getTextureUnitState("GlobalNormal");
-  if (texture_state) {
-    texture_state->setTexture(normalmap);
-    texture_state->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_NONE);
-    texture_state->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
+    auto new_material = Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(new_name);
+
+    auto *texture_state = new_material->getTechnique(0)->getPass(0)->getTextureUnitState("GlobalNormal");
+    if (texture_state) {
+      texture_state->setTexture(normalmap);
+      texture_state->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_NONE);
+      texture_state->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
+    }
+
+    return new_material;
   }
-
-  return new_material;
 }
 //---------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Ogre::Terrain *terrain) {
   std::string material_name = "TerrainCustom";
+  const int GENERATOR = 1;
+
   UpdatePbrParams(material_name);
 
-  unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
-  std::mt19937 generator(seed1);
+  std::string new_name = material_name + std::to_string(GENERATOR);
 
-  return Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(material_name + std::to_string(generator()));
+  if (Ogre::MaterialManager::getSingleton().resourceExists(new_name)) {
+    return Ogre::MaterialManager::getSingleton().getByName(new_name);
+  } else {
+    auto new_material = Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(new_name);
+    return new_material;
+  }
+
 }
 }

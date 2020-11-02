@@ -59,6 +59,10 @@ class ShadowSettings : public NoCopy {
       throw Exception("Unknown texture format, aborting;");
 
     scene->setShadowTextureSettings(tex_size, tex_count_, texture_type);
+//    scene->setShadowTextureConfig(0, 1024, 1024, texture_type);
+//    scene->setShadowTextureConfig(1, tex_size, tex_size, texture_type);
+//    scene->setShadowTextureConfig(2, tex_size, tex_size, texture_type);
+
     scene->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
     scene->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
     scene->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 6);

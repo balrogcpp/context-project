@@ -544,6 +544,7 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
 
   /// Create the entity
   Ogre::Entity *entity = nullptr;
+
   try {
     entity = scene_->createEntity(name, meshFile);
     entity->setCastShadows(castShadows);
@@ -611,8 +612,8 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
           UpdatePbrShadowReceiver(material_ptr);
 
         auto ibl_texture = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
-        auto ibl_texture2 = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Diffuse");
-        if (ibl_texture || ibl_texture2) {
+
+        if (ibl_texture) {
           if (!ccamera_) {
             auto *root = root_node_->createChildSceneNode(Ogre::Vector3{0, GetHeigh(0, 0) + 1, 0});
             ccamera_ = std::make_unique<CubeMapCamera>(root, 256);
@@ -622,6 +623,7 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
         }
       }
     }
+
     /// Process userDataReference
     if (auto element = xml_node.child("userData")) {
       ProcessUserData_(element, entity->getUserObjectBindings());
@@ -714,7 +716,6 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
     UpdatePbrParams(material);
     if (material_ptr->getReceiveShadows())
       UpdatePbrShadowReceiver(material);
-//    UpdatePbrShadowCaster(material);
   }
 
   if (reflection) {

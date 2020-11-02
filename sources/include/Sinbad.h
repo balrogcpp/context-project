@@ -3,7 +3,7 @@
 #include "Entity.h"
 #include "Input.h"
 
-#define SCALE 0.1
+#define SCALE 0.2
 #define CHAR_HEIGHT SCALE*5          // height of character's center of mass above ground
 #define CAM_HEIGHT SCALE*2           // height of camera above character's center of mass
 #define RUN_SPEED SCALE*17           // character running speed in units per second

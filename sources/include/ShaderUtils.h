@@ -28,7 +28,7 @@
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
-inline void UpdatePbrShadowCaster(Ogre::MaterialPtr &material) {
+inline void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
   auto *pass = material->getTechnique(0)->getPass(0);
   int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
   bool transparency_casts_shadows = material->getTransparencyCastsShadows();
@@ -72,7 +72,7 @@ inline void UpdatePbrShadowCaster(Ogre::MaterialPtr &material) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-inline void UpdatePbrParams(Ogre::MaterialPtr &material) {
+inline void UpdatePbrParams(const Ogre::MaterialPtr &material) {
   const int MAX_LIGHT_COUNT = 5;
 
   if (!material->getTechnique(0)->getPass(0)->hasVertexProgram()
@@ -116,7 +116,7 @@ inline void UpdatePbrParams(Ogre::MaterialPtr &material) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-inline void UpdatePbrShadowReceiver(Ogre::MaterialPtr &material) {
+inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
   const int PSSM_SPLIT_COUNT = 3;
   const int MAX_LIGHT_COUNT = 5;
 
@@ -174,17 +174,19 @@ inline void UpdatePbrShadowReceiver(Ogre::MaterialPtr &material) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-inline void UpdatePbrIbl(Ogre::MaterialPtr &material) {
+inline void UpdatePbrIbl(const Ogre::MaterialPtr &material) {
   auto ibl_texture = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
   auto ibl_texture2 = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Diffuse");
-  const bool realtime_cubemap = true;
-  if (realtime_cubemap) {
-    if (ibl_texture) {
-      ibl_texture->setTexture(Ogre::TextureManager::getSingleton().getByName("dyncubemap", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME));
-    }
-    if (ibl_texture2) {
-      ibl_texture2->setTexture(Ogre::TextureManager::getSingleton().getByName("dyncubemap", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME));
-    }
+  const bool REALTIME_CUBEMAP = true;
+
+  if (REALTIME_CUBEMAP) {
+    auto cubemap = Ogre::TextureManager::getSingleton().getByName("dyncubemap", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+
+    if (ibl_texture)
+      ibl_texture->setTexture(cubemap);
+
+//    if (ibl_texture2)
+//      ibl_texture2->setTexture(cubemap);
   } else {
     auto skybox = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
     if (!skybox)
@@ -192,8 +194,10 @@ inline void UpdatePbrIbl(Ogre::MaterialPtr &material) {
     auto cubemap = skybox->getTechnique(0)->getPass(0)->getTextureUnitState("CubeMap");
     if (!cubemap)
       return;
+
     if (ibl_texture)
       ibl_texture->setTextureName(cubemap->getName());
+
     if (ibl_texture2)
       ibl_texture2->setTextureName(cubemap->getName());
   }
@@ -245,15 +249,15 @@ inline bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declarat
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-inline void EnsureHasTangents(Ogre::MeshPtr mesh_ptr) {
+inline void EnsureHasTangents(Ogre::MeshPtr mesh) {
   bool generateTangents = false;
-  if (mesh_ptr->sharedVertexData) {
-    Ogre::VertexDeclaration *vertexDecl = mesh_ptr->sharedVertexData->vertexDeclaration;
+  if (mesh->sharedVertexData) {
+    Ogre::VertexDeclaration *vertexDecl = mesh->sharedVertexData->vertexDeclaration;
     generateTangents |= HasNoTangentsAndCanGenerate(vertexDecl);
   }
 
-  for (unsigned i = 0; i < mesh_ptr->getNumSubMeshes(); ++i) {
-    Ogre::SubMesh *subMesh = mesh_ptr->getSubMesh(i);
+  for (unsigned i = 0; i < mesh->getNumSubMeshes(); ++i) {
+    Ogre::SubMesh *subMesh = mesh->getSubMesh(i);
     if (subMesh->vertexData) {
       Ogre::VertexDeclaration *vertexDecl = subMesh->vertexData->vertexDeclaration;
       generateTangents |= HasNoTangentsAndCanGenerate(vertexDecl);
@@ -261,7 +265,67 @@ inline void EnsureHasTangents(Ogre::MeshPtr mesh_ptr) {
   }
 
   if (generateTangents) {
-    mesh_ptr->buildTangentVectors();
+    mesh->buildTangentVectors();
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+inline void UpdateMeshMaterial(Ogre::MeshPtr mesh, bool cast_shadow = true) {
+  try {
+    EnsureHasTangents(mesh);
+
+    for (auto &submesh : mesh->getSubMeshes()) {
+      Ogre::MaterialPtr material;
+
+      material = submesh->getMaterial();
+
+      if (material) {
+        UpdatePbrParams(material);
+
+        if (cast_shadow)
+          UpdatePbrShadowCaster(material);
+
+        if (material->getReceiveShadows())
+          UpdatePbrShadowReceiver(material);
+      }
+    }
+  }
+  catch (Ogre::Exception &e) {
+    Ogre::LogManager::getSingleton().logMessage(e.getFullDescription());
+    Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+inline void UpdateMeshMaterial(const std::string &mesh_name, bool cast_shadow = true) {
+  const auto &mesh = Ogre::MeshManager::getSingleton().getByName(mesh_name);
+  UpdateMeshMaterial(mesh);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+inline void UpdateEntityMaterial(Ogre::Entity *entity) {
+  try {
+    EnsureHasTangents(entity->getMesh());
+
+    for (auto &submesh : entity->getMesh()->getSubMeshes()) {
+      Ogre::MaterialPtr material;
+
+      material = submesh->getMaterial();
+
+      if (material) {
+        UpdatePbrParams(material);
+
+        if (entity->getCastShadows())
+          UpdatePbrShadowCaster(material);
+
+//        if (material->getReceiveShadows())
+          UpdatePbrShadowReceiver(material);
+      }
+    }
+  }
+  catch (Ogre::Exception &e) {
+    Ogre::LogManager::getSingleton().logMessage(e.getFullDescription());
+    Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
   }
 }
 }
