@@ -36,23 +36,25 @@ void DemoDotAppState::KeyDown(SDL_Keycode sym) {
 }
 
 void DemoDotAppState::Clear() {
-//  input_->UnregObserver(controller_.get());
+  if (controller_) input_->UnregObserver(controller_.get());
 }
 
 void DemoDotAppState::Loop(float time) {
-//  controller_->addTime(time);
+  if (controller_) controller_->Update(time);
 }
 
 void DemoDotAppState::Callback(int a, int b) {
-//  std::cout << "Bang! " << a << ' ' << b << '\n';
 }
 
 void DemoDotAppState::Create() {
+//  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
   Load("1.scene");
-  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
 
-//  controller_ = std::make_unique<SinbadCharacterController>(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"));
-//  input_->RegObserver(controller_.get());
+  controller_ = std::make_unique<SinbadCharacterController>(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"));
+  input_->RegObserver(controller_.get());
+  UpdateMeshMaterial("Sinbad.mesh");
+  UpdateMeshMaterial("Sword.mesh");
+
 //  sound_->CreateSound("ambient", "test.ogg", false);
 //  sound_->SetVolume("ambient", 0.5);
 //  sound_->PlaySound("ambient");
