@@ -84,6 +84,7 @@ uniform sampler2D ubrdfLUT;
 #endif
 #ifdef TERRAIN
 uniform sampler2D uGlobalNormalSampler;
+//uniform sampler2D uGlobalShadowSampler;
 #endif
 #ifdef HAS_NORMALMAP
 uniform sampler2D uNormalSampler;
@@ -108,7 +109,6 @@ uniform sampler2D shadowMap0;
 uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
 uniform vec3 pssmSplitPoints;
-uniform float uShadowColour;
 in vec4 lightSpacePosArray[MAX_SHADOWS];
 #endif
 in vec3 vPosition;
@@ -304,7 +304,7 @@ vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
 //----------------------------------------------------------------------------------------------------------------------
 vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
 {
-    const float scale = 0.02;
+    const float scale = 0.01;
     const float offset = 0.0;
     float displacement =  texture2D(uOffsetSampler, texCoords).r * scale + offset;
     return texCoords - viewDir.xy * displacement;
@@ -519,30 +519,20 @@ void main()
 
         // Calculate the shading terms for the microfacet specular shading model
         vec3 F = SpecularReflection(pbrInputs);
+        vec3 diffuseContrib = (1.0 - F) * Diffuse(pbrInputs);
 
         // Calculation of analytical lighting contribution
-        vec3 diffuseContrib = (1.0 - F) * Diffuse(pbrInputs);
-        vec3 specContrib = vec3(0.0);
+        float G = GeometricOcclusion(pbrInputs);
+        float D = MicrofacetDistribution(pbrInputs);
+        vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
 
         float tmp = NdotL * fSpotT * fAtten;
-        float attenuation = 1.0;
 
 #ifdef SHADOWRECEIVER
-        if (uLightCastsShadowsArray[i] * tmp > 0.001) {
-            attenuation = CalcPSSMDepthShadow();
-            attenuation = clamp(attenuation + uShadowColour, 0.0, 1.0);
-            tmp *= attenuation;
+        if (uLightCastsShadowsArray[i] == 1.0) {
+            tmp *= CalcPSSMDepthShadow();
         }
 #endif
-
-#ifndef PAGED_GEOMETRY
-        if (attenuation == 1.0)
-#endif
-        {
-            float G = GeometricOcclusion(pbrInputs);
-            float D = MicrofacetDistribution(pbrInputs);
-            specContrib = F * G * D / (4.0 * NdotL * NdotV);
-        }
 
         total_colour += (tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib));
     }
@@ -567,7 +557,7 @@ void main()
 #endif
 
 #ifdef REFLECTION
-    total_colour = ApplyReflection(total_colour, n, v, 1.0 - roughness);
+    total_colour = ApplyReflection(total_colour, n, v, metallic);
 #endif //REFLECTION
 
     total_colour = ApplyFog(total_colour);

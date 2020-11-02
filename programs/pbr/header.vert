@@ -31,12 +31,8 @@
 #define in attribute
 #define out varying
 #endif
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : require
-#endif
 #else
 #extension GL_OES_standard_derivatives : enable
-#extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
 precision highp float;
 precision highp int;

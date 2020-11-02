@@ -38,7 +38,7 @@ void main()
   vec3 bloom = vec3(0.0);
 
   float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
-  if(brightness > 0.9)
+  if(brightness > 1.0)
     bloom = color;
 
   gl_FragColor = vec4(bloom, 1.0);

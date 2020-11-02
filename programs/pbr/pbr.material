@@ -47,10 +47,9 @@ material Basic
             ambient 0 0 0
             alpha_rejection greater_equal 127
 
-            texture_unit Albedo {}
-            texture_unit Normal
+            texture_unit Albedo
             {
-                texture normal.dds
+                texture white.dds
             }
 
             vertex_program_ref PbrBasic_vs {}
@@ -108,14 +107,14 @@ material PBR
                 texture white.dds
                 filtering bilinear
             }
-            texture_unit Emissive
-            {
-                texture black.dds
-                filtering bilinear
-            }
             texture_unit AO
             {
                 texture white.dds
+                filtering bilinear
+            }
+            texture_unit Emissive
+            {
+                texture black.dds
                 filtering bilinear
             }
             texture_unit Offset
@@ -132,8 +131,8 @@ material PBR
                 param_named uNormalSampler    int 1
                 param_named uMetallicSampler int 2
                 param_named uRoughnessSampler int 3
-                param_named uEmissiveSampler      int 4
-                param_named uOcclusionSampler   int 5
+                param_named uOcclusionSampler   int 4
+                param_named uEmissiveSampler      int 5
                 param_named uOffsetSampler   int 6
 			}
         }
@@ -182,16 +181,17 @@ material PBR_IBL
                 texture white.dds
                 filtering bilinear
             }
-            texture_unit Emissive
-            {
-                texture black.dds
-                filtering bilinear
-            }
             texture_unit AO
             {
                 texture white.dds
                 filtering bilinear
             }
+            texture_unit Emissive
+            {
+                texture black.dds
+                filtering bilinear
+            }
+
             texture_unit IBL_Diffuse
             {
                 texture diffuse.dds cubic
@@ -217,8 +217,8 @@ material PBR_IBL
                 param_named uNormalSampler    int 1
                 param_named uMetallicSampler int 2
                 param_named uRoughnessSampler int 3
-                param_named uEmissiveSampler      int 4
-                param_named uOcclusionSampler   int 5
+                param_named uOcclusionSampler   int 4
+                param_named uEmissiveSampler      int 5
                 param_named uDiffuseEnvSampler  int 6
                 param_named uSpecularEnvSampler int 7
                 param_named ubrdfLUT            int 8
@@ -237,11 +237,14 @@ vertex_program PbrReflective_vs glsl glsles
 fragment_program PbrReflective_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_PARALLAXMAP,REFLECTION,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_EMISSIVEMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_PARALLAXMAP,HAS_OCCLUSIONMAP,REFLECTION,SHADOWRECEIVER
 }
 
 material Reflective
 {
+    receive_shadows on
+    transparency_casts_shadows off
+
     technique
     {
       pass
@@ -250,7 +253,10 @@ material Reflective
             specular 1 1 1 1
             ambient 0 0 0
 
-            texture_unit Albedo {}
+            texture_unit Albedo
+            {
+                texture white.dds
+            }
             texture_unit Normal
             {
                 texture normal.dds
@@ -263,6 +269,16 @@ material Reflective
             texture_unit Roughness
             {
                 texture white.dds
+                filtering bilinear
+            }
+            texture_unit AO
+            {
+                texture white.dds
+                filtering bilinear
+            }
+            texture_unit Emissive
+            {
+                texture black.dds
                 filtering bilinear
             }
             texture_unit Offset
@@ -288,9 +304,11 @@ material Reflective
                 param_named uNormalSampler    int 1
                 param_named uMetallicSampler int 2
                 param_named uRoughnessSampler int 3
-                param_named uOffsetSampler int 4
-                param_named uReflectionMap int 5
-                param_named uNoiseMap int 6
+                param_named uOcclusionSampler int 4
+                param_named uEmissiveSampler int 5
+                param_named uOffsetSampler int 6
+                param_named uReflectionMap int 7
+                param_named uNoiseMap int 8
 			}
         }
     }
@@ -311,6 +329,9 @@ fragment_program PbrTerrain_fs glsl glsles
 
 material Terrain
 {
+    receive_shadows on
+    transparency_casts_shadows off
+
     technique
     {
       pass
@@ -319,7 +340,10 @@ material Terrain
             specular 1 1 1 1
             ambient 0 0 0
 
-            texture_unit Albedo {}
+            texture_unit Albedo
+            {
+                texture white.dds
+            }
             texture_unit Normal
             {
                 texture normal.dds
@@ -334,14 +358,14 @@ material Terrain
                 texture white.dds
                 filtering bilinear
             }
-            texture_unit Emissive
-            {
-                texture black.dds
-                filtering bilinear
-            }
             texture_unit AO
             {
                 texture white.dds
+                filtering bilinear
+            }
+            texture_unit Emissive
+            {
+                texture black.dds
                 filtering bilinear
             }
             texture_unit Offset
@@ -366,10 +390,11 @@ material Terrain
                 param_named uNormalSampler    int 1
                 param_named uMetallicSampler int 2
                 param_named uRoughnessSampler int 3
-                param_named uEmissiveSampler      int 4
-                param_named uOcclusionSampler   int 5
+                param_named uOcclusionSampler   int 4
+                param_named uEmissiveSampler      int 5
                 param_named uOffsetSampler   int 6
                 param_named uGlobalNormalSampler int 7
+                //param_named uGlobalShadowSampler int 8
 			}
         }
     }
