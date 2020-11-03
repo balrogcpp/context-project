@@ -24,7 +24,7 @@
 #define HEADER_FRAG
 
 #ifndef GL_ES
-#define USE_TEX_LOD
+//#define USE_TEX_LOD
 #if VERSION != 120
 #define varying in
 #define texture1D texture

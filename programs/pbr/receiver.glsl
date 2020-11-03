@@ -1,5 +1,12 @@
 #ifndef RECEIVER_GLSL
 #define RECEIVER_GLSL
+
+//----------------------------------------------------------------------------------------------------------------------
+float InterleavedGradientNoise(vec2 position_screen)
+{
+  vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
+  return fract(magic.z * fract(dot(position_screen, magic.xy)));
+}
 //----------------------------------------------------------------------------------------------------------------------
 vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
 {
@@ -11,12 +18,6 @@ vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
   float cosine = cos(theta);
 
   return vec2(r * cosine, r * sine);
-}
-//----------------------------------------------------------------------------------------------------------------------
-float InterleavedGradientNoise(vec2 position_screen)
-{
-  vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
-  return fract(magic.z * fract(dot(position_screen, magic.xy)));
 }
 //----------------------------------------------------------------------------------------------------------------------
 float AvgBlockersDepthToPenumbra(float z_shadowMapView, float avgBlockersDepth)

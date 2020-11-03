@@ -38,7 +38,7 @@ fragment_program PSSM/shadow_caster_fs glsl glsles
 
 	default_params
 	{
-	    param_named uBaseColorSampler int 0
+	    param_named uAlbedoSampler int 0
 	}
 }
 

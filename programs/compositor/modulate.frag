@@ -44,7 +44,7 @@ void main()
     scene *= texture2D(SsaoSampler, oUv0).r;
 #endif
 #ifdef Bloom
-    scene += (0.1 * texture2D(BloomSampler, oUv0).rgb);
+    scene += texture2D(BloomSampler, oUv0).rgb;
 #endif
     gl_FragColor = vec4(scene, 1.0);
 }

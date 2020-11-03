@@ -2,8 +2,8 @@
 #define SRGB_GLSL
 
 #define MANUAL_SRGB
-#undef SRGB_FAST_APPROXIMATION
-#define SRGB_SQRT
+#define SRGB_FAST_APPROXIMATION
+#undef SRGB_SQRT
 //----------------------------------------------------------------------------------------------------------------------
 vec4 SRGBtoLINEAR(vec4 srgbIn)
 {

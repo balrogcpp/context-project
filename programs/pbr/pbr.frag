@@ -49,14 +49,14 @@
 #define MAX_SHADOWS 3
 #ifdef SHADOWCASTER_ALPHA
 in vec2 vUV0;
-uniform sampler2D uBaseColorSampler;
+uniform sampler2D uAlbedoSampler;
 #endif
 #ifndef SHADOWCASTER
 in vec2 vUV0;
 in float vDepth;
 in float vAlpha;
 #ifdef HAS_BASECOLORMAP
-uniform sampler2D uBaseColorSampler;
+uniform sampler2D uAlbedoSampler;
 #endif
 uniform float uAlphaRejection;
 uniform vec3 uSurfaceAmbientColour;
@@ -109,6 +109,7 @@ uniform sampler2D shadowMap0;
 uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
 uniform vec3 pssmSplitPoints;
+uniform float uShadowColour;
 in vec4 lightSpacePosArray[MAX_SHADOWS];
 #endif
 in vec3 vPosition;
@@ -124,11 +125,11 @@ in vec3 vNormal;
 #endif
 #ifdef REFLECTION
 uniform sampler2D uReflectionMap;
-uniform sampler2D uNoiseMap;
 in vec4 projectionCoord;
 #endif
 
 const float M_PI = 3.141592653589793;
+const float LOD = 0.5;
 
 //SRGB corretion
 #include "srgb.glsl"
@@ -216,7 +217,7 @@ vec3 GetNormal(vec2 uv)
 #endif
 
 #ifdef HAS_NORMALMAP
-    vec3 n = texture2D(uNormalSampler, uv).xyz;
+    vec3 n = texture2D(uNormalSampler, uv, LOD).xyz;
     n = normalize(tbn * ((2.0 * n - 1.0)));
 #else //!HAS_NORMALMAP
     vec3 n = tbn[2].xyz;
@@ -229,7 +230,7 @@ float GetMetallic(vec2 uv) {
     float metallic = uSurfaceShininessColour;
 
 #ifdef HAS_METALLICMAP
-    metallic *= texture2D(uMetallicSampler, uv).r;
+    metallic *= texture2D(uMetallicSampler, uv, LOD).r;
 #endif
 
     return metallic;
@@ -241,7 +242,7 @@ float GetRoughness(vec2 uv) {
     float roughness = uSurfaceSpecularColour;
 
 #ifdef HAS_ROUGHNESSMAP
-    roughness *= texture2D(uRoughnessSampler, uv).r;
+    roughness *= texture2D(uRoughnessSampler, uv, LOD).r;
 #endif
 
     return roughness > c_MinRoughness ? roughness : c_MinRoughness;
@@ -251,8 +252,9 @@ float GetRoughness(vec2 uv) {
 vec4 GetDiffuse(vec2 uv) {
     vec3 base_color = vec3(0.0);
     float alpha = 1.0;
+
 #ifdef HAS_BASECOLORMAP
-    vec4 tmp = texture2D(uBaseColorSampler, uv);
+    vec4 tmp = texture2D(uAlbedoSampler, uv, LOD);
     base_color = SRGBtoLINEAR(tmp.rgb);
     alpha = tmp.a;
     base_color *= uSurfaceDiffuseColour;
@@ -289,12 +291,15 @@ vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
     const float fresnelBias = 0.1;
     const float fresnelScale = 1.8;
     const float fresnelPower = 8.0;
-    const float noiseScale = 0.1;
+    const float shadowFilterMaxSize = 0.1;
+
     float cosa = dot(n, -v);
     float fresnel = fresnelBias + fresnelScale * pow(1.0 + cosa, fresnelPower);
     fresnel = clamp(fresnel, 0.0, 1.0);
-    vec2 noise = texture2D(uNoiseMap, vUV0.xy).xy - 0.5;
-    projection.xy += (noiseScale * noise);
+
+    float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
+    projection.xy += VogelDiskSample(3, 16, gradientNoise) * shadowFilterMaxSize;
+
     vec3 reflectionColour = texture2DProj(uReflectionMap, projection).rgb;
     return mix(color, reflectionColour, fresnel * metallic);
 }
@@ -302,12 +307,12 @@ vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
 
 #ifdef HAS_PARALLAXMAP
 //----------------------------------------------------------------------------------------------------------------------
-vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
+vec2 ParallaxMapping(vec2 uv, vec3 viewDir)
 {
     const float scale = 0.01;
     const float offset = 0.0;
-    float displacement =  texture2D(uOffsetSampler, texCoords).r * scale + offset;
-    return texCoords - viewDir.xy * displacement;
+    float displacement =  texture2D(uOffsetSampler, uv, LOD).r * scale + offset;
+    return uv - viewDir.xy * displacement;
 }
 #endif
 
@@ -547,11 +552,11 @@ void main()
 
 // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
-    total_colour *= texture2D(uOcclusionSampler, tex_coord).r;
+    total_colour *= texture2D(uOcclusionSampler, tex_coord, LOD).r;
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord).rgb + uSurfaceEmissiveColour);
+    total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord, LOD).rgb + uSurfaceEmissiveColour);
 #else
     total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour);
 #endif
@@ -565,7 +570,7 @@ void main()
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
-    if (texture2D(uBaseColorSampler, vUV0.xy).a < 0.5) {
+    if (texture2D(uAlbedoSampler, vUV0.xy).a < 0.5) {
         discard;
     }
 #endif //SHADOWCASTER_ALPHA

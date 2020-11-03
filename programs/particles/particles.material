@@ -62,7 +62,7 @@ material Examples/Droplet
 
 			fragment_program_ref droplet_fs
 			{
-                param_named uBaseColorSampler int 0
+                param_named uAlbedoSampler int 0
 			}
         }
     }

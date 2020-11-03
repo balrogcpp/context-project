@@ -56,7 +56,7 @@ material Basic
 
             fragment_program_ref PbrBasic_fs
             {
-                param_named uBaseColorSampler int 0
+                param_named uAlbedoSampler int 0
             }
         }
     }
@@ -127,7 +127,7 @@ material PBR
 
 			fragment_program_ref PBR_fs
 			{
-                param_named uBaseColorSampler   int 0
+                param_named uAlbedoSampler   int 0
                 param_named uNormalSampler    int 1
                 param_named uMetallicSampler int 2
                 param_named uRoughnessSampler int 3
@@ -191,7 +191,6 @@ material PBR_IBL
                 texture black.dds
                 filtering bilinear
             }
-
             texture_unit IBL_Diffuse
             {
                 texture diffuse.dds cubic
@@ -213,7 +212,7 @@ material PBR_IBL
 
 			fragment_program_ref PBR_IBL_fs
 			{
-                param_named uBaseColorSampler   int 0
+                param_named uAlbedoSampler   int 0
                 param_named uNormalSampler    int 1
                 param_named uMetallicSampler int 2
                 param_named uRoughnessSampler int 3
@@ -290,17 +289,12 @@ material Reflective
             {
                 filtering bilinear
             }
-            texture_unit NoiseMap
-            {
-                texture noise_fresnel.dds
-                filtering bilinear
-            }
 
             vertex_program_ref PbrReflective_vs {}
 
 			fragment_program_ref PbrReflective_fs
 			{
-                param_named uBaseColorSampler   int 0
+                param_named uAlbedoSampler   int 0
                 param_named uNormalSampler    int 1
                 param_named uMetallicSampler int 2
                 param_named uRoughnessSampler int 3
@@ -308,7 +302,6 @@ material Reflective
                 param_named uEmissiveSampler int 5
                 param_named uOffsetSampler int 6
                 param_named uReflectionMap int 7
-                param_named uNoiseMap int 8
 			}
         }
     }
@@ -386,7 +379,7 @@ material Terrain
 
 			fragment_program_ref PbrTerrain_fs
 			{
-                param_named uBaseColorSampler   int 0
+                param_named uAlbedoSampler   int 0
                 param_named uNormalSampler    int 1
                 param_named uMetallicSampler int 2
                 param_named uRoughnessSampler int 3
@@ -436,7 +429,7 @@ material Paged
 
 			fragment_program_ref PbrPaged_fs
 			{
-                param_named uBaseColorSampler   int 0
+                param_named uAlbedoSampler   int 0
 			}
         }
     }
@@ -480,7 +473,7 @@ material Grass
 
 			fragment_program_ref PbrGrass_fs
 			{
-                param_named uBaseColorSampler int 0
+                param_named uAlbedoSampler int 0
 			}
         }
     }
