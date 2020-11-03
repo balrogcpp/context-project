@@ -88,6 +88,11 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
     throw Exception("Cast from info.info.x11.window to size_t failed");
 
   params["externalWindowHandle"] = std::to_string(reinterpret_cast<unsigned long>(info.info.x11.window));
+#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  if (!reinterpret_cast<unsigned long>(info.info.x11.window))
+    throw Exception("Cast from info.info.x11.window to size_t failed");
+
+  params["externalWindowHandle"] = std::to_string(reinterpret_cast<unsigned long>(info.info.x11.window));
 #endif
 
   const char true_str[] = "true";
@@ -141,6 +146,7 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
   //Compositor block
   compositor_ = std::make_unique<Compositor>();
 }
+//----------------------------------------------------------------------------------------------------------------------
 Renderer::~Renderer() {}
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Create() {
@@ -183,6 +189,7 @@ void Renderer::UpdateShadow(bool enable, float far_distance, int tex_size, int t
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
+  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
   if (filtering == Ogre::TFO_ANISOTROPIC)
     Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);

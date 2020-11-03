@@ -176,17 +176,14 @@ inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
 //----------------------------------------------------------------------------------------------------------------------
 inline void UpdatePbrIbl(const Ogre::MaterialPtr &material) {
   auto ibl_texture = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
-  auto ibl_texture2 = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Diffuse");
-  const bool REALTIME_CUBEMAP = true;
+
+  const bool REALTIME_CUBEMAP = false;
 
   if (REALTIME_CUBEMAP) {
     auto cubemap = Ogre::TextureManager::getSingleton().getByName("dyncubemap", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 
     if (ibl_texture)
       ibl_texture->setTexture(cubemap);
-
-//    if (ibl_texture2)
-//      ibl_texture2->setTexture(cubemap);
   } else {
     auto skybox = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
     if (!skybox)
@@ -196,10 +193,7 @@ inline void UpdatePbrIbl(const Ogre::MaterialPtr &material) {
       return;
 
     if (ibl_texture)
-      ibl_texture->setTextureName(cubemap->getName());
-
-    if (ibl_texture2)
-      ibl_texture2->setTextureName(cubemap->getName());
+      ibl_texture->setTexture(cubemap->_getTexturePtr());
   }
 }
 
@@ -318,7 +312,33 @@ inline void UpdateEntityMaterial(Ogre::Entity *entity) {
         if (entity->getCastShadows())
           UpdatePbrShadowCaster(material);
 
-//        if (material->getReceiveShadows())
+        if (material->getReceiveShadows())
+          UpdatePbrShadowReceiver(material);
+      }
+    }
+  }
+  catch (Ogre::Exception &e) {
+    Ogre::LogManager::getSingleton().logMessage(e.getFullDescription());
+    Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
+  }
+}
+//----------------------------------------------------------------------------------------------------------------------
+inline void LoadEntityAndMaterials(Ogre::Entity *entity) {
+  try {
+    EnsureHasTangents(entity->getMesh());
+
+    for (auto &submesh : entity->getMesh()->getSubMeshes()) {
+      Ogre::MaterialPtr material;
+
+      material = submesh->getMaterial();
+
+      if (material) {
+        UpdatePbrParams(material);
+
+        if (entity->getCastShadows())
+          UpdatePbrShadowCaster(material);
+
+        if (material->getReceiveShadows())
           UpdatePbrShadowReceiver(material);
       }
     }

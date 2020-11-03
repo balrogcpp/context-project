@@ -786,7 +786,7 @@ void DotSceneLoaderB::ProcessFog_(pugi::xml_node &xml_node) {
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessSkyBox_(pugi::xml_node &xml_node) {
   /// Process attributes
-  std::string material = GetAttrib(xml_node, "material", "Skybox");
+  std::string material = GetAttrib(xml_node, "material", "SkyBox");
   std::string cubemap = GetAttrib(xml_node, "cubemap", "OutputCube.dds");
   float distance = GetAttribReal(xml_node, "distance", 500);
   bool drawFirst = GetAttribBool(xml_node, "drawFirst", true);

@@ -59,9 +59,6 @@ class ShadowSettings : public NoCopy {
       throw Exception("Unknown texture format, aborting;");
 
     scene->setShadowTextureSettings(tex_size, tex_count_, texture_type);
-//    scene->setShadowTextureConfig(0, 1024, 1024, texture_type);
-//    scene->setShadowTextureConfig(1, tex_size, tex_size, texture_type);
-//    scene->setShadowTextureConfig(2, tex_size, tex_size, texture_type);
 
     scene->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
     scene->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
@@ -78,7 +75,7 @@ class ShadowSettings : public NoCopy {
     pssm_->setSplitPadding(1.0);
     pssm_->setOptimalAdjustFactor(0, 0.0);
     pssm_->setOptimalAdjustFactor(1, 0.0);
-    pssm_->setOptimalAdjustFactor(2, 0.0);
+//    pssm_->setOptimalAdjustFactor(2, 0.0);
     scene->setShadowCameraSetup(pssm_);
   }
 //----------------------------------------------------------------------------------------------------------------------
@@ -105,7 +102,7 @@ class ShadowSettings : public NoCopy {
   }
 
  private:
-  int16_t split_count_ = 3;
+  int16_t split_count_ = 2;
   int16_t tex_count_ = 3;
   std::vector<float> split_points_;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm_;

@@ -21,36 +21,9 @@
 //SOFTWARE.
 
 #pragma once
-#include "Application.h"
-#include "AppState.h"
-#include "CameraMan.h"
-#include "Component.h"
-#include "ComponentLocator.h"
-#include "Compositor.h"
-#include "CubeMapCamera.h"
-#include "DesktopIcon.h"
-#include "DotSceneLoaderB.h"
-#include "Entity.h"
-#include "Exception.h"
-#include "Forest.h"
-#include "Gorilla.h"
-#include "HwCheck.h"
-#include "Input.h"
-#include "Landscape.h"
-#include "NoCopy.h"
-#include "OgreHeaders.h"
-#include "Overlay.h"
 #include "ShaderUtils.h"
-#include "MeshUtils.h"
-#include "Physics.h"
-#include "ReflectionCamera.h"
-#include "Renderer.h"
-#include "RtssUtils.h"
-#include "ShadowSettings.h"
-#include "Singleton.h"
-#include "Sound.h"
-#include "Storage.h"
-#include "TerrainMaterialGeneratorB.h"
-#include "VerboseListener.h"
-#include "Window.h"
-#include "YamlConfigurator.h"
+
+namespace xio {
+//----------------------------------------------------------------------------------------------------------------------
+
+}

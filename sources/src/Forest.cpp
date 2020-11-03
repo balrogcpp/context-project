@@ -186,7 +186,7 @@ void Forest::GenerateTreesStatic() {
   rocks->setRegionDimensions(Ogre::Vector3(50.0));
   auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
 
-  const float bounds = 200.0f;
+  const float bounds = 50.0f;
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 250; i++) {
     Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
@@ -236,10 +236,14 @@ void Forest::GenerateGrassPaged() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateTreesPaged() {
+  const float bound = 50;
+
   UpdatePbrParams("3D-Diggers/fir01");
   UpdatePbrShadowCaster("3D-Diggers/fir01");
+//  UpdatePbrShadowReceiver("3D-Diggers/fir01");
   UpdatePbrParams("3D-Diggers/fir02");
   UpdatePbrShadowCaster("3D-Diggers/fir02");
+//  UpdatePbrShadowReceiver("3D-Diggers/fir02");
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;
@@ -255,9 +259,8 @@ void Forest::GenerateTreesPaged() {
   Ogre::Entity *fir1EntPtr = scene->createEntity("fir1", "fir05_30.mesh");
   auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
 
-  const float bound = 100;
 
-  for (int i = 0; i < 25; i++) {
+  for (int i = 0; i < 50; i++) {
     yaw = Ogre::Math::RangeRandom(0, 360);
     if (Ogre::Math::RangeRandom(0, 1) <= 0.8f) {
       x = Ogre::Math::RangeRandom(-bound, bound);
@@ -265,12 +268,12 @@ void Forest::GenerateTreesPaged() {
       if (x < -bound) x = -bound; else if (x > bound) x = bound;
       if (z < -bound) z = -bound; else if (z > bound) z = bound;
     } else {
-      x = Ogre::Math::RangeRandom(-200, 200);
-      z = Ogre::Math::RangeRandom(-200, 200);
+      x = Ogre::Math::RangeRandom(-bound, bound);
+      z = Ogre::Math::RangeRandom(-bound, bound);
     }
     y = heigh_func_(x, z);
     scale = Ogre::Math::RangeRandom(0.9f, 1.1f);
-    scale *= 0.1;
+    scale *= 0.05;
     Ogre::Quaternion quat;
     quat.FromAngleAxis(Ogre::Degree(yaw), Ogre::Vector3::UNIT_Y);
 
@@ -285,8 +288,8 @@ void Forest::GenerateTreesPaged() {
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
 //  GenerateGrassStatic();
-  GenerateGrassPaged();
-  GenerateTreesPaged();
+//  GenerateGrassPaged();
+//  GenerateTreesPaged();
   GenerateTreesStatic();
 }
 }
