@@ -45,7 +45,6 @@ material Basic
             specular 1 1 1 1
             diffuse 1 1 1
             ambient 0 0 0
-            alpha_rejection greater_equal 127
 
             texture_unit Albedo
             {
@@ -87,7 +86,6 @@ material PBR
             diffuse 1 1 1
             specular 1 1 1 1
             ambient 0 0 0
-            alpha_rejection greater_equal 127
 
             texture_unit Albedo
             {
@@ -164,7 +162,6 @@ material PBR_IBL
             diffuse 1 1 1
             specular 1 1 1 1
             ambient 0 0 0
-            alpha_rejection greater_equal 127
 
             texture_unit Albedo {}
             texture_unit Normal
@@ -230,13 +227,13 @@ material PBR_IBL
 vertex_program PbrReflective_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,REFLECTION,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_REFLECTION,SHADOWRECEIVER
 }
 
 fragment_program PbrReflective_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_EMISSIVEMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_PARALLAXMAP,HAS_OCCLUSIONMAP,REFLECTION,SHADOWRECEIVER
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_EMISSIVEMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_PARALLAXMAP,HAS_OCCLUSIONMAP,HAS_REFLECTION,SHADOWRECEIVER
 }
 
 material Reflective

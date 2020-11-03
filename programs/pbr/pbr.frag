@@ -123,7 +123,7 @@ in mat3 vTBN;
 in vec3 vNormal;
 #endif
 #endif
-#ifdef REFLECTION
+#ifdef HAS_REFLECTION
 uniform sampler2D uReflectionMap;
 in vec4 projectionCoord;
 #endif
@@ -285,7 +285,7 @@ vec3 ApplyFog(vec3 color) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-#ifdef REFLECTION
+#ifdef HAS_REFLECTION
 vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
     vec4 projection = projectionCoord;
     const float fresnelBias = 0.1;
@@ -316,119 +316,12 @@ vec2 ParallaxMapping(vec2 uv, vec3 viewDir)
 }
 #endif
 
-// Encapsulate the various inputs used by the various functions in the shading equation
-// We store values in this struct to simplify the integration of alternative implementations
-// of the shading terms, outlined in the Readme.MD Appendix.
-//----------------------------------------------------------------------------------------------------------------------
-struct PBRInfo
-{
-    float NdotL;                  // cos angle between normal and light direction
-    float NdotV;                  // cos angle between normal and view direction
-    float NdotH;                  // cos angle between normal and half vector
-    float LdotH;                  // cos angle between light direction and half vector
-    float VdotH;                  // cos angle between view direction and half vector
-    float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)
-    float metalness;              // metallic value at the surface
-    vec3 reflectance0;            // full reflectance color (normal incidence angle)
-    vec3 reflectance90;           // reflectance color at grazing angle
-    float alphaRoughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])
-    vec3 diffuseColor;            // color contribution from diffuse lighting
-    vec3 specularColor;           // color contribution from specular lighting
-};
+#include "lighting.glsl"
 
-// Basic Lambertian diffuse
-// Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
-// See also [1], Equation 1
-//----------------------------------------------------------------------------------------------------------------------
-vec3 Diffuse(PBRInfo pbrInputs)
-{
-    return pbrInputs.diffuseColor / M_PI;
-}
-
-// The following equation models the Fresnel reflectance term of the spec equation (aka F())
-// Implementation of fresnel from [4], Equation 15
-//----------------------------------------------------------------------------------------------------------------------
-vec3 SpecularReflection(PBRInfo pbrInputs)
-{
-    return pbrInputs.reflectance0 + (pbrInputs.reflectance90 - pbrInputs.reflectance0) * pow(clamp(1.0 - pbrInputs.VdotH, 0.0, 1.0), 5.0);
-}
-
-// This calculates the specular geometric attenuation (aka G()),
-// where rougher material will reflect less light back to the viewer.
-// This implementation is based on [1] Equation 4, and we adopt their modifications to
-// alphaRoughness as input as originally proposed in [2].
-//----------------------------------------------------------------------------------------------------------------------
-float GeometricOcclusion(PBRInfo pbrInputs)
-{
-    float NdotL = pbrInputs.NdotL;
-    float NdotV = pbrInputs.NdotV;
-    float r = pbrInputs.alphaRoughness;
-
-    float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r * r + (1.0 - r * r) * (NdotL * NdotL)));
-    float attenuationV = 2.0 * NdotV / (NdotV + sqrt(r * r + (1.0 - r * r) * (NdotV * NdotV)));
-    return attenuationL * attenuationV;
-}
-
-// The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())
-// Implementation from "Average Irregularity Representation of a Roughened Surface for Ray Reflection" by T. S. Trowbridge, and K. P. Reitz
-// Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.
-//----------------------------------------------------------------------------------------------------------------------
-float MicrofacetDistribution(PBRInfo pbrInputs)
-{
-    float roughnessSq = pbrInputs.alphaRoughness * pbrInputs.alphaRoughness;
-    float f = (pbrInputs.NdotH * roughnessSq - pbrInputs.NdotH) * pbrInputs.NdotH + 1.0;
-    return roughnessSq / (M_PI * f * f);
-}
 #endif //!SHADOWCASTER
 
-//IBL PBR extention
 #ifdef USE_IBL
-// Calculation of the lighting contribution from an optional Image Based Light source.
-// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
-// See our README.md on Environment Maps [3] for additional discussion.
-//----------------------------------------------------------------------------------------------------------------------
-vec3 GetIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)
-{
-    float mipCount = 9.0;// resolution of 512x512
-    float lod = (pbrInputs.perceptualRoughness * mipCount);
-    // retrieve a scale and bias to F0. See [1], Figure 3
-    vec3 brdf = SRGBtoLINEAR(texture2D(ubrdfLUT, vec2(pbrInputs.NdotV, 1.0 - pbrInputs.perceptualRoughness))).rgb;
-    vec3 diffuseLight = SRGBtoLINEAR(textureCube(uDiffuseEnvSampler, n)).rgb;
-
-#ifdef USE_TEX_LOD
-    vec3 specularLight = SRGBtoLINEAR(textureCubeLod(uSpecularEnvSampler, reflection, lod)).rgb;
-#else
-    vec3 specularLight = SRGBtoLINEAR(textureCube(uSpecularEnvSampler, reflection)).rgb;
-#endif
-
-    vec3 diffuse = diffuseLight * pbrInputs.diffuseColor;
-    vec3 specular = specularLight * (pbrInputs.specularColor * brdf.x + brdf.y);
-
-    return diffuse + specular;
-}
-// Calculation of the lighting contribution from an optional Image Based Light source.
-// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
-// See our README.md on Environment Maps [3] for additional discussion.
-//----------------------------------------------------------------------------------------------------------------------
-vec3 GetIBLContribution(vec3 diffuseColor, vec3 specularColor, float perceptualRoughness, float NdotV, vec3 n, vec3 reflection)
-{
-    float mipCount = 9.0;// resolution of 512x512
-    float lod = (perceptualRoughness * mipCount);
-    // retrieve a scale and bias to F0. See [1], Figure 3
-    vec3 brdf = SRGBtoLINEAR(texture2D(ubrdfLUT, vec2(NdotV, 1.0 - perceptualRoughness))).rgb;
-    vec3 diffuseLight = SRGBtoLINEAR(textureCube(uDiffuseEnvSampler, n)).rgb;
-
-#ifdef USE_TEX_LOD
-    vec3 specularLight = SRGBtoLINEAR(textureCubeLod(uSpecularEnvSampler, reflection, lod)).rgb;
-#else
-    vec3 specularLight = SRGBtoLINEAR(textureCube(uSpecularEnvSampler, reflection)).rgb;
-#endif
-
-    vec3 diffuse = diffuseLight * diffuseColor;
-    vec3 specular = specularLight * (specularColor * brdf.x + brdf.y);
-
-    return diffuse + specular;
-}
+#include "ibl.glsl"
 #endif
 
 void main()
@@ -446,18 +339,16 @@ void main()
 #endif
 
     // The albedo may be defined from a base texture or a flat color
-    vec4 baseColor = GetDiffuse(tex_coord);
+    vec4 albedo = GetDiffuse(tex_coord);
     float metallic = GetMetallic(tex_coord);
     float roughness = GetRoughness(tex_coord);
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
-    float alphaRoughness = roughness * roughness;
-
     const vec3 f0 = vec3(0.04);
-    vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0);
+    vec3 diffuseColor = albedo.rgb * (vec3(1.0) - f0);
     diffuseColor *= (1.0 - metallic);
-    vec3 specularColor = mix(f0, baseColor.rgb, metallic);
+    vec3 specularColor = mix(f0, albedo.rgb, metallic);
 
     // Compute reflectance.
     float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
@@ -508,19 +399,19 @@ void main()
         float VdotH = clamp(dot(v, h), 0.0, 1.0);
 
         PBRInfo pbrInputs = PBRInfo(
-        NdotL,
-        NdotV,
-        NdotH,
-        LdotH,
-        VdotH,
-        roughness,
-        metallic,
-        specularEnvironmentR0,
-        specularEnvironmentR90,
-        alphaRoughness,
-        diffuseColor,
-        specularColor
-        );
+                                    NdotL,
+                                    NdotV,
+                                    NdotH,
+                                    LdotH,
+                                    VdotH,
+                                    roughness,
+                                    metallic,
+                                    specularEnvironmentR0,
+                                    specularEnvironmentR90,
+                                    roughness * roughness,
+                                    diffuseColor,
+                                    specularColor
+                                    );
 
         // Calculate the shading terms for the microfacet specular shading model
         vec3 F = SpecularReflection(pbrInputs);
@@ -531,15 +422,15 @@ void main()
         float D = MicrofacetDistribution(pbrInputs);
         vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
 
-        float tmp = NdotL * fSpotT * fAtten;
+        vec3 colour = NdotL * fSpotT * fAtten * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
 #ifdef SHADOWRECEIVER
         if (uLightCastsShadowsArray[i] == 1.0) {
-            tmp *= CalcPSSMDepthShadow();
+            colour *= CalcPSSMDepthShadow();
         }
 #endif
 
-        total_colour += (tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib));
+        total_colour += colour;
     }
 
 // Calculate lighting contribution from image based lighting source (IBL)
@@ -547,7 +438,7 @@ void main()
     vec3 reflection = -normalize(reflect(v, n));
     total_colour += GetIBLContribution(diffuseColor, specularColor, roughness, NdotV, n, reflection);
 #else
-    total_colour += ((uSurfaceAmbientColour + uAmbientLightColour) * baseColor.rgb);
+    total_colour += ((uSurfaceAmbientColour + uAmbientLightColour) * diffuseColor.rgb);
 #endif
 
 // Apply optional PBR terms for additional (optional) shading
@@ -561,12 +452,12 @@ void main()
     total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour);
 #endif
 
-#ifdef REFLECTION
+#ifdef HAS_REFLECTION
     total_colour = ApplyReflection(total_colour, n, v, metallic);
-#endif //REFLECTION
+#endif //HAS_REFLECTION
 
     total_colour = ApplyFog(total_colour);
-    gl_FragColor = vec4(total_colour, baseColor.a);
+    gl_FragColor = vec4(total_colour, albedo.a);
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA

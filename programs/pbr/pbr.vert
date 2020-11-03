@@ -85,7 +85,7 @@ out mat3 vTBN;
 out vec3 vNormal;
 #endif
 #endif
-#ifdef REFLECTION
+#ifdef HAS_REFLECTION
 out vec4 projectionCoord;
 #endif
 #else //SHADOWCASTER
@@ -155,7 +155,7 @@ void main()
   }
 #endif
 
-#ifdef REFLECTION
+#ifdef HAS_REFLECTION
   const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
                               0.0, 0.5, 0.0, 0.0,
                               0.0, 0.0, 0.5, 0.0,
