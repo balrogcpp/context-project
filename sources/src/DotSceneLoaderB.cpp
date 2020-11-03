@@ -24,6 +24,7 @@
 #include "DotSceneLoaderB.h"
 #include "Physics.h"
 #include "ShaderUtils.h"
+#include "MeshUtils.h"
 #include "XmlUtils.h"
 #include "Sound.h"
 
@@ -114,7 +115,7 @@ void DotSceneLoaderB::Load(const std::string &filename, const std::string &group
   /// Validate the File
   if (!XMLRoot.attribute("formatVersion")) {
     Ogre::LogManager::getSingleton().logError(
-        "[DotSceneLoader] Invalid .scene File. Missing <scene formatVersion='x.y' >");
+        "[DotSceneLoader] Invalid .scene File. Missing <scene formfatVersion='x.y' >");
     return;
   }
 
@@ -619,7 +620,7 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
             ccamera_ = std::make_unique<CubeMapCamera>(root, 256);
           }
 
-          UpdatePbrIbl(material_ptr);
+          UpdatePbrIbl(material_ptr, false);
         }
       }
     }
@@ -692,7 +693,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   Ogre::Plane plane(normal, distance);
 
   rcamera_.reset();
-  rcamera_ = std::make_unique<ReflectionCamera>(plane, 512);
+  rcamera_ = std::make_unique<ReflectionCamera>(plane, 1024);
 
   std::string mesh_name = name + "mesh";
 

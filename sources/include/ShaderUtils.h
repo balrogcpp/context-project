@@ -174,12 +174,10 @@ inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-inline void UpdatePbrIbl(const Ogre::MaterialPtr &material) {
+inline void UpdatePbrIbl(const Ogre::MaterialPtr &material, bool realtime) {
   auto ibl_texture = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
 
-  const bool REALTIME_CUBEMAP = false;
-
-  if (REALTIME_CUBEMAP) {
+  if (realtime) {
     auto cubemap = Ogre::TextureManager::getSingleton().getByName("dyncubemap", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 
     if (ibl_texture)
@@ -204,9 +202,9 @@ inline void UpdatePbrParams(const std::string &material) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-inline void UpdatePbrIbl(const std::string &material) {
+inline void UpdatePbrIbl(const std::string &material, bool realtime) {
   auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
-  UpdatePbrIbl(material_ptr);
+  UpdatePbrIbl(material_ptr, realtime);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -219,133 +217,5 @@ inline void UpdatePbrShadowReceiver(const std::string &material) {
 inline void UpdatePbrShadowCaster(const std::string &material) {
   auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
   UpdatePbrShadowCaster(material_ptr);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-inline bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
-  bool hasTangents = false;
-  bool hasUVs = false;
-  auto &elementList = vertex_declaration->getElements();
-  auto iter = elementList.begin();
-  auto end = elementList.end();
-
-  while (iter != end && !hasTangents) {
-    const Ogre::VertexElement &vertexElem = *iter;
-    if (vertexElem.getSemantic() == Ogre::VES_TANGENT)
-      hasTangents = true;
-    if (vertexElem.getSemantic() == Ogre::VES_TEXTURE_COORDINATES)
-      hasUVs = true;
-
-    ++iter;
-  }
-
-  return !hasTangents && hasUVs;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-inline void EnsureHasTangents(Ogre::MeshPtr mesh) {
-  bool generateTangents = false;
-  if (mesh->sharedVertexData) {
-    Ogre::VertexDeclaration *vertexDecl = mesh->sharedVertexData->vertexDeclaration;
-    generateTangents |= HasNoTangentsAndCanGenerate(vertexDecl);
-  }
-
-  for (unsigned i = 0; i < mesh->getNumSubMeshes(); ++i) {
-    Ogre::SubMesh *subMesh = mesh->getSubMesh(i);
-    if (subMesh->vertexData) {
-      Ogre::VertexDeclaration *vertexDecl = subMesh->vertexData->vertexDeclaration;
-      generateTangents |= HasNoTangentsAndCanGenerate(vertexDecl);
-    }
-  }
-
-  if (generateTangents) {
-    mesh->buildTangentVectors();
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-inline void UpdateMeshMaterial(Ogre::MeshPtr mesh, bool cast_shadow = true) {
-  try {
-    EnsureHasTangents(mesh);
-
-    for (auto &submesh : mesh->getSubMeshes()) {
-      Ogre::MaterialPtr material;
-
-      material = submesh->getMaterial();
-
-      if (material) {
-        UpdatePbrParams(material);
-
-        if (cast_shadow)
-          UpdatePbrShadowCaster(material);
-
-        if (material->getReceiveShadows())
-          UpdatePbrShadowReceiver(material);
-      }
-    }
-  }
-  catch (Ogre::Exception &e) {
-    Ogre::LogManager::getSingleton().logMessage(e.getFullDescription());
-    Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-inline void UpdateMeshMaterial(const std::string &mesh_name, bool cast_shadow = true) {
-  const auto &mesh = Ogre::MeshManager::getSingleton().getByName(mesh_name);
-  UpdateMeshMaterial(mesh);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-inline void UpdateEntityMaterial(Ogre::Entity *entity) {
-  try {
-    EnsureHasTangents(entity->getMesh());
-
-    for (auto &submesh : entity->getMesh()->getSubMeshes()) {
-      Ogre::MaterialPtr material;
-
-      material = submesh->getMaterial();
-
-      if (material) {
-        UpdatePbrParams(material);
-
-        if (entity->getCastShadows())
-          UpdatePbrShadowCaster(material);
-
-        if (material->getReceiveShadows())
-          UpdatePbrShadowReceiver(material);
-      }
-    }
-  }
-  catch (Ogre::Exception &e) {
-    Ogre::LogManager::getSingleton().logMessage(e.getFullDescription());
-    Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-inline void LoadEntityAndMaterials(Ogre::Entity *entity) {
-  try {
-    EnsureHasTangents(entity->getMesh());
-
-    for (auto &submesh : entity->getMesh()->getSubMeshes()) {
-      Ogre::MaterialPtr material;
-
-      material = submesh->getMaterial();
-
-      if (material) {
-        UpdatePbrParams(material);
-
-        if (entity->getCastShadows())
-          UpdatePbrShadowCaster(material);
-
-        if (material->getReceiveShadows())
-          UpdatePbrShadowReceiver(material);
-      }
-    }
-  }
-  catch (Ogre::Exception &e) {
-    Ogre::LogManager::getSingleton().logMessage(e.getFullDescription());
-    Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
-  }
 }
 }

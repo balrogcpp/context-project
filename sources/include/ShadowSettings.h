@@ -75,7 +75,7 @@ class ShadowSettings : public NoCopy {
     pssm_->setSplitPadding(1.0);
     pssm_->setOptimalAdjustFactor(0, 0.0);
     pssm_->setOptimalAdjustFactor(1, 0.0);
-//    pssm_->setOptimalAdjustFactor(2, 0.0);
+    pssm_->setOptimalAdjustFactor(2, 0.0);
     scene->setShadowCameraSetup(pssm_);
   }
 //----------------------------------------------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ class ShadowSettings : public NoCopy {
   }
 
  private:
-  int16_t split_count_ = 2;
+  int16_t split_count_ = 3;
   int16_t tex_count_ = 3;
   std::vector<float> split_points_;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm_;
