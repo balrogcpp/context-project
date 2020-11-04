@@ -126,6 +126,7 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
   viewport_->setBackgroundColour(Ogre::ColourValue::Black);
   camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / viewport_->getActualHeight());
   camera_->setAutoAspectRatio(true);
+  camera_->setLodBias(0.5);
 //  camera_->setPolygonMode(Ogre::PM_WIREFRAME);
 
   //Resource block
@@ -169,7 +170,7 @@ void Renderer::CreateCamera() {
   }
 
   if (camera_) {
-    camera_->setNearClipDistance(0.001f);
+    camera_->setNearClipDistance(0.1f);
     camera_->setFarClipDistance(10000.0f);
   }
 

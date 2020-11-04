@@ -96,7 +96,7 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv)
   float compare = uv.z;
 
   const int iterations = 16;
-  const float shadowFilterMaxSize = 0.005;
+  const float shadowFilterMaxSize = 0.004;
   float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 //  float penumbra = Penumbra(shadowMap, gradientNoise, uv.xy, compare, 16);
 
@@ -109,4 +109,27 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv)
 
   return shadow;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+float CalcPSSMDepthShadow(vec3 pssmSplitPoints, vec4 lightSpacePosArray[MAX_SHADOWS], sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, float camDepth)
+{
+  // calculate shadow
+  if (camDepth <= pssmSplitPoints.x)
+  {
+    return calcDepthShadow(shadowMap0, lightSpacePosArray[0]);
+  }
+  else if (camDepth <= pssmSplitPoints.y)
+  {
+    return calcDepthShadow(shadowMap1, lightSpacePosArray[1]);
+  }
+  else if (camDepth <= pssmSplitPoints.z)
+  {
+    return calcDepthShadow(shadowMap2, lightSpacePosArray[2]);
+  }
+  else
+  {
+    return 1.0;
+  }
+}
+
 #endif //RECEIVER_GLSL

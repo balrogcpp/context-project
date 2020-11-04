@@ -43,13 +43,16 @@ class ShadowSettings : public NoCopy {
     tex_size_ = tex_size;
     tex_format_ = tex_format;
 
-    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+    scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
+    camera_ = scene_->getCamera("Default");
+    
     if (!enable) {
-      scene->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+      scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
       return;
     }
 
-    scene->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    scene_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+
     Ogre::PixelFormat texture_type;
     if (tex_format == 32)
       texture_type = Ogre::PixelFormat::PF_DEPTH32;
@@ -58,31 +61,35 @@ class ShadowSettings : public NoCopy {
     else
       throw Exception("Unknown texture format, aborting;");
 
-    scene->setShadowTextureSettings(tex_size, tex_count_, texture_type);
+    scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
+    scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
+    scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
 
-    scene->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
-    scene->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
-    scene->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 6);
-    scene->setShadowTextureSelfShadow(true);
-    scene->setShadowCasterRenderBackFaces(true);
-    scene->setShadowFarDistance(far_distance);
+    scene_->setShadowTextureSettings(tex_size, tex_count_, texture_type);
+
+    for (int i = 0; i < 3; i++)
+      scene_->setShadowTextureConfig(i, 2048, 2048, texture_type);
+
+    scene_->setShadowTextureSelfShadow(true);
+    scene_->setShadowCasterRenderBackFaces(true);
+    scene_->setShadowFarDistance(far_distance);
     auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/NoAlpha/shadow_caster");
-    scene->setShadowTextureCasterMaterial(passCaterMaterial);
+    scene_->setShadowTextureCasterMaterial(passCaterMaterial);
 
     pssm_ = std::make_shared<Ogre::PSSMShadowCameraSetup>();
-    pssm_->calculateSplitPoints(split_count_, 0.1, scene->getShadowFarDistance());
+    pssm_->calculateSplitPoints(split_count_, 1.0, scene_->getShadowFarDistance());
     split_points_ = pssm_->getSplitPoints();
     pssm_->setSplitPadding(1.0);
     pssm_->setOptimalAdjustFactor(0, 0.0);
     pssm_->setOptimalAdjustFactor(1, 0.0);
     pssm_->setOptimalAdjustFactor(2, 0.0);
-    scene->setShadowCameraSetup(pssm_);
+    scene_->setShadowCameraSetup(pssm_);
   }
 //----------------------------------------------------------------------------------------------------------------------
   void UpdateSplits(float padding, const std::vector<float> &pssm_factor) {
     pssm_->setSplitPadding(padding);
-    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-    pssm_->calculateSplitPoints(split_count_, 0.1, scene->getShadowFarDistance());
+    pssm_->calculateSplitPoints(split_count_, 1.0, scene_->getShadowFarDistance());
+
     for (size_t i = 0; i < pssm_factor.size(); i++) {
       pssm_->setOptimalAdjustFactor(i, pssm_factor[i]);
     }
@@ -106,6 +113,8 @@ class ShadowSettings : public NoCopy {
   int16_t tex_count_ = 3;
   std::vector<float> split_points_;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm_;
+  Ogre::Camera *camera_;
+  Ogre::SceneManager *scene_;
   bool shadow_enable_ = true;
   float far_distance_ = 500.0;
   int16_t tex_size_ = 2048;

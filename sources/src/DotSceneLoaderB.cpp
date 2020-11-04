@@ -232,6 +232,27 @@ void DotSceneLoaderB::ProcessEnvironment_(pugi::xml_node &xml_node) {
     viewport->setBackgroundColour(ParseColour(element));
 }
 ///---------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::ProcessLightRange_(pugi::xml_node &xml_node, Ogre::Light *light) {
+  /// Process attributes
+  float inner = GetAttribReal(xml_node, "inner");
+  float outer = GetAttribReal(xml_node, "outer");
+  float falloff = GetAttribReal(xml_node, "falloff", 1.0);
+
+  /// Setup the light range
+  light->setSpotlightRange(Ogre::Angle(inner), Ogre::Angle(outer), falloff);
+}
+///---------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::ProcessLightAttenuation_(pugi::xml_node &xml_node, Ogre::Light *light) {
+  /// Process attributes
+  float range = GetAttribReal(xml_node, "range");
+  float constant = GetAttribReal(xml_node, "constant");
+  float linear = GetAttribReal(xml_node, "linear");
+  float quadratic = GetAttribReal(xml_node, "quadratic");
+
+  /// Setup the light attenuation
+  light->setAttenuation(range, constant, linear, quadratic);
+}
+///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   /// Process attributes
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -261,6 +282,8 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 
   light->setVisible(GetAttribBool(xml_node, "visible", true));
   light->setCastShadows(GetAttribBool(xml_node, "castShadows", false));
+  if (sValue == "point")
+    light->setCastShadows(false);
   light->setPowerScale(GetAttribReal(xml_node, "powerScale", 1.0));
 
   /// Process colourDiffuse
@@ -869,27 +892,6 @@ void DotSceneLoaderB::ProcessSkyPlane_(pugi::xml_node &xml_node) {
   plane.normal = Ogre::Vector3(planeX, planeY, planeZ);
   plane.d = planeD;
   scene_->setSkyPlane(true, plane, material, scale, tiling, drawFirst, bow, 1, 1, group_name_);
-}
-///---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessLightRange_(pugi::xml_node &xml_node, Ogre::Light *light) {
-  /// Process attributes
-  float inner = GetAttribReal(xml_node, "inner");
-  float outer = GetAttribReal(xml_node, "outer");
-  float falloff = GetAttribReal(xml_node, "falloff", 1.0);
-
-  /// Setup the light range
-  light->setSpotlightRange(Ogre::Angle(inner), Ogre::Angle(outer), falloff);
-}
-///---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessLightAttenuation_(pugi::xml_node &xml_node, Ogre::Light *light) {
-  /// Process attributes
-  float range = GetAttribReal(xml_node, "range");
-  float constant = GetAttribReal(xml_node, "constant");
-  float linear = GetAttribReal(xml_node, "linear");
-  float quadratic = GetAttribReal(xml_node, "quadratic");
-
-  /// Setup the light attenuation
-  light->setAttenuation(range, constant, linear, quadratic);
 }
 ///---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessUserData_(pugi::xml_node &xml_node, Ogre::UserObjectBindings &user_object_bindings) {

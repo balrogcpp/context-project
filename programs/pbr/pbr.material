@@ -400,7 +400,7 @@ vertex_program PbrPaged_vs glsl glsles
 fragment_program PbrPaged_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,SHADOWRECEIVER
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,SHADOWRECEIVER
 }
 
 material Paged
@@ -442,7 +442,7 @@ vertex_program PbrGrass_vs glsl glsles
 fragment_program PbrGrass_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,SHADOWRECEIVER
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,SHADOWRECEIVER
 }
 
 material Grass

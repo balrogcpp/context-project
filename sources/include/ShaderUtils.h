@@ -36,8 +36,8 @@ inline void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
   std::string material_name = material->getName();
 
   if (num_textures > 0 && alpha_rejection > 0 && transparency_casts_shadows) {
-    auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
-    std::string caster_name = "PSSM/shadow_caster/" + material_name;
+    auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
+    std::string caster_name = "PSSM/shadow_caster_alpha/" + material_name;
     Ogre::MaterialPtr new_caster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
 
     if (!new_caster) {
@@ -59,11 +59,11 @@ inline void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
 
     material->getTechnique(0)->setShadowCasterMaterial(new_caster);
   } else {
-    std::string caster_name = "PSSM/NoAlpha/shadow_caster/" + material_name;
+    std::string caster_name = "PSSM/shadow_caster/" + material_name;
     Ogre::MaterialPtr new_caster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
 
     if (!new_caster) {
-      auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/NoAlpha/shadow_caster");
+      auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
       new_caster = caster_material->clone(caster_name);
     }
 
@@ -75,8 +75,7 @@ inline void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
 inline void UpdatePbrParams(const Ogre::MaterialPtr &material) {
   const int MAX_LIGHT_COUNT = 5;
 
-  if (!material->getTechnique(0)->getPass(0)->hasVertexProgram()
-      || !material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
+  if (!material->getTechnique(0)->getPass(0)->hasVertexProgram() || !material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
     return;
   }
 
@@ -113,6 +112,8 @@ inline void UpdatePbrParams(const Ogre::MaterialPtr &material) {
   frag_params->setNamedAutoConstant("uFogColour", Ogre::GpuProgramParameters::ACT_FOG_COLOUR);
   frag_params->setNamedAutoConstant("uFogParams", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
   frag_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
+
+  frag_params->setNamedConstant("uLOD", 0.0f);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

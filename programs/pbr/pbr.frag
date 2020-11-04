@@ -58,6 +58,7 @@ in float vAlpha;
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D uAlbedoSampler;
 #endif
+uniform float uLOD;
 uniform float uAlphaRejection;
 uniform vec3 uSurfaceAmbientColour;
 uniform vec3 uSurfaceDiffuseColour;
@@ -129,7 +130,6 @@ in vec4 projectionCoord;
 #endif
 
 const float M_PI = 3.141592653589793;
-const float LOD = 0.5;
 
 //SRGB corretion
 #include "srgb.glsl"
@@ -137,29 +137,6 @@ const float LOD = 0.5;
 //Shadows block
 #ifdef SHADOWRECEIVER
 #include "receiver.glsl"
-//----------------------------------------------------------------------------------------------------------------------
-float CalcPSSMDepthShadow()
-{
-    float camDepth = vDepth;
-
-    // calculate shadow
-    if (camDepth <= pssmSplitPoints.x)
-    {
-        return calcDepthShadow(shadowMap0, lightSpacePosArray[0]);
-    }
-    else if (camDepth <= pssmSplitPoints.y)
-    {
-        return calcDepthShadow(shadowMap1, lightSpacePosArray[1]);
-    }
-    else if (camDepth <= pssmSplitPoints.z)
-    {
-        return calcDepthShadow(shadowMap2, lightSpacePosArray[2]);
-    }
-    else
-    {
-        return 1.0;
-    }
-}
 #endif
 
 // Find the normal for this fragment, pulling either from a predefined normal map
@@ -217,7 +194,7 @@ vec3 GetNormal(vec2 uv)
 #endif
 
 #ifdef HAS_NORMALMAP
-    vec3 n = texture2D(uNormalSampler, uv, LOD).xyz;
+    vec3 n = texture2D(uNormalSampler, uv, uLOD).xyz;
     n = normalize(tbn * ((2.0 * n - 1.0)));
 #else //!HAS_NORMALMAP
     vec3 n = tbn[2].xyz;
@@ -230,7 +207,7 @@ float GetMetallic(vec2 uv) {
     float metallic = uSurfaceShininessColour;
 
 #ifdef HAS_METALLICMAP
-    metallic *= texture2D(uMetallicSampler, uv, LOD).r;
+    metallic *= texture2D(uMetallicSampler, uv, uLOD).r;
 #endif
 
     return metallic;
@@ -242,7 +219,7 @@ float GetRoughness(vec2 uv) {
     float roughness = uSurfaceSpecularColour;
 
 #ifdef HAS_ROUGHNESSMAP
-    roughness *= texture2D(uRoughnessSampler, uv, LOD).r;
+    roughness *= texture2D(uRoughnessSampler, uv, uLOD).r;
 #endif
 
     return roughness > c_MinRoughness ? roughness : c_MinRoughness;
@@ -254,7 +231,7 @@ vec4 GetDiffuse(vec2 uv) {
     float alpha = 1.0;
 
 #ifdef HAS_BASECOLORMAP
-    vec4 tmp = texture2D(uAlbedoSampler, uv, LOD);
+    vec4 tmp = texture2D(uAlbedoSampler, uv, uLOD);
     base_color = SRGBtoLINEAR(tmp.rgb);
     alpha = tmp.a;
     base_color *= uSurfaceDiffuseColour;
@@ -265,12 +242,14 @@ vec4 GetDiffuse(vec2 uv) {
     base_color.rgb *= vColor;
 #endif
 #ifdef PAGED_GEOMETRY
-//    alpha *= vAlpha;
+    alpha *= vAlpha;
 #endif
 
+#ifdef HAS_ALPHA
     if (alpha < uAlphaRejection) {
         discard;
     }
+#endif
 
     return vec4(base_color, alpha);
 }
@@ -311,7 +290,7 @@ vec2 ParallaxMapping(vec2 uv, vec3 viewDir)
 {
     const float scale = 0.01;
     const float offset = 0.0;
-    float displacement =  texture2D(uOffsetSampler, uv, LOD).r * scale + offset;
+    float displacement =  texture2D(uOffsetSampler, uv, uLOD).r * scale + offset;
     return uv - viewDir.xy * displacement;
 }
 #endif
@@ -368,21 +347,18 @@ void main()
     for (int i = 0; i < int(uLightCount); i++) {
         vec3 l = -normalize(uLightDirectionArray[i]);// Vector from surface point to light
         vec3 h = normalize(l+v);// Half vector between both l and v
+        float NdotL = clamp(dot(n, l), 0.001, 1.0);
 
         vec3 vLightView = uLightPositionArray[i] - vPosition;
         float fLightD = length(vLightView);
         vLightView = normalize(vLightView);
 
-        vec4 vAttParams = uLightAttenuationArray[i];
-
         float fAtten = 1.0;
         float fSpotT = 1.0;
 
-        if (fLightD > vAttParams.x) {
-            continue;
-        }
+        vec4 vAttParams = uLightAttenuationArray[i];
 
-        if (vAttParams.z != 0.0) {
+        if (vAttParams.z > 0.0) {
             vec3 vSpotParams = uLightSpotParamsArray[i];
 
             fAtten  = 1.0 / (vAttParams.y + vAttParams.z*fLightD + vAttParams.w*fLightD*fLightD);
@@ -392,8 +368,6 @@ void main()
             fSpotT = pow(fSpotE, vSpotParams.z);
         }
 
-        float ndotl = dot(n, l);
-        float NdotL = clamp(ndotl, 0.001, 1.0);
         float NdotH = clamp(dot(n, h), 0.0, 1.0);
         float LdotH = clamp(dot(l, h), 0.0, 1.0);
         float VdotH = clamp(dot(v, h), 0.0, 1.0);
@@ -425,9 +399,7 @@ void main()
         vec3 colour = NdotL * fSpotT * fAtten * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
 #ifdef SHADOWRECEIVER
-        if (uLightCastsShadowsArray[i] == 1.0) {
-            colour *= CalcPSSMDepthShadow();
-        }
+            colour *= CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray, shadowMap0, shadowMap1, shadowMap2, vDepth);
 #endif
 
         total_colour += colour;
@@ -438,16 +410,16 @@ void main()
     vec3 reflection = -normalize(reflect(v, n));
     total_colour += GetIBLContribution(diffuseColor, specularColor, roughness, NdotV, n, reflection);
 #else
-    total_colour += ((uSurfaceAmbientColour + uAmbientLightColour) * diffuseColor.rgb);
+    total_colour += ((uSurfaceAmbientColour + uAmbientLightColour) * albedo.rgb);
 #endif
 
 // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
-    total_colour *= texture2D(uOcclusionSampler, tex_coord, LOD).r;
+    total_colour *= texture2D(uOcclusionSampler, tex_coord, uLOD).r;
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord, LOD).rgb + uSurfaceEmissiveColour);
+    total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord, uLOD).rgb + uSurfaceEmissiveColour);
 #else
     total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour);
 #endif

@@ -20,7 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-vertex_program PSSM/shadow_caster_vs glsl glsles
+vertex_program PSSM/shadow_caster_alpha_vs glsl glsles
 {
 	source pbr.vert
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
@@ -31,7 +31,7 @@ vertex_program PSSM/shadow_caster_vs glsl glsles
 	}
 }
 
-fragment_program PSSM/shadow_caster_fs glsl glsles
+fragment_program PSSM/shadow_caster_alpha_fs glsl glsles
 {
 	source pbr.frag
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
@@ -40,6 +40,39 @@ fragment_program PSSM/shadow_caster_fs glsl glsles
 	{
 	    param_named uAlbedoSampler int 0
 	}
+}
+
+material PSSM/shadow_caster_alpha
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref PSSM/shadow_caster_alpha_vs {}
+
+			fragment_program_ref PSSM/shadow_caster_alpha_fs {}
+
+            texture_unit BaseColor {}
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PSSM/shadow_caster_vs glsl glsles
+{
+	source pbr.vert
+	preprocessor_defines SHADOWCASTER
+
+	default_params
+	{
+		param_named_auto uMVPMatrix worldviewproj_matrix
+	}
+}
+
+fragment_program PSSM/shadow_caster_fs glsl glsles
+{
+	source pbr.frag
+	preprocessor_defines SHADOWCASTER
 }
 
 material PSSM/shadow_caster
@@ -51,39 +84,6 @@ material PSSM/shadow_caster
 			vertex_program_ref PSSM/shadow_caster_vs {}
 
 			fragment_program_ref PSSM/shadow_caster_fs {}
-
-            texture_unit BaseColor {}
-		}
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program PSSM/NoAlpha/shadow_caster_vs glsl glsles
-{
-	source pbr.vert
-	preprocessor_defines SHADOWCASTER
-
-	default_params
-	{
-		param_named_auto uMVPMatrix worldviewproj_matrix
-	}
-}
-
-fragment_program PSSM/NoAlpha/shadow_caster_fs glsl glsles
-{
-	source pbr.frag
-	preprocessor_defines SHADOWCASTER
-}
-
-material PSSM/NoAlpha/shadow_caster
-{
-	technique
-	{
-		pass
-		{
-			vertex_program_ref PSSM/NoAlpha/shadow_caster_vs {}
-
-			fragment_program_ref PSSM/NoAlpha/shadow_caster_fs {}
 		}
 	}
 }

@@ -131,7 +131,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   terrain_global_options->setCastsDynamicShadows(false);
   terrain_global_options->setCompositeMapDistance(100);
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
-  terrain_global_options->setUseRayBoxDistanceCalculation(false);
+  terrain_global_options->setUseRayBoxDistanceCalculation(true);
   terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
 
   auto *scene_manager = Ogre::Root::getSingleton().getSceneManager("Default");
