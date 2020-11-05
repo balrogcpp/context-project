@@ -29,7 +29,7 @@ using namespace xio;
 DemoDotAppState::DemoDotAppState() {}
 DemoDotAppState::~DemoDotAppState() {}
 
-void DemoDotAppState::KeyDown(SDL_Keycode sym) {
+void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
     SwitchNextState(std::make_unique<DemoDotAppState>());
   }
