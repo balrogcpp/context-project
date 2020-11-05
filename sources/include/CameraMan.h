@@ -183,7 +183,7 @@ class CameraMan final : public Entity, public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) override {
+  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override {
     if (!stop_) {
       if (style_ == FREELOOK) {
         node_->yaw(Ogre::Degree(-dx));
@@ -195,7 +195,7 @@ class CameraMan final : public Entity, public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void KeyDown(SDL_Keycode sym) override {
+  void OnKeyDown(SDL_Keycode sym) override {
     SDL_Scancode code = SDL_GetScancodeFromKey(sym);
 
     if (!stop_) {
@@ -234,7 +234,7 @@ class CameraMan final : public Entity, public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void KeyUp(SDL_Keycode sym) override {
+  void OnKeyUp(SDL_Keycode sym) override {
     SDL_Scancode code = SDL_GetScancodeFromKey(sym);
 
     if (!stop_) {

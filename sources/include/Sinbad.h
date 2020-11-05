@@ -3,11 +3,11 @@
 #include "Entity.h"
 #include "Input.h"
 
-#define SCALE 0.2
-#define CHAR_HEIGHT SCALE*5          // height of character's center of mass above ground
-#define CAM_HEIGHT SCALE*2           // height of camera above character's center of mass
-//#define RUN_SPEED SCALE*17           // character running speed in units per second
-#define RUN_SPEED SCALE*30           // character running speed in units per second
+#define SCALE 0.2f
+#define CHAR_HEIGHT SCALE*5.0f          // height of character's center of mass above ground
+#define CAM_HEIGHT SCALE*2.0f           // height of camera above character's center of mass
+//#define RUN_SPEED SCALE*17.0f           // character running speed in units per second
+#define RUN_SPEED SCALE*30.0f           // character running speed in units per second
 #define TURN_SPEED 500.0f      // character turning in degrees per second
 #define ANIM_FADE_SPEED 7.5f   // animation crossfade speed in % of full weight per second
 #define JUMP_ACCEL SCALE*30.0f       // character jump acceleration in upward units per squared second
@@ -48,7 +48,7 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
     updateCamera(deltaTime);
   }
 
-  void KeyDown(const SDL_Keycode key) override {
+  void OnKeyDown(SDL_Keycode key) override {
     if (key == 'q' && (mTopAnimID == ANIM_IDLE_TOP || mTopAnimID == ANIM_RUN_TOP)) {
       // take swords out (or put them back, since it's the same animation but reversed)
       setTopAnimation(ANIM_DRAW_SWORDS, true);
@@ -89,7 +89,7 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
     }
   }
 
-  void KeyUp(SDL_Keycode key) override {
+  void OnKeyUp(SDL_Keycode key) override {
     // keep track of the player's intended direction
     if (key == 'w' && mKeyDirection.z == -1) mKeyDirection.z = 0;
     else if (key == 'a' && mKeyDirection.x == -1) mKeyDirection.x = 0;
@@ -103,17 +103,17 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
     }
   }
 
-  void Move(int32_t dx, int32_t dy) override {
+  void OnMouseMove(int32_t dx, int32_t dy) override {
     // update camera goal based on mouse movement
     updateCameraGoal(-0.05f * dx, -0.05f * dy, 0);
   }
 
-  void Wheel(int32_t x, int32_t y) override {
+  void OnMouseWheel(int32_t x, int32_t y) override {
     // update camera goal based on mouse movement
     updateCameraGoal(0, 0, -0.05f * y);
   }
 
-  void LbDown(int32_t x, int32_t y) override {
+  void OnMouseLbDown(int32_t x, int32_t y) override {
     if (mSwordsDrawn && (mTopAnimID == ANIM_IDLE_TOP || mTopAnimID == ANIM_RUN_TOP)) {
       // if swords are out, and character's not doing something weird, then SLICE!
       setTopAnimation(ANIM_SLICE_VERTICAL, true);
@@ -121,7 +121,7 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
     }
   }
 
-  void RbDown(int32_t x, int32_t y) override {
+  void OnMouseRbDown(int32_t x, int32_t y) override {
     if (mSwordsDrawn && (mTopAnimID == ANIM_IDLE_TOP || mTopAnimID == ANIM_RUN_TOP)) {
       // if swords are out, and character's not doing something weird, then SLICE!
       setTopAnimation(ANIM_SLICE_HORIZONTAL, true);
@@ -208,7 +208,7 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
 
     // our model is quite small, so reduce the clipping planes
     cam->setNearClipDistance(0.1);
-    cam->setFarClipDistance(5000);
+    cam->setFarClipDistance(SCALE * 5000);
 
     mPivotPitch = 0;
   }
@@ -245,8 +245,7 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
       mBodyNode->yaw(Ogre::Degree(yawToGoal));
 
       // move in current body direction (not the goal direction)
-      mBodyNode->translate(0, 0, deltaTime * RUN_SPEED * mAnims[mBaseAnimID]->getWeight(),
-                           Ogre::Node::TS_LOCAL);
+      mBodyNode->translate(0, 0, deltaTime * RUN_SPEED * mAnims[mBaseAnimID]->getWeight(),Ogre::Node::TS_LOCAL);
     }
 
     if (mBaseAnimID == ANIM_JUMP_LOOP) {
@@ -393,6 +392,9 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
     if (!(dist + distChange < SCALE * 8 && distChange < 0) && !(dist + distChange > SCALE * 40 && distChange > 0)) {
       mCameraGoal->translate(0, 0, distChange, Ogre::Node::TS_LOCAL);
     }
+//    if (!(dist + distChange < SCALE * 8 && distChange < 0) && !(dist + distChange > SCALE * 40 && distChange > 0)) {
+//      mCameraGoal->translate(0, 0, distChange, Ogre::Node::TS_LOCAL);
+//    }
   }
 
   void setBaseAnimation(AnimID id, bool reset = false) {

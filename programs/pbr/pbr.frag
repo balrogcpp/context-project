@@ -45,8 +45,9 @@
 #endif
 #include "header.frag"
 
-#define MAX_LIGHTS 5
-#define MAX_SHADOWS 3
+#define MAX_LIGHTS 10
+#define MAX_SHADOWS 9
+
 #ifdef SHADOWCASTER_ALPHA
 in vec2 vUV0;
 uniform sampler2D uAlbedoSampler;
@@ -109,8 +110,17 @@ uniform sampler2D uOffsetSampler;
 uniform sampler2D shadowMap0;
 uniform sampler2D shadowMap1;
 uniform sampler2D shadowMap2;
+uniform sampler2D shadowMap3;
+uniform sampler2D shadowMap4;
+uniform sampler2D shadowMap5;
+uniform sampler2D shadowMap6;
+uniform sampler2D shadowMap7;
+uniform sampler2D shadowMap8;
 uniform vec3 pssmSplitPoints;
 uniform float uShadowColour;
+uniform float uDepthOffset;
+uniform float uShadowFilterSize;
+uniform int uShadowFilterIterations;
 in vec4 lightSpacePosArray[MAX_SHADOWS];
 #endif
 in vec3 vPosition;
@@ -344,6 +354,10 @@ void main()
 
     vec3 total_colour = vec3(0.0);
 
+#ifdef SHADOWRECEIVER
+    int shadow_counter = 0;
+#endif
+
     for (int i = 0; i < int(uLightCount); i++) {
         vec3 l = -normalize(uLightDirectionArray[i]);// Vector from surface point to light
         vec3 h = normalize(l+v);// Half vector between both l and v
@@ -357,11 +371,12 @@ void main()
         float fSpotT = 1.0;
 
         vec4 vAttParams = uLightAttenuationArray[i];
+        float spot = vAttParams.z;
 
-        if (vAttParams.z > 0.0) {
+        if (spot > 0.0) {
             vec3 vSpotParams = uLightSpotParamsArray[i];
 
-            fAtten  = 1.0 / (vAttParams.y + vAttParams.z*fLightD + vAttParams.w*fLightD*fLightD);
+            fAtten  = 1.0 / (vAttParams.y + spot*fLightD + vAttParams.w*fLightD*fLightD);
 
             float rho = dot(l, vLightView);
             float fSpotE = clamp((rho - vSpotParams.y) / (vSpotParams.x - vSpotParams.y), 0.0, 1.0);
@@ -399,7 +414,19 @@ void main()
         vec3 colour = NdotL * fSpotT * fAtten * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
 #ifdef SHADOWRECEIVER
-            colour *= CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray, shadowMap0, shadowMap1, shadowMap2, vDepth);
+        if (uLightCastsShadowsArray[i] > 0.0) {
+            if (shadow_counter == 0) {
+                colour *= CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], shadowMap0, shadowMap1, shadowMap2, spot, vDepth, uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            }
+            else if (shadow_counter == 1) {
+                colour *= CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[3], lightSpacePosArray[4], lightSpacePosArray[5], shadowMap3, shadowMap4, shadowMap5, spot, vDepth, uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            }
+            else if (shadow_counter == 2) {
+                colour *= CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[6], lightSpacePosArray[7], lightSpacePosArray[8], shadowMap6, shadowMap7, shadowMap8, spot, vDepth, uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            }
+
+            shadow_counter = shadow_counter + 1;
+        }
 #endif
 
         total_colour += colour;

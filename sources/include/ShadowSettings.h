@@ -42,6 +42,7 @@ class ShadowSettings : public NoCopy {
     far_distance_ = far_distance;
     tex_size_ = tex_size;
     tex_format_ = tex_format;
+    const int SPLIT_COUNT = 3;
 
     scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
     camera_ = scene_->getCamera("Default");
@@ -61,34 +62,35 @@ class ShadowSettings : public NoCopy {
     else
       throw Exception("Unknown texture format, aborting;");
 
+    scene_->setShadowTextureSettings(tex_size, tex_count_, texture_type);
+
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
 
-    scene_->setShadowTextureSettings(tex_size, tex_count_, texture_type);
-
-    for (int i = 0; i < 3; i++)
-      scene_->setShadowTextureConfig(i, 2048, 2048, texture_type);
+//    for (int i = 0; i < SPLIT_COUNT; i++)
+//      scene_->setShadowTextureConfig(i, 1024, 1024, texture_type);
 
     scene_->setShadowTextureSelfShadow(true);
     scene_->setShadowCasterRenderBackFaces(true);
     scene_->setShadowFarDistance(far_distance);
-    auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/NoAlpha/shadow_caster");
+    auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     scene_->setShadowTextureCasterMaterial(passCaterMaterial);
 
     pssm_ = std::make_shared<Ogre::PSSMShadowCameraSetup>();
-    pssm_->calculateSplitPoints(split_count_, 1.0, scene_->getShadowFarDistance());
+    pssm_->calculateSplitPoints(split_count_, 0.1, scene_->getShadowFarDistance());
     split_points_ = pssm_->getSplitPoints();
     pssm_->setSplitPadding(1.0);
-    pssm_->setOptimalAdjustFactor(0, 0.0);
-    pssm_->setOptimalAdjustFactor(1, 0.0);
-    pssm_->setOptimalAdjustFactor(2, 0.0);
+
+    for (int i = 0; i < SPLIT_COUNT; i++)
+      pssm_->setOptimalAdjustFactor(i, 0.0);
+
     scene_->setShadowCameraSetup(pssm_);
   }
 //----------------------------------------------------------------------------------------------------------------------
   void UpdateSplits(float padding, const std::vector<float> &pssm_factor) {
     pssm_->setSplitPadding(padding);
-    pssm_->calculateSplitPoints(split_count_, 1.0, scene_->getShadowFarDistance());
+    pssm_->calculateSplitPoints(split_count_, 0.1, scene_->getShadowFarDistance());
 
     for (size_t i = 0; i < pssm_factor.size(); i++) {
       pssm_->setOptimalAdjustFactor(i, pssm_factor[i]);
@@ -104,19 +106,19 @@ class ShadowSettings : public NoCopy {
     return split_points_;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  Ogre::PSSMShadowCameraSetup* GetPssmSetup() {
-    return pssm_.get();
+  const Ogre::PSSMShadowCameraSetup &GetPssmSetup() {
+    return *pssm_;
   }
 
  private:
   int16_t split_count_ = 3;
-  int16_t tex_count_ = 3;
+  int16_t tex_count_ = 9;
   std::vector<float> split_points_;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm_;
-  Ogre::Camera *camera_;
-  Ogre::SceneManager *scene_;
+  Ogre::Camera *camera_ = nullptr;
+  Ogre::SceneManager *scene_ = nullptr;
   bool shadow_enable_ = true;
-  float far_distance_ = 500.0;
+  float far_distance_ = 400.0;
   int16_t tex_size_ = 2048;
   int tex_format_ = 16;
 };

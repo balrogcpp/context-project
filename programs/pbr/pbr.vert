@@ -32,8 +32,9 @@
 #endif
 #include "header.vert"
 
-#define MAX_LIGHTS 5
-#define MAX_SHADOWS 3
+#define MAX_LIGHTS 10
+#define MAX_SHADOWS 9
+
 #define HAS_UV
 
 #ifndef VERTEX_COMPRESSION

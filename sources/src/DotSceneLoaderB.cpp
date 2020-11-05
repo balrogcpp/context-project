@@ -282,8 +282,14 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 
   light->setVisible(GetAttribBool(xml_node, "visible", true));
   light->setCastShadows(GetAttribBool(xml_node, "castShadows", false));
-  if (sValue == "point")
+  static auto default_scs = Ogre::DefaultShadowCameraSetup::create();
+
+  if (light->getType() == Ogre::Light::LT_POINT) {
     light->setCastShadows(false);
+  } else if (light->getType() == Ogre::Light::LT_SPOTLIGHT) {
+    light->setCustomShadowCameraSetup(default_scs);
+  }
+
   light->setPowerScale(GetAttribReal(xml_node, "powerScale", 1.0));
 
   /// Process colourDiffuse
@@ -716,12 +722,11 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   Ogre::Plane plane(normal, distance);
 
   rcamera_.reset();
-  rcamera_ = std::make_unique<ReflectionCamera>(plane, 1024);
+  rcamera_ = std::make_unique<ReflectionCamera>(plane, 512);
 
   std::string mesh_name = name + "mesh";
 
-  Ogre::MeshPtr plane_mesh = Ogre::MeshManager::getSingleton().getByName(mesh_name,
-                                                                         Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+  Ogre::MeshPtr plane_mesh = Ogre::MeshManager::getSingleton().getByName(mesh_name);
   if (plane_mesh)
     Ogre::MeshManager::getSingleton().remove(plane_mesh);
   Ogre::MeshPtr res =

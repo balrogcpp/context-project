@@ -31,7 +31,7 @@ namespace xio {
 class VerboseListener final : public InputObserver {
  private:
 //----------------------------------------------------------------------------------------------------------------------
-  void KeyDown(SDL_Keycode sym) final {
+  void OnKeyDown(SDL_Keycode sym) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -41,7 +41,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void KeyUp(SDL_Keycode sym) final {
+  void OnKeyUp(SDL_Keycode sym) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -50,7 +50,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Move(int x, int y, int dx, int dy, bool left, bool right, bool middle) final {
+  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -72,7 +72,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Wheel(int x, int y) final {
+  void OnMouseWheel(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << "Up" << ' ';
@@ -82,7 +82,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void LbDown(int x, int y) final {
+  void OnMouseLbDown(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -94,7 +94,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void LbUp(int x, int y) final {
+  void OnMouseLbUp(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -106,7 +106,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void RbDown(int x, int y) final {
+  void OnMouseRbDown(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -118,7 +118,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void RbUp(int x, int y) final {
+  void OnMouseRbUp(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -130,7 +130,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void MbDown(int x, int y) final {
+  void OnMouseMbDown(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -142,7 +142,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void MbUp(int x, int y) final {
+  void OnMouseMbUp(int x, int y) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -154,7 +154,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Axis(int which, int axis, int value) final {
+  void OnJoysticAxis(int which, int axis, int value) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -168,7 +168,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void BtDown(int which, int button) final {
+  void OnJoysticBtDown(int which, int button) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -180,7 +180,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void BtUp(int which, int button) final {
+  void OnJoysticBtUp(int which, int button) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -192,7 +192,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Hat(int which, int hat, int value) final {
+  void OnJoysticHat(int which, int hat, int value) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';
@@ -206,7 +206,7 @@ class VerboseListener final : public InputObserver {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Ball(int which, int ball, int xrel, int yrel) final {
+  void OnJoysticBall(int which, int ball, int xrel, int yrel) final {
     if (print_) {
       std::cout << __func__;
       std::cout << ' ';

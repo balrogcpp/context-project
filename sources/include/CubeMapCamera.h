@@ -40,7 +40,7 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
     // point the camera in the right direction based on which face of the cubemap this is
     if (scene_->hasLight("Sun"))
       scene_->getLight("Sun")->setCastShadows(false);
-    camera_->setLodBias(0.1);
+    camera_->setLodBias(0.001);
     camera_node_->setOrientation(Ogre::Quaternion::IDENTITY);
     if (evt.source == targets_[0]) camera_node_->yaw(Ogre::Degree(-90));
     else if (evt.source == targets_[1]) camera_node_->yaw(Ogre::Degree(90));

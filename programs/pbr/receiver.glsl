@@ -87,7 +87,7 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-float calcDepthShadow(sampler2D shadowMap, vec4 uv)
+float calcDepthShadow(sampler2D shadowMap, vec4 uv, float offset, float filter_size, int iterations)
 {
   uv.xyz /= uv.w;
 
@@ -95,41 +95,42 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv)
   float shadow = 0.0;
   float compare = uv.z;
 
-  const int iterations = 16;
-  const float shadowFilterMaxSize = 0.004;
   float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 //  float penumbra = Penumbra(shadowMap, gradientNoise, uv.xy, compare, 16);
 
   for (int i = 0; i < iterations; i++)
   {
-    uv.xy += VogelDiskSample(i, 16, gradientNoise) * shadowFilterMaxSize;
-//    uv.xy += VogelDiskSample(i, 16, gradientNoise) * penumbra * shadowFilterMaxSize;
-    shadow += (texture2D(shadowMap, uv.xy).r > compare ? 1.0 / float(iterations) : 0.0);
+    uv.xy += VogelDiskSample(i, iterations, gradientNoise) * filter_size;
+//    uv.xy += VogelDiskSample(i, iterations, gradientNoise) * penumbra * filter_size;
+    shadow += (texture2D(shadowMap, uv.xy).r - offset > compare ? 1.0 / float(iterations) : 0.0);
   }
 
   return shadow;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float CalcPSSMDepthShadow(vec3 pssmSplitPoints, vec4 lightSpacePosArray[MAX_SHADOWS], sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, float camDepth)
+float CalcPSSMDepthShadow(vec3 pssmSplitPoints, vec4 lightSpacePos0, vec4 lightSpacePos1, vec4 lightSpacePos2, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, float spot, float camDepth, float offset, float filter_size, int iterations)
 {
+  if (spot > 0.0)
+  {
+    return calcDepthShadow(shadowMap0, lightSpacePos0, offset, filter_size, iterations);
+  }
+
   // calculate shadow
   if (camDepth <= pssmSplitPoints.x)
   {
-    return calcDepthShadow(shadowMap0, lightSpacePosArray[0]);
+    return calcDepthShadow(shadowMap0, lightSpacePos0, offset, filter_size, iterations);
   }
   else if (camDepth <= pssmSplitPoints.y)
   {
-    return calcDepthShadow(shadowMap1, lightSpacePosArray[1]);
+    return calcDepthShadow(shadowMap1, lightSpacePos1, offset, filter_size, iterations);
   }
   else if (camDepth <= pssmSplitPoints.z)
   {
-    return calcDepthShadow(shadowMap2, lightSpacePosArray[2]);
+    return calcDepthShadow(shadowMap2, lightSpacePos2, offset, filter_size, iterations);
   }
-  else
-  {
-    return 1.0;
-  }
+
+  return 1.0;
 }
 
 #endif //RECEIVER_GLSL

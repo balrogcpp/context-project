@@ -36,26 +36,26 @@ class InputSequencer;
 class InputObserver {
  public:
   //Keyboard
-  virtual void KeyDown(SDL_Keycode sym) {}
-  virtual void KeyUp(SDL_Keycode sym) {}
+  virtual void OnKeyDown(SDL_Keycode sym) {}
+  virtual void OnKeyUp(SDL_Keycode sym) {}
 
   //Mouse
-  virtual void Move(int32_t dx, int32_t dy) {}
-  virtual void Move(int32_t x, int32_t y, int32_t dx, int32_t dy, bool left, bool right, bool middle) {}
-  virtual void Wheel(int32_t x, int32_t y) {}
-  virtual void LbDown(int32_t x, int32_t y) {}
-  virtual void LbUp(int32_t x, int32_t y) {}
-  virtual void RbDown(int32_t x, int32_t y) {}
-  virtual void RbUp(int32_t x, int32_t y) {}
-  virtual void MbDown(int32_t x, int32_t y) {}
-  virtual void MbUp(int32_t x, int32_t y) {}
+  virtual void OnMouseMove(int32_t dx, int32_t dy) {}
+  virtual void OnMouseMove(int32_t x, int32_t y, int32_t dx, int32_t dy, bool left, bool right, bool middle) {}
+  virtual void OnMouseWheel(int32_t x, int32_t y) {}
+  virtual void OnMouseLbDown(int32_t x, int32_t y) {}
+  virtual void OnMouseLbUp(int32_t x, int32_t y) {}
+  virtual void OnMouseRbDown(int32_t x, int32_t y) {}
+  virtual void OnMouseRbUp(int32_t x, int32_t y) {}
+  virtual void OnMouseMbDown(int32_t x, int32_t y) {}
+  virtual void OnMouseMbUp(int32_t x, int32_t y) {}
 
   //Joystic
-  virtual void Axis(int32_t which, int32_t axis, int32_t value) {}
-  virtual void BtDown(int32_t which, int32_t button) {}
-  virtual void BtUp(int32_t which, int32_t button) {}
-  virtual void Hat(int32_t which, int32_t hat, int32_t value) {}
-  virtual void Ball(int32_t which, int32_t ball, int32_t xrel, int32_t yrel) {}
+  virtual void OnJoysticAxis(int32_t which, int32_t axis, int32_t value) {}
+  virtual void OnJoysticBtDown(int32_t which, int32_t button) {}
+  virtual void OnJoysticBtUp(int32_t which, int32_t button) {}
+  virtual void OnJoysticHat(int32_t which, int32_t hat, int32_t value) {}
+  virtual void OnJoysticBall(int32_t which, int32_t ball, int32_t xrel, int32_t yrel) {}
 };
 //----------------------------------------------------------------------------------------------------------------------
 class WindowObserver {
@@ -154,22 +154,22 @@ class InputSequencer {
       switch (event.type) {
         case SDL_KEYUP: {
           for (auto it : io_listeners)
-            it->KeyUp(event.key.keysym.sym);
+            it->OnKeyUp(event.key.keysym.sym);
           break;
         }
         case SDL_KEYDOWN: {
           for (auto it : io_listeners)
-            it->KeyDown(event.key.keysym.sym);
+            it->OnKeyDown(event.key.keysym.sym);
           break;
         }
         case SDL_MOUSEMOTION: {
           for (auto it : io_listeners) {
-            it->Move(event.motion.x, event.motion.y,
-                     event.motion.xrel, event.motion.yrel,
-                     (event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0,
-                     (event.motion.state & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0,
-                     (event.motion.state & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
-            it->Move(event.motion.xrel, event.motion.yrel);
+            it->OnMouseMove(event.motion.x, event.motion.y,
+                            event.motion.xrel, event.motion.yrel,
+                            (event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0,
+                            (event.motion.state & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0,
+                            (event.motion.state & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
+            it->OnMouseMove(event.motion.xrel, event.motion.yrel);
           }
           break;
         }
@@ -177,17 +177,17 @@ class InputSequencer {
           switch (event.button.button) {
             case SDL_BUTTON_LEFT: {
               for (auto it : io_listeners)
-                it->LbDown(event.button.x, event.button.y);
+                it->OnMouseLbDown(event.button.x, event.button.y);
               break;
             }
             case SDL_BUTTON_RIGHT: {
               for (auto it : io_listeners)
-                it->RbDown(event.button.x, event.button.y);
+                it->OnMouseRbDown(event.button.x, event.button.y);
               break;
             }
             case SDL_BUTTON_MIDDLE: {
               for (auto it : io_listeners)
-                it->MbDown(event.button.x, event.button.y);
+                it->OnMouseMbDown(event.button.x, event.button.y);
               break;
             }
           }
@@ -197,17 +197,17 @@ class InputSequencer {
           switch (event.button.button) {
             case SDL_BUTTON_LEFT: {
               for (auto it : io_listeners)
-                it->LbUp(event.button.x, event.button.y);
+                it->OnMouseLbUp(event.button.x, event.button.y);
               break;
             }
             case SDL_BUTTON_RIGHT: {
               for (auto it : io_listeners)
-                it->RbUp(event.button.x, event.button.y);
+                it->OnMouseRbUp(event.button.x, event.button.y);
               break;
             }
             case SDL_BUTTON_MIDDLE: {
               for (auto it : io_listeners)
-                it->MbUp(event.button.x, event.button.y);
+                it->OnMouseMbUp(event.button.x, event.button.y);
               break;
             }
           }
@@ -216,34 +216,34 @@ class InputSequencer {
 
         case SDL_MOUSEWHEEL: {
           for (auto it : io_listeners)
-            it->Wheel(event.wheel.x, event.wheel.y);
+            it->OnMouseWheel(event.wheel.x, event.wheel.y);
           break;
         }
 
         case SDL_JOYAXISMOTION: {
           for (auto it : io_listeners)
-            it->Axis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
+            it->OnJoysticAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
           break;
         }
         case SDL_JOYBALLMOTION: {
           for (auto it : io_listeners)
-            it->Ball(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
+            it->OnJoysticBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
           break;
         }
         case SDL_JOYHATMOTION: {
           for (auto it : io_listeners)
-            it->Hat(event.jhat.which, event.jhat.hat, event.jhat.value);
+            it->OnJoysticHat(event.jhat.which, event.jhat.hat, event.jhat.value);
           break;
         }
         case SDL_JOYBUTTONDOWN: {
           for (auto it : io_listeners)
-            it->BtDown(event.jbutton.which, event.jbutton.button);
+            it->OnJoysticBtDown(event.jbutton.which, event.jbutton.button);
           break;
         }
         case SDL_JOYBUTTONUP: {
           for (auto it : io_listeners) {
             if (it)
-              it->BtUp(event.jbutton.which, event.jbutton.button);
+              it->OnJoysticBtUp(event.jbutton.which, event.jbutton.button);
           }
           break;
         }

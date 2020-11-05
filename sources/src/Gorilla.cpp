@@ -2381,7 +2381,7 @@ void OgreConsole::shutdown() {
 
 }
 
-void OgreConsole::KeyDown(SDL_Keycode arg) {
+void OgreConsole::OnKeyDown(SDL_Keycode arg) {
   if (arg == SDLK_BACKQUOTE)
     setVisible(!isVisible());
 

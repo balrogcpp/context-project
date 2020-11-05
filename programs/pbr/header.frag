@@ -24,7 +24,8 @@
 #define HEADER_FRAG
 
 #ifndef GL_ES
-//#define USE_TEX_LOD
+//GLSL
+#define USE_TEX_LOD
 #if VERSION != 120
 #define varying in
 #define texture1D texture
@@ -43,7 +44,9 @@ out vec4 gl_FragColor;
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
 #endif
+//GLSLES
 #else
+#define USE_TEX_LOD
 #extension GL_OES_standard_derivatives : enable
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
