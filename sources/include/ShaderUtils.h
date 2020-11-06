@@ -125,8 +125,7 @@ inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
   const int SHADOW_TEXTURE_COUNT = 9;
   const int MAX_LIGHT_COUNT = 10;
 
-  if (!material->getReceiveShadows() || !material->getTechnique(0)->getPass(0)->hasVertexProgram()
-      || !material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
+  if (!material->getReceiveShadows() || !material->getTechnique(0)->getPass(0)->hasVertexProgram() || !material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
     return;
   }
 

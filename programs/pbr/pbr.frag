@@ -45,9 +45,6 @@
 #endif
 #include "header.frag"
 
-#define MAX_LIGHTS 10
-#define MAX_SHADOWS 9
-
 #ifdef SHADOWCASTER_ALPHA
 in vec2 vUV0;
 uniform sampler2D uAlbedoSampler;
@@ -116,6 +113,7 @@ uniform sampler2D shadowMap5;
 uniform sampler2D shadowMap6;
 uniform sampler2D shadowMap7;
 uniform sampler2D shadowMap8;
+
 uniform vec3 pssmSplitPoints;
 uniform float uShadowColour;
 uniform float uDepthOffset;

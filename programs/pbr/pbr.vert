@@ -32,9 +32,6 @@
 #endif
 #include "header.vert"
 
-#define MAX_LIGHTS 10
-#define MAX_SHADOWS 9
-
 #define HAS_UV
 
 #ifndef VERTEX_COMPRESSION
@@ -141,18 +138,16 @@ void main()
 
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
-  int k0= 0;
-  int k1= 1;
-  int k2= 2;
+  int k0= 0; int k1= 1; int k2= 2;
+
   for (int i = 0; i < int(uLightCount);  i++) {
     if (uLightCastsShadowsArray[i] > 0.0) {
       lightSpacePosArray[k0] = uTexWorldViewProjMatrixArray[k0] * new_position;
       lightSpacePosArray[k1] = uTexWorldViewProjMatrixArray[k1] * new_position;
       lightSpacePosArray[k2] = uTexWorldViewProjMatrixArray[k2] * new_position;
     }
-    k0 += 3;
-    k1 += 3;
-    k2 += 3;
+
+    k0 += 3; k1 += 3; k2 += 3;
   }
 #endif
 

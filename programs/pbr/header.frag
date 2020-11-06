@@ -44,8 +44,9 @@ out vec4 gl_FragColor;
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
 #endif
-//GLSLES
+
 #else
+//GLSLES
 #define USE_TEX_LOD
 #extension GL_OES_standard_derivatives : enable
 #ifdef USE_TEX_LOD

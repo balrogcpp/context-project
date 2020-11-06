@@ -62,14 +62,21 @@ class ShadowSettings : public NoCopy {
     else
       throw Exception("Unknown texture format, aborting;");
 
-    scene_->setShadowTextureSettings(tex_size, tex_count_, texture_type);
+    scene_->setShadowTextureSettings(tex_size_, tex_count_, texture_type);
 
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
 
-//    for (int i = 0; i < SPLIT_COUNT; i++)
-//      scene_->setShadowTextureConfig(i, 1024, 1024, texture_type);
+//      scene_->setShadowTextureConfig(0, tex_size_ , tex_size_, texture_type);
+//      scene_->setShadowTextureConfig(1, tex_size_ , tex_size_, texture_type);
+//      scene_->setShadowTextureConfig(2, tex_size_ , tex_size_, texture_type);
+//      scene_->setShadowTextureConfig(3, tex_size_ / 2, tex_size_ / 2, texture_type);
+//      scene_->setShadowTextureConfig(4, tex_size_ / 2 , tex_size_ / 2, texture_type);
+//      scene_->setShadowTextureConfig(5, tex_size_ / 2 , tex_size_ / 2, texture_type);
+//      scene_->setShadowTextureConfig(6, tex_size_ / 2, tex_size_ / 2, texture_type);
+//      scene_->setShadowTextureConfig(7, tex_size_ / 2 , tex_size_ / 2, texture_type);
+//      scene_->setShadowTextureConfig(8, tex_size_ / 2 , tex_size_ / 2, texture_type);
 
     scene_->setShadowTextureSelfShadow(true);
     scene_->setShadowCasterRenderBackFaces(true);

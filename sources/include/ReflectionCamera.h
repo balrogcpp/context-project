@@ -39,16 +39,24 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
 //----------------------------------------------------------------------------------------------------------------------
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
     rcamera_->enableReflection(plane_);
-    rcamera_->setLodBias(0.001);
-    if (scene_->hasLight("Sun"))
-      scene_->getLight("Sun")->setCastShadows(false);
+    rcamera_->setLodBias(0.1);
+//    scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+
+//    if (scene_->hasLight("Sun"))
+//      scene_->getLight("Sun")->setCastShadows(false);
+//    if (scene_->hasLight("Spot"))
+//      scene_->getLight("Spot")->setCastShadows(false);
   }
 //----------------------------------------------------------------------------------------------------------------------
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
     rcamera_->disableReflection();
     rcamera_->setLodBias(1.0);
-    if (scene_->hasLight("Sun"))
-      scene_->getLight("Sun")->setCastShadows(true);
+//    scene_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+
+//    if (scene_->hasLight("Sun"))
+//      scene_->getLight("Sun")->setCastShadows(true);
+//    if (scene_->hasLight("Spot"))
+//      scene_->getLight("Spot")->setCastShadows(true);
   }
 
  private:
