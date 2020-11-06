@@ -30,7 +30,7 @@
 #include <pugixml.hpp>
 #include <yaml-cpp/yaml.h>
 #include <lua.hpp>
-#include <sol.hpp>
+#include <sol/sol.hpp>
 #include <string>
 #include <iostream>
 #include <fstream>

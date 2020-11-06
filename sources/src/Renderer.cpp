@@ -49,9 +49,6 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
 
   Ogre::Root::getSingleton().setRenderSystem(gl3plus_render_system);
 #else
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL
-  Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLRenderSystem());
-#endif
 #endif //OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #endif //OGRE_BUILD_RENDERSYSTEM_GLES2
 #ifdef OGRE_BUILD_PLUGIN_OCTREE

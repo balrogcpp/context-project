@@ -26,6 +26,7 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif ()
 
+include(FindPkgConfig)
 include(CMakeDependentOption)
 include(ExternalProject)
 find_package(Git REQUIRED)
@@ -39,6 +40,7 @@ set(CONTEXT_EXTERNAL_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION} CACHE PATH "")
 set(CONTEXT_EXTERNAL_INCLUDE_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include CACHE PATH "")
 set(CONTEXT_EXTERNAL_LIB_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib CACHE PATH "")
 set(CONTEXT_EXTERNAL_BIN_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin CACHE PATH "")
+set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 set(EXTERNAL_BUILD_TYPE ${CMAKE_BUILD_TYPE})
 set(EXTERNAL_GIT_SHALLOW true)
 set(EXTERNAL_GIT_PROGRESS false)
@@ -439,7 +441,7 @@ externalproject_add(target-assimp
                     -G "${CMAKE_GENERATOR}"
                     )
 
-cmake_dependent_option(CONTEXT_OGRE_BUILD_GLES2 "CONTEXT_OGRE_BUILD_GLES2" true "NOT MINGW; NOT APPLE; NOT RELEASE" false)
+cmake_dependent_option(CONTEXT_OGRE_BUILD_GLES2 "CONTEXT_OGRE_BUILD_GLES2" true "UNIX; NOT MINGW; NOT APPLE; NOT WIN32" false)
 cmake_dependent_option(CONTEXT_OGRE_BUILD_GL3PLUS "CONTEXT_OGRE_BUILD_GL3PLUS" true "NOT ANDROID" false)
 option(CONTEXT_OGRE_BUILD_GL "CONTEXT_OGRE_BUILD_GL" false)
 option(CONTEXT_OGRE_BUILD_OCTREE "CONTEXT_OGRE_BUILD_OCTREE" true)
@@ -471,6 +473,9 @@ externalproject_add(target-ogre1
                     GIT_TAG c87ffeb4d7feeee2a1e028c1d50a7f3fc75017cd
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
+                        ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre1/RenderSystems/GLSupport/include/GLSL
+                        ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -514,30 +519,6 @@ externalproject_add(target-ogre1
                     -DOGRE_INSTALL_SAMPLES_SOURCE=false
                     -DOGRE_INSTALL_SAMPLES=false
                     -DOGRE_BUILD_TOOLS=false
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
-                    )
-
-externalproject_add(target-procedural
-                    EXCLUDE_FROM_ALL true
-                    DEPENDS target-ogre1
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/OGRECave/ogre-procedural.git
-                    GIT_TAG b678da1dd9c7f643e4992e08f8ff46604d7aa209
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DOgreProcedural_BUILD_SAMPLES=false
-                    -DOgreProcedural_BUILD_DOCS=false
-                    -DOgreProcedural_STATIC=true
                     -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
                     -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
                     -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
@@ -640,107 +621,84 @@ if (CONTEXT_OGRE_BUILD_PROCEDURAL)
 endif ()
 add_custom_target(deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
 
-if (WIN32)
-    if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
-        set(SUFFIX_LIB_BULLET _Debug)
-    elseif (${CMAKE_BUILD_TYPE} STREQUAL RelWithDebInfo)
-        set(SUFFIX_LIB_BULLET _RelWithDebugInfo)
-    endif ()
-endif ()
-
-set(BULLET_LIBRARIES
-    BulletDynamics${SUFFIX_LIB_BULLET}
-    BulletCollision${SUFFIX_LIB_BULLET}
-    LinearMath${SUFFIX_LIB_BULLET}
-    )
-
-if (WIN32)
-    if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
-        set(SUFFIX_LIB_SDL d)
-    endif ()
-endif ()
-
-set(SDL_LIBRARIES SDL2${SUFFIX_LIB_SDL})
-
-set(OGG_LIBRARIES ogg)
-set(LUA_LIBRARIES lua)
-set(VORBISFILE_LIBRARIES vorbisfile vorbis vorbisenc)
-
-if (WIN32)
-    set(OPENAL_LIBRARY OpenAL32)
-elseif (UNIX)
-    set(OPENAL_LIBRARY openal)
-endif ()
-
-set(SUFFIX_LIB_OGRE Static)
-if (WIN32)
-    if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
-        string(APPEND SUFFIX_LIB_OGRE _d)
-    endif ()
-endif ()
+########################################################################################################################
+#OGRE BLOCK
+########################################################################################################################
+find_package(OGRE QUIET)
 
 if (CONTEXT_OGRE_BUILD_STBI)
-    list(APPEND OGRE_PLUGINS Codec_STBI${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_PLUGINS Codec_STBIStatic)
 endif ()
 if (CONTEXT_OGRE_BUILD_FREEIMAGE)
-    list(APPEND OGRE_PLUGINS Codec_FreeImage${SUFFIX_LIB_OGRE})
-    list(APPEND OGRE_PLUGINS freeimage)
+    list(APPEND OGRE_STATIC_PLUGINS Codec_FreeImageStatic)
+    list(APPEND OGRE_STATIC_PLUGINS freeimage)
 endif ()
 if (CONTEXT_OGRE_BUILD_GL3PLUS)
-    list(APPEND OGRE_PLUGINS RenderSystem_GL3Plus${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_PLUGINS RenderSystem_GL3PlusStatic)
 endif ()
 if (CONTEXT_OGRE_BUILD_GL)
-    list(APPEND OGRE_PLUGINS RenderSystem_GL${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_PLUGINS RenderSystem_GLStatic)
 endif ()
 if (CONTEXT_OGRE_BUILD_GLES2)
-    list(APPEND OGRE_PLUGINS RenderSystem_GLES2${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_PLUGINS RenderSystem_GLES2Static)
 endif ()
 if (CONTEXT_OGRE_BUILD_OCTREE)
-    list(APPEND OGRE_PLUGINS Plugin_OctreeSceneManager${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_PLUGINS Plugin_OctreeSceneManagerStatic)
 endif ()
 if (CONTEXT_OGRE_BUILD_PFX)
-    list(APPEND OGRE_PLUGINS Plugin_ParticleFX${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_PLUGINS Plugin_ParticleFXStatic)
 endif ()
+
 if (CONTEXT_OGRE_BUILD_RTSS)
-    list(APPEND OGRE_LIBRARIES OgreRTShaderSystem${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_LIBRARIES OgreRTShaderSystemStatic)
 endif ()
 if (CONTEXT_OGRE_BUILD_HLMS)
-    list(APPEND OGRE_LIBRARIES OgreHLMS${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_LIBRARIES OgreHLMSStatic)
 endif ()
 if (CONTEXT_OGRE_BUILD_TERRAIN)
-    list(APPEND OGRE_LIBRARIES OgreTerrain${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_LIBRARIES OgreTerrainStatic)
 endif ()
 if (CONTEXT_OGRE_BUILD_PAGING)
-    list(APPEND OGRE_LIBRARIES OgrePaging${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_LIBRARIES OgrePagingStatic)
 endif ()
 if (CONTEXT_OGRE_BUILD_MESHLODGENERATOR)
-    list(APPEND OGRE_LIBRARIES OgreMeshLodGenerator${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_LIBRARIES OgreMeshLodGeneratorStatic)
 endif ()
 if (CONTEXT_OGRE_BUILD_OVERLAY)
-    list(APPEND OGRE_LIBRARIES OgreOverlay${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_LIBRARIES OgreOverlayStatic)
 endif ()
 if (CONTEXT_OGRE_BUILD_VOLUME)
-    list(APPEND OGRE_LIBRARIES OgreVolume${SUFFIX_LIB_OGRE})
+    list(APPEND OGRE_STATIC_LIBRARIES OgreVolumeStatic)
 endif ()
 if (CONTEXT_OGRE_BUILD_PROCEDURAL)
-    list(APPEND OGRE_LIBRARIES OgreProcedural)
+    list(APPEND OGRE_STATIC_LIBRARIES OgreProcedural)
 endif ()
 if (CONTEXT_OGRE_BUILD_ASSIMP)
-    list(APPEND OGRE_LIBRARIES Codec_AssimpStatic)
-    list(APPEND OGRE_LIBRARIES assimp)
-    list(APPEND OGRE_LIBRARIES IrrXML)
+    list(APPEND OGRE_STATIC_LIBRARIES Codec_AssimpStatic)
+    list(APPEND OGRE_STATIC_LIBRARIES assimp)
+    list(APPEND OGRE_STATIC_LIBRARIES IrrXML)
 endif ()
-list(APPEND OGRE_LIBRARIES OgreGLSupport${SUFFIX_LIB_OGRE})
-list(APPEND OGRE_LIBRARIES OgreMain${SUFFIX_LIB_OGRE})
+list(APPEND OGRE_STATIC_LIBRARIES OgreGLSupportStatic)
+list(APPEND OGRE_STATIC_LIBRARIES OgreMainStatic)
 
-list(APPEND STATIC_LIBRARIES pugixml)
-list(APPEND STATIC_LIBRARIES yaml-cpp)
-list(APPEND STATIC_LIBRARIES "zzip")
-if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
-    list(APPEND STATIC_LIBRARIES "freetyped")
-else ()
-    list(APPEND STATIC_LIBRARIES "freetype")
-endif ()
+########################################################################################################################
+#Other dependencies block
+########################################################################################################################
+
+find_package(Bullet QUIET)
+find_package(SDL2 QUIET)
+find_package(OpenAL QUIET)
+find_package(Lua QUIET)
+pkg_check_modules(ogg ogg)
+pkg_check_modules(vorbis vorbis)
+find_package(pugixml QUIET)
+find_package(yaml-cpp QUIET)
+find_package(freetype QUIET)
+find_package(sol2 QUIET)
+
+########################################################################################################################
+#Hardcoded shit for static build
+########################################################################################################################
 
 if (MINGW)
     list(APPEND STATIC_LIBRARIES zlibstatic)
@@ -785,13 +743,22 @@ elseif (ANDROID)
 endif ()
 
 set(CONTEXT_STATIC_DEPENDENCY_LIBS
-    ${OGRE_PLUGINS}
-    ${OGRE_LIBRARIES}
-    ${VORBISFILE_LIBRARIES}
-    ${OGG_LIBRARIES}
-    ${OPENAL_LIBRARY}
-    ${SDL_LIBRARIES}
-    ${LUA_LIBRARIES}
-    ${BULLET_LIBRARIES}
-    ${STATIC_LIBRARIES}
-    CACHE INTERNAL "")
+    ${OGRE_STATIC_PLUGINS} ${OGRE_STATIC_LIBRARIES}
+    vorbisfile vorbis vorbisenc ogg openal SDL2 zzip pugixml lua
+    ${BULLET_LIBRARIES} ${YAML_CPP_LIBRARIES} ${STATIC_LIBRARIES}
+    CACHE INTERNAL ""
+    )
+
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR})
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/btogre/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/oggsound/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/pgeometry/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${SOL2_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${SDL2_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${BULLET_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus)
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2)
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES)
+set(CONTEXT_DEPENDENCY_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIRS} CACHE INTERNAL "")

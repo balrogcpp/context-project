@@ -74,9 +74,6 @@
 #undef OGRE_BUILD_RENDERSYSTEM_GLES2
 #include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
 #endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL
-#include <RenderSystems/GL/OgreGLRenderSystem.h>
-#endif
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
 #include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 #endif
