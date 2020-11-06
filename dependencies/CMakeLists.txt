@@ -686,22 +686,26 @@ list(APPEND OGRE_STATIC_LIBRARIES OgreMainStatic)
 ########################################################################################################################
 
 find_package(Bullet QUIET)
-find_package(SDL2 QUIET)
+pkg_check_modules(SDL2 QUIET sdl2)
 find_package(OpenAL QUIET)
 find_package(Lua QUIET)
-pkg_check_modules(ogg ogg)
-pkg_check_modules(vorbis vorbis)
-find_package(pugixml QUIET)
+pkg_check_modules(OGG QUIET ogg)
+pkg_check_modules(VORBIS QUIET vorbis)
+pkg_check_modules(VORBISSENC QUIET vorbisenc)
+pkg_check_modules(VORBISFILE QUIET vorbisfile)
+pkg_check_modules(PUGIXML QUIET pugixml)
 find_package(yaml-cpp QUIET)
 find_package(freetype QUIET)
 find_package(sol2 QUIET)
+find_package(ZLIB QUIET)
+find_package(Lua51 QUIET)
+find_package(ZZip QUIET)
 
 ########################################################################################################################
 #Hardcoded shit for static build
 ########################################################################################################################
 
 if (MINGW)
-    list(APPEND STATIC_LIBRARIES zlibstatic)
     list(APPEND STATIC_LIBRARIES opengl32)
     list(APPEND STATIC_LIBRARIES imagehlp)
     list(APPEND STATIC_LIBRARIES dinput8)
@@ -720,7 +724,6 @@ if (MINGW)
     list(APPEND STATIC_LIBRARIES hid)
     list(APPEND STATIC_LIBRARIES jemalloc)
 elseif (UNIX AND NOT ANDROID)
-    list(APPEND STATIC_LIBRARIES z)
     list(APPEND STATIC_LIBRARIES OpenGL)
     list(APPEND STATIC_LIBRARIES GLX)
     list(APPEND STATIC_LIBRARIES X11)
@@ -728,7 +731,6 @@ elseif (UNIX AND NOT ANDROID)
     list(APPEND STATIC_LIBRARIES dl)
     list(APPEND STATIC_LIBRARIES jemalloc)
 elseif (ANDROID)
-    list(APPEND STATIC_LIBRARIES z.a)
     list(APPEND STATIC_LIBRARIES log)
     list(APPEND STATIC_LIBRARIES android)
     list(APPEND STATIC_LIBRARIES EGL)
@@ -744,8 +746,9 @@ endif ()
 
 set(CONTEXT_STATIC_DEPENDENCY_LIBS
     ${OGRE_STATIC_PLUGINS} ${OGRE_STATIC_LIBRARIES}
-    vorbisfile vorbis vorbisenc ogg openal SDL2 zzip pugixml lua
-    ${BULLET_LIBRARIES} ${YAML_CPP_LIBRARIES} ${STATIC_LIBRARIES}
+    ${VORBISFILE_LIBRARIES} ${VORBIS_LIBRARIES} ${VORBISENC_LIBRARIES} ${ZZip_LIBRARIES}
+    ${PUGIXML_LIBRARIES} ${OGG_LIBRARIES} ${SDL2_LIBRARIES} ${LUA_LIBRARIES}
+    ${OPENAL_LIBRARY} ${BULLET_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ZLIB_LIBRARIES} ${STATIC_LIBRARIES}
     CACHE INTERNAL ""
     )
 
