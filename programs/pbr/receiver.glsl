@@ -29,6 +29,7 @@ float InterleavedGradientNoise(vec2 position_screen)
   vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
   return fract(magic.z * fract(dot(position_screen, magic.xy)));
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
 {
@@ -41,6 +42,7 @@ vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
 
   return vec2(r * cosine, r * sine);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 float AvgBlockersDepthToPenumbra(float z_shadowMapView, float avgBlockersDepth)
 {
@@ -55,6 +57,7 @@ float AvgBlockersDepthToPenumbra(float lightSize, float z_shadowMapView, float a
   penumbra *= penumbra;
   return clamp(penumbra, 0.0, 1.0);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float z_shadowMapView, int samplesCount)
 {
@@ -86,6 +89,7 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
     return 0.0;
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 float calcDepthShadow(sampler2D shadowMap, vec4 uv, float offset, float filter_size, int iterations)
 {

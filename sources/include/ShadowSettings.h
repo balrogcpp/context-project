@@ -65,7 +65,7 @@ class ShadowSettings : public NoCopy {
     scene_->setShadowTextureSettings(tex_size_, tex_count_, texture_type);
 
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
-    scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 3);
+    scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
 
 //      scene_->setShadowTextureConfig(0, tex_size_ , tex_size_, texture_type);

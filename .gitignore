@@ -3,6 +3,7 @@
 /cmake-build-release/
 /cmake-build-relwithdebinfo/
 /cmake-build-minsizerel/
+/build-android/
 /install/
 /build/
 /Release/

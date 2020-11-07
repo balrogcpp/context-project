@@ -368,9 +368,6 @@ endif ()
 add_subdirectory(${CONTEXT_ROOT_DIR}/sources ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME})
 add_subdirectory(${CONTEXT_ROOT_DIR}/demo ${CMAKE_CURRENT_BINARY_DIR}/demo)
 
-if (ANDROID)
-    add_dependencies(lib-static deps)
-endif ()
 add_dependencies(demo lib-static)
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     add_dependencies(demo zip-deps)
@@ -395,7 +392,7 @@ add_custom_target(zip-deps
                   VERBATIM
                   )
 
-install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
+install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${CMAKE_SOURCE_DIR}/deploy/start.sh ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
         CONFIGURATIONS Release
         PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
         DESTINATION .

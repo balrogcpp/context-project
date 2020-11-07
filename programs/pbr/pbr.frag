@@ -415,15 +415,42 @@ void main()
         if (uLightCastsShadowsArray[i] > 0.0) {
             if (shadow_counter == 0) {
                 colour *= CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], shadowMap0, shadowMap1, shadowMap2, spot, vDepth, uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+                shadow_counter += (spot <= 0.0) ? 2 : 0;
             }
-            else if (shadow_counter == 1) {
-                colour *= CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[3], lightSpacePosArray[4], lightSpacePosArray[5], shadowMap3, shadowMap4, shadowMap5, spot, vDepth, uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
-            }
-            else if (shadow_counter == 2) {
-                colour *= CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[6], lightSpacePosArray[7], lightSpacePosArray[8], shadowMap6, shadowMap7, shadowMap8, spot, vDepth, uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
-            }
+            #if MAX_SHADOWS > 1
+            else if (shadow_counter == 1)
+                colour *= calcDepthShadow(shadowMap1, lightSpacePosArray[1], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            #endif
+            #if MAX_SHADOWS > 2
+            else if (shadow_counter == 2)
+                colour *= calcDepthShadow(shadowMap2, lightSpacePosArray[2], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            #endif
+            #if MAX_SHADOWS > 3
+            else if (shadow_counter == 3)
+                colour *= calcDepthShadow(shadowMap3, lightSpacePosArray[3], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            #endif
+            #if MAX_SHADOWS > 4
+            else if (shadow_counter == 4)
+                colour *= calcDepthShadow(shadowMap4, lightSpacePosArray[4], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            #endif
+            #if MAX_SHADOWS > 5
+            else if (shadow_counter == 5)
+                colour *= calcDepthShadow(shadowMap5, lightSpacePosArray[5], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            #endif
+            #if MAX_SHADOWS > 6
+            else if (shadow_counter == 6)
+                colour *= calcDepthShadow(shadowMap6, lightSpacePosArray[6], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            #endif
+            #if MAX_SHADOWS > 7
+            else if (shadow_counter == 7)
+                colour *= calcDepthShadow(shadowMap7, lightSpacePosArray[7], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            #endif
+            #if MAX_SHADOWS > 8
+            else if (shadow_counter == 8)
+                colour *= calcDepthShadow(shadowMap8, lightSpacePosArray[8], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            #endif
 
-            shadow_counter = shadow_counter + 1;
+            shadow_counter++;
         }
 #endif
 

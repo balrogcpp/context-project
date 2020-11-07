@@ -138,16 +138,8 @@ void main()
 
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
-  int k0= 0; int k1= 1; int k2= 2;
-
-  for (int i = 0; i < int(uLightCount);  i++) {
-    if (uLightCastsShadowsArray[i] > 0.0) {
-      lightSpacePosArray[k0] = uTexWorldViewProjMatrixArray[k0] * new_position;
-      lightSpacePosArray[k1] = uTexWorldViewProjMatrixArray[k1] * new_position;
-      lightSpacePosArray[k2] = uTexWorldViewProjMatrixArray[k2] * new_position;
-    }
-
-    k0 += 3; k1 += 3; k2 += 3;
+  for (int i = 0; i < int(uLightCount - 1) + 3;  i++) {
+    lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * new_position;
   }
 #endif
 
@@ -156,6 +148,7 @@ void main()
                               0.0, 0.5, 0.0, 0.0,
                               0.0, 0.0, 0.5, 0.0,
                               0.5, 0.5, 0.5, 1.0);
+
   projectionCoord = scalemat * gl_Position;
 #endif
 

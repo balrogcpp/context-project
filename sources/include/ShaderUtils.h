@@ -122,7 +122,7 @@ inline void UpdatePbrParams(const Ogre::MaterialPtr &material) {
 //----------------------------------------------------------------------------------------------------------------------
 inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
   const int PSSM_SPLIT_COUNT = 3;
-  const int SHADOW_TEXTURE_COUNT = 9;
+  const int MAX_SHADOWS = 5;
   const int MAX_LIGHT_COUNT = 10;
 
   if (!material->getReceiveShadows() || !material->getTechnique(0)->getPass(0)->hasVertexProgram() || !material->getTechnique(0)->getPass(0)->hasFragmentProgram()) {
@@ -141,7 +141,7 @@ inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
   }
 
   vert_params->setNamedAutoConstant( "uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
-  vert_params->setNamedAutoConstant("uTexWorldViewProjMatrixArray",Ogre::GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY, SHADOW_TEXTURE_COUNT);
+  vert_params->setNamedAutoConstant("uTexWorldViewProjMatrixArray",Ogre::GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY, MAX_SHADOWS);
   vert_params->setNamedAutoConstant("uLightCastsShadowsArray",Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY, MAX_LIGHT_COUNT);
 
   auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
@@ -168,7 +168,7 @@ inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
 
   int texture_count = pass->getNumTextureUnitStates();
 
-  for (int i = 0; i < SHADOW_TEXTURE_COUNT; i++) {
+  for (int i = 0; i < MAX_SHADOWS; i++) {
     if (pass->getTextureUnitState("shadowMap" + std::to_string(i)))
       continue;
 
