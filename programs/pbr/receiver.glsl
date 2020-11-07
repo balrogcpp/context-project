@@ -91,7 +91,7 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float calcDepthShadow(sampler2D shadowMap, vec4 uv, float offset, float filter_size, int iterations)
+float CalcDepthShadow(sampler2D shadowMap, vec4 uv, float offset, float filter_size, int iterations)
 {
   uv.xyz /= uv.w;
 
@@ -113,25 +113,20 @@ float calcDepthShadow(sampler2D shadowMap, vec4 uv, float offset, float filter_s
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float CalcPSSMDepthShadow(vec3 pssmSplitPoints, vec4 lightSpacePos0, vec4 lightSpacePos1, vec4 lightSpacePos2, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, float spot, float camDepth, float offset, float filter_size, int iterations)
+float CalcPSSMDepthShadow(vec3 pssmSplitPoints, vec4 lightSpacePos0, vec4 lightSpacePos1, vec4 lightSpacePos2, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, float camDepth, float offset, float filter_size, int iterations)
 {
-  if (spot > 0.0)
-  {
-    return calcDepthShadow(shadowMap0, lightSpacePos0, offset, filter_size, iterations);
-  }
-
   // calculate shadow
   if (camDepth <= pssmSplitPoints.x)
   {
-    return calcDepthShadow(shadowMap0, lightSpacePos0, offset, filter_size, iterations);
+    return CalcDepthShadow(shadowMap0, lightSpacePos0, offset, filter_size, iterations);
   }
   else if (camDepth <= pssmSplitPoints.y)
   {
-    return calcDepthShadow(shadowMap1, lightSpacePos1, offset, filter_size, iterations);
+    return CalcDepthShadow(shadowMap1, lightSpacePos1, offset, filter_size, iterations);
   }
   else if (camDepth <= pssmSplitPoints.z)
   {
-    return calcDepthShadow(shadowMap2, lightSpacePos2, offset, filter_size, iterations);
+    return CalcDepthShadow(shadowMap2, lightSpacePos2, offset, filter_size, iterations);
   }
 
   return 1.0;

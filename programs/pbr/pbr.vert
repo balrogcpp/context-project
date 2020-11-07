@@ -69,8 +69,8 @@ in vec4 tangent;
 #ifdef SHADOWRECEIVER
 uniform float uLightCount;
 uniform float uLightCastsShadowsArray[MAX_LIGHTS];
-uniform mat4 uTexWorldViewProjMatrixArray[MAX_SHADOWS];
-out vec4 lightSpacePosArray[MAX_SHADOWS];
+uniform mat4 uTexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
+out vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 out vec3 vPosition;
 #ifdef HAS_COLOURS
@@ -138,7 +138,7 @@ void main()
 
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
-  for (int i = 0; i < int(uLightCount - 1) + 3;  i++) {
+  for (int i = 0; i < int(uLightCount) + 2;  i++) {
     lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * new_position;
   }
 #endif

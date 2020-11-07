@@ -119,7 +119,7 @@ uniform float uShadowColour;
 uniform float uDepthOffset;
 uniform float uShadowFilterSize;
 uniform int uShadowFilterIterations;
-in vec4 lightSpacePosArray[MAX_SHADOWS];
+in vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 in vec3 vPosition;
 #ifdef HAS_COLOURS
@@ -413,41 +413,55 @@ void main()
 
 #ifdef SHADOWRECEIVER
         if (uLightCastsShadowsArray[i] > 0.0) {
-            if (shadow_counter == 0) {
-                colour *= CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], shadowMap0, shadowMap1, shadowMap2, spot, vDepth, uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
-                shadow_counter += (spot <= 0.0) ? 2 : 0;
+            #if MAX_SHADOW_TEXTURES > 2
+            if (spot <= 0.0) {
+                colour *= CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], shadowMap0, shadowMap1, shadowMap2, vDepth, uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+                shadow_counter += 2;
             }
-            #if MAX_SHADOWS > 1
+            #endif
+            #if MAX_SHADOW_TEXTURES > 0
+            else if (shadow_counter == 0)
+                colour *= CalcDepthShadow(shadowMap0, lightSpacePosArray[0], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            #endif
+            #if MAX_SHADOW_TEXTURES > 1
             else if (shadow_counter == 1)
-                colour *= calcDepthShadow(shadowMap1, lightSpacePosArray[1], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+                colour *= CalcDepthShadow(shadowMap1, lightSpacePosArray[1], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
             #endif
-            #if MAX_SHADOWS > 2
+            #if MAX_SHADOW_TEXTURES > 2
             else if (shadow_counter == 2)
-                colour *= calcDepthShadow(shadowMap2, lightSpacePosArray[2], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+                colour *= CalcDepthShadow(shadowMap2, lightSpacePosArray[2], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
             #endif
-            #if MAX_SHADOWS > 3
+            #if MAX_SHADOW_TEXTURES > 3
             else if (shadow_counter == 3)
-                colour *= calcDepthShadow(shadowMap3, lightSpacePosArray[3], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+                colour *= CalcDepthShadow(shadowMap3, lightSpacePosArray[3], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
             #endif
-            #if MAX_SHADOWS > 4
+            #if MAX_SHADOW_TEXTURES > 4
             else if (shadow_counter == 4)
-                colour *= calcDepthShadow(shadowMap4, lightSpacePosArray[4], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+                colour *= CalcDepthShadow(shadowMap4, lightSpacePosArray[4], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
             #endif
-            #if MAX_SHADOWS > 5
+            #if MAX_SHADOW_TEXTURES > 5
             else if (shadow_counter == 5)
-                colour *= calcDepthShadow(shadowMap5, lightSpacePosArray[5], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+                colour *= CalcDepthShadow(shadowMap5, lightSpacePosArray[5], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
             #endif
-            #if MAX_SHADOWS > 6
+            #if MAX_SHADOW_TEXTURES > 6
             else if (shadow_counter == 6)
-                colour *= calcDepthShadow(shadowMap6, lightSpacePosArray[6], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+                colour *= CalcDepthShadow(shadowMap6, lightSpacePosArray[6], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
             #endif
-            #if MAX_SHADOWS > 7
+            #if MAX_SHADOW_TEXTURES > 7
             else if (shadow_counter == 7)
-                colour *= calcDepthShadow(shadowMap7, lightSpacePosArray[7], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+                colour *= CalcDepthShadow(shadowMap7, lightSpacePosArray[7], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
             #endif
-            #if MAX_SHADOWS > 8
+            #if MAX_SHADOW_TEXTURES > 8
             else if (shadow_counter == 8)
-                colour *= calcDepthShadow(shadowMap8, lightSpacePosArray[8], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+                colour *= CalcDepthShadow(shadowMap8, lightSpacePosArray[8], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            #endif
+            #if MAX_SHADOW_TEXTURES > 9
+            else if (shadow_counter == 9)
+                colour *= CalcDepthShadow(shadowMap9, lightSpacePosArray[9], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+            #endif
+            #if MAX_SHADOW_TEXTURES > 10
+            else if (shadow_counter == 10)
+                colour *= CalcDepthShadow(shadowMap10, lightSpacePosArray[10], uDepthOffset, uShadowFilterSize, uShadowFilterIterations);
             #endif
 
             shadow_counter++;
