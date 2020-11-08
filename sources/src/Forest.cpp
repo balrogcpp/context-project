@@ -24,6 +24,7 @@
 #include "pcheader.h"
 #include "Forest.h"
 #include "ShaderUtils.h"
+#include "MeshUtils.h"
 #include "DotSceneLoaderB.h"
 #include "Physics.h"
 using namespace Forests;
@@ -181,6 +182,8 @@ void Forest::GenerateTreesStatic() {
   CreateGrassMesh(1.0, 1.0);
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   Ogre::Entity *rock = scene->createEntity("Rock", "rock.mesh");
+  UpdateMeshMaterial("rock.mesh");
+
   // Create a static geometry field, which we will populate with grass
   auto *rocks = scene->createStaticGeometry("Rocks");
   rocks->setRegionDimensions(Ogre::Vector3(50.0));
@@ -238,13 +241,6 @@ void Forest::GenerateGrassPaged() {
 void Forest::GenerateTreesPaged() {
   const float bound = 50;
 
-  UpdatePbrParams("3D-Diggers/fir01");
-  UpdatePbrShadowCaster("3D-Diggers/fir01");
-//  UpdatePbrShadowReceiver("3D-Diggers/fir01");
-  UpdatePbrParams("3D-Diggers/fir02");
-  UpdatePbrShadowCaster("3D-Diggers/fir02");
-//  UpdatePbrShadowReceiver("3D-Diggers/fir02");
-
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;
   auto *trees = new PagedGeometry(scene->getCamera("Default"), 50);
@@ -257,8 +253,8 @@ void Forest::GenerateTreesPaged() {
 
   trees->setPageLoader(treeLoader);
   Ogre::Entity *fir1EntPtr = scene->createEntity("fir1", "fir05_30.mesh");
+  UpdateMeshMaterial("fir05_30.mesh");
   auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
-
 
   for (int i = 0; i < 50; i++) {
     yaw = Ogre::Math::RangeRandom(0, 360);

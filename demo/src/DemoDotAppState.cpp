@@ -47,13 +47,13 @@ void DemoDotAppState::Callback(int a, int b) {
 }
 
 void DemoDotAppState::Create() {
-  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
+//  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
   Load("1.scene");
 
-//  controller_ = std::make_unique<SinbadCharacterController>(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"));
-//  input_->RegObserver(controller_.get());
-//  UpdateMeshMaterial("Sinbad.mesh");
-//  UpdateMeshMaterial("Sword.mesh");
+  controller_ = std::make_unique<SinbadCharacterController>(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"));
+  input_->RegObserver(controller_.get());
+  UpdateMeshMaterial("Sinbad.mesh");
+  UpdateMeshMaterial("Sword.mesh");
 
 //  sound_->CreateSound("ambient", "test.ogg", false);
 //  sound_->SetVolume("ambient", 0.5);

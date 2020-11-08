@@ -569,90 +569,17 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
   std::string name = GetAttrib(xml_node, "name");
   std::string id = GetAttrib(xml_node, "id");
   std::string meshFile = GetAttrib(xml_node, "meshFile");
-  std::string material = GetAttrib(xml_node, "material");
-  bool castShadows = GetAttribBool(xml_node, "castShadows", true);
+  std::string material_name = GetAttrib(xml_node, "material");
+  bool cast_shadows = GetAttribBool(xml_node, "castShadows", true);
+  bool active_ibl = GetAttribBool(xml_node, "activeIBL", false);
+  bool planar_reflection = GetAttribBool(xml_node, "planarReflection", false);
 
   /// Create the entity
-  Ogre::Entity *entity = nullptr;
+  Ogre::Entity *entity = scene_->createEntity(name, meshFile);
 
   try {
-    entity = scene_->createEntity(name, meshFile);
-    entity->setCastShadows(castShadows);
     parent->attachObject(entity);
-
-    if (entity->getMesh()->getNumLodLevels() < 2) {
-      Ogre::LodConfig lod_config(const_cast<Ogre::MeshPtr &>(entity->getMesh()));
-      lod_config.advanced = Ogre::LodConfig::Advanced();
-      lod_config.levels.clear();
-      lod_config.advanced.profile.clear();
-      Ogre::MeshLodGenerator::getSingleton().getAutoconfig(lod_config.mesh, lod_config);
-      lod_config.createGeneratedLodLevel(1, 0.50, Ogre::LodLevel::VRM_COLLAPSE_COST);
-      lod_config.createGeneratedLodLevel(2, 0.75, Ogre::LodLevel::VRM_COLLAPSE_COST);
-      lod_config.createGeneratedLodLevel(3, 0.99, Ogre::LodLevel::VRM_COLLAPSE_COST);
-      lod_config.advanced.outsideWeight = 1.0;
-      lod_config.advanced.useCompression = true;
-      lod_config.advanced.useVertexNormals = true;
-      lod_config.advanced.useBackgroundQueue = true;
-      Ogre::MeshLodGenerator().generateLodLevels(lod_config);
-      delete Ogre::MeshLodGenerator::getSingletonPtr();
-
-      if (!lod_config.advanced.useBackgroundQueue) {
-        scene_->destroyEntity(entity);
-        entity = scene_->createEntity(lod_config.mesh->getName(), lod_config.mesh);
-        parent->attachObject(entity);
-      }
-    }
-
-    std::string shadow_technique = "texture";
-
-    if (shadow_technique == "stencil") {
-      if (!entity->getMesh()->isEdgeListBuilt()) {
-        entity->getMesh()->buildEdgeList();
-      }
-
-      for (int j = 0; j < entity->getNumManualLodLevels(); j++) {
-        auto *lod = entity->getManualLodLevel(j);
-        EnsureHasTangents(lod->getMesh());
-        if (shadow_technique == "stencil") {
-          if (!lod->getMesh()->isEdgeListBuilt()) {
-            lod->getMesh()->buildEdgeList();
-          }
-        }
-      }
-    }
-
-    EnsureHasTangents(entity->getMesh());
-    for (auto &submesh : entity->getMesh()->getSubMeshes()) {
-      Ogre::MaterialPtr material_ptr;
-
-      if (!material.empty()) {
-        entity->setMaterialName(material);
-        material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
-      } else if (submesh->getMaterial()) {
-        material_ptr = submesh->getMaterial();
-      }
-
-      if (material_ptr) {
-        UpdatePbrParams(material_ptr);
-
-        if (entity->getCastShadows())
-          UpdatePbrShadowCaster(material_ptr);
-
-        if (material_ptr->getReceiveShadows())
-          UpdatePbrShadowReceiver(material_ptr);
-
-        auto ibl_texture = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
-
-        if (ibl_texture) {
-          if (!ccamera_) {
-            auto *root = root_node_->createChildSceneNode(Ogre::Vector3{0, GetHeigh(0, 0) + 1, 0});
-            ccamera_ = std::make_unique<CubeMapCamera>(root, 256);
-          }
-
-          UpdatePbrIbl(material_ptr, false);
-        }
-      }
-    }
+    UpdateEntityMaterial(entity, cast_shadows, material_name, planar_reflection, active_ibl);
 
     /// Process userDataReference
     if (auto element = xml_node.child("userData")) {

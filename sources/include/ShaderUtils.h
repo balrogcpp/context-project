@@ -183,10 +183,10 @@ inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-inline void UpdatePbrIbl(const Ogre::MaterialPtr &material, bool realtime) {
+inline void UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active = false) {
   auto ibl_texture = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
 
-  if (realtime) {
+  if (active) {
     auto cubemap = Ogre::TextureManager::getSingleton().getByName("dyncubemap", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 
     if (ibl_texture)

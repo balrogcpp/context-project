@@ -87,6 +87,7 @@ uniform sampler2D uGlobalNormalSampler;
 #endif
 #ifdef HAS_NORMALMAP
 uniform sampler2D uNormalSampler;
+uniform float uNormalScale;
 #endif
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D uEmissiveSampler;
@@ -99,9 +100,11 @@ uniform sampler2D uRoughnessSampler;
 #endif
 #ifdef HAS_OCCLUSIONMAP
 uniform sampler2D uOcclusionSampler;
+uniform float uOcclusionScale;
 #endif
 #ifdef HAS_PARALLAXMAP
 uniform sampler2D uOffsetSampler;
+uniform float uOffsetScale;
 #endif
 #ifdef SHADOWRECEIVER
 uniform sampler2D shadowMap0;
@@ -202,7 +205,7 @@ vec3 GetNormal(vec2 uv)
 #endif
 
 #ifdef HAS_NORMALMAP
-    vec3 n = texture2D(uNormalSampler, uv, uLOD).xyz;
+    vec3 n = uNormalScale * texture2D(uNormalSampler, uv, uLOD).xyz;
     n = normalize(tbn * ((2.0 * n - 1.0)));
 #else //!HAS_NORMALMAP
     vec3 n = tbn[2].xyz;
@@ -296,9 +299,7 @@ vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
 //----------------------------------------------------------------------------------------------------------------------
 vec2 ParallaxMapping(vec2 uv, vec3 viewDir)
 {
-    const float scale = 0.01;
-    const float offset = 0.0;
-    float displacement =  texture2D(uOffsetSampler, uv, uLOD).r * scale + offset;
+    float displacement = uOffsetScale * texture2D(uOffsetSampler, uv, uLOD).r;
     return uv - viewDir.xy * displacement;
 }
 #endif
@@ -481,13 +482,11 @@ void main()
 
 // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
-    total_colour *= texture2D(uOcclusionSampler, tex_coord, uLOD).r;
+    total_colour *= (uOcclusionScale * texture2D(uOcclusionSampler, tex_coord, uLOD).r);
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord, uLOD).rgb + uSurfaceEmissiveColour);
-#else
-    total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour);
+    total_colour += (uSurfaceEmissiveColour * SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord, uLOD).rgb));
 #endif
 
 #ifdef HAS_REFLECTION
