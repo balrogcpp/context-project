@@ -209,7 +209,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
                              bool immediate = false);
   /** Gets a named sound.
   @remarks
-      Returns a named sound object if defined, NULL otherwise.
+      Returns a named sound object if defined, nullptr otherwise.
       @param name
           Sound name.
    */

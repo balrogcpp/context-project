@@ -29,9 +29,16 @@ using namespace xio;
 DemoDotAppState::DemoDotAppState() {}
 DemoDotAppState::~DemoDotAppState() {}
 
-void DemoDotAppState::KeyDown(SDL_Keycode sym) {
+void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
     SwitchNextState(std::make_unique<DemoDotAppState>());
+  } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F) {
+    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+
+    if (scene->hasLight("Point")) {
+      auto *light = scene->getLight("Point");
+      light->setVisible(!light->isVisible());
+    }
   }
 }
 
@@ -39,17 +46,25 @@ void DemoDotAppState::Clear() {
 }
 
 void DemoDotAppState::Loop(float time) {
+//  Ogre::Root::getSingleton().getSceneManager("Default")->_notifyLightsDirty();
 }
 
 void DemoDotAppState::Callback(int a, int b) {
-//  std::cout << "Bang! " << a << ' ' << b << '\n';
 }
 
 void DemoDotAppState::Create() {
+//  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
   Load("1.scene");
 
-  sound_->CreateSound("ambient", "test.ogg", false);
-  sound_->SetVolume("ambient", 0.5);
-  sound_->PlaySound("ambient");
+  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+  auto *root = scene->getRootSceneNode();
+
+  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
+  auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
+  root->createChildSceneNode(Ogre::Vector3(2, 7, 0))->attachObject(ps);
+
+//  sound_->CreateSound("ambient", "test.ogg", false);
+//  sound_->SetVolume("ambient", 0.5);
+//  sound_->PlaySound("ambient");
 }
 }

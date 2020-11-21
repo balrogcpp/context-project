@@ -30,7 +30,7 @@
 #include <pugixml.hpp>
 #include <yaml-cpp/yaml.h>
 #include <lua.hpp>
-#include <sol.hpp>
+#include <sol/sol.hpp>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -52,6 +52,7 @@
 #include <filesystem>
 #include <cstdlib>
 #include <limits>
+#include <cctype>
 #include <omp.h>
 extern "C" {
 #include <SDL2/SDL.h>

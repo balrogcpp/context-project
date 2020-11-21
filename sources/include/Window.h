@@ -44,7 +44,8 @@ class Window : public NoCopy {
 //----------------------------------------------------------------------------------------------------------------------
   virtual ~Window() {
     if (f_)
-      SDL_SetWindowFullscreen(window_, SDL_FALSE);
+    SDL_SetWindowFullscreen(window_, SDL_FALSE);
+
     SDL_DestroyWindow(window_);
   }
 
@@ -72,19 +73,15 @@ class Window : public NoCopy {
     screen_w_ = static_cast<int>(DM.w);
     screen_h_ = static_cast<int>(DM.h);
 
-    bool invalid = (screen_w_ * screen_h_) == 0;
-
-    if (invalid) {
+    if (w_ * h_ == 0.0) {
       w_ = screen_w_;
       h_ = screen_h_;
-      f_ = true;
+      f_ = false;
     }
-
-    bool factual_fullscreen = (w_ == screen_w_ && h_ == screen_h_);
 
     flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
 
-    if (factual_fullscreen)
+    if (w_ == screen_w_ && h_ == screen_h_)
       flags_ |= SDL_WINDOW_BORDERLESS;
 
     if (f_) {
@@ -152,7 +149,6 @@ class Window : public NoCopy {
     }
 
     if (window_ && f_) {
-      SDL_SetWindowSize(window_, screen_w_, screen_h_);
       SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
   }
@@ -190,7 +186,7 @@ class Window : public NoCopy {
     return static_cast<float>(w_) / h_;
   }
 
-  inline bool GetFullscreen() const noexcept {
+  inline bool IsFullscreen() const noexcept {
     return f_;
   }
 
@@ -220,13 +216,10 @@ class Window : public NoCopy {
 
   inline void Fullscreen(bool f) noexcept {
     f_ = f;
+
     if (f) {
-      w_ = screen_w_;
-      h_ = screen_h_;
-      SDL_SetWindowSize(window_, screen_w_, screen_h_);
       SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_FULLSCREEN_DESKTOP);
     } else {
-      SDL_SetWindowFullscreen(window_, flags_);
       SDL_SetWindowSize(window_, w_, h_);
     }
   }

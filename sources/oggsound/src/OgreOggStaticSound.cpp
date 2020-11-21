@@ -72,7 +72,7 @@ void OgreOggStaticSound::_openImpl(Ogre::DataStreamPtr &fileStream) {
   // Store file name
   mAudioName = mAudioStream->getName();
 
-  if (ov_open_callbacks(&mAudioStream, &mOggStream, NULL, 0, mOggCallbacks) < 0) {
+  if (ov_open_callbacks(&mAudioStream, &mOggStream, nullptr, 0, mOggCallbacks) < 0) {
     OGRE_EXCEPT(Ogre::Exception::ERR_FILE_NOT_FOUND, "Could not open Ogg stream.", "OgreOggStaticSound::_openImpl()");
     return;
   }

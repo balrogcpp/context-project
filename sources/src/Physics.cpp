@@ -180,20 +180,191 @@ void Physics::CreateTerrainHeightfieldShape(int size,
   world_->setForceUpdateAllAabbs(false);
 }
 //----------------------------------------------------------------------------------------------------------------------
+void Physics::ProcessData(Ogre::Entity *entity,
+                          Ogre::SceneNode *parent_node,
+                          const std::string &proxy_type,
+                          const std::string &physics_type,
+                          float mass,
+                          float mass_radius,
+                          float inertia_tensor,
+                          float velocity_min,
+                          float velocity_max,
+                          float friction) {
+  btRigidBody *entBody = nullptr;
+
+  if (physics_type == TYPE_STATIC) {
+    std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
+
+    if (entity->getNumManualLodLevels() > 0)
+      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(entity->getNumManualLodLevels() - 1));
+    else
+      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity, parent_node);
+
+    if (proxy_type == PROXY_CAPSULE) {
+      auto *entShape = converter->createCapsule();
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+    } else if (proxy_type == PROXY_BOX) {
+      auto *entShape = converter->createBox();
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+    } else if (proxy_type == PROXY_SPHERE) {
+      auto *entShape = converter->createSphere();
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+    } else if (proxy_type == PROXY_CYLINDER) {
+      auto *entShape = converter->createCylinder();
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+    } else if (proxy_type == PROXY_TRIMESH) {
+      auto *entShape = converter->createTrimesh();
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+    } else if (proxy_type == PROXY_CONVEX) {
+      auto *entShape = converter->createConvex();
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+    } else if (proxy_type.empty()) {
+      auto *entShape = converter->createConvex();
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+    } else {
+      auto *entShape = converter->createConvex();
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+    }
+  } else if (physics_type == TYPE_DYNAMIC) {
+    std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
+    btVector3 inertia;
+
+    if (entity->getNumManualLodLevels() > 0) {
+      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(
+          entity->getNumManualLodLevels() - 1));
+      auto *entShape = converter->createConvex();
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else {
+      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
+    }
+
+    if (proxy_type == PROXY_CAPSULE) {
+      auto *entShape = converter->createCapsule();
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else if (proxy_type == PROXY_BOX) {
+      auto *entShape = converter->createBox();
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else if (proxy_type == PROXY_SPHERE) {
+      auto *entShape = converter->createSphere();
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else if (proxy_type == PROXY_CYLINDER) {
+      auto *entShape = converter->createCylinder();
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else if (proxy_type == PROXY_TRIMESH) {
+      auto *entShape = converter->createTrimesh();
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else if (proxy_type == PROXY_CONVEX) {
+      auto *entShape = converter->createConvex();
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else if (proxy_type.empty()) {
+      auto *entShape = converter->createConvex();
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else {
+      auto *entShape = converter->createConvex();
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    }
+  } else if (physics_type == TYPE_GHOST) {
+    std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
+    btVector3 inertia;
+
+    if (entity->getNumManualLodLevels() > 0) {
+      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(
+          entity->getNumManualLodLevels() - 1));
+    } else {
+      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
+    }
+    if (proxy_type == PROXY_CAPSULE) {
+      auto *entShape = converter->createCapsule();
+
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else if (proxy_type == PROXY_BOX) {
+      auto *entShape = converter->createBox();
+
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else if (proxy_type == PROXY_SPHERE) {
+      auto *entShape = converter->createSphere();
+
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else if (proxy_type == PROXY_CYLINDER) {
+      auto *entShape = converter->createCylinder();
+
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else if (proxy_type == PROXY_TRIMESH) {
+      auto *entShape = converter->createTrimesh();
+
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else if (proxy_type == PROXY_CONVEX) {
+      auto *entShape = converter->createConvex();
+
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else if (proxy_type.empty()) {
+      auto *entShape = converter->createConvex();
+
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    } else {
+      auto *entShape = converter->createConvex();
+
+      entShape->calculateLocalInertia(mass, inertia);
+      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
+      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+      entBody->setAngularFactor(0);
+    }
+  }
+
+  if (entBody) {
+//    if (anisotropic_friction) {
+//      entBody->setAnisotropicFriction({friction_x, friction_y, friction_z});
+//    } else {
+//      entBody->setFriction(friction_x);
+//    }
+//    entBody->setUserIndex(0);
+    AddRigidBody(entBody);
+  }
+}
+//----------------------------------------------------------------------------------------------------------------------
 void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
                           Ogre::Entity *entity,
                           Ogre::SceneNode *parent_node) {
-  const std::string physics_type_static = "STATIC";
-  const std::string physics_type_dynamic = "dynamic";
-  const std::string physics_type_actor = "actor";
-  const std::string physics_type_ghost = "ghost";
-  const std::string physics_type_none = "none";
-  const std::string proxy_box = "box";
-  const std::string proxy_capsule = "capsule";
-  const std::string proxy_sphere = "sphere";
-  const std::string proxy_cylinder = "cylinder";
-  const std::string proxy_trimesh = "trimesh";
-  const std::string proxy_convex = "convex";
 
   std::string proxy_type;
   if (user_object_bindings.getUserAny("proxy").has_value())
@@ -219,36 +390,39 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
   float damping_rot = Ogre::any_cast<float>(user_object_bindings.getUserAny("damping_rot"));
   btRigidBody *entBody = nullptr;
 
-  if (physics_type == physics_type_static) {
+  if (physics_type == TYPE_STATIC) {
     std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
 
-    if (entity->getNumManualLodLevels() > 0)
-      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(
-          entity->getNumManualLodLevels() - 1));
-    else
+    if (proxy_type.find(".mesh") != std::string::npos) {
+      Ogre::MeshManager::getSingleton().load(proxy_type, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+      auto mesh = Ogre::MeshManager::getSingleton().getByName(proxy_type);
+      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity, mesh);
+      proxy_type = PROXY_TRIMESH;
+    } else {
       converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
+    }
 
-    if (proxy_type == proxy_capsule) {
+    if (proxy_type == PROXY_CAPSULE) {
       auto *entShape = converter->createCapsule();
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-    } else if (proxy_type == proxy_box) {
+    } else if (proxy_type == PROXY_BOX) {
       auto *entShape = converter->createBox();
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-    } else if (proxy_type == proxy_sphere) {
+    } else if (proxy_type == PROXY_SPHERE) {
       auto *entShape = converter->createSphere();
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-    } else if (proxy_type == proxy_cylinder) {
+    } else if (proxy_type == PROXY_CYLINDER) {
       auto *entShape = converter->createCylinder();
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-    } else if (proxy_type == proxy_trimesh) {
+    } else if (proxy_type == PROXY_TRIMESH) {
       auto *entShape = converter->createTrimesh();
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-    } else if (proxy_type == proxy_convex) {
+    } else if (proxy_type == PROXY_CONVEX) {
       auto *entShape = converter->createConvex();
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
@@ -263,47 +437,50 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
     }
 
     entBody->setAngularFactor(0);
-  } else if (physics_type == physics_type_dynamic) {
+  } else if (physics_type == TYPE_DYNAMIC) {
     std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
     btVector3 inertia;
 
-    if (entity->getNumManualLodLevels() > 0) {
-      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(
-          entity->getNumManualLodLevels() - 1));
-      auto *entShape = converter->createConvex();
-      entShape->calculateLocalInertia(mass, inertia);
-      auto *bodyState = new BtOgre::RigidBodyState(parent_node);
-      entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    if (proxy_type.find(".mesh") != std::string::npos) {
+      Ogre::MeshManager::getSingleton().load(proxy_type, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+      auto mesh = Ogre::MeshManager::getSingleton().getByName(proxy_type);
+      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity, mesh);
+      proxy_type = PROXY_TRIMESH;
     } else {
-      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
+      if (entity->getMesh()->getNumLodLevels() > 0) {
+        auto lod = entity->getMesh()->getLodLevel(entity->getMesh()->getNumLodLevels() - 1).manualMesh;
+        Ogre::MeshManager::getSingleton().load("Cube.mesh", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity, lod);
+      } else {
+        converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
+      }
     }
-
-    if (proxy_type == proxy_capsule) {
+    if (proxy_type == PROXY_CAPSULE) {
       auto *entShape = converter->createCapsule();
       entShape->calculateLocalInertia(mass, inertia);
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-    } else if (proxy_type == proxy_box) {
+    } else if (proxy_type == PROXY_BOX) {
       auto *entShape = converter->createBox();
       entShape->calculateLocalInertia(mass, inertia);
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-    } else if (proxy_type == proxy_sphere) {
+    } else if (proxy_type == PROXY_SPHERE) {
       auto *entShape = converter->createSphere();
       entShape->calculateLocalInertia(mass, inertia);
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-    } else if (proxy_type == proxy_cylinder) {
+    } else if (proxy_type == PROXY_CYLINDER) {
       auto *entShape = converter->createCylinder();
       entShape->calculateLocalInertia(mass, inertia);
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-    } else if (proxy_type == proxy_trimesh) {
+    } else if (proxy_type == PROXY_TRIMESH) {
       auto *entShape = converter->createTrimesh();
       entShape->calculateLocalInertia(mass, inertia);
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-    } else if (proxy_type == proxy_convex) {
+    } else if (proxy_type == PROXY_CONVEX) {
       auto *entShape = converter->createConvex();
       entShape->calculateLocalInertia(mass, inertia);
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
@@ -319,47 +496,46 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(mass, bodyState, entShape, inertia);
     }
-  } else if (physics_type == physics_type_ghost) {
+  } else if (physics_type == TYPE_GHOST) {
     std::unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
     btVector3 inertia;
 
     if (entity->getNumManualLodLevels() > 0) {
-      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(
-          entity->getNumManualLodLevels() - 1));
+      converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity->getManualLodLevel(entity->getNumManualLodLevels() - 1));
     } else {
       converter = std::make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
     }
-    if (proxy_type == proxy_capsule) {
+    if (proxy_type == PROXY_CAPSULE) {
       auto *entShape = converter->createCapsule();
 
       entShape->calculateLocalInertia(mass, inertia);
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-    } else if (proxy_type == proxy_box) {
+    } else if (proxy_type == PROXY_BOX) {
       auto *entShape = converter->createBox();
 
       entShape->calculateLocalInertia(mass, inertia);
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-    } else if (proxy_type == proxy_sphere) {
+    } else if (proxy_type == PROXY_SPHERE) {
       auto *entShape = converter->createSphere();
 
       entShape->calculateLocalInertia(mass, inertia);
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-    } else if (proxy_type == proxy_cylinder) {
+    } else if (proxy_type == PROXY_CYLINDER) {
       auto *entShape = converter->createCylinder();
 
       entShape->calculateLocalInertia(mass, inertia);
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-    } else if (proxy_type == proxy_trimesh) {
+    } else if (proxy_type == PROXY_TRIMESH) {
       auto *entShape = converter->createTrimesh();
 
       entShape->calculateLocalInertia(mass, inertia);
       auto *bodyState = new BtOgre::RigidBodyState(parent_node);
       entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-    } else if (proxy_type == proxy_convex) {
+    } else if (proxy_type == PROXY_CONVEX) {
       auto *entShape = converter->createConvex();
 
       entShape->calculateLocalInertia(mass, inertia);
@@ -388,9 +564,7 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
       entBody->setFriction(friction_x);
     }
 
-    static int counter = 10;
-    entBody->setUserIndex(counter);
-    counter++;
+//    entBody->setUserIndex(0);
     AddRigidBody(entBody);
   }
 }

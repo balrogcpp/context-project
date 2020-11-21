@@ -79,9 +79,9 @@ OgreOggSoundManager &OgreOggSoundManager::getSingleton() {
 OgreOggSoundManager::OgreOggSoundManager() :
     mNumSources(0),
     mOrigVolume(1.f),
-    mDevice(0),
-    mContext(0),
-    mListener(0)
+    mDevice(nullptr),
+    mContext(nullptr),
+    mListener(nullptr)
 #if HAVE_EFX
 ,mEAXSupport(false)
 ,mEFXSupport(false)
@@ -95,12 +95,12 @@ OgreOggSoundManager::OgreOggSoundManager() :
 ,mEAXVersion(0)
 #endif
     ,
-    mRecorder(0),
-    mDeviceStrings(0),
+    mRecorder(nullptr),
+    mDeviceStrings(nullptr),
     mMaxSources(100),
     mResourceGroupName(""),
     mGlobalPitch(1.f),
-    mSoundsToDestroy(0),
+    mSoundsToDestroy(nullptr),
     mFadeVolume(false),
     mFadeIn(false),
     mFadeTime(0.f),
@@ -112,43 +112,43 @@ OgreOggSoundManager::OgreOggSoundManager() :
 {
 #if HAVE_EFX
   // Effect objects
-  alGenEffects = NULL;
-  alDeleteEffects = NULL;
-  alIsEffect = NULL;
-  alEffecti = NULL;
-  alEffectiv = NULL;
-  alEffectf = NULL;
-  alEffectfv = NULL;
-  alGetEffecti = NULL;
-  alGetEffectiv = NULL;
-  alGetEffectf = NULL;
-  alGetEffectfv = NULL;
+  alGenEffects = nullptr;
+  alDeleteEffects = nullptr;
+  alIsEffect = nullptr;
+  alEffecti = nullptr;
+  alEffectiv = nullptr;
+  alEffectf = nullptr;
+  alEffectfv = nullptr;
+  alGetEffecti = nullptr;
+  alGetEffectiv = nullptr;
+  alGetEffectf = nullptr;
+  alGetEffectfv = nullptr;
 
   //Filter objects
-  alGenFilters = NULL;
-  alDeleteFilters = NULL;
-  alIsFilter = NULL;
-  alFilteri = NULL;
-  alFilteriv = NULL;
-  alFilterf = NULL;
-  alFilterfv = NULL;
-  alGetFilteri = NULL;
-  alGetFilteriv = NULL;
-  alGetFilterf = NULL;
-  alGetFilterfv = NULL;
+  alGenFilters = nullptr;
+  alDeleteFilters = nullptr;
+  alIsFilter = nullptr;
+  alFilteri = nullptr;
+  alFilteriv = nullptr;
+  alFilterf = nullptr;
+  alFilterfv = nullptr;
+  alGetFilteri = nullptr;
+  alGetFilteriv = nullptr;
+  alGetFilterf = nullptr;
+  alGetFilterfv = nullptr;
 
   // Auxiliary slot object
-  alGenAuxiliaryEffectSlots = NULL;
-  alDeleteAuxiliaryEffectSlots = NULL;
-  alIsAuxiliaryEffectSlot = NULL;
-  alAuxiliaryEffectSloti = NULL;
-  alAuxiliaryEffectSlotiv = NULL;
-  alAuxiliaryEffectSlotf = NULL;
-  alAuxiliaryEffectSlotfv = NULL;
-  alGetAuxiliaryEffectSloti = NULL;
-  alGetAuxiliaryEffectSlotiv = NULL;
-  alGetAuxiliaryEffectSlotf = NULL;
-  alGetAuxiliaryEffectSlotfv = NULL;
+  alGenAuxiliaryEffectSlots = nullptr;
+  alDeleteAuxiliaryEffectSlots = nullptr;
+  alIsAuxiliaryEffectSlot = nullptr;
+  alAuxiliaryEffectSloti = nullptr;
+  alAuxiliaryEffectSlotiv = nullptr;
+  alAuxiliaryEffectSlotf = nullptr;
+  alAuxiliaryEffectSlotfv = nullptr;
+  alGetAuxiliaryEffectSloti = nullptr;
+  alGetAuxiliaryEffectSlotiv = nullptr;
+  alGetAuxiliaryEffectSlotf = nullptr;
+  alGetAuxiliaryEffectSlotfv = nullptr;
 
   mNumEffectSlots = 0;
   mNumSendsPerSource = 0;
@@ -204,26 +204,26 @@ OgreOggSoundManager::~OgreOggSoundManager() {
           }
       }
       delete mActionsList;
-      mActionsList=0;
+      mActionsList = nullptr;
   }
 #endif
   if (mSoundsToDestroy) {
     delete mSoundsToDestroy;
-    mSoundsToDestroy = 0;
+    mSoundsToDestroy = nullptr;
   }
 
   _releaseAll();
 
   if (mRecorder) {
     OGRE_DELETE_T(mRecorder, OgreOggSoundRecord, Ogre::MEMCATEGORY_GENERAL);
-    mRecorder = 0;
+    mRecorder = nullptr;
   }
 
-  alcMakeContextCurrent(0);
+  alcMakeContextCurrent(nullptr);
   alcDestroyContext(mContext);
-  mContext = 0;
+  mContext = nullptr;
   alcCloseDevice(mDevice);
-  mDevice = 0;
+  mDevice = nullptr;
 
   if (mListener) {
     Ogre::SceneManager *s = mListener->getSceneManager();
@@ -252,14 +252,14 @@ bool OgreOggSoundManager::init(const std::string &deviceName,
   int majorVersion;
   int minorVersion;
 #if OGRE_PLATFORM != OGRE_PLATFORM_WIN32
-  ALCdevice *device = alcOpenDevice(NULL);
+  ALCdevice *device = alcOpenDevice(nullptr);
 #endif
   // Version Info
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   ALenum error = 0;
-  alcGetError(NULL);
-  alcGetIntegerv(NULL, ALC_MINOR_VERSION, sizeof(minorVersion), &minorVersion);
-  if ((error = alcGetError(NULL)) != AL_NO_ERROR) {
+  alcGetError(nullptr);
+  alcGetIntegerv(nullptr, ALC_MINOR_VERSION, sizeof(minorVersion), &minorVersion);
+  if ((error = alcGetError(nullptr)) != AL_NO_ERROR) {
     switch (error) {
       case AL_INVALID_NAME: {
         LogManager::getSingleton().logMessage("Invalid Name when attempting: OpenAL Minor Version number",
@@ -290,9 +290,9 @@ bool OgreOggSoundManager::init(const std::string &deviceName,
     LogManager::getSingleton().logMessage("Unable to get OpenAL Minor Version number", Ogre::LML_CRITICAL);
     return false;
   }
-  alcGetError(NULL);
-  alcGetIntegerv(NULL, ALC_MAJOR_VERSION, sizeof(majorVersion), &majorVersion);
-  if ((error = alcGetError(NULL)) != AL_NO_ERROR) {
+  alcGetError(nullptr);
+  alcGetIntegerv(nullptr, ALC_MAJOR_VERSION, sizeof(majorVersion), &majorVersion);
+  if ((error = alcGetError(nullptr)) != AL_NO_ERROR) {
     switch (error) {
       case AL_INVALID_NAME: {
         LogManager::getSingleton().logMessage("Invalid Name when attempting: OpenAL Minor Version number",
@@ -365,7 +365,7 @@ bool OgreOggSoundManager::init(const std::string &deviceName,
 //  }
 
   // If the suggested device is in the list we use it, otherwise select the default device
-  mDevice = alcOpenDevice(deviceInList ? deviceName.c_str() : NULL);
+  mDevice = alcOpenDevice(deviceInList ? deviceName.c_str() : nullptr);
   if (!mDevice) {
     Ogre::LogManager::getSingletonPtr()->logMessage("OgreOggSoundManager::init() ERROR - Unable to open audio device",
                                                     Ogre::LML_CRITICAL);
@@ -473,17 +473,17 @@ bool OgreOggSoundManager::init(const std::string &deviceName,
 
 /*/////////////////////////////////////////////////////////////////*/
 const StringVector OgreOggSoundManager::getDeviceList() const {
-  const ALCchar *deviceList = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
+  const ALCchar *deviceList = alcGetString(nullptr, ALC_ALL_DEVICES_SPECIFIER);
 
   Ogre::StringVector deviceVector;
   /*
   ** The list returned by the call to alcGetString has the names of the
-  ** devices seperated by NULL characters and the list is terminated by
-  ** two NULL characters, so we can cast the list into a string and it
-  ** will automatically stop at the first NULL that it sees, then we
+  ** devices seperated by nullptr characters and the list is terminated by
+  ** two nullptr characters, so we can cast the list into a string and it
+  ** will automatically stop at the first nullptr that it sees, then we
   ** can move the pointer ahead by the lenght of that string + 1 and we
   ** will be at the begining of the next string.  Once we hit an empty
-  ** string we know that we've found the double NULL that terminates the
+  ** string we know that we've found the double nullptr that terminates the
   ** list and we can stop there.
   */
   while (*deviceList != 0) {
@@ -493,14 +493,14 @@ const StringVector OgreOggSoundManager::getDeviceList() const {
 
       if (device) {
         // Device seems to be valid
-        ALCcontext *context = alcCreateContext(device, NULL);
+        ALCcontext *context = alcCreateContext(device, nullptr);
         if (alcGetError(device)) throw std::string("Unable to create context");
         if (context) {
           // Context seems to be valid
           alcMakeContextCurrent(context);
           if (alcGetError(device)) throw std::string("Unable to make context current");
           deviceVector.push_back(alcGetString(device, ALC_DEVICE_SPECIFIER));
-          alcMakeContextCurrent(NULL);
+          alcMakeContextCurrent(nullptr);
           if (alcGetError(device)) throw std::string("Unable to clear current context");
           alcDestroyContext(context);
           if (alcGetError(device)) throw std::string("Unable to destroy current context");
@@ -2310,7 +2310,7 @@ void OgreOggSoundManager::_releaseSoundImpl(OgreOggISound *sound) {
   mSoundMap.erase(i);
 
   // Delete sound
-  delete sound;
+  OGRE_DELETE_T(sound, OgreOggISound, Ogre::MEMCATEGORY_GENERAL);
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggSoundManager::_destroySoundImpl(OgreOggISound *sound) {
@@ -2335,7 +2335,7 @@ void OgreOggSoundManager::_destroyListener() {
 #	endif
 #endif
 
-  delete mListener;
+  OGRE_DELETE_T(mListener, OgreOggListener, Ogre::MEMCATEGORY_GENERAL);
   mListener = nullptr;
 }
 /*/////////////////////////////////////////////////////////////////*/

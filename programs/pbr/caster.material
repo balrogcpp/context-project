@@ -20,22 +20,10 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-vertex_program PSSM/shadow_caster_vsGLSL glsl
+vertex_program PSSM/shadow_caster_alpha_vs glsl glsles
 {
 	source pbr.vert
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
-}
-
-vertex_program PSSM/shadow_caster_vsGLSLES glsles
-{
-	source pbr.vert
-	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
-}
-
-vertex_program PSSM/shadow_caster_vs unified
-{
-	delegate PSSM/shadow_caster_vsGLSL
-	delegate PSSM/shadow_caster_vsGLSLES
 
 	default_params
 	{
@@ -43,27 +31,48 @@ vertex_program PSSM/shadow_caster_vs unified
 	}
 }
 
-fragment_program PSSM/shadow_caster_fsGLSL glsl
+fragment_program PSSM/shadow_caster_alpha_fs glsl glsles
 {
 	source pbr.frag
 	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
-}
-
-fragment_program PSSM/shadow_caster_fsGLSLES glsles
-{
-	source pbr.frag
-	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
-}
-
-fragment_program PSSM/shadow_caster_fs unified
-{
-	delegate PSSM/shadow_caster_fsGLSL
-	delegate PSSM/shadow_caster_fsGLSLES
 
 	default_params
 	{
-	    param_named uBaseColorSampler int 0
+	    param_named uAlbedoSampler int 0
 	}
+}
+
+material PSSM/shadow_caster_alpha
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref PSSM/shadow_caster_alpha_vs {}
+
+			fragment_program_ref PSSM/shadow_caster_alpha_fs {}
+
+            texture_unit BaseColor {}
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PSSM/shadow_caster_vs glsl glsles
+{
+	source pbr.vert
+	preprocessor_defines SHADOWCASTER
+
+	default_params
+	{
+		param_named_auto uMVPMatrix worldviewproj_matrix
+	}
+}
+
+fragment_program PSSM/shadow_caster_fs glsl glsles
+{
+	source pbr.frag
+	preprocessor_defines SHADOWCASTER
 }
 
 material PSSM/shadow_caster
@@ -72,66 +81,9 @@ material PSSM/shadow_caster
 	{
 		pass
 		{
-            texture_unit BaseColor {}
-
 			vertex_program_ref PSSM/shadow_caster_vs {}
 
 			fragment_program_ref PSSM/shadow_caster_fs {}
-		}
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program PSSM/NoAlpha/shadow_caster_vsGLSL glsl
-{
-	source pbr.vert
-	preprocessor_defines SHADOWCASTER
-}
-
-vertex_program PSSM/NoAlpha/shadow_caster_vsGLSLES glsles
-{
-	source pbr.vert
-	preprocessor_defines SHADOWCASTER
-}
-
-vertex_program PSSM/NoAlpha/shadow_caster_vs unified
-{
-	delegate PSSM/NoAlpha/shadow_caster_vsGLSL
-	delegate PSSM/NoAlpha/shadow_caster_vsGLSLES
-
-	default_params
-	{
-		param_named_auto uMVPMatrix worldviewproj_matrix
-	}
-}
-
-fragment_program PSSM/NoAlpha/shadow_caster_fsGLSL glsl
-{
-	source pbr.frag
-	preprocessor_defines SHADOWCASTER
-}
-
-fragment_program PSSM/NoAlpha/shadow_caster_fsGLSLES glsles
-{
-	source pbr.frag
-	preprocessor_defines SHADOWCASTER
-}
-
-fragment_program PSSM/NoAlpha/shadow_caster_fs unified
-{
-	delegate PSSM/NoAlpha/shadow_caster_fsGLSL
-	delegate PSSM/NoAlpha/shadow_caster_fsGLSLES
-}
-
-material PSSM/NoAlpha/shadow_caster
-{
-	technique
-	{
-		pass
-		{
-			vertex_program_ref PSSM/NoAlpha/shadow_caster_vs {}
-
-			fragment_program_ref PSSM/NoAlpha/shadow_caster_fs {}
 		}
 	}
 }

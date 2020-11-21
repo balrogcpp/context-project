@@ -1,0 +1,51 @@
+From 473292dcf65ec73f82185debfdc28fe49450f826 Mon Sep 17 00:00:00 2001
+From: Andrey Vasiliev <foursilico@gmail.com>
+Date: Fri, 20 Nov 2020 22:54:55 +0200
+Subject: [PATCH] Patch
+
+---
+ OgreMain/src/OgreSceneManager.cpp | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
+
+diff --git a/OgreMain/src/OgreSceneManager.cpp b/OgreMain/src/OgreSceneManager.cpp
+index e731a37ed..b8d65d7f0 100644
+--- a/OgreMain/src/OgreSceneManager.cpp
++++ b/OgreMain/src/OgreSceneManager.cpp
+@@ -364,19 +364,21 @@ void SceneManager::_populateLightList(const Vector3& position, Real radius,
+         // Calc squared distance
+         lt->_calcTempSquareDist(position);
+ 
+-        if (lt->getType() == Light::LT_DIRECTIONAL)
+-        {
+-            // Always included
+-            destList.push_back(lt);
+-        }
+-        else
+-        {
+-            // only add in-range lights
+-            if (lt->isInLightRange(Sphere(position,radius)))
+-            {
+-                destList.push_back(lt);
+-            }
+-        }
++        destList.push_back(lt);
++
++//        if (lt->getType() == Light::LT_DIRECTIONAL)
++//        {
++//            // Always included
++//            destList.push_back(lt);
++//        }
++//        else
++//        {
++//            // only add in-range lights
++//            if (lt->isInLightRange(Sphere(position,radius)))
++//            {
++//                destList.push_back(lt);
++//            }
++//        }
+     }
+ 
+     // Sort (stable to guarantee ordering on directional lights)
+-- 
+2.25.1
+

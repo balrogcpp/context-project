@@ -398,11 +398,18 @@ StaticMeshToShapeConverter::StaticMeshToShapeConverter() :
 StaticMeshToShapeConverter::~StaticMeshToShapeConverter() {
 }
 //------------------------------------------------------------------------------------------------
-StaticMeshToShapeConverter::StaticMeshToShapeConverter(Entity *entity, const Matrix4 &transform) :
+StaticMeshToShapeConverter::StaticMeshToShapeConverter(Entity *entity, SceneNode *parent, const Matrix4 &transform) :
     VertexIndexToShape(transform),
     entity_(0),
     node_(0) {
-  addEntity(entity, transform);
+  addEntity(entity, transform, parent);
+}
+//------------------------------------------------------------------------------------------------
+StaticMeshToShapeConverter::StaticMeshToShapeConverter(Entity *entity, const MeshPtr &mesh, SceneNode *parent, const Matrix4 &transform) :
+    VertexIndexToShape(transform),
+    entity_(0),
+    node_(0) {
+  addEntity(entity, mesh, transform, parent);
 }
 //------------------------------------------------------------------------------------------------
 StaticMeshToShapeConverter::StaticMeshToShapeConverter(Renderable *rend, const Matrix4 &transform) :
@@ -417,14 +424,18 @@ StaticMeshToShapeConverter::StaticMeshToShapeConverter(Renderable *rend, const M
 
 }
 //------------------------------------------------------------------------------------------------
-void StaticMeshToShapeConverter::addEntity(Entity *entity, const Matrix4 &transform) {
+void StaticMeshToShapeConverter::addEntity(Entity *entity, const Matrix4 &transform, SceneNode *parent) {
   // Each entity added need to Reset size and radius
   // Next time getRadius and getSize are asked, they're computed.
-  bounds_ = Ogre::Vector3(-1, -1, -1);
+  bounds_ = Ogre::Vector3(-1.0);
   bound_radius_ = -1;
 
   entity_ = entity;
-  node_ = (SceneNode *) (entity_->getParentNode());
+  if (!parent)
+    node_ = (SceneNode *) (entity_->getParentNode());
+  else
+    node_ = parent;
+
   transform_ = transform;
   scale_ = node_ ? node_->getScale() : Ogre::Vector3(1, 1, 1);
 
@@ -433,6 +444,47 @@ void StaticMeshToShapeConverter::addEntity(Entity *entity, const Matrix4 &transf
   }
 
   addMesh(entity_->getMesh());
+//  for (unsigned int i = 0; i < entity_->getNumSubEntities(); ++i) {
+//    SubMesh *sub_mesh = entity_->getSubEntity(i)->getSubMesh();
+//
+//    if (!sub_mesh->useSharedVertices) {
+//      VertexIndexToShape::addIndexData(sub_mesh->indexData, vertex_count_);
+//      VertexIndexToShape::addStaticVertexData(sub_mesh->vertexData);
+//    } else {
+//      VertexIndexToShape::addIndexData(sub_mesh->indexData);
+//    }
+//
+//  }
+}
+//------------------------------------------------------------------------------------------------
+void StaticMeshToShapeConverter::addEntity(Entity *entity, const Ogre::MeshPtr &mesh, const Matrix4 &transform, SceneNode *parent) {
+  // Each entity added need to Reset size and radius
+  // Next time getRadius and getSize are asked, they're computed.
+  bounds_ = Ogre::Vector3(-1.0);
+  bound_radius_ = -1;
+
+  entity_ = entity;
+  if (!parent)
+    node_ = (SceneNode *) (entity_->getParentNode());
+  else
+    node_ = parent;
+
+  transform_ = transform;
+  scale_ = node_ ? node_->getScale() : Ogre::Vector3(1.0);
+
+  if (mesh) {
+    if (mesh->sharedVertexData) {
+      VertexIndexToShape::addStaticVertexData(mesh->sharedVertexData);
+    }
+
+    addMesh(mesh);
+  } else {
+    if (entity_->getMesh()->sharedVertexData) {
+      VertexIndexToShape::addStaticVertexData(entity_->getMesh()->sharedVertexData);
+    }
+
+    addMesh(entity_->getMesh());
+  }
 //  for (unsigned int i = 0; i < entity_->getNumSubEntities(); ++i) {
 //    SubMesh *sub_mesh = entity_->getSubEntity(i)->getSubMesh();
 //

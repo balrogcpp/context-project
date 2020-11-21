@@ -27,10 +27,11 @@ ARG CONTEXT_HOME=/mnt/build
 WORKDIR ${CONTEXT_HOME}
 
 ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
+ADD dependencies/patch ./dependencies/patch
 ADD CMakeLists.txt .
 ADD ./CMake ./CMake
 
-RUN apt-get update && apt-get install -y git gnutls-bin openssl cmake ninja-build libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
+RUN apt-get update && apt-get install -y git gnutls-bin openssl cmake ninja-build nsis libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
     && git config --global http.sslVerify false \
     && git config --global http.postBuffer 1048576000 \
     && mkdir -p build-windows build-linux build-android \

@@ -23,70 +23,35 @@
 #ifndef GL_ES
 #define VERSION 120
 #version VERSION
-#define USE_TEX_LOD
-#if VERSION != 120
-#define varying in
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-out vec4 gl_FragColor;
 #else
-#define in varying
-#define out varying
+#define VERSION 100
+#version VERSION
 #endif
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : require
-#endif
-#else
-#define VERSION 300
-#version VERSION es
-#extension GL_OES_standard_derivatives : enable
-#extension GL_EXT_shader_texture_lod: enable
-#define textureCubeLod textureLodEXT
-precision highp float;
-#if VERSION == 100
-#define in varying
-#define out varying
-#else
-#define varying in
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-out vec4 gl_FragColor;
-#endif
-#endif
+#include "header.frag"
 
-in vec3 oViewPos;
+in float distance;
 in vec4 vPosition;
 in vec4 vPrevPosition;
 uniform float cNearClipDistance;
 uniform float cFarClipDistance;// !!! might be 0 for infinite view projection.
-#ifdef ALPHA
+#ifdef HAS_ALPHA
 in vec2 vUV;
 uniform sampler2D baseColor;
 #endif
+
 void main()
 {
-#ifdef ALPHA
+#ifdef HAS_ALPHA
     if (texture2D(baseColor, vUV).a < 0.5) {
         discard;
     }
 #endif
-    float distance = length(oViewPos);
+
     float clipDistance = cFarClipDistance - cNearClipDistance;
-    gl_FragData[0] = vec4((distance - cNearClipDistance) / clipDistance, 0.0, 0.0, 1.0);
+//    gl_FragData[0] = vec4((distance - cNearClipDistance) / clipDistance, 0.0, 0.0, 1.0);
 
     vec2 a = (vPosition.xz / vPosition.w) * 0.5 + 0.5;
     vec2 b = (vPrevPosition.xz / vPrevPosition.w) * 0.5 + 0.5;
-    gl_FragData[1] = vec4(vec2(a - b), 0.0, 1.0);
+//    gl_FragData[1] = vec4(vec2(a - b), 0.0, 1.0);
+    gl_FragColor = vec4((distance - cNearClipDistance) / clipDistance, vec2(a - b), 1.0);
 }

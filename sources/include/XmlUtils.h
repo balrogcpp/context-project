@@ -90,10 +90,10 @@ inline void ParseMaterial(Ogre::Entity *ent, const std::string &material_name) {
 
   }
 
-  for (unsigned i = 0; i < ent->getNumManualLodLevels(); i++) {
+  for (size_t i = 0; i < ent->getNumManualLodLevels(); i++) {
     auto *lod = ent->getManualLodLevel(i);
 
-    for (unsigned j = 0; j < lod->getNumSubEntities(); j++) {
+    for (size_t j = 0; j < lod->getNumSubEntities(); j++) {
       auto *subEnt = lod->getSubEntity(j);
       if (!material) {
         material = ent->getManualLodLevel(1)->getSubEntity(j)->getMaterial();
@@ -104,14 +104,14 @@ inline void ParseMaterial(Ogre::Entity *ent, const std::string &material_name) {
 //  }
 }
 //----------------------------------------------------------------------------------------------------------------------
-inline Ogre::Quaternion ParseQuaternion(const pugi::xml_node &xml_node) {
+inline Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node) {
   Ogre::Quaternion orientation;
 
   if (xml_node.attribute("qw")) {
     orientation.w = Ogre::StringConverter::parseReal(xml_node.attribute("qw").value());
     orientation.x = Ogre::StringConverter::parseReal(xml_node.attribute("qx").value());
-    orientation.y = Ogre::StringConverter::parseReal(xml_node.attribute("qy").value());
-    orientation.z = Ogre::StringConverter::parseReal(xml_node.attribute("qz").value());
+    orientation.y = -Ogre::StringConverter::parseReal(xml_node.attribute("qz").value());
+    orientation.z = Ogre::StringConverter::parseReal(xml_node.attribute("qy").value());
   } else if (xml_node.attribute("axisX")) {
     Ogre::Vector3 axis;
     axis.x = Ogre::StringConverter::parseReal(xml_node.attribute("axisX").value());
@@ -137,6 +137,18 @@ inline Ogre::Quaternion ParseQuaternion(const pugi::xml_node &xml_node) {
     orientation.y = Ogre::StringConverter::parseReal(xml_node.attribute("y").value());
     orientation.z = Ogre::StringConverter::parseReal(xml_node.attribute("z").value());
   }
+
+  Ogre::Vector3 direction = orientation * Ogre::Vector3::NEGATIVE_UNIT_Z;
+  float x = direction.x;
+  float y = direction.y;
+  float z = direction.z;
+  direction = Ogre::Vector3(x, z, -y).normalisedCopy();
+
+  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+  auto *node = scene->getRootSceneNode()->createChildSceneNode("tmp");
+  node->setDirection(direction);
+  orientation = node->getOrientation();
+  scene->destroySceneNode(node);
 
   return orientation;
 }

@@ -68,7 +68,7 @@ fragment_program SkyBoxCustomFp unified
 	delegate SkyBoxCustomFpGLSLES
 }
 
-material Skybox
+material SkyBox
 {
 	technique
 	{

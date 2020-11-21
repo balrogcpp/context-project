@@ -48,12 +48,11 @@ namespace xio {
 struct ContactInfo {
   ContactInfo() = default;
   ContactInfo(const btCollisionObject *a, int points)
-    : a_(a), points_(points)
-  {}
+      : a_(a), points_(points) {}
 
-  ContactInfo& operator= (const ContactInfo& that) = default;
+  ContactInfo &operator=(const ContactInfo &that) = default;
 
-  const btCollisionObject * a_;
+  const btCollisionObject *a_;
   int points_;
 };
 
@@ -76,6 +75,16 @@ class Physics final : public Component, public Singleton<Physics> {
   void DispatchCollisions();
   void AddRigidBody(btRigidBody *body);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);
+  void ProcessData(Ogre::Entity *entity,
+                   Ogre::SceneNode *parent_node = nullptr,
+                   const std::string &proxy_type = "box",
+                   const std::string &physics_type = "static",
+                   float mass = 0.0,
+                   float mass_radius = 0.0,
+                   float inertia_tensor = 0.0,
+                   float velocity_min = 0.0,
+                   float velocity_max = 0.0,
+                   float friction = 1.0);
   void CreateTerrainHeightfieldShape(int size,
                                      float *data,
                                      const float &min_height,
@@ -95,6 +104,17 @@ class Physics final : public Component, public Singleton<Physics> {
   int steps_ = 8;
   bool pause_ = false;
   bool debug_ = false;
+  const std::string TYPE_STATIC = "static";
+  const std::string TYPE_DYNAMIC = "dynamic";
+  const std::string TYPE_ACTOR = "actor";
+  const std::string TYPE_GHOST = "ghost";
+  const std::string TYPE_NONE = "none";
+  const std::string PROXY_BOX = "box";
+  const std::string PROXY_CAPSULE = "capsule";
+  const std::string PROXY_SPHERE = "sphere";
+  const std::string PROXY_CYLINDER = "cylinder";
+  const std::string PROXY_TRIMESH = "trimesh";
+  const std::string PROXY_CONVEX = "convex";
 
  public:
   void SetCallback(const std::function<void(int a, int b)> &callback) {

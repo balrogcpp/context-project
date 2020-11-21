@@ -59,7 +59,7 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
         if (texPtr3) {
           texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
           texPtr3->setTextureAddressingMode(Ogre::TextureAddressingMode::TAM_CLAMP);
-          texPtr3->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
+          texPtr3->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_NONE);
           texPtr3->setTextureName(texture_name);
         }
       }

@@ -27,6 +27,7 @@ fragment_program filtery_fs glsl glsles
     default_params
     {
         param_named uSampler int 0
+        param_named_auto texelSize inverse_texture_size 0
     }
 }
 
@@ -37,5 +38,6 @@ fragment_program filterx_fs glsl glsles
     default_params
     {
         param_named uSampler int 0
+        param_named_auto texelSize inverse_texture_size 0
     }
 }

@@ -36,14 +36,14 @@ class ComponentLocator {
  public:
 //----------------------------------------------------------------------------------------------------------------------
   static void LocateComponents(YamlConfigurator *conf,
-                        InputSequencer *io,
+                        InputSequencer *input,
                         Renderer *renderer,
                         Physics *physics,
                         Sound *sounds,
                         Overlay *overlay,
                         DotSceneLoaderB *loader) {
     conf_ = conf;
-    io_ = io;
+    input_ = input;
     renderer_ = renderer;
     physics_ = physics;
     sound_ = sounds;
@@ -58,6 +58,6 @@ class ComponentLocator {
   inline static Sound *sound_ = nullptr;
   inline static Overlay *overlay_ = nullptr;
   inline static DotSceneLoaderB *loader_ = nullptr;
-  inline static InputSequencer *io_ = nullptr;
+  inline static InputSequencer *input_ = nullptr;
 };
 }

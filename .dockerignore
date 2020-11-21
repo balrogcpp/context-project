@@ -10,8 +10,10 @@
 /Debug/
 /artifacts/
 /Doxygen/
+/other/
 /tmp/
 /cmake-build-android/
+/.git/
 /.cxx/
 /.gradle/
 /local.properties/

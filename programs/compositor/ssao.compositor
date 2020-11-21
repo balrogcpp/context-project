@@ -31,6 +31,7 @@ fragment_program Crytek_fp glsl glsles
         param_named_auto cViewportSize viewport_size
         param_named_auto farClipDistance far_clip_distance
         param_named_auto cFov fov
+        param_named_auto shadow_colour shadow_colour
 	}
 }
 
@@ -56,7 +57,7 @@ material SsaoCrytek
 
             texture_unit
             {
-                content_type compositor GBuffer mrt 0
+                content_type compositor GBuffer mrt
                 tex_address_mode clamp
                 filtering none
             }
@@ -199,12 +200,13 @@ material Modulate/Ssao
 			texture_unit
             {
                 content_type compositor Ssao ssao
-                filtering none
+                filtering linear linear none
             }
 		}
 	}
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 compositor Modulate/Ssao
 {
     technique

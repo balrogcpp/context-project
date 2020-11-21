@@ -23,69 +23,35 @@
 #ifndef GL_ES
 #define VERSION 120
 #version VERSION
-#define USE_TEX_LOD
-#if VERSION != 120
-#define attribute in
-#define varying out
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
 #else
-#define in attribute
-#define out varying
+#define VERSION 100
+#version VERSION
 #endif
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : require
-#endif
-#else
-#define VERSION 300
-#version VERSION es
-#extension GL_OES_standard_derivatives : enable
-#extension GL_EXT_shader_texture_lod: enable
-#define textureCubeLod textureLodEXT
-precision highp float;
-#if VERSION == 100
-#define in attribute
-#define out varying
-#else
-#define attribute in
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-#endif
-#endif
+#include "header.vert"
 
-in vec4 vertex;
-#ifdef ALPHA
+in vec3 position;
+#ifdef HAS_ALPHA
 in vec2 uv0;
 #endif
 uniform mat4 uModelMatrix;
 uniform mat4 cWorldViewProj;
 uniform mat4 cWorldViewProjPrev;
-uniform mat4 cWorldView;
-out vec3 oViewPos;
+out float distance;
 out vec4 vPosition;
 out vec4 vPrevPosition;
-#ifdef ALPHA
+#ifdef HAS_ALPHA
 out vec2 vUV;
 #endif
+
 void main()
 {
-    oViewPos = (cWorldView * vertex).xyz;// transform the vertex position to the view space
-#ifdef ALPHA
+#ifdef HAS_ALPHA
     vUV = uv0;
 #endif
-    vPosition = cWorldViewProj * vertex;
-    vPrevPosition = (cWorldViewProjPrev * uModelMatrix) * vertex;
+
+    vec4 new_position = vec4(position, 1.0);
+    distance = length((cWorldViewProj * new_position).xyz);// transform the vertex position to the view space
+    vPosition = cWorldViewProj * new_position;
+    vPrevPosition = (cWorldViewProjPrev * uModelMatrix) * new_position;
     gl_Position = vPosition;
 }

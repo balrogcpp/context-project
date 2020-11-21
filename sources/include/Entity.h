@@ -26,11 +26,6 @@
 namespace xio {
 class Entity : public ComponentLocator {
  public:
-  void AddAsSoundListener() {
-
-  }
-
- protected:
-
+  virtual void Update(float time) = 0;
 };
 }

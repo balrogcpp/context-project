@@ -21,8 +21,8 @@
 //SOFTWARE.
 
 #pragma once
-
 #include <Ogre.h>
+#include <vector>
 
 namespace xio {
 class ReflectionCamera final : public Ogre::RenderTargetListener {
@@ -36,19 +36,32 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
     Clear_();
   }
 
- public:
+ private:
 //----------------------------------------------------------------------------------------------------------------------
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
-    scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
     rcamera_->enableReflection(plane_);
+    rcamera_->setLodBias(0.001);
+
+    technique_ = scene_->getShadowTechnique();
+
+    if (scene_->hasLight("Sun")) {
+      pssm_shadows_ = scene_->getLight("Sun")->getCastShadows();
+    } else {
+      pssm_shadows_ = false;
+    }
+
+//    if (!pssm_shadows_)
+//      scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   }
 //----------------------------------------------------------------------------------------------------------------------
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
     rcamera_->disableReflection();
-    scene_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    rcamera_->setLodBias(1.0);
+
+//    if (!pssm_shadows_)
+//      scene_->setShadowTechnique(technique_);
   }
 
- private:
 //----------------------------------------------------------------------------------------------------------------------
   void Clear_() {
     if (reflection_tex_) {
@@ -104,7 +117,6 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
     Ogre::Viewport *vp2 = rtt2->addViewport(camera);
     vp2->setOverlaysEnabled(false);
     vp2->setShadowsEnabled(false);
-    // toggle refraction in camera
     rtt2->addListener(this);
     vp2->setVisibilityMask(SUBMERGED_MASK);
 
@@ -116,6 +128,10 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   Ogre::Plane plane_;
   Ogre::Camera *rcamera_ = nullptr;
   Ogre::SceneManager *scene_ = nullptr;
+  Ogre::ShadowTechnique technique_ = Ogre::SHADOWTYPE_NONE;
+  bool pssm_shadows_ = false;
+  float far_clip_distance = 0.0;
+
 
  public:
   const uint32_t SUBMERGED_MASK = 0x0F0;

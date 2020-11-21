@@ -38,7 +38,9 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   //----------------------------------------------------------------------------------------------------------------------
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
     // point the camera in the right direction based on which face of the cubemap this is
-    scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+//    if (scene_->hasLight("Sun"))
+//      scene_->getLight("Sun")->setCastShadows(false);
+
     camera_node_->setOrientation(Ogre::Quaternion::IDENTITY);
     if (evt.source == targets_[0]) camera_node_->yaw(Ogre::Degree(-90));
     else if (evt.source == targets_[1]) camera_node_->yaw(Ogre::Degree(90));
@@ -48,7 +50,8 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   }
 //----------------------------------------------------------------------------------------------------------------------
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) final {
-    scene_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+//    if (scene_->hasLight("Sun"))
+//      scene_->getLight("Sun")->setCastShadows(true);
   }
 
  private:
@@ -79,7 +82,7 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
     camera_->setProjectionType(Ogre::PT_PERSPECTIVE);
     camera_->setFOVy(Ogre::Degree(90.0));
     camera_->setAspectRatio(1.0);
-    camera_->setLodBias(0.2);
+    camera_->setLodBias(0.1);
     camera_->setNearClipDistance(main_camera->getNearClipDistance());
     camera_->setFarClipDistance(main_camera->getFarClipDistance());
     camera_node_ = creator->createChildSceneNode();

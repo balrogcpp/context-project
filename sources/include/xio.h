@@ -23,7 +23,7 @@
 #pragma once
 #include "Application.h"
 #include "AppState.h"
-#include "Camera.h"
+#include "CameraMan.h"
 #include "Component.h"
 #include "ComponentLocator.h"
 #include "Compositor.h"
@@ -41,6 +41,7 @@
 #include "OgreHeaders.h"
 #include "Overlay.h"
 #include "ShaderUtils.h"
+#include "MeshUtils.h"
 #include "Physics.h"
 #include "ReflectionCamera.h"
 #include "Renderer.h"

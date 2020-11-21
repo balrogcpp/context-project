@@ -177,11 +177,13 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
   Ogre::RTShader::ShaderGenerator *shader_generator_;
 };
 //----------------------------------------------------------------------------------------------------------------------
-inline void InitRtss(const std::string &cache_path = "") {
+inline void InitRtss() {
   if (!Ogre::RTShader::ShaderGenerator::initialize()) {
     throw RtssException("RTTS System failed to initialize");
   }
-
+}
+//----------------------------------------------------------------------------------------------------------------------
+inline void CreateRtssShaders(const std::string &cache_path = "") {
   auto *scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *camera_ = scene_->getCamera("Default");
   auto *viewport_ = camera_->getViewport();

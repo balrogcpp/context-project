@@ -24,6 +24,7 @@ FROM balrogcpp/xio-dependencies:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt/build
+ARG GIT_HASH=00000000
 WORKDIR ${CONTEXT_HOME}
 
 ADD sources ./sources
@@ -38,14 +39,13 @@ ADD programs ./programs
 ADD scenes ./scenes
 ADD CMakeLists.txt .
 ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
-ADD .git ./.git
 
 RUN mkdir -p build-windows && mkdir -p build-linux && mkdir -p build-android && \
     cd build-windows && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. && \
     cmake --build . --target install-zip && cd .. && \
     cd build-linux && \
-    cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. && \
     cmake --build . --target install && \
     cmake --build . --target install-zip && cd .. && \
     rm -rf build-windows build-linux build-android

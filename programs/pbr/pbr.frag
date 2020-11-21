@@ -39,60 +39,25 @@
 #ifndef GL_ES
 #define VERSION 120
 #version VERSION
-#define USE_TEX_LOD
-#if VERSION != 120
-#define varying in
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-out vec4 gl_FragColor;
 #else
-#define in varying
-#define out varying
+#define VERSION 100
+#version VERSION
 #endif
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : require
-#endif
-#else
-#define VERSION 300
-#version VERSION es
-#extension GL_OES_standard_derivatives : enable
-#extension GL_EXT_shader_texture_lod: enable
-#define textureCubeLod textureLodEXT
-precision highp float;
-#if VERSION == 100
-#define in varying
-#define out varying
-#else
-#define varying in
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-out vec4 gl_FragColor;
-#endif
-#endif
+#include "header.frag"
 
-#define MAX_LIGHTS 5
-#define MAX_SHADOWS 1
 #ifdef SHADOWCASTER_ALPHA
 in vec2 vUV0;
-uniform sampler2D uBaseColorSampler;
+uniform sampler2D uAlbedoSampler;
 #endif
+
 #ifndef SHADOWCASTER
-in vec4 vUV0;
+in vec2 vUV0;
+in float vDepth;
+in float vAlpha;
 #ifdef HAS_BASECOLORMAP
-uniform sampler2D uBaseColorSampler;
+uniform sampler2D uAlbedoSampler;
 #endif
+uniform float uLOD;
 uniform float uAlphaRejection;
 uniform vec3 uSurfaceAmbientColour;
 uniform vec3 uSurfaceDiffuseColour;
@@ -119,9 +84,12 @@ uniform sampler2D ubrdfLUT;
 #endif
 #ifdef TERRAIN
 uniform sampler2D uGlobalNormalSampler;
+//uniform sampler2D uGlobalShadowSampler;
+uniform float uTerrainTexScale;
 #endif
 #ifdef HAS_NORMALMAP
 uniform sampler2D uNormalSampler;
+uniform float uNormalScale;
 #endif
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D uEmissiveSampler;
@@ -137,17 +105,71 @@ uniform sampler2D uOcclusionSampler;
 #endif
 #ifdef HAS_PARALLAXMAP
 uniform sampler2D uOffsetSampler;
+uniform float uOffsetScale;
 #endif
+
+
 #ifdef SHADOWRECEIVER
+
 uniform sampler2D shadowMap0;
+#if MAX_SHADOW_TEXTURES > 1
 uniform sampler2D shadowMap1;
+#endif
+#if MAX_SHADOW_TEXTURES > 2
 uniform sampler2D shadowMap2;
-uniform vec3 pssmSplitPoints;
+#endif
+#if MAX_SHADOW_TEXTURES > 3
+uniform sampler2D shadowMap3;
+#endif
+#if MAX_SHADOW_TEXTURES > 4
+uniform sampler2D shadowMap4;
+#endif
+#if MAX_SHADOW_TEXTURES > 5
+uniform sampler2D shadowMap5;
+#endif
+#if MAX_SHADOW_TEXTURES > 6
+uniform sampler2D shadowMap6;
+#endif
+#if MAX_SHADOW_TEXTURES > 7
+uniform sampler2D shadowMap7;
+#endif
+
+//uniform float uLightNumber0;
+//#if MAX_SHADOW_TEXTURES > 1
+//uniform float uLightNumber1;
+//#endif
+//#if MAX_SHADOW_TEXTURES > 2
+//uniform float uLightNumber2;
+//#endif
+//#if MAX_SHADOW_TEXTURES > 3
+//uniform float uLightNumber3;
+//#endif
+//#if MAX_SHADOW_TEXTURES > 4
+//uniform float uLightNumber4;
+//#endif
+//#if MAX_SHADOW_TEXTURES > 5
+//uniform float uLightNumber5;
+//#endif
+//#if MAX_SHADOW_TEXTURES > 6
+//uniform float uLightNumber6;
+//#endif
+//#if MAX_SHADOW_TEXTURES > 7
+//uniform float uLightNumber7;
+//#endif
+
+
+uniform vec4 pssmSplitPoints;
 uniform float uShadowColour;
-in vec4 lightSpacePosArray[3 * MAX_SHADOWS];
+uniform float uShadowDepthOffset;
+uniform float uShadowFilterSize;
+uniform int uShadowFilterIterations;
+
+in vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 in vec3 vPosition;
+#ifdef HAS_COLOURS
 in vec3 vColor;
+#endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 in mat3 vTBN;
@@ -155,9 +177,8 @@ in mat3 vTBN;
 in vec3 vNormal;
 #endif
 #endif
-#ifdef REFLECTION
+#ifdef HAS_REFLECTION
 uniform sampler2D uReflectionMap;
-uniform sampler2D uNoiseMap;
 in vec4 projectionCoord;
 #endif
 
@@ -169,35 +190,77 @@ const float M_PI = 3.141592653589793;
 //Shadows block
 #ifdef SHADOWRECEIVER
 #include "receiver.glsl"
-//----------------------------------------------------------------------------------------------------------------------
-float calcPSSMDepthShadow()
-{
-    float camDepth = vUV0.z;
 
-    // calculate shadow
-    if (camDepth <= pssmSplitPoints.x)
-    {
-        return calcDepthShadow(shadowMap0, lightSpacePosArray[0]);
-    }
-    else if (camDepth <= pssmSplitPoints.y)
-    {
-        return calcDepthShadow(shadowMap1, lightSpacePosArray[1]);
-    }
-    else if (camDepth <= pssmSplitPoints.z)
-    {
-        return calcDepthShadow(shadowMap2, lightSpacePosArray[2]);
-    }
-    else
-    {
-        return 1.0;
-    }
-}
+//int shadow_texture_counter = 0;
+//
+//int lightNumberArray[MAX_SHADOW_TEXTURES] = int[](int(uLightNumber0)
+//                                                        #if MAX_SHADOW_TEXTURES > 1
+//                                                        , int(uLightNumber1)
+//                                                        #endif
+//                                                        #if MAX_SHADOW_TEXTURES > 2
+//                                                        , int(uLightNumber2)
+//                                                        #endif
+//                                                        #if MAX_SHADOW_TEXTURES > 3
+//                                                        , int(uLightNumber3)
+//                                                        #endif
+//                                                        #if MAX_SHADOW_TEXTURES > 4
+//                                                        , int(uLightNumber4)
+//                                                        #endif
+//                                                        #if MAX_SHADOW_TEXTURES > 5
+//                                                        , int(uLightNumber5)
+//                                                        #endif
+//                                                        #if MAX_SHADOW_TEXTURES > 6
+//                                                        , int(uLightNumber6)
+//                                                        #endif
+//                                                        #if MAX_SHADOW_TEXTURES > 7
+//                                                        , int(uLightNumber7)
+//                                                        #endif
+//                                                        );
+
+float GetShadow(const int counter, float offset, float filter_size, float filter_iterations) {
+    if (vDepth>= pssmSplitPoints.w)
+      return 1.0;
+    else if (counter == 0)
+      return CalcDepthShadow(shadowMap0, lightSpacePosArray[0], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+#if MAX_SHADOW_TEXTURES > 1
+    else if (counter == 1)
+      return CalcDepthShadow(shadowMap1, lightSpacePosArray[1], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
 #endif
+#if MAX_SHADOW_TEXTURES > 2
+    else if (counter == 2)
+      return CalcDepthShadow(shadowMap2, lightSpacePosArray[2], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+#endif
+#if MAX_SHADOW_TEXTURES > 3
+    else if (counter == 3)
+      return CalcDepthShadow(shadowMap3, lightSpacePosArray[3], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+#endif
+#if MAX_SHADOW_TEXTURES > 4
+    else if (counter == 4)
+      return CalcDepthShadow(shadowMap4, lightSpacePosArray[4], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+#endif
+#if MAX_SHADOW_TEXTURES > 5
+    else if (counter == 5)
+      return CalcDepthShadow(shadowMap5, lightSpacePosArray[5], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+#endif
+#if MAX_SHADOW_TEXTURES > 6
+    else if (counter == 6)
+      return CalcDepthShadow(shadowMap6, lightSpacePosArray[6], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+#endif
+#if MAX_SHADOW_TEXTURES > 7
+    else if (counter == 7)
+      return CalcDepthShadow(shadowMap7, lightSpacePosArray[7], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+#endif
+
+    return 1.0;
+}
+
+#endif
+
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
 //----------------------------------------------------------------------------------------------------------------------
-mat3 getTgn()
+mat3 GetTGN()
 {
 // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
@@ -220,38 +283,36 @@ mat3 getTgn()
 #endif //!HAS_TANGENTS
 }
 
-vec3 getNormal(vec2 uv)
-{
-    mat3 tbn = getTgn();
-
-#ifdef HAS_NORMALMAP
-    vec3 n = texture2D(uNormalSampler, uv).rgb;
-    n = normalize(tbn * ((2.0 * n - 1.0)));
-#else //!HAS_NORMALMAP
-    vec3 n = tbn[2].xyz;
-#endif
-
-    return n;
-}
-//Terrain block
-#ifdef TERRAIN
 //----------------------------------------------------------------------------------------------------------------------
-vec3 getNormalTerrain(vec2 uv)
+#ifdef TERRAIN
+mat3 GetTgnTerrain()
 {
-// Retrieve the tangent space matrix
+    // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
     vec3 t = vec3(1.0, 0.0, 0.0);
     vec3 ng = texture2D(uGlobalNormalSampler, vUV0.xy).xyz * 2.0 - 1.0;
     vec3 b = normalize(cross(ng, t));
     t = normalize(cross(ng ,b));
     mat3 tbn = mat3(t, b, ng);
-
 #else //HAS_TANGENTS
     mat3 tbn = vTBN;
 #endif //!HAS_TANGENTS
 
+    return tbn;
+}
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 GetNormal(vec2 uv)
+{
+#ifdef TERRAIN
+    mat3 tbn = GetTgnTerrain();
+#else
+    mat3 tbn = GetTGN();
+#endif
+
 #ifdef HAS_NORMALMAP
-    vec3 n = texture2D(uNormalSampler, uv).rgb;
+    vec3 n = uNormalScale * texture2D(uNormalSampler, uv, uLOD).xyz;
     n = normalize(tbn * ((2.0 * n - 1.0)));
 #else //!HAS_NORMALMAP
     vec3 n = tbn[2].xyz;
@@ -259,13 +320,12 @@ vec3 getNormalTerrain(vec2 uv)
 
     return n;
 }
-#endif
 //----------------------------------------------------------------------------------------------------------------------
 float GetMetallic(vec2 uv) {
     float metallic = uSurfaceShininessColour;
 
 #ifdef HAS_METALLICMAP
-    metallic *= texture2D(uMetallicSampler, uv).r;
+    metallic *= texture2D(uMetallicSampler, uv, uLOD).r;
 #endif
 
     return metallic;
@@ -277,7 +337,7 @@ float GetRoughness(vec2 uv) {
     float roughness = uSurfaceSpecularColour;
 
 #ifdef HAS_ROUGHNESSMAP
-    roughness *= texture2D(uRoughnessSampler, uv).r;
+    roughness *= texture2D(uRoughnessSampler, uv, uLOD).r;
 #endif
 
     return roughness > c_MinRoughness ? roughness : c_MinRoughness;
@@ -287,45 +347,58 @@ float GetRoughness(vec2 uv) {
 vec4 GetDiffuse(vec2 uv) {
     vec3 base_color = vec3(0.0);
     float alpha = 1.0;
+
 #ifdef HAS_BASECOLORMAP
-    vec4 tmp = texture2D(uBaseColorSampler, uv);
+    vec4 tmp = texture2D(uAlbedoSampler, uv, uLOD);
     base_color = SRGBtoLINEAR(tmp.rgb);
     alpha = tmp.a;
     base_color *= uSurfaceDiffuseColour;
 #else
     base_color.rgb = SRGBtoLINEAR(uSurfaceDiffuseColour);
 #endif
-#ifdef PAGED_GEOMETRY
+#ifdef HAS_COLOURS
     base_color.rgb *= vColor;
-    alpha *= vUV0.w;
+#endif
+#ifdef PAGED_GEOMETRY
+    alpha *= vAlpha;
 #endif
 
+#ifdef HAS_ALPHA
     if (alpha < uAlphaRejection) {
         discard;
     }
+#endif
 
     return vec4(base_color, alpha);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 ApplyFog(vec3 color) {
-    float exponent = vUV0.z * uFogParams.x;
+    const float maxy = 500.0;
+    float exponent = vDepth * uFogParams.x;
     float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
+    fog_value *= ((maxy - vPosition.y) / maxy);
     return mix(color, uFogColour, fog_value);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-#ifdef REFLECTION
+#ifdef HAS_REFLECTION
 vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
     vec4 projection = projectionCoord;
+
     const float fresnelBias = 0.1;
     const float fresnelScale = 1.8;
     const float fresnelPower = 8.0;
+    const float filter_max_size = 0.1;
+    const int sample_count = 8;
+
     float cosa = dot(n, -v);
     float fresnel = fresnelBias + fresnelScale * pow(1.0 + cosa, fresnelPower);
     fresnel = clamp(fresnel, 0.0, 1.0);
-    vec2 noise = texture2D(uNoiseMap, vUV0.xy).xy - 0.5;
-    projection.xy += (0.1 * noise);
+
+    float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
+    projection.xy += VogelDiskSample(3, sample_count, gradientNoise) * filter_max_size;
+
     vec3 reflectionColour = texture2DProj(uReflectionMap, projection).rgb;
     return mix(color, reflectionColour, fresnel * metallic);
 }
@@ -333,159 +406,46 @@ vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
 
 #ifdef HAS_PARALLAXMAP
 //----------------------------------------------------------------------------------------------------------------------
-vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
+vec2 ParallaxMapping(vec2 uv, vec3 viewDir)
 {
-    const float scale = 0.0001;
-    const float offset = 0.0;
-    float displacement =  texture2D(uOffsetSampler, texCoords).r * scale + offset;
-    return texCoords - viewDir.xy * displacement;
+    float displacement = uOffsetScale * texture2D(uOffsetSampler, uv, uLOD).r;
+    return uv - viewDir.xy * displacement;
 }
 #endif
 
-// Encapsulate the various inputs used by the various functions in the shading equation
-// We store values in this struct to simplify the integration of alternative implementations
-// of the shading terms, outlined in the Readme.MD Appendix.
-//----------------------------------------------------------------------------------------------------------------------
-struct PBRInfo
-{
-    float NdotL;                  // cos angle between normal and light direction
-    float NdotV;                  // cos angle between normal and view direction
-    float NdotH;                  // cos angle between normal and half vector
-    float LdotH;                  // cos angle between light direction and half vector
-    float VdotH;                  // cos angle between view direction and half vector
-    float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)
-    float metalness;              // metallic value at the surface
-    vec3 reflectance0;            // full reflectance color (normal incidence angle)
-    vec3 reflectance90;           // reflectance color at grazing angle
-    float alphaRoughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])
-    vec3 diffuseColor;            // color contribution from diffuse lighting
-    vec3 specularColor;           // color contribution from specular lighting
-};
+#include "lighting.glsl"
 
-// Basic Lambertian diffuse
-// Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
-// See also [1], Equation 1
-//----------------------------------------------------------------------------------------------------------------------
-vec3 diffuse(PBRInfo pbrInputs)
-{
-    return pbrInputs.diffuseColor / M_PI;
-}
-
-// The following equation models the Fresnel reflectance term of the spec equation (aka F())
-// Implementation of fresnel from [4], Equation 15
-//----------------------------------------------------------------------------------------------------------------------
-vec3 specularReflection(PBRInfo pbrInputs)
-{
-    return pbrInputs.reflectance0 + (pbrInputs.reflectance90 - pbrInputs.reflectance0) * pow(clamp(1.0 - pbrInputs.VdotH, 0.0, 1.0), 5.0);
-}
-
-// This calculates the specular geometric attenuation (aka G()),
-// where rougher material will reflect less light back to the viewer.
-// This implementation is based on [1] Equation 4, and we adopt their modifications to
-// alphaRoughness as input as originally proposed in [2].
-//----------------------------------------------------------------------------------------------------------------------
-float geometricOcclusion(PBRInfo pbrInputs)
-{
-    float NdotL = pbrInputs.NdotL;
-    float NdotV = pbrInputs.NdotV;
-    float r = pbrInputs.alphaRoughness;
-
-    float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r * r + (1.0 - r * r) * (NdotL * NdotL)));
-    float attenuationV = 2.0 * NdotV / (NdotV + sqrt(r * r + (1.0 - r * r) * (NdotV * NdotV)));
-    return attenuationL * attenuationV;
-}
-
-// The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())
-// Implementation from "Average Irregularity Representation of a Roughened Surface for Ray Reflection" by T. S. Trowbridge, and K. P. Reitz
-// Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.
-//----------------------------------------------------------------------------------------------------------------------
-float microfacetDistribution(PBRInfo pbrInputs)
-{
-    float roughnessSq = pbrInputs.alphaRoughness * pbrInputs.alphaRoughness;
-    float f = (pbrInputs.NdotH * roughnessSq - pbrInputs.NdotH) * pbrInputs.NdotH + 1.0;
-    return roughnessSq / (M_PI * f * f);
-}
 #endif //!SHADOWCASTER
 
-
-//IBL PBR extention
 #ifdef USE_IBL
-// Calculation of the lighting contribution from an optional Image Based Light source.
-// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
-// See our README.md on Environment Maps [3] for additional discussion.
-//----------------------------------------------------------------------------------------------------------------------
-vec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)
-{
-    float mipCount = 9.0;// resolution of 512x512
-    float lod = (pbrInputs.perceptualRoughness * mipCount);
-    // retrieve a scale and bias to F0. See [1], Figure 3
-    vec3 brdf = SRGBtoLINEAR(texture2D(ubrdfLUT, vec2(pbrInputs.NdotV, 1.0 - pbrInputs.perceptualRoughness))).rgb;
-    vec3 diffuseLight = SRGBtoLINEAR(textureCube(uDiffuseEnvSampler, n)).rgb;
-
-#ifdef USE_TEX_LOD
-    vec3 specularLight = SRGBtoLINEAR(textureCubeLod(uSpecularEnvSampler, reflection, lod)).rgb;
-#else
-    vec3 specularLight = SRGBtoLINEAR(textureCube(uSpecularEnvSampler, reflection)).rgb;
-#endif
-
-    vec3 diffuse = diffuseLight * pbrInputs.diffuseColor;
-    vec3 specular = specularLight * (pbrInputs.specularColor * brdf.x + brdf.y);
-
-    return diffuse + specular;
-}
-// Calculation of the lighting contribution from an optional Image Based Light source.
-// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
-// See our README.md on Environment Maps [3] for additional discussion.
-//----------------------------------------------------------------------------------------------------------------------
-vec3 getIBLContribution(vec3 diffuseColor, vec3 specularColor, float perceptualRoughness, float NdotV, vec3 n, vec3 reflection)
-{
-    float mipCount = 9.0;// resolution of 512x512
-    float lod = (perceptualRoughness * mipCount);
-    // retrieve a scale and bias to F0. See [1], Figure 3
-    vec3 brdf = SRGBtoLINEAR(texture2D(ubrdfLUT, vec2(NdotV, 1.0 - perceptualRoughness))).rgb;
-    vec3 diffuseLight = SRGBtoLINEAR(textureCube(uDiffuseEnvSampler, n)).rgb;
-
-#ifdef USE_TEX_LOD
-    vec3 specularLight = SRGBtoLINEAR(textureCubeLod(uSpecularEnvSampler, reflection, lod)).rgb;
-#else
-    vec3 specularLight = SRGBtoLINEAR(textureCube(uSpecularEnvSampler, reflection)).rgb;
-#endif
-
-    vec3 diffuse = diffuseLight * diffuseColor;
-    vec3 specular = specularLight * (specularColor * brdf.x + brdf.y);
-
-    return diffuse + specular;
-}
+#include "ibl.glsl"
 #endif
 
 void main()
 {
 #ifndef SHADOWCASTER
     vec3 v = normalize(uCameraPosition - vPosition);
-
-#ifdef HAS_PARALLAXMAP
-    vec2 tex_coord = ParallaxMapping(vUV0.xy, v);
-#else
     vec2 tex_coord = vUV0.xy;
-#endif
 
 #ifdef TERRAIN
-    tex_coord *= 64.0;
+    tex_coord *= uTerrainTexScale;
+#endif
+
+#ifdef HAS_PARALLAXMAP
+    tex_coord = ParallaxMapping(tex_coord, v);
 #endif
 
     // The albedo may be defined from a base texture or a flat color
-    vec4 baseColor = GetDiffuse(tex_coord);
+    vec4 albedo = GetDiffuse(tex_coord);
     float metallic = GetMetallic(tex_coord);
     float roughness = GetRoughness(tex_coord);
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
-    float alphaRoughness = roughness * roughness;
-
     const vec3 f0 = vec3(0.04);
-    vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0);
+    vec3 diffuseColor = albedo.rgb * (vec3(1.0) - f0);
     diffuseColor *= (1.0 - metallic);
-    vec3 specularColor = mix(f0, baseColor.rgb, metallic);
+    vec3 specularColor = mix(f0, albedo.rgb, metallic);
 
     // Compute reflectance.
     float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
@@ -496,115 +456,122 @@ void main()
     vec3 specularEnvironmentR0 = specularColor.rgb;
     vec3 specularEnvironmentR90 = vec3(1.0) * reflectance90;
 
-#ifndef TERRAIN
-    vec3 n = getNormal(tex_coord);// normal at surface point
-#else
-    vec3 n = getNormalTerrain(tex_coord);// normal at surface point
-#endif
+    vec3 n = GetNormal(tex_coord);// normal at surface point
 
     float NdotV = abs(dot(n, v)) + 0.001;
-    vec3 reflection = -normalize(reflect(v, n));
 
     vec3 total_colour = vec3(0.0);
 
     for (int i = 0; i < int(uLightCount); i++) {
         vec3 l = -normalize(uLightDirectionArray[i]);// Vector from surface point to light
         vec3 h = normalize(l+v);// Half vector between both l and v
+        float NdotL = clamp(dot(n, l), 0.001, 1.0);
 
         vec3 vLightView = uLightPositionArray[i] - vPosition;
         float fLightD = length(vLightView);
         vLightView = normalize(vLightView);
 
-        vec4 vAttParams = uLightAttenuationArray[i];
-
         float fAtten = 1.0;
         float fSpotT = 1.0;
 
-        if (fLightD > vAttParams.x) {
-            continue;
-        }
+        vec4 vAttParams = uLightAttenuationArray[i];
+        float attenuation = vAttParams.z;
+        vec3 vSpotParams = uLightSpotParamsArray[i];
+        float spot = vSpotParams.z;
 
-        if (vAttParams.z != 0.0) {
-            vec3 vSpotParams = uLightSpotParamsArray[i];
-
-            fAtten  = 1.0 / (vAttParams.y + vAttParams.z*fLightD + vAttParams.w*fLightD*fLightD);
+        if (attenuation > 0.0) {
+            fAtten = float(fLightD < vAttParams.x) / (vAttParams.y + attenuation * fLightD + vAttParams.w * fLightD * fLightD);
 
             float rho = dot(l, vLightView);
-            float fSpotE = clamp((rho - vSpotParams.y) / (vSpotParams.x - vSpotParams.y), 0.0, 1.0);
-            fSpotT = pow(fSpotE, vSpotParams.z);
+
+            if (spot > 0.0) {
+                  float fSpotE = clamp((rho - vSpotParams.y) / (vSpotParams.x - vSpotParams.y), 0.0, 1.0);
+                  fSpotT = pow(fSpotE, spot);
+              }
         }
 
-        float ndotl = dot(n, l);
-        float NdotL = clamp(ndotl, 0.001, 1.0);
         float NdotH = clamp(dot(n, h), 0.0, 1.0);
         float LdotH = clamp(dot(l, h), 0.0, 1.0);
         float VdotH = clamp(dot(v, h), 0.0, 1.0);
 
         PBRInfo pbrInputs = PBRInfo(
-        NdotL,
-        NdotV,
-        NdotH,
-        LdotH,
-        VdotH,
-        roughness,
-        metallic,
-        specularEnvironmentR0,
-        specularEnvironmentR90,
-        alphaRoughness,
-        diffuseColor,
-        specularColor
-        );
+                                    NdotL,
+                                    NdotV,
+                                    NdotH,
+                                    LdotH,
+                                    VdotH,
+                                    roughness,
+                                    metallic,
+                                    specularEnvironmentR0,
+                                    specularEnvironmentR90,
+                                    roughness * roughness,
+                                    diffuseColor,
+                                    specularColor
+                                    );
 
         // Calculate the shading terms for the microfacet specular shading model
-        vec3 F = specularReflection(pbrInputs);
-        float G = geometricOcclusion(pbrInputs);
-        float D = microfacetDistribution(pbrInputs);
+        vec3 F = SpecularReflection(pbrInputs);
+        vec3 diffuseContrib = (1.0 - F) * Diffuse(pbrInputs);
 
         // Calculation of analytical lighting contribution
-        vec3 diffuseContrib = (1.0 - F) * diffuse(pbrInputs);
+        float G = GeometricOcclusion(pbrInputs);
+        float D = MicrofacetDistribution(pbrInputs);
         vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
 
         float tmp = NdotL * fSpotT * fAtten;
+        vec3 colour = tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
 #ifdef SHADOWRECEIVER
-        if (uLightCastsShadowsArray[i] * tmp > 0.001) {
-            float shadow = calcPSSMDepthShadow();
-            shadow = clamp(shadow + uShadowColour, 0.0, 1.0);
-            tmp *= shadow;
+        if (uLightCastsShadowsArray[i] == 1.0) {
+//            int counter = shadow_texture_counter + lightNumberArray[i] - i;
+            #if MAX_SHADOW_TEXTURES > 2
+              if (uLightAttenuationArray[0].z > 0.0) {
+                  colour *= (tmp > 0.002) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations / 2) : 1.0;
+              } else if (i == 0) {
+                  colour *= (tmp > 0.002) ? CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], shadowMap0, shadowMap1, shadowMap2, vDepth, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations) : 1.0;
+              } else {
+                  colour *= (tmp > 0.002) ? GetShadow(i + 2, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations) : 1.0;
+              }
+            #else
+              colour *= (tmp > 0.002) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations / 2) : 1.0;
+            #endif
         }
 #endif
-
-        total_colour += (tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib));
+        total_colour += colour;
     }
 
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
-    total_colour += getIBLContribution(diffuseColor, specularColor, roughness, NdotV, n, reflection);
+    vec3 reflection = -normalize(reflect(v, n));
+    total_colour += GetIBLContribution(diffuseColor, specularColor, roughness, NdotV, n, reflection);
 #else
-    total_colour += ((uSurfaceAmbientColour + uAmbientLightColour) * baseColor.rgb);
+    total_colour += (uAmbientLightColour * albedo.rgb);
 #endif
 
 // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
-    total_colour *= texture2D(uOcclusionSampler, tex_coord).r;
+    total_colour *= (uSurfaceAmbientColour * texture2D(uOcclusionSampler, tex_coord, uLOD).r);
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord).rgb + uSurfaceEmissiveColour);
-#else
-    total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour);
+    total_colour += (uSurfaceEmissiveColour * SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord, uLOD).rgb));
 #endif
 
-#ifdef REFLECTION
+#ifdef HAS_REFLECTION
     total_colour = ApplyReflection(total_colour, n, v, metallic);
-#endif //REFLECTION
+#endif //HAS_REFLECTION
 
     total_colour = ApplyFog(total_colour);
-    gl_FragColor = vec4(total_colour, baseColor.a);
+
+#ifdef HAS_ALPHA
+    gl_FragColor = vec4(total_colour, albedo.a);
+#else
+    gl_FragColor = vec4(total_colour, 1.0);
+#endif
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
-    if (texture2D(uBaseColorSampler, vUV0.xy).a < 0.5) {
+    if (texture2D(uAlbedoSampler, vUV0.xy).a < 0.5) {
         discard;
     }
 #endif //SHADOWCASTER_ALPHA

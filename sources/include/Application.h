@@ -36,7 +36,7 @@
 namespace xio {
 class Application final : public WindowObserver, public Ogre::LogListener {
  public:
-  Application();
+  explicit Application(int argc, char* argv[]);
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&scene_ptr);
  private:
@@ -57,7 +57,7 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   void PrintLogToConsole();
 
   std::unique_ptr<YamlConfigurator> conf_;
-  std::unique_ptr<InputSequencer> io_;
+  std::unique_ptr<InputSequencer> input_;
   std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<Physics> physics_;
   std::unique_ptr<Sound> sound_;
@@ -66,7 +66,7 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   std::unique_ptr<AppState> cur_state_;
   bool quit_ = false;
   bool suspend_ = false;
-  long time_of_last_frame_ = 0;
+  int64_t time_of_last_frame_ = 0;
   int current_fps_ = 0;
   int target_fps_ = 60;
   bool verbose_ = false;
@@ -81,7 +81,7 @@ class Application final : public WindowObserver, public Ogre::LogListener {
 //----------------------------------------------------------------------------------------------------------------------
   void SetInitialState(std::unique_ptr<AppState> &&state) {
     cur_state_ = move(state);
-    io_->RegObserver(cur_state_.get());
+    input_->RegObserver(cur_state_.get());
     Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
   }
 };

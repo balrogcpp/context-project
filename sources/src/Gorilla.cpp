@@ -170,7 +170,7 @@ void TextureAtlas::_loadTexture(Ogre::ConfigFile::SettingsMultiMap *settings) {
     // >  file myatlas.png ~loadinggroup
     if (name == "file") {
       Ogre::String textureName = data;
-      Ogre::String groupName = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+      Ogre::String groupName = Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME;
       size_t groupSplit = data.find_first_of('~');
       if (groupSplit != std::string::npos) {
         textureName = data.substr(0, groupSplit);
@@ -431,8 +431,7 @@ Ogre::MaterialPtr TextureAtlas::createOrGet2DMasterMaterial() {
     return d2Material;
   }
 
-  d2Material = Ogre::MaterialManager::getSingletonPtr()->create("Gorilla2D",
-                                                                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  d2Material = Ogre::MaterialManager::getSingletonPtr()->create("Gorilla2D",Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
   Ogre::Pass *pass = d2Material->getTechnique(0)->getPass(0);
   pass->setCullingMode(Ogre::CULL_NONE);
   pass->setDepthCheckEnabled(false);
@@ -465,8 +464,7 @@ Ogre::MaterialPtr TextureAtlas::createOrGet3DMasterMaterial() {
     return d3Material;
   }
 
-  d3Material = Ogre::MaterialManager::getSingletonPtr()->create("Gorilla3D",
-                                                                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  d3Material = Ogre::MaterialManager::getSingletonPtr()->create("Gorilla3D", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
   Ogre::Pass *pass = d3Material->getTechnique(0)->getPass(0);
   pass->setCullingMode(Ogre::CULL_NONE);
   pass->setDepthCheckEnabled(false);
@@ -2383,7 +2381,7 @@ void OgreConsole::shutdown() {
 
 }
 
-void OgreConsole::KeyDown(SDL_Keycode arg) {
+void OgreConsole::OnKeyDown(SDL_Keycode arg) {
   if (arg == SDLK_BACKQUOTE)
     setVisible(!isVisible());
 

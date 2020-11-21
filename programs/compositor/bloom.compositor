@@ -47,7 +47,7 @@ material bloom
             {
                 content_type compositor Main scene
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering none
             }
 		}
 	}
@@ -57,7 +57,7 @@ compositor Bloom
 {
     technique
     {
-        texture bloom target_width_scaled 0.15 target_height_scaled 0.15 PF_FLOAT16_RGB chain_scope
+        texture bloom target_width_scaled 0.2 target_height_scaled 0.2 PF_FLOAT16_RGB chain_scope
 
         target bloom
         {

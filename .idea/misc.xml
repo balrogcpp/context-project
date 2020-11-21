@@ -15,6 +15,7 @@
     </libraryRoots>
     <excludeRoots>
       <file path="$PROJECT_DIR$/artifacts" />
+      <file path="$PROJECT_DIR$/build-android" />
       <file path="$PROJECT_DIR$/cmake-build-android" />
       <file path="$PROJECT_DIR$/dependencies/external" />
       <file path="$PROJECT_DIR$/install" />

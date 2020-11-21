@@ -26,58 +26,20 @@
 #ifndef GL_ES
 #define VERSION 120
 #version VERSION
-#define USE_TEX_LOD
-#if VERSION != 120
-#define attribute in
-#define varying out
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
 #else
-#define in attribute
-#define out varying
+#define VERSION 100
+#version VERSION
 #endif
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : require
-#endif
-#else
-#define VERSION 300
-#version VERSION es
-#extension GL_OES_standard_derivatives : enable
-#extension GL_EXT_shader_texture_lod: enable
-#define textureCubeLod textureLodEXT
-precision highp float;
-#if VERSION == 100
-#define in attribute
-#define out varying
-#else
-#define attribute in
-#define texture1D texture
-#define texture2D texture
-#define texture2DProj textureProj
-#define shadow2DProj textureProj
-#define texture3D texture
-#define textureCube texture
-#define texture2DLod textureLod
-#define textureCubeLod textureLod
-#endif
-#endif
+#include "header.vert"
 
-#define MAX_LIGHTS 5
-#define MAX_SHADOWS 1
 #define HAS_UV
 
 #ifndef VERTEX_COMPRESSION
-in vec4 position;
+in vec3 position;
 in vec2 uv0;
 #else
-in vec2 vertex; // VES_POSITION
-in float uv0; // VES_TEXTURE_COORDINATES0
+in vec2 vertex;
+in float uv0;
 uniform mat4 posIndexToObjectSpace;
 uniform float baseUVScale;
 #endif
@@ -85,28 +47,35 @@ uniform float baseUVScale;
 uniform mat4 uMVPMatrix;
 
 #ifndef SHADOWCASTER_ALPHA
-in vec4 colour;
+#ifdef HAS_COLOURS
+in vec3 colour;
+#endif
 uniform mat4 uModelMatrix;
 uniform vec3 uCameraPosition;
 #ifdef PAGED_GEOMETRY
 uniform float fadeRange;
+uniform float windRange;
 #endif
 uniform float uTime;
-out vec4 vUV0;
+out vec2 vUV0;
+out float vDepth;
+out float vAlpha;
 #ifdef HAS_NORMALS
-in vec4 normal;
+in vec3 normal;
 #endif
 #ifdef HAS_TANGENTS
 in vec4 tangent;
 #endif
 #ifdef SHADOWRECEIVER
 uniform float uLightCount;
-uniform float uLightCastsShadowsArray[MAX_LIGHTS];
-uniform mat4 uTexWorldViewProjMatrixArray[3 * MAX_SHADOWS];
-out vec4 lightSpacePosArray[3 * MAX_SHADOWS];
+uniform vec4 uLightAttenuation;
+uniform mat4 uTexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
+out vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 out vec3 vPosition;
+#ifdef HAS_COLOURS
 out vec3 vColor;
+#endif
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 out mat3 vTBN;
@@ -114,45 +83,86 @@ out mat3 vTBN;
 out vec3 vNormal;
 #endif
 #endif
-#ifdef REFLECTION
+#ifdef HAS_REFLECTION
 out vec4 projectionCoord;
 #endif
+
 #else //SHADOWCASTER
 out vec2 vUV0;
+#endif
+
+#ifdef HAS_REFLECTION
+vec4 GetProjectionCoord(vec4 position) {
+  const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
+                            0.0, 0.5, 0.0, 0.0,
+                            0.0, 0.0, 0.5, 0.0,
+                            0.5, 0.5, 0.5, 1.0);
+
+  return scalemat * position;
+}
+#endif
+
+#ifdef PAGED_GEOMETRY
+float hash( float n ) {
+  return fract(sin(n)*43758.5453);
+}
+
+float noise(vec2 x) {
+  vec2 p = floor(x);
+  vec2 f = fract(x);
+  f = f*f*(3.0-2.0*f);
+  float n = p.x + p.y*57.0;
+  float res = mix(mix( hash(n+  0.0), hash(n+  1.0),f.x), mix( hash(n+ 57.0), hash(n+ 58.0),f.x),f.y);
+  return res;
+}
+
+float fbm(vec2 p) {
+  float f = 0.0;
+  f += 0.50000*noise(p); p = p*2.02;
+//  f += 0.25000*noise( p ); p = p*2.03;
+//  f += 0.12500*noise( p ); p = p*2.01;
+//  f += 0.06250*noise( p ); p = p*2.04;
+//  f += 0.03125*noise(p);
+  return f/0.984375;
+}
+
+vec4 ApplyWaveAnimation(vec4 position, float time, float frequency, vec4 direction) {
+  float offset = sin(uTime + position.x * frequency);
+  float n = fbm(position.xy * time * 0.2) * 4.0 - 2.0;
+//  return position + offset * direction;
+  return position + n * direction;
+}
 #endif
 
 void main()
 {
 #ifndef VERTEX_COMPRESSION
-  vec4 new_position = position;
+  vec4 new_position = vec4(position, 1.0);
 #else
-  vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0, 1.0);
-#define uv0 _uv0
+  vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0.xy, 1.0);
   vec2 uv0 = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
   vUV0.xy = uv0.xy;
 
-#ifdef PAGED_GEOMETRY
-if (uv0.y == 0.0) {
-  float kradius = 0.25;
-  float kheigh = 0.25;
-  float kx = 1.0;
-  float ky = 1.0;
-  new_position.y += sin(uTime + new_position.z + new_position.y + new_position.x) * kradius * kradius * ky;
-  new_position.x += sin(uTime + new_position.z) * kheigh * kheigh * kx;
-}
-#endif
 #ifndef SHADOWCASTER
+#ifdef HAS_COLOURS
   vColor = colour.rgb;
+#endif
+
   vec4 model_position = uModelMatrix * new_position;
   vPosition = model_position.xyz / model_position.w;
+
 #ifdef PAGED_GEOMETRY
   float dist = distance(uCameraPosition.xz, vPosition.xz);
-  vUV0.w = 2.0f - (2.0f * dist * fadeRange);
-  float offset = (2.0f * dist * fadeRange) - 1.0f;
-  new_position.y -= 2.0f * clamp(offset, 0, 1);
+
+  if (uv0.y < 0.9) {
+    new_position = ApplyWaveAnimation(new_position, uTime, 1.0, vec4(0.1, 0.1, 0.1, 0));
+  }
+
+  vAlpha = 2.0 - (1.0 * dist * fadeRange);
 #endif
+
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
   vec3 n = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
@@ -166,35 +176,20 @@ if (uv0.y == 0.0) {
 #endif
 
   gl_Position = uMVPMatrix * new_position;
-  vUV0.z = gl_Position.z;
-#ifdef REFLECTION
-  const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
-                        0.0, 0.5, 0.0, 0.0,
-                        0.0, 0.0, 0.5, 0.0,
-                        0.5, 0.5, 0.5, 1.0);
-  projectionCoord = scalemat * gl_Position;
-#endif
+  vDepth = gl_Position.z;
+
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
-  int k0= 0;
-  int k1= 1;
-  int k2= 2;
-  for (int i = 0; i < int(uLightCount);  i++) {
-    if (uLightCastsShadowsArray[i] > 0) {
-      lightSpacePosArray[k0] = uTexWorldViewProjMatrixArray[k0] * new_position;
-      lightSpacePosArray[k1] = uTexWorldViewProjMatrixArray[k1] * new_position;
-      lightSpacePosArray[k2] = uTexWorldViewProjMatrixArray[k2] * new_position;
-    }
-    k0 += 3;
-    k1 += 3;
-    k2 += 3;
+  for (int i = 0; i < clamp(int(uLightCount) + 2 * int(uLightAttenuation.z <= 0.0), 0, MAX_SHADOW_TEXTURES); i++) {
+      lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * new_position;
   }
 #endif
 
-#else //SHADOWCASTER
-#ifdef SHADOWCASTER_ALPHA
-  vUV0.xy = uv0.xy;
+#ifdef HAS_REFLECTION
+  projectionCoord = GetProjectionCoord(gl_Position);
 #endif
+
+#else //SHADOWCASTER
   gl_Position = uMVPMatrix * new_position;
 #endif //SHADOWCASTER
 }

@@ -38,7 +38,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
 namespace xio {
-Application::Application() {
+Application::Application(int argc, char* argv[]) {
   try {
     Init_();
   }
@@ -74,6 +74,7 @@ void Application::messageLogged(const std::string &message, Ogre::LogMessageLeve
         bool maskDebug, const std::string &logName, bool &skipThisMessage) {
   log_.append(message);
   log_.append("\n");
+  std::cout << message << "\n";
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
@@ -102,11 +103,14 @@ void Application::Init_() {
   int tex_format = conf_->Get<int>("graphics_shadows_texture_format");
   renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
-  io_ = std::make_unique<InputSequencer>();
+  input_ = std::make_unique<InputSequencer>();
   physics_ = std::make_unique<Physics>();
   sound_ = std::make_unique<Sound>();
   overlay_ = std::make_unique<Overlay>();
   loader_ = std::make_unique<DotSceneLoaderB>();
+
+  ComponentLocator::LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
+  loader_->LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
 
   components_.push_back(sound_.get());
   components_.push_back(loader_.get());
@@ -114,15 +118,11 @@ void Application::Init_() {
   components_.push_back(renderer_.get());
   components_.push_back(overlay_.get());
 
-  ComponentLocator::LocateComponents(
-      conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
-
   for (auto &it : components_) {
     it->Create();
   }
 
-  io_->RegObserver(overlay_->GetConsole());
-  renderer_->Refresh();
+  input_->RegObserver(overlay_->GetConsole());
 
   // Texture filtering
   std::string graphics_filtration = conf_->Get<std::string>("graphics_filtration");
@@ -137,18 +137,18 @@ void Application::Init_() {
     tfo = Ogre::TFO_NONE;
 
   renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
-  loader_->LocateComponents(conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
   verbose_ = conf_->Get<bool>("global_verbose_enable");
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");
-  io_->RegWinObserver(this);
-  renderer_->Resize(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"),conf_->Get<bool>("window_fullscreen"));
+  input_->RegWinObserver(this);
+//  renderer_->Resize(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"),conf_->Get<bool>("window_fullscreen"));
   renderer_->GetWindow().SetCaption(conf_->Get<std::string>("window_caption"));
+  renderer_->Refresh();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Reset_() {
-  io_->Clear();
-  io_->UnregWinObserver(this);
+  input_->Clear();
+  input_->UnregWinObserver(this);
 
   for (auto &it : components_)
     it->Clean();
@@ -157,13 +157,13 @@ void Application::Reset_() {
     it->Reset();
 
   renderer_.reset();
-  io_.reset();
+  input_.reset();
   physics_.reset();
   sound_.reset();
   overlay_.reset();
   loader_.reset();
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  std::this_thread::sleep_for(std::chrono::microseconds(200));
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::InitState_(std::unique_ptr<AppState> &&next_state) {
@@ -171,15 +171,14 @@ void Application::InitState_(std::unique_ptr<AppState> &&next_state) {
     cur_state_->Clear();
     renderer_->Refresh();
     Ogre::Root::getSingleton().removeFrameListener(cur_state_.get());
-    io_->UnregObserver(cur_state_.get());
+    input_->UnregObserver(cur_state_.get());
   }
 
   cur_state_ = move(next_state);
-  io_->RegObserver(cur_state_.get());
+  input_->RegObserver(cur_state_.get());
   Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
 
-  cur_state_->LocateComponents(
-      conf_.get(), io_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
+  cur_state_->LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
   cur_state_->Create();
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -189,7 +188,7 @@ void Application::Quit() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
   if (evt.type == SDL_WINDOWEVENT) {
-    static bool fullscreen = renderer_->GetWindow().GetFullscreen();
+    static bool fullscreen = renderer_->GetWindow().IsFullscreen();
 
     if (!fullscreen) {
       if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
@@ -223,10 +222,10 @@ void Application::Loop_() {
   while (quit_) {
     if (cur_state_) {
       auto before_frame = std::chrono::system_clock::now().time_since_epoch();
-      long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(before_frame).count();
+      int64_t micros_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(before_frame).count();
 
       int fps_frames_ = 0;
-      long delta_time_ = 0;
+      int64_t delta_time_ = 0;
 
       if (delta_time_ > 1000000) {
         current_fps_ = fps_frames_;
@@ -234,7 +233,7 @@ void Application::Loop_() {
         fps_frames_ = 0;
       }
 
-      io_->Capture();
+      input_->Capture();
 
       if (!suspend_) {
         if (cur_state_->IsDirty()) {
@@ -248,13 +247,14 @@ void Application::Loop_() {
         }
 
         auto before_update = std::chrono::system_clock::now().time_since_epoch();
-        long millis_before_update = std::chrono::duration_cast<std::chrono::microseconds>(before_update).count();
-        float frame_time = static_cast<float>(millis_before_update - time_of_last_frame_) / 1000000;
-        time_of_last_frame_ = millis_before_update;
-        cur_state_->Loop(frame_time);
+        int64_t micros_before_update = std::chrono::duration_cast<std::chrono::microseconds>(before_update).count();
+        float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_) / 1000000;
+        time_of_last_frame_ = micros_before_update;
 
         for (auto *it : components_)
           it->Loop(frame_time);
+
+        cur_state_->Loop(frame_time);
 
         renderer_->RenderOneFrame();
       } else {
@@ -268,19 +268,19 @@ void Application::Loop_() {
 #endif
 
       auto duration_after_render = std::chrono::system_clock::now().time_since_epoch();
-      long millis_after_render = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_render).count();
-      long render_time = millis_after_render - millis_before_frame;
+      auto micros_after_render = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_render).count();
+      auto render_time = micros_after_render - micros_before_frame;
 
       if (lock_fps_) {
-        long delay = static_cast<long> ((1000000 / target_fps_) - render_time);
+        auto delay = static_cast<int64_t> ((1000000 / target_fps_) - render_time);
         if (delay > 0)
           std::this_thread::sleep_for(std::chrono::microseconds(delay));
       }
 
       auto duration_after_loop = std::chrono::system_clock::now().time_since_epoch();
-      long millis_after_loop = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_loop).count();
+      int64_t micros_after_loop = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_loop).count();
 
-      long time_since_last_frame_ = millis_after_loop - millis_before_frame;
+      int64_t time_since_last_frame_ = micros_after_loop - micros_before_frame;
       delta_time_ += time_since_last_frame_;
 
       fps_frames_++;
@@ -298,6 +298,8 @@ void Application::Go_() {
     time_of_last_frame_ = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
     Loop_();
     Reset_();
+    WriteLogToFile("ogre.log");
+    PrintLogToConsole();
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
