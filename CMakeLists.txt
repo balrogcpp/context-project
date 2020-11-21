@@ -342,12 +342,14 @@ if (CONTEXT_ONLY_DEPS)
     return()
 endif ()
 
-execute_process(
-        COMMAND git rev-parse --short=8 HEAD
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE GIT_SHA1
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+#execute_process(
+#        COMMAND git rev-parse --short=8 HEAD
+#        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+#        OUTPUT_VARIABLE GIT_SHA1
+#        OUTPUT_STRIP_TRAILING_WHITESPACE
+#)
+
+option(GIT_SHA1 STRING)
 
 set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
 set(CONTEXT_ZIP_NAME ContextProjectDemo-${CMAKE_BUILD_TYPE}-${GIT_SHA1} CACHE PATH "")
