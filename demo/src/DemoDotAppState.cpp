@@ -32,15 +32,21 @@ DemoDotAppState::~DemoDotAppState() {}
 void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
     SwitchNextState(std::make_unique<DemoDotAppState>());
+  } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F) {
+    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+
+    if (scene->hasLight("Point")) {
+      auto *light = scene->getLight("Point");
+      light->setVisible(!light->isVisible());
+    }
   }
 }
 
 void DemoDotAppState::Clear() {
-  if (controller_) input_->UnregObserver(controller_.get());
 }
 
 void DemoDotAppState::Loop(float time) {
-  if (controller_) controller_->Update(time);
+//  Ogre::Root::getSingleton().getSceneManager("Default")->_notifyLightsDirty();
 }
 
 void DemoDotAppState::Callback(int a, int b) {
@@ -50,10 +56,12 @@ void DemoDotAppState::Create() {
 //  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
   Load("1.scene");
 
-  controller_ = std::make_unique<SinbadCharacterController>(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"));
-  input_->RegObserver(controller_.get());
-  UpdateMeshMaterial("Sinbad.mesh");
-  UpdateMeshMaterial("Sword.mesh");
+  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+  auto *root = scene->getRootSceneNode();
+
+  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
+  auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
+  root->createChildSceneNode(Ogre::Vector3(2, 7, 0))->attachObject(ps);
 
 //  sound_->CreateSound("ambient", "test.ogg", false);
 //  sound_->SetVolume("ambient", 0.5);
