@@ -90,9 +90,9 @@ inline void UpdatePbrParams(const Ogre::MaterialPtr &material) {
   vert_params->setNamedAutoConstant("uModelMatrix", Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
   vert_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
 
-  vert_params->setNamedConstant("fadeRange", 1.0f / 50.0f);
-  vert_params->setNamedConstant("windRange", 10.0f);
-  vert_params->setNamedConstantFromTime("uTime", 1.0);
+  vert_params->setNamedConstant("uFadeRange", 1.0f / 50.0f);
+  vert_params->setNamedConstant("uWindRange", 15.0f);
+  vert_params->setNamedConstantFromTime("uTime", 1.0f);
 
   auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
   frag_params->setIgnoreMissingParams(true);
@@ -117,7 +117,7 @@ inline void UpdatePbrParams(const Ogre::MaterialPtr &material) {
   frag_params->setNamedConstant("uLOD", 0.0f);
 //  frag_params->setNamedConstant("uLOD", 0.5f);
   frag_params->setNamedConstant("uShadowFilterSize", 0.004f);
-  frag_params->setNamedConstant("uShadowFilterIterations", 16);
+  frag_params->setNamedConstant("uShadowFilterIterations", 8);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

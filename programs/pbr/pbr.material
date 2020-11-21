@@ -30,7 +30,7 @@ shared_params PBR_Shared
 vertex_program PBR_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 fragment_program PbrBasic_fs glsl glsles
@@ -216,7 +216,7 @@ abstract material PBR_IBL : PBR
 vertex_program PbrReflective_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_REFLECTION,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_REFLECTION,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 fragment_program PbrReflective_fs glsl glsles
@@ -267,7 +267,7 @@ abstract material Plane : PBR
 vertex_program PbrTerrain_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines TERRAIN,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 fragment_program PbrTerrain_fs glsl glsles
@@ -327,7 +327,7 @@ abstract material Terrain : PBR
 vertex_program PbrPaged_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,MAX_LIGHTS=8
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8
 }
 
 fragment_program PbrPaged_fs glsl glsles
@@ -369,7 +369,7 @@ abstract material Paged
 vertex_program PbrGrass_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_COLOURS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 fragment_program PbrGrass_fs glsl glsles

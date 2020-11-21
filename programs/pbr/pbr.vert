@@ -32,11 +32,11 @@
 #endif
 #include "header.vert"
 
-#define HAS_UV
-
 #ifndef VERTEX_COMPRESSION
 in vec3 position;
+#ifdef HAS_UV
 in vec2 uv0;
+#endif
 #else
 in vec2 vertex;
 in float uv0;
@@ -46,15 +46,16 @@ uniform float baseUVScale;
 
 uniform mat4 uMVPMatrix;
 
-#ifndef SHADOWCASTER_ALPHA
+#ifndef SHADOWCASTER
 #ifdef HAS_COLOURS
 in vec3 colour;
 #endif
 uniform mat4 uModelMatrix;
 uniform vec3 uCameraPosition;
 #ifdef PAGED_GEOMETRY
-uniform float fadeRange;
-uniform float windRange;
+#define HAS_UV
+uniform float uFadeRange;
+uniform float uWindRange;
 #endif
 uniform float uTime;
 out vec2 vUV0;
@@ -142,7 +143,11 @@ void main()
   vec2 uv0 = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
+#ifdef HAS_UV
   vUV0.xy = uv0.xy;
+#else
+  vUV0.xy = vec2(0.0);
+#endif
 
 #ifndef SHADOWCASTER
 #ifdef HAS_COLOURS
@@ -154,12 +159,12 @@ void main()
 
 #ifdef PAGED_GEOMETRY
   float dist = distance(uCameraPosition.xz, vPosition.xz);
+  vAlpha = 2.0 - (1.0 * dist * uFadeRange);
 
-  if (uv0.y < 0.9) {
-    new_position = ApplyWaveAnimation(new_position, uTime, 1.0, vec4(0.1, 0.1, 0.1, 0.0));
+//  if (uv0.y < 0.9) {
+  if (uv0.y * vAlpha < 0.45) {
+    new_position = ApplyWaveAnimation(new_position, uTime, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
   }
-
-  vAlpha = 2.0 - (1.0 * dist * fadeRange);
 #endif
 
 #ifdef HAS_NORMALS
