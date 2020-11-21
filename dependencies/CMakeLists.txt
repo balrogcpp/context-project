@@ -476,17 +476,19 @@ externalproject_add(target-ogre1
                     PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
                         ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre1/RenderSystems/GLSupport/include/GLSL
                         ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
+                        && ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre1 ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.10.patch
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DOGRE_ASSERT_MODE=1
                     -DOGRE_CONFIG_THREADS=3
+                    -DOGRE_CONFIG_THREAD_PROVIDER=std
                     -DOGRE_STATIC=true
                     -DOGRE_NODELESS_POSITIONING=false
-                    -DOGRE_CONFIG_THREAD_PROVIDER=std
                     -DOGRE_BUILD_COMPONENT_PYTHON=false
                     -DOGRE_BUILD_COMPONENT_JAVA=false
-                    -DOGRE_RESOURCEMANAGER_STRICT=0
+                    -DOGRE_RESOURCEMANAGER_STRICT=2
                     -DOGRE_BUILD_COMPONENT_PYTHON=false
                     -DOGRE_BUILD_RENDERSYSTEM_D3D11=false
                     -DOGRE_BUILD_RENDERSYSTEM_D3D9=false

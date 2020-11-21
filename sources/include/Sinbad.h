@@ -36,6 +36,10 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
   };
 
  public:
+  Ogre::SceneNode *GetBodyNode() const {
+    return mBodyNode;
+  }
+
   explicit SinbadCharacterController(Ogre::Camera *cam) : mBaseAnimID(ANIM_NONE), mTopAnimID(ANIM_NONE) {
     setupBody(cam->getSceneManager());
     setupCamera(cam);
@@ -205,10 +209,6 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
     mCameraPivot->setFixedYawAxis(true);
     mCameraGoal->setFixedYawAxis(true);
     mCameraNode->setFixedYawAxis(true);
-
-    // our model is quite small, so reduce the clipping planes
-    cam->setNearClipDistance(0.1);
-    cam->setFarClipDistance(SCALE * 5000);
 
     mPivotPitch = 0;
   }
@@ -392,9 +392,6 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
     if (!(dist + distChange < SCALE * 8 && distChange < 0) && !(dist + distChange > SCALE * 40 && distChange > 0)) {
       mCameraGoal->translate(0, 0, distChange, Ogre::Node::TS_LOCAL);
     }
-//    if (!(dist + distChange < SCALE * 8 && distChange < 0) && !(dist + distChange > SCALE * 40 && distChange > 0)) {
-//      mCameraGoal->translate(0, 0, distChange, Ogre::Node::TS_LOCAL);
-//    }
   }
 
   void setBaseAnimation(AnimID id, bool reset = false) {

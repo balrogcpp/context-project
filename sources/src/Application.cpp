@@ -141,7 +141,7 @@ void Application::Init_() {
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");
   input_->RegWinObserver(this);
-  renderer_->Resize(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"),conf_->Get<bool>("window_fullscreen"));
+//  renderer_->Resize(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"),conf_->Get<bool>("window_fullscreen"));
   renderer_->GetWindow().SetCaption(conf_->Get<std::string>("window_caption"));
   renderer_->Refresh();
 }
@@ -163,7 +163,7 @@ void Application::Reset_() {
   overlay_.reset();
   loader_.reset();
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  std::this_thread::sleep_for(std::chrono::microseconds(200));
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::InitState_(std::unique_ptr<AppState> &&next_state) {
@@ -188,7 +188,7 @@ void Application::Quit() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
   if (evt.type == SDL_WINDOWEVENT) {
-    static bool fullscreen = renderer_->GetWindow().GetFullscreen();
+    static bool fullscreen = renderer_->GetWindow().IsFullscreen();
 
     if (!fullscreen) {
       if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
@@ -222,10 +222,10 @@ void Application::Loop_() {
   while (quit_) {
     if (cur_state_) {
       auto before_frame = std::chrono::system_clock::now().time_since_epoch();
-      long millis_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(before_frame).count();
+      int64_t micros_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(before_frame).count();
 
       int fps_frames_ = 0;
-      long delta_time_ = 0;
+      int64_t delta_time_ = 0;
 
       if (delta_time_ > 1000000) {
         current_fps_ = fps_frames_;
@@ -247,13 +247,14 @@ void Application::Loop_() {
         }
 
         auto before_update = std::chrono::system_clock::now().time_since_epoch();
-        long millis_before_update = std::chrono::duration_cast<std::chrono::microseconds>(before_update).count();
-        float frame_time = static_cast<float>(millis_before_update - time_of_last_frame_) / 1000000;
-        time_of_last_frame_ = millis_before_update;
-        cur_state_->Loop(frame_time);
+        int64_t micros_before_update = std::chrono::duration_cast<std::chrono::microseconds>(before_update).count();
+        float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_) / 1000000;
+        time_of_last_frame_ = micros_before_update;
 
         for (auto *it : components_)
           it->Loop(frame_time);
+
+        cur_state_->Loop(frame_time);
 
         renderer_->RenderOneFrame();
       } else {
@@ -267,19 +268,19 @@ void Application::Loop_() {
 #endif
 
       auto duration_after_render = std::chrono::system_clock::now().time_since_epoch();
-      long millis_after_render = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_render).count();
-      long render_time = millis_after_render - millis_before_frame;
+      auto micros_after_render = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_render).count();
+      auto render_time = micros_after_render - micros_before_frame;
 
       if (lock_fps_) {
-        long delay = static_cast<long> ((1000000 / target_fps_) - render_time);
+        auto delay = static_cast<int64_t> ((1000000 / target_fps_) - render_time);
         if (delay > 0)
           std::this_thread::sleep_for(std::chrono::microseconds(delay));
       }
 
       auto duration_after_loop = std::chrono::system_clock::now().time_since_epoch();
-      long millis_after_loop = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_loop).count();
+      int64_t micros_after_loop = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_loop).count();
 
-      long time_since_last_frame_ = millis_after_loop - millis_before_frame;
+      int64_t time_since_last_frame_ = micros_after_loop - micros_before_frame;
       delta_time_ += time_since_last_frame_;
 
       fps_frames_++;

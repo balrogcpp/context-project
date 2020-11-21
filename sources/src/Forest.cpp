@@ -31,13 +31,96 @@ using namespace Forests;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
+#pragma pack(push, 1)
 struct GrassVertex {
   float x, y, z;
   float nx, ny, nz;
   float u, v;
 };
+#pragma pack(pop)
 
 static void CreateGrassMesh(float width, float height) {
+  using namespace Ogre;
+
+  MeshPtr mesh = MeshManager::getSingleton().createManual("grass", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+  // create a submesh with the grass material
+  SubMesh *sm = mesh->createSubMesh();
+  sm->setMaterialName("GrassCustom");
+  sm->useSharedVertices = false;
+  sm->vertexData = OGRE_NEW VertexData();
+  sm->vertexData->vertexStart = 0;
+  sm->vertexData->vertexCount = 12;
+  sm->indexData->indexCount = 18;
+
+  UpdatePbrParams("GrassCustom");
+  UpdatePbrShadowReceiver("GrassCustom");
+
+  // specify a vertex format declaration for our mesh: 3 floats for position, 3 floats for normal, 2 floats for UV
+  VertexDeclaration *decl = sm->vertexData->vertexDeclaration;
+  decl->addElement(0, 0, VET_FLOAT3, VES_POSITION);
+  decl->addElement(0, sizeof(float) * 3, VET_FLOAT3, VES_NORMAL);
+  decl->addElement(0, sizeof(float) * 6, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0);
+
+  // create a vertex buffer
+  HardwareVertexBufferSharedPtr vb = HardwareBufferManager::getSingleton().createVertexBuffer
+      (decl->getVertexSize(0), sm->vertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+
+  GrassVertex *verts = (GrassVertex *) vb->lock(HardwareBuffer::HBL_DISCARD);  // start filling in vertex data
+
+  for (unsigned int i = 0; i < 3; i++)  // each grass mesh consists of 3 planes
+  {
+    // planes intersect along the Y axis with 60 degrees between them
+    Real x = Math::Cos(Degree(i * 60)) * width / 2;
+    Real z = Math::Sin(Degree(i * 60)) * width / 2;
+
+    for (unsigned int j = 0; j < 4; j++)  // each plane has 4 vertices
+    {
+      GrassVertex &vert = verts[i * 4 + j];
+
+      vert.x = j < 2 ? -x : x;
+      vert.y = j % 2 ? 0 : height;
+      vert.z = j < 2 ? -z : z;
+
+      // all normals point straight up
+      vert.nx = 0;
+      vert.ny = 1;
+      vert.nz = 0;
+
+      vert.u = j < 2 ? 0 : 1;
+      vert.v = j % 2;
+    }
+  }
+
+  vb->unlock();  // commit vertex changes
+
+  sm->vertexData->vertexBufferBinding->setBinding(0, vb);  // bind vertex buffer to our submesh
+
+  // create an index buffer
+  sm->indexData->indexBuffer = HardwareBufferManager::getSingleton().createIndexBuffer
+      (HardwareIndexBuffer::IT_16BIT, sm->indexData->indexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+
+  // start filling in index data
+  Ogre::uint16 *indices = (Ogre::uint16 *) sm->indexData->indexBuffer->lock(HardwareBuffer::HBL_DISCARD);
+
+  for (unsigned int i = 0; i < 3; i++)  // each grass mesh consists of 3 planes
+  {
+    unsigned int off = i * 4;  // each plane consists of 2 triangles
+
+    *indices++ = 0 + off;
+    *indices++ = 3 + off;
+    *indices++ = 1 + off;
+
+    *indices++ = 0 + off;
+    *indices++ = 2 + off;
+    *indices++ = 3 + off;
+  }
+
+  sm->indexData->indexBuffer->unlock();  // commit index changes
+}
+
+
+static void CreateGrassMesh2(float width, float height) {
   Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
 
   // Create a submesh with the grass material
@@ -128,25 +211,18 @@ Forest::~Forest() {
   for (auto it : gpages_)
     delete it;
 
-  pgeometry_.clear();
-  pgeometry_.shrink_to_fit();
-  ploaders_.clear();
-  ploaders_.shrink_to_fit();
-  gpages_.clear();
-  gpages_.shrink_to_fit();
-  sgeometry_.clear();
-  sgeometry_.shrink_to_fit();
-
   auto &mesh_manager = Ogre::MeshManager::getSingleton();
   if (mesh_manager.getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
     mesh_manager.remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::Update(float time) {
-  for (auto it : pgeometry_)
+  for (auto it : pgeometry_) {
     it->update();
-  for (auto it : gpages_)
+  }
+  for (auto it : gpages_) {
     it->update();
+  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateGrassStatic() {
@@ -170,7 +246,7 @@ void Forest::GenerateGrassStatic() {
   }
 
   field->setVisibilityFlags(SUBMERGED_MASK);
-  field->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
+//  field->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
   field->build();
   field->setCastShadows(false);
 
@@ -179,17 +255,15 @@ void Forest::GenerateGrassStatic() {
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateTreesStatic() {
   // create our grass mesh, and Create a grass entity from it
-  CreateGrassMesh(1.0, 1.0);
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   Ogre::Entity *rock = scene->createEntity("Rock", "rock.mesh");
   UpdateMeshMaterial("rock.mesh");
 
   // Create a static geometry field, which we will populate with grass
   auto *rocks = scene->createStaticGeometry("Rocks");
-  rocks->setRegionDimensions(Ogre::Vector3(50.0));
   auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
 
-  const float bounds = 50.0f;
+  const float bounds = 100.0f;
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 250; i++) {
     Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
@@ -205,8 +279,10 @@ void Forest::GenerateTreesStatic() {
     rocks->addEntity(rock, pos, ori, scale);
   }
 
+  rocks->setRegionDimensions(Ogre::Vector3(25.0));
+
 //  rocks->setVisibilityFlags(SUBMERGED_MASK);
-  rocks->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
+//  rocks->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
   rocks->build();
   rocks->setCastShadows(true);
 
@@ -214,28 +290,28 @@ void Forest::GenerateTreesStatic() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateGrassPaged() {
-  auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 50);
+  auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 25);
   pgeometry_.push_back(grass);
   grass->addDetailLevel<GrassPage>(50, 10);//Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
   ploaders_.push_back(grassLoader);
   grass->setPageLoader(grassLoader);
+  grassLoader->setRenderQueueGroup(Ogre::RENDER_QUEUE_MAIN);
   if (heigh_func_)
-    grassLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z) - 0.1); });
+    grassLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z)); });
   UpdatePbrParams("GrassCustom");
   UpdatePbrShadowReceiver("GrassCustom");
   GrassLayer *layer = grassLoader->addLayer("GrassCustom");
-  layer->setFadeTechnique(FADETECH_ALPHAGROW);
+  layer->setFadeTechnique(FADETECH_ALPHA);
   layer->setRenderTechnique(GRASSTECH_CROSSQUADS);
-  layer->setMaximumSize(1.0f, 1.0f);
+  layer->setMaximumSize(2.0f, 2.0f);
   layer->setAnimationEnabled(true);
   layer->setSwayDistribution(10.0f);
   layer->setSwayLength(1.0f);
   layer->setSwaySpeed(0.5f);
   layer->setDensity(2.0f);
-  layer->setMapBounds(TBounds(-500, -500, 500, 500));
-  layer->setDensityMap("terrain.png");
-  layer->setColorMap("terrain.png");
+  layer->setMapBounds(TBounds(-250, -250, 250, 250));
+  layer->setDensityMap("grass_density.png");
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateTreesPaged() {
@@ -245,7 +321,8 @@ void Forest::GenerateTreesPaged() {
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;
   auto *trees = new PagedGeometry(scene->getCamera("Default"), 50);
   pgeometry_.push_back(trees);
-  trees->addDetailLevel<BatchPage>(100, 20);
+  trees->addDetailLevel<WindBatchPage>(100, 20);
+  trees->addDetailLevel<Forests::BatchPage>(200, 60);
   auto *treeLoader = new TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
   ploaders_.push_back(treeLoader);
   if (heigh_func_)
@@ -269,7 +346,7 @@ void Forest::GenerateTreesPaged() {
     }
     y = heigh_func_(x, z);
     scale = Ogre::Math::RangeRandom(0.9f, 1.1f);
-    scale *= 0.05;
+    scale *= 0.1;
     Ogre::Quaternion quat;
     quat.FromAngleAxis(Ogre::Degree(yaw), Ogre::Vector3::UNIT_Y);
 
@@ -284,8 +361,8 @@ void Forest::GenerateTreesPaged() {
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
 //  GenerateGrassStatic();
-//  GenerateGrassPaged();
-//  GenerateTreesPaged();
+  GenerateGrassPaged();
+  GenerateTreesPaged();
   GenerateTreesStatic();
 }
 }

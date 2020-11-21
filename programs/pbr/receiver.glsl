@@ -91,29 +91,30 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float CalcDepthShadow(sampler2D shadowMap, vec4 uv, float offset, float filter_size, int iterations)
+float CalcDepthShadow(sampler2D shadowMap, vec4 lightSpace, float offset, float filter_size, int iterations)
 {
-  uv.xyz /= uv.w;
+  lightSpace /= lightSpace.w;
 
-  uv.z = uv.z * 0.5 + 0.5; // convert -1..1 to 0..1
+  lightSpace.z = lightSpace.z * 0.5 + 0.5; // convert -1..1 to 0..1
   float shadow = 0.0;
-  float compare = uv.z;
+  float compare = lightSpace.z;
 
   float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
 //  float penumbra = Penumbra(shadowMap, gradientNoise, uv.xy, compare, 16);
 
   for (int i = 0; i < iterations; i++)
   {
-    uv.xy += VogelDiskSample(i, iterations, gradientNoise) * filter_size;
+    lightSpace.xy += VogelDiskSample(i, iterations, gradientNoise) * filter_size;
 //    uv.xy += VogelDiskSample(i, iterations, gradientNoise) * penumbra * filter_size;
-    shadow += (texture2D(shadowMap, uv.xy).r - offset > compare ? 1.0 / float(iterations) : 0.0);
+    float depth = texture2D(shadowMap, lightSpace.xy).r;
+    shadow += ((depth - offset > compare) ? 1.0 / float(iterations) : 0.0);
   }
 
   return shadow;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float CalcPSSMDepthShadow(vec3 pssmSplitPoints, vec4 lightSpacePos0, vec4 lightSpacePos1, vec4 lightSpacePos2, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, float camDepth, float offset, float filter_size, int iterations)
+float CalcPSSMDepthShadow(vec4 pssmSplitPoints, vec4 lightSpacePos0, vec4 lightSpacePos1, vec4 lightSpacePos2, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, float camDepth, float offset, float filter_size, int iterations)
 {
   // calculate shadow
   if (camDepth <= pssmSplitPoints.x)

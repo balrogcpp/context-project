@@ -164,8 +164,6 @@ class CameraMan final : public Entity, public InputObserver {
       // Just to determine the sign of the angle we pick up above, the
       // value itself does not interest us.
       pitchAngleSign = camera_pitch_node_->getOrientation().x;
-      camera_pitch_node_->translate(Ogre::Vector3{1,-1,1});
-      camera_pitch_node_->translate(Ogre::Vector3{-1,1,-1});
 
       // Limit the pitch between -90 degress and +90 degrees, Quake3-style.
       if (pitchAngle > 90.0f) {
@@ -324,7 +322,42 @@ class CameraMan final : public Entity, public InputObserver {
     return camera_;
   }
 
-  void RegCamera(Ogre::SceneNode *parent, Ogre::Camera *camera) {
+  void AttachNode(Ogre::SceneNode *parent, Ogre::SceneNode *proxy = nullptr) {
+    if (style_ == FPS) {
+      for (const auto it : parent->getAttachedObjects()) {
+        parent->detachObject(it);
+        camera_roll_node_->attachObject(it);
+      }
+
+      for (const auto it : parent->getChildren()) {
+        if (it == camera_yaw_node_)
+          continue;
+
+        parent->removeChild(it);
+        camera_roll_node_->removeChild(it);
+        camera_roll_node_->addChild(it);
+      }
+    } else if (style_ == MANUAL) {
+      if (!proxy || parent == proxy)
+        return;
+
+      for (const auto it : parent->getAttachedObjects()) {
+        if (dynamic_cast<Ogre::Camera*>(it))
+          continue;
+
+        parent->detachObject(it);
+        proxy->attachObject(it);
+      }
+
+      for (const auto it : parent->getChildren()) {
+        parent->removeChild(it);
+        proxy->removeChild(it);
+        proxy->addChild(it);
+      }
+    }
+  }
+
+  void AttachCamera(Ogre::SceneNode *parent, Ogre::Camera *camera, Ogre::SceneNode *proxy = nullptr) {
     node_ = parent;
     camera_ = camera;
 
@@ -341,22 +374,8 @@ class CameraMan final : public Entity, public InputObserver {
       // and attach the camera to it.
       camera_roll_node_ = camera_pitch_node_->createChildSceneNode("CameraRoll");
       camera_roll_node_->attachObject(camera_);
-
-      for (const auto it : parent->getAttachedObjects()) {
-        parent->detachObject(it);
-        camera_roll_node_->attachObject(it);
-      }
-
-      for (const auto it : parent->getChildren()) {
-        if (it == camera_yaw_node_)
-          continue;
-
-        parent->removeChild(it);
-        camera_roll_node_->removeChild(it);
-        camera_roll_node_->addChild(it);
-      }
     } else {
-      node_->attachObject(camera_);
+        node_->attachObject(camera_);
     }
 
     UpdateStyle();

@@ -41,11 +41,7 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
 #else
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *gl3plus_render_system = new Ogre::GL3PlusRenderSystem();
-
-  if (global_sso_enable_)
-    gl3plus_render_system->setConfigOption("Separate Shader Objects", "Yes");
-  else
-    gl3plus_render_system->setConfigOption("Separate Shader Objects", "No");
+  gl3plus_render_system->setConfigOption("Separate Shader Objects", global_sso_enable_ ? "Yes" : "No");
 
   Ogre::Root::getSingleton().setRenderSystem(gl3plus_render_system);
 #else
@@ -75,6 +71,7 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
   Ogre::NameValuePairList params;
 
   SDL_SysWMinfo info = window_->GetInfo();
+
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   if (!reinterpret_cast<size_t>(info.info.win.window))
     throw Exception("Cast from info.info.win.window to size_t failed");
@@ -84,7 +81,7 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
   if (!reinterpret_cast<unsigned long>(info.info.x11.window))
     throw Exception("Cast from info.info.x11.window to size_t failed");
 
-  params["externalWindowHandle"] = std::to_string(reinterpret_cast<unsigned long>(info.info.x11.window));
+  params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   if (!reinterpret_cast<unsigned long>(info.info.x11.window))
     throw Exception("Cast from info.info.x11.window to size_t failed");
@@ -105,15 +102,15 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
   params["MSAA"] = std::to_string(msaa_);
 
   ogre_ = root_->createRenderWindow(window_->GetCaption(), window_->GetSize().first, \
-                       window_->GetSize().second, false, &params);
+                       window_->GetSize().second, window_->IsFullscreen(), &params);
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   if (global_octree_enable_)
     scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
   else
-    scene_ = root_->createSceneManager("Default");
+    scene_ = root_->createSceneManager(Ogre::ST_GENERIC,"Default");
 #else
-  scene_ = root_->createSceneManager("Default");
+  scene_ = root_->createSceneManager(Ogre::ST_GENERIC, "Default");
 #endif
 
   //Camera block
@@ -123,7 +120,7 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
   viewport_->setBackgroundColour(Ogre::ColourValue::Black);
   camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / viewport_->getActualHeight());
   camera_->setAutoAspectRatio(true);
-  camera_->setLodBias(0.5);
+//  camera_->setLodBias(0.5);
 //  camera_->setPolygonMode(Ogre::PM_WIREFRAME);
 
   //Resource block
@@ -189,8 +186,7 @@ void Renderer::UpdateShadow(bool enable, float far_distance, int tex_size, int t
 void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
-  if (filtering == Ogre::TFO_ANISOTROPIC)
-    Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
+  Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Resize(int32_t w, int32_t h, bool f) {

@@ -46,6 +46,8 @@ class TerrainGlobalOptions;
 class VertexDeclaration;
 }
 
+class SinbadCharacterController;
+
 namespace xio {
 class CameraMan;
 class JsonConfigurator;
@@ -105,6 +107,8 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   Ogre::SceneNode *root_node_ = nullptr;
   Ogre::SceneNode *attach_node_ = nullptr;
   std::string group_name_;
+  std::unique_ptr<SinbadCharacterController> sinbad_;
+
   static inline YamlConfigurator *conf_ = nullptr;
   static inline Renderer *renderer_ = nullptr;
   static inline Physics *physics_ = nullptr;

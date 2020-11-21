@@ -68,7 +68,7 @@ in vec4 tangent;
 #endif
 #ifdef SHADOWRECEIVER
 uniform float uLightCount;
-uniform float uLightCastsShadowsArray[MAX_LIGHTS];
+uniform vec4 uLightAttenuation;
 uniform mat4 uTexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 out vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
@@ -86,8 +86,52 @@ out vec3 vNormal;
 #ifdef HAS_REFLECTION
 out vec4 projectionCoord;
 #endif
+
 #else //SHADOWCASTER
 out vec2 vUV0;
+#endif
+
+#ifdef HAS_REFLECTION
+vec4 GetProjectionCoord(vec4 position) {
+  const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
+                            0.0, 0.5, 0.0, 0.0,
+                            0.0, 0.0, 0.5, 0.0,
+                            0.5, 0.5, 0.5, 1.0);
+
+  return scalemat * position;
+}
+#endif
+
+#ifdef PAGED_GEOMETRY
+float hash( float n ) {
+  return fract(sin(n)*43758.5453);
+}
+
+float noise(vec2 x) {
+  vec2 p = floor(x);
+  vec2 f = fract(x);
+  f = f*f*(3.0-2.0*f);
+  float n = p.x + p.y*57.0;
+  float res = mix(mix( hash(n+  0.0), hash(n+  1.0),f.x), mix( hash(n+ 57.0), hash(n+ 58.0),f.x),f.y);
+  return res;
+}
+
+float fbm(vec2 p) {
+  float f = 0.0;
+  f += 0.50000*noise(p); p = p*2.02;
+//  f += 0.25000*noise( p ); p = p*2.03;
+//  f += 0.12500*noise( p ); p = p*2.01;
+//  f += 0.06250*noise( p ); p = p*2.04;
+//  f += 0.03125*noise(p);
+  return f/0.984375;
+}
+
+vec4 ApplyWaveAnimation(vec4 position, float time, float frequency, vec4 direction) {
+  float offset = sin(uTime + position.x * frequency);
+  float n = fbm(position.xy * time * 0.2) * 4.0 - 2.0;
+//  return position + offset * direction;
+  return position + n * direction;
+}
 #endif
 
 void main()
@@ -108,19 +152,17 @@ void main()
 
   vec4 model_position = uModelMatrix * new_position;
   vPosition = model_position.xyz / model_position.w;
+
 #ifdef PAGED_GEOMETRY
   float dist = distance(uCameraPosition.xz, vPosition.xz);
-  if (uv0.xy == vec2(0.0) && dist < windRange) {
-    const float frequency = 4.0;
-    const vec4 direction = vec4(0.2, 0.2, 0, 0);
-    float offset = sin(uTime + new_position.x * frequency);
-    new_position += direction * offset;
+
+  if (uv0.y < 0.9) {
+    new_position = ApplyWaveAnimation(new_position, uTime, 1.0, vec4(0.1, 0.1, 0.1, 0));
   }
 
-  vAlpha = 2.0 - (2.0 * dist * fadeRange);
-  float offset = (2.0 * dist * fadeRange) - 1.0;
-  new_position.y -= 2.0 * clamp(offset, 0, 1);
+  vAlpha = 2.0 - (1.0 * dist * fadeRange);
 #endif
+
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
   vec3 n = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
@@ -138,18 +180,13 @@ void main()
 
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
-  for (int i = 0; i < int(uLightCount) + 2;  i++) {
-    lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * new_position;
+  for (int i = 0; i < clamp(int(uLightCount) + 2 * int(uLightAttenuation.z <= 0.0), 0, MAX_SHADOW_TEXTURES); i++) {
+      lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * new_position;
   }
 #endif
 
 #ifdef HAS_REFLECTION
-  const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
-                              0.0, 0.5, 0.0, 0.0,
-                              0.0, 0.0, 0.5, 0.0,
-                              0.5, 0.5, 0.5, 1.0);
-
-  projectionCoord = scalemat * gl_Position;
+  projectionCoord = GetProjectionCoord(gl_Position);
 #endif
 
 #else //SHADOWCASTER
