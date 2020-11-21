@@ -53,68 +53,68 @@ void main()
   float fragmentWorldDepth = texture2D(sSceneDepthSampler, oUv0).r * farClipDistance;
   float accessibility = 0.0;
 
-  if (fragmentWorldDepth < 30.0) {
-    // get rotation vector, rotation is tiled every 4 screen pixels
-    vec2 rotationTC = oUv0 * cViewportSize.xy / 4.0;
-    vec3 rotationVector = 2.0 * texture2D(sRotSampler4x4, rotationTC).xyz - 1.0;// [-1, 1]x[-1. 1]x[-1. 1]
+//  if (fragmentWorldDepth < 50.0) {
+//    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+//    return;
+//  }
 
-    float rUV = 0.0;// radius of influence in screen space
-    float r = 0.0;// radius of influence in world space
-    if (cSampleInScreenspace == 1.0)
-    {
-      rUV = cSampleLengthScreenSpace;
-      r = tan(rUV * cFov) * fragmentWorldDepth;
-    }
-    else
-    {
-      rUV = atan(cSampleLengthWorldSpace / fragmentWorldDepth) / cFov;// the radius of influence projected into screen space
-      r = cSampleLengthWorldSpace;
-    }
+  // get rotation vector, rotation is tiled every 4 screen pixels
+  vec2 rotationTC = oUv0 * cViewportSize.xy / 4.0;
+  vec3 rotationVector = 2.0 * texture2D(sRotSampler4x4, rotationTC).xyz - 1.0;// [-1, 1]x[-1. 1]x[-1. 1]
 
-    float sampleLength = cOffsetScale;// the offset for the first sample
-    float sampleLengthStep = pow((rUV / sampleLength), 1.0/nSampleNum);
-
-    // sample the sphere and accumulate accessibility
-    for (int i = 0; i < (int(nSampleNum)/8); i++)
-    {
-      for (int x = -1; x <= 1; x += 2)
-      for (int y = -1; y <= 1; y += 2)
-      for (int z = -1; z <= 1; z += 2)
-      {
-        //generate offset vector
-        vec3 offset = normalize(vec3(x, y, z)) * sampleLength;
-
-        // update sample length
-        sampleLength *= sampleLengthStep;
-
-        // reflect offset vector by random rotation sample (i.e. rotating it)
-        vec3 rotatedOffset = reflect(offset, rotationVector);
-
-        vec2 sampleTC = oUv0 + rotatedOffset.xy * rUV;
-
-        // read scene depth at sampling point and convert into world space units (m or whatever)
-        float sampleWorldDepth = texture2D(sSceneDepthSampler, sampleTC).r * farClipDistance;
-
-        // check if depths of both pixels are close enough and sampling point should affect our center pixel
-        float fRangeIsInvalid = clamp((fragmentWorldDepth - sampleWorldDepth) / r, 0.0, 1.0);
-
-        // accumulate accessibility, use default value of 0.5 if right computations are not possible
-
-        accessibility += mix(float(sampleWorldDepth > (fragmentWorldDepth + rotatedOffset.z * r)), cDefaultAccessibility, fRangeIsInvalid);
-      }
-    }
-
-    // get average value
-    accessibility /= nSampleNum;
-
-    // normalize, remove edge highlighting
-    accessibility *= cEdgeHighlight;
-
-    accessibility = clamp(accessibility + shadow_colour, 0.0, 1.0);
+  float rUV = 0.0;// radius of influence in screen space
+  float r = 0.0;// radius of influence in world space
+  if (cSampleInScreenspace == 1.0)
+  {
+    rUV = cSampleLengthScreenSpace;
+    r = tan(rUV * cFov) * fragmentWorldDepth;
   }
-  else {
-    accessibility = 1.0;
+  else
+  {
+    rUV = atan(cSampleLengthWorldSpace / fragmentWorldDepth) / cFov;// the radius of influence projected into screen space
+    r = cSampleLengthWorldSpace;
   }
+
+  float sampleLength = cOffsetScale;// the offset for the first sample
+  float sampleLengthStep = pow((rUV / sampleLength), 1.0/nSampleNum);
+
+  // sample the sphere and accumulate accessibility
+  for (int i = 0; i < (int(nSampleNum)/8); i++)
+  {
+    for (int x = -1; x <= 1; x += 2)
+    for (int y = -1; y <= 1; y += 2)
+    for (int z = -1; z <= 1; z += 2)
+    {
+      //generate offset vector
+      vec3 offset = normalize(vec3(x, y, z)) * sampleLength;
+
+      // update sample length
+      sampleLength *= sampleLengthStep;
+
+      // reflect offset vector by random rotation sample (i.e. rotating it)
+      vec3 rotatedOffset = reflect(offset, rotationVector);
+
+      vec2 sampleTC = oUv0 + rotatedOffset.xy * rUV;
+
+      // read scene depth at sampling point and convert into world space units (m or whatever)
+      float sampleWorldDepth = texture2D(sSceneDepthSampler, sampleTC).r * farClipDistance;
+
+      // check if depths of both pixels are close enough and sampling point should affect our center pixel
+      float fRangeIsInvalid = clamp((fragmentWorldDepth - sampleWorldDepth) / r, 0.0, 1.0);
+
+      // accumulate accessibility, use default value of 0.5 if right computations are not possible
+
+      accessibility += mix(float(sampleWorldDepth > (fragmentWorldDepth + rotatedOffset.z * r)), cDefaultAccessibility, fRangeIsInvalid);
+    }
+  }
+
+  // get average value
+  accessibility /= nSampleNum;
+
+  // normalize, remove edge highlighting
+  accessibility *= cEdgeHighlight;
+
+  accessibility = clamp(accessibility + shadow_colour, 0.0, 1.0);
 
   // amplify and saturate if necessary
   gl_FragColor = vec4(vec3(accessibility), 1.0);

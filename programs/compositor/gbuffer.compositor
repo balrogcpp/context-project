@@ -24,7 +24,7 @@ compositor GBuffer
 {
     technique
     {
-        texture mrt target_width target_height PF_FLOAT16_R PF_FLOAT16_GR chain_scope
+        texture mrt target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB chain_scope
 
         target mrt
         {
@@ -80,13 +80,13 @@ material gbuffer
 vertex_program gbuffer_alpha_vp glsl glsles
 {
  	source gbuffer.vert
- 	preprocessor_defines ALPHA
+ 	preprocessor_defines HAS_ALPHA
 }
 
 fragment_program gbuffer_alpha_fp glsl glsles
 {
 	source gbuffer.frag
-	preprocessor_defines ALPHA
+	preprocessor_defines HAS_ALPHA
 }
 
 material gbuffer_alpha
@@ -95,7 +95,11 @@ material gbuffer_alpha
     {
         pass
         {
-            texture_unit BaseColor {}
+            texture_unit BaseColor
+            {
+                filtering bilinear
+                tex_address_mode clamp
+            }
 
             vertex_program_ref gbuffer_alpha_vp
             {

@@ -57,7 +57,7 @@ material SsaoCrytek
 
             texture_unit
             {
-                content_type compositor GBuffer mrt 0
+                content_type compositor GBuffer mrt
                 tex_address_mode clamp
                 filtering none
             }
@@ -200,7 +200,7 @@ material Modulate/Ssao
 			texture_unit
             {
                 content_type compositor Ssao ssao
-                filtering none
+                filtering linear linear none
             }
 		}
 	}

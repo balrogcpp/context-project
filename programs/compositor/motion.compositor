@@ -55,9 +55,9 @@ material motion_blur
             }
 			texture_unit
             {
-                content_type compositor GBuffer mrt 1
+                content_type compositor GBuffer mrt
                 tex_address_mode mirror
-                filtering none
+                filtering linear linear none
             }
 		}
 	}

@@ -40,7 +40,7 @@ uniform float uScale;
 
 void main()
 {
-  vec2 velocity = uScale * (0.01667/uFrameTime) * texture2D(uTexMotion, oUv0).rg;
+  vec2 velocity = uScale * (0.01667/uFrameTime) * texture2D(uTexMotion, oUv0).gb;
   float speed = length(velocity / texelSize);
   int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
 

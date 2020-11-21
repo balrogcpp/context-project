@@ -29,8 +29,8 @@
 #endif
 #include "header.vert"
 
-in vec4 position;
-#ifdef ALPHA
+in vec3 position;
+#ifdef HAS_ALPHA
 in vec2 uv0;
 #endif
 uniform mat4 uModelMatrix;
@@ -39,18 +39,19 @@ uniform mat4 cWorldViewProjPrev;
 out float distance;
 out vec4 vPosition;
 out vec4 vPrevPosition;
-#ifdef ALPHA
+#ifdef HAS_ALPHA
 out vec2 vUV;
 #endif
 
 void main()
 {
-#ifdef ALPHA
+#ifdef HAS_ALPHA
     vUV = uv0;
 #endif
 
-    distance = length((cWorldViewProj * position).xyz);// transform the vertex position to the view space
-    vPosition = cWorldViewProj * position;
-    vPrevPosition = (cWorldViewProjPrev * uModelMatrix) * position;
+    vec4 new_position = vec4(position, 1.0);
+    distance = length((cWorldViewProj * new_position).xyz);// transform the vertex position to the view space
+    vPosition = cWorldViewProj * new_position;
+    vPrevPosition = (cWorldViewProjPrev * uModelMatrix) * new_position;
     gl_Position = vPosition;
 }

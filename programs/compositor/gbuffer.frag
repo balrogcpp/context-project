@@ -34,23 +34,24 @@ in vec4 vPosition;
 in vec4 vPrevPosition;
 uniform float cNearClipDistance;
 uniform float cFarClipDistance;// !!! might be 0 for infinite view projection.
-#ifdef ALPHA
+#ifdef HAS_ALPHA
 in vec2 vUV;
 uniform sampler2D baseColor;
 #endif
 
 void main()
 {
-#ifdef ALPHA
+#ifdef HAS_ALPHA
     if (texture2D(baseColor, vUV).a < 0.5) {
         discard;
     }
 #endif
 
     float clipDistance = cFarClipDistance - cNearClipDistance;
-    gl_FragData[0] = vec4((distance - cNearClipDistance) / clipDistance, 0.0, 0.0, 1.0);
+//    gl_FragData[0] = vec4((distance - cNearClipDistance) / clipDistance, 0.0, 0.0, 1.0);
 
     vec2 a = (vPosition.xz / vPosition.w) * 0.5 + 0.5;
     vec2 b = (vPrevPosition.xz / vPrevPosition.w) * 0.5 + 0.5;
-    gl_FragData[1] = vec4(vec2(a - b), 0.0, 1.0);
+//    gl_FragData[1] = vec4(vec2(a - b), 0.0, 1.0);
+    gl_FragColor = vec4((distance - cNearClipDistance) / clipDistance, vec2(a - b), 1.0);
 }
