@@ -138,8 +138,7 @@ inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
     return;
   }
 
-  vert_params->setNamedAutoConstant("uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
-  vert_params->setNamedAutoConstant("uLightAttenuation", Ogre::GpuProgramParameters::ACT_LIGHT_ATTENUATION);
+  vert_params->setNamedConstant("uShadowTextureCount", OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES);
   vert_params->setNamedAutoConstant("uTexWorldViewProjMatrixArray", Ogre::GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY, OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES);
 
   auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
@@ -161,12 +160,8 @@ inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
   frag_params->setNamedConstant("pssmSplitPoints", splitPoints);
   frag_params->setNamedAutoConstant("uShadowColour", Ogre::GpuProgramParameters::ACT_SHADOW_COLOUR);
   frag_params->setNamedAutoConstant("uLightCastsShadowsArray",Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY, OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES);
-
-//  for (int i = 0; i < OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES; i++)
-//    frag_params->setNamedAutoConstant(std::string("uLightNumber") + std::to_string(i), Ogre::GpuProgramParameters::ACT_LIGHT_NUMBER, i);
-
   frag_params->setNamedConstant("uShadowFilterSize", 0.004f);
-  frag_params->setNamedConstant("uShadowFilterIterations", 16);
+  frag_params->setNamedConstant("uShadowFilterIterations", 8);
 
   int texture_count = pass->getNumTextureUnitStates();
 

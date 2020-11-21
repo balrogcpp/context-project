@@ -134,30 +134,6 @@ uniform sampler2D shadowMap6;
 uniform sampler2D shadowMap7;
 #endif
 
-//uniform float uLightNumber0;
-//#if MAX_SHADOW_TEXTURES > 1
-//uniform float uLightNumber1;
-//#endif
-//#if MAX_SHADOW_TEXTURES > 2
-//uniform float uLightNumber2;
-//#endif
-//#if MAX_SHADOW_TEXTURES > 3
-//uniform float uLightNumber3;
-//#endif
-//#if MAX_SHADOW_TEXTURES > 4
-//uniform float uLightNumber4;
-//#endif
-//#if MAX_SHADOW_TEXTURES > 5
-//uniform float uLightNumber5;
-//#endif
-//#if MAX_SHADOW_TEXTURES > 6
-//uniform float uLightNumber6;
-//#endif
-//#if MAX_SHADOW_TEXTURES > 7
-//uniform float uLightNumber7;
-//#endif
-
-
 uniform vec4 pssmSplitPoints;
 uniform float uShadowColour;
 uniform float uShadowDepthOffset;
@@ -191,33 +167,7 @@ const float M_PI = 3.141592653589793;
 #ifdef SHADOWRECEIVER
 #include "receiver.glsl"
 
-//int shadow_texture_counter = 0;
-//
-//int lightNumberArray[MAX_SHADOW_TEXTURES] = int[](int(uLightNumber0)
-//                                                        #if MAX_SHADOW_TEXTURES > 1
-//                                                        , int(uLightNumber1)
-//                                                        #endif
-//                                                        #if MAX_SHADOW_TEXTURES > 2
-//                                                        , int(uLightNumber2)
-//                                                        #endif
-//                                                        #if MAX_SHADOW_TEXTURES > 3
-//                                                        , int(uLightNumber3)
-//                                                        #endif
-//                                                        #if MAX_SHADOW_TEXTURES > 4
-//                                                        , int(uLightNumber4)
-//                                                        #endif
-//                                                        #if MAX_SHADOW_TEXTURES > 5
-//                                                        , int(uLightNumber5)
-//                                                        #endif
-//                                                        #if MAX_SHADOW_TEXTURES > 6
-//                                                        , int(uLightNumber6)
-//                                                        #endif
-//                                                        #if MAX_SHADOW_TEXTURES > 7
-//                                                        , int(uLightNumber7)
-//                                                        #endif
-//                                                        );
-
-float GetShadow(const int counter, float offset, float filter_size, float filter_iterations) {
+float GetShadow(const int counter, float offset, float filter_size, int filter_iterations) {
     if (vDepth>= pssmSplitPoints.w)
       return 1.0;
     else if (counter == 0)
@@ -523,7 +473,6 @@ void main()
 
 #ifdef SHADOWRECEIVER
         if (uLightCastsShadowsArray[i] == 1.0) {
-//            int counter = shadow_texture_counter + lightNumberArray[i] - i;
             #if MAX_SHADOW_TEXTURES > 2
               if (uLightAttenuationArray[0].z > 0.0) {
                   colour *= (tmp > 0.002) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations / 2) : 1.0;

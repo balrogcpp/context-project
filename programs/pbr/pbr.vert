@@ -67,8 +67,7 @@ in vec3 normal;
 in vec4 tangent;
 #endif
 #ifdef SHADOWRECEIVER
-uniform float uLightCount;
-uniform vec4 uLightAttenuation;
+uniform int uShadowTextureCount;
 uniform mat4 uTexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 out vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
@@ -157,7 +156,7 @@ void main()
   float dist = distance(uCameraPosition.xz, vPosition.xz);
 
   if (uv0.y < 0.9) {
-    new_position = ApplyWaveAnimation(new_position, uTime, 1.0, vec4(0.1, 0.1, 0.1, 0));
+    new_position = ApplyWaveAnimation(new_position, uTime, 1.0, vec4(0.1, 0.1, 0.1, 0.0));
   }
 
   vAlpha = 2.0 - (1.0 * dist * fadeRange);
@@ -180,7 +179,7 @@ void main()
 
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
-  for (int i = 0; i < clamp(int(uLightCount) + 2 * int(uLightAttenuation.z <= 0.0), 0, MAX_SHADOW_TEXTURES); i++) {
+  for (int i = 0; i < uShadowTextureCount; i++) {
       lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * new_position;
   }
 #endif
