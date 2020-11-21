@@ -1,11 +1,31 @@
 // Example particle systems
+material Examples/Smoke
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			scene_blend alpha_blend
+			depth_write off
+			diffuse vertexcolour
+            fog_override true
+
+			texture_unit
+			{
+				texture bubble.png
+				tex_address_mode clamp
+			}
+		}
+	}
+}
 
 // smoke
 particle_system Examples/Smoke
 {
 	material        	Examples/Smoke
-	particle_width  	35
-	particle_height 	35
+	particle_width  	1
+	particle_height 	1
 	cull_each       	true
 	quota           	500
 	billboard_type  	point
@@ -14,19 +34,19 @@ particle_system Examples/Smoke
 	// Area emitter
 	emitter Point
 	{
-		position 0 15 -15
-		angle 35
-		emission_rate 15
+		position 2 0 0
+		angle 15
+		emission_rate 1
 		time_to_live 4
-		direction 0 1 0
-		velocity_min 50
-		velocity_max 80    	
+		direction 1 1 0
+		velocity_min 1
+		velocity_max 2
 	}
 
-	affector ColourImage
+    /*affector ColourImage
 	{
 		image smokecolors.png
-	}
+	}*/
 
    	affector Rotator
    	{
@@ -38,7 +58,7 @@ particle_system Examples/Smoke
 
    	affector Scaler
    	{
-       	rate 50
+       	rate 0.1
    	}
 
 }
