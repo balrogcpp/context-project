@@ -9,7 +9,7 @@ variables:
 build:
   stage: build
   script:
-    - docker build . -t context
+    - docker build --build-arg GIT_HASH=$CI_COMMIT_SHORT_SHA . -t context
     - docker create -ti --name abc context bash
     - mkdir artifacts
     - docker cp abc:/mnt/build/install/ContextProjectDemo-Release-$CI_COMMIT_SHORT_SHA.zip .
