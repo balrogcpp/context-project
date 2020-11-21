@@ -1,51 +1,25 @@
-From 473292dcf65ec73f82185debfdc28fe49450f826 Mon Sep 17 00:00:00 2001
+From cd6a121a268c09d3e21be428255e0d2f8a791809 Mon Sep 17 00:00:00 2001
 From: Andrey Vasiliev <foursilico@gmail.com>
-Date: Fri, 20 Nov 2020 22:54:55 +0200
-Subject: [PATCH] Patch
+Date: Sat, 21 Nov 2020 21:08:44 +0200
+Subject: [PATCH] Skip shadow culling
 
 ---
- OgreMain/src/OgreSceneManager.cpp | 28 +++++++++++++++-------------
- 1 file changed, 15 insertions(+), 13 deletions(-)
+ OgreMain/src/OgreSceneManager.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/OgreMain/src/OgreSceneManager.cpp b/OgreMain/src/OgreSceneManager.cpp
-index e731a37ed..b8d65d7f0 100644
+index e731a37..928deec 100644
 --- a/OgreMain/src/OgreSceneManager.cpp
 +++ b/OgreMain/src/OgreSceneManager.cpp
-@@ -364,19 +364,21 @@ void SceneManager::_populateLightList(const Vector3& position, Real radius,
+@@ -364,7 +364,7 @@ void SceneManager::_populateLightList(const Vector3& position, Real radius,
          // Calc squared distance
          lt->_calcTempSquareDist(position);
- 
+
 -        if (lt->getType() == Light::LT_DIRECTIONAL)
--        {
--            // Always included
--            destList.push_back(lt);
--        }
--        else
--        {
--            // only add in-range lights
--            if (lt->isInLightRange(Sphere(position,radius)))
--            {
--                destList.push_back(lt);
--            }
--        }
-+        destList.push_back(lt);
-+
-+//        if (lt->getType() == Light::LT_DIRECTIONAL)
-+//        {
-+//            // Always included
-+//            destList.push_back(lt);
-+//        }
-+//        else
-+//        {
-+//            // only add in-range lights
-+//            if (lt->isInLightRange(Sphere(position,radius)))
-+//            {
-+//                destList.push_back(lt);
-+//            }
-+//        }
-     }
- 
-     // Sort (stable to guarantee ordering on directional lights)
--- 
++        if (lt->getType() == Light::LT_DIRECTIONAL || lt->getCastShadows())
+         {
+             // Always included
+             destList.push_back(lt);
+--
 2.25.1
 
