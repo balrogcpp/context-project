@@ -26,7 +26,7 @@
 #include <OgreMaterialManager.h>
 #include <OgreShadowCameraSetupPSSM.h>
 #include <vector>
-#include "ShaderUtils.h"
+#include "PbrShaderUtils.h"
 
 namespace xio {
 class ShadowSettings : public NoCopy {

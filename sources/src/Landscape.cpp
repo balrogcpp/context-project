@@ -26,7 +26,7 @@
 #include "Renderer.h"
 #include <Terrain/OgreTerrainMaterialGeneratorA.h>
 #include "TerrainMaterialGeneratorB.h"
-#include "ShaderUtils.h"
+#include "PbrShaderUtils.h"
 #include "XmlUtils.h"
 
 namespace xio {

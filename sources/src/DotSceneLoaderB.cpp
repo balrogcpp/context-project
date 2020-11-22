@@ -23,7 +23,7 @@
 #include "pcheader.h"
 #include "DotSceneLoaderB.h"
 #include "Physics.h"
-#include "ShaderUtils.h"
+#include "PbrShaderUtils.h"
 #include "MeshUtils.h"
 #include "XmlUtils.h"
 #include "Sound.h"

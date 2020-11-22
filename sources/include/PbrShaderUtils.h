@@ -174,7 +174,7 @@ inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
     tu->setContentType(Ogre::TextureUnitState::CONTENT_SHADOW);
     tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
     tu->setTextureBorderColour(Ogre::ColourValue::White);
-    tu->setTextureFiltering(Ogre::TFO_BILINEAR);
+    tu->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_NONE);
     frag_params->setNamedConstant("shadowMap" + std::to_string(i), texture_count + i);
   }
 }

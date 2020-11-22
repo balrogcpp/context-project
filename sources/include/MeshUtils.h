@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #pragma once
-#include "ShaderUtils.h"
+#include "PbrShaderUtils.h"
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
