@@ -294,32 +294,24 @@ float GetRoughness(vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec4 GetDiffuse(vec2 uv) {
-    vec3 base_color = vec3(0.0);
-    float alpha = 1.0;
+vec4 GetAlbedo(vec2 uv) {
+    vec4 albedo = vec4(1.0);
 
-#ifdef HAS_BASECOLORMAP
-    vec4 tmp = texture2D(uAlbedoSampler, uv, uLOD);
-    base_color = SRGBtoLINEAR(tmp.rgb);
-    alpha = tmp.a;
-    base_color *= uSurfaceDiffuseColour;
-#else
-    base_color.rgb = SRGBtoLINEAR(uSurfaceDiffuseColour);
-#endif
 #ifdef HAS_COLOURS
-    base_color.rgb *= vColor;
-#endif
-#ifdef PAGED_GEOMETRY
-    alpha *= vAlpha;
+    vec3 vertex_colour = vColor;
+#else
+    const vec3 vertex_colour = vec3(1.0);
 #endif
 
 #ifdef HAS_ALPHA
-    if (alpha < uAlphaRejection) {
-        discard;
-    }
+    albedo = texture2D(uAlbedoSampler, uv, uLOD);
+#else
+    albedo = vec4(texture2D(uAlbedoSampler, uv, uLOD).rgb, 1.0);
 #endif
 
-    return vec4(base_color, alpha);
+    albedo.rgb *= (uSurfaceDiffuseColour * vertex_colour);
+
+    return SRGBtoLINEAR(albedo);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -386,9 +378,18 @@ void main()
 #endif
 
     // The albedo may be defined from a base texture or a flat color
-    vec4 albedo = GetDiffuse(tex_coord);
+    vec4 albedo = GetAlbedo(tex_coord);
     float metallic = GetMetallic(tex_coord);
     float roughness = GetRoughness(tex_coord);
+
+#ifdef HAS_ALPHA
+#ifdef PAGED_GEOMETRY
+    albedo.a *= vAlpha;
+#endif //PAGED_GEOMETRY
+
+    if (albedo.a < uAlphaRejection)
+        discard;
+#endif
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
