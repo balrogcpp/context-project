@@ -139,20 +139,6 @@ externalproject_add(target-bullet3
                     -G "${CMAKE_GENERATOR}"
                     )
 
-# Build OpenAL with PulseAudio on Linux and DirectAudio on Windows
-if (ANDROID)
-    set(ALSOFT_LIB_TYPE STATIC)
-elseif (UNIX)
-    set(ALSOFT_BACKEND_PULSEAUDIO true)
-    set(ALSOFT_BACKEND_ALSA false)
-    set(ALSOFT_BACKEND_DAUDIO false)
-    set(ALSOFT_LIB_TYPE DYNAMIC)
-elseif (MINGW)
-    set(ALSOFT_BACKEND_PULSEAUDIO false)
-    set(ALSOFT_BACKEND_DAUDIO true)
-    set(ALSOFT_LIB_TYPE DYNAMIC)
-endif ()
-
 # Because of LGPL license of OpenAL you should link as .dll
 externalproject_add(target-openal
                     EXCLUDE_FROM_ALL true
@@ -165,32 +151,6 @@ externalproject_add(target-openal
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DALSOFT_REQUIRE_PULSEAUDIO=${ALSOFT_BACKEND_PULSEAUDIO}
-                    -DALSOFT_BACKEND_PULSEAUDIO=${ALSOFT_BACKEND_PULSEAUDIO}
-                    -DALSOFT_REQUIRE_JACK=false
-                    -DALSOFT_BACKEND_JACK=false
-                    -DALSOFT_REQUIRE_COREAUDIO=false
-                    -DALSOFT_BACKEND_COREAUDIO=false
-                    -DALSOFT_REQUIRE_PORTAUDIO=false
-                    -DALSOFT_BACKEND_PORTAUDIO=false
-                    -DALSOFT_REQUIRE_SNDIO=false
-                    -DALSOFT_BACKEND_SNDIO=false
-                    -DALSOFT_REQUIRE_QSA=false
-                    -DALSOFT_BACKEND_QSA=false
-                    -DALSOFT_REQUIRE_SOLARIS=false
-                    -DALSOFT_BACKEND_SOLARIS=false
-                    -DALSOFT_REQUIRE_ALSA=${ALSOFT_BACKEND_ALSA}
-                    -DALSOFT_BACKEND_ALSA=${ALSOFT_BACKEND_ALSA}
-                    -DALSOFT_REQUIRE_OSS=false
-                    -DALSOFT_BACKEND_OSS=false
-                    -DALSOFT_REQUIRE_WINMM=false
-                    -DALSOFT_BACKEND_WINMM=false
-                    -DALSOFT_REQUIRE_WASAPI=false
-                    -DALSOFT_BACKEND_WASAPI=false
-                    -DALSOFT_BACKEND_WAVE=false
-                    -DALSOFT_REQUIRE_DSOUND=${ALSOFT_BACKEND_DAUDIO}
-                    -DALSOFT_BACKEND_DSOUND=${ALSOFT_BACKEND_DAUDIO}
-                    -DLIBTYPE=${ALSOFT_LIB_TYPE}
                     -DALSOFT_TESTS=false
                     -DALSOFT_UTILS=false
                     -DALSOFT_EXAMPLES=false
@@ -225,10 +185,6 @@ externalproject_add(target-ogg
                     -G "${CMAKE_GENERATOR}"
                     )
 
-if (ANDROID)
-    set(OGG_ANDROID_LIB libogg.a)
-endif ()
-
 externalproject_add(target-vorbis
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-ogg
@@ -241,7 +197,7 @@ externalproject_add(target-vorbis
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                     -DOGG_INCLUDE_DIRS=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
-                    -DOGG_LIBRARIES=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/${OGG_ANDROID_LIB}
+                    -DOGG_LIBRARIES=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libogg.a
                     -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
                     -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
                     -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
@@ -251,13 +207,6 @@ externalproject_add(target-vorbis
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     )
-
-#Patch for MinGW static build
-if (MINGW)
-    set(ZLIB_STATIC_LIBRARY libzlibstatic.a)
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(ZLIB_STATIC_LIBRARY libz.a)
-endif ()
 
 externalproject_add(target-zlib
                     EXCLUDE_FROM_ALL true
@@ -283,7 +232,7 @@ externalproject_add(target-zlib
                     -G "${CMAKE_GENERATOR}"
                     INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-zlib-build
                     ${CMAKE_COMMAND} --build ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-zlib-build --target install
-                    && ${CMAKE_COMMAND} -E copy ${ZLIB_STATIC_LIBRARY} ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/${ZLIB_STATIC_LIBRARY}
+                    && ${CMAKE_COMMAND} -E copy libz.a libzlibstatic.a ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib || :
                     )
 
 externalproject_add(target-freetype
@@ -441,46 +390,22 @@ externalproject_add(target-assimp
                     -G "${CMAKE_GENERATOR}"
                     )
 
-cmake_dependent_option(CONTEXT_OGRE_BUILD_GLES2 "CONTEXT_OGRE_BUILD_GLES2" true "UNIX; NOT MINGW; NOT APPLE; NOT WIN32" false)
-cmake_dependent_option(CONTEXT_OGRE_BUILD_GL3PLUS "CONTEXT_OGRE_BUILD_GL3PLUS" true "NOT ANDROID" false)
-option(CONTEXT_OGRE_BUILD_GL "CONTEXT_OGRE_BUILD_GL" false)
-option(CONTEXT_OGRE_BUILD_OCTREE "CONTEXT_OGRE_BUILD_OCTREE" true)
-option(CONTEXT_OGRE_BUILD_PAGING "CONTEXT_OGRE_BUILD_PAGING" true)
-option(CONTEXT_OGRE_BUILD_STBI "CONTEXT_OGRE_BUILD_STBI" true)
-option(CONTEXT_OGRE_BUILD_HLMS "CONTEXT_OGRE_BUILD_HLMS" false)
-option(CONTEXT_OGRE_BUILD_RTSS "CONTEXT_OGRE_BUILD_RTSS" true)
-option(CONTEXT_OGRE_BUILD_TERRAIN "CONTEXT_OGRE_BUILD_TERRAIN" true)
-option(CONTEXT_OGRE_BUILD_PROPERTY "CONTEXT_OGRE_BUILD_PROPERTY" false)
-option(CONTEXT_OGRE_BUILD_OVERLAY "CONTEXT_OGRE_BUILD_OVERLAY" false)
-option(CONTEXT_OGRE_BUILD_OVERLAY_IMGUI "CONTEXT_OGRE_BUILD_OVERLAY_IMGUI" false)
-option(CONTEXT_OGRE_BUILD_PFX "CONTEXT_OGRE_BUILD_PFX" true)
-option(CONTEXT_OGRE_BUILD_DOT "CONTEXT_OGRE_BUILD_DOT" false)
-option(CONTEXT_OGRE_BUILD_DEPENDENCIES "CONTEXT_OGRE_BUILD_DEPENDENCIES" false)
-option(CONTEXT_OGRE_BUILD_BSP "CONTEXT_OGRE_BUILD_BSP" false)
-option(CONTEXT_OGRE_BUILD_PCZ "CONTEXT_OGRE_BUILD_PCZ" false)
-option(CONTEXT_OGRE_BUILD_FREEIMAGE "CONTEXT_OGRE_BUILD_FREEIMAGE" false)
-option(CONTEXT_OGRE_BUILD_EXRCODEC "CONTEXT_OGRE_BUILD_EXRCODEC" false)
-option(CONTEXT_OGRE_BUILD_VOLUME "CONTEXT_OGRE_BUILD_VOLUME" true)
-option(CONTEXT_OGRE_BUILD_MESHLODGENERATOR "CONTEXT_OGRE_BUILD_MESHLODGENERATOR" true)
-option(CONTEXT_OGRE_BUILD_ASSIMP "CONTEXT_OGRE_BUILD_ASSIMP" false)
-option(CONTEXT_OGRE_BUILD_PROCEDURAL "CONTEXT_OGRE_BUILD_PROCEDURAL" false)
-
 externalproject_add(target-ogre1
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-zzip target-freetype target-pugixml target-sdl
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/balrogcpp/ogre.git #patch will come with v1.12.10
-                    GIT_TAG c87ffeb4d7feeee2a1e028c1d50a7f3fc75017cd
+                    GIT_TAG fix-multishadow
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
                         ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre1/RenderSystems/GLSupport/include/GLSL
                         ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
-                        && ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre1 ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.10.patch
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DOGRE_DEPENDENCIES_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DOGRE_ASSERT_MODE=1
                     -DOGRE_CONFIG_THREADS=3
                     -DOGRE_CONFIG_THREAD_PROVIDER=std
@@ -493,30 +418,27 @@ externalproject_add(target-ogre1
                     -DOGRE_BUILD_RENDERSYSTEM_D3D11=false
                     -DOGRE_BUILD_RENDERSYSTEM_D3D9=false
                     -DOGRE_BUILD_PLUGIN_CG=false
-                    -DOGRE_BUILD_COMPONENT_BITES=${CONTEXT_OGRE_BUILD_OVERLAY}
-                    -DOGRE_BUILD_RENDERSYSTEM_GL=${CONTEXT_OGRE_BUILD_GL}
-                    -DOGRE_BUILD_RENDERSYSTEM_GL3PLUS=${CONTEXT_OGRE_BUILD_GL3PLUS}
-                    -DOGRE_BUILD_RENDERSYSTEM_GLES2=${CONTEXT_OGRE_BUILD_GLES2}
-                    -DOGRE_BUILD_COMPONENT_OVERLAY=${CONTEXT_OGRE_BUILD_OVERLAY}
-                    -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=${CONTEXT_OGRE_BUILD_OVERLAY_IMGUI}
-                    -DOGRE_BUILD_COMPONENT_PAGING=${CONTEXT_OGRE_BUILD_PAGING}
-                    -DOGRE_BUILD_COMPONENT_MESHLODGENERATOR=${CONTEXT_OGRE_BUILD_MESHLODGENERATOR}
-                    -DOGRE_BUILD_COMPONENT_PROPERTY=${CONTEXT_OGRE_BUILD_PROPERTY}
-                    -DOGRE_BUILD_COMPONENT_VOLUME=${CONTEXT_OGRE_BUILD_VOLUME}
-                    -DOGRE_BUILD_COMPONENT_TERRAIN=${CONTEXT_OGRE_BUILD_TERRAIN}
-                    -DOGRE_BUILD_PLUGIN_FREEIMAGE=${CONTEXT_OGRE_BUILD_FREEIMAGE}
-                    -DOGRE_BUILD_PLUGIN_EXRCODEC=${CONTEXT_OGRE_BUILD_EXRCODEC}
-                    -DOGRE_BUILD_PLUGIN_ASSIMP=${CONTEXT_OGRE_BUILD_ASSIMP}
-                    -DOGRE_BUILD_PLUGIN_STBI=${CONTEXT_OGRE_BUILD_STBI}
-                    -DOGRE_BUILD_PLUGIN_BSP=${CONTEXT_OGRE_BUILD_BSP}
-                    -DOGRE_BUILD_PLUGIN_PCZ=${CONTEXT_OGRE_BUILD_PCZ}
-                    -DOGRE_BUILD_PLUGIN_PFX=${CONTEXT_OGRE_BUILD_PFX}
-                    -DOGRE_BUILD_PLUGIN_OCTREE=${CONTEXT_OGRE_BUILD_OCTREE}
-                    -DOGRE_BUILD_PLUGIN_DOT_SCENE=${CONTEXT_OGRE_BUILD_DOT}
-                    -DOGRE_BUILD_COMPONENT_HLMS=${CONTEXT_OGRE_BUILD_HLMS}
-                    -DOGRE_BUILD_COMPONENT_RTSHADERSYSTEM=${CONTEXT_OGRE_BUILD_RTSS}
-                    -DOGRE_DEPENDENCIES_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DOGRE_BUILD_DEPENDENCIES=${CONTEXT_OGRE_BUILD_DEPENDENCIES}
+                    -DOGRE_BUILD_COMPONENT_BITES=false
+                    -DOGRE_BUILD_RENDERSYSTEM_GL=false
+                    -DOGRE_BUILD_COMPONENT_OVERLAY=false
+                    -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=false
+                    -DOGRE_BUILD_COMPONENT_PAGING=true
+                    -DOGRE_BUILD_COMPONENT_MESHLODGENERATOR=true
+                    -DOGRE_BUILD_COMPONENT_PROPERTY=false
+                    -DOGRE_BUILD_COMPONENT_VOLUME=true
+                    -DOGRE_BUILD_COMPONENT_TERRAIN=true
+                    -DOGRE_BUILD_PLUGIN_FREEIMAGE=false
+                    -DOGRE_BUILD_PLUGIN_EXRCODEC=false
+                    -DOGRE_BUILD_PLUGIN_ASSIMP=false
+                    -DOGRE_BUILD_PLUGIN_STBI=true
+                    -DOGRE_BUILD_PLUGIN_BSP=false
+                    -DOGRE_BUILD_PLUGIN_PCZ=false
+                    -DOGRE_BUILD_PLUGIN_PFX=true
+                    -DOGRE_BUILD_PLUGIN_OCTREE=true
+                    -DOGRE_BUILD_PLUGIN_DOT_SCENE=false
+                    -DOGRE_BUILD_COMPONENT_HLMS=false
+                    -DOGRE_BUILD_COMPONENT_RTSHADERSYSTEM=true
+                    -DOGRE_BUILD_DEPENDENCIES=false
                     -DOGRE_BUILD_SAMPLES=false
                     -DOGRE_INSTALL_SAMPLES_SOURCE=false
                     -DOGRE_INSTALL_SAMPLES=false
@@ -628,67 +550,12 @@ add_custom_target(deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
 ########################################################################################################################
 find_package(OGRE QUIET)
 
-if (CONTEXT_OGRE_BUILD_STBI)
-    list(APPEND OGRE_STATIC_PLUGINS Codec_STBIStatic)
-endif ()
-if (CONTEXT_OGRE_BUILD_FREEIMAGE)
-    list(APPEND OGRE_STATIC_PLUGINS Codec_FreeImageStatic)
-    list(APPEND OGRE_STATIC_PLUGINS freeimage)
-endif ()
-if (CONTEXT_OGRE_BUILD_GL3PLUS)
-    list(APPEND OGRE_STATIC_PLUGINS RenderSystem_GL3PlusStatic)
-endif ()
-if (CONTEXT_OGRE_BUILD_GL)
-    list(APPEND OGRE_STATIC_PLUGINS RenderSystem_GLStatic)
-endif ()
-if (CONTEXT_OGRE_BUILD_GLES2)
-    list(APPEND OGRE_STATIC_PLUGINS RenderSystem_GLES2Static)
-endif ()
-if (CONTEXT_OGRE_BUILD_OCTREE)
-    list(APPEND OGRE_STATIC_PLUGINS Plugin_OctreeSceneManagerStatic)
-endif ()
-if (CONTEXT_OGRE_BUILD_PFX)
-    list(APPEND OGRE_STATIC_PLUGINS Plugin_ParticleFXStatic)
-endif ()
-
-if (CONTEXT_OGRE_BUILD_RTSS)
-    list(APPEND OGRE_STATIC_LIBRARIES OgreRTShaderSystemStatic)
-endif ()
-if (CONTEXT_OGRE_BUILD_HLMS)
-    list(APPEND OGRE_STATIC_LIBRARIES OgreHLMSStatic)
-endif ()
-if (CONTEXT_OGRE_BUILD_TERRAIN)
-    list(APPEND OGRE_STATIC_LIBRARIES OgreTerrainStatic)
-endif ()
-if (CONTEXT_OGRE_BUILD_PAGING)
-    list(APPEND OGRE_STATIC_LIBRARIES OgrePagingStatic)
-endif ()
-if (CONTEXT_OGRE_BUILD_MESHLODGENERATOR)
-    list(APPEND OGRE_STATIC_LIBRARIES OgreMeshLodGeneratorStatic)
-endif ()
-if (CONTEXT_OGRE_BUILD_OVERLAY)
-    list(APPEND OGRE_STATIC_LIBRARIES OgreOverlayStatic)
-endif ()
-if (CONTEXT_OGRE_BUILD_VOLUME)
-    list(APPEND OGRE_STATIC_LIBRARIES OgreVolumeStatic)
-endif ()
-if (CONTEXT_OGRE_BUILD_PROCEDURAL)
-    list(APPEND OGRE_STATIC_LIBRARIES OgreProcedural)
-endif ()
-if (CONTEXT_OGRE_BUILD_ASSIMP)
-    list(APPEND OGRE_STATIC_LIBRARIES Codec_AssimpStatic)
-    list(APPEND OGRE_STATIC_LIBRARIES assimp)
-    list(APPEND OGRE_STATIC_LIBRARIES IrrXML)
-endif ()
-list(APPEND OGRE_STATIC_LIBRARIES OgreGLSupportStatic)
-list(APPEND OGRE_STATIC_LIBRARIES OgreMainStatic)
-
 ########################################################################################################################
 #Other dependencies block
 ########################################################################################################################
 
 find_package(Bullet QUIET)
-pkg_check_modules(SDL2 QUIET sdl2)
+find_package(SDL2 QUIET)
 find_package(OpenAL QUIET)
 find_package(Lua QUIET)
 pkg_check_modules(OGG QUIET ogg)
@@ -708,50 +575,29 @@ find_package(ZZip QUIET)
 ########################################################################################################################
 
 if (MINGW)
-    list(APPEND STATIC_LIBRARIES opengl32)
-    list(APPEND STATIC_LIBRARIES imagehlp)
-    list(APPEND STATIC_LIBRARIES dinput8)
-    list(APPEND STATIC_LIBRARIES dxguid)
-    list(APPEND STATIC_LIBRARIES dxerr8)
-    list(APPEND STATIC_LIBRARIES user32)
-    list(APPEND STATIC_LIBRARIES gdi32)
-    list(APPEND STATIC_LIBRARIES imm32)
-    list(APPEND STATIC_LIBRARIES winmm)
-    list(APPEND STATIC_LIBRARIES ole32)
-    list(APPEND STATIC_LIBRARIES oleaut32)
-    list(APPEND STATIC_LIBRARIES shell32)
-    list(APPEND STATIC_LIBRARIES version)
-    list(APPEND STATIC_LIBRARIES uuid)
-    list(APPEND STATIC_LIBRARIES setupapi)
-    list(APPEND STATIC_LIBRARIES hid)
-    list(APPEND STATIC_LIBRARIES jemalloc)
+    list(APPEND SYSTEM_LIBRARIES opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid jemalloc)
 elseif (UNIX AND NOT ANDROID)
-    list(APPEND STATIC_LIBRARIES OpenGL)
-    list(APPEND STATIC_LIBRARIES GLX)
-    list(APPEND STATIC_LIBRARIES X11)
-    list(APPEND STATIC_LIBRARIES Xrandr)
-    list(APPEND STATIC_LIBRARIES dl)
-    list(APPEND STATIC_LIBRARIES jemalloc)
+    list(APPEND SYSTEM_LIBRARIES OpenGL GLX X11 Xrandr dl jemalloc)
 elseif (ANDROID)
-    list(APPEND STATIC_LIBRARIES log)
-    list(APPEND STATIC_LIBRARIES android)
-    list(APPEND STATIC_LIBRARIES EGL)
-    list(APPEND STATIC_LIBRARIES GLESv2)
-    list(APPEND STATIC_LIBRARIES GLESv1_CM)
-    list(APPEND STATIC_LIBRARIES OpenSLES)
-    list(APPEND STATIC_LIBRARIES dl)
-    list(APPEND STATIC_LIBRARIES m.a)
-    list(APPEND STATIC_LIBRARIES hidapi)
-    list(APPEND STATIC_LIBRARIES ndk_compat)
-    list(APPEND STATIC_LIBRARIES omp)
+    list(APPEND SYSTEM_LIBRARIES log android EGL GLESv2 GLESv1_CM OpenSLES dl m.a hidapi ndk_compat omp)
 endif ()
 
-set(CONTEXT_STATIC_DEPENDENCY_LIBS
-    ${OGRE_STATIC_PLUGINS} ${OGRE_STATIC_LIBRARIES}
-    vorbisfile vorbis vorbisenc ogg pugixml SDL2 ${ZZip_LIBRARIES} ${LUA_LIBRARIES}
-    ${OPENAL_LIBRARY} ${BULLET_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ZLIB_LIBRARIES} ${STATIC_LIBRARIES}
-    CACHE INTERNAL ""
-    )
+set(CONTEXT_STATIC_DEPENDENCY_LIBS)
+
+if (OGRE_STATIC)
+    list(REMOVE_ITEM OGRE_LIBRARIES "dl")
+    foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
+        string(REPLACE "Static" "" X "${I}")
+        list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS "${X}Static")
+    endforeach ()
+endif ()
+
+list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS
+     vorbisfile vorbis vorbisenc ogg pugixml ${SDL2_LIBRARIES} ${ZZip_LIBRARIES} ${LUA_LIBRARIES}
+     ${OPENAL_LIBRARY} ${BULLET_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ZLIB_LIBRARIES} ${SYSTEM_LIBRARIES}
+     )
+
+set(CONTEXT_STATIC_DEPENDENCY_LIBS ${CONTEXT_STATIC_DEPENDENCY_LIBS} CACHE INTERNAL "")
 
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR})
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/btogre/include)
