@@ -162,13 +162,18 @@ void Compositor::Init() {
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
 
     for (int i = 0; i < 1; i++) {
-      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "FilterY/Ssao"))
-        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "FilterY/Ssao", true);
-      else
-        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
+//      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "FilterY/Ssao"))
+//        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "FilterY/Ssao", true);
+//      else
+//        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
+//
+//      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "FilterX/Ssao"))
+//        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "FilterX/Ssao", true);
+//      else
+//        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
 
-      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "FilterX/Ssao"))
-        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "FilterX/Ssao", true);
+      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Filter/Ssao"))
+        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Filter/Ssao", true);
       else
         Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
     }

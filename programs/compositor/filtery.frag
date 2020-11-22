@@ -31,11 +31,10 @@
 
 in vec2 oUv0;
 uniform sampler2D uSampler;
-uniform vec4 texelSize;
+uniform vec2 texelSize;
 
 vec4 Iteration(float offset, float weight) {
-  return texture2D(uSampler, (oUv0 + vec2(0.0, offset) * texelSize.y)) * weight +
-  texture2D(uSampler, (oUv0 - vec2(0.0, offset) * texelSize.y)) * weight;
+  return texture2D(uSampler, (oUv0 + vec2(0.0, offset) * texelSize.y)) * weight + texture2D(uSampler, (oUv0 - vec2(0.0, offset) * texelSize.y)) * weight;
 }
 
 void main()

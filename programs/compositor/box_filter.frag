@@ -20,35 +20,28 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-fragment_program filtery_fs glsl glsles
+#ifndef GL_ES
+#define VERSION 120
+#version VERSION
+#else
+#define VERSION 100
+#version VERSION
+#endif
+#include "header.frag"
+
+in vec2 oUv0;
+uniform sampler2D uSampler;
+uniform vec2 texelSize;
+
+void main()
 {
-	source filtery.frag
+  float color = 0;
+  for (int x = -2; x < 2; x++)
+  for (int y = -2; y < 2; y++)
+  {
+    color += texture2D(uSampler, vec2(oUv0.x + x * texelSize.x, oUv0.y + y * texelSize.y)).x;
+  }
+  color /= 16;
 
-    default_params
-    {
-        param_named uSampler int 0
-        param_named_auto texelSize inverse_texture_size 0
-    }
-}
-
-fragment_program filterx_fs glsl glsles
-{
-	source filterx.frag
-
-    default_params
-    {
-        param_named uSampler int 0
-        param_named_auto texelSize inverse_texture_size 0
-    }
-}
-
-fragment_program box_filter_fs glsl glsles
-{
-	source box_filter.frag
-
-    default_params
-    {
-        param_named uSampler int 0
-        param_named_auto texelSize inverse_texture_size 0
-    }
+  gl_FragColor = vec4(color, 0.0, 0.0, 1.0);
 }
