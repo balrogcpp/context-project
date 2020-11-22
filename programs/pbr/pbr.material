@@ -391,7 +391,7 @@ abstract material Grass : Basic
       {
             alpha_rejection greater_equal 128
             cull_hardware none
-            cull_software none
+            //cull_software none
             //scene_blend alpha_blend
 
             texture_unit Albedo

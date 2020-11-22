@@ -40,7 +40,7 @@ ADD scenes ./scenes
 ADD CMakeLists.txt .
 ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 
-RUN mkdir -p build-windows && mkdir -p build-linux && mkdir -p build-android && \
+RUN mkdir -p build-windows build-linux build-android && \
     cd build-windows && \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. && \
     cmake --build . --target install-zip && cd .. && \

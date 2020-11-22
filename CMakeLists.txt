@@ -276,14 +276,14 @@ if (CONTEXT_ONLY_DEPS)
     return()
 endif ()
 
-#execute_process(
-#        COMMAND git rev-parse --short=8 HEAD
-#        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-#        OUTPUT_VARIABLE GIT_SHA1
-#        OUTPUT_STRIP_TRAILING_WHITESPACE
-#)
-
-option(GIT_SHA1 STRING)
+if (NOT GIT_SHA1)
+    execute_process(
+            COMMAND git rev-parse --short=8 HEAD
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_VARIABLE GIT_SHA1
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+endif ()
 
 set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
 set(CONTEXT_ZIP_NAME ContextProjectDemo-${CMAKE_BUILD_TYPE}-${GIT_SHA1} CACHE PATH "")
@@ -305,9 +305,6 @@ add_subdirectory(${CONTEXT_ROOT_DIR}/sources ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE
 add_subdirectory(${CONTEXT_ROOT_DIR}/demo ${CMAKE_CURRENT_BINARY_DIR}/demo)
 
 add_dependencies(demo lib-static)
-if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-    add_dependencies(demo zip-deps)
-endif ()
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
 
@@ -340,15 +337,16 @@ install(DIRECTORY ${CONTEXT_MEDIA_FILES}
         )
 
 if (WIN32)
-    set(CONTEXT_OS "Windows")
+    set(CONTEXT_TARGET_OS "Windows")
 elseif (UNIX)
-    set(CONTEXT_OS "Linux")
+    set(CONTEXT_TARGET_OS "Linux")
 elseif (ANDROID)
-    set(CONTEXT_OS "Android")
+    set(CONTEXT_TARGET_OS "Android")
 endif ()
+
 set(CONTEXT_PACKAGE_NAME "ContextProjectDemo")
 set(CONTEXT_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts)
-set(CONTEXT_ARTIFACT_NAME ${CONTEXT_PACKAGE_NAME}-${CMAKE_BUILD_TYPE}-${CONTEXT_OS}-${CONTEXT_BUILD_PLATFORM})
+set(CONTEXT_ARTIFACT_NAME ${CONTEXT_PACKAGE_NAME}-${CONTEXT_TARGET_OS}-${CONTEXT_BUILD_PLATFORM}-${GIT_SHA1})
 
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
@@ -363,11 +361,7 @@ set(CPACK_NSIS_PACKAGE_NAME "Context Demo")
 set(CPACK_NSIS_MENU_LINKS "demo.exe" "ContextProjectDemo")
 set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL true)
 
-if (UNIX)
-    set(CPACK_GENERATOR "TGZ")
-elseif (WIN32 OR MINGW)
-    set(CPACK_GENERATOR "NSIS")
-endif ()
+set(CPACK_GENERATOR "ZIP")
 
 include(CPack)
 
@@ -377,6 +371,7 @@ add_custom_target(install-zip
                   COMMENT "Create zip..."
                   VERBATIM
                   )
-add_dependencies(install-zip install)
+
+add_dependencies(install-zip install zip-deps)
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
