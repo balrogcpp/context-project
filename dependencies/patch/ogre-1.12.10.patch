@@ -62,7 +62,7 @@
 +                }
 +            }
 +
-+          lightsLeft = 0;
++        lightsLeft = 0;
          }
 
          // issue the render op
