@@ -27,20 +27,13 @@
 #define VERSION 100
 #version VERSION
 #endif
-#include "header.frag"
+#include "header.vert"
 
-in vec2 oUv0;
-uniform sampler2D SceneSampler;
-#ifdef GAMMA
-uniform float exposure;
-#endif
+in vec3 position;
+uniform mat4 cWorldViewProj;
+
 void main()
 {
-  vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-#ifdef GAMMA
-  const float gamma = 2.2;
-  vec3 mapped = vec3(1.0) - exp(-scene * exposure);
-  scene = pow(mapped, vec3(1.0 / gamma));
-#endif
-  gl_FragColor = vec4(scene, 1.0);
+  vec4 new_position = vec4(position, 1.0);
+  gl_Position = cWorldViewProj * new_position;
 }

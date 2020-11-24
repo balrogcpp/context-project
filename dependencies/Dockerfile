@@ -27,6 +27,7 @@ ARG CONTEXT_HOME=/mnt/build
 WORKDIR ${CONTEXT_HOME}
 
 ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
+ADD dependencies/patch ./dependencies/patch
 ADD CMakeLists.txt .
 ADD ./CMake ./CMake
 

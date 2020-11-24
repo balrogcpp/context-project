@@ -35,5 +35,5 @@ in vec3 TexCoords; // direction vector representing a 3D texture coordinate
 
 void main()
 {
-    gl_FragColor = SRGBtoLINEAR(textureCube(cubemap, TexCoords));
+    gl_FragColor = vec4(SRGBtoLINEAR(textureCube(cubemap, TexCoords).rgb), 1.0);
 }

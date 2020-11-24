@@ -133,7 +133,7 @@ float fbm(vec2 p) {
 vec4 ApplyWaveAnimation(vec4 position, float time, float frequency, vec4 direction) {
   float offset = sin(uTime + position.x * frequency);
   float n = fbm(position.xy * time * 0.2) * 4.0 - 2.0;
-//  return position + offset * direction;
+//  return position + offset * direction + n * 0.01;
   return position + n * direction;
 }
 #endif
@@ -162,10 +162,10 @@ void main()
   vPosition = model_position.xyz / model_position.w;
 
 #ifdef PAGED_GEOMETRY
-  float dist = distance(uCameraPosition.xz, vPosition.xz);
-  vAlpha = 2.0 - (1.0 * dist * uFadeRange);
+  float dist = distance(uCameraPosition.xyz, vPosition.xyz);
+  vAlpha = (dist < uFadeRange) ? 1.0 : 0.0;
 
-  if (uv0.y < 0.9) {
+  if (uv0.y < 0.9 && dist < uWindRange) {
     new_position = ApplyWaveAnimation(new_position, uTime, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
   }
 #endif

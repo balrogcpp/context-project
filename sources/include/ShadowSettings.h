@@ -58,13 +58,13 @@ class ShadowSettings : public NoCopy {
     else
       throw Exception("Unknown texture format, aborting;");
 
-    scene_->setShadowTextureSettings(tex_size_, tex_count_, texture_type);
+    scene_->setShadowTextureSettings(tex_size_, 1, texture_type);
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
 
-     for (int i = 0; i < tex_count_; i++)
-        scene_->setShadowTextureConfig(i, tex_size_ * pow(2, -floor(i/3)), tex_size_ * pow(2, -floor(i/3)), texture_type);
+//     for (int i = 0; i < tex_count_; i++)
+//        scene_->setShadowTextureConfig(i, tex_size_ * pow(2, -floor(i/3)), tex_size_ * pow(2, -floor(i/3)), texture_type);
 
     scene_->setShadowTextureSelfShadow(true);
     scene_->setShadowCasterRenderBackFaces(true);

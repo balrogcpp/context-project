@@ -118,7 +118,7 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
   auto *renderTarget = root_->getRenderTarget(window_->GetCaption());
   viewport_ = renderTarget->addViewport(camera_);
   viewport_->setBackgroundColour(Ogre::ColourValue::Black);
-  camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / viewport_->getActualHeight());
+  camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / static_cast<float>(viewport_->getActualHeight()));
   camera_->setAutoAspectRatio(true);
 //  camera_->setLodBias(0.5);
 //  camera_->setPolygonMode(Ogre::PM_WIREFRAME);
@@ -165,7 +165,7 @@ void Renderer::CreateCamera() {
 
   if (camera_) {
     camera_->setNearClipDistance(0.1f);
-    camera_->setFarClipDistance(10000.0f);
+    camera_->setFarClipDistance(5000.0f);
   }
 
   camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / viewport_->getActualHeight());
@@ -191,7 +191,7 @@ void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Resize(int32_t w, int32_t h, bool f) {
   if (f) {
-    window_->Fullscreen(f);
+    window_->SetFullscreen(f);
     ogre_->resize(window_->GetSize().first, window_->GetSize().second);
     ogre_->setFullscreen(f, window_->GetSize().first, window_->GetSize().second);
   } else {

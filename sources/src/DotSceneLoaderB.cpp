@@ -295,11 +295,36 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   light->setVisible(GetAttribBool(xml_node, "visible", true));
   light->setCastShadows(GetAttribBool(xml_node, "castShadows", false));
 
+  auto texture_config = scene_->getShadowTextureConfigList()[0];
+
   if (light->getType() == Ogre::Light::LT_POINT) {
     light->setCastShadows(false);
   } else if (light->getType() == Ogre::Light::LT_SPOTLIGHT) {
     static auto default_scs = Ogre::DefaultShadowCameraSetup::create();
-    light->setCustomShadowCameraSetup(default_scs);
+
+    if (light->getCastShadows()) {
+      light->setCustomShadowCameraSetup(default_scs);
+      size_t tex_count = scene_->getShadowTextureConfigList().size() + 1;
+      scene_->setShadowTextureCount(tex_count);
+
+      size_t index = tex_count - 1;
+      texture_config.height *= std::pow(2, -floor(index/3));
+      texture_config.width *= std::pow(2, -floor(index/3));
+      scene_->setShadowTextureConfig(index, texture_config);
+    }
+  } else if (light->getType() == Ogre::Light::LT_DIRECTIONAL) {
+    if (light->getCastShadows()) {
+      size_t per_light = scene_->getShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL);
+      size_t tex_count = scene_->getShadowTextureConfigList().size() + per_light - 1;
+      scene_->setShadowTextureCount(tex_count);
+
+      for (size_t i = 1; i <= per_light; i++) {
+        size_t index = tex_count - i;
+        texture_config.height *= std::pow(2, -floor(index/3));
+        texture_config.width *= std::pow(2, -floor(index/3));
+        scene_->setShadowTextureConfig(index, texture_config);
+      }
+    }
   }
 
   light->setPowerScale(GetAttribReal(xml_node, "powerScale", 1.0));

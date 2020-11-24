@@ -43,9 +43,7 @@ class Window : public NoCopy {
   }
 //----------------------------------------------------------------------------------------------------------------------
   virtual ~Window() {
-    if (f_)
     SDL_SetWindowFullscreen(window_, SDL_FALSE);
-
     SDL_DestroyWindow(window_);
   }
 
@@ -74,21 +72,26 @@ class Window : public NoCopy {
     screen_h_ = static_cast<int>(DM.h);
 
     if (w_ * h_ == 0.0) {
-      w_ = screen_w_;
-      h_ = screen_h_;
-      f_ = false;
+      f_ = true;
     }
 
-    flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
-
-    if (w_ == screen_w_ && h_ == screen_h_)
+    if (w_ == screen_w_ && h_ == screen_h_) {
       flags_ |= SDL_WINDOW_BORDERLESS;
+      f_ = true;
+    }
 
     if (f_) {
       flags_ |= SDL_WINDOW_ALWAYS_ON_TOP;
       flags_ |= SDL_WINDOW_INPUT_GRABBED;
       flags_ |= SDL_WINDOW_MOUSE_FOCUS;
+
+      flags_ |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+
+      w_ = screen_w_;
+      h_ = screen_h_;
     }
+
+    flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
 
     window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w_, h_, flags_);
 
@@ -146,10 +149,6 @@ class Window : public NoCopy {
 
       if (!context_)
         throw Exception("Failed to Create SDL_GL_Context");
-    }
-
-    if (window_ && f_) {
-      SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
   }
 
@@ -214,7 +213,7 @@ class Window : public NoCopy {
     SDL_SetWindowSize(window_, w_, h_);
   }
 
-  inline void Fullscreen(bool f) noexcept {
+  inline void SetFullscreen(bool f) noexcept {
     f_ = f;
 
     if (f) {

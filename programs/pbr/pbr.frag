@@ -297,19 +297,17 @@ float GetRoughness(vec2 uv) {
 vec4 GetAlbedo(vec2 uv) {
     vec4 albedo = vec4(1.0);
 
-#ifdef HAS_COLOURS
-    vec3 vertex_colour = vColor;
-#else
-    const vec3 vertex_colour = vec3(1.0);
-#endif
-
 #ifdef HAS_ALPHA
     albedo = texture2D(uAlbedoSampler, uv, uLOD);
 #else
     albedo = vec4(texture2D(uAlbedoSampler, uv, uLOD).rgb, 1.0);
 #endif
 
-    albedo.rgb *= (uSurfaceDiffuseColour * vertex_colour);
+#ifdef HAS_COLOURS
+    albedo.rgb *= (uSurfaceDiffuseColour * vColor);
+#else
+    albedo.rgb *= (uSurfaceDiffuseColour);
+#endif
 
     return SRGBtoLINEAR(albedo);
 }
@@ -385,6 +383,7 @@ void main()
 #ifdef HAS_ALPHA
 #ifdef PAGED_GEOMETRY
     albedo.a *= vAlpha;
+    albedo.a = clamp(albedo.a, 0.0, 1.0);
 #endif //PAGED_GEOMETRY
 
     if (albedo.a < uAlphaRejection)

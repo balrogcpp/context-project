@@ -53,10 +53,10 @@ void main()
   float fragmentWorldDepth = texture2D(sSceneDepthSampler, oUv0).r * farClipDistance;
   float accessibility = 0.0;
 
-//  if (fragmentWorldDepth < 50.0) {
-//    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-//    return;
-//  }
+  if (fragmentWorldDepth <= 0.0) {
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    return;
+  }
 
   // get rotation vector, rotation is tiled every 4 screen pixels
   vec2 rotationTC = oUv0 * cViewportSize.xy / 4.0;

@@ -24,7 +24,7 @@
 shared_params PBR_Shared
 {
     shared_param_named uNormalScale float 1.0
-    shared_param_named uOffsetScale float 0.01
+    shared_param_named uOffsetScale float 0.001
 }
 
 vertex_program PBR_vs glsl glsles
@@ -172,24 +172,30 @@ abstract material PBR_IBL : PBR
     transparency_casts_shadows off
     receive_shadows on
 
+    set $IBL_Diffuse diffuse.dds
+    set $IBL_Specular specular.dds
+    set $IBL_LUT brdfLUT.dds
+
     technique
     {
       pass
       {
             texture_unit IBL_Diffuse
             {
-                texture diffuse.dds cubic
+                texture $IBL_Diffuse cubic
                 tex_address_mode clamp
+                filtering bilinear
             }
             texture_unit IBL_Specular
             {
-                texture specular.dds cubic
+                texture $IBL_Specular cubic
                 tex_address_mode clamp
+                filtering bilinear
             }
             texture_unit IBL_LUT
             {
                 tex_address_mode clamp
-                texture brdfLUT.dds
+                texture $IBL_LUT
                 filtering bilinear
             }
 
@@ -391,7 +397,6 @@ abstract material Grass : Basic
       {
             alpha_rejection greater_equal 128
             cull_hardware none
-            //cull_software none
             //scene_blend alpha_blend
 
             texture_unit Albedo

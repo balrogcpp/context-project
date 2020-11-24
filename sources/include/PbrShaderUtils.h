@@ -90,8 +90,8 @@ inline void UpdatePbrParams(const Ogre::MaterialPtr &material) {
   vert_params->setNamedAutoConstant("uModelMatrix", Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
   vert_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
 
-  vert_params->setNamedConstant("uFadeRange", 1.0f / 50.0f);
-  vert_params->setNamedConstant("uWindRange", 15.0f);
+  vert_params->setNamedConstant("uFadeRange", 50.0f);
+  vert_params->setNamedConstant("uWindRange", 30.0f);
   vert_params->setNamedConstantFromTime("uTime", 1.0f);
 
   auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
@@ -116,8 +116,6 @@ inline void UpdatePbrParams(const Ogre::MaterialPtr &material) {
 
   frag_params->setNamedConstant("uLOD", 0.0f);
 //  frag_params->setNamedConstant("uLOD", 0.5f);
-  frag_params->setNamedConstant("uShadowFilterSize", 0.004f);
-  frag_params->setNamedConstant("uShadowFilterIterations", 8);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -174,7 +172,7 @@ inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
     tu->setContentType(Ogre::TextureUnitState::CONTENT_SHADOW);
     tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
     tu->setTextureBorderColour(Ogre::ColourValue::White);
-    tu->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_NONE);
+    tu->setTextureFiltering( Ogre::TFO_NONE);
     frag_params->setNamedConstant("shadowMap" + std::to_string(i), texture_count + i);
   }
 }

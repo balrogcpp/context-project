@@ -117,3 +117,31 @@ material gbuffer_alpha
         }
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+vertex_program gbuffer_empty_vp glsl glsles
+{
+ 	source gbuffer_empty.vert
+}
+
+fragment_program gbuffer_empty_fp glsl glsles
+{
+	source gbuffer_empty.frag
+}
+
+material gbuffer_empty
+{
+    technique
+    {
+        pass
+        {
+            vertex_program_ref gbuffer_empty_vp
+            {
+                param_named_auto cWorldViewProj worldviewproj_matrix
+            }
+
+            fragment_program_ref gbuffer_empty_fp
+            {}
+        }
+    }
+}

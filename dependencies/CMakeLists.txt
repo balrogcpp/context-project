@@ -401,6 +401,7 @@ externalproject_add(target-ogre1
                     PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
                         ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre1/RenderSystems/GLSupport/include/GLSL
                         ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
+                        #&& ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre1 ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.10.patch
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}

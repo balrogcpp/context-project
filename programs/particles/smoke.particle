@@ -1,8 +1,6 @@
 // Example particle systems
 material Examples/Smoke
 {
-    receive_shadows off
-    transparency_casts_shadows on
 	technique
 	{
 		pass
@@ -12,10 +10,11 @@ material Examples/Smoke
 			depth_write off
 			diffuse vertexcolour
             fog_override true
+            alpha_rejection greater_equal 1
 
-			texture_unit Albedo
+			texture_unit
 			{
-				texture bubble.png
+				texture leaf.png
 				tex_address_mode clamp
 			}
 		}
@@ -45,10 +44,10 @@ particle_system Examples/Smoke
 		velocity_max 2
 	}
 
-    /*affector ColourImage
+    affector ColourImage
 	{
 		image smokecolors.png
-	}*/
+	}
 
    	affector Rotator
    	{

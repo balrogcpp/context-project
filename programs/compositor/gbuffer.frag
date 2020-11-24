@@ -42,7 +42,7 @@ uniform sampler2D baseColor;
 void main()
 {
 #ifdef HAS_ALPHA
-    if (texture2D(baseColor, vUV).a < 0.5) {
+    if (texture2D(baseColor, vUV).a < 1.0) {
         discard;
     }
 #endif
