@@ -383,7 +383,6 @@ void main()
 #ifdef HAS_ALPHA
 #ifdef PAGED_GEOMETRY
     albedo.a *= vAlpha;
-    albedo.a = clamp(albedo.a, 0.0, 1.0);
 #endif //PAGED_GEOMETRY
 
     if (albedo.a < uAlphaRejection)
@@ -425,18 +424,25 @@ void main()
         float fSpotT = 1.0;
 
         vec4 vAttParams = uLightAttenuationArray[i];
-        float attenuation = vAttParams.z;
-        vec3 vSpotParams = uLightSpotParamsArray[i];
-        float spot = vSpotParams.z;
+        float range = vAttParams.x;
 
-        if (attenuation > 0.0) {
-            fAtten = float(fLightD < vAttParams.x) / (vAttParams.y + attenuation * fLightD + vAttParams.w * fLightD * fLightD);
+        if (range > 0.0) {
+            float attenuation_const = vAttParams.y;
+            float attenuation_linear = vAttParams.z;
+            float attenuation_quad = vAttParams.w;
 
-            float rho = dot(l, vLightView);
+            fAtten = float(fLightD < range) / (attenuation_const + attenuation_linear * fLightD + attenuation_quad * fLightD * fLightD);
 
-            if (spot > 0.0) {
-                  float fSpotE = clamp((rho - vSpotParams.y) / (vSpotParams.x - vSpotParams.y), 0.0, 1.0);
-                  fSpotT = pow(fSpotE, spot);
+            vec3 vSpotParams = uLightSpotParamsArray[i];
+            float outer_radius = vSpotParams.z;
+
+            if (outer_radius > 0.0) {
+                float fallof = vSpotParams.x;
+                float inner_radius = vSpotParams.y;
+
+                float rho = dot(l, vLightView);
+                float fSpotE = clamp((rho - inner_radius) / (fallof - inner_radius), 0.0, 1.0);
+                fSpotT = pow(fSpotE, outer_radius);
               }
         }
 
@@ -472,9 +478,9 @@ void main()
         vec3 colour = tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
 #ifdef SHADOWRECEIVER
-        if (uLightCastsShadowsArray[i] == 1.0) {
+        if (uLightCastsShadowsArray[i] > 0.0) {
             #if MAX_SHADOW_TEXTURES > 2
-              if (uLightAttenuationArray[0].z > 0.0) {
+              if (uLightAttenuationArray[0].x > 0.0) {
                   colour *= (tmp > 0.002) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations / 2) : 1.0;
               } else if (i == 0) {
                   colour *= (tmp > 0.002) ? CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], shadowMap0, shadowMap1, shadowMap2, vDepth, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations) : 1.0;
