@@ -74,14 +74,21 @@ void Application::messageLogged(const std::string &message, Ogre::LogMessageLeve
         bool maskDebug, const std::string &logName, bool &skipThisMessage) {
   log_.append(message);
   log_.append("\n");
-  std::cout << message << "\n";
+#ifdef DEBUG
+  if (verbose_)
+    std::cout << message << "\n";
+#endif
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
   auto *logger = new Ogre::LogManager();
   logger->createLog("ogre.log", true, false, true);
   Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+#ifdef DEBUG
   Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
+#else
+  Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
+#endif
 
 //#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 //  DesktopIcon icon;
