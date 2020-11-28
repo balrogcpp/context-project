@@ -35,7 +35,7 @@ class Component : public NoCopy {
   virtual void Clean() = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;
-  virtual void Loop(float time) = 0;
+  virtual void Update(float time) = 0;
 
  protected:
   inline static YamlConfigurator *conf_ = nullptr;

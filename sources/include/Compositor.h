@@ -47,7 +47,7 @@ class Compositor : public Component, public Singleton<Compositor> {
   void Clean() final;
   void Pause() final {}
   void Resume() final {}
-  void Loop(float time) final;
+  void Update(float time) final;
 
   void EnableEffect(const std::string &name, bool enable) {
     effects_[name] = enable;

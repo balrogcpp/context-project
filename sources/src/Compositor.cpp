@@ -57,24 +57,24 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     }
 
     if (pass->getNumTextureUnitStates() > 0 && has_alpha && alpha_rejection > 0) {
-//      gBufferTech->setSchemeName(schemeName);
-//      Ogre::Pass *gbufPass = gBufferTech->createPass();
-//      *gbufPass = *ref_mat3_->getTechnique(0)->getPass(0);
-
       gBufferTech->setSchemeName(schemeName);
       Ogre::Pass *gbufPass = gBufferTech->createPass();
-      *gbufPass = *ref_mat2_->getTechnique(0)->getPass(0);
+      *gbufPass = *ref_mat3_->getTechnique(0)->getPass(0);
 
-      auto texture_albedo = pass->getTextureUnitState(0);
-      if (texture_albedo) {
-        std::string texture_name = pass->getTextureUnitState(0)->getTextureName();
-        auto *texPtr3 = gBufferTech->getPass(0)->getTextureUnitState("BaseColor");
-
-        if (texPtr3) {
-          texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-          texPtr3->setTextureName(texture_name);
-        }
-      }
+//      gBufferTech->setSchemeName(schemeName);
+//      Ogre::Pass *gbufPass = gBufferTech->createPass();
+//      *gbufPass = *ref_mat2_->getTechnique(0)->getPass(0);
+//
+//      auto texture_albedo = pass->getTextureUnitState(0);
+//      if (texture_albedo) {
+//        std::string texture_name = pass->getTextureUnitState(0)->getTextureName();
+//        auto *texPtr3 = gBufferTech->getPass(0)->getTextureUnitState("BaseColor");
+//
+//        if (texPtr3) {
+//          texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+//          texPtr3->setTextureName(texture_name);
+//        }
+//      }
     } else {
       gBufferTech->setSchemeName(schemeName);
       Ogre::Pass *gbufPass = gBufferTech->createPass();
@@ -119,7 +119,7 @@ Compositor::Compositor() {
 }
 Compositor::~Compositor() noexcept {}
 //----------------------------------------------------------------------------------------------------------------------
-void Compositor::Loop(float time) {
+void Compositor::Update(float time) {
   if (effects_["motion"]) {
     mvp_prev_ = mvp_;
     mvp_ = camera_->getProjectionMatrixWithRSDepth() * camera_->getViewMatrix();
@@ -134,103 +134,119 @@ void Compositor::Clean() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Init() {
-  if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Main"))
-    Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Main", false);
+  auto &compositor_manager = Ogre::CompositorManager::getSingleton();
+
+  if (compositor_manager.addCompositor(viewport_, "Main"))
+    compositor_manager.setCompositorEnabled(viewport_, "Main", false);
   else
     Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Main compositor\n");
 
-  auto *compositor = Ogre::CompositorManager::getSingleton().getCompositorChain(viewport_)->getCompositor("Main");
-  auto *td = compositor->getTechnique()->getTextureDefinition("scene");
-  td->width = conf_->Get<int>("window_width");
-  td->height = conf_->Get<int>("window_high");
+  auto *compositor_chain = compositor_manager.getCompositorChain(viewport_);
+  bool fullscreen = conf_->Get<bool>("window_fullscreen");
 
-  Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Main", true);
+  if (fullscreen) {
+    auto *main_compositor = compositor_chain->getCompositor("Main");
+    auto *td = main_compositor->getTechnique()->getTextureDefinition("scene");
+    td->width = conf_->Get<int>("window_width");
+    td->height = conf_->Get<int>("window_high");
+  }
 
-  if (effects_["ssao"] || effects_["motion"]) {
+  int new_width = conf_->Get<int>("window_width");
+  int new_height = conf_->Get<int>("window_high");
+  bool resolution_changed = new_width != viewport_->getActualWidth() || new_height != viewport_->getActualHeight();
+
+  compositor_manager.setCompositorEnabled(viewport_, "Main", true);
+
+  if (effects_["ssao"] || effects_["motion"] || !gbuff_handler_) {
     gbuff_handler_ = new GBufferSchemeHandler();
     Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_, "GBuffer");
   }
 
   if (effects_["ssao"] || effects_["motion"]) {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "GBuffer"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "GBuffer", true);
+    if (compositor_manager.addCompositor(viewport_, "GBuffer"))
+      compositor_manager.setCompositorEnabled(viewport_, "GBuffer", false);
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
+
+    if (fullscreen) {
+      auto *gbuf_compositor = compositor_chain->getCompositor("GBuffer");
+      auto *td = gbuf_compositor->getTechnique()->getTextureDefinition("mrt");
+      td->width = new_width / 2;
+      td->height = new_height / 2;
+    }
+
+    compositor_manager.setCompositorEnabled(viewport_, "GBuffer", true);
   }
 
   if (effects_["bloom"]) {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Bloom"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Bloom", true);
+    if (compositor_manager.addCompositor(viewport_, "Bloom"))
+      compositor_manager.setCompositorEnabled(viewport_, "Bloom", false);
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Bloom compositor\n");
 
-    for (int i = 0; i < 1; i++) {
-      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "FilterY/Bloom"))
-        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "FilterY/Bloom", true);
-      else
-        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
-
-      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "FilterX/Bloom"))
-        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "FilterX/Bloom", true);
-      else
-        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
+    if (fullscreen) {
+      auto *bloom_compositor = compositor_chain->getCompositor("Bloom");
+      auto *td = bloom_compositor->getTechnique()->getTextureDefinition("bloom");
+      td->width = new_width / 4;
+      td->height = new_height / 4;
     }
-  }
 
-  if (effects_["ssao"]) {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Ssao"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Ssao", true);
+    compositor_manager.setCompositorEnabled(viewport_, "Bloom", true);
+
+    if (compositor_manager.addCompositor(viewport_, "FilterY/Bloom"))
+      compositor_manager.setCompositorEnabled(viewport_, "FilterY/Bloom", true);
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
 
-    for (int i = 0; i < 1; i++) {
-      if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Filter/Ssao"))
-        Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Filter/Ssao", true);
-      else
-        Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
-    }
+    if (compositor_manager.addCompositor(viewport_, "FilterX/Bloom"))
+      compositor_manager.setCompositorEnabled(viewport_, "FilterX/Bloom", true);
+    else
+      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
   }
 
-  if (effects_["motion"]) {
-  if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "MotionBlur"))
-    Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "MotionBlur", true);
-  else
-    Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
-  }
+  if (effects_["ssao"]) {
+    if (compositor_manager.addCompositor(viewport_, "Ssao"))
+      compositor_manager.setCompositorEnabled(viewport_, "Ssao", true);
+    else
+      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
 
-//  if (td->width != viewport_->getActualWidth() || td->width != viewport_->getActualHeight()) {
-//    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Filter/Main"))
-//      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Filter/Main", true);
-//    else
-//      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
-//  }
+    if (compositor_manager.addCompositor(viewport_, "Filter/Ssao"))
+      compositor_manager.setCompositorEnabled(viewport_, "Filter/Ssao", true);
+    else
+      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
+  }
 
   if (effects_["ssao"] && !effects_["bloom"]) {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Modulate/Ssao"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Modulate/Ssao", true);
+    if (compositor_manager.addCompositor(viewport_, "Modulate/Ssao"))
+      compositor_manager.setCompositorEnabled(viewport_, "Modulate/Ssao", true);
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
   }
 
   else if (effects_["bloom"] && !effects_["ssao"]) {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Modulate/Bloom"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Modulate/Bloom", true);
+    if (compositor_manager.addCompositor(viewport_, "Modulate/Bloom"))
+      compositor_manager.setCompositorEnabled(viewport_, "Modulate/Bloom", true);
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
   }
 
   else if (effects_["bloom"] && effects_["ssao"]) {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Modulate/SsaoBlur"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Modulate/SsaoBlur", true);
+    if (compositor_manager.addCompositor(viewport_, "Modulate/SsaoBlur"))
+      compositor_manager.setCompositorEnabled(viewport_, "Modulate/SsaoBlur", true);
     else
       Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
   }
 
-  else if (!effects_["bloom"] && !effects_["ssao"]) {
-    if (Ogre::CompositorManager::getSingleton().addCompositor(viewport_, "Output"))
-      Ogre::CompositorManager::getSingleton().setCompositorEnabled(viewport_, "Output", true);
+  if (effects_["motion"]) {
+    if (compositor_manager.addCompositor(viewport_, "MotionBlur"))
+      compositor_manager.setCompositorEnabled(viewport_, "MotionBlur", true);
     else
-      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Filter compositor\n");
+      Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Modulate compositor\n");
   }
+
+  if (compositor_manager.addCompositor(viewport_, "Output"))
+    compositor_manager.setCompositorEnabled(viewport_, "Output", true);
+  else
+    Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
 }
 }

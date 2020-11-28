@@ -24,7 +24,6 @@
 #include "Component.h"
 #include "Singleton.h"
 #include "Gorilla.h"
-#include <memory>
 
 namespace Ogre {
 class RenderTarget;
@@ -43,7 +42,7 @@ class Overlay final : public Component, public Singleton<Overlay> {
   void Clean() final {}
   void Pause() final {}
   void Resume() final {}
-  void Loop(float time) final;
+  void Update(float time) final;
   void Text(const std::string &str);
   void Show();
   void Hide();

@@ -92,14 +92,14 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
   const char true_str[] = "true";
   const char false_str[] = "false";
   bool vsync_ = conf_->Get<bool>("graphics_vsync");
-  bool gamma_ = false;
+  bool gamma_ = conf_->Get<bool>("graphics_gamma");;
   int fsaa_ = conf_->Get<int>("graphics_fsaa");
-  int msaa_ = 0;
+//  int msaa_ = 0;
 
   params["vsync"] = vsync_ ? true_str : false_str;
   params["gamma"] = gamma_ ? true_str : false_str;
   params["FSAA"] = std::to_string(fsaa_);
-  params["MSAA"] = std::to_string(msaa_);
+//  params["MSAA"] = std::to_string(msaa_);
 
   ogre_ = root_->createRenderWindow(window_->GetCaption(), window_->GetSize().first, \
                        window_->GetSize().second, window_->IsFullscreen(), &params);

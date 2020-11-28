@@ -91,7 +91,7 @@ inline void UpdatePbrParams(const Ogre::MaterialPtr &material) {
   vert_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
 
   vert_params->setNamedConstant("uFadeRange", 50.0f);
-  vert_params->setNamedConstant("uWindRange", 30.0f);
+  vert_params->setNamedConstant("uWindRange", 50.0f);
   vert_params->setNamedConstantFromTime("uTime", 1.0f);
 
   auto frag_params = material->getTechnique(0)->getPass(0)->getFragmentProgramParameters();

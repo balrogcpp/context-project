@@ -50,7 +50,7 @@ class Renderer final : public Component, public Singleton<Renderer> {
   void Clean() final {}
   void Pause() final {}
   void Resume() final {}
-  void Loop(float time) final {compositor_->Loop(time);};
+  void Update(float time) final { compositor_->Update(time);};
 
   void Refresh();
   void UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy);

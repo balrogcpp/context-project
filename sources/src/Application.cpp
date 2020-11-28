@@ -252,9 +252,9 @@ void Application::Loop_() {
         time_of_last_frame_ = micros_before_update;
 
         for (auto *it : components_)
-          it->Loop(frame_time);
+          it->Update(frame_time);
 
-        cur_state_->Loop(frame_time);
+        cur_state_->Update(frame_time);
 
         renderer_->RenderOneFrame();
       } else {

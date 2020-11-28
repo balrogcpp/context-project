@@ -2,6 +2,7 @@
 #include "Ogre.h"
 #include "Entity.h"
 #include "Input.h"
+#include "MeshUtils.h"
 
 #define SCALE 0.2f
 #define CHAR_HEIGHT SCALE*5.0f          // height of character's center of mass above ground
@@ -143,13 +144,14 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
     mBodyNode->scale(Ogre::Vector3{SCALE});
 
     // create swords and attach to sheath
-    Ogre::LogManager::getSingleton().logMessage("Creating swords");
     mSword1 = sceneMgr->createEntity("SinbadSword1", "Sword.mesh");
     mSword2 = sceneMgr->createEntity("SinbadSword2", "Sword.mesh");
     mBodyEnt->attachObjectToBone("Sheath.L", mSword1);
     mBodyEnt->attachObjectToBone("Sheath.R", mSword2);
 
-    Ogre::LogManager::getSingleton().logMessage("Creating the chains");
+    xio::UpdateMeshMaterial("Sinbad.mesh");
+    xio::UpdateMeshMaterial("Sword.mesh");
+
     // create a couple of ribbon trails for the swords, just for fun
     Ogre::NameValuePairList params;
     params["numberOfChains"] = "2";
