@@ -355,7 +355,6 @@ externalproject_add(target-ogre1
                     -DOGRE_BUILD_PLUGIN_CG=false
                     -DOGRE_BUILD_COMPONENT_BITES=false
                     -DOGRE_BUILD_RENDERSYSTEM_GL=false
-                    -DOGRE_BUILD_RENDERSYSTEM_GLES2=true
                     -DOGRE_BUILD_COMPONENT_OVERLAY=true
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=false
                     -DOGRE_BUILD_COMPONENT_PAGING=true
