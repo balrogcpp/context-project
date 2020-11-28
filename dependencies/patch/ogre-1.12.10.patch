@@ -78,7 +78,7 @@
 +          (*li)->_notifyIndexInFrame(lightIndex);
 +        }
 +
-+      // notify light dirty, so all movable objects will re-populate
++        // notify light dirty, so all movable objects will re-populate
          // their light list next time
          _notifyLightsDirty();
      }

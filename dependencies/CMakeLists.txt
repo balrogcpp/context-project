@@ -30,6 +30,11 @@ include(FindPkgConfig)
 include(CMakeDependentOption)
 include(ExternalProject)
 find_package(Git REQUIRED)
+if (NOT ANDROID)
+    find_package(OpenGL REQUIRED)
+else ()
+    find_package(OpenGLES2 REQUIRED)
+endif ()
 
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 
@@ -89,11 +94,6 @@ externalproject_add(target-sdl
                     -DDIRECTX=false
                     -DSDL_AUDIO=false
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -103,7 +103,7 @@ externalproject_add(target-bullet3
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
-                    GIT_TAG 3.05
+                    GIT_TAG 3.07
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -129,17 +129,11 @@ externalproject_add(target-bullet3
                     -DBUILD_SHARED_LIBS=false
                     -DUSE_SOFT_BODY_MULTI_BODY_DYNAMICS_WORLD=false
                     -DINSTALL_LIBS=true
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     )
 
-# Because of LGPL license of OpenAL you should link as .dll
 externalproject_add(target-openal
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -154,11 +148,6 @@ externalproject_add(target-openal
                     -DALSOFT_TESTS=false
                     -DALSOFT_UTILS=false
                     -DALSOFT_EXAMPLES=false
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -175,11 +164,6 @@ externalproject_add(target-ogg
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -198,11 +182,6 @@ externalproject_add(target-vorbis
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                     -DOGG_INCLUDE_DIRS=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
                     -DOGG_LIBRARIES=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libogg.a
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -221,50 +200,12 @@ externalproject_add(target-zlib
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DBUILD_SHARED_LIBS=false
                     -DSKIP_INSTALL_LIBRARIES=true
-                    -DHAVE_OFF64_T=false
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-zlib-build
                     ${CMAKE_COMMAND} --build ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-zlib-build --target install
                     && ${CMAKE_COMMAND} -E copy libz.a libzlibstatic.a ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib || :
-                    )
-
-externalproject_add(target-freetype
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/aseprite/freetype2.git
-                    GIT_TAG VER-2-9-1
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DUNIX=true
-                    -DBUILD_SHARED_LIBS=false
-                    -DFT_WITH_PNG=false
-                    -DFT_WITH_BZIP2=false
-                    -DFT_WITH_ZLIB=false
-                    -DFT_WITH_HARFBUZZ=false
-                    -DCMAKE_DISABLE_FIND_PACKAGE_PNG=true
-                    -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=true
-                    -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=true
-                    -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=true
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
-                    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config ${EXTERNAL_BUILD_TYPE} --target install
-                    ${MINGW_INSTALL_PATHC}
                     )
 
 externalproject_add(target-zzip
@@ -278,11 +219,6 @@ externalproject_add(target-zzip
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -303,11 +239,6 @@ externalproject_add(target-rapidjson
                     -DRAPIDJSON_BUILD_TESTS=false
                     -DRAPIDJSON_BUILD_THIRDPARTY_GTEST=false
                     -DRAPIDJSON_HAS_STDSTRING=true
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -329,11 +260,6 @@ externalproject_add(target-yamlcpp
                     -DYAML_CPP_BUILD_TOOLS=false
                     -DMSVC_SHARED_RT=false
                     -DMSVC_STHREADED_RT=false
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS} -I /opt/android-ndk/sources/android/cpufeatures
                     -G "${CMAKE_GENERATOR}"
@@ -349,11 +275,6 @@ externalproject_add(target-pugixml
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -380,19 +301,33 @@ externalproject_add(target-assimp
                     -DINJECT_DEBUG_POSTFIX=false
                     -DASSIMP_BUILD_GLTF_IMPORTER=false
                     -DASSIMP_BUILD_GLTF_EXPORTER=false
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     )
 
+externalproject_add(target-freetype
+                    EXCLUDE_FROM_ALL true
+                    DEPENDS target-zlib
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/aseprite/freetype2.git
+                    GIT_TAG VER-2-9-1
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DUNIX=true
+                    -DBUILD_SHARED_LIBS=false
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config ${EXTERNAL_BUILD_TYPE} --target install
+                    )
+
 externalproject_add(target-ogre1
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zlib target-zzip target-freetype target-pugixml target-sdl
+                    DEPENDS target-zzip target-pugixml target-freetype
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/balrogcpp/ogre.git #patch will come with v1.12.10
                     GIT_TAG fix-multishadow
@@ -401,13 +336,12 @@ externalproject_add(target-ogre1
                     PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
                         ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre1/RenderSystems/GLSupport/include/GLSL
                         ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
-                        #&& ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre1 ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.10.patch
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                     -DOGRE_DEPENDENCIES_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DOGRE_ASSERT_MODE=1
+                    -DOGRE_ASSERT_MODE=0
                     -DOGRE_CONFIG_THREADS=3
                     -DOGRE_CONFIG_THREAD_PROVIDER=std
                     -DOGRE_STATIC=true
@@ -421,10 +355,11 @@ externalproject_add(target-ogre1
                     -DOGRE_BUILD_PLUGIN_CG=false
                     -DOGRE_BUILD_COMPONENT_BITES=false
                     -DOGRE_BUILD_RENDERSYSTEM_GL=false
-                    -DOGRE_BUILD_COMPONENT_OVERLAY=false
+                    -DOGRE_BUILD_RENDERSYSTEM_GLES2=true
+                    -DOGRE_BUILD_COMPONENT_OVERLAY=true
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=false
                     -DOGRE_BUILD_COMPONENT_PAGING=true
-                    -DOGRE_BUILD_COMPONENT_MESHLODGENERATOR=true
+                    -DOGRE_BUILD_COMPONENT_MESHLODGENERATOR=false
                     -DOGRE_BUILD_COMPONENT_PROPERTY=false
                     -DOGRE_BUILD_COMPONENT_VOLUME=true
                     -DOGRE_BUILD_COMPONENT_TERRAIN=true
@@ -469,11 +404,6 @@ externalproject_add(target-lua
                     -DLUA_BUILD_WLUA=false
                     -DBUILD_SHARED_LIBS=false
                     -DLUA_USE_READLINE=false
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -490,41 +420,9 @@ externalproject_add(target-sol
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
-                    )
-
-externalproject_add(target-rocket
-                    EXCLUDE_FROM_ALL true
-                    DEPENDS target-lua target-freetype
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/balrogcpp/libRocket.git
-                    GIT_TAG c4384c71f63dc6d1ee3c9726daa637c158b0c3e0
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build
-                    ${CMAKE_COMMAND}
-                    -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DBUILD_SHARED_LIBS=false
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
-                    ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket/Build
-                    BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build ${CMAKE_COMMAND} --build .
-                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build ${CMAKE_COMMAND} --build . --target install
                     )
 
 if (ANDROID)
@@ -532,38 +430,21 @@ if (ANDROID)
 else ()
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
 endif ()
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rapidjson)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-pugixml)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre1)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rocket)
-if (CONTEXT_OGRE_BUILD_PROCEDURAL)
-    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-procedural)
-endif ()
 add_custom_target(deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
 
-########################################################################################################################
-#OGRE BLOCK
-########################################################################################################################
 find_package(OGRE QUIET)
-
-########################################################################################################################
-#Other dependencies block
-########################################################################################################################
-
 find_package(Bullet QUIET)
 find_package(SDL2 QUIET)
 find_package(OpenAL QUIET)
 find_package(Lua QUIET)
-pkg_check_modules(OGG QUIET ogg)
-pkg_check_modules(VORBIS QUIET vorbis)
-pkg_check_modules(VORBISSENC QUIET vorbisenc)
-pkg_check_modules(VORBISFILE QUIET vorbisfile)
-pkg_check_modules(PUGIXML QUIET pugixml)
 find_package(yaml-cpp QUIET)
 find_package(freetype QUIET)
 find_package(sol2 QUIET)
@@ -574,6 +455,19 @@ find_package(ZZip QUIET)
 ########################################################################################################################
 #Hardcoded shit for static build
 ########################################################################################################################
+set(CONTEXT_STATIC_DEPENDENCY_LIBS)
+
+if (OGRE_STATIC)
+    list(REMOVE_ITEM OGRE_LIBRARIES "dl")
+    foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
+        string(REPLACE "Static" "" X "${I}")
+        list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS "${X}Static")
+    endforeach ()
+else ()
+    foreach (I IN LISTS OGRE_LIBRARIES)
+        list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS "${I}")
+    endforeach ()
+endif ()
 
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid jemalloc)
@@ -583,19 +477,9 @@ elseif (ANDROID)
     list(APPEND SYSTEM_LIBRARIES log android EGL GLESv2 GLESv1_CM OpenSLES dl m.a hidapi ndk_compat omp)
 endif ()
 
-set(CONTEXT_STATIC_DEPENDENCY_LIBS)
-
-if (OGRE_STATIC)
-    list(REMOVE_ITEM OGRE_LIBRARIES "dl")
-    foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
-        string(REPLACE "Static" "" X "${I}")
-        list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS "${X}Static")
-    endforeach ()
-endif ()
-
 list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS
-     vorbisfile vorbis vorbisenc ogg pugixml ${SDL2_LIBRARIES} ${ZZip_LIBRARIES} ${LUA_LIBRARIES}
-     ${OPENAL_LIBRARY} ${BULLET_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ZLIB_LIBRARIES} ${SYSTEM_LIBRARIES}
+     ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${SDL2_LIBRARIES}
+     ${OPENAL_LIBRARY} ${YAML_CPP_LIBRARIES} ${ZZip_LIBRARIES} ${ZLIB_LIBRARIES} ${SYSTEM_LIBRARIES}
      )
 
 set(CONTEXT_STATIC_DEPENDENCY_LIBS ${CONTEXT_STATIC_DEPENDENCY_LIBS} CACHE INTERNAL "")

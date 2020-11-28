@@ -20,22 +20,27 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#pragma once
-#include "AppState.h"
+#include "pcheader.h"
+#include "MenuAppState.h"
+#include "DemoDotAppState.h"
+
+using namespace xio;
 
 namespace Demo {
 
-class DemoDotAppState : public xio::AppState {
- public:
-   DemoDotAppState() {}
-   virtual ~DemoDotAppState() {}
+void MenuAppState::Clear() {
+}
 
-    void Create() final;
-    void Clear() final;
-    void Pause() final {}
-    void Unpause() final {}
-    void Update(float time) final;
+void MenuAppState::OnKeyDown(SDL_Keycode sym) {
+#ifdef DEBUG
+  if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_G) {
+    SwitchNextState(std::make_unique<DemoDotAppState>());
+  }
+#endif
+}
 
-    void OnKeyDown(SDL_Keycode sym) final;
-};
+void MenuAppState::Create() {
+  renderer_->GetWindow().SetCursorStatus(false, true, true);
+}
+
 }

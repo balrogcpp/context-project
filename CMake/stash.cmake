@@ -105,14 +105,43 @@ externalproject_add(target-theora
                     INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-theora ${CONTEXT_MAKE} install
                     )
 
+externalproject_add(target-rocket
+                    EXCLUDE_FROM_ALL true
+                    DEPENDS target-lua target-freetype
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/balrogcpp/libRocket.git
+                    GIT_TAG c4384c71f63dc6d1ee3c9726daa637c158b0c3e0
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build
+                    ${CMAKE_COMMAND}
+                    -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DBUILD_SHARED_LIBS=false
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
+                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
+                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
+                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket/Build
+                    BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build ${CMAKE_COMMAND} --build .
+                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build ${CMAKE_COMMAND} --build . --target install
+                    )
+
 externalproject_add(target-cegui
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-freetype target-ogre1
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/roninest/cegui-static.git
-                    GIT_TAG v0-8-7${CEGUI_GIT_TAG}
+                    GIT_REPOSITORY https://github.com/cegui/cegui.git
+                    GIT_TAG v0-8
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    PATCH_COMMAND wget -c http://rapidxml.sourceforge.net/rapidxml.hpp -P ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/
+                        && ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-cegui ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/cegui-0.8.patch
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
@@ -142,29 +171,44 @@ externalproject_add(target-cegui
                     -DCEGUI_STATIC_IMAGECODEC_MODULE=true
                     -DCEGUI_BUILD_STATIC_FACTORY_MODULE=true
                     -DCEGUI_BUILD_RENDERER_OGRE=true
-                    -DOGRE_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/OGRE/cmake
-                    -DCEGUI_FOUND_OGRE_VERSION_MAJOR=1
-                    -DCEGUI_FOUND_OGRE_VERSION_MINOR=12
-                    -DCEGUI_FOUND_OGRE_VERSION_PATCH=5
-                    -DFreetype_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/cmake/freetype
                     -DCEGUI_BUILD_RENDERER_OPENGL=false
                     -DCEGUI_BUILD_RENDERER_OPENGL3=false
                     -DCEGUI_BUILD_RENDERER_OPENGLES=false
                     -DCEGUI_BUILD_RENDERER_DIRECT3D9=false
                     -DCEGUI_BUILD_RENDERER_DIRECT3D10=false
                     -DCEGUI_BUILD_RENDERER_DIRECT3D11=false
+                    -DCEGUI_FOUND_OGRE_VERSION_MAJOR=1
+                    -DCEGUI_FOUND_OGRE_VERSION_MINOR=12
+                    -DCEGUI_FOUND_OGRE_VERSION_PATCH=10
                     -DCEGUI_BIDI_SUPPORT=false
                     -DCEGUI_USE_FRIBIDI=false
                     -DCEGUI_USE_MINIBIDI=false
                     -DCEGUI_HAS_MINIZIP_RESOURCE_PROVIDER=false
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CONTEXT_EXTERNAL_C_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G ${CMAKE_GENERATOR}
+                    )
+
+externalproject_add(target-rocket
+                    EXCLUDE_FROM_ALL true
+                    DEPENDS target-lua target-freetype
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/libRocket/libRocket.git
+                    GIT_TAG c4384c71f63dc6d1ee3c9726daa637c158b0c3e0
+                    GIT_SHALLOW false
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build ${CMAKE_COMMAND}
+                    -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DBUILD_SHARED_LIBS=false
+                    -DBUILD_LUA_BINDINGS=true
+                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
+                    ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket/Build
+                    BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build ${CMAKE_COMMAND} --build .
+                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-rocket-build ${CMAKE_COMMAND} --build . --target install
                     )
 
 externalproject_add(target-procedural

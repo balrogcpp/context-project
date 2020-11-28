@@ -26,12 +26,14 @@ project(xio-demo)
 
 set(HEADER_FILES_context-demo
     include/DemoDotAppState.h
+    include/MenuAppState.h
     include/pcheader.h
     )
 
 set(SOURCE_FILES_context-demo
     src/main.cpp
     src/DemoDotAppState.cpp
+    src/MenuAppState.cpp
     )
 
 if (ANDROID)

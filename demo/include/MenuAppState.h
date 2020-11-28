@@ -25,17 +25,18 @@
 
 namespace Demo {
 
-class DemoDotAppState : public xio::AppState {
+class MenuAppState : public xio::AppState {
  public:
-   DemoDotAppState() {}
-   virtual ~DemoDotAppState() {}
+  MenuAppState() : AppState() {}
+  virtual ~MenuAppState() {}
 
-    void Create() final;
-    void Clear() final;
-    void Pause() final {}
-    void Unpause() final {}
-    void Update(float time) final;
+  void Create() final;
+  void Clear() final;
+  void Pause() final {}
+  void Unpause() final {}
+  void Update(float time) final {};
 
-    void OnKeyDown(SDL_Keycode sym) final;
+  void OnKeyDown(SDL_Keycode sym) final;
 };
+
 }

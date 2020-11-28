@@ -26,9 +26,6 @@
 namespace Demo {
 using namespace xio;
 
-DemoDotAppState::DemoDotAppState() {}
-DemoDotAppState::~DemoDotAppState() {}
-
 void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
     SwitchNextState(std::make_unique<DemoDotAppState>());
@@ -45,11 +42,8 @@ void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
 void DemoDotAppState::Clear() {
 }
 
-void DemoDotAppState::Loop(float time) {
+void DemoDotAppState::Update(float time) {
 //  Ogre::Root::getSingleton().getSceneManager("Default")->_notifyLightsDirty();
-}
-
-void DemoDotAppState::Callback(int a, int b) {
 }
 
 void DemoDotAppState::Create() {
