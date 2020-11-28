@@ -20,9 +20,10 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+//----------------------------------------------------------------------------------------------------------------------
 fragment_program Output_fs glsl glsles
 {
-    source modulate.frag
+    source output.frag
 	default_params
 	{
 		param_named SceneSampler int 0
@@ -67,14 +68,64 @@ compositor Output
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program FilteredOutput_fs glsl glsles
+{
+    source output.frag
+    //preprocessor_defines PCF_FILTER
+	default_params
+	{
+		param_named SceneSampler int 0
+		param_named exposure float 1.0
+		param_named_auto texelSize inverse_texture_size 0
+	}
+}
+
+material Filter/Output
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref FilteredOutput_fs {}
+
+			texture_unit
+            {
+                content_type compositor Main scene
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+compositor Filter/Output
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material Filter/Output
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 fragment_program Modulate_SSAO_BLOOM_fs glsl glsles
 {
 	source modulate.frag
     preprocessor_defines SSAO,BLOOM
 	default_params
 	{
-		param_named exposure float 1.0
+		//param_named exposure float 1.0
 	}
 }
 
@@ -124,7 +175,8 @@ compositor Modulate/SsaoBlur
 {
     technique
     {
-        target_output
+        texture_ref scene Main scene
+        target scene
         {
             pass render_quad
             {

@@ -29,6 +29,7 @@ fragment_program Crytek_fp glsl glsles
 		param_named sSceneDepthSampler int 0
 		param_named sRotSampler4x4 int 1
         param_named_auto cViewportSize viewport_size
+        param_named_auto nearClipDistance near_clip_distance
         param_named_auto farClipDistance far_clip_distance
         param_named_auto cFov fov
         param_named_auto shadow_colour shadow_colour
@@ -227,7 +228,7 @@ fragment_program Modulate_SSAO_fs glsl glsles
 	{
 		param_named SceneSampler int 0
 		param_named SsaoSampler int 1
-		param_named exposure float 0.5
+		//param_named exposure float 1.0
 	}
 }
 
@@ -261,12 +262,12 @@ material Modulate/Ssao
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 compositor Modulate/Ssao
 {
     technique
     {
-        target_output
+        texture_ref scene Main scene
+        target scene
         {
             pass render_quad
             {

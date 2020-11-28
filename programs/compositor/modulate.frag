@@ -29,8 +29,6 @@
 #endif
 #include "header.frag"
 
-#include "srgb.glsl"
-
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
 #ifdef BLOOM
@@ -38,9 +36,6 @@ uniform sampler2D BloomSampler;
 #endif
 #ifdef SSAO
 uniform sampler2D SsaoSampler;
-#endif
-#ifdef MANUAL_SRGB
-uniform float exposure;
 #endif
 
 void main()
@@ -51,11 +46,6 @@ void main()
 #endif
 #ifdef BLOOM
     scene.rgb += texture2D(BloomSampler, oUv0).rgb;
-#endif
-#ifdef MANUAL_SRGB
-    const float gamma = 2.2;
-    vec3 mapped = vec3(1.0) - exp(-scene.rgb * exposure);
-    scene.rgb = pow(mapped, vec3(1.0 / gamma));
 #endif
 
     gl_FragColor = vec4(scene.rgb, 1.0);

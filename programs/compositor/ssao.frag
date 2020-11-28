@@ -34,6 +34,7 @@ uniform sampler2D sSceneDepthSampler;
 uniform sampler2D sRotSampler4x4;
 uniform vec4 cViewportSize; // auto param width/height/inv. width/inv. height
 uniform float cFov; // vertical field of view in radians
+uniform float nearClipDistance;
 uniform float farClipDistance;
 uniform float cSampleInScreenspace; // whether to sample in screen or world space
 uniform float cSampleLengthScreenSpace; // The sample length in screen space [0, 1]
@@ -50,13 +51,15 @@ void main()
   const float nSampleNum = 8.0; // number of samples
 
   // get the depth of the current pixel and convert into world space unit [0, inf]
-  float fragmentWorldDepth = texture2D(sSceneDepthSampler, oUv0).r * farClipDistance;
-  float accessibility = 0.0;
+  float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
 
-  if (fragmentWorldDepth <= 0.0) {
+  if (clampedDepth <= 0.0) {
     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     return;
   }
+
+  float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
+  float accessibility = 0.0;
 
   // get rotation vector, rotation is tiled every 4 screen pixels
   vec2 rotationTC = oUv0 * cViewportSize.xy / 4.0;

@@ -39,9 +39,9 @@ void main()
   for (int x = -2; x < 2; x++)
   for (int y = -2; y < 2; y++)
   {
-    color += texture2D(uSampler, vec2(oUv0.x + x * texelSize.x, oUv0.y + y * texelSize.y)).x;
+    color += texture2D(uSampler, vec2(oUv0.x + float(x) * texelSize.x, oUv0.y + float(y) * texelSize.y)).x;
   }
-  color /= 16;
+  color /= 16.0;
 
   gl_FragColor = vec4(color, 0.0, 0.0, 1.0);
 }

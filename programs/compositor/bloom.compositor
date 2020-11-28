@@ -57,7 +57,7 @@ compositor Bloom
 {
     technique
     {
-        texture bloom target_width_scaled 0.25 target_height_scaled 0.25 PF_FLOAT16_RGB chain_scope
+        texture bloom target_width_scaled 0.25 target_height_scaled 0.25 PF_FLOAT16_RGB chain_scope pooled
 
         target bloom
         {
@@ -155,7 +155,7 @@ fragment_program Modulate_BLOOM_fs glsl glsles
     preprocessor_defines BLOOM
 	default_params
 	{
-		param_named exposure float 1.0
+		//param_named exposure float 1.0
 	}
 }
 
@@ -197,7 +197,8 @@ compositor Modulate/Bloom
 {
     technique
     {
-        target_output
+        texture_ref scene Main scene
+        target scene
         {
             pass render_quad
             {

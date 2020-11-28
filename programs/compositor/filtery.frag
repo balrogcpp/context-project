@@ -39,10 +39,10 @@ vec3 Iteration(const float offset, const float weight) {
 
 void main()
 {
-  //  const int radius = 3;
-  //  const float offset[radius] = float[]( 0.0, 1.3846153846, 3.2307692308 );
-  //  const float weight[radius] = float[]( 0.2270270270, 0.3162162162, 0.0702702703 );
-
+//  const int radius = 3;
+//  const float offset[radius] = float[]( 0.0, 1.3846153846, 3.2307692308 );
+//  const float weight[radius] = float[]( 0.2270270270, 0.3162162162, 0.0702702703 );
+//
 //  const float offset0 = 0.0;
 //  const float offset1 = 1.3846153846;
 //  const float offset2 = 3.2307692308;
@@ -55,10 +55,10 @@ void main()
 //
 //  final_color += Iteration(offset1, weight1);
 //  final_color += Iteration(offset2, weight2);
-
-  //  const int radius = 5;
-  //  const float offset[5] = float[](0.0, 1.0, 2.0, 3.0, 4.0);
-  //  const float weight[5] = float[](0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162);
+//
+//  const int radius = 5;
+//  const float offset[5] = float[](0.0, 1.0, 2.0, 3.0, 4.0);
+//  const float weight[5] = float[](0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162);
 
   const float offset0 = 0.0;
   const float offset1 = 1.0;
