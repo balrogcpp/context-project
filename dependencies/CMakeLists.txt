@@ -341,7 +341,7 @@ externalproject_add(target-ogre1
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                     -DOGRE_DEPENDENCIES_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DOGRE_ASSERT_MODE=0
+                    -DOGRE_ASSERT_MODE=1
                     -DOGRE_CONFIG_THREADS=3
                     -DOGRE_CONFIG_THREAD_PROVIDER=std
                     -DOGRE_STATIC=true

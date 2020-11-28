@@ -137,7 +137,11 @@ void Application::Init_() {
     tfo = Ogre::TFO_NONE;
 
   renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
+#ifdef DEBUG
+  verbose_ = true;
+#else
   verbose_ = conf_->Get<bool>("global_verbose_enable");
+#endif
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");
   input_->RegWinObserver(this);
@@ -298,13 +302,15 @@ void Application::Go_() {
     time_of_last_frame_ = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
     Loop_();
     Reset_();
-    WriteLogToFile("ogre.log");
-    PrintLogToConsole();
+    if (verbose_) {
+      WriteLogToFile("ogre.log");
+      PrintLogToConsole();
+    }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Message_(const std::string &caption, const std::string &message) {
-  WriteLogToFile("ogre.log");
+  WriteLogToFile("error.log");
   PrintLogToConsole();
   std::cerr << caption << '\n';
   std::cerr << message << '\n';

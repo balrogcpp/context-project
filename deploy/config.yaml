@@ -3,8 +3,6 @@ window_caption: Demo Application
 window_width: 1024
 window_high: 768
 window_fullscreen: false
-global_verbose_enable: true
-global_log_enable: true
 compositor_use_bloom: false
 compositor_use_ssao: false
 compositor_use_motion: false
