@@ -159,7 +159,7 @@ inline void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
   frag_params->setNamedAutoConstant("uShadowColour", Ogre::GpuProgramParameters::ACT_SHADOW_COLOUR);
   frag_params->setNamedAutoConstant("uLightCastsShadowsArray",Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY, OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES);
   frag_params->setNamedConstant("uShadowFilterSize", 0.004f);
-  frag_params->setNamedConstant("uShadowFilterIterations", 8);
+  frag_params->setNamedConstant("uShadowFilterIterations", 16);
 
   int texture_count = pass->getNumTextureUnitStates();
 

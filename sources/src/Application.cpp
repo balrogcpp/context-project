@@ -144,11 +144,7 @@ void Application::Init_() {
     tfo = Ogre::TFO_NONE;
 
   renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
-#ifdef DEBUG
-  verbose_ = true;
-#else
   verbose_ = conf_->Get<bool>("global_verbose_enable");
-#endif
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");
   input_->RegWinObserver(this);
@@ -235,13 +231,10 @@ void Application::Loop_() {
       auto before_frame = std::chrono::system_clock::now().time_since_epoch();
       int64_t micros_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(before_frame).count();
 
-      int fps_frames_ = 0;
-      int64_t delta_time_ = 0;
-
-      if (delta_time_ > 1000000) {
-        current_fps_ = fps_frames_;
-        delta_time_ = 0;
-        fps_frames_ = 0;
+      if (cumulated_time_ > 1000000) {
+        current_fps_ = fps_counter_;
+        cumulated_time_ = 0;
+        fps_counter_ = 0;
       }
 
       input_->Capture();
@@ -292,9 +285,9 @@ void Application::Loop_() {
       int64_t micros_after_loop = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_loop).count();
 
       int64_t time_since_last_frame_ = micros_after_loop - micros_before_frame;
-      delta_time_ += time_since_last_frame_;
+      cumulated_time_ += time_since_last_frame_;
 
-      fps_frames_++;
+      fps_counter_++;
     } else {
       quit_ = true;
     }

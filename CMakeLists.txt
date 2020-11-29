@@ -321,11 +321,18 @@ add_custom_target(zip-deps
                   VERBATIM
                   )
 
-install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${CMAKE_SOURCE_DIR}/deploy/start.sh ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
+install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
         CONFIGURATIONS Release
         PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
         DESTINATION .
         )
+
+install(FILES ${CMAKE_SOURCE_DIR}/deploy/start.sh
+        CONFIGURATIONS Release
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
+        DESTINATION .
+        )
+
 file(GLOB CONTEXT_MEDIA_FILES ${CMAKE_SOURCE_DIR}/tmp/*)
 install(DIRECTORY ${CONTEXT_MEDIA_FILES}
         CONFIGURATIONS Release

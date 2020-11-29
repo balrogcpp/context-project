@@ -335,17 +335,17 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
     light->setSpecularColour(ParseColour(element));
   }
 
-  if (sValue == "spot") {
-    /// Process lightRange
-    if (auto element = xml_node.child("lightRange")) {
-      ProcessLightRange_(element, light);
-    }
-  }
-
   if (light->getType() != Ogre::Light::LT_DIRECTIONAL) {
     /// Process lightAttenuation
     if (auto element = xml_node.child("lightAttenuation")) {
       ProcessLightAttenuation_(element, light);
+    }
+  }
+
+  if (light->getType() != Ogre::Light::LT_SPOTLIGHT) {
+    /// Process lightRange
+    if (auto element = xml_node.child("lightRange")) {
+      ProcessLightRange_(element, light);
     }
   }
 

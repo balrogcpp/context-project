@@ -128,7 +128,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 
   OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
   terrain_global_options->setUseVertexCompressionWhenAvailable(false);
-  terrain_global_options->setCastsDynamicShadows(true);
+  terrain_global_options->setCastsDynamicShadows(false);
   terrain_global_options->setCompositeMapDistance(200);
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
   terrain_global_options->setUseRayBoxDistanceCalculation(true);
@@ -199,9 +199,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     for (auto pLayerElement : pPageElement.children("layer")) {
       layer_counter++;
       if (layer_counter != layers_count) {
-        InitBlendMaps_(terrain_->getTerrain(pageX, pageY),
-                       layer_counter,
-                       pLayerElement.attribute("blendmap").value());
+        InitBlendMaps_(terrain_->getTerrain(pageX, pageY),layer_counter,pLayerElement.attribute("blendmap").value());
       }
 
     }

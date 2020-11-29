@@ -57,24 +57,24 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     }
 
     if (pass->getNumTextureUnitStates() > 0 && has_alpha && alpha_rejection > 0) {
-      gBufferTech->setSchemeName(schemeName);
-      Ogre::Pass *gbufPass = gBufferTech->createPass();
-      *gbufPass = *ref_mat3_->getTechnique(0)->getPass(0);
-
 //      gBufferTech->setSchemeName(schemeName);
 //      Ogre::Pass *gbufPass = gBufferTech->createPass();
-//      *gbufPass = *ref_mat2_->getTechnique(0)->getPass(0);
-//
-//      auto texture_albedo = pass->getTextureUnitState(0);
-//      if (texture_albedo) {
-//        std::string texture_name = pass->getTextureUnitState(0)->getTextureName();
-//        auto *texPtr3 = gBufferTech->getPass(0)->getTextureUnitState("BaseColor");
-//
-//        if (texPtr3) {
-//          texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-//          texPtr3->setTextureName(texture_name);
-//        }
-//      }
+//      *gbufPass = *ref_mat3_->getTechnique(0)->getPass(0);
+
+      gBufferTech->setSchemeName(schemeName);
+      Ogre::Pass *gbufPass = gBufferTech->createPass();
+      *gbufPass = *ref_mat2_->getTechnique(0)->getPass(0);
+
+      auto texture_albedo = pass->getTextureUnitState(0);
+      if (texture_albedo) {
+        std::string texture_name = pass->getTextureUnitState(0)->getTextureName();
+        auto *texPtr3 = gBufferTech->getPass(0)->getTextureUnitState("BaseColor");
+
+        if (texPtr3) {
+          texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+          texPtr3->setTextureName(texture_name);
+        }
+      }
     } else {
       gBufferTech->setSchemeName(schemeName);
       Ogre::Pass *gbufPass = gBufferTech->createPass();
