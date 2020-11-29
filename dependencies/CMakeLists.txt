@@ -329,10 +329,11 @@ externalproject_add(target-ogre1
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zzip target-pugixml target-freetype
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/balrogcpp/ogre.git #patch will come with v1.12.10
-                    GIT_TAG fix-multishadow
-                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    URL https://github.com/OGRECave/ogre/archive/27b8feb1b133a0d9aa0ea1d888bcd65939645a74.zip
+                    #GIT_REPOSITORY https://github.com/OGRECave/ogre.git
+                    #GIT_TAG 27b8feb1b133a0d9aa0ea1d888bcd65939645a74
+                    #GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    #GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
                         ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre1/RenderSystems/GLSupport/include/GLSL
                         ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
