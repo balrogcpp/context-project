@@ -40,29 +40,29 @@ class InputObserver {
   virtual void OnKeyUp(SDL_Keycode sym) {}
 
   //Mouse
-  virtual void OnMouseMove(int32_t dx, int32_t dy) {}
-  virtual void OnMouseMove(int32_t x, int32_t y, int32_t dx, int32_t dy, bool left, bool right, bool middle) {}
-  virtual void OnMouseWheel(int32_t x, int32_t y) {}
-  virtual void OnMouseLbDown(int32_t x, int32_t y) {}
-  virtual void OnMouseLbUp(int32_t x, int32_t y) {}
-  virtual void OnMouseRbDown(int32_t x, int32_t y) {}
-  virtual void OnMouseRbUp(int32_t x, int32_t y) {}
-  virtual void OnMouseMbDown(int32_t x, int32_t y) {}
-  virtual void OnMouseMbUp(int32_t x, int32_t y) {}
+  virtual void OnMouseMove(int dx, int dy) {}
+  virtual void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {}
+  virtual void OnMouseWheel(int x, int y) {}
+  virtual void OnMouseLbDown(int x, int y) {}
+  virtual void OnMouseLbUp(int x, int y) {}
+  virtual void OnMouseRbDown(int x, int y) {}
+  virtual void OnMouseRbUp(int x, int y) {}
+  virtual void OnMouseMbDown(int x, int y) {}
+  virtual void OnMouseMbUp(int x, int y) {}
 
   //Joystic
-  virtual void OnJoysticAxis(int32_t which, int32_t axis, int32_t value) {}
-  virtual void OnJoysticBtDown(int32_t which, int32_t button) {}
-  virtual void OnJoysticBtUp(int32_t which, int32_t button) {}
-  virtual void OnJoysticHat(int32_t which, int32_t hat, int32_t value) {}
-  virtual void OnJoysticBall(int32_t which, int32_t ball, int32_t xrel, int32_t yrel) {}
+  virtual void OnJoysticAxis(int which, int axis, int value) {}
+  virtual void OnJoysticBtDown(int which, int button) {}
+  virtual void OnJoysticBtUp(int which, int button) {}
+  virtual void OnJoysticHat(int which, int hat, int value) {}
+  virtual void OnJoysticBall(int which, int ball, int xrel, int yrel) {}
 };
 //----------------------------------------------------------------------------------------------------------------------
 class WindowObserver {
  public:
   virtual void Event(const SDL_Event &evt) {}
   virtual void Quit() {}
-  virtual void Other(uint8_t type, int32_t code, void *data1, void *data2) {}
+  virtual void Other(uint8_t type, int code, void *data1, void *data2) {}
 };
 //----------------------------------------------------------------------------------------------------------------------
 class InputException : public std::exception {

@@ -42,7 +42,7 @@ class RenderWindow;
 namespace xio {
 class Renderer final : public Component, public Singleton<Renderer> {
  public:
-  Renderer(int32_t w, int32_t h, bool f);
+  Renderer(int w, int h, bool f);
   virtual ~Renderer();
 
   void Create() final;
@@ -56,7 +56,7 @@ class Renderer final : public Component, public Singleton<Renderer> {
   void UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy);
   void UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format);
   void RenderOneFrame();
-  void Resize(int32_t w, int32_t h, bool f);
+  void Resize(int w, int h, bool f);
 
  private:
   void CreateCamera();

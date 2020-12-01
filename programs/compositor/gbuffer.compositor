@@ -24,7 +24,7 @@ compositor GBuffer
 {
     technique
     {
-        texture mrt target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB chain_scope
+        texture mrt target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R PF_FLOAT16_GR chain_scope
 
         target mrt
         {

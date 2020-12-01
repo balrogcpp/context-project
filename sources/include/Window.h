@@ -37,7 +37,7 @@ namespace xio {
 class Window : public NoCopy {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  explicit Window(int32_t w, int32_t h, bool f)
+  explicit Window(int w, int h, bool f)
       : w_(w), h_(h), f_(f) {
     Init_();
   }
@@ -52,18 +52,6 @@ class Window : public NoCopy {
   void Init_() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
       throw Exception("Failed to init SDL2");
-
-    if (SDL_NumJoysticks() != 0) {
-      for (int i = 0; i < SDL_NumJoysticks(); i++) {
-        if (SDL_IsGameController(i)) {
-          SDL_GameController *controller = nullptr;
-
-          controller = SDL_GameControllerOpen(i);
-
-          break;
-        }
-      }
-    }
 
     SDL_DisplayMode DM;
     SDL_GetCurrentDisplayMode(0, &DM);
@@ -158,13 +146,13 @@ class Window : public NoCopy {
   SDL_GLContext context_ = nullptr;
   std::string caption_;
   bool f_ = false;
-  int32_t w_ = 1024;
-  int32_t h_ = 768;
-  int32_t screen_w_;
-  int32_t screen_h_;
+  int w_ = 1024;
+  int h_ = 768;
+  int screen_w_;
+  int screen_h_;
   bool gl_force_ = false;
-  int32_t gl_minor = 3;
-  int32_t gl_major = 3;
+  int gl_minor = 3;
+  int gl_major = 3;
 
  public:
 //----------------------------------------------------------------------------------------------------------------------
@@ -177,7 +165,7 @@ class Window : public NoCopy {
     SDL_SetWindowTitle(window_, caption.c_str());
   }
 
-  inline std::pair<uint32_t, uint32_t> GetSize() const noexcept {
+  inline std::pair<int, int> GetSize() const noexcept {
     return std::make_pair(w_, h_);
   }
 
@@ -206,7 +194,7 @@ class Window : public NoCopy {
     SDL_GL_SwapWindow(window_);
   }
 
-  inline void Resize(int32_t w, int32_t h) noexcept {
+  inline void Resize(int w, int h) noexcept {
     w_ = w;
     h_ = h;
     SDL_SetWindowPosition(window_, (screen_w_ - w_) / 2, (screen_h_ - h_) / 2);

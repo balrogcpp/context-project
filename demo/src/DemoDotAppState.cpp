@@ -43,7 +43,7 @@ void DemoDotAppState::Clear() {
 }
 
 void DemoDotAppState::Update(float time) {
-//  Ogre::Root::getSingleton().getSceneManager("Default")->_notifyLightsDirty();
+  anim->addTime(time);
 }
 
 void DemoDotAppState::Create() {
@@ -55,7 +55,18 @@ void DemoDotAppState::Create() {
 
   Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
   auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
-  root->createChildSceneNode(Ogre::Vector3(2, 7, 0))->attachObject(ps);
+  root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
+
+  Ogre::Entity *entity = scene->createEntity("Dragon_Mesh.mesh", "Dragon_Mesh.mesh");
+  auto *node = root->createChildSceneNode(Ogre::Vector3(2, 0, 0));
+  node->scale(Ogre::Vector3(0.1));
+  node->attachObject(entity);
+//  node->setScale(Ogre::Vector3(5.828835));
+  UpdateEntityMaterial(entity);
+  anim = entity->getAnimationState("my_animation");
+//  anim->setWeight(0.01);
+  anim->setLoop(true);
+  anim->setEnabled(true);
 
 //  sound_->CreateSound("ambient", "test.ogg", false);
 //  sound_->SetVolume("ambient", 0.5);

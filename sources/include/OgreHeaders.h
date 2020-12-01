@@ -84,6 +84,8 @@
 #include <Plugins/FreeImageCodec/OgreFreeImageCodec.h>
 #include <Plugins/FreeImageCodec/OgreFreeImageCodecExports.h>
 #endif
+//
+#define OGRE_BUILD_PLUGIN_ASSIMP
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
 #include <Plugins/Assimp/OgreAssimpLoader.h>
 #endif

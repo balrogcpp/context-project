@@ -37,5 +37,8 @@ class DemoDotAppState : public xio::AppState {
     void Update(float time) final;
 
     void OnKeyDown(SDL_Keycode sym) final;
+
+ private:
+  Ogre::AnimationState *anim = nullptr;
 };
 }

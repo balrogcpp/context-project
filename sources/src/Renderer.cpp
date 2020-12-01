@@ -27,41 +27,29 @@
 #include "RtssUtils.h"
 
 namespace xio {
-Renderer::Renderer(int32_t w, int32_t h, bool f) {
+Renderer::Renderer(int w, int h, bool f) {
   window_ = std::make_unique<Window>(w, h, f);
   root_ = new Ogre::Root("", "", "");
-  bool global_sso_enable_ = true;
-  bool global_octree_enable_ = true;
-  bool global_stbi_enable_ = true;
-  bool global_freeimage_enable_ = false;
-  bool global_particlefx_enable_ = true;
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
   Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem());
-#else
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+#elif defined OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *gl3plus_render_system = new Ogre::GL3PlusRenderSystem();
-  gl3plus_render_system->setConfigOption("Separate Shader Objects", global_sso_enable_ ? "Yes" : "No");
+  gl3plus_render_system->setConfigOption("Separate Shader Objects", "Yes");
 
   Ogre::Root::getSingleton().setRenderSystem(gl3plus_render_system);
-#else
-#endif //OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-#endif //OGRE_BUILD_RENDERSYSTEM_GLES2
+#endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
-  if (global_octree_enable_)
-    Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
+  Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
 #endif // OGRE_BUILD_PLUGIN_OCTREE
 #ifdef OGRE_BUILD_PLUGIN_PFX
-  if (global_particlefx_enable_)
-    Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
+  Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
 #endif // OGRE_BUILD_PLUGIN_PFX
 #ifdef OGRE_BUILD_PLUGIN_STBI
-  if (global_stbi_enable_)
-    Ogre::Root::getSingleton().installPlugin(new Ogre::STBIPlugin());
+  Ogre::Root::getSingleton().installPlugin(new Ogre::STBIPlugin());
 #endif // OGRE_BUILD_PLUGIN_STBI
 #ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
-  if (global_freeimage_enable_)
-    Ogre::Root::getSingleton().installPlugin(new Ogre::FreeImagePlugin());
+  Ogre::Root::getSingleton().installPlugin(new Ogre::FreeImagePlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
   Ogre::Root::getSingleton().installPlugin(new Ogre::AssimpPlugin());
@@ -78,15 +66,20 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
 
   params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  if (!reinterpret_cast<unsigned long>(info.info.x11.window))
+  if (!reinterpret_cast<size_t>(info.info.x11.window))
     throw Exception("Cast from info.info.x11.window to size_t failed");
 
   params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  if (!reinterpret_cast<unsigned long>(info.info.x11.window))
+  if (!reinterpret_cast<size_t>(info.info.x11.window))
     throw Exception("Cast from info.info.x11.window to size_t failed");
 
-  params["externalWindowHandle"] = std::to_string(reinterpret_cast<unsigned long>(info.info.x11.window));
+  params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(info.info.x11.window));
+#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+  if (!reinterpret_cast<size_t>(wmInfo.info.cocoa.window))
+    throw Exception("Cast from wmInfo.info.cocoa.window to size_t failed");
+
+  params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(wmInfo.info.cocoa.window));
 #endif
 
   const char true_str[] = "true";
@@ -94,21 +87,16 @@ Renderer::Renderer(int32_t w, int32_t h, bool f) {
   bool vsync_ = conf_->Get<bool>("graphics_vsync");
   bool gamma_ = conf_->Get<bool>("graphics_gamma");;
   int fsaa_ = conf_->Get<int>("graphics_fsaa");
-//  int msaa_ = 0;
 
   params["vsync"] = vsync_ ? true_str : false_str;
   params["gamma"] = gamma_ ? true_str : false_str;
   params["FSAA"] = std::to_string(fsaa_);
-//  params["MSAA"] = std::to_string(msaa_);
 
   ogre_ = root_->createRenderWindow(window_->GetCaption(), window_->GetSize().first, \
                        window_->GetSize().second, window_->IsFullscreen(), &params);
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
-  if (global_octree_enable_)
-    scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
-  else
-    scene_ = root_->createSceneManager(Ogre::ST_GENERIC,"Default");
+  scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
 #else
   scene_ = root_->createSceneManager(Ogre::ST_GENERIC, "Default");
 #endif
@@ -189,7 +177,7 @@ void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy
   Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::Resize(int32_t w, int32_t h, bool f) {
+void Renderer::Resize(int w, int h, bool f) {
   if (f) {
     window_->SetFullscreen(f);
     ogre_->resize(window_->GetSize().first, window_->GetSize().second);

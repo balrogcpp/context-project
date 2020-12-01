@@ -10,7 +10,7 @@ material Examples/Smoke
 			depth_write off
 			diffuse vertexcolour
             fog_override true
-            alpha_rejection greater_equal 1
+            alpha_rejection greater_equal 0
 
 			texture_unit
 			{

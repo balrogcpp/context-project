@@ -44,7 +44,12 @@ inline void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
 
     if (!new_caster) {
       new_caster = caster_material->clone(caster_name);
+//      auto *pass = new_caster->getTechnique(0)->getPass(0);
+//      pass->setCullingMode(material->getTechnique(0)->getPass(0)->getCullingMode());
+//      pass->setManualCullingMode(material->getTechnique(0)->getPass(0)->getManualCullingMode());
+
       auto texture_albedo = pass->getTextureUnitState("Albedo");
+
       if (texture_albedo) {
         std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
 
@@ -52,8 +57,6 @@ inline void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
 
         if (texPtr3) {
           texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-          texPtr3->setTextureAddressingMode(Ogre::TextureAddressingMode::TAM_CLAMP);
-          texPtr3->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
           texPtr3->setTextureName(texture_name);
         }
       }
@@ -66,7 +69,12 @@ inline void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
 
     if (!new_caster) {
       auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+
       new_caster = caster_material->clone(caster_name);
+
+      auto *pass = new_caster->getTechnique(0)->getPass(0);
+      pass->setCullingMode(material->getTechnique(0)->getPass(0)->getCullingMode());
+      pass->setManualCullingMode(material->getTechnique(0)->getPass(0)->getManualCullingMode());
     }
 
     material->getTechnique(0)->setShadowCasterMaterial(new_caster);

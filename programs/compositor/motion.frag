@@ -29,7 +29,7 @@
 #endif
 #include "header.frag"
 
-#define MAX_SAMPLES 8
+#define MAX_SAMPLES 8.0
 
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
@@ -40,18 +40,18 @@ uniform float uScale;
 
 void main()
 {
-  vec4 scene = texture2D(SceneSampler, oUv0);
+  vec3 scene = texture2D(SceneSampler, oUv0).rgb;
 
-  vec2 velocity = uScale * (0.01667/uFrameTime) * texture2D(uTexMotion, oUv0).gb;
+  vec2 velocity = uScale * (0.01667/uFrameTime) * texture2D(uTexMotion, oUv0).rg;
   float speed = length(velocity / texelSize);
-  int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
+  int nSamples = int(clamp(speed, 1.0, MAX_SAMPLES));
 
   for (int i = 1; i < nSamples; i++) {
     vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
-    scene += texture2D(SceneSampler, oUv0 + offset);
+    scene += texture2D(SceneSampler, oUv0 + offset).rgb;
   }
 
   scene /= float(nSamples);
 
-  gl_FragColor = vec4(scene);
+  gl_FragColor = vec4(scene, 1.0);
 }

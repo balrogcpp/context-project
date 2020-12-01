@@ -41,17 +41,22 @@ uniform sampler2D baseColor;
 
 void main()
 {
-#ifdef HAS_ALPHA
-    if (texture2D(baseColor, vUV).a < 1.0) {
-        discard;
-    }
-#endif
-
     float clippedDistance = (distance - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
 
     vec2 a = (vPosition.xz / vPosition.w) * 0.5 + 0.5;
     vec2 b = (vPrevPosition.xz / vPrevPosition.w) * 0.5 + 0.5;
     vec2 velocity = vec2(a - b);
 
-    gl_FragColor = vec4(clippedDistance, velocity, 1.0);
+#ifdef HAS_ALPHA
+        float alpha = texture2D(baseColor, vUV).a;
+
+        if (alpha < 0.5) {
+            discard;
+            //clippedDistance = 0.0;
+            //velocity = vec2(0.0);
+        }
+#endif
+
+    gl_FragData[0] = vec4(clippedDistance, 0.0, 0.0, 1.0);
+    gl_FragData[1] = vec4(velocity, 0.0, 1.0);
 }

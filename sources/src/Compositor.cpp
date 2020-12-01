@@ -49,11 +49,14 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 
     auto *pass = originalMaterial->getTechnique(0)->getPass(0);
     int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
-    auto tu = pass->getTextureUnitState(0);
     bool has_alpha = false;
 
-    if (tu) {
-      has_alpha = tu->_getTexturePtr()->hasAlpha();
+    if (pass->getNumTextureUnitStates() > 0) {
+      auto tu = pass->getTextureUnitState(0);
+
+      if (tu) {
+        has_alpha = tu->_getTexturePtr()->hasAlpha();
+      }
     }
 
     if (pass->getNumTextureUnitStates() > 0 && has_alpha && alpha_rejection > 0) {

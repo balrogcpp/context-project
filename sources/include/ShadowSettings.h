@@ -63,9 +63,6 @@ class ShadowSettings : public NoCopy {
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
 
-//     for (int i = 0; i < tex_count_; i++)
-//        scene_->setShadowTextureConfig(i, tex_size_ * pow(2, -floor(i/3)), tex_size_ * pow(2, -floor(i/3)), texture_type);
-
     scene_->setShadowTextureSelfShadow(true);
     scene_->setShadowCasterRenderBackFaces(true);
     scene_->setShadowFarDistance(far_distance);
@@ -81,6 +78,7 @@ class ShadowSettings : public NoCopy {
       pssm_->setOptimalAdjustFactor(i, 0.0);
 
     scene_->setShadowCameraSetup(pssm_);
+    scene_->setShadowColour(Ogre::ColourValue::Black);
 
     if (!enable)
       scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);

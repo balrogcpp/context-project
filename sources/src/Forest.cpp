@@ -360,7 +360,6 @@ void Forest::GenerateTreesPaged() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
-//  GenerateGrassStatic();
 //  GenerateGrassPaged();
   GenerateTreesPaged();
   GenerateTreesStatic();

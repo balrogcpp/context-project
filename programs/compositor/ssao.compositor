@@ -58,7 +58,7 @@ material SsaoCrytek
 
             texture_unit
             {
-                content_type compositor GBuffer mrt
+                content_type compositor GBuffer mrt 0
                 tex_address_mode clamp
                 filtering linear linear none
             }

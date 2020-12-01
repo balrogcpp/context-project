@@ -51,11 +51,11 @@ material motion_blur
             {
                 content_type compositor Main scene
                 tex_address_mode mirror
-                filtering none
+                filtering linear linear none
             }
 			texture_unit
             {
-                content_type compositor GBuffer mrt
+                content_type compositor GBuffer mrt 1
                 tex_address_mode mirror
                 filtering linear linear none
             }
