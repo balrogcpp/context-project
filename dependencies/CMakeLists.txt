@@ -22,11 +22,6 @@
 
 project(xio-deps)
 
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif ()
-
-include(FindPkgConfig)
 include(CMakeDependentOption)
 include(ExternalProject)
 find_package(Git REQUIRED)
@@ -46,7 +41,6 @@ set(CONTEXT_EXTERNAL_INCLUDE_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include CA
 set(CONTEXT_EXTERNAL_LIB_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib CACHE PATH "")
 set(CONTEXT_EXTERNAL_BIN_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin CACHE PATH "")
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
-set(EXTERNAL_BUILD_TYPE ${CMAKE_BUILD_TYPE})
 set(EXTERNAL_GIT_SHALLOW true)
 set(EXTERNAL_GIT_PROGRESS false)
 
@@ -75,7 +69,7 @@ externalproject_add(target-cpuinfo
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -93,7 +87,7 @@ externalproject_add(target-sdl
                     -DSDL_SHARED_ENABLED_BY_DEFAULT=false
                     -DDIRECTX=false
                     -DSDL_AUDIO=false
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -108,7 +102,7 @@ externalproject_add(target-bullet3
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DUSE_MSVC_RUNTIME_LIBRARY_DLL=true
                     -DUSE_MSVC_INCREMENTAL_LINKING=false
                     -DUSE_MSVC_EXEPTIONS=true
@@ -144,7 +138,7 @@ externalproject_add(target-openal
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DALSOFT_TESTS=false
                     -DALSOFT_UTILS=false
                     -DALSOFT_EXAMPLES=false
@@ -163,7 +157,7 @@ externalproject_add(target-ogg
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -179,7 +173,7 @@ externalproject_add(target-vorbis
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DOGG_INCLUDE_DIRS=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
                     -DOGG_LIBRARIES=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libogg.a
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
@@ -196,16 +190,12 @@ externalproject_add(target-zlib
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DBUILD_SHARED_LIBS=false
-                    -DSKIP_INSTALL_LIBRARIES=true
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
-                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-zlib-build
-                    ${CMAKE_COMMAND} --build ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-zlib-build --target install
-                    && ${CMAKE_COMMAND} -E copy libz.a libzlibstatic.a ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib || :
                     )
 
 externalproject_add(target-zzip
@@ -218,7 +208,7 @@ externalproject_add(target-zzip
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -233,7 +223,7 @@ externalproject_add(target-rapidjson
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DRAPIDJSON_BUILD_DOC=false
                     -DRAPIDJSON_BUILD_EXAMPLES=false
                     -DRAPIDJSON_BUILD_TESTS=false
@@ -253,7 +243,7 @@ externalproject_add(target-yamlcpp
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DYAML_BUILD_SHARED_LIBS=false
                     -DYAML_CPP_BUILD_CONTRIB=false
                     -DYAML_CPP_BUILD_TESTS=false
@@ -274,7 +264,7 @@ externalproject_add(target-pugixml
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -290,17 +280,13 @@ externalproject_add(target-assimp
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DASSIMP_BUILD_TESTS=false
                     -DBUILD_SHARED_LIBS=false
                     -DASSIMP_BUILD_ASSIMP_TOOLS=false
                     -DASSIMP_OPT_BUILD_PACKAGES=false
                     -DASSIMP_BUILD_ZLIB=false
                     -DASSIMP_NO_EXPORT=true
-                    -DASSIMP_INJECT_DEBUG_POSTFIX=false
-                    -DINJECT_DEBUG_POSTFIX=false
-                    -DASSIMP_BUILD_GLTF_IMPORTER=false
-                    -DASSIMP_BUILD_GLTF_EXPORTER=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -316,18 +302,18 @@ externalproject_add(target-freetype
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DUNIX=true
                     -DBUILD_SHARED_LIBS=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
-                    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config ${EXTERNAL_BUILD_TYPE} --target install
+                    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target install
                     )
 
-externalproject_add(target-ogre1
+externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zzip target-pugixml target-freetype
+                    DEPENDS target-zzip target-pugixml target-freetype target-assimp
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     URL https://github.com/OGRECave/ogre/archive/27b8feb1b133a0d9aa0ea1d888bcd65939645a74.zip
                     #GIT_REPOSITORY https://github.com/OGRECave/ogre.git
@@ -335,12 +321,12 @@ externalproject_add(target-ogre1
                     #GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     #GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
-                        ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre1/RenderSystems/GLSupport/include/GLSL
+                        ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre/RenderSystems/GLSupport/include/GLSL
                         ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DOGRE_DEPENDENCIES_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DOGRE_ASSERT_MODE=1
                     -DOGRE_CONFIG_THREADS=3
@@ -354,18 +340,18 @@ externalproject_add(target-ogre1
                     -DOGRE_BUILD_RENDERSYSTEM_D3D11=false
                     -DOGRE_BUILD_RENDERSYSTEM_D3D9=false
                     -DOGRE_BUILD_PLUGIN_CG=false
-                    -DOGRE_BUILD_COMPONENT_BITES=false
                     -DOGRE_BUILD_RENDERSYSTEM_GL=false
                     -DOGRE_BUILD_COMPONENT_OVERLAY=true
+                    -DOGRE_BUILD_COMPONENT_BITES=false
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=false
-                    -DOGRE_BUILD_COMPONENT_PAGING=true
+                    -DOGRE_BUILD_COMPONENT_PAGING=false
                     -DOGRE_BUILD_COMPONENT_MESHLODGENERATOR=false
                     -DOGRE_BUILD_COMPONENT_PROPERTY=false
                     -DOGRE_BUILD_COMPONENT_VOLUME=true
                     -DOGRE_BUILD_COMPONENT_TERRAIN=true
                     -DOGRE_BUILD_PLUGIN_FREEIMAGE=false
                     -DOGRE_BUILD_PLUGIN_EXRCODEC=false
-                    -DOGRE_BUILD_PLUGIN_ASSIMP=false
+                    -DOGRE_BUILD_PLUGIN_ASSIMP=true
                     -DOGRE_BUILD_PLUGIN_STBI=true
                     -DOGRE_BUILD_PLUGIN_BSP=false
                     -DOGRE_BUILD_PLUGIN_PCZ=false
@@ -398,7 +384,7 @@ externalproject_add(target-lua
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DLUA_EXE=false
                     -DLUA_DOC=false
                     -DLUA_BUILD_WLUA=false
@@ -419,7 +405,7 @@ externalproject_add(target-sol
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -427,8 +413,10 @@ externalproject_add(target-sol
 
 if (ANDROID)
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
-else ()
+elseif (UNIX OR MINGW)
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
+else ()
+
 endif ()
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rapidjson)
@@ -436,8 +424,8 @@ list(APPEND CONTEXT_DEPENDENCY_TARGETS target-pugixml)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre1)
 add_custom_target(deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
 
 find_package(OGRE QUIET)
@@ -451,6 +439,11 @@ find_package(sol2 QUIET)
 find_package(ZLIB QUIET)
 find_package(Lua51 QUIET)
 find_package(ZZip QUIET)
+find_package(assimp QUIET)
+
+if (NOT OGRE_FOUND)
+    return()
+endif ()
 
 ########################################################################################################################
 #Hardcoded shit for static build
@@ -469,6 +462,8 @@ else ()
     endforeach ()
 endif ()
 
+list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS "Codec_AssimpStatic")
+
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid jemalloc)
 elseif (UNIX AND NOT ANDROID)
@@ -479,7 +474,7 @@ endif ()
 
 list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS
      ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${SDL2_LIBRARIES}
-     ${OPENAL_LIBRARY} ${YAML_CPP_LIBRARIES} ${ZZip_LIBRARIES} ${ZLIB_LIBRARIES} ${SYSTEM_LIBRARIES}
+     ${OPENAL_LIBRARY} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} IrrXML ${ZZip_LIBRARIES} ${ZLIB_LIBRARIES} ${SYSTEM_LIBRARIES}
      )
 
 set(CONTEXT_STATIC_DEPENDENCY_LIBS ${CONTEXT_STATIC_DEPENDENCY_LIBS} CACHE INTERNAL "")
@@ -493,6 +488,7 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${SOL2_INCLUDE_DIRS})
 list(APPEND CONTEXT_INCLUDE_DIRS ${SDL2_INCLUDE_DIRS})
 list(APPEND CONTEXT_INCLUDE_DIRS ${BULLET_INCLUDE_DIRS})
 list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus)
 list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2)
 list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES)
