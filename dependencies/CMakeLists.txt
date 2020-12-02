@@ -467,7 +467,7 @@ elseif (UNIX AND NOT ANDROID)
 elseif (ANDROID)
     list(APPEND SYSTEM_LIBRARIES log android EGL GLESv2 GLESv1_CM OpenSLES dl m.a hidapi ndk_compat omp)
 elseif (MSVC)
-    list(APPEND SYSTEM_LIBRARIES winmm)
+    list(APPEND SYSTEM_LIBRARIES opengl32 winmm)
 endif ()
 
 list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS
