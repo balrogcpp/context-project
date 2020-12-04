@@ -21,20 +21,22 @@
 //SOFTWARE.
 
 #pragma once
+
 #include "NoCopy.h"
-#include <yaml-cpp/yaml.h>
-#include <filesystem>
+#include <INIReader.h>
 #include <string>
+#include <memory>
+#include <type_traits>
 
 namespace xio {
-class YamlParserException : public std::exception {
+class IniParserException : public std::exception {
  public:
-  YamlParserException() = default;
+  IniParserException() = default;
 
-  explicit YamlParserException(std::string description)
+  explicit IniParserException(std::string description)
       : description(std::move(description)) {}
 
-  virtual ~YamlParserException() {}
+  virtual ~IniParserException() {}
 
  public:
   std::string getDescription() const noexcept {
@@ -50,32 +52,42 @@ class YamlParserException : public std::exception {
   size_t code = 0;
 };
 
-class YamlConfigurator : public NoCopy {
+class IniConfigurator : public NoCopy {
  public:
-  explicit YamlConfigurator(const std::string &file = "config.yaml") {
+  explicit IniConfigurator(const std::string &file = "config.yaml") {
     Load(file);
   }
 
-  YamlConfigurator(const YamlConfigurator &) = delete;
-  YamlConfigurator &operator=(const YamlConfigurator &) = delete;
-  virtual ~YamlConfigurator() {}
+  IniConfigurator(const IniConfigurator &) = delete;
+  IniConfigurator &operator=(const IniConfigurator &) = delete;
+  virtual ~IniConfigurator() {}
 
   void Load(const std::string &file) {
-    document_.reset();
-    document_ = YAML::LoadFile(file);
+    document_ = std::make_unique<INIReader>(file);
   }
  private:
-  YAML::Node document_;
+  std::unique_ptr<INIReader> document_;
 
  public:
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
   inline T Get(const std::string &str) {
+    const std::string section = "Default";
+
     T t{};
 
     try {
-      t = document_[str].as<T>();
-    } catch (std::exception &e) {
+      if (std::is_floating_point<T>::value) {
+        t = document_->GetReal(section, str, 0.0);
+      } else if (std::is_same<T, bool>::value) {
+        t = document_->GetBoolean(section, str, false);
+      } else if (std::is_integral<T>::value) {
+        t = document_->GetInteger(section, str, 0);
+      } else if (std::is_same<T, std::string>::value) {
+        //t = document_->GetString(section, str, "");
+      }
+    }
+    catch (std::exception &e) {
       //ignore
     }
 
