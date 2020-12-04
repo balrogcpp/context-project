@@ -25,6 +25,7 @@ project(xio-deps)
 include(CMakeDependentOption)
 include(ExternalProject)
 find_package(Git REQUIRED)
+
 if (NOT ANDROID)
     find_package(OpenGL REQUIRED)
 else ()
@@ -44,18 +45,6 @@ set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 if (ANDROID)
     set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
-
-externalproject_add(target-jemalloc
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/jemalloc/jemalloc.git
-                    GIT_TAG 5.2.1
-                    GIT_SHALLOW true
-                    GIT_PROGRESS false
-                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./autogen.sh
-                    BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./configure --disable-stats --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
-                    )
 
 externalproject_add(target-cpuinfo
                     EXCLUDE_FROM_ALL true
@@ -101,12 +90,6 @@ externalproject_add(target-bullet3
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DUSE_MSVC_RUNTIME_LIBRARY_DLL=true
-                    -DUSE_MSVC_INCREMENTAL_LINKING=false
-                    -DUSE_MSVC_EXEPTIONS=true
-                    -DUSE_MSVC_AVX=false
-                    -DUSE_MSVC_FAST_FLOATINGPOINT=true
-                    -DUSE_MSVC_STRING_POOLING=true
-                    -DUSE_MSVC_FUNCTION_LEVEL_LINKING=true
                     -DBULLET2_MULTITHREADING=true
                     -DBULLET2_USE_OPEN_MP_MULTITHREADING=true
                     -DBUILD_BULLET2_DEMOS=false
@@ -125,6 +108,12 @@ externalproject_add(target-bullet3
                     -G "${CMAKE_GENERATOR}"
                     )
 
+if (APPLE OR ANDROID)
+    set(OPENAL_LIBTYPE STATIC)
+else ()
+    set(OPENAL_LIBTYPE SHARED)
+endif ()
+
 externalproject_add(target-openal
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -139,6 +128,12 @@ externalproject_add(target-openal
                     -DALSOFT_TESTS=false
                     -DALSOFT_UTILS=false
                     -DALSOFT_EXAMPLES=false
+                    -DALSOFT_BACKEND_SDL2=false
+                    -DALSOFT_BACKEND_SNDIO=false
+                    -DALSOFT_BACKEND_WASAPI=false
+                    -DALSOFT_BACKEND_WINMM=false
+                    -DALSOFT_BACKEND_WAVE=false
+                    -DLIBTYPE=${OPENAL_LIBTYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -409,8 +404,6 @@ externalproject_add(target-sol
 
 if (ANDROID)
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
-elseif (UNIX OR MINGW)
-    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
 else ()
 
 endif ()
@@ -446,33 +439,29 @@ endif ()
 ########################################################################################################################
 set(CONTEXT_STATIC_DEPENDENCY_LIBS)
 
-if (OGRE_STATIC)
-    list(REMOVE_ITEM OGRE_LIBRARIES "dl")
-    foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
-        string(REPLACE "Static" "" X "${I}")
-        list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS "${X}Static")
-    endforeach ()
-else ()
-    foreach (I IN LISTS OGRE_LIBRARIES)
-        list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS "${I}")
-    endforeach ()
-endif ()
+list(REMOVE_ITEM OGRE_LIBRARIES "dl")
+foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
+    string(REPLACE "Static" "" X "${I}")
+    list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS "${X}Static")
+endforeach ()
 
 list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS "Codec_AssimpStatic")
 
 if (MINGW)
-    list(APPEND SYSTEM_LIBRARIES opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid jemalloc)
+    list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (UNIX AND NOT ANDROID)
-    list(APPEND SYSTEM_LIBRARIES OpenGL GLX X11 Xrandr dl jemalloc)
+    list(APPEND SYSTEM_LIBRARIES z OpenGL GLX X11 Xrandr dl)
 elseif (ANDROID)
-    list(APPEND SYSTEM_LIBRARIES log android EGL GLESv2 GLESv1_CM OpenSLES dl m.a hidapi ndk_compat omp)
+    list(APPEND SYSTEM_LIBRARIES z.a log android EGL GLESv2 GLESv1_CM OpenSLES dl m.a hidapi ndk_compat omp)
 elseif (MSVC)
-    list(APPEND SYSTEM_LIBRARIES opengl32 winmm Version imm32 Setupapi)
+    list(APPEND SYSTEM_LIBRARIES ${ZLIB_LIBRARIES} opengl32 winmm Version imm32 Setupapi)
+elseif (APPLE)
+    list(APPEND SYSTEM_LIBRARIES ${ZLIB_LIBRARIES})
 endif ()
 
 list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS
-     ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${SDL2_LIBRARIES}
-     ${OPENAL_LIBRARY} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} IrrXML ${ZZip_LIBRARIES} ${ZLIB_LIBRARIES} ${SYSTEM_LIBRARIES}
+     ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SDL2_LIBRARIES}
+     ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} IrrXML ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES}
      )
 
 set(CONTEXT_STATIC_DEPENDENCY_LIBS ${CONTEXT_STATIC_DEPENDENCY_LIBS} CACHE INTERNAL "")
