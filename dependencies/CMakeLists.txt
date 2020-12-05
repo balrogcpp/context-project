@@ -89,7 +89,6 @@ externalproject_add(target-bullet3
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DUSE_MSVC_RUNTIME_LIBRARY_DLL=true
                     -DBULLET2_MULTITHREADING=true
                     -DBULLET2_USE_OPEN_MP_MULTITHREADING=true
                     -DBUILD_BULLET2_DEMOS=false
@@ -240,8 +239,6 @@ externalproject_add(target-yamlcpp
                     -DYAML_CPP_BUILD_CONTRIB=false
                     -DYAML_CPP_BUILD_TESTS=false
                     -DYAML_CPP_BUILD_TOOLS=false
-                    -DMSVC_SHARED_RT=false
-                    -DMSVC_STHREADED_RT=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS} -I /opt/android-ndk/sources/android/cpufeatures
                     -G "${CMAKE_GENERATOR}"
@@ -305,13 +302,12 @@ externalproject_add(target-freetype
 
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zzip target-pugixml target-freetype target-assimp
+                    DEPENDS target-zzip target-freetype
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    URL https://github.com/OGRECave/ogre/archive/27b8feb1b133a0d9aa0ea1d888bcd65939645a74.zip
-                    #GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    #GIT_TAG 27b8feb1b133a0d9aa0ea1d888bcd65939645a74
-                    #GIT_SHALLOW true
-                    #GIT_PROGRESS false
+                    GIT_REPOSITORY https://github.com/balrogcpp/ogre.git
+                    GIT_TAG stable
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
                     PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
                         ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre/RenderSystems/GLSupport/include/GLSL
                         ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
@@ -343,7 +339,7 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_COMPONENT_TERRAIN=true
                     -DOGRE_BUILD_PLUGIN_FREEIMAGE=false
                     -DOGRE_BUILD_PLUGIN_EXRCODEC=false
-                    -DOGRE_BUILD_PLUGIN_ASSIMP=true
+                    -DOGRE_BUILD_PLUGIN_ASSIMP=false
                     -DOGRE_BUILD_PLUGIN_STBI=true
                     -DOGRE_BUILD_PLUGIN_BSP=false
                     -DOGRE_BUILD_PLUGIN_PCZ=false
@@ -445,8 +441,6 @@ foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
     list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS "${X}Static")
 endforeach ()
 
-list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS "Codec_AssimpStatic")
-
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (UNIX AND NOT ANDROID)
@@ -460,8 +454,8 @@ elseif (APPLE)
 endif ()
 
 list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS
-     ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SDL2_LIBRARIES}
-     ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} IrrXML ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES}
+     vorbisfile vorbis vorbisenc ogg pugixml freetype  ${BULLET_LIBRARIES} ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
+     ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES}
      )
 
 set(CONTEXT_STATIC_DEPENDENCY_LIBS ${CONTEXT_STATIC_DEPENDENCY_LIBS} CACHE INTERNAL "")
@@ -475,7 +469,6 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${SOL2_INCLUDE_DIRS})
 list(APPEND CONTEXT_INCLUDE_DIRS ${SDL2_INCLUDE_DIRS})
 list(APPEND CONTEXT_INCLUDE_DIRS ${BULLET_INCLUDE_DIRS})
 list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS})
-list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus)
 list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2)
 list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES)
