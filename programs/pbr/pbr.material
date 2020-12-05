@@ -71,6 +71,7 @@ abstract material Basic
             specular 1 1 1 1
             diffuse 1 1 1
             ambient 1 1 1
+            emission 1 1 1
 
             texture_unit Albedo
             {
@@ -114,6 +115,7 @@ abstract material PBR
             diffuse 1 1 1
             specular 1 1 1 1
             ambient 1 1 1
+            emissive 1 1 1
 
             texture_unit Albedo
             {
