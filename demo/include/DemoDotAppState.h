@@ -39,6 +39,7 @@ class DemoDotAppState : public xio::AppState {
     void OnKeyDown(SDL_Keycode sym) final;
 
  private:
-  Ogre::AnimationState *anim = nullptr;
+  Ogre::AnimationState *anim1 = nullptr;
+  Ogre::AnimationState *anim2 = nullptr;
 };
 }

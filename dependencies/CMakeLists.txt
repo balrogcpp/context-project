@@ -304,8 +304,8 @@ externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zzip target-freetype
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/balrogcpp/ogre.git
-                    GIT_TAG stable
+                    GIT_REPOSITORY https://github.com/OGRECave/ogre.git
+                    GIT_TAG v1.12.10
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -419,7 +419,7 @@ find_package(SDL2 QUIET)
 find_package(OpenAL QUIET)
 find_package(Lua QUIET)
 find_package(yaml-cpp QUIET)
-#find_package(freetype QUIET)
+find_package(freetype QUIET)
 find_package(sol2 QUIET)
 find_package(ZLIB QUIET)
 find_package(Lua51 QUIET)
@@ -454,7 +454,7 @@ elseif (APPLE)
 endif ()
 
 list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS
-     vorbisfile vorbis vorbisenc ogg pugixml freetype  ${BULLET_LIBRARIES} ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
+     vorbisfile vorbis vorbisenc ogg pugixml freetype ${BULLET_LIBRARIES} ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
      ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES}
      )
 

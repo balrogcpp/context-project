@@ -71,7 +71,7 @@ abstract material Basic
             specular 1 1 1 1
             diffuse 1 1 1
             ambient 1 1 1
-            emission 1 1 1
+            emissive 1 1 1
 
             texture_unit Albedo
             {
@@ -97,6 +97,8 @@ sampler PBRSampler
 
 abstract material PBR
 {
+    lod_strategy Distance
+    lod_values 2.0 5.0 10.0
     transparency_casts_shadows off
     receive_shadows on
 
@@ -110,8 +112,10 @@ abstract material PBR
 
     technique
     {
-      pass
-      {
+        lod_index 0
+
+        pass
+        {
             diffuse 1 1 1
             specular 1 1 1 1
             ambient 1 1 1
@@ -155,8 +159,8 @@ abstract material PBR
 
             vertex_program_ref PBR_vs {}
 
-			fragment_program_ref PBR_fs
-			{
+            fragment_program_ref PBR_fs
+            {
                 param_named uAlbedoSampler      int 0
                 param_named uNormalSampler      int 1
                 param_named uMetallicSampler    int 2
@@ -164,7 +168,32 @@ abstract material PBR
                 param_named uOcclusionSampler   int 4
                 param_named uEmissiveSampler    int 5
                 param_named uOffsetSampler      int 6
-			}
+            }
+        }
+    }
+
+    technique
+    {
+        lod_index 1
+
+        pass
+        {
+            specular 1 1 1 1
+            diffuse 1 1 1
+            ambient 1 1 1
+            emissive 1 1 1
+
+            texture_unit Albedo
+            {
+                texture green.dds
+            }
+
+            vertex_program_ref PBR_vs {}
+
+            fragment_program_ref PbrBasic_fs
+            {
+                param_named uAlbedoSampler int 0
+            }
         }
     }
 }
@@ -180,8 +209,8 @@ abstract material PBR_IBL : PBR
 
     technique
     {
-      pass
-      {
+        pass
+        {
             texture_unit IBL_Diffuse
             {
                 texture $IBL_Diffuse cubic
@@ -203,8 +232,8 @@ abstract material PBR_IBL : PBR
 
             vertex_program_ref PBR_vs {}
 
-			fragment_program_ref PBR_IBL_fs
-			{
+            fragment_program_ref PBR_IBL_fs
+            {
                 param_named uAlbedoSampler      int 0
                 param_named uNormalSampler      int 1
                 param_named uMetallicSampler    int 2
@@ -215,7 +244,7 @@ abstract material PBR_IBL : PBR
                 param_named uDiffuseEnvSampler  int 7
                 param_named uSpecularEnvSampler int 8
                 param_named ubrdfLUT            int 9
-			}
+            }
         }
     }
 }
@@ -246,8 +275,8 @@ abstract material Plane : PBR
 
     technique
     {
-      pass
-      {
+        pass
+        {
             texture_unit ReflectionMap
             {
                 texture black.dds
@@ -256,8 +285,8 @@ abstract material Plane : PBR
 
             vertex_program_ref PbrReflective_vs {}
 
-			fragment_program_ref PbrReflective_fs
-			{
+            fragment_program_ref PbrReflective_fs
+            {
                 param_named uAlbedoSampler      int 0
                 param_named uNormalSampler      int 1
                 param_named uMetallicSampler    int 2
@@ -266,7 +295,7 @@ abstract material Plane : PBR
                 param_named uEmissiveSampler    int 5
                 param_named uOffsetSampler      int 6
                 param_named uReflectionMap      int 7
-			}
+            }
         }
     }
 }
@@ -298,8 +327,8 @@ abstract material Terrain : PBR
 
     technique
     {
-      pass
-      {
+        pass
+        {
             texture_unit GlobalNormal
             {
                 texture normal.dds
@@ -313,9 +342,9 @@ abstract material Terrain : PBR
 
             vertex_program_ref PbrTerrain_vs {}
 
-			fragment_program_ref PbrTerrain_fs
-			{
-			    param_named uShadowDepthOffset float 0.001
+            fragment_program_ref PbrTerrain_fs
+            {
+                param_named uShadowDepthOffset float 0.001
 
                 param_named uAlbedoSampler       int 0
                 param_named uNormalSampler       int 1
@@ -326,7 +355,7 @@ abstract material Terrain : PBR
                 param_named uOffsetSampler       int 6
                 param_named uGlobalNormalSampler int 7
                 //param_named uGlobalShadowSampler int 8
-			}
+            }
         }
     }
 }
@@ -353,8 +382,8 @@ abstract material Paged
 
     technique
     {
-      pass
-      {
+        pass
+        {
             alpha_rejection greater_equal 127
 
             texture_unit Albedo
@@ -363,12 +392,12 @@ abstract material Paged
                 filtering bilinear
             }
 
-			vertex_program_ref PbrPaged_vs {}
+            vertex_program_ref PbrPaged_vs {}
 
-			fragment_program_ref PbrPaged_fs
-			{
+            fragment_program_ref PbrPaged_fs
+            {
                 param_named uAlbedoSampler int 0
-			}
+            }
         }
     }
 }
@@ -395,8 +424,8 @@ abstract material Grass : Basic
 
     technique
     {
-      pass
-      {
+        pass
+        {
             alpha_rejection greater_equal 128
             cull_hardware none
             //scene_blend alpha_blend
@@ -408,12 +437,12 @@ abstract material Grass : Basic
                 tex_address_mode clamp
             }
 
-			vertex_program_ref PbrGrass_vs {}
+            vertex_program_ref PbrGrass_vs {}
 
-			fragment_program_ref PbrGrass_fs
-			{
+            fragment_program_ref PbrGrass_fs
+            {
                 param_named uAlbedoSampler int 0
-			}
+            }
         }
     }
 }
