@@ -72,7 +72,6 @@ class Window : public NoCopy {
       flags_ |= SDL_WINDOW_ALWAYS_ON_TOP;
       flags_ |= SDL_WINDOW_INPUT_GRABBED;
       flags_ |= SDL_WINDOW_MOUSE_FOCUS;
-
       flags_ |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
       w_ = screen_w_;
@@ -87,56 +86,6 @@ class Window : public NoCopy {
       SDL_SetRelativeMouseMode(SDL_TRUE);
     } else {
       throw Exception("Failed to Create SDL_Window");
-    }
-
-    if (gl_force_) {
-      constexpr std::pair<int, int> versions[]{{4, 5}, {4, 4}, {4, 3}, {4, 2}, {4, 1},
-                                               {4, 0}, {3, 3}, {3, 2}, {3, 1}, {3, 0}};
-
-      if (gl_force_) {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_major);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor);
-
-        context_ = SDL_GL_CreateContext(window_);
-
-        if (!context_) {
-          for (const auto &it : versions) {
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, it.first);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, it.second);
-
-            context_ = SDL_GL_CreateContext(window_);
-
-            if (!context_) {
-              continue;
-            } else {
-              gl_major = it.first;
-              gl_minor = it.second;
-              break;
-            }
-          }
-        }
-      } else {
-        for (const auto &it : versions) {
-          SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-          SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, it.first);
-          SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, it.second);
-
-          context_ = SDL_GL_CreateContext(window_);
-
-          if (!context_) {
-            continue;
-          } else {
-            gl_major = it.first;
-            gl_minor = it.second;
-            break;
-          }
-        }
-      }
-
-      if (!context_)
-        throw Exception("Failed to Create SDL_GL_Context");
     }
   }
 
