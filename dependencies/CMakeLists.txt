@@ -89,6 +89,9 @@ externalproject_add(target-bullet3
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_RELWITHDEBINFO_POSTFIX=
+                    -DCMAKE_DEBUG_POSTFIX=
+                    -DCMAKE_MINSIZEREL_POSTFIX=
                     -DBULLET2_MULTITHREADING=true
                     -DBULLET2_USE_OPEN_MP_MULTITHREADING=true
                     -DBUILD_BULLET2_DEMOS=false
@@ -419,7 +422,6 @@ find_package(SDL2 QUIET)
 find_package(OpenAL QUIET)
 find_package(Lua QUIET)
 find_package(yaml-cpp QUIET)
-find_package(freetype QUIET)
 find_package(sol2 QUIET)
 find_package(ZLIB QUIET)
 find_package(Lua51 QUIET)
