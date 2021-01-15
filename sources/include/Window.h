@@ -63,13 +63,14 @@ class Window : public NoCopy {
       f_ = true;
     }
 
+    flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
+
     if (w_ == screen_w_ && h_ == screen_h_) {
       flags_ |= SDL_WINDOW_BORDERLESS;
       f_ = true;
     }
 
     if (f_) {
-      flags_ |= SDL_WINDOW_ALWAYS_ON_TOP;
       flags_ |= SDL_WINDOW_INPUT_GRABBED;
       flags_ |= SDL_WINDOW_MOUSE_FOCUS;
       flags_ |= SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -77,8 +78,6 @@ class Window : public NoCopy {
       w_ = screen_w_;
       h_ = screen_h_;
     }
-
-    flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
 
     window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w_, h_, flags_);
 
