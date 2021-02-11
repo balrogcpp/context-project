@@ -24,6 +24,10 @@ cmake_minimum_required(VERSION 3.16.3)
 
 project(xio)
 
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif ()
+
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
 
 set(CMAKE_CXX_STANDARD 17)
@@ -76,7 +80,7 @@ set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT ANDROID)
     if (NOT ${CMAKE_BUILD_TYPE} STREQUAL Release)
-        string(APPEND CMAKE_CXX_FLAGS " -g -DDEBUG -D_DEBUG")
+        string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
     elseif ()
         string(APPEND CMAKE_CXX_FLAGS " -Ofast -DNDEBUG")
@@ -89,13 +93,13 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_CXX_FLAGS " -mwindows")
     endif ()
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        string(APPEND CMAKE_CXX_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
+    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        string(APPEND CMAKE_CXX_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT} -floop-parallelize-all")
     elseif ()
         string(APPEND CMAKE_CXX_FLAGS " -flto=thin")
     endif ()
 
-    string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -funroll-loops -floop-parallelize-all -pthread -fopenmp")
+    string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -funroll-loops -pthread -fopenmp")
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -163,11 +167,11 @@ if (WIN32)
 endif ()
 
 add_custom_target(zip-deps
-                  COMMAND ${CMAKE_COMMAND} -DCMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR} -P CMake/zipdir.cmake
-                  WORKING_DIRECTORY ${CONTEXT_ROOT_DIR}
-                  COMMENT "Zipping dependencies..."
-                  VERBATIM
-                  )
+        COMMAND ${CMAKE_COMMAND} -DCMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR} -P CMake/zipdir.cmake
+        WORKING_DIRECTORY ${CONTEXT_ROOT_DIR}
+        COMMENT "Zipping dependencies..."
+        VERBATIM
+        )
 
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
         CONFIGURATIONS Release
@@ -217,10 +221,10 @@ set(CPACK_GENERATOR "ZIP")
 include(CPack)
 
 add_custom_target(install-zip
-                  COMMAND ${CMAKE_COMMAND} -E tar cf ${CONTEXT_ZIP_NAME}.zip --format=zip ${CONTEXT_ZIP_NAME}
-                  WORKING_DIRECTORY ${CONTEXT_INSTALL_PATH}
-                  COMMENT "Create zip..."
-                  VERBATIM
-                  )
+        COMMAND ${CMAKE_COMMAND} -E tar cf ${CONTEXT_ZIP_NAME}.zip --format=zip ${CONTEXT_ZIP_NAME}
+        WORKING_DIRECTORY ${CONTEXT_INSTALL_PATH}
+        COMMENT "Create zip..."
+        VERBATIM
+        )
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
