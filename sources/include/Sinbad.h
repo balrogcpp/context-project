@@ -2,6 +2,7 @@
 #include "Ogre.h"
 #include "Entity.h"
 #include "Input.h"
+#include "MeshUtils.h"
 
 #define SCALE 0.2f
 #define CHAR_HEIGHT SCALE*5.0f          // height of character's center of mass above ground
@@ -107,17 +108,17 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
     }
   }
 
-  void OnMouseMove(int32_t dx, int32_t dy) override {
+  void OnMouseMove(int dx, int dy) override {
     // update camera goal based on mouse movement
     updateCameraGoal(-0.05f * dx, -0.05f * dy, 0);
   }
 
-  void OnMouseWheel(int32_t x, int32_t y) override {
+  void OnMouseWheel(int x, int y) override {
     // update camera goal based on mouse movement
     updateCameraGoal(0, 0, -0.05f * y);
   }
 
-  void OnMouseLbDown(int32_t x, int32_t y) override {
+  void OnMouseLbDown(int x, int y) override {
     if (mSwordsDrawn && (mTopAnimID == ANIM_IDLE_TOP || mTopAnimID == ANIM_RUN_TOP)) {
       // if swords are out, and character's not doing something weird, then SLICE!
       setTopAnimation(ANIM_SLICE_VERTICAL, true);
@@ -125,7 +126,7 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
     }
   }
 
-  void OnMouseRbDown(int32_t x, int32_t y) override {
+  void OnMouseRbDown(int x, int y) override {
     if (mSwordsDrawn && (mTopAnimID == ANIM_IDLE_TOP || mTopAnimID == ANIM_RUN_TOP)) {
       // if swords are out, and character's not doing something weird, then SLICE!
       setTopAnimation(ANIM_SLICE_HORIZONTAL, true);
@@ -143,13 +144,14 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
     mBodyNode->scale(Ogre::Vector3{SCALE});
 
     // create swords and attach to sheath
-    Ogre::LogManager::getSingleton().logMessage("Creating swords");
     mSword1 = sceneMgr->createEntity("SinbadSword1", "Sword.mesh");
     mSword2 = sceneMgr->createEntity("SinbadSword2", "Sword.mesh");
     mBodyEnt->attachObjectToBone("Sheath.L", mSword1);
     mBodyEnt->attachObjectToBone("Sheath.R", mSword2);
 
-    Ogre::LogManager::getSingleton().logMessage("Creating the chains");
+    xio::UpdateMeshMaterial("Sinbad.mesh");
+    xio::UpdateMeshMaterial("Sword.mesh");
+
     // create a couple of ribbon trails for the swords, just for fun
     Ogre::NameValuePairList params;
     params["numberOfChains"] = "2";

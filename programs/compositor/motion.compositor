@@ -30,7 +30,7 @@ fragment_program motion_blur_fs glsl glsles
         param_named uTexMotion int 1
         param_named_auto texelSize inverse_texture_size 0
         param_named_auto uFrameTime frame_time
-        param_named uScale float 0.5
+        param_named uScale float 1
     }
 }
 
@@ -51,11 +51,11 @@ material motion_blur
             {
                 content_type compositor Main scene
                 tex_address_mode mirror
-                filtering none
+                filtering linear linear none
             }
 			texture_unit
             {
-                content_type compositor GBuffer mrt
+                content_type compositor GBuffer mrt 1
                 tex_address_mode mirror
                 filtering linear linear none
             }

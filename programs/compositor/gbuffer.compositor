@@ -24,7 +24,7 @@ compositor GBuffer
 {
     technique
     {
-        texture mrt target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_RGB chain_scope
+        texture mrt target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R PF_FLOAT16_GR chain_scope
 
         target mrt
         {
@@ -114,6 +114,34 @@ material gbuffer_alpha
                 param_named_auto cFarClipDistance far_clip_distance
                 param_named baseColor int 0
             }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+vertex_program gbuffer_empty_vp glsl glsles
+{
+ 	source gbuffer_empty.vert
+}
+
+fragment_program gbuffer_empty_fp glsl glsles
+{
+	source gbuffer_empty.frag
+}
+
+material gbuffer_empty
+{
+    technique
+    {
+        pass
+        {
+            vertex_program_ref gbuffer_empty_vp
+            {
+                param_named_auto cWorldViewProj worldviewproj_matrix
+            }
+
+            fragment_program_ref gbuffer_empty_fp
+            {}
         }
     }
 }

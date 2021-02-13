@@ -29,18 +29,37 @@
 #endif
 #include "header.frag"
 
+#include "srgb.glsl"
+
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
-#ifdef GAMMA
+#ifdef MANUAL_SRGB
 uniform float exposure;
 #endif
+#ifdef PCF_FILTER
+uniform vec2 texelSize;
+#endif
+
 void main()
 {
+#ifndef PCF_FILTER
   vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-#ifdef GAMMA
-  const float gamma = 2.2;
-  vec3 mapped = vec3(1.0) - exp(-scene * exposure);
-  scene = pow(mapped, vec3(1.0 / gamma));
+#else
+  vec3 scene = vec3(0.0);
+
+  for (int x = -2; x < 2; x++)
+  for (int y = -2; y < 2; y++)
+  {
+    scene += texture2D(SceneSampler, vec2(oUv0.x + float(x) * texelSize.x, oUv0.y + float(y) * texelSize.y)).rgb;
+  }
+  scene /= 16.0;
+
 #endif
-  gl_FragColor = vec4(scene, 1.0);
+#ifdef MANUAL_SRGB
+  const float gamma = 2.2;
+  vec3 mapped = vec3(1.0) - exp(-scene.rgb * exposure);
+  scene.rgb = pow(mapped, vec3(1.0 / gamma));
+#endif
+
+  gl_FragColor = vec4(scene.rgb, 1.0);
 }

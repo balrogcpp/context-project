@@ -31,20 +31,22 @@
 
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
-#ifdef Bloom
+#ifdef BLOOM
 uniform sampler2D BloomSampler;
 #endif
-#ifdef Ssao
+#ifdef SSAO
 uniform sampler2D SsaoSampler;
 #endif
+
 void main()
 {
     vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-#ifdef Ssao
-    scene *= texture2D(SsaoSampler, oUv0).r;
+#ifdef SSAO
+    scene.rgb *= texture2D(SsaoSampler, oUv0).r;
 #endif
-#ifdef Bloom
-    scene += texture2D(BloomSampler, oUv0).rgb;
+#ifdef BLOOM
+    scene.rgb += texture2D(BloomSampler, oUv0).rgb;
 #endif
-    gl_FragColor = vec4(scene, 1.0);
+
+    gl_FragColor = vec4(scene.rgb, 1.0);
 }

@@ -37,15 +37,13 @@ namespace xio {
 class Window : public NoCopy {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  explicit Window(int32_t w, int32_t h, bool f)
+  explicit Window(int w, int h, bool f)
       : w_(w), h_(h), f_(f) {
     Init_();
   }
 //----------------------------------------------------------------------------------------------------------------------
   virtual ~Window() {
-    if (f_)
     SDL_SetWindowFullscreen(window_, SDL_FALSE);
-
     SDL_DestroyWindow(window_);
   }
 
@@ -55,18 +53,6 @@ class Window : public NoCopy {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
       throw Exception("Failed to init SDL2");
 
-    if (SDL_NumJoysticks() != 0) {
-      for (int i = 0; i < SDL_NumJoysticks(); i++) {
-        if (SDL_IsGameController(i)) {
-          SDL_GameController *controller = nullptr;
-
-          controller = SDL_GameControllerOpen(i);
-
-          break;
-        }
-      }
-    }
-
     SDL_DisplayMode DM;
     SDL_GetCurrentDisplayMode(0, &DM);
 
@@ -74,20 +60,23 @@ class Window : public NoCopy {
     screen_h_ = static_cast<int>(DM.h);
 
     if (w_ * h_ == 0.0) {
-      w_ = screen_w_;
-      h_ = screen_h_;
-      f_ = false;
+      f_ = true;
     }
 
     flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
 
-    if (w_ == screen_w_ && h_ == screen_h_)
+    if (w_ == screen_w_ && h_ == screen_h_) {
       flags_ |= SDL_WINDOW_BORDERLESS;
+      f_ = true;
+    }
 
     if (f_) {
-      flags_ |= SDL_WINDOW_ALWAYS_ON_TOP;
       flags_ |= SDL_WINDOW_INPUT_GRABBED;
       flags_ |= SDL_WINDOW_MOUSE_FOCUS;
+      flags_ |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+
+      w_ = screen_w_;
+      h_ = screen_h_;
     }
 
     window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w_, h_, flags_);
@@ -97,60 +86,6 @@ class Window : public NoCopy {
     } else {
       throw Exception("Failed to Create SDL_Window");
     }
-
-    if (gl_force_) {
-      constexpr std::pair<int, int> versions[]{{4, 5}, {4, 4}, {4, 3}, {4, 2}, {4, 1},
-                                               {4, 0}, {3, 3}, {3, 2}, {3, 1}, {3, 0}};
-
-      if (gl_force_) {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_major);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor);
-
-        context_ = SDL_GL_CreateContext(window_);
-
-        if (!context_) {
-          for (const auto &it : versions) {
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, it.first);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, it.second);
-
-            context_ = SDL_GL_CreateContext(window_);
-
-            if (!context_) {
-              continue;
-            } else {
-              gl_major = it.first;
-              gl_minor = it.second;
-              break;
-            }
-          }
-        }
-      } else {
-        for (const auto &it : versions) {
-          SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-          SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, it.first);
-          SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, it.second);
-
-          context_ = SDL_GL_CreateContext(window_);
-
-          if (!context_) {
-            continue;
-          } else {
-            gl_major = it.first;
-            gl_minor = it.second;
-            break;
-          }
-        }
-      }
-
-      if (!context_)
-        throw Exception("Failed to Create SDL_GL_Context");
-    }
-
-    if (window_ && f_) {
-      SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
-    }
   }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -159,13 +94,13 @@ class Window : public NoCopy {
   SDL_GLContext context_ = nullptr;
   std::string caption_;
   bool f_ = false;
-  int32_t w_ = 1024;
-  int32_t h_ = 768;
-  int32_t screen_w_;
-  int32_t screen_h_;
+  int w_ = 1024;
+  int h_ = 768;
+  int screen_w_;
+  int screen_h_;
   bool gl_force_ = false;
-  int32_t gl_minor = 3;
-  int32_t gl_major = 3;
+  int gl_minor = 3;
+  int gl_major = 3;
 
  public:
 //----------------------------------------------------------------------------------------------------------------------
@@ -178,7 +113,7 @@ class Window : public NoCopy {
     SDL_SetWindowTitle(window_, caption.c_str());
   }
 
-  inline std::pair<uint32_t, uint32_t> GetSize() const noexcept {
+  inline std::pair<int, int> GetSize() const noexcept {
     return std::make_pair(w_, h_);
   }
 
@@ -207,14 +142,14 @@ class Window : public NoCopy {
     SDL_GL_SwapWindow(window_);
   }
 
-  inline void Resize(int32_t w, int32_t h) noexcept {
+  inline void Resize(int w, int h) noexcept {
     w_ = w;
     h_ = h;
     SDL_SetWindowPosition(window_, (screen_w_ - w_) / 2, (screen_h_ - h_) / 2);
     SDL_SetWindowSize(window_, w_, h_);
   }
 
-  inline void Fullscreen(bool f) noexcept {
+  inline void SetFullscreen(bool f) noexcept {
     f_ = f;
 
     if (f) {

@@ -26,7 +26,7 @@
 #include <OgreMaterialManager.h>
 #include <OgreShadowCameraSetupPSSM.h>
 #include <vector>
-#include "ShaderUtils.h"
+#include "PbrShaderUtils.h"
 
 namespace xio {
 class ShadowSettings : public NoCopy {
@@ -58,13 +58,11 @@ class ShadowSettings : public NoCopy {
     else
       throw Exception("Unknown texture format, aborting;");
 
-    scene_->setShadowTextureSettings(tex_size_, tex_count_, texture_type);
+    scene_->setShadowTextureSize(tex_size_);
+    scene_->setShadowTexturePixelFormat(texture_type);
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
     scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
-
-     for (int i = 0; i < tex_count_; i++)
-        scene_->setShadowTextureConfig(i, tex_size_ * pow(2, -floor(i/3)), tex_size_ * pow(2, -floor(i/3)), texture_type);
 
     scene_->setShadowTextureSelfShadow(true);
     scene_->setShadowCasterRenderBackFaces(true);
@@ -81,6 +79,7 @@ class ShadowSettings : public NoCopy {
       pssm_->setOptimalAdjustFactor(i, 0.0);
 
     scene_->setShadowCameraSetup(pssm_);
+    scene_->setShadowColour(Ogre::ColourValue::Black);
 
     if (!enable)
       scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);

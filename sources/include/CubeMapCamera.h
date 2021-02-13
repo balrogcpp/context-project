@@ -27,7 +27,7 @@ namespace xio {
 class CubeMapCamera final : public Ogre::RenderTargetListener {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  CubeMapCamera(Ogre::SceneNode *creator, uint32_t tex_size) {
+  CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size) {
     Init_(creator, tex_size);
   }
 
@@ -75,7 +75,7 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
     camera_node_ = nullptr;
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Init_(Ogre::SceneNode *creator, uint32_t tex_size) {
+  void Init_(Ogre::SceneNode *creator, unsigned int tex_size) {
     scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
     auto *main_camera = scene_->getCamera("Default");
     camera_ = scene_->createCamera("CubeMapCamera");

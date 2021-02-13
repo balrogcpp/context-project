@@ -40,7 +40,7 @@
 #include "NoCopy.h"
 #include "OgreHeaders.h"
 #include "Overlay.h"
-#include "ShaderUtils.h"
+#include "PbrShaderUtils.h"
 #include "MeshUtils.h"
 #include "Physics.h"
 #include "ReflectionCamera.h"

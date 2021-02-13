@@ -26,9 +26,6 @@
 namespace Demo {
 using namespace xio;
 
-DemoDotAppState::DemoDotAppState() {}
-DemoDotAppState::~DemoDotAppState() {}
-
 void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
     SwitchNextState(std::make_unique<DemoDotAppState>());
@@ -45,11 +42,9 @@ void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
 void DemoDotAppState::Clear() {
 }
 
-void DemoDotAppState::Loop(float time) {
-//  Ogre::Root::getSingleton().getSceneManager("Default")->_notifyLightsDirty();
-}
-
-void DemoDotAppState::Callback(int a, int b) {
+void DemoDotAppState::Update(float time) {
+  anim1->addTime(time/4);
+//  anim2->addTime(time/4);
 }
 
 void DemoDotAppState::Create() {
@@ -61,7 +56,21 @@ void DemoDotAppState::Create() {
 
   Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
   auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
-  root->createChildSceneNode(Ogre::Vector3(2, 7, 0))->attachObject(ps);
+  root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
+
+  Ogre::Entity *entity = scene->createEntity("ely_vanguardsoldier_kerwinatienza_Mesh.mesh", "ely_vanguardsoldier_kerwinatienza_Mesh.mesh");
+  auto *node = root->createChildSceneNode(Ogre::Vector3(0, 0, 0));
+  node->scale(Ogre::Vector3(0.02));
+  node->attachObject(entity);
+  UpdateEntityMaterial(entity);
+//  UpdateMeshMaterial("Person.mesh");
+  anim1 = entity->getAnimationState("run");
+  anim1->setLoop(true);
+  anim1->setEnabled(true);
+
+//  anim2 = entity->getAnimationState("jump");
+//  anim2->setLoop(true);
+//  anim2->setEnabled(true);
 
 //  sound_->CreateSound("ambient", "test.ogg", false);
 //  sound_->SetVolume("ambient", 0.5);

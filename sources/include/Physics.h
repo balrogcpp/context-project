@@ -64,7 +64,7 @@ class Physics final : public Component, public Singleton<Physics> {
   void Create() final {}
   void Reset() final {}
   void Clean() final;
-  void Loop(float time) final;
+  void Update(float time) final;
   void Resume() final {
     pause_ = false;
   }

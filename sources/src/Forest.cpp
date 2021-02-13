@@ -23,7 +23,7 @@
 
 #include "pcheader.h"
 #include "Forest.h"
-#include "ShaderUtils.h"
+#include "PbrShaderUtils.h"
 #include "MeshUtils.h"
 #include "DotSceneLoaderB.h"
 #include "Physics.h"
@@ -31,13 +31,11 @@ using namespace Forests;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
-#pragma pack(push, 1)
 struct GrassVertex {
   float x, y, z;
   float nx, ny, nz;
   float u, v;
 };
-#pragma pack(pop)
 
 static void CreateGrassMesh(float width, float height) {
   using namespace Ogre;
@@ -321,7 +319,7 @@ void Forest::GenerateTreesPaged() {
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;
   auto *trees = new PagedGeometry(scene->getCamera("Default"), 50);
   pgeometry_.push_back(trees);
-  trees->addDetailLevel<WindBatchPage>(100, 20);
+//  trees->addDetailLevel<WindBatchPage>(100, 20);
   trees->addDetailLevel<Forests::BatchPage>(200, 60);
   auto *treeLoader = new TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
   ploaders_.push_back(treeLoader);
@@ -360,7 +358,6 @@ void Forest::GenerateTreesPaged() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
-//  GenerateGrassStatic();
   GenerateGrassPaged();
   GenerateTreesPaged();
   GenerateTreesStatic();

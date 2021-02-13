@@ -27,7 +27,7 @@
 namespace xio {
 class ReflectionCamera final : public Ogre::RenderTargetListener {
  public:
-  explicit ReflectionCamera(Ogre::Plane plane, uint32_t tex_size) {
+  explicit ReflectionCamera(Ogre::Plane plane, unsigned int tex_size) {
     SetPlane(plane);
     Init_(tex_size);
   }
@@ -79,7 +79,7 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
     }
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Init_(uint32_t tex_size) {
+  void Init_(unsigned int tex_size) {
     // create our reflection & refraction render textures, and setup their render targets
     scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
     auto *camera = scene_->getCamera("Default");

@@ -134,7 +134,7 @@ class _OGGSOUND_EXPORT OgreOggStreamBufferSound : public OgreOggISound {
       Calculates a block aligned buffer size of 250ms using
       sounds properties
    */
-  bool _queryBufferInfo() {}
+  bool _queryBufferInfo() { return true; }
   /** Releases buffers and OpenAL objects.
   @remarks
       Cleans up this sounds OpenAL objects, including buffers

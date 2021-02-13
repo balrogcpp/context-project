@@ -21,25 +21,25 @@
 //SOFTWARE.
 
 #pragma once
-#include "Renderer.h"
 #include "AppState.h"
-#include "Forest.h"
-#include <memory>
 
 namespace Demo {
 
 class DemoDotAppState : public xio::AppState {
  public:
-   DemoDotAppState();
-   ~DemoDotAppState();
+   DemoDotAppState() {}
+   virtual ~DemoDotAppState() {}
 
     void Create() final;
     void Clear() final;
     void Pause() final {}
     void Unpause() final {}
-    void Loop(float time) final;
+    void Update(float time) final;
 
     void OnKeyDown(SDL_Keycode sym) final;
-    static void Callback(int a, int b);
+
+ private:
+  Ogre::AnimationState *anim1 = nullptr;
+  Ogre::AnimationState *anim2 = nullptr;
 };
 }

@@ -74,14 +74,21 @@ void Application::messageLogged(const std::string &message, Ogre::LogMessageLeve
         bool maskDebug, const std::string &logName, bool &skipThisMessage) {
   log_.append(message);
   log_.append("\n");
-  std::cout << message << "\n";
+#ifdef DEBUG
+  if (verbose_)
+    std::cout << message << "\n";
+#endif
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
   auto *logger = new Ogre::LogManager();
   logger->createLog("ogre.log", true, false, true);
   Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+#ifdef DEBUG
   Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
+#else
+  Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
+#endif
 
 //#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 //  DesktopIcon icon;
@@ -224,13 +231,10 @@ void Application::Loop_() {
       auto before_frame = std::chrono::system_clock::now().time_since_epoch();
       int64_t micros_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(before_frame).count();
 
-      int fps_frames_ = 0;
-      int64_t delta_time_ = 0;
-
-      if (delta_time_ > 1000000) {
-        current_fps_ = fps_frames_;
-        delta_time_ = 0;
-        fps_frames_ = 0;
+      if (cumulated_time_ > 1000000) {
+        current_fps_ = fps_counter_;
+        cumulated_time_ = 0;
+        fps_counter_ = 0;
       }
 
       input_->Capture();
@@ -252,9 +256,9 @@ void Application::Loop_() {
         time_of_last_frame_ = micros_before_update;
 
         for (auto *it : components_)
-          it->Loop(frame_time);
+          it->Update(frame_time);
 
-        cur_state_->Loop(frame_time);
+        cur_state_->Update(frame_time);
 
         renderer_->RenderOneFrame();
       } else {
@@ -281,9 +285,9 @@ void Application::Loop_() {
       int64_t micros_after_loop = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_loop).count();
 
       int64_t time_since_last_frame_ = micros_after_loop - micros_before_frame;
-      delta_time_ += time_since_last_frame_;
+      cumulated_time_ += time_since_last_frame_;
 
-      fps_frames_++;
+      fps_counter_++;
     } else {
       quit_ = true;
     }
@@ -298,13 +302,15 @@ void Application::Go_() {
     time_of_last_frame_ = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
     Loop_();
     Reset_();
-    WriteLogToFile("ogre.log");
-    PrintLogToConsole();
+    if (verbose_) {
+      WriteLogToFile("ogre.log");
+      PrintLogToConsole();
+    }
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Message_(const std::string &caption, const std::string &message) {
-  WriteLogToFile("ogre.log");
+  WriteLogToFile("error.log");
   PrintLogToConsole();
   std::cerr << caption << '\n';
   std::cerr << message << '\n';

@@ -32,11 +32,15 @@
 #endif
 #include "header.vert"
 
+#ifdef SHADOWCASTER_ALPHA
 #define HAS_UV
+#endif
 
 #ifndef VERTEX_COMPRESSION
 in vec3 position;
+#ifdef HAS_UV
 in vec2 uv0;
+#endif
 #else
 in vec2 vertex;
 in float uv0;
@@ -46,46 +50,46 @@ uniform float baseUVScale;
 
 uniform mat4 uMVPMatrix;
 
-#ifndef SHADOWCASTER_ALPHA
+#ifndef SHADOWCASTER
 #ifdef HAS_COLOURS
 in vec3 colour;
-#endif
+#endif //HAS_COLOURS
 uniform mat4 uModelMatrix;
 uniform vec3 uCameraPosition;
 #ifdef PAGED_GEOMETRY
-uniform float fadeRange;
-uniform float windRange;
-#endif
+#define HAS_UV
+uniform float uFadeRange;
+uniform float uWindRange;
+#endif //PAGED_GEOMETRY
 uniform float uTime;
 out vec2 vUV0;
 out float vDepth;
 out float vAlpha;
 #ifdef HAS_NORMALS
 in vec3 normal;
-#endif
+#endif //HAS_NORMALS
 #ifdef HAS_TANGENTS
 in vec4 tangent;
-#endif
+#endif //HAS_TANGENTS
 #ifdef SHADOWRECEIVER
-uniform float uLightCount;
-uniform vec4 uLightAttenuation;
+uniform int uShadowTextureCount;
 uniform mat4 uTexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 out vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
-#endif
+#endif //SHADOWRECEIVER
 out vec3 vPosition;
 #ifdef HAS_COLOURS
 out vec3 vColor;
-#endif
+#endif //HAS_COLOURS
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 out mat3 vTBN;
-#else
+#else //!HAS_TANGENTS
 out vec3 vNormal;
-#endif
-#endif
+#endif //HAS_TANGENTS
+#endif //HAS_NORMALS
 #ifdef HAS_REFLECTION
 out vec4 projectionCoord;
-#endif
+#endif //HAS_REFLECTION
 
 #else //SHADOWCASTER
 out vec2 vUV0;
@@ -129,7 +133,7 @@ float fbm(vec2 p) {
 vec4 ApplyWaveAnimation(vec4 position, float time, float frequency, vec4 direction) {
   float offset = sin(uTime + position.x * frequency);
   float n = fbm(position.xy * time * 0.2) * 4.0 - 2.0;
-//  return position + offset * direction;
+//  return position + offset * direction + n * 0.01;
   return position + n * direction;
 }
 #endif
@@ -143,7 +147,11 @@ void main()
   vec2 uv0 = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
+#ifdef HAS_UV
   vUV0.xy = uv0.xy;
+#else
+  vUV0.xy = vec2(0.0);
+#endif
 
 #ifndef SHADOWCASTER
 #ifdef HAS_COLOURS
@@ -154,13 +162,12 @@ void main()
   vPosition = model_position.xyz / model_position.w;
 
 #ifdef PAGED_GEOMETRY
-  float dist = distance(uCameraPosition.xz, vPosition.xz);
+  float dist = distance(uCameraPosition.xyz, vPosition.xyz);
+  vAlpha = (dist < uFadeRange) ? 1.0 : 0.0;
 
-  if (uv0.y < 0.9) {
-    new_position = ApplyWaveAnimation(new_position, uTime, 1.0, vec4(0.1, 0.1, 0.1, 0));
+  if (uv0.y < 0.9 && dist < uWindRange) {
+    new_position = ApplyWaveAnimation(new_position, uTime, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
   }
-
-  vAlpha = 2.0 - (1.0 * dist * fadeRange);
 #endif
 
 #ifdef HAS_NORMALS
@@ -180,7 +187,7 @@ void main()
 
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
-  for (int i = 0; i < clamp(int(uLightCount) + 2 * int(uLightAttenuation.z <= 0.0), 0, MAX_SHADOW_TEXTURES); i++) {
+  for (int i = 0; i < uShadowTextureCount; i++) {
       lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * new_position;
   }
 #endif

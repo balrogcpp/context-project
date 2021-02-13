@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include "NoCopy.h"
 #include <yaml-cpp/yaml.h>
 #include <filesystem>

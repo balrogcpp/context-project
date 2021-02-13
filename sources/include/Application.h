@@ -67,6 +67,8 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   bool quit_ = false;
   bool suspend_ = false;
   int64_t time_of_last_frame_ = 0;
+  int64_t cumulated_time_ = 0;
+  int64_t fps_counter_ = 0;
   int current_fps_ = 0;
   int target_fps_ = 60;
   bool verbose_ = false;

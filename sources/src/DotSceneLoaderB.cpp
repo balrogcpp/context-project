@@ -23,7 +23,7 @@
 #include "pcheader.h"
 #include "DotSceneLoaderB.h"
 #include "Physics.h"
-#include "ShaderUtils.h"
+#include "PbrShaderUtils.h"
 #include "MeshUtils.h"
 #include "XmlUtils.h"
 #include "Sound.h"
@@ -64,7 +64,7 @@ void DotSceneLoaderB::Clean() {
 }
 
 ///---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::Loop(float time) {
+void DotSceneLoaderB::Update(float time) {
   camera_->Update(time);
   terrain_->Update(time);
   forest_->Update(time);
@@ -295,11 +295,32 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   light->setVisible(GetAttribBool(xml_node, "visible", true));
   light->setCastShadows(GetAttribBool(xml_node, "castShadows", false));
 
+  auto texture_config = scene_->getShadowTextureConfigList()[0];
+
   if (light->getType() == Ogre::Light::LT_POINT) {
     light->setCastShadows(false);
-  } else if (light->getType() == Ogre::Light::LT_SPOTLIGHT) {
+  } else if (light->getType() == Ogre::Light::LT_SPOTLIGHT && light->getCastShadows()) {
     static auto default_scs = Ogre::DefaultShadowCameraSetup::create();
+
     light->setCustomShadowCameraSetup(default_scs);
+    size_t tex_count = scene_->getShadowTextureConfigList().size() + 1;
+    scene_->setShadowTextureCount(tex_count);
+
+    size_t index = tex_count - 1;
+    texture_config.height *= std::pow(2, -floor(index/3));
+    texture_config.width *= std::pow(2, -floor(index/3));
+    scene_->setShadowTextureConfig(index, texture_config);
+  } else if (light->getType() == Ogre::Light::LT_DIRECTIONAL && light->getCastShadows()) {
+    size_t per_light = scene_->getShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL);
+    size_t tex_count = scene_->getShadowTextureConfigList().size() + per_light - 1;
+    scene_->setShadowTextureCount(tex_count);
+
+    for (size_t i = 1; i <= per_light; i++) {
+      size_t index = tex_count - i;
+      texture_config.height *= std::pow(2, -floor(index/3));
+      texture_config.width *= std::pow(2, -floor(index/3));
+      scene_->setShadowTextureConfig(index, texture_config);
+    }
   }
 
   light->setPowerScale(GetAttribReal(xml_node, "powerScale", 1.0));
@@ -314,17 +335,17 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
     light->setSpecularColour(ParseColour(element));
   }
 
-  if (sValue == "spot") {
-    /// Process lightRange
-    if (auto element = xml_node.child("lightRange")) {
-      ProcessLightRange_(element, light);
-    }
-  }
-
-  if (sValue != "directional") {
+  if (light->getType() != Ogre::Light::LT_DIRECTIONAL) {
     /// Process lightAttenuation
     if (auto element = xml_node.child("lightAttenuation")) {
       ProcessLightAttenuation_(element, light);
+    }
+  }
+
+  if (light->getType() != Ogre::Light::LT_SPOTLIGHT) {
+    /// Process lightRange
+    if (auto element = xml_node.child("lightRange")) {
+      ProcessLightRange_(element, light);
     }
   }
 
@@ -381,9 +402,6 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   } else {
     sinbad_ = std::make_unique<SinbadCharacterController>(scene_->getCamera("Default"));
     input_->RegObserver(sinbad_.get());
-    UpdateMeshMaterial("Sinbad.mesh");
-    UpdateMeshMaterial("Sword.mesh");
-
     camera_->AttachNode(parent, sinbad_->GetBodyNode());
   }
 

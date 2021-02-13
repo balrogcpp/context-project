@@ -38,4 +38,8 @@ int main(int argc, char *argv[])
     app.Main(move(state));
   }
   catch (...) {}
+
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  return 0;
+#endif
 }

@@ -1,5 +1,5 @@
 #!/bin/bash
 
-LD_LIBRARY_PATH=. ./context-demo
+LD_LIBRARY_PATH=. ./demo
 
 exit 0

@@ -22,21 +22,7 @@
 
 cmake_minimum_required(VERSION 3.16.3)
 
-# The project version number.
-set(PROJECT_VERSION_MAJOR 0 CACHE STRING "Project major version number.")
-set(PROJECT_VERSION_MINOR 1 CACHE STRING "Project minor version number.")
-set(PROJECT_VERSION_PATCH 0 CACHE STRING "Project patch version number.")
-mark_as_advanced(PROJECT_VERSION_MAJOR PROJECT_VERSION_MINOR PROJECT_VERSION_PATCH)
-
 project(xio)
-
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif ()
-
-if (CMAKE_BUILD_TYPE STREQUAL Release)
-    set(RELEASE true)
-endif ()
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
 
@@ -55,7 +41,7 @@ check_type_size("void*" PTR_SIZE BUILTIN_TYPES_ONLY)
 if (PTR_SIZE EQUAL 8)
     set(CONTEXT_PLATFORM "x64" CACHE STRING "")
 elseif (PTR_SIZE EQUAL 4)
-    set(CONTEXT_PLATFORM "x86" CACHE STRING "")
+    set(CONTEXT_PLATFORM "x32" CACHE STRING "")
 endif ()
 if (WIN32)
     set(CONTEXT_EXTERNAL_TOOLCHAIN "windows")
@@ -88,234 +74,33 @@ processorcount(CONTEXT_PROCESSOR_COUNT)
 set(CMAKE_BUILD_PARALLEL_LEVEL ${CONTEXT_PROCESSOR_COUNT})
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 
-set(CONTEXT_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-set(CONTEXT_C_FLAGS ${CMAKE_C_FLAGS})
-set(CONTEXT_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
-set(CONTEXT_STATIC_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS})
-set(CONTEXT_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS})
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW)
-    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -g")
-    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -O3")
-    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -msse3")
-    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -funroll-loops")
-    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -floop-parallelize-all -ftree-parallelize-loops=8")
-    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -pthread")
-    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -fopenmp")
-    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -DDEBUG")
-    string(APPEND CONTEXT_GCC_CXX_Debug_FLAGS " -D_DEBUG")
-
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -g")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -O3")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -msse3")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -funroll-loops")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -floop-parallelize-all -ftree-parallelize-loops=8")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -pthread")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -fopenmp")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -DDEBUG")
-    string(APPEND CONTEXT_GCC_CXX_RelWithDebInfo_FLAGS " -D_DEBUG")
-
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -Ofast")
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -msse3")
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -funroll-loops")
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -ftree-parallelize-loops=8")
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -pthread")
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -fopenmp")
-    string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -DNDEBUG")
-    if (MINGW)
-        string(APPEND CONTEXT_GCC_CXX_Release_FLAGS " -mwindows")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT ANDROID)
+    if (NOT ${CMAKE_BUILD_TYPE} STREQUAL Release)
+        string(APPEND CMAKE_CXX_FLAGS " -g -DDEBUG -D_DEBUG")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
+    elseif ()
+        string(APPEND CMAKE_CXX_FLAGS " -Ofast -DNDEBUG")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie -fuse-linker-plugin")
     endif ()
 
-    string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -g")
-    string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -O3")
-    string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -msse3")
-    string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -funroll-loops")
-    string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -floop-parallelize-all -ftree-parallelize-loops=8")
-    string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -pthread")
-    string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -fopenmp")
-    string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -DDEBUG")
-    string(APPEND CONTEXT_GCC_C_Debug_FLAGS " -D_DEBUG")
+    string(APPEND CONTEXT_CXX_FLAGS " -DSDL_MAIN_HANDLED -DRAPIDJSON_HAS_STDSTRING")
 
-    string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -g")
-    string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -O3")
-    string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -msse3")
-    string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -funroll-loops")
-    string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -floop-parallelize-all -ftree-parallelize-loops=8")
-    string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -pthread")
-    string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -fopenmp")
-    string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -DDEBUG")
-    string(APPEND CONTEXT_GCC_C_RelWithDebInfo_FLAGS " -D_DEBUG")
+    if (MINGW)
+        string(APPEND CMAKE_CXX_FLAGS " -mwindows")
+    endif ()
 
-    string(APPEND CONTEXT_GCC_C_Release_FLAGS " -Ofast")
-    string(APPEND CONTEXT_GCC_C_Release_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
-    string(APPEND CONTEXT_GCC_C_Release_FLAGS " -msse3")
-    string(APPEND CONTEXT_GCC_C_Release_FLAGS " -funroll-loops")
-    string(APPEND CONTEXT_GCC_C_Release_FLAGS " -floop-parallelize-all -ftree-parallelize-loops=8")
-    string(APPEND CONTEXT_GCC_C_Release_FLAGS " -pthread")
-    string(APPEND CONTEXT_GCC_C_Release_FLAGS " -fopenmp")
-    string(APPEND CONTEXT_GCC_C_Release_FLAGS " -DNDEBUG")
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        string(APPEND CMAKE_CXX_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
+    elseif ()
+        string(APPEND CMAKE_CXX_FLAGS " -flto=thin")
+    endif ()
 
-    string(APPEND CONTEXT_GCC_SHARED_LINKER_Release_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT} -fuse-linker-plugin")
-
-    string(APPEND CONTEXT_GCC_EXE_LINKER_Debug_FLAGS " -no-pie")
-    string(APPEND CONTEXT_GCC_EXE_LINKER_RelWithDebInfo_FLAGS " -no-pie")
-    string(APPEND CONTEXT_GCC_EXE_LINKER_Release_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT} -fuse-linker-plugin")
-    string(APPEND CONTEXT_GCC_EXE_LINKER_Release_FLAGS " -no-pie")
-
-    set(CONTEXT_CXX_FLAGS ${CONTEXT_CXX_FLAGS} ${CONTEXT_GCC_CXX_${CMAKE_BUILD_TYPE}_FLAGS})
-    set(CONTEXT_C_FLAGS ${CONTEXT_C_FLAGS} ${CONTEXT_GCC_C_${CMAKE_BUILD_TYPE}_FLAGS})
-    set(CONTEXT_EXE_LINKER_FLAGS ${CONTEXT_EXE_LINKER_FLAGS} ${CONTEXT_GCC_EXE_LINKER_${CMAKE_BUILD_TYPE}_FLAGS})
-    set(CONTEXT_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS} ${CONTEXT_GCC_STATIC_LINKER_${CMAKE_BUILD_TYPE}_FLAGS})
-    set(CONTEXT_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS} ${CONTEXT_GCC_SHARED_LINKER_${CMAKE_BUILD_TYPE}_FLAGS})
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT ANDROID)
-    string(APPEND CONTEXT_Clang_C_Debug_FLAGS " -g")
-    string(APPEND CONTEXT_Clang_C_Debug_FLAGS " -DDEBUG")
-    string(APPEND CONTEXT_Clang_C_Debug_FLAGS " -D_DEBUG")
-    string(APPEND CONTEXT_Clang_C_Debug_FLAGS " -msse3")
-    string(APPEND CONTEXT_Clang_C_Debug_FLAGS " -funroll-loops")
-    string(APPEND CONTEXT_Clang_C_Debug_FLAGS " -O2")
-    string(APPEND CONTEXT_Clang_C_Debug_FLAGS " -pthread")
-    string(APPEND CONTEXT_Clang_C_Debug_FLAGS " -fopenmp")
-
-    string(APPEND CONTEXT_Clang_C_RelWithDebInfo_FLAGS " -g")
-    string(APPEND CONTEXT_Clang_C_RelWithDebInfo_FLAGS " -DDEBUG")
-    string(APPEND CONTEXT_Clang_C_RelWithDebInfo_FLAGS " -D_DEBUG")
-    string(APPEND CONTEXT_Clang_C_RelWithDebInfo_FLAGS " -msse3")
-    string(APPEND CONTEXT_Clang_C_RelWithDebInfo_FLAGS " -funroll-loops")
-    string(APPEND CONTEXT_Clang_C_RelWithDebInfo_FLAGS " -O2")
-    string(APPEND CONTEXT_Clang_C_RelWithDebInfo_FLAGS " -pthread")
-    string(APPEND CONTEXT_Clang_C_RelWithDebInfo_FLAGS " -fopenmp")
-
-    string(APPEND CONTEXT_Clang_C_Release_FLAGS " -DNDEBUG")
-    string(APPEND CONTEXT_Clang_C_Release_FLAGS " -msse3")
-    string(APPEND CONTEXT_Clang_C_Release_FLAGS " -funroll-loops")
-    string(APPEND CONTEXT_Clang_C_Release_FLAGS " -Ofast")
-    string(APPEND CONTEXT_Clang_C_Release_FLAGS " -pthread")
-    string(APPEND CONTEXT_Clang_C_Release_FLAGS " -fopenmp")
-    string(APPEND CONTEXT_Clang_C_Release_FLAGS " -flto=thin")
-
-    string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -g")
-    string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -DDEBUG")
-    string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -D_DEBUG")
-    string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -O2")
-    string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -msse3")
-    string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -funroll-loops")
-    string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -pthread")
-    string(APPEND CONTEXT_Clang_CXX_Debug_FLAGS " -fopenmp")
-
-    string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -g")
-    string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -DDEBUG")
-    string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -D_DEBUG")
-    string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -O2")
-    string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -msse3")
-    string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -funroll-loops")
-    string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -pthread")
-    string(APPEND CONTEXT_Clang_CXX_RelWithDebInfo_FLAGS " -fopenmp")
-
-    string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -DNDEBUG")
-    string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -Ofast")
-    string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -msse3")
-    string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -funroll-loops")
-    string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -pthread")
-    string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -fopenmp")
-    string(APPEND CONTEXT_Clang_CXX_Release_FLAGS " -flto=thin")
-
-    string(APPEND CONTEXT_Clang_SHARED_LINKER_Release_FLAGS " -flto=thin")
-
-    string(APPEND CONTEXT_Clang_EXE_LINKER_Debug_FLAGS " -no-pie")
-    string(APPEND CONTEXT_Clang_EXE_LINKER_RelWithDebInfo_FLAGS " -no-pie")
-    string(APPEND CONTEXT_Clang_EXE_LINKER_Release_FLAGS " -flto=thin")
-    string(APPEND CONTEXT_Clang_EXE_LINKER_Release_FLAGS " -no-pie")
-
-    set(CONTEXT_CXX_FLAGS ${CONTEXT_CXX_FLAGS}${CONTEXT_Clang_CXX_${CMAKE_BUILD_TYPE}_FLAGS})
-    set(CONTEXT_C_FLAGS ${CONTEXT_C_FLAGS}${CONTEXT_Clang_C_${CMAKE_BUILD_TYPE}_FLAGS})
-    set(CONTEXT_EXE_LINKER_FLAGS ${CONTEXT_EXE_LINKER_FLAGS} ${CONTEXT_Clang_EXE_LINKER_${CMAKE_BUILD_TYPE}_FLAGS})
-    set(CONTEXT_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS}${CONTEXT_Clang_STATIC_LINKER_${CMAKE_BUILD_TYPE}_FLAGS})
-    set(CONTEXT_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS}${CONTEXT_CLang_SHARED_LINKER_${CMAKE_BUILD_TYPE}_FLAGS})
+    string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -funroll-loops -floop-parallelize-all -pthread -fopenmp")
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-    if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-        string(REGEX REPLACE "/O[0-4]" "/O2" CONTEXT_MSVC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-        string(REGEX REPLACE "/fp:[a-zA-Z]*" "/fp:fast" CONTEXT_MSVC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-        string(REGEX REPLACE "/GS" "/GS-" CONTEXT_MSVC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /GS-")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /MP")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /MD")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /GL")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /arch:sse3")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /openmp")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /fp:fast")
-        string(REPLACE "INCREMENTAL:YES" "INCREMENTAL:NO" CONTEXT_MSVC_EXE_LINKER_FLAGS ${CONTEXT_MSVC_EXE_LINKER_FLAGS})
-        string(APPEND CONTEXT_MSVC_EXE_LINKER_FLAGS " /OPT:REF")
-        string(APPEND CONTEXT_MSVC_EXE_LINKER_FLAGS " /OPT:ICF")
-        string(APPEND CONTEXT_MSVC_EXE_LINKER_FLAGS " /LTCG")
-        string(APPEND CONTEXT_MSVC_STATIC_LINKER_FLAGS " /LTCG")
-        string(REPLACE "INCREMENTAL:YES" "INCREMENTAL:NO" CONTEXT_MSVC_SHARED_LINKER_FLAGS ${CONTEXT_MSVC_SHARED_LINKER_FLAGS})
-        string(APPEND CONTEXT_MSVC_SHARED_LINKER_FLAGS " /OPT:REF")
-        string(APPEND CONTEXT_MSVC_SHARED_LINKER_FLAGS " /OPT:ICF")
-        string(APPEND CONTEXT_MSVC_SHARED_LINKER_FLAGS " /LTCG")
-    elseif (${CMAKE_BUILD_TYPE} STREQUAL RelWithDebInfo)
-        string(REGEX REPLACE "/O[0-4]" "/O2" CONTEXT_MSVC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-        string(REGEX REPLACE "/fp:[a-zA-Z]*" "/fp:fast" CONTEXT_MSVC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /GS-")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /MP")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /GL")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /arch:sse3")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /openmp")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /fp:fast")
-        string(REPLACE "INCREMENTAL:YES" "INCREMENTAL:NO" CONTEXT_MSVC_EXE_LINKER_FLAGS ${CONTEXT_MSVC_EXE_LINKER_FLAGS})
-        string(APPEND CONTEXT_MSVC_EXE_LINKER_FLAGS " /OPT:REF")
-        string(APPEND CONTEXT_MSVC_EXE_LINKER_FLAGS " /OPT:ICF")
-        string(APPEND CONTEXT_MSVC_EXE_LINKER_FLAGS " /LTCG")
-        string(APPEND CONTEXT_MSVC_EXE_LINKER_FLAGS " /SUBSYSTEM:WINDOWS")
-        string(APPEND CONTEXT_MSVC_EXE_LINKER_FLAGS " \"Dbghelp.lib\"")
-        string(REPLACE "INCREMENTAL:YES" "INCREMENTAL:NO" CONTEXT_MSVC_STATIC_LINKER_FLAGS ${CONTEXT_MSVC_STATIC_LINKER_FLAGS})
-        string(APPEND CONTEXT_MSVC_STATIC_LINKER_FLAGS " /LTCG")
-        string(APPEND CONTEXT_MSVC_STATIC_LINKER_FLAGS " \"Dbghelp.lib\"")
-        string(REPLACE "INCREMENTAL:YES" "INCREMENTAL:NO" CONTEXT_MSVC_SHARED_LINKER_FLAGS ${CONTEXT_MSVC_SHARED_LINKER_FLAGS})
-        string(APPEND CONTEXT_MSVC_SHARED_LINKER_FLAGS " /OPT:REF")
-        string(APPEND CONTEXT_MSVC_SHARED_LINKER_FLAGS " /OPT:ICF")
-        string(APPEND CONTEXT_MSVC_SHARED_LINKER_FLAGS " /LTCG")
-        string(APPEND CONTEXT_MSVC_SHARED_LINKER_FLAGS " \"Dbghelp.lib\"")
-    elseif (${CMAKE_BUILD_TYPE} STREQUAL Debug)
-        string(REGEX REPLACE "/O[0-4]" "/O0" CONTEXT_MSVC_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /openmp")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /MP")
-        string(APPEND CONTEXT_MSVC_CXX_FLAGS " /MD")
-        string(APPEND CONTEXT_MSVC_EXE_LINKER_FLAGS " \"Dbghelp.lib\"")
-        string(APPEND CONTEXT_MSVC_SHARED_LINKER_FLAGS " \"Dbghelp.lib\"")
-    endif ()
 
-    set(CONTEXT_CXX_FLAGS ${CONTEXT_CXX_FLAGS} ${CONTEXT_MSVC_CXX_FLAGS} CACHE STRING "")
-    set(CONTEXT_C_FLAGS ${CONTEXT_C_FLAGS} ${CONTEXT_MSVC_C_FLAGS} CACHE STRING "")
-    set(CONTEXT_EXE_LINKER_FLAGS ${CONTEXT_EXE_LINKER_FLAGS} ${CONTEXT_MSVC_EXE_LINKER_FLAGS} CACHE STRING "")
-    set(CONTEXT_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS} ${CONTEXT_MSVC_STATIC_LINKER_FLAGS} CACHE STRING "")
-    set(CONTEXT_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS} ${CONTEXT_MSVC_SHARED_LINKER_FLAGS} CACHE STRING "")
-endif ()
-
-set(CONTEXT_EXTERNAL_CXX_FLAGS ${CONTEXT_CXX_FLAGS} CACHE STRING "")
-set(CONTEXT_EXTERNAL_C_FLAGS ${CONTEXT_C_FLAGS} CACHE STRING "")
-set(CONTEXT_EXTERNAL_EXE_LINKER_FLAGS ${CONTEXT_EXE_LINKER_FLAGS} CACHE STRING "")
-set(CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS} CACHE STRING "")
-set(CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS} CACHE STRING "")
-
-set(CMAKE_CXX_FLAGS ${CONTEXT_CXX_FLAGS})
-set(CMAKE_C_FLAGS ${CONTEXT_C_FLAGS})
-set(CMAKE_EXE_LINKER_FLAGS ${CONTEXT_EXE_LINKER_FLAGS})
-set(CMAKE_STATIC_LINKER_FLAGS ${CONTEXT_STATIC_LINKER_FLAGS})
-set(CMAKE_SHARED_LINKER_FLAGS ${CONTEXT_SHARED_LINKER_FLAGS})
-
-if (MSVC)
-    string(APPEND CONTEXT_CXX_FLAGS " /D \"_ENABLE_EXTENDED_ALIGNED_STORAGE\"")
-    string(APPEND CONTEXT_CXX_FLAGS " /D \"SDL_MAIN_HANDLED\"")
-    string(APPEND CONTEXT_C_FLAGS " /D \"_ENABLE_EXTENDED_ALIGNED_STORAGE\"")
-    string(APPEND CONTEXT_C_FLAGS " /D \"SDL_MAIN_HANDLED\"")
-else ()
-    string(APPEND CONTEXT_CXX_FLAGS " -DSDL_MAIN_HANDLED")
-    string(APPEND CONTEXT_CXX_FLAGS " -DRAPIDJSON_HAS_STDSTRING")
-    string(APPEND CONTEXT_CXX_FLAGS " -DGORILLA_USES_EXCEPTIONS")
-    string(APPEND CONTEXT_C_FLAGS " -DSDL_MAIN_HANDLED")
+    string(APPEND CMAKE_CXX_FLAGS " /O2 /MP /MD /GS- /GL /fp:fast /openmp /D \"_ENABLE_EXTENDED_ALIGNED_STORAGE\" /D \"RAPIDJSON_HAS_STDSTRING\"")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " /OPT:REF /OPT:ICF /LTCG /SUBSYSTEM:WINDOWS")
 endif ()
 
 if (ANDROID)
@@ -342,25 +127,22 @@ if (CONTEXT_ONLY_DEPS)
     return()
 endif ()
 
-#execute_process(
-#        COMMAND git rev-parse --short=8 HEAD
-#        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-#        OUTPUT_VARIABLE GIT_SHA1
-#        OUTPUT_STRIP_TRAILING_WHITESPACE
-#)
-
-option(GIT_SHA1 STRING)
+if (NOT GIT_SHA1)
+    execute_process(
+            COMMAND git rev-parse --short=8 HEAD
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_VARIABLE GIT_SHA1
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+endif ()
 
 set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
-set(CONTEXT_ZIP_NAME ContextProjectDemo-${CMAKE_BUILD_TYPE}-${GIT_SHA1} CACHE PATH "")
+set(CONTEXT_ZIP_NAME ContextProjectDemo-${GIT_SHA1} CACHE PATH "")
 set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
 
 if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
     message(SEND_ERROR "In-source builds are not allowed!")
 endif ()
-
-set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release" "RelWithDebInfo" "Debug")
-set(CMAKE_BUILD_TYPE "Release" CACHE STRING "CMake build type")
 
 option(CONTEXT_MAKEFILE_VERBOSE "Verbose mode for make" false)
 if (CONTEXT_MAKEFILE_VERBOSE)
@@ -371,20 +153,13 @@ add_subdirectory(${CONTEXT_ROOT_DIR}/sources ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE
 add_subdirectory(${CONTEXT_ROOT_DIR}/demo ${CMAKE_CURRENT_BINARY_DIR}/demo)
 
 add_dependencies(demo lib-static)
-if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-    add_dependencies(demo zip-deps)
-endif ()
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
-if (UNIX)
-    set(EXTERNAL_DLL_LOCATION ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib)
-    file(GLOB EXTERNAL_DLL_GLOB ${EXTERNAL_DLL_LOCATION}/*.so*)
-elseif (WIN32)
-    set(EXTERNAL_DLL_LOCATION ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin)
-    file(GLOB EXTERNAL_DLL_GLOB ${EXTERNAL_DLL_LOCATION}/*dll)
+if (WIN32)
+    set(EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/OpenAL32.dll)
 endif ()
 
 add_custom_target(zip-deps
@@ -394,11 +169,18 @@ add_custom_target(zip-deps
                   VERBATIM
                   )
 
-install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${CMAKE_SOURCE_DIR}/deploy/start.sh ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
+install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
         CONFIGURATIONS Release
         PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
         DESTINATION .
         )
+
+install(FILES ${CMAKE_SOURCE_DIR}/deploy/start.sh
+        CONFIGURATIONS Release
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
+        DESTINATION .
+        )
+
 file(GLOB CONTEXT_MEDIA_FILES ${CMAKE_SOURCE_DIR}/tmp/*)
 install(DIRECTORY ${CONTEXT_MEDIA_FILES}
         CONFIGURATIONS Release
@@ -406,15 +188,16 @@ install(DIRECTORY ${CONTEXT_MEDIA_FILES}
         )
 
 if (WIN32)
-    set(CONTEXT_OS "Windows")
+    set(CONTEXT_TARGET_OS "Windows")
 elseif (UNIX)
-    set(CONTEXT_OS "Linux")
+    set(CONTEXT_TARGET_OS "Linux")
 elseif (ANDROID)
-    set(CONTEXT_OS "Android")
+    set(CONTEXT_TARGET_OS "Android")
 endif ()
+
 set(CONTEXT_PACKAGE_NAME "ContextProjectDemo")
 set(CONTEXT_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts)
-set(CONTEXT_ARTIFACT_NAME ${CONTEXT_PACKAGE_NAME}-${CMAKE_BUILD_TYPE}-${CONTEXT_OS}-${CONTEXT_BUILD_PLATFORM})
+set(CONTEXT_ARTIFACT_NAME ${CONTEXT_PACKAGE_NAME}-${CONTEXT_TARGET_OS}-${CONTEXT_BUILD_PLATFORM}-${GIT_SHA1})
 
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
@@ -429,11 +212,7 @@ set(CPACK_NSIS_PACKAGE_NAME "Context Demo")
 set(CPACK_NSIS_MENU_LINKS "demo.exe" "ContextProjectDemo")
 set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL true)
 
-if (UNIX)
-    set(CPACK_GENERATOR "TGZ")
-elseif (WIN32 OR MINGW)
-    set(CPACK_GENERATOR "NSIS")
-endif ()
+set(CPACK_GENERATOR "ZIP")
 
 include(CPack)
 
@@ -443,6 +222,5 @@ add_custom_target(install-zip
                   COMMENT "Create zip..."
                   VERBATIM
                   )
-add_dependencies(install-zip install)
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)

@@ -29,6 +29,7 @@ fragment_program Crytek_fp glsl glsles
 		param_named sSceneDepthSampler int 0
 		param_named sRotSampler4x4 int 1
         param_named_auto cViewportSize viewport_size
+        param_named_auto nearClipDistance near_clip_distance
         param_named_auto farClipDistance far_clip_distance
         param_named_auto cFov fov
         param_named_auto shadow_colour shadow_colour
@@ -57,9 +58,9 @@ material SsaoCrytek
 
             texture_unit
             {
-                content_type compositor GBuffer mrt
+                content_type compositor GBuffer mrt 0
                 tex_address_mode clamp
-                filtering none
+                filtering linear linear none
             }
 
             texture_unit
@@ -76,7 +77,7 @@ compositor Ssao
 {
     technique
     {
-        texture ssao target_width target_height PF_FLOAT16_R chain_scope
+        texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R chain_scope
 
         target ssao
         {
@@ -88,6 +89,7 @@ compositor Ssao
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 material Ssao/filtery
 {
 	technique
@@ -105,7 +107,7 @@ material Ssao/filtery
             {
                 content_type compositor Ssao ssao
                 tex_address_mode clamp
-                filtering none
+                filtering linear linear none
             }
 		}
 	}
@@ -128,7 +130,7 @@ material Ssao/filterx
             {
                 content_type compositor Ssao ssao
                 tex_address_mode clamp
-                filtering none
+                filtering linear linear none
             }
 		}
 	}
@@ -167,14 +169,66 @@ compositor FilterX/Ssao
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+fragment_program ssao_filter_fs glsl glsles
+{
+	source ssao_filter.frag
+
+    default_params
+    {
+        param_named uSampler int 0
+        param_named_auto texelSize inverse_texture_size 0
+    }
+}
+
+material Ssao/filter
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref ssao_filter_fs {}
+
+			texture_unit
+            {
+                content_type compositor Ssao ssao
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+compositor Filter/Ssao
+{
+    technique
+    {
+        texture_ref ssao Ssao ssao
+
+        target ssao
+        {
+            pass render_quad
+            {
+                material Ssao/filter
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 fragment_program Modulate_SSAO_fs glsl glsles
 {
 	source modulate.frag
-    preprocessor_defines Ssao
+    preprocessor_defines SSAO
 	default_params
 	{
 		param_named SceneSampler int 0
 		param_named SsaoSampler int 1
+		//param_named exposure float 1.0
 	}
 }
 
@@ -194,19 +248,20 @@ material Modulate/Ssao
 			texture_unit
             {
                 content_type compositor Main scene
-                filtering none
+                tex_address_mode clamp
+                filtering linear linear none
             }
 
 			texture_unit
             {
                 content_type compositor Ssao ssao
+                tex_address_mode clamp
                 filtering linear linear none
             }
 		}
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 compositor Modulate/Ssao
 {
     technique

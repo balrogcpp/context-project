@@ -51,6 +51,7 @@
 #include <thread>
 #include <filesystem>
 #include <cstdlib>
+#include <cassert>
 #include <limits>
 #include <cctype>
 #include <omp.h>

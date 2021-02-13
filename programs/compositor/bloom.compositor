@@ -47,7 +47,7 @@ material bloom
             {
                 content_type compositor Main scene
                 tex_address_mode clamp
-                filtering none
+                filtering linear linear none
             }
 		}
 	}
@@ -57,7 +57,7 @@ compositor Bloom
 {
     technique
     {
-        texture bloom target_width_scaled 0.2 target_height_scaled 0.2 PF_FLOAT16_RGB chain_scope
+        texture bloom target_width_scaled 0.25 target_height_scaled 0.25 PF_FLOAT16_RGB chain_scope pooled
 
         target bloom
         {
@@ -87,7 +87,7 @@ material Bloom/filtery
             {
                 content_type compositor Bloom bloom
                 tex_address_mode clamp
-                filtering none
+                filtering linear linear none
             }
 		}
 	}
@@ -110,7 +110,7 @@ material Bloom/filterx
             {
                 content_type compositor Bloom bloom
                 tex_address_mode clamp
-                filtering none
+                filtering linear linear none
             }
 		}
 	}
@@ -152,11 +152,10 @@ compositor FilterX/Bloom
 fragment_program Modulate_BLOOM_fs glsl glsles
 {
 	source modulate.frag
-    preprocessor_defines Bloom
+    preprocessor_defines BLOOM
 	default_params
 	{
-		param_named SceneSampler int 0
-		param_named BloomSampler int 1
+		//param_named exposure float 1.0
 	}
 }
 
@@ -171,13 +170,17 @@ material Modulate/Bloom
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Modulate_BLOOM_fs {}
+			fragment_program_ref Modulate_BLOOM_fs
+			{
+                param_named SceneSampler int 0
+                param_named BloomSampler int 1
+			}
 
 			texture_unit
             {
                 content_type compositor Main scene
                 tex_address_mode clamp
-                filtering none
+                filtering linear linear none
             }
 
 			texture_unit

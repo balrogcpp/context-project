@@ -41,3 +41,14 @@ fragment_program filterx_fs glsl glsles
         param_named_auto texelSize inverse_texture_size 0
     }
 }
+
+fragment_program box_filter_fs glsl glsles
+{
+	source box_filter.frag
+
+    default_params
+    {
+        param_named uSampler int 0
+        param_named_auto texelSize inverse_texture_size 0
+    }
+}

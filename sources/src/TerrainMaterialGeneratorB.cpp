@@ -23,7 +23,7 @@
 
 #include "pcheader.h"
 #include "TerrainMaterialGeneratorB.h"
-#include "ShaderUtils.h"
+#include "PbrShaderUtils.h"
 
 using namespace xio;
 

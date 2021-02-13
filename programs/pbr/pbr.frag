@@ -134,30 +134,6 @@ uniform sampler2D shadowMap6;
 uniform sampler2D shadowMap7;
 #endif
 
-//uniform float uLightNumber0;
-//#if MAX_SHADOW_TEXTURES > 1
-//uniform float uLightNumber1;
-//#endif
-//#if MAX_SHADOW_TEXTURES > 2
-//uniform float uLightNumber2;
-//#endif
-//#if MAX_SHADOW_TEXTURES > 3
-//uniform float uLightNumber3;
-//#endif
-//#if MAX_SHADOW_TEXTURES > 4
-//uniform float uLightNumber4;
-//#endif
-//#if MAX_SHADOW_TEXTURES > 5
-//uniform float uLightNumber5;
-//#endif
-//#if MAX_SHADOW_TEXTURES > 6
-//uniform float uLightNumber6;
-//#endif
-//#if MAX_SHADOW_TEXTURES > 7
-//uniform float uLightNumber7;
-//#endif
-
-
 uniform vec4 pssmSplitPoints;
 uniform float uShadowColour;
 uniform float uShadowDepthOffset;
@@ -191,64 +167,38 @@ const float M_PI = 3.141592653589793;
 #ifdef SHADOWRECEIVER
 #include "receiver.glsl"
 
-//int shadow_texture_counter = 0;
-//
-//int lightNumberArray[MAX_SHADOW_TEXTURES] = int[](int(uLightNumber0)
-//                                                        #if MAX_SHADOW_TEXTURES > 1
-//                                                        , int(uLightNumber1)
-//                                                        #endif
-//                                                        #if MAX_SHADOW_TEXTURES > 2
-//                                                        , int(uLightNumber2)
-//                                                        #endif
-//                                                        #if MAX_SHADOW_TEXTURES > 3
-//                                                        , int(uLightNumber3)
-//                                                        #endif
-//                                                        #if MAX_SHADOW_TEXTURES > 4
-//                                                        , int(uLightNumber4)
-//                                                        #endif
-//                                                        #if MAX_SHADOW_TEXTURES > 5
-//                                                        , int(uLightNumber5)
-//                                                        #endif
-//                                                        #if MAX_SHADOW_TEXTURES > 6
-//                                                        , int(uLightNumber6)
-//                                                        #endif
-//                                                        #if MAX_SHADOW_TEXTURES > 7
-//                                                        , int(uLightNumber7)
-//                                                        #endif
-//                                                        );
-
-float GetShadow(const int counter, float offset, float filter_size, float filter_iterations) {
+float GetShadow(const int counter, float offset, float filter_size, int filter_iterations) {
     if (vDepth>= pssmSplitPoints.w)
-      return 1.0;
+        return 1.0;
     else if (counter == 0)
-      return CalcDepthShadow(shadowMap0, lightSpacePosArray[0], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap0, lightSpacePosArray[0], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
 #if MAX_SHADOW_TEXTURES > 1
     else if (counter == 1)
-      return CalcDepthShadow(shadowMap1, lightSpacePosArray[1], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap1, lightSpacePosArray[1], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 2
     else if (counter == 2)
-      return CalcDepthShadow(shadowMap2, lightSpacePosArray[2], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap2, lightSpacePosArray[2], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 3
     else if (counter == 3)
-      return CalcDepthShadow(shadowMap3, lightSpacePosArray[3], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap3, lightSpacePosArray[3], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 4
     else if (counter == 4)
-      return CalcDepthShadow(shadowMap4, lightSpacePosArray[4], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap4, lightSpacePosArray[4], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 5
     else if (counter == 5)
-      return CalcDepthShadow(shadowMap5, lightSpacePosArray[5], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap5, lightSpacePosArray[5], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 6
     else if (counter == 6)
-      return CalcDepthShadow(shadowMap6, lightSpacePosArray[6], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap6, lightSpacePosArray[6], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 7
     else if (counter == 7)
-      return CalcDepthShadow(shadowMap7, lightSpacePosArray[7], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap7, lightSpacePosArray[7], uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations);
 #endif
 
     return 1.0;
@@ -344,32 +294,22 @@ float GetRoughness(vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec4 GetDiffuse(vec2 uv) {
-    vec3 base_color = vec3(0.0);
-    float alpha = 1.0;
-
-#ifdef HAS_BASECOLORMAP
-    vec4 tmp = texture2D(uAlbedoSampler, uv, uLOD);
-    base_color = SRGBtoLINEAR(tmp.rgb);
-    alpha = tmp.a;
-    base_color *= uSurfaceDiffuseColour;
-#else
-    base_color.rgb = SRGBtoLINEAR(uSurfaceDiffuseColour);
-#endif
-#ifdef HAS_COLOURS
-    base_color.rgb *= vColor;
-#endif
-#ifdef PAGED_GEOMETRY
-    alpha *= vAlpha;
-#endif
+vec4 GetAlbedo(vec2 uv) {
+    vec4 albedo = vec4(1.0);
 
 #ifdef HAS_ALPHA
-    if (alpha < uAlphaRejection) {
-        discard;
-    }
+    albedo = texture2D(uAlbedoSampler, uv, uLOD);
+#else
+    albedo = vec4(texture2D(uAlbedoSampler, uv, uLOD).rgb, 1.0);
 #endif
 
-    return vec4(base_color, alpha);
+#ifdef HAS_COLOURS
+    albedo.rgb *= (uSurfaceDiffuseColour * vColor);
+#else
+    albedo.rgb *= (uSurfaceDiffuseColour);
+#endif
+
+    return SRGBtoLINEAR(albedo);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -436,9 +376,18 @@ void main()
 #endif
 
     // The albedo may be defined from a base texture or a flat color
-    vec4 albedo = GetDiffuse(tex_coord);
+    vec4 albedo = GetAlbedo(tex_coord);
     float metallic = GetMetallic(tex_coord);
     float roughness = GetRoughness(tex_coord);
+
+#ifdef HAS_ALPHA
+#ifdef PAGED_GEOMETRY
+    albedo.a *= vAlpha;
+#endif //PAGED_GEOMETRY
+
+    if (albedo.a < uAlphaRejection)
+        discard;
+#endif
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
@@ -475,18 +424,25 @@ void main()
         float fSpotT = 1.0;
 
         vec4 vAttParams = uLightAttenuationArray[i];
-        float attenuation = vAttParams.z;
-        vec3 vSpotParams = uLightSpotParamsArray[i];
-        float spot = vSpotParams.z;
+        float range = vAttParams.x;
 
-        if (attenuation > 0.0) {
-            fAtten = float(fLightD < vAttParams.x) / (vAttParams.y + attenuation * fLightD + vAttParams.w * fLightD * fLightD);
+        if (range > 0.0) {
+            float attenuation_const = vAttParams.y;
+            float attenuation_linear = vAttParams.z;
+            float attenuation_quad = vAttParams.w;
 
-            float rho = dot(l, vLightView);
+            fAtten = float(fLightD < range) / (attenuation_const + attenuation_linear * fLightD + attenuation_quad * fLightD * fLightD);
 
-            if (spot > 0.0) {
-                  float fSpotE = clamp((rho - vSpotParams.y) / (vSpotParams.x - vSpotParams.y), 0.0, 1.0);
-                  fSpotT = pow(fSpotE, spot);
+            vec3 vSpotParams = uLightSpotParamsArray[i];
+            float outer_radius = vSpotParams.z;
+
+            if (outer_radius > 0.0) {
+                float fallof = vSpotParams.x;
+                float inner_radius = vSpotParams.y;
+
+                float rho = dot(l, vLightView);
+                float fSpotE = clamp((rho - inner_radius) / (fallof - inner_radius), 0.0, 1.0);
+                fSpotT = pow(fSpotE, outer_radius);
               }
         }
 
@@ -522,19 +478,23 @@ void main()
         vec3 colour = tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
 #ifdef SHADOWRECEIVER
-        if (uLightCastsShadowsArray[i] == 1.0) {
-//            int counter = shadow_texture_counter + lightNumberArray[i] - i;
+        if (uLightCastsShadowsArray[i] > 0.0) {
+            float shadow = 1.0;
             #if MAX_SHADOW_TEXTURES > 2
-              if (uLightAttenuationArray[0].z > 0.0) {
-                  colour *= (tmp > 0.002) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations / 2) : 1.0;
-              } else if (i == 0) {
-                  colour *= (tmp > 0.002) ? CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], shadowMap0, shadowMap1, shadowMap2, vDepth, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations) : 1.0;
-              } else {
-                  colour *= (tmp > 0.002) ? GetShadow(i + 2, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations) : 1.0;
-              }
+                if (uLightAttenuationArray[0].x < 100000.0) {
+                    shadow = (tmp > 0.002) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
+                } else {
+                    if (i == 0) {
+                        shadow = (tmp > 0.002) ? CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], shadowMap0, shadowMap1, shadowMap2, vDepth, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations) : 1.0;
+                    } else {
+                        shadow = (tmp > 0.002) ? GetShadow(i + 2, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
+                    }
+                }
             #else
-              colour *= (tmp > 0.002) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations / 2) : 1.0;
+                shadow = (tmp > 0.002) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
             #endif
+
+            colour *= clamp(shadow + uShadowColour, 0.0, 1.0);
         }
 #endif
         total_colour += colour;

@@ -22,10 +22,8 @@
 
 project(xio-doc)
 
-find_package(Doxygen)
-find_package(Doxygen COMPONENTS dot)
-find_package(LATEX)
-find_package(LATEX COMPONENTS PDFLATEX)
+find_package(Doxygen QUIET COMPONENTS dot)
+find_package(LATEX QUIET COMPONENTS PDFLATEX)
 
 # add a target to generate API documentation with Doxygen
 if (${DOXYGEN_DOT_FOUND})

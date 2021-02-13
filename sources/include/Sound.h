@@ -40,7 +40,7 @@ class Sound final : public Component, public Singleton<Sound> {
   void Clean() final;
   void Pause() final;
   void Resume() final;
-  void Loop(float time) final {}
+  void Update(float time) final {}
 
   void CreateSound(const std::string &name, const std::string &file, bool loop = false);
   void PlaySound(const std::string &name, bool immediate = true);
