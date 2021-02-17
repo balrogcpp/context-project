@@ -22,9 +22,9 @@
 
 project(lib-static)
 
-file(GLOB_RECURSE SOURCE_FILES_CONTEXT_LIB *.cpp *.h)
+file(GLOB_RECURSE SOURCE_FILES *.cpp *.h)
 
 include_directories(lib-static ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
-add_library(lib-static STATIC ${SOURCE_FILES_CONTEXT_LIB})
+add_library(lib-static STATIC ${SOURCE_FILES})
 set_target_properties(lib-static PROPERTIES OUTPUT_NAME "xio-static")
 target_precompile_headers(lib-static PUBLIC include/pcheader.h)

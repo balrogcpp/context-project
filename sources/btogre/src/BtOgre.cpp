@@ -15,10 +15,6 @@
 
 #include "pcheader.h"
 
-#include "BtOgreExtras.h"
-#include "BtOgreGP.h"
-#include "BtOgrePG.h"
-
 using namespace Ogre;
 
 namespace BtOgre {
