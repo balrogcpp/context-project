@@ -25,52 +25,40 @@
 FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ENV MINGW=/mingw
+ARG MINGW_ROOT=/mingw
 ARG BINUTILS_VERSION=2.35.1
 ARG MINGW_VERSION=8.0.0
 ARG GCC_VERSION=10.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
+ARG CMAKE_VERSION=3.19.4
+ARG CMAKE_HOME=/opt/cmake
+ARG NINJA_VERSION=1.10.2
 WORKDIR /mnt
 
+ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+
 RUN apt-get update \
-    && apt-get install -y g++ gcc make autoconf libssl1.1 wget ca-certificates zlib1g-dev libssl-dev libgmp-dev libmpfr-dev \
+    && apt-get install -y wget ca-certificates gnupg2 \
+    && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
+    && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
+    && apt-get update \
+    && apt-get install -y g++-10 gcc-10 clang lld llvm make autoconf zlib1g-dev libssl-dev libgmp-dev libmpfr-dev \
         libmpc-dev libisl-dev libgmp10 libmpfr6 libmpc3 yasm file patch gperf xz-utils bzip2 zip \
-    && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc-10 10000 \
+        --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++-10 \
+    && update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 10000 \
+    && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 10000 \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
     && wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
-    && mkdir -p ${MINGW}/include ${MINGW}/lib/pkgconfig \
-    && cd pkg-config-${PKG_CONFIG_VERSION} \
-    && ./configure \
-       --prefix=/usr \
-       --with-pc-path=${MINGW}/lib/pkgconfig \
-       --with-internal-glib \
-       --disable-shared \
-       --disable-nls \
-    && make -j`nproc` > /dev/null \
-    && make install > /dev/null \
-    && cd .. \
+    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
+    && wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp && unzip /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
+    && mkdir -p ${MINGW_ROOT}/include ${MINGW_ROOT}/lib/pkgconfig \
     && mkdir binutils-${BINUTILS_VERSION}-mingw \
     && cd binutils-${BINUTILS_VERSION}-mingw \
     && ../binutils-${BINUTILS_VERSION}/configure \
       --prefix=/usr \
       --target=x86_64-w64-mingw32 \
-      --disable-shared \
-      --enable-static \
-      --enable-lto \
-      --enable-plugins \
-      --disable-multilib \
-      --disable-nls \
-      --disable-werror \
-      --with-system-zlib \
-    && make -j`nproc` > /dev/null \
-    && make install > /dev/null \
-    && cd .. \
-    && mkdir binutils-${BINUTILS_VERSION}-linux \
-    && cd binutils-${BINUTILS_VERSION}-linux \
-    && ../binutils-${BINUTILS_VERSION}/configure \
-      --prefix=/usr \
-      --target=x86_64-linux-gnu \
       --disable-shared \
       --enable-static \
       --enable-lto \
@@ -101,25 +89,14 @@ RUN apt-get update \
       --disable-shared \
       --enable-static \
       --enable-threads=posix \
+      --enable-exceptions=seh \
       --enable-libgomp \
       --enable-libatomic \
       --enable-graphite \
-      --enable-libstdcxx-pch \
-      --enable-libstdcxx-debug \
       --disable-multilib \
       --enable-lto \
       --disable-nls \
       --disable-werror \
-    && make -j`nproc` all-gcc > /dev/null \
-    && make install-gcc > /dev/null \
-    && cd .. \
-    && mkdir gcc-linux \
-    && cd gcc-linux \
-    && ../gcc-${GCC_VERSION}/configure \
-      --prefix=/usr \
-      --target=x86_64-linux-gnu \
-      --enable-languages=c,c++ \
-      --disable-multilib \
     && make -j`nproc` all-gcc > /dev/null \
     && make install-gcc > /dev/null \
     && cd .. \
@@ -151,8 +128,6 @@ RUN apt-get update \
     && rm /mnt/gcc-mingw32/gcc/xgcc \
     && mv /mnt/gcc-mingw32/gcc/xgcc.bak /mnt/gcc-mingw32/gcc/xgcc \
     && make install > /dev/null \
-    && cd .. \
-    && cd gcc-linux \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
     && cd .. \
@@ -165,13 +140,16 @@ RUN apt-get update \
     && rm -rf gcc-${GCC_VERSION} \
     && rm -rf gcc-mingw32 \
     && rm -rf gcc-linux \
-    && apt-get -y purge libssl1.1 wget ca-certificates zlib1g-dev libssl-dev libgmp-dev libmpfr-dev \
-                         libmpc-dev libisl-dev xz-utils bzip2 zip \
+    && sed -i '$d' /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get -y purge wget zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev xz-utils bzip2 zip \
     && apt-get -y autoremove \
     && apt-get clean \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 10000 \
-        --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++ \
     && update-alternatives --install /usr/bin/mingw32-gcc mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc 10000 \
-        --slave /usr/bin/mingw32-g++ mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++
-
-ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+        --slave /usr/bin/mingw32-g++ mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++ \
+    && ln -s /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
+    && ln -s /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a \
+    && chmod u+x /tmp/cmake-install.sh \
+    && mkdir /opt/cmake \
+    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
+    && rm /tmp/cmake-install.sh
