@@ -40,14 +40,17 @@ ADD scenes ./scenes
 ADD CMakeLists.txt .
 ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 
-RUN mkdir -p build-windows build-linux build-android && \
-    cd build-windows && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. && \
-    cmake --build . --target install && cd .. && \
-    cd build-linux && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. && \
-    cmake --build . --target zip-deps && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. && \
-    cmake --build . --target install && \
-    cmake --build . --target install-zip && cd .. && \
-    rm -rf build-windows build-linux build-android
+ENV CC=clang
+ENV CXX=clang++
+
+RUN mkdir -p build-windows build-linux build-android \
+    && cd build-windows \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-w64.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+    && cmake --build . --target install && cd .. \
+    && cd build-linux \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+    && cmake --build . --target zip-deps \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+    && cmake --build . --target install \
+    && cmake --build . --target install-zip && cd .. \
+    && rm -rf build-windows build-linux build-android scenes
