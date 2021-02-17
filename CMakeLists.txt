@@ -24,6 +24,10 @@ cmake_minimum_required(VERSION 3.16.3)
 
 project(xio)
 
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif ()
+
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
 
 set(CMAKE_CXX_STANDARD 17)
@@ -53,14 +57,13 @@ elseif (UNIX)
     set(CONTEXT_EXTERNAL_TOOLCHAIN "linux")
 endif ()
 
+
 if (MINGW)
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-mingw")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-gcc")
 elseif (MSVC)
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-msvc")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-clang")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-gcc")
 else ()
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-${CMAKE_CXX_COMPILER_ID}")
 endif ()
@@ -76,30 +79,51 @@ set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT ANDROID)
     if (NOT ${CMAKE_BUILD_TYPE} STREQUAL Release)
-        string(APPEND CMAKE_CXX_FLAGS " -g -DDEBUG -D_DEBUG")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
+        string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
+        string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     elseif ()
         string(APPEND CMAKE_CXX_FLAGS " -Ofast -DNDEBUG")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie -fuse-linker-plugin")
+        string(APPEND CMAKE_C_FLAGS " -Ofast -DNDEBUG")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
     endif ()
 
-    string(APPEND CONTEXT_CXX_FLAGS " -DSDL_MAIN_HANDLED -DRAPIDJSON_HAS_STDSTRING")
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
+    endif ()
 
     if (MINGW)
         string(APPEND CMAKE_CXX_FLAGS " -mwindows")
+        string(APPEND CMAKE_C_FLAGS " -mwindows")
     endif ()
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        string(APPEND CMAKE_CXX_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
-    elseif ()
-        string(APPEND CMAKE_CXX_FLAGS " -flto=thin")
+    string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -funroll-loops -pthread")
+    string(APPEND CMAKE_C_FLAGS " -msse4.1 -funroll-loops -pthread")
+
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
+        string(APPEND CMAKE_CXX_FLAGS " -fopenmp=libgomp")
+        string(APPEND CMAKE_C_FLAGS " -fopenmp=libgomp")
+    else ()
+        string(APPEND CMAKE_CXX_FLAGS " -fopenmp")
+        string(APPEND CMAKE_C_FLAGS " -fopenmp")
     endif ()
 
-    string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -funroll-loops -floop-parallelize-all -pthread -fopenmp")
+    string(APPEND CONTEXT_CXX_FLAGS " -DSDL_MAIN_HANDLED -DRAPIDJSON_HAS_STDSTRING")
+    string(APPEND CONTEXT_C_FLAGS " -DSDL_MAIN_HANDLED -DRAPIDJSON_HAS_STDSTRING")
+
+    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
+        string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
+        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
+    else ()
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=thin -fuse-ld=lld")
+        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=thin -fuse-ld=lld")
+    endif ()
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
     string(APPEND CMAKE_CXX_FLAGS " /O2 /MP /MD /GS- /GL /fp:fast /openmp /D \"_ENABLE_EXTENDED_ALIGNED_STORAGE\" /D \"RAPIDJSON_HAS_STDSTRING\"")
+    string(APPEND CMAKE_C_FLAGS " /O2 /MP /MD /GS- /GL /fp:fast /openmp /D \"_ENABLE_EXTENDED_ALIGNED_STORAGE\" /D \"RAPIDJSON_HAS_STDSTRING\"")
     string(APPEND CMAKE_EXE_LINKER_FLAGS " /OPT:REF /OPT:ICF /LTCG /SUBSYSTEM:WINDOWS")
 endif ()
 
@@ -163,11 +187,11 @@ if (WIN32)
 endif ()
 
 add_custom_target(zip-deps
-                  COMMAND ${CMAKE_COMMAND} -DCMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR} -P CMake/zipdir.cmake
-                  WORKING_DIRECTORY ${CONTEXT_ROOT_DIR}
-                  COMMENT "Zipping dependencies..."
-                  VERBATIM
-                  )
+        COMMAND ${CMAKE_COMMAND} -DCMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR} -P CMake/zipdir.cmake
+        WORKING_DIRECTORY ${CONTEXT_ROOT_DIR}
+        COMMENT "Zipping dependencies..."
+        VERBATIM
+        )
 
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OTHER_DLL_GLOB}
         CONFIGURATIONS Release
@@ -217,10 +241,10 @@ set(CPACK_GENERATOR "ZIP")
 include(CPack)
 
 add_custom_target(install-zip
-                  COMMAND ${CMAKE_COMMAND} -E tar cf ${CONTEXT_ZIP_NAME}.zip --format=zip ${CONTEXT_ZIP_NAME}
-                  WORKING_DIRECTORY ${CONTEXT_INSTALL_PATH}
-                  COMMENT "Create zip..."
-                  VERBATIM
-                  )
+        COMMAND ${CMAKE_COMMAND} -E tar cf ${CONTEXT_ZIP_NAME}.zip --format=zip ${CONTEXT_ZIP_NAME}
+        WORKING_DIRECTORY ${CONTEXT_INSTALL_PATH}
+        COMMENT "Create zip..."
+        VERBATIM
+        )
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)

@@ -24,27 +24,17 @@ cmake_minimum_required(VERSION 3.16.3)
 
 project(xio-demo)
 
-set(HEADER_FILES_context-demo
-    include/DemoDotAppState.h
-    include/MenuAppState.h
-    include/pcheader.h
-    )
-
-set(SOURCE_FILES_context-demo
-    src/main.cpp
-    src/DemoDotAppState.cpp
-    src/MenuAppState.cpp
-    )
+file(GLOB_RECURSE SOURCE_FILES *.cpp *.h)
 
 if (ANDROID)
-    list(APPEND SOURCE_FILES_context ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
-    list(APPEND SOURCE_FILES_context ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
+    list(APPEND SOURCE_FILES ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+    list(APPEND SOURCE_FILES ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
 endif ()
 
 if (NOT ANDROID)
-    add_executable(demo ${SOURCE_FILES_context-demo} ${HEADER_FILES_context-demo})
+    add_executable(demo ${SOURCE_FILES})
 else ()
-    add_library(demo SHARED ${SOURCE_FILES_context-demo} ${HEADER_FILES_context-demo})
+    add_library(demo SHARED ${SOURCE_FILES})
 endif ()
 set(CONTEXT_LIBRARIES xio-static)
 

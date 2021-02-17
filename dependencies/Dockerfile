@@ -20,7 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-FROM balrogcpp/gcc-mingw-x86_64:latest
+FROM balrogcpp/clang-mingw-x86_64:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt/build
@@ -31,10 +31,10 @@ ADD dependencies/patch ./dependencies/patch
 ADD CMakeLists.txt .
 ADD ./CMake ./CMake
 
-RUN apt-get update && apt-get install -y git gnutls-bin openssl cmake ninja-build nsis libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
+RUN apt-get install -y git gnutls-bin openssl nsis libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
     && git config --global http.sslVerify false \
     && git config --global http.postBuffer 1048576000 \
-    && mkdir -p build-windows build-linux build-android \
+    && mkdir -p build-windows build-linux \
     && cd ${CONTEXT_HOME}/build-windows \
     && cmake -DCONTEXT_ONLY_DEPS=true -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. \
     && cmake --build . --target deps \
@@ -46,5 +46,5 @@ RUN apt-get update && apt-get install -y git gnutls-bin openssl cmake ninja-buil
     && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-gcc-x64 \
     && rm -rf src tmp \
     && cd ${CONTEXT_HOME} \
-    && rm -rf build-windows build-linux build-android \
+    && rm -rf build-windows build-linux \
     && rm -rf CMake CMakeLists.txt dependencies/CMakeLists.txt \

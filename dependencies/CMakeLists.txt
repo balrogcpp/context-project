@@ -33,8 +33,8 @@ else ()
 endif ()
 
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
-set(CONTEXT_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN}/ CACHE PATH "")
-set(CONTEXT_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN}/sdk/ CACHE PATH "")
+set(CONTEXT_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN} CACHE PATH "")
+set(CONTEXT_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN}/sdk CACHE PATH "")
 set(CONTEXT_EXTERNAL_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/patch CACHE PATH "")
 set(CONTEXT_EXTERNAL_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION} CACHE PATH "")
 set(CONTEXT_EXTERNAL_INCLUDE_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include CACHE PATH "")
@@ -120,7 +120,7 @@ externalproject_add(target-openal
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/kcat/openal-soft.git
-                    GIT_TAG openal-soft-1.20.1
+                    GIT_TAG 1.21.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -137,6 +137,8 @@ externalproject_add(target-openal
                     -DALSOFT_BACKEND_WAVE=false
                     -DLIBTYPE=${OPENAL_LIBTYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+                    -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     )
@@ -435,12 +437,12 @@ endif ()
 ########################################################################################################################
 #Hardcoded shit for static build
 ########################################################################################################################
-set(CONTEXT_STATIC_DEPENDENCY_LIBS)
+set(CONTEXT_STATIC_DEPENDENCY_LIBS "" CACHE INTERNAL "")
 
 list(REMOVE_ITEM OGRE_LIBRARIES "dl")
 foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
     string(REPLACE "Static" "" X "${I}")
-    list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS "${X}Static")
+    list(APPEND OGRE_LIBRARIES_STATIC "${X}Static")
 endforeach ()
 
 if (MINGW)
@@ -456,7 +458,7 @@ elseif (APPLE)
 endif ()
 
 list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS
-     vorbisfile vorbis vorbisenc ogg pugixml freetype ${BULLET_LIBRARIES} ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
+     ${OGRE_LIBRARIES_STATIC} ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
      ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES}
      )
 
