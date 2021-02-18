@@ -57,7 +57,6 @@ elseif (UNIX)
     set(CONTEXT_EXTERNAL_TOOLCHAIN "linux")
 endif ()
 
-
 if (MINGW)
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-mingw")
 elseif (MSVC)

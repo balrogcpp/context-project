@@ -42,8 +42,7 @@ RUN apt-get update \
     && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
-    && apt-get install -y g++-10 gcc-10 clang lld llvm make autoconf zlib1g-dev libssl-dev libgmp-dev libmpfr-dev \
-        libmpc-dev libisl-dev libgmp10 libmpfr6 libmpc3 yasm file patch gperf xz-utils bzip2 zip \
+    && apt-get install -y g++-10 gcc-10 clang lld llvm make autoconf file patch xz-utils bzip2 zip zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev\
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc-10 10000 \
         --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++-10 \
     && update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 10000 \
