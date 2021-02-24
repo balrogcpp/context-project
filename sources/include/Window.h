@@ -22,11 +22,9 @@
 
 #pragma once
 
-#include "Exception.h"
 #include "NoCopy.h"
 
 extern "C" {
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 }
 
@@ -36,59 +34,12 @@ extern "C" {
 namespace xio {
 class Window : public NoCopy {
  public:
-//----------------------------------------------------------------------------------------------------------------------
-  explicit Window(int w, int h, bool f)
-      : w_(w), h_(h), f_(f) {
-    Init_();
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  virtual ~Window() {
-    SDL_SetWindowFullscreen(window_, SDL_FALSE);
-    SDL_DestroyWindow(window_);
-  }
+  explicit Window(int w, int h, bool f);
+  virtual ~Window();
 
  private:
-//----------------------------------------------------------------------------------------------------------------------
-  void Init_() {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
-      throw Exception("Failed to init SDL2");
+  void Init_();
 
-    SDL_DisplayMode DM;
-    SDL_GetCurrentDisplayMode(0, &DM);
-
-    screen_w_ = static_cast<int>(DM.w);
-    screen_h_ = static_cast<int>(DM.h);
-
-    if (w_ * h_ == 0.0) {
-      f_ = true;
-    }
-
-    flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
-
-    if (w_ == screen_w_ && h_ == screen_h_) {
-      flags_ |= SDL_WINDOW_BORDERLESS;
-      f_ = true;
-    }
-
-    if (f_) {
-      flags_ |= SDL_WINDOW_INPUT_GRABBED;
-      flags_ |= SDL_WINDOW_MOUSE_FOCUS;
-      flags_ |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-
-      w_ = screen_w_;
-      h_ = screen_h_;
-    }
-
-    window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w_, h_, flags_);
-
-    if (window_) {
-      SDL_SetRelativeMouseMode(SDL_TRUE);
-    } else {
-      throw Exception("Failed to Create SDL_Window");
-    }
-  }
-
-//----------------------------------------------------------------------------------------------------------------------
   SDL_Window *window_ = nullptr;
   uint32_t flags_ = 0;
   SDL_GLContext context_ = nullptr;
@@ -98,65 +49,26 @@ class Window : public NoCopy {
   int h_ = 768;
   int screen_w_;
   int screen_h_;
-  bool gl_force_ = false;
-  int gl_minor = 3;
-  int gl_major = 3;
 
  public:
-//----------------------------------------------------------------------------------------------------------------------
-  inline std::string GetCaption() const noexcept {
-    return caption_;
-  }
+  std::string GetCaption() const noexcept;
 
-  inline void SetCaption(const std::string &caption) {
-    caption_ = caption;
-    SDL_SetWindowTitle(window_, caption.c_str());
-  }
+  void SetCaption(const std::string &caption);
 
-  inline std::pair<int, int> GetSize() const noexcept {
-    return std::make_pair(w_, h_);
-  }
+  float GetRatio() const noexcept;
 
-  inline float GetRatio() const noexcept {
-    return static_cast<float>(w_) / h_;
-  }
+  std::pair<int, int> GetSize() const noexcept;
 
-  inline bool IsFullscreen() const noexcept {
-    return f_;
-  }
+  bool IsFullscreen() const noexcept;
 
-  inline SDL_SysWMinfo GetInfo() const noexcept {
-    SDL_SysWMinfo info;
-    SDL_VERSION(&info.version);
-    SDL_GetWindowWMInfo(window_, &info);
-    return info;
-  }
+  SDL_SysWMinfo GetInfo() const noexcept;
 
-  inline void SetCursorStatus(bool show, bool grab, bool relative) noexcept {
-    SDL_ShowCursor(show);
-    SDL_SetWindowGrab(window_, static_cast<SDL_bool>(grab));
-    SDL_SetRelativeMouseMode(static_cast<SDL_bool>(relative));
-  }
+  void SetCursorStatus(bool show, bool grab, bool relative) noexcept;
 
-  inline void SwapBuffers() const noexcept {
-    SDL_GL_SwapWindow(window_);
-  }
+  void SwapBuffers() const noexcept;
 
-  inline void Resize(int w, int h) noexcept {
-    w_ = w;
-    h_ = h;
-    SDL_SetWindowPosition(window_, (screen_w_ - w_) / 2, (screen_h_ - h_) / 2);
-    SDL_SetWindowSize(window_, w_, h_);
-  }
+  void Resize(int w, int h) noexcept;
 
-  inline void SetFullscreen(bool f) noexcept {
-    f_ = f;
-
-    if (f) {
-      SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_FULLSCREEN_DESKTOP);
-    } else {
-      SDL_SetWindowSize(window_, w_, h_);
-    }
-  }
+  void SetFullscreen(bool f) noexcept;
 };
 }

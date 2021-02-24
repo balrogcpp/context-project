@@ -23,6 +23,7 @@
 #include "pcheader.h"
 #include "Sound.h"
 #include "Exception.h"
+#include "OgreOggSound.h"
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------

@@ -33,7 +33,6 @@
 #include "Entity.h"
 #include "Exception.h"
 #include "Forest.h"
-#include "Gorilla.h"
 #include "HwCheck.h"
 #include "Input.h"
 #include "Landscape.h"

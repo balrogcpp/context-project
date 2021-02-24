@@ -24,6 +24,7 @@
 #include "Component.h"
 #include "Singleton.h"
 #include "Gorilla.h"
+#include "OgreConsole.h"
 
 namespace Ogre {
 class RenderTarget;

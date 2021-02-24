@@ -24,45 +24,12 @@
 #include "NoCopy.h"
 #include <map>
 #include <string>
-#include <regex>
-#include <filesystem>
-#include <fstream>
 
 namespace xio {
 class DesktopIcon : public NoCopy {
  public:
-  void Init() {
-    run_dir_ = std::filesystem::current_path().string();
-    skeleton = std::regex_replace(skeleton, std::regex("EXEC"), run_dir_ + "/" + exec_);
-    skeleton = std::regex_replace(skeleton, std::regex("PATH"), run_dir_);
-    skeleton = std::regex_replace(skeleton, std::regex("ICON"), icon_);
-    skeleton = std::regex_replace(skeleton, std::regex("NAME"), name_);
-    skeleton = std::regex_replace(skeleton, std::regex("COMMENT"), name_);
-    skeleton = std::regex_replace(skeleton, std::regex("VERSION"), version);
-  }
-
-  void Save(const std::string &icon_name) {
-    std::string home_dir = std::string(getenv("HOME"));
-    std::string path = home_dir + "/.local/share/applications/" + icon_name + ".desktop";
-
-    std::ifstream in;
-    in.open(path);
-    if (in.is_open()) {
-      std::string s;
-      getline(in, s, '\0');
-      in.close();
-
-      if (s == skeleton)
-        return;
-    }
-
-    std::ofstream out;
-    out.open(path);
-    if (out.is_open()) {
-      out << skeleton;
-      out.close();
-    }
-  }
+  void Init();
+  void Save(const std::string &icon_name);
 
  private:
   std::string run_dir_;
@@ -71,7 +38,8 @@ class DesktopIcon : public NoCopy {
   std::string version = "1.0";
   std::string name_ = "XioDemo";
   std::map<std::string, std::string> properties;
-  std::string skeleton = "[Desktop Entry]\n"
+  std::string output_;
+  const std::string skeleton_ = "[Desktop Entry]\n"
                          "Version=VERSION\n"
                          "Name=NAME\n"
                          "Comment=COMMENT\n"

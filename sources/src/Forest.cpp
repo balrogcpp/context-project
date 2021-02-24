@@ -27,6 +27,8 @@
 #include "MeshUtils.h"
 #include "DotSceneLoaderB.h"
 #include "Physics.h"
+#include "PagedGeometryAll.h"
+
 using namespace Forests;
 
 namespace xio {

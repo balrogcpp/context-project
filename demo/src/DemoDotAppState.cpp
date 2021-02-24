@@ -43,7 +43,7 @@ void DemoDotAppState::Clear() {
 }
 
 void DemoDotAppState::Update(float time) {
-  anim1->addTime(time/4);
+//  anim1->addTime(time/4);
 //  anim2->addTime(time/4);
 }
 
@@ -58,15 +58,14 @@ void DemoDotAppState::Create() {
   auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
   root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
 
-  Ogre::Entity *entity = scene->createEntity("ely_vanguardsoldier_kerwinatienza_Mesh.mesh", "ely_vanguardsoldier_kerwinatienza_Mesh.mesh");
-  auto *node = root->createChildSceneNode(Ogre::Vector3(0, 0, 0));
-  node->scale(Ogre::Vector3(0.02));
-  node->attachObject(entity);
-  UpdateEntityMaterial(entity);
-//  UpdateMeshMaterial("Person.mesh");
-  anim1 = entity->getAnimationState("run");
-  anim1->setLoop(true);
-  anim1->setEnabled(true);
+//  Ogre::Entity *entity = scene->createEntity("ely_vanguardsoldier_kerwinatienza_Mesh.mesh", "ely_vanguardsoldier_kerwinatienza_Mesh.mesh");
+//  auto *node = root->createChildSceneNode(Ogre::Vector3(0, 0, 0));
+//  node->scale(Ogre::Vector3(0.02));
+//  node->attachObject(entity);
+//  UpdateEntityMaterial(entity);
+//  anim1 = entity->getAnimationState("run");
+//  anim1->setLoop(true);
+//  anim1->setEnabled(true);
 
 //  anim2 = entity->getAnimationState("jump");
 //  anim2->setLoop(true);

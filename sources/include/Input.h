@@ -26,8 +26,9 @@ extern "C" {
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_events.h>
 }
-#include <cstdint>
+
 #include <vector>
+#include <string>
 #include <exception>
 
 namespace xio {
@@ -97,12 +98,8 @@ class InputSequencer {
   InputSequencer(const InputSequencer &) = delete;
   InputSequencer &operator=(const InputSequencer &) = delete;
 
-  InputSequencer() {
-    if (instanced_)
-      throw InputException("Only one instance of InputSequencer is allowed!\n");
-    Reserve(RESERVE_SIZE);
-    instanced_ = true;
-  }
+  InputSequencer();
+  virtual ~InputSequencer();
 
  private:
   KeyboardListenersList io_listeners;
@@ -111,153 +108,18 @@ class InputSequencer {
   inline static bool instanced_ = false;
 
  public:
-  void RegObserver(InputObserver *p) {
-    io_listeners.push_back(p);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void UnregObserver(InputObserver *p) {
-    auto it = find(io_listeners.begin(), io_listeners.end(), p);
-    if (it != io_listeners.end()) {
-      iter_swap(it, prev(io_listeners.end()));
-      io_listeners.pop_back();
-    }
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void RegWinObserver(WindowObserver *p) {
-    win_listeners.push_back(p);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void UnregWinObserver(WindowObserver *p) {
-    auto it = find(win_listeners.begin(), win_listeners.end(), p);
-    if (it != win_listeners.end()) {
-      iter_swap(it, prev(win_listeners.end()));
-      win_listeners.pop_back();
-    }
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void Clear() {
-    io_listeners.clear();
-    io_listeners.shrink_to_fit();
-    win_listeners.clear();
-    win_listeners.shrink_to_fit();
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void Reserve(size_t size) {
-    io_listeners.reserve(size);
-    win_listeners.reserve(size);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void Capture() {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
+  void RegObserver(InputObserver *p);
 
-      switch (event.type) {
-        case SDL_KEYUP: {
-          for (auto it : io_listeners)
-            it->OnKeyUp(event.key.keysym.sym);
-          break;
-        }
-        case SDL_KEYDOWN: {
-          for (auto it : io_listeners)
-            it->OnKeyDown(event.key.keysym.sym);
-          break;
-        }
-        case SDL_MOUSEMOTION: {
-          for (auto it : io_listeners) {
-            it->OnMouseMove(event.motion.x, event.motion.y,
-                            event.motion.xrel, event.motion.yrel,
-                            (event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0,
-                            (event.motion.state & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0,
-                            (event.motion.state & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
-            it->OnMouseMove(event.motion.xrel, event.motion.yrel);
-          }
-          break;
-        }
-        case SDL_MOUSEBUTTONDOWN: {
-          switch (event.button.button) {
-            case SDL_BUTTON_LEFT: {
-              for (auto it : io_listeners)
-                it->OnMouseLbDown(event.button.x, event.button.y);
-              break;
-            }
-            case SDL_BUTTON_RIGHT: {
-              for (auto it : io_listeners)
-                it->OnMouseRbDown(event.button.x, event.button.y);
-              break;
-            }
-            case SDL_BUTTON_MIDDLE: {
-              for (auto it : io_listeners)
-                it->OnMouseMbDown(event.button.x, event.button.y);
-              break;
-            }
-          }
-          break;
-        }
-        case SDL_MOUSEBUTTONUP: {
-          switch (event.button.button) {
-            case SDL_BUTTON_LEFT: {
-              for (auto it : io_listeners)
-                it->OnMouseLbUp(event.button.x, event.button.y);
-              break;
-            }
-            case SDL_BUTTON_RIGHT: {
-              for (auto it : io_listeners)
-                it->OnMouseRbUp(event.button.x, event.button.y);
-              break;
-            }
-            case SDL_BUTTON_MIDDLE: {
-              for (auto it : io_listeners)
-                it->OnMouseMbUp(event.button.x, event.button.y);
-              break;
-            }
-          }
-          break;
-        }
+  void UnregObserver(InputObserver *p);
 
-        case SDL_MOUSEWHEEL: {
-          for (auto it : io_listeners)
-            it->OnMouseWheel(event.wheel.x, event.wheel.y);
-          break;
-        }
+  void RegWinObserver(WindowObserver *p);
 
-        case SDL_JOYAXISMOTION: {
-          for (auto it : io_listeners)
-            it->OnJoysticAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
-          break;
-        }
-        case SDL_JOYBALLMOTION: {
-          for (auto it : io_listeners)
-            it->OnJoysticBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
-          break;
-        }
-        case SDL_JOYHATMOTION: {
-          for (auto it : io_listeners)
-            it->OnJoysticHat(event.jhat.which, event.jhat.hat, event.jhat.value);
-          break;
-        }
-        case SDL_JOYBUTTONDOWN: {
-          for (auto it : io_listeners)
-            it->OnJoysticBtDown(event.jbutton.which, event.jbutton.button);
-          break;
-        }
-        case SDL_JOYBUTTONUP: {
-          for (auto it : io_listeners) {
-            if (it)
-              it->OnJoysticBtUp(event.jbutton.which, event.jbutton.button);
-          }
-          break;
-        }
-        case SDL_QUIT: {
-          for (auto it : win_listeners)
-            it->Quit();
-          break;
-        }
-        default: {
-          for (auto it : win_listeners)
-            it->Event(event);
-        }
-      }
-    }
-  }
+  void UnregWinObserver(WindowObserver *p);
+
+  void Clear();
+
+  void Reserve(size_t size);
+
+  void Capture();
 };
 }

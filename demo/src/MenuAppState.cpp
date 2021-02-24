@@ -23,6 +23,7 @@
 #include "pcheader.h"
 #include "MenuAppState.h"
 #include "DemoDotAppState.h"
+#include "Renderer.h"
 
 using namespace xio;
 

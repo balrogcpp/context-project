@@ -21,5 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-#include "xio_deps.h"
-#include "xio.h"
+#include <Ogre.h>
+//#include "xio_deps.h"
+//#include "xio.h"

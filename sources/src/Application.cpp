@@ -25,7 +25,6 @@
 #include "Exception.h"
 #include "Overlay.h"
 #include "HwCheck.h"
-#include "DesktopIcon.h"
 #include "ComponentLocator.h"
 #include "DesktopIcon.h"
 
@@ -90,11 +89,11 @@ void Application::Init_() {
   Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
 #endif
 
-//#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-//  DesktopIcon icon;
-//  icon.Init();
-//  icon.Save("XioDemo");
-//#endif
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+  DesktopIcon icon;
+  icon.Init();
+  icon.Save("XioDemo");
+#endif
 
   conf_ = std::make_unique<YamlConfigurator>("config.yaml");
   Renderer::SetConfigurator(conf_.get());

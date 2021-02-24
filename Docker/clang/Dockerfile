@@ -43,8 +43,7 @@ RUN apt-get update \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
     && apt-get install -y g++-10 gcc-10 clang lld llvm make autoconf file patch xz-utils bzip2 zip zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev\
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc-10 10000 \
-        --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++-10 \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc-10 10000 --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++-10 \
     && update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 10000 \
     && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 10000 \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \

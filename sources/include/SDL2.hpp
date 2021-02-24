@@ -21,40 +21,7 @@
 //SOFTWARE.
 
 #pragma once
-#include "OgreHeaders.h"
-#include <rapidjson/rapidjson.h>
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/istreamwrapper.h>
-#include <pugixml.hpp>
-#include <yaml-cpp/yaml.h>
-#include <lua.hpp>
-#include <sol/sol.hpp>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <functional>
-#include <sstream>
-#include <memory>
-#include <vector>
-#include <list>
-#include <deque>
-#include <queue>
-#include <stack>
-#include <set>
-#include <unordered_set>
-#include <unordered_map>
-#include <map>
-#include <algorithm>
-#include <chrono>
-#include <thread>
-#include <filesystem>
-#include <cstdlib>
-#include <cassert>
-#include <limits>
-#include <cctype>
-#include <omp.h>
+
 extern "C" {
 #include <SDL2/SDL.h>
 }

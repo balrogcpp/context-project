@@ -21,17 +21,5 @@
 //SOFTWARE.
 
 #pragma once
-#include "xio_deps.h"
-#include "BtOgreExtras.h"
-#include "BtOgreGP.h"
-#include "BtOgrePG.h"
-#include "OgreOggSound.h"
-#include "PagedGeometry.h"
-#include "GrassLoader.h"
-#include "TreeLoader2D.h"
-#include "TreeLoader3D.h"
-#include "BatchPage.h"
-#include "BatchedGeometry.h"
-#include "ImpostorPage.h"
-#include "WindBatchPage.h"
-#include "WindBatchedGeometry.h"
+#include "OgreHeaders.h"
+#include "BtOgre.h"

@@ -27,23 +27,7 @@
 #include <iostream>
 
 namespace xio{
-inline bool TestCapabilities(const std::vector<Ogre::Capabilities> &capabilities) {
-  auto *caps = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
-  for (const auto &it : capabilities) {
-    bool result = caps->hasCapability(it);
-    if (!result) return result;
-  }
+bool TestCapabilities(const std::vector<Ogre::Capabilities> &capabilities);
 
-  return true;
-}
-//----------------------------------------------------------------------------------------------------------------------
-inline bool ShaderSupported(const std::vector<std::string> &v) {
-  auto &gpu = Ogre::GpuProgramManager::getSingleton();
-  for (const auto &it : v) {
-    bool result = gpu.isSyntaxSupported(it);
-    if (!result) return result;
-  }
-
-  return true;
-}
+bool IsShaderSupported(const std::vector<std::string> &v);
 }
