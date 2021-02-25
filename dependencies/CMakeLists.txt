@@ -83,7 +83,7 @@ externalproject_add(target-bullet3
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
-                    GIT_TAG 3.07
+                    GIT_TAG 3.08
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -92,6 +92,7 @@ externalproject_add(target-bullet3
                     -DCMAKE_RELWITHDEBINFO_POSTFIX=
                     -DCMAKE_DEBUG_POSTFIX=
                     -DCMAKE_MINSIZEREL_POSTFIX=
+                    -DCLAMP_VELOCITIES=0
                     -DBULLET2_MULTITHREADING=true
                     -DBULLET2_USE_OPEN_MP_MULTITHREADING=true
                     -DBUILD_BULLET2_DEMOS=false
@@ -105,6 +106,10 @@ externalproject_add(target-bullet3
                     -DBUILD_SHARED_LIBS=false
                     -DUSE_SOFT_BODY_MULTI_BODY_DYNAMICS_WORLD=false
                     -DINSTALL_LIBS=true
+                    -DUSE_MSVC_AVX=false
+                    -DUSE_MSVC_FAST_FLOATINGPOINT=true
+                    -DUSE_MSVC_RUNTIME_LIBRARY_DLL=true
+                    -DUSE_MSVC_RELEASE_RUNTIME_ALWAYS=true
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -245,7 +250,7 @@ externalproject_add(target-yamlcpp
                     -DYAML_CPP_BUILD_TESTS=false
                     -DYAML_CPP_BUILD_TOOLS=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS} -I /opt/android-ndk/sources/android/cpufeatures
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}# -I /opt/android-ndk/sources/android/cpufeatures
                     -G "${CMAKE_GENERATOR}"
                     )
 
@@ -358,6 +363,8 @@ externalproject_add(target-ogre
                     -DOGRE_INSTALL_SAMPLES_SOURCE=false
                     -DOGRE_INSTALL_SAMPLES=false
                     -DOGRE_BUILD_TOOLS=false
+                    -DOGRE_INSTALL_PDB=false
+                    -DOGRE_INSTALL_DOCS=false
                     -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
                     -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
                     -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
