@@ -122,7 +122,7 @@ Renderer::Renderer(int w, int h, bool f) {
   rtss::InitRtss();
   Storage::LoadResources();
   rtss::CreateRtssShaders();
-  rtss::InitInstansing();
+//  rtss::InitInstansing();
 
   //Shadow block
   shadow_ = std::make_unique<ShadowSettings>();

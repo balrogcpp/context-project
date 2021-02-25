@@ -49,7 +49,7 @@ void DemoDotAppState::Update(float time) {
 
 void DemoDotAppState::Create() {
 //  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
-  Load("1.scene");
+  LoadFromFile("1.scene");
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *root = scene->getRootSceneNode();

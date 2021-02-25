@@ -310,7 +310,7 @@ externalproject_add(target-ogre
                     DEPENDS target-zzip target-freetype
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v1.12.10
+                    GIT_TAG v1.12.11
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory

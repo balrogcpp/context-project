@@ -25,10 +25,6 @@
 #include "NoCopy.h"
 #include "Input.h"
 #include "ComponentLocator.h"
-#include <OgreRoot.h>
-#include <OgreSceneLoaderManager.h>
-#include <OgreFrameListener.h>
-#include <OgreRenderTargetListener.h>
 
 namespace xio {
 class AppState
@@ -45,12 +41,7 @@ class AppState
     return move(next_);
   }
 //----------------------------------------------------------------------------------------------------------------------
-  void Load(const std::string &file_name) {
-    auto *scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
-    Ogre::SceneLoaderManager::getSingleton().load(file_name,
-                                                  Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-                                                  scene_->getRootSceneNode());
-  }
+  void LoadFromFile(const std::string &file_name);
 
   virtual void Create() = 0;
   virtual void Clear() = 0;

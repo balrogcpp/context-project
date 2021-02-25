@@ -22,7 +22,7 @@
 
 #pragma once
 #include <lua.hpp>
-#include "../gorilla/include/Gorilla.h"
+#include "Gorilla.h"
 #include "Component.h"
 #include "Singleton.h"
 

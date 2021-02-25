@@ -24,7 +24,7 @@ cmake_minimum_required(VERSION 3.16.3)
 
 project(xio-demo)
 
-file(GLOB_RECURSE SOURCE_FILES *.cpp *.h)
+file(GLOB_RECURSE SOURCE_FILES *.cpp *.h ../sources/*.cpp ../sources/*.h)
 
 if (ANDROID)
     list(APPEND SOURCE_FILES ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
@@ -36,7 +36,7 @@ if (NOT ANDROID)
 else ()
     add_library(demo SHARED ${SOURCE_FILES})
 endif ()
-set(CONTEXT_LIBRARIES xio-static)
+#set(CONTEXT_LIBRARIES xio-static)
 
 include_directories(demo ${CMAKE_CURRENT_SOURCE_DIR}/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})

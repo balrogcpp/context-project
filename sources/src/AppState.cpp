@@ -20,9 +20,16 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#pragma once
-#include "PagedGeometry.h"
-#include "GrassLoader.h"
-#include "BatchPage.h"
-#include "TreeLoader2D.h"
-#include "TreeLoader3D.h"
+#include "pcheader.h"
+#include "AppState.h"
+
+#include <OgreSceneLoaderManager.h>
+
+namespace xio {
+void AppState::LoadFromFile(const std::string &file_name) {
+  auto *scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
+  Ogre::SceneLoaderManager::getSingleton().load(file_name,
+												Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+												scene_->getRootSceneNode());
+}
+}
