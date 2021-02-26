@@ -36,9 +36,9 @@ find_package(Lua51 QUIET)
 find_package(ZZip QUIET)
 find_package(assimp QUIET)
 
-#if (NOT OGRE_FOUND)
-#    return()
-#endif ()
+if (NOT OGRE_FOUND)
+    return()
+endif ()
 
 list(REMOVE_ITEM OGRE_LIBRARIES "dl")
 foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
