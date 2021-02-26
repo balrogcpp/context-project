@@ -36,18 +36,18 @@ find_package(Lua51 QUIET)
 find_package(ZZip QUIET)
 find_package(assimp QUIET)
 
-if (NOT OGRE_FOUND)
-    return()
-endif ()
+#if (NOT OGRE_FOUND)
+#    return()
+#endif ()
 
 list(REMOVE_ITEM OGRE_LIBRARIES "dl")
 foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
     string(REPLACE "Static" "" X "${I}")
-    if(WIN32 AND ${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    if (WIN32 AND ${CMAKE_BUILD_TYPE} STREQUAL Debug)
         list(APPEND OGRE_LIBRARIES_STATIC "${X}Static_d")
-    else()
+    else ()
         list(APPEND OGRE_LIBRARIES_STATIC "${X}Static")
-    endif()
+    endif ()
 endforeach ()
 
 if (MINGW)
@@ -93,8 +93,8 @@ endif ()
 include_directories(demo ${CMAKE_CURRENT_SOURCE_DIR}/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
 target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
-                                    ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES}
-                                    )
+        ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES}
+        )
 target_precompile_headers(demo PUBLIC include/pcheader.h)
 install(TARGETS demo
         CONFIGURATIONS Release

@@ -126,9 +126,9 @@ elseif (MSVC)
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
         string(APPEND CMAKE_CXX_FLAGS " /GL")
         string(APPEND CMAKE_C_FLAGS " /GL")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " /LTCG /OPT:ICF/OPT:REF /SUBSYSTEM:WINDOWS")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF /SUBSYSTEM:WINDOWS")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF")
-    endif()
+    endif ()
 endif ()
 
 if (ANDROID)
@@ -172,14 +172,9 @@ if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
     message(SEND_ERROR "In-source builds are not allowed!")
 endif ()
 
-option(CONTEXT_MAKEFILE_VERBOSE "Verbose mode for make" false)
-if (CONTEXT_MAKEFILE_VERBOSE)
-    set(CMAKE_VERBOSE_MAKEFILE true)
-endif ()
-
+set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 add_subdirectory(${CONTEXT_ROOT_DIR}/sources ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME})
 add_subdirectory(${CONTEXT_ROOT_DIR}/demo ${CMAKE_CURRENT_BINARY_DIR}/demo)
-
 add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
