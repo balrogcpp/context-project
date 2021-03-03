@@ -49,34 +49,34 @@ class CameraMan final : public Entity, public InputObserver {
   void OnKeyDown(SDL_Keycode sym) override;
   void OnKeyUp(SDL_Keycode sym) override;
 
-  Ogre::SceneNode *node_ = nullptr;
-  Ogre::SceneNode *camera_yaw_node_ = nullptr;
-  Ogre::SceneNode *camera_pitch_node_ = nullptr;
-  Ogre::SceneNode *camera_roll_node_ = nullptr;
-  btRigidBody *rigid_ = nullptr;
+  Ogre::SceneNode *node_;
+  Ogre::SceneNode *camera_yaw_node_;
+  Ogre::SceneNode *camera_pitch_node_;
+  Ogre::SceneNode *camera_roll_node_;
+  btRigidBody *rigid_;
   Ogre::Degree dx_, dy_;
-  Ogre::Camera *camera_ = nullptr;
-  int style_ = MANUAL;
-  Ogre::SceneNode *target_ = nullptr;
-  bool orbiting_ = false;
-  bool moving_ = false;
-  float top_speed_ = 10.0f;
-  float run_speed_ = 20.0f;
-  float animation_time_ = 0.0f;
-  float anim_duration_ = .5f;//ms
-  float const_speed_ = 5.;
-  float heigh_ = 1.5f;
-  bool move_forward_ = false;
-  bool move_back_ = false;
-  bool move_left_ = false;
-  bool move_right_ = false;
-  bool move_up_ = false;
-  bool move_down_ = false;
-  bool move_fast_ = false;
-  bool stop_ = false;
-  Ogre::Vector3 offset_ = Ogre::Vector3::ZERO;
-  Ogre::Vector3 velocity_ = Ogre::Vector3::ZERO;
-  Ogre::Vector3 prev_pos_ = Ogre::Vector3::ZERO;
+  Ogre::Camera *camera_;
+  int style_;
+  Ogre::SceneNode *target_;
+  bool orbiting_;
+  bool moving_;
+  float top_speed_;
+  float run_speed_;
+  float animation_time_;
+  float anim_duration_;//ms
+  float const_speed_;
+  float heigh_;
+  bool move_forward_;
+  bool move_back_;
+  bool move_left_;
+  bool move_right_;
+  bool move_up_;
+  bool move_down_;
+  bool move_fast_;
+  bool stop_;
+  Ogre::Vector3 offset_;
+  Ogre::Vector3 velocity_;
+  Ogre::Vector3 prev_pos_;
 
  public:
   void SetRigidBody(btRigidBody *rigid_body);

@@ -24,6 +24,7 @@
 #include "Component.h"
 #include "Singleton.h"
 #include <string>
+#include "view_ptr.h"
 
 namespace OgreOggSound{
   class OgreOggSoundManager;
@@ -49,6 +50,6 @@ class Sound final : public Component, public Singleton<Sound> {
   void SetVolume(const std::string &name, float gain);
   void SetListener(Ogre::SceneNode *parent);
  private:
-  OgreOggSound::OgreOggSoundManager *manager_ = nullptr;
+  view_ptr<OgreOggSound::OgreOggSoundManager> manager_;
 };
 }

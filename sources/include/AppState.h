@@ -28,20 +28,19 @@
 
 namespace xio {
 class AppState
-    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputObserver, public NoCopy, public ComponentLocator {
+	: public Ogre::RenderTargetListener,
+	  public Ogre::FrameListener,
+	  public InputObserver,
+	  public NoCopy,
+	  public ComponentLocator {
  public:
-//----------------------------------------------------------------------------------------------------------------------
-  void SwitchNextState(std::unique_ptr<AppState> &&app_state) {
-    next_ = std::move(app_state);
-    dirty_ = true;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  std::unique_ptr<AppState> &&GetNextState() {
-    dirty_ = false;
-    return move(next_);
-  }
-//----------------------------------------------------------------------------------------------------------------------
+  AppState();
+  virtual ~AppState();
+
+  void SwitchNextState(std::unique_ptr<AppState> &&app_state);
+  std::unique_ptr<AppState> GetNextState();
   void LoadFromFile(const std::string &file_name);
+  bool IsDirty() const;
 
   virtual void Create() = 0;
   virtual void Clear() = 0;
@@ -49,12 +48,8 @@ class AppState
   virtual void Unpause() = 0;
   virtual void Update(float time) = 0;
 
-  bool IsDirty() {
-    return dirty_;
-  }
-
  protected:
   std::unique_ptr<AppState> next_;
-  bool dirty_ = false;
+  bool dirty_;
 };
 }

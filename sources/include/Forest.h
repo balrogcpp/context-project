@@ -25,6 +25,7 @@
 #include "ComponentLocator.h"
 #include <functional>
 #include <memory>
+#include "view_ptr.h"
 
 namespace Forests {
 class PagedGeometry;
@@ -46,17 +47,17 @@ class Forest final : public ComponentLocator, public SubComponent {
 
  private:
   inline static std::function<float(float, float)> heigh_func_;
-  std::vector<Forests::PagedGeometry *> pgeometry_;
-  std::vector<Forests::PageLoader *> ploaders_;
-  std::vector<Forests::GeometryPage *> gpages_;
-  std::vector<Ogre::StaticGeometry *> sgeometry_;
+  std::vector<view_ptr<Forests::PagedGeometry>> pgeometry_;
+  std::vector<view_ptr<Forests::PageLoader>> ploaders_;
+  std::vector<view_ptr<Forests::GeometryPage>> gpages_;
+  std::vector<view_ptr<Ogre::StaticGeometry>> sgeometry_;
   const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
   const Ogre::uint32 SURFACE_MASK = 0x00F;
   const Ogre::uint32 WATER_MASK = 0xF00;
 
  public:
   static void SetHeighFunc(const std::function<float(float, float)> &heigh_func) {
-    heigh_func_ = heigh_func;
+	heigh_func_ = heigh_func;
   }
 };
 }

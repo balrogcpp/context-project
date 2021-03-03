@@ -22,7 +22,6 @@
 
 #include "pcheader.h"
 #include "Compositor.h"
-#include "Exception.h"
 
 namespace xio {
 class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {

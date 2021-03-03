@@ -37,11 +37,11 @@ class VerboseListener final : public InputObserver {
   void OnMouseRbUp(int x, int y) final;
   void OnMouseMbDown(int x, int y) final;
   void OnMouseMbUp(int x, int y) final;
-  void OnJoysticAxis(int which, int axis, int value) final;
-  void OnJoysticBtDown(int which, int button) final;
-  void OnJoysticBtUp(int which, int button) final;
-  void OnJoysticHat(int which, int hat, int value) final;
-  void OnJoysticBall(int which, int ball, int xrel, int yrel) final;
+  void OnJoystickAxis(int which, int axis, int value) final;
+  void OnJoystickBtDown(int which, int button) final;
+  void OnJoystickBtUp(int which, int button) final;
+  void OnJoystickHat(int which, int hat, int value) final;
+  void OnJoystickBall(int which, int ball, int xrel, int yrel) final;
 
  private:
   bool verbose_ = false;

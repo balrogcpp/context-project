@@ -22,8 +22,11 @@
 
 #include "pcheader.h"
 #include "Sound.h"
-#include "Exception.h"
 #include "OgreOggSound.h"
+#include <exception>
+#include <string>
+
+using namespace std;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
@@ -40,7 +43,7 @@ Sound::Sound(unsigned int max_sources, unsigned int queue_list_size) {
   // Register
   Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
   OgreOggSound::OgreOggSoundManager::getSingleton().init("", max_sources, queue_list_size);
-  manager_ = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
+  manager_ = &OgreOggSound::OgreOggSoundManager::getSingleton();
   manager_->setResourceGroupName(Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -77,7 +80,7 @@ void Sound::PlaySound(const std::string &name, bool immediate) {
       sound->stop();
     sound->play();
   } else {
-    throw Exception(std::string("Sound \"") + name + "\" not found. Aborting.\n");
+    throw runtime_error(std::string("Sound \"") + name + "\" not found. Aborting.\n");
   }
 }
 //----------------------------------------------------------------------------------------------------------------------

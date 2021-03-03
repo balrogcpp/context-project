@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include "view_ptr.h"
+
 namespace xio {
 class JsonConfigurator;
 class YamlConfigurator;
@@ -36,28 +38,28 @@ class ComponentLocator {
  public:
 //----------------------------------------------------------------------------------------------------------------------
   static void LocateComponents(YamlConfigurator *conf,
-                               InputSequencer *input,
-                               Renderer *renderer,
-                               Physics *physics,
-                               Sound *sounds,
-                               Overlay *overlay,
-                               DotSceneLoaderB *loader) {
-    conf_ = conf;
-    input_ = input;
-    renderer_ = renderer;
-    physics_ = physics;
-    sound_ = sounds;
-    overlay_ = overlay;
-    loader_ = loader;
+							   InputSequencer *input,
+							   Renderer *renderer,
+							   Physics *physics,
+							   Sound *sounds,
+							   Overlay *overlay,
+							   DotSceneLoaderB *loader) {
+	conf_ = conf;
+	input_ = input;
+	renderer_ = renderer;
+	physics_ = physics;
+	sound_ = sounds;
+	overlay_ = overlay;
+	loader_ = loader;
   }
 
  protected:
-  inline static YamlConfigurator *conf_ = nullptr;
-  inline static Renderer *renderer_ = nullptr;
-  inline static Physics *physics_ = nullptr;
-  inline static Sound *sound_ = nullptr;
-  inline static Overlay *overlay_ = nullptr;
-  inline static DotSceneLoaderB *loader_ = nullptr;
-  inline static InputSequencer *input_ = nullptr;
+  inline static view_ptr<YamlConfigurator> conf_;
+  inline static view_ptr<Renderer> renderer_;
+  inline static view_ptr<Physics> physics_;
+  inline static view_ptr<Sound> sound_;
+  inline static view_ptr<Overlay> overlay_;
+  inline static view_ptr<DotSceneLoaderB> loader_;
+  inline static view_ptr<InputSequencer> input_;
 };
 }

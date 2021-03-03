@@ -30,41 +30,14 @@ extern "C" {
 #include <vector>
 #include <string>
 #include <exception>
+#include "view_ptr.h"
+
 
 namespace xio {
 class InputSequencer;
-//----------------------------------------------------------------------------------------------------------------------
-class InputObserver {
- public:
-  //Keyboard
-  virtual void OnKeyDown(SDL_Keycode sym) {}
-  virtual void OnKeyUp(SDL_Keycode sym) {}
+class InputObserver;
+class WindowObserver;
 
-  //Mouse
-  virtual void OnMouseMove(int dx, int dy) {}
-  virtual void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {}
-  virtual void OnMouseWheel(int x, int y) {}
-  virtual void OnMouseLbDown(int x, int y) {}
-  virtual void OnMouseLbUp(int x, int y) {}
-  virtual void OnMouseRbDown(int x, int y) {}
-  virtual void OnMouseRbUp(int x, int y) {}
-  virtual void OnMouseMbDown(int x, int y) {}
-  virtual void OnMouseMbUp(int x, int y) {}
-
-  //Joystic
-  virtual void OnJoysticAxis(int which, int axis, int value) {}
-  virtual void OnJoysticBtDown(int which, int button) {}
-  virtual void OnJoysticBtUp(int which, int button) {}
-  virtual void OnJoysticHat(int which, int hat, int value) {}
-  virtual void OnJoysticBall(int which, int ball, int xrel, int yrel) {}
-};
-//----------------------------------------------------------------------------------------------------------------------
-class WindowObserver {
- public:
-  virtual void Event(const SDL_Event &evt) {}
-  virtual void Quit() {}
-  virtual void Other(uint8_t type, int code, void *data1, void *data2) {}
-};
 //----------------------------------------------------------------------------------------------------------------------
 class InputException : public std::exception {
  public:
@@ -91,8 +64,8 @@ class InputException : public std::exception {
 //----------------------------------------------------------------------------------------------------------------------
 class InputSequencer {
  public:
-  using KeyboardListenersList = std::vector<InputObserver *>;
-  using OtherListenersList = std::vector<WindowObserver *>;
+  using KeyboardListenersList = std::vector<view_ptr<InputObserver>>;
+  using OtherListenersList = std::vector<view_ptr<WindowObserver>>;
 
   //Copy not allowed
   InputSequencer(const InputSequencer &) = delete;
@@ -101,20 +74,22 @@ class InputSequencer {
   InputSequencer();
   virtual ~InputSequencer();
 
+  static InputSequencer &GetInstance();
+
  private:
   KeyboardListenersList io_listeners;
   OtherListenersList win_listeners;
   const size_t RESERVE_SIZE = 16;
-  inline static bool instanced_ = false;
+  inline static bool instanced_;
 
  public:
-  void RegObserver(InputObserver *p);
+  void RegObserver(view_ptr<InputObserver> p);
 
-  void UnregObserver(InputObserver *p);
+  void UnregObserver(view_ptr<InputObserver> p);
 
-  void RegWinObserver(WindowObserver *p);
+  void RegWinObserver(view_ptr<WindowObserver> p);
 
-  void UnregWinObserver(WindowObserver *p);
+  void UnregWinObserver(view_ptr<WindowObserver> p);
 
   void Clear();
 
@@ -122,4 +97,43 @@ class InputSequencer {
 
   void Capture();
 };
-}
+
+//----------------------------------------------------------------------------------------------------------------------
+class InputObserver {
+ public:
+  InputObserver();
+  virtual ~InputObserver();
+
+  //Keyboard
+  virtual void OnKeyDown(SDL_Keycode sym) {}
+  virtual void OnKeyUp(SDL_Keycode sym) {}
+
+  //Mouse
+  virtual void OnMouseMove(int dx, int dy) {}
+  virtual void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {}
+  virtual void OnMouseWheel(int x, int y) {}
+  virtual void OnMouseLbDown(int x, int y) {}
+  virtual void OnMouseLbUp(int x, int y) {}
+  virtual void OnMouseRbDown(int x, int y) {}
+  virtual void OnMouseRbUp(int x, int y) {}
+  virtual void OnMouseMbDown(int x, int y) {}
+  virtual void OnMouseMbUp(int x, int y) {}
+
+  //Joystick
+  virtual void OnJoystickAxis(int which, int axis, int value) {}
+  virtual void OnJoystickBtDown(int which, int button) {}
+  virtual void OnJoystickBtUp(int which, int button) {}
+  virtual void OnJoystickHat(int which, int hat, int value) {}
+  virtual void OnJoystickBall(int which, int ball, int xrel, int yrel) {}
+};
+//----------------------------------------------------------------------------------------------------------------------
+class WindowObserver {
+ public:
+  WindowObserver();
+  virtual ~WindowObserver();
+
+  virtual void Event(const SDL_Event &evt) {}
+  virtual void Quit() {}
+  virtual void Other(uint8_t type, int code, void *data1, void *data2) {}
+};
+} //namespace

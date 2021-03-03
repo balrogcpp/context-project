@@ -20,8 +20,8 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "pcheader.h"
 #include "DemoDotAppState.h"
+#include "Sound.h"
 
 namespace Demo {
 using namespace xio;
@@ -71,8 +71,8 @@ void DemoDotAppState::Create() {
 //  anim2->setLoop(true);
 //  anim2->setEnabled(true);
 
-//  sound_->CreateSound("ambient", "test.ogg", false);
-//  sound_->SetVolume("ambient", 0.5);
-//  sound_->PlaySound("ambient");
+  sound_->CreateSound("ambient", "test.ogg", false);
+  sound_->SetVolume("ambient", 0.5);
+  sound_->PlaySound("ambient");
 }
 }

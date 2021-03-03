@@ -23,3 +23,4 @@
 #pragma once
 #include "OgreHeaders.h"
 #include "BtOgre.h"
+#include "OgreOggSound.h"

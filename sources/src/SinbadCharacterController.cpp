@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include "Sinbad.h"
+#include "SinbadCharacterController.h"
 #include "Ogre.h"
 #include "MeshUtils.h"
 #include "DotSceneLoaderB.h"

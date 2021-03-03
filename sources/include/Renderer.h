@@ -65,11 +65,11 @@ class Renderer final : public Component, public Singleton<Renderer> {
   std::unique_ptr<ShadowSettings> shadow_;
   std::unique_ptr<Compositor> compositor_;
 
-  Ogre::Root *root_ = nullptr;
-  Ogre::SceneManager *scene_ = nullptr;
-  Ogre::Camera *camera_ = nullptr;
-  Ogre::Viewport *viewport_ = nullptr;
-  Ogre::RenderWindow *ogre_ = nullptr;
+  Ogre::Root *root_;
+  Ogre::SceneManager *scene_;
+  Ogre::Camera *camera_;
+  Ogre::Viewport *viewport_;
+  Ogre::RenderWindow *ogre_;
 
  public:
   Window &GetWindow() {

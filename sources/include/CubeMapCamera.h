@@ -22,6 +22,7 @@
 
 #pragma once
 #include <Ogre.h>
+#include <array>
 
 namespace xio {
 class CubeMapCamera final : public Ogre::RenderTargetListener {
@@ -37,11 +38,11 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   void Clear_();
   void Init_(Ogre::SceneNode *creator, unsigned int tex_size);
 
-  Ogre::SceneManager *scene_ = nullptr;
-  Ogre::Camera *camera_ = nullptr;
-  Ogre::SceneNode *camera_node_ = nullptr;
+  Ogre::SceneManager *scene_;
+  Ogre::Camera *camera_;
+  Ogre::SceneNode *camera_node_;
   std::shared_ptr<Ogre::Texture> cubemap_;
-  Ogre::RenderTarget *targets_[6]{nullptr};
+  std::array<Ogre::RenderTarget*, 6> targets_;
 
  public:
   std::shared_ptr<Ogre::Texture> GetDyncubemap() const;

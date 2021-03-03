@@ -32,6 +32,7 @@
 #include "Overlay.h"
 #include "AppState.h"
 #include "YamlConfigurator.h"
+#include "view_ptr.h"
 
 namespace xio {
 class Application final : public WindowObserver, public Ogre::LogListener {
@@ -39,6 +40,9 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   explicit Application(int argc, char *argv[]);
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&scene_ptr);
+  void SetInitialState(std::unique_ptr<AppState> &&state);
+  int GetCurrentFps() const;
+
  private:
   void Init_();
   void Reset_();
@@ -56,35 +60,24 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   void WriteLogToFile(const std::string &file_name);
   void PrintLogToConsole();
 
+  view_ptr<InputSequencer> input_;
   std::unique_ptr<YamlConfigurator> conf_;
-  std::unique_ptr<InputSequencer> input_;
   std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<Physics> physics_;
   std::unique_ptr<Sound> sound_;
   std::unique_ptr<Overlay> overlay_;
   std::unique_ptr<DotSceneLoaderB> loader_;
   std::unique_ptr<AppState> cur_state_;
-  bool quit_ = false;
-  bool suspend_ = false;
-  int64_t time_of_last_frame_ = 0;
-  int64_t cumulated_time_ = 0;
-  int64_t fps_counter_ = 0;
-  int current_fps_ = 0;
-  int target_fps_ = 60;
-  bool verbose_ = false;
-  bool lock_fps_ = true;
-  std::vector<Component *> components_;
+  bool quit_;
+  bool suspend_;
+  int64_t time_of_last_frame_;
+  int64_t cumulated_time_;
+  int64_t fps_counter_;
+  int current_fps_;
+  int target_fps_;
+  bool verbose_;
+  bool lock_fps_;
+  std::vector<view_ptr<Component>> components_;
   std::string log_;
- public:
-//----------------------------------------------------------------------------------------------------------------------
-  int GetCurrentFps() const {
-	return current_fps_;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void SetInitialState(std::unique_ptr<AppState> &&state) {
-	cur_state_ = move(state);
-	input_->RegObserver(cur_state_.get());
-	Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
-  }
 };
 }

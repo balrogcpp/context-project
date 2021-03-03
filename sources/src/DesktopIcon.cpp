@@ -28,6 +28,22 @@
 #include <fstream>
 
 namespace xio {
+DesktopIcon::DesktopIcon()
+	: exec_("demo"), version_("1.0"), name_("XioDemo"),
+	  skeleton_{"[Desktop Entry]\n"
+				"Version=VERSION\n"
+				"Name=NAME\n"
+				"Comment=COMMENT\n"
+				"TryExec=EXEC\n"
+				"Exec=EXEC\n"
+				"GenericName=NAME\n"
+				"Icon=ICON\n"
+				"Path=PATH\n"
+				"Terminal=false\n"
+				"Type=Application\n"} {}
+
+DesktopIcon::~DesktopIcon() {}
+
 void DesktopIcon::Init() {
   run_dir_ = std::filesystem::current_path().string();
   output_ = skeleton_;
@@ -36,7 +52,7 @@ void DesktopIcon::Init() {
   output_ = std::regex_replace(output_, std::regex("ICON"), icon_);
   output_ = std::regex_replace(output_, std::regex("NAME"), name_);
   output_ = std::regex_replace(output_, std::regex("COMMENT"), name_);
-  output_ = std::regex_replace(output_, std::regex("VERSION"), version);
+  output_ = std::regex_replace(output_, std::regex("VERSION"), version_);
 }
 
 void DesktopIcon::Save(const std::string &icon_name) {

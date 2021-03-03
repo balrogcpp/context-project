@@ -31,7 +31,9 @@
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 
 namespace xio {
-  CameraMan::CameraMan() {}
+  CameraMan::CameraMan()
+  : top_speed_(10), run_speed_(20), anim_duration_(0.5), const_speed_(5), heigh_(1.5), style_(MANUAL)
+  {}
   CameraMan::~CameraMan() {}
 
 //----------------------------------------------------------------------------------------------------------------------

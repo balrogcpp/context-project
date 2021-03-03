@@ -27,7 +27,7 @@
 #include <OgreShadowCameraSetupPSSM.h>
 #include <vector>
 #include "PbrShaderUtils.h"
-#include "Exception.h"
+#include "view_ptr.h"
 
 namespace xio {
 class ShadowSettings : public NoCopy {
@@ -49,15 +49,15 @@ class ShadowSettings : public NoCopy {
   const Ogre::PSSMShadowCameraSetup &GetPssmSetup();
 
  private:
-  int16_t pssm_split_count_ = 3;
-  int16_t tex_count_ = OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES;
+  int16_t pssm_split_count_;
+  int16_t tex_count_;
   std::vector<float> split_points_;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm_;
-  Ogre::Camera *camera_ = nullptr;
-  Ogre::SceneManager *scene_ = nullptr;
-  bool shadow_enable_ = true;
-  float far_distance_ = 400.0;
-  int16_t tex_size_ = 2048;
-  int tex_format_ = 16;
+  view_ptr<Ogre::Camera> camera_;
+  view_ptr<Ogre::SceneManager> scene_;
+  bool shadow_enable_;
+  float far_distance_;
+  int16_t tex_size_;
+  int tex_format_;
 };
 }

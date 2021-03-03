@@ -25,11 +25,38 @@
 
 #include <OgreSceneLoaderManager.h>
 
+using namespace std;
+
 namespace xio {
+//----------------------------------------------------------------------------------------------------------------------
+AppState::AppState()
+	:dirty_(false)
+{}
+
+//----------------------------------------------------------------------------------------------------------------------
+AppState::~AppState(){}
+
+//----------------------------------------------------------------------------------------------------------------------
 void AppState::LoadFromFile(const std::string &file_name) {
   auto *scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
-  Ogre::SceneLoaderManager::getSingleton().load(file_name,
-												Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-												scene_->getRootSceneNode());
+  auto group = Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME;
+  Ogre::SceneLoaderManager::getSingleton().load(file_name, group, scene_->getRootSceneNode());
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+void AppState::SwitchNextState(std::unique_ptr<AppState> &&app_state) {
+  next_ = std::move(app_state);
+  dirty_ = true;
+}
+//----------------------------------------------------------------------------------------------------------------------
+std::unique_ptr<AppState> AppState::GetNextState() {
+  dirty_ = false;
+  return move(next_);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+bool AppState::IsDirty() const {
+  return dirty_;
+}
+
 }

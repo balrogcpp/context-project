@@ -54,12 +54,13 @@ class Compositor : public Component, public Singleton<Compositor> {
   }
 
   void Init();
+
  private:
   std::map<std::string, bool> effects_;
-  GBufferSchemeHandler *gbuff_handler_ = nullptr;
-  Ogre::SceneManager *scene_ = nullptr;
-  Ogre::Camera *camera_ = nullptr;
-  Ogre::Viewport *viewport_ = nullptr;
+  GBufferSchemeHandler *gbuff_handler_;
+  Ogre::SceneManager *scene_;
+  Ogre::Camera *camera_;
+  Ogre::Viewport *viewport_;
   Ogre::Matrix4 mvp_;
   Ogre::Matrix4 mvp_prev_;
 };

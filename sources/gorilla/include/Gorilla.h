@@ -3033,5 +3033,4 @@ class D3Panel {
 
   std::vector<Button *> mButtons;
 };
-
 }

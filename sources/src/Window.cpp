@@ -23,8 +23,6 @@
 #include "pcheader.h"
 #include "Window.h"
 
-#include "Exception.h"
-
 extern "C" {
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
@@ -32,6 +30,8 @@ extern "C" {
 
 #include <string>
 #include <cinttypes>
+
+using namespace std;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
@@ -47,8 +47,9 @@ Window::~Window() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Window::Init_() {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
-	throw Exception("Failed to init SDL2");
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
+	throw runtime_error("Failed to init SDL2");
+  }
 
   SDL_DisplayMode DM;
   SDL_GetCurrentDisplayMode(0, &DM);
@@ -81,7 +82,7 @@ void Window::Init_() {
   if (window_) {
 	SDL_SetRelativeMouseMode(SDL_TRUE);
   } else {
-	throw Exception("Failed to Create SDL_Window");
+	throw runtime_error("Failed to Create SDL_Window");
   }
 }
 

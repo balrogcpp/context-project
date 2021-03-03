@@ -24,12 +24,24 @@
 #include "ShadowSettings.h"
 
 namespace xio {
-ShadowSettings::ShadowSettings() {}
+ShadowSettings::ShadowSettings()
+	: pssm_split_count_(3),
+	  tex_count_(OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES),
+	  camera_(nullptr),
+	  scene_(nullptr),
+	  shadow_enable_(true),
+	  far_distance_(400),
+	  tex_size_(1024),
+	  tex_format_(16) {}
+
+//----------------------------------------------------------------------------------------------------------------------
 ShadowSettings::~ShadowSettings() {}
+
 //----------------------------------------------------------------------------------------------------------------------
 void ShadowSettings::UpdateParams() {
   UpdateParams(shadow_enable_, far_distance_, tex_size_, tex_format_);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void ShadowSettings::UpdateParams(bool enable, float far_distance, int tex_size, int tex_format) {
   shadow_enable_ = enable;
@@ -49,7 +61,7 @@ void ShadowSettings::UpdateParams(bool enable, float far_distance, int tex_size,
   else if (tex_format==16)
 	texture_type = Ogre::PixelFormat::PF_DEPTH16;
   else
-	throw Exception("Unknown texture format, aborting;");
+	throw std::runtime_error("Unknown texture format, aborting;");
 
   scene_->setShadowTextureSize(tex_size_);
   scene_->setShadowTexturePixelFormat(texture_type);
@@ -77,6 +89,7 @@ void ShadowSettings::UpdateParams(bool enable, float far_distance, int tex_size,
   if (!enable)
 	scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void ShadowSettings::UpdateSplits(float padding, const std::vector<float> &pssm_factor) {
   pssm_->setSplitPadding(padding);
@@ -86,17 +99,21 @@ void ShadowSettings::UpdateSplits(float padding, const std::vector<float> &pssm_
 	pssm_->setOptimalAdjustFactor(i, pssm_factor[i]);
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void ShadowSettings::SetManualSplits(const std::vector<float> &split_points) {
   split_points_ = split_points;
   pssm_->setSplitPoints(split_points);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 const std::vector<float> &ShadowSettings::GetSplitPoints() {
   return split_points_;
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 const Ogre::PSSMShadowCameraSetup &ShadowSettings::GetPssmSetup() {
   return *pssm_;
 }
-}
+
+} //namespace

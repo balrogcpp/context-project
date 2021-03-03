@@ -23,36 +23,49 @@
 #include "Input.h"
 #include <algorithm>
 
+using namespace std;
+
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
-
 InputSequencer::InputSequencer() {
-  if (instanced_)
+  if (instanced_) {
 	throw InputException("Only one instance of InputSequencer is allowed!\n");
+  }
+
   Reserve(RESERVE_SIZE);
   instanced_ = true;
 }
 
 InputSequencer::~InputSequencer() {}
 
-void InputSequencer::RegObserver(InputObserver *p) {
+//----------------------------------------------------------------------------------------------------------------------
+InputSequencer &InputSequencer::GetInstance() {
+  static InputSequencer instance; // Guaranteed to be destroyed.
+  // Instantiated on first use.
+  return instance;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void InputSequencer::RegObserver(view_ptr<InputObserver> p) {
   io_listeners.push_back(p);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::UnregObserver(InputObserver *p) {
+void InputSequencer::UnregObserver(view_ptr<InputObserver> p) {
   auto it = find(io_listeners.begin(), io_listeners.end(), p);
+
   if (it!=io_listeners.end()) {
 	iter_swap(it, prev(io_listeners.end()));
 	io_listeners.pop_back();
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::RegWinObserver(WindowObserver *p) {
+void InputSequencer::RegWinObserver(view_ptr<WindowObserver> p) {
   win_listeners.push_back(p);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::UnregWinObserver(WindowObserver *p) {
+void InputSequencer::UnregWinObserver(view_ptr<WindowObserver> p) {
   auto it = find(win_listeners.begin(), win_listeners.end(), p);
+
   if (it!=win_listeners.end()) {
 	iter_swap(it, prev(win_listeners.end()));
 	win_listeners.pop_back();
@@ -146,28 +159,28 @@ void InputSequencer::Capture() {
 
 	  case SDL_JOYAXISMOTION: {
 		for (auto it : io_listeners)
-		  it->OnJoysticAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
+		  it->OnJoystickAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
 		break;
 	  }
 	  case SDL_JOYBALLMOTION: {
 		for (auto it : io_listeners)
-		  it->OnJoysticBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
+		  it->OnJoystickBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
 		break;
 	  }
 	  case SDL_JOYHATMOTION: {
 		for (auto it : io_listeners)
-		  it->OnJoysticHat(event.jhat.which, event.jhat.hat, event.jhat.value);
+		  it->OnJoystickHat(event.jhat.which, event.jhat.hat, event.jhat.value);
 		break;
 	  }
 	  case SDL_JOYBUTTONDOWN: {
 		for (auto it : io_listeners)
-		  it->OnJoysticBtDown(event.jbutton.which, event.jbutton.button);
+		  it->OnJoystickBtDown(event.jbutton.which, event.jbutton.button);
 		break;
 	  }
 	  case SDL_JOYBUTTONUP: {
 		for (auto it : io_listeners) {
 		  if (it)
-			it->OnJoysticBtUp(event.jbutton.which, event.jbutton.button);
+			it->OnJoystickBtUp(event.jbutton.which, event.jbutton.button);
 		}
 		break;
 	  }
@@ -183,4 +196,21 @@ void InputSequencer::Capture() {
 	}
   }
 }
+
+InputObserver::InputObserver() {
+  InputSequencer::GetInstance().RegObserver(this);
 }
+
+InputObserver::~InputObserver() {
+  InputSequencer::GetInstance().UnregObserver(this);
+}
+
+WindowObserver::WindowObserver() {
+  InputSequencer::GetInstance().RegWinObserver(this);
+}
+
+WindowObserver::~WindowObserver() {
+  InputSequencer::GetInstance().UnregWinObserver(this);
+}
+
+} //namespace

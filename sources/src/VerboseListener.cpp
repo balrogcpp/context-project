@@ -149,7 +149,7 @@ void VerboseListener::OnMouseMbUp(int x, int y) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void VerboseListener::OnJoysticAxis(int which, int axis, int value) {
+void VerboseListener::OnJoystickAxis(int which, int axis, int value) {
   if (verbose_) {
 	std::cout << __func__;
 	std::cout << ' ';
@@ -163,7 +163,7 @@ void VerboseListener::OnJoysticAxis(int which, int axis, int value) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void VerboseListener::OnJoysticBtDown(int which, int button) {
+void VerboseListener::OnJoystickBtDown(int which, int button) {
   if (verbose_) {
 	std::cout << __func__;
 	std::cout << ' ';
@@ -175,7 +175,7 @@ void VerboseListener::OnJoysticBtDown(int which, int button) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void VerboseListener::OnJoysticBtUp(int which, int button) {
+void VerboseListener::OnJoystickBtUp(int which, int button) {
   if (verbose_) {
 	std::cout << __func__;
 	std::cout << ' ';
@@ -187,7 +187,7 @@ void VerboseListener::OnJoysticBtUp(int which, int button) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void VerboseListener::OnJoysticHat(int which, int hat, int value) {
+void VerboseListener::OnJoystickHat(int which, int hat, int value) {
   if (verbose_) {
 	std::cout << __func__;
 	std::cout << ' ';
@@ -201,7 +201,7 @@ void VerboseListener::OnJoysticHat(int which, int hat, int value) {
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void VerboseListener::OnJoysticBall(int which, int ball, int xrel, int yrel) {
+void VerboseListener::OnJoystickBall(int which, int ball, int xrel, int yrel) {
   if (verbose_) {
 	std::cout << __func__;
 	std::cout << ' ';

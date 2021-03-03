@@ -20,7 +20,6 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "pcheader.h"
 #include "MenuAppState.h"
 #include "DemoDotAppState.h"
 #include "Renderer.h"
@@ -41,7 +40,7 @@ void MenuAppState::OnKeyDown(SDL_Keycode sym) {
 }
 
 void MenuAppState::Create() {
-  renderer_->GetWindow().SetCursorStatus(false, true, true);
+//  renderer_->GetWindow().SetCursorStatus(false, true, true);
 }
 
 }

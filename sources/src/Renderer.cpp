@@ -22,9 +22,10 @@
 
 #include "pcheader.h"
 #include "Renderer.h"
-#include "Exception.h"
 #include "Storage.h"
 #include "RtssUtils.h"
+
+using namespace std;
 
 namespace xio {
 Renderer::Renderer(int w, int h, bool f) {
@@ -67,7 +68,7 @@ Renderer::Renderer(int w, int h, bool f) {
   params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   if (!reinterpret_cast<size_t>(info.info.x11.window))
-    throw Exception("Cast from info.info.x11.window to size_t failed");
+    throw runtime_error("Cast from info.info.x11.window to size_t failed");
 
   params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
@@ -129,8 +130,10 @@ Renderer::Renderer(int w, int h, bool f) {
   //Compositor block
   compositor_ = std::make_unique<Compositor>();
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 Renderer::~Renderer() {}
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Create() {
   compositor_->EnableEffect("ssao", conf_->Get<bool>("compositor_use_ssao"));
@@ -140,6 +143,7 @@ void Renderer::Create() {
   compositor_->Init();
   rtss::InitPssm(shadow_->GetSplitPoints());
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::CreateCamera() {
   if (!scene_->hasCamera("Default")) {
@@ -162,20 +166,24 @@ void Renderer::CreateCamera() {
   scene_->setSkyDomeEnabled(false);
   scene_->setAmbientLight(Ogre::ColourValue::Black);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Refresh() {
   shadow_->UpdateParams();
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format) {
   shadow_->UpdateParams(enable, far_distance, tex_size, tex_format);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
   Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Resize(int w, int h, bool f) {
   if (f) {
@@ -187,6 +195,7 @@ void Renderer::Resize(int w, int h, bool f) {
     ogre_->resize(w, h);
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::RenderOneFrame() {
   root_->renderOneFrame();
@@ -194,4 +203,5 @@ void Renderer::RenderOneFrame() {
   window_->SwapBuffers();
 #endif
 }
-}
+
+} //namespace

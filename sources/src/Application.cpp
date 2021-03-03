@@ -22,7 +22,6 @@
 
 #include "pcheader.h"
 #include "Application.h"
-#include "Exception.h"
 #include "Overlay.h"
 #include "HwCheck.h"
 #include "ComponentLocator.h"
@@ -36,46 +35,54 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 #endif
 
+using namespace std;
+
 namespace xio {
-Application::Application(int argc, char* argv[]) {
+Application::Application(int argc, char *argv[])
+	: target_fps_(60),
+	  lock_fps_(true),
+	  quit_(false),
+	  suspend_(false),
+	  time_of_last_frame_(0),
+	  cumulated_time_(0),
+	  fps_counter_(0),
+	  current_fps_(0),
+	  verbose_(false),
+	  input_(nullptr) {
   try {
-    Init_();
-  }
-  catch (Exception &e) {
-    Message_("Exception occurred", e.getDescription());
-    throw e;
+	Init_();
   }
   catch (Ogre::Exception &e) {
-    Message_("Exception occurred (OGRE)", e.getFullDescription());
-    throw e;
+	Message_("Exception occurred (OGRE)", e.getFullDescription());
+	throw e;
   }
-  catch (std::exception &e) {
-    Message_("Exception occurred (std::exception)", e.what());
-    throw e;
+  catch (exception &e) {
+	Message_("Exception occurred (exception)", e.what());
+	throw e;
   }
-};
+}
+
 Application::~Application() = default;
 //----------------------------------------------------------------------------------------------------------------------
-void Application::WriteLogToFile(const std::string &file_name) {
-  std::ofstream f;
+void Application::WriteLogToFile(const string &file_name) {
+  ofstream f;
   f.open(file_name);
   if (f.is_open()) {
-    f << log_;
-    f.close();
+	f << log_;
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::PrintLogToConsole() {
-  std::cout << log_ << std::flush;
+  cout << log_ << flush;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
-        bool maskDebug, const std::string &logName, bool &skipThisMessage) {
+void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml, \
+        bool maskDebug, const string &logName, bool &skipThisMessage) {
   log_.append(message);
   log_.append("\n");
 #ifdef DEBUG
   if (verbose_)
-    std::cout << message << "\n";
+	cout << message << "\n";
 #endif
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -89,18 +96,18 @@ void Application::Init_() {
   Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
 #endif
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#if OGRE_PLATFORM==OGRE_PLATFORM_LINUX
   DesktopIcon icon;
   icon.Init();
   icon.Save("XioDemo");
 #endif
 
-  conf_ = std::make_unique<YamlConfigurator>("config.yaml");
+  conf_ = make_unique<YamlConfigurator>("config.yaml");
   Renderer::SetConfigurator(conf_.get());
   int window_width = conf_->Get<int>("window_width");
   int window_high = conf_->Get<int>("window_high");
   bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
-  renderer_ = std::make_unique<Renderer>(window_width, window_high, window_fullscreen);
+  renderer_ = make_unique<Renderer>(window_width, window_high, window_fullscreen);
 
   // Shadows param
   bool shadow_enable = conf_->Get<bool>("graphics_shadows_enable");
@@ -109,14 +116,20 @@ void Application::Init_() {
   int tex_format = conf_->Get<int>("graphics_shadows_texture_format");
   renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
-  input_ = std::make_unique<InputSequencer>();
-  physics_ = std::make_unique<Physics>();
-  sound_ = std::make_unique<Sound>();
-  overlay_ = std::make_unique<Overlay>();
-  loader_ = std::make_unique<DotSceneLoaderB>();
+  input_ = &InputSequencer::GetInstance();
+  physics_ = make_unique<Physics>();
+  sound_ = make_unique<Sound>();
+  overlay_ = make_unique<Overlay>();
+  loader_ = make_unique<DotSceneLoaderB>();
 
-  ComponentLocator::LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
-  loader_->LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
+  ComponentLocator::LocateComponents(conf_.get(),
+									 input_,
+									 renderer_.get(),
+									 physics_.get(),
+									 sound_.get(),
+									 overlay_.get(),
+									 loader_.get());
+  loader_->LocateComponents(conf_.get(), input_, renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
 
   components_.push_back(sound_.get());
   components_.push_back(loader_.get());
@@ -125,100 +138,108 @@ void Application::Init_() {
   components_.push_back(overlay_.get());
 
   for (auto &it : components_) {
-    it->Create();
+	it->Create();
   }
 
-  input_->RegObserver(overlay_->GetConsole());
-
   // Texture filtering
-  std::string graphics_filtration = conf_->Get<std::string>("graphics_filtration");
+  string graphics_filtration = conf_->Get<string>("graphics_filtration");
   Ogre::TextureFilterOptions tfo = Ogre::TFO_BILINEAR;
-  if (graphics_filtration == "anisotropic")
-    tfo = Ogre::TFO_ANISOTROPIC;
-  else if (graphics_filtration == "bilinear")
-    tfo = Ogre::TFO_BILINEAR;
-  else if (graphics_filtration == "trilinear")
-    tfo = Ogre::TFO_TRILINEAR;
-  else if (graphics_filtration == "none")
-    tfo = Ogre::TFO_NONE;
+  if (graphics_filtration=="anisotropic")
+	tfo = Ogre::TFO_ANISOTROPIC;
+  else if (graphics_filtration=="bilinear")
+	tfo = Ogre::TFO_BILINEAR;
+  else if (graphics_filtration=="trilinear")
+	tfo = Ogre::TFO_TRILINEAR;
+  else if (graphics_filtration=="none")
+	tfo = Ogre::TFO_NONE;
 
   renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
   verbose_ = conf_->Get<bool>("global_verbose_enable");
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
   target_fps_ = conf_->Get<int>("global_target_fps");
-  input_->RegWinObserver(this);
-//  renderer_->Resize(conf_->Get<int>("window_width"),conf_->Get<int>("window_high"),conf_->Get<bool>("window_fullscreen"));
-  renderer_->GetWindow().SetCaption(conf_->Get<std::string>("window_caption"));
+  renderer_->GetWindow().SetCaption(conf_->Get<string>("window_caption"));
   renderer_->Refresh();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Reset_() {
   input_->Clear();
-  input_->UnregWinObserver(this);
 
   for (auto &it : components_)
-    it->Clean();
+	it->Clean();
 
   for (auto &it : components_)
-    it->Reset();
+	it->Reset();
 
   renderer_.reset();
-  input_.reset();
   physics_.reset();
   sound_.reset();
   overlay_.reset();
   loader_.reset();
 
-  std::this_thread::sleep_for(std::chrono::microseconds(200));
+  this_thread::sleep_for(chrono::microseconds(200));
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::InitState_(std::unique_ptr<AppState> &&next_state) {
+void Application::InitState_(unique_ptr <AppState> &&next_state) {
   if (cur_state_) {
-    cur_state_->Clear();
-    renderer_->Refresh();
-    Ogre::Root::getSingleton().removeFrameListener(cur_state_.get());
-    input_->UnregObserver(cur_state_.get());
+	cur_state_->Clear();
+	renderer_->Refresh();
+	Ogre::Root::getSingleton().removeFrameListener(cur_state_.get());
   }
 
   cur_state_ = move(next_state);
-  input_->RegObserver(cur_state_.get());
   Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
 
-  cur_state_->LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get(), loader_.get());
+  cur_state_->LocateComponents(conf_.get(),
+							   input_,
+							   renderer_.get(),
+							   physics_.get(),
+							   sound_.get(),
+							   overlay_.get(),
+							   loader_.get());
   cur_state_->Create();
 }
+//----------------------------------------------------------------------------------------------------------------------
+int Application::GetCurrentFps() const {
+  return current_fps_;
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Application::SetInitialState(std::unique_ptr<AppState> &&state) {
+  cur_state_ = move(state);
+  Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Quit() {
   quit_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
-  if (evt.type == SDL_WINDOWEVENT) {
-    static bool fullscreen = renderer_->GetWindow().IsFullscreen();
+  if (evt.type==SDL_WINDOWEVENT) {
+	static bool fullscreen = renderer_->GetWindow().IsFullscreen();
 
-    if (!fullscreen) {
-      if (evt.window.event == SDL_WINDOWEVENT_LEAVE || evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
-        suspend_ = true;
-        renderer_->GetWindow().SetCursorStatus(true, false, false);
-        cur_state_->Pause();
-      } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
-          || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
-        suspend_ = false;
-        renderer_->GetWindow().SetCursorStatus(false, true, true);
-        cur_state_->Unpause();
-      }
-    } else {
-      if (evt.window.event == SDL_WINDOWEVENT_MINIMIZED) {
-        suspend_ = true;
-        renderer_->GetWindow().SetCursorStatus(true, false, false);
-        cur_state_->Pause();
-      } else if (evt.window.event == SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event == SDL_WINDOWEVENT_RESTORED
-          || evt.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
-        suspend_ = false;
-        renderer_->GetWindow().SetCursorStatus(false, true, true);
-        cur_state_->Unpause();
-      }
-    }
+	if (!fullscreen) {
+	  if (evt.window.event==SDL_WINDOWEVENT_LEAVE || evt.window.event==SDL_WINDOWEVENT_MINIMIZED) {
+		suspend_ = true;
+		renderer_->GetWindow().SetCursorStatus(true, false, false);
+		cur_state_->Pause();
+	  } else if (evt.window.event==SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event==SDL_WINDOWEVENT_RESTORED
+		  || evt.window.event==SDL_WINDOWEVENT_MAXIMIZED) {
+		suspend_ = false;
+		renderer_->GetWindow().SetCursorStatus(false, true, true);
+		cur_state_->Unpause();
+	  }
+	} else {
+	  if (evt.window.event==SDL_WINDOWEVENT_MINIMIZED) {
+		suspend_ = true;
+		renderer_->GetWindow().SetCursorStatus(true, false, false);
+		cur_state_->Pause();
+	  } else if (evt.window.event==SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event==SDL_WINDOWEVENT_RESTORED
+		  || evt.window.event==SDL_WINDOWEVENT_MAXIMIZED) {
+		suspend_ = false;
+		renderer_->GetWindow().SetCursorStatus(false, true, true);
+		cur_state_->Unpause();
+	  }
+	}
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -226,115 +247,112 @@ void Application::Other(uint8_t type, int32_t code, void *data1, void *data2) {}
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Loop_() {
   while (quit_) {
-    if (cur_state_) {
-      auto before_frame = std::chrono::system_clock::now().time_since_epoch();
-      int64_t micros_before_frame = std::chrono::duration_cast<std::chrono::microseconds>(before_frame).count();
+	if (cur_state_) {
+	  auto before_frame = chrono::system_clock::now().time_since_epoch();
+	  int64_t micros_before_frame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
 
-      if (cumulated_time_ > 1000000) {
-        current_fps_ = fps_counter_;
-        cumulated_time_ = 0;
-        fps_counter_ = 0;
-      }
+	  if (cumulated_time_ > 1e+6) {
+		current_fps_ = fps_counter_;
+		cumulated_time_ = 0;
+		fps_counter_ = 0;
+	  }
 
-      input_->Capture();
+	  input_->Capture();
 
-      if (!suspend_) {
-        if (cur_state_->IsDirty()) {
-          for (auto &it : components_)
-            it->Clean();
+	  if (!suspend_) {
+		if (cur_state_->IsDirty()) {
+		  for (auto &it : components_)
+			it->Clean();
 
-          InitState_(move(cur_state_->GetNextState()));
-        } else {
-          for (auto &it : components_)
-            it->Resume();
-        }
+		  InitState_(move(cur_state_->GetNextState()));
+		} else {
+		  for (auto &it : components_)
+			it->Resume();
+		}
 
-        auto before_update = std::chrono::system_clock::now().time_since_epoch();
-        int64_t micros_before_update = std::chrono::duration_cast<std::chrono::microseconds>(before_update).count();
-        float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_) / 1000000;
-        time_of_last_frame_ = micros_before_update;
+		auto before_update = chrono::system_clock::now().time_since_epoch();
+		int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
+		float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_)/1e+6;
+		time_of_last_frame_ = micros_before_update;
 
-        for (auto *it : components_)
-          it->Update(frame_time);
+		for (auto *it : components_)
+		  it->Update(frame_time);
 
-        cur_state_->Update(frame_time);
+		cur_state_->Update(frame_time);
 
-        renderer_->RenderOneFrame();
-      } else {
-        for (auto &it : components_)
-          it->Pause();
-      }
+		renderer_->RenderOneFrame();
+	  } else {
+		for (auto &it : components_)
+		  it->Pause();
+	  }
 
 #ifdef DEBUG
-      if (verbose_)
-        std::cout << std::flush;
+	  if (verbose_)
+		cout << flush;
 #endif
 
-      auto duration_after_render = std::chrono::system_clock::now().time_since_epoch();
-      auto micros_after_render = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_render).count();
-      auto render_time = micros_after_render - micros_before_frame;
+	  auto duration_after_render = chrono::system_clock::now().time_since_epoch();
+	  auto micros_after_render = chrono::duration_cast<chrono::microseconds>(duration_after_render).count();
+	  auto render_time = micros_after_render - micros_before_frame;
 
-      if (lock_fps_) {
-        auto delay = static_cast<int64_t> ((1000000 / target_fps_) - render_time);
-        if (delay > 0)
-          std::this_thread::sleep_for(std::chrono::microseconds(delay));
-      }
+	  if (lock_fps_) {
+		auto delay = static_cast<int64_t> ((1e+6/target_fps_) - render_time);
+		if (delay > 0)
+		  this_thread::sleep_for(chrono::microseconds(delay));
+	  }
 
-      auto duration_after_loop = std::chrono::system_clock::now().time_since_epoch();
-      int64_t micros_after_loop = std::chrono::duration_cast<std::chrono::microseconds>(duration_after_loop).count();
+	  auto duration_after_loop = chrono::system_clock::now().time_since_epoch();
+	  int64_t micros_after_loop = chrono::duration_cast<chrono::microseconds>(duration_after_loop).count();
 
-      int64_t time_since_last_frame_ = micros_after_loop - micros_before_frame;
-      cumulated_time_ += time_since_last_frame_;
+	  int64_t time_since_last_frame_ = micros_after_loop - micros_before_frame;
+	  cumulated_time_ += time_since_last_frame_;
 
-      fps_counter_++;
-    } else {
-      quit_ = true;
-    }
+	  fps_counter_++;
+	} else {
+	  quit_ = true;
+	}
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
   if (cur_state_) {
-    InitState_(move(cur_state_));
-    quit_ = true;
-    auto duration_before_update = std::chrono::system_clock::now().time_since_epoch();
-    time_of_last_frame_ = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_update).count();
-    Loop_();
-    Reset_();
-    if (verbose_) {
-      WriteLogToFile("ogre.log");
-      PrintLogToConsole();
-    }
+	InitState_(move(cur_state_));
+	quit_ = true;
+	auto duration_before_update = chrono::system_clock::now().time_since_epoch();
+	time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
+	Loop_();
+	Reset_();
+	if (verbose_) {
+	  WriteLogToFile("ogre.log");
+	  PrintLogToConsole();
+	}
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-int Application::Message_(const std::string &caption, const std::string &message) {
+int Application::Message_(const string &caption, const string &message) {
   WriteLogToFile("error.log");
   PrintLogToConsole();
-  std::cerr << caption << '\n';
-  std::cerr << message << '\n';
+  cerr << caption << '\n';
+  cerr << message << '\n';
 #ifdef _WIN32
   MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
 #endif
   return 1;
 }
 //----------------------------------------------------------------------------------------------------------------------
-int Application::Main(std::unique_ptr<AppState> &&scene_ptr) {
+int Application::Main(unique_ptr <AppState> &&scene_ptr) {
   try {
 #ifndef DEBUG
-    std::ios_base::sync_with_stdio(false);
+	ios_base::sync_with_stdio(false);
 #endif
-    SetInitialState(move(scene_ptr));
-    Go_();
-  }
-  catch (Exception &e) {
-    return Message_("Exception occurred", e.getDescription());
+	SetInitialState(move(scene_ptr));
+	Go_();
   }
   catch (Ogre::Exception &e) {
-    return Message_("Exception occurred (OGRE)", e.getFullDescription());
+	return Message_("Exception occurred (OGRE)", e.getFullDescription());
   }
-  catch (std::exception &e) {
-    return Message_("Exception occurred (std::exception)", e.what());
+  catch (exception &e) {
+	return Message_("Exception occurred (exception)", e.what());
   }
 
   return 0;

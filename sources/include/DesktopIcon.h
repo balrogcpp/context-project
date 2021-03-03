@@ -28,27 +28,20 @@
 namespace xio {
 class DesktopIcon : public NoCopy {
  public:
+  DesktopIcon();
+  virtual ~DesktopIcon();
+
   void Init();
   void Save(const std::string &icon_name);
 
  private:
   std::string run_dir_;
-  std::string exec_ = "demo";
+  std::string exec_;
   std::string icon_;
-  std::string version = "1.0";
-  std::string name_ = "XioDemo";
+  std::string version_;
+  std::string name_ ;
   std::map<std::string, std::string> properties;
   std::string output_;
-  const std::string skeleton_ = "[Desktop Entry]\n"
-                         "Version=VERSION\n"
-                         "Name=NAME\n"
-                         "Comment=COMMENT\n"
-                         "TryExec=EXEC\n"
-                         "Exec=EXEC\n"
-                         "GenericName=NAME\n"
-                         "Icon=ICON\n"
-                         "Path=PATH\n"
-                         "Terminal=false\n"
-                         "Type=Application\n";
+  const std::string skeleton_;
 };
 }

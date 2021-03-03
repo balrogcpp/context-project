@@ -33,6 +33,7 @@
 #include <OgreVector4.h>
 #include <vector>
 #include <string>
+#include "view_ptr.h"
 
 namespace pugi {
 class xml_node;
@@ -102,19 +103,20 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   static inline std::unique_ptr<Landscape> terrain_;
   static inline std::unique_ptr<Forest> forest_;
   std::unique_ptr<CameraMan> camera_;
-  Ogre::SceneManager *scene_ = nullptr;
-  Ogre::Root *root_ = nullptr;
-  Ogre::SceneNode *root_node_ = nullptr;
-  Ogre::SceneNode *attach_node_ = nullptr;
+  Ogre::SceneManager *scene_;
+  Ogre::Root *root_;
+  Ogre::SceneNode *root_node_;
+  Ogre::SceneNode *attach_node_;
   std::string group_name_;
   std::unique_ptr<SinbadCharacterController> sinbad_;
 
-  static inline YamlConfigurator *conf_ = nullptr;
-  static inline Renderer *renderer_ = nullptr;
-  static inline Physics *physics_ = nullptr;
-  static inline Sound *sound_ = nullptr;
-  static inline Overlay *overlay_ = nullptr;
-  static inline InputSequencer *input_ = nullptr;
+  static inline view_ptr<YamlConfigurator> conf_;
+  static inline view_ptr<Renderer> renderer_;
+  static inline view_ptr<Physics> physics_;
+  static inline view_ptr<Sound> sound_;
+  static inline view_ptr<Overlay> overlay_;
+  static inline view_ptr<InputSequencer> input_;
+  
  public:
 //----------------------------------------------------------------------------------------------------------------------
   static void LocateComponents(YamlConfigurator *conf,

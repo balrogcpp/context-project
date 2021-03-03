@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-
 #include "BtOgrePG.h"
 #include "BtOgreGP.h"
 #include "BtOgreExtras.h"
