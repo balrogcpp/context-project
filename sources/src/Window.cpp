@@ -22,6 +22,7 @@
 
 #include "pcheader.h"
 #include "Window.h"
+#include "Exception.h"
 
 extern "C" {
 #include <SDL2/SDL.h>
@@ -48,7 +49,7 @@ Window::~Window() {
 //----------------------------------------------------------------------------------------------------------------------
 void Window::Init_() {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
-	throw runtime_error("Failed to init SDL2");
+	throw Exception("Failed to init SDL2");
   }
 
   SDL_DisplayMode DM;
@@ -82,7 +83,7 @@ void Window::Init_() {
   if (window_) {
 	SDL_SetRelativeMouseMode(SDL_TRUE);
   } else {
-	throw runtime_error("Failed to Create SDL_Window");
+	throw Exception("Failed to Create SDL_Window");
   }
 }
 

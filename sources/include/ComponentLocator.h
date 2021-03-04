@@ -37,13 +37,13 @@ class InputSequencer;
 class ComponentLocator {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  static void LocateComponents(YamlConfigurator *conf,
-							   InputSequencer *input,
-							   Renderer *renderer,
-							   Physics *physics,
-							   Sound *sounds,
-							   Overlay *overlay,
-							   DotSceneLoaderB *loader) {
+  static void LocateComponents(view_ptr<YamlConfigurator> conf,
+							   view_ptr<InputSequencer> input,
+							   view_ptr<Renderer> renderer,
+							   view_ptr<Physics> physics,
+							   view_ptr<Sound> sounds,
+							   view_ptr<Overlay> overlay,
+							   view_ptr<DotSceneLoaderB> loader) {
 	conf_ = conf;
 	input_ = input;
 	renderer_ = renderer;

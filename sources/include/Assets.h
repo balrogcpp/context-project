@@ -54,7 +54,7 @@ class StorageException : public std::exception {
   size_t code = 0;
 };
 
-class Storage {
+class Assets {
 
   static bool StringSanityCheck(const std::string &str);
 

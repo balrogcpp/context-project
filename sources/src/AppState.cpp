@@ -37,19 +37,20 @@ AppState::AppState()
 AppState::~AppState(){}
 
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::LoadFromFile(const std::string &file_name) {
-  auto *scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
+void AppState::LoadFromFile(const string &file_name) {
+  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto group = Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME;
-  Ogre::SceneLoaderManager::getSingleton().load(file_name, group, scene_->getRootSceneNode());
+  Ogre::SceneLoaderManager::getSingleton().load(file_name, group, scene->getRootSceneNode());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::SwitchNextState(std::unique_ptr<AppState> &&app_state) {
-  next_ = std::move(app_state);
+void AppState::SwitchNextState(unique_ptr<AppState> &&app_state) {
+  next_ = move(app_state);
   dirty_ = true;
 }
+
 //----------------------------------------------------------------------------------------------------------------------
-std::unique_ptr<AppState> AppState::GetNextState() {
+unique_ptr<AppState> AppState::GetNextState() {
   dirty_ = false;
   return move(next_);
 }
@@ -59,4 +60,4 @@ bool AppState::IsDirty() const {
   return dirty_;
 }
 
-}
+} //namespace

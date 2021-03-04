@@ -27,13 +27,13 @@ namespace Demo {
 
 class DemoDotAppState : public xio::AppState {
  public:
-   DemoDotAppState() {}
-   virtual ~DemoDotAppState() {}
+   DemoDotAppState();
+   virtual ~DemoDotAppState();
 
     void Create() final;
     void Clear() final;
-    void Pause() final {}
-    void Unpause() final {}
+    void Pause() final;
+    void Unpause() final;
     void Update(float time) final;
 
     void OnKeyDown(SDL_Keycode sym) final;

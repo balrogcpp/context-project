@@ -110,7 +110,6 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 };
 
 //----------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------
 Compositor::Compositor() {
   effects_["bloom"] = false;
   effects_["ssao"] = false;
@@ -119,7 +118,12 @@ Compositor::Compositor() {
   camera_ = scene_->getCamera("Default");
   viewport_ = camera_->getViewport();
 }
-Compositor::~Compositor() noexcept {}
+Compositor::~Compositor() {
+  if (effects_["motion"]) {
+	gbuff_handler_->Clear();
+  }
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Update(float time) {
   if (effects_["motion"]) {
@@ -128,12 +132,7 @@ void Compositor::Update(float time) {
     gbuff_handler_->Update(mvp_prev_);
   }
 }
-//----------------------------------------------------------------------------------------------------------------------
-void Compositor::Clean() {
-  if (effects_["motion"]) {
-    gbuff_handler_->Clear();
-  }
-}
+
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Init() {
   auto &compositor_manager = Ogre::CompositorManager::getSingleton();
@@ -251,4 +250,4 @@ void Compositor::Init() {
   else
     Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
 }
-}
+} //namespace

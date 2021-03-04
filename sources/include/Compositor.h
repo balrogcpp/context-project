@@ -42,9 +42,7 @@ class Compositor : public Component, public Singleton<Compositor> {
   Compositor();
   virtual ~Compositor();
 
-  void Create() final {}
-  void Reset() final {}
-  void Clean() final;
+  void Clean() final {}
   void Pause() final {}
   void Resume() final {}
   void Update(float time) final;

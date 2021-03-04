@@ -79,7 +79,6 @@ class InputSequencer {
  private:
   KeyboardListenersList io_listeners;
   OtherListenersList win_listeners;
-  const size_t RESERVE_SIZE = 16;
   inline static bool instanced_;
 
  public:

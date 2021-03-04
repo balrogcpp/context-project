@@ -31,8 +31,6 @@ class Component : public NoCopy {
   Component() {}
   virtual ~Component() {}
 
-  virtual void Create() = 0;
-  virtual void Reset() = 0;
   virtual void Clean() = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;

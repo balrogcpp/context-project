@@ -47,7 +47,22 @@ Physics::Physics() {
   pause_ = false;
 }
 //----------------------------------------------------------------------------------------------------------------------
-Physics::~Physics() {}
+Physics::~Physics() {
+  world_->clearForces();
+
+  //remove the rigidbodies from the dynamics world and delete them
+  for (int i = world_->getNumCollisionObjects() - 1; i >= 0; i--) {
+	btCollisionObject *obj = world_->getCollisionObjectArray()[i];
+	world_->removeCollisionObject(obj);
+	delete obj;
+  }
+
+  for (int i = world_->getNumConstraints() - 1; i >= 0; i--) {
+	btTypedConstraint *constraint = world_->getConstraint(i);
+	world_->removeConstraint(constraint);
+	delete constraint;
+  }
+}
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Update(float time) {
   if (pause_)

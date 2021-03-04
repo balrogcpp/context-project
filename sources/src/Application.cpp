@@ -23,9 +23,10 @@
 #include "pcheader.h"
 #include "Application.h"
 #include "Overlay.h"
-#include "HwCheck.h"
 #include "ComponentLocator.h"
 #include "DesktopIcon.h"
+#include "Exception.h"
+#include <iostream>
 
 #ifdef _WIN32
 extern "C"
@@ -52,6 +53,10 @@ Application::Application(int argc, char *argv[])
   try {
 	Init_();
   }
+  catch (Exception &e) {
+    Message_("Exception occurred", e.getDescription());
+    throw e;
+  }
   catch (Ogre::Exception &e) {
 	Message_("Exception occurred (OGRE)", e.getFullDescription());
 	throw e;
@@ -62,19 +67,22 @@ Application::Application(int argc, char *argv[])
   }
 }
 
-Application::~Application() = default;
+Application::~Application() {
+
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 void Application::WriteLogToFile(const string &file_name) {
   ofstream f;
   f.open(file_name);
-  if (f.is_open()) {
+  if (f.is_open())
 	f << log_;
-  }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::PrintLogToConsole() {
   cout << log_ << flush;
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const string &logName, bool &skipThisMessage) {
@@ -85,6 +93,7 @@ void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml
 	cout << message << "\n";
 #endif
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Init_() {
   auto *logger = new Ogre::LogManager();
@@ -118,7 +127,7 @@ void Application::Init_() {
 
   input_ = &InputSequencer::GetInstance();
   physics_ = make_unique<Physics>();
-  sound_ = make_unique<Sound>();
+  sound_ = make_unique<Sound>(16, 16);
   overlay_ = make_unique<Overlay>();
   loader_ = make_unique<DotSceneLoaderB>();
 
@@ -129,17 +138,10 @@ void Application::Init_() {
 									 sound_.get(),
 									 overlay_.get(),
 									 loader_.get());
+
   loader_->LocateComponents(conf_.get(), input_, renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
 
-  components_.push_back(sound_.get());
-  components_.push_back(loader_.get());
-  components_.push_back(physics_.get());
-  components_.push_back(renderer_.get());
-  components_.push_back(overlay_.get());
-
-  for (auto &it : components_) {
-	it->Create();
-  }
+  components_ = {sound_.get(), loader_.get(), physics_.get(), renderer_.get(), overlay_.get()};
 
   // Texture filtering
   string graphics_filtration = conf_->Get<string>("graphics_filtration");
@@ -160,24 +162,7 @@ void Application::Init_() {
   renderer_->GetWindow().SetCaption(conf_->Get<string>("window_caption"));
   renderer_->Refresh();
 }
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Reset_() {
-  input_->Clear();
 
-  for (auto &it : components_)
-	it->Clean();
-
-  for (auto &it : components_)
-	it->Reset();
-
-  renderer_.reset();
-  physics_.reset();
-  sound_.reset();
-  overlay_.reset();
-  loader_.reset();
-
-  this_thread::sleep_for(chrono::microseconds(200));
-}
 //----------------------------------------------------------------------------------------------------------------------
 void Application::InitState_(unique_ptr <AppState> &&next_state) {
   if (cur_state_) {
@@ -198,10 +183,12 @@ void Application::InitState_(unique_ptr <AppState> &&next_state) {
 							   loader_.get());
   cur_state_->Create();
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 int Application::GetCurrentFps() const {
   return current_fps_;
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Application::SetInitialState(std::unique_ptr<AppState> &&state) {
   cur_state_ = move(state);
@@ -212,6 +199,7 @@ void Application::SetInitialState(std::unique_ptr<AppState> &&state) {
 void Application::Quit() {
   quit_ = false;
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
   if (evt.type==SDL_WINDOWEVENT) {
@@ -242,11 +230,18 @@ void Application::Event(const SDL_Event &evt) {
 	}
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Other(uint8_t type, int32_t code, void *data1, void *data2) {}
+void Application::Other(uint8_t type, int32_t code, void *data1, void *data2) {
+
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Loop_() {
+  bool old_suspend = false;
+
   while (quit_) {
+
 	if (cur_state_) {
 	  auto before_frame = chrono::system_clock::now().time_since_epoch();
 	  int64_t micros_before_frame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
@@ -261,29 +256,23 @@ void Application::Loop_() {
 
 	  if (!suspend_) {
 		if (cur_state_->IsDirty()) {
-		  for (auto &it : components_)
-			it->Clean();
-
+		  for_each(components_.begin(), components_.end(), [](Component* it){it->Clean();});
 		  InitState_(move(cur_state_->GetNextState()));
-		} else {
-		  for (auto &it : components_)
-			it->Resume();
+		} else if (old_suspend) {
+		  for_each(components_.begin(), components_.end(), [](Component* it){it->Resume();});
+		  old_suspend = false;
 		}
 
 		auto before_update = chrono::system_clock::now().time_since_epoch();
 		int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
 		float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_)/1e+6;
 		time_of_last_frame_ = micros_before_update;
-
-		for (auto *it : components_)
-		  it->Update(frame_time);
-
+		for_each(components_.begin(), components_.end(), [frame_time](Component* it){it->Update(frame_time);});
 		cur_state_->Update(frame_time);
-
 		renderer_->RenderOneFrame();
 	  } else {
-		for (auto &it : components_)
-		  it->Pause();
+		for_each(components_.begin(), components_.end(), [](Component* it){it->Pause();});
+		old_suspend = true;
 	  }
 
 #ifdef DEBUG
@@ -321,13 +310,13 @@ void Application::Go_() {
 	auto duration_before_update = chrono::system_clock::now().time_since_epoch();
 	time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
 	Loop_();
-	Reset_();
 	if (verbose_) {
 	  WriteLogToFile("ogre.log");
 	  PrintLogToConsole();
 	}
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Message_(const string &caption, const string &message) {
   WriteLogToFile("error.log");
@@ -339,6 +328,7 @@ int Application::Message_(const string &caption, const string &message) {
 #endif
   return 1;
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Main(unique_ptr <AppState> &&scene_ptr) {
   try {
@@ -347,6 +337,9 @@ int Application::Main(unique_ptr <AppState> &&scene_ptr) {
 #endif
 	SetInitialState(move(scene_ptr));
 	Go_();
+  }
+  catch (Exception &e) {
+    return Message_("Exception occurred", e.getDescription());
   }
   catch (Ogre::Exception &e) {
 	return Message_("Exception occurred (OGRE)", e.getFullDescription());
@@ -357,4 +350,5 @@ int Application::Main(unique_ptr <AppState> &&scene_ptr) {
 
   return 0;
 }
-}
+
+} //namespace

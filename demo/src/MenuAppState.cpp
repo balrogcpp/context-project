@@ -24,6 +24,7 @@
 #include "DemoDotAppState.h"
 #include "Renderer.h"
 
+using namespace std;
 using namespace xio;
 
 namespace Demo {
@@ -32,11 +33,9 @@ void MenuAppState::Clear() {
 }
 
 void MenuAppState::OnKeyDown(SDL_Keycode sym) {
-#ifdef DEBUG
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_G) {
-    SwitchNextState(std::make_unique<DemoDotAppState>());
+    SwitchNextState(make_unique<DemoDotAppState>());
   }
-#endif
 }
 
 void MenuAppState::Create() {

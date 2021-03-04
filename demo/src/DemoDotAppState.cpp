@@ -21,14 +21,57 @@
 //SOFTWARE.
 
 #include "DemoDotAppState.h"
+#include "MenuAppState.h"
 #include "Sound.h"
 
-namespace Demo {
+using namespace std;
 using namespace xio;
+
+namespace Demo {
+DemoDotAppState::DemoDotAppState() {
+////  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
+//  LoadFromFile("1.scene");
+//
+//  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+//  auto *root = scene->getRootSceneNode();
+//
+//  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
+//  auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
+//  root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
+//
+////  Ogre::Entity *entity = scene->createEntity("ely_vanguardsoldier_kerwinatienza_Mesh.mesh", "ely_vanguardsoldier_kerwinatienza_Mesh.mesh");
+////  auto *node = root->createChildSceneNode(Ogre::Vector3(0, 0, 0));
+////  node->scale(Ogre::Vector3(0.02));
+////  node->attachObject(entity);
+////  UpdateEntityMaterial(entity);
+////  anim1 = entity->getAnimationState("run");
+////  anim1->setLoop(true);
+////  anim1->setEnabled(true);
+//
+////  anim2 = entity->getAnimationState("jump");
+////  anim2->setLoop(true);
+////  anim2->setEnabled(true);
+//
+//  sound_->CreateSound("ambient", "test.ogg", false);
+//  sound_->SetVolume("ambient", 0.5);
+//  sound_->PlaySound("ambient");
+}
+
+DemoDotAppState::~DemoDotAppState() {
+
+}
+
+void DemoDotAppState::Pause() {
+
+}
+
+void DemoDotAppState::Unpause() {
+
+}
 
 void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
-    SwitchNextState(std::make_unique<DemoDotAppState>());
+    SwitchNextState(make_unique<MenuAppState>());
   } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F) {
     auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
 

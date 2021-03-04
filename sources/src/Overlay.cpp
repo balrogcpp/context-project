@@ -28,15 +28,7 @@
 using namespace Gorilla;
 
 namespace xio {
-Overlay::Overlay() {}
-Overlay::~Overlay() {}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Overlay::Update(float time) {
-  caption_->text((1.0 / time));
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Overlay::Create() {
+Overlay::Overlay() {
   atlas_ = std::make_unique<Silverback>();
   atlas_->loadAtlas("dejavu");
   auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
@@ -56,6 +48,15 @@ void Overlay::Create() {
   console_->init(screen_);
   console_->setVisible(false);
 }
+
+Overlay::~Overlay() {
+//  atlas_->destroyScreen(screen_);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Overlay::Update(float time) {
+  caption_->text((1.0 / time));
+}
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Text(const std::string &str) {
   caption_->text(str);
@@ -67,10 +68,5 @@ void Overlay::Show() {
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Hide() {
   screen_->hide();
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Overlay::Reset() {
-  console_.reset();
-  atlas_->destroyScreen(screen_);
 }
 }

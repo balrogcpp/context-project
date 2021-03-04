@@ -21,13 +21,34 @@
 //SOFTWARE.
 
 #pragma once
-#include <Ogre.h>
-#include <vector>
+
 #include <string>
-#include <iostream>
+#include <utility>
+#include <stdexcept>
+#include <exception>
 
-namespace xio{
-bool TestCapabilities(const std::vector<Ogre::Capabilities> &capabilities);
+namespace xio {
 
-bool IsShaderSupported(const std::vector<std::string> &v);
+class Exception : public std::exception {
+ public:
+  Exception() = default;
+
+  explicit Exception(std::string description)
+	  : description(std::move(description)) {};
+
+  ~Exception() noexcept override = default;
+
+ public:
+  std::string getDescription() const noexcept {
+	return description;
+  }
+
+  const char *what() const noexcept override {
+	return description.c_str();
+  }
+
+ protected:
+  std::string description = "Description not specified";
+  size_t code = 0;
+};
 }

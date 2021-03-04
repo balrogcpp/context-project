@@ -45,8 +45,6 @@ class Renderer final : public Component, public Singleton<Renderer> {
   Renderer(int w, int h, bool f);
   virtual ~Renderer();
 
-  void Create() final;
-  void Reset() final {}
   void Clean() final {}
   void Pause() final {}
   void Resume() final {}

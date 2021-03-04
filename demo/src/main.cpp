@@ -23,6 +23,9 @@
 #include "DemoDotAppState.h"
 #include "Application.h"
 
+using namespace std;
+using namespace xio;
+
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include <android_native_app_glue.h>
 #include <jni.h>
@@ -33,9 +36,8 @@ int main(int argc, char *argv[])
 #endif
 {
   try {
-    xio::Application app(argc, argv);
-    auto state = std::make_unique<Demo::DemoDotAppState>();
-    app.Main(move(state));
+    Application app(argc, argv);
+    app.Main(make_unique<Demo::DemoDotAppState>());
   }
   catch (...) {}
 

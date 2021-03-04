@@ -22,6 +22,9 @@
 
 #include "pcheader.h"
 #include "ShadowSettings.h"
+#include "Exception.h"
+
+using namespace std;
 
 namespace xio {
 ShadowSettings::ShadowSettings()
@@ -61,7 +64,7 @@ void ShadowSettings::UpdateParams(bool enable, float far_distance, int tex_size,
   else if (tex_format==16)
 	texture_type = Ogre::PixelFormat::PF_DEPTH16;
   else
-	throw std::runtime_error("Unknown texture format, aborting;");
+	throw Exception("Unknown texture format, aborting;");
 
   scene_->setShadowTextureSize(tex_size_);
   scene_->setShadowTexturePixelFormat(texture_type);
@@ -75,7 +78,7 @@ void ShadowSettings::UpdateParams(bool enable, float far_distance, int tex_size,
   auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
   scene_->setShadowTextureCasterMaterial(passCaterMaterial);
 
-  pssm_ = std::make_shared<Ogre::PSSMShadowCameraSetup>();
+  pssm_ = make_shared<Ogre::PSSMShadowCameraSetup>();
   pssm_->calculateSplitPoints(pssm_split_count_, 0.1, scene_->getShadowFarDistance());
   split_points_ = pssm_->getSplitPoints();
   pssm_->setSplitPadding(1.0);
@@ -91,7 +94,7 @@ void ShadowSettings::UpdateParams(bool enable, float far_distance, int tex_size,
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void ShadowSettings::UpdateSplits(float padding, const std::vector<float> &pssm_factor) {
+void ShadowSettings::UpdateSplits(float padding, const vector<float> &pssm_factor) {
   pssm_->setSplitPadding(padding);
   pssm_->calculateSplitPoints(pssm_split_count_, 0.1, scene_->getShadowFarDistance());
 
@@ -101,13 +104,13 @@ void ShadowSettings::UpdateSplits(float padding, const std::vector<float> &pssm_
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void ShadowSettings::SetManualSplits(const std::vector<float> &split_points) {
+void ShadowSettings::SetManualSplits(const vector<float> &split_points) {
   split_points_ = split_points;
   pssm_->setSplitPoints(split_points);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-const std::vector<float> &ShadowSettings::GetSplitPoints() {
+const vector<float> &ShadowSettings::GetSplitPoints() {
   return split_points_;
 }
 

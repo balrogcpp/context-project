@@ -32,7 +32,7 @@ InputSequencer::InputSequencer() {
 	throw InputException("Only one instance of InputSequencer is allowed!\n");
   }
 
-  Reserve(RESERVE_SIZE);
+  Reserve(128);
   instanced_ = true;
 }
 
@@ -198,19 +198,23 @@ void InputSequencer::Capture() {
 }
 
 InputObserver::InputObserver() {
-  InputSequencer::GetInstance().RegObserver(this);
+  static auto &ref = InputSequencer::GetInstance();
+  ref.RegObserver(this);
 }
 
 InputObserver::~InputObserver() {
-  InputSequencer::GetInstance().UnregObserver(this);
+  static auto &ref = InputSequencer::GetInstance();
+  ref.UnregObserver(this);
 }
 
 WindowObserver::WindowObserver() {
-  InputSequencer::GetInstance().RegWinObserver(this);
+  static auto &ref = InputSequencer::GetInstance();
+  ref.RegWinObserver(this);
 }
 
 WindowObserver::~WindowObserver() {
-  InputSequencer::GetInstance().UnregWinObserver(this);
+  static auto &ref = InputSequencer::GetInstance();
+  ref.UnregWinObserver(this);
 }
 
 } //namespace
