@@ -45,7 +45,7 @@ check_type_size("void*" PTR_SIZE BUILTIN_TYPES_ONLY)
 
 if (NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE STREQUAL "Release")
     message(SEND_ERROR "Only Release and RelWithDebInfo build are available")
-endif()
+endif ()
 
 if (PTR_SIZE EQUAL 8)
     set(CONTEXT_PLATFORM "x64" CACHE STRING "")
@@ -178,9 +178,94 @@ if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
 endif ()
 
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
-add_subdirectory(${CONTEXT_ROOT_DIR}/sources ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME})
-add_subdirectory(${CONTEXT_ROOT_DIR}/demo ${CMAKE_CURRENT_BINARY_DIR}/demo)
-add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
+#add_subdirectory(${CONTEXT_ROOT_DIR}/sources ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME})
+#add_subdirectory(${CONTEXT_ROOT_DIR}/demo ${CMAKE_CURRENT_BINARY_DIR}/demo)
+#add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
+
+find_package(OGRE QUIET)
+find_package(Bullet QUIET)
+find_package(SDL2 QUIET)
+find_package(OpenAL QUIET)
+find_package(Lua QUIET)
+find_package(yaml-cpp QUIET)
+find_package(sol2 QUIET)
+find_package(ZLIB QUIET)
+find_package(Lua51 QUIET)
+find_package(ZZip QUIET)
+find_package(assimp QUIET)
+
+if (NOT OGRE_FOUND)
+    return()
+endif ()
+
+list(REMOVE_ITEM OGRE_LIBRARIES "dl")
+foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
+    string(REPLACE "Static" "" X "${I}")
+    if (WIN32 AND ${CMAKE_BUILD_TYPE} STREQUAL Debug)
+        list(APPEND OGRE_LIBRARIES_STATIC "${X}Static_d")
+    else ()
+        list(APPEND OGRE_LIBRARIES_STATIC "${X}Static")
+    endif ()
+endforeach ()
+
+if (MINGW)
+    list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
+elseif (UNIX AND NOT ANDROID)
+    list(APPEND SYSTEM_LIBRARIES z OpenGL GLX X11 Xrandr dl)
+elseif (ANDROID)
+    list(APPEND SYSTEM_LIBRARIES z.a log android EGL GLESv2 GLESv1_CM OpenSLES dl m.a hidapi ndk_compat omp)
+elseif (MSVC)
+    list(APPEND SYSTEM_LIBRARIES ${ZLIB_LIBRARIES} opengl32 winmm Version imm32 Setupapi)
+elseif (APPLE)
+    list(APPEND SYSTEM_LIBRARIES ${ZLIB_LIBRARIES})
+endif ()
+
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR})
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/btogre/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/oggsound/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/pgeometry/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/gorilla/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${SOL2_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${SDL2_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${BULLET_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus)
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2)
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES)
+set(CONTEXT_DEPENDENCY_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIRS})
+
+file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h sources/*.cpp sources/*.h)
+
+if (ANDROID)
+    list(APPEND SOURCE_FILES ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+    list(APPEND SOURCE_FILES ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
+endif ()
+
+if (NOT ANDROID)
+    add_executable(demo ${SOURCE_FILES})
+else ()
+    add_library(demo SHARED ${SOURCE_FILES})
+endif ()
+
+message(${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+
+include_directories(demo demo/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
+target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
+target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
+        ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES})
+target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
+install(TARGETS demo
+        CONFIGURATIONS Release
+        RUNTIME DESTINATION .
+        )
+
+file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h)
+
+include_directories(lib-static ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+add_library(lib-static STATIC ${SOURCE_FILES})
+set_target_properties(lib-static PROPERTIES OUTPUT_NAME "xio-static")
+target_precompile_headers(lib-static PUBLIC sources/include/pcheader.h)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
