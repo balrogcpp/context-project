@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrey Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@
 #include "view_ptr.h"
 
 namespace xio {
+
 class Application final : public WindowObserver, public Ogre::LogListener, public ComponentLocator {
  public:
   explicit Application(int argc, char *argv[]);
@@ -53,7 +54,7 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   void WriteLogToFile_(const std::string &file_name);
   void PrintLogToConsole_();
 
-  std::unique_ptr<StateManager> state_manager_;
+  StateManager state_manager_;
   std::unique_ptr<Engine> engine_;
 
   bool running_ = true;
@@ -71,4 +72,5 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   bool lock_fps_ = true;
   std::string log_;
 };
+
 } //namespace

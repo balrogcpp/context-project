@@ -27,6 +27,7 @@
 using namespace std;
 
 namespace xio {
+
 Engine::Engine() {
   conf_ = make_unique<Configurator>("config.yaml");
   Renderer::SetConfigurator(conf_.get());
@@ -48,19 +49,12 @@ Engine::Engine() {
   overlay_ = make_unique<Overlay>();
   loader_ = make_unique<DotSceneLoaderB>();
 
-  ComponentLocator::LocateComponents(conf_.get(),
-									 input_,
-									 renderer_.get(),
-									 physics_.get(),
-									 sound_.get(),
-									 overlay_.get(),
-									 loader_.get());
+  ComponentLocator::LocateComponents(conf_, input_, renderer_, physics_, sound_, overlay_, loader_);
 
   loader_->LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
 
   components_ = {sound_.get(), loader_.get(), physics_.get(), renderer_.get(), overlay_.get()};
 
-  // Texture filtering
   string graphics_filtration = conf_->Get<string>("graphics_filtration");
   Ogre::TextureFilterOptions tfo = Ogre::TFO_BILINEAR;
   if (graphics_filtration=="anisotropic")

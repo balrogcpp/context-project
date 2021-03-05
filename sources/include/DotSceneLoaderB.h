@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrey Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -100,10 +100,10 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   static inline std::unique_ptr<Landscape> terrain_;
   static inline std::unique_ptr<Forest> forest_;
   std::unique_ptr<CameraMan> camera_;
-  Ogre::SceneManager *scene_;
-  Ogre::Root *root_;
-  Ogre::SceneNode *root_node_;
-  Ogre::SceneNode *attach_node_;
+  view_ptr<Ogre::SceneManager> scene_;
+  view_ptr<Ogre::Root> root_;
+  view_ptr<Ogre::SceneNode> root_node_;
+  view_ptr<Ogre::SceneNode> attach_node_;
   std::string group_name_;
   std::unique_ptr<SinbadCharacterController> sinbad_;
 
@@ -116,18 +116,18 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  static void LocateComponents(Configurator *conf,
-							   InputSequencer *input,
-							   Renderer *renderer,
-							   Physics *physics,
-							   Sound *sounds,
-							   Overlay *overlay) {
-    conf_ = conf;
-    input_ = input;
-    renderer_ = renderer;
-    physics_ = physics;
-    sound_ = sounds;
-    overlay_ = overlay;
+  static void LocateComponents(view_ptr<Configurator> conf,
+							   view_ptr<InputSequencer> input,
+							   view_ptr<Renderer> renderer,
+							   view_ptr<Physics> physics,
+							   view_ptr<Sound> sounds,
+							   view_ptr<Overlay> overlay) {
+	conf_ = conf;
+	input_ = input;
+	renderer_ = renderer;
+	physics_ = physics;
+	sound_ = sounds;
+	overlay_ = overlay;
   }
 //----------------------------------------------------------------------------------------------------------------------
   static Landscape &GetTerrain() {
