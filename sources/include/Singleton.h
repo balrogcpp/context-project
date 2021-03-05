@@ -28,8 +28,7 @@
 
 namespace xio{
 
-template <typename T>
-class Singleton : public NoCopy{
+template <typename T> class Singleton : public NoCopy{
  public:
   Singleton() {
     assert(!instanced_);
@@ -37,9 +36,10 @@ class Singleton : public NoCopy{
     instanced_ = true;
   }
 
-  virtual ~Singleton() {}
+  virtual ~Singleton() = default;
 
  protected:
   inline static bool instanced_ = false;
 };
+
 }

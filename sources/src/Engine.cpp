@@ -28,7 +28,7 @@ using namespace std;
 
 namespace xio {
 Engine::Engine() {
-  conf_ = make_unique<YamlConfigurator>("config.yaml");
+  conf_ = make_unique<Configurator>("config.yaml");
   Renderer::SetConfigurator(conf_.get());
   int window_width = conf_->Get<int>("window_width");
   int window_high = conf_->Get<int>("window_high");
@@ -56,7 +56,7 @@ Engine::Engine() {
 									 overlay_.get(),
 									 loader_.get());
 
-  loader_->LocateComponents(conf_.get(), input_, renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
+  loader_->LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
 
   components_ = {sound_.get(), loader_.get(), physics_.get(), renderer_.get(), overlay_.get()};
 
@@ -89,22 +89,22 @@ void Engine::Capture() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Pause() {
-  for_each(components_.begin(), components_.end(), [](Component *it) { it->Pause(); });
+  for_each(components_.begin(), components_.end(), [](view_ptr<Component> it) { it->Pause(); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Resume() {
-  for_each(components_.begin(), components_.end(), [](Component *it) { it->Resume(); });
+  for_each(components_.begin(), components_.end(), [](view_ptr<Component> it) { it->Resume(); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Clean() {
-  for_each(components_.begin(), components_.end(), [](Component *it) { it->Cleanup(); });
+  for_each(components_.begin(), components_.end(), [](view_ptr<Component> it) { it->Cleanup(); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Update(float time) {
-  for_each(components_.begin(), components_.end(), [time](Component *it) { it->Update(time); });
+  for_each(components_.begin(), components_.end(), [time](view_ptr<Component> it) { it->Update(time); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -116,4 +116,5 @@ void Engine::RenderOneFrame() {
 void Engine::Refresh() {
   renderer_->Refresh();
 }
+
 } //namespace

@@ -23,6 +23,7 @@
 #pragma once
 
 namespace xio {
+
 class NoCopy {
  public:
   NoCopy() = default;
@@ -30,4 +31,5 @@ class NoCopy {
   NoCopy &operator=(const NoCopy &) = delete;
   virtual ~NoCopy() = default;
 };
+
 }

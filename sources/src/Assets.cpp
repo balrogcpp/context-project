@@ -21,12 +21,16 @@
 //SOFTWARE.
 
 #include "pcheader.h"
+
+#include <iostream>
+#include <filesystem>
 #include "Assets.h"
+#include "Exception.h"
 
 using namespace std;
 
 namespace xio {
-//----------------------------------------------------------------------------------------------------------------------
+
 bool Assets::StringSanityCheck(const string &str) {
   if (str[0]=='#') {
 	return true;
@@ -41,21 +45,25 @@ bool Assets::StringSanityCheck(const string &str) {
 
   return true;
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Assets::LeftTrim(string &s) {
   auto it = find_if(s.begin(), s.end(), [](char c) {return !isspace<char>(c, locale::classic());});
   s.erase(s.begin(), it);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Assets::RightTrim(string &s) {
   auto it = find_if(s.rbegin(), s.rend(), [](char c) { return !isspace<char>(c, locale::classic()); });
   s.erase(it.base(), s.end());
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Assets::TrimString(string &s) {
   RightTrim(s);
   LeftTrim(s);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Assets::PrintPathList(const vector<tuple<string, string, string>> &path_list) {
   cout << "Path list:\n";
@@ -66,6 +74,7 @@ void Assets::PrintPathList(const vector<tuple<string, string, string>> &path_lis
 
   cout << '\n';
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Assets::PrintStringList(const vector<string> &string_list) {
   cout << "Path list:\n";
@@ -77,9 +86,11 @@ void Assets::PrintStringList(const vector<string> &string_list) {
   cout << '\n';
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Assets::LoadResources() {
   Ogre::ResourceGroupManager::getSingletonPtr()->initialiseAllResourceGroups();
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 vector<tuple<string, string, string>>
 Assets::InitGeneralResources(const vector<string> &path_list,
@@ -112,7 +123,7 @@ Assets::InitGeneralResources(const vector<string> &path_list,
 		TrimString(line);
 
 		if (!StringSanityCheck(line)) {
-		  throw StorageException(string("Sanity check of file ") + resource_file + " is failed. Aborting.");
+		  throw Exception(string("Sanity check of file ") + resource_file + " is failed. Aborting.");
 		}
 
 		if (line[0]=='#') {
@@ -144,7 +155,7 @@ Assets::InitGeneralResources(const vector<string> &path_list,
 	if (find(begin(path_list), end(path_list), get<0>(it))==end(path_list)) {
 	  dir_list.push_back(get<0>(it));
 	} else {
-	  //throw StorageException("Path " + get<0>(it) + " already registered. Aborting.");
+	  //throw Exception("Path " + get<0>(it) + " already registered. Aborting.");
 	}
 
 	for (auto jt = fs::recursive_directory_iterator(get<0>(it)); jt!=fs::recursive_directory_iterator();
@@ -159,7 +170,7 @@ Assets::InitGeneralResources(const vector<string> &path_list,
 		if (find(begin(path_list), end(path_list), file_name)==end(path_list)) {
 		  dir_list.push_back(file_name);
 		} else {
-		  //throw StorageException("Path " + file_name + " already registered. Aborting.");
+		  //throw Exception("Path " + file_name + " already registered. Aborting.");
 		}
 
 		ogre_resource_manager.addResourceLocation(file_path, "FileSystem", get<2>(it));
@@ -175,7 +186,7 @@ Assets::InitGeneralResources(const vector<string> &path_list,
 			  file_list.push_back(file_name);
 			}
 		  } else {
-			//throw StorageException("File " + file_name + " already exists. Aborting.");
+			//throw Exception("File " + file_name + " already exists. Aborting.");
 		  }
 
 		  ogre_resource_manager.addResourceLocation(file_path, "Zip", get<2>(it));

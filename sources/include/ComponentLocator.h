@@ -26,7 +26,7 @@
 
 namespace xio {
 class JsonConfigurator;
-class YamlConfigurator;
+class Configurator;
 class Renderer;
 class Physics;
 class Sound;
@@ -37,7 +37,7 @@ class InputSequencer;
 class ComponentLocator {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  static void LocateComponents(view_ptr<YamlConfigurator> conf,
+  static void LocateComponents(view_ptr<Configurator> conf,
 							   view_ptr<InputSequencer> input,
 							   view_ptr<Renderer> renderer,
 							   view_ptr<Physics> physics,
@@ -54,7 +54,7 @@ class ComponentLocator {
   }
 
  protected:
-  inline static view_ptr<YamlConfigurator> conf_;
+  inline static view_ptr<Configurator> conf_;
   inline static view_ptr<Renderer> renderer_;
   inline static view_ptr<Physics> physics_;
   inline static view_ptr<Sound> sound_;

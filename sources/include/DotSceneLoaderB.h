@@ -52,7 +52,7 @@ class SinbadCharacterController;
 namespace xio {
 class CameraMan;
 class JsonConfigurator;
-class YamlConfigurator;
+class Configurator;
 class Renderer;
 class Physics;
 class Sound;
@@ -107,7 +107,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   std::string group_name_;
   std::unique_ptr<SinbadCharacterController> sinbad_;
 
-  static inline view_ptr<YamlConfigurator> conf_;
+  static inline view_ptr<Configurator> conf_;
   static inline view_ptr<Renderer> renderer_;
   static inline view_ptr<Physics> physics_;
   static inline view_ptr<Sound> sound_;
@@ -116,12 +116,12 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  static void LocateComponents(YamlConfigurator *conf,
-                               InputSequencer *input,
-                               Renderer *renderer,
-                               Physics *physics,
-                               Sound *sounds,
-                               Overlay *overlay) {
+  static void LocateComponents(Configurator *conf,
+							   InputSequencer *input,
+							   Renderer *renderer,
+							   Physics *physics,
+							   Sound *sounds,
+							   Overlay *overlay) {
     conf_ = conf;
     input_ = input;
     renderer_ = renderer;

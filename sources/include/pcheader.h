@@ -24,3 +24,4 @@
 #include "OgreHeaders.h"
 #include "BtOgre.h"
 #include "OgreOggSound.h"
+#include "view_ptr.h"

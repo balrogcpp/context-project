@@ -22,7 +22,7 @@
 
 #pragma once
 #include "NoCopy.h"
-#include "YamlConfigurator.h"
+#include "Configurator.h"
 #include "view_ptr.h"
 
 namespace xio {
@@ -37,9 +37,10 @@ class Component : public NoCopy {
   virtual void Update(float time) = 0;
 
  protected:
-  inline static view_ptr<YamlConfigurator> conf_;
+  inline static view_ptr<Configurator> conf_;
+
  public:
-  static void SetConfigurator(YamlConfigurator *conf) {
+  static void SetConfigurator(view_ptr<Configurator> conf) {
     conf_ = conf;
   }
 };

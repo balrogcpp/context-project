@@ -23,36 +23,11 @@
 #pragma once
 
 #include <Ogre.h>
-
 #include <string>
 #include <vector>
-#include <filesystem>
-#include <iostream>
 #include <tuple>
 
 namespace xio {
-class StorageException : public std::exception {
- public:
-  StorageException() = default;
-
-  explicit StorageException(std::string description)
-	  : description(std::move(description)) {};
-
-  ~StorageException() noexcept override = default;
-
- public:
-  std::string getDescription() const noexcept {
-	return description;
-  }
-
-  const char *what() const noexcept override {
-	return description.c_str();
-  }
-
- protected:
-  std::string description = std::string("Description not specified");
-  size_t code = 0;
-};
 
 class Assets {
 
@@ -67,8 +42,8 @@ class Assets {
   static void PrintPathList(const std::vector<std::tuple<std::string, std::string, std::string>> &path_list);
 
   static void PrintStringList(const std::vector<std::string> &string_list);
- public:
 
+ public:
   static void LoadResources();
 
   std::vector<std::tuple<std::string, std::string, std::string>>
@@ -76,4 +51,5 @@ class Assets {
 							  const std::string &resource_file = "",
 							  bool verbose = false);
 };
-}
+
+} //namespace

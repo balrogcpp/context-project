@@ -28,7 +28,7 @@
 #include "DotSceneLoaderB.h"
 #include "Overlay.h"
 #include "AppState.h"
-#include "YamlConfigurator.h"
+#include "Configurator.h"
 #include "Engine.h"
 #include "view_ptr.h"
 
@@ -49,7 +49,7 @@ class Engine {
 
  private:
   view_ptr<InputSequencer> input_;
-  std::unique_ptr<YamlConfigurator> conf_;
+  std::unique_ptr<Configurator> conf_;
   std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<Physics> physics_;
   std::unique_ptr<Sound> sound_;
