@@ -47,6 +47,11 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE STRE
     message(SEND_ERROR "Only Release RelWithDebInfo Debug build are available")
 endif ()
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND MSVC)
+    message(SEND_ERROR "Debug build is not working with MSVC. Use RelWithDebInfo instead")
+endif ()
+
+
 if (PTR_SIZE EQUAL 8)
     set(CONTEXT_PLATFORM "x64" CACHE STRING "")
 elseif (PTR_SIZE EQUAL 4)
@@ -128,14 +133,17 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     endif ()
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-    string(APPEND CMAKE_CXX_FLAGS " /O2 /MP /GS- /fp:fast /openmp /D \"_ENABLE_EXTENDED_ALIGNED_STORAGE\" /D \"RAPIDJSON_HAS_STDSTRING\"")
-    string(APPEND CMAKE_C_FLAGS " /O2 /MP /GS- /fp:fast /openmp /D \"_ENABLE_EXTENDED_ALIGNED_STORAGE\" /D \"RAPIDJSON_HAS_STDSTRING\"")
+    string(APPEND CMAKE_CXX_FLAGS " /O2 /MP /GS- /fp:fast /openmp /D \"RAPIDJSON_HAS_STDSTRING\"")
+    string(APPEND CMAKE_C_FLAGS " /O2 /MP /GS- /fp:fast /openmp /D \"RAPIDJSON_HAS_STDSTRING\"")
 
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
         string(APPEND CMAKE_CXX_FLAGS " /GL")
         string(APPEND CMAKE_C_FLAGS " /GL")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF /SUBSYSTEM:WINDOWS")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF")
+    else ()
+    string(APPEND CMAKE_CXX_FLAGS " /D \"DEBUG\"")
+    string(APPEND CMAKE_C_FLAGS " /D \"DEBUG\"")
     endif ()
 endif ()
 

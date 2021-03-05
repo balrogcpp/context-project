@@ -93,7 +93,6 @@ externalproject_add(target-bullet3
                     -DUSE_MSVC_AVX=false
                     -DUSE_MSVC_FAST_FLOATINGPOINT=true
                     -DUSE_MSVC_RUNTIME_LIBRARY_DLL=true
-                    -DUSE_MSVC_RELEASE_RUNTIME_ALWAYS=true
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
