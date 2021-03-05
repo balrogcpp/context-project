@@ -28,6 +28,7 @@
 #include "Exception.h"
 
 using namespace std;
+namespace fs = filesystem;
 
 namespace xio {
 
@@ -48,13 +49,13 @@ bool Assets::StringSanityCheck(const string &str) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Assets::LeftTrim(string &s) {
-  auto it = find_if(s.begin(), s.end(), [](char c) {return !isspace<char>(c, locale::classic());});
+  auto it = find_if(s.begin(), s.end(), [](char c) { return !isspace < char > (c, locale::classic()); });
   s.erase(s.begin(), it);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Assets::RightTrim(string &s) {
-  auto it = find_if(s.rbegin(), s.rend(), [](char c) { return !isspace<char>(c, locale::classic()); });
+  auto it = find_if(s.rbegin(), s.rend(), [](char c) { return !isspace < char > (c, locale::classic()); });
   s.erase(it.base(), s.end());
 }
 
@@ -65,7 +66,7 @@ void Assets::TrimString(string &s) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::PrintPathList(const vector<tuple<string, string, string>> &path_list) {
+void Assets::PrintPathList(const vector <tuple<string, string, string>> &path_list) {
   cout << "Path list:\n";
 
   for (const auto &it : path_list) {
@@ -76,7 +77,7 @@ void Assets::PrintPathList(const vector<tuple<string, string, string>> &path_lis
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::PrintStringList(const vector<string> &string_list) {
+void Assets::PrintStringList(const vector <string> &string_list) {
   cout << "Path list:\n";
 
   for (const auto &it : string_list) {
@@ -92,16 +93,15 @@ void Assets::LoadResources() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vector<tuple<string, string, string>>
-Assets::InitGeneralResources(const vector<string> &path_list,
+void
+Assets::InitGeneralResources(const vector <string> &path_list,
 							 const string &resource_file,
 							 bool verbose) {
-  namespace fs = filesystem;
   const string default_group_name = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
 
-  vector<string> file_list;
-  vector<string> dir_list;
-  vector<tuple<string, string, string>> resource_list;
+  vector <string> file_list;
+  vector <string> dir_list;
+  vector <tuple<string, string, string>> resource_list;
   auto &ogre_resource_manager = Ogre::ResourceGroupManager::getSingleton();
 
   for (const auto &it : path_list) {
@@ -144,7 +144,7 @@ Assets::InitGeneralResources(const vector<string> &path_list,
   if (verbose)
 	PrintPathList(resource_list);
 
-  const vector<string> extensions_list =
+  const vector <string> extensions_list =
 	  {".glsl", ".glslt", ".hlsl", ".hlslt", ".gles", ".cg", ".vert", ".frag", ".material", ".compositor",
 	   ".particle",
 	   ".fx", ".program", ".dds", ".bmp", ".png", ".tga", ".jpg",
@@ -155,11 +155,10 @@ Assets::InitGeneralResources(const vector<string> &path_list,
 	if (find(begin(path_list), end(path_list), get<0>(it))==end(path_list)) {
 	  dir_list.push_back(get<0>(it));
 	} else {
-	  //throw Exception("Path " + get<0>(it) + " already registered. Aborting.");
+//	  throw Exception("Path " + get<0>(it) + " already registered. Aborting.");
 	}
 
-	for (auto jt = fs::recursive_directory_iterator(get<0>(it)); jt!=fs::recursive_directory_iterator();
-		 ++jt) {
+	for (auto jt = fs::recursive_directory_iterator(get<0>(it)); jt!=fs::recursive_directory_iterator(); ++jt) {
 	  const auto file_path = jt->path().string();
 	  const auto file_name = jt->path().filename().string();
 
@@ -170,7 +169,7 @@ Assets::InitGeneralResources(const vector<string> &path_list,
 		if (find(begin(path_list), end(path_list), file_name)==end(path_list)) {
 		  dir_list.push_back(file_name);
 		} else {
-		  //throw Exception("Path " + file_name + " already registered. Aborting.");
+//		  throw Exception("Path " + file_name + " already registered. Aborting.");
 		}
 
 		ogre_resource_manager.addResourceLocation(file_path, "FileSystem", get<2>(it));
@@ -181,12 +180,11 @@ Assets::InitGeneralResources(const vector<string> &path_list,
 		}
 		if (fs::path(file_path).extension()==".zip") {
 		  if (find(begin(file_list), end(file_list), file_name)==end(file_list)) {
-			if (find(begin(extensions_list), end(extensions_list), fs::path(file_name).extension())
-				!=end(extensions_list)) {
+			if (find(begin(extensions_list), end(extensions_list), fs::path(file_name).extension())!=end(extensions_list)) {
 			  file_list.push_back(file_name);
 			}
 		  } else {
-			//throw Exception("File " + file_name + " already exists. Aborting.");
+//			throw Exception("File " + file_name + " already exists. Aborting.");
 		  }
 
 		  ogre_resource_manager.addResourceLocation(file_path, "Zip", get<2>(it));
@@ -194,8 +192,6 @@ Assets::InitGeneralResources(const vector<string> &path_list,
 	  }
 	}
   }
-
-  return resource_list;
 }
 
 } //namespace

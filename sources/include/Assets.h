@@ -46,8 +46,7 @@ class Assets {
  public:
   static void LoadResources();
 
-  std::vector<std::tuple<std::string, std::string, std::string>>
-  static InitGeneralResources(const std::vector<std::string> &path_list,
+  static void InitGeneralResources(const std::vector<std::string> &path_list,
 							  const std::string &resource_file = "",
 							  bool verbose = false);
 };

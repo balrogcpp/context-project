@@ -214,26 +214,6 @@ externalproject_add(target-zzip
                     -G "${CMAKE_GENERATOR}"
                     )
 
-externalproject_add(target-rapidjson
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
-                    GIT_TAG v1.1.0
-                    GIT_SHALLOW true
-                    GIT_PROGRESS false
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DRAPIDJSON_BUILD_DOC=false
-                    -DRAPIDJSON_BUILD_EXAMPLES=false
-                    -DRAPIDJSON_BUILD_TESTS=false
-                    -DRAPIDJSON_BUILD_THIRDPARTY_GTEST=false
-                    -DRAPIDJSON_HAS_STDSTRING=true
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
-                    )
-
 externalproject_add(target-yamlcpp
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -263,28 +243,6 @@ externalproject_add(target-pugixml
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
-                    )
-
-externalproject_add(target-assimp
-                    EXCLUDE_FROM_ALL true
-                    DEPENDS target-zlib target-rapidjson
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/assimp/assimp.git
-                    GIT_TAG v5.0.1
-                    GIT_SHALLOW true
-                    GIT_PROGRESS false
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DASSIMP_BUILD_TESTS=false
-                    -DBUILD_SHARED_LIBS=false
-                    -DASSIMP_BUILD_ASSIMP_TOOLS=false
-                    -DASSIMP_OPT_BUILD_PACKAGES=false
-                    -DASSIMP_BUILD_ZLIB=false
-                    -DASSIMP_NO_EXPORT=true
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -415,7 +373,6 @@ else ()
 
 endif ()
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rapidjson)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-pugixml)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)

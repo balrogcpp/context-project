@@ -37,7 +37,7 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
  public:
   Ogre::SceneNode *GetBodyNode() const;
   explicit SinbadCharacterController(Ogre::Camera *cam);
-  void Update(Ogre::Real deltaTime);
+  void Update(Ogre::Real deltaTime) override;
 
   void OnKeyDown(SDL_Keycode key) override;
 
@@ -52,7 +52,6 @@ class SinbadCharacterController : public xio::Entity, public xio::InputObserver 
   void OnMouseRbDown(int x, int y) override;
 
  private:
-
   void setupBody(Ogre::SceneManager *sceneMgr);
 
   void setupAnimations();
