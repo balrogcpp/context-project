@@ -36,7 +36,7 @@ ADD tests ./tests
 ADD LICENSE .
 ADD android ./android
 ADD programs ./programs
-ADD scenes ./scenes
+ADD assets ./assets
 ADD CMakeLists.txt .
 ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 

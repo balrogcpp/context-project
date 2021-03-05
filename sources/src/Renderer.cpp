@@ -115,7 +115,7 @@ Renderer::Renderer(int w, int h, bool f) {
 #ifndef DEBUG
   Assets::InitGeneralResources({"./"}, "resources.list");
 #else
-  Assets::InitGeneralResources({"../programs", "../scenes"}, "resources.list");
+  Assets::InitGeneralResources({"../programs", "../assets"}, "resources.list");
 #endif
 
   //RTSS block
