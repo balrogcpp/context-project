@@ -43,7 +43,7 @@ void CreateRtssShaders(const std::string &cache_path) {
   shader_generator->addSceneManager(scene_);
   viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
-  // Create and register the material manager listener if it doesn't exist yet.
+  // Init and register the material manager listener if it doesn't exist yet.
 #if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
   if (!std::filesystem::exists(cache_path) && !cache_path.empty())
 	std::filesystem::create_directories(cache_path);
@@ -120,7 +120,7 @@ bool ShaderResolver::FixMaterial(const std::string &material_name) {
 	  std::cout << "Fixing Material " << material_name << " !\n";
   }
 
-  // Create shader generated technique for this material.
+  // Init shader generated technique for this material.
   bool techniqueCreated = mShaderGenerator.createShaderBasedTechnique(
 	  *originalMaterial,
 	  Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
@@ -158,7 +158,7 @@ Ogre::Technique *ShaderResolver::handleSchemeNotFound(unsigned short scheme_inde
 	return nullptr;
   }
 
-  // Create shader generated technique for this material.
+  // Init shader generated technique for this material.
   bool techniqueCreated = shader_generator_->createShaderBasedTechnique(
 	  *original_material,
 	  Ogre::MaterialManager::DEFAULT_SCHEME_NAME,

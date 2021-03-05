@@ -165,7 +165,7 @@ void OgreOggStaticWavSound::_openImpl(Ogre::DataStreamPtr &fileStream) {
   }
 
 
-  // Create OpenAL buffer
+  // Init OpenAL buffer
   alGetError();
   alGenBuffers(1, &(*mBuffers)[0]);
   if (alGetError() != AL_NO_ERROR) {

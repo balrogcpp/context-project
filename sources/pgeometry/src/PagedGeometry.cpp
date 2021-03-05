@@ -31,7 +31,7 @@ PagedGeometry::PagedGeometry(Camera *cam, const Real pageSize, Ogre::RenderQueue
     oldCamPos = sceneCam->getDerivedPosition();
 
 #ifdef PAGEDGEOMETRY_ALTERNATE_COORDSYSTEM
-    rootNode = sceneMgr->getRootSceneNode()->createChildSceneNode();	//Create PagedGeometry's root node
+    rootNode = sceneMgr->getRootSceneNode()->createChildSceneNode();	//Init PagedGeometry's root node
 #else
     rootNode = sceneMgr->getRootSceneNode();
 #endif
@@ -196,7 +196,7 @@ void PagedGeometry::removeDetailLevels() {
     delete mgr;
   }
 
-  //Clear the page manager list
+  //Cleanup the page manager list
   managerList.clear();
 }
 

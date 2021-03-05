@@ -803,7 +803,7 @@ void LayerContainer::_recalculateIndexes() {
 
   std::map<Ogre::uint, IndexData *>::iterator index_data;
 
-  // Clear all index data.
+  // Cleanup all index data.
   for (std::map<Ogre::uint, IndexData *>::iterator index_data = mIndexData.begin(); index_data != mIndexData.end();
        index_data++) {
     (*index_data).second->mVertices.remove_all();

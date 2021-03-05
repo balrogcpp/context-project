@@ -210,7 +210,7 @@ ImpostorBatch::ImpostorBatch(ImpostorPage *group, Entity *entity) :
   // Render impostor texture for this entity
   m_pTexture = ImpostorTexture::getTexture(group, entity);
 
-  //Create billboard set
+  //Init billboard set
   PagedGeometry *pg = group->getParentPagedGeometry();
   bbset = new StaticBillboardSet(pg->getSceneManager(), pg->getSceneNode());
   bbset->setTextureStacksAndSlices(IMPOSTOR_PITCH_ANGLES, IMPOSTOR_YAW_ANGLES);

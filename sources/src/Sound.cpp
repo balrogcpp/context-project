@@ -38,7 +38,7 @@ Sound::Sound(unsigned int max_sources, unsigned int queue_list_size) {
   _putenv("ALSOFT_LOGLEVEL=LOG_NONE");
 #endif
 
-  // Create new factory
+  // Init new factory
   auto *mOgreOggSoundFactory = OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
 
   // Register
@@ -53,7 +53,7 @@ Sound::~Sound() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::Clean() {
+void Sound::Cleanup() {
 
 }
 

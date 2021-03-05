@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrey Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -21,53 +21,66 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include "AppState.h"
 
-#include <OgreSceneLoaderManager.h>
-
-using namespace std;
+#include "StateManager.h"
 
 namespace xio {
-//----------------------------------------------------------------------------------------------------------------------
-AppState::AppState()
-{}
+StateManager::StateManager() {
 
-//----------------------------------------------------------------------------------------------------------------------
-AppState::~AppState(){}
-
-//----------------------------------------------------------------------------------------------------------------------
-void AppState::LoadFromFile(const string &file_name) {
-  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  auto group = Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME;
-  Ogre::SceneLoaderManager::getSingleton().load(file_name, group, scene->getRootSceneNode());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::ChangeState(unique_ptr<AppState> &&app_state) {
-  next_ = move(app_state);
-  dirty_ = true;
+StateManager::~StateManager() {
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::ChangeState() {
-  dirty_ = true;
+void StateManager::InitState() {
+  cur_state_->Init();
+  Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-unique_ptr<AppState> AppState::GetNextState() {
-  dirty_ = false;
-  return move(next_);
+void StateManager::InitNextState() {
+  if (cur_state_) {
+	cur_state_->Cleanup();
+	Ogre::Root::getSingleton().removeFrameListener(cur_state_.get());
+  }
+
+  cur_state_ = move(cur_state_->GetNextState());
+  Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
+  cur_state_->Init();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::SetNextState(unique_ptr<AppState> &&next_state) {
-  dirty_ = false;
-  next_ = move(next_state);
+void StateManager::SetInitialState(std::unique_ptr<AppState> &&next_state) {
+  cur_state_ = move(next_state);
+  Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-bool AppState::IsDirty() const {
-  return dirty_;
+void StateManager::Update(float time) {
+	cur_state_->Update(time);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+bool StateManager::IsActive() const {
+	return static_cast<bool>(cur_state_);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+bool StateManager::IsDirty() const {
+	return cur_state_->IsDirty();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void StateManager::Pause() {
+  cur_state_->Pause();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void StateManager::Resume() {
+  cur_state_->Resume();
 }
 
 } //namespace

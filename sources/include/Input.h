@@ -31,6 +31,7 @@ extern "C" {
 #include <string>
 #include <exception>
 #include "view_ptr.h"
+#include "Exception.h"
 
 
 namespace xio {
@@ -38,29 +39,6 @@ class InputSequencer;
 class InputObserver;
 class WindowObserver;
 
-//----------------------------------------------------------------------------------------------------------------------
-class InputException : public std::exception {
- public:
-  InputException() = default;
-
-  explicit InputException(std::string description)
-      : description(std::move(description)) {}
-
-  virtual ~InputException() {}
-
- public:
-  std::string getDescription() const noexcept {
-    return description;
-  }
-
-  const char *what() const noexcept override {
-    return description.c_str();
-  }
-
- protected:
-  std::string description = std::string("Description not specified");
-  size_t code = 0;
-};
 //----------------------------------------------------------------------------------------------------------------------
 class InputSequencer {
  public:

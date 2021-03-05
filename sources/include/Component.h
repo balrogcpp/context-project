@@ -31,7 +31,7 @@ class Component : public NoCopy {
   Component() {}
   virtual ~Component() {}
 
-  virtual void Clean() = 0;
+  virtual void Cleanup() = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;
   virtual void Update(float time) = 0;

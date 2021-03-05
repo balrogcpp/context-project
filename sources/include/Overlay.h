@@ -38,7 +38,7 @@ class Overlay final : public Component, public Singleton<Overlay> {
   Overlay();
   virtual ~Overlay();
 
-  void Clean() final {}
+  void Cleanup() final {}
   void Pause() final {}
   void Resume() final {}
   void Update(float time) final;

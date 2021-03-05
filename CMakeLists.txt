@@ -178,9 +178,8 @@ if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
 endif ()
 
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
-#add_subdirectory(${CONTEXT_ROOT_DIR}/sources ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME})
-#add_subdirectory(${CONTEXT_ROOT_DIR}/demo ${CMAKE_CURRENT_BINARY_DIR}/demo)
 #add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
+#add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/doc)
 
 find_package(OGRE QUIET)
 find_package(Bullet QUIET)
@@ -247,8 +246,6 @@ if (NOT ANDROID)
 else ()
     add_library(demo SHARED ${SOURCE_FILES})
 endif ()
-
-message(${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 
 include_directories(demo demo/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})

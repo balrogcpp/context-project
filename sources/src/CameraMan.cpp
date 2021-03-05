@@ -328,13 +328,13 @@ namespace xio {
 	if (style_ == FPS) {
 	  node_->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
 
-	  // Create the camera's yaw node as a child of camera's top node.
+	  // Init the camera's yaw node as a child of camera's top node.
 	  camera_yaw_node_ = parent->createChildSceneNode("CameraYaw");
 
-	  // Create the camera's pitch node as a child of camera's yaw node.
+	  // Init the camera's pitch node as a child of camera's yaw node.
 	  camera_pitch_node_ = camera_yaw_node_->createChildSceneNode("CameraPitch");
 
-	  // Create the camera's roll node as a child of camera's pitch node
+	  // Init the camera's roll node as a child of camera's pitch node
 	  // and attach the camera to it.
 	  camera_roll_node_ = camera_pitch_node_->createChildSceneNode("CameraRoll");
 	  camera_roll_node_->attachObject(camera_);

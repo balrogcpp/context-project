@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrey Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -21,22 +21,28 @@
 //SOFTWARE.
 
 #pragma once
+
 #include "AppState.h"
+#include "view_ptr.h"
 
-namespace Demo {
+namespace xio {
 
-class MenuAppState : public xio::AppState {
+class StateManager {
  public:
-  MenuAppState() : AppState() {}
-  virtual ~MenuAppState() {}
+  StateManager();
+  virtual ~StateManager();
 
-  void Init() final;
-  void Cleanup() final;
-  void Pause() final {}
-  void Resume() final {}
-  void Update(float time) final {};
+  void InitState();
+  void InitNextState();
+  void SetInitialState(std::unique_ptr<AppState> &&next_state);
+  void Update(float time);
+  bool IsActive() const;
+  bool IsDirty() const;
+  void Pause();
+  void Resume();
 
-  void OnKeyDown(SDL_Keycode sym) final;
+ private:
+  std::unique_ptr<AppState> cur_state_;
 };
 
-}
+} //namespace

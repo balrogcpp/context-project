@@ -36,7 +36,7 @@ class Sound final : public Component, public Singleton<Sound> {
   Sound(unsigned int max_sources, unsigned int queue_list_size);
   virtual ~Sound();
 
-  void Clean() final;
+  void Cleanup() final;
   void Pause() final;
   void Resume() final;
   void Update(float time) final;

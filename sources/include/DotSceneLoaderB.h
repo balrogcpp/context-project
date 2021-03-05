@@ -63,7 +63,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();
 
-  void Clean() final;
+  void Cleanup() final;
   void Pause() final {}
   void Resume() final {}
   void Update(float time) final;

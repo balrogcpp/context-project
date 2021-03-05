@@ -122,7 +122,7 @@ void Physics::DispatchCollisions() {
   contacts_ = new_contacts;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::Clean() {
+void Physics::Cleanup() {
   world_->clearForces();
 
   //remove the rigidbodies from the dynamics world and delete them
@@ -178,7 +178,7 @@ void Physics::CreateTerrainHeightfieldShape(int size,
       new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(size / 2, 0, size / 2)));
   btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, terrainShape, btVector3(0, 0, 0));
 
-  //Create Rigid Body using 0 mass so it is static
+  //Init Rigid Body using 0 mass so it is static
   auto *entBody = new btRigidBody(groundRigidBodyCI);
 
   entBody->setFriction(0.8f);

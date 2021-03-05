@@ -153,7 +153,7 @@ void OgreOggStreamWavSound::_openImpl(Ogre::DataStreamPtr &fileStream) {
     OGRE_EXCEPT(Ogre::Exception::ERR_FILE_NOT_FOUND, "Not a valid RIFF file!", "OgreOggStreamWavSound::_openImpl()");
   }
 
-  // Create OpenAL buffer
+  // Init OpenAL buffer
   alGetError();
   alGenBuffers(NUM_BUFFERS, &(*mBuffers)[0]);
   if (alGetError() != AL_NO_ERROR)
@@ -380,7 +380,7 @@ void OgreOggStreamWavSound::_updateAudioBuffers() {
 
       return;
     } else {
-      // Clear audio data already played...
+      // Cleanup audio data already played...
       _dequeue();
 
       // Fill with next chunk of audio...
@@ -456,7 +456,7 @@ bool OgreOggStreamWavSound::_stream(ALuint buffer) {
   int bytes = 0;
   int result = 0;
 
-  // Create buffer
+  // Init buffer
   data = OGRE_ALLOC_T(char, mBufferSize, Ogre::MEMCATEGORY_GENERAL);
   memset(data, 0, mBufferSize);
 

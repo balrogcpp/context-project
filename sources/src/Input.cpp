@@ -29,7 +29,7 @@ namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 InputSequencer::InputSequencer() {
   if (instanced_) {
-	throw InputException("Only one instance of InputSequencer is allowed!\n");
+	throw Exception("Only one instance of InputSequencer is allowed!\n");
   }
 
   Reserve(128);

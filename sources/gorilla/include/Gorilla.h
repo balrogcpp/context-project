@@ -395,7 +395,7 @@ class Silverback : public Ogre::Singleton<Silverback>, public Ogre::GeneralAlloc
 
   /*! function. loadAtlas
       desc.
-          Create a TextureAtlas from a ".gorilla" file.
+          Init a TextureAtlas from a ".gorilla" file.
 
           Name is the name of the TextureAtlas, as well as the first part of the filename
           of the gorilla file; i.e. name.gorilla, the gorilla file can be loaded from a different
@@ -407,7 +407,7 @@ class Silverback : public Ogre::Singleton<Silverback>, public Ogre::GeneralAlloc
 
   /*! function. createScreen
       desc.
-          Create a Screen using a Viewport and a name of a previously loaded TextureAtlas.
+          Init a Screen using a Viewport and a name of a previously loaded TextureAtlas.
           Both must exist. The screen will register itself as a RenderQueueListener to the
           SceneManager that has the Camera which is tied to the Viewport.
       note.
@@ -696,7 +696,7 @@ class LayerContainer {
 
   /*! function. createLayer
       desc.
-          Create a layer for drawing on to.
+          Init a layer for drawing on to.
 
           Index represents the z-order, 0 being the layer drawn first and 15
           the layer drawn last. Layers drawn after another layer will appear
@@ -726,7 +726,7 @@ class LayerContainer {
 
   /*! function. _createVertexBuffer
       desc.
-          Create the vertex buffer
+          Init the vertex buffer
   */
   void _createVertexBuffer(size_t initialSize);
 
@@ -745,7 +745,7 @@ class LayerContainer {
 
   /* function. _recalculateIndexes
      desc.
-         Clear mIndexes, mIndexVertices and mIndexRedraw,
+         Cleanup mIndexes, mIndexVertices and mIndexRedraw,
          and from mLayers fill them out again. A full redraw
          is required.
   */
@@ -2119,13 +2119,13 @@ class LineList : public Ogre::GeneralAllocatedObject {
 
   /*! function. begin
       desc.
-          Clear lines and start again
+          Cleanup lines and start again
   */
   void begin(Ogre::Real lineThickness = 1.0f, const Ogre::ColourValue &colour = Ogre::ColourValue::White);
 
   /*! function. begin
       desc.
-          Clear lines and start again
+          Cleanup lines and start again
   */
   void begin(Ogre::Real lineThickness, Gorilla::Colours::Colour colour) {
     begin(lineThickness, webcolour(colour));
@@ -2188,7 +2188,7 @@ class QuadList : public Ogre::GeneralAllocatedObject {
 
   /*! function. begin
       desc.
-          Clear everything and start again
+          Cleanup everything and start again
   */
   void begin();
 

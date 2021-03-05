@@ -357,7 +357,7 @@ void StaticBillboardSet::build() {
     if (mBillboardBuffer.empty())
       return;
 
-    //Create manual mesh to store billboard quads
+    //Init manual mesh to store billboard quads
     mPtrMesh = MeshManager::getSingleton().createManual(getUniqueID("SBSmesh"),
                                                         ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     Ogre::SubMesh *pSubMesh = mPtrMesh->createSubMesh();
@@ -519,7 +519,7 @@ void StaticBillboardSet::build() {
       LogManager::getSingleton().setLogDetail(logLev);
     }
 
-    // Create an entity for the mesh
+    // Init an entity for the mesh
     mpEntity = mpSceneMgr->createEntity(mEntityName, mPtrMesh->getName(), mPtrMesh->getGroup());
     mpEntity->setCastShadows(false);
     mpEntity->setMaterial(mFadeEnabled ? mPtrFadeMaterial : mPtrMaterial);

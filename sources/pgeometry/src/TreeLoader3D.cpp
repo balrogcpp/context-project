@@ -108,7 +108,7 @@ void TreeLoader3D::addTree(Entity *entity, const Ogre::Vector3 &position, Degree
   int pageZ = (int) Math::Floor(zrel / pageSize);
   std::vector<TreeDef> &treeList = _getGridPage(pageGrid, pageX, pageZ);
 
-  //Create the new tree
+  //Init the new tree
   TreeDef tree;
   tree.yPos = (float) pos.y;
   tree.xPos = static_cast<uint16>(65535 * (xrel - (pageX * pageSize)) / pageSize);

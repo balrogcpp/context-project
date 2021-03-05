@@ -65,13 +65,13 @@ void DemoDotAppState::Pause() {
 
 }
 
-void DemoDotAppState::Unpause() {
+void DemoDotAppState::Resume() {
 
 }
 
 void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
-    SwitchNextState(make_unique<MenuAppState>());
+	ChangeState();
   } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F) {
     auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
 
@@ -82,7 +82,7 @@ void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   }
 }
 
-void DemoDotAppState::Clear() {
+void DemoDotAppState::Cleanup() {
 }
 
 void DemoDotAppState::Update(float time) {
@@ -90,9 +90,10 @@ void DemoDotAppState::Update(float time) {
 //  anim2->addTime(time/4);
 }
 
-void DemoDotAppState::Create() {
+void DemoDotAppState::Init() {
 //  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
   LoadFromFile("1.scene");
+  SetNextState(make_unique<MenuAppState>());
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *root = scene->getRootSceneNode();

@@ -30,10 +30,10 @@ class DemoDotAppState : public xio::AppState {
    DemoDotAppState();
    virtual ~DemoDotAppState();
 
-    void Create() final;
-    void Clear() final;
+    void Init() final;
+    void Cleanup() final;
     void Pause() final;
-    void Unpause() final;
+    void Resume() final;
     void Update(float time) final;
 
     void OnKeyDown(SDL_Keycode sym) final;

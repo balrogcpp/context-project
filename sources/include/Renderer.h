@@ -45,7 +45,7 @@ class Renderer final : public Component, public Singleton<Renderer> {
   Renderer(int w, int h, bool f);
   virtual ~Renderer();
 
-  void Clean() final {}
+  void Cleanup() final {}
   void Pause() final {}
   void Resume() final {}
   void Update(float time) final { compositor_->Update(time);};

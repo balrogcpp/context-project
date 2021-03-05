@@ -36,7 +36,7 @@ Overlay::Overlay() {
   layer_ = screen_->createLayer(0);
   Ogre::Real vpW = screen_->getWidth(), vpH = screen_->getHeight();
 
-  // Create our drawing layer
+  // Init our drawing layer
   layer_ = screen_->createLayer(0);
   rect_ = layer_->createRectangle(0, 0, vpW, vpH);
   rect_->background_colour(rgb(0, 0, 0, 0));

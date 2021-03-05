@@ -54,7 +54,7 @@ DotSceneLoaderB::~DotSceneLoaderB()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::Clean() {
+void DotSceneLoaderB::Cleanup() {
   terrain_.reset();
   forest_.reset();
   sinbad_.reset();
@@ -93,12 +93,12 @@ void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const string &group_name
     return;
   }
 
-  // figure out where to attach any nodes we Create
+  // figure out where to attach any nodes we Init
 //  attach_node_ = root_node;
   root_ = Ogre::Root::getSingletonPtr();
   attach_node_ = root_node;
 
-//  Create();
+//  Init();
   if (!terrain_) terrain_ = make_unique<Landscape>();
   if (!forest_) forest_ = make_unique<Forest>();
   forest_->SetHeighFunc([](float x, float z) { return terrain_->GetHeigh(x, z); });
@@ -133,10 +133,10 @@ void DotSceneLoaderB::Load(const string &filename, const string &group_name, Ogr
     return;
   }
 
-  // figure out where to attach any nodes we Create
+  // figure out where to attach any nodes we Init
   attach_node_ = root_node;
 
-//  Create();
+//  Init();
   if (!terrain_) terrain_ = make_unique<Landscape>();
   if (!forest_) forest_ = make_unique<Forest>();
   forest_->SetHeighFunc([](float x, float z) { return terrain_->GetHeigh(x, z); });
@@ -285,7 +285,7 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   string name = GetAttrib(xml_node, "name");
   const size_t MAX_TEX_COUNT = 9;
 
-  // Create the light
+  // Init the light
   Ogre::Light *light = scene_->createLight(name);
   parent->attachObject(light);
 
@@ -374,7 +374,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   float aspectRatio = GetAttribReal(xml_node, "aspectRatio", 0);
   string projectionType = GetAttrib(xml_node, "projectionType", "perspective");
 
-  // Create the camera
+  // Init the camera
   auto *camera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
   if (!camera_) {
@@ -450,7 +450,7 @@ void DotSceneLoaderB::ProcessNode_(pugi::xml_node &xml_node, Ogre::SceneNode *pa
   // Construct the node's name
   string name = GetAttrib(xml_node, "name");
 
-  // Create the scene node
+  // Init the scene node
   Ogre::SceneNode *node;
 
   if (name.empty()) {
@@ -631,7 +631,7 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
   bool active_ibl = GetAttribBool(xml_node, "activeIBL", false);
   bool planar_reflection = GetAttribBool(xml_node, "planarReflection", false);
 
-  // Create the entity
+  // Init the entity
   Ogre::Entity *entity = scene_->createEntity(name, meshFile);
 
   try {
@@ -663,7 +663,7 @@ void DotSceneLoaderB::ProcessParticleSystem_(pugi::xml_node &xml_node, Ogre::Sce
     templateName = GetAttrib(xml_node, "file"); // compatibility with old scenes
   }
 
-  // Create the particle system
+  // Init the particle system
   try {
     Ogre::ParticleSystem *pParticles = scene_->createParticleSystem(name, templateName);
     UpdatePbrParams(pParticles->getMaterialName());

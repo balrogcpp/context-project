@@ -24,14 +24,8 @@
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 #include <OgreLog.h>
-#include "Input.h"
-#include "Renderer.h"
-#include "Sound.h"
-#include "Physics.h"
-#include "DotSceneLoaderB.h"
-#include "Overlay.h"
-#include "AppState.h"
-#include "YamlConfigurator.h"
+#include "Engine.h"
+#include "StateManager.h"
 #include "view_ptr.h"
 
 namespace xio {
@@ -40,15 +34,14 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   explicit Application(int argc, char *argv[]);
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&scene_ptr);
-  void SetInitialState(std::unique_ptr<AppState> &&state);
   int GetCurrentFps() const;
 
  private:
   void Init_();
   void Loop_();
   void Go_();
-  void InitState_(std::unique_ptr<AppState> &&next_state);
   int Message_(const std::string &caption, const std::string &message);
+
   void Event(const SDL_Event &evt) final;
   void Other(uint8_t type, int32_t code, void *data1, void *data2) final;
   void Quit() final;
@@ -56,27 +49,21 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const std::string &logName, bool &skipThisMessage) final;
 
-  void WriteLogToFile(const std::string &file_name);
-  void PrintLogToConsole();
+  void WriteLogToFile_(const std::string &file_name);
+  void PrintLogToConsole_();
 
-  view_ptr<InputSequencer> input_;
-  std::unique_ptr<YamlConfigurator> conf_;
-  std::unique_ptr<Renderer> renderer_;
-  std::unique_ptr<Physics> physics_;
-  std::unique_ptr<Sound> sound_;
-  std::unique_ptr<Overlay> overlay_;
-  std::unique_ptr<DotSceneLoaderB> loader_;
-  std::unique_ptr<AppState> cur_state_;
-  bool quit_;
-  bool suspend_;
-  int64_t time_of_last_frame_;
-  int64_t cumulated_time_;
-  int64_t fps_counter_;
-  int current_fps_;
-  int target_fps_;
-  bool verbose_;
-  bool lock_fps_;
-  std::vector<view_ptr<Component>> components_;
+  std::unique_ptr<StateManager> state_manager_;
+  std::unique_ptr<Engine> engine_;
+
+  bool running_ = true;
+  bool suspend_ = false;
+  int64_t time_of_last_frame_ = 0;
+  int64_t cumulated_time_ = 0;
+  int64_t fps_counter_ = 0;
+  int current_fps_ = 0;
+  int target_fps_ = 60;
+  bool verbose_ = false;
+  bool lock_fps_ = true;
   std::string log_;
 };
-}
+} //namespace

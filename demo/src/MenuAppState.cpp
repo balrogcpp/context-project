@@ -29,16 +29,16 @@ using namespace xio;
 
 namespace Demo {
 
-void MenuAppState::Clear() {
+void MenuAppState::Cleanup() {
 }
 
 void MenuAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_G) {
-    SwitchNextState(make_unique<DemoDotAppState>());
+	ChangeState(make_unique<DemoDotAppState>());
   }
 }
 
-void MenuAppState::Create() {
+void MenuAppState::Init() {
 //  renderer_->GetWindow().SetCursorStatus(false, true, true);
 }
 

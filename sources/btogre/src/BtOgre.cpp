@@ -815,7 +815,7 @@ void DynamicRenderable::initialize(RenderOperation::OperationType operationType,
   mVertexBufferCapacity = 0;
   mIndexBufferCapacity = 0;
 
-  // Create vertex declaration
+  // Init vertex declaration
   createVertexDeclaration();
 }
 //------------------------------------------------------------------------------------------------
@@ -842,7 +842,7 @@ void DynamicRenderable::prepareHardwareBuffers(size_t vertexCount,
   }
   if (newVertCapacity != mVertexBufferCapacity) {
     mVertexBufferCapacity = newVertCapacity;
-    // Create new vertex buffer
+    // Init new vertex buffer
     HardwareVertexBufferSharedPtr vbuf =
         HardwareBufferManager::getSingleton().createVertexBuffer(
             mRenderOp.vertexData->vertexDeclaration->getVertexSize(0),
@@ -881,7 +881,7 @@ void DynamicRenderable::prepareHardwareBuffers(size_t vertexCount,
 
     if (newIndexCapacity != mIndexBufferCapacity) {
       mIndexBufferCapacity = newIndexCapacity;
-      // Create new index buffer
+      // Init new index buffer
       mRenderOp.indexData->indexBuffer =
           HardwareBufferManager::getSingleton().createIndexBuffer(
               HardwareIndexBuffer::IT_16BIT,

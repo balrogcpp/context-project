@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrey Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -37,19 +37,21 @@ class AppState
   AppState();
   virtual ~AppState();
 
-  void SwitchNextState(std::unique_ptr<AppState> &&app_state);
+  void ChangeState(std::unique_ptr<AppState> &&app_state);
+  void ChangeState();
   std::unique_ptr<AppState> GetNextState();
+  void SetNextState(std::unique_ptr<AppState> &&next_state);
   void LoadFromFile(const std::string &file_name);
   bool IsDirty() const;
 
-  virtual void Create() = 0;
-  virtual void Clear() = 0;
+  virtual void Init() = 0;
+  virtual void Cleanup() = 0;
   virtual void Pause() = 0;
-  virtual void Unpause() = 0;
+  virtual void Resume() = 0;
   virtual void Update(float time) = 0;
 
  protected:
   std::unique_ptr<AppState> next_;
-  bool dirty_;
+  bool dirty_ = false;
 };
 }

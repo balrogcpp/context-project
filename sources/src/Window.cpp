@@ -83,7 +83,7 @@ void Window::Init_() {
   if (window_) {
 	SDL_SetRelativeMouseMode(SDL_TRUE);
   } else {
-	throw Exception("Failed to Create SDL_Window");
+	throw Exception("Failed to Init SDL_Window");
   }
 }
 

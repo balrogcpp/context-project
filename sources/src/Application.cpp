@@ -23,7 +23,6 @@
 #include "pcheader.h"
 #include "Application.h"
 #include "Overlay.h"
-#include "ComponentLocator.h"
 #include "DesktopIcon.h"
 #include "Exception.h"
 #include <iostream>
@@ -39,23 +38,13 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 namespace xio {
-Application::Application(int argc, char *argv[])
-	: target_fps_(60),
-	  lock_fps_(true),
-	  quit_(false),
-	  suspend_(false),
-	  time_of_last_frame_(0),
-	  cumulated_time_(0),
-	  fps_counter_(0),
-	  current_fps_(0),
-	  verbose_(false),
-	  input_(nullptr) {
+Application::Application(int argc, char *argv[]) {
   try {
 	Init_();
   }
   catch (Exception &e) {
-    Message_("Exception occurred", e.getDescription());
-    throw e;
+	Message_("Exception occurred", e.getDescription());
+	throw e;
   }
   catch (Ogre::Exception &e) {
 	Message_("Exception occurred (OGRE)", e.getFullDescription());
@@ -72,14 +61,14 @@ Application::~Application() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::WriteLogToFile(const string &file_name) {
+void Application::WriteLogToFile_(const string &file_name) {
   ofstream f;
   f.open(file_name);
   if (f.is_open())
 	f << log_;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::PrintLogToConsole() {
+void Application::PrintLogToConsole_() {
   cout << log_ << flush;
 }
 
@@ -111,77 +100,8 @@ void Application::Init_() {
   icon.Save("XioDemo");
 #endif
 
-  conf_ = make_unique<YamlConfigurator>("config.yaml");
-  Renderer::SetConfigurator(conf_.get());
-  int window_width = conf_->Get<int>("window_width");
-  int window_high = conf_->Get<int>("window_high");
-  bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
-  renderer_ = make_unique<Renderer>(window_width, window_high, window_fullscreen);
-
-  // Shadows param
-  bool shadow_enable = conf_->Get<bool>("graphics_shadows_enable");
-  float shadow_far = conf_->Get<float>("graphics_shadows_far_distance");
-  int16_t tex_size = conf_->Get<int16_t>("graphics_shadows_texture_resolution");
-  int tex_format = conf_->Get<int>("graphics_shadows_texture_format");
-  renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
-
-  input_ = &InputSequencer::GetInstance();
-  physics_ = make_unique<Physics>();
-  sound_ = make_unique<Sound>(16, 16);
-  overlay_ = make_unique<Overlay>();
-  loader_ = make_unique<DotSceneLoaderB>();
-
-  ComponentLocator::LocateComponents(conf_.get(),
-									 input_,
-									 renderer_.get(),
-									 physics_.get(),
-									 sound_.get(),
-									 overlay_.get(),
-									 loader_.get());
-
-  loader_->LocateComponents(conf_.get(), input_, renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
-
-  components_ = {sound_.get(), loader_.get(), physics_.get(), renderer_.get(), overlay_.get()};
-
-  // Texture filtering
-  string graphics_filtration = conf_->Get<string>("graphics_filtration");
-  Ogre::TextureFilterOptions tfo = Ogre::TFO_BILINEAR;
-  if (graphics_filtration=="anisotropic")
-	tfo = Ogre::TFO_ANISOTROPIC;
-  else if (graphics_filtration=="bilinear")
-	tfo = Ogre::TFO_BILINEAR;
-  else if (graphics_filtration=="trilinear")
-	tfo = Ogre::TFO_TRILINEAR;
-  else if (graphics_filtration=="none")
-	tfo = Ogre::TFO_NONE;
-
-  renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
-  verbose_ = conf_->Get<bool>("global_verbose_enable");
-  lock_fps_ = conf_->Get<bool>("global_lock_fps");
-  target_fps_ = conf_->Get<int>("global_target_fps");
-  renderer_->GetWindow().SetCaption(conf_->Get<string>("window_caption"));
-  renderer_->Refresh();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Application::InitState_(unique_ptr <AppState> &&next_state) {
-  if (cur_state_) {
-	cur_state_->Clear();
-	renderer_->Refresh();
-	Ogre::Root::getSingleton().removeFrameListener(cur_state_.get());
-  }
-
-  cur_state_ = move(next_state);
-  Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
-
-  cur_state_->LocateComponents(conf_.get(),
-							   input_,
-							   renderer_.get(),
-							   physics_.get(),
-							   sound_.get(),
-							   overlay_.get(),
-							   loader_.get());
-  cur_state_->Create();
+  engine_ = make_unique<Engine>();
+  state_manager_ = make_unique<StateManager>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -190,43 +110,22 @@ int Application::GetCurrentFps() const {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::SetInitialState(std::unique_ptr<AppState> &&state) {
-  cur_state_ = move(state);
-  Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
-}
-
-//----------------------------------------------------------------------------------------------------------------------
 void Application::Quit() {
-  quit_ = false;
+  running_ = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
   if (evt.type==SDL_WINDOWEVENT) {
-	static bool fullscreen = renderer_->GetWindow().IsFullscreen();
-
-	if (!fullscreen) {
-	  if (evt.window.event==SDL_WINDOWEVENT_LEAVE || evt.window.event==SDL_WINDOWEVENT_MINIMIZED) {
-		suspend_ = true;
-		renderer_->GetWindow().SetCursorStatus(true, false, false);
-		cur_state_->Pause();
-	  } else if (evt.window.event==SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event==SDL_WINDOWEVENT_RESTORED
-		  || evt.window.event==SDL_WINDOWEVENT_MAXIMIZED) {
-		suspend_ = false;
-		renderer_->GetWindow().SetCursorStatus(false, true, true);
-		cur_state_->Unpause();
-	  }
-	} else {
-	  if (evt.window.event==SDL_WINDOWEVENT_MINIMIZED) {
-		suspend_ = true;
-		renderer_->GetWindow().SetCursorStatus(true, false, false);
-		cur_state_->Pause();
-	  } else if (evt.window.event==SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event==SDL_WINDOWEVENT_RESTORED
-		  || evt.window.event==SDL_WINDOWEVENT_MAXIMIZED) {
-		suspend_ = false;
-		renderer_->GetWindow().SetCursorStatus(false, true, true);
-		cur_state_->Unpause();
-	  }
+	if (evt.window.event==SDL_WINDOWEVENT_LEAVE || evt.window.event==SDL_WINDOWEVENT_MINIMIZED) {
+	  suspend_ = true;
+//		renderer_->GetWindow().SetCursorStatus(true, false, false);
+	  state_manager_->Pause();
+	} else if (evt.window.event==SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event==SDL_WINDOWEVENT_RESTORED
+		|| evt.window.event==SDL_WINDOWEVENT_MAXIMIZED) {
+	  suspend_ = false;
+//		renderer_->GetWindow().SetCursorStatus(false, true, true);
+	  state_manager_->Resume();
 	}
   }
 }
@@ -240,9 +139,9 @@ void Application::Other(uint8_t type, int32_t code, void *data1, void *data2) {
 void Application::Loop_() {
   bool old_suspend = false;
 
-  while (quit_) {
+  while (running_) {
 
-	if (cur_state_) {
+	if (state_manager_->IsActive()) {
 	  auto before_frame = chrono::system_clock::now().time_since_epoch();
 	  int64_t micros_before_frame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
 
@@ -252,14 +151,15 @@ void Application::Loop_() {
 		fps_counter_ = 0;
 	  }
 
-	  input_->Capture();
+	  engine_->Capture();
 
 	  if (!suspend_) {
-		if (cur_state_->IsDirty()) {
-		  for_each(components_.begin(), components_.end(), [](Component* it){it->Clean();});
-		  InitState_(move(cur_state_->GetNextState()));
+		if (state_manager_->IsDirty()) {
+		  engine_->Clean();
+		  engine_->Refresh();
+		  state_manager_->InitNextState();
 		} else if (old_suspend) {
-		  for_each(components_.begin(), components_.end(), [](Component* it){it->Resume();});
+		  engine_->Resume();
 		  old_suspend = false;
 		}
 
@@ -267,11 +167,11 @@ void Application::Loop_() {
 		int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
 		float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_)/1e+6;
 		time_of_last_frame_ = micros_before_update;
-		for_each(components_.begin(), components_.end(), [frame_time](Component* it){it->Update(frame_time);});
-		cur_state_->Update(frame_time);
-		renderer_->RenderOneFrame();
+		engine_->Update(frame_time);
+		state_manager_->Update(frame_time);
+		engine_->RenderOneFrame();
 	  } else {
-		for_each(components_.begin(), components_.end(), [](Component* it){it->Pause();});
+		engine_->Pause();
 		old_suspend = true;
 	  }
 
@@ -298,29 +198,29 @@ void Application::Loop_() {
 
 	  fps_counter_++;
 	} else {
-	  quit_ = true;
+	  running_ = true;
 	}
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
-  if (cur_state_) {
-	InitState_(move(cur_state_));
-	quit_ = true;
+  if (state_manager_->IsActive()) {
+	state_manager_->InitState();
+	running_ = true;
 	auto duration_before_update = chrono::system_clock::now().time_since_epoch();
 	time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
 	Loop_();
 	if (verbose_) {
-	  WriteLogToFile("ogre.log");
-	  PrintLogToConsole();
+	  WriteLogToFile_("ogre.log");
+	  PrintLogToConsole_();
 	}
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Message_(const string &caption, const string &message) {
-  WriteLogToFile("error.log");
-  PrintLogToConsole();
+  WriteLogToFile_("error.log");
+  PrintLogToConsole_();
   cerr << caption << '\n';
   cerr << message << '\n';
 #ifdef _WIN32
@@ -335,11 +235,11 @@ int Application::Main(unique_ptr <AppState> &&scene_ptr) {
 #ifndef DEBUG
 	ios_base::sync_with_stdio(false);
 #endif
-	SetInitialState(move(scene_ptr));
+	state_manager_->SetInitialState(move(scene_ptr));
 	Go_();
   }
   catch (Exception &e) {
-    return Message_("Exception occurred", e.getDescription());
+	return Message_("Exception occurred", e.getDescription());
   }
   catch (Ogre::Exception &e) {
 	return Message_("Exception occurred (OGRE)", e.getFullDescription());
