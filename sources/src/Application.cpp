@@ -56,6 +56,31 @@ Application::Application(int argc, char *argv[]) {
   }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Init_() {
+  auto *logger = new Ogre::LogManager();
+  logger->createLog("ogre.log", true, false, true);
+  Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+#ifdef DEBUG
+  Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
+#else
+  Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
+#endif
+
+#if OGRE_PLATFORM==OGRE_PLATFORM_LINUX
+  DesktopIcon icon;
+  icon.Init();
+  icon.Save("XioDemo");
+#endif
+
+  engine_ = make_unique<Engine>();
+  state_manager_ = make_unique<StateManager>();
+
+  verbose_ = conf_->Get<bool>("global_verbose");
+  lock_fps_ = conf_->Get<bool>("global_lock_fps");
+  target_fps_ = conf_->Get<int>("global_target_fps");
+}
+
 Application::~Application() {
 
 }
@@ -81,27 +106,6 @@ void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml
   if (verbose_)
 	cout << message << "\n";
 #endif
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Init_() {
-  auto *logger = new Ogre::LogManager();
-  logger->createLog("ogre.log", true, false, true);
-  Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
-#ifdef DEBUG
-  Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
-#else
-  Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
-#endif
-
-#if OGRE_PLATFORM==OGRE_PLATFORM_LINUX
-  DesktopIcon icon;
-  icon.Init();
-  icon.Save("XioDemo");
-#endif
-
-  engine_ = make_unique<Engine>();
-  state_manager_ = make_unique<StateManager>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -205,7 +209,7 @@ void Application::Loop_() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
   if (state_manager_->IsActive()) {
-	state_manager_->InitState();
+	state_manager_->InitCurState();
 	running_ = true;
 	auto duration_before_update = chrono::system_clock::now().time_since_epoch();
 	time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();

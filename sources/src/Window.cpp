@@ -88,17 +88,17 @@ void Window::Init_() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-std::string Window::GetCaption() const noexcept {
+string Window::GetCaption() const noexcept {
   return caption_;
 }
 
-void Window::SetCaption(const std::string &caption) {
+void Window::SetCaption(const string &caption) {
   caption_ = caption;
   SDL_SetWindowTitle(window_, caption.c_str());
 }
 
-std::pair<int, int> Window::GetSize() const noexcept {
-  return std::make_pair(w_, h_);
+pair<int, int> Window::GetSize() const noexcept {
+  return make_pair(w_, h_);
 }
 
 float Window::GetRatio() const noexcept {

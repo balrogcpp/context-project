@@ -27,7 +27,10 @@
 #include <filesystem>
 #include <fstream>
 
+using namespace std;
+
 namespace xio {
+
 DesktopIcon::DesktopIcon()
 	: exec_("demo"), version_("1.0"), name_("XioDemo"),
 	  skeleton_{"[Desktop Entry]\n"
@@ -40,29 +43,34 @@ DesktopIcon::DesktopIcon()
 				"Icon=ICON\n"
 				"Path=PATH\n"
 				"Terminal=false\n"
-				"Type=Application\n"} {}
+				"Type=Application\n"} {
 
-DesktopIcon::~DesktopIcon() {}
-
-void DesktopIcon::Init() {
-  run_dir_ = std::filesystem::current_path().string();
-  output_ = skeleton_;
-  output_ = std::regex_replace(output_, std::regex("EXEC"), run_dir_ + "/" + exec_);
-  output_ = std::regex_replace(output_, std::regex("PATH"), run_dir_);
-  output_ = std::regex_replace(output_, std::regex("ICON"), icon_);
-  output_ = std::regex_replace(output_, std::regex("NAME"), name_);
-  output_ = std::regex_replace(output_, std::regex("COMMENT"), name_);
-  output_ = std::regex_replace(output_, std::regex("VERSION"), version_);
 }
 
-void DesktopIcon::Save(const std::string &icon_name) {
-  std::string home_dir = std::string(getenv("HOME"));
-  std::string path = home_dir + "/.local/share/applications/" + icon_name + ".desktop";
+//----------------------------------------------------------------------------------------------------------------------
+DesktopIcon::~DesktopIcon() = default;
 
-  std::ifstream in;
+//----------------------------------------------------------------------------------------------------------------------
+void DesktopIcon::Init() {
+  run_dir_ = filesystem::current_path().string();
+  output_ = skeleton_;
+  output_ = regex_replace(output_, regex("EXEC"), run_dir_ + "/" + exec_);
+  output_ = regex_replace(output_, regex("PATH"), run_dir_);
+  output_ = regex_replace(output_, regex("ICON"), icon_);
+  output_ = regex_replace(output_, regex("NAME"), name_);
+  output_ = regex_replace(output_, regex("COMMENT"), name_);
+  output_ = regex_replace(output_, regex("VERSION"), version_);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void DesktopIcon::Save(const string &icon_name) {
+  string home_dir = string(getenv("HOME"));
+  string path = home_dir + "/.local/share/applications/" + icon_name + ".desktop";
+
+  ifstream in;
   in.open(path);
   if (in.is_open()) {
-	std::string s;
+	string s;
 	getline(in, s, '\0');
 	in.close();
 
@@ -70,11 +78,11 @@ void DesktopIcon::Save(const std::string &icon_name) {
 	  return;
   }
 
-  std::ofstream out;
+  ofstream out;
   out.open(path);
   if (out.is_open()) {
 	out << output_;
-	out.close();
   }
 }
-}
+
+} //namespace

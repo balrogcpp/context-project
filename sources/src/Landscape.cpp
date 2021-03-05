@@ -26,23 +26,28 @@
 #include "Renderer.h"
 #include <Terrain/OgreTerrainMaterialGeneratorA.h>
 #include "TerrainMaterialGeneratorB.h"
-#include "PbrShaderUtils.h"
 #include "XmlUtils.h"
+#include <pugixml.hpp>
+
+using namespace std;
 
 namespace xio {
-Landscape::Landscape() {}
 
+Landscape::Landscape() = default;
+
+//----------------------------------------------------------------------------------------------------------------------
 Landscape::~Landscape() {
   if (terrain_) {
 	terrain_->removeAllTerrains();
 	terrain_.reset();
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Landscape::GetTerrainImage_(bool flipX,
 								 bool flipY,
 								 Ogre::Image &ogre_image,
-								 const std::string &filename = "terrain.dds") {
+								 const string &filename = "terrain.dds") {
   ogre_image.load(filename, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 
   if (flipX)
@@ -51,8 +56,9 @@ void Landscape::GetTerrainImage_(bool flipX,
   if (flipY)
 	ogre_image.flipAroundX();
 }
+
 //----------------------------------------------------------------------------------------------------------------------
-void Landscape::DefineTerrain_(long x, long y, bool flat, const std::string &filename = "terrain.dds") {
+void Landscape::DefineTerrain_(long x, long y, bool flat, const string &filename = "terrain.dds") {
   // if a file is available, use it
   // if not, generate file from import
 
@@ -67,17 +73,18 @@ void Landscape::DefineTerrain_(long x, long y, bool flat, const std::string &fil
   Ogre::Image image;
   GetTerrainImage_(x%2!=0, y%2!=0, image, filename);
 
-  std::string cached = terrain_->generateFilename(x, y);
+  string cached = terrain_->generateFilename(x, y);
   if (Ogre::ResourceGroupManager::getSingleton().resourceExists(terrain_->getResourceGroup(), cached)) {
 	terrain_->defineTerrain(x, y);
   } else {
 	terrain_->defineTerrain(x, y, &image);
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Landscape::InitBlendMaps_(Ogre::Terrain *terrain,
 							   int layer,
-							   const std::string &image = "terrain_blendmap.dds") {
+							   const string &image = "terrain_blendmap.dds") {
   Ogre::TerrainLayerBlendMap *blendMap = terrain->getLayerBlendMap(layer);
   auto *pBlend1 = blendMap->getBlendPointer();
 
@@ -111,6 +118,7 @@ void Landscape::InitBlendMaps_(Ogre::Terrain *terrain,
 	terrain->getGlobalColourMap()->loadImage(colourMap);
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   float worldSize = GetAttribReal(xml_node, "worldSize");
@@ -130,10 +138,10 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   terrain_global_options->setCompositeMapDistance(200);
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
   terrain_global_options->setUseRayBoxDistanceCalculation(false);
-  terrain_global_options->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
+  terrain_global_options->setDefaultMaterialGenerator(make_shared<TerrainMaterialGeneratorB>());
 
   auto *scene_manager = Ogre::Root::getSingleton().getSceneManager("Default");
-  terrain_ = std::make_unique<Ogre::TerrainGroup>(scene_manager, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
+  terrain_ = make_unique<Ogre::TerrainGroup>(scene_manager, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
   terrain_->setFilenameConvention("terrain", "bin");
   terrain_->setOrigin(Ogre::Vector3::ZERO);
   terrain_->setResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -173,7 +181,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 	int pageX = Ogre::StringConverter::parseInt(pPageElement.attribute("x").value());
 	int pageY = Ogre::StringConverter::parseInt(pPageElement.attribute("y").value());
 
-	std::string heighmap = pPageElement.attribute("heightmap").value();
+	string heighmap = pPageElement.attribute("heightmap").value();
 	DefineTerrain_(pageX, pageY, false, heighmap);
 	terrain_->loadTerrain(pageX, pageY, true);
 	terrain_->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
@@ -220,6 +228,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 	);
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 float Landscape::GetHeigh(float x, float z) {
   if (terrain_)
@@ -227,4 +236,5 @@ float Landscape::GetHeigh(float x, float z) {
   else
 	return 0.0f;
 }
-}
+
+} //namespace

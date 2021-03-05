@@ -23,195 +23,211 @@
 #include <iostream>
 #include "VerboseListener.h"
 
+using namespace std;
+
 namespace xio {
 
 void VerboseListener::OnKeyDown(SDL_Keycode sym) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << "sym ";
-	std::cout << sym;
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << "sym ";
+	cout << sym;
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnKeyUp(SDL_Keycode sym) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout <<
+	cout << __func__;
+	cout << ' ';
+	cout <<
 			  sym;
-	std::cout << '\n';
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << " x ";
-	std::cout << x << ' ';
-	std::cout << "y" << ' ';
-	std::cout << y << ' ';
-	std::cout << "dx" << ' ';
-	std::cout << dx << ' ';
-	std::cout << "dy" << ' ';
-	std::cout << dy << ' ';
-	std::cout << "left" << ' ';
-	std::cout << left << ' ';
-	std::cout << "right" << ' ';
-	std::cout << right << ' ';
-	std::cout << "middle" << ' ';
-	std::cout << middle << ' ';
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << " x ";
+	cout << x << ' ';
+	cout << "y" << ' ';
+	cout << y << ' ';
+	cout << "dx" << ' ';
+	cout << dx << ' ';
+	cout << "dy" << ' ';
+	cout << dy << ' ';
+	cout << "left" << ' ';
+	cout << left << ' ';
+	cout << "right" << ' ';
+	cout << right << ' ';
+	cout << "middle" << ' ';
+	cout << middle << ' ';
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnMouseWheel(int x, int y) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << "Up" << ' ';
-	std::cout << x << ' ';
-	std::cout << "Down" << ' ';
-	std::cout << y << '\n';
+	cout << __func__;
+	cout << "Up" << ' ';
+	cout << x << ' ';
+	cout << "Down" << ' ';
+	cout << y << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnMouseLbDown(int x, int y) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << "x" << ' ';
-	std::cout << x << ' ';
-	std::cout << "y" << ' ';
-	std::cout << y << ' ';
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << "x" << ' ';
+	cout << x << ' ';
+	cout << "y" << ' ';
+	cout << y << ' ';
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnMouseLbUp(int x, int y) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << "x" << ' ';
-	std::cout << x << ' ';
-	std::cout << "y" << ' ';
-	std::cout << y << ' ';
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << "x" << ' ';
+	cout << x << ' ';
+	cout << "y" << ' ';
+	cout << y << ' ';
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnMouseRbDown(int x, int y) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << "x" << ' ';
-	std::cout << x << ' ';
-	std::cout << "y" << ' ';
-	std::cout << y << ' ';
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << "x" << ' ';
+	cout << x << ' ';
+	cout << "y" << ' ';
+	cout << y << ' ';
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnMouseRbUp(int x, int y) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << "x" << ' ';
-	std::cout << x << ' ';
-	std::cout << "y" << ' ';
-	std::cout << y << ' ';
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << "x" << ' ';
+	cout << x << ' ';
+	cout << "y" << ' ';
+	cout << y << ' ';
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnMouseMbDown(int x, int y) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << "x" << ' ';
-	std::cout << x << ' ';
-	std::cout << "y" << ' ';
-	std::cout << y << ' ';
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << "x" << ' ';
+	cout << x << ' ';
+	cout << "y" << ' ';
+	cout << y << ' ';
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnMouseMbUp(int x, int y) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << "x" << ' ';
-	std::cout << x << ' ';
-	std::cout << "y" << ' ';
-	std::cout << y << ' ';
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << "x" << ' ';
+	cout << x << ' ';
+	cout << "y" << ' ';
+	cout << y << ' ';
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnJoystickAxis(int which, int axis, int value) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << "which" << ' ';
-	std::cout << which << ' ';
-	std::cout << "axis" << ' ';
-	std::cout << axis << ' ';
-	std::cout << "value" << ' ';
-	std::cout << value << ' ';
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << "which" << ' ';
+	cout << which << ' ';
+	cout << "axis" << ' ';
+	cout << axis << ' ';
+	cout << "value" << ' ';
+	cout << value << ' ';
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnJoystickBtDown(int which, int button) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << "which" << ' ';
-	std::cout << which << ' ';
-	std::cout << "button" << ' ';
-	std::cout << button << ' ';
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << "which" << ' ';
+	cout << which << ' ';
+	cout << "button" << ' ';
+	cout << button << ' ';
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnJoystickBtUp(int which, int button) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << "which" << ' ';
-	std::cout << which << ' ';
-	std::cout << "button" << ' ';
-	std::cout << button << ' ';
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << "which" << ' ';
+	cout << which << ' ';
+	cout << "button" << ' ';
+	cout << button << ' ';
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnJoystickHat(int which, int hat, int value) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << "which" << ' ';
-	std::cout << which << ' ';
-	std::cout << "hat" << ' ';
-	std::cout << hat << ' ';
-	std::cout << "value" << ' ';
-	std::cout << value << ' ';
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << "which" << ' ';
+	cout << which << ' ';
+	cout << "hat" << ' ';
+	cout << hat << ' ';
+	cout << "value" << ' ';
+	cout << value << ' ';
+	cout << '\n';
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::OnJoystickBall(int which, int ball, int xrel, int yrel) {
   if (verbose_) {
-	std::cout << __func__;
-	std::cout << ' ';
-	std::cout << "which" << ' ';
-	std::cout << which << ' ';
-	std::cout << "ball" << ' ';
-	std::cout << ball << ' ';
-	std::cout << "yrel" << ' ';
-	std::cout << yrel << ' ';
-	std::cout << '\n';
+	cout << __func__;
+	cout << ' ';
+	cout << "which" << ' ';
+	cout << which << ' ';
+	cout << "ball" << ' ';
+	cout << ball << ' ';
+	cout << "yrel" << ' ';
+	cout << yrel << ' ';
+	cout << '\n';
   }
 }
 

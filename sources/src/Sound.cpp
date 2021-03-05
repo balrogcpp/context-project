@@ -72,7 +72,7 @@ void Sound::Resume() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::CreateSound(const std::string &name, const std::string &file, bool loop) {
+void Sound::CreateSound(const string &name, const string &file, bool loop) {
   auto *sound = manager_->createSound(name, file, true, loop, true, nullptr);
   Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->createChildSceneNode()->attachObject(sound);
 }
@@ -88,14 +88,14 @@ void Sound::SetListener(Ogre::SceneNode *parent) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::PlaySound(const std::string &name, bool immediate) {
+void Sound::PlaySound(const string &name, bool immediate) {
   auto *sound = manager_->getSound(name);
   if (sound) {
     if (immediate)
       sound->stop();
     sound->play();
   } else {
-    throw Exception(std::string("Sound \"") + name + "\" not found. Aborting.\n");
+    throw Exception(string("Sound \"") + name + "\" not found. Aborting.\n");
   }
 }
 
@@ -105,14 +105,14 @@ void Sound::SetMasterVolume(float volume) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::SetMaxVolume(const std::string &name, float volume) {
+void Sound::SetMaxVolume(const string &name, float volume) {
   if (manager_->getSound(name)) {
     manager_->getSound(name)->setMaxVolume(volume);
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::SetVolume(const std::string &name, float gain) {
+void Sound::SetVolume(const string &name, float gain) {
   if (manager_->getSound(name)) {
     manager_->getSound(name)->setVolume(gain);
   }

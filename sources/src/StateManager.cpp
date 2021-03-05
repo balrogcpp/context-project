@@ -24,6 +24,8 @@
 
 #include "StateManager.h"
 
+using namespace std;
+
 namespace xio {
 StateManager::StateManager() {
 
@@ -35,7 +37,7 @@ StateManager::~StateManager() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void StateManager::InitState() {
+void StateManager::InitCurState() {
   cur_state_->Init();
   Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
 }
@@ -47,13 +49,13 @@ void StateManager::InitNextState() {
 	Ogre::Root::getSingleton().removeFrameListener(cur_state_.get());
   }
 
-  cur_state_ = move(cur_state_->GetNextState());
-  Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
+  cur_state_ = move(cur_state_->next_);
   cur_state_->Init();
+  Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void StateManager::SetInitialState(std::unique_ptr<AppState> &&next_state) {
+void StateManager::SetInitialState(unique_ptr<AppState> &&next_state) {
   cur_state_ = move(next_state);
   Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
 }

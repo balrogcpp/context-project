@@ -23,16 +23,17 @@
 #pragma once
 
 #include "AppState.h"
+#include "Singleton.h"
 #include "view_ptr.h"
 
 namespace xio {
 
-class StateManager {
+class StateManager : public Singleton<StateManager> {
  public:
   StateManager();
   virtual ~StateManager();
 
-  void InitState();
+  void InitCurState();
   void InitNextState();
   void SetInitialState(std::unique_ptr<AppState> &&next_state);
   void Update(float time);

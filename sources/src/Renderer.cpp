@@ -113,7 +113,7 @@ Renderer::Renderer(int w, int h, bool f) {
 
   //Resource block
 #ifndef DEBUG
-  Assets::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
+  Assets::InitGeneralResources({"../programs", "../scenes"}, "resources.list");
 #else
   Assets::InitGeneralResources({"../programs", "../scenes"}, "resources.list");
 #endif

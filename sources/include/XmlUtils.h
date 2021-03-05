@@ -23,7 +23,10 @@
 #pragma once
 #include <OgreQuaternion.h>
 #include <OgreColourValue.h>
-#include <pugixml.hpp>
+
+namespace pugi {
+class xml_node;
+}
 
 namespace xio {
 

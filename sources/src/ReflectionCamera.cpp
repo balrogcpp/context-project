@@ -23,12 +23,16 @@
 #include "pcheader.h"
 #include "ReflectionCamera.h"
 
+using namespace std;
+
 namespace xio {
+
 ReflectionCamera::ReflectionCamera(Ogre::Plane plane, unsigned int tex_size) {
   SetPlane(plane);
   Init_(tex_size);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 ReflectionCamera::~ReflectionCamera() {
   Clear_();
 }
@@ -120,12 +124,12 @@ void ReflectionCamera::SetPlane(Ogre::Plane plane) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-std::shared_ptr<Ogre::Texture> ReflectionCamera::GetReflectionTex() const noexcept {
+shared_ptr<Ogre::Texture> ReflectionCamera::GetReflectionTex() const noexcept {
   return reflection_tex_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-std::shared_ptr<Ogre::Texture> ReflectionCamera::GetRefractionTex() const noexcept {
+shared_ptr<Ogre::Texture> ReflectionCamera::GetRefractionTex() const noexcept {
   return refraction_tex_;
 }
 

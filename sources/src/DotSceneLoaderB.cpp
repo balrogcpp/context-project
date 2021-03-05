@@ -28,6 +28,7 @@
 #include "XmlUtils.h"
 #include "Sound.h"
 #include "SinbadCharacterController.h"
+#include <pugixml.hpp>
 
 using namespace std;
 
@@ -96,44 +97,6 @@ void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const string &group_name
   // figure out where to attach any nodes we Init
 //  attach_node_ = root_node;
   root_ = Ogre::Root::getSingletonPtr();
-  attach_node_ = root_node;
-
-//  Init();
-  if (!terrain_) terrain_ = make_unique<Landscape>();
-  if (!forest_) forest_ = make_unique<Forest>();
-  forest_->SetHeighFunc([](float x, float z) { return terrain_->GetHeigh(x, z); });
-  if (!camera_) camera_ = make_unique<CameraMan>();
-//  input_->RegObserver(camera_.get());
-
-  // Process the scene
-  ProcessScene_(XMLRoot);
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::Load(const string &filename, const string &group_name, Ogre::SceneNode *root_node) {
-  group_name_ = group_name;
-  scene_ = root_node->getCreator();
-
-  pugi::xml_document XMLDoc; // character type defaults to char
-
-  auto result = XMLDoc.load_file(filename.c_str());
-
-  if (!result) {
-    Ogre::LogManager::getSingleton().stream(Ogre::LML_CRITICAL) << "[DotSceneLoader] " << result.description();
-    return;
-  }
-
-  // Grab the scene node
-  auto XMLRoot = XMLDoc.child("scene");
-
-  // Validate the File
-  if (!XMLRoot.attribute("formatVersion")) {
-    Ogre::LogManager::getSingleton().logError(
-        "[DotSceneLoader] Invalid .scene File. Missing <scene formfatVersion='x.y' >");
-    return;
-  }
-
-  // figure out where to attach any nodes we Init
   attach_node_ = root_node;
 
 //  Init();
@@ -754,7 +717,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   unique_ptr<BtOgre::StaticMeshToShapeConverter>
       converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
 
-  auto *entShape = converter->createBox();
+  auto *entShape = converter->createTrimesh();
   auto *bodyState = new BtOgre::RigidBodyState(parent);
   btRigidBody *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
   entBody->setFriction(1);

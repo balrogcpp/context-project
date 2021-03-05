@@ -73,9 +73,6 @@ Engine::Engine() {
 	tfo = Ogre::TFO_NONE;
 
   renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
-//  verbose_ = conf_->Get<bool>("global_verbose_enable");
-//  lock_fps_ = conf_->Get<bool>("global_lock_fps");
-//  target_fps_ = conf_->Get<int>("global_target_fps");
   renderer_->GetWindow().SetCaption(conf_->Get<string>("window_caption"));
   renderer_->Refresh();
 }

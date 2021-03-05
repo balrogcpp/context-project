@@ -26,10 +26,11 @@
 #include <OgreLog.h>
 #include "Engine.h"
 #include "StateManager.h"
+#include "ComponentLocator.h"
 #include "view_ptr.h"
 
 namespace xio {
-class Application final : public WindowObserver, public Ogre::LogListener {
+class Application final : public WindowObserver, public Ogre::LogListener, public ComponentLocator {
  public:
   explicit Application(int argc, char *argv[]);
   virtual ~Application();
@@ -62,7 +63,11 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   int64_t fps_counter_ = 0;
   int current_fps_ = 0;
   int target_fps_ = 60;
+#ifdef DEBUG
+  bool verbose_ = true;
+#else
   bool verbose_ = false;
+#endif
   bool lock_fps_ = true;
   std::string log_;
 };

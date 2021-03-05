@@ -23,6 +23,8 @@
 #include "pcheader.h"
 #include "PbrShaderUtils.h"
 
+using namespace std;
+
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
@@ -30,11 +32,11 @@ void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
   int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
   bool transparency_casts_shadows = material->getTransparencyCastsShadows();
   int num_textures = pass->getNumTextureUnitStates();
-  std::string material_name = material->getName();
+  string material_name = material->getName();
 
   if (num_textures > 0 && alpha_rejection > 0 && transparency_casts_shadows) {
 	auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
-	std::string caster_name = "PSSM/shadow_caster_alpha/" + material_name;
+	string caster_name = "PSSM/shadow_caster_alpha/" + material_name;
 	Ogre::MaterialPtr new_caster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
 
 	if (!new_caster) {
@@ -46,7 +48,7 @@ void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
 	  auto texture_albedo = pass->getTextureUnitState("Albedo");
 
 	  if (texture_albedo) {
-		std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
+		string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
 
 		auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
 
@@ -59,7 +61,7 @@ void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
 
 	material->getTechnique(0)->setShadowCasterMaterial(new_caster);
   } else {
-	std::string caster_name = "PSSM/shadow_caster/" + material_name;
+	string caster_name = "PSSM/shadow_caster/" + material_name;
 	Ogre::MaterialPtr new_caster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
 
 	if (!new_caster) {
@@ -190,16 +192,16 @@ void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
 	int texture_count = pass->getNumTextureUnitStates();
 
 	for (int j = 0; j < OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES; j++) {
-	  if (pass->getTextureUnitState("shadowMap" + std::to_string(j)))
+	  if (pass->getTextureUnitState("shadowMap" + to_string(j)))
 		continue;
 
 	  Ogre::TextureUnitState *tu = pass->createTextureUnitState();
-	  tu->setName("shadowMap" + std::to_string(j));
+	  tu->setName("shadowMap" + to_string(j));
 	  tu->setContentType(Ogre::TextureUnitState::CONTENT_SHADOW);
 	  tu->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
 	  tu->setTextureBorderColour(Ogre::ColourValue::White);
 	  tu->setTextureFiltering(Ogre::TFO_NONE);
-	  frag_params->setNamedConstant("shadowMap" + std::to_string(j), texture_count + j);
+	  frag_params->setNamedConstant("shadowMap" + to_string(j), texture_count + j);
 	}
   }
 }
@@ -227,26 +229,27 @@ void UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void UpdatePbrParams(const std::string &material) {
+void UpdatePbrParams(const string &material) {
   auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
   UpdatePbrParams(material_ptr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void UpdatePbrIbl(const std::string &material, bool realtime) {
+void UpdatePbrIbl(const string &material, bool realtime) {
   auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
   UpdatePbrIbl(material_ptr, realtime);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void UpdatePbrShadowReceiver(const std::string &material) {
+void UpdatePbrShadowReceiver(const string &material) {
   auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
   UpdatePbrShadowReceiver(material_ptr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void UpdatePbrShadowCaster(const std::string &material) {
+void UpdatePbrShadowCaster(const string &material) {
   auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
   UpdatePbrShadowCaster(material_ptr);
 }
-}
+
+} //namespace

@@ -39,7 +39,9 @@ int main(int argc, char *argv[])
     Application app(argc, argv);
     app.Main(make_unique<Demo::DemoDotAppState>());
   }
-  catch (...) {}
+  catch (...) {
+
+  }
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   return 0;

@@ -22,44 +22,23 @@
 
 #pragma once
 #include "NoCopy.h"
+#include "Exception.h"
 #include <string>
-#include <exception>
+#include <cassert>
 
 namespace xio{
-class SingleInstanceException : public std::exception {
- public:
-  SingleInstanceException() = default;
-
-  explicit SingleInstanceException(std::string description)
-      : description(std::move(description)) {}
-
-  virtual ~SingleInstanceException() {}
-
- public:
-  std::string getDescription() const noexcept {
-    return description;
-  }
-
-  const char *what() const noexcept override {
-    return description.c_str();
-  }
-
- protected:
-  std::string description = std::string("Description not specified");
-  size_t code = 0;
-};
 
 template <typename T>
 class Singleton : public NoCopy{
  public:
   Singleton() {
-    if (instanced_)
-      throw SingleInstanceException("Only one instance can be created!\n");
+    assert(!instanced_);
 
     instanced_ = true;
   }
 
   virtual ~Singleton() {}
+
  protected:
   inline static bool instanced_ = false;
 };

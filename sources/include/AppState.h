@@ -27,6 +27,8 @@
 #include "ComponentLocator.h"
 
 namespace xio {
+class StateManager;
+
 class AppState
 	: public Ogre::RenderTargetListener,
 	  public Ogre::FrameListener,
@@ -39,7 +41,7 @@ class AppState
 
   void ChangeState(std::unique_ptr<AppState> &&app_state);
   void ChangeState();
-  std::unique_ptr<AppState> GetNextState();
+//  std::unique_ptr<AppState> GetNextState();
   void SetNextState(std::unique_ptr<AppState> &&next_state);
   void LoadFromFile(const std::string &file_name);
   bool IsDirty() const;
@@ -51,6 +53,7 @@ class AppState
   virtual void Update(float time) = 0;
 
  protected:
+  friend class StateManager;
   std::unique_ptr<AppState> next_;
   bool dirty_ = false;
 };

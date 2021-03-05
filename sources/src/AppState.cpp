@@ -54,14 +54,13 @@ void AppState::ChangeState() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-unique_ptr<AppState> AppState::GetNextState() {
-  dirty_ = false;
-  return move(next_);
-}
+//unique_ptr<AppState> AppState::GetNextState() {
+//  dirty_ = false;
+//  return move(next_);
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::SetNextState(unique_ptr<AppState> &&next_state) {
-  dirty_ = false;
   next_ = move(next_state);
 }
 

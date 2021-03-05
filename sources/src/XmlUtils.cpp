@@ -22,12 +22,15 @@
 
 #include "pcheader.h"
 #include "XmlUtils.h"
+#include <pugixml.hpp>
+
+using namespace std;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
-std::string GetAttrib(const pugi::xml_node &xml_node,
-					  const std::string &attrib,
-					  const std::string &defaultValue) {
+string GetAttrib(const pugi::xml_node &xml_node,
+					  const string &attrib,
+					  const string &defaultValue) {
   if (auto anode = xml_node.attribute(attrib.c_str())) {
 	return anode.value();
   } else {
@@ -35,7 +38,7 @@ std::string GetAttrib(const pugi::xml_node &xml_node,
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-float GetAttribReal(const pugi::xml_node &xml_node, const std::string &attrib, float defaultValue) {
+float GetAttribReal(const pugi::xml_node &xml_node, const string &attrib, float defaultValue) {
   if (auto anode = xml_node.attribute(attrib.c_str())) {
 	return Ogre::StringConverter::parseReal(anode.value());
   } else {
@@ -43,7 +46,7 @@ float GetAttribReal(const pugi::xml_node &xml_node, const std::string &attrib, f
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-int GetAttribInt(const pugi::xml_node &xml_node, const std::string &attrib, int defaultValue) {
+int GetAttribInt(const pugi::xml_node &xml_node, const string &attrib, int defaultValue) {
   if (auto anode = xml_node.attribute(attrib.c_str())) {
 	return Ogre::StringConverter::parseInt(anode.value());
   } else {
@@ -51,7 +54,7 @@ int GetAttribInt(const pugi::xml_node &xml_node, const std::string &attrib, int 
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-bool GetAttribBool(const pugi::xml_node &xml_node, const std::string &attrib, bool defaultValue) {
+bool GetAttribBool(const pugi::xml_node &xml_node, const string &attrib, bool defaultValue) {
   if (auto anode = xml_node.attribute(attrib.c_str())) {
 	return anode.as_bool();
   } else {
@@ -83,7 +86,7 @@ Ogre::Vector3 ParseScale(const pugi::xml_node &xml_node) {
   return Ogre::Vector3(x, y, z);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void ParseMaterial(Ogre::Entity *ent, const std::string &material_name) {
+void ParseMaterial(Ogre::Entity *ent, const string &material_name) {
   Ogre::MaterialPtr material;
   if (!material_name.empty()) {
 	material = Ogre::MaterialManager::getSingleton().getByName(material_name);
@@ -162,9 +165,9 @@ Ogre::ColourValue ParseColour(pugi::xml_node &xml_node) {
 }
 //----------------------------------------------------------------------------------------------------------------------
 Ogre::ColourValue ParseProperty(pugi::xml_node &xml_node) {
-  std::string name = GetAttrib(xml_node, "name");
-  std::string type = GetAttrib(xml_node, "type");
-  std::string data = GetAttrib(xml_node, "data");
+  string name = GetAttrib(xml_node, "name");
+  string type = GetAttrib(xml_node, "type");
+  string data = GetAttrib(xml_node, "data");
 
   return Ogre::ColourValue(Ogre::StringConverter::parseReal(xml_node.attribute("r").value()),
 						   Ogre::StringConverter::parseReal(xml_node.attribute("g").value()),

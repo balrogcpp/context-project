@@ -26,11 +26,13 @@
 #include "MeshUtils.h"
 #include "DotSceneLoaderB.h"
 
+using namespace std;
 
 Ogre::SceneNode *SinbadCharacterController::GetBodyNode() const {
   return mBodyNode;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam)
 	: mBaseAnimID(ANIM_NONE), mTopAnimID(ANIM_NONE) {
   setupBody(cam->getSceneManager());
@@ -38,12 +40,14 @@ SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam)
   setupAnimations();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::Update(Ogre::Real deltaTime) {
   updateBody(deltaTime);
   updateAnimations(deltaTime);
   updateCamera(deltaTime);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::OnKeyDown(SDL_Keycode key) {
   if (key=='q' && (mTopAnimID==ANIM_IDLE_TOP || mTopAnimID==ANIM_RUN_TOP)) {
 // take swords out (or put them back, since it's the same animation but reversed)
@@ -85,6 +89,7 @@ void SinbadCharacterController::OnKeyDown(SDL_Keycode key) {
   }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::OnKeyUp(SDL_Keycode key) {
 // keep track of the player's intended direction
   if (key=='w' && mKeyDirection.z==-1) mKeyDirection.z = 0;
@@ -99,6 +104,7 @@ void SinbadCharacterController::OnKeyUp(SDL_Keycode key) {
   }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::OnMouseMove(int dx, int dy) {
 // update camera goal based on mouse movement
   updateCameraGoal(-0.05f*dx, -0.05f*dy, 0);
@@ -109,6 +115,7 @@ void SinbadCharacterController::OnMouseWheel(int x, int y) {
   updateCameraGoal(0, 0, -0.05f*y);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::OnMouseLbDown(int x, int y) {
   if (mSwordsDrawn && (mTopAnimID==ANIM_IDLE_TOP || mTopAnimID==ANIM_RUN_TOP)) {
 // if swords are out, and character's not doing something weird, then SLICE!
@@ -117,6 +124,7 @@ void SinbadCharacterController::OnMouseLbDown(int x, int y) {
   }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::OnMouseRbDown(int x, int y) {
   if (mSwordsDrawn && (mTopAnimID==ANIM_IDLE_TOP || mTopAnimID==ANIM_RUN_TOP)) {
 // if swords are out, and character's not doing something weird, then SLICE!
@@ -125,6 +133,7 @@ void SinbadCharacterController::OnMouseRbDown(int x, int y) {
   }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::setupBody(Ogre::SceneManager *sceneMgr) {
   // create main model
   mBodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y*CHAR_HEIGHT);
@@ -162,6 +171,7 @@ void SinbadCharacterController::setupBody(Ogre::SceneManager *sceneMgr) {
   mVerticalVelocity = 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::setupAnimations() {
   // this is very important due to the nature of the exported animations
   mBodyEnt->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
@@ -188,6 +198,7 @@ void SinbadCharacterController::setupAnimations() {
   mSwordsDrawn = false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::setupCamera(Ogre::Camera *cam) {
   // create a pivot at roughly the character's shoulder
   mCameraPivot = cam->getSceneManager()->getRootSceneNode()->createChildSceneNode();
@@ -204,6 +215,7 @@ void SinbadCharacterController::setupCamera(Ogre::Camera *cam) {
   mPivotPitch = 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::updateBody(Ogre::Real deltaTime) {
   mGoalDirection = Ogre::Vector3::ZERO;   // we will calculate this
   float x = mBodyNode->getPosition().x;
@@ -229,9 +241,9 @@ void SinbadCharacterController::updateBody(Ogre::Real deltaTime) {
 
 	// turn as much as we can, but not more than we need to
 	if (yawToGoal < 0)
-	  yawToGoal = std::min<Ogre::Real>(0, std::max<Ogre::Real>(yawToGoal, yawAtSpeed));
+	  yawToGoal = min<Ogre::Real>(0, max<Ogre::Real>(yawToGoal, yawAtSpeed));
 	else if (yawToGoal > 0)
-	  yawToGoal = std::max<Ogre::Real>(0, std::min<Ogre::Real>(yawToGoal, yawAtSpeed));
+	  yawToGoal = max<Ogre::Real>(0, min<Ogre::Real>(yawToGoal, yawAtSpeed));
 
 	mBodyNode->yaw(Ogre::Degree(yawToGoal));
 
@@ -255,6 +267,7 @@ void SinbadCharacterController::updateBody(Ogre::Real deltaTime) {
   }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::updateAnimations(Ogre::Real deltaTime) {
   Ogre::Real baseAnimSpeed = 1;
   Ogre::Real topAnimSpeed = 1;
@@ -337,6 +350,7 @@ void SinbadCharacterController::updateAnimations(Ogre::Real deltaTime) {
   fadeAnimations(deltaTime);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::fadeAnimations(Ogre::Real deltaTime) {
   for (int i = 0; i < NUM_ANIMS; i++) {
 	if (mFadingIn[i]) {
@@ -356,6 +370,7 @@ void SinbadCharacterController::fadeAnimations(Ogre::Real deltaTime) {
   }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::updateCamera(Ogre::Real deltaTime) {
   // place the camera pivot roughly at the character's shoulder
   mCameraPivot->setPosition(mBodyNode->getPosition() + Ogre::Vector3::UNIT_Y*CAM_HEIGHT);
@@ -366,6 +381,7 @@ void SinbadCharacterController::updateCamera(Ogre::Real deltaTime) {
   mCameraNode->lookAt(mCameraPivot->_getDerivedPosition(), Ogre::Node::TS_PARENT);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::updateCameraGoal(Ogre::Real deltaYaw, Ogre::Real deltaPitch, Ogre::Real deltaZoom) {
   mCameraPivot->yaw(Ogre::Degree(deltaYaw), Ogre::Node::TS_PARENT);
 
@@ -385,6 +401,7 @@ void SinbadCharacterController::updateCameraGoal(Ogre::Real deltaYaw, Ogre::Real
   }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::setBaseAnimation(AnimID id, bool reset) {
   if (mBaseAnimID!=ANIM_NONE) {
 	// if we have an old animation, fade it out
@@ -404,6 +421,7 @@ void SinbadCharacterController::setBaseAnimation(AnimID id, bool reset) {
   }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::setTopAnimation(AnimID id, bool reset) {
   if (mTopAnimID!=ANIM_NONE) {
 	// if we have an old animation, fade it out

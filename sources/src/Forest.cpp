@@ -30,15 +30,17 @@
 #include "PagedGeometryAll.h"
 
 using namespace Forests;
+using namespace std;
 
 namespace xio {
-//----------------------------------------------------------------------------------------------------------------------
+
 struct GrassVertex {
   float x, y, z;
   float nx, ny, nz;
   float u, v;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 static void CreateGrassMesh(float width, float height) {
   using namespace Ogre;
 
@@ -119,13 +121,13 @@ static void CreateGrassMesh(float width, float height) {
   sm->indexData->indexBuffer->unlock();  // commit index changes
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 static void CreateGrassMesh2(float width, float height) {
   Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
 
   // Init a submesh with the grass material
   Ogre::SubMesh *sm = mesh->createSubMesh();
-  const std::string grassMaterial = "GrassCustom";
+  const string grassMaterial = "GrassCustom";
   Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
 
   UpdatePbrParams(tmp);
@@ -202,7 +204,9 @@ static void CreateGrassMesh2(float width, float height) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Forest::Forest() {}
+Forest::Forest() = default;
+
+//----------------------------------------------------------------------------------------------------------------------
 Forest::~Forest() {
   for (auto it : pgeometry_)
     delete it;
@@ -215,6 +219,7 @@ Forest::~Forest() {
   if (mesh_manager.getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
     mesh_manager.remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::Update(float time) {
   for (auto it : pgeometry_) {
@@ -224,6 +229,7 @@ void Forest::Update(float time) {
     it->update();
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateGrassStatic() {
   // create our grass mesh, and Init a grass entity from it
@@ -252,6 +258,7 @@ void Forest::GenerateGrassStatic() {
 
   sgeometry_.push_back(field);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateTreesStatic() {
   // create our grass mesh, and Init a grass entity from it
@@ -288,6 +295,7 @@ void Forest::GenerateTreesStatic() {
 
   sgeometry_.push_back(rocks);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateGrassPaged() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 25);
@@ -313,6 +321,7 @@ void Forest::GenerateGrassPaged() {
   layer->setMapBounds(TBounds(-250, -250, 250, 250));
   layer->setDensityMap("grass_density.png");
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateTreesPaged() {
   const float bound = 50;
@@ -358,10 +367,12 @@ void Forest::GenerateTreesPaged() {
     treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, 0, z), Ogre::Degree(yaw), scale);
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
   GenerateGrassPaged();
   GenerateTreesPaged();
   GenerateTreesStatic();
 }
-}
+
+} //namespace

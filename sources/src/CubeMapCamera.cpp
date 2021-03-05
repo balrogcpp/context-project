@@ -25,15 +25,19 @@
 
 #include <Ogre.h>
 
+using namespace std;
+
 namespace xio {
 CubeMapCamera::CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size) {
   Init_(creator, tex_size);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 CubeMapCamera::~CubeMapCamera() {
   Clear_();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   // point the camera in the right direction based on which face of the cubemap this is
   camera_node_->setOrientation(Ogre::Quaternion::IDENTITY);
@@ -43,10 +47,13 @@ void CubeMapCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   else if (evt.source==targets_[3]) camera_node_->pitch(Ogre::Degree(-90));
   else if (evt.source==targets_[5]) camera_node_->yaw(Ogre::Degree(180));
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::Clear_() {
   if (cubemap_) {
 	for (auto it : targets_) {
@@ -65,6 +72,7 @@ void CubeMapCamera::Clear_() {
 
   camera_node_ = nullptr;
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::Init_(Ogre::SceneNode *creator, unsigned int tex_size) {
   scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -98,7 +106,9 @@ void CubeMapCamera::Init_(Ogre::SceneNode *creator, unsigned int tex_size) {
   }
 }
 
-std::shared_ptr<Ogre::Texture> CubeMapCamera::GetDyncubemap() const {
+//----------------------------------------------------------------------------------------------------------------------
+shared_ptr<Ogre::Texture> CubeMapCamera::GetDyncubemap() const {
   return cubemap_;
 }
-}
+
+} //namespace
