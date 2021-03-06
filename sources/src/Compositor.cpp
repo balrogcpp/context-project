@@ -31,12 +31,14 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   GBufferSchemeHandler() {
 	ref_mat_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer");
-	ref_mat_->load();
-
 	ref_mat2_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer_alpha");
-	ref_mat2_->load();
-
 	ref_mat3_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer_empty");
+
+	if (!ref_mat_ || !ref_mat2_ || !ref_mat3_)
+		throw Exception("No available materials for Compositor::GBufferSchemeHandler");
+
+	ref_mat_->load();
+	ref_mat2_->load();
 	ref_mat3_->load();
 
 	gpu_params_.reserve(64);
@@ -95,12 +97,6 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 	}
   }
 
-//----------------------------------------------------------------------------------------------------------------------
-  void Clear() {
-	gpu_params_.clear();
-	gpu_params_.shrink_to_fit();
-  }
-
  private:
   Ogre::MaterialPtr ref_mat_;
   Ogre::MaterialPtr ref_mat2_;
@@ -120,9 +116,7 @@ Compositor::Compositor() {
 
 //----------------------------------------------------------------------------------------------------------------------
 Compositor::~Compositor() {
-  if (effects_["motion"]) {
-	gbuff_handler_->Clear();
-  }
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

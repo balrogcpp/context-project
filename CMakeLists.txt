@@ -271,10 +271,10 @@ install(TARGETS demo
 
 file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h)
 
-include_directories(lib-static ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
-add_library(lib-static STATIC ${SOURCE_FILES})
-set_target_properties(lib-static PROPERTIES OUTPUT_NAME "xio-static")
-target_precompile_headers(lib-static PUBLIC sources/include/pcheader.h)
+# include_directories(lib-static ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+# add_library(lib-static STATIC ${SOURCE_FILES} )
+# set_target_properties(lib-static PROPERTIES OUTPUT_NAME "xio-static")
+# target_precompile_headers(lib-static PUBLIC sources/include/pcheader.h)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 

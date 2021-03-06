@@ -30,7 +30,6 @@
 #include <windows.h>
 #include <locale>
 #include <shellapi.h>
-#include <codecvt>
 #endif
 
 using namespace std;
@@ -58,7 +57,6 @@ int main(int argc, char** argv)
     Application app;
 #else
     Application app(argv);
-    cout << argv << '\n';
 #endif
     app.Main(make_unique<Demo::DemoDotAppState>());
   }

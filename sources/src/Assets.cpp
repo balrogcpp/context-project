@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-
 #include <iostream>
 #include <filesystem>
 #include "Assets.h"
@@ -32,6 +31,20 @@ namespace fs = filesystem;
 
 namespace xio {
 
+static std::string FindPath(const std::string& file, int depth = 2) {
+	string path = file;
+
+	for (int i = 0; i < depth; i++) {
+		if (fs::exists(path))
+			return path;
+		else
+			path = string("../") + path;
+	}
+
+	return string();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 bool Assets::StringSanityCheck(const string &str) {
   if (str[0]=='#') {
 	return true;
@@ -105,8 +118,10 @@ Assets::InitGeneralResources(const vector <string> &path_list,
   auto &ogre_resource_manager = Ogre::ResourceGroupManager::getSingleton();
 
   for (const auto &it : path_list) {
-	if (fs::exists(it))
-	  resource_list.push_back({it, "FileSystem", default_group_name});
+	string path = FindPath(it);
+
+	if (fs::exists(path))
+	  resource_list.push_back({path, "FileSystem", default_group_name});
   }
 
   if (!resource_file.empty()) {

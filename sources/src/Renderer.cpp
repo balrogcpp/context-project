@@ -112,11 +112,7 @@ Renderer::Renderer(int w, int h, bool f) {
   camera_->setAutoAspectRatio(true);
 
   //Resource block
-#ifndef DEBUG
-  Assets::InitGeneralResources({"./"}, "resources.list");
-#else
-  Assets::InitGeneralResources({"../programs", "../assets"}, "resources.list");
-#endif
+  Assets::InitGeneralResources({"programs", "assets"}, "resources.list");
 
   //RTSS block
   rtss::InitRtss();
