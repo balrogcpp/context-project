@@ -32,7 +32,9 @@
 #pragma once
 
 #include "OGRE/Ogre.h"
+extern "C" {
 #include <SDL2/SDL_keycode.h>
+}
 #include "Input.h"
 #include "Singleton.h"
 #ifndef GORILLA_USES_EXCEPTIONS
@@ -395,7 +397,7 @@ class Silverback : public Ogre::Singleton<Silverback>, public Ogre::GeneralAlloc
 
   /*! function. loadAtlas
       desc.
-          Create a TextureAtlas from a ".gorilla" file.
+          Init a TextureAtlas from a ".gorilla" file.
 
           Name is the name of the TextureAtlas, as well as the first part of the filename
           of the gorilla file; i.e. name.gorilla, the gorilla file can be loaded from a different
@@ -407,7 +409,7 @@ class Silverback : public Ogre::Singleton<Silverback>, public Ogre::GeneralAlloc
 
   /*! function. createScreen
       desc.
-          Create a Screen using a Viewport and a name of a previously loaded TextureAtlas.
+          Init a Screen using a Viewport and a name of a previously loaded TextureAtlas.
           Both must exist. The screen will register itself as a RenderQueueListener to the
           SceneManager that has the Camera which is tied to the Viewport.
       note.
@@ -696,7 +698,7 @@ class LayerContainer {
 
   /*! function. createLayer
       desc.
-          Create a layer for drawing on to.
+          Init a layer for drawing on to.
 
           Index represents the z-order, 0 being the layer drawn first and 15
           the layer drawn last. Layers drawn after another layer will appear
@@ -726,7 +728,7 @@ class LayerContainer {
 
   /*! function. _createVertexBuffer
       desc.
-          Create the vertex buffer
+          Init the vertex buffer
   */
   void _createVertexBuffer(size_t initialSize);
 
@@ -745,7 +747,7 @@ class LayerContainer {
 
   /* function. _recalculateIndexes
      desc.
-         Clear mIndexes, mIndexVertices and mIndexRedraw,
+         Cleanup mIndexes, mIndexVertices and mIndexRedraw,
          and from mLayers fill them out again. A full redraw
          is required.
   */
@@ -2119,13 +2121,13 @@ class LineList : public Ogre::GeneralAllocatedObject {
 
   /*! function. begin
       desc.
-          Clear lines and start again
+          Cleanup lines and start again
   */
   void begin(Ogre::Real lineThickness = 1.0f, const Ogre::ColourValue &colour = Ogre::ColourValue::White);
 
   /*! function. begin
       desc.
-          Clear lines and start again
+          Cleanup lines and start again
   */
   void begin(Ogre::Real lineThickness, Gorilla::Colours::Colour colour) {
     begin(lineThickness, webcolour(colour));
@@ -2188,7 +2190,7 @@ class QuadList : public Ogre::GeneralAllocatedObject {
 
   /*! function. begin
       desc.
-          Clear everything and start again
+          Cleanup everything and start again
   */
   void begin();
 
@@ -3032,67 +3034,5 @@ class D3Panel {
   Ogre::Vector2 mSize;
 
   std::vector<Button *> mButtons;
-
-};
-
-typedef void (*OgreConsoleFunctionPtr)(Ogre::StringVector &);
-
- class OgreConsole : public xio::Singleton<OgreConsole>, public Ogre::FrameListener, public Ogre::LogListener, public xio::InputObserver {
-
- public:
-
-  OgreConsole();
-
-  ~OgreConsole();
-
-  void init(Gorilla::Screen *screen_to_use);
-  void shutdown();
-
-  void setVisible(bool mIsVisible);
-  bool isVisible() { return mIsVisible; }
-
-  void print(const Ogre::String &text);
-
-  bool frameStarted(const Ogre::FrameEvent &evt) override;
-  bool frameEnded(const Ogre::FrameEvent &evt) override;
-
-  void OnKeyDown(SDL_Keycode arg) override;
-
-  void addCommand(const Ogre::String &command, OgreConsoleFunctionPtr);
-  void removeCommand(const Ogre::String &command);
-
-  //log
-#if OGRE_VERSION_MINOR < 8 && OGRE_VERSION_MAJOR < 2
-  void messageLogged( const Ogre::String& message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName );
-#else
-  // "bool& skip" added in Ogre 1.8
-  void messageLogged(const Ogre::String &message,
-                     Ogre::LogMessageLevel lml,
-                     bool maskDebug,
-                     const Ogre::String &logName,
-                     bool &skip);
-#endif
- private:
-
-  void updateConsole();
-  void updatePrompt();
-
-  bool mIsVisible;
-  bool mIsInitialised;
-  Gorilla::Screen *mScreen;
-  Gorilla::Layer *mLayer;
-  Gorilla::Caption *mPromptText;
-  Gorilla::MarkupText *mConsoleText;
-  Gorilla::Rectangle *mDecoration;
-  Gorilla::GlyphData *mGlyphData;
-
-  bool mUpdateConsole;
-  bool mUpdatePrompt;
-
-  unsigned int mStartline;
-  std::list<Ogre::String> lines;
-  Ogre::String prompt;
-  std::map<Ogre::String, OgreConsoleFunctionPtr> commands;
-
 };
 }

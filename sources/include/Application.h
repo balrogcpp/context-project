@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -24,28 +24,26 @@
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 #include <OgreLog.h>
-#include "Input.h"
-#include "Renderer.h"
-#include "Sound.h"
-#include "Physics.h"
-#include "DotSceneLoaderB.h"
-#include "Overlay.h"
-#include "AppState.h"
-#include "YamlConfigurator.h"
+#include "Engine.h"
+#include "StateManager.h"
+#include "ComponentLocator.h"
+#include "view_ptr.h"
 
 namespace xio {
-class Application final : public WindowObserver, public Ogre::LogListener {
+
+class Application final : public WindowObserver, public Ogre::LogListener, public ComponentLocator {
  public:
-  explicit Application(int argc, char* argv[]);
+  explicit Application(char** argv = {});
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&scene_ptr);
+  int GetCurrentFps() const;
+
  private:
-  void Init_();
-  void Reset_();
+  void Init_(char** argv = {});
   void Loop_();
   void Go_();
-  void InitState_(std::unique_ptr<AppState> &&next_state);
   int Message_(const std::string &caption, const std::string &message);
+
   void Event(const SDL_Event &evt) final;
   void Other(uint8_t type, int32_t code, void *data1, void *data2) final;
   void Quit() final;
@@ -53,38 +51,26 @@ class Application final : public WindowObserver, public Ogre::LogListener {
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const std::string &logName, bool &skipThisMessage) final;
 
-  void WriteLogToFile(const std::string &file_name);
-  void PrintLogToConsole();
+  void WriteLogToFile_(const std::string &file_name);
+  void PrintLogToConsole_();
 
-  std::unique_ptr<YamlConfigurator> conf_;
-  std::unique_ptr<InputSequencer> input_;
-  std::unique_ptr<Renderer> renderer_;
-  std::unique_ptr<Physics> physics_;
-  std::unique_ptr<Sound> sound_;
-  std::unique_ptr<Overlay> overlay_;
-  std::unique_ptr<DotSceneLoaderB> loader_;
-  std::unique_ptr<AppState> cur_state_;
-  bool quit_ = false;
+  StateManager state_manager_;
+  std::unique_ptr<Engine> engine_;
+
+  bool running_ = true;
   bool suspend_ = false;
   int64_t time_of_last_frame_ = 0;
   int64_t cumulated_time_ = 0;
   int64_t fps_counter_ = 0;
   int current_fps_ = 0;
   int target_fps_ = 60;
+#ifdef DEBUG
+  bool verbose_ = true;
+#else
   bool verbose_ = false;
+#endif
   bool lock_fps_ = true;
-  std::vector<Component *> components_;
   std::string log_;
- public:
-//----------------------------------------------------------------------------------------------------------------------
-  int GetCurrentFps() const {
-    return current_fps_;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void SetInitialState(std::unique_ptr<AppState> &&state) {
-    cur_state_ = move(state);
-    input_->RegObserver(cur_state_.get());
-    Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
-  }
 };
-}
+
+} //namespace

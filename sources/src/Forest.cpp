@@ -1,7 +1,7 @@
 //Cpp file for dummy context2_deps target
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -27,16 +27,20 @@
 #include "MeshUtils.h"
 #include "DotSceneLoaderB.h"
 #include "Physics.h"
+#include "PagedGeometryAll.h"
+
 using namespace Forests;
+using namespace std;
 
 namespace xio {
-//----------------------------------------------------------------------------------------------------------------------
+
 struct GrassVertex {
   float x, y, z;
   float nx, ny, nz;
   float u, v;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 static void CreateGrassMesh(float width, float height) {
   using namespace Ogre;
 
@@ -117,13 +121,13 @@ static void CreateGrassMesh(float width, float height) {
   sm->indexData->indexBuffer->unlock();  // commit index changes
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 static void CreateGrassMesh2(float width, float height) {
   Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
 
-  // Create a submesh with the grass material
+  // Init a submesh with the grass material
   Ogre::SubMesh *sm = mesh->createSubMesh();
-  const std::string grassMaterial = "GrassCustom";
+  const string grassMaterial = "GrassCustom";
   Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
 
   UpdatePbrParams(tmp);
@@ -142,7 +146,7 @@ static void CreateGrassMesh2(float width, float height) {
   decl->addElement(0, sizeof(float) * 3, Ogre::VET_FLOAT3, Ogre::VES_NORMAL);
   decl->addElement(0, sizeof(float) * 6, Ogre::VET_FLOAT2, Ogre::VES_TEXTURE_COORDINATES, 0);
 
-  // Create a vertex buffer
+  // Init a vertex buffer
   Ogre::HardwareVertexBufferSharedPtr vb = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer
       (decl->getVertexSize(0), sm->vertexData->vertexCount, Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
@@ -176,7 +180,7 @@ static void CreateGrassMesh2(float width, float height) {
 
   sm->vertexData->vertexBufferBinding->setBinding(0, vb);  // bind vertex buffer to our submesh
 
-  // Create an index buffer
+  // Init an index buffer
   sm->indexData->indexBuffer = Ogre::HardwareBufferManager::getSingleton().createIndexBuffer
       (Ogre::HardwareIndexBuffer::IT_16BIT, sm->indexData->indexCount, Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
@@ -200,7 +204,9 @@ static void CreateGrassMesh2(float width, float height) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Forest::Forest() {}
+Forest::Forest() = default;
+
+//----------------------------------------------------------------------------------------------------------------------
 Forest::~Forest() {
   for (auto it : pgeometry_)
     delete it;
@@ -213,22 +219,23 @@ Forest::~Forest() {
   if (mesh_manager.getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
     mesh_manager.remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::Update(float time) {
-  for (auto it : pgeometry_) {
+  for (auto it : pgeometry_)
     it->update();
-  }
-  for (auto it : gpages_) {
+
+  for (auto it : gpages_)
     it->update();
-  }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateGrassStatic() {
-  // create our grass mesh, and Create a grass entity from it
+  // create our grass mesh, and Init a grass entity from it
   CreateGrassMesh(1.0, 1.0);
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   Ogre::Entity *grass = scene->createEntity("Grass", "grass");
-  // Create a static geometry field, which we will populate with grass
+  // Init a static geometry field, which we will populate with grass
   auto *field = scene->createStaticGeometry("FarnField");
   field->setRegionDimensions(Ogre::Vector3(50.0));
 
@@ -250,14 +257,15 @@ void Forest::GenerateGrassStatic() {
 
   sgeometry_.push_back(field);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateTreesStatic() {
-  // create our grass mesh, and Create a grass entity from it
+  // create our grass mesh, and Init a grass entity from it
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   Ogre::Entity *rock = scene->createEntity("Rock", "rock.mesh");
   UpdateMeshMaterial("rock.mesh");
 
-  // Create a static geometry field, which we will populate with grass
+  // Init a static geometry field, which we will populate with grass
   auto *rocks = scene->createStaticGeometry("Rocks");
   auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
 
@@ -286,6 +294,7 @@ void Forest::GenerateTreesStatic() {
 
   sgeometry_.push_back(rocks);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateGrassPaged() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 25);
@@ -311,6 +320,7 @@ void Forest::GenerateGrassPaged() {
   layer->setMapBounds(TBounds(-250, -250, 250, 250));
   layer->setDensityMap("grass_density.png");
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateTreesPaged() {
   const float bound = 50;
@@ -356,10 +366,12 @@ void Forest::GenerateTreesPaged() {
     treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, 0, z), Ogre::Degree(yaw), scale);
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
   GenerateGrassPaged();
   GenerateTreesPaged();
   GenerateTreesStatic();
 }
-}
+
+} //namespace

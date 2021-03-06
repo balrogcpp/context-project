@@ -110,7 +110,7 @@ void TreeLoader2D::addTree(Entity *entity, const Vector3 &position, Degree yaw, 
   int pageZ = (int) Math::Floor(zrel / pageSize); // bad perfomance float --> int
   std::vector<TreeDef> &treeList = _getGridPage(pageGrid, pageX, pageZ);
 
-  //Create the new tree
+  //Init the new tree
   TreeDef tree;
   tree.xPos = static_cast<uint16>(0xFFFF * (xrel - (pageX * pageSize)) / pageSize);
   tree.zPos = static_cast<uint16>(0xFFFF * (zrel - (pageZ * pageSize)) / pageSize);

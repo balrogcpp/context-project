@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -26,25 +26,18 @@
 #include "Gorilla.h"
 
 using namespace Gorilla;
+using namespace std;
 
 namespace xio {
-Overlay::Overlay() {}
-Overlay::~Overlay() {}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Overlay::Update(float time) {
-  caption_->text((1.0 / time));
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Overlay::Create() {
-  atlas_ = std::make_unique<Silverback>();
+Overlay::Overlay() {
+  atlas_ = make_unique<Silverback>();
   atlas_->loadAtlas("dejavu");
   auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
   screen_ = atlas_->createScreen(viewport, "dejavu");
   layer_ = screen_->createLayer(0);
   Ogre::Real vpW = screen_->getWidth(), vpH = screen_->getHeight();
 
-  // Create our drawing layer
+  // Init our drawing layer
   layer_ = screen_->createLayer(0);
   rect_ = layer_->createRectangle(0, 0, vpW, vpH);
   rect_->background_colour(rgb(0, 0, 0, 0));
@@ -52,12 +45,22 @@ void Overlay::Create() {
   caption_->width(0);
   caption_->align(TextAlign_Right);
 
-  console_ = std::make_unique<OgreConsole>();
+  console_ = make_unique<OgreConsole>();
   console_->init(screen_);
   console_->setVisible(false);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
-void Overlay::Text(const std::string &str) {
+Overlay::~Overlay() {
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Overlay::Update(float time) {
+  caption_->text((1.0 / time));
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Overlay::Text(const string &str) {
   caption_->text(str);
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -67,10 +70,5 @@ void Overlay::Show() {
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Hide() {
   screen_->hide();
-}
-//----------------------------------------------------------------------------------------------------------------------
-void Overlay::Reset() {
-  console_.reset();
-  atlas_->destroyScreen(screen_);
 }
 }

@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,15 @@
 
 #include "pcheader.h"
 #include "Renderer.h"
-#include "Exception.h"
-#include "Storage.h"
+#include "Assets.h"
 #include "RtssUtils.h"
+#include "Exception.h"
+
+using namespace std;
 
 namespace xio {
 Renderer::Renderer(int w, int h, bool f) {
-  window_ = std::make_unique<Window>(w, h, f);
+  window_ = make_unique<Window>(w, h, f);
   root_ = new Ogre::Root("", "", "");
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
@@ -64,22 +66,22 @@ Renderer::Renderer(int w, int h, bool f) {
   if (!reinterpret_cast<size_t>(info.info.win.window))
     throw Exception("Cast from info.info.win.window to size_t failed");
 
-  params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(info.info.win.window));
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   if (!reinterpret_cast<size_t>(info.info.x11.window))
     throw Exception("Cast from info.info.x11.window to size_t failed");
 
-  params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(info.info.x11.window));
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   if (!reinterpret_cast<size_t>(info.info.x11.window))
     throw Exception("Cast from info.info.x11.window to size_t failed");
 
-  params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(info.info.x11.window));
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   if (!reinterpret_cast<size_t>(wmInfo.info.cocoa.window))
     throw Exception("Cast from wmInfo.info.cocoa.window to size_t failed");
 
-  params["externalWindowHandle"] = std::to_string(reinterpret_cast<size_t>(wmInfo.info.cocoa.window));
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(wmInfo.info.cocoa.window));
 #endif
 
   const char true_str[] = "true";
@@ -90,7 +92,7 @@ Renderer::Renderer(int w, int h, bool f) {
 
   params["vsync"] = vsync_ ? true_str : false_str;
   params["gamma"] = gamma_ ? true_str : false_str;
-  params["FSAA"] = std::to_string(fsaa_);
+  params["FSAA"] = to_string(fsaa_);
 
   ogre_ = root_->createRenderWindow(window_->GetCaption(), window_->GetSize().first, \
                        window_->GetSize().second, window_->IsFullscreen(), &params);
@@ -108,38 +110,38 @@ Renderer::Renderer(int w, int h, bool f) {
   viewport_->setBackgroundColour(Ogre::ColourValue::Black);
   camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / static_cast<float>(viewport_->getActualHeight()));
   camera_->setAutoAspectRatio(true);
-//  camera_->setLodBias(0.5);
-//  camera_->setPolygonMode(Ogre::PM_WIREFRAME);
 
   //Resource block
 #ifndef DEBUG
-  Storage::InitGeneralResources({"./programs", "./scenes"}, "resources.list");
+  Assets::InitGeneralResources({"./"}, "resources.list");
 #else
-  Storage::InitGeneralResources({"../../../programs", "../../../scenes"}, "resources.list");
+  Assets::InitGeneralResources({"../programs", "../assets"}, "resources.list");
 #endif
 
   //RTSS block
   rtss::InitRtss();
-  Storage::LoadResources();
+  Assets::LoadResources();
   rtss::CreateRtssShaders();
-  rtss::InitInstansing();
+//  rtss::InitInstansing();
 
   //Shadow block
-  shadow_ = std::make_unique<ShadowSettings>();
+  shadow_ = make_unique<ShadowSettings>();
   //Compositor block
-  compositor_ = std::make_unique<Compositor>();
-}
-//----------------------------------------------------------------------------------------------------------------------
-Renderer::~Renderer() {}
-//----------------------------------------------------------------------------------------------------------------------
-void Renderer::Create() {
+  compositor_ = make_unique<Compositor>();
+
   compositor_->EnableEffect("ssao", conf_->Get<bool>("compositor_use_ssao"));
   compositor_->EnableEffect("bloom", conf_->Get<bool>("compositor_use_bloom"));
   compositor_->EnableEffect("hdr", conf_->Get<bool>("compositor_use_hdr"));
   compositor_->EnableEffect("motion", conf_->Get<bool>("compositor_use_motion"));
   compositor_->Init();
-  rtss::InitPssm(shadow_->GetSplitPoints());
+//  rtss::InitPssm(shadow_->GetSplitPoints());
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+Renderer::~Renderer() {
+
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::CreateCamera() {
   if (!scene_->hasCamera("Default")) {
@@ -162,20 +164,24 @@ void Renderer::CreateCamera() {
   scene_->setSkyDomeEnabled(false);
   scene_->setAmbientLight(Ogre::ColourValue::Black);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Refresh() {
   shadow_->UpdateParams();
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format) {
   shadow_->UpdateParams(enable, far_distance, tex_size, tex_format);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
   Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Resize(int w, int h, bool f) {
   if (f) {
@@ -187,6 +193,7 @@ void Renderer::Resize(int w, int h, bool f) {
     ogre_->resize(w, h);
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::RenderOneFrame() {
   root_->renderOneFrame();
@@ -194,4 +201,5 @@ void Renderer::RenderOneFrame() {
   window_->SwapBuffers();
 #endif
 }
-}
+
+} //namespace

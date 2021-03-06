@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //    of this software and associated documentation files (the "Software"), to deal
@@ -25,35 +25,42 @@
 #include "TerrainMaterialGeneratorB.h"
 #include "PbrShaderUtils.h"
 
-using namespace xio;
+using namespace std;
 
 namespace xio {
-//---------------------------------------------------------------------
+
 TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
   mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
 
   // TODO - check hardware capabilities & use fallbacks if required (more profiles needed)
   setActiveProfile(mProfiles.back());
 }
-//---------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
 TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB() = default;
-//---------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
 TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent,
                                                   const Ogre::String &name,
                                                   const Ogre::String &desc)
-    : Profile(parent, name, desc) {}
-//---------------------------------------------------------------------
+    : Profile(parent, name, desc) {
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
-//---------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
 void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrain) {
   terrain->_setMorphRequired(true);
   terrain->_setNormalMapRequired(true);
   terrain->_setLightMapRequired(lightmap_, true);
   terrain->_setCompositeMapRequired(true);
 }
-//---------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *terrain) {
-  std::string material_name = "TerrainCustom";
+  string material_name = "TerrainCustom";
   const int GENERATOR = 0;
 
   UpdatePbrParams(material_name);
@@ -76,7 +83,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
   }
 
   auto normalmap = terrain->getTerrainNormalMap();
-  std::string new_name = material_name + std::to_string(GENERATOR);
+  string new_name = material_name + to_string(GENERATOR);
 
   if (Ogre::MaterialManager::getSingleton().resourceExists(new_name)) {
     return Ogre::MaterialManager::getSingleton().getByName(new_name);
@@ -94,14 +101,15 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
     return new_material;
   }
 }
-//---------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Ogre::Terrain *terrain) {
-  std::string material_name = "TerrainCustom";
+  string material_name = "TerrainCustom";
   const int GENERATOR = 1;
 
   UpdatePbrParams(material_name);
 
-  std::string new_name = material_name + std::to_string(GENERATOR);
+  string new_name = material_name + to_string(GENERATOR);
 
   if (Ogre::MaterialManager::getSingleton().resourceExists(new_name)) {
     return Ogre::MaterialManager::getSingleton().getByName(new_name);
@@ -109,6 +117,6 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap
     auto new_material = Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(new_name);
     return new_material;
   }
+}
 
-}
-}
+} //namespace

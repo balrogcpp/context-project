@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -27,38 +27,16 @@
 #include <string>
 
 namespace xio {
-class YamlParserException : public std::exception {
+
+class Configurator : public NoCopy {
  public:
-  YamlParserException() = default;
-
-  explicit YamlParserException(std::string description)
-      : description(std::move(description)) {}
-
-  virtual ~YamlParserException() {}
-
- public:
-  std::string getDescription() const noexcept {
-    return description;
-  }
-
-  const char *what() const noexcept override {
-    return description.c_str();
-  }
-
- protected:
-  std::string description = std::string("Description not specified");
-  size_t code = 0;
-};
-
-class YamlConfigurator : public NoCopy {
- public:
-  explicit YamlConfigurator(const std::string &file = "config.yaml") {
+  explicit Configurator(const std::string &file = "config.yaml") {
     Load(file);
   }
 
-  YamlConfigurator(const YamlConfigurator &) = delete;
-  YamlConfigurator &operator=(const YamlConfigurator &) = delete;
-  virtual ~YamlConfigurator() {}
+  Configurator(const Configurator &) = delete;
+  Configurator &operator=(const Configurator &) = delete;
+  virtual ~Configurator() {}
 
   void Load(const std::string &file) {
     document_.reset();
@@ -68,6 +46,16 @@ class YamlConfigurator : public NoCopy {
   YAML::Node document_;
 
  public:
+//----------------------------------------------------------------------------------------------------------------------
+  template<typename T>
+  void AddMember(const std::string &name, T &&value) {
+//	static auto &allocator = document_.GetAllocator();
+//	if (!document_.HasMember(name)) {
+//	  document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name.c_str()), value, allocator);
+//	}
+
+  }
+
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
   inline T Get(const std::string &str) {

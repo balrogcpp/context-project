@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -21,106 +21,39 @@
 //SOFTWARE.
 
 #pragma once
-#include "PbrShaderUtils.h"
+
+#include <OgreMesh.h>
+#include <string>
+
+namespace Ogre {
+class VertexDeclaration;
+class Entity;
+}
 
 namespace xio {
-//----------------------------------------------------------------------------------------------------------------------
-inline bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
-  bool hasTangents = false;
-  bool hasUVs = false;
-  auto &elementList = vertex_declaration->getElements();
-  auto iter = elementList.begin();
-  auto end = elementList.end();
 
-  while (iter != end && !hasTangents) {
-    const Ogre::VertexElement &vertexElem = *iter;
-    if (vertexElem.getSemantic() == Ogre::VES_TANGENT)
-      hasTangents = true;
-    if (vertexElem.getSemantic() == Ogre::VES_TEXTURE_COORDINATES)
-      hasUVs = true;
+bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration);
 
-    ++iter;
-  }
+void EnsureHasTangents(Ogre::MeshPtr mesh);
 
-  return !hasTangents && hasUVs;
-}
+void UpdateMeshEdgeList(Ogre::Entity *entity);
 
-//----------------------------------------------------------------------------------------------------------------------
-inline void EnsureHasTangents(Ogre::MeshPtr mesh) {
-  bool generateTangents = false;
-  if (mesh->sharedVertexData) {
-    Ogre::VertexDeclaration *vertexDecl = mesh->sharedVertexData->vertexDeclaration;
-    generateTangents |= HasNoTangentsAndCanGenerate(vertexDecl);
-  }
+void UpdateMeshMaterial(Ogre::MeshPtr mesh,
+						bool cast_shadows = true,
+						const std::string &material_name = "",
+						bool planar_reflection = false,
+						bool active_ibl = false);
 
-  for (unsigned i = 0; i < mesh->getNumSubMeshes(); ++i) {
-    Ogre::SubMesh *subMesh = mesh->getSubMesh(i);
-    if (subMesh->vertexData) {
-      Ogre::VertexDeclaration *vertexDecl = subMesh->vertexData->vertexDeclaration;
-      generateTangents |= HasNoTangentsAndCanGenerate(vertexDecl);
-    }
-  }
+void UpdateMeshMaterial(const std::string &mesh_name,
+						bool cast_shadows = true,
+						const std::string &material_name = "",
+						bool planar_reflection = false,
+						bool active_ibl = false);
 
-  if (generateTangents) {
-    mesh->buildTangentVectors();
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-inline void UpdateMeshEdgeList(Ogre::Entity *entity) {
-    if (!entity->getMesh()->isEdgeListBuilt()) {
-      entity->getMesh()->buildEdgeList();
-    }
-}
+void UpdateEntityMaterial(Ogre::Entity *entity,
+						  bool cast_shadows = true,
+						  const std::string &material_name = "",
+						  bool planar_reflection = false,
+						  bool active_ibl = false);
 
-//----------------------------------------------------------------------------------------------------------------------
-inline void UpdateMeshMaterial(Ogre::MeshPtr mesh, bool cast_shadows = true, const std::string &material_name = "", bool planar_reflection = false, bool active_ibl = false) {
-  try {
-    EnsureHasTangents(mesh);
-
-    for (auto &submesh : mesh->getSubMeshes()) {
-      Ogre::MaterialPtr material;
-
-      if (!material_name.empty()) {
-        submesh->setMaterialName(material_name);
-      }
-
-      material = submesh->getMaterial();
-
-      if (material) {
-        UpdatePbrParams(material);
-
-        if (cast_shadows)
-          UpdatePbrShadowCaster(material);
-
-        if (material->getReceiveShadows())
-          UpdatePbrShadowReceiver(material);
-
-        UpdatePbrIbl(material, active_ibl);
-      }
-    }
-  }
-  catch (Ogre::Exception &e) {
-    Ogre::LogManager::getSingleton().logMessage(e.getFullDescription());
-    Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-inline void UpdateMeshMaterial(const std::string &mesh_name, bool cast_shadows = true, const std::string &material_name = "", bool planar_reflection = false, bool active_ibl = false) {
-  const auto &mesh = Ogre::MeshManager::getSingleton().getByName(mesh_name);
-  UpdateMeshMaterial(mesh, cast_shadows, material_name, planar_reflection, active_ibl);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-inline void UpdateEntityMaterial(Ogre::Entity *entity, bool cast_shadows = true, const std::string &material_name = "", bool planar_reflection = false, bool active_ibl = false) {
-  try {
-    entity->setCastShadows(cast_shadows);
-
-    UpdateMeshMaterial(entity->getMesh(), cast_shadows, material_name, planar_reflection, active_ibl);
-  }
-  catch (Ogre::Exception &e) {
-    Ogre::LogManager::getSingleton().logMessage(e.getFullDescription());
-    Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
-  }
-}
 }

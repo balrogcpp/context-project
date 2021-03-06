@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,13 @@ namespace Demo {
 
 class DemoDotAppState : public xio::AppState {
  public:
-   DemoDotAppState() {}
-   virtual ~DemoDotAppState() {}
+   DemoDotAppState();
+   virtual ~DemoDotAppState();
 
-    void Create() final;
-    void Clear() final;
-    void Pause() final {}
-    void Unpause() final {}
+    void Init() final;
+    void Cleanup() final;
+    void Pause() final;
+    void Resume() final;
     void Update(float time) final;
 
     void OnKeyDown(SDL_Keycode sym) final;

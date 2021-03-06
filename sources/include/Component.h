@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,8 @@
 
 #pragma once
 #include "NoCopy.h"
-#include "YamlConfigurator.h"
+#include "Configurator.h"
+#include "view_ptr.h"
 
 namespace xio {
 class Component : public NoCopy {
@@ -30,17 +31,16 @@ class Component : public NoCopy {
   Component() {}
   virtual ~Component() {}
 
-  virtual void Create() = 0;
-  virtual void Reset() = 0;
-  virtual void Clean() = 0;
+  virtual void Cleanup() = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;
   virtual void Update(float time) = 0;
 
  protected:
-  inline static YamlConfigurator *conf_ = nullptr;
+  inline static view_ptr<Configurator> conf_;
+
  public:
-  static void SetConfigurator(YamlConfigurator *conf) {
+  static void SetConfigurator(view_ptr<Configurator> conf) {
     conf_ = conf;
   }
 };

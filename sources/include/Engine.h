@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,42 @@
 //SOFTWARE.
 
 #pragma once
-#include "Application.h"
-#include "AppState.h"
-#include "CameraMan.h"
-#include "Component.h"
-#include "ComponentLocator.h"
-#include "Compositor.h"
-#include "CubeMapCamera.h"
-#include "DesktopIcon.h"
-#include "DotSceneLoaderB.h"
-#include "Entity.h"
-#include "Exception.h"
-#include "Forest.h"
-#include "Gorilla.h"
-#include "HwCheck.h"
 #include "Input.h"
-#include "Landscape.h"
-#include "NoCopy.h"
-#include "OgreHeaders.h"
-#include "Overlay.h"
-#include "PbrShaderUtils.h"
-#include "MeshUtils.h"
-#include "Physics.h"
-#include "ReflectionCamera.h"
 #include "Renderer.h"
-#include "RtssUtils.h"
-#include "ShadowSettings.h"
-#include "Singleton.h"
 #include "Sound.h"
-#include "Storage.h"
-#include "TerrainMaterialGeneratorB.h"
-#include "VerboseListener.h"
-#include "Window.h"
-#include "YamlConfigurator.h"
+#include "Physics.h"
+#include "DotSceneLoaderB.h"
+#include "Overlay.h"
+#include "AppState.h"
+#include "Configurator.h"
+#include "Engine.h"
+#include "view_ptr.h"
+
+namespace xio {
+
+class Engine {
+ public:
+  Engine();
+  virtual ~Engine();
+
+  void Capture();
+  void Pause();
+  void Resume();
+  void Clean();
+  void Refresh();
+  void Update(float time);
+  void RenderOneFrame();
+
+ private:
+  view_ptr<InputSequencer> input_;
+  std::unique_ptr<Configurator> conf_;
+  std::unique_ptr<Renderer> renderer_;
+  std::unique_ptr<Physics> physics_;
+  std::unique_ptr<Sound> sound_;
+  std::unique_ptr<Overlay> overlay_;
+  std::unique_ptr<DotSceneLoaderB> loader_;
+  std::unique_ptr<AppState> cur_state_;
+  std::vector<view_ptr<Component>> components_;
+};
+
+} //namespace

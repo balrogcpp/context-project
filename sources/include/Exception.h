@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,9 @@
 #pragma once
 
 #include <string>
-#include <exception>
 #include <utility>
+#include <stdexcept>
+#include <exception>
 
 namespace xio {
 
@@ -33,21 +34,21 @@ class Exception : public std::exception {
   Exception() = default;
 
   explicit Exception(std::string description)
-      : description(std::move(description)) {};
+	  : description(std::move(description)) {};
 
   ~Exception() noexcept override = default;
 
  public:
   std::string getDescription() const noexcept {
-    return description;
+	return description;
   }
 
   const char *what() const noexcept override {
-    return description.c_str();
+	return description.c_str();
   }
 
  protected:
-  std::string description = std::string("Description not specified");
+  std::string description = "Description not specified";
   size_t code = 0;
 };
 }

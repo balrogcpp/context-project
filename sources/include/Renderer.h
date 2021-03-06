@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -45,9 +45,7 @@ class Renderer final : public Component, public Singleton<Renderer> {
   Renderer(int w, int h, bool f);
   virtual ~Renderer();
 
-  void Create() final;
-  void Reset() final {}
-  void Clean() final {}
+  void Cleanup() final {}
   void Pause() final {}
   void Resume() final {}
   void Update(float time) final { compositor_->Update(time);};
@@ -65,11 +63,11 @@ class Renderer final : public Component, public Singleton<Renderer> {
   std::unique_ptr<ShadowSettings> shadow_;
   std::unique_ptr<Compositor> compositor_;
 
-  Ogre::Root *root_ = nullptr;
-  Ogre::SceneManager *scene_ = nullptr;
-  Ogre::Camera *camera_ = nullptr;
-  Ogre::Viewport *viewport_ = nullptr;
-  Ogre::RenderWindow *ogre_ = nullptr;
+  Ogre::Root *root_;
+  Ogre::SceneManager *scene_;
+  Ogre::Camera *camera_;
+  Ogre::Viewport *viewport_;
+  Ogre::RenderWindow *ogre_;
 
  public:
   Window &GetWindow() {

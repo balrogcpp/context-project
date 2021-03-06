@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 #include "Component.h"
 #include "Singleton.h"
 #include "Gorilla.h"
+#include "OgreConsole.h"
 
 namespace Ogre {
 class RenderTarget;
@@ -37,9 +38,7 @@ class Overlay final : public Component, public Singleton<Overlay> {
   Overlay();
   virtual ~Overlay();
 
-  void Create() final;
-  void Reset() final;
-  void Clean() final {}
+  void Cleanup() final {}
   void Pause() final {}
   void Resume() final {}
   void Update(float time) final;

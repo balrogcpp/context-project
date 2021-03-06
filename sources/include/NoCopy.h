@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
 #pragma once
 
 namespace xio {
+
 class NoCopy {
  public:
   NoCopy() = default;
@@ -30,4 +31,5 @@ class NoCopy {
   NoCopy &operator=(const NoCopy &) = delete;
   virtual ~NoCopy() = default;
 };
+
 }

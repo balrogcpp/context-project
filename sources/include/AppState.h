@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -25,44 +25,35 @@
 #include "NoCopy.h"
 #include "Input.h"
 #include "ComponentLocator.h"
-#include <OgreRoot.h>
-#include <OgreSceneLoaderManager.h>
-#include <OgreFrameListener.h>
-#include <OgreRenderTargetListener.h>
 
 namespace xio {
-class AppState
-    : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputObserver, public NoCopy, public ComponentLocator {
- public:
-//----------------------------------------------------------------------------------------------------------------------
-  void SwitchNextState(std::unique_ptr<AppState> &&app_state) {
-    next_ = std::move(app_state);
-    dirty_ = true;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  std::unique_ptr<AppState> &&GetNextState() {
-    dirty_ = false;
-    return move(next_);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void Load(const std::string &file_name) {
-    auto *scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
-    Ogre::SceneLoaderManager::getSingleton().load(file_name,
-                                                  Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-                                                  scene_->getRootSceneNode());
-  }
+class StateManager;
 
-  virtual void Create() = 0;
-  virtual void Clear() = 0;
+class AppState
+	: public Ogre::RenderTargetListener,
+	  public Ogre::FrameListener,
+	  public InputObserver,
+	  public NoCopy,
+	  public ComponentLocator {
+ public:
+  AppState();
+  virtual ~AppState();
+
+  void ChangeState(std::unique_ptr<AppState> &&app_state);
+  void ChangeState();
+//  std::unique_ptr<AppState> GetNextState();
+  void SetNextState(std::unique_ptr<AppState> &&next_state);
+  void LoadFromFile(const std::string &file_name);
+  bool IsDirty() const;
+
+  virtual void Init() = 0;
+  virtual void Cleanup() = 0;
   virtual void Pause() = 0;
-  virtual void Unpause() = 0;
+  virtual void Resume() = 0;
   virtual void Update(float time) = 0;
 
-  bool IsDirty() {
-    return dirty_;
-  }
-
  protected:
+  friend class StateManager;
   std::unique_ptr<AppState> next_;
   bool dirty_ = false;
 };

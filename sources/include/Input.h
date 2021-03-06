@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -26,15 +26,61 @@ extern "C" {
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_events.h>
 }
-#include <cstdint>
+
 #include <vector>
+#include <string>
 #include <exception>
+#include "view_ptr.h"
+#include "Exception.h"
+
 
 namespace xio {
 class InputSequencer;
+class InputObserver;
+class WindowObserver;
+
+//----------------------------------------------------------------------------------------------------------------------
+class InputSequencer {
+ public:
+  using KeyboardListenersList = std::vector<view_ptr<InputObserver>>;
+  using OtherListenersList = std::vector<view_ptr<WindowObserver>>;
+
+  //Copy not allowed
+  InputSequencer(const InputSequencer &) = delete;
+  InputSequencer &operator=(const InputSequencer &) = delete;
+
+  InputSequencer();
+  virtual ~InputSequencer();
+
+  static InputSequencer &GetInstance();
+
+ private:
+  KeyboardListenersList io_listeners;
+  OtherListenersList win_listeners;
+  inline static bool instanced_;
+
+ public:
+  void RegObserver(view_ptr<InputObserver> p);
+
+  void UnregObserver(view_ptr<InputObserver> p);
+
+  void RegWinObserver(view_ptr<WindowObserver> p);
+
+  void UnregWinObserver(view_ptr<WindowObserver> p);
+
+  void Clear();
+
+  void Reserve(size_t size);
+
+  void Capture();
+};
+
 //----------------------------------------------------------------------------------------------------------------------
 class InputObserver {
  public:
+  InputObserver();
+  virtual ~InputObserver();
+
   //Keyboard
   virtual void OnKeyDown(SDL_Keycode sym) {}
   virtual void OnKeyUp(SDL_Keycode sym) {}
@@ -50,214 +96,21 @@ class InputObserver {
   virtual void OnMouseMbDown(int x, int y) {}
   virtual void OnMouseMbUp(int x, int y) {}
 
-  //Joystic
-  virtual void OnJoysticAxis(int which, int axis, int value) {}
-  virtual void OnJoysticBtDown(int which, int button) {}
-  virtual void OnJoysticBtUp(int which, int button) {}
-  virtual void OnJoysticHat(int which, int hat, int value) {}
-  virtual void OnJoysticBall(int which, int ball, int xrel, int yrel) {}
+  //Joystick
+  virtual void OnJoystickAxis(int which, int axis, int value) {}
+  virtual void OnJoystickBtDown(int which, int button) {}
+  virtual void OnJoystickBtUp(int which, int button) {}
+  virtual void OnJoystickHat(int which, int hat, int value) {}
+  virtual void OnJoystickBall(int which, int ball, int xrel, int yrel) {}
 };
 //----------------------------------------------------------------------------------------------------------------------
 class WindowObserver {
  public:
+  WindowObserver();
+  virtual ~WindowObserver();
+
   virtual void Event(const SDL_Event &evt) {}
   virtual void Quit() {}
   virtual void Other(uint8_t type, int code, void *data1, void *data2) {}
 };
-//----------------------------------------------------------------------------------------------------------------------
-class InputException : public std::exception {
- public:
-  InputException() = default;
-
-  explicit InputException(std::string description)
-      : description(std::move(description)) {}
-
-  virtual ~InputException() {}
-
- public:
-  std::string getDescription() const noexcept {
-    return description;
-  }
-
-  const char *what() const noexcept override {
-    return description.c_str();
-  }
-
- protected:
-  std::string description = std::string("Description not specified");
-  size_t code = 0;
-};
-//----------------------------------------------------------------------------------------------------------------------
-class InputSequencer {
- public:
-  using KeyboardListenersList = std::vector<InputObserver *>;
-  using OtherListenersList = std::vector<WindowObserver *>;
-
-  //Copy not allowed
-  InputSequencer(const InputSequencer &) = delete;
-  InputSequencer &operator=(const InputSequencer &) = delete;
-
-  InputSequencer() {
-    if (instanced_)
-      throw InputException("Only one instance of InputSequencer is allowed!\n");
-    Reserve(RESERVE_SIZE);
-    instanced_ = true;
-  }
-
- private:
-  KeyboardListenersList io_listeners;
-  OtherListenersList win_listeners;
-  const size_t RESERVE_SIZE = 16;
-  inline static bool instanced_ = false;
-
- public:
-  void RegObserver(InputObserver *p) {
-    io_listeners.push_back(p);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void UnregObserver(InputObserver *p) {
-    auto it = find(io_listeners.begin(), io_listeners.end(), p);
-    if (it != io_listeners.end()) {
-      iter_swap(it, prev(io_listeners.end()));
-      io_listeners.pop_back();
-    }
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void RegWinObserver(WindowObserver *p) {
-    win_listeners.push_back(p);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void UnregWinObserver(WindowObserver *p) {
-    auto it = find(win_listeners.begin(), win_listeners.end(), p);
-    if (it != win_listeners.end()) {
-      iter_swap(it, prev(win_listeners.end()));
-      win_listeners.pop_back();
-    }
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void Clear() {
-    io_listeners.clear();
-    io_listeners.shrink_to_fit();
-    win_listeners.clear();
-    win_listeners.shrink_to_fit();
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void Reserve(size_t size) {
-    io_listeners.reserve(size);
-    win_listeners.reserve(size);
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  void Capture() {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-
-      switch (event.type) {
-        case SDL_KEYUP: {
-          for (auto it : io_listeners)
-            it->OnKeyUp(event.key.keysym.sym);
-          break;
-        }
-        case SDL_KEYDOWN: {
-          for (auto it : io_listeners)
-            it->OnKeyDown(event.key.keysym.sym);
-          break;
-        }
-        case SDL_MOUSEMOTION: {
-          for (auto it : io_listeners) {
-            it->OnMouseMove(event.motion.x, event.motion.y,
-                            event.motion.xrel, event.motion.yrel,
-                            (event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0,
-                            (event.motion.state & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0,
-                            (event.motion.state & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
-            it->OnMouseMove(event.motion.xrel, event.motion.yrel);
-          }
-          break;
-        }
-        case SDL_MOUSEBUTTONDOWN: {
-          switch (event.button.button) {
-            case SDL_BUTTON_LEFT: {
-              for (auto it : io_listeners)
-                it->OnMouseLbDown(event.button.x, event.button.y);
-              break;
-            }
-            case SDL_BUTTON_RIGHT: {
-              for (auto it : io_listeners)
-                it->OnMouseRbDown(event.button.x, event.button.y);
-              break;
-            }
-            case SDL_BUTTON_MIDDLE: {
-              for (auto it : io_listeners)
-                it->OnMouseMbDown(event.button.x, event.button.y);
-              break;
-            }
-          }
-          break;
-        }
-        case SDL_MOUSEBUTTONUP: {
-          switch (event.button.button) {
-            case SDL_BUTTON_LEFT: {
-              for (auto it : io_listeners)
-                it->OnMouseLbUp(event.button.x, event.button.y);
-              break;
-            }
-            case SDL_BUTTON_RIGHT: {
-              for (auto it : io_listeners)
-                it->OnMouseRbUp(event.button.x, event.button.y);
-              break;
-            }
-            case SDL_BUTTON_MIDDLE: {
-              for (auto it : io_listeners)
-                it->OnMouseMbUp(event.button.x, event.button.y);
-              break;
-            }
-          }
-          break;
-        }
-
-        case SDL_MOUSEWHEEL: {
-          for (auto it : io_listeners)
-            it->OnMouseWheel(event.wheel.x, event.wheel.y);
-          break;
-        }
-
-        case SDL_JOYAXISMOTION: {
-          for (auto it : io_listeners)
-            it->OnJoysticAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
-          break;
-        }
-        case SDL_JOYBALLMOTION: {
-          for (auto it : io_listeners)
-            it->OnJoysticBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
-          break;
-        }
-        case SDL_JOYHATMOTION: {
-          for (auto it : io_listeners)
-            it->OnJoysticHat(event.jhat.which, event.jhat.hat, event.jhat.value);
-          break;
-        }
-        case SDL_JOYBUTTONDOWN: {
-          for (auto it : io_listeners)
-            it->OnJoysticBtDown(event.jbutton.which, event.jbutton.button);
-          break;
-        }
-        case SDL_JOYBUTTONUP: {
-          for (auto it : io_listeners) {
-            if (it)
-              it->OnJoysticBtUp(event.jbutton.which, event.jbutton.button);
-          }
-          break;
-        }
-        case SDL_QUIT: {
-          for (auto it : win_listeners)
-            it->Quit();
-          break;
-        }
-        default: {
-          for (auto it : win_listeners)
-            it->Event(event);
-        }
-      }
-    }
-  }
-};
-}
+} //namespace

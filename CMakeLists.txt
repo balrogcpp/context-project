@@ -1,6 +1,6 @@
 #MIT License
 #
-#Copyright (c) 2020 Andrey Vasiliev
+#Copyright (c) 2021 Andrei Vasilev
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,8 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
 set(CMAKE_CXX_STANDARD 17)
 set_property(GLOBAL PROPERTY CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+#set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+#set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 enable_language(C)
 enable_language(CXX)
@@ -41,6 +42,15 @@ include(CheckTypeSize)
 include(ProcessorCount)
 
 check_type_size("void*" PTR_SIZE BUILTIN_TYPES_ONLY)
+
+if (NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(SEND_ERROR "Only Release RelWithDebInfo Debug build are available")
+endif ()
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND MSVC)
+    message(SEND_ERROR "Debug build is not working with MSVC. Use RelWithDebInfo instead")
+endif ()
+
 
 if (PTR_SIZE EQUAL 8)
     set(CONTEXT_PLATFORM "x64" CACHE STRING "")
@@ -77,13 +87,16 @@ set(CMAKE_BUILD_PARALLEL_LEVEL ${CONTEXT_PROCESSOR_COUNT})
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT ANDROID)
-    if (NOT ${CMAKE_BUILD_TYPE} STREQUAL Release)
-        string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
-        string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
-    elseif ()
+    if (${CMAKE_BUILD_TYPE} STREQUAL Release)
         string(APPEND CMAKE_CXX_FLAGS " -Ofast -DNDEBUG")
         string(APPEND CMAKE_C_FLAGS " -Ofast -DNDEBUG")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
+    elseif (${CMAKE_BUILD_TYPE} STREQUAL Debug)
+        string(APPEND CMAKE_CXX_FLAGS " -g -O0 -DDEBUG -D_DEBUG")
+        string(APPEND CMAKE_C_FLAGS " -g -O0 -DDEBUG -D_DEBUG")
+    elseif (${CMAKE_BUILD_TYPE} STREQUAL RelWithDebInfo)
+        string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
+        string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     endif ()
 
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -120,10 +133,18 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     endif ()
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp /D \"RAPIDJSON_HAS_STDSTRING\"")
+    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp /D \"RAPIDJSON_HAS_STDSTRING\"")
 
-    string(APPEND CMAKE_CXX_FLAGS " /O2 /MP /MD /GS- /GL /fp:fast /openmp /D \"_ENABLE_EXTENDED_ALIGNED_STORAGE\" /D \"RAPIDJSON_HAS_STDSTRING\"")
-    string(APPEND CMAKE_C_FLAGS " /O2 /MP /MD /GS- /GL /fp:fast /openmp /D \"_ENABLE_EXTENDED_ALIGNED_STORAGE\" /D \"RAPIDJSON_HAS_STDSTRING\"")
-    string(APPEND CMAKE_EXE_LINKER_FLAGS " /OPT:REF /OPT:ICF /LTCG /SUBSYSTEM:WINDOWS")
+    if (${CMAKE_BUILD_TYPE} STREQUAL Release)
+        string(APPEND CMAKE_CXX_FLAGS " /O2 /fp:fast /GL /D \"WINAPI_MAIN_FUNC\"")
+        string(APPEND CMAKE_C_FLAGS " /O2 /fp:fast /GL /D \"WINAPI_MAIN_FUNC\"")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF /SUBSYSTEM:WINDOWS")
+        string(APPEND CMAKE_SHARED_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF")
+    else ()
+        string(APPEND CMAKE_CXX_FLAGS " /D \"DEBUG\"")
+        string(APPEND CMAKE_C_FLAGS " /D \"DEBUG\"")
+    endif ()
 endif ()
 
 if (ANDROID)
@@ -140,7 +161,6 @@ set(CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CONTEXT_BUILD_PLATFOR
 set(CONTEXT_BIN_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
 set(CONTEXT_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/xio CACHE PATH "")
 set(CONTEXT_INCLUDE_DIR ${CONTEXT_SOURCE_DIR}/include CACHE PATH "")
-
 set(CONTEXT_THIRDPARTY_ROOT ${CONTEXT_ROOT_DIR}/sources CACHE PATH "")
 set(CONTEXT_THIRDPARTY_DIR ${CONTEXT_THIRDPARTY_ROOT} CACHE PATH "")
 
@@ -167,17 +187,94 @@ if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
     message(SEND_ERROR "In-source builds are not allowed!")
 endif ()
 
-option(CONTEXT_MAKEFILE_VERBOSE "Verbose mode for make" false)
-if (CONTEXT_MAKEFILE_VERBOSE)
-    set(CMAKE_VERBOSE_MAKEFILE true)
+set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
+#add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
+#add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/doc)
+
+find_package(OGRE QUIET)
+find_package(Bullet QUIET)
+find_package(SDL2 QUIET)
+find_package(OpenAL QUIET)
+find_package(Lua QUIET)
+find_package(yaml-cpp QUIET)
+find_package(sol2 QUIET)
+find_package(ZLIB QUIET)
+find_package(Lua51 QUIET)
+find_package(ZZip QUIET)
+find_package(assimp QUIET)
+
+if (NOT OGRE_FOUND)
+    return()
 endif ()
 
-add_subdirectory(${CONTEXT_ROOT_DIR}/sources ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME})
-add_subdirectory(${CONTEXT_ROOT_DIR}/demo ${CMAKE_CURRENT_BINARY_DIR}/demo)
+list(REMOVE_ITEM OGRE_LIBRARIES "dl")
+foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
+    string(REPLACE "Static" "" X "${I}")
+    if (WIN32 AND ${CMAKE_BUILD_TYPE} STREQUAL Debug)
+        list(APPEND OGRE_LIBRARIES_STATIC "${X}Static_d")
+    else ()
+        list(APPEND OGRE_LIBRARIES_STATIC "${X}Static")
+    endif ()
+endforeach ()
 
-add_dependencies(demo lib-static)
+if (MINGW)
+    list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
+elseif (UNIX AND NOT ANDROID)
+    list(APPEND SYSTEM_LIBRARIES z OpenGL GLX X11 Xrandr dl)
+elseif (ANDROID)
+    list(APPEND SYSTEM_LIBRARIES z.a log android EGL GLESv2 GLESv1_CM OpenSLES dl m.a hidapi ndk_compat omp)
+elseif (MSVC)
+    list(APPEND SYSTEM_LIBRARIES ${ZLIB_LIBRARIES} opengl32 winmm Version imm32 Setupapi)
+elseif (APPLE)
+    list(APPEND SYSTEM_LIBRARIES ${ZLIB_LIBRARIES})
+endif ()
 
-add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR})
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/btogre/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/oggsound/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/pgeometry/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/gorilla/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include)
+list(APPEND CONTEXT_INCLUDE_DIRS ${SOL2_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${SDL2_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${BULLET_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS})
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus)
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2)
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES)
+list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
+set(CONTEXT_DEPENDENCY_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIRS})
+
+file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h sources/*.cpp sources/*.h)
+
+if (ANDROID)
+    list(APPEND SOURCE_FILES ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+    list(APPEND SOURCE_FILES ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
+endif ()
+
+if (NOT ANDROID)
+    add_executable(demo ${SOURCE_FILES})
+else ()
+    add_library(demo SHARED ${SOURCE_FILES})
+endif ()
+
+include_directories(demo demo/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
+target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
+target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
+        ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES})
+target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
+
+install(TARGETS demo
+        CONFIGURATIONS Release
+        RUNTIME DESTINATION .
+        )
+
+file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h)
+
+include_directories(lib-static ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+add_library(lib-static STATIC ${SOURCE_FILES})
+set_target_properties(lib-static PROPERTIES OUTPUT_NAME "xio-static")
+target_precompile_headers(lib-static PUBLIC sources/include/pcheader.h)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 

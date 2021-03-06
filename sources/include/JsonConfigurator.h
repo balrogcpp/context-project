@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -29,32 +29,9 @@
 #include <rapidjson/istreamwrapper.h>
 
 namespace xio {
-class JsonParserException : public std::exception {
- public:
-  JsonParserException() = default;
-
-  explicit JsonParserException(std::string description)
-      : description(std::move(description)) {};
-
-  ~JsonParserException() noexcept override = default;
-
- public:
-  std::string getDescription() const noexcept {
-    return description;
-  }
-
-  const char *what() const noexcept override {
-    return description.c_str();
-  }
-
- protected:
-  std::string description = std::string("Description not specified");
-  size_t code = 0;
-};
 
 class JsonConfigurator {
  public:
-//----------------------------------------------------------------------------------------------------------------------
   explicit JsonConfigurator(const std::string &file = "config.json") {
     Load(file);
   }
@@ -89,6 +66,7 @@ class JsonConfigurator {
       document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name.c_str()), value, allocator);
     }
   }
+
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
   inline T Get(const std::string &str) {
@@ -103,4 +81,5 @@ class JsonConfigurator {
     return t;
   }
 };
+
 }

@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -20,27 +20,26 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "pcheader.h"
 #include "MenuAppState.h"
 #include "DemoDotAppState.h"
+#include "Renderer.h"
 
+using namespace std;
 using namespace xio;
 
 namespace Demo {
 
-void MenuAppState::Clear() {
+void MenuAppState::Cleanup() {
 }
 
 void MenuAppState::OnKeyDown(SDL_Keycode sym) {
-#ifdef DEBUG
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_G) {
-    SwitchNextState(std::make_unique<DemoDotAppState>());
+	ChangeState(make_unique<DemoDotAppState>());
   }
-#endif
 }
 
-void MenuAppState::Create() {
-  renderer_->GetWindow().SetCursorStatus(false, true, true);
+void MenuAppState::Init() {
+//  renderer_->GetWindow().SetCursorStatus(false, true, true);
 }
 
 }

@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,11 @@
 
 #pragma once
 
+#include "view_ptr.h"
+
 namespace xio {
 class JsonConfigurator;
-class YamlConfigurator;
+class Configurator;
 class Renderer;
 class Physics;
 class Sound;
@@ -35,29 +37,29 @@ class InputSequencer;
 class ComponentLocator {
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  static void LocateComponents(YamlConfigurator *conf,
-                               InputSequencer *input,
-                               Renderer *renderer,
-                               Physics *physics,
-                               Sound *sounds,
-                               Overlay *overlay,
-                               DotSceneLoaderB *loader) {
-    conf_ = conf;
-    input_ = input;
-    renderer_ = renderer;
-    physics_ = physics;
-    sound_ = sounds;
-    overlay_ = overlay;
-    loader_ = loader;
+  static void LocateComponents(view_ptr<Configurator> conf,
+							   view_ptr<InputSequencer> input,
+							   view_ptr<Renderer> renderer,
+							   view_ptr<Physics> physics,
+							   view_ptr<Sound> sounds,
+							   view_ptr<Overlay> overlay,
+							   view_ptr<DotSceneLoaderB> loader) {
+	conf_ = conf;
+	input_ = input;
+	renderer_ = renderer;
+	physics_ = physics;
+	sound_ = sounds;
+	overlay_ = overlay;
+	loader_ = loader;
   }
 
  protected:
-  inline static YamlConfigurator *conf_ = nullptr;
-  inline static Renderer *renderer_ = nullptr;
-  inline static Physics *physics_ = nullptr;
-  inline static Sound *sound_ = nullptr;
-  inline static Overlay *overlay_ = nullptr;
-  inline static DotSceneLoaderB *loader_ = nullptr;
-  inline static InputSequencer *input_ = nullptr;
+  inline static view_ptr<Configurator> conf_;
+  inline static view_ptr<Renderer> renderer_;
+  inline static view_ptr<Physics> physics_;
+  inline static view_ptr<Sound> sound_;
+  inline static view_ptr<Overlay> overlay_;
+  inline static view_ptr<DotSceneLoaderB> loader_;
+  inline static view_ptr<InputSequencer> input_;
 };
 }

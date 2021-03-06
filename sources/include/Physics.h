@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -61,9 +61,7 @@ class Physics final : public Component, public Singleton<Physics> {
   Physics();
   virtual ~Physics();
 
-  void Create() final {}
-  void Reset() final {}
-  void Clean() final;
+  void Cleanup() final;
   void Update(float time) final;
   void Resume() final {
     pause_ = false;

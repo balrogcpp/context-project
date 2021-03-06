@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -21,5 +21,34 @@
 //SOFTWARE.
 
 #pragma once
-#include "xio_deps.h"
-#include "xio.h"
+
+#include <Ogre.h>
+#include <string>
+#include <vector>
+#include <tuple>
+
+namespace xio {
+
+class Assets {
+
+  static bool StringSanityCheck(const std::string &str);
+
+  static void LeftTrim(std::string &s);
+
+  static void RightTrim(std::string &s);
+
+  static void TrimString(std::string &s);
+
+  static void PrintPathList(const std::vector<std::tuple<std::string, std::string, std::string>> &path_list);
+
+  static void PrintStringList(const std::vector<std::string> &string_list);
+
+ public:
+  static void LoadResources();
+
+  static void InitGeneralResources(const std::vector<std::string> &path_list,
+							  const std::string &resource_file = "",
+							  bool verbose = false);
+};
+
+} //namespace

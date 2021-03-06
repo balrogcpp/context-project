@@ -32,34 +32,18 @@ else ()
     find_package(OpenGLES2 REQUIRED)
 endif ()
 
-set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
-set(CONTEXT_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN} CACHE PATH "")
+set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT})
+set(CONTEXT_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN})
 set(CONTEXT_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN}/sdk CACHE PATH "")
-set(CONTEXT_EXTERNAL_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/patch CACHE PATH "")
-set(CONTEXT_EXTERNAL_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION} CACHE PATH "")
-set(CONTEXT_EXTERNAL_INCLUDE_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include CACHE PATH "")
+set(CONTEXT_EXTERNAL_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/patch)
+set(CONTEXT_EXTERNAL_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
+set(CONTEXT_EXTERNAL_INCLUDE_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include)
 set(CONTEXT_EXTERNAL_LIB_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib CACHE PATH "")
-set(CONTEXT_EXTERNAL_BIN_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin CACHE PATH "")
-set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
+set(CONTEXT_EXTERNAL_BIN_DIR ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin)
 
 if (ANDROID)
     set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
-
-externalproject_add(target-cpuinfo
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/google/cpu_features.git
-                    GIT_TAG v0.4.1
-                    GIT_SHALLOW true
-                    GIT_PROGRESS false
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
-                    )
 
 externalproject_add(target-sdl
                     EXCLUDE_FROM_ALL true
@@ -83,7 +67,7 @@ externalproject_add(target-bullet3
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
-                    GIT_TAG 3.07
+                    GIT_TAG 3.08
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -92,6 +76,7 @@ externalproject_add(target-bullet3
                     -DCMAKE_RELWITHDEBINFO_POSTFIX=
                     -DCMAKE_DEBUG_POSTFIX=
                     -DCMAKE_MINSIZEREL_POSTFIX=
+                    -DCLAMP_VELOCITIES=0
                     -DBULLET2_MULTITHREADING=true
                     -DBULLET2_USE_OPEN_MP_MULTITHREADING=true
                     -DBUILD_BULLET2_DEMOS=false
@@ -105,6 +90,9 @@ externalproject_add(target-bullet3
                     -DBUILD_SHARED_LIBS=false
                     -DUSE_SOFT_BODY_MULTI_BODY_DYNAMICS_WORLD=false
                     -DINSTALL_LIBS=true
+                    -DUSE_MSVC_AVX=false
+                    -DUSE_MSVC_FAST_FLOATINGPOINT=true
+                    -DUSE_MSVC_RUNTIME_LIBRARY_DLL=true
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -210,26 +198,6 @@ externalproject_add(target-zzip
                     -G "${CMAKE_GENERATOR}"
                     )
 
-externalproject_add(target-rapidjson
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
-                    GIT_TAG v1.1.0
-                    GIT_SHALLOW true
-                    GIT_PROGRESS false
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DRAPIDJSON_BUILD_DOC=false
-                    -DRAPIDJSON_BUILD_EXAMPLES=false
-                    -DRAPIDJSON_BUILD_TESTS=false
-                    -DRAPIDJSON_BUILD_THIRDPARTY_GTEST=false
-                    -DRAPIDJSON_HAS_STDSTRING=true
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
-                    )
-
 externalproject_add(target-yamlcpp
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -245,7 +213,7 @@ externalproject_add(target-yamlcpp
                     -DYAML_CPP_BUILD_TESTS=false
                     -DYAML_CPP_BUILD_TOOLS=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS} -I /opt/android-ndk/sources/android/cpufeatures
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}# -I /opt/android-ndk/sources/android/cpufeatures
                     -G "${CMAKE_GENERATOR}"
                     )
 
@@ -259,28 +227,6 @@ externalproject_add(target-pugixml
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
-                    )
-
-externalproject_add(target-assimp
-                    EXCLUDE_FROM_ALL true
-                    DEPENDS target-zlib target-rapidjson
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/assimp/assimp.git
-                    GIT_TAG v5.0.1
-                    GIT_SHALLOW true
-                    GIT_PROGRESS false
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DASSIMP_BUILD_TESTS=false
-                    -DBUILD_SHARED_LIBS=false
-                    -DASSIMP_BUILD_ASSIMP_TOOLS=false
-                    -DASSIMP_OPT_BUILD_PACKAGES=false
-                    -DASSIMP_BUILD_ZLIB=false
-                    -DASSIMP_NO_EXPORT=true
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -310,7 +256,7 @@ externalproject_add(target-ogre
                     DEPENDS target-zzip target-freetype
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v1.12.10
+                    GIT_TAG v1.12.11
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -358,6 +304,8 @@ externalproject_add(target-ogre
                     -DOGRE_INSTALL_SAMPLES_SOURCE=false
                     -DOGRE_INSTALL_SAMPLES=false
                     -DOGRE_BUILD_TOOLS=false
+                    -DOGRE_INSTALL_PDB=false
+                    -DOGRE_INSTALL_DOCS=false
                     -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
                     -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
                     -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
@@ -404,12 +352,26 @@ externalproject_add(target-sol
                     )
 
 if (ANDROID)
+    externalproject_add(target-cpuinfo
+            EXCLUDE_FROM_ALL true
+            PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+            GIT_REPOSITORY https://github.com/google/cpu_features.git
+            GIT_TAG v0.4.1
+            GIT_SHALLOW true
+            GIT_PROGRESS false
+            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+            -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+            ${CONTEXT_CMAKE_EXTRA_FLAGS}
+            -G "${CMAKE_GENERATOR}"
+            )
+
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
 else ()
 
 endif ()
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rapidjson)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-pugixml)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
@@ -417,63 +379,3 @@ list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 add_custom_target(deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
-
-find_package(OGRE QUIET)
-find_package(Bullet QUIET)
-find_package(SDL2 QUIET)
-find_package(OpenAL QUIET)
-find_package(Lua QUIET)
-find_package(yaml-cpp QUIET)
-find_package(sol2 QUIET)
-find_package(ZLIB QUIET)
-find_package(Lua51 QUIET)
-find_package(ZZip QUIET)
-find_package(assimp QUIET)
-
-if (NOT OGRE_FOUND)
-    return()
-endif ()
-
-########################################################################################################################
-#Hardcoded shit for static build
-########################################################################################################################
-set(CONTEXT_STATIC_DEPENDENCY_LIBS "" CACHE INTERNAL "")
-
-list(REMOVE_ITEM OGRE_LIBRARIES "dl")
-foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
-    string(REPLACE "Static" "" X "${I}")
-    list(APPEND OGRE_LIBRARIES_STATIC "${X}Static")
-endforeach ()
-
-if (MINGW)
-    list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
-elseif (UNIX AND NOT ANDROID)
-    list(APPEND SYSTEM_LIBRARIES z OpenGL GLX X11 Xrandr dl)
-elseif (ANDROID)
-    list(APPEND SYSTEM_LIBRARIES z.a log android EGL GLESv2 GLESv1_CM OpenSLES dl m.a hidapi ndk_compat omp)
-elseif (MSVC)
-    list(APPEND SYSTEM_LIBRARIES ${ZLIB_LIBRARIES} opengl32 winmm Version imm32 Setupapi)
-elseif (APPLE)
-    list(APPEND SYSTEM_LIBRARIES ${ZLIB_LIBRARIES})
-endif ()
-
-list(APPEND CONTEXT_STATIC_DEPENDENCY_LIBS
-     ${OGRE_LIBRARIES_STATIC} ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
-     ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES}
-     )
-
-set(CONTEXT_STATIC_DEPENDENCY_LIBS ${CONTEXT_STATIC_DEPENDENCY_LIBS} CACHE INTERNAL "")
-
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR})
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/btogre/include)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/oggsound/include)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_THIRDPARTY_ROOT}/pgeometry/include)
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include)
-list(APPEND CONTEXT_INCLUDE_DIRS ${SOL2_INCLUDE_DIRS})
-list(APPEND CONTEXT_INCLUDE_DIRS ${SDL2_INCLUDE_DIRS})
-list(APPEND CONTEXT_INCLUDE_DIRS ${BULLET_INCLUDE_DIRS})
-list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS})
-list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus)
-list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2)
-list(APPEND CONTEXT_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES)
-set(CONTEXT_DEPENDENCY_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIRS} CACHE INTERNAL "")

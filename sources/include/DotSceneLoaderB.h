@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@
 #include <OgreVector4.h>
 #include <vector>
 #include <string>
+#include "view_ptr.h"
 
 namespace pugi {
 class xml_node;
@@ -51,7 +52,7 @@ class SinbadCharacterController;
 namespace xio {
 class CameraMan;
 class JsonConfigurator;
-class YamlConfigurator;
+class Configurator;
 class Renderer;
 class Physics;
 class Sound;
@@ -62,15 +63,12 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();
 
-  void Create() final;
-  void Reset() final {}
-  void Clean() final;
+  void Cleanup() final;
   void Pause() final {}
   void Resume() final {}
   void Update(float time) final;
 
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
-  void Load(const std::string &filename, const std::string &group_name, Ogre::SceneNode *root_node);
   float GetHeigh(float x, float z);
 
  private:
@@ -102,33 +100,34 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   static inline std::unique_ptr<Landscape> terrain_;
   static inline std::unique_ptr<Forest> forest_;
   std::unique_ptr<CameraMan> camera_;
-  Ogre::SceneManager *scene_ = nullptr;
-  Ogre::Root *root_ = nullptr;
-  Ogre::SceneNode *root_node_ = nullptr;
-  Ogre::SceneNode *attach_node_ = nullptr;
+  view_ptr<Ogre::SceneManager> scene_;
+  view_ptr<Ogre::Root> root_;
+  view_ptr<Ogre::SceneNode> root_node_;
+  view_ptr<Ogre::SceneNode> attach_node_;
   std::string group_name_;
   std::unique_ptr<SinbadCharacterController> sinbad_;
 
-  static inline YamlConfigurator *conf_ = nullptr;
-  static inline Renderer *renderer_ = nullptr;
-  static inline Physics *physics_ = nullptr;
-  static inline Sound *sound_ = nullptr;
-  static inline Overlay *overlay_ = nullptr;
-  static inline InputSequencer *input_ = nullptr;
+  static inline view_ptr<Configurator> conf_;
+  static inline view_ptr<Renderer> renderer_;
+  static inline view_ptr<Physics> physics_;
+  static inline view_ptr<Sound> sound_;
+  static inline view_ptr<Overlay> overlay_;
+  static inline view_ptr<InputSequencer> input_;
+  
  public:
 //----------------------------------------------------------------------------------------------------------------------
-  static void LocateComponents(YamlConfigurator *conf,
-                               InputSequencer *input,
-                               Renderer *renderer,
-                               Physics *physics,
-                               Sound *sounds,
-                               Overlay *overlay) {
-    conf_ = conf;
-    input_ = input;
-    renderer_ = renderer;
-    physics_ = physics;
-    sound_ = sounds;
-    overlay_ = overlay;
+  static void LocateComponents(view_ptr<Configurator> conf,
+							   view_ptr<InputSequencer> input,
+							   view_ptr<Renderer> renderer,
+							   view_ptr<Physics> physics,
+							   view_ptr<Sound> sounds,
+							   view_ptr<Overlay> overlay) {
+	conf_ = conf;
+	input_ = input;
+	renderer_ = renderer;
+	physics_ = physics;
+	sound_ = sounds;
+	overlay_ = overlay;
   }
 //----------------------------------------------------------------------------------------------------------------------
   static Landscape &GetTerrain() {

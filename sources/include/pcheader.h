@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -21,17 +21,7 @@
 //SOFTWARE.
 
 #pragma once
-#include "xio_deps.h"
-#include "BtOgreExtras.h"
-#include "BtOgreGP.h"
-#include "BtOgrePG.h"
+#include "OgreHeaders.h"
+#include "BtOgre.h"
 #include "OgreOggSound.h"
-#include "PagedGeometry.h"
-#include "GrassLoader.h"
-#include "TreeLoader2D.h"
-#include "TreeLoader3D.h"
-#include "BatchPage.h"
-#include "BatchedGeometry.h"
-#include "ImpostorPage.h"
-#include "WindBatchPage.h"
-#include "WindBatchedGeometry.h"
+#include "view_ptr.h"

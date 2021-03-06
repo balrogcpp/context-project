@@ -1,3 +1,3 @@
-[submodule "scenes"]
-	path = scenes
+[submodule "assets"]
+	path = assets
 	url = https://github.com/roninest/scenes.git

@@ -269,7 +269,7 @@ void OgreOggStreamSound::_updateAudioBuffers() {
 
       return;
     } else {
-      // Clear audio data already played...
+      // Cleanup audio data already played...
       _dequeue();
 
       // Fill with next chunk of audio...
@@ -323,7 +323,7 @@ bool OgreOggStreamSound::_stream(ALuint buffer) {
   int section = 0;
   int result = 0;
 
-  // Create buffer
+  // Init buffer
   data = OGRE_ALLOC_T(char, mBufferSize, Ogre::MEMCATEGORY_GENERAL);
   memset(data, 0, mBufferSize);
 

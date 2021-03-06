@@ -174,7 +174,7 @@ OgreOggSoundManager::~OgreOggSoundManager() {
       if ( !mActionsList->empty() )
       {
           SoundAction obj;
-          // Clear out action list
+          // Cleanup out action list
           while (mActionsList->pop(obj))
           {
               // If parameters specified delete structure
@@ -521,7 +521,7 @@ const StringVector OgreOggSoundManager::getDeviceList() const {
 bool OgreOggSoundManager::createListener() {
   if (mListener) return true;
 
-  // Create a listener
+  // Init a listener
   return ((mListener = dynamic_cast<OgreOggListener *>(
 #if OGRE_VERSION_MAJOR == 2
       mSceneMgr->createMovableObject(OgreOggSoundFactory::FACTORY_TYPE_NAME, &(mSceneMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0)
@@ -729,7 +729,7 @@ OgreOggISound *OgreOggSoundManager::createSound(const std::string &name,
   catch (Exception &e) {
     OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, e.getFullDescription(), "OgreOggSoundManager::createSound()");
   }
-  // Create Movable Sound
+  // Init Movable Sound
   return sound;
 }
 
@@ -1754,7 +1754,7 @@ bool OgreOggSoundManager::_setEAXReverbProperties(EFXEAXREVERBPROPERTIES *pEFXEA
 {
     if (pEFXEAXReverb)
     {
-        // Clear AL Error code
+        // Cleanup AL Error code
         alGetError();
 
         // Determine type of 'Reverb' effect and apply correct settings
@@ -2140,7 +2140,7 @@ void OgreOggSoundManager::_destroyAllSoundsImpl() {
 
   mSharedBuffers.clear();
 
-  // Clear queues
+  // Cleanup queues
   mActiveSounds.clear();
   mPausedSounds.clear();
   mSoundsToReactivate.clear();
@@ -2423,7 +2423,7 @@ void OgreOggSoundManager::_enumDevices() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggSoundManager::_releaseAll() {
-  // Clear all of the various containers of sounds. This will make releasing MUCH faster since each sound won't have to
+  // Cleanup all of the various containers of sounds. This will make releasing MUCH faster since each sound won't have to
   // bother searching for and manually removing themselves from the lists, which really doesn't matter when everything is
   // being destroyed.
   mSoundsToReactivate.clear();
@@ -2631,7 +2631,7 @@ bool OgreOggSoundManager::_registerSharedBuffer(const String &sName, ALuint &buf
 
   SharedBufferList::iterator f;
   if ((f = mSharedBuffers.find(sName)) == mSharedBuffers.end()) {
-    // Create struct
+    // Init struct
     sharedAudioBuffer *buf = OGRE_NEW_T(sharedAudioBuffer, Ogre::MEMCATEGORY_GENERAL);
 
     // Set buffer
