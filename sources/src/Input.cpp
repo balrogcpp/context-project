@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
 //SOFTWARE.
 
 #include "Input.h"
+#include "SDL2.hpp"
 #include <algorithm>
 
 using namespace std;

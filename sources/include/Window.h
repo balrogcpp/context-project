@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 #include "NoCopy.h"
 
 extern "C" {
+#define SDL_MAIN_HANDLED
 #include <SDL2/SDL_syswm.h>
 }
 

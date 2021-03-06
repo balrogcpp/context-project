@@ -32,7 +32,9 @@
 #pragma once
 
 #include "OGRE/Ogre.h"
+extern "C" {
 #include <SDL2/SDL_keycode.h>
+}
 #include "Input.h"
 #include "Singleton.h"
 #ifndef GORILLA_USES_EXCEPTIONS

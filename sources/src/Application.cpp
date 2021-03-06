@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 #include "Overlay.h"
 #include "DesktopIcon.h"
 #include "Exception.h"
+#include "SDL2.hpp"
 #include <iostream>
 
 #ifdef _WIN32
@@ -38,9 +39,9 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 namespace xio {
-Application::Application(int argc, char *argv[]) {
+Application::Application(char **argv) {
   try {
-	Init_();
+	Init_(argv);
   }
   catch (Exception &e) {
 	Message_("Exception occurred", e.getDescription());
@@ -57,7 +58,7 @@ Application::Application(int argc, char *argv[]) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Init_() {
+void Application::Init_(char** argv) {
   auto *logger = new Ogre::LogManager();
   logger->createLog("ogre.log", true, false, true);
   Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
@@ -140,7 +141,7 @@ void Application::Other(uint8_t type, int32_t code, void *data1, void *data2) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Loop_() {
-  bool old_suspend = false;
+  bool suspend_old = false;
 
   while (running_) {
 
@@ -161,9 +162,9 @@ void Application::Loop_() {
 		  engine_->Clean();
 		  engine_->Refresh();
 		  state_manager_.InitNextState();
-		} else if (old_suspend) {
+		} else if (suspend_old) {
 		  engine_->Resume();
-		  old_suspend = false;
+		  suspend_old = false;
 		}
 
 		auto before_update = chrono::system_clock::now().time_since_epoch();
@@ -175,7 +176,7 @@ void Application::Loop_() {
 		engine_->RenderOneFrame();
 	  } else {
 		engine_->Pause();
-		old_suspend = true;
+		suspend_old = true;
 	  }
 
 #ifdef DEBUG
@@ -201,7 +202,7 @@ void Application::Loop_() {
 
 	  fps_counter_++;
 	} else {
-	  running_ = true;
+	  running_ = false;
 	}
   }
 }
@@ -235,6 +236,9 @@ int Application::Message_(const string &caption, const string &message) {
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Main(unique_ptr <AppState> &&scene_ptr) {
   try {
+#if OGRE_COMPILER == OGRE_COMPILER_MSVC
+	  SDL_SetMainReady();
+#endif
 #ifndef DEBUG
 	ios_base::sync_with_stdio(false);
 #endif

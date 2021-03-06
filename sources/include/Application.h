@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -33,13 +33,13 @@ namespace xio {
 
 class Application final : public WindowObserver, public Ogre::LogListener, public ComponentLocator {
  public:
-  explicit Application(int argc, char *argv[]);
+  explicit Application(char** argv = {});
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&scene_ptr);
   int GetCurrentFps() const;
 
  private:
-  void Init_();
+  void Init_(char** argv = {});
   void Loop_();
   void Go_();
   int Message_(const std::string &caption, const std::string &message);

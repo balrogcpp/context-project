@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
 
 #include "pcheader.h"
 #include "CameraMan.h"
-
+#include "SDL2.hpp"
 #include <OgreRoot.h>
 #include <OgreSceneNode.h>
 #include "Input.h"

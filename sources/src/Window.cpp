@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,7 @@
 #include "pcheader.h"
 #include "Window.h"
 #include "Exception.h"
-
-extern "C" {
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
-}
-
+#include "SDL2.hpp"
 #include <string>
 #include <cinttypes>
 
