@@ -31,7 +31,7 @@ namespace fs = filesystem;
 
 namespace xio {
 
-static std::string FindPath(const std::string& file, int depth = 2) {
+static std::string FindPath(const std::string& file, int depth = 3) {
 	string path = file;
 
 	for (int i = 0; i < depth; i++) {
