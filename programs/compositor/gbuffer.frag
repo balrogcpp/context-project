@@ -34,6 +34,7 @@ in vec4 vPosition;
 in vec4 vPrevPosition;
 uniform float cNearClipDistance;
 uniform float cFarClipDistance;
+uniform float uFrameTime;
 #ifdef HAS_ALPHA
 in vec2 vUV;
 uniform sampler2D baseColor;
@@ -45,7 +46,7 @@ void main()
 
     vec2 a = (vPosition.xz / vPosition.w) * 0.5 + 0.5;
     vec2 b = (vPrevPosition.xz / vPrevPosition.w) * 0.5 + 0.5;
-    vec2 velocity = vec2(a - b);
+    vec2 velocity = (0.0166667 / uFrameTime) * vec2(a - b);
 
 #ifdef HAS_ALPHA
         float alpha = texture2D(baseColor, vUV).a;

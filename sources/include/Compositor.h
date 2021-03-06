@@ -55,7 +55,7 @@ class Compositor : public Component, public Singleton<Compositor> {
 
  private:
   std::map<std::string, bool> effects_;
-  GBufferSchemeHandler *gbuff_handler_;
+  std::unique_ptr<GBufferSchemeHandler> gbuff_handler_;
   Ogre::SceneManager *scene_;
   Ogre::Camera *camera_;
   Ogre::Viewport *viewport_;

@@ -22,6 +22,7 @@
 
 #include "pcheader.h"
 #include "Compositor.h"
+#include <iostream>
 
 using namespace std;
 
@@ -29,21 +30,21 @@ namespace xio {
 
 class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
+
   GBufferSchemeHandler() {
 	ref_mat_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer");
-	ref_mat2_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer_alpha");
-	ref_mat3_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer_empty");
+	ref_mat_alpha_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer_alpha");
+	ref_mat_empty_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer_empty");
 
-	if (!ref_mat_ || !ref_mat2_ || !ref_mat3_)
+	if (!ref_mat_ || !ref_mat_alpha_ || !ref_mat_empty_)
 		throw Exception("No available materials for Compositor::GBufferSchemeHandler");
 
 	ref_mat_->load();
-	ref_mat2_->load();
-	ref_mat3_->load();
-
-	gpu_params_.reserve(64);
+	ref_mat_alpha_->load();
+	ref_mat_empty_->load();
   }
 
+//----------------------------------------------------------------------------------------------------------------------
   Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex,
 										const Ogre::String &schemeName,
 										Ogre::Material *originalMaterial,
@@ -66,16 +67,16 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 	if (pass->getNumTextureUnitStates() > 0 && has_alpha && alpha_rejection > 0) {
 	  gBufferTech->setSchemeName(schemeName);
 	  Ogre::Pass *gbufPass = gBufferTech->createPass();
-	  *gbufPass = *ref_mat2_->getTechnique(0)->getPass(0);
+	  *gbufPass = *ref_mat_alpha_->getTechnique(0)->getPass(0);
 
 	  auto texture_albedo = pass->getTextureUnitState(0);
 	  if (texture_albedo) {
 		string texture_name = pass->getTextureUnitState(0)->getTextureName();
-		auto *texPtr3 = gBufferTech->getPass(0)->getTextureUnitState("BaseColor");
+		auto *AlphaTexPtr = gBufferTech->getPass(0)->getTextureUnitState("BaseColor");
 
-		if (texPtr3) {
-		  texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-		  texPtr3->setTextureName(texture_name);
+		if (AlphaTexPtr) {
+		  AlphaTexPtr->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+		  AlphaTexPtr->setTextureName(texture_name);
 		}
 	  }
 	} else {
@@ -84,24 +85,31 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 	  *gbufPass = *ref_mat_->getTechnique(0)->getPass(0);
 	}
 
-	gpu_params_.push_back(gBufferTech->getPass(0)->getVertexProgramParameters());
+	gpu_vp_params_.push_back(gBufferTech->getPass(0)->getVertexProgramParameters());
+	gpu_fp_params_.push_back(gBufferTech->getPass(0)->getFragmentProgramParameters());
 	gBufferTech->getPass(0)->getVertexProgramParameters()->setIgnoreMissingParams(true);
+	gBufferTech->getPass(0)->getFragmentProgramParameters()->setIgnoreMissingParams(true);
 
 	return gBufferTech;
   }
 
 //----------------------------------------------------------------------------------------------------------------------
-  void Update(Ogre::Matrix4 mvp) {
-	for (auto &it : gpu_params_) {
-	  it->setNamedConstant("cWorldViewProjPrev", mvp);
+  void Update(Ogre::Matrix4 mvp_prev, float time) {
+	for (auto &it : gpu_fp_params_) {
+	  it->setNamedConstant("uFrameTime", time);
+	}
+
+	for (auto &it : gpu_vp_params_) {
+	  it->setNamedConstant("cWorldViewProjPrev", mvp_prev);
 	}
   }
 
  private:
   Ogre::MaterialPtr ref_mat_;
-  Ogre::MaterialPtr ref_mat2_;
-  Ogre::MaterialPtr ref_mat3_;
-  vector <Ogre::GpuProgramParametersSharedPtr> gpu_params_;
+  Ogre::MaterialPtr ref_mat_alpha_;
+  Ogre::MaterialPtr ref_mat_empty_;
+  vector <Ogre::GpuProgramParametersSharedPtr> gpu_fp_params_;
+  vector <Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -124,7 +132,7 @@ void Compositor::Update(float time) {
   if (effects_["motion"]) {
 	mvp_prev_ = mvp_;
 	mvp_ = camera_->getProjectionMatrixWithRSDepth()*camera_->getViewMatrix();
-	gbuff_handler_->Update(mvp_prev_);
+	gbuff_handler_->Update(mvp_prev_, time);
   }
 }
 
@@ -154,8 +162,8 @@ void Compositor::Init() {
   compositor_manager.setCompositorEnabled(viewport_, "Main", true);
 
   if (effects_["ssao"] || effects_["motion"] || !gbuff_handler_) {
-	gbuff_handler_ = new GBufferSchemeHandler();
-	Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_, "GBuffer");
+	  gbuff_handler_ = make_unique <GBufferSchemeHandler>();
+	Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_.get(), "GBuffer");
   }
 
   if (effects_["ssao"] || effects_["motion"]) {

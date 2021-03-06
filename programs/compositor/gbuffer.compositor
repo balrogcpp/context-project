@@ -71,6 +71,7 @@ material gbuffer
             {
                 param_named_auto cNearClipDistance near_clip_distance
                 param_named_auto cFarClipDistance far_clip_distance
+                param_named uFrameTime float 0
             }
         }
     }
@@ -112,6 +113,7 @@ material gbuffer_alpha
             {
                 param_named_auto cNearClipDistance near_clip_distance
                 param_named_auto cFarClipDistance far_clip_distance
+                param_named uFrameTime float 0
                 param_named baseColor int 0
             }
         }

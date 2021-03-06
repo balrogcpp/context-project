@@ -50,7 +50,7 @@ bool Assets::StringSanityCheck(const string &str) {
 	return true;
   }
 
-  for (const auto &it : str) {
+  for (auto it : str) {
 	if (isalpha(it) || isdigit(it) || it=='.' || it==',' || it==';' || it=='_' || it=='-' || it=='/') {
 	} else {
 	  return false;

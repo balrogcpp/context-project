@@ -35,14 +35,13 @@ in vec2 oUv0;
 uniform sampler2D SceneSampler;
 uniform sampler2D uTexMotion;
 uniform vec2 texelSize;
-uniform float uFrameTime;
 uniform float uScale;
 
 void main()
 {
   vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-
-  vec2 velocity = uScale * (0.01667/uFrameTime) * texture2D(uTexMotion, oUv0).rg;
+  
+  vec2 velocity = uScale * texture2D(uTexMotion, oUv0).rg;
   float speed = length(velocity / texelSize);
   int nSamples = int(clamp(speed, 1.0, MAX_SAMPLES));
 

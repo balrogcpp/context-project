@@ -81,6 +81,7 @@ void Application::Init_(char** argv) {
   target_fps_ = conf_->Get<int>("global_target_fps");
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Application::~Application() {
 
 }
@@ -169,7 +170,7 @@ void Application::Loop_() {
 
 		auto before_update = chrono::system_clock::now().time_since_epoch();
 		int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
-		float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_)/1e+6;
+		double frame_time = static_cast<double>(micros_before_update - time_of_last_frame_)/1e+6;
 		time_of_last_frame_ = micros_before_update;
 		engine_->Update(frame_time);
 		state_manager_.Update(frame_time);
