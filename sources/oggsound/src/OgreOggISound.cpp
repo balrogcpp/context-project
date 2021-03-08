@@ -152,7 +152,7 @@ void OgreOggISound::_setSharedProperties(sharedAudioBuffer *buffer) {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::play(bool immediate) {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
 #if OGGSOUND_THREADED
   SoundAction action;
@@ -167,7 +167,7 @@ void OgreOggISound::play(bool immediate) {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::stop(bool immediate) {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
 #if OGGSOUND_THREADED
   SoundAction action;
@@ -182,7 +182,7 @@ void OgreOggISound::stop(bool immediate) {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::pause(bool immediate) {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
 #if OGGSOUND_THREADED
   SoundAction action;

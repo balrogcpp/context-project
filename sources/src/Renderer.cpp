@@ -94,7 +94,7 @@ Renderer::Renderer(int w, int h, bool f) {
   params["gamma"] = gamma_ ? true_str : false_str;
   params["FSAA"] = to_string(fsaa_);
 
-  ogre_ = root_->createRenderWindow(window_->GetCaption(), window_->GetSize().first, \
+  render_window_ = root_->createRenderWindow(window_->GetCaption(), window_->GetSize().first, \
                        window_->GetSize().second, window_->IsFullscreen(), &params);
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
@@ -106,7 +106,7 @@ Renderer::Renderer(int w, int h, bool f) {
   //Camera block
   camera_ = scene_->createCamera("Default");
   auto *renderTarget = root_->getRenderTarget(window_->GetCaption());
-  viewport_ = renderTarget->addViewport(camera_);
+  viewport_ = renderTarget->addViewport(camera_.get());
   viewport_->setBackgroundColour(Ogre::ColourValue::Black);
   camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / static_cast<float>(viewport_->getActualHeight()));
   camera_->setAutoAspectRatio(true);
@@ -139,27 +139,23 @@ Renderer::~Renderer() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::CreateCamera() {
-  if (!scene_->hasCamera("Default")) {
-    camera_ = scene_->createCamera("Default");
-    auto *renderTarget = root_->getRenderTarget(window_->GetCaption());
-    renderTarget->removeViewport(0);
-    renderTarget->addViewport(camera_);
-  } else {
-    camera_ = scene_->getCamera("Default");
-  }
+void Renderer::Cleanup() {
 
-  if (camera_) {
-    camera_->setNearClipDistance(0.1f);
-    camera_->setFarClipDistance(5000.0f);
-  }
-
-  camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / viewport_->getActualHeight());
-  camera_->setAutoAspectRatio(true);
-  scene_->setSkyBoxEnabled(false);
-  scene_->setSkyDomeEnabled(false);
-  scene_->setAmbientLight(Ogre::ColourValue::Black);
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+void Renderer::Pause() {
+
+}
+//----------------------------------------------------------------------------------------------------------------------
+void Renderer::Resume() {
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Renderer::Update(float time) {
+  compositor_->Update(time);
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Refresh() {
@@ -182,11 +178,11 @@ void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy
 void Renderer::Resize(int w, int h, bool f) {
   if (f) {
     window_->SetFullscreen(f);
-    ogre_->resize(window_->GetSize().first, window_->GetSize().second);
-    ogre_->setFullscreen(f, window_->GetSize().first, window_->GetSize().second);
+    render_window_->resize(window_->GetSize().first, window_->GetSize().second);
+    render_window_->setFullscreen(f, window_->GetSize().first, window_->GetSize().second);
   } else {
     window_->Resize(w, h);
-    ogre_->resize(w, h);
+    render_window_->resize(w, h);
   }
 }
 

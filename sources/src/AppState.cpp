@@ -28,12 +28,15 @@
 using namespace std;
 
 namespace xio {
-//----------------------------------------------------------------------------------------------------------------------
-AppState::AppState()
-{}
+
+AppState::AppState() {
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------
-AppState::~AppState(){}
+AppState::~AppState() {
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::LoadFromFile(const string &file_name) {
@@ -52,12 +55,6 @@ void AppState::ChangeState(unique_ptr<AppState> &&app_state) {
 void AppState::ChangeState() {
   dirty_ = true;
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-//unique_ptr<AppState> AppState::GetNextState() {
-//  dirty_ = false;
-//  return move(next_);
-//}
 
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::SetNextState(unique_ptr<AppState> &&next_state) {

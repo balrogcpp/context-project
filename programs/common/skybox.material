@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-vertex_program SkyBoxCustomVpGLSL glsl
+vertex_program SkyBoxCustomVp glsl glsles
 {
 	source skybox.vert
     default_params
@@ -29,43 +29,15 @@ vertex_program SkyBoxCustomVpGLSL glsl
     }
 }
 
-vertex_program SkyBoxCustomVpGLSLES glsles
-{
-	source skybox.vert
-    default_params
-    {
-        param_named_auto worldViewProj worldviewproj_matrix
-    }
-}
-
-fragment_program SkyBoxCustomFpGLSL glsl
+fragment_program SkyBoxCustomFp glsl glsles
 {
 	source skybox.frag
     default_params
     {
+        param_named_auto uFogColour fog_colour
+        param_named_auto uFogParams fog_params
         param_named cubemap int 0
     }
-}
-
-fragment_program SkyBoxCustomFpGLSLES glsles
-{
-	source skybox.frag
-    default_params
-    {
-        param_named cubemap int 0
-    }
-}
-
-vertex_program SkyBoxCustomVp unified
-{
-	delegate SkyBoxCustomVpGLSL
-	delegate SkyBoxCustomVpGLSLES
-}
-
-fragment_program SkyBoxCustomFp unified
-{
-	delegate SkyBoxCustomFpGLSL
-	delegate SkyBoxCustomFpGLSLES
 }
 
 material SkyBox

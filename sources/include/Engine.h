@@ -55,7 +55,6 @@ class Engine {
   std::unique_ptr<Sound> sound_;
   std::unique_ptr<Overlay> overlay_;
   std::unique_ptr<DotSceneLoaderB> loader_;
-  std::unique_ptr<AppState> cur_state_;
   std::vector<view_ptr<Component>> components_;
 };
 

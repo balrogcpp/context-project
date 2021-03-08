@@ -47,7 +47,7 @@ class BatchPage : public GeometryPage {
  public:
   /// Default constructor
   BatchPage();
-  ~BatchPage();
+  virtual ~BatchPage();
 
   /// Replace pure virtual GeometryPage::init
   void init(PagedGeometry *geom, const Ogre::Any &data);

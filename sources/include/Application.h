@@ -24,6 +24,7 @@
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 #include <OgreLog.h>
+#include "Singleton.h"
 #include "Engine.h"
 #include "StateManager.h"
 #include "ComponentLocator.h"
@@ -31,15 +32,16 @@
 
 namespace xio {
 
-class Application final : public WindowObserver, public Ogre::LogListener, public ComponentLocator {
+class Application final
+	: public WindowObserver, public Ogre::LogListener, public ComponentLocator, public Singleton<Application> {
  public:
-  explicit Application(char** argv = {});
+  explicit Application(char **argv = {});
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&scene_ptr);
   int GetCurrentFps() const;
 
  private:
-  void Init_(char** argv = {});
+  void Init_(char **argv = {});
   void Loop_();
   void Go_();
   int Message_(const std::string &caption, const std::string &message);
@@ -54,7 +56,7 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   void WriteLogToFile_(const std::string &file_name);
   void PrintLogToConsole_();
 
-  StateManager state_manager_;
+  std::unique_ptr<StateManager> state_manager_;
   std::unique_ptr<Engine> engine_;
 
   bool running_ = true;

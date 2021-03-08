@@ -25,7 +25,6 @@
 #include "Exception.h"
 #include "SDL2.hpp"
 #include <string>
-#include <cinttypes>
 
 using namespace std;
 

@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -30,11 +30,15 @@
 #include "header.vert"
 
 uniform mat4 worldViewProj;
+
 in vec4 position;
 in vec3 uv0;
+
+out float vDepth;
 out vec3 TexCoords; // direction vector representing a 3D texture coordinate
 
 void main() {
     TexCoords = uv0.xyz;
     gl_Position = worldViewProj * position;
+    vDepth = gl_Position.z;
 }

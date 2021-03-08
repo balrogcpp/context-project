@@ -445,7 +445,7 @@ bool OgreOggSoundManager::init(const std::string &deviceName,
   Ogre::LogManager::getSingleton().logMessage("*** --- Using POCO threads for streaming", Ogre::LML_NORMAL);
 #	else
   mUpdateThread = OGRE_NEW_T(std::thread, Ogre::MEMCATEGORY_GENERAL)(OgreOggSoundManager::threadUpdate);
-  Ogre::LogManager::getSingleton().logMessage("*** --- Using BOOST threads for streaming", Ogre::LML_NORMAL);
+  Ogre::LogManager::getSingleton().logMessage("*** --- Using STD threads for streaming", Ogre::LML_NORMAL);
 #	endif
 #endif
 

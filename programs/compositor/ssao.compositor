@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@ fragment_program Crytek_fp glsl glsles
         param_named_auto farClipDistance far_clip_distance
         param_named_auto cFov fov
         param_named_auto shadow_colour shadow_colour
+        param_named_auto fog_params fog_params
 	}
 }
 
@@ -228,7 +229,6 @@ fragment_program Modulate_SSAO_fs glsl glsles
 	{
 		param_named SceneSampler int 0
 		param_named SsaoSampler int 1
-		//param_named exposure float 1.0
 	}
 }
 

@@ -38,26 +38,24 @@ static std::string FindPath(const std::string& file, int depth = 3) {
 		if (fs::exists(path))
 			return path;
 		else
-			path = string("../") + path;
+			path = string("../").append(path);
 	}
 
 	return string();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+static bool CheckSymbol(char c) {
+  return (isalpha(c) || isdigit(c) || c=='.' || c==',' || c==';' || c=='_' || c=='-' || c=='/');
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 bool Assets::StringSanityCheck(const string &str) {
-  if (str[0]=='#') {
+  if (str.empty() || str[0]=='#') {
 	return true;
   }
 
-  for (auto it : str) {
-	if (isalpha(it) || isdigit(it) || it=='.' || it==',' || it==';' || it=='_' || it=='-' || it=='/') {
-	} else {
-	  return false;
-	}
-  }
-
-  return true;
+  return any_of(str.begin(), str.end(), CheckSymbol);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

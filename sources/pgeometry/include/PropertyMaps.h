@@ -99,7 +99,7 @@ class DensityMap {
 
  private:
   DensityMap(Ogre::TexturePtr texture, MapChannel channel);
-  ~DensityMap();
+  virtual ~DensityMap();
 
   static std::map<Ogre::String, DensityMap *> selfList;
   Ogre::String selfKey;
@@ -190,7 +190,7 @@ class ColorMap {
 
  private:
   ColorMap(Ogre::TexturePtr map, MapChannel channel);
-  ~ColorMap();
+  virtual ~ColorMap();
 
   static std::map<Ogre::String, ColorMap *> selfList;
   Ogre::String selfKey;

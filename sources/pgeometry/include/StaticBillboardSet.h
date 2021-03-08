@@ -96,7 +96,7 @@ class StaticBillboardSet {
   StaticBillboardSet(Ogre::SceneManager *mgr,
                      Ogre::SceneNode *rootSceneNode,
                      BillboardMethod method = BB_METHOD_ACCELERATED);
-  ~StaticBillboardSet();
+  virtual ~StaticBillboardSet();
 
   /**
   \brief Adds a billboard to the StaticBillboardSet at the specified position.

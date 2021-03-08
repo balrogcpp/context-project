@@ -116,8 +116,8 @@ void DemoDotAppState::Init() {
 //  anim2->setLoop(true);
 //  anim2->setEnabled(true);
 
-  sound_->CreateSound("ambient", "test.ogg", false);
-  sound_->SetVolume("ambient", 0.5);
-  sound_->PlaySound("ambient");
+//  sound_->CreateSound("ambient", "test.ogg", false);
+//  sound_->SetVolume("ambient", 0.5);
+//  sound_->PlaySound("ambient");
 }
 }

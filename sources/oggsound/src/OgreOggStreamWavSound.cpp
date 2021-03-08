@@ -34,7 +34,6 @@
 
 #include "OgreOggStreamWavSound.h"
 #include <string>
-#include <iostream>
 #include "OgreOggSoundManager.h"
 
 namespace OgreOggSound {
@@ -153,7 +152,7 @@ void OgreOggStreamWavSound::_openImpl(Ogre::DataStreamPtr &fileStream) {
     OGRE_EXCEPT(Ogre::Exception::ERR_FILE_NOT_FOUND, "Not a valid RIFF file!", "OgreOggStreamWavSound::_openImpl()");
   }
 
-  // Init OpenAL buffer
+  // Create OpenAL buffer
   alGetError();
   alGenBuffers(NUM_BUFFERS, &(*mBuffers)[0]);
   if (alGetError() != AL_NO_ERROR)
@@ -380,7 +379,7 @@ void OgreOggStreamWavSound::_updateAudioBuffers() {
 
       return;
     } else {
-      // Cleanup audio data already played...
+      // Clear audio data already played...
       _dequeue();
 
       // Fill with next chunk of audio...
@@ -456,7 +455,7 @@ bool OgreOggStreamWavSound::_stream(ALuint buffer) {
   int bytes = 0;
   int result = 0;
 
-  // Init buffer
+  // Create buffer
   data = OGRE_ALLOC_T(char, mBufferSize, Ogre::MEMCATEGORY_GENERAL);
   memset(data, 0, mBufferSize);
 
@@ -575,7 +574,7 @@ void OgreOggStreamWavSound::_dequeue() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamWavSound::_pauseImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (mSource == AL_NONE) return;
 
@@ -587,7 +586,7 @@ void OgreOggStreamWavSound::_pauseImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamWavSound::_playImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (isPlaying()) return;
 
@@ -669,7 +668,7 @@ void OgreOggStreamWavSound::_updatePlayPosition() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamWavSound::_stopImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (mSource != AL_NONE) {
     // Remove audio data from source

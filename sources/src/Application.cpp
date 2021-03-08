@@ -75,6 +75,7 @@ void Application::Init_(char** argv) {
 #endif
 
   engine_ = make_unique<Engine>();
+  state_manager_ = make_unique<StateManager>();
 
   verbose_ = conf_->Get<bool>("global_verbose");
   lock_fps_ = conf_->Get<bool>("global_lock_fps");
@@ -125,12 +126,12 @@ void Application::Event(const SDL_Event &evt) {
 	if (evt.window.event==SDL_WINDOWEVENT_LEAVE || evt.window.event==SDL_WINDOWEVENT_MINIMIZED) {
 	  suspend_ = true;
 //		renderer_->GetWindow().SetCursorStatus(true, false, false);
-	  state_manager_.Pause();
+	  state_manager_->Pause();
 	} else if (evt.window.event==SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event==SDL_WINDOWEVENT_RESTORED
 		|| evt.window.event==SDL_WINDOWEVENT_MAXIMIZED) {
 	  suspend_ = false;
 //		renderer_->GetWindow().SetCursorStatus(false, true, true);
-	  state_manager_.Resume();
+	  state_manager_->Resume();
 	}
   }
 }
@@ -146,7 +147,7 @@ void Application::Loop_() {
 
   while (running_) {
 
-	if (state_manager_.IsActive()) {
+	if (state_manager_->IsActive()) {
 	  auto before_frame = chrono::system_clock::now().time_since_epoch();
 	  int64_t micros_before_frame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
 
@@ -159,10 +160,10 @@ void Application::Loop_() {
 	  engine_->Capture();
 
 	  if (!suspend_) {
-		if (state_manager_.IsDirty()) {
+		if (state_manager_->IsDirty()) {
 		  engine_->Clean();
 		  engine_->Refresh();
-		  state_manager_.InitNextState();
+		  state_manager_->InitNextState();
 		} else if (suspend_old) {
 		  engine_->Resume();
 		  suspend_old = false;
@@ -173,7 +174,7 @@ void Application::Loop_() {
 		double frame_time = static_cast<double>(micros_before_update - time_of_last_frame_)/1e+6;
 		time_of_last_frame_ = micros_before_update;
 		engine_->Update(frame_time);
-		state_manager_.Update(frame_time);
+		state_manager_->Update(frame_time);
 		engine_->RenderOneFrame();
 	  } else {
 		engine_->Pause();
@@ -209,8 +210,8 @@ void Application::Loop_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
-  if (state_manager_.IsActive()) {
-	state_manager_.InitCurState();
+  if (state_manager_->IsActive()) {
+	state_manager_->InitCurState();
 	running_ = true;
 	auto duration_before_update = chrono::system_clock::now().time_since_epoch();
 	time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
@@ -243,7 +244,7 @@ int Application::Main(unique_ptr <AppState> &&scene_ptr) {
 #ifndef DEBUG
 	ios_base::sync_with_stdio(false);
 #endif
-	state_manager_.SetInitialState(move(scene_ptr));
+	state_manager_->SetInitialState(move(scene_ptr));
 	Go_();
   }
   catch (Exception &e) {

@@ -79,7 +79,7 @@ class PagedGeometry {
                 Ogre::Real pageSize = 100,
                 Ogre::RenderQueueGroupID queue = Ogre::RENDER_QUEUE_6);
 
-  ~PagedGeometry();
+  virtual ~PagedGeometry();
 
   /**
   \brief Sets the camera to use when calculating levels of detail.
@@ -1251,7 +1251,7 @@ class GeometryPageManager {
   GeometryPageManager(PagedGeometry *mainGeom);
 
   /** \brief Internal function - DO NOT USE */
-  ~GeometryPageManager();
+  virtual ~GeometryPageManager();
 
   /**
   \brief Sets the near viewing range of this page manager.

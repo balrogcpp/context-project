@@ -42,7 +42,7 @@ class TreeLoader3D : public PageLoader {
   \param geom The PagedGeometry object that this TreeLoader3D will be assigned to.
   \param bounds The rectangular boundary in which all trees will be placed. */
   TreeLoader3D(PagedGeometry *geom, const TBounds &bounds);
-  ~TreeLoader3D();
+  virtual ~TreeLoader3D();
 
   /** \brief Adds an entity to the scene with the specified location, rotation, and scale.
   \param entity The entity to be added to the scene.

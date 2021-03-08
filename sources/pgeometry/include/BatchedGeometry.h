@@ -56,7 +56,7 @@ class BatchedGeometry : public Ogre::MovableObject {
     /// Constructor
     SubBatch(BatchedGeometry *parent, Ogre::SubEntity *ent);
     /// Destructor
-    ~SubBatch();
+	virtual ~SubBatch();
 
     ///
     void addSubEntity(Ogre::SubEntity *ent, const Ogre::Vector3 &position,
@@ -141,7 +141,7 @@ class BatchedGeometry : public Ogre::MovableObject {
 
   /// Constructor
   BatchedGeometry(Ogre::SceneManager *mgr, Ogre::SceneNode *rootSceneNode);
-  ~BatchedGeometry();
+  virtual ~BatchedGeometry();
 
   TConstSubBatchIterator getSubBatchIterator() const { return TConstSubBatchIterator(m_mapSubBatch); }
   TSubBatchIterator getSubBatchIterator() { return TSubBatchIterator(m_mapSubBatch); }

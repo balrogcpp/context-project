@@ -82,7 +82,7 @@ class ImpostorPage : public GeometryPage {
 
  public:
   ImpostorPage();
-  ~ImpostorPage();
+  virtual ~ImpostorPage();
 
   void init(PagedGeometry *geom, const Ogre::Any &data);
 
@@ -238,7 +238,7 @@ class ImpostorPage : public GeometryPage {
 class ImpostorBatch {
  public:
   static ImpostorBatch *getBatch(ImpostorPage *group, Ogre::Entity *entity);
-  ~ImpostorBatch();
+  virtual ~ImpostorBatch();
 
   inline void build() {
     bbset->build();
@@ -328,7 +328,7 @@ class ImpostorTexture {
   void regenerate();
   static void regenerateAll();
 
-  ~ImpostorTexture();
+  virtual ~ImpostorTexture();
 
  protected:
   ImpostorTexture(ImpostorPage *group, Ogre::Entity *entity);

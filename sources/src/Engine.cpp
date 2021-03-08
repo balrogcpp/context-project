@@ -56,17 +56,17 @@ Engine::Engine() {
   components_ = {sound_.get(), loader_.get(), physics_.get(), renderer_.get(), overlay_.get()};
 
   string graphics_filtration = conf_->Get<string>("graphics_filtration");
-  Ogre::TextureFilterOptions tfo = Ogre::TFO_BILINEAR;
-  if (graphics_filtration=="anisotropic")
-	tfo = Ogre::TFO_ANISOTROPIC;
-  else if (graphics_filtration=="bilinear")
-	tfo = Ogre::TFO_BILINEAR;
-  else if (graphics_filtration=="trilinear")
-	tfo = Ogre::TFO_TRILINEAR;
-  else if (graphics_filtration=="none")
-	tfo = Ogre::TFO_NONE;
+  Ogre::TextureFilterOptions tfo = Ogre::TFO_ANISOTROPIC;
+//  if (graphics_filtration=="anisotropic")
+//	tfo = Ogre::TFO_ANISOTROPIC;
+//  else if (graphics_filtration=="bilinear")
+//	tfo = Ogre::TFO_BILINEAR;
+//  else if (graphics_filtration=="trilinear")
+//	tfo = Ogre::TFO_TRILINEAR;
+//  else if (graphics_filtration=="none")
+//	tfo = Ogre::TFO_NONE;
 
-  renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
+  renderer_->UpdateParams(tfo, 8);
   renderer_->GetWindow().SetCaption(conf_->Get<string>("window_caption"));
   renderer_->Refresh();
 }

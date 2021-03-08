@@ -34,7 +34,6 @@
 
 #include "OgreOggStreamSound.h"
 #include <string>
-#include <iostream>
 #include "OgreOggSoundManager.h"
 
 namespace OgreOggSound {
@@ -269,7 +268,7 @@ void OgreOggStreamSound::_updateAudioBuffers() {
 
       return;
     } else {
-      // Cleanup audio data already played...
+      // Clear audio data already played...
       _dequeue();
 
       // Fill with next chunk of audio...
@@ -323,7 +322,7 @@ bool OgreOggStreamSound::_stream(ALuint buffer) {
   int section = 0;
   int result = 0;
 
-  // Init buffer
+  // Create buffer
   data = OGRE_ALLOC_T(char, mBufferSize, Ogre::MEMCATEGORY_GENERAL);
   memset(data, 0, mBufferSize);
 
@@ -464,7 +463,7 @@ float OgreOggStreamSound::getPlayPosition() const {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamSound::_pauseImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (mSource == AL_NONE) return;
 
@@ -476,7 +475,7 @@ void OgreOggStreamSound::_pauseImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamSound::_playImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (isPlaying())
     return;
@@ -501,7 +500,7 @@ void OgreOggStreamSound::_playImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamSound::_stopImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (mSource != AL_NONE) {
     // Remove audio data from source

@@ -34,7 +34,6 @@
 
 #include "OgreOggStaticSound.h"
 #include <string>
-#include <iostream>
 #include "OgreOggSound.h"
 
 namespace OgreOggSound {
@@ -265,7 +264,7 @@ void OgreOggStaticSound::setSource(ALuint &src) {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStaticSound::_pauseImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (mSource == AL_NONE) return;
 
@@ -278,7 +277,7 @@ void OgreOggStaticSound::_pauseImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStaticSound::_playImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (isPlaying())
     return;
@@ -300,7 +299,7 @@ void OgreOggStaticSound::_playImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStaticSound::_stopImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (mSource == AL_NONE || isStopped()) return;
 

@@ -41,7 +41,6 @@ class AppState
 
   void ChangeState(std::unique_ptr<AppState> &&app_state);
   void ChangeState();
-//  std::unique_ptr<AppState> GetNextState();
   void SetNextState(std::unique_ptr<AppState> &&next_state);
   void LoadFromFile(const std::string &file_name);
   bool IsDirty() const;
@@ -57,4 +56,5 @@ class AppState
   std::unique_ptr<AppState> next_;
   bool dirty_ = false;
 };
-}
+
+} //namespace

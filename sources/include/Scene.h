@@ -20,15 +20,12 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-compositor Main
-{
-    technique
-    {
-        texture scene target_width target_height PF_FLOAT16_RGB chain_scope pooled
+#pragma once
 
-        target scene
-        {
-            input previous
-        }
-    }
-}
+namespace xio {
+
+class Scene {
+
+};
+
+} //namespace

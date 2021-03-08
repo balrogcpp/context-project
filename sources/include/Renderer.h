@@ -27,9 +27,7 @@
 #include "ShadowSettings.h"
 #include "Compositor.h"
 #include "Component.h"
-#include <vector>
-#include <string>
-#include <memory>
+#include "view_ptr.h"
 
 namespace Ogre {
 class Root;
@@ -45,10 +43,10 @@ class Renderer final : public Component, public Singleton<Renderer> {
   Renderer(int w, int h, bool f);
   virtual ~Renderer();
 
-  void Cleanup() final {}
-  void Pause() final {}
-  void Resume() final {}
-  void Update(float time) final { compositor_->Update(time);};
+  void Cleanup() final;
+  void Pause() final;
+  void Resume() final;
+  void Update(float time) final;
 
   void Refresh();
   void UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy);
@@ -57,17 +55,15 @@ class Renderer final : public Component, public Singleton<Renderer> {
   void Resize(int w, int h, bool f);
 
  private:
-  void CreateCamera();
-
   std::unique_ptr<Window> window_;
   std::unique_ptr<ShadowSettings> shadow_;
   std::unique_ptr<Compositor> compositor_;
 
-  Ogre::Root *root_;
-  Ogre::SceneManager *scene_;
-  Ogre::Camera *camera_;
-  Ogre::Viewport *viewport_;
-  Ogre::RenderWindow *ogre_;
+  view_ptr<Ogre::Root> root_;
+  view_ptr<Ogre::SceneManager> scene_;
+  view_ptr<Ogre::Camera> camera_;
+  view_ptr<Ogre::Viewport> viewport_;
+  view_ptr<Ogre::RenderWindow> render_window_;
 
  public:
   Window &GetWindow() {
@@ -82,4 +78,5 @@ class Renderer final : public Component, public Singleton<Renderer> {
     return *compositor_;
   }
 };
-}
+
+} //namespace

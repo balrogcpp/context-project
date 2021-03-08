@@ -34,7 +34,6 @@
 
 #include "OgreOggStaticWavSound.h"
 #include <string>
-#include <iostream>
 #include "OgreOggSoundManager.h"
 
 namespace OgreOggSound {
@@ -165,7 +164,7 @@ void OgreOggStaticWavSound::_openImpl(Ogre::DataStreamPtr &fileStream) {
   }
 
 
-  // Init OpenAL buffer
+  // Create OpenAL buffer
   alGetError();
   alGenBuffers(1, &(*mBuffers)[0]);
   if (alGetError() != AL_NO_ERROR) {
@@ -386,7 +385,7 @@ void OgreOggStaticWavSound::setSource(ALuint &src) {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStaticWavSound::_pauseImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (mSource == AL_NONE) return;
 
@@ -398,7 +397,7 @@ void OgreOggStaticWavSound::_pauseImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStaticWavSound::_playImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (isPlaying())
     return;
@@ -419,7 +418,7 @@ void OgreOggStaticWavSound::_playImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStaticWavSound::_stopImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (mSource == AL_NONE) return;
 

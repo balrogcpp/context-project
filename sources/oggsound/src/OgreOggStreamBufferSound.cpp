@@ -32,7 +32,6 @@
 
 #include "OgreOggStreamBufferSound.h"
 #include <string>
-#include <iostream>
 #include "OgreOggSound.h"
 
 namespace OgreOggSound {
@@ -117,7 +116,7 @@ void OgreOggStreamBufferSound::insertData(char *data, size_t dataLen, bool start
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamBufferSound::_pauseImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (mSource == AL_NONE) return;
 
@@ -130,7 +129,7 @@ void OgreOggStreamBufferSound::_pauseImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamBufferSound::_playImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (isPlaying())
     return;
@@ -148,7 +147,7 @@ void OgreOggStreamBufferSound::_playImpl() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamBufferSound::_stopImpl() {
-  OgreAssert((mState != SS_DESTROYED), R"(mState != SS_DESTROYED)");
+  assert(mState != SS_DESTROYED);
 
   if (mSource == AL_NONE || isStopped()) return;
 

@@ -22,7 +22,6 @@
 
 #include "pcheader.h"
 #include "Compositor.h"
-#include <iostream>
 
 using namespace std;
 

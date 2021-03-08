@@ -49,7 +49,7 @@ class GrassLoader : public PageLoader {
   /** \brief Creates a new GrassLoader object.
   \param geom The PagedGeometry object that this GrassLoader will be assigned to.*/
   GrassLoader(PagedGeometry *geom);
-  ~GrassLoader();
+  virtual ~GrassLoader();
 
   /** \brief Adds a grass layer to the scene.
   \param material The initial grass texture to use (this can be changed later).
@@ -516,7 +516,7 @@ class GrassLayer {
   GrassLayer(PagedGeometry *geom, GrassLoader *ldr);
 
   /** \brief Do not delete a GrassLayer yourself - the GrassLoader will do this automatically when it's deleted */
-  ~GrassLayer();
+  virtual ~GrassLayer();
 
   //Updates the vertex shader used by this layer based on the animate enable status
   void _updateShaders();
@@ -576,7 +576,7 @@ but it also means potentially poor performance if you don't know what you're doi
 class GrassPage : public GeometryPage {
  public:
   void init(PagedGeometry *geom, const Ogre::Any &data);
-  ~GrassPage();
+  virtual ~GrassPage();
 
   void addEntity(Ogre::Entity *ent,
                  const Ogre::Vector3 &position,

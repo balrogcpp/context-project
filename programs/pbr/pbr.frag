@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrei Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -314,10 +314,10 @@ vec4 GetAlbedo(vec2 uv) {
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 ApplyFog(vec3 color) {
-    const float maxy = 500.0;
+//    const float maxy = 500.0;
     float exponent = vDepth * uFogParams.x;
     float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
-    fog_value *= ((maxy - vPosition.y) / maxy);
+//    fog_value *= ((maxy - vPosition.y) / maxy);
     return mix(color, uFogColour, fog_value);
 }
 
@@ -473,7 +473,6 @@ void main()
         float G = GeometricOcclusion(pbrInputs);
         float D = MicrofacetDistribution(pbrInputs);
         vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
-
         float tmp = NdotL * fSpotT * fAtten;
         vec3 colour = tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 

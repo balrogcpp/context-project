@@ -208,13 +208,6 @@ Forest::Forest() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 Forest::~Forest() {
-  for (auto it : pgeometry_)
-    delete it;
-  for (auto it : ploaders_)
-    delete it;
-  for (auto it : gpages_)
-    delete it;
-
   auto &mesh_manager = Ogre::MeshManager::getSingleton();
   if (mesh_manager.getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
     mesh_manager.remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
@@ -222,10 +215,10 @@ Forest::~Forest() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::Update(float time) {
-  for (auto it : pgeometry_)
+  for (auto &it : pgeometry_)
     it->update();
 
-  for (auto it : gpages_)
+  for (auto &it : gpages_)
     it->update();
 }
 
@@ -298,14 +291,16 @@ void Forest::GenerateTreesStatic() {
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateGrassPaged() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 25);
-  pgeometry_.push_back(grass);
   grass->addDetailLevel<GrassPage>(50, 10);//Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
-  ploaders_.push_back(grassLoader);
   grass->setPageLoader(grassLoader);
   grassLoader->setRenderQueueGroup(Ogre::RENDER_QUEUE_MAIN);
   if (heigh_func_)
     grassLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z)); });
+
+  pgeometry_.push_back(unique_ptr<PagedGeometry>(grass));
+  ploaders_.push_back(unique_ptr<PageLoader>(grassLoader));
+
   UpdatePbrParams("GrassCustom");
   UpdatePbrShadowReceiver("GrassCustom");
   GrassLayer *layer = grassLoader->addLayer("GrassCustom");
@@ -328,13 +323,15 @@ void Forest::GenerateTreesPaged() {
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;
   auto *trees = new PagedGeometry(scene->getCamera("Default"), 50);
-  pgeometry_.push_back(trees);
 //  trees->addDetailLevel<WindBatchPage>(100, 20);
   trees->addDetailLevel<Forests::BatchPage>(200, 60);
   auto *treeLoader = new TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
-  ploaders_.push_back(treeLoader);
   if (heigh_func_)
     treeLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z) - 0.1); });
+
+
+  pgeometry_.push_back(unique_ptr<PagedGeometry>(trees));
+  ploaders_.push_back(unique_ptr<PageLoader>(treeLoader));
 
   trees->setPageLoader(treeLoader);
   Ogre::Entity *fir1EntPtr = scene->createEntity("fir1", "fir05_30.mesh");
@@ -369,7 +366,7 @@ void Forest::GenerateTreesPaged() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
-  GenerateGrassPaged();
+//  GenerateGrassPaged();
   GenerateTreesPaged();
   GenerateTreesStatic();
 }
