@@ -28,4 +28,4 @@ ADD sources ./sources
 ADD doc ./doc
 ADD CMakeLists.txt .
 
-RUN mkdir build && cd build && cmake .. && cmake --build . --target xio-pdf && cd ..
+RUN mkdir build && cd build && cmake .. && cmake --build . --target pdf && cd ..

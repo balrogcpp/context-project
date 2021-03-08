@@ -92,8 +92,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_C_FLAGS " -Ofast -DNDEBUG")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
     elseif (${CMAKE_BUILD_TYPE} STREQUAL Debug)
-        string(APPEND CMAKE_CXX_FLAGS " -g -O0 -DDEBUG -D_DEBUG")
-        string(APPEND CMAKE_C_FLAGS " -g -O0 -DDEBUG -D_DEBUG")
+        string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
+        string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     elseif (${CMAKE_BUILD_TYPE} STREQUAL RelWithDebInfo)
         string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
         string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
@@ -119,8 +119,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_C_FLAGS " -fopenmp")
     endif ()
 
-    string(APPEND CONTEXT_CXX_FLAGS " -DSDL_MAIN_HANDLED -DRAPIDJSON_HAS_STDSTRING")
-    string(APPEND CONTEXT_C_FLAGS " -DSDL_MAIN_HANDLED -DRAPIDJSON_HAS_STDSTRING")
+#    string(APPEND CONTEXT_CXX_FLAGS " -DSDL_MAIN_HANDLED -DRAPIDJSON_HAS_STDSTRING")
+#    string(APPEND CONTEXT_C_FLAGS " -DSDL_MAIN_HANDLED -DRAPIDJSON_HAS_STDSTRING")
 
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
@@ -188,8 +188,6 @@ if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
 endif ()
 
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
-#add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
-#add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/doc)
 
 find_package(OGRE QUIET)
 find_package(Bullet QUIET)
@@ -203,7 +201,7 @@ find_package(Lua51 QUIET)
 find_package(ZZip QUIET)
 find_package(assimp QUIET)
 
-if (NOT OGRE_FOUND)
+if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND)
     return()
 endif ()
 
@@ -344,3 +342,4 @@ add_custom_target(install-zip
         )
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
+add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)

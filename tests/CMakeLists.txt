@@ -24,4 +24,5 @@ project(xio-tests)
 
 enable_testing()
 
+#include(CTest)
 include(GoogleTest)
