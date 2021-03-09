@@ -200,6 +200,7 @@ find_package(ZLIB QUIET)
 find_package(Lua51 QUIET)
 find_package(ZZip QUIET)
 find_package(assimp QUIET)
+find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
 
 if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND)
     return()
@@ -258,8 +259,8 @@ endif ()
 
 include_directories(demo demo/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
-target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
-        ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES})
+target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
+        ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES})
 target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
 
 install(TARGETS demo
