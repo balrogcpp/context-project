@@ -119,9 +119,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_C_FLAGS " -fopenmp")
     endif ()
 
-#    string(APPEND CONTEXT_CXX_FLAGS " -DSDL_MAIN_HANDLED -DRAPIDJSON_HAS_STDSTRING")
-#    string(APPEND CONTEXT_C_FLAGS " -DSDL_MAIN_HANDLED -DRAPIDJSON_HAS_STDSTRING")
-
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
         string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
@@ -264,7 +261,6 @@ target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${BULLET_
 target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
 
 install(TARGETS demo
-        CONFIGURATIONS Release
         RUNTIME DESTINATION .
         )
 
@@ -289,20 +285,17 @@ add_custom_target(zip-deps
         )
 
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB}
-        CONFIGURATIONS Release
         PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
         DESTINATION .
         )
 
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/start.sh
-        CONFIGURATIONS Release
         PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
         DESTINATION .
         )
 
 file(GLOB CONTEXT_MEDIA_FILES ${CMAKE_SOURCE_DIR}/tmp/*)
 install(DIRECTORY ${CONTEXT_MEDIA_FILES}
-        CONFIGURATIONS Release
         DESTINATION .
         )
 
