@@ -203,16 +203,6 @@ if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR 
     return()
 endif ()
 
-list(REMOVE_ITEM OGRE_LIBRARIES "dl")
-foreach (I IN LISTS OGRE_PLUGINS OGRE_LIBRARIES)
-    string(REPLACE "Static" "" X "${I}")
-    if (WIN32 AND ${CMAKE_BUILD_TYPE} STREQUAL Debug)
-        list(APPEND OGRE_LIBRARIES_STATIC "${X}Static_d")
-    else ()
-        list(APPEND OGRE_LIBRARIES_STATIC "${X}Static")
-    endif ()
-endforeach ()
-
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (UNIX AND NOT ANDROID)
@@ -256,8 +246,8 @@ endif ()
 
 include_directories(demo demo/include ${CONTEXT_DEPENDENCY_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
-target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
-        ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES})
+target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
+        ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES})
 target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
 
 install(TARGETS demo

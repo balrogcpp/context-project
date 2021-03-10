@@ -299,7 +299,7 @@ externalproject_add(target-assimp
 
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zzip target-freetype target-assimp
+                    DEPENDS target-zzip target-freetype
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v1.12.11
@@ -336,7 +336,7 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_COMPONENT_TERRAIN=true
                     -DOGRE_BUILD_PLUGIN_FREEIMAGE=false
                     -DOGRE_BUILD_PLUGIN_EXRCODEC=false
-                    -DOGRE_BUILD_PLUGIN_ASSIMP=true
+                    -DOGRE_BUILD_PLUGIN_ASSIMP=false
                     -DOGRE_BUILD_PLUGIN_STBI=true
                     -DOGRE_BUILD_PLUGIN_BSP=false
                     -DOGRE_BUILD_PLUGIN_PCZ=false
