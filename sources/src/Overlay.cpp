@@ -71,4 +71,5 @@ void Overlay::Show() {
 void Overlay::Hide() {
   screen_->hide();
 }
-}
+
+} //namespace

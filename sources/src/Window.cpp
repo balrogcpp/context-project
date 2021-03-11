@@ -136,4 +136,5 @@ void Window::SetFullscreen(bool f) noexcept {
 	SDL_SetWindowSize(window_, w_, h_);
   }
 }
-}
+
+} //namespace

@@ -39,4 +39,5 @@ class SubComponent : public NoCopy {
     conf_ = conf;
   }
 };
-}
+
+} //namespace

@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrey Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -20,14 +20,26 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#pragma once
-#include <lua.hpp>
-#include "Gorilla.h"
-#include "Component.h"
-#include "Singleton.h"
+#include "pcheader.h"
+
+#include "ComponentLocator.h"
 
 namespace xio {
-class LuaConsole : public Component, public Singleton<LuaConsole> {
- public:
-};
+
+void ComponentLocator::LocateComponents(view_ptr<Configurator> conf,
+							 view_ptr<InputSequencer> input,
+							 view_ptr<Renderer> renderer,
+							 view_ptr<Physics> physics,
+							 view_ptr<Sound> sounds,
+							 view_ptr<Overlay> overlay,
+							 view_ptr<DotSceneLoaderB> loader) {
+  conf_ = conf;
+  input_ = input;
+  renderer_ = renderer;
+  physics_ = physics;
+  sound_ = sounds;
+  overlay_ = overlay;
+  loader_ = loader;
 }
+
+} //namespace

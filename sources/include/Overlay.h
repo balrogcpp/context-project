@@ -59,4 +59,5 @@ class Overlay final : public Component, public Singleton<Overlay> {
     return console_.get();
   }
 };
-}
+
+} //namespace

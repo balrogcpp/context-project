@@ -115,10 +115,10 @@ Renderer::Renderer(int w, int h, bool f) {
   Assets::InitGeneralResources({"programs", "assets"}, "resources.list");
 
   //RTSS block
-  rtss::InitRtss();
+  xio::InitRtss();
   Assets::LoadResources();
-  rtss::CreateRtssShaders();
-//  rtss::InitInstansing();
+  xio::CreateRtssShaders();
+//  xio::InitInstansing();
 
   //Shadow block
   shadow_ = make_unique<ShadowSettings>();
@@ -130,7 +130,7 @@ Renderer::Renderer(int w, int h, bool f) {
   compositor_->EnableEffect("hdr", conf_->Get<bool>("compositor_use_hdr"));
   compositor_->EnableEffect("motion", conf_->Get<bool>("compositor_use_motion"));
   compositor_->Init();
-//  rtss::InitPssm(shadow_->GetSplitPoints());
+//  xio::InitPssm(shadow_->GetSplitPoints());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

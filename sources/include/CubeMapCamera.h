@@ -27,9 +27,10 @@
 namespace xio {
 class CubeMapCamera final : public Ogre::RenderTargetListener {
  public:
-//----------------------------------------------------------------------------------------------------------------------
+
   CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size);
   virtual ~CubeMapCamera();
+
   //----------------------------------------------------------------------------------------------------------------------
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
@@ -41,10 +42,10 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   Ogre::SceneManager *scene_;
   Ogre::Camera *camera_;
   Ogre::SceneNode *camera_node_;
-  std::shared_ptr<Ogre::Texture> cubemap_;
   std::array<Ogre::RenderTarget*, 6> targets_;
 
  public:
-  std::shared_ptr<Ogre::Texture> GetDyncubemap() const;
+  std::shared_ptr<Ogre::Texture> cubemap_;
 };
-}
+
+} //namespace

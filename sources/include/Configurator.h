@@ -30,22 +30,12 @@ namespace xio {
 
 class Configurator : public NoCopy {
  public:
-  explicit Configurator(const std::string &file = "config.yaml") {
-    Load(file);
-  }
+  explicit Configurator(const std::string &file = "config.yaml");
 
-  Configurator(const Configurator &) = delete;
-  Configurator &operator=(const Configurator &) = delete;
-  virtual ~Configurator() {}
+  virtual ~Configurator();
 
-  void Load(const std::string &file) {
-    document_.reset();
-    document_ = YAML::LoadFile(file);
-  }
- private:
-  YAML::Node document_;
+  void Load(const std::string &file);
 
- public:
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
   void AddMember(const std::string &name, T &&value) {
@@ -53,12 +43,11 @@ class Configurator : public NoCopy {
 //	if (!document_.HasMember(name)) {
 //	  document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name.c_str()), value, allocator);
 //	}
-
   }
 
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
-  inline T Get(const std::string &str) {
+  T Get(const std::string &str) {
     T t{};
 
     try {
@@ -69,5 +58,9 @@ class Configurator : public NoCopy {
 
     return t;
   }
+
+ private:
+  YAML::Node document_;
 };
-}
+
+} //namespace

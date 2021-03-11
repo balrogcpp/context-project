@@ -54,4 +54,5 @@ class VerboseListener final : public InputObserver {
 	verbose_ = print;
   }
 };
-}
+
+} //namespace

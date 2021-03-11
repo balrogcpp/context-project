@@ -60,4 +60,5 @@ class ShadowSettings : public NoCopy {
   int16_t tex_size_;
   int tex_format_;
 };
-}
+
+} //namespace

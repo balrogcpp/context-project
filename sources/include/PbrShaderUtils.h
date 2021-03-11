@@ -43,4 +43,5 @@ void UpdatePbrIbl(const std::string &material, bool realtime);
 void UpdatePbrShadowReceiver(const std::string &material);
 
 void UpdatePbrShadowCaster(const std::string &material);
-}
+
+} //namespace

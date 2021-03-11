@@ -142,4 +142,5 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
     return *forest_;
   }
 };
-}
+
+} //namespace

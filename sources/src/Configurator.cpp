@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrey Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +20,23 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#pragma once
-#include <lua.hpp>
-#include "Component.h"
-#include "Singleton.h"
+#include "pcheader.h"
+
+#include "Configurator.h"
 
 namespace xio {
-class LuaServer : public Component, public Singleton<LuaServer> {
- public:
-};
+
+Configurator::Configurator(const std::string &file) {
+  Load(file);
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+Configurator::~Configurator() = default;
+
+//----------------------------------------------------------------------------------------------------------------------
+void Configurator::Load(const std::string &file) {
+  document_.reset();
+  document_ = YAML::LoadFile(file);
+}
+
+} //namespace

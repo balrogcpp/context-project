@@ -25,7 +25,6 @@
 #include "NoCopy.h"
 
 extern "C" {
-#define SDL_MAIN_HANDLED
 #include <SDL2/SDL_syswm.h>
 }
 
@@ -72,4 +71,5 @@ class Window : public NoCopy {
 
   void SetFullscreen(bool f) noexcept;
 };
-}
+
+} //namespace

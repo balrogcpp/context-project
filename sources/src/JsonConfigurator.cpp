@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrey Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -20,40 +20,32 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#pragma once
+#include "pcheader.h"
 
-#include <OgreMesh.h>
-#include <string>
-
-namespace Ogre {
-class VertexDeclaration;
-class Entity;
-}
+#include "JsonConfigurator.h"
 
 namespace xio {
 
-bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration);
+JsonConfigurator::JsonConfigurator(const std::string &file) {
+  Load(file);
+}
 
-void EnsureHasTangents(Ogre::MeshPtr mesh);
+//----------------------------------------------------------------------------------------------------------------------
+JsonConfigurator::~JsonConfigurator() = default;
 
-void UpdateMeshEdgeList(Ogre::Entity *entity);
+//----------------------------------------------------------------------------------------------------------------------
+void JsonConfigurator::Load(const std::string &file_name) {
+  std::ifstream ifs(file_name);
+  rapidjson::IStreamWrapper isw(ifs);
+  document_.ParseStream(isw);
 
-void UpdateMeshMaterial(Ogre::MeshPtr mesh,
-						bool cast_shadows = true,
-						const std::string &material_name = "",
-						bool planar_reflection = false,
-						bool active_ibl = false);
+  if (ifs.is_open())
+	ifs.close();
+  else
+	throw Exception("Error during parsing of " + file_name + " : can't open file_name");
 
-void UpdateMeshMaterial(const std::string &mesh_name,
-						bool cast_shadows = true,
-						const std::string &material_name = "",
-						bool planar_reflection = false,
-						bool active_ibl = false);
-
-void UpdateEntityMaterial(Ogre::Entity *entity,
-						  bool cast_shadows = true,
-						  const std::string &material_name = "",
-						  bool planar_reflection = false,
-						  bool active_ibl = false);
+  if (!document_.IsObject())
+	throw Exception("Error during parsing of " + file_name + " : file_name is empty or incorrect");
+}
 
 } //namespace

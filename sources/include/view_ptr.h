@@ -1,3 +1,4 @@
+#pragma once
 #ifndef JSS_OBJECT_PTR_HPP
 #define JSS_OBJECT_PTR_HPP
 

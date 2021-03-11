@@ -51,4 +51,5 @@ class Sound final : public Component, public Singleton<Sound> {
  private:
   view_ptr<OgreOggSound::OgreOggSoundManager> manager_;
 };
-}
+
+} //namespace

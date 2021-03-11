@@ -62,4 +62,5 @@ class Compositor : public Component, public Singleton<Compositor> {
   Ogre::Matrix4 mvp_;
   Ogre::Matrix4 mvp_prev_;
 };
-}
+
+} //namespace

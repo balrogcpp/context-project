@@ -106,9 +106,4 @@ void CubeMapCamera::Init_(Ogre::SceneNode *creator, unsigned int tex_size) {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-shared_ptr<Ogre::Texture> CubeMapCamera::GetDyncubemap() const {
-  return cubemap_;
-}
-
 } //namespace

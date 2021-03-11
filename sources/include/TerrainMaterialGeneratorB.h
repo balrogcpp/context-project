@@ -32,7 +32,7 @@ namespace xio {
 class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
  public:
   TerrainMaterialGeneratorB();
-  ~TerrainMaterialGeneratorB() override;
+  virtual ~TerrainMaterialGeneratorB();
 
   class SM2Profile : public Ogre::TerrainMaterialGenerator::Profile {
    public:
@@ -62,4 +62,5 @@ class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
     int8_t max_layers_ = 4;
   };
 };
-}
+
+} //namespace

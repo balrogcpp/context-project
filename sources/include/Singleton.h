@@ -42,4 +42,4 @@ template <typename T> class Singleton : public NoCopy{
   inline static bool instanced_ = false;
 };
 
-}
+} //namespace

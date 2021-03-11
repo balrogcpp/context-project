@@ -60,4 +60,5 @@ class Forest final : public ComponentLocator, public SubComponent {
 	heigh_func_ = heigh_func;
   }
 };
-}
+
+} //namespace

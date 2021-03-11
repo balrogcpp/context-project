@@ -146,4 +146,3 @@ vertex_program Ogre/Compositor/StdQuad_Tex4_vp unified
 	delegate Ogre/Compositor/StdQuad_Tex4_GLSL_vp
 	delegate Ogre/Compositor/StdQuad_Tex4_GLSLES_vp
 }
-

@@ -52,4 +52,5 @@ class Landscape final : public ComponentLocator, public SubComponent {
 
   std::unique_ptr<Ogre::TerrainGroup> terrain_;
 };
-}
+
+} //namespace

@@ -44,4 +44,5 @@ class Component : public NoCopy {
     conf_ = conf;
   }
 };
-}
+
+} //namespace

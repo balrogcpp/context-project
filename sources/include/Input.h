@@ -113,4 +113,5 @@ class WindowObserver {
   virtual void Quit() {}
   virtual void Other(uint8_t type, int code, void *data1, void *data2) {}
 };
+
 } //namespace

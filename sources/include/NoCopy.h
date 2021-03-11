@@ -32,4 +32,4 @@ class NoCopy {
   virtual ~NoCopy() = default;
 };
 
-}
+} //namespace

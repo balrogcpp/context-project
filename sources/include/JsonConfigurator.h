@@ -21,6 +21,9 @@
 //SOFTWARE.
 
 #pragma once
+#include "NoCopy.h"
+#include "Exception.h"
+
 #include <filesystem>
 #include <string>
 #include <fstream>
@@ -30,46 +33,28 @@
 
 namespace xio {
 
-class JsonConfigurator {
+class JsonConfigurator : public NoCopy {
  public:
-  explicit JsonConfigurator(const std::string &file = "config.json") {
-    Load(file);
-  }
+  explicit JsonConfigurator(const std::string &file = "config.json");
 
-  JsonConfigurator(const JsonConfigurator &) = delete;
-  JsonConfigurator &operator=(const JsonConfigurator &) = delete;
-  virtual ~JsonConfigurator() {}
+//----------------------------------------------------------------------------------------------------------------------
+  virtual ~JsonConfigurator();
 
-  void Load(const std::string &file) {
-    std::ifstream ifs(file);
-    rapidjson::IStreamWrapper isw(ifs);
-    document_.ParseStream(isw);
+//----------------------------------------------------------------------------------------------------------------------
+  void Load(const std::string &file_name);
 
-    if (ifs.is_open())
-      ifs.close();
-    else
-      throw JsonParserException("Error during parsing of " + file + " : can't open file");
-
-    if (!document_.IsObject())
-      throw JsonParserException("Error during parsing of " + file + " : file is empty or incorrect");
-  }
-
- private:
-  rapidjson::Document document_;
-
- public:
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
-  void AddMember(const std::string &name, T &&value) {
+  void AddMember(const char *str, T &&value) {
     static auto &allocator = document_.GetAllocator();
-    if (!document_.HasMember(name)) {
-      document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name.c_str()), value, allocator);
+    if (!document_.HasMember(str)) {
+      document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(str), value, allocator);
     }
   }
 
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
-  inline T Get(const std::string &str) {
+  inline T Get(const char *str) {
     T t{};
 
     try {
@@ -80,6 +65,9 @@ class JsonConfigurator {
 
     return t;
   }
+
+ private:
+  rapidjson::Document document_;
 };
 
-}
+} //namespace

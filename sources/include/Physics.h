@@ -119,4 +119,5 @@ class Physics final : public Component, public Singleton<Physics> {
     callback_ = callback;
   }
 };
-}
+
+} //namespace

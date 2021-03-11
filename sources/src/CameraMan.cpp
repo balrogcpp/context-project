@@ -376,4 +376,5 @@ namespace xio {
   int CameraMan::GetStyle() const noexcept {
 	return style_;
   }
-};
+
+} //namespace

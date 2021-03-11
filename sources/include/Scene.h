@@ -22,9 +22,13 @@
 
 #pragma once
 
+#include "Singleton.h"
+#include "Exception.h"
+
 namespace xio {
 
-class Scene {
+class Scene : public Singleton<Scene> {
+ public:
 
 };
 

@@ -53,4 +53,5 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node);
 Ogre::ColourValue ParseColour(pugi::xml_node &xml_node);
 
 Ogre::ColourValue ParseProperty(pugi::xml_node &xml_node);
-}
+
+} //namespace

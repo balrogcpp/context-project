@@ -27,11 +27,11 @@
 
 using namespace std;
 
-namespace rtss {
+namespace xio {
 
 void InitRtss() {
   if (!Ogre::RTShader::ShaderGenerator::initialize()) {
-	throw RtssException("RTTS System failed to initialize");
+	throw Exception("RTTS System failed to initialize");
   }
 }
 
@@ -55,6 +55,7 @@ void CreateRtssShaders(const string &cache_path) {
   shader_generator->setShaderCachePath(cache_path);
   Ogre::MaterialManager::getSingleton().addListener(new ShaderResolver(shader_generator));
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InitPssm(const vector<float> &split_points) {
   Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();

@@ -44,4 +44,5 @@ class DesktopIcon : public NoCopy {
   std::string output_;
   const std::string skeleton_;
 };
-}
+
+} //namespace

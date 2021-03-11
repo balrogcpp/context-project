@@ -28,4 +28,5 @@ class Entity : public ComponentLocator {
  public:
   virtual void Update(float time) = 0;
 };
-}
+
+} //namespace

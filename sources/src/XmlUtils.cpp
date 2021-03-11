@@ -175,4 +175,5 @@ Ogre::ColourValue ParseProperty(pugi::xml_node &xml_node) {
 						   xml_node.attribute("a")
 						   ? Ogre::StringConverter::parseReal(xml_node.attribute("a").value()) : 1);
 }
-}
+
+} //namespace

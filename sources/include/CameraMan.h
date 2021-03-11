@@ -99,4 +99,5 @@ class CameraMan final : public Entity, public InputObserver {
 
   int GetStyle() const noexcept;
 };
-}
+
+} //namespace
