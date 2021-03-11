@@ -26,10 +26,10 @@ include(CMakeDependentOption)
 include(ExternalProject)
 find_package(Git REQUIRED)
 
-if (NOT ANDROID)
-    find_package(OpenGL REQUIRED)
-else ()
+if (ANDROID)
     find_package(OpenGLES2 REQUIRED)
+else ()
+    find_package(OpenGL REQUIRED)
 endif ()
 
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT})
@@ -299,7 +299,7 @@ externalproject_add(target-assimp
 
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zzip target-freetype
+                    DEPENDS target-zzip target-freetype target-assimp
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v1.12.11

@@ -130,8 +130,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     endif ()
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp /D \"RAPIDJSON_HAS_STDSTRING\"")
-    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp /D \"RAPIDJSON_HAS_STDSTRING\"")
+    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp")
+    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp")
 
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
         string(APPEND CMAKE_CXX_FLAGS " /O2 /fp:fast /GL /D \"WINAPI_MAIN_FUNC\"")
@@ -265,6 +265,8 @@ set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
+elseif(UNIX)
+    file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/*.so*)
 endif ()
 
 add_custom_target(zip-deps
