@@ -31,7 +31,7 @@ ADD dependencies/patch ./dependencies/patch
 ADD CMakeLists.txt .
 ADD ./CMake ./CMake
 
-RUN apt-get install -y git gnutls-bin openssl libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
+RUN apt-get update && apt-get install -y git gnutls-bin openssl libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
     && git config --global http.sslVerify false \
     && git config --global http.postBuffer 1048576000 \
     && mkdir -p build-windows build-linux \
