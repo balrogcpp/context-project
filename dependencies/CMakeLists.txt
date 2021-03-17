@@ -271,6 +271,22 @@ externalproject_add(target-rapidjson
                     -G "${CMAKE_GENERATOR}"
                     )
 
+externalproject_add(target-json
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/nlohmann/json.git
+                    GIT_TAG v3.9.1
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    -DJSON_BuildTests=false
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
 externalproject_add(target-assimp
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-rapidjson
