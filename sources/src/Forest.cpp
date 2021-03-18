@@ -1,7 +1,7 @@
 //Cpp file for dummy context2_deps target
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -252,7 +252,7 @@ void Forest::GenerateGrassStatic() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Forest::GenerateTreesStatic() {
+void Forest::GenerateRocksStatic() {
   // create our grass mesh, and Init a grass entity from it
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   Ogre::Entity *rock = scene->createEntity("Rock", "rock.mesh");
@@ -366,9 +366,9 @@ void Forest::GenerateTreesPaged() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
-//  GenerateGrassPaged();
+  GenerateGrassPaged();
   GenerateTreesPaged();
-  GenerateTreesStatic();
+  GenerateRocksStatic();
 }
 
 } //namespace

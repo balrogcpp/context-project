@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -177,7 +177,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 //  defaultimp.layerList[2].textureNames.push_back("Rock20_diffspec.dds");
 //  defaultimp.layerList[2].textureNames.push_back("Rock20_normheight.dds");
 
-  for (auto pPageElement : xml_node.children("terrain")) {
+  for (auto &pPageElement : xml_node.children("terrain")) {
 	int pageX = Ogre::StringConverter::parseInt(pPageElement.attribute("x").value());
 	int pageY = Ogre::StringConverter::parseInt(pPageElement.attribute("y").value());
 

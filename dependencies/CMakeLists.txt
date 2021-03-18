@@ -1,6 +1,6 @@
 #MIT License
 #
-#Copyright (c) 2020 Andrey Vasiliev
+#Copyright (c) 2021 Andrew Vasiliev
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -402,7 +402,7 @@ externalproject_add(target-sol
                     DEPENDS target-lua
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/ThePhD/sol2.git
-                    GIT_TAG v3.2.1
+                    GIT_TAG v3.2.3
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
