@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include "OGRE/Ogre.h"
+#include <Ogre.h>
 extern "C" {
 #include <SDL2/SDL_keycode.h>
 }

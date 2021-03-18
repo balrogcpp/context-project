@@ -21,6 +21,7 @@
 //SOFTWARE.
 
 #pragma once
+
 #include "Singleton.h"
 #include "Input.h"
 #include "Gorilla.h"

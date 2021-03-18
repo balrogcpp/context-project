@@ -58,7 +58,7 @@ class _OGGSOUND_EXPORT OgreOggSoundFactory : public Ogre::MovableObjectFactory {
   static Ogre::String FACTORY_TYPE_NAME;
 
   const Ogre::String &getType(void) const;
-  void destroyInstance(Ogre::MovableObject *obj);
+  void destroyInstance(Ogre::MovableObject *obj) override;
 };
 }
 

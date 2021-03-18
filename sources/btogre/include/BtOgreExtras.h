@@ -13,8 +13,7 @@
  * =====================================================================================
  */
 
-#ifndef _BtOgreShapes_H_
-#define _BtOgreShapes_H_
+#pragma once
 
 #include <btBulletDynamicsCommon.h>
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
@@ -264,10 +263,3 @@ class DebugDrawer : public btIDebugDraw {
 };
 
 }
-
-#endif
-
-
-
-
-

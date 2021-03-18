@@ -14,8 +14,7 @@
  * =====================================================================================
  */
 
-#ifndef _BtOgrePG_H_
-#define _BtOgrePG_H_
+#pragma once
 
 #include <btBulletDynamicsCommon.h>
 #include <Ogre.h>
@@ -134,5 +133,3 @@ class AnimatedMeshToShapeConverter : public VertexIndexToShape {
 };
 
 }
-
-#endif

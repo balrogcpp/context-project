@@ -142,4 +142,3 @@ class _OGGSOUND_EXPORT OgreOggSoundRecord {
 };
 
 }
-

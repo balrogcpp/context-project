@@ -14,8 +14,7 @@
  * =====================================================================================
  */
 
-#ifndef _BtOgreGP_H_
-#define _BtOgreGP_H_
+#pragma once
 
 #include "BtOgreExtras.h"
 #include <btBulletDynamicsCommon.h>
@@ -73,5 +72,3 @@ class RigidBodyState : public btMotionState {
 //Softbody-Ogre connection goes here!
 
 }
-
-#endif

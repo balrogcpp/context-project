@@ -81,7 +81,7 @@ class LocklessQueue {
   @remarks
       Added query function for quickly testing status (Ian Stangoe)
   */
-  [[nodiscard]] bool empty() const {
+  bool empty() const {
     return (m_head == m_tail);
   }
 
@@ -93,4 +93,5 @@ class LocklessQueue {
     return true;
   }
 };
-};
+
+}
