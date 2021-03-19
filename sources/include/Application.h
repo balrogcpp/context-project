@@ -41,7 +41,6 @@ class Application final
   int GetCurrentFps() const;
 
  private:
-  void Init_(char **argv = {});
   void Loop_();
   void Go_();
   int Message_(const std::string &caption, const std::string &message);

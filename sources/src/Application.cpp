@@ -41,7 +41,27 @@ using namespace std;
 namespace xio {
 Application::Application(char **argv) {
   try {
-	Init_(argv);
+	auto *logger = new Ogre::LogManager();
+	logger->createLog("ogre.log", true, false, true);
+	Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+#ifdef DEBUG
+	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
+#else
+	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
+#endif
+
+#if OGRE_PLATFORM==OGRE_PLATFORM_LINUX
+	DesktopIcon icon;
+	icon.Init();
+	icon.Save("XioDemo");
+#endif
+
+	engine_ = make_unique<Engine>();
+	state_manager_ = make_unique<StateManager>();
+
+	verbose_ = conf_->Get<bool>("global_verbose");
+	lock_fps_ = conf_->Get<bool>("global_lock_fps");
+	target_fps_ = conf_->Get<int>("global_target_fps");
   }
   catch (Exception &e) {
 	Message_("Exception occurred", e.getDescription());
@@ -55,31 +75,6 @@ Application::Application(char **argv) {
 	Message_("Exception occurred (exception)", e.what());
 	throw e;
   }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Init_(char** argv) {
-  auto *logger = new Ogre::LogManager();
-  logger->createLog("ogre.log", true, false, true);
-  Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
-#ifdef DEBUG
-  Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
-#else
-  Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
-#endif
-
-#if OGRE_PLATFORM==OGRE_PLATFORM_LINUX
-  DesktopIcon icon;
-  icon.Init();
-  icon.Save("XioDemo");
-#endif
-
-  engine_ = make_unique<Engine>();
-  state_manager_ = make_unique<StateManager>();
-
-  verbose_ = conf_->Get<bool>("global_verbose");
-  lock_fps_ = conf_->Get<bool>("global_lock_fps");
-  target_fps_ = conf_->Get<int>("global_target_fps");
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -238,8 +233,8 @@ int Application::Message_(const string &caption, const string &message) {
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Main(unique_ptr <AppState> &&scene_ptr) {
   try {
-#if OGRE_COMPILER == OGRE_COMPILER_MSVC
-	  SDL_SetMainReady();
+#if OGRE_COMPILER==OGRE_COMPILER_MSVC
+	SDL_SetMainReady();
 #endif
 #ifndef DEBUG
 	ios_base::sync_with_stdio(false);

@@ -315,7 +315,7 @@ externalproject_add(target-assimp
 
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zzip target-freetype target-assimp
+                    DEPENDS target-zzip target-freetype target-sdl target-assimp
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v1.12.11
@@ -415,19 +415,19 @@ externalproject_add(target-sol
 
 if (ANDROID)
     externalproject_add(target-cpuinfo
-            EXCLUDE_FROM_ALL true
-            PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-            GIT_REPOSITORY https://github.com/google/cpu_features.git
-            GIT_TAG v0.4.1
-            GIT_SHALLOW true
-            GIT_PROGRESS false
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-            -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-            ${CONTEXT_CMAKE_EXTRA_FLAGS}
-            -G "${CMAKE_GENERATOR}"
-            )
+                        EXCLUDE_FROM_ALL true
+                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                        GIT_REPOSITORY https://github.com/google/cpu_features.git
+                        GIT_TAG v0.4.1
+                        GIT_SHALLOW true
+                        GIT_PROGRESS false
+                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                        ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                        -G "${CMAKE_GENERATOR}"
+                        )
 
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
 else ()
@@ -439,5 +439,4 @@ list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 add_custom_target(deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
