@@ -38,19 +38,23 @@ ADD android ./android
 ADD programs ./programs
 ADD assets ./assets
 ADD CMakeLists.txt .
+ADD zip-dependencies.py .
+ADD zip-artifacts.py .
 ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 
 ENV CC=clang
 ENV CXX=clang++
 
 RUN mkdir -p build-windows build-linux build-android \
+    && python3 zip-dependencies.py -i "assets" -o "tmp" \
+    && python3 zip-dependencies.py -i "programs" -o "tmp" \
     && cd build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-w64.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target zip-deps \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-w64.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target install && cd .. \
+    && cmake --build . --target install \
+    && cd .. \
     && cd build-linux \
     && cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target install \
-    && cmake --build . --target install-zip && cd .. \
+    && cd .. \
+    && python3 zip-artifacts.py -i "install" -o "artifacts" \
     && rm -rf build-windows build-linux build-android scenes

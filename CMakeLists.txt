@@ -181,6 +181,7 @@ endif ()
 
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 
+find_package(Python3 REQUIRED)
 find_package(OGRE QUIET)
 find_package(Bullet QUIET)
 find_package(SDL2 QUIET)
@@ -247,13 +248,6 @@ file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
-add_custom_target(zip-deps
-        COMMAND ${CMAKE_COMMAND} -DCMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR} -P CMake/zipdir.cmake
-        WORKING_DIRECTORY ${CONTEXT_ROOT_DIR}
-        COMMENT "Zipping dependencies..."
-        VERBATIM
-        )
-
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/OpenAL32.dll)
 elseif (UNIX)
@@ -301,13 +295,6 @@ set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 set(CPACK_GENERATOR "ZIP")
 
 include(CPack)
-
-add_custom_target(install-zip
-        COMMAND ${CMAKE_COMMAND} -E tar cf ${CONTEXT_ZIP_NAME}.zip --format=zip ${CONTEXT_ZIP_NAME}
-        WORKING_DIRECTORY ${CONTEXT_INSTALL_PATH}
-        COMMENT "Create zip..."
-        VERBATIM
-        )
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
 add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
