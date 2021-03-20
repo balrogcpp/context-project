@@ -211,9 +211,9 @@ elseif (APPLE)
 endif ()
 
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_THIRDPARTY_ROOT}/btogre/include ${CONTEXT_THIRDPARTY_ROOT}/oggsound/include
-        ${CONTEXT_THIRDPARTY_ROOT}/pgeometry/include ${CONTEXT_THIRDPARTY_ROOT}/gorilla/include ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
-        ${SOL2_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${BULLET_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
-        ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
+                                    ${CONTEXT_THIRDPARTY_ROOT}/pgeometry/include ${CONTEXT_THIRDPARTY_ROOT}/gorilla/include ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
+                                    ${SOL2_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${BULLET_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
+                                    ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 
 file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h sources/*.cpp sources/*.h)
 
@@ -231,13 +231,12 @@ endif ()
 include_directories(demo demo/include ${CONTEXT_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
 target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
-        vorbisfile vorbis vorbisenc ogg pugixml freetype ${SDL2_LIBRARIES}
-        ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${YAML_CPP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES})
+                            vorbisfile vorbis vorbisenc ogg pugixml freetype ${SDL2_LIBRARIES}
+                            ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${YAML_CPP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES})
+
 target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
 
-install(TARGETS demo
-        RUNTIME DESTINATION .
-        )
+install(TARGETS demo RUNTIME DESTINATION .)
 
 file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h)
 
@@ -248,12 +247,6 @@ file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
-if (WIN32)
-    file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
-elseif (UNIX)
-    file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/*.so*)
-endif ()
-
 add_custom_target(zip-deps
         COMMAND ${CMAKE_COMMAND} -DCMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR} -P CMake/zipdir.cmake
         WORKING_DIRECTORY ${CONTEXT_ROOT_DIR}
@@ -261,20 +254,29 @@ add_custom_target(zip-deps
         VERBATIM
         )
 
+if (WIN32)
+    file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/OpenAL32.dll)
+elseif (UNIX)
+    #file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/*.so*)
+endif ()
+
+file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OPENAL_LIBRARY} DESTINATION . FOLLOW_SYMLINK_CHAIN)
+
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB}
         PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
         DESTINATION .
         )
 
-install(FILES ${CMAKE_SOURCE_DIR}/deploy/start.sh
-        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/assets ${CMAKE_SOURCE_DIR}/tmp/programs
         DESTINATION .
         )
 
-file(GLOB CONTEXT_MEDIA_FILES ${CMAKE_SOURCE_DIR}/tmp/*)
-install(DIRECTORY ${CONTEXT_MEDIA_FILES}
-        DESTINATION .
-        )
+if (UNIX)
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/start.sh
+            PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE
+            DESTINATION .
+            )
+endif()
 
 if (WIN32)
     set(CONTEXT_TARGET_OS "Windows")
@@ -295,11 +297,6 @@ set(CPACK_PACKAGE_DIRECTORY ${CONTEXT_ARTIFACT_DIR})
 set(CPACK_PACKAGE_NAME ${CONTEXT_ARTIFACT_NAME})
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
-
-set(CPACK_NSIS_DISPLAY_NAME "Context Demo")
-set(CPACK_NSIS_PACKAGE_NAME "Context Demo")
-set(CPACK_NSIS_MENU_LINKS "demo.exe" "ContextProjectDemo")
-set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL true)
 
 set(CPACK_GENERATOR "ZIP")
 
