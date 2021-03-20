@@ -43,14 +43,9 @@ include(ProcessorCount)
 
 check_type_size("void*" PTR_SIZE BUILTIN_TYPES_ONLY)
 
-if (NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(SEND_ERROR "Only Release RelWithDebInfo Debug build are available")
+if (NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+    message(SEND_ERROR "Only Release and RelWithDebInfo build are available")
 endif ()
-
-if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND MSVC)
-    message(SEND_ERROR "Debug build is not working with MSVC. Use RelWithDebInfo instead")
-endif ()
-
 
 if (PTR_SIZE EQUAL 8)
     set(CONTEXT_PLATFORM "x64" CACHE STRING "")
@@ -235,8 +230,9 @@ endif ()
 
 include_directories(demo demo/include ${CONTEXT_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
-target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${BULLET_LIBRARIES} vorbisfile vorbis vorbisenc ogg pugixml freetype ${LUA_LIBRARIES} ${OPENAL_LIBRARY}
-        ${SDL2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES})
+target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
+        vorbisfile vorbis vorbisenc ogg pugixml freetype ${SDL2_LIBRARIES}
+        ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${YAML_CPP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES})
 target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
 
 install(TARGETS demo
