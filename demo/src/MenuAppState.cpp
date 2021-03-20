@@ -39,7 +39,7 @@ void MenuAppState::OnKeyDown(SDL_Keycode sym) {
 }
 
 void MenuAppState::Init() {
-//  renderer_->GetWindow().SetCursorStatus(false, true, true);
+  renderer_->GetWindow().SetCursorStatus(true, false, false);
 }
 
 }

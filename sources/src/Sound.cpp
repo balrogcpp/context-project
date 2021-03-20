@@ -22,7 +22,7 @@
 
 #include "pcheader.h"
 #include "Sound.h"
-#include "OgreOggSound.h"
+#include "oggsound/OgreOggSound.h"
 #include "Exception.h"
 
 #include <string>

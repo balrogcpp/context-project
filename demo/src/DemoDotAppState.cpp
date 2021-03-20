@@ -22,6 +22,7 @@
 
 #include "DemoDotAppState.h"
 #include "MenuAppState.h"
+#include "Renderer.h"
 #include "Sound.h"
 
 using namespace std;
@@ -91,6 +92,7 @@ void DemoDotAppState::Update(float time) {
 }
 
 void DemoDotAppState::Init() {
+  renderer_->GetWindow().SetCursorStatus(false, true, true);
 //  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
   LoadFromFile("1.scene");
 //  next_ = make_unique<MenuAppState>();

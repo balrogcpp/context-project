@@ -25,20 +25,21 @@
 #include "SDL2.hpp"
 #include <OgreRoot.h>
 #include <OgreSceneNode.h>
-#include "Input.h"
-#include "Entity.h"
-#include "ComponentLocator.h"
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 
 namespace xio {
-  CameraMan::CameraMan()
-  : top_speed_(10), run_speed_(20), anim_duration_(0.5), const_speed_(5), heigh_(1.5), style_(MANUAL)
-  {}
-  CameraMan::~CameraMan() {}
+  CameraMan::CameraMan() {
+
+  }
+
+//----------------------------------------------------------------------------------------------------------------------
+  CameraMan::~CameraMan() {
+
+  }
 
 //----------------------------------------------------------------------------------------------------------------------
   void CameraMan::ManualStop() {
-	if (style_ == FREELOOK) {
+	if (style_ == Style::FREELOOK) {
 	  move_forward_ = false;
 	  move_back_ = false;
 	  move_left_ = false;
@@ -50,7 +51,7 @@ namespace xio {
   }
 //----------------------------------------------------------------------------------------------------------------------
   void CameraMan::Update(float time) {
-	if (style_ == FREELOOK) {
+	if (style_ == Style::FREELOOK) {
 	  top_speed_ = move_fast_ ? run_speed_ : const_speed_;
 
 	  Ogre::Vector3 accel = Ogre::Vector3::ZERO;
@@ -88,7 +89,7 @@ namespace xio {
 		prev_pos_ = target_->getPosition();
 		node_->translate(move);
 	  }
-	} else if (style_ == FPS) {
+	} else if (style_ == Style::FPS) {
 	  top_speed_ = move_fast_ ? run_speed_ : const_speed_;
 
 	  velocity_ = {0, 0, 0};
@@ -177,10 +178,10 @@ namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
   void CameraMan::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
 	if (!stop_) {
-	  if (style_ == FREELOOK) {
+	  if (style_ == Style::FREELOOK) {
 		node_->yaw(Ogre::Degree(-dx));
 		node_->pitch(Ogre::Degree(-dy));
-	  } else if (style_ == FPS) {
+	  } else if (style_ == Style::FPS) {
 		dx_ = Ogre::Degree(dx);
 		dy_ = Ogre::Degree(dy);
 	  }
@@ -191,7 +192,7 @@ namespace xio {
 	SDL_Scancode code = SDL_GetScancodeFromKey(sym);
 
 	if (!stop_) {
-	  if (style_ == FREELOOK) {
+	  if (style_ == Style::FREELOOK) {
 		if (code == SDL_SCANCODE_W || sym == SDLK_UP)
 		  move_forward_ = true;
 		else if (code == SDL_SCANCODE_S || sym == SDLK_DOWN)
@@ -206,7 +207,7 @@ namespace xio {
 		  move_down_ = true;
 		else if (sym == SDLK_LSHIFT)
 		  move_fast_ = true;
-	  } else if (style_ == FPS) {
+	  } else if (style_ == Style::FPS) {
 		if (code == SDL_SCANCODE_W || sym == SDLK_UP)
 		  move_forward_ = true;
 		else if (code == SDL_SCANCODE_S || sym == SDLK_DOWN)
@@ -230,7 +231,7 @@ namespace xio {
 	SDL_Scancode code = SDL_GetScancodeFromKey(sym);
 
 	if (!stop_) {
-	  if (style_ == FREELOOK) {
+	  if (style_ == Style::FREELOOK) {
 		if (code == SDL_SCANCODE_W || sym == SDLK_UP)
 		  move_forward_ = false;
 		else if (code == SDL_SCANCODE_S || sym == SDLK_DOWN)
@@ -246,7 +247,7 @@ namespace xio {
 		else if (sym == SDLK_LSHIFT)
 		  move_fast_ = false;
 
-	  } else if (style_ == FPS) {
+	  } else if (style_ == Style::FPS) {
 		if (code == SDL_SCANCODE_W || sym == SDLK_UP)
 		  move_forward_ = false;
 		else if (code == SDL_SCANCODE_S || sym == SDLK_DOWN)
@@ -275,33 +276,33 @@ namespace xio {
   }
 
   Ogre::SceneNode *CameraMan::GetCameraNode() const {
-	if (style_ == FPS) {
-	  return camera_roll_node_;
+	if (style_ == Style::FPS) {
+	  return camera_roll_node_.get();
 	} else {
-	  return node_;
+	  return node_.get();
 	}
   }
 
   Ogre::Camera *CameraMan::GetCamera() const {
-	return camera_;
+	return camera_.get();
   }
 
   void CameraMan::AttachNode(Ogre::SceneNode *parent, Ogre::SceneNode *proxy) {
-	if (style_ == FPS) {
+	if (style_ == Style::FPS) {
 	  for (const auto it : parent->getAttachedObjects()) {
 		parent->detachObject(it);
 		camera_roll_node_->attachObject(it);
 	  }
 
 	  for (const auto it : parent->getChildren()) {
-		if (it == camera_yaw_node_)
+		if (it == camera_yaw_node_.get())
 		  continue;
 
 		parent->removeChild(it);
 		camera_roll_node_->removeChild(it);
 		camera_roll_node_->addChild(it);
 	  }
-	} else if (style_ == MANUAL) {
+	} else if (style_ == Style::MANUAL) {
 	  if (!proxy || parent == proxy)
 		return;
 
@@ -325,7 +326,7 @@ namespace xio {
 	node_ = parent;
 	camera_ = camera;
 
-	if (style_ == FPS) {
+	if (style_ == Style::FPS) {
 	  node_->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
 
 	  // Init the camera's yaw node as a child of camera's top node.
@@ -337,9 +338,9 @@ namespace xio {
 	  // Init the camera's roll node as a child of camera's pitch node
 	  // and attach the camera to it.
 	  camera_roll_node_ = camera_pitch_node_->createChildSceneNode("CameraRoll");
-	  camera_roll_node_->attachObject(camera_);
+	  camera_roll_node_->attachObject(camera_.get());
 	} else {
-	  node_->attachObject(camera_);
+	  node_->attachObject(camera_.get());
 	}
 
 	UpdateStyle();
@@ -357,23 +358,23 @@ namespace xio {
   }
 
   void CameraMan::UpdateStyle() {
-	if (style_ == FREELOOK) {
+	if (style_ == Style::FREELOOK) {
 	  node_->setFixedYawAxis(true); // also fix axis with lookAt calls
 	  node_->setAutoTracking(false);
-	} else if (style_ == MANUAL) {
+	} else if (style_ == Style::MANUAL) {
 	  ManualStop();
 	  node_->setAutoTracking(false);
-	} else if (style_ == FPS) {
+	} else if (style_ == Style::FPS) {
 	  node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z); // also fix axis with lookAt calls
 	  node_->setAutoTracking(false);
 	}
   }
 
-  void CameraMan::SetStyle(int style) {
+  void CameraMan::SetStyle(Style style) {
 	style_ = style;
   }
 
-  int CameraMan::GetStyle() const noexcept {
+  CameraMan::Style CameraMan::GetStyle() const noexcept {
 	return style_;
   }
 

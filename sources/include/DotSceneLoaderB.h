@@ -97,16 +97,17 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
 
   std::unique_ptr<ReflectionCamera> rcamera_;
   std::unique_ptr<CubeMapCamera> ccamera_;
-  static inline std::unique_ptr<Landscape> terrain_;
-  static inline std::unique_ptr<Forest> forest_;
   std::unique_ptr<CameraMan> camera_;
   view_ptr<Ogre::SceneManager> scene_;
   view_ptr<Ogre::Root> root_;
   view_ptr<Ogre::SceneNode> root_node_;
   view_ptr<Ogre::SceneNode> attach_node_;
   std::string group_name_;
+
   std::unique_ptr<SinbadCharacterController> sinbad_;
 
+  static inline std::unique_ptr<Landscape> terrain_;
+  static inline std::unique_ptr<Forest> forest_;
   static inline view_ptr<Configurator> conf_;
   static inline view_ptr<Renderer> renderer_;
   static inline view_ptr<Physics> physics_;
@@ -115,7 +116,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   static inline view_ptr<InputSequencer> input_;
   
  public:
-//----------------------------------------------------------------------------------------------------------------------
+
   static void LocateComponents(view_ptr<Configurator> conf,
 							   view_ptr<InputSequencer> input,
 							   view_ptr<Renderer> renderer,
@@ -129,15 +130,15 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
 	sound_ = sounds;
 	overlay_ = overlay;
   }
-//----------------------------------------------------------------------------------------------------------------------
+
   static Landscape &GetTerrain() {
     return *terrain_;
   }
-//----------------------------------------------------------------------------------------------------------------------
+
   CameraMan &GetCamera() const {
     return *camera_;
   }
-//----------------------------------------------------------------------------------------------------------------------
+
   static Forest &GetForest() {
     return *forest_;
   }

@@ -22,6 +22,6 @@
 
 #pragma once
 #include "OgreHeaders.h"
-#include "BtOgre.h"
-#include "OgreOggSound.h"
+#include "btogre/BtOgre.h"
+#include "oggsound/OgreOggSound.h"
 #include "view_ptr.h"

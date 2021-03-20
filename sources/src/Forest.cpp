@@ -1,4 +1,3 @@
-//Cpp file for dummy context2_deps target
 //MIT License
 //
 //Copyright (c) 2021 Andrew Vasiliev
@@ -27,7 +26,7 @@
 #include "MeshUtils.h"
 #include "DotSceneLoaderB.h"
 #include "Physics.h"
-#include "PagedGeometryAll.h"
+#include "pgeometry/PagedGeometryAll.h"
 
 using namespace Forests;
 using namespace std;
@@ -366,7 +365,7 @@ void Forest::GenerateTreesPaged() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
-  GenerateGrassPaged();
+//  GenerateGrassPaged();
   GenerateTreesPaged();
   GenerateRocksStatic();
 }

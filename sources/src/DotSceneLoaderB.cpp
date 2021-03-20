@@ -45,13 +45,8 @@ DotSceneLoaderB::DotSceneLoaderB() {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-DotSceneLoaderB::~DotSceneLoaderB()
-{
-  terrain_.reset();
-  forest_.reset();
-  sinbad_.reset();
-  scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  scene_->clearScene();
+DotSceneLoaderB::~DotSceneLoaderB() {
+  Cleanup();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -59,13 +54,13 @@ void DotSceneLoaderB::Cleanup() {
   terrain_.reset();
   forest_.reset();
   sinbad_.reset();
-  scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  scene_->clearScene();
+  if (scene_) scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+  if (scene_) scene_->clearScene();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::Update(float time) {
-  camera_->Update(time);
+  if (camera_) camera_->Update(time);
   if (terrain_) terrain_->Update(time);
   if (forest_) forest_->Update(time);
   if (sinbad_ && terrain_) sinbad_->Update(time);
@@ -95,16 +90,12 @@ void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const string &group_name
   }
 
   // figure out where to attach any nodes we Init
-//  attach_node_ = root_node;
   root_ = Ogre::Root::getSingletonPtr();
   attach_node_ = root_node;
 
-//  Init();
   if (!terrain_) terrain_ = make_unique<Landscape>();
   if (!forest_) forest_ = make_unique<Forest>();
   forest_->SetHeighFunc([](float x, float z) { return terrain_->GetHeigh(x, z); });
-  if (!camera_) camera_ = make_unique<CameraMan>();
-//  input_->RegObserver(camera_.get());
 
   // Process the scene
   ProcessScene_(XMLRoot);
@@ -342,12 +333,11 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
 
   if (!camera_) {
     camera_ = make_unique<CameraMan>();
-//    input_->RegObserver(camera_.get());
   }
 
   camera_->AttachCamera(parent, camera);
 
-  if (camera_->GetStyle() == CameraMan::FPS) {
+  if (camera_->GetStyle() == CameraMan::Style::FPS) {
     auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
     auto *actor = scene->createEntity("Actor", "Icosphere.mesh");
     actor->setCastShadows(false);

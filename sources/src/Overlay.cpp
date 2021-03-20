@@ -23,7 +23,7 @@
 #include "pcheader.h"
 
 #include "Overlay.h"
-#include "Gorilla.h"
+#include "gorilla/Gorilla.h"
 
 using namespace Gorilla;
 using namespace std;

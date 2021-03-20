@@ -211,8 +211,7 @@ elseif (APPLE)
     list(APPEND SYSTEM_LIBRARIES zlibstatic)
 endif ()
 
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_THIRDPARTY_ROOT}/btogre/include ${CONTEXT_THIRDPARTY_ROOT}/oggsound/include
-                                    ${CONTEXT_THIRDPARTY_ROOT}/pgeometry/include ${CONTEXT_THIRDPARTY_ROOT}/gorilla/include ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
+list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
                                     ${SOL2_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${BULLET_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
                                     ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 

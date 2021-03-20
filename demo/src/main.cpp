@@ -21,6 +21,7 @@
 //SOFTWARE.
 
 #include "DemoDotAppState.h"
+#include "MenuAppState.h"
 #include "Application.h"
 #include <string>
 #include <iostream>
@@ -58,7 +59,8 @@ int main(int argc, char** argv)
 #else
     Application app(argv);
 #endif
-    app.Main(make_unique<Demo::DemoDotAppState>());
+    app.Main(make_unique<Demo::MenuAppState>());
+//    app.Main(make_unique<Demo::DemoDotAppState>());
   }
   catch (...) {
 

@@ -23,8 +23,8 @@
 #pragma once
 #include "Component.h"
 #include "Singleton.h"
-#include "Gorilla.h"
-#include "OgreConsole.h"
+#include "gorilla/Gorilla.h"
+#include "gorilla/OgreConsole.h"
 
 namespace Ogre {
 class RenderTarget;
