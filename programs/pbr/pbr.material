@@ -97,8 +97,6 @@ sampler PBRSampler
 
 abstract material PBR
 {
-    lod_strategy Distance
-    lod_values 2.0 5.0 10.0
     transparency_casts_shadows off
     receive_shadows on
 
@@ -112,8 +110,6 @@ abstract material PBR
 
     technique
     {
-        lod_index 0
-
         pass
         {
             diffuse 1 1 1
@@ -124,37 +120,30 @@ abstract material PBR
             texture_unit Albedo
             {
                 texture $Albedo
-                sampler_ref PBRSampler
             }
             texture_unit Normal
             {
                 texture $Normal
-                sampler_ref PBRSampler
             }
             texture_unit Metallic
             {
                 texture $Metallic
-                sampler_ref PBRSampler
             }
             texture_unit Roughness
             {
                 texture $Roughness
-               sampler_ref PBRSampler
             }
             texture_unit AO
             {
                 texture $AO
-                sampler_ref PBRSampler
             }
             texture_unit Emissive
             {
                 texture $Emissive
-                sampler_ref PBRSampler
             }
             texture_unit Offset
             {
                 texture $Offset
-                sampler_ref PBRSampler
             }
 
             vertex_program_ref PBR_vs {}
@@ -168,31 +157,6 @@ abstract material PBR
                 param_named uOcclusionSampler   int 4
                 param_named uEmissiveSampler    int 5
                 param_named uOffsetSampler      int 6
-            }
-        }
-    }
-
-    technique
-    {
-        lod_index 1
-
-        pass
-        {
-            specular 1 1 1 1
-            diffuse 1 1 1
-            ambient 1 1 1
-            emissive 1 1 1
-
-            texture_unit Albedo
-            {
-                texture green.dds
-            }
-
-            vertex_program_ref PBR_vs {}
-
-            fragment_program_ref PbrBasic_fs
-            {
-                param_named uAlbedoSampler int 0
             }
         }
     }
