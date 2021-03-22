@@ -453,7 +453,7 @@ list(APPEND CONTEXT_DEPENDENCY_TARGETS target-pugixml)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre)
-if (NOT MINGW AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if (NOT (MINGW AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
     #Bullet has problems with openmp linking at clang_mingw combination
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
 endif ()
