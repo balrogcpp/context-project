@@ -48,7 +48,7 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 										const Ogre::String &schemeName,
 										Ogre::Material *originalMaterial,
 										unsigned short lodIndex,
-										const Ogre::Renderable *rend) final {
+										const Ogre::Renderable *rend) override {
 	Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
 
 	auto *pass = originalMaterial->getTechnique(0)->getPass(0);
@@ -136,6 +136,21 @@ void Compositor::Update(float time) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+void Compositor::Cleanup() {
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Compositor::Pause() {
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Compositor::Resume() {
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 void Compositor::Init() {
   auto &compositor_manager = Ogre::CompositorManager::getSingleton();
 
@@ -160,9 +175,11 @@ void Compositor::Init() {
 
   compositor_manager.setCompositorEnabled(viewport_, "Main", true);
 
-  if (effects_["ssao"] || effects_["motion"] || !gbuff_handler_) {
-	  gbuff_handler_ = make_unique <GBufferSchemeHandler>();
-	Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_.get(), "GBuffer");
+  if (effects_["ssao"] || effects_["motion"]) {
+	  if (!gbuff_handler_) {
+		gbuff_handler_ = make_unique<GBufferSchemeHandler>();
+		Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_.get(), "GBuffer");
+	  }
   }
 
   if (effects_["ssao"] || effects_["motion"]) {

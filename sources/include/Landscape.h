@@ -43,7 +43,7 @@ class Landscape final : public ComponentLocator, public SubComponent {
 
   void ProcessTerrainGroup(pugi::xml_node &xml_node);
   float GetHeigh(float x, float z);
-  void Update(float time) final {}
+  void Update(float time) override {}
 
  private:
   void GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image, const std::string &filename);

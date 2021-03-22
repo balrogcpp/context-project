@@ -42,7 +42,7 @@ class AppState
   void ChangeState(std::unique_ptr<AppState> &&app_state);
   void ChangeState();
   void SetNextState(std::unique_ptr<AppState> &&next_state);
-  void LoadFromFile(const std::string &file_name);
+  void LoadFromFile(const std::string &file_name, const std::string &group);
   bool IsDirty() const;
 
   virtual void Init() = 0;

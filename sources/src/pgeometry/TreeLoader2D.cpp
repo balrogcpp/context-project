@@ -7,6 +7,7 @@ Permission is granted to anyone to use this software for any purpose, including 
     2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
     3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
+
 #include "pcheader.h"
 #include "pgeometry/TreeLoader2D.h"
 #include "pgeometry/PagedGeometry.h"
@@ -110,7 +111,7 @@ void TreeLoader2D::addTree(Entity *entity, const Vector3 &position, Degree yaw, 
   int pageZ = (int) Math::Floor(zrel / pageSize); // bad perfomance float --> int
   std::vector<TreeDef> &treeList = _getGridPage(pageGrid, pageX, pageZ);
 
-  //Init the new tree
+  //Create the new tree
   TreeDef tree;
   tree.xPos = static_cast<uint16>(0xFFFF * (xrel - (pageX * pageSize)) / pageSize);
   tree.zPos = static_cast<uint16>(0xFFFF * (zrel - (pageZ * pageSize)) / pageSize);
@@ -181,7 +182,7 @@ TreeLoader2D::deleteTrees(const Ogre::Vector3 &position, Ogre::Real radius, Enti
   } else {
     //Only scan entities of the given type
     it = pageGridList.find(type);
-    OgreAssert((it != pageGridList.end()), R"(it != pageGridList.end())");
+    assert(it != pageGridList.end());
     end = it;
     ++end;
   }
@@ -273,7 +274,7 @@ TreeLoader2D::deleteTrees(TBounds area, Ogre::Entity *type) {
   } else {
     //Only scan entities of the given type
     it = pageGridList.find(type);
-    OgreAssert((it != pageGridList.end()), R"(it != pageGridList.end())");
+    assert(it != pageGridList.end());
     end = it;
     ++end;
   }
@@ -367,7 +368,7 @@ std::vector<void*> TreeLoader2D::findTrees(const Ogre::Vector3 &position, Real r
     } else {
         //Only scan entities of the given type
         it = pageGridList.find(type);
-        OgreAssert((it != pageGridList.end()), R"(it != pageGridList.end())");
+        assert(it != pageGridList.end());
         end = it; ++end;
     }
 

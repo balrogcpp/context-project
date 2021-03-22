@@ -46,7 +46,7 @@ class Assets {
  public:
   static void LoadResources();
 
-  static void InitGeneralResources(const std::vector<std::string> &path_list,
+  static void InitGeneralResources(const std::string &path, const std::string &group,
 							  const std::string &resource_file = "",
 							  bool verbose = false);
 };

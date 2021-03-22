@@ -41,19 +41,19 @@ class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
                const Ogre::String &desc);
     virtual ~SM2Profile();
 
-    Ogre::MaterialPtr generate(const Ogre::Terrain *terrain) final;
-    Ogre::MaterialPtr generateForCompositeMap(const Ogre::Terrain *terrain) final;
+    Ogre::MaterialPtr generate(const Ogre::Terrain *terrain) override;
+    Ogre::MaterialPtr generateForCompositeMap(const Ogre::Terrain *terrain) override;
 
-    inline Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const final {
+    inline Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const override {
       return max_layers_;
     }
-    inline void updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) final {}
-    inline void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) final {}
-    void requestOptions(Ogre::Terrain *terrain) final;
-    inline bool isVertexCompressionSupported() const final {
+    inline void updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
+    inline void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
+    void requestOptions(Ogre::Terrain *terrain) override;
+    inline bool isVertexCompressionSupported() const override {
       return false;
     }
-    inline void setLightmapEnabled(bool enabled) final {
+    inline void setLightmapEnabled(bool enabled) override {
       lightmap_ = enabled;
     }
 

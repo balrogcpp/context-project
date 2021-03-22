@@ -108,7 +108,7 @@ void TreeLoader3D::addTree(Entity *entity, const Ogre::Vector3 &position, Degree
   int pageZ = (int) Math::Floor(zrel / pageSize);
   std::vector<TreeDef> &treeList = _getGridPage(pageGrid, pageX, pageZ);
 
-  //Init the new tree
+  //Create the new tree
   TreeDef tree;
   tree.yPos = (float) pos.y;
   tree.xPos = static_cast<uint16>(65535 * (xrel - (pageX * pageSize)) / pageSize);
@@ -176,7 +176,7 @@ TreeLoader3D::deleteTrees(const Vector3 &position, Real radius, Entity *type) {
   } else {
     //Only scan entities of the given type
     it = pageGridList.find(type);
-    OgreAssert((it != pageGridList.end()), R"(it != pageGridList.end())");
+    assert(it != pageGridList.end());
     end = it;
     ++end;
   }
@@ -268,7 +268,7 @@ TreeLoader3D::deleteTrees(TBounds area, Ogre::Entity *type) {
   } else {
     //Only scan entities of the given type
     it = pageGridList.find(type);
-    OgreAssert((it != pageGridList.end()), R"(it != pageGridList.end())");
+    assert(it != pageGridList.end());
     end = it;
     ++end;
   }
@@ -362,7 +362,7 @@ std::vector<void*> TreeLoader3D::findTrees(const Ogre::Vector3 &position, Real r
     } else {
         //Only scan entities of the given type
         it = pageGridList.find(type);
-        OgreAssert((it != pageGridList.end()), R"(it != pageGridList.end())");
+        assert(it != pageGridList.end());
         end = it; ++end;
     }
 
@@ -565,4 +565,5 @@ void TreeIterator3D::_readTree() {
   //Get entity
   currentTreeDat.entity = currentGrid->first;
 }
+
 }

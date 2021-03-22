@@ -838,10 +838,10 @@ class GeometryPage {
                          const Ogre::ColourValue &color) = 0;
 
   /**
-  \brief Perform any final steps to make added entities appear in the scene.
+  \brief Perform any override steps to make added entities appear in the scene.
 
   build() is automatically called right after all the entities have been added with
-  addEntity(). Use this if there are any final steps that need to be performed after
+  addEntity(). Use this if there are any override steps that need to be performed after
   addEntity() has been called in order to display the entities.
 
   \note This function is not pure virtual, so you don't have to override it if you
@@ -871,7 +871,7 @@ class GeometryPage {
   \param invisibleDist The distance where pgeometry will be invisible (alpha 0)
 
   This is called whenever a page needs fading enabled/disabled. The distance ranges
-  given specify how the final alpha values should be calculated - pgeometry at
+  given specify how the override alpha values should be calculated - pgeometry at
   visibleDist should have alpha values of 1, while pgeometry at invisibleDist should
   have alpha values of 0. Important: Distances must be calculated in the xz plane
   only - the y coordinate should be disregarded when calculating distance.

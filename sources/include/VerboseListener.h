@@ -27,21 +27,21 @@ namespace xio {
 
 class VerboseListener final : public InputObserver {
  private:
-  void OnKeyDown(SDL_Keycode sym) final;
-  void OnKeyUp(SDL_Keycode sym) final;
-  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) final;
-  void OnMouseWheel(int x, int y) final;
-  void OnMouseLbDown(int x, int y) final;
-  void OnMouseLbUp(int x, int y) final;
-  void OnMouseRbDown(int x, int y) final;
-  void OnMouseRbUp(int x, int y) final;
-  void OnMouseMbDown(int x, int y) final;
-  void OnMouseMbUp(int x, int y) final;
-  void OnJoystickAxis(int which, int axis, int value) final;
-  void OnJoystickBtDown(int which, int button) final;
-  void OnJoystickBtUp(int which, int button) final;
-  void OnJoystickHat(int which, int hat, int value) final;
-  void OnJoystickBall(int which, int ball, int xrel, int yrel) final;
+  void OnKeyDown(SDL_Keycode sym) override;
+  void OnKeyUp(SDL_Keycode sym) override;
+  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override;
+  void OnMouseWheel(int x, int y) override;
+  void OnMouseLbDown(int x, int y) override;
+  void OnMouseLbUp(int x, int y) override;
+  void OnMouseRbDown(int x, int y) override;
+  void OnMouseRbUp(int x, int y) override;
+  void OnMouseMbDown(int x, int y) override;
+  void OnMouseMbUp(int x, int y) override;
+  void OnJoystickAxis(int which, int axis, int value) override;
+  void OnJoystickBtDown(int which, int button) override;
+  void OnJoystickBtUp(int which, int button) override;
+  void OnJoystickHat(int which, int hat, int value) override;
+  void OnJoystickBall(int which, int ball, int xrel, int yrel) override;
 
  private:
   bool verbose_ = false;

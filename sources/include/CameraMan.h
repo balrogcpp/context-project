@@ -50,11 +50,12 @@ class CameraMan final : public Entity, public InputObserver {
   void OnKeyDown(SDL_Keycode sym) override;
   void OnKeyUp(SDL_Keycode sym) override;
 
+ private:
   view_ptr<Ogre::SceneNode> node_;
   view_ptr<Ogre::SceneNode> camera_yaw_node_;
   view_ptr<Ogre::SceneNode> camera_pitch_node_;
   view_ptr<Ogre::SceneNode> camera_roll_node_;
-  btRigidBody *rigid_ = nullptr;
+  view_ptr<btRigidBody> rigid_;
   Ogre::Degree dx_, dy_;
   view_ptr<Ogre::Camera> camera_;
   view_ptr<Ogre::SceneNode> target_;
@@ -77,9 +78,7 @@ class CameraMan final : public Entity, public InputObserver {
   Ogre::Vector3 prev_pos_;
 
  public:
-  void SetRigidBody(btRigidBody *rigid_body);
-
-  btRigidBody *GetRigidBody() const;
+  void SetRigidBody(view_ptr<btRigidBody> rigid_body);
 
   Ogre::SceneNode *GetCameraNode() const;
 
@@ -90,8 +89,6 @@ class CameraMan final : public Entity, public InputObserver {
   void AttachCamera(Ogre::SceneNode *parent, Ogre::Camera *camera, Ogre::SceneNode *proxy = nullptr);
 
   void UnregCamera();
-
-  void UpdateStyle();
 
   void SetStyle(Style style);
 

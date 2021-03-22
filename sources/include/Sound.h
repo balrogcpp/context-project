@@ -36,10 +36,10 @@ class Sound final : public Component, public Singleton<Sound> {
   Sound(unsigned int max_sources, unsigned int queue_list_size);
   virtual ~Sound();
 
-  void Cleanup() final;
-  void Pause() final;
-  void Resume() final;
-  void Update(float time) final;
+  void Cleanup() override;
+  void Pause() override;
+  void Resume() override;
+  void Update(float time) override;
 
   void CreateSound(const std::string &name, const std::string &file, bool loop = false);
   void PlaySound(const std::string &name, bool immediate = true);

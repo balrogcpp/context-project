@@ -137,7 +137,7 @@ void GrassLoader::loadPage(PageInfo &page) {
         case GRASSTECH_SPRITE: mesh = generateGrass_SPRITE(page, layer, position, grassCount);
           break;
       }
-      OgreAssert((mesh), R"(mesh)");
+      assert(mesh);
 
       //Add the mesh to PagedGeometry
       Entity *entity = geom->getCamera()->getSceneManager()->createEntity(getUniqueID(), mesh->getName());
@@ -1480,5 +1480,4 @@ void GrassPage::setVisible(bool visible) {
   }
 }
 
-}
-
+} //namespace

@@ -42,10 +42,10 @@ class Compositor : public Component, public Singleton<Compositor> {
   Compositor();
   virtual ~Compositor();
 
-  void Cleanup() final {}
-  void Pause() final {}
-  void Resume() final {}
-  void Update(float time) final;
+  void Cleanup() override;
+  void Pause() override;
+  void Resume() override;
+  void Update(float time) override;
 
   void EnableEffect(const std::string &name, bool enable) {
     effects_[name] = enable;

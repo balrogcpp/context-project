@@ -184,7 +184,7 @@ class StaticBillboardSet {
   which means height is not taken into account when fading - only xz distances. This works
   well with flat terrain maps, but may not be well suited for spherical worlds.
 
-  The distance ranges given specify how the final alpha values should be calculated -
+  The distance ranges given specify how the override alpha values should be calculated -
   billboards at visibleDist will have alpha values of 1, and pgeometry at invisibleDist
   will have alpha values of 0.
 
@@ -195,7 +195,7 @@ class StaticBillboardSet {
   */
   void setFade(bool enabled, Ogre::Real visibleDist, Ogre::Real invisibleDist);
 
-  /// Performs final steps required for the created billboards to appear in the scene.
+  /// Performs override steps required for the created billboards to appear in the scene.
   /// Until this is called, any billboards created with createBillboard() will not appear.
   void build();
 

@@ -106,7 +106,7 @@ class GrassLoader : public PageLoader {
 
   Final density values are calculated by multiplying the layer density by this
   density factor. For example, a layer with .4 density and a density factor of .5
-  will result in a final density of .2 (.5 * .4)
+  will result in a override density of .2 (.5 * .4)
 
   By default, the density factor is set to 1.0 so the layer density is not modified.
   */
@@ -522,15 +522,15 @@ class GrassLayer {
   void _updateShaders();
 
   //Used by GrassLoader::loadPage() - populates an array with a uniform distribution of grass
-  //Returns the final number of grasses, which will always be <= grassCount
+  //Returns the override number of grasses, which will always be <= grassCount
   unsigned int _populateGrassList_Uniform(PageInfo page, float *posBuff, unsigned int grassCount);
 
   //Used by GrassLoader::loadPage() - populates an array of grass positions based on the density map
-  //Returns the final number of grasses, which will always be <= grassCount
+  //Returns the override number of grasses, which will always be <= grassCount
   unsigned int _populateGrassList_UnfilteredDM(PageInfo page, float *posBuff, unsigned int grassCount);
 
   //Variation of _populateGrassList(), using bilinear filtering on the density map lookups
-  //Returns the final number of grasses, which will always be <= grassCount
+  //Returns the override number of grasses, which will always be <= grassCount
   unsigned int _populateGrassList_BilinearDM(PageInfo page, float *posBuff, unsigned int grassCount);
 
   GrassLoader *parent;

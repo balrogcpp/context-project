@@ -31,7 +31,7 @@ PagedGeometry::PagedGeometry(Camera *cam, const Real pageSize, Ogre::RenderQueue
     oldCamPos = sceneCam->getDerivedPosition();
 
 #ifdef PAGEDGEOMETRY_ALTERNATE_COORDSYSTEM
-    rootNode = sceneMgr->getRootSceneNode()->createChildSceneNode();	//Init PagedGeometry's root node
+    rootNode = sceneMgr->getRootSceneNode()->createChildSceneNode();	//Create PagedGeometry's root node
 #else
     rootNode = sceneMgr->getRootSceneNode();
 #endif
@@ -103,12 +103,12 @@ void PagedGeometry::setCamera(Camera *cam) {
       sceneCam = cam;
     }
 
-    //If sceneMgre is nullptr (this only occurs the first time a camera is set),
+    //If sceneMgre is NULL (this only occurs the first time a camera is set),
     //then set the scene manager (it won't change after this point).
     if (sceneMgr == nullptr)
       sceneMgr = sceneCam->getSceneManager();
 
-    //If rootNode is nullptr (this also only occurs the first time a camera is set),
+    //If rootNode is NULL (this also only occurs the first time a camera is set),
     //the create a scene node (it won't change after this point) for the coordinate
     //system translations.
     if (rootNode == nullptr) {
@@ -137,7 +137,7 @@ void PagedGeometry::setCoordinateSystem(Vector3 up, Vector3 right)
 #ifdef PAGEDGEOMETRY_ALTERNATE_COORDSYSTEM
 Vector3 PagedGeometry::_convertToLocal(const Vector3 &globalVec) const
 {
-    OgreAssert((getSceneNode()), R"(getSceneNode())");
+    assert(getSceneNode());
     //Convert from the given global position to the local coordinate system of PagedGeometry's root scene node.
     return (getSceneNode()->getOrientation().Inverse() * globalVec);
 }
@@ -196,7 +196,7 @@ void PagedGeometry::removeDetailLevels() {
     delete mgr;
   }
 
-  //Cleanup the page manager list
+  //Clear the page manager list
   managerList.clear();
 }
 
@@ -243,7 +243,7 @@ void PagedGeometry::update() {
 }
 
 void PagedGeometry::reloadGeometry() {
-  OgreAssert((pageLoader), R"(pageLoader)");
+  assert(pageLoader);
 
   std::list<GeometryPageManager *>::iterator it;
   for (it = managerList.begin(); it != managerList.end(); ++it) {
@@ -1042,4 +1042,5 @@ void GeometryPage::clearBoundingBox() {
   _trueBounds = AxisAlignedBox(0, 0, 0, 0, 0, 0);
   _trueBoundsUndefined = true;
 }
-}
+
+} //namespace

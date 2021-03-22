@@ -23,6 +23,7 @@
 #pragma once
 #include "NoCopy.h"
 #include "Configurator.h"
+#include "view_ptr.h"
 
 namespace xio {
 class SubComponent : public NoCopy {
@@ -33,9 +34,10 @@ class SubComponent : public NoCopy {
   virtual void Update(float time) = 0;
 
  protected:
-  inline static Configurator *conf_ = nullptr;
+  inline static view_ptr<Configurator> conf_;
+
  public:
-  static void SetConfigurator(Configurator *conf) {
+  static void SetConfigurator(view_ptr<Configurator> conf) {
     conf_ = conf;
   }
 };

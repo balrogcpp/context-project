@@ -94,7 +94,7 @@ void DemoDotAppState::Update(float time) {
 void DemoDotAppState::Init() {
   renderer_->GetWindow().SetCursorStatus(false, true, true);
 //  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
-  LoadFromFile("1.scene");
+  LoadFromFile("1.scene", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 //  next_ = make_unique<MenuAppState>();
   SetNextState(make_unique<MenuAppState>());
 

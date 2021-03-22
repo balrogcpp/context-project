@@ -100,7 +100,7 @@ Renderer::Renderer(int w, int h, bool f) {
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
 #else
-  scene_ = root_->createSceneManager(Ogre::ST_GENERIC, "Default");
+  ogre_scene_ = root_->createSceneManager(Ogre::ST_GENERIC, "Default");
 #endif
 
   //Camera block
@@ -112,7 +112,8 @@ Renderer::Renderer(int w, int h, bool f) {
   camera_->setAutoAspectRatio(true);
 
   //Resource block
-  Assets::InitGeneralResources({"programs", "assets"}, "resources.list");
+  Assets::InitGeneralResources("programs", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, "resources.list");
+  Assets::InitGeneralResources("assets", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, "resources.list");
 
   //RTSS block
   xio::InitRtss();
@@ -160,6 +161,8 @@ void Renderer::Update(float time) {
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Refresh() {
   shadow_->UpdateParams();
+  compositor_->Init();
+  Ogre::MaterialManager::getSingleton().load("Gorilla2D", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

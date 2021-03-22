@@ -43,10 +43,10 @@ class Renderer final : public Component, public Singleton<Renderer> {
   Renderer(int w, int h, bool f);
   virtual ~Renderer();
 
-  void Cleanup() final;
-  void Pause() final;
-  void Resume() final;
-  void Update(float time) final;
+  void Cleanup() override;
+  void Pause() override;
+  void Resume() override;
+  void Update(float time) override;
 
   void Refresh();
   void UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy);

@@ -118,12 +118,11 @@ void Application::Quit() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {
   if (evt.type==SDL_WINDOWEVENT) {
-	if (evt.window.event==SDL_WINDOWEVENT_LEAVE || evt.window.event==SDL_WINDOWEVENT_MINIMIZED) {
+	if (evt.window.event==SDL_WINDOWEVENT_FOCUS_LOST || evt.window.event==SDL_WINDOWEVENT_MINIMIZED) {
 	  suspend_ = true;
 //		renderer_->GetWindow().SetCursorStatus(true, false, false);
 	  state_manager_->Pause();
-	} else if (evt.window.event==SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event==SDL_WINDOWEVENT_RESTORED
-		|| evt.window.event==SDL_WINDOWEVENT_MAXIMIZED) {
+	} else if (evt.window.event==SDL_WINDOWEVENT_FOCUS_GAINED) {
 	  suspend_ = false;
 //		renderer_->GetWindow().SetCursorStatus(false, true, true);
 	  state_manager_->Resume();
@@ -156,7 +155,7 @@ void Application::Loop_() {
 
 	  if (!suspend_) {
 		if (state_manager_->IsDirty()) {
-		  engine_->Clean();
+		  engine_->Cleanup();
 		  engine_->Refresh();
 		  state_manager_->InitNextState();
 		} else if (suspend_old) {
@@ -203,6 +202,7 @@ void Application::Loop_() {
 	}
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
   if (state_manager_->IsActive()) {
@@ -220,6 +220,7 @@ void Application::Go_() {
 
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Message_(const string &caption, const string &message) {
+  //renderer_->GetWindow().SetCursorStatus(true, false, false);
   WriteLogToFile_("error.log");
   PrintLogToConsole_();
   cerr << caption << '\n';

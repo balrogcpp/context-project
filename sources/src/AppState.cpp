@@ -39,9 +39,8 @@ AppState::~AppState() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::LoadFromFile(const string &file_name) {
+void AppState::LoadFromFile(const string &file_name, const string &group) {
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  auto group = Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME;
   Ogre::SceneLoaderManager::getSingleton().load(file_name, group, scene->getRootSceneNode());
 }
 

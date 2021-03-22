@@ -42,7 +42,7 @@ class Engine {
   void Capture();
   void Pause();
   void Resume();
-  void Clean();
+  void Cleanup();
   void Refresh();
   void Update(float time);
   void RenderOneFrame();

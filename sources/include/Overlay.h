@@ -38,10 +38,10 @@ class Overlay final : public Component, public Singleton<Overlay> {
   Overlay();
   virtual ~Overlay();
 
-  void Cleanup() final {}
-  void Pause() final {}
-  void Resume() final {}
-  void Update(float time) final;
+  void Cleanup() override {}
+  void Pause() override {}
+  void Resume() override {}
+  void Update(float time) override;
   void Text(const std::string &str);
   void Show();
   void Hide();

@@ -73,7 +73,7 @@ void VertexIndexToShape::addAnimatedVertexData(const Ogre::VertexData *vertex_da
                                                const Ogre::VertexData *blend_data,
                                                const Ogre::Mesh::IndexMap *indexMap) {
   // Get the bone index element
-  OgreAssert((vertex_data), R"(vertex_data)");
+  assert(vertex_data);
 
   const VertexData *data = blend_data;
   const unsigned int prev_size = vertex_count_;
@@ -88,7 +88,7 @@ void VertexIndexToShape::addAnimatedVertexData(const Ogre::VertexData *vertex_da
   // Get the positional buffer element
   {
     const Ogre::VertexElement *posElem = data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
-    OgreAssert( (posElem), R"(posElem)");
+    assert (posElem);
     Ogre::HardwareVertexBufferSharedPtr vbuf = data->vertexBufferBinding->getBuffer(posElem->getSource());
     const unsigned int vSize = (unsigned int) vbuf->getVertexSize();
 
@@ -112,7 +112,7 @@ void VertexIndexToShape::addAnimatedVertexData(const Ogre::VertexData *vertex_da
   }
   {
     const Ogre::VertexElement *bneElem = vertex_data->vertexDeclaration->findElementBySemantic(Ogre::VES_BLEND_INDICES);
-    OgreAssert( (bneElem), R"(bneElem)");
+    assert (bneElem);
 
     Ogre::HardwareVertexBufferSharedPtr vbuf = vertex_data->vertexBufferBinding->getBuffer(bneElem->getSource());
     const unsigned int vSize = (unsigned int) vbuf->getVertexSize();
@@ -564,7 +564,7 @@ void AnimatedMeshToShapeConverter::addEntity(Entity *entity, const Matrix4 &tran
   mNode = (SceneNode *) (mEntity->getParentNode());
   transform_ = transform;
 
-  OgreAssert( (entity->getMesh()->hasSkeleton()), R"(entity->getMesh()->hasSkeleton())");
+  assert (entity->getMesh()->hasSkeleton());
 
   mEntity->addSoftwareAnimationRequest(false);
   mEntity->_updateAnimation();
@@ -603,7 +603,7 @@ void AnimatedMeshToShapeConverter::addMesh(const MeshPtr &mesh, const Matrix4 &t
   //_node = (SceneNode*)(_entity->getParentNode());
   transform_ = transform;
 
-  OgreAssert( (mesh->hasSkeleton()), R"(mesh->hasSkeleton())");
+  assert (mesh->hasSkeleton());
 
   if (mesh->sharedVertexData) {
     VertexIndexToShape::addAnimatedVertexData(mesh->sharedVertexData,
@@ -815,7 +815,7 @@ void DynamicRenderable::initialize(RenderOperation::OperationType operationType,
   mVertexBufferCapacity = 0;
   mIndexBufferCapacity = 0;
 
-  // Init vertex declaration
+  // Create vertex declaration
   createVertexDeclaration();
 }
 //------------------------------------------------------------------------------------------------
@@ -842,7 +842,7 @@ void DynamicRenderable::prepareHardwareBuffers(size_t vertexCount,
   }
   if (newVertCapacity != mVertexBufferCapacity) {
     mVertexBufferCapacity = newVertCapacity;
-    // Init new vertex buffer
+    // Create new vertex buffer
     HardwareVertexBufferSharedPtr vbuf =
         HardwareBufferManager::getSingleton().createVertexBuffer(
             mRenderOp.vertexData->vertexDeclaration->getVertexSize(0),
@@ -881,7 +881,7 @@ void DynamicRenderable::prepareHardwareBuffers(size_t vertexCount,
 
     if (newIndexCapacity != mIndexBufferCapacity) {
       mIndexBufferCapacity = newIndexCapacity;
-      // Init new index buffer
+      // Create new index buffer
       mRenderOp.indexData->indexBuffer =
           HardwareBufferManager::getSingleton().createIndexBuffer(
               HardwareIndexBuffer::IT_16BIT,
@@ -947,7 +947,7 @@ void DynamicLines::addPoint(Real x, Real y, Real z) {
 }
 //------------------------------------------------------------------------------------------------
 const Vector3 &DynamicLines::getPoint(unsigned short index) const {
-  OgreAssert((index < mPoints.size() && "Point index is out of bounds!!"), R"(index < mPoints.size() && "Point index is out of bounds!!")");
+  assert(index < mPoints.size() && "Point index is out of bounds!!");
   return mPoints[index];
 }
 //------------------------------------------------------------------------------------------------
@@ -956,7 +956,7 @@ unsigned short DynamicLines::getNumPoints(void) const {
 }
 //------------------------------------------------------------------------------------------------
 void DynamicLines::setPoint(unsigned short index, const Vector3 &value) {
-  OgreAssert((index < mPoints.size() && "Point index is out of bounds!!"), R"(index < mPoints.size() && "Point index is out of bounds!!")");
+  assert(index < mPoints.size() && "Point index is out of bounds!!");
 
   mPoints[index] = value;
   mDirty = true;

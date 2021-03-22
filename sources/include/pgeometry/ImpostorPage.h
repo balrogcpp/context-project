@@ -121,7 +121,7 @@ class ImpostorPage : public GeometryPage {
 
   The default impostor resolution is 128x128. Note that 32 impostor images
   will be stored in a single texture (8 x 4), so a impostor resolution of 128,
-  for example, results in final texture size of 1024 x 512.
+  for example, results in override texture size of 1024 x 512.
 
   \warning Calling this function will have no effect unless it is done before
   any entities are added to any page.

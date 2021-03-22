@@ -43,7 +43,7 @@ class Forest final : public ComponentLocator, public SubComponent {
   void GenerateRocksStatic();
   void GenerateTreesPaged();
   void ProcessForest();
-  void Update(float time) final;
+  void Update(float time) override;
 
  private:
   inline static std::function<float(float, float)> heigh_func_;

@@ -7,8 +7,8 @@ Permission is granted to anyone to use this software for any purpose, including 
 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
-#pragma once
 
+#pragma once
 #include <OgrePrerequisites.h>
 #include <OgrePixelFormat.h>
 #include <OgreColourValue.h>
@@ -78,7 +78,7 @@ class DensityMap {
   video card until you call PagedGeometry::reloadGeometry(). If you don't, the grass you see
   will remain unchanged. */
   Ogre::PixelBox getPixelBox() {
-    OgreAssert((pixels), R"(pixels)");
+    assert(pixels);
     return *pixels;
   }
 
@@ -149,7 +149,7 @@ class ColorMap {
   video card until you call PagedGeometry::reloadGeometry(). If you don't, the grass you see
   will remain unchanged. */
   Ogre::PixelBox getPixelBox() {
-    OgreAssert((pixels), R"(pixels)");
+    assert(pixels);
     return *pixels;
   }
 

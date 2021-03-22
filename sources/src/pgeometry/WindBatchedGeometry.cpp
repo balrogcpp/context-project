@@ -158,7 +158,7 @@ void WindBatchedGeometry::WindSubBatch::build() {
     vertexBufferElements[i] = vertDecl->findElementsBySource(i);
   }
 
-  //If no vertex colors are used, make sure the final batch includes them (so the shade values work)
+  //If no vertex colors are used, make sure the override batch includes them (so the shade values work)
   if (m_RequireVertexColors) {
     if (!m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE)) {
       Ogre::ushort i = (Ogre::ushort) vertBinding->getBufferCount();

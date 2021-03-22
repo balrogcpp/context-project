@@ -45,28 +45,26 @@ Engine::Engine() {
 
   input_ = &InputSequencer::GetInstance();
   physics_ = make_unique<Physics>();
-  sound_ = make_unique<Sound>(16, 16);
+  sound_ = make_unique<Sound>(8, 8);
   overlay_ = make_unique<Overlay>();
   loader_ = make_unique<DotSceneLoaderB>();
 
   ComponentLocator::LocateComponents(conf_, input_, renderer_, physics_, sound_, overlay_, loader_);
 
-  loader_->LocateComponents(conf_.get(), input_.get(), renderer_.get(), physics_.get(), sound_.get(), overlay_.get());
-
   components_ = {sound_.get(), loader_.get(), physics_.get(), renderer_.get(), overlay_.get()};
 
   string graphics_filtration = conf_->Get<string>("graphics_filtration");
-  Ogre::TextureFilterOptions tfo = Ogre::TFO_ANISOTROPIC;
-//  if (graphics_filtration=="anisotropic")
-//	tfo = Ogre::TFO_ANISOTROPIC;
-//  else if (graphics_filtration=="bilinear")
-//	tfo = Ogre::TFO_BILINEAR;
-//  else if (graphics_filtration=="trilinear")
-//	tfo = Ogre::TFO_TRILINEAR;
-//  else if (graphics_filtration=="none")
-//	tfo = Ogre::TFO_NONE;
+  Ogre::TextureFilterOptions tfo = Ogre::TFO_BILINEAR;
+  if (graphics_filtration=="anisotropic")
+	tfo = Ogre::TFO_ANISOTROPIC;
+  else if (graphics_filtration=="bilinear")
+	tfo = Ogre::TFO_BILINEAR;
+  else if (graphics_filtration=="trilinear")
+	tfo = Ogre::TFO_TRILINEAR;
+  else if (graphics_filtration=="none")
+	tfo = Ogre::TFO_NONE;
 
-  renderer_->UpdateParams(tfo, 8);
+  renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
   renderer_->GetWindow().SetCaption(conf_->Get<string>("window_caption"));
   renderer_->Refresh();
 }
@@ -92,7 +90,7 @@ void Engine::Resume() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Engine::Clean() {
+void Engine::Cleanup() {
   for_each(components_.begin(), components_.end(), [](view_ptr<Component> it) { it->Cleanup(); });
 }
 

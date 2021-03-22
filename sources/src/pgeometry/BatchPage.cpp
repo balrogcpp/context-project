@@ -39,7 +39,7 @@ BatchPage::BatchPage() :
 //-----------------------------------------------------------------------------
 ///
 void BatchPage::init(PagedGeometry *geom_, const Any &data) {
-  OgreAssert((geom_ && "Can any code set null pointer?"), R"(geom_ && "Can any code set null pointer?")");
+  assert(geom_ && "Can any code set null pointer?");
 
   int datacast = data.has_value() ? Ogre::any_cast<int>(data) : 0;
 #ifdef _DEBUG
@@ -123,6 +123,7 @@ void BatchPage::build() {
     //Store the original materials
     m_vecUnfadedMaterials.push_back(subBatch->getMaterial());
   }
+
 //  _updateShaders();
 }
 
@@ -232,8 +233,7 @@ void BatchPage::_updateShaders() {
       shaderLanguage = "cg";
 
     //If the shader hasn't been created yet, create it
-    if (!HighLevelGpuProgramManager::getSingleton().getByName(vertexProgName,
-                                                              ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
+    if (!HighLevelGpuProgramManager::getSingleton().getByName(vertexProgName, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
       Pass *pass = ptrMat->getTechnique(0)->getPass(0);
       String vertexProgSource;
 

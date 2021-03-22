@@ -31,17 +31,17 @@ namespace fs = filesystem;
 
 namespace xio {
 
-static std::string FindPath(const std::string& file, int depth = 3) {
-	string path = file;
+static std::string FindPath(const std::string &file, int depth = 3) {
+  string path = file;
 
-	for (int i = 0; i < depth; i++) {
-		if (fs::exists(path))
-			return path;
-		else
-			path = string("../").append(path);
-	}
+  for (int i = 0; i < depth; i++) {
+	if (fs::exists(path))
+	  return path;
+	else
+	  path = string("../").append(path);
+  }
 
-	return string();
+  return string();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -100,34 +100,30 @@ void Assets::PrintStringList(const vector <string> &string_list) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Assets::LoadResources() {
-  Ogre::ResourceGroupManager::getSingletonPtr()->initialiseAllResourceGroups();
+  Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void
-Assets::InitGeneralResources(const vector <string> &path_list,
+Assets::InitGeneralResources(const string &path_,
+							 const string &group_,
 							 const string &resource_file,
 							 bool verbose) {
-  const string default_group_name = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
-
   vector <string> file_list;
   vector <string> dir_list;
   vector <tuple<string, string, string>> resource_list;
   auto &ogre_resource_manager = Ogre::ResourceGroupManager::getSingleton();
 
-  for (const auto &it : path_list) {
-	string path = FindPath(it);
+  string path = FindPath(path_);
 
-	if (fs::exists(path))
-	  resource_list.push_back({path, "FileSystem", default_group_name});
-  }
+  if (fs::exists(path))
+	resource_list.push_back({path, "FileSystem", group_});
 
   if (!resource_file.empty()) {
 	fstream list_file;
 	list_file.open(resource_file);
 
 	string line;
-	string path;
 	string type;
 	string group;
 
@@ -165,11 +161,7 @@ Assets::InitGeneralResources(const vector <string> &path_list,
 
   for (const auto &it : resource_list) {
 	ogre_resource_manager.addResourceLocation(get<0>(it), get<1>(it), get<2>(it));
-	if (find(begin(path_list), end(path_list), get<0>(it))==end(path_list)) {
-	  dir_list.push_back(get<0>(it));
-	} else {
-//	  throw Exception("Path " + get<0>(it) + " already registered. Aborting.");
-	}
+	dir_list.push_back(get<0>(it));
 
 	for (auto jt = fs::recursive_directory_iterator(get<0>(it)); jt!=fs::recursive_directory_iterator(); ++jt) {
 	  const auto file_path = jt->path().string();
@@ -179,11 +171,8 @@ Assets::InitGeneralResources(const vector <string> &path_list,
 		if (verbose) {
 		  cout << "Parsing directory:  " << file_path << '\n';
 		}
-		if (find(begin(path_list), end(path_list), file_name)==end(path_list)) {
-		  dir_list.push_back(file_name);
-		} else {
-//		  throw Exception("Path " + file_name + " already registered. Aborting.");
-		}
+
+		dir_list.push_back(file_name);
 
 		ogre_resource_manager.addResourceLocation(file_path, "FileSystem", get<2>(it));
 
@@ -192,13 +181,11 @@ Assets::InitGeneralResources(const vector <string> &path_list,
 		  cout << "Parsing file:  " << file_path << '\n';
 		}
 		if (fs::path(file_path).extension()==".zip") {
-		  if (find(begin(file_list), end(file_list), file_name)==end(file_list)) {
-			if (find(begin(extensions_list), end(extensions_list), fs::path(file_name).extension())!=end(extensions_list)) {
-			  file_list.push_back(file_name);
-			}
-		  } else {
-//			throw Exception("File " + file_name + " already exists. Aborting.");
+		  if (find(begin(extensions_list), end(extensions_list), fs::path(file_name).extension())
+			  !=end(extensions_list)) {
+			file_list.push_back(file_name);
 		  }
+
 
 		  ogre_resource_manager.addResourceLocation(file_path, "Zip", get<2>(it));
 		}

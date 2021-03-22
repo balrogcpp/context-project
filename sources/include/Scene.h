@@ -22,14 +22,21 @@
 
 #pragma once
 
-#include "Singleton.h"
 #include "Exception.h"
+#include "SubComponent.h"
+#include <string>
 
 namespace xio {
 
-class Scene : public Singleton<Scene> {
+class Scene final : public SubComponent {
  public:
+  Scene();
+  virtual ~Scene();
 
+  void Update(float time) override;
+
+ private:
+  std::string resource_group_;
 };
 
 } //namespace

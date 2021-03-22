@@ -61,7 +61,7 @@ BatchedGeometry::BatchedGeometry(Ogre::SceneManager *mgr, Ogre::SceneNode *rootS
     m_Built(false),
     m_vecCenter(Ogre::Vector3::ZERO),
     m_BoundsUndefined(true) {
-  OgreAssert((rootSceneNode), R"(rootSceneNode)");
+  assert(rootSceneNode);
 }
 
 //-----------------------------------------------------------------------------
@@ -200,14 +200,14 @@ void BatchedGeometry::extractVertexDataFromShared(const Ogre::MeshPtr &mesh) {
     IndexData *indexData = subMesh->indexData;
     HardwareIndexBufferSharedPtr ib = indexData->indexBuffer;
 
-    // Init new nonshared vertex data
+    // Create new nonshared vertex data
     std::map<uint32, uint32> indicesMap;
     VertexData *newVertexData = new VertexData();
     newVertexData->vertexCount = CountUsedVertices(indexData, indicesMap);
     //delete newVertexData->vertexDeclaration;
     newVertexData->vertexDeclaration = oldVertexData->vertexDeclaration->clone();
 
-    // Init new vertex buffers
+    // Create new vertex buffers
     uint32 buffersCount = (uint32) oldVertexData->vertexBufferBinding->getBufferCount();
     for (uint32 bufferIndex = 0; bufferIndex < buffersCount; bufferIndex++) {
 
@@ -217,7 +217,7 @@ void BatchedGeometry::extractVertexDataFromShared(const Ogre::MeshPtr &mesh) {
       uint8 *oldLock =
           (uint8 *) oldVertexBuffer->lock(0, oldVertexData->vertexCount * vertexSize, HardwareBuffer::HBL_READ_ONLY);
 
-      // Init and lock nonshared vertex buffer
+      // Create and lock nonshared vertex buffer
       HardwareVertexBufferSharedPtr newVertexBuffer = HardwareBufferManager::getSingleton().createVertexBuffer(
           vertexSize, newVertexData->vertexCount, oldVertexBuffer->getUsage(), oldVertexBuffer->hasShadowBuffer());
       uint8 *newLock =
@@ -315,7 +315,7 @@ void BatchedGeometry::build() {
     m_boundsAAB.setMaximum(m_boundsAAB.getMaximum() - m_vecCenter);    // Center the bounding box
     m_fRadius = m_boundsAAB.getMaximum().length();                    // Calculate BB radius
 
-    // Init scene node
+    // Create scene node
     m_pSceneNode = m_pParentSceneNode->createChildSceneNode(m_vecCenter);
 
     //Build each batch
@@ -362,7 +362,8 @@ void BatchedGeometry::clear() {
 //-----------------------------------------------------------------------------
 ///
 void BatchedGeometry::_updateRenderQueue(RenderQueue *queue) {
-  OgreAssert(isVisible(), "Ogre core code must detect that this MovableObject invisible");
+  assert(isVisible() && "Ogre core code must detect that this MovableObject invisible");
+
   for (const auto &it : m_mapSubBatch)
     queue->addRenderable(it.second);
 
@@ -420,7 +421,7 @@ BatchedGeometry::SubBatch::SubBatch(BatchedGeometry *parent, SubEntity *ent) :
     m_RequireVertexColors(false),
     m_pSubMesh(0),
     m_pParentGeom(parent) {
-  OgreAssert((ent), R"(ent)");
+  assert(ent);
   m_pSubMesh = ent->getSubMesh();
 
   const Ogre::MaterialPtr &parentMaterial = ent->getMaterial();
@@ -482,7 +483,7 @@ BatchedGeometry::SubBatch::~SubBatch() {
 void BatchedGeometry::SubBatch::addSubEntity(SubEntity *ent, const Vector3 &position,
                                              const Quaternion &orientation, const Vector3 &scale,
                                              const Ogre::ColourValue &color, void *userData) {
-  OgreAssert((!m_Built), R"(!m_Built)");
+  assert(!m_Built);
 
   //Add this submesh to the queue
   QueuedMesh newMesh(ent->getSubMesh(), position, orientation, scale, color, userData);
@@ -508,7 +509,7 @@ void BatchedGeometry::SubBatch::addSubEntity(SubEntity *ent, const Vector3 &posi
 //-----------------------------------------------------------------------------
 ///
 void BatchedGeometry::SubBatch::build() {
-  OgreAssert((!m_Built), R"(!m_Built)");
+  assert(!m_Built);
 
   HardwareIndexBuffer::IndexType srcIndexType = m_pSubMesh->indexData->indexBuffer->getType();
   HardwareIndexBuffer::IndexType destIndexType =                             // type of index buffer
@@ -628,7 +629,7 @@ void BatchedGeometry::SubBatch::build() {
   for (Ogre::ushort i = 0; i < vertBinding->getBufferCount(); ++i)
     vertBinding->getBuffer(i)->unlock();
 
-  m_queueMesh.clear();   // Cleanup mesh queue
+  m_queueMesh.clear();   // Clear mesh queue
   m_Built = true;
 }
 
@@ -881,7 +882,7 @@ void BatchedGeometry::SubBatch::clear() {
     m_pIndexData->indexCount = 0;
   }
 
-  m_queueMesh.clear(); // Cleanup mesh queue
+  m_queueMesh.clear(); // Clear mesh queue
 }
 
 //-----------------------------------------------------------------------------

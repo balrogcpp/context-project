@@ -61,12 +61,12 @@ class Physics final : public Component, public Singleton<Physics> {
   Physics();
   virtual ~Physics();
 
-  void Cleanup() final;
-  void Update(float time) final;
-  void Resume() final {
+  void Cleanup() override;
+  void Update(float time) override;
+  void Resume() override {
     pause_ = false;
   }
-  void Pause() final {
+  void Pause() override {
     pause_ = true;
   }
 

@@ -27,12 +27,12 @@
 namespace xio {
 
 void ComponentLocator::LocateComponents(view_ptr<Configurator> conf,
-							 view_ptr<InputSequencer> input,
-							 view_ptr<Renderer> renderer,
-							 view_ptr<Physics> physics,
-							 view_ptr<Sound> sounds,
-							 view_ptr<Overlay> overlay,
-							 view_ptr<DotSceneLoaderB> loader) {
+										view_ptr<InputSequencer> input,
+										view_ptr<Renderer> renderer,
+										view_ptr<Physics> physics,
+										view_ptr<Sound> sounds,
+										view_ptr<Overlay> overlay,
+										view_ptr<DotSceneLoaderB> loader) {
   conf_ = conf;
   input_ = input;
   renderer_ = renderer;
