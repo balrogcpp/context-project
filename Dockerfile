@@ -46,8 +46,7 @@ ENV CC=clang
 ENV CXX=clang++
 
 RUN mkdir -p build-windows build-linux build-android \
-    && python3 zip-dependencies.py -i "assets" -o "tmp" \
-    && python3 zip-dependencies.py -i "programs" -o "tmp" \
+    && python3 zip-dependencies.py \
     && cd build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-w64.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target install \
@@ -57,4 +56,4 @@ RUN mkdir -p build-windows build-linux build-android \
     && cmake --build . --target install \
     && cd .. \
     && python3 zip-artifacts.py -i "install" -o "artifacts" \
-    && rm -rf build-windows build-linux build-android scenes
+    && rm -rf build-windows build-linux build-android scenes install artifacts/_CPack_Packages
