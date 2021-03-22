@@ -25,7 +25,7 @@ cmake_minimum_required(VERSION 3.16.3)
 project(xio)
 
 if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
+    set(CMAKE_BUILD_TYPE RelWithDebInfo)
 endif ()
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
@@ -158,9 +158,7 @@ set(CONTEXT_THIRDPARTY_DIR ${CONTEXT_THIRDPARTY_ROOT} CACHE PATH "")
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/dependencies ${CONTEXT_WORK_DIR}/dependencies)
 
-if (CONTEXT_ONLY_DEPS)
-    return()
-endif ()
+add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
 
 if (NOT GIT_SHA1)
     execute_process(
@@ -181,7 +179,6 @@ endif ()
 
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 
-find_package(Python3 REQUIRED)
 find_package(OGRE QUIET)
 find_package(Bullet QUIET)
 find_package(SDL2 QUIET)
@@ -193,7 +190,7 @@ find_package(ZLIB QUIET)
 find_package(Lua51 QUIET)
 find_package(ZZip QUIET)
 find_package(assimp QUIET)
-find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
+#find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
 
 if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND)
     return()
@@ -202,8 +199,10 @@ endif ()
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (UNIX AND NOT ANDROID)
-    list(APPEND SYSTEM_LIBRARIES z.a OpenGL GLX X11 Xrandr dl)
+    #jemalloc fix problems with memory bloat on linux
+    list(APPEND SYSTEM_LIBRARIES z.a OpenGL GLX X11 Xrandr dl jemalloc.a)
 elseif (ANDROID)
+    #gradle don't pass -fopenmp flag or smth
     list(APPEND SYSTEM_LIBRARIES z.a log android EGL GLESv2 GLESv1_CM OpenSLES dl m.a hidapi ndk_compat omp)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 winmm Version imm32 Setupapi)
@@ -255,6 +254,12 @@ endif ()
 
 file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OPENAL_LIBRARY} DESTINATION . FOLLOW_SYMLINK_CHAIN)
 
+find_package(Python3 QUIET)
+
+if (NOT Python3_Interpreter_FOUND)
+    return()
+endif ()
+
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB}
         PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
         DESTINATION .
@@ -295,5 +300,5 @@ set(CPACK_GENERATOR "ZIP")
 
 include(CPack)
 
-add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
+#TODO tests
 add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)

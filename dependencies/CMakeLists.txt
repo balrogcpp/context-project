@@ -431,6 +431,23 @@ if (ANDROID)
 
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
 endif ()
+
+if (UNIX)
+    externalproject_add(target-jemalloc
+                        EXCLUDE_FROM_ALL true
+                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                        GIT_REPOSITORY https://github.com/jemalloc/jemalloc.git
+                        GIT_TAG 5.2.1
+                        GIT_SHALLOW true
+                        GIT_PROGRESS false
+                        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./autogen.sh
+                        BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./configure --disable-stats --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
+                        )
+
+    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
+endif ()
+
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-pugixml)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
