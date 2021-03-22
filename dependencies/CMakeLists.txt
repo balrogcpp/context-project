@@ -48,7 +48,7 @@ endif ()
 externalproject_add(target-sdl
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/SDL-mirror/SDL.git
+                    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
                     GIT_TAG release-2.0.14
                     GIT_SHALLOW true
                     GIT_PROGRESS false
@@ -67,7 +67,7 @@ externalproject_add(target-bullet3
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
-                    GIT_TAG 3.08
+                    GIT_TAG 3.09
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -136,7 +136,7 @@ externalproject_add(target-ogg
                     DEPENDS target-openal
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/xiph/ogg.git
-                    GIT_TAG v1.3.3
+                    GIT_TAG v1.3.4
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -152,7 +152,7 @@ externalproject_add(target-vorbis
                     DEPENDS target-ogg
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/xiph/vorbis.git
-                    GIT_TAG v1.3.6
+                    GIT_TAG v1.3.7
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -187,7 +187,7 @@ externalproject_add(target-zzip
                     DEPENDS target-zlib
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/paroj/ZZIPlib.git
-                    GIT_TAG 4b4d9ca1134397dd6c0649fce2dfd80643e53cf6
+                    #GIT_TAG 4b4d9ca1134397dd6c0649fce2dfd80643e53cf6 repo is archived
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -221,7 +221,7 @@ externalproject_add(target-pugixml
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/zeux/pugixml.git
-                    GIT_TAG v1.10
+                    GIT_TAG v1.11.4
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -236,8 +236,8 @@ externalproject_add(target-freetype
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/aseprite/freetype2.git
-                    GIT_TAG VER-2-9-1
+                    GIT_REPOSITORY https://git.savannah.gnu.org/git/freetype/freetype2.git
+                    GIT_TAG VER-2-9-1 #2.10 compilation error
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -315,7 +315,7 @@ externalproject_add(target-assimp
 
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zzip target-freetype target-sdl target-assimp
+                    DEPENDS target-zzip target-freetype target-sdl target-rapidjson
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v1.12.11
@@ -418,7 +418,7 @@ if (ANDROID)
                         EXCLUDE_FROM_ALL true
                         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                         GIT_REPOSITORY https://github.com/google/cpu_features.git
-                        GIT_TAG v0.4.1
+                        GIT_TAG v0.6.0
                         GIT_SHALLOW true
                         GIT_PROGRESS false
                         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -430,13 +430,13 @@ if (ANDROID)
                         )
 
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
-else ()
-
 endif ()
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-pugixml)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre)
-add_custom_target(deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
+if (NOT MINGW)
+    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
+endif ()
+add_custom_target(target-deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
