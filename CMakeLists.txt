@@ -24,11 +24,11 @@ cmake_minimum_required(VERSION 3.16.3)
 
 project(xio)
 
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE RelWithDebInfo)
+if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
+    message(SEND_ERROR "In-source builds are not allowed!")
 endif ()
 
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
 
 set(CMAKE_CXX_STANDARD 17)
 set_property(GLOBAL PROPERTY CXX_EXTENSIONS OFF)
@@ -43,8 +43,13 @@ include(ProcessorCount)
 
 check_type_size("void*" PTR_SIZE BUILTIN_TYPES_ONLY)
 
-if (NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE STREQUAL "Release")
-    message(SEND_ERROR "Only Release and RelWithDebInfo build are available")
+if (NOT ANDROID)
+    if (NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+        message(SEND_ERROR "Only Release and RelWithDebInfo build are available")
+    endif ()
+    if (NOT CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE RelWithDebInfo)
+    endif ()
 endif ()
 
 if (PTR_SIZE EQUAL 8)
@@ -138,10 +143,13 @@ elseif (MSVC)
         string(APPEND CMAKE_C_FLAGS " /D \"DEBUG\"")
     endif ()
 endif ()
+# Export ANativeActivity_onCreate(),
+# Refer to: https://github.com/android-ndk/ndk/issues/381.
 
 if (ANDROID)
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-${ANDROID_ABI}")
     set(CONTEXT_BUILD_PLATFORM ${ANDROID_ABI})
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
 else ()
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-${CONTEXT_BUILD_PLATFORM}")
 endif ()
@@ -173,16 +181,17 @@ set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
 set(CONTEXT_ZIP_NAME ContextProjectDemo-${GIT_SHA1} CACHE PATH "")
 set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
 
-if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
-    message(SEND_ERROR "In-source builds are not allowed!")
-endif ()
-
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
+set(CMAKE_FIND_ROOT_PATH "${ANDROID_NDK};${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
 
+
+find_package(Threads REQUIRED)
+find_package(OpenMP REQUIRED)
 find_package(OGRE QUIET)
 find_package(Bullet QUIET)
 find_package(SDL2 QUIET)
 find_package(OpenAL QUIET)
+find_package(Ogg QUIET)
 find_package(Lua QUIET)
 find_package(yaml-cpp QUIET)
 find_package(sol2 QUIET)
@@ -192,8 +201,17 @@ find_package(ZZip QUIET)
 find_package(assimp QUIET)
 #find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
 
-if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND)
-    return()
+if (NOT ANDROID)
+    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND)
+        message("Please build dependencies before executable")
+        return()
+    endif ()
+else ()
+    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND)
+        add_library(target-deps-dummy SHARED android/main.cpp)
+        add_dependencies(target-deps-dummy target-deps)
+        return()
+    endif ()
 endif ()
 
 if (MINGW)
@@ -203,22 +221,22 @@ elseif (UNIX AND NOT ANDROID)
     list(APPEND SYSTEM_LIBRARIES z.a OpenGL GLX X11 Xrandr dl jemalloc.a)
 elseif (ANDROID)
     #gradle don't pass -fopenmp flag or smth
-    list(APPEND SYSTEM_LIBRARIES z.a log android EGL GLESv2 GLESv1_CM OpenSLES dl m.a hidapi ndk_compat omp)
+    list(APPEND SYSTEM_LIBRARIES z.a android native_app_glue atomic EGL GLESv1_CM GLESv2 log OpenSLES hidapi omp)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 winmm Version imm32 Setupapi)
 elseif (APPLE)
     list(APPEND SYSTEM_LIBRARIES zlibstatic)
 endif ()
 
+
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
-                                    ${SOL2_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${BULLET_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
+                                    ${BULLET_INCLUDE_DIR} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
                                     ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 
 file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h sources/*.cpp sources/*.h)
 
 if (ANDROID)
-    list(APPEND SOURCE_FILES ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
-    list(APPEND SOURCE_FILES ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
+    add_library(native_app_glue STATIC ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
 endif ()
 
 if (NOT ANDROID)
@@ -228,9 +246,11 @@ else ()
 endif ()
 
 include_directories(demo demo/include ${CONTEXT_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
+
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
+
 target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
-                            vorbisfile vorbis vorbisenc ogg pugixml freetype ${SDL2_LIBRARIES}
+                            vorbisfile vorbis vorbisenc ${OGG_LIBRARY} pugixml ${SDL2_LIBRARIES}
                             ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${YAML_CPP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES})
 
 target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
@@ -252,7 +272,9 @@ elseif (UNIX)
     #file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/*.so*)
 endif ()
 
-file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OPENAL_LIBRARY} DESTINATION . FOLLOW_SYMLINK_CHAIN)
+if (NOT ANDROID)
+    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OPENAL_LIBRARY} DESTINATION . FOLLOW_SYMLINK_CHAIN)
+endif ()
 
 find_package(Python3 QUIET)
 

@@ -26,6 +26,18 @@
 #include "RtssUtils.h"
 #include "Exception.h"
 
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+extern "C" {
+#include <android/configuration.h>
+#include <android/asset_manager.h>
+#include <android/native_window.h>
+#include <android/input.h>
+
+static AAssetManager* mAAssetMgr = NULL;
+static AConfiguration* mAConfig = NULL;
+}
+#endif
+
 using namespace std;
 
 namespace xio {
@@ -73,16 +85,18 @@ Renderer::Renderer(int w, int h, bool f) {
 
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  if (!reinterpret_cast<size_t>(info.info.x11.window))
-    throw Exception("Cast from info.info.x11.window to size_t failed");
+  if (!reinterpret_cast<size_t>(info.info.android.window))
+    throw Exception("Cast from info.info.android.window to size_t failed");
 
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
+  params["preserveContext"] = "true"; //Optionally preserve the gl context, prevents reloading all resources, this is false by default
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   if (!reinterpret_cast<size_t>(wmInfo.info.cocoa.window))
     throw Exception("Cast from wmInfo.info.cocoa.window to size_t failed");
 
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(wmInfo.info.cocoa.window));
 #endif
+
 
   const char true_str[] = "true";
   const char false_str[] = "false";

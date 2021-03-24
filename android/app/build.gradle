@@ -1,0 +1,79 @@
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.1.3'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.application'
+
+android {
+    buildToolsVersion '31.0.0 rc2'
+    compileSdkVersion 29
+    ndkVersion '22.0.7026061'
+
+    defaultConfig {
+        applicationId 'com.example.demo'
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode     1
+        versionName    '1.0'
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_ARM_NEON=ON '
+            }
+        }
+    }
+    signingConfigs {
+        release {
+            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled = false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            version '3.16.3'
+            path '../../CMakeLists.txt'
+        }
+    }
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86'
+            universalApk false
+        }
+    }
+    /*sourceSets {
+        main {
+            //res.srcDirs = ['android/main/res']
+            //assets.srcDirs = ['tmp/programs', 'tmp/assets']
+            //manifest.srcFile 'android/main/AndroidManifest.xml'
+        }
+    }*/
+}
+android.lintOptions {
+        abortOnError  = false
+}
+

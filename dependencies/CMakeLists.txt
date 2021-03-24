@@ -152,7 +152,7 @@ externalproject_add(target-vorbis
                     DEPENDS target-ogg
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/xiph/vorbis.git
-                    GIT_TAG v1.3.7
+                    GIT_TAG v1.3.6 #version 1.3.7 can't find ogg @Android
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -432,7 +432,7 @@ if (ANDROID)
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
 endif ()
 
-if (UNIX)
+if (UNIX AND NOT ANDROID AND CMAKE_BUILD_TYPE STREQUAL "Release")
     externalproject_add(target-jemalloc
                         EXCLUDE_FROM_ALL true
                         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
