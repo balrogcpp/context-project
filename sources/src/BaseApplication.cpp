@@ -20,30 +20,10 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#pragma once
-#include "NoCopy.h"
-#include "view_ptr.h"
+#include "pcheader.h"
+
+#include "BaseApplication.h"
 
 namespace xio {
-class Configurator;
-
-class Component : public NoCopy {
- public:
-  Component() {}
-  virtual ~Component() {}
-
-  virtual void Cleanup() = 0;
-  virtual void Pause() = 0;
-  virtual void Resume() = 0;
-  virtual void Update(float time) = 0;
-
- protected:
-  inline static view_ptr<Configurator> conf_;
-
- public:
-  static void SetConfigurator(view_ptr<Configurator> conf) {
-    conf_ = conf;
-  }
-};
 
 } //namespace

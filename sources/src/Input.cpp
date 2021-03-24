@@ -50,6 +50,7 @@ InputSequencer &InputSequencer::GetInstance() {
 void InputSequencer::RegObserver(view_ptr<InputObserver> p) {
   io_listeners.push_back(p);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::UnregObserver(view_ptr<InputObserver> p) {
   auto it = find(io_listeners.begin(), io_listeners.end(), p);
@@ -59,10 +60,12 @@ void InputSequencer::UnregObserver(view_ptr<InputObserver> p) {
 	io_listeners.pop_back();
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::RegWinObserver(view_ptr<WindowObserver> p) {
   win_listeners.push_back(p);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::UnregWinObserver(view_ptr<WindowObserver> p) {
   auto it = find(win_listeners.begin(), win_listeners.end(), p);
@@ -72,6 +75,7 @@ void InputSequencer::UnregWinObserver(view_ptr<WindowObserver> p) {
 	win_listeners.pop_back();
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::Clear() {
   io_listeners.clear();
@@ -79,11 +83,13 @@ void InputSequencer::Clear() {
   win_listeners.clear();
   win_listeners.shrink_to_fit();
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::Reserve(size_t size) {
   io_listeners.reserve(size);
   win_listeners.reserve(size);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::Capture() {
   SDL_Event event;
@@ -198,21 +204,25 @@ void InputSequencer::Capture() {
   }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 InputObserver::InputObserver() {
   static auto &ref = InputSequencer::GetInstance();
   ref.RegObserver(this);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 InputObserver::~InputObserver() {
   static auto &ref = InputSequencer::GetInstance();
   ref.UnregObserver(this);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 WindowObserver::WindowObserver() {
   static auto &ref = InputSequencer::GetInstance();
   ref.RegWinObserver(this);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 WindowObserver::~WindowObserver() {
   static auto &ref = InputSequencer::GetInstance();
   ref.UnregWinObserver(this);

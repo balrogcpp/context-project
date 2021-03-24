@@ -20,8 +20,8 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+#include "Configurator.h"
 #include "pcheader.h"
-
 #include "Engine.h"
 
 using namespace std;
@@ -29,8 +29,9 @@ using namespace std;
 namespace xio {
 
 Engine::Engine() {
-  conf_ = make_unique<Configurator>("config.yaml");
-  Renderer::SetConfigurator(conf_.get());
+  conf_ = make_unique<Configurator>("config.json");
+
+  Component::SetConfigurator(conf_.get());
   int window_width = conf_->Get<int>("window_width");
   int window_high = conf_->Get<int>("window_high");
   bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
@@ -39,7 +40,7 @@ Engine::Engine() {
   // Shadows param
   bool shadow_enable = conf_->Get<bool>("graphics_shadows_enable");
   float shadow_far = conf_->Get<float>("graphics_shadows_far_distance");
-  int16_t tex_size = conf_->Get<int16_t>("graphics_shadows_texture_resolution");
+  int16_t tex_size = conf_->Get<int>("graphics_shadows_texture_resolution");
   int tex_format = conf_->Get<int>("graphics_shadows_texture_format");
   renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
@@ -76,7 +77,10 @@ Engine::~Engine() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Capture() {
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#else
   input_->Capture();
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------

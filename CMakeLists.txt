@@ -104,7 +104,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     endif ()
 
     if (MINGW)
-        string(APPEND CMAKE_CXX_FLAGS " -mwindows")
+        string(APPEND CMAKE_CXX_FLAGS " -mwindows -DWINVER=0x0601 -D_WIN32_WINNT=0x0601")
         string(APPEND CMAKE_C_FLAGS " -mwindows")
     endif ()
 
@@ -130,8 +130,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     endif ()
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp")
-    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp")
+    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp  /D_WIN32_WINNT=0x0601 /DWINVER=0x0601")
+    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp  /D_WIN32_WINNT=0x0601 /DWINVER=0x0601")
 
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
         string(APPEND CMAKE_CXX_FLAGS " /O2 /fp:fast /GL /D \"WINAPI_MAIN_FUNC\"")
@@ -143,12 +143,13 @@ elseif (MSVC)
         string(APPEND CMAKE_C_FLAGS " /D \"DEBUG\"")
     endif ()
 endif ()
-# Export ANativeActivity_onCreate(),
-# Refer to: https://github.com/android-ndk/ndk/issues/381.
 
 if (ANDROID)
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-${ANDROID_ABI}")
     set(CONTEXT_BUILD_PLATFORM ${ANDROID_ABI})
+
+    # Export ANativeActivity_onCreate(),
+    # Refer to: https://github.com/android-ndk/ndk/issues/381.
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
 else ()
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-${CONTEXT_BUILD_PLATFORM}")
@@ -168,36 +169,19 @@ add_subdirectory(${CONTEXT_ROOT_DIR}/dependencies ${CONTEXT_WORK_DIR}/dependenci
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
 
-if (NOT GIT_SHA1)
-    execute_process(
-            COMMAND git rev-parse --short=8 HEAD
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            OUTPUT_VARIABLE GIT_SHA1
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-endif ()
-
-set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
-set(CONTEXT_ZIP_NAME ContextProjectDemo-${GIT_SHA1} CACHE PATH "")
-set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
 
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 set(CMAKE_FIND_ROOT_PATH "${ANDROID_NDK};${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
 
-
 find_package(Threads REQUIRED)
-find_package(OpenMP REQUIRED)
 find_package(OGRE QUIET)
 find_package(Bullet QUIET)
 find_package(SDL2 QUIET)
 find_package(OpenAL QUIET)
 find_package(Ogg QUIET)
-find_package(Lua QUIET)
-find_package(yaml-cpp QUIET)
 find_package(sol2 QUIET)
 find_package(ZLIB QUIET)
 find_package(Lua51 QUIET)
-find_package(ZZip QUIET)
 find_package(assimp QUIET)
 #find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
 
@@ -208,20 +192,20 @@ if (NOT ANDROID)
     endif ()
 else ()
     if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND)
-        add_library(target-deps-dummy SHARED android/main.cpp)
+        add_library(target-deps-dummy SHARED android/app/src/main/cpp/main.cpp)
         add_dependencies(target-deps-dummy target-deps)
         return()
     endif ()
 endif ()
 
+
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (UNIX AND NOT ANDROID)
     #jemalloc fix problems with memory bloat on linux
-    list(APPEND SYSTEM_LIBRARIES z.a OpenGL GLX X11 Xrandr dl jemalloc.a)
+    list(APPEND SYSTEM_LIBRARIES OpenGL GLX X11 Xrandr dl jemalloc.a)
 elseif (ANDROID)
-    #gradle don't pass -fopenmp flag or smth
-    list(APPEND SYSTEM_LIBRARIES z.a android native_app_glue atomic EGL GLESv1_CM GLESv2 log OpenSLES hidapi omp)
+    list(APPEND SYSTEM_LIBRARIES android native_app_glue atomic EGL GLESv1_CM GLESv2 log OpenSLES)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 winmm Version imm32 Setupapi)
 elseif (APPLE)
@@ -233,7 +217,7 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTA
                                     ${BULLET_INCLUDE_DIR} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
                                     ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 
-file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h sources/*.cpp sources/*.h)
+file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h demo/*.hpp sources/*.cpp sources/*.h sources/*.hpp)
 
 if (ANDROID)
     add_library(native_app_glue STATIC ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
@@ -251,13 +235,13 @@ target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERN
 
 target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
                             vorbisfile vorbis vorbisenc ${OGG_LIBRARY} pugixml ${SDL2_LIBRARIES}
-                            ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${YAML_CPP_LIBRARIES} ${ZZip_LIBRARIES} ${SYSTEM_LIBRARIES})
+                            ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${YAML_CPP_LIBRARIES} ${SYSTEM_LIBRARIES})
 
 target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
 
 install(TARGETS demo RUNTIME DESTINATION .)
 
-file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h)
+file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
 
 # include_directories(lib-static ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
 # add_library(lib-static STATIC ${SOURCE_FILES} )
@@ -273,7 +257,7 @@ elseif (UNIX)
 endif ()
 
 if (NOT ANDROID)
-    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB} ${OPENAL_LIBRARY} DESTINATION . FOLLOW_SYMLINK_CHAIN)
+    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} ${OPENAL_LIBRARY} DESTINATION . FOLLOW_SYMLINK_CHAIN)
 endif ()
 
 find_package(Python3 QUIET)
@@ -282,7 +266,24 @@ if (NOT Python3_Interpreter_FOUND)
     return()
 endif ()
 
-install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.yaml ${EXTERNAL_DLL_GLOB}
+if (NOT GIT_SHA1)
+    execute_process(
+            COMMAND git rev-parse --short=8 HEAD
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_VARIABLE GIT_SHA1
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+endif ()
+
+set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
+set(CONTEXT_ZIP_NAME ContextProjectDemo-${GIT_SHA1} CACHE PATH "")
+set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
+
+set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
+set(CMAKE_FIND_ROOT_PATH "${ANDROID_NDK};${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
+
+
+install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB}
         PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
         DESTINATION .
         )

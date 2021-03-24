@@ -28,7 +28,6 @@
 #include "DotSceneLoaderB.h"
 #include "Overlay.h"
 #include "AppState.h"
-#include "Configurator.h"
 #include "Engine.h"
 #include "view_ptr.h"
 

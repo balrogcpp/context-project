@@ -61,17 +61,15 @@ android {
         abi {
             enable true
             reset()
-            include 'x86'
+            include 'x86', 'arm64-v8a'
             universalApk false
         }
     }
-    /*sourceSets {
+    sourceSets {
         main {
-            //res.srcDirs = ['android/main/res']
-            //assets.srcDirs = ['tmp/programs', 'tmp/assets']
-            //manifest.srcFile 'android/main/AndroidManifest.xml'
+            assets.srcDirs = ['../../tmp/programs']
         }
-    }*/
+    }
 }
 android.lintOptions {
         abortOnError  = false

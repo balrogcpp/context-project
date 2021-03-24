@@ -57,6 +57,7 @@ externalproject_add(target-sdl
                     -DSDL_SHARED_ENABLED_BY_DEFAULT=false
                     -DDIRECTX=false
                     -DSDL_AUDIO=false
+                    -DHIDAPI=false
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
@@ -78,7 +79,7 @@ externalproject_add(target-bullet3
                     -DCMAKE_MINSIZEREL_POSTFIX=
                     -DCLAMP_VELOCITIES=0
                     -DBULLET2_MULTITHREADING=true
-                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=true
+                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=false
                     -DBUILD_BULLET2_DEMOS=false
                     -DBUILD_CPU_DEMOS=false
                     -DBUILD_EXTRAS=false
@@ -198,25 +199,6 @@ externalproject_add(target-zzip
                     -G "${CMAKE_GENERATOR}"
                     )
 
-externalproject_add(target-yamlcpp
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-                    GIT_TAG yaml-cpp-0.6.3
-                    GIT_SHALLOW true
-                    GIT_PROGRESS false
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DYAML_BUILD_SHARED_LIBS=false
-                    -DYAML_CPP_BUILD_CONTRIB=false
-                    -DYAML_CPP_BUILD_TESTS=false
-                    -DYAML_CPP_BUILD_TOOLS=false
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}# -I /opt/android-ndk/sources/android/cpufeatures
-                    -G "${CMAKE_GENERATOR}"
-                    )
-
 externalproject_add(target-pugixml
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -315,7 +297,7 @@ externalproject_add(target-assimp
 
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zzip target-freetype target-sdl target-rapidjson
+                    DEPENDS target-zzip target-freetype target-sdl target-pugixml
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v1.12.11
@@ -413,25 +395,6 @@ externalproject_add(target-sol
                     -G "${CMAKE_GENERATOR}"
                     )
 
-if (ANDROID)
-    externalproject_add(target-cpuinfo
-                        EXCLUDE_FROM_ALL true
-                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                        GIT_REPOSITORY https://github.com/google/cpu_features.git
-                        GIT_TAG v0.6.0
-                        GIT_SHALLOW true
-                        GIT_PROGRESS false
-                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                        ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                        -G "${CMAKE_GENERATOR}"
-                        )
-
-    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
-endif ()
-
 if (UNIX AND NOT ANDROID AND CMAKE_BUILD_TYPE STREQUAL "Release")
     externalproject_add(target-jemalloc
                         EXCLUDE_FROM_ALL true
@@ -449,12 +412,8 @@ if (UNIX AND NOT ANDROID AND CMAKE_BUILD_TYPE STREQUAL "Release")
 endif ()
 
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-pugixml)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-rapidjson)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre)
-if (NOT (MINGW AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
-    #Bullet has problems with openmp linking at clang_mingw combination
-    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
-endif ()
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
 add_custom_target(target-deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})

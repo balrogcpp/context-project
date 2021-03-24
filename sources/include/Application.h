@@ -21,20 +21,25 @@
 //SOFTWARE.
 
 #pragma once
-#include <OgreFrameListener.h>
-#include <OgreRenderTargetListener.h>
 #include <OgreLog.h>
 #include "Singleton.h"
 #include "Engine.h"
 #include "StateManager.h"
 #include "ComponentLocator.h"
+#include "BaseApplication.h"
 #include "view_ptr.h"
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+extern "C" {
+  struct android_app;
+}
+#endif
 
 namespace xio {
 
 class Application final : public WindowObserver, public Ogre::LogListener, public ComponentLocator, public Singleton<Application> {
  public:
-  explicit Application(char **argv = {});
+  explicit Application();
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&scene_ptr);
   int GetCurrentFps() const;
@@ -71,6 +76,9 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
 #endif
   bool lock_fps_ = true;
   std::string log_;
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  android_app* state_ = nullptr;
+#endif
 };
 
 } //namespace

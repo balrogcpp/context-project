@@ -22,10 +22,11 @@
 
 #pragma once
 #include "NoCopy.h"
-#include "Configurator.h"
 #include "view_ptr.h"
 
 namespace xio {
+class Configurator;
+
 class SubComponent : public NoCopy {
  public:
   SubComponent() {}

@@ -42,9 +42,25 @@ Window::~Window() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Window::Init_() {
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
 	throw Exception("Failed to init SDL2");
   }
+
+  /* Open the first available controller. */
+  SDL_GameController *controller = nullptr;
+  for (int i = 0; i < SDL_NumJoysticks(); ++i) {
+	if (SDL_IsGameController(i)) {
+	  controller = SDL_GameControllerOpen(i);
+	  assert(controller & "Could not open gamecontroller");
+	}
+  }
+
+#else
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_SENSOR) < 0) {
+	throw Exception("Failed to init SDL2");
+  }
+#endif
 
   SDL_DisplayMode DM;
   SDL_GetCurrentDisplayMode(0, &DM);

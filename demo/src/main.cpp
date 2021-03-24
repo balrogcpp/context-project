@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,10 @@
 #include "DemoDotAppState.h"
 #include "MenuAppState.h"
 #include "Application.h"
-#include <string>
-#include <iostream>
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <locale>
-#include <shellapi.h>
 #endif
 
 using namespace std;
@@ -45,22 +41,30 @@ INT WINAPI WinMain
     _In_ int nShowCmd
 )
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+extern "C" {
 #include <android_native_app_glue.h>
 #include <jni.h>
+#include <android/log.h>
 
-void android_main(struct android_app* pApp)
+void android_main(struct android_app* state);
+}
+
+void android_main(struct android_app* state)
 #else
 int main(int argc, char** argv)
 #endif
 {
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+  SetProcessDPIAware();
+#endif
+
   try {
-#if defined WIN32 && defined WINAPI_MAIN_FUNC
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
     Application app;
 #else
-    Application app(argv);
+	Application app(state);
 #endif
     app.Main(make_unique<Demo::MenuAppState>());
-//    app.Main(make_unique<Demo::DemoDotAppState>());
   }
   catch (...) {
 
@@ -70,3 +74,33 @@ int main(int argc, char** argv)
   return 0;
 #endif
 }
+
+//
+// Created by Patrick Martin on 1/30/19.
+//
+
+//#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+//extern "C" {
+//#include <android_native_app_glue.h>
+//#include <jni.h>
+//#include <android/log.h>
+//
+//void android_main(struct android_app* state);
+//void handle_cmd(android_app *pApp, int32_t cmd) {
+//}
+//
+//void android_main(struct android_app *pApp) {
+//  pApp->onAppCmd = handle_cmd;
+//
+//  int events;
+//  android_poll_source *pSource;
+//  do {
+//	if (ALooper_pollAll(0, nullptr, &events, (void **) &pSource) >= 0) {
+//	  if (pSource) {
+//		pSource->process(pApp, pSource);
+//	  }
+//	}
+//  } while (!pApp->destroyRequested);
+//}
+//}
+//#endif

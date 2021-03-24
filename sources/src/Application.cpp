@@ -20,12 +20,14 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+#include "Configurator.h"
 #include "pcheader.h"
 #include "Application.h"
 #include "Overlay.h"
 #include "DesktopIcon.h"
 #include "Exception.h"
 #include "SDL2.hpp"
+#include "VerboseListener.h"
 #include <iostream>
 
 #ifdef _WIN32
@@ -39,8 +41,12 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 namespace xio {
-Application::Application(char **argv) {
+Application::Application() {
   try {
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+    state_ = (android_app*)(state);
+#endif
+
 	auto *logger = new Ogre::LogManager();
 	logger->createLog("ogre.log", true, false, true);
 	Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
@@ -220,7 +226,6 @@ void Application::Go_() {
 
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Message_(const string &caption, const string &message) {
-  //renderer_->GetWindow().SetCursorStatus(true, false, false);
   WriteLogToFile_("error.log");
   PrintLogToConsole_();
   cerr << caption << '\n';
@@ -239,6 +244,9 @@ int Application::Main(unique_ptr <AppState> &&scene_ptr) {
 #endif
 #ifndef DEBUG
 	ios_base::sync_with_stdio(false);
+#else
+	auto verbose_listener = make_unique<VerboseListener>();
+	//verbose_listener->verbose = true;
 #endif
 	state_manager_->SetInitialState(move(scene_ptr));
 	Go_();

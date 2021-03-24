@@ -43,16 +43,8 @@ class VerboseListener final : public InputObserver {
   void OnJoystickHat(int which, int hat, int value) override;
   void OnJoystickBall(int which, int ball, int xrel, int yrel) override;
 
- private:
-  bool verbose_ = false;
-
  public:
-  bool IsVerbose() const noexcept {
-	return verbose_;
-  }
-  void SetVerbose(bool print) noexcept {
-	verbose_ = print;
-  }
+  bool verbose = false;
 };
 
 } //namespace

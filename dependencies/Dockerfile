@@ -42,10 +42,6 @@ RUN apt-get update && apt-get install -y python3 git gnutls-bin openssl libxaw7-
     && cd ${CONTEXT_HOME}/build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-w64.cmake -G Ninja .. \
     && cmake --build . --target target-deps \
-#Build bullet3 separatly with mingw (clang_mingw linking issue)
-    && rm -rf * \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target target-bullet3 \
     && cd ${CONTEXT_HOME}/dependencies/external/Release/windows-mingw-x64/ \
     && rm -rf src tmp \
     && cd ${CONTEXT_HOME}/build-linux \

@@ -20,23 +20,23 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "pcheader.h"
+//#include "pcheader.h"
 
-#include "Configurator.h"
+//#include "Configurator.h"
 
-namespace xio {
-
-Configurator::Configurator(const std::string &file) {
-  Load(file);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-Configurator::~Configurator() = default;
-
-//----------------------------------------------------------------------------------------------------------------------
-void Configurator::Load(const std::string &file) {
-  document_.reset();
-  document_ = YAML::LoadFile(file);
-}
-
-} //namespace
+//namespace xio {
+//
+//Configurator::Configurator(const std::string &file) {
+//  Load(file);
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------
+//Configurator::~Configurator() = default;
+//
+////----------------------------------------------------------------------------------------------------------------------
+//void Configurator::Load(const std::string &file) {
+//  document_.reset();
+//  document_ = YAML::LoadFile(file);
+//}
+//
+//} //namespace

@@ -1,5 +1,39 @@
 include(ExternalProject)
 
+externalproject_add(target-yamlcpp
+        EXCLUDE_FROM_ALL true
+        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+        GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+        GIT_TAG yaml-cpp-0.6.3
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DYAML_BUILD_SHARED_LIBS=false
+        -DYAML_CPP_BUILD_CONTRIB=false
+        -DYAML_CPP_BUILD_TESTS=false
+        -DYAML_CPP_BUILD_TOOLS=false
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        ${CONTEXT_CMAKE_EXTRA_FLAGS}
+        -G "${CMAKE_GENERATOR}"
+        )
+
+externalproject_add(target-cpuinfo
+        EXCLUDE_FROM_ALL true
+        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+        GIT_REPOSITORY https://github.com/google/cpu_features.git
+        GIT_TAG v0.6.0
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        ${CONTEXT_CMAKE_EXTRA_FLAGS}
+        -G "${CMAKE_GENERATOR}"
+        )
+
 externalproject_add(target-gtest
         EXCLUDE_FROM_ALL true
         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}

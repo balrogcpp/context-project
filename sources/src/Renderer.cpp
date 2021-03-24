@@ -20,6 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+#include "Configurator.h"
 #include "pcheader.h"
 #include "Renderer.h"
 #include "Assets.h"
@@ -28,13 +29,11 @@
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 extern "C" {
+#include <android_native_app_glue.h>
 #include <android/configuration.h>
 #include <android/asset_manager.h>
 #include <android/native_window.h>
 #include <android/input.h>
-
-static AAssetManager* mAAssetMgr = NULL;
-static AConfiguration* mAConfig = NULL;
 }
 #endif
 
@@ -42,7 +41,19 @@ using namespace std;
 
 namespace xio {
 Renderer::Renderer(int w, int h, bool f) {
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   window_ = make_unique<Window>(w, h, f);
+#else
+  state_ = (android_app*)(state);
+
+  mAConfig = AConfiguration_new();
+
+  //AConfiguration_fromAssetManager(mAConfig, assetMgr);
+  //mAAssetMgr = assetMgr;
+
+  native_ = state_->window;
+#endif
+
   root_ = new Ogre::Root("", "", "");
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
@@ -72,29 +83,25 @@ Renderer::Renderer(int w, int h, bool f) {
   root_->initialise(false);
   Ogre::NameValuePairList params;
 
-  SDL_SysWMinfo info = window_->GetInfo();
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+  SDL_SysWMinfo info = window_->GetInfo();
+
   if (!reinterpret_cast<size_t>(info.info.win.window))
     throw Exception("Cast from info.info.win.window to size_t failed");
 
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+  SDL_SysWMinfo info = window_->GetInfo();
+
   if (!reinterpret_cast<size_t>(info.info.x11.window))
     throw Exception("Cast from info.info.x11.window to size_t failed");
 
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  if (!reinterpret_cast<size_t>(info.info.android.window))
-    throw Exception("Cast from info.info.android.window to size_t failed");
-
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(native_));
+  params["androidConfig"] = to_string(reinterpret_cast<size_t>(mAConfig));
   params["preserveContext"] = "true"; //Optionally preserve the gl context, prevents reloading all resources, this is false by default
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  if (!reinterpret_cast<size_t>(wmInfo.info.cocoa.window))
-    throw Exception("Cast from wmInfo.info.cocoa.window to size_t failed");
-
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(wmInfo.info.cocoa.window));
 #endif
 
 
@@ -108,8 +115,12 @@ Renderer::Renderer(int w, int h, bool f) {
   params["gamma"] = gamma_ ? true_str : false_str;
   params["FSAA"] = to_string(fsaa_);
 
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   render_window_ = root_->createRenderWindow(window_->GetCaption(), window_->GetSize().first, \
                        window_->GetSize().second, window_->IsFullscreen(), &params);
+#else
+  render_window_ = Ogre::Root::getSingleton().createRenderWindow("MyDemo", 0, 0, false, &params);
+#endif
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
@@ -119,7 +130,7 @@ Renderer::Renderer(int w, int h, bool f) {
 
   //Camera block
   camera_ = scene_->createCamera("Default");
-  auto *renderTarget = root_->getRenderTarget(window_->GetCaption());
+  auto *renderTarget = root_->getRenderTarget(render_window_->getName());
   viewport_ = renderTarget->addViewport(camera_.get());
   viewport_->setBackgroundColour(Ogre::ColourValue::Black);
   camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / static_cast<float>(viewport_->getActualHeight()));
@@ -193,14 +204,14 @@ void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy
 
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Resize(int w, int h, bool f) {
-  if (f) {
-    window_->SetFullscreen(f);
-    render_window_->resize(window_->GetSize().first, window_->GetSize().second);
-    render_window_->setFullscreen(f, window_->GetSize().first, window_->GetSize().second);
-  } else {
-    window_->Resize(w, h);
-    render_window_->resize(w, h);
-  }
+//  if (f) {
+//    window_->SetFullscreen(f);
+//    render_window_->resize(window_->GetSize().first, window_->GetSize().second);
+//    render_window_->setFullscreen(f, window_->GetSize().first, window_->GetSize().second);
+//  } else {
+//    window_->Resize(w, h);
+//    render_window_->resize(w, h);
+//  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

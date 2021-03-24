@@ -22,45 +22,66 @@
 
 #pragma once
 #include "NoCopy.h"
-#include <yaml-cpp/yaml.h>
+#include "Exception.h"
 #include <filesystem>
 #include <string>
+#define RAPIDJSON_HAS_STDSTRING 1
+#include <rapidjson/document.h>
+#include <rapidjson/istreamwrapper.h>
 
 namespace xio {
 
 class Configurator : public NoCopy {
  public:
-  explicit Configurator(const std::string &file = "config.yaml");
 
-  virtual ~Configurator();
+//----------------------------------------------------------------------------------------------------------------------
+  explicit Configurator(const std::string &file = "config.json") {
+	Load(file);
+  }
 
-  void Load(const std::string &file);
+  virtual ~Configurator() {}
+
+  void Load(const std::string &file) {
+	std::ifstream ifs(file);
+	rapidjson::IStreamWrapper isw(ifs);
+	document_.ParseStream(isw);
+
+	if (ifs.is_open())
+	  ifs.close();
+	else
+	  throw Exception("Error during parsing of " + file + " : can't open file");
+
+	if (!document_.IsObject())
+	  throw Exception("Error during parsing of " + file + " : file is empty or incorrect");
+  }
+
+ private:
+  rapidjson::Document document_;
+
+ public:
 
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
   void AddMember(const std::string &name, T &&value) {
-//	static auto &allocator = document_.GetAllocator();
-//	if (!document_.HasMember(name)) {
-//	  document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name.c_str()), value, allocator);
-//	}
+	static auto &allocator = document_.GetAllocator();
+	if (!document_.HasMember(name.c_str())) {
+	  document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name.c_str()), value, allocator);
+	}
   }
 
 //----------------------------------------------------------------------------------------------------------------------
   template<typename T>
-  T Get(const std::string &str) {
-    T t{};
+  inline T Get(const std::string &str) {
+	T t{};
 
-    try {
-      t = document_[str].as<T>();
-    } catch (std::exception &e) {
-      //ignore
-    }
+	try {
+	  t = document_[str.c_str()].Get<T>();
+	} catch (std::exception &e) {
+	  //ignore
+	}
 
-    return t;
+	return t;
   }
-
- private:
-  YAML::Node document_;
 };
 
 } //namespace

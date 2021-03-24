@@ -21,29 +21,37 @@
 //SOFTWARE.
 
 #pragma once
-#include "NoCopy.h"
-#include "view_ptr.h"
+
+#include <OgreLog.h>
+#include "StateManager.h"
+#include "Engine.h"
+#include "ComponentLocator.h"
 
 namespace xio {
-class Configurator;
 
-class Component : public NoCopy {
+class BaseApplication : public Ogre::LogListener, public ComponentLocator {
  public:
-  Component() {}
-  virtual ~Component() {}
 
-  virtual void Cleanup() = 0;
-  virtual void Pause() = 0;
-  virtual void Resume() = 0;
-  virtual void Update(float time) = 0;
 
- protected:
-  inline static view_ptr<Configurator> conf_;
+ private:
+  std::unique_ptr<StateManager> state_manager_;
+  std::unique_ptr<Engine> engine_;
 
- public:
-  static void SetConfigurator(view_ptr<Configurator> conf) {
-    conf_ = conf;
-  }
+  bool running_ = true;
+  bool suspend_ = false;
+  int64_t time_of_last_frame_ = 0;
+  int64_t cumulated_time_ = 0;
+  int64_t fps_counter_ = 0;
+  int current_fps_ = 0;
+  int target_fps_ = 60;
+#ifdef DEBUG
+  bool verbose_ = true;
+#else
+  bool verbose_ = false;
+#endif
+  bool lock_fps_ = true;
+  std::string log_;
+
 };
 
 } //namespace
