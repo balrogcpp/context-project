@@ -20,7 +20,6 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "Configurator.h"
 #include "pcheader.h"
 #include "Engine.h"
 
@@ -30,8 +29,8 @@ namespace xio {
 
 Engine::Engine() {
   conf_ = make_unique<Configurator>("config.json");
-
   Component::SetConfigurator(conf_.get());
+
   int window_width = conf_->Get<int>("window_width");
   int window_high = conf_->Get<int>("window_high");
   bool window_fullscreen = conf_->Get<bool>("window_fullscreen");

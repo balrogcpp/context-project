@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrey Vasiliev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +20,20 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "pcheader.h"
+#pragma once
+#include "BaseApplication.h"
 
-using namespace std;
+extern "C" {
+struct android_app;
+}
 
 namespace xio {
 
-//----------------------------------------------------------------------------------------------------------------------
-Configurator::Configurator(const string &file_name) {
-  Load(file_name);
-}
+class AndroidApplication final : public BaseApplication {
+ public:
 
-//----------------------------------------------------------------------------------------------------------------------
-Configurator::~Configurator() = default;
-
-//----------------------------------------------------------------------------------------------------------------------
-void Configurator::Load(const string &file_name) {
-  ifstream ifs(file_name);
-  rapidjson::IStreamWrapper isw(ifs);
-  document_.ParseStream(isw);
-
-  if (ifs.is_open())
-	ifs.close();
-  else
-	throw Exception("Error during parsing of " + file_name + " : can't open file");
-
-  if (!document_.IsObject())
-	throw Exception("Error during parsing of " + file_name + " : file is empty or incorrect");
-}
+ private:
+  android_app* state_ = nullptr;
+};
 
 } //namespace

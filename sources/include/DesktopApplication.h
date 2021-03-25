@@ -29,56 +29,22 @@
 #include "BaseApplication.h"
 #include "view_ptr.h"
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-extern "C" {
-  struct android_app;
-}
-#endif
-
 namespace xio {
 
-class Application final : public WindowObserver, public Ogre::LogListener, public ComponentLocator, public Singleton<Application> {
+class DesktopApplication final : public WindowObserver, public BaseApplication {
  public:
-  explicit Application();
-  virtual ~Application();
-  int Main(std::unique_ptr<AppState> &&scene_ptr);
-  int GetCurrentFps() const;
+  DesktopApplication();
+  virtual ~DesktopApplication();
 
  private:
-  void Loop_();
-  void Go_();
-  int Message_(const std::string &caption, const std::string &message);
+  void OnMain() override;
+  void OnLoop() override;
+  void OnGo() override;
 
+  //WindowObserver callback
   void Event(const SDL_Event &evt) override;
   void Other(uint8_t type, int32_t code, void *data1, void *data2) override;
   void Quit() override;
-
-  void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
-        bool maskDebug, const std::string &logName, bool &skipThisMessage) override;
-
-  void WriteLogToFile_(const std::string &file_name);
-  void PrintLogToConsole_();
-
-  std::unique_ptr<StateManager> state_manager_;
-  std::unique_ptr<Engine> engine_;
-
-  bool running_ = true;
-  bool suspend_ = false;
-  int64_t time_of_last_frame_ = 0;
-  int64_t cumulated_time_ = 0;
-  int64_t fps_counter_ = 0;
-  int current_fps_ = 0;
-  int target_fps_ = 60;
-#ifdef DEBUG
-  bool verbose_ = true;
-#else
-  bool verbose_ = false;
-#endif
-  bool lock_fps_ = true;
-  std::string log_;
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  android_app* state_ = nullptr;
-#endif
 };
 
 } //namespace

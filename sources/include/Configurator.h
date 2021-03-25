@@ -34,33 +34,13 @@ namespace xio {
 class Configurator : public NoCopy {
  public:
 
-//----------------------------------------------------------------------------------------------------------------------
-  explicit Configurator(const std::string &file = "config.json") {
-	Load(file);
-  }
+  explicit Configurator(const std::string &file_name = "config.json");
 
-  virtual ~Configurator() {}
+  virtual ~Configurator();
 
-  void Load(const std::string &file) {
-	std::ifstream ifs(file);
-	rapidjson::IStreamWrapper isw(ifs);
-	document_.ParseStream(isw);
+  void Load(const std::string &file_name);
 
-	if (ifs.is_open())
-	  ifs.close();
-	else
-	  throw Exception("Error during parsing of " + file + " : can't open file");
 
-	if (!document_.IsObject())
-	  throw Exception("Error during parsing of " + file + " : file is empty or incorrect");
-  }
-
- private:
-  rapidjson::Document document_;
-
- public:
-
-//----------------------------------------------------------------------------------------------------------------------
   template<typename T>
   void AddMember(const std::string &name, T &&value) {
 	static auto &allocator = document_.GetAllocator();
@@ -69,7 +49,7 @@ class Configurator : public NoCopy {
 	}
   }
 
-//----------------------------------------------------------------------------------------------------------------------
+
   template<typename T>
   inline T Get(const std::string &str) {
 	T t{};
@@ -82,6 +62,10 @@ class Configurator : public NoCopy {
 
 	return t;
   }
+
+ private:
+  rapidjson::Document document_;
+
 };
 
 } //namespace

@@ -20,22 +20,12 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "Configurator.h"
 #include "pcheader.h"
 #include "Renderer.h"
 #include "Assets.h"
 #include "RtssUtils.h"
 #include "Exception.h"
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-extern "C" {
-#include <android_native_app_glue.h>
-#include <android/configuration.h>
-#include <android/asset_manager.h>
-#include <android/native_window.h>
-#include <android/input.h>
-}
-#endif
 
 using namespace std;
 
@@ -44,14 +34,14 @@ Renderer::Renderer(int w, int h, bool f) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   window_ = make_unique<Window>(w, h, f);
 #else
-  state_ = (android_app*)(state);
-
-  mAConfig = AConfiguration_new();
-
-  //AConfiguration_fromAssetManager(mAConfig, assetMgr);
-  //mAAssetMgr = assetMgr;
-
-  native_ = state_->window;
+//  state_ = (android_app*)(state);
+//
+//  mAConfig = AConfiguration_new();
+//
+//  //AConfiguration_fromAssetManager(mAConfig, assetMgr);
+//  //mAAssetMgr = assetMgr;
+//
+//  native_ = state_->window;
 #endif
 
   root_ = new Ogre::Root("", "", "");

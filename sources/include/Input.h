@@ -61,17 +61,11 @@ class InputSequencer {
 
  public:
   void RegObserver(view_ptr<InputObserver> p);
-
   void UnregObserver(view_ptr<InputObserver> p);
-
   void RegWinObserver(view_ptr<WindowObserver> p);
-
   void UnregWinObserver(view_ptr<WindowObserver> p);
-
   void Clear();
-
   void Reserve(size_t size);
-
   void Capture();
 };
 
@@ -103,6 +97,7 @@ class InputObserver {
   virtual void OnJoystickHat(int which, int hat, int value) {}
   virtual void OnJoystickBall(int which, int ball, int xrel, int yrel) {}
 };
+
 //----------------------------------------------------------------------------------------------------------------------
 class WindowObserver {
  public:

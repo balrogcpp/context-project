@@ -26,14 +26,35 @@
 #include "StateManager.h"
 #include "Engine.h"
 #include "ComponentLocator.h"
+#include "Singleton.h"
 
 namespace xio {
 
-class BaseApplication : public Ogre::LogListener, public ComponentLocator {
+class BaseApplication : public Ogre::LogListener, public ComponentLocator, public Singleton<BaseApplication> {
  public:
+  BaseApplication();
+  virtual ~BaseApplication();
+
+  int GetCurrentFps() const;
+
+  int Main(std::unique_ptr<AppState> &&scene_ptr);
+
+ protected:
+  virtual void OnLoop() = 0;
+  virtual void OnGo() = 0;
+  virtual void OnMain() = 0;
+
+  void Loop_();
+  void Go_();
+
+  void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
+        bool maskDebug, const std::string &logName, bool &skipThisMessage) override;
+
+  int Message_(const std::string &caption, const std::string &message);
+  void WriteLogToFile_(const std::string &file_name);
+  void PrintLogToConsole_();
 
 
- private:
   std::unique_ptr<StateManager> state_manager_;
   std::unique_ptr<Engine> engine_;
 

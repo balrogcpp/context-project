@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrey Vasiliev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +22,19 @@
 
 #include "pcheader.h"
 
-using namespace std;
+#include "AndroidApplication.h"
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+extern "C" {
+#include <android_native_app_glue.h>
+#include <android/configuration.h>
+#include <android/asset_manager.h>
+#include <android/native_window.h>
+#include <android/input.h>
+}
+#endif
+
 
 namespace xio {
-
-//----------------------------------------------------------------------------------------------------------------------
-Configurator::Configurator(const string &file_name) {
-  Load(file_name);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-Configurator::~Configurator() = default;
-
-//----------------------------------------------------------------------------------------------------------------------
-void Configurator::Load(const string &file_name) {
-  ifstream ifs(file_name);
-  rapidjson::IStreamWrapper isw(ifs);
-  document_.ParseStream(isw);
-
-  if (ifs.is_open())
-	ifs.close();
-  else
-	throw Exception("Error during parsing of " + file_name + " : can't open file");
-
-  if (!document_.IsObject())
-	throw Exception("Error during parsing of " + file_name + " : file is empty or incorrect");
-}
 
 } //namespace

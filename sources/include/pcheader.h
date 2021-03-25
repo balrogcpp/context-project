@@ -21,6 +21,7 @@
 //SOFTWARE.
 
 #pragma once
+#include "Configurator.h"
 #include "OgreHeaders.h"
 #include "btogre/BtOgre.h"
 #include "oggsound/OgreOggSound.h"
