@@ -49,11 +49,9 @@ RUN mkdir -p build-windows build-linux build-android \
     && python3 zip-dependencies.py \
     && cd build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-w64.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target install \
+    && cmake --build . --target package \
     && cd .. \
     && cd build-linux \
     && cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target install \
-    && cd .. \
-    && python3 zip-artifacts.py -i "install" -o "artifacts" \
-    && rm -rf build-windows build-linux build-android scenes install artifacts/_CPack_Packages
+    && cmake --build . --target package \
+    && cd ..

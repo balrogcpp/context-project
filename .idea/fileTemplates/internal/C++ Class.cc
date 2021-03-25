@@ -24,6 +24,8 @@
 
 #[[#include]]# "${HEADER_FILENAME}"
 
+using namespace std;
+
 namespace xio {
 
 } //namespace

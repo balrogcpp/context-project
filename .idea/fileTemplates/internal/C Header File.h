@@ -25,7 +25,8 @@
 namespace xio {
 
 class ${NAME} {
-
+  public:
+  
 };
 
 } //namespace

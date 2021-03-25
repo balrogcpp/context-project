@@ -22,85 +22,66 @@
 
 #include "DemoDotAppState.h"
 #include "MenuAppState.h"
-#include "Application.h"
-
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
+#include "DesktopApplication.h"
 
 using namespace std;
 using namespace xio;
 
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
 #if defined WIN32 && defined WINAPI_MAIN_FUNC
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 INT WINAPI WinMain
 (
-    _In_ HINSTANCE hInstance,
-    _In_opt_ HINSTANCE hPrevInstance,
-    _In_ LPSTR lpCmdLine,
-    _In_ int nShowCmd
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPSTR lpCmdLine,
+	_In_ int nShowCmd
 )
-#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-extern "C" {
-#include <android_native_app_glue.h>
-#include <jni.h>
-#include <android/log.h>
-
-void android_main(struct android_app* state);
-}
-
-void android_main(struct android_app* state)
-#else
-int main(int argc, char** argv)
+#elif OGRE_PLATFORM==OGRE_PLATFORM_LINUX || OGRE_PLATFORM==OGRE_PLATFORM_APPLE
+int main(int argc, char **argv)
 #endif
 {
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  SetProcessDPIAware();
-#endif
+  DesktopApplication app;
+  app.Main(make_unique<Demo::MenuAppState>());
 
-  try {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-    Application app;
-#else
-	Application app(state);
-#endif
-    app.Main(make_unique<Demo::MenuAppState>());
-  }
-  catch (...) {
-
-  }
-
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   return 0;
-#endif
 }
 
-//
-// Created by Patrick Martin on 1/30/19.
-//
+#else
+extern "C" {
+  #include <android_native_app_glue.h>
+}
 
-//#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-//extern "C" {
-//#include <android_native_app_glue.h>
-//#include <jni.h>
-//#include <android/log.h>
+void handle_cmd(android_app *pApp, int32_t cmd) {
+//      switch (cmd) {
+//        case APP_CMD_INIT_WINDOW:
+//            pApp->userData = new Renderer(pApp);
+//            break;
 //
-//void android_main(struct android_app* state);
-//void handle_cmd(android_app *pApp, int32_t cmd) {
-//}
-//
-//void android_main(struct android_app *pApp) {
-//  pApp->onAppCmd = handle_cmd;
-//
-//  int events;
-//  android_poll_source *pSource;
-//  do {
-//	if (ALooper_pollAll(0, nullptr, &events, (void **) &pSource) >= 0) {
-//	  if (pSource) {
-//		pSource->process(pApp, pSource);
-//	  }
-//	}
-//  } while (!pApp->destroyRequested);
-//}
-//}
-//#endif
+//        case APP_CMD_TERM_WINDOW:
+//            if (pApp->userData) {
+//                auto *pRenderer = reinterpret_cast<Renderer *>(pApp->userData);
+//                pApp->userData = nullptr;
+//                delete pRenderer;
+//            }
+//    }
+}
+
+
+void android_main(struct android_app *pApp) {
+  pApp->onAppCmd = handle_cmd;
+
+  int events;
+  android_poll_source *pSource;
+  do {
+	if (ALooper_pollAll(0, nullptr, &events, (void **) &pSource) >= 0) {
+	  if (pSource) {
+		pSource->process(pApp, pSource);
+	  }
+	}
+  } while (!pApp->destroyRequested);
+}
+
+#endif

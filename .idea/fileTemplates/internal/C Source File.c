@@ -22,7 +22,9 @@
 
 #[[#include]]# "pcheader.h"
 
-#[[#include]]# "${HEADER_FILENAME}"
+#[[#include]]# "HEADER_FILENAME.h"
+
+using namespace std;
 
 namespace xio {
 
