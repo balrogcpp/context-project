@@ -26,10 +26,10 @@ include(CMakeDependentOption)
 include(ExternalProject)
 find_package(Git REQUIRED)
 
-if (ANDROID)
-    find_package(OpenGLES2 REQUIRED)
-else ()
+if (NOT ANDROID)
     find_package(OpenGL REQUIRED)
+else ()
+    find_package(OpenGLES2 REQUIRED)
 endif ()
 
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT})
@@ -57,7 +57,6 @@ externalproject_add(target-sdl
                     -DSDL_SHARED_ENABLED_BY_DEFAULT=false
                     -DDIRECTX=false
                     -DSDL_AUDIO=false
-                    -DHIDAPI=false
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
@@ -181,6 +180,8 @@ externalproject_add(target-zlib
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
+                    TEST_COMMAND ${CMAKE_COMMAND} -E remove -f ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libz.so
+                    TEST_AFTER_INSTALL true
                     )
 
 externalproject_add(target-zzip
@@ -303,9 +304,6 @@ externalproject_add(target-ogre
                     GIT_TAG v1.12.11
                     GIT_SHALLOW true
                     GIT_PROGRESS false
-                    PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
-                        ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre/RenderSystems/GLSupport/include/GLSL
-                        ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -324,6 +322,7 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_RENDERSYSTEM_D3D9=false
                     -DOGRE_BUILD_PLUGIN_CG=false
                     -DOGRE_BUILD_RENDERSYSTEM_GL=false
+                    -DOGRE_BUILD_RENDERSYSTEM_GLES2=false
                     -DOGRE_BUILD_COMPONENT_OVERLAY=true
                     -DOGRE_BUILD_COMPONENT_BITES=false
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=true
@@ -357,7 +356,11 @@ externalproject_add(target-ogre
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
-                    )
+                    TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
+                        ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre/RenderSystems/GLSupport/include/GLSL
+                        ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
+                    TEST_AFTER_INSTALL true
+        )
 
 externalproject_add(target-lua
                     EXCLUDE_FROM_ALL true

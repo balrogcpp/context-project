@@ -47,7 +47,7 @@ RUN apt-get update && apt-get install -y python3 git gnutls-bin openssl libxaw7-
     && cd ${CONTEXT_HOME}/build-linux \
     && cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
     && cmake --build . --target target-deps \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-gcc-x64 \
+    && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-clang-x64 \
     && rm -rf src tmp \
     && cd ${CONTEXT_HOME} \
     && rm -rf build-windows build-linux \
