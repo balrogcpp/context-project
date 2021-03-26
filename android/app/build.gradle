@@ -23,14 +23,14 @@ android {
     ndkVersion '22.0.7026061'
 
     defaultConfig {
-        applicationId 'com.example.demo'
+        applicationId 'org.libsdl.app'
         minSdkVersion 14
         targetSdkVersion 28
         versionCode     1
         versionName    '1.0'
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_ARM_NEON=ON '
+                arguments '-DANDROID_ARM_NEON=ON'
             }
         }
     }
@@ -46,10 +46,13 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled = false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
+    }
+    sourceSets.main {
+        jniLibs.srcDir 'libs'
     }
     externalNativeBuild {
         cmake {
@@ -67,11 +70,15 @@ android {
     }
     sourceSets {
         main {
-            assets.srcDirs = ['../../tmp/programs']
+            assets.srcDirs = ['../../programs']
         }
     }
-}
-android.lintOptions {
-        abortOnError  = false
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+}

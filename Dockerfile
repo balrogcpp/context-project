@@ -39,7 +39,6 @@ ADD programs ./programs
 ADD assets ./assets
 ADD CMakeLists.txt .
 ADD zip-dependencies.py .
-ADD zip-artifacts.py .
 ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 
 ENV CC=clang

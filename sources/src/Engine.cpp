@@ -41,8 +41,8 @@ Engine::Engine() {
   float shadow_far = conf_->Get<float>("graphics_shadows_far_distance");
   int16_t tex_size = conf_->Get<int>("graphics_shadows_texture_resolution");
   int tex_format = conf_->Get<int>("graphics_shadows_texture_format");
-  renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
+  renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
   input_ = &InputSequencer::GetInstance();
   physics_ = make_unique<Physics>();
   sound_ = make_unique<Sound>(8, 8);
@@ -76,10 +76,7 @@ Engine::~Engine() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Capture() {
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-#else
   input_->Capture();
-#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------

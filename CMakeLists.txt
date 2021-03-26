@@ -22,22 +22,20 @@
 
 cmake_minimum_required(VERSION 3.16.3)
 
-project(xio)
-
-if (CMAKE_SOURCE_DIR STREQUAL ${CMAKE_BINARY_DIR})
-    message(SEND_ERROR "In-source builds are not allowed!")
-endif ()
-
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
-
 set(CMAKE_CXX_STANDARD 17)
 set_property(GLOBAL PROPERTY CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 #set(CMAKE_DISABLE_SOURCE_CHANGES ON)
-#set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
-
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 enable_language(C)
 enable_language(CXX)
+
+project(xio CXX)
+
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
+
+
 include(CheckTypeSize)
 include(ProcessorCount)
 
@@ -71,8 +69,10 @@ if (MINGW)
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-mingw")
 elseif (MSVC)
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-msvc")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-gcc")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-clang")
 else ()
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-${CMAKE_CXX_COMPILER_ID}")
 endif ()
@@ -150,7 +150,7 @@ if (ANDROID)
 
     # Export ANativeActivity_onCreate(),
     # Refer to: https://github.com/android-ndk/ndk/issues/381.
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
+    #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
 else ()
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-${CONTEXT_BUILD_PLATFORM}")
 endif ()
@@ -199,20 +199,6 @@ else ()
 endif ()
 
 
-if (MINGW)
-    list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
-elseif (UNIX AND NOT ANDROID)
-    #jemalloc fix problems with memory bloat on linux
-    list(APPEND SYSTEM_LIBRARIES OpenGL GLX X11 Xrandr dl jemalloc.a)
-elseif (ANDROID)
-    list(APPEND SYSTEM_LIBRARIES android native_app_glue atomic EGL GLESv1_CM GLESv2 log OpenSLES)
-elseif (MSVC)
-    list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 winmm Version imm32 Setupapi)
-elseif (APPLE)
-    list(APPEND SYSTEM_LIBRARIES zlibstatic)
-endif ()
-
-
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
                                     ${BULLET_INCLUDE_DIR} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
                                     ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
@@ -227,14 +213,31 @@ if (NOT ANDROID)
     add_executable(demo ${SOURCE_FILES})
 else ()
     add_library(demo SHARED ${SOURCE_FILES})
+    set_target_properties(demo PROPERTIES OUTPUT_NAME "main")
 endif ()
 
 include_directories(demo demo/include ${CONTEXT_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
 
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
 
+
+if (MINGW)
+    list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
+elseif (UNIX AND NOT ANDROID)
+    #jemalloc fix problems with memory bloat on linux
+    list(APPEND SYSTEM_LIBRARIES OpenGL GLX X11 Xrandr dl jemalloc.a)
+elseif (ANDROID)
+    #list(APPEND SYSTEM_LIBRARIES android native_app_glue atomic EGL GLESv1_CM GLESv2 log OpenSLES)
+    list(APPEND SYSTEM_LIBRARIES SDL2::hidapi android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
+elseif (MSVC)
+    list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 winmm Version imm32 Setupapi)
+elseif (APPLE)
+    list(APPEND SYSTEM_LIBRARIES zlibstatic)
+endif ()
+
+
 target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
-                            vorbisfile vorbis vorbisenc ${OGG_LIBRARY} pugixml ${SDL2_LIBRARIES}
+                            vorbisfile vorbis vorbisenc ${OGG_LIBRARY} pugixml SDL2::SDL2-static
                             ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${YAML_CPP_LIBRARIES} ${SYSTEM_LIBRARIES})
 
 target_precompile_headers(demo PUBLIC sources/include/pcheader.h)

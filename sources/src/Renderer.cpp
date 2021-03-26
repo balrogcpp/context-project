@@ -31,18 +31,7 @@ using namespace std;
 
 namespace xio {
 Renderer::Renderer(int w, int h, bool f) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   window_ = make_unique<Window>(w, h, f);
-#else
-//  state_ = (android_app*)(state);
-//
-//  mAConfig = AConfiguration_new();
-//
-//  //AConfiguration_fromAssetManager(mAConfig, assetMgr);
-//  //mAAssetMgr = assetMgr;
-//
-//  native_ = state_->window;
-#endif
 
   root_ = new Ogre::Root("", "", "");
 

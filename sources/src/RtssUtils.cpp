@@ -48,10 +48,9 @@ void CreateRtssShaders(const string &cache_path) {
   viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
   // Init and register the material manager listener if it doesn't exist yet.
-#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
   if (!filesystem::exists(cache_path) && !cache_path.empty())
 	filesystem::create_directories(cache_path);
-#endif
+
   shader_generator->setShaderCachePath(cache_path);
   Ogre::MaterialManager::getSingleton().addListener(new ShaderResolver(shader_generator));
 }
@@ -216,4 +215,5 @@ bool ShaderResolver::beforeIlluminationPassesCleared(Ogre::Technique *technique)
 }
 
 } //namespace
+
 #endif

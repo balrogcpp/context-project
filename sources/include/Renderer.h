@@ -31,7 +31,6 @@
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 extern "C" {
-  struct android_app;
   struct AAssetManager;
   struct AConfiguration;
   struct ANativeWindow;
@@ -78,7 +77,6 @@ class Renderer final : public Component, public Singleton<Renderer> {
   AAssetManager* mAAssetMgr = nullptr;
   AConfiguration* mAConfig = nullptr;
   ANativeWindow* native_ = nullptr;
-  android_app* state_ = nullptr;
 #endif
 
  public:
