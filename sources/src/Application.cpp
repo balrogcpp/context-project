@@ -21,49 +21,68 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include <string>
+#include "Application.h"
+#include "Overlay.h"
+#include "DesktopIcon.h"
+#include "Exception.h"
+#include "SDL2.hpp"
 #include <iostream>
-#include "BaseApplication.h"
+
+#ifdef WIN32
+extern "C"
+{
+__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
+__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif
 
 using namespace std;
 
 namespace xio {
-BaseApplication::BaseApplication() {
+Application::Application() {
   try {
-	auto *logger = new Ogre::LogManager();
-	logger->createLog("ogre.log", true, false, true);
-	Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+//	auto *logger = new Ogre::LogManager();
+//	logger->createLog("ogre.log", true, false, true);
+//	Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+//#ifdef DEBUG
+//	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
+//#else
+//	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
+//#endif
 
-#ifdef DEBUG
-	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
-#else
-	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
+#if OGRE_PLATFORM==OGRE_PLATFORM_LINUX
+	DesktopIcon icon;
+	icon.Init();
+	icon.Save("XioDemo");
 #endif
 
 	engine_ = make_unique<Engine>();
+
 	state_manager_ = make_unique<StateManager>();
+
+	verbose_ = conf_->Get<bool>("global_verbose");
+	lock_fps_ = conf_->Get<bool>("global_lock_fps");
+	target_fps_ = conf_->Get<int>("global_target_fps");
+
   }
   catch (Exception &e) {
-	Message_("Exception", e.getDescription());
-	throw e;
+	Message_("Exception occurred", e.getDescription());
   }
   catch (Ogre::Exception &e) {
-	Message_("Exception (OGRE)", e.getFullDescription());
-	throw e;
+	Message_("Exception occurred (OGRE)", e.getFullDescription());
   }
   catch (exception &e) {
-	Message_("Exception (exception)", e.what());
-	throw e;
+	Message_("Exception occurred (exception)", e.what());
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-BaseApplication::~BaseApplication() {
+Application::~Application() {
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-int BaseApplication::Message_(const string &caption, const string &message) {
+int Application::Message_(const string &caption, const string &message) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   WriteLogToFile_("error.log");
   PrintLogToConsole_();
@@ -71,58 +90,47 @@ int BaseApplication::Message_(const string &caption, const string &message) {
 #ifdef _WIN32
   MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
 #endif
+#else
+  SDL_Log("%s", string(caption + " : " + message).c_str());
 #endif
 
   return 1;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void BaseApplication::WriteLogToFile_(const string &file_name) {
+void Application::WriteLogToFile_(const string &file_name) {
   ofstream f;
   f.open(file_name);
   if (f.is_open())
 	f << log_;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void BaseApplication::PrintLogToConsole_() {
+void Application::PrintLogToConsole_() {
   cout << log_ << flush;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void BaseApplication::messageLogged(const string &message, Ogre::LogMessageLevel lml, \
+void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const string &logName, bool &skipThisMessage) {
   log_.append(message);
   log_.append("\n");
-  if (verbose_)
+#ifdef DEBUG
+  if (verbose_) {
 	cout << message << "\n";
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+	SDL_Log("%s", message.c_str());
+#endif
+  }
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-int BaseApplication::GetCurrentFps() const {
+int Application::GetCurrentFps() const {
   return current_fps_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void BaseApplication::Go_() {
-  OnGo();
-
-  if (state_manager_->IsActive()) {
-	state_manager_->InitCurState();
-	running_ = true;
-	auto duration_before_update = chrono::system_clock::now().time_since_epoch();
-	time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
-	Loop_();
-
-//	if (verbose_) {
-//	  WriteLogToFile_("ogre.log");
-//	  PrintLogToConsole_();
-//	}
-
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void BaseApplication::Loop_() {
+void Application::Loop_() {
   bool suspend_old = false;
 
   while (running_) {
@@ -188,9 +196,50 @@ void BaseApplication::Loop_() {
 	}
   }
 }
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Go_() {
+  if (state_manager_->IsActive()) {
+	state_manager_->InitCurState();
+	running_ = true;
+	auto duration_before_update = chrono::system_clock::now().time_since_epoch();
+	time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
+	Loop_();
+
+//	if (verbose_) {
+//	  WriteLogToFile_("ogre.log");
+//	  PrintLogToConsole_();
+//	}
+
+  }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
-int BaseApplication::Main(unique_ptr <AppState> &&scene_ptr) {
+void Application::Quit() {
+  running_ = false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Event(const SDL_Event &evt) {
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  if (evt.type==SDL_WINDOWEVENT) {
+	if (evt.window.event==SDL_WINDOWEVENT_FOCUS_LOST || evt.window.event==SDL_WINDOWEVENT_MINIMIZED) {
+	  suspend_ = true;
+	  state_manager_->Pause();
+	} else if (evt.window.event==SDL_WINDOWEVENT_FOCUS_GAINED) {
+	  suspend_ = false;
+	  state_manager_->Resume();
+	}
+  }
+#endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Other(uint8_t type, int32_t code, void *data1, void *data2) {
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+int Application::Main(unique_ptr <AppState> &&scene_ptr) {
   try {
 #if OGRE_PLATFORM==OGRE_PLATFORM_WIN32
 	SetProcessDPIAware();
@@ -201,7 +250,6 @@ int BaseApplication::Main(unique_ptr <AppState> &&scene_ptr) {
 
 	ios_base::sync_with_stdio(false);
 
-    OnMain();
 	state_manager_->SetInitialState(move(scene_ptr));
 	Go_();
   }

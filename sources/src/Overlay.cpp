@@ -22,6 +22,12 @@
 
 #include "pcheader.h"
 
+#ifdef OGRE_BUILD_COMPONENT_OVERLAY
+#include <Overlay/OgreOverlay.h>
+#include <Overlay/OgreOverlayManager.h>
+#include <Overlay/OgreOverlaySystem.h>
+#endif
+
 #include "Overlay.h"
 #include "gorilla/Gorilla.h"
 

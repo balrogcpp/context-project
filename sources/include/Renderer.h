@@ -29,14 +29,6 @@
 #include "Component.h"
 #include "view_ptr.h"
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-extern "C" {
-  struct AAssetManager;
-  struct AConfiguration;
-  struct ANativeWindow;
-}
-#endif
-
 namespace Ogre {
 class Root;
 class SceneManager;
@@ -72,12 +64,6 @@ class Renderer final : public Component, public Singleton<Renderer> {
   view_ptr<Ogre::Camera> camera_;
   view_ptr<Ogre::Viewport> viewport_;
   view_ptr<Ogre::RenderWindow> render_window_;
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  AAssetManager* mAAssetMgr = nullptr;
-  AConfiguration* mAConfig = nullptr;
-  ANativeWindow* native_ = nullptr;
-#endif
 
  public:
   Window &GetWindow() {

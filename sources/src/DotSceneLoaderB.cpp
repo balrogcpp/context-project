@@ -31,6 +31,17 @@
 #include "Renderer.h"
 #include <pugixml.hpp>
 
+//LOD Generator
+#ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
+#include <MeshLodGenerator/OgreLodConfig.h>
+#include <MeshLodGenerator/OgreMeshLodGenerator.h>
+#endif
+//Paging
+#ifdef OGRE_BUILD_COMPONENT_PAGING
+#include <Paging/OgrePaging.h>
+#include <Paging/OgrePage.h>
+#endif
+
 using namespace std;
 
 namespace xio {

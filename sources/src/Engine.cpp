@@ -28,9 +28,31 @@ using namespace std;
 namespace xio {
 
 Engine::Engine() {
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   conf_ = make_unique<Configurator>("config.json");
-  Component::SetConfigurator(conf_.get());
+#else
+  conf_ = make_unique<Configurator>("");
+  conf_->AddMember("window_caption", "MyDemo");
+  conf_->AddMember("window_width", 1024);
+  conf_->AddMember("window_high", 768);
+  conf_->AddMember("window_fullscreen", false);
+  conf_->AddMember("compositor_use_bloom", false);
+  conf_->AddMember("compositor_use_ssao", false);
+  conf_->AddMember("compositor_use_motion", true);
+  conf_->AddMember("global_target_fps", 60);
+  conf_->AddMember("global_lock_fps", true);
+  conf_->AddMember("graphics_vsync", true);
+  conf_->AddMember("graphics_shadows_enable", true);
+  conf_->AddMember("graphics_fsaa", 0);
+  conf_->AddMember("graphics_filtration", "bilinear");
+  conf_->AddMember("graphics_anisotropy_level", 8);
+  conf_->AddMember("graphics_shadows_texture_resolution", 1024);
+  conf_->AddMember("graphics_shadows_far_distance", 500);
+  conf_->AddMember("graphics_shadows_texture_format", 16);
+#endif
 
+
+  Component::SetConfigurator(conf_.get());
   int window_width = conf_->Get<int>("window_width");
   int window_high = conf_->Get<int>("window_high");
   bool window_fullscreen = conf_->Get<bool>("window_fullscreen");

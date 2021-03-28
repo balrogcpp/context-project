@@ -28,7 +28,8 @@ namespace xio {
 
 //----------------------------------------------------------------------------------------------------------------------
 Configurator::Configurator(const string &file_name) {
-  Load(file_name);
+  if (!file_name.empty())
+  	Load(file_name);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -37,16 +38,13 @@ Configurator::~Configurator() = default;
 //----------------------------------------------------------------------------------------------------------------------
 void Configurator::Load(const string &file_name) {
   ifstream ifs(file_name);
-  rapidjson::IStreamWrapper isw(ifs);
-  document_.ParseStream(isw);
 
-  if (ifs.is_open())
-	ifs.close();
-  else
+  if (!ifs.is_open())
 	throw Exception("Error during parsing of " + file_name + " : can't open file");
 
-  if (!document_.IsObject())
-	throw Exception("Error during parsing of " + file_name + " : file is empty or incorrect");
+  ifs >> document_;
+//  rapidjson::IStreamWrapper isw(ifs);
+//  document_.ParseStream(isw);
 }
 
 } //namespace

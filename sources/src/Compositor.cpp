@@ -131,7 +131,7 @@ void Compositor::Update(float time) {
   if (effects_["motion"]) {
 	mvp_prev_ = mvp_;
 	mvp_ = camera_->getProjectionMatrixWithRSDepth()*camera_->getViewMatrix();
-	gbuff_handler_->Update(mvp_prev_, time);
+//	gbuff_handler_->Update(mvp_prev_, time);
   }
 }
 
@@ -152,6 +152,8 @@ void Compositor::Resume() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Init() {
+//  return;
+
   auto &compositor_manager = Ogre::CompositorManager::getSingleton();
 
   if (compositor_manager.addCompositor(viewport_, "Main"))
@@ -175,12 +177,12 @@ void Compositor::Init() {
 
   compositor_manager.setCompositorEnabled(viewport_, "Main", true);
 
-  if (effects_["ssao"] || effects_["motion"]) {
-	  if (!gbuff_handler_) {
-		gbuff_handler_ = make_unique<GBufferSchemeHandler>();
-		Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_.get(), "GBuffer");
-	  }
-  }
+//  if (effects_["ssao"] || effects_["motion"]) {
+//	  if (!gbuff_handler_) {
+//		gbuff_handler_ = make_unique<GBufferSchemeHandler>();
+//		Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_.get(), "GBuffer");
+//	  }
+//  }
 
   if (effects_["ssao"] || effects_["motion"]) {
 	if (compositor_manager.addCompositor(viewport_, "GBuffer"))
@@ -188,12 +190,12 @@ void Compositor::Init() {
 	else
 	  Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add ShadowReceiver compositor\n");
 
-	if (fullscreen) {
-	  auto *gbuf_compositor = compositor_chain->getCompositor("GBuffer");
-	  auto *td = gbuf_compositor->getTechnique()->getTextureDefinition("mrt");
-	  td->width = new_width/2;
-	  td->height = new_height/2;
-	}
+//	if (fullscreen) {
+//	  auto *gbuf_compositor = compositor_chain->getCompositor("GBuffer");
+//	  auto *td = gbuf_compositor->getTechnique()->getTextureDefinition("mrt");
+//	  td->width = new_width/2;
+//	  td->height = new_height/2;
+//	}
 
 	compositor_manager.setCompositorEnabled(viewport_, "GBuffer", true);
   }

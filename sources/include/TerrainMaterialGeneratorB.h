@@ -26,6 +26,7 @@
 
 namespace Ogre {
 class PSSMShadowCameraSetup;
+class Terrain;
 };
 
 namespace xio {

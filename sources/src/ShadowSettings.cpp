@@ -58,13 +58,13 @@ void ShadowSettings::UpdateParams(bool enable, float far_distance, int tex_size,
   scene_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
   scene_->setShadowFarDistance(far_distance_);
 
-  Ogre::PixelFormat texture_type;
-  if (tex_format==32)
-	texture_type = Ogre::PixelFormat::PF_DEPTH32;
-  else if (tex_format==16)
-	texture_type = Ogre::PixelFormat::PF_DEPTH16;
-  else
-	throw Exception("Unknown texture format, aborting;");
+  Ogre::PixelFormat texture_type = Ogre::PixelFormat::PF_DEPTH16;
+//  if (tex_format==32)
+//	texture_type = Ogre::PixelFormat::PF_DEPTH32;
+//  else if (tex_format==16)
+//	texture_type = Ogre::PixelFormat::PF_DEPTH16;
+//  else
+//	throw Exception("Unknown texture format, aborting;");
 
   scene_->setShadowTextureSize(tex_size_);
   scene_->setShadowTexturePixelFormat(texture_type);

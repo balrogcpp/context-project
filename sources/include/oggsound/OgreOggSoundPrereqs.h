@@ -117,4 +117,5 @@ typedef std::map<std::string, sharedAudioBuffer *> SharedBufferList;
  */
 
 #define OGGSOUND_THREADED 1
+
 #define OGGSOUND_UTIME 1000 //us

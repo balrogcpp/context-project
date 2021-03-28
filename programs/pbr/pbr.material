@@ -21,16 +21,26 @@
 //SOFTWARE.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-shared_params PBR_Shared
+shared_params PBR_Shared_frag
 {
     shared_param_named uNormalScale float 1.0
     shared_param_named uOffsetScale float 0.001
+}
+
+shared_params PBR_Shared_vert
+{
+    shared_param_named uFadeRange float 50.0
+    shared_param_named uWindRange float 50.0
+    shared_param_named uTimeScale float 1.0
 }
 
 vertex_program PBR_vs glsl glsles
 {
 	source pbr.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    default_params {
+        shared_params_ref PBR_Shared_vert
+    }
 }
 
 fragment_program PbrBasic_fs glsl glsles
@@ -42,20 +52,28 @@ fragment_program PbrBasic_fs glsl glsles
 fragment_program PBR_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,HAS_PARALLAXMAP,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {
-        shared_params_ref PBR_Shared
+        shared_params_ref PBR_Shared_frag
     }
 }
 
 fragment_program PBR_IBL_fs glsl glsles
 {
     source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,HAS_PARALLAXMAP,USE_IBL,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {
-        shared_params_ref PBR_Shared
+        shared_params_ref PBR_Shared_frag
     }
 }
+
+sampler PBRSampler
+{
+    filtering anisotropic
+    max_anisotropy 8
+    //tex_address_mode wrap
+}
+
 
 abstract material Basic
 {
@@ -88,13 +106,6 @@ abstract material Basic
     }
 }
 
-sampler PBRSampler
-{
-    filtering anisotropic
-    max_anisotropy 8
-    //tex_address_mode wrap
-}
-
 abstract material PBR
 {
     transparency_casts_shadows off
@@ -102,11 +113,8 @@ abstract material PBR
 
     set $Albedo white.dds
     set $Normal normal.dds
-    set $Metallic white.dds
-    set $Roughness white.dds
-    set $AO white.dds
+    set $ORM white.dds
     set $Emissive black.dds
-    set $Offset black.dds
 
     technique
     {
@@ -125,25 +133,13 @@ abstract material PBR
             {
                 texture $Normal
             }
-            texture_unit Metallic
+            texture_unit ORM
             {
-                texture $Metallic
-            }
-            texture_unit Roughness
-            {
-                texture $Roughness
-            }
-            texture_unit AO
-            {
-                texture $AO
+                texture $ORM
             }
             texture_unit Emissive
             {
                 texture $Emissive
-            }
-            texture_unit Offset
-            {
-                texture $Offset
             }
 
             vertex_program_ref PBR_vs {}
@@ -152,11 +148,8 @@ abstract material PBR
             {
                 param_named uAlbedoSampler      int 0
                 param_named uNormalSampler      int 1
-                param_named uMetallicSampler    int 2
-                param_named uRoughnessSampler   int 3
-                param_named uOcclusionSampler   int 4
-                param_named uEmissiveSampler    int 5
-                param_named uOffsetSampler      int 6
+                param_named uORMSampler         int 2
+                param_named uEmissiveSampler    int 3
             }
         }
     }
@@ -204,10 +197,9 @@ abstract material PBR_IBL : PBR
                 param_named uRoughnessSampler   int 3
                 param_named uOcclusionSampler   int 4
                 param_named uEmissiveSampler    int 5
-                param_named uOffsetSampler      int 6
-                param_named uDiffuseEnvSampler  int 7
-                param_named uSpecularEnvSampler int 8
-                param_named ubrdfLUT            int 9
+                param_named uDiffuseEnvSampler  int 6
+                param_named uSpecularEnvSampler int 7
+                param_named ubrdfLUT            int 8
             }
         }
     }
@@ -223,12 +215,12 @@ vertex_program PbrReflective_vs glsl glsles
 fragment_program PbrReflective_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_EMISSIVEMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_PARALLAXMAP,HAS_OCCLUSIONMAP,HAS_REFLECTION,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_EMISSIVEMAP,HAS_OMR,HAS_REFLECTION,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 
     default_params
     {
         param_named uShadowDepthOffset float 0.0001
-        shared_params_ref PBR_Shared
+        shared_params_ref PBR_Shared_frag
     }
 }
 
@@ -253,12 +245,9 @@ abstract material Plane : PBR
             {
                 param_named uAlbedoSampler      int 0
                 param_named uNormalSampler      int 1
-                param_named uMetallicSampler    int 2
-                param_named uRoughnessSampler   int 3
-                param_named uOcclusionSampler   int 4
-                param_named uEmissiveSampler    int 5
-                param_named uOffsetSampler      int 6
-                param_named uReflectionMap      int 7
+                param_named uORMSampler         int 2
+                param_named uEmissiveSampler    int 3
+                param_named uReflectionMap      int 4
             }
         }
     }
@@ -274,13 +263,13 @@ vertex_program PbrTerrain_vs glsl glsles
 fragment_program PbrTerrain_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_METALLICMAP,HAS_ROUGHNESSMAP,HAS_OCCLUSIONMAP,HAS_PARALLAXMAP,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 
     default_params
     {
         param_named uShadowDepthOffset float 0.0001
         param_named uTerrainTexScale float 50.0
-        shared_params_ref PBR_Shared
+        shared_params_ref PBR_Shared_frag
     }
 }
 
@@ -312,12 +301,10 @@ abstract material Terrain : PBR
 
                 param_named uAlbedoSampler       int 0
                 param_named uNormalSampler       int 1
-                param_named uMetallicSampler     int 2
-                param_named uRoughnessSampler    int 3
-                param_named uOcclusionSampler    int 4
-                param_named uEmissiveSampler     int 5
-                param_named uOffsetSampler       int 6
-                param_named uGlobalNormalSampler int 7
+                param_named uORMSampler          int 2
+                param_named uEmissiveSampler     int 3
+                param_named uOffsetSampler       int 4
+                param_named uGlobalNormalSampler int 5
                 //param_named uGlobalShadowSampler int 8
             }
         }
@@ -329,6 +316,9 @@ vertex_program PbrPaged_vs glsl glsles
 {
 	source pbr.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8
+    default_params {
+        shared_params_ref PBR_Shared_vert
+    }
 }
 
 fragment_program PbrPaged_fs glsl glsles
@@ -371,6 +361,9 @@ vertex_program PbrGrass_vs glsl glsles
 {
 	source pbr.vert
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    default_params {
+        shared_params_ref PBR_Shared_vert
+    }
 }
 
 fragment_program PbrGrass_fs glsl glsles

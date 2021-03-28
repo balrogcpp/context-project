@@ -21,39 +21,36 @@
 //SOFTWARE.
 
 #pragma once
-
 #include <OgreLog.h>
-#include "StateManager.h"
-#include "Engine.h"
-#include "ComponentLocator.h"
 #include "Singleton.h"
+#include "Engine.h"
+#include "StateManager.h"
+#include "ComponentLocator.h"
+#include "view_ptr.h"
 
 namespace xio {
 
-class BaseApplication : public Ogre::LogListener, public ComponentLocator, public Singleton<BaseApplication> {
+class Application final : public WindowObserver, public Ogre::LogListener, public ComponentLocator, public Singleton<Application> {
  public:
-  BaseApplication();
-  virtual ~BaseApplication();
-
+  explicit Application();
+  virtual ~Application();
+  int Main(std::unique_ptr<AppState> &&scene_ptr);
   int GetCurrentFps() const;
 
-  int Main(std::unique_ptr<AppState> &&scene_ptr);
-
- protected:
-  virtual void OnLoop() = 0;
-  virtual void OnGo() = 0;
-  virtual void OnMain() = 0;
-
+ private:
   void Loop_();
   void Go_();
+  int Message_(const std::string &caption, const std::string &message);
+
+  void Event(const SDL_Event &evt) override;
+  void Other(uint8_t type, int32_t code, void *data1, void *data2) override;
+  void Quit() override;
 
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const std::string &logName, bool &skipThisMessage) override;
 
-  int Message_(const std::string &caption, const std::string &message);
   void WriteLogToFile_(const std::string &file_name);
   void PrintLogToConsole_();
-
 
   std::unique_ptr<StateManager> state_manager_;
   std::unique_ptr<Engine> engine_;
@@ -72,7 +69,6 @@ class BaseApplication : public Ogre::LogListener, public ComponentLocator, publi
 #endif
   bool lock_fps_ = true;
   std::string log_;
-
 };
 
 } //namespace

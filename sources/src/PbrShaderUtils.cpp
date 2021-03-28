@@ -108,34 +108,27 @@ void UpdatePbrParams(const Ogre::MaterialPtr &material) {
 	frag_params->setNamedAutoConstant("uAlphaRejection", Ogre::GpuProgramParameters::ACT_SURFACE_ALPHA_REJECTION_VALUE);
 	frag_params->setNamedAutoConstant("uSurfaceAmbientColour", Ogre::GpuProgramParameters::ACT_SURFACE_AMBIENT_COLOUR);
 	frag_params->setNamedAutoConstant("uSurfaceDiffuseColour", Ogre::GpuProgramParameters::ACT_SURFACE_DIFFUSE_COLOUR);
-	frag_params->setNamedAutoConstant("uSurfaceSpecularColour",
-									  Ogre::GpuProgramParameters::ACT_SURFACE_SPECULAR_COLOUR);
+	frag_params->setNamedAutoConstant("uSurfaceSpecularColour",Ogre::GpuProgramParameters::ACT_SURFACE_SPECULAR_COLOUR);
 	frag_params->setNamedAutoConstant("uSurfaceShininessColour", Ogre::GpuProgramParameters::ACT_SURFACE_SHININESS);
-	frag_params->setNamedAutoConstant("uSurfaceEmissiveColour",
-									  Ogre::GpuProgramParameters::ACT_SURFACE_EMISSIVE_COLOUR);
+	frag_params->setNamedAutoConstant("uSurfaceEmissiveColour",Ogre::GpuProgramParameters::ACT_SURFACE_EMISSIVE_COLOUR);
 	frag_params->setNamedAutoConstant("uAmbientLightColour", Ogre::GpuProgramParameters::ACT_AMBIENT_LIGHT_COLOUR);
 	frag_params->setNamedAutoConstant("uLightCount", Ogre::GpuProgramParameters::ACT_LIGHT_COUNT);
-	frag_params->setNamedAutoConstant("uLightPositionArray",
-									  Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_ARRAY,
-									  OGRE_MAX_SIMULTANEOUS_LIGHTS);
-	frag_params->setNamedAutoConstant("uLightDirectionArray",
-									  Ogre::GpuProgramParameters::ACT_LIGHT_DIRECTION_ARRAY,
-									  OGRE_MAX_SIMULTANEOUS_LIGHTS);
-	frag_params->setNamedAutoConstant("uLightDiffuseScaledColourArray",
-									  Ogre::GpuProgramParameters::ACT_LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY,
-									  OGRE_MAX_SIMULTANEOUS_LIGHTS);
-	frag_params->setNamedAutoConstant("uLightAttenuationArray",
-									  Ogre::GpuProgramParameters::ACT_LIGHT_ATTENUATION_ARRAY,
-									  OGRE_MAX_SIMULTANEOUS_LIGHTS);
-	frag_params->setNamedAutoConstant("uLightSpotParamsArray",
-									  Ogre::GpuProgramParameters::ACT_SPOTLIGHT_PARAMS_ARRAY,
-									  OGRE_MAX_SIMULTANEOUS_LIGHTS);
+	frag_params->setNamedAutoConstant("uLightPositionArray",Ogre::GpuProgramParameters::ACT_LIGHT_POSITION_ARRAY,OGRE_MAX_SIMULTANEOUS_LIGHTS);
+	frag_params->setNamedAutoConstant("uLightDirectionArray",Ogre::GpuProgramParameters::ACT_LIGHT_DIRECTION_ARRAY,OGRE_MAX_SIMULTANEOUS_LIGHTS);
+	frag_params->setNamedAutoConstant("uLightDiffuseScaledColourArray",Ogre::GpuProgramParameters::ACT_LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY,OGRE_MAX_SIMULTANEOUS_LIGHTS);
+	frag_params->setNamedAutoConstant("uLightAttenuationArray",Ogre::GpuProgramParameters::ACT_LIGHT_ATTENUATION_ARRAY,OGRE_MAX_SIMULTANEOUS_LIGHTS);
+	frag_params->setNamedAutoConstant("uLightSpotParamsArray",Ogre::GpuProgramParameters::ACT_SPOTLIGHT_PARAMS_ARRAY,OGRE_MAX_SIMULTANEOUS_LIGHTS);
 	frag_params->setNamedAutoConstant("uFogColour", Ogre::GpuProgramParameters::ACT_FOG_COLOUR);
 	frag_params->setNamedAutoConstant("uFogParams", Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
 	frag_params->setNamedAutoConstant("uCameraPosition", Ogre::GpuProgramParameters::ACT_CAMERA_POSITION);
+	frag_params->setNamedAutoConstant("cNearClipDistance", Ogre::GpuProgramParameters::ACT_NEAR_CLIP_DISTANCE);
+	frag_params->setNamedAutoConstant("cFarClipDistance", Ogre::GpuProgramParameters::ACT_FAR_CLIP_DISTANCE);
 
-	frag_params->setNamedConstant("uLOD", 0.0f);
-//  frag_params->setNamedConstant("uLOD", 0.5f);
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
+  frag_params->setNamedConstant("uLOD", 0.5f);
+#else
+  frag_params->setNamedConstant("uLOD", 0.0f);
+#endif
   }
 }
 

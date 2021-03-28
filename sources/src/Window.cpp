@@ -24,24 +24,13 @@
 #include "Window.h"
 #include "Exception.h"
 #include "SDL2.hpp"
-#include <string>
 
 using namespace std;
 
 namespace xio {
-//----------------------------------------------------------------------------------------------------------------------
+
 Window::Window(int w, int h, bool f)
 	: w_(w), h_(h), f_(f) {
-  Init_();
-}
-//----------------------------------------------------------------------------------------------------------------------
-Window::~Window() {
-  SDL_SetWindowFullscreen(window_, SDL_FALSE);
-  SDL_DestroyWindow(window_);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Window::Init_() {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
 	throw Exception("Failed to init SDL2");
@@ -57,7 +46,7 @@ void Window::Init_() {
   }
 
 #else
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_SENSOR) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 	throw Exception("Failed to init SDL2");
   }
 #endif
@@ -68,10 +57,9 @@ void Window::Init_() {
   screen_w_ = static_cast<int>(DM.w);
   screen_h_ = static_cast<int>(DM.h);
 
-  if (w_*h_==0.0) {
-	f_ = true;
-  }
+  flags_ = SDL_WINDOW_SHOWN;
 
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
 
   if (w_==screen_w_ && h_==screen_h_) {
@@ -80,74 +68,97 @@ void Window::Init_() {
   }
 
   if (f_) {
-	flags_ |= SDL_WINDOW_INPUT_GRABBED;
-	flags_ |= SDL_WINDOW_MOUSE_FOCUS;
+	//flags_ |= SDL_WINDOW_INPUT_GRABBED;
+	//flags_ |= SDL_WINDOW_MOUSE_FOCUS;
 	flags_ |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-
+	flags_ |= SDL_WINDOW_BORDERLESS;
 	w_ = screen_w_;
 	h_ = screen_h_;
   }
 
-  window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w_, h_, flags_);
+  window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w_, h_, flags_);
+#else
+  window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen_w_, screen_h_, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 
-  if (window_) {
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-  } else {
-	throw Exception("Failed to Init SDL_Window");
-  }
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+  SDL_GL_SetSwapInterval(0);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+  auto glc = SDL_GL_CreateContext(window_);
+
+//  auto rdr = SDL_CreateRenderer(
+//	  window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-string Window::GetCaption() const noexcept {
+Window::~Window() {
+  SDL_SetWindowFullscreen(window_, SDL_FALSE);
+  SDL_DestroyWindow(window_);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+string Window::GetCaption() const {
   return caption_;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Window::SetCaption(const string &caption) {
   caption_ = caption;
   SDL_SetWindowTitle(window_, caption.c_str());
 }
 
-pair<int, int> Window::GetSize() const noexcept {
+//----------------------------------------------------------------------------------------------------------------------
+pair<int, int> Window::GetSize() const {
   return make_pair(w_, h_);
 }
 
-float Window::GetRatio() const noexcept {
+//----------------------------------------------------------------------------------------------------------------------
+float Window::GetRatio() const {
   return static_cast<float>(w_)/h_;
 }
 
-bool Window::IsFullscreen() const noexcept {
+//----------------------------------------------------------------------------------------------------------------------
+bool Window::IsFullscreen() const {
   return f_;
 }
 
-SDL_SysWMinfo Window::GetInfo() const noexcept {
+//----------------------------------------------------------------------------------------------------------------------
+SDL_SysWMinfo Window::GetInfo() const {
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(window_, &info);
   return info;
 }
 
-void Window::SetCursorStatus(bool show, bool grab, bool relative) noexcept {
+//----------------------------------------------------------------------------------------------------------------------
+void Window::SetCursorStatus(bool show, bool grab, bool relative) {
   SDL_ShowCursor(show);
   SDL_SetWindowGrab(window_, static_cast<SDL_bool>(grab));
   SDL_SetRelativeMouseMode(static_cast<SDL_bool>(relative));
 }
 
-void Window::SwapBuffers() const noexcept {
+//----------------------------------------------------------------------------------------------------------------------
+void Window::SwapBuffers() const {
   SDL_GL_SwapWindow(window_);
 }
 
-void Window::Resize(int w, int h) noexcept {
+//----------------------------------------------------------------------------------------------------------------------
+void Window::Resize(int w, int h) {
   w_ = w;
   h_ = h;
   SDL_SetWindowPosition(window_, (screen_w_ - w_)/2, (screen_h_ - h_)/2);
   SDL_SetWindowSize(window_, w_, h_);
 }
 
-void Window::SetFullscreen(bool f) noexcept {
+//----------------------------------------------------------------------------------------------------------------------
+void Window::SetFullscreen(bool f) {
   f_ = f;
 
   if (f) {
-	SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
   } else {
 	SDL_SetWindowSize(window_, w_, h_);
   }

@@ -101,9 +101,9 @@ void DemoDotAppState::Init() {
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *root = scene->getRootSceneNode();
 
-  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
-  auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
-  root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
+//  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
+//  auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
+//  root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
 
 //  Ogre::Entity *entity = scene->createEntity("ely_vanguardsoldier_kerwinatienza_Mesh.mesh", "ely_vanguardsoldier_kerwinatienza_Mesh.mesh");
 //  auto *node = root->createChildSceneNode(Ogre::Vector3(0, 0, 0));

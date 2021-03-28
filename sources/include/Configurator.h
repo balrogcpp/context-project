@@ -25,16 +25,17 @@
 #include "Exception.h"
 #include <filesystem>
 #include <string>
-#define RAPIDJSON_HAS_STDSTRING 1
-#include <rapidjson/document.h>
-#include <rapidjson/istreamwrapper.h>
+//#define RAPIDJSON_HAS_STDSTRING 1
+//#include <rapidjson/document.h>
+//#include <rapidjson/istreamwrapper.h>
+#include <nlohmann/json.hpp>
 
 namespace xio {
 
 class Configurator : public NoCopy {
  public:
 
-  explicit Configurator(const std::string &file_name = "config.json");
+  explicit Configurator(const std::string &file_name);
 
   virtual ~Configurator();
 
@@ -43,10 +44,11 @@ class Configurator : public NoCopy {
 
   template<typename T>
   void AddMember(const std::string &name, T &&value) {
-	static auto &allocator = document_.GetAllocator();
-	if (!document_.HasMember(name.c_str())) {
-	  document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name.c_str()), value, allocator);
-	}
+//	static auto &allocator = document_.GetAllocator();
+//	if (!document_.HasMember(name.c_str())) {
+//	  document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name.c_str()), value, allocator);
+//	}
+	document_[name] = value;
   }
 
 
@@ -55,17 +57,23 @@ class Configurator : public NoCopy {
 	T t{};
 
 	try {
-	  t = document_[str.c_str()].Get<T>();
+		t = static_cast<T>(document_[str]);
 	} catch (std::exception &e) {
 	  //ignore
 	}
-
+//
+//	try {
+//	  t = document_[str.c_str()].Get<T>();
+//	} catch (std::exception &e) {
+//	  //ignore
+//	}
+//
 	return t;
   }
 
  private:
-  rapidjson::Document document_;
-
+  //rapidjson::Document document_;
+  nlohmann::json document_;
 };
 
 } //namespace

@@ -21,6 +21,7 @@
 //SOFTWARE.
 
 #pragma once
+#include "SDL2.hpp"
 #include "Configurator.h"
 #include "OgreHeaders.h"
 #include "btogre/BtOgre.h"

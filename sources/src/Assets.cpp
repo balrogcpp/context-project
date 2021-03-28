@@ -109,6 +109,14 @@ Assets::InitGeneralResources(const string &path_,
 							 const string &group_,
 							 const string &resource_file,
 							 bool verbose) {
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  const std::string file_system = "FileSystem";
+  const std::string zip = "Zip";
+#else
+  const std::string file_system = "APKFileSystem";
+  const std::string zip = "APKZip";
+#endif
+
   vector <string> file_list;
   vector <string> dir_list;
   vector <tuple<string, string, string>> resource_list;
@@ -117,7 +125,7 @@ Assets::InitGeneralResources(const string &path_,
   string path = FindPath(path_);
 
   if (fs::exists(path))
-	resource_list.push_back({path, "FileSystem", group_});
+	resource_list.push_back({path, file_system, group_});
 
   if (!resource_file.empty()) {
 	fstream list_file;
@@ -174,7 +182,7 @@ Assets::InitGeneralResources(const string &path_,
 
 		dir_list.push_back(file_name);
 
-		ogre_resource_manager.addResourceLocation(file_path, "FileSystem", get<2>(it));
+		ogre_resource_manager.addResourceLocation(file_path, file_system, get<2>(it));
 
 	  } else if (jt->is_regular_file()) {
 		if (verbose) {
@@ -187,7 +195,7 @@ Assets::InitGeneralResources(const string &path_,
 		  }
 
 
-		  ogre_resource_manager.addResourceLocation(file_path, "Zip", get<2>(it));
+		  ogre_resource_manager.addResourceLocation(file_path, zip, get<2>(it));
 		}
 	  }
 	}

@@ -29,6 +29,15 @@
 #include "XmlUtils.h"
 #include <pugixml.hpp>
 
+#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+#include <Terrain/OgreTerrainGroup.h>
+#include <Terrain/OgreTerrainQuadTreeNode.h>
+#include <Terrain/OgreTerrainMaterialGeneratorA.h>
+#include <Terrain/OgreTerrainMaterialGenerator.h>
+#include <Terrain/OgreTerrainAutoUpdateLod.h>
+#include <Terrain/OgreTerrain.h>
+#endif
+
 using namespace std;
 
 namespace xio {
