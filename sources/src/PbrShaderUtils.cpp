@@ -27,7 +27,7 @@ using namespace std;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
-void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
+void Pbr::UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
   auto *pass = material->getTechnique(0)->getPass(0);
   int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
   bool transparency_casts_shadows = material->getTransparencyCastsShadows();
@@ -78,8 +78,33 @@ void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
   }
 }
 
+static std::vector <Ogre::GpuProgramParametersSharedPtr> gpu_fp_params_;
+static std::vector <Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;
+static Ogre::Matrix4 mvp_;
+static Ogre::Matrix4 mvp_prev_;
+static Ogre::Camera *camera_;
+
 //----------------------------------------------------------------------------------------------------------------------
-void UpdatePbrParams(const Ogre::MaterialPtr &material) {
+void Pbr::Cleanup() {
+	gpu_fp_params_.clear();
+	gpu_fp_params_.shrink_to_fit();
+	gpu_vp_params_.clear();
+	gpu_vp_params_.shrink_to_fit();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Pbr::Update(float time) {
+  camera_ = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
+  mvp_prev_ = mvp_;
+  mvp_ = camera_->getProjectionMatrixWithRSDepth()*camera_->getViewMatrix();
+
+  for_each(gpu_fp_params_.begin(), gpu_fp_params_.end(), [time](auto &it){it->setNamedConstant("uFrameTime", time);});
+
+  for_each(gpu_vp_params_.begin(), gpu_vp_params_.end(), [](auto &it){it->setNamedConstant("cWorldViewProjPrev", mvp_prev_);});
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Pbr::UpdatePbrParams(const Ogre::MaterialPtr &material) {
   for (int i = 0; i < material->getNumTechniques(); i++) {
 
 	if (!material->getTechnique(i)->getPass(0)->hasVertexProgram()
@@ -129,11 +154,14 @@ void UpdatePbrParams(const Ogre::MaterialPtr &material) {
 #else
   frag_params->setNamedConstant("uLOD", 0.0f);
 #endif
+
+	gpu_vp_params_.push_back(vert_params);
+	gpu_fp_params_.push_back(frag_params);
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
+void Pbr::UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
   for (int i = 0; i < material->getNumTechniques(); i++) {
 
 	if (!material->getReceiveShadows() || !material->getTechnique(i)->getPass(0)->hasVertexProgram()
@@ -200,7 +228,7 @@ void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active) {
+void Pbr::UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active) {
   auto ibl_texture = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
 
   if (active) {
@@ -222,25 +250,26 @@ void UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void UpdatePbrParams(const string &material) {
+void Pbr::UpdatePbrParams(const string &material) {
   auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
-  UpdatePbrParams(material_ptr);
+  if (material_ptr)
+  	UpdatePbrParams(material_ptr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void UpdatePbrIbl(const string &material, bool realtime) {
+void Pbr::UpdatePbrIbl(const string &material, bool realtime) {
   auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
   UpdatePbrIbl(material_ptr, realtime);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void UpdatePbrShadowReceiver(const string &material) {
+void Pbr::UpdatePbrShadowReceiver(const string &material) {
   auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
   UpdatePbrShadowReceiver(material_ptr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void UpdatePbrShadowCaster(const string &material) {
+void Pbr::UpdatePbrShadowCaster(const string &material) {
   auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
   UpdatePbrShadowCaster(material_ptr);
 }

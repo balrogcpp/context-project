@@ -26,8 +26,6 @@
 #include "RtssUtils.h"
 #include "Exception.h"
 
-#undef OGRE_BUILD_RENDERSYSTEM_GLES2
-
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
 #include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 #elif defined OGRE_BUILD_RENDERSYSTEM_GL3PLUS

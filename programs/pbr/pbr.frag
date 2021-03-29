@@ -145,6 +145,8 @@ uniform int uShadowFilterIterations;
 in vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 in vec3 vPosition;
+in vec4 vScreenPosition;
+in vec4 vPrevScreenPosition;
 #ifdef HAS_COLOURS
 in vec3 vColor;
 #endif
@@ -162,6 +164,7 @@ in vec4 projectionCoord;
 
 uniform float cNearClipDistance;
 uniform float cFarClipDistance;
+uniform float uFrameTime;
 
 const float M_PI = 3.141592653589793;
 
@@ -326,6 +329,25 @@ vec4 GetAlbedo(vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//void GetORM(vec2 uv, out float occlusion, out float metallic, out float roughness) {
+//#ifdef HAS_ORM
+//    vec3 OMR = texture2D(uORMSampler, uv, uLOD).rgb;
+//
+//    metallic = uSurfaceShininessColour;
+//
+//    const float c_MinRoughness = 0.04;
+//    roughness = uSurfaceSpecularColour;
+//
+//    metallic *= OMR.b;
+//    roughness *= OMR.g;
+//    metallic = clamp(metallic, 0.0, 1.0);
+//    roughness = clamp(roughness, c_MinRoughness, 1.0);
+//
+//    occlusion = OMR.r;
+//#endif
+//}
+
+//----------------------------------------------------------------------------------------------------------------------
 vec3 ApplyFog(vec3 color, float depth) {
     float exponent = depth * uFogParams.x;
     float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
@@ -389,7 +411,6 @@ void main()
 
     vec4 albedo = GetAlbedo(tex_coord);
 
-    // The albedo may be defined from a base texture or a flat color uORMSampler
 #ifdef HAS_ORM
     vec3 OMR = texture2D(uORMSampler, tex_coord, uLOD).rgb;
 
@@ -404,6 +425,12 @@ void main()
     roughness = clamp(roughness, c_MinRoughness, 1.0);
 
     float occlusion = OMR.r;
+
+//    float occlusion;
+//    float roughness;
+//    float metallic;
+//
+//    GetORM(tex_coord, occlusion, roughness, metallic);
 #else
     float metallic = GetMetallic(tex_coord);
     float roughness = GetRoughness(tex_coord);
@@ -552,12 +579,16 @@ void main()
 #endif //HAS_REFLECTION
 
 #ifndef GL_ES
-    //total_colour = ApplyFog(total_colour, vDepth);
-//    gl_FragColor = vec4(LINEARtoSRGB(total_colour), albedo.a);
-
     gl_FragData[0] = vec4(total_colour, albedo.a);
-//    float clippedDistance = (vDepth - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
-//    gl_FragData[1] = vec4(clippedDistance, 0.0, 0.0, 1.0);
+
+
+    float clippedDistance = (vDepth - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
+
+    vec2 a = (vScreenPosition.xz / vScreenPosition.w) * 0.5 + 0.5;
+    vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w) * 0.5 + 0.5;
+    vec2 velocity = (0.0166667 / uFrameTime) * vec2(a - b);
+
+    gl_FragData[1] = vec4(clippedDistance, velocity, 1.0);
 #else
     total_colour = ApplyFog(total_colour, vDepth);
     gl_FragColor = vec4(LINEARtoSRGB(total_colour), albedo.a);

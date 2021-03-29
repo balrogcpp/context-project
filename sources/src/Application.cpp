@@ -159,10 +159,12 @@ void Application::Loop_() {
 
 		auto before_update = chrono::system_clock::now().time_since_epoch();
 		int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
-		double frame_time = static_cast<double>(micros_before_update - time_of_last_frame_)/1e+6;
+		float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_)/1e+6;
 		time_of_last_frame_ = micros_before_update;
 		engine_->Update(frame_time);
 		state_manager_->Update(frame_time);
+
+
 		engine_->RenderOneFrame();
 	  } else {
 		engine_->Pause();

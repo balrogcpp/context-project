@@ -49,6 +49,7 @@ uniform float baseUVScale;
 #endif
 
 uniform mat4 uMVPMatrix;
+uniform mat4 cWorldViewProjPrev;
 
 #ifndef SHADOWCASTER
 #ifdef HAS_COLOURS
@@ -77,6 +78,8 @@ uniform mat4 uTexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 out vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif //SHADOWRECEIVER
 out vec3 vPosition;
+out vec4 vScreenPosition;
+out vec4 vPrevScreenPosition;
 #ifdef HAS_COLOURS
 out vec3 vColor;
 #endif //HAS_COLOURS
@@ -143,7 +146,8 @@ void main()
 #ifndef VERTEX_COMPRESSION
   vec4 new_position = vec4(position, 1.0);
 #else
-  vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0.xy, 1.0);
+  vec4 new_position = posIndexToObjectSpace * vec4(vertex, uv0, 1.0);
+#define uv0 _uv0
   vec2 uv0 = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
@@ -183,7 +187,12 @@ void main()
 #endif
 
   gl_Position = uMVPMatrix * new_position;
+
+  vScreenPosition = gl_Position;
+  vPrevScreenPosition = cWorldViewProjPrev * uModelMatrix * new_position;
+
   vDepth = gl_Position.z;
+
 
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
@@ -195,6 +204,7 @@ void main()
 #ifdef HAS_REFLECTION
   projectionCoord = GetProjectionCoord(gl_Position);
 #endif
+
 
 #else //SHADOWCASTER
   gl_Position = uMVPMatrix * new_position;

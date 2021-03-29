@@ -51,13 +51,11 @@ void main()
 #ifdef HAS_ALPHA
         float alpha = texture2D(baseColor, vUV).a;
 
-        if (alpha < 0.5) {
+        if (alpha < 0.5)
             discard;
-            //clippedDistance = 0.0;
-            //velocity = vec2(0.0);
-        }
 #endif
 
-    gl_FragData[0] = vec4(clippedDistance, 0.0, 0.0, 1.0);
-    gl_FragData[1] = vec4(velocity, 0.0, 1.0);
+//    gl_FragData[0] = vec4(clippedDistance, 0.0, 0.0, 1.0);
+//    gl_FragData[1] = vec4(velocity, 0.0, 1.0);
+    gl_FragColor = vec4(clippedDistance, velocity, 1.0);
 }

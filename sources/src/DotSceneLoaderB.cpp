@@ -129,11 +129,11 @@ void DotSceneLoaderB::Cleanup() {
   terrain_.reset();
   forest_.reset();
   sinbad_.reset();
+//  Pbr::Cleanup();
   if (ogre_scene_) ogre_scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   if (ogre_scene_) ogre_scene_->clearScene();
   if (camera_) camera_->SetStyle(CameraMan::Style::MANUAL);
   scene_.reset();
-
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(group_name_);
 }
 
@@ -651,7 +651,7 @@ void DotSceneLoaderB::ProcessParticleSystem_(pugi::xml_node &xml_node, Ogre::Sce
   // Init the particle system
   try {
     Ogre::ParticleSystem *pParticles = ogre_scene_->createParticleSystem(name, templateName);
-    UpdatePbrParams(pParticles->getMaterialName());
+    Pbr::UpdatePbrParams(pParticles->getMaterialName());
 
     const Ogre::uint32 WATER_MASK = 0xF00;
     pParticles->setVisibilityFlags(WATER_MASK);
@@ -712,9 +712,9 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   if (!material.empty()) {
     entity->setMaterialName(material);
     Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
-    UpdatePbrParams(material);
+    Pbr::UpdatePbrParams(material);
     if (material_ptr->getReceiveShadows())
-      UpdatePbrShadowReceiver(material);
+      Pbr::UpdatePbrShadowReceiver(material);
   }
 
   if (reflection) {

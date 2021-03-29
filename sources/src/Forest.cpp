@@ -54,8 +54,8 @@ static void CreateGrassMesh(float width, float height) {
   sm->vertexData->vertexCount = 12;
   sm->indexData->indexCount = 18;
 
-  UpdatePbrParams("GrassCustom");
-  UpdatePbrShadowReceiver("GrassCustom");
+  Pbr::UpdatePbrParams("GrassCustom");
+  Pbr::UpdatePbrShadowReceiver("GrassCustom");
 
   // specify a vertex format declaration for our mesh: 3 floats for position, 3 floats for normal, 2 floats for UV
   VertexDeclaration *decl = sm->vertexData->vertexDeclaration;
@@ -129,8 +129,8 @@ static void CreateGrassMesh2(float width, float height) {
   const string grassMaterial = "GrassCustom";
   Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
 
-  UpdatePbrParams(tmp);
-  UpdatePbrShadowReceiver(tmp);
+  Pbr::UpdatePbrParams(tmp);
+  Pbr::UpdatePbrShadowReceiver(tmp);
 
   sm->setMaterialName(grassMaterial);
   sm->useSharedVertices = false;
@@ -300,8 +300,8 @@ void Forest::GenerateGrassPaged() {
   pgeometry_.push_back(unique_ptr<PagedGeometry>(grass));
   ploaders_.push_back(unique_ptr<PageLoader>(grassLoader));
 
-  UpdatePbrParams("GrassCustom");
-  UpdatePbrShadowReceiver("GrassCustom");
+  Pbr::UpdatePbrParams("GrassCustom");
+  Pbr::UpdatePbrShadowReceiver("GrassCustom");
   GrassLayer *layer = grassLoader->addLayer("GrassCustom");
   layer->setFadeTechnique(FADETECH_ALPHA);
   layer->setRenderTechnique(GRASSTECH_CROSSQUADS);
@@ -334,7 +334,9 @@ void Forest::GenerateTreesPaged() {
 
   trees->setPageLoader(treeLoader);
   Ogre::Entity *fir1EntPtr = scene->createEntity("fir1", "fir05_30.mesh");
+
   UpdateMeshMaterial("fir05_30.mesh");
+
   auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
 
   for (int i = 0; i < 50; i++) {
@@ -361,6 +363,11 @@ void Forest::GenerateTreesPaged() {
 
     treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, 0, z), Ogre::Degree(yaw), scale);
   }
+
+  Update(0);
+
+  Pbr::UpdatePbrParams("3D-Diggers/fir01_Batched");
+  Pbr::UpdatePbrParams("3D-Diggers/fir02_Batched");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

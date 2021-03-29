@@ -59,7 +59,7 @@ material SsaoCrytek
 
             texture_unit
             {
-                content_type compositor GBuffer mrt 0
+                content_type compositor MRT mrt 1
                 tex_address_mode clamp
                 filtering linear linear none
             }
@@ -78,7 +78,7 @@ compositor Ssao
 {
     technique
     {
-        texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R chain_scope
+        texture ssao target_width target_height PF_FLOAT16_R chain_scope
 
         target ssao
         {
@@ -215,63 +215,6 @@ compositor Filter/Ssao
             pass render_quad
             {
                 material Ssao/filter
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program Modulate_SSAO_fs glsl glsles
-{
-	source modulate.frag
-    preprocessor_defines SSAO
-	default_params
-	{
-		param_named SceneSampler int 0
-		param_named SsaoSampler int 1
-	}
-}
-
-material Modulate/Ssao
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref Modulate_SSAO_fs {}
-
-			texture_unit
-            {
-                content_type compositor Main scene
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-
-			texture_unit
-            {
-                content_type compositor Ssao ssao
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-		}
-	}
-}
-
-compositor Modulate/Ssao
-{
-    technique
-    {
-        texture_ref scene Main scene
-        target scene
-        {
-            pass render_quad
-            {
-                material Modulate/Ssao
             }
         }
     }

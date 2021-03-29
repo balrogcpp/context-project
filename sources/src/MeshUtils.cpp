@@ -90,15 +90,15 @@ void UpdateMeshMaterial(Ogre::MeshPtr mesh, bool cast_shadows, const string &mat
 	  material = submesh->getMaterial();
 
 	  if (material) {
-		UpdatePbrParams(material);
+		Pbr::UpdatePbrParams(material);
 
 		if (cast_shadows)
-		  UpdatePbrShadowCaster(material);
+		  Pbr::UpdatePbrShadowCaster(material);
 
 		if (material->getReceiveShadows())
-		  UpdatePbrShadowReceiver(material);
+		  Pbr::UpdatePbrShadowReceiver(material);
 
-		UpdatePbrIbl(material, active_ibl);
+		Pbr::UpdatePbrIbl(material, active_ibl);
 	  }
 	}
   }

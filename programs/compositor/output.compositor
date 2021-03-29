@@ -24,10 +24,15 @@
 fragment_program Output_fs glsl glsles
 {
     source output.frag
+    preprocessor_defines MAX_SAMPLES=8,SSAO,MOTION_BLUR
 	default_params
 	{
-		param_named SceneSampler int 0
 		param_named exposure float 1.0
+		param_named_auto uFogColour fog_colour
+		param_named_auto uFogParams fog_params
+        param_named_auto nearClipDistance near_clip_distance
+        param_named_auto farClipDistance far_clip_distance
+        param_named uScale float 0.5
 	}
 }
 
@@ -42,11 +47,32 @@ material Output
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Output_fs {}
+			fragment_program_ref Output_fs
+			{
+			    param_named SceneSampler int 0
+			    param_named_auto texelSize inverse_texture_size 0
+			    param_named sSceneDepthSampler int 1
+			    param_named SsaoSampler int 2
+			}
 
 			texture_unit
             {
-                content_type compositor Main scene
+                content_type compositor MRT mrt 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit
+            {
+                content_type compositor MRT mrt 1
+                //content_type compositor GBuffer mrt
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit
+            {
+                content_type compositor Ssao ssao
                 tex_address_mode clamp
                 filtering linear linear none
             }
@@ -63,124 +89,6 @@ compositor Output
             pass render_quad
             {
                 material Output
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program FilteredOutput_fs glsl glsles
-{
-    source output.frag
-    //preprocessor_defines PCF_FILTER
-	default_params
-	{
-		param_named SceneSampler int 0
-		param_named exposure float 1.0
-		//param_named_auto texelSize inverse_texture_size 0
-	}
-}
-
-material Filter/Output
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref FilteredOutput_fs {}
-
-			texture_unit
-            {
-                content_type compositor Main scene
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-		}
-	}
-}
-
-compositor Filter/Output
-{
-    technique
-    {
-        target_output
-        {
-            pass render_quad
-            {
-                material Filter/Output
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program Modulate_SSAO_BLOOM_fs glsl glsles
-{
-	source modulate.frag
-    preprocessor_defines SSAO,BLOOM
-	default_params
-	{
-		//param_named exposure float 1.0
-	}
-}
-
-material Modulate/SsaoBlur
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref Modulate_SSAO_BLOOM_fs
-			{
-                param_named SceneSampler int 0
-                param_named BloomSampler int 1
-                param_named SsaoSampler int 2
-			}
-
-			texture_unit
-            {
-                content_type compositor Main scene
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-
-			texture_unit
-            {
-                content_type compositor Bloom bloom
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-
-			texture_unit
-            {
-                content_type compositor Ssao ssao
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-		}
-	}
-}
-
-compositor Modulate/SsaoBlur
-{
-    technique
-    {
-        texture_ref scene Main scene
-        target scene
-        {
-            pass render_quad
-            {
-                material Modulate/SsaoBlur
             }
         }
     }
