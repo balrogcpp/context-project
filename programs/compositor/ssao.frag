@@ -54,13 +54,14 @@ void main()
 
   // get the depth of the current pixel and convert into world space unit [0, inf]
   float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
+  float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
 
-  if (clampedDepth <= 0.0) {
+  if (fragmentWorldDepth <= 0.0) {
     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     return;
   }
 
-  float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
+
   float accessibility = 0.0;
 
   // get rotation vector, rotation is tiled every 4 screen pixels

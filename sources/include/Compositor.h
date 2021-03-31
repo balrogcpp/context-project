@@ -46,21 +46,21 @@ class Compositor : public Component, public Singleton<Compositor> {
   void Pause() override;
   void Resume() override;
   void Update(float time) override;
-
-  void EnableEffect(const std::string &name, bool enable) {
-    effects_[name] = enable;
-  }
-
+  void EnableEffect(const std::string &name, bool enable = true);
   void Init();
 
  private:
+  void InitGbuffer_();
+  void AddCompositor_(const std::string &compositor);
+  void InitMRT_();
+  void InitOutput_();
+
   std::map<std::string, bool> effects_;
   std::unique_ptr<GBufferSchemeHandler> gbuff_handler_;
-  Ogre::SceneManager *scene_;
-  Ogre::Camera *camera_;
-  Ogre::Viewport *viewport_;
-  Ogre::Matrix4 mvp_;
-  Ogre::Matrix4 mvp_prev_;
+  view_ptr<Ogre::CompositorManager> compositor_manager_;
+  view_ptr<Ogre::SceneManager> scene_;
+  view_ptr<Ogre::Camera> camera_;
+  view_ptr<Ogre::Viewport> viewport_;
 };
 
 } //namespace

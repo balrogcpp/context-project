@@ -20,12 +20,41 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+material GBuffer
+{
+    technique
+    {
+        pass
+        {
+            rtshader_system GBuffer
+            {
+                lighting_stage gbuffer normal_viewdepth viewpos
+            }
+        }
+    }
+}
+
 compositor GBuffer
 {
     technique
     {
-        //texture mrt target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R PF_FLOAT16_GR chain_scope
-        texture mrt target_width target_height PF_FLOAT16_RGB chain_scope
+        // GBuffer enconding: --------------------------------------------------
+        // mrt0: rgba --> unused in this sample (plain white, (1, 1, 1, 1))
+        // mrt1: xyz --> normals, w --> normalized linear depth [0, 1]
+        // mrt2: xyz --> position in view space
+        //
+        // use a better packing of variables in the mrt to (possibly) increase
+        // performance!
+        // ---------------------------------------------------------------------
+        texture mrt target_width target_height PF_FLOAT32_RGBA PF_FLOAT32_RGBA chain_scope
+        texture occlusion target_width target_height PF_FLOAT32_RGBA chain_scope
+		texture scene target_width target_height PF_BYTE_RGBA chain_scope
+
+		// the scene we want to modulate
+        target scene
+        {
+            input previous
+        }
 
         target mrt
         {
@@ -40,111 +69,6 @@ compositor GBuffer
 			}
 
             pass render_scene {}
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-vertex_program gbuffer_vp glsl glsles
-{
-	source gbuffer.vert
-}
-
-fragment_program gbuffer_fp glsl glsles
-{
-	source gbuffer.frag
-}
-
-material gbuffer
-{
-    technique
-    {
-        pass
-        {
-            vertex_program_ref gbuffer_vp
-            {
-                param_named_auto uModelMatrix world_matrix
-                param_named_auto cWorldViewProj worldviewproj_matrix
-                param_named cWorldViewProjPrev matrix4x4 0
-            }
-
-            fragment_program_ref gbuffer_fp
-            {
-                param_named_auto cNearClipDistance near_clip_distance
-                param_named_auto cFarClipDistance far_clip_distance
-                param_named uFrameTime float 0
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-vertex_program gbuffer_alpha_vp glsl glsles
-{
- 	source gbuffer.vert
- 	preprocessor_defines HAS_ALPHA
-}
-
-fragment_program gbuffer_alpha_fp glsl glsles
-{
-	source gbuffer.frag
-	preprocessor_defines HAS_ALPHA
-}
-
-material gbuffer_alpha
-{
-    technique
-    {
-        pass
-        {
-            texture_unit BaseColor
-            {
-                filtering bilinear
-                tex_address_mode clamp
-            }
-
-            vertex_program_ref gbuffer_alpha_vp
-            {
-                param_named_auto uModelMatrix world_matrix
-                param_named_auto cWorldViewProj worldviewproj_matrix
-                param_named cWorldViewProjPrev matrix4x4 0
-            }
-
-            fragment_program_ref gbuffer_alpha_fp
-            {
-                param_named_auto cNearClipDistance near_clip_distance
-                param_named_auto cFarClipDistance far_clip_distance
-                param_named uFrameTime float 0
-                param_named baseColor int 0
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-vertex_program gbuffer_empty_vp glsl glsles
-{
- 	source gbuffer_empty.vert
-}
-
-fragment_program gbuffer_empty_fp glsl glsles
-{
-	source gbuffer_empty.frag
-}
-
-material gbuffer_empty
-{
-    technique
-    {
-        pass
-        {
-            vertex_program_ref gbuffer_empty_vp
-            {
-                param_named_auto cWorldViewProj worldviewproj_matrix
-            }
-
-            fragment_program_ref gbuffer_empty_fp
-            {}
         }
     }
 }

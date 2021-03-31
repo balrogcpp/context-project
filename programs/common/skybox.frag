@@ -53,7 +53,7 @@ void main()
 
 #ifndef GL_ES
     gl_FragData[0] = vec4(color, 1.0);
-    gl_FragData[1] = vec4(0.0, 0.0, 0.0, 1.0);
+    gl_FragData[1] = vec4(vDepth, 0.0, 0.0, 1.0);
 #else
     color = ApplyFog(color);
     gl_FragColor = vec4(LINEARtoSRGB(color, 1.0), 1.0);

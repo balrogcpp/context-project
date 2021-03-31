@@ -50,6 +50,7 @@ uniform float farClipDistance;
 
 uniform vec2 texelSize;
 uniform float uScale;
+uniform float uMotionBlueEnable;
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 ApplyFog(vec3 color, float depth) {
@@ -71,6 +72,7 @@ void main()
   scene = ApplyFog(scene, fragmentWorldDepth);
 
 #ifdef MOTION_BLUR
+  if (uMotionBlueEnable > 0.0) {
   vec2 velocity = uScale * texture2D(sSceneDepthSampler, oUv0).gb;
   float speed = length(velocity / texelSize);
   int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
@@ -82,11 +84,10 @@ void main()
     float clampedDepth = texture2D(sSceneDepthSampler, uv).r;
     float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
     scene += ApplyFog(texture2D(SceneSampler, uv).rgb, fragmentWorldDepth);
-
-//    scene += texture2D(SceneSampler, uv).rgb;
   }
 
   scene /= float(nSamples);
+}
 #endif
 
 #ifdef MANUAL_SRGB

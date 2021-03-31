@@ -321,7 +321,7 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_RENDERSYSTEM_D3D9=false
                     -DOGRE_BUILD_PLUGIN_CG=false
                     -DOGRE_BUILD_RENDERSYSTEM_GL=false
-                    #-DOGRE_BUILD_RENDERSYSTEM_GLES2=true
+                    -DOGRE_BUILD_RENDERSYSTEM_GLES2=true
                     -DOGRE_BUILD_COMPONENT_OVERLAY=true
                     -DOGRE_BUILD_COMPONENT_BITES=false
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=true
@@ -359,7 +359,7 @@ externalproject_add(target-ogre
                         ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre/RenderSystems/GLSupport/include/GLSL
                         ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
                     TEST_AFTER_INSTALL true
-        )
+                    )
 
 externalproject_add(target-lua
                     EXCLUDE_FROM_ALL true

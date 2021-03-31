@@ -41,7 +41,7 @@ Window::Window(int w, int h, bool f)
   for (int i = 0; i < SDL_NumJoysticks(); ++i) {
 	if (SDL_IsGameController(i)) {
 	  controller = SDL_GameControllerOpen(i);
-	  assert(controller & "Could not open gamecontroller");
+	  assert(controller && "Could not open gamecontroller");
 	}
   }
 

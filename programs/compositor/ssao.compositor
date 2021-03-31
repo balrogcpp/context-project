@@ -37,12 +37,14 @@ fragment_program Crytek_fp glsl glsles
 	}
 }
 
-material SsaoCrytek
+material SSAOCrytek
 {
     technique
     {
         pass
         {
+            lighting off
+            polygon_mode_overrideable false
             depth_check off
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
@@ -74,24 +76,24 @@ material SsaoCrytek
     }
 }
 
-compositor Ssao
+compositor SSAO
 {
     technique
     {
-        texture ssao target_width target_height PF_FLOAT16_R chain_scope
+        texture ssao target_width target_height PF_FLOAT16_R chain_scope pooled
 
         target ssao
         {
             pass render_quad
             {
-                material SsaoCrytek
+                material SSAOCrytek
             }
         }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-material Ssao/filtery
+material SSAO/filtery
 {
 	technique
 	{
@@ -106,7 +108,7 @@ material Ssao/filtery
 
 			texture_unit
             {
-                content_type compositor Ssao ssao
+                content_type compositor SSAO ssao
                 tex_address_mode clamp
                 filtering linear linear none
             }
@@ -114,7 +116,7 @@ material Ssao/filtery
 	}
 }
 
-material Ssao/filterx
+material SSAO/filterx
 {
 	technique
 	{
@@ -129,7 +131,7 @@ material Ssao/filterx
 
 			texture_unit
             {
-                content_type compositor Ssao ssao
+                content_type compositor SSAO ssao
                 tex_address_mode clamp
                 filtering linear linear none
             }
@@ -137,33 +139,33 @@ material Ssao/filterx
 	}
 }
 
-compositor FilterY/Ssao
+compositor FilterY/SSAO
 {
     technique
     {
-        texture_ref ssao Ssao ssao
+        texture_ref ssao SSAO ssao
 
         target ssao
         {
             pass render_quad
             {
-                material Ssao/filtery
+                material SSAO/filtery
             }
         }
     }
 }
 
-compositor FilterX/Ssao
+compositor FilterX/SSAO
 {
     technique
     {
-        texture_ref ssao Ssao ssao
+        texture_ref ssao SSAO ssao
 
         target ssao
         {
             pass render_quad
             {
-                material Ssao/filterx
+                material SSAO/filterx
             }
         }
     }
@@ -181,7 +183,7 @@ fragment_program ssao_filter_fs glsl glsles
     }
 }
 
-material Ssao/filter
+material BoxFilter/filter
 {
 	technique
 	{
@@ -196,7 +198,7 @@ material Ssao/filter
 
 			texture_unit
             {
-                content_type compositor Ssao ssao
+                content_type compositor SSAO ssao
                 tex_address_mode clamp
                 filtering linear linear none
             }
@@ -204,17 +206,17 @@ material Ssao/filter
 	}
 }
 
-compositor Filter/Ssao
+compositor BoxFilter/SSAO
 {
     technique
     {
-        texture_ref ssao Ssao ssao
+        texture_ref ssao SSAO ssao
 
         target ssao
         {
             pass render_quad
             {
-                material Ssao/filter
+                material BoxFilter/filter
             }
         }
     }
