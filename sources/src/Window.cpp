@@ -89,7 +89,7 @@ Window::Window(int w, int h, bool f)
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 
-  this_thread::sleep_for(50ms);
+  this_thread::sleep_for(250ms);
 
   window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_w_, screen_h_, SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN |SDL_WINDOW_OPENGL);
   auto glc = SDL_GL_CreateContext(window_);
