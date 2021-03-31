@@ -56,7 +56,7 @@ class Renderer final : public Component, public Singleton<Renderer> {
 
  private:
   std::unique_ptr<Window> window_;
-  std::unique_ptr<ShadowSettings> shadow_;
+  std::unique_ptr<ShadowSettings> shadow_settings_;
   std::unique_ptr<Compositor> compositor_;
 
   view_ptr<Ogre::Root> root_;
@@ -71,7 +71,7 @@ class Renderer final : public Component, public Singleton<Renderer> {
   }
 
   ShadowSettings &GetShadowSettings() {
-    return *shadow_;
+    return *shadow_settings_;
   }
 
   Compositor &GetCompositor() {

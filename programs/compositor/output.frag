@@ -66,6 +66,10 @@ void main()
   scene.rgb *= texture2D(SsaoSampler, oUv0).r;
 #endif
 
+  float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
+  float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
+  scene = ApplyFog(scene, fragmentWorldDepth);
+
 #ifdef MOTION_BLUR
   vec2 velocity = uScale * texture2D(sSceneDepthSampler, oUv0).gb;
   float speed = length(velocity / texelSize);
@@ -73,20 +77,20 @@ void main()
 
   for (int i = 1; i < nSamples; i++) {
     vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
-    scene += texture2D(SceneSampler, oUv0 + offset).rgb;
+    vec2 uv = oUv0 + offset;
+
+    float clampedDepth = texture2D(sSceneDepthSampler, uv).r;
+    float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
+    scene += ApplyFog(texture2D(SceneSampler, uv).rgb, fragmentWorldDepth);
+
+//    scene += texture2D(SceneSampler, uv).rgb;
   }
 
   scene /= float(nSamples);
 #endif
 
-  float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
-  float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
-  scene = ApplyFog(scene, fragmentWorldDepth);
-
 #ifdef MANUAL_SRGB
-  scene.rgb = LINEARtoSRGB(scene.rgb);
-//  vec3 mapped = vec3(1.0) - exp(-scene.rgb * exposure);
-//  scene.rgb = pow(mapped, vec3(1.0 / 2.2));
+  scene.rgb = LINEARtoSRGB(scene.rgb, exposure);
 #endif
 
   gl_FragColor = vec4(scene.rgb, 1.0);

@@ -65,7 +65,6 @@ material Output
             texture_unit
             {
                 content_type compositor MRT mrt 1
-                //content_type compositor GBuffer mrt
                 tex_address_mode clamp
                 filtering linear linear none
             }

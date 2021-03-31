@@ -257,8 +257,7 @@ abstract material Plane : PBR
 vertex_program PbrTerrain_vs glsl glsles
 {
 	source pbr.vert
-	//VERTEX_COMPRESSION
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {
         shared_params_ref PBR_Shared_vert
     }
@@ -391,6 +390,7 @@ abstract material Grass : Basic
         {
             alpha_rejection greater_equal 128
             cull_hardware none
+            //cull_software none
             //scene_blend alpha_blend
 
             texture_unit Albedo

@@ -55,10 +55,10 @@ class ShadowSettings : public NoCopy {
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm_;
   view_ptr<Ogre::Camera> camera_;
   view_ptr<Ogre::SceneManager> scene_;
-  bool shadow_enable_;
-  float far_distance_;
-  int16_t tex_size_;
-  int tex_format_;
+  bool shadow_enable_ = false;
+  float far_distance_ = 400;
+  int16_t tex_size_ = 1024;
+  int tex_format_ = 16;
 };
 
 } //namespace

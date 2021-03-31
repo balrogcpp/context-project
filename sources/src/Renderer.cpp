@@ -26,10 +26,10 @@
 #include "RtssUtils.h"
 #include "Exception.h"
 
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-#include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
-#elif defined OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
+#elif defined OGRE_BUILD_RENDERSYSTEM_GLES2
+#include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 #endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
@@ -81,14 +81,13 @@ namespace xio {
 Renderer::Renderer(int w, int h, bool f) {
   root_ = new Ogre::Root("");
 
-
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-  Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem());
-#elif defined OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *gl3plus_render_system = new Ogre::GL3PlusRenderSystem();
   gl3plus_render_system->setConfigOption("Separate Shader Objects", "Yes");
 
   Ogre::Root::getSingleton().setRenderSystem(gl3plus_render_system);
+#elif defined OGRE_BUILD_RENDERSYSTEM_GLES2
+  Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
@@ -118,17 +117,15 @@ Renderer::Renderer(int w, int h, bool f) {
 
   Ogre::NameValuePairList params;
 
-  #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   SDL_SysWMinfo info = window_->GetInfo();
+
+  #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  SDL_SysWMinfo info = window_->GetInfo();
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  SDL_SysWMinfo info = window_->GetInfo();
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  SDL_SysWMinfo info = window_->GetInfo();
   JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
 
   jclass class_activity       = env->FindClass("android/app/Activity");
@@ -138,6 +135,15 @@ Renderer::Renderer(int w, int h, bool f) {
   jobject raw_activity = (jobject)SDL_AndroidGetActivity();
   jobject raw_resources = env->CallObjectMethod(raw_activity, method_get_resources);
   jobject raw_asset_manager = env->CallObjectMethod(raw_resources, method_get_assets);
+
+//  SDL_GLContext m_sdl_gl_context = SDL_GL_GetCurrentContext();
+//
+//  jclass class_sdl_activity   = env->FindClass("org/libsdl/app/SDLActivity");
+//  jmethodID method_get_native_surface = env->GetStaticMethodID(class_sdl_activity, "getNativeSurface", "()Landroid/view/Surface;");
+//  jobject raw_surface = env->CallStaticObjectMethod(class_sdl_activity, method_get_native_surface);
+//  ANativeWindow *native_window = ANativeWindow_fromSurface(env, raw_surface);
+
+
   AAssetManager* asset_manager = AAssetManager_fromJava(env, raw_asset_manager);
   AConfiguration* mAConfig = AConfiguration_new();
   AConfiguration_fromAssetManager(mAConfig, asset_manager);
@@ -145,23 +151,12 @@ Renderer::Renderer(int w, int h, bool f) {
   Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(asset_manager));
   Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKZipArchiveFactory(asset_manager));
 
-  SDL_GLContext m_sdl_gl_context = SDL_GL_GetCurrentContext();
 
-  jclass class_sdl_activity   = env->FindClass("org/libsdl/app/SDLActivity");
-  jmethodID method_get_native_surface = env->GetStaticMethodID(class_sdl_activity, "getNativeSurface", "()Landroid/view/Surface;");
-  jobject raw_surface = env->CallStaticObjectMethod(class_sdl_activity, method_get_native_surface);
-  ANativeWindow *native_window = ANativeWindow_fromSurface(env, raw_surface);
-
-  params["currentGLContext"]     = "true";
-//  params["preserveContext"] = "true";
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(native_window));
-//  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
-  params["externalGLContext"]    = to_string(reinterpret_cast<size_t>(m_sdl_gl_context));
-
-//  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(native_window));
+  params["currentGLContext"] = "true";
+  params["preserveContext"] = "true";
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
+//  params["externalGLContext"]    = to_string(reinterpret_cast<size_t>(m_sdl_gl_context));
 //  params["androidConfig"] = to_string(reinterpret_cast<size_t>(mAConfig));
-//  params["preserveContext"] = "true";
-//  params["currentGLContext"] = "true";
 #endif
 
   const char true_str[] = "true";
@@ -222,7 +217,7 @@ Renderer::Renderer(int w, int h, bool f) {
 //  xio::InitInstansing();
 
   //Shadow block
-  shadow_ = make_unique<ShadowSettings>();
+  shadow_settings_ = make_unique<ShadowSettings>();
   //Compositor block
   compositor_ = make_unique<Compositor>();
 
@@ -231,7 +226,7 @@ Renderer::Renderer(int w, int h, bool f) {
   compositor_->EnableEffect("hdr", conf_->Get<bool>("compositor_use_hdr"));
   compositor_->EnableEffect("motion", conf_->Get<bool>("compositor_use_motion"));
   compositor_->Init();
-//  xio::InitPssm(shadow_->GetSplitPoints());
+//  xio::InitPssm(shadow_settings_->GetSplitPoints());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -260,14 +255,14 @@ void Renderer::Update(float time) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Refresh() {
-  shadow_->UpdateParams();
+  if (shadow_settings_) shadow_settings_->UpdateParams();
   compositor_->Init();
   Ogre::MaterialManager::getSingleton().load("Gorilla2D", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format) {
-  shadow_->UpdateParams(enable, far_distance, tex_size, tex_format);
+  if (shadow_settings_) shadow_settings_->UpdateParams(enable, far_distance, tex_size, tex_format);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

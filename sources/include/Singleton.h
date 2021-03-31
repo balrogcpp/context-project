@@ -31,7 +31,8 @@ namespace xio{
 template <typename T> class Singleton : public NoCopy{
  public:
   Singleton() {
-    assert(!instanced_);
+    if (instanced_)
+      throw Exception("Only one instance can be created!\n");
 
     instanced_ = true;
   }

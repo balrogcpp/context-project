@@ -591,7 +591,7 @@ void main()
     gl_FragData[1] = vec4(clippedDistance, velocity, 1.0);
 #else
     total_colour = ApplyFog(total_colour, vDepth);
-    gl_FragColor = vec4(LINEARtoSRGB(total_colour), albedo.a);
+    gl_FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), albedo.a);
 #endif
 
 #else //SHADOWCASTER

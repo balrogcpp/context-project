@@ -28,7 +28,7 @@ using namespace std;
 namespace xio {
 
 Engine::Engine() {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
   conf_ = make_unique<Configurator>("config.json");
 #else
   conf_ = make_unique<Configurator>("");
@@ -39,18 +39,17 @@ Engine::Engine() {
   conf_->AddMember("compositor_use_bloom", false);
   conf_->AddMember("compositor_use_ssao", false);
   conf_->AddMember("compositor_use_motion", true);
-  conf_->AddMember("global_target_fps", 60);
+  conf_->AddMember("global_target_fps", 30);
   conf_->AddMember("global_lock_fps", true);
-  conf_->AddMember("graphics_vsync", true);
-  conf_->AddMember("graphics_shadows_enable", true);
+  conf_->AddMember("graphics_vsync", false);
+  conf_->AddMember("graphics_shadows_enable", false);
   conf_->AddMember("graphics_fsaa", 0);
   conf_->AddMember("graphics_filtration", "bilinear");
   conf_->AddMember("graphics_anisotropy_level", 8);
-  conf_->AddMember("graphics_shadows_texture_resolution", 1024);
+  conf_->AddMember("graphics_shadows_texture_resolution", 512);
   conf_->AddMember("graphics_shadows_far_distance", 500);
   conf_->AddMember("graphics_shadows_texture_format", 16);
 #endif
-
 
   Component::SetConfigurator(conf_.get());
   int window_width = conf_->Get<int>("window_width");
@@ -65,6 +64,7 @@ Engine::Engine() {
   int tex_format = conf_->Get<int>("graphics_shadows_texture_format");
 
   renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
+
   input_ = &InputSequencer::GetInstance();
   physics_ = make_unique<Physics>();
   sound_ = make_unique<Sound>(8, 8);

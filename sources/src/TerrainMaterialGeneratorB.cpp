@@ -61,7 +61,7 @@ TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const {
-  return false;
+  return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

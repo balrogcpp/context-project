@@ -136,8 +136,10 @@ void Compositor::Update(float time) {
 	mvp_ = camera_->getProjectionMatrixWithRSDepth()*camera_->getViewMatrix();
 	gbuff_handler_->Update(mvp_prev_, time);
   }
-
-  Pbr::Update(time);
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
+  if (Ogre::Root::getSingleton().getRenderSystem()->getName()!="OpenGL ES 2.x Rendering Subsystem")
+  	Pbr::Update(time);
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -169,19 +171,28 @@ void Compositor::Init() {
 //	gbuff_handler_ = make_unique<GBufferSchemeHandler>();
 //	Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_.get(), "GBuffer");
 //  }
-//
+
 //  if (compositor_manager.addCompositor(viewport_, "GBuffer"))
-//	compositor_manager.setCompositorEnabled(viewport_, "GBuffer", false);
+//	compositor_manager.setCompositorEnabled(viewport_, "GBuffer", true);
 //  else
 //	Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add GBuffer compositor\n");
-//
-//  compositor_manager.setCompositorEnabled(viewport_, "GBuffer", true);
 
   if (compositor_manager.addCompositor(viewport_, "MRT"))
-	compositor_manager.setCompositorEnabled(viewport_, "MRT", true);
+	compositor_manager.setCompositorEnabled(viewport_, "MRT", false);
   else
 	Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add MRT compositor\n");
 
+  auto *compositor_chain = compositor_manager.getCompositorChain(viewport_);
+  bool fullscreen = conf_->Get<bool>("window_fullscreen");
+
+  if (fullscreen) {
+	auto *main_compositor = compositor_chain->getCompositor("MRT");
+	auto *td = main_compositor->getTechnique()->getTextureDefinition("mrt");
+	td->width = conf_->Get<int>("window_width");
+	td->height = conf_->Get<int>("window_high");
+  }
+
+  compositor_manager.setCompositorEnabled(viewport_, "MRT", true);
 
   if (effects_["ssao"]) {
 	if (compositor_manager.addCompositor(viewport_, "Ssao"))

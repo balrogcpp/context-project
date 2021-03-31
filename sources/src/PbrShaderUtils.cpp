@@ -149,11 +149,11 @@ void Pbr::UpdatePbrParams(const Ogre::MaterialPtr &material) {
 	frag_params->setNamedAutoConstant("cNearClipDistance", Ogre::GpuProgramParameters::ACT_NEAR_CLIP_DISTANCE);
 	frag_params->setNamedAutoConstant("cFarClipDistance", Ogre::GpuProgramParameters::ACT_FAR_CLIP_DISTANCE);
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-  frag_params->setNamedConstant("uLOD", 0.5f);
-#else
+//#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
+//  frag_params->setNamedConstant("uLOD", 0.5f);
+//#else
   frag_params->setNamedConstant("uLOD", 0.0f);
-#endif
+//#endif
 
 	gpu_vp_params_.push_back(vert_params);
 	gpu_fp_params_.push_back(frag_params);
@@ -162,6 +162,9 @@ void Pbr::UpdatePbrParams(const Ogre::MaterialPtr &material) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Pbr::UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
+  if (Ogre::Root::getSingleton().getSceneManager("Default")->getShadowTechnique() == Ogre::SHADOWTYPE_NONE)
+    return;
+
   for (int i = 0; i < material->getNumTechniques(); i++) {
 
 	if (!material->getReceiveShadows() || !material->getTechnique(i)->getPass(0)->hasVertexProgram()
@@ -182,9 +185,7 @@ void Pbr::UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
 	}
 
 	vert_params->setNamedConstant("uShadowTextureCount", OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES);
-	vert_params->setNamedAutoConstant("uTexWorldViewProjMatrixArray",
-									  Ogre::GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY,
-									  OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES);
+	vert_params->setNamedAutoConstant("uTexWorldViewProjMatrixArray",Ogre::GpuProgramParameters::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY,OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES);
 
 	auto frag_params = material->getTechnique(i)->getPass(0)->getFragmentProgramParameters();
 	frag_params->setIgnoreMissingParams(true);
@@ -204,9 +205,7 @@ void Pbr::UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
 
 	frag_params->setNamedConstant("pssmSplitPoints", splitPoints);
 	frag_params->setNamedAutoConstant("uShadowColour", Ogre::GpuProgramParameters::ACT_SHADOW_COLOUR);
-	frag_params->setNamedAutoConstant("uLightCastsShadowsArray",
-									  Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY,
-									  OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES);
+	frag_params->setNamedAutoConstant("uLightCastsShadowsArray",Ogre::GpuProgramParameters::ACT_LIGHT_CASTS_SHADOWS_ARRAY,OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES);
 	frag_params->setNamedConstant("uShadowFilterSize", 0.004f);
 	frag_params->setNamedConstant("uShadowFilterIterations", 16);
 
