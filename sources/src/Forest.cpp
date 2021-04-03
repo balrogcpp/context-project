@@ -293,7 +293,7 @@ void Forest::GenerateGrassPaged() {
   grass->addDetailLevel<GrassPage>(5, 5);//Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
   grass->setPageLoader(grassLoader);
-//  grassLoader->setRenderQueueGroup(Ogre::RENDER_QUEUE_MAIN);
+  grassLoader->setRenderQueueGroup(Ogre::RENDER_QUEUE_MAIN);
 
   if (heigh_func_)
     grassLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z)); });
@@ -378,7 +378,7 @@ void Forest::GenerateTreesPaged() {
 void Forest::ProcessForest() {
   GenerateGrassPaged();
 //  GenerateTreesPaged();
-//  GenerateRocksStatic();
+  GenerateRocksStatic();
 }
 
 } //namespace

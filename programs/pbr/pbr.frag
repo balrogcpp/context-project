@@ -170,6 +170,7 @@ const float M_PI = 3.141592653589793;
 
 //SRGB corretion
 #include "srgb.glsl"
+#include "fog.glsl"
 
 //Shadows block
 #ifdef SHADOWRECEIVER
@@ -347,13 +348,6 @@ vec4 GetAlbedo(vec2 uv) {
 //#endif
 //}
 
-//----------------------------------------------------------------------------------------------------------------------
-vec3 ApplyFog(vec3 color, float depth) {
-    float exponent = depth * uFogParams.x;
-    float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
-    return mix(color, uFogColour, fog_value);
-}
-
 #ifdef HAS_REFLECTION
 //----------------------------------------------------------------------------------------------------------------------
 vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
@@ -411,30 +405,14 @@ void main()
 
     vec4 albedo = GetAlbedo(tex_coord);
 
-#ifdef HAS_ORM
-    vec3 OMR = texture2D(uORMSampler, tex_coord, uLOD).rgb;
+#ifndef GL_ES
+    float clippedDistance = (vDepth - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
 
-    float metallic = uSurfaceShininessColour;
+    vec2 a = (vScreenPosition.xz / vScreenPosition.w) * 0.5 + 0.5;
+    vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w) * 0.5 + 0.5;
+    vec2 velocity = (0.0166667 / uFrameTime) * vec2(a - b);
 
-    const float c_MinRoughness = 0.04;
-    float roughness = uSurfaceSpecularColour;
-
-    metallic *= OMR.b;
-    roughness *= OMR.g;
-    metallic = clamp(metallic, 0.0, 1.0);
-    roughness = clamp(roughness, c_MinRoughness, 1.0);
-
-    float occlusion = OMR.r;
-
-//    float occlusion;
-//    float roughness;
-//    float metallic;
-//
-//    GetORM(tex_coord, occlusion, roughness, metallic);
-#else
-    float metallic = GetMetallic(tex_coord);
-    float roughness = GetRoughness(tex_coord);
-    float occlusion = GetOcclusion(tex_coord);
+    gl_FragData[1] = vec4(clippedDistance, velocity, 1.0);
 #endif
 
 #ifdef HAS_ALPHA
@@ -442,9 +420,36 @@ void main()
     albedo.a *= vAlpha;
 #endif //PAGED_GEOMETRY
 
-    if (albedo.a < uAlphaRejection)
+    if (albedo.a < uAlphaRejection) {
         discard;
+    }
 #endif
+
+
+#ifdef HAS_ORM
+
+    vec3 ORM = texture2D(uORMSampler, tex_coord, uLOD).rgb;
+
+    float metallic = uSurfaceShininessColour;
+
+    const float c_MinRoughness = 0.04;
+    float roughness = uSurfaceSpecularColour;
+
+    float occlusion = ORM.r;
+    roughness *= ORM.g;
+    metallic *= ORM.b;
+
+    metallic = clamp(metallic, 0.0, 1.0);
+    roughness = clamp(roughness, c_MinRoughness, 1.0);
+
+#else
+
+    float metallic = GetMetallic(tex_coord);
+    float roughness = GetRoughness(tex_coord);
+    float occlusion = GetOcclusion(tex_coord);
+
+#endif
+
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
@@ -542,7 +547,7 @@ void main()
                 } else {
                     if (i == 0) {
                         shadow = (tmp > 0.002) ? CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], \
-                         shadowMap0, shadowMap1, shadowMap2, vDepth, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations) : 1.0;
+                         shadowMap0, shadowMap1, shadowMap2, vDepth, uShadowDepthOffset, uShadowFilterSize*2.0, uShadowFilterIterations) : 1.0;
                     } else {
                         shadow = (tmp > 0.002) ? GetShadow(i + 2, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
                     }
@@ -580,17 +585,8 @@ void main()
 
 #ifndef GL_ES
     gl_FragData[0] = vec4(total_colour, albedo.a);
-
-
-    float clippedDistance = (vDepth - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
-
-    vec2 a = (vScreenPosition.xz / vScreenPosition.w) * 0.5 + 0.5;
-    vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w) * 0.5 + 0.5;
-    vec2 velocity = (0.0166667 / uFrameTime) * vec2(a - b);
-
-    gl_FragData[1] = vec4(clippedDistance, velocity, 1.0);
 #else
-    total_colour = ApplyFog(total_colour, vDepth);
+    total_colour = ApplyFog(total_colour, uFogParams, uFogColour, vDepth);
     gl_FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), albedo.a);
 #endif
 

@@ -102,37 +102,36 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     endif ()
 
-    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
-    endif ()
-
+    # Set minimum supported Windows version to Win7
     if (MINGW)
         string(APPEND CMAKE_CXX_FLAGS " -mwindows -DWINVER=0x0601 -D_WIN32_WINNT=0x0601")
-        string(APPEND CMAKE_C_FLAGS " -mwindows")
+        string(APPEND CMAKE_C_FLAGS " -mwindows -DWINVER=0x0601 -D_WIN32_WINNT=0x0601")
+    endif ()
+    # With PIE most of linuxes don't recognize binary
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
     endif ()
 
     string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -funroll-loops -pthread")
     string(APPEND CMAKE_C_FLAGS " -msse4.1 -funroll-loops -pthread")
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
-        string(APPEND CMAKE_CXX_FLAGS " -fopenmp=libgomp")
-        string(APPEND CMAKE_C_FLAGS " -fopenmp=libgomp")
-    else ()
-        string(APPEND CMAKE_CXX_FLAGS " -fopenmp")
-        string(APPEND CMAKE_C_FLAGS " -fopenmp")
-    endif ()
-
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
-        string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
     else ()
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=thin -fuse-ld=lld")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=thin -fuse-ld=lld")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=thin")
+        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=thin")
     endif ()
+elseif(ANDROID AND ${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    string(APPEND CMAKE_CXX_FLAGS " -Ofast -DNDEBUG -funroll-loops -pthread")
+    string(APPEND CMAKE_C_FLAGS " -Ofast -DNDEBUG -funroll-loops -pthread")
+
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=thin")
+    string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=thin")
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+
     string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp  /D_WIN32_WINNT=0x0601 /DWINVER=0x0601")
     string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp  /D_WIN32_WINNT=0x0601 /DWINVER=0x0601")
 
@@ -176,7 +175,15 @@ add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 set(CMAKE_FIND_ROOT_PATH "${ANDROID_NDK};${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
 
+if (NOT ANDROID)
+    find_package(OpenGL REQUIRED)
+else ()
+    find_package(OpenGLES2 REQUIRED)
+endif ()
+
+
 find_package(Threads REQUIRED)
+
 find_package(OGRE QUIET)
 find_package(Bullet QUIET)
 find_package(SDL2 QUIET)
@@ -205,7 +212,8 @@ endif ()
 
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
                                     ${BULLET_INCLUDE_DIR} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
-                                    ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
+                                    ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
+                                    ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 
 file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h demo/*.hpp sources/*.cpp sources/*.h sources/*.hpp)
 
@@ -226,23 +234,22 @@ target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERN
 
 
 if (MINGW)
-    list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
+    list(APPEND SYSTEM_LIBRARIES imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (UNIX AND NOT ANDROID)
     #jemalloc fix problems with memory bloat on linux
-    list(APPEND SYSTEM_LIBRARIES OpenGL GLX X11 Xrandr dl jemalloc.a)
+    list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl jemalloc.a)
 elseif (ANDROID)
-    #list(APPEND SYSTEM_LIBRARIES android native_app_glue atomic EGL GLESv1_CM GLESv2 log OpenSLES)
     list(APPEND SYSTEM_LIBRARIES SDL2::hidapi android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
 elseif (MSVC)
-    list(APPEND SYSTEM_LIBRARIES zlibstatic opengl32 winmm Version imm32 Setupapi)
+    list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 elseif (APPLE)
-    list(APPEND SYSTEM_LIBRARIES zlibstatic)
+    list(APPEND SYSTEM_LIBRARIES)
 endif ()
 
 
 target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
-                            vorbisfile vorbis vorbisenc ${OGG_LIBRARY} pugixml SDL2::SDL2-static
-                            ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${YAML_CPP_LIBRARIES} ${SYSTEM_LIBRARIES})
+                            vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
+                            ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
 target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
 

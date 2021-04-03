@@ -332,7 +332,7 @@ fragment_program PbrPaged_fs glsl glsles
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_ALPHA,MAX_LIGHTS=8
 }
 
-abstract material Paged
+abstract material Paged : Basic
 {
     receive_shadows off
     transparency_casts_shadows on
@@ -403,6 +403,56 @@ abstract material Grass : Basic
             vertex_program_ref PbrGrass_vs {}
 
             fragment_program_ref PbrGrass_fs
+            {
+                param_named uAlbedoSampler int 0
+            }
+        }
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PbrFx_vs glsl glsles
+{
+	source pbr.vert
+    preprocessor_defines HAS_UV,HAS_COLOURS,MAX_LIGHTS=1
+    default_params {
+        shared_params_ref PBR_Shared_vert
+    }
+}
+
+fragment_program PbrFx_fs glsl glsles
+{
+	source pbr.frag
+    preprocessor_defines HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=1
+}
+
+abstract material PbrFx : Basic
+{
+    receive_shadows off
+    transparency_casts_shadows off
+
+    set $Albedo white.dds
+
+    technique
+    {
+        pass
+        {
+            lighting off
+            alpha_rejection greater_equal 128
+            cull_hardware none
+            scene_blend add
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+                filtering bilinear
+                tex_address_mode clamp
+            }
+
+            vertex_program_ref PbrFx_vs {}
+
+            fragment_program_ref PbrFx_fs
             {
                 param_named uAlbedoSampler int 0
             }

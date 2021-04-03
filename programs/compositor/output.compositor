@@ -99,7 +99,7 @@ fragment_program OutputSSAOfs glsl glsles
         param_named_auto nearClipDistance near_clip_distance
         param_named_auto farClipDistance far_clip_distance
         param_named uScale float 0.5
-        param_named uMotionBlueEnable float 0.0
+        param_named uMotionBlurEnable float 0.0
 	}
 }
 

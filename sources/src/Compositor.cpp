@@ -48,18 +48,6 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 										const Ogre::Renderable *rend) override {
 	Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
 
-	auto *pass = originalMaterial->getTechnique(0)->getPass(0);
-	int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
-	bool has_alpha = false;
-
-	if (pass->getNumTextureUnitStates() > 0) {
-	  auto tu = pass->getTextureUnitState(0);
-
-	  if (tu) {
-		has_alpha = tu->_getTexturePtr()->hasAlpha();
-	  }
-	}
-
 	gBufferTech->setSchemeName(schemeName);
 	Ogre::Pass *gbufPass = gBufferTech->createPass();
 	*gbufPass = *ref_mat_->getTechnique(0)->getPass(0);
@@ -139,15 +127,28 @@ void Compositor::InitGbuffer_() {
   if (compositor_manager_->addCompositor(viewport_.get(), "GBuffer"))
 	compositor_manager_->setCompositorEnabled(viewport_.get(), "GBuffer", true);
   else
-	Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add GBuffer compositor\n");
+	Ogre::LogManager::getSingleton().logMessage("Failed to add GBuffer compositor\n");
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Compositor::AddCompositor_(const std::string &name) {
+void Compositor::AddCompositorEnabled_(const std::string &name) {
   if (compositor_manager_->addCompositor(viewport_.get(), name))
 	compositor_manager_->setCompositorEnabled(viewport_.get(), name, true);
   else
     throw Exception(string("Failed to add ") + name + " compositor");
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Compositor::AddCompositorDisabled_(const std::string &name) {
+  if (compositor_manager_->addCompositor(viewport_.get(), name))
+	compositor_manager_->setCompositorEnabled(viewport_.get(), name, false);
+  else
+    throw Exception(string("Failed to add ") + name + " compositor");
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Compositor::EnableCompositor_(const std::string &name) {
+  compositor_manager_->setCompositorEnabled(viewport_.get(), name, true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -158,56 +159,62 @@ void Compositor::InitMRT_() {
 	Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add MRT compositor\n");
 
   auto *compositor_chain = compositor_manager_->getCompositorChain(viewport_.get());
-  bool fullscreen = conf_->Get<bool>("window_fullscreen");
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
 
-  if (fullscreen) {
+  if (conf_->Get<bool>("window_fullscreen")) {
 	auto *main_compositor = compositor_chain->getCompositor("MRT");
 	auto *td = main_compositor->getTechnique()->getTextureDefinition("mrt");
 	td->width = conf_->Get<int>("window_width");
 	td->height = conf_->Get<int>("window_high");
   }
 
+#else
+
+  auto *main_compositor = compositor_chain->getCompositor("MRT");
+  auto *td = main_compositor->getTechnique()->getTextureDefinition("mrt");
+  td->height = viewport_->getActualHeight() * 0.75;
+  td->width = viewport_->getActualWidth() * 0.75;
+
+#endif
+
   compositor_manager_->setCompositorEnabled(viewport_.get(), "MRT", true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::InitOutput_() {
+  string output_compositor;
+
   if (effects_["ssao"]) {
-	if (compositor_manager_->addCompositor(viewport_.get(), "OutputSSAO"))
-	  compositor_manager_->setCompositorEnabled(viewport_.get(), "OutputSSAO", false);
-	else
-	  Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add OutputSSAO compositor\n");
-
-	auto params = Ogre::MaterialManager::getSingleton().getByName("OutputSSAO")->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-	params->setNamedConstant("uMotionBlueEnable", 1.0f);
-	compositor_manager_->setCompositorEnabled(viewport_.get(), "OutputSSAO", true);
+	output_compositor = "OutputSSAO";
   } else {
-
-	if (compositor_manager_->addCompositor(viewport_.get(), "Output"))
-	  compositor_manager_->setCompositorEnabled(viewport_.get(), "Output", false);
-
-	else
-	  Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add Output compositor\n");
-
-	auto params = Ogre::MaterialManager::getSingleton().getByName("Output")->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-	params->setNamedConstant("uMotionBlueEnable", 1.0f);
-	compositor_manager_->setCompositorEnabled(viewport_.get(), "Output", true);
+	output_compositor = "Output";
   }
+
+  AddCompositorDisabled_(output_compositor);
+
+  if (effects_["motion"]) {
+    auto &material_manager = Ogre::MaterialManager::getSingleton();
+    auto *technique = material_manager.getByName(output_compositor)->getTechnique(0);
+    auto fs_params = technique->getPass(0)->getFragmentProgramParameters();
+	fs_params->setNamedConstant("uMotionBlurEnable", 1.0f);
+  }
+
+  EnableCompositor_(output_compositor);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Init() {
-  if (Ogre::Root::getSingleton().getRenderSystem()->getName()=="OpenGL ES 2.x Rendering Subsystem")
-	return;
-#if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID
-  return;
-#endif
+//  if (Ogre::Root::getSingleton().getRenderSystem()->getName()=="OpenGL ES 2.x Rendering Subsystem")
+//	return;
+//#if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID
+//  return;
+//#endif
 
   InitMRT_();
 
   if (effects_["ssao"]) {
-    AddCompositor_("SSAO");
-    AddCompositor_("BoxFilter/SSAO");
+	AddCompositorEnabled_("SSAO");
+	AddCompositorEnabled_("BoxFilter/SSAO");
   }
 
   InitOutput_();

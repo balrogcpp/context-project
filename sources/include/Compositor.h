@@ -51,7 +51,9 @@ class Compositor : public Component, public Singleton<Compositor> {
 
  private:
   void InitGbuffer_();
-  void AddCompositor_(const std::string &compositor);
+  void AddCompositorEnabled_(const std::string &name);
+  void AddCompositorDisabled_(const std::string &name);
+  void EnableCompositor_(const std::string &name);
   void InitMRT_();
   void InitOutput_();
 

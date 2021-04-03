@@ -53,6 +53,12 @@ class Renderer final : public Component, public Singleton<Renderer> {
   void UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format);
   void RenderOneFrame();
   void Resize(int w, int h, bool f);
+  void RestoreFullscreenAndroid();
+
+  Window &GetWindow();
+  ShadowSettings &GetShadowSettings();
+  Compositor &GetCompositor();
+
 
  private:
   std::unique_ptr<Window> window_;
@@ -64,19 +70,6 @@ class Renderer final : public Component, public Singleton<Renderer> {
   view_ptr<Ogre::Camera> camera_;
   view_ptr<Ogre::Viewport> viewport_;
   view_ptr<Ogre::RenderWindow> render_window_;
-
- public:
-  Window &GetWindow() {
-    return *window_;
-  }
-
-  ShadowSettings &GetShadowSettings() {
-    return *shadow_settings_;
-  }
-
-  Compositor &GetCompositor() {
-    return *compositor_;
-  }
 };
 
 } //namespace

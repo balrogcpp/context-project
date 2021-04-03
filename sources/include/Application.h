@@ -43,8 +43,9 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   int Message_(const std::string &caption, const std::string &message);
 
   void Event(const SDL_Event &evt) override;
-  void Other(uint8_t type, int32_t code, void *data1, void *data2) override;
   void Quit() override;
+  void Pause() override;
+  void Resume() override;
 
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const std::string &logName, bool &skipThisMessage) override;
@@ -62,13 +63,14 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   int64_t fps_counter_ = 0;
   int current_fps_ = 0;
   int target_fps_ = 60;
+  bool lock_fps_ = true;
+  std::string log_;
+
 #ifdef DEBUG
   bool verbose_ = true;
 #else
   bool verbose_ = false;
 #endif
-  bool lock_fps_ = true;
-  std::string log_;
 };
 
 } //namespace

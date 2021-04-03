@@ -26,6 +26,7 @@
 #include <OgreFrameListener.h>
 #include <OgreAny.h>
 #include <map>
+#include <thread>
 
 namespace BtOgre {
 class DebugDrawer;
@@ -63,12 +64,8 @@ class Physics final : public Component, public Singleton<Physics> {
 
   void Cleanup() override;
   void Update(float time) override;
-  void Resume() override {
-    pause_ = false;
-  }
-  void Pause() override {
-    pause_ = true;
-  }
+  void Resume() override;
+  void Pause() override;
 
   void DispatchCollisions();
   void AddRigidBody(btRigidBody *body);
@@ -90,6 +87,10 @@ class Physics final : public Component, public Singleton<Physics> {
                                      const Ogre::Vector3 &position,
                                      const float &scale);
 
+  void SetCallback(const std::function<void(int a, int b)> &callback) {
+	callback_ = callback;
+  }
+
  private:
   std::unique_ptr<BtOgre::DebugDrawer> dbg_draw_;
   std::unique_ptr<btAxisSweep3> broadphase_;
@@ -97,11 +98,18 @@ class Physics final : public Component, public Singleton<Physics> {
   std::unique_ptr<btCollisionDispatcher> dispatcher_;
   std::unique_ptr<btSequentialImpulseConstraintSolver> solver_;
   std::unique_ptr<btDynamicsWorld> world_;
+  std::unique_ptr<std::thread> update_thread_;
+  std::mutex mutex_;
   std::map<const btCollisionObject *, ContactInfo> contacts_;
   std::function<void(int a, int b)> callback_;
-  int steps_ = 8;
-  bool pause_ = false;
+  int steps_ = 4;
+//  bool pause_ = true;
+//  bool running_ = false;
+  std::atomic<bool> pause_ = true;
+  std::atomic<bool> running_ = false;
   bool debug_ = false;
+  int64_t time_of_last_frame_ = 0;
+  int64_t cumulated_time_ = 0;
   const std::string TYPE_STATIC = "static";
   const std::string TYPE_DYNAMIC = "dynamic";
   const std::string TYPE_ACTOR = "actor";
@@ -113,11 +121,6 @@ class Physics final : public Component, public Singleton<Physics> {
   const std::string PROXY_CYLINDER = "cylinder";
   const std::string PROXY_TRIMESH = "trimesh";
   const std::string PROXY_CONVEX = "convex";
-
- public:
-  void SetCallback(const std::function<void(int a, int b)> &callback) {
-    callback_ = callback;
-  }
 };
 
 } //namespace

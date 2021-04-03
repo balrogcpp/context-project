@@ -46,12 +46,60 @@ Physics::Physics() {
 	world_->setDebugDrawer(dbg_draw_.get());
   }
 
+  running_ = true;
+
+//  time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+//
+//  function<void(void)> update_func_ = [&]() {
+//	while (running_) {
+//	  auto before_update = chrono::system_clock::now().time_since_epoch();
+//	  int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
+//	  float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_)/1e+6;
+//	  time_of_last_frame_ = micros_before_update;
+//
+//	  //Actually do calculations
+//	  if (!pause_) {
+//		world_->stepSimulation(frame_time, steps_);
+//
+//		if (debug_)
+//		  dbg_draw_->step();
+//
+//		DispatchCollisions();
+//	  }
+//	  //Actually do calculations
+//
+//	  auto after_update = chrono::system_clock::now().time_since_epoch();
+//	  int64_t micros_after_update = chrono::duration_cast<chrono::microseconds>(after_update).count();
+//
+//	  auto update_time = micros_after_update - micros_before_update;
+//
+//	  auto delay = static_cast<int64_t> ((1e+6/60) - update_time);
+//	  if (delay > 0)
+//		this_thread::sleep_for(chrono::microseconds(delay));
+//	}
+//  };
+//
+//  update_thread_ = make_unique<thread>(update_func_);
+//  update_thread_->detach();
+
   pause_ = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 Physics::~Physics() {
+  running_ = false;
+
   Cleanup();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Physics::Resume() {
+  pause_ = false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Physics::Pause() {
+  pause_ = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

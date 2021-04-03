@@ -26,7 +26,7 @@
 #include "RtssUtils.h"
 #include "Exception.h"
 
-//#undef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
 #elif defined OGRE_BUILD_RENDERSYSTEM_GLES2
@@ -61,7 +61,6 @@
 #include <OgreFileSystem.h>
 #include <OgreZip.h>
 
-#include <android_native_app_glue.h>
 #include <android/configuration.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
@@ -120,7 +119,7 @@ Renderer::Renderer(int w, int h, bool f) {
 
   SDL_SysWMinfo info = window_->GetInfo();
 
-  #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
@@ -137,12 +136,21 @@ Renderer::Renderer(int w, int h, bool f) {
   jobject raw_resources = env->CallObjectMethod(raw_activity, method_get_resources);
   jobject raw_asset_manager = env->CallObjectMethod(raw_resources, method_get_assets);
 
-//  SDL_GLContext m_sdl_gl_context = SDL_GL_GetCurrentContext();
-//
+
 //  jclass class_sdl_activity   = env->FindClass("org/libsdl/app/SDLActivity");
 //  jmethodID method_get_native_surface = env->GetStaticMethodID(class_sdl_activity, "getNativeSurface", "()Landroid/view/Surface;");
 //  jobject raw_surface = env->CallStaticObjectMethod(class_sdl_activity, method_get_native_surface);
 //  ANativeWindow *native_window = ANativeWindow_fromSurface(env, raw_surface);
+//EGL_BUFFER_PRESERVED
+//	(EGLSurface)info.info.android.surface->
+//	eglSurfaceAttrib(
+
+  params["currentGLContext"] = "true";
+  params["externalGLControl"] = "true";
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
+  params["preserveContext"] = "true";
+//  params["externalGLContext"]    = to_string(reinterpret_cast<size_t>(window_->gl_context_));
+//  params["androidConfig"] = to_string(reinterpret_cast<size_t>(mAConfig));
 
 
   AAssetManager* asset_manager = AAssetManager_fromJava(env, raw_asset_manager);
@@ -151,13 +159,6 @@ Renderer::Renderer(int w, int h, bool f) {
 
   Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(asset_manager));
   Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKZipArchiveFactory(asset_manager));
-
-
-  params["currentGLContext"] = "true";
-  params["preserveContext"] = "true";
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
-//  params["externalGLContext"]    = to_string(reinterpret_cast<size_t>(m_sdl_gl_context));
-//  params["androidConfig"] = to_string(reinterpret_cast<size_t>(mAConfig));
 #endif
 
   const char true_str[] = "true";
@@ -170,6 +171,7 @@ Renderer::Renderer(int w, int h, bool f) {
   params["vsync"] = vsync_ ? true_str : false_str;
   params["gamma"] = gamma_ ? true_str : false_str;
   params["FSAA"] = to_string(fsaa_);
+
 
   render_window_ = Ogre::Root::getSingleton().createRenderWindow("MyDemo", 0, 0, false, &params);
 
@@ -209,11 +211,15 @@ Renderer::Renderer(int w, int h, bool f) {
   resGroupMan.addResourceLocation("/terrain", "APKFileSystem", defResGroup);
   resGroupMan.addResourceLocation("/Titanium-scuffed", "APKFileSystem", defResGroup);
   resGroupMan.addResourceLocation("/vegetation", "APKFileSystem", defResGroup);
+  resGroupMan.addResourceLocation("/music", "APKFileSystem", defResGroup);
+  resGroupMan.addResourceLocation("/sounds", "APKFileSystem", defResGroup);
 #endif
 
   //RTSS block
   xio::InitRtss();
+
   Assets::LoadResources();
+
   xio::CreateRtssShaders();
 //  xio::InitInstansing();
 
@@ -283,14 +289,42 @@ void Renderer::Resize(int w, int h, bool f) {
 //    window_->Resize(w, h);
 //    render_window_->resize(w, h);
 //  }
+
+  render_window_->resize(w, h);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Renderer::RestoreFullscreenAndroid() {
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  SDL_DisplayMode DM;
+  SDL_GetCurrentDisplayMode(0, &DM);
+  int screen_w = static_cast<int>(DM.w);
+  int screen_h = static_cast<int>(DM.h);
+  Resize(screen_w, screen_h, true);
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::RenderOneFrame() {
   root_->renderOneFrame();
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   window_->SwapBuffers();
 #endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Window &Renderer::GetWindow() {
+  return *window_;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+ShadowSettings &Renderer::GetShadowSettings() {
+  return *shadow_settings_;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Compositor &Renderer::GetCompositor() {
+  return *compositor_;
 }
 
 } //namespace

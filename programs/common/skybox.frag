@@ -29,6 +29,7 @@
 #endif
 #include "header.frag"
 #include "srgb.glsl"
+#include "fog.glsl"
 
 uniform samplerCube cubemap;
 uniform vec3 uFogColour;
@@ -36,15 +37,7 @@ uniform vec4 uFogParams;
 
 in float vDepth;
 
-//----------------------------------------------------------------------------------------------------------------------
-vec3 ApplyFog(vec3 color) {
-    float exponent = vDepth * uFogParams.x;
-    float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
-    return mix(color, uFogColour, fog_value);
-}
-
 in vec3 TexCoords; // direction vector representing a 3D texture coordinate
-
 
 
 void main()
@@ -53,9 +46,9 @@ void main()
 
 #ifndef GL_ES
     gl_FragData[0] = vec4(color, 1.0);
-    gl_FragData[1] = vec4(vDepth, 0.0, 0.0, 1.0);
+    gl_FragData[1] = vec4(1.0, 0.0, 0.0, 1.0);
 #else
-    color = ApplyFog(color);
+    color = ApplyFog(color, uFogParams, uFogColour, vDepth);
     gl_FragColor = vec4(LINEARtoSRGB(color, 1.0), 1.0);
 #endif
 }

@@ -24,12 +24,17 @@
 #include <OgreMaterial.h>
 #include <string>
 #include <vector>
+#include "ComponentLocator.h"
 
 #define OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES 4
 
+namespace Ogre {
+class Camera;
+}
+
 namespace xio {
 
-class Pbr {
+class Pbr : ComponentLocator {
  public:
   static void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material);
 

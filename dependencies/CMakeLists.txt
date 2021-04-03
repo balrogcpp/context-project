@@ -25,6 +25,7 @@ project(xio-deps)
 include(CMakeDependentOption)
 include(ExternalProject)
 find_package(Git REQUIRED)
+find_package(Threads REQUIRED)
 
 if (NOT ANDROID)
     find_package(OpenGL REQUIRED)
@@ -303,6 +304,8 @@ externalproject_add(target-ogre
                     GIT_TAG v1.12.11
                     GIT_SHALLOW true
                     GIT_PROGRESS false
+                    PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre
+                        ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11.patch
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}

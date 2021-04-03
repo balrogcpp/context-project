@@ -28,16 +28,36 @@ using namespace std;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
-InputSequencer::InputSequencer() {
-  if (instanced_) {
-	throw Exception("Only one instance of InputSequencer is allowed!\n");
-  }
+int InputSequencer::HandleAppEvents(void *userdata, SDL_Event *event) {
+	switch(event->type) {
+	  case SDL_APP_WILLENTERBACKGROUND:
+	  case SDL_APP_DIDENTERBACKGROUND: {
+	    SDL_Log("On pause");
+		for (auto it : win_listeners) it->Pause();
+		return 0;
+	  }
 
-  Reserve(128);
-  instanced_ = true;
+	  case SDL_APP_WILLENTERFOREGROUND:
+	  case SDL_APP_DIDENTERFOREGROUND: {
+		SDL_Log("On resume");
+		for (auto it : win_listeners) it->Resume();
+		return 0;
+	  }
+
+	  default:
+	    return 1;
+	}
 }
 
-InputSequencer::~InputSequencer() {}
+//----------------------------------------------------------------------------------------------------------------------
+InputSequencer::InputSequencer() {
+  Reserve(128);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+InputSequencer::~InputSequencer() {
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 InputSequencer &InputSequencer::GetInstance() {
@@ -63,6 +83,14 @@ void InputSequencer::UnregObserver(view_ptr<InputObserver> p) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::RegWinObserver(view_ptr<WindowObserver> p) {
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  auto callback = [](void *userdata, SDL_Event *event) {
+	return InputSequencer::GetInstance().HandleAppEvents(userdata, event);
+  };
+
+  SDL_SetEventFilter(callback, nullptr);
+#endif
+
   win_listeners.push_back(p);
 }
 
@@ -101,11 +129,13 @@ void InputSequencer::Capture() {
 		  it->OnKeyUp(event.key.keysym.sym);
 		break;
 	  }
+
 	  case SDL_KEYDOWN: {
 		for (auto it : io_listeners)
 		  it->OnKeyDown(event.key.keysym.sym);
 		break;
 	  }
+
 	  case SDL_MOUSEMOTION: {
 		for (auto it : io_listeners) {
 		  it->OnMouseMove(event.motion.x, event.motion.y,
@@ -117,6 +147,7 @@ void InputSequencer::Capture() {
 		}
 		break;
 	  }
+
 	  case SDL_MOUSEBUTTONDOWN: {
 		switch (event.button.button) {
 		  case SDL_BUTTON_LEFT: {
@@ -137,6 +168,7 @@ void InputSequencer::Capture() {
 		}
 		break;
 	  }
+
 	  case SDL_MOUSEBUTTONUP: {
 		switch (event.button.button) {
 		  case SDL_BUTTON_LEFT: {
@@ -169,21 +201,25 @@ void InputSequencer::Capture() {
 		  it->OnJoystickAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
 		break;
 	  }
+
 	  case SDL_JOYBALLMOTION: {
 		for (auto it : io_listeners)
 		  it->OnJoystickBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
 		break;
 	  }
+
 	  case SDL_JOYHATMOTION: {
 		for (auto it : io_listeners)
 		  it->OnJoystickHat(event.jhat.which, event.jhat.hat, event.jhat.value);
 		break;
 	  }
+
 	  case SDL_JOYBUTTONDOWN: {
 		for (auto it : io_listeners)
 		  it->OnJoystickBtDown(event.jbutton.which, event.jbutton.button);
 		break;
 	  }
+
 	  case SDL_JOYBUTTONUP: {
 		for (auto it : io_listeners) {
 		  if (it)
@@ -191,11 +227,34 @@ void InputSequencer::Capture() {
 		}
 		break;
 	  }
+
 	  case SDL_QUIT: {
 		for (auto it : win_listeners)
 		  it->Quit();
 		break;
 	  }
+
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+	  case SDL_WINDOWEVENT: {
+		switch (event.window.event) {
+		  case SDL_WINDOWEVENT_MINIMIZED:
+		  case SDL_WINDOWEVENT_FOCUS_LOST: {
+			for (auto it : win_listeners)
+			  it->Pause();
+			break;
+		  }
+
+		  case SDL_WINDOWEVENT_FOCUS_GAINED: {
+			for (auto it : win_listeners)
+			  it->Resume();
+			break;
+		  }
+		}
+
+		break;
+	  }
+#endif
+
 	  default: {
 		for (auto it : win_listeners)
 		  it->Event(event);

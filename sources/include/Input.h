@@ -32,6 +32,7 @@ extern "C" {
 #include <exception>
 #include "view_ptr.h"
 #include "Exception.h"
+#include "Singleton.h"
 
 
 namespace xio {
@@ -40,14 +41,10 @@ class InputObserver;
 class WindowObserver;
 
 //----------------------------------------------------------------------------------------------------------------------
-class InputSequencer {
+class InputSequencer : public Singleton<InputSequencer> {
  public:
   using KeyboardListenersList = std::vector<view_ptr<InputObserver>>;
   using OtherListenersList = std::vector<view_ptr<WindowObserver>>;
-
-  //Copy not allowed
-  InputSequencer(const InputSequencer &) = delete;
-  InputSequencer &operator=(const InputSequencer &) = delete;
 
   InputSequencer();
   virtual ~InputSequencer();
@@ -57,7 +54,7 @@ class InputSequencer {
  private:
   KeyboardListenersList io_listeners;
   OtherListenersList win_listeners;
-  inline static bool instanced_;
+  int HandleAppEvents(void *userdata, SDL_Event *event);
 
  public:
   void RegObserver(view_ptr<InputObserver> p);
@@ -106,6 +103,8 @@ class WindowObserver {
 
   virtual void Event(const SDL_Event &evt) {}
   virtual void Quit() {}
+  virtual void Pause() {}
+  virtual void Resume() {}
   virtual void Other(uint8_t type, int code, void *data1, void *data2) {}
 };
 

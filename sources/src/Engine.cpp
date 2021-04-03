@@ -35,10 +35,10 @@ Engine::Engine() {
   conf_->AddMember("window_caption", "MyDemo");
   conf_->AddMember("window_width", 1024);
   conf_->AddMember("window_high", 768);
-  conf_->AddMember("window_fullscreen", false);
+  conf_->AddMember("window_fullscreen", true);
   conf_->AddMember("compositor_use_bloom", false);
   conf_->AddMember("compositor_use_ssao", false);
-  conf_->AddMember("compositor_use_motion", true);
+  conf_->AddMember("compositor_use_motion", false);
   conf_->AddMember("global_target_fps", 30);
   conf_->AddMember("global_lock_fps", true);
   conf_->AddMember("graphics_vsync", false);
@@ -47,9 +47,10 @@ Engine::Engine() {
   conf_->AddMember("graphics_filtration", "bilinear");
   conf_->AddMember("graphics_anisotropy_level", 8);
   conf_->AddMember("graphics_shadows_texture_resolution", 512);
-  conf_->AddMember("graphics_shadows_far_distance", 500);
+  conf_->AddMember("graphics_shadows_far_distance", 400);
   conf_->AddMember("graphics_shadows_texture_format", 16);
 #endif
+
 
   Component::SetConfigurator(conf_.get());
   int window_width = conf_->Get<int>("window_width");
@@ -67,7 +68,11 @@ Engine::Engine() {
 
   input_ = &InputSequencer::GetInstance();
   physics_ = make_unique<Physics>();
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   sound_ = make_unique<Sound>(8, 8);
+#else
+  sound_ = make_unique<Sound>(4, 4);
+#endif
   overlay_ = make_unique<Overlay>();
   loader_ = make_unique<DotSceneLoaderB>();
 

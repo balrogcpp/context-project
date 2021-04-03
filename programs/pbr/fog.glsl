@@ -20,15 +20,24 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-compositor Main
-{
-    technique
-    {
-        texture scene target_width target_height PF_FLOAT16_RGB chain_scope pooled
+#ifndef GL_ES
 
-        target scene
-        {
-            input previous
-        }
-    }
+vec3 ApplyFog(vec3 color, vec4 fog_params, vec3 fog_color, float depth) {
+    float exponent = depth * fog_params.x;
+    float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
+    return mix(color, fog_color, fog_value);
 }
+
+#else
+
+float Exp(float x) {
+    return 1.0 + x + x * x / 2.0;
+}
+
+vec3 ApplyFog(vec3 color, vec4 fog_params, vec3 fog_color, float depth) {
+    float exponent = depth * fog_params.x;
+    float fog_value = 1.0 - clamp(1.0 / Exp(exponent), 0.0, 1.0);
+    return mix(color, fog_color, fog_value);
+}
+
+#endif

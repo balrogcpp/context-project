@@ -41,9 +41,6 @@ void Pbr::UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
 
 	if (!new_caster) {
 	  new_caster = caster_material->clone(caster_name);
-//      auto *pass = new_caster->getTechnique(0)->getPass(0);
-//      pass->setCullingMode(material->getTechnique(0)->getPass(0)->getCullingMode());
-//      pass->setManualCullingMode(material->getTechnique(0)->getPass(0)->getManualCullingMode());
 
 	  auto texture_albedo = pass->getTextureUnitState("Albedo");
 
@@ -94,13 +91,19 @@ void Pbr::Cleanup() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Pbr::Update(float time) {
-  camera_ = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
-  mvp_prev_ = mvp_;
-  mvp_ = camera_->getProjectionMatrixWithRSDepth()*camera_->getViewMatrix();
+  if (conf_->Get<bool>("compositor_use_motion")) {
+	camera_ = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
+	mvp_prev_ = mvp_;
+	mvp_ = camera_->getProjectionMatrixWithRSDepth()*camera_->getViewMatrix();
 
-  for_each(gpu_fp_params_.begin(), gpu_fp_params_.end(), [time](auto &it){it->setNamedConstant("uFrameTime", time);});
+	for_each(gpu_fp_params_.begin(),
+			 gpu_fp_params_.end(),
+			 [time](auto &it) { it->setNamedConstant("uFrameTime", time); });
 
-  for_each(gpu_vp_params_.begin(), gpu_vp_params_.end(), [](auto &it){it->setNamedConstant("cWorldViewProjPrev", mvp_prev_);});
+	for_each(gpu_vp_params_.begin(),
+			 gpu_vp_params_.end(),
+			 [](auto &it) { it->setNamedConstant("cWorldViewProjPrev", mvp_prev_); });
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

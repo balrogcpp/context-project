@@ -64,15 +64,16 @@ Application::Application() {
 	lock_fps_ = conf_->Get<bool>("global_lock_fps");
 	target_fps_ = conf_->Get<int>("global_target_fps");
 
+	renderer_->RestoreFullscreenAndroid();
   }
   catch (Exception &e) {
-	Message_("Exception occurred", e.getDescription());
+	Message_("Exception", e.getDescription());
   }
   catch (Ogre::Exception &e) {
-	Message_("Exception occurred (OGRE)", e.getFullDescription());
+	Message_("Exception (OGRE)", e.getFullDescription());
   }
   catch (exception &e) {
-	Message_("Exception occurred (exception)", e.what());
+	Message_("Exception (std::exception)", e.what());
   }
 }
 
@@ -148,10 +149,13 @@ void Application::Loop_() {
 	  engine_->Capture();
 
 	  if (!suspend_) {
+
 		if (state_manager_->IsDirty()) {
+		  engine_->Pause();
 		  engine_->Cleanup();
 		  engine_->Refresh();
 		  state_manager_->InitNextState();
+		  engine_->Resume();
 		} else if (suspend_old) {
 		  engine_->Resume();
 		  suspend_old = false;
@@ -163,7 +167,6 @@ void Application::Loop_() {
 		time_of_last_frame_ = micros_before_update;
 		engine_->Update(frame_time);
 		state_manager_->Update(frame_time);
-
 
 		engine_->RenderOneFrame();
 	  } else {
@@ -197,7 +200,10 @@ void Application::Loop_() {
 	  running_ = false;
 	}
   }
+
+  engine_->Pause();
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
   if (state_manager_->IsActive()) {
@@ -205,7 +211,7 @@ void Application::Go_() {
 	running_ = true;
 	auto duration_before_update = chrono::system_clock::now().time_since_epoch();
 	time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
-	Loop_();
+    Loop_();
 
 //	if (verbose_) {
 //	  WriteLogToFile_("ogre.log");
@@ -221,22 +227,21 @@ void Application::Quit() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Event(const SDL_Event &evt) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  if (evt.type==SDL_WINDOWEVENT) {
-	if (evt.window.event==SDL_WINDOWEVENT_FOCUS_LOST || evt.window.event==SDL_WINDOWEVENT_MINIMIZED) {
-	  suspend_ = true;
-	  state_manager_->Pause();
-	} else if (evt.window.event==SDL_WINDOWEVENT_FOCUS_GAINED) {
-	  suspend_ = false;
-	  state_manager_->Resume();
-	}
-  }
-#endif
+void Application::Pause() {
+  suspend_ = true;
+  state_manager_->Pause();
+  engine_->Pause();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Other(uint8_t type, int32_t code, void *data1, void *data2) {
+void Application::Resume() {
+  suspend_ = false;
+  state_manager_->Resume();
+  engine_->Resume();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Event(const SDL_Event &evt) {
 
 }
 

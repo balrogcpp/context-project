@@ -30,6 +30,7 @@
 #include "header.frag"
 
 #include "srgb.glsl"
+#include "fog.glsl"
 
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
@@ -50,18 +51,13 @@ uniform float farClipDistance;
 
 uniform vec2 texelSize;
 uniform float uScale;
-uniform float uMotionBlueEnable;
-
-//----------------------------------------------------------------------------------------------------------------------
-vec3 ApplyFog(vec3 color, float depth) {
-  float exponent = depth * uFogParams.x;
-  float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
-  return mix(color, uFogColour, fog_value);
-}
+uniform float uMotionBlurEnable;
 
 void main()
 {
   vec3 scene = texture2D(SceneSampler, oUv0).rgb;
+#ifndef GL_ES
+
 
 #ifdef SSAO
   scene.rgb *= texture2D(SsaoSampler, oUv0).r;
@@ -69,10 +65,10 @@ void main()
 
   float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
   float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
-  scene = ApplyFog(scene, fragmentWorldDepth);
+  scene = ApplyFog(scene, uFogParams, uFogColour, fragmentWorldDepth);
 
 #ifdef MOTION_BLUR
-  if (uMotionBlueEnable > 0.0) {
+  if (uMotionBlurEnable > 0.0) {
   vec2 velocity = uScale * texture2D(sSceneDepthSampler, oUv0).gb;
   float speed = length(velocity / texelSize);
   int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
@@ -83,7 +79,7 @@ void main()
 
     float clampedDepth = texture2D(sSceneDepthSampler, uv).r;
     float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
-    scene += ApplyFog(texture2D(SceneSampler, uv).rgb, fragmentWorldDepth);
+    scene += ApplyFog(texture2D(SceneSampler, uv).rgb, uFogParams, uFogColour, fragmentWorldDepth);
   }
 
   scene /= float(nSamples);
@@ -94,5 +90,7 @@ void main()
   scene.rgb = LINEARtoSRGB(scene.rgb, exposure);
 #endif
 
+
+#endif
   gl_FragColor = vec4(scene.rgb, 1.0);
 }

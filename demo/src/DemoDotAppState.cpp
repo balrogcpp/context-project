@@ -24,6 +24,7 @@
 #include "MenuAppState.h"
 #include "Renderer.h"
 #include "Sound.h"
+#include "PbrShaderUtils.h"
 
 using namespace std;
 using namespace xio;
@@ -102,6 +103,7 @@ void DemoDotAppState::Init() {
   auto *root = scene->getRootSceneNode();
 
 //  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
+//  xio::Pbr::UpdatePbrParams("Examples/Smoke");
 //  auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
 //  root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
 
@@ -118,8 +120,9 @@ void DemoDotAppState::Init() {
 //  anim2->setLoop(true);
 //  anim2->setEnabled(true);
 
-//  sound_->CreateSound("ambient", "test.ogg", false);
+  sound_->CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
 //  sound_->SetVolume("ambient", 0.5);
-//  sound_->PlaySound("ambient");
+  sound_->PlaySound("ambient");
 }
+
 }

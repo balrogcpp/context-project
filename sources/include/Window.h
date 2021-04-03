@@ -37,38 +37,29 @@ class Window : public NoCopy {
   explicit Window(int w, int h, bool f);
   virtual ~Window();
 
- private:
+ public:
+  std::string GetCaption() const;
+  void SetCaption(const std::string &caption);
+  float GetRatio() const;
+  std::pair<int, int> GetSize() const;
+  bool IsFullscreen() const;
+  SDL_SysWMinfo GetInfo() const;
+  void SetCursorStatus(bool show, bool grab, bool relative);
+  void SwapBuffers() const;
+  void Resize(int w, int h);
+  void SetFullscreen(bool f);
 
   SDL_Window *window_ = nullptr;
+  SDL_GLContext gl_context_ = nullptr;
+
+ private:
   uint32_t flags_ = 0;
-  SDL_GLContext context_ = nullptr;
   std::string caption_;
   bool f_ = false;
   int w_ = 1024;
   int h_ = 768;
   int screen_w_;
   int screen_h_;
-
- public:
-  std::string GetCaption() const;
-
-  void SetCaption(const std::string &caption);
-
-  float GetRatio() const;
-
-  std::pair<int, int> GetSize() const;
-
-  bool IsFullscreen() const;
-
-  SDL_SysWMinfo GetInfo() const;
-
-  void SetCursorStatus(bool show, bool grab, bool relative);
-
-  void SwapBuffers() const;
-
-  void Resize(int w, int h);
-
-  void SetFullscreen(bool f);
 };
 
 } //namespace
