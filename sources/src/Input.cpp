@@ -32,15 +32,13 @@ int InputSequencer::HandleAppEvents(void *userdata, SDL_Event *event) {
 	switch(event->type) {
 	  case SDL_APP_WILLENTERBACKGROUND:
 	  case SDL_APP_DIDENTERBACKGROUND: {
-	    SDL_Log("On pause");
-		for (auto it : win_listeners) it->Pause();
+		for_each(win_listeners.begin(), win_listeners.end(), [](auto it){it->Pause();});
 		return 0;
 	  }
 
 	  case SDL_APP_WILLENTERFOREGROUND:
 	  case SDL_APP_DIDENTERFOREGROUND: {
-		SDL_Log("On resume");
-		for (auto it : win_listeners) it->Resume();
+		for_each(win_listeners.begin(), win_listeners.end(), [](auto it){it->Resume();});
 		return 0;
 	  }
 
@@ -125,14 +123,12 @@ void InputSequencer::Capture() {
 
 	switch (event.type) {
 	  case SDL_KEYUP: {
-		for (auto it : io_listeners)
-		  it->OnKeyUp(event.key.keysym.sym);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnKeyUp(event.key.keysym.sym);});
 		break;
 	  }
 
 	  case SDL_KEYDOWN: {
-		for (auto it : io_listeners)
-		  it->OnKeyDown(event.key.keysym.sym);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnKeyDown(event.key.keysym.sym);});
 		break;
 	  }
 
@@ -151,18 +147,15 @@ void InputSequencer::Capture() {
 	  case SDL_MOUSEBUTTONDOWN: {
 		switch (event.button.button) {
 		  case SDL_BUTTON_LEFT: {
-			for (auto it : io_listeners)
-			  it->OnMouseLbDown(event.button.x, event.button.y);
+			for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseLbDown(event.button.x, event.button.y);});
 			break;
 		  }
 		  case SDL_BUTTON_RIGHT: {
-			for (auto it : io_listeners)
-			  it->OnMouseRbDown(event.button.x, event.button.y);
+			for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseRbDown(event.button.x, event.button.y);});
 			break;
 		  }
 		  case SDL_BUTTON_MIDDLE: {
-			for (auto it : io_listeners)
-			  it->OnMouseMbDown(event.button.x, event.button.y);
+			for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseMbDown(event.button.x, event.button.y);});
 			break;
 		  }
 		}
@@ -172,18 +165,15 @@ void InputSequencer::Capture() {
 	  case SDL_MOUSEBUTTONUP: {
 		switch (event.button.button) {
 		  case SDL_BUTTON_LEFT: {
-			for (auto it : io_listeners)
-			  it->OnMouseLbUp(event.button.x, event.button.y);
+			for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseLbUp(event.button.x, event.button.y);});
 			break;
 		  }
 		  case SDL_BUTTON_RIGHT: {
-			for (auto it : io_listeners)
-			  it->OnMouseRbUp(event.button.x, event.button.y);
+			for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseRbUp(event.button.x, event.button.y);});
 			break;
 		  }
 		  case SDL_BUTTON_MIDDLE: {
-			for (auto it : io_listeners)
-			  it->OnMouseMbUp(event.button.x, event.button.y);
+			for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseMbUp(event.button.x, event.button.y);});
 			break;
 		  }
 		}
@@ -191,46 +181,37 @@ void InputSequencer::Capture() {
 	  }
 
 	  case SDL_MOUSEWHEEL: {
-		for (auto it : io_listeners)
-		  it->OnMouseWheel(event.wheel.x, event.wheel.y);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseWheel(event.wheel.x, event.wheel.y);});
 		break;
 	  }
 
 	  case SDL_JOYAXISMOTION: {
-		for (auto it : io_listeners)
-		  it->OnJoystickAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnJoystickAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);});
 		break;
 	  }
 
 	  case SDL_JOYBALLMOTION: {
-		for (auto it : io_listeners)
-		  it->OnJoystickBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnJoystickBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);});
 		break;
 	  }
 
 	  case SDL_JOYHATMOTION: {
-		for (auto it : io_listeners)
-		  it->OnJoystickHat(event.jhat.which, event.jhat.hat, event.jhat.value);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnJoystickHat(event.jhat.which, event.jhat.hat, event.jhat.value);});
 		break;
 	  }
 
 	  case SDL_JOYBUTTONDOWN: {
-		for (auto it : io_listeners)
-		  it->OnJoystickBtDown(event.jbutton.which, event.jbutton.button);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnJoystickBtDown(event.jbutton.which, event.jbutton.button);});
 		break;
 	  }
 
 	  case SDL_JOYBUTTONUP: {
-		for (auto it : io_listeners) {
-		  if (it)
-			it->OnJoystickBtUp(event.jbutton.which, event.jbutton.button);
-		}
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnJoystickBtUp(event.jbutton.which, event.jbutton.button);});
 		break;
 	  }
 
 	  case SDL_QUIT: {
-		for (auto it : win_listeners)
-		  it->Quit();
+		for_each(win_listeners.begin(), win_listeners.end(), [](auto it){it->Quit();});
 		break;
 	  }
 
@@ -239,14 +220,12 @@ void InputSequencer::Capture() {
 		switch (event.window.event) {
 		  case SDL_WINDOWEVENT_MINIMIZED:
 		  case SDL_WINDOWEVENT_FOCUS_LOST: {
-			for (auto it : win_listeners)
-			  it->Pause();
+			for_each(win_listeners.begin(), win_listeners.end(), [](auto it){it->Pause();});
 			break;
 		  }
 
 		  case SDL_WINDOWEVENT_FOCUS_GAINED: {
-			for (auto it : win_listeners)
-			  it->Resume();
+			for_each(win_listeners.begin(), win_listeners.end(), [](auto it){it->Resume();});
 			break;
 		  }
 		}
@@ -256,8 +235,7 @@ void InputSequencer::Capture() {
 #endif
 
 	  default: {
-		for (auto it : win_listeners)
-		  it->Event(event);
+		for_each(win_listeners.begin(), win_listeners.end(), [&event](auto it){it->Event(event);});
 	  }
 	}
   }

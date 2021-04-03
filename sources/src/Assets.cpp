@@ -100,7 +100,33 @@ void Assets::PrintStringList(const vector <string> &string_list) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Assets::LoadResources() {
+  Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Assets::AddResourceLocation(const string &path_, const string &group_) {
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  const std::string file_system = "FileSystem";
+  const std::string zip = "Zip";
+#else
+  const std::string file_system = "APKFileSystem";
+  const std::string zip = "APKZip";
+#endif
+
+  string path = FindPath(path_);
+  Ogre::ResourceGroupManager &resGroupMan = Ogre::ResourceGroupManager::getSingleton();
+
+  if (!path.empty()) {
+	if (fs::is_directory(path)) {
+
+	  resGroupMan.addResourceLocation(path, file_system, group_);
+
+	} else if (fs::path(path).extension()==".zip") {
+	  resGroupMan.addResourceLocation(path, zip, group_);
+	}
+  }
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

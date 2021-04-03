@@ -29,15 +29,19 @@
 #include "Overlay.h"
 #include "AppState.h"
 #include "Engine.h"
+#include "Singleton.h"
 #include "view_ptr.h"
 
 namespace xio {
 
-class Engine {
+class Engine : public Singleton<Engine> {
  public:
   Engine();
   virtual ~Engine();
 
+  static Engine& GetInstance();
+
+  void InitComponents();
   void Capture();
   void Pause();
   void Resume();
@@ -45,6 +49,7 @@ class Engine {
   void Refresh();
   void Update(float time);
   void RenderOneFrame();
+  void RegComponent(view_ptr<Component> component);
 
  private:
   view_ptr<InputSequencer> input_;

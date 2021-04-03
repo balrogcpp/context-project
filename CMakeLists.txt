@@ -149,10 +149,6 @@ endif ()
 if (ANDROID)
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-${ANDROID_ABI}")
     set(CONTEXT_BUILD_PLATFORM ${ANDROID_ABI})
-
-    # Export ANativeActivity_onCreate(),
-    # Refer to: https://github.com/android-ndk/ndk/issues/381.
-    #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
 else ()
     string(APPEND CONTEXT_EXTERNAL_TOOLCHAIN "-${CONTEXT_BUILD_PLATFORM}")
 endif ()
@@ -194,15 +190,17 @@ find_package(sol2 QUIET)
 find_package(ZLIB QUIET)
 find_package(Lua51 QUIET)
 find_package(assimp QUIET)
+find_package(PNG QUIET)
+find_package(freetype QUIET)
 #find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
 
 if (NOT ANDROID)
-    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND)
+    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND OR NOT PNG_FOUND)
         message("Please build dependencies before executable")
         return()
     endif ()
 else ()
-    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND)
+    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND OR NOT PNG_FOUND)
         add_library(target-deps-dummy SHARED android/app/src/main/cpp/main.cpp)
         add_dependencies(target-deps-dummy target-deps)
         return()
@@ -217,10 +215,6 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTA
 
 file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h demo/*.hpp sources/*.cpp sources/*.h sources/*.hpp)
 
-if (ANDROID)
-    add_library(native_app_glue STATIC ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
-endif ()
-
 if (NOT ANDROID)
     add_executable(demo ${SOURCE_FILES})
 else ()
@@ -228,28 +222,28 @@ else ()
     set_target_properties(demo PROPERTIES OUTPUT_NAME "main")
 endif ()
 
-include_directories(demo demo/include ${CONTEXT_INCLUDE_DIRS} ${ANDROID_NDK}/sources/android/native_app_glue)
+include_directories(demo demo/include ${CONTEXT_INCLUDE_DIRS})
 
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
 
 
 if (MINGW)
-    list(APPEND SYSTEM_LIBRARIES imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
+    list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (UNIX AND NOT ANDROID)
     #jemalloc fix problems with memory bloat on linux
     list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl jemalloc.a)
 elseif (ANDROID)
     list(APPEND SYSTEM_LIBRARIES SDL2::hidapi android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
 elseif (MSVC)
-    list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
+    list(APPEND SYSTEM_LIBRARIES zlibstatic winmm Version imm32 Setupapi)
 elseif (APPLE)
     list(APPEND SYSTEM_LIBRARIES)
 endif ()
 
 
 target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
-                            vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
-                            ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
+                    ${PNG_LIBRARIES} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
+                    ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
 target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
 
@@ -265,7 +259,7 @@ file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
 if (WIN32)
-    file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/OpenAL32.dll)
+    file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
 elseif (UNIX)
     #file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/*.so*)
 endif ()

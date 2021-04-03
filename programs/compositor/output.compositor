@@ -24,7 +24,7 @@
 fragment_program Output_fs glsl glsles
 {
     source output.frag
-    preprocessor_defines MAX_SAMPLES=8,MOTION_BLUR
+    preprocessor_defines MAX_SAMPLES=8,MOTION_BLUR,SSAO
 	default_params
 	{
 		param_named exposure float 1.0
@@ -33,6 +33,8 @@ fragment_program Output_fs glsl glsles
         param_named_auto nearClipDistance near_clip_distance
         param_named_auto farClipDistance far_clip_distance
         param_named uScale float 0.5
+        param_named uSSAOEnable float 0.0
+        param_named uMotionBlurEnable float 0.0
 	}
 }
 
@@ -48,73 +50,6 @@ material Output
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
 			fragment_program_ref Output_fs
-			{
-			    param_named SceneSampler int 0
-			    param_named_auto texelSize inverse_texture_size 0
-			    param_named sSceneDepthSampler int 1
-			}
-
-			texture_unit
-            {
-                content_type compositor MRT mrt 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-
-            texture_unit
-            {
-                content_type compositor MRT mrt 1
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-		}
-	}
-}
-
-compositor Output
-{
-    technique
-    {
-        target_output
-        {
-            pass render_quad
-            {
-                material Output
-            }
-        }
-    }
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program OutputSSAOfs glsl glsles
-{
-    source output.frag
-    preprocessor_defines MAX_SAMPLES=8,SSAO,MOTION_BLUR
-	default_params
-	{
-		param_named exposure float 1.0
-		param_named_auto uFogColour fog_colour
-		param_named_auto uFogParams fog_params
-        param_named_auto nearClipDistance near_clip_distance
-        param_named_auto farClipDistance far_clip_distance
-        param_named uScale float 0.5
-        param_named uMotionBlurEnable float 0.0
-	}
-}
-
-material OutputSSAO
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref OutputSSAOfs
 			{
 			    param_named SceneSampler int 0
 			    param_named_auto texelSize inverse_texture_size 0
@@ -136,17 +71,17 @@ material OutputSSAO
                 filtering linear linear none
             }
 
-            texture_unit
+            texture_unit SSAO
             {
-                content_type compositor SSAO ssao
-                tex_address_mode clamp
-                filtering linear linear none
+                //content_type compositor SSAO ssao
+                //tex_address_mode clamp
+                //filtering linear linear none
             }
 		}
 	}
 }
 
-compositor OutputSSAO
+compositor Output
 {
     technique
     {
@@ -154,7 +89,7 @@ compositor OutputSSAO
         {
             pass render_quad
             {
-                material OutputSSAO
+                material Output
             }
         }
     }

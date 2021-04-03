@@ -26,6 +26,7 @@
 #include "Window.h"
 #include "ShadowSettings.h"
 #include "Compositor.h"
+#include "Overlay.h"
 #include "Component.h"
 #include "view_ptr.h"
 
@@ -64,6 +65,7 @@ class Renderer final : public Component, public Singleton<Renderer> {
   std::unique_ptr<Window> window_;
   std::unique_ptr<ShadowSettings> shadow_settings_;
   std::unique_ptr<Compositor> compositor_;
+  std::unique_ptr<Overlay> overlay_;
 
   view_ptr<Ogre::Root> root_;
   view_ptr<Ogre::SceneManager> scene_;

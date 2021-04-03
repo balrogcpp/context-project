@@ -31,7 +31,7 @@ namespace xio {
 
 void InitRtss() {
   if (!Ogre::RTShader::ShaderGenerator::initialize()) {
-	throw Exception("RTTS System failed to initialize");
+	throw Exception("RTSS failed to initialize");
   }
 }
 
@@ -106,12 +106,10 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
 	return false;
 
   auto &mShaderGenerator = Ogre::RTShader::ShaderGenerator::getSingleton();
-  auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name,
-																		  Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+  auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name);
 
   if (!originalMaterial) {
-	originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name,
-																	   Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+	originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name, Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
   }
 
   bool verbose = false;
@@ -152,18 +150,18 @@ Ogre::Technique *ShaderResolver::handleSchemeNotFound(unsigned short scheme_inde
 													  Ogre::Material *original_material,
 													  unsigned short lod_index,
 													  const Ogre::Renderable *renderable) {
-  static vector<string> material_list_;
+//  static vector<string> material_list_;
+//  string material_name = original_material->getName();
+//  if (find(material_list_.begin(), material_list_.end(), material_name)==material_list_.end()) {
+//	material_list_.push_back(material_name);
+//  } else {
+//	return nullptr;
+//  }
 
   if (scheme_name!=Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
 	return nullptr;
   }
 
-  string material_name = original_material->getName();
-  if (find(material_list_.begin(), material_list_.end(), material_name)==material_list_.end()) {
-	material_list_.push_back(material_name);
-  } else {
-	return nullptr;
-  }
 
   // Init shader generated technique for this material.
   bool techniqueCreated = shader_generator_->createShaderBasedTechnique(

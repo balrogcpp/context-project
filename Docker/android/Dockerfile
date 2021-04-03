@@ -23,15 +23,17 @@
 FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG GRADLE_VERSION=6.4.1
+ARG GRADLE_VERSION=6.8.3
 ARG GRADLE_HOME=/opt/gradle
 ARG ANDROID_SDK_VERSION=r30.0.1
-ARG ANDROID_NDK_VERSION=r21b
+ARG ANDROID_NDK_VERSION=r22
 ARG ANDROID_SDK_HOME=/opt/android-sdk
+ARG CMAKE_VERSION=3.19.4
+ARG CMAKE_HOME=/opt/cmake
+ARG NINJA_VERSION=1.10.2
 
 RUN apt-get update && \
-    apt-get install -y wget zip openjdk-8-jdk cmake && \
-    update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java && \
+    apt-get install -y wget zip openjdk-jdk && \
     cd /tmp && \
     wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip && \
     unzip -q gradle-${GRADLE_VERSION}-bin.zip && \

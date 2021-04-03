@@ -25,39 +25,45 @@
 #include "Singleton.h"
 #include "gorilla/Gorilla.h"
 #include "gorilla/OgreConsole.h"
+//#include <Overlay/OgreImGuiInputListener.h>
 
 namespace Ogre {
 class RenderTarget;
 class Texture;
 class SceneNode;
+class ImGuiOverlay;
+class OverlaySystem;
+class RenderTargetViewportEvent;
 }
 
 namespace xio {
-class Overlay final : public Component, public Singleton<Overlay> {
+ class Overlay final : public Component, public Singleton<Overlay>, public Ogre::RenderTargetListener {
  public:
-  Overlay();
+  Overlay(view_ptr<Ogre::RenderWindow> render_window);
   virtual ~Overlay();
 
-  void Cleanup() override {}
-  void Pause() override {}
-  void Resume() override {}
+  void Cleanup() override;
+  void Pause() override;
+  void Resume() override;
   void Update(float time) override;
+  void preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) override;
+
   void Text(const std::string &str);
   void Show();
   void Hide();
 
  private:
-  std::unique_ptr<Gorilla::Silverback> atlas_;
-  Gorilla::Screen *screen_ = nullptr;
-  Gorilla::Layer *layer_ = nullptr;
-  Gorilla::Caption *caption_ = nullptr;
-  Gorilla::Rectangle *rect_ = nullptr;
-  std::unique_ptr<Gorilla::OgreConsole> console_;
 
- public:
-  Gorilla::OgreConsole* GetConsole() {
-    return console_.get();
-  }
+  std::unique_ptr<Gorilla::Silverback> atlas_;
+  view_ptr<Gorilla::Screen> screen_;
+  view_ptr<Gorilla::Layer> layer_;
+  view_ptr<Gorilla::Caption> caption_;
+  view_ptr<Gorilla::Rectangle> rect_;
+
+  std::unique_ptr<Gorilla::OgreConsole> console_;
+  std::unique_ptr<Ogre::ImGuiOverlay> imgui_;
+  view_ptr<Ogre::OverlaySystem> overlay_;
+  view_ptr<Ogre::RenderWindow> window_;
 };
 
 } //namespace

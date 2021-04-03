@@ -59,7 +59,7 @@ struct ContactInfo {
 
 class Physics final : public Component, public Singleton<Physics> {
  public:
-  Physics();
+  Physics(bool threaded = false);
   virtual ~Physics();
 
   void Cleanup() override;
@@ -92,6 +92,8 @@ class Physics final : public Component, public Singleton<Physics> {
   }
 
  private:
+  void InitThread_();
+
   std::unique_ptr<BtOgre::DebugDrawer> dbg_draw_;
   std::unique_ptr<btAxisSweep3> broadphase_;
   std::unique_ptr<btDefaultCollisionConfiguration> configurator_;
@@ -103,8 +105,8 @@ class Physics final : public Component, public Singleton<Physics> {
   std::map<const btCollisionObject *, ContactInfo> contacts_;
   std::function<void(int a, int b)> callback_;
   int steps_ = 4;
-//  bool pause_ = true;
-//  bool running_ = false;
+  bool threaded_ = false;
+  int64_t update_rate_ = 120;
   std::atomic<bool> pause_ = true;
   std::atomic<bool> running_ = false;
   bool debug_ = false;

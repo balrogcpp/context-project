@@ -170,10 +170,10 @@ void Compositor::InitMRT_() {
 
 #else
 
-  auto *main_compositor = compositor_chain->getCompositor("MRT");
-  auto *td = main_compositor->getTechnique()->getTextureDefinition("mrt");
-  td->height = viewport_->getActualHeight() * 0.75;
-  td->width = viewport_->getActualWidth() * 0.75;
+//  auto *main_compositor = compositor_chain->getCompositor("MRT");
+//  auto *td = main_compositor->getTechnique()->getTextureDefinition("mrt");
+//  td->height = viewport_->getActualHeight() * 0.75;
+//  td->width = viewport_->getActualWidth() * 0.75;
 
 #endif
 
@@ -184,18 +184,30 @@ void Compositor::InitMRT_() {
 void Compositor::InitOutput_() {
   string output_compositor;
 
-  if (effects_["ssao"]) {
-	output_compositor = "OutputSSAO";
-  } else {
+//  if (effects_["ssao"]) {
+//	output_compositor = "OutputSSAO";
+//  } else {
 	output_compositor = "Output";
-  }
+//  }
 
   AddCompositorDisabled_(output_compositor);
 
+  if (effects_["ssao"]) {
+	auto &material_manager = Ogre::MaterialManager::getSingleton();
+	auto material = material_manager.getByName(output_compositor);
+	auto *pass = material->getTechnique(0)->getPass(0);
+	auto texture = pass->getTextureUnitState("SSAO");
+	texture->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+	texture->setCompositorReference("SSAO", "ssao");
+	auto fs_params = pass->getFragmentProgramParameters();
+	fs_params->setNamedConstant("uSSAOEnable", 1.0f);
+  }
+
   if (effects_["motion"]) {
     auto &material_manager = Ogre::MaterialManager::getSingleton();
-    auto *technique = material_manager.getByName(output_compositor)->getTechnique(0);
-    auto fs_params = technique->getPass(0)->getFragmentProgramParameters();
+    auto material = material_manager.getByName(output_compositor);
+    auto *pass = material->getTechnique(0)->getPass(0);
+    auto fs_params = pass->getFragmentProgramParameters();
 	fs_params->setNamedConstant("uMotionBlurEnable", 1.0f);
   }
 

@@ -27,7 +27,8 @@ using namespace std;
 
 namespace xio {
 
-Physics::Physics() {
+Physics::Physics(bool threaded) : threaded_(threaded)
+{
   broadphase_ = make_unique<btAxisSweep3>(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000), 1024);
   configurator_ = make_unique<btDefaultCollisionConfiguration>();
   dispatcher_ = make_unique<btCollisionDispatcher>(configurator_.get());
@@ -48,39 +49,7 @@ Physics::Physics() {
 
   running_ = true;
 
-//  time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-//
-//  function<void(void)> update_func_ = [&]() {
-//	while (running_) {
-//	  auto before_update = chrono::system_clock::now().time_since_epoch();
-//	  int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
-//	  float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_)/1e+6;
-//	  time_of_last_frame_ = micros_before_update;
-//
-//	  //Actually do calculations
-//	  if (!pause_) {
-//		world_->stepSimulation(frame_time, steps_);
-//
-//		if (debug_)
-//		  dbg_draw_->step();
-//
-//		DispatchCollisions();
-//	  }
-//	  //Actually do calculations
-//
-//	  auto after_update = chrono::system_clock::now().time_since_epoch();
-//	  int64_t micros_after_update = chrono::duration_cast<chrono::microseconds>(after_update).count();
-//
-//	  auto update_time = micros_after_update - micros_before_update;
-//
-//	  auto delay = static_cast<int64_t> ((1e+6/60) - update_time);
-//	  if (delay > 0)
-//		this_thread::sleep_for(chrono::microseconds(delay));
-//	}
-//  };
-//
-//  update_thread_ = make_unique<thread>(update_func_);
-//  update_thread_->detach();
+  InitThread_();
 
   pause_ = false;
 }
@@ -90,6 +59,46 @@ Physics::~Physics() {
   running_ = false;
 
   Cleanup();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Physics::InitThread_() {
+  if (!threaded_)
+    return;
+
+  time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+
+  function<void(void)> update_func_ = [&]() {
+	while (running_) {
+	  auto before_update = chrono::system_clock::now().time_since_epoch();
+	  int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
+	  float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_)/1e+6;
+	  time_of_last_frame_ = micros_before_update;
+
+	  //Actually do calculations
+	  if (!pause_) {
+		world_->stepSimulation(frame_time, steps_);
+
+		if (debug_)
+		  dbg_draw_->step();
+
+		DispatchCollisions();
+	  }
+	  //Actually do calculations
+
+	  auto after_update = chrono::system_clock::now().time_since_epoch();
+	  int64_t micros_after_update = chrono::duration_cast<chrono::microseconds>(after_update).count();
+
+	  auto update_time = micros_after_update - micros_before_update;
+
+	  auto delay = static_cast<int64_t> ((1e+6/update_rate_) - update_time);
+	  if (delay > 0)
+		this_thread::sleep_for(chrono::microseconds(delay));
+	}
+  };
+
+  update_thread_ = make_unique<thread>(update_func_);
+  update_thread_->detach();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -104,6 +113,9 @@ void Physics::Pause() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Physics::Update(float time) {
+  if (threaded_)
+    return;
+
   if (pause_)
 	return;
 

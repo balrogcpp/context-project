@@ -24,8 +24,9 @@
 
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
 #include <Overlay/OgreOverlay.h>
-#include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
+#include <Overlay/OgreOverlayManager.h>
+#include <Overlay/OgreImGuiOverlay.h>
 #endif
 
 #include "Overlay.h"
@@ -35,7 +36,7 @@ using namespace Gorilla;
 using namespace std;
 
 namespace xio {
-Overlay::Overlay() {
+Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : window_(render_window) {
   atlas_ = make_unique<Silverback>();
   atlas_->loadAtlas("dejavu");
   auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
@@ -52,27 +53,69 @@ Overlay::Overlay() {
   caption_->align(TextAlign_Right);
 
   console_ = make_unique<OgreConsole>();
-  console_->init(screen_);
+  console_->init(screen_.get());
   console_->setVisible(false);
+
+
+  Ogre::SceneManager* sm = Ogre::Root::getSingletonPtr()->getSceneManager("Default");
+  overlay_ = new Ogre::OverlaySystem();
+  sm->addRenderQueueListener(overlay_.get());
+
+  imgui_ = make_unique<Ogre::ImGuiOverlay>();
+  imgui_->setZOrder(300);
+  imgui_->show();
+  Ogre::OverlayManager::getSingleton().addOverlay(imgui_.get());
+  window_->addListener(this);
+//  Ogre::Root::getSingleton().addFrameListener(this);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 Overlay::~Overlay() {
+  Ogre::Root::getSingletonPtr()->getSceneManager("Default")->removeRenderQueueListener(overlay_.get());
+}
 
+//----------------------------------------------------------------------------------------------------------------------
+void Overlay::preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt)
+{
+  if(!evt.source->getOverlaysEnabled()) return;
+  Ogre::ImGuiOverlay::NewFrame();
+  ImGui::ShowDemoWindow();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Update(float time) {
   caption_->text((1.0 / time));
+
+//  if(!evt.source->getOverlaysEnabled()) return;
+//  Ogre::ImGuiOverlay::NewFrame();
+//  ImGui::ShowDemoWindow();
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+void Overlay::Cleanup() {
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Overlay::Pause() {
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Overlay::Resume() {
+
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Text(const string &str) {
   caption_->text(str);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Show() {
   screen_->show();
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Hide() {
   screen_->hide();

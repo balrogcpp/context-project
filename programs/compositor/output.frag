@@ -52,6 +52,7 @@ uniform float farClipDistance;
 uniform vec2 texelSize;
 uniform float uScale;
 uniform float uMotionBlurEnable;
+uniform float uSSAOEnable;
 
 void main()
 {
@@ -60,7 +61,9 @@ void main()
 
 
 #ifdef SSAO
+if (uSSAOEnable > 0.0) {
   scene.rgb *= texture2D(SsaoSampler, oUv0).r;
+}
 #endif
 
   float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;

@@ -20,36 +20,21 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#pragma once
+#include "pcheader.h"
 
-#include <Ogre.h>
-#include <string>
-#include <vector>
-#include <tuple>
+#include "Component.h"
+#include "Engine.h"
+
+using namespace std;
 
 namespace xio {
+Component::Component() {
+	Engine::GetInstance().RegComponent(this);
+}
 
-class Assets {
+//----------------------------------------------------------------------------------------------------------------------
+Component::~Component() {
 
-  static bool StringSanityCheck(const std::string &str);
-
-  static void LeftTrim(std::string &s);
-
-  static void RightTrim(std::string &s);
-
-  static void TrimString(std::string &s);
-
-  static void PrintPathList(const std::vector<std::tuple<std::string, std::string, std::string>> &path_list);
-
-  static void PrintStringList(const std::vector<std::string> &string_list);
-
- public:
-  static void LoadResources();
-  static void AddResourceLocation(const std::string &path_, const std::string &group_);
-
-  static void InitGeneralResources(const std::string &path, const std::string &group,
-							  const std::string &resource_file = "",
-							  bool verbose = false);
-};
+}
 
 } //namespace

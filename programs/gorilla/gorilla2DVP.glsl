@@ -3,7 +3,7 @@
 #else
 #version 100
 precision highp float;
-precision highp int;
+precision lowp int;
 precision lowp sampler2D;
 #endif
 

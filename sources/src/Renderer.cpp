@@ -141,9 +141,7 @@ Renderer::Renderer(int w, int h, bool f) {
 //  jmethodID method_get_native_surface = env->GetStaticMethodID(class_sdl_activity, "getNativeSurface", "()Landroid/view/Surface;");
 //  jobject raw_surface = env->CallStaticObjectMethod(class_sdl_activity, method_get_native_surface);
 //  ANativeWindow *native_window = ANativeWindow_fromSurface(env, raw_surface);
-//EGL_BUFFER_PRESERVED
-//	(EGLSurface)info.info.android.surface->
-//	eglSurfaceAttrib(
+
 
   params["currentGLContext"] = "true";
   params["externalGLControl"] = "true";
@@ -185,7 +183,15 @@ Renderer::Renderer(int w, int h, bool f) {
 
   //Resource block
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  Assets::InitGeneralResources("programs", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, "resources.list");
+//  Assets::InitGeneralResources("programs", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Assets::AddResourceLocation("programs/common", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Assets::AddResourceLocation("programs/rtss", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Assets::AddResourceLocation("programs/pbr", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Assets::AddResourceLocation("programs/particles", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Assets::AddResourceLocation("programs/compositor", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Assets::AddResourceLocation("programs/overlay", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Assets::AddResourceLocation("programs/gorilla", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Assets::AddResourceLocation("programs/fonts", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
   Assets::InitGeneralResources("assets", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, "resources.list");
 #else
   Ogre::ResourceGroupManager& resGroupMan = Ogre::ResourceGroupManager::getSingleton();
@@ -193,11 +199,11 @@ Renderer::Renderer(int w, int h, bool f) {
   resGroupMan.addResourceLocation("/", "APKFileSystem", defResGroup);
   resGroupMan.addResourceLocation("/common", "APKFileSystem", defResGroup);
   resGroupMan.addResourceLocation("/rtss", "APKFileSystem", defResGroup);
+  resGroupMan.addResourceLocation("/pbr", "APKFileSystem", defResGroup);
   resGroupMan.addResourceLocation("/particles", "APKFileSystem", defResGroup);
   resGroupMan.addResourceLocation("/overlay", "APKFileSystem", defResGroup);
   resGroupMan.addResourceLocation("/gorilla", "APKFileSystem", defResGroup);
   resGroupMan.addResourceLocation("/compositor", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/pbr", "APKFileSystem", defResGroup);
 
   resGroupMan.addResourceLocation("/1", "APKFileSystem", defResGroup);
   resGroupMan.addResourceLocation("/bog", "APKFileSystem", defResGroup);
@@ -215,13 +221,13 @@ Renderer::Renderer(int w, int h, bool f) {
   resGroupMan.addResourceLocation("/sounds", "APKFileSystem", defResGroup);
 #endif
 
+
   //RTSS block
   xio::InitRtss();
+  xio::CreateRtssShaders();
+
 
   Assets::LoadResources();
-
-  xio::CreateRtssShaders();
-//  xio::InitInstansing();
 
   //Shadow block
   shadow_settings_ = make_unique<ShadowSettings>();
@@ -233,7 +239,8 @@ Renderer::Renderer(int w, int h, bool f) {
   compositor_->EnableEffect("hdr", conf_->Get<bool>("compositor_use_hdr"));
   compositor_->EnableEffect("motion", conf_->Get<bool>("compositor_use_motion"));
   compositor_->Init();
-//  xio::InitPssm(shadow_settings_->GetSplitPoints());
+  overlay_ = make_unique<Overlay>(render_window_);
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -257,14 +264,14 @@ void Renderer::Resume() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Update(float time) {
-  compositor_->Update(time);
+  //compositor_->Update(time);
+  //overlay_->Update(time);
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Refresh() {
   if (shadow_settings_) shadow_settings_->UpdateParams();
   compositor_->Init();
-  Ogre::MaterialManager::getSingleton().load("Gorilla2D", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -281,15 +288,6 @@ void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy
 
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Resize(int w, int h, bool f) {
-//  if (f) {
-//    window_->SetFullscreen(f);
-//    render_window_->resize(window_->GetSize().first, window_->GetSize().second);
-//    render_window_->setFullscreen(f, window_->GetSize().first, window_->GetSize().second);
-//  } else {
-//    window_->Resize(w, h);
-//    render_window_->resize(w, h);
-//  }
-
   render_window_->resize(w, h);
 }
 

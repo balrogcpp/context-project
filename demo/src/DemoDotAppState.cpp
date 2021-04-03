@@ -63,35 +63,42 @@ DemoDotAppState::~DemoDotAppState() {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Pause() {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Resume() {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
 	ChangeState();
-  } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F) {
-    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-
-    if (scene->hasLight("Point")) {
-      auto *light = scene->getLight("Point");
-      light->setVisible(!light->isVisible());
-    }
   }
+//  else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F) {
+//    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+//
+//    if (scene->hasLight("Point")) {
+//      auto *light = scene->getLight("Point");
+//      light->setVisible(!light->isVisible());
+//    }
+//  }
 }
 
 void DemoDotAppState::Cleanup() {
+
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Update(float time) {
 //  anim1->addTime(time/4);
 //  anim2->addTime(time/4);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Init() {
   renderer_->GetWindow().SetCursorStatus(false, true, true);
 //  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);

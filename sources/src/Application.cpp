@@ -56,7 +56,8 @@ Application::Application() {
 	icon.Save("XioDemo");
 #endif
 
-	engine_ = make_unique<Engine>();
+	engine_ = &Engine::GetInstance();
+	engine_->InitComponents();
 
 	state_manager_ = make_unique<StateManager>();
 
@@ -84,7 +85,7 @@ Application::~Application() {
 
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Message_(const string &caption, const string &message) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
   WriteLogToFile_("error.log");
   PrintLogToConsole_();
   cerr << caption << '\n' << message << '\n';
@@ -118,7 +119,7 @@ void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml
 #ifdef DEBUG
   if (verbose_) {
 	cout << message << "\n";
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID
 	SDL_Log("%s", message.c_str());
 #endif
   }
@@ -211,7 +212,7 @@ void Application::Go_() {
 	running_ = true;
 	auto duration_before_update = chrono::system_clock::now().time_since_epoch();
 	time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
-    Loop_();
+	Loop_();
 
 //	if (verbose_) {
 //	  WriteLogToFile_("ogre.log");

@@ -53,6 +53,17 @@ Engine::Engine() {
 
 
   Component::SetConfigurator(conf_.get());
+  components_.reserve(128);
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Engine::~Engine() {
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Engine::InitComponents() {
   int window_width = conf_->Get<int>("window_width");
   int window_high = conf_->Get<int>("window_high");
   bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
@@ -67,18 +78,16 @@ Engine::Engine() {
   renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
   input_ = &InputSequencer::GetInstance();
-  physics_ = make_unique<Physics>();
+
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  physics_ = make_unique<Physics>(true);
   sound_ = make_unique<Sound>(8, 8);
 #else
+  physics_ = make_unique<Physics>(false);
   sound_ = make_unique<Sound>(4, 4);
 #endif
-  overlay_ = make_unique<Overlay>();
   loader_ = make_unique<DotSceneLoaderB>();
 
-  ComponentLocator::LocateComponents(conf_, input_, renderer_, physics_, sound_, overlay_, loader_);
-
-  components_ = {sound_.get(), loader_.get(), physics_.get(), renderer_.get(), overlay_.get()};
 
   string graphics_filtration = conf_->Get<string>("graphics_filtration");
   Ogre::TextureFilterOptions tfo = Ogre::TFO_BILINEAR;
@@ -94,16 +103,24 @@ Engine::Engine() {
   renderer_->UpdateParams(tfo, conf_->Get<int>("graphics_anisotropy_level"));
   renderer_->GetWindow().SetCaption(conf_->Get<string>("window_caption"));
   renderer_->Refresh();
+
+  ComponentLocator::LocateComponents(conf_, input_, renderer_, physics_, sound_, overlay_, loader_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Engine::~Engine() {
-
+Engine& Engine::GetInstance() {
+	static Engine engine;
+	return engine;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Capture() {
   input_->Capture();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Engine::RegComponent(view_ptr<Component> component) {
+  components_.push_back(component);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -98,7 +98,7 @@ externalproject_add(target-bullet3
                     -G "${CMAKE_GENERATOR}"
                     )
 
-if (APPLE OR ANDROID)
+if (IOS OR ANDROID)
     set(OPENAL_LIBTYPE STATIC)
 else ()
     set(OPENAL_LIBTYPE SHARED)
@@ -180,7 +180,8 @@ externalproject_add(target-zlib
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
-                    TEST_COMMAND ${CMAKE_COMMAND} -E remove -f ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libz.so
+                    TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        ${CMAKE_COMMAND} -E rm -f lib/libz.so bin/libzlib.dll lib/libzlib.dll.a
                     TEST_AFTER_INSTALL true
                     )
 
@@ -215,9 +216,27 @@ externalproject_add(target-pugixml
                     -G "${CMAKE_GENERATOR}"
                     )
 
-externalproject_add(target-freetype
+externalproject_add(target-png
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/glennrp/libpng.git
+                    GIT_TAG v1.6.37
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DPNG_SHARED=false
+                    -DPNG_TESTS=false
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
+externalproject_add(target-freetype
+                    EXCLUDE_FROM_ALL true
+                    DEPENDS target-png
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://git.savannah.gnu.org/git/freetype/freetype2.git
                     GIT_TAG VER-2-9-1 #2.10 compilation error
@@ -227,11 +246,11 @@ externalproject_add(target-freetype
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DUNIX=true
+                    -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=true
                     -DBUILD_SHARED_LIBS=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
-                    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target install
                     )
 
 externalproject_add(target-rapidjson

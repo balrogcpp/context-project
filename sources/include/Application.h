@@ -54,7 +54,7 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   void PrintLogToConsole_();
 
   std::unique_ptr<StateManager> state_manager_;
-  std::unique_ptr<Engine> engine_;
+  view_ptr<Engine> engine_;
 
   bool running_ = true;
   bool suspend_ = false;
