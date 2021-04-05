@@ -264,7 +264,10 @@ int Application::Main(unique_ptr <AppState> &&scene_ptr) {
 	return Message_("Exception (std::exception)", e.what());
   }
 
+// Didn't test it with MSVC, remember there was segfault at SDL_Quit
+#if OGRE_COMPILER!=OGRE_COMPILER_MSVC
   SDL_Quit();
+#endif
 
   return 0;
 }

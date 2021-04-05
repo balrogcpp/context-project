@@ -37,9 +37,6 @@ using namespace std;
 
 namespace xio {
 Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : window_(render_window) {
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  debug_ = false;
-#endif
 
   if (gorilla_) {
     atlas_ = make_unique<Silverback>();
