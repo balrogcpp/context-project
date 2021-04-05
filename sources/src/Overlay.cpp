@@ -37,25 +37,31 @@ using namespace std;
 
 namespace xio {
 Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : window_(render_window) {
-  atlas_ = make_unique<Silverback>();
-  atlas_->loadAtlas("dejavu");
-  auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
-  screen_ = atlas_->createScreen(viewport, "dejavu");
-  layer_ = screen_->createLayer(0);
-  Ogre::Real vpW = screen_->getWidth(), vpH = screen_->getHeight();
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  debug_ = false;
+#endif
 
-  // Init our drawing layer
-  layer_ = screen_->createLayer(0);
-  rect_ = layer_->createRectangle(0, 0, vpW, vpH);
-  rect_->background_colour(rgb(0, 0, 0, 0));
-  caption_ = layer_->createCaption(24, vpW - 55, 66, "");
-  caption_->width(0);
-  caption_->align(TextAlign_Right);
+  if (gorilla_) {
+    atlas_ = make_unique<Silverback>();
+    atlas_->loadAtlas("dejavu");
+    auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
+    screen_ = atlas_->createScreen(viewport, "dejavu");
+    layer_ = screen_->createLayer(0);
+    Ogre::Real vpW = screen_->getWidth(), vpH = screen_->getHeight();
 
-  console_ = make_unique<OgreConsole>();
-  console_->init(screen_.get());
-  console_->setVisible(false);
+    // Init our drawing layer
+    layer_ = screen_->createLayer(0);
+    rect_ = layer_->createRectangle(0, 0, vpW, vpH);
+    rect_->background_colour(rgb(0, 0, 0, 0));
+    caption_ = layer_->createCaption(24, vpW - 55, 66, "");
+    caption_->width(0);
+    caption_->align(TextAlign_Right);
 
+    console_ = make_unique<OgreConsole>();
+    console_->init(screen_.get());
+    console_->setVisible(false);
+
+  }
 
   Ogre::SceneManager* sm = Ogre::Root::getSingletonPtr()->getSceneManager("Default");
   overlay_ = new Ogre::OverlaySystem();
@@ -63,32 +69,31 @@ Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : window_(render_wi
 
   imgui_ = make_unique<Ogre::ImGuiOverlay>();
   imgui_->setZOrder(300);
-  imgui_->show();
+//  imgui_->addFont("Roboto-Medium.ttf");
+//  imgui_->show();
   Ogre::OverlayManager::getSingleton().addOverlay(imgui_.get());
   window_->addListener(this);
-//  Ogre::Root::getSingleton().addFrameListener(this);
+
+  imgui_listener_ = make_unique<ImGuiInputListener>();
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 Overlay::~Overlay() {
-  Ogre::Root::getSingletonPtr()->getSceneManager("Default")->removeRenderQueueListener(overlay_.get());
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt)
 {
   if(!evt.source->getOverlaysEnabled()) return;
-  Ogre::ImGuiOverlay::NewFrame();
-  ImGui::ShowDemoWindow();
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Update(float time) {
-  caption_->text((1.0 / time));
-
-//  if(!evt.source->getOverlaysEnabled()) return;
-//  Ogre::ImGuiOverlay::NewFrame();
-//  ImGui::ShowDemoWindow();
+  if (gorilla_) caption_->text((1.0 / time));
+  imgui_->show();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -107,18 +112,9 @@ void Overlay::Resume() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Overlay::Text(const string &str) {
-  caption_->text(str);
+void Overlay::PrepareTexture(const std::string &name_, const std::string group_) {
+  imgui_->addFont(name_, group_);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-void Overlay::Show() {
-  screen_->show();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Overlay::Hide() {
-  screen_->hide();
-}
 
 } //namespace

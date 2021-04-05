@@ -54,25 +54,13 @@
 //#include <Volume/OgreVolumeCacheSource.h>
 //#include <Volume/OgreVolumeTextureSource.h>
 //#endif
-
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-#include <OgreArchiveFactory.h>
-#include <OgreFileSystem.h>
-#include <OgreZip.h>
-
-#include <android/configuration.h>
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
-#include <android/native_window.h>
-#include <android/native_window_jni.h>
-#include <android/input.h>
-#include <android/input.h>
-#include <android/sensor.h>
-#include <android/log.h>
-#include <jni.h>
+#ifdef OGRE_BUILD_COMPONENT_OVERLAY
+#include <Overlay/OgreOverlayManager.h>
+#include <Overlay/OgreImGuiOverlay.h>
 #endif
 
+
+#include "Android.h"
 
 using namespace std;
 namespace fs = filesystem;
@@ -81,6 +69,57 @@ namespace xio {
 Renderer::Renderer(int w, int h, bool f) {
   root_ = new Ogre::Root("");
 
+  InitOgrePlugins_();
+
+  root_->initialise(false);
+
+  window_ = make_unique<Window>(w, h, f);
+
+  InitRenderWindow_();
+
+  //Camera block
+  camera_ = scene_->createCamera("Default");
+  auto *renderTarget = root_->getRenderTarget(render_window_->getName());
+  viewport_ = renderTarget->addViewport(camera_.get());
+  viewport_->setBackgroundColour(Ogre::ColourValue::Black);
+  camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / static_cast<float>(viewport_->getActualHeight()));
+  camera_->setAutoAspectRatio(true);
+
+  InitResourceLocation_();
+
+
+  //RTSS block
+  xio::InitRtss();
+  xio::CreateRtssShaders();
+
+  // Overlay
+  overlay_ = make_unique<Overlay>(render_window_);
+
+
+  Assets::LoadResources();
+
+  //Shadow block
+  shadow_settings_ = make_unique<ShadowSettings>();
+  //Compositor block
+  compositor_ = make_unique<Compositor>();
+
+
+  compositor_->EnableEffect("ssao", conf_->Get<bool>("compositor_use_ssao"));
+  compositor_->EnableEffect("bloom", conf_->Get<bool>("compositor_use_bloom"));
+  compositor_->EnableEffect("hdr", conf_->Get<bool>("compositor_use_hdr"));
+  compositor_->EnableEffect("motion", conf_->Get<bool>("compositor_use_motion"));
+  compositor_->Init();
+
+  overlay_->PrepareTexture("Roboto-Medium", Ogre::RGN_INTERNAL);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Renderer::~Renderer() {
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Renderer::InitOgrePlugins_() {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *gl3plus_render_system = new Ogre::GL3PlusRenderSystem();
   gl3plus_render_system->setConfigOption("Separate Shader Objects", "Yes");
@@ -110,11 +149,10 @@ Renderer::Renderer(int w, int h, bool f) {
   ogre_scene_ = root_->createSceneManager(Ogre::ST_GENERIC, "Default");
 #endif
 
-  root_->initialise(false);
+}
 
-  window_ = make_unique<Window>(w, h, f);
-
-
+//----------------------------------------------------------------------------------------------------------------------
+void Renderer::InitRenderWindow_() {
   Ogre::NameValuePairList params;
 
   SDL_SysWMinfo info = window_->GetInfo();
@@ -136,20 +174,10 @@ Renderer::Renderer(int w, int h, bool f) {
   jobject raw_resources = env->CallObjectMethod(raw_activity, method_get_resources);
   jobject raw_asset_manager = env->CallObjectMethod(raw_resources, method_get_assets);
 
-
-//  jclass class_sdl_activity   = env->FindClass("org/libsdl/app/SDLActivity");
-//  jmethodID method_get_native_surface = env->GetStaticMethodID(class_sdl_activity, "getNativeSurface", "()Landroid/view/Surface;");
-//  jobject raw_surface = env->CallStaticObjectMethod(class_sdl_activity, method_get_native_surface);
-//  ANativeWindow *native_window = ANativeWindow_fromSurface(env, raw_surface);
-
-
   params["currentGLContext"] = "true";
   params["externalGLControl"] = "true";
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
   params["preserveContext"] = "true";
-//  params["externalGLContext"]    = to_string(reinterpret_cast<size_t>(window_->gl_context_));
-//  params["androidConfig"] = to_string(reinterpret_cast<size_t>(mAConfig));
-
 
   AAssetManager* asset_manager = AAssetManager_fromJava(env, raw_asset_manager);
   AConfiguration* mAConfig = AConfiguration_new();
@@ -171,80 +199,52 @@ Renderer::Renderer(int w, int h, bool f) {
   params["FSAA"] = to_string(fsaa_);
 
 
-  render_window_ = Ogre::Root::getSingleton().createRenderWindow("MyDemo", 0, 0, false, &params);
-
-  //Camera block
-  camera_ = scene_->createCamera("Default");
-  auto *renderTarget = root_->getRenderTarget(render_window_->getName());
-  viewport_ = renderTarget->addViewport(camera_.get());
-  viewport_->setBackgroundColour(Ogre::ColourValue::Black);
-  camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) / static_cast<float>(viewport_->getActualHeight()));
-  camera_->setAutoAspectRatio(true);
-
-  //Resource block
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-//  Assets::InitGeneralResources("programs", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
-  Assets::AddResourceLocation("programs/common", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
-  Assets::AddResourceLocation("programs/rtss", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
-  Assets::AddResourceLocation("programs/pbr", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
-  Assets::AddResourceLocation("programs/particles", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
-  Assets::AddResourceLocation("programs/compositor", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
-  Assets::AddResourceLocation("programs/overlay", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
-  Assets::AddResourceLocation("programs/gorilla", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
-  Assets::AddResourceLocation("programs/fonts", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
-  Assets::InitGeneralResources("assets", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, "resources.list");
-#else
-  Ogre::ResourceGroupManager& resGroupMan = Ogre::ResourceGroupManager::getSingleton();
-  Ogre::String defResGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
-  resGroupMan.addResourceLocation("/", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/common", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/rtss", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/pbr", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/particles", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/overlay", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/gorilla", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/compositor", "APKFileSystem", defResGroup);
-
-  resGroupMan.addResourceLocation("/1", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/bog", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/foam-grip", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/helmet", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/material", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/models", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/protocol", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/sinbad", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/sounds", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/terrain", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/Titanium-scuffed", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/vegetation", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/music", "APKFileSystem", defResGroup);
-  resGroupMan.addResourceLocation("/sounds", "APKFileSystem", defResGroup);
-#endif
-
-
-  //RTSS block
-  xio::InitRtss();
-  xio::CreateRtssShaders();
-
-
-  Assets::LoadResources();
-
-  //Shadow block
-  shadow_settings_ = make_unique<ShadowSettings>();
-  //Compositor block
-  compositor_ = make_unique<Compositor>();
-
-  compositor_->EnableEffect("ssao", conf_->Get<bool>("compositor_use_ssao"));
-  compositor_->EnableEffect("bloom", conf_->Get<bool>("compositor_use_bloom"));
-  compositor_->EnableEffect("hdr", conf_->Get<bool>("compositor_use_hdr"));
-  compositor_->EnableEffect("motion", conf_->Get<bool>("compositor_use_motion"));
-  compositor_->Init();
-  overlay_ = make_unique<Overlay>(render_window_);
+  render_window_ = Ogre::Root::getSingleton().createRenderWindow("", 0, 0, false, &params);
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Renderer::~Renderer() {
+void Renderer::InitResourceLocation_() {
+  const string internal_group = Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME;
+  const string default_group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+
+  Assets::AddLocation("programs/common", internal_group);
+  Assets::AddLocation("programs/rtss", internal_group);
+  Assets::AddLocation("programs/pbr", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Assets::AddLocation("programs/particles", internal_group);
+  Assets::AddLocation("programs/compositor", internal_group);
+  Assets::AddLocation("programs/overlay", internal_group);
+  Assets::AddLocation("programs/gorilla", internal_group);
+
+  Assets::AddLocationRecursive("assets", default_group, "resources.list");
+
+#else
+  Ogre::ResourceGroupManager& resGroupMan = Ogre::ResourceGroupManager::getSingleton();
+  Ogre::String defResGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+
+  const std::string file_system = "APKFileSystem";
+  const std::string zip = "APKZip";
+
+  resGroupMan.addResourceLocation("/programs/common.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/rtss.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/pbr.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/particles.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/compositor.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/overlay.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/gorilla.zip", zip, internal_group);
+
+  resGroupMan.addResourceLocation("/assets/material.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/assets/models.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/assets/music.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/assets/scenes.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/assets/sounds.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/assets/terrain.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/assets/vegetation.zip", zip, default_group);
+
+
+#endif
 
 }
 

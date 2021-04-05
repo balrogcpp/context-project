@@ -85,15 +85,13 @@ Application::~Application() {
 
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Message_(const string &caption, const string &message) {
-#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
-  WriteLogToFile_("error.log");
-  PrintLogToConsole_();
-  cerr << caption << '\n' << message << '\n';
+
+
 #ifdef _WIN32
   MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
-#endif
 #else
   SDL_Log("%s", string(caption + " : " + message).c_str());
+  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption.c_str(), message.c_str(), nullptr);
 #endif
 
   return 1;
@@ -214,11 +212,6 @@ void Application::Go_() {
 	time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
 	Loop_();
 
-//	if (verbose_) {
-//	  WriteLogToFile_("ogre.log");
-//	  PrintLogToConsole_();
-//	}
-
   }
 }
 
@@ -268,8 +261,10 @@ int Application::Main(unique_ptr <AppState> &&scene_ptr) {
 	return Message_("Exception (OGRE)", e.getFullDescription());
   }
   catch (exception &e) {
-	return Message_("Exception (exception)", e.what());
+	return Message_("Exception (std::exception)", e.what());
   }
+
+  SDL_Quit();
 
   return 0;
 }

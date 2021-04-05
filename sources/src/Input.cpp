@@ -216,6 +216,11 @@ void InputSequencer::Capture() {
 	  }
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+	  case SDL_TEXTINPUT: {
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnTextInput(event.text.text);});
+		break;
+	  }
+
 	  case SDL_WINDOWEVENT: {
 		switch (event.window.event) {
 		  case SDL_WINDOWEVENT_MINIMIZED:

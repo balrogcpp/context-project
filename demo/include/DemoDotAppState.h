@@ -30,16 +30,17 @@ class DemoDotAppState : public xio::AppState {
    DemoDotAppState();
    virtual ~DemoDotAppState();
 
-    void Init() final;
-    void Cleanup() final;
-    void Pause() final;
-    void Resume() final;
-    void Update(float time) final;
+    void Init() override;
+    void Cleanup() override;
+    void Pause() override;
+    void Resume() override;
+    void Update(float time) override;
 
-    void OnKeyDown(SDL_Keycode sym) final;
+    void OnKeyDown(SDL_Keycode sym) override;
 
  private:
   Ogre::AnimationState *anim1 = nullptr;
   Ogre::AnimationState *anim2 = nullptr;
+  bool context_menu_ = false;
 };
 }

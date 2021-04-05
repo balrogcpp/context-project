@@ -25,7 +25,7 @@
 #include "Singleton.h"
 #include "gorilla/Gorilla.h"
 #include "gorilla/OgreConsole.h"
-//#include <Overlay/OgreImGuiInputListener.h>
+#include "ImGuiInputListener.h"
 
 namespace Ogre {
 class RenderTarget;
@@ -37,7 +37,7 @@ class RenderTargetViewportEvent;
 }
 
 namespace xio {
- class Overlay final : public Component, public Singleton<Overlay>, public Ogre::RenderTargetListener {
+class Overlay final : public Component, public Singleton<Overlay>, public Ogre::RenderTargetListener {
  public:
   Overlay(view_ptr<Ogre::RenderWindow> render_window);
   virtual ~Overlay();
@@ -46,24 +46,30 @@ namespace xio {
   void Pause() override;
   void Resume() override;
   void Update(float time) override;
-  void preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) override;
+  void preViewportUpdate(const Ogre::RenderTargetViewportEvent &evt) override;
 
-  void Text(const std::string &str);
-  void Show();
-  void Hide();
+
+  void PrepareTexture(const std::string &name_, const std::string group_ = Ogre::RGN_AUTODETECT);
 
  private:
 
   std::unique_ptr<Gorilla::Silverback> atlas_;
+  std::unique_ptr<Gorilla::OgreConsole> console_;
   view_ptr<Gorilla::Screen> screen_;
   view_ptr<Gorilla::Layer> layer_;
   view_ptr<Gorilla::Caption> caption_;
   view_ptr<Gorilla::Rectangle> rect_;
 
-  std::unique_ptr<Gorilla::OgreConsole> console_;
+  std::unique_ptr<ImGuiInputListener> imgui_listener_;
   std::unique_ptr<Ogre::ImGuiOverlay> imgui_;
   view_ptr<Ogre::OverlaySystem> overlay_;
   view_ptr<Ogre::RenderWindow> window_;
+
+#ifdef DEBUG
+  bool gorilla_ = false;
+#else
+  bool gorilla_ = false;
+#endif
 };
 
 } //namespace

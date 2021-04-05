@@ -12,6 +12,5 @@
     <plugin id="org.jetbrains.plugins.clangFormat" />
     <plugin id="org.jetbrains.plugins.github" />
     <plugin id="org.jetbrains.plugins.terminal" />
-    <plugin id="org.jetbrains.plugins.yaml" />
   </component>
 </project>

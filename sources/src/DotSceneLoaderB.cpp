@@ -30,6 +30,7 @@
 #include "SinbadCharacterController.h"
 #include "Renderer.h"
 #include <pugixml.hpp>
+#include "btogre/BtOgre.h"
 
 //LOD Generator
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR

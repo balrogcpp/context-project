@@ -21,9 +21,21 @@
 //SOFTWARE.
 
 #pragma once
-#include "SDL2.hpp"
-#include "Configurator.h"
-#include "OgreHeaders.h"
-//#include "btogre/BtOgre.h"
-//#include "oggsound/OgreOggSound.h"
-#include "view_ptr.h"
+
+
+#include <OgreArchiveFactory.h>
+#include <OgreFileSystem.h>
+#include <OgreZip.h>
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#include <android/configuration.h>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
+#include <android/input.h>
+#include <android/input.h>
+#include <android/sensor.h>
+#include <android/log.h>
+#include <jni.h>
+#endif

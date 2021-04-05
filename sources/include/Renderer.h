@@ -62,6 +62,10 @@ class Renderer final : public Component, public Singleton<Renderer> {
 
 
  private:
+  void InitOgrePlugins_();
+  void InitRenderWindow_();
+  void InitResourceLocation_();
+
   std::unique_ptr<Window> window_;
   std::unique_ptr<ShadowSettings> shadow_settings_;
   std::unique_ptr<Compositor> compositor_;

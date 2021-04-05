@@ -25,6 +25,7 @@
 #include "Renderer.h"
 #include "Sound.h"
 #include "PbrShaderUtils.h"
+#include <Overlay/OgreImGuiOverlay.h>
 
 using namespace std;
 using namespace xio;
@@ -76,8 +77,11 @@ void DemoDotAppState::Resume() {
 //----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
-	ChangeState();
+	context_menu_ = true;
+	renderer_->GetWindow().SetCursorStatus(true, false, false);
   }
+
+
 //  else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F) {
 //    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
 //
@@ -89,13 +93,75 @@ void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
 }
 
 void DemoDotAppState::Cleanup() {
-
+  Ogre::ImGuiOverlay::NewFrame();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Update(float time) {
 //  anim1->addTime(time/4);
 //  anim2->addTime(time/4);
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  context_menu_ = true;
+#endif
+
+  Ogre::ImGuiOverlay::NewFrame();
+
+  ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+  ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+  ImGui::End();
+
+
+  if (!context_menu_) {
+	return;
+  }
+
+  // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+  {
+    using namespace ImGui;
+
+	static ImGuiIO& io = ImGui::GetIO();
+	SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f,0.5f));
+	SetNextWindowSize({0, 0}, ImGuiCond_Always);
+	SetNextWindowCollapsed(false, ImGuiCond_Always);
+	SetNextWindowBgAlpha(0.5);
+	SetNextWindowFocus();
+
+	static float f = 0.0f;
+    static int counter = 0;
+
+    ImGui::Begin("", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);                          // Create a window called "Hello, world!" and append into it.
+
+//    ImGui::SetWindowFontScale(4.0);
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("         RESUME          ")) // Buttons return true when clicked (most widgets return true when edited/activated)
+	{
+	  renderer_->GetWindow().SetCursorStatus(false, true, true);
+	  context_menu_ = false;
+	}
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("        MAIN MENU        ")) // Buttons return true when clicked (most widgets return true when edited/activated)
+	  ChangeState(make_unique<MenuAppState>());
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("          EXIT           ")) // Buttons return true when clicked (most widgets return true when edited/activated)
+	  ChangeState();
+
+	ImGui::NewLine();
+
+
+    ImGui::End();
+
+//	ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+//	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+//	ImGui::End();
+  }
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -103,8 +169,6 @@ void DemoDotAppState::Init() {
   renderer_->GetWindow().SetCursorStatus(false, true, true);
 //  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
   LoadFromFile("1.scene", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-//  next_ = make_unique<MenuAppState>();
-  SetNextState(make_unique<MenuAppState>());
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *root = scene->getRootSceneNode();
@@ -128,7 +192,7 @@ void DemoDotAppState::Init() {
 //  anim2->setEnabled(true);
 
   sound_->CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
-//  sound_->SetVolume("ambient", 0.5);
+  sound_->SetVolume("ambient", 0.5);
   sound_->PlaySound("ambient");
 }
 

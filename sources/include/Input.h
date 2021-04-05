@@ -86,6 +86,7 @@ class InputObserver {
   virtual void OnMouseRbUp(int x, int y) {}
   virtual void OnMouseMbDown(int x, int y) {}
   virtual void OnMouseMbUp(int x, int y) {}
+  virtual void OnTextInput (const char* text) {}
 
   //Joystick
   virtual void OnJoystickAxis(int which, int axis, int value) {}

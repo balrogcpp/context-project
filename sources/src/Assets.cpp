@@ -25,18 +25,21 @@
 #include <filesystem>
 #include "Assets.h"
 #include "Exception.h"
+#include "Android.h"
 
 using namespace std;
 namespace fs = filesystem;
 
-namespace xio {
+namespace xio::Assets {
 
-static std::string FindPath(const std::string &file, int depth = 3) {
-  string path = file;
+static std::string FindPath(const std::string &path_, int depth = 3) {
+  string path = path_;
 
   for (int i = 0; i < depth; i++) {
 	if (fs::exists(path))
 	  return path;
+	else if (fs::exists(path + ".zip"))
+	  return path.append(".zip");
 	else
 	  path = string("../").append(path);
   }
@@ -50,7 +53,7 @@ static bool CheckSymbol(char c) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-bool Assets::StringSanityCheck(const string &str) {
+static bool StringSanityCheck(const string &str) {
   if (str.empty() || str[0]=='#') {
 	return true;
   }
@@ -59,25 +62,25 @@ bool Assets::StringSanityCheck(const string &str) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::LeftTrim(string &s) {
+static void LeftTrim(string &s) {
   auto it = find_if(s.begin(), s.end(), [](char c) { return !isspace < char > (c, locale::classic()); });
   s.erase(s.begin(), it);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::RightTrim(string &s) {
+static void RightTrim(string &s) {
   auto it = find_if(s.rbegin(), s.rend(), [](char c) { return !isspace < char > (c, locale::classic()); });
   s.erase(it.base(), s.end());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::TrimString(string &s) {
+static void TrimString(string &s) {
   RightTrim(s);
   LeftTrim(s);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::PrintPathList(const vector <tuple<string, string, string>> &path_list) {
+void PrintPathList(const vector <tuple<string, string, string>> &path_list) {
   cout << "Path list:\n";
 
   for (const auto &it : path_list) {
@@ -88,7 +91,7 @@ void Assets::PrintPathList(const vector <tuple<string, string, string>> &path_li
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::PrintStringList(const vector <string> &string_list) {
+void PrintStringList(const vector <string> &string_list) {
   cout << "Path list:\n";
 
   for (const auto &it : string_list) {
@@ -99,49 +102,57 @@ void Assets::PrintStringList(const vector <string> &string_list) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::LoadResources() {
+void LoadResources() {
   Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::AddResourceLocation(const string &path_, const string &group_) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+void AddLocation(const string &path_, const string &group_, bool recursive) {
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
   const std::string file_system = "FileSystem";
   const std::string zip = "Zip";
-#else
-  const std::string file_system = "APKFileSystem";
-  const std::string zip = "APKZip";
-#endif
 
   string path = FindPath(path_);
-  Ogre::ResourceGroupManager &resGroupMan = Ogre::ResourceGroupManager::getSingleton();
+  Ogre::ResourceGroupManager &rgm = Ogre::ResourceGroupManager::getSingleton();
 
   if (!path.empty()) {
 	if (fs::is_directory(path)) {
 
-	  resGroupMan.addResourceLocation(path, file_system, group_);
+	  rgm.addResourceLocation(path, file_system, group_, recursive);
 
 	} else if (fs::path(path).extension()==".zip") {
-	  resGroupMan.addResourceLocation(path, zip, group_);
+	  rgm.addResourceLocation(path, zip, group_, recursive);
 	}
   }
+
+#endif
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void
-Assets::InitGeneralResources(const string &path_,
-							 const string &group_,
-							 const string &resource_file,
-							 bool verbose) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  const std::string file_system = "FileSystem";
-  const std::string zip = "Zip";
-#else
-  const std::string file_system = "APKFileSystem";
-  const std::string zip = "APKZip";
+void AddLocationAndroid(AAssetManager* asset_mgr, const string &resource_file, const string &group_, bool verbose) {
+#if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID
+//  const string file_system = "APKFileSystem";
+//
+//
+//  AAssetDir* dir = AAssetManager_openDir(asset_mgr, path_.c_str());
+//  const char* fileName = NULL;
+//
+//  while((fileName = AAssetDir_getNextFileName(dir)) != NULL) {
+//	Ogre::LogManager::getSingleton().logMessage(string("Found directory: ") + fileName);
+//  }
 #endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void AddLocationRecursive(const string &path_,
+								  const string &group_,
+								  const string &resource_file,
+								  bool verbose) {
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
+  const string file_system = "FileSystem";
+  const string zip = "Zip";
 
   vector <string> file_list;
   vector <string> dir_list;
@@ -203,7 +214,7 @@ Assets::InitGeneralResources(const string &path_,
 
 	  if (jt->is_directory()) {
 		if (verbose) {
-		  cout << "Parsing directory:  " << file_path << '\n';
+		  Ogre::LogManager::getSingleton().logMessage(string("Found directory: ") + file_path);
 		}
 
 		dir_list.push_back(file_name);
@@ -212,7 +223,7 @@ Assets::InitGeneralResources(const string &path_,
 
 	  } else if (jt->is_regular_file()) {
 		if (verbose) {
-		  cout << "Parsing file:  " << file_path << '\n';
+		  Ogre::LogManager::getSingleton().logMessage(string("Found file: ") + file_path);
 		}
 		if (fs::path(file_path).extension()==".zip") {
 		  if (find(begin(extensions_list), end(extensions_list), fs::path(file_name).extension())
@@ -220,12 +231,12 @@ Assets::InitGeneralResources(const string &path_,
 			file_list.push_back(file_name);
 		  }
 
-
 		  ogre_resource_manager.addResourceLocation(file_path, zip, get<2>(it));
 		}
 	  }
 	}
   }
+#endif
 }
 
 } //namespace

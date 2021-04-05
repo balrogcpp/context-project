@@ -22,6 +22,7 @@
 
 #include "pcheader.h"
 #include "Physics.h"
+#include "btogre/BtOgre.h"
 
 using namespace std;
 

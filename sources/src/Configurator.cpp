@@ -43,8 +43,6 @@ void Configurator::Load(const string &file_name) {
 	throw Exception("Error during parsing of " + file_name + " : can't open file");
 
   ifs >> document_;
-//  rapidjson::IStreamWrapper isw(ifs);
-//  document_.ParseStream(isw);
 }
 
 } //namespace

@@ -181,7 +181,7 @@ externalproject_add(target-zlib
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        ${CMAKE_COMMAND} -E rm -f lib/libz.so bin/libzlib.dll lib/libzlib.dll.a
+                        ${CMAKE_COMMAND} -E remove -f lib/libz.so bin/libzlib.dll lib/libzlib.dll.a
                     TEST_AFTER_INSTALL true
                     )
 

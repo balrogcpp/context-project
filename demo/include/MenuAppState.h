@@ -30,13 +30,13 @@ class MenuAppState : public xio::AppState {
   MenuAppState() : AppState() {}
   virtual ~MenuAppState() {}
 
-  void Init() final;
-  void Cleanup() final;
-  void Pause() final {}
-  void Resume() final {}
-  void Update(float time) final {};
+  void Init() override;
+  void Cleanup() override;
+  void Pause() override {}
+  void Resume() override {}
+  void Update(float time) override;
 
-  void OnKeyDown(SDL_Keycode sym) final;
+  void OnKeyDown(SDL_Keycode sym) override;
 };
 
 }
