@@ -94,16 +94,19 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_CXX_FLAGS " -Ofast -DNDEBUG")
         string(APPEND CMAKE_C_FLAGS " -Ofast -DNDEBUG")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
+        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-linker-plugin")
+        if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
+            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
+        else ()
+            string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=thin")
+            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=thin")
+        endif ()
     elseif (${CMAKE_BUILD_TYPE} STREQUAL "Debug" OR ${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
         string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
         string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     endif ()
 
-    # Set minimum supported Windows version to Win7
-    if (MINGW)
-        string(APPEND CMAKE_CXX_FLAGS " -mwindows -DWINVER=0x0601 -D_WIN32_WINNT=0x0601")
-        string(APPEND CMAKE_C_FLAGS " -mwindows -DWINVER=0x0601 -D_WIN32_WINNT=0x0601")
-    endif ()
     # With PIE most of linuxes don't recognize binary
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
@@ -112,34 +115,29 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -funroll-loops -pthread")
     string(APPEND CMAKE_C_FLAGS " -msse4.1 -funroll-loops -pthread")
 
-    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
-    else ()
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=thin")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=thin")
-    endif ()
+
 elseif(ANDROID AND ${CMAKE_BUILD_TYPE} STREQUAL "Release")
     string(APPEND CMAKE_CXX_FLAGS " -Ofast -DNDEBUG -funroll-loops -pthread")
     string(APPEND CMAKE_C_FLAGS " -Ofast -DNDEBUG -funroll-loops -pthread")
 
-    string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=thin")
-    string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=thin")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin -flto=thin")
+    string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-linker-plugin -flto=thin")
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
-    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp  /D_WIN32_WINNT=0x0601 /DWINVER=0x0601")
-    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /openmp  /D_WIN32_WINNT=0x0601 /DWINVER=0x0601")
+    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS-")
+    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS-")
 
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-        string(APPEND CMAKE_CXX_FLAGS " /O2 /fp:fast /GL /D \"WINAPI_MAIN_FUNC\"")
-        string(APPEND CMAKE_C_FLAGS " /O2 /fp:fast /GL /D \"WINAPI_MAIN_FUNC\"")
+        string(APPEND CMAKE_CXX_FLAGS " /O2 /fp:fast /GL")
+        string(APPEND CMAKE_C_FLAGS " /O2 /fp:fast /GL")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF /SUBSYSTEM:WINDOWS")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF")
     else ()
         string(APPEND CMAKE_CXX_FLAGS " /D \"DEBUG\"")
         string(APPEND CMAKE_C_FLAGS " /D \"DEBUG\"")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " /SUBSYSTEM:WINDOWS")
     endif ()
 endif ()
 
@@ -210,7 +208,7 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTA
                                     ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
                                     ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 
-file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h demo/*.hpp sources/*.cpp sources/*.h sources/*.hpp)
+file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h demo/*.hpp demo/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
 
 if (NOT ANDROID)
     add_executable(demo ${SOURCE_FILES})

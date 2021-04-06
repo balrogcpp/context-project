@@ -39,16 +39,22 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 namespace xio {
+
 Application::Application() {
   try {
-//	auto *logger = new Ogre::LogManager();
-//	logger->createLog("ogre.log", true, false, true);
-//	Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
-//#ifdef DEBUG
-//	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
-//#else
-//	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
-//#endif
+
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+	auto *logger = new Ogre::LogManager();
+	logger->createLog("ogre.log", true, false, true);
+	Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+#ifdef DEBUG
+	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
+#else
+	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
+#endif
+#endif
+
+
 
 #if OGRE_PLATFORM==OGRE_PLATFORM_LINUX
 	DesktopIcon icon;
@@ -79,7 +85,9 @@ Application::Application() {
 
 //----------------------------------------------------------------------------------------------------------------------
 Application::~Application() {
-
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+	Ogre::LogManager::getSingleton().getDefaultLog()->removeListener(this);
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -240,9 +248,7 @@ void Application::Event(const SDL_Event &evt) {
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Main(unique_ptr <AppState> &&scene_ptr) {
   try {
-#if OGRE_PLATFORM==OGRE_PLATFORM_WIN32
-	SetProcessDPIAware();
-#endif
+
 #if OGRE_COMPILER==OGRE_COMPILER_MSVC
 	SDL_SetMainReady();
 #endif
@@ -262,10 +268,7 @@ int Application::Main(unique_ptr <AppState> &&scene_ptr) {
 	return Message_("Exception (std::exception)", e.what());
   }
 
-// Didn't test it with MSVC, remember there was segfault at SDL_Quit
-#if OGRE_COMPILER!=OGRE_COMPILER_MSVC
   SDL_Quit();
-#endif
 
   return 0;
 }
