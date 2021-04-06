@@ -34,7 +34,6 @@ ADD demo ./demo
 ADD doc ./doc
 ADD tests ./tests
 ADD LICENSE .
-ADD android ./android
 ADD programs ./programs
 ADD assets ./assets
 ADD CMakeLists.txt .

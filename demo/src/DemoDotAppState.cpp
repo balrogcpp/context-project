@@ -56,15 +56,6 @@ void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
 	renderer_->GetWindow().SetCursorStatus(true, false, false);
   }
 
-
-//  else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F) {
-//    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-//
-//    if (scene->hasLight("Point")) {
-//      auto *light = scene->getLight("Point");
-//      light->setVisible(!light->isVisible());
-//    }
-//  }
 }
 
 void DemoDotAppState::Cleanup() {
@@ -76,70 +67,78 @@ void DemoDotAppState::Update(float time) {
 //  anim1->addTime(time/4);
 //  anim2->addTime(time/4);
 
-#if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID
-  context_menu_ = true;
-#endif
 
   Ogre::ImGuiOverlay::NewFrame();
 
   {
-	using namespace ImGui;
-
 	static ImGuiIO &io = ImGui::GetIO();
-  SetNextWindowPos({0, 0}, ImGuiCond_Always);
-	SetNextWindowSize({0, 0}, ImGuiCond_Always);
-	SetNextWindowCollapsed(false, ImGuiCond_Always);
-	SetNextWindowBgAlpha(0.5);
-//  SetNextWindowFocus();
+	ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
+	ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
+	ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
+	ImGui::SetNextWindowBgAlpha(0.5);
 
 	ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+
+	ImGui::SetWindowFontScale(0.25);
+
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
 				1000.0f/ImGui::GetIO().Framerate,
 				ImGui::GetIO().Framerate);
 	ImGui::End();
 
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
 	if (!context_menu_) {
 	  return;
 	}
+#endif
 
-	SetNextWindowPos(ImVec2(io.DisplaySize.x*0.5f, io.DisplaySize.y*0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-	SetNextWindowSize({0, 0}, ImGuiCond_Always);
-	SetNextWindowCollapsed(false, ImGuiCond_Always);
-	SetNextWindowBgAlpha(0.5);
-//	SetNextWindowFocus();
+	ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x*0.5f, io.DisplaySize.y*0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
+	ImGui::SetNextWindowBgAlpha(0.5);
+	ImGui::SetNextWindowFocus();
+
+#if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID
+	ImGui::SetNextWindowCollapsed(true, ImGuiCond_Appearing);
+
+	ImGui::Begin("", nullptr, ImGuiWindowFlags_NoResize);
+#else
+	ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
+	ImGui::Begin("", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+#endif
+
+	const float hdx = 1920;
+	const float hdy = 1080;
+	float scale = 0.25f * renderer_->GetWindow().GetSize().first / hdx;
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+	scale *= 4.0f;
+#endif
+	ImGui::SetWindowFontScale(scale);
 
 
-	ImGui::Begin("",
-				 nullptr,
-				 ImGuiWindowFlags_NoTitleBar
-					 | ImGuiWindowFlags_NoResize);                          // Create a window called "Hello, world!" and append into it.
-
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
 
 	ImGui::NewLine();
 
-	if (ImGui::Button("         RESUME          ")) // Buttons return true when clicked (most widgets return true when edited/activated)
-	{
+	if (ImGui::Button("         RESUME          ")) {
 	  renderer_->GetWindow().SetCursorStatus(false, true, true);
 	  context_menu_ = false;
 	}
 
+#endif
+
 	ImGui::NewLine();
 
-	if (ImGui::Button("        MAIN MENU        ")) // Buttons return true when clicked (most widgets return true when edited/activated)
+	if (ImGui::Button("        MAIN MENU        "))
 	  ChangeState(make_unique<MenuAppState>());
 
 	ImGui::NewLine();
 
-	if (ImGui::Button("          EXIT           ")) // Buttons return true when clicked (most widgets return true when edited/activated)
+	if (ImGui::Button("          EXIT           "))
 	  ChangeState();
 
 	ImGui::NewLine();
 
 	ImGui::End();
-
-//	ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
-//	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-//	ImGui::End();
   }
 
 }

@@ -54,7 +54,7 @@ class Renderer final : public Component, public Singleton<Renderer> {
   void UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format);
   void RenderOneFrame();
   void Resize(int w, int h, bool f);
-  void RestoreFullscreenAndroid();
+  void RestoreFullscreenAndroid_();
 
   Window &GetWindow();
   ShadowSettings &GetShadowSettings();
@@ -63,8 +63,13 @@ class Renderer final : public Component, public Singleton<Renderer> {
 
  private:
   void InitOgrePlugins_();
+  void InitOgreRenderSystem_();
+  void InitOgreRenderSystem_GL3_();
+  void InitOgreRenderSystem_GLES2_();
   void InitRenderWindow_();
   void InitResourceLocation_();
+
+  std::string render_system_;
 
   std::unique_ptr<Window> window_;
   std::unique_ptr<ShadowSettings> shadow_settings_;

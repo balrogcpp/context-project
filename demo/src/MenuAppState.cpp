@@ -34,39 +34,35 @@ void MenuAppState::Cleanup() {
   Ogre::ImGuiOverlay::NewFrame();
 }
 
-static ImFont *font = nullptr;
-
 void MenuAppState::Update(float time) {
-
 
   Ogre::ImGuiOverlay::NewFrame();
 
-  // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
   {
-	static float f = 0.0f;
-	static int counter = 0;
-
-	using namespace ImGui;
-
-//	ImGui::ShowDemoWindow();
-
-	static ImGuiIO& io = ImGui::GetIO();
-	SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f,0.5f));
-	SetNextWindowSize({0, 0}, ImGuiCond_Always);
-	SetNextWindowCollapsed(false, ImGuiCond_Always);
-	SetNextWindowFocus();
-
+	static ImGuiIO &io = ImGui::GetIO();
+	ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x*0.5f, io.DisplaySize.y*0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
+	ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
+	ImGui::SetNextWindowFocus();
 
 	ImGui::Begin("", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 
+	const float hdx = 1920;
+	const float hdy = 1080;
+	float scale = 0.25f * renderer_->GetWindow().GetSize().first / hdx;
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+	scale *= 4.0f;
+#endif
+	ImGui::SetWindowFontScale(scale);
+
 	ImGui::NewLine();
 
-    if (ImGui::Button("        DEMO        "))
+	if (ImGui::Button("        DEMO        "))
 	  ChangeState(make_unique<DemoDotAppState>());
 
 	ImGui::NewLine();
 
-    if (ImGui::Button("        EXIT        "))
+	if (ImGui::Button("        EXIT        "))
 	  ChangeState();
 
 	ImGui::NewLine();
@@ -77,15 +73,13 @@ void MenuAppState::Update(float time) {
 }
 
 void MenuAppState::OnKeyDown(SDL_Keycode sym) {
-//  if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_G) {
-//	ChangeState(make_unique<DemoDotAppState>());
-//  }
+
 }
 
 void MenuAppState::Init() {
   renderer_->GetWindow().SetCursorStatus(true, false, false);
 
-  ImGuiIO& io = ImGui::GetIO();
-  }
+  ImGuiIO &io = ImGui::GetIO();
+}
 
 }

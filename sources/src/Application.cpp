@@ -45,7 +45,7 @@ Application::Application() {
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
 	auto *logger = new Ogre::LogManager();
-	logger->createLog("ogre.log", true, false, true);
+	logger->createLog(log_file_, false, false, true);
 	Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
 #ifdef DEBUG
 	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
@@ -67,19 +67,23 @@ Application::Application() {
 
 	state_manager_ = make_unique<StateManager>();
 
-	verbose_ = conf_->Get<bool>("global_verbose");
+	conf_->Get("verbose", verbose_);
+
+	if (verbose_)
+	  log_.reserve(10000);
+
 	lock_fps_ = conf_->Get<bool>("global_lock_fps");
 	target_fps_ = conf_->Get<int>("global_target_fps");
 
   }
   catch (Exception &e) {
-	Message_("Exception", e.getDescription());
+	ExceptionMessage_("Exception", e.getDescription());
   }
   catch (Ogre::Exception &e) {
-	Message_("Exception (OGRE)", e.getFullDescription());
+	ExceptionMessage_("Exception (OGRE)", e.getFullDescription());
   }
   catch (exception &e) {
-	Message_("Exception (std::exception)", e.what());
+	ExceptionMessage_("Exception (std::exception)", e.what());
   }
 }
 
@@ -91,8 +95,7 @@ Application::~Application() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-int Application::Message_(const string &caption, const string &message) {
-
+int Application::ExceptionMessage_(const string &caption, const string &message) {
 
 #ifdef _WIN32
   MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
@@ -105,11 +108,16 @@ int Application::Message_(const string &caption, const string &message) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::WriteLogToFile_(const string &file_name) {
+void Application::WriteLogToFile_() {
+  if (!verbose_)
+    return;
+
   ofstream f;
-  f.open(file_name);
+  f.open(log_file_);
+
   if (f.is_open())
 	f << log_;
+
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::PrintLogToConsole_() {
@@ -119,21 +127,14 @@ void Application::PrintLogToConsole_() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const string &logName, bool &skipThisMessage) {
+
   log_.append(message);
   log_.append("\n");
-#ifdef DEBUG
-  if (verbose_) {
-	cout << message << "\n";
-#if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID
-	SDL_Log("%s", message.c_str());
-#endif
-  }
-#endif
-}
 
-//----------------------------------------------------------------------------------------------------------------------
-int Application::GetCurrentFps() const {
-  return current_fps_;
+#ifdef DEBUG
+  if (verbose_)
+	cout << message << '\n';
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -257,18 +258,22 @@ int Application::Main(unique_ptr <AppState> &&scene_ptr) {
 
 	state_manager_->SetInitialState(move(scene_ptr));
 	Go_();
+
+	WriteLogToFile_();
+
+	SDL_Quit();
+
   }
   catch (Exception &e) {
-	return Message_("Exception", e.getDescription());
+	return ExceptionMessage_("Exception", e.getDescription());
   }
   catch (Ogre::Exception &e) {
-	return Message_("Exception (OGRE)", e.getFullDescription());
+	return ExceptionMessage_("Exception (OGRE)", e.getFullDescription());
   }
   catch (exception &e) {
-	return Message_("Exception (std::exception)", e.what());
+	return ExceptionMessage_("Exception (std::exception)", e.what());
   }
 
-  SDL_Quit();
 
   return 0;
 }

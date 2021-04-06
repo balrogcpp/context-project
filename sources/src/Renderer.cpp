@@ -29,8 +29,6 @@
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
-#elif defined OGRE_BUILD_RENDERSYSTEM_GLES2
-#include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 #endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
@@ -63,6 +61,9 @@ namespace xio {
 Renderer::Renderer(int w, int h, bool f) {
   root_ = new Ogre::Root("");
 
+  conf_->Get("render_system", render_system_);
+
+  InitOgreRenderSystem_();
   InitOgrePlugins_();
 
   root_->initialise(false);
@@ -70,6 +71,7 @@ Renderer::Renderer(int w, int h, bool f) {
   window_ = make_unique<Window>(w, h, f);
 
   InitRenderWindow_();
+  RestoreFullscreenAndroid_();
 
   //Camera block
   camera_ = scene_->createCamera("Default");
@@ -86,7 +88,6 @@ Renderer::Renderer(int w, int h, bool f) {
   xio::InitRtss();
   xio::CreateRtssShaders();
 
-  RestoreFullscreenAndroid();
 
   // Overlay
   overlay_ = make_unique<Overlay>(render_window_);
@@ -115,14 +116,7 @@ Renderer::~Renderer() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::InitOgrePlugins_() {
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-  auto *gl3plus_render_system = new Ogre::GL3PlusRenderSystem();
-  gl3plus_render_system->setConfigOption("Separate Shader Objects", "Yes");
 
-  Ogre::Root::getSingleton().setRenderSystem(gl3plus_render_system);
-#elif defined OGRE_BUILD_RENDERSYSTEM_GLES2
-  Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem());
-#endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
 #endif // OGRE_BUILD_PLUGIN_OCTREE
@@ -142,6 +136,31 @@ void Renderer::InitOgrePlugins_() {
   scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
 #else
   ogre_scene_ = root_->createSceneManager(Ogre::ST_GENERIC, "Default");
+#endif
+
+}//----------------------------------------------------------------------------------------------------------------------
+void Renderer::InitOgreRenderSystem_() {
+  if (render_system_ == "gl3")
+  	InitOgreRenderSystem_GL3_();
+  else if (render_system_ == "gles2")
+  	InitOgreRenderSystem_GLES2_();
+  else
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
+	InitOgreRenderSystem_GLES2_();
+#else
+	InitOgreRenderSystem_GL3_();
+#endif
+
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Renderer::InitOgreRenderSystem_GL3_() {
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+  auto *gl3plus_render_system = new Ogre::GL3PlusRenderSystem();
+  gl3plus_render_system->setConfigOption("Separate Shader Objects", "Yes");
+
+  Ogre::Root::getSingleton().setRenderSystem(gl3plus_render_system);
 #endif
 
 }
@@ -275,7 +294,7 @@ void Renderer::UpdateShadow(bool enable, float far_distance, int tex_size, int t
 
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
-  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
+  //Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
   Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
@@ -288,13 +307,14 @@ void Renderer::Resize(int w, int h, bool f) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::RestoreFullscreenAndroid() {
+void Renderer::RestoreFullscreenAndroid_() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   SDL_DisplayMode DM;
-  SDL_GetCurrentDisplayMode(0, &DM);
+  SDL_GetDesktopDisplayMode(0, &DM);
   int screen_w = static_cast<int>(DM.w);
   int screen_h = static_cast<int>(DM.h);
-  Resize(screen_w, screen_h, true);
+//  Resize(screen_w, screen_h, true);
+  render_window_->resize(screen_w, screen_h);
 #endif
 }
 

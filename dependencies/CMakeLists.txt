@@ -419,7 +419,7 @@ externalproject_add(target-sol
                     -G "${CMAKE_GENERATOR}"
                     )
 
-if (UNIX AND NOT ANDROID AND CMAKE_BUILD_TYPE STREQUAL "Release")
+if (UNIX AND NOT ANDROID)
     externalproject_add(target-jemalloc
                         EXCLUDE_FROM_ALL true
                         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}

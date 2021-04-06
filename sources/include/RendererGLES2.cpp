@@ -20,56 +20,23 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#pragma once
-#include "NoCopy.h"
-#include "Exception.h"
-#include <nlohmann/json.hpp>
-#include <filesystem>
-#include <string>
+#include "pcheader.h"
+
+#include "Renderer.h"
+
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+#include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
+#endif
+
+using namespace std;
 
 namespace xio {
-
-class Configurator : public NoCopy {
- public:
-
-  explicit Configurator(const std::string &file_name);
-
-  virtual ~Configurator();
-
-  void Load(const std::string &file_name);
-
 //----------------------------------------------------------------------------------------------------------------------
-  template<typename T>
-  void AddMember(const std::string &key, T &&value) {
-	document_[key] = value;
-  }
+void Renderer::InitOgreRenderSystem_GLES2_() {
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+  Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem());
+#endif
 
-//----------------------------------------------------------------------------------------------------------------------
-  template<typename T>
-  T Get(const std::string &key) {
-	T t{};
-
-	if (document_.find(key)!=document_.end())
-	  t = static_cast<T>(document_[key]);
-
-	return t;
-  }
-
-//----------------------------------------------------------------------------------------------------------------------
-  template<typename T>
-  bool Get(const std::string &key, T &t_) {
-
-	if (document_.find(key)!=document_.end()) {
-	  t_ = static_cast<T>(document_[key]);
-	  return true;
-	} else {
-	  return false;
-	}
-
-  }
-
- private:
-  nlohmann::json document_;
-};
+}
 
 } //namespace

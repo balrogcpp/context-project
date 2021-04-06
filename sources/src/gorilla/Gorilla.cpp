@@ -396,7 +396,7 @@ void TextureAtlas::_loadSprites(Ogre::ConfigFile::SettingsMultiMap *settings) {
     str_values = Ogre::StringUtil::split(data, " ", 4);
 
     if (str_values.size() != 4) {
-      //std::cout << "[Gorilla] Sprite #" << sprite_name << " does not have enough properties\n" << data << "\n";
+      //std::cout << "[Gorilla] Sprite #" << sprite_name << " does not have enough properties\n" << data << '\n';
       continue;
     }
 
@@ -905,7 +905,7 @@ void LayerContainer::_renderVertices(bool force) {
     knownVertexCount += (*it).second->mVertices.size();
 
   _resizeVertexBuffer(knownVertexCount);
-  //std::cout << "+++ Known Vertex Count is: " << knownVertexCount << "\n";
+  //std::cout << "+++ Known Vertex Count is: " << knownVertexCount << '\n';
   Vertex *writeIterator = (Vertex *) mVertexBuffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
 
   size_t i = 0;

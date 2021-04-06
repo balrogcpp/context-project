@@ -33,7 +33,9 @@ Configurator::Configurator(const string &file_name) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Configurator::~Configurator() = default;
+Configurator::~Configurator() {
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void Configurator::Load(const string &file_name) {

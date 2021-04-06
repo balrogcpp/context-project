@@ -1,5 +1,6 @@
 {
   "window_caption": "Demo Application",
+  "verbose": false,
   "window_width": 1920,
   "window_high": 1080,
   "window_fullscreen": false,

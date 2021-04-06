@@ -1293,7 +1293,7 @@ void GrassLayer::_updateShaders() {
                 "uniform mat4 worldViewProj; \n"
                 "uniform vec3 camPos; \n"
                 "uniform float fadeRange; \n"
-                "\n"
+				"\n"
                 "void main()"
                 "{ \n"
                 "    vec4 color = gl_Color; \n"

@@ -32,7 +32,7 @@ namespace xio {
 Window::Window(int w, int h, bool f)
 	: w_(w), h_(h), f_(f) {
 
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
+  if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 	throw Exception("Failed to init SDL2");
   }
 
@@ -45,7 +45,7 @@ Window::Window(int w, int h, bool f)
   }
 
   SDL_DisplayMode DM;
-  SDL_GetCurrentDisplayMode(0, &DM);
+  SDL_GetDesktopDisplayMode(0, &DM);
   screen_w_ = static_cast<int>(DM.w);
   screen_h_ = static_cast<int>(DM.h);
 
@@ -75,9 +75,13 @@ Window::Window(int w, int h, bool f)
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 
-
-  flags_ |= SDL_WINDOW_FULLSCREEN;
+  flags_ |= SDL_WINDOW_BORDERLESS;
+  flags_ |= SDL_WINDOW_FULLSCREEN_DESKTOP;
   flags_ |= SDL_WINDOW_OPENGL;
+
+  w_ = screen_w_;
+  h_ = screen_h_;
+
   window_ = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen_w_, screen_h_, flags_);
   gl_context_ = SDL_GL_CreateContext(window_);
 
@@ -152,7 +156,11 @@ void Window::SetFullscreen(bool f) {
   f_ = f;
 
   if (f) {
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
 	SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
+#else
+	SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_FULLSCREEN);
+#endif
   } else {
 	SDL_SetWindowSize(window_, w_, h_);
   }

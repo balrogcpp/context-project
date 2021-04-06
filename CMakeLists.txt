@@ -50,7 +50,7 @@ if (NOT ANDROID)
     endif ()
     if (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         message(SEND_ERROR "Debug build is not working with MSVC right now")
-    endif()
+    endif ()
 endif ()
 
 if (PTR_SIZE EQUAL 8)
@@ -116,7 +116,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     string(APPEND CMAKE_C_FLAGS " -msse4.1 -funroll-loops -pthread")
 
 
-elseif(ANDROID AND ${CMAKE_BUILD_TYPE} STREQUAL "Release")
+elseif (ANDROID AND ${CMAKE_BUILD_TYPE} STREQUAL "Release")
     string(APPEND CMAKE_CXX_FLAGS " -Ofast -DNDEBUG -funroll-loops -pthread")
     string(APPEND CMAKE_C_FLAGS " -Ofast -DNDEBUG -funroll-loops -pthread")
 
@@ -204,17 +204,21 @@ endif ()
 
 
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
-                                    ${BULLET_INCLUDE_DIR} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
-                                    ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
-                                    ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
+        ${BULLET_INCLUDE_DIR} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
+        ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
+        ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 
-file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h demo/*.hpp demo/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
+file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h demo/*.hpp deploy/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
 
-if (NOT ANDROID)
-    add_executable(demo ${SOURCE_FILES})
-else ()
+set(EXECUTABLE_NAME demo)
+
+if (ANDROID)
     add_library(demo SHARED ${SOURCE_FILES})
     set_target_properties(demo PROPERTIES OUTPUT_NAME "main")
+elseif (WIN32)
+    add_executable(demo WIN32 ${SOURCE_FILES})
+else()
+    add_executable(demo ${SOURCE_FILES})
 endif ()
 
 include_directories(demo demo/include ${CONTEXT_INCLUDE_DIRS})
@@ -237,8 +241,8 @@ endif ()
 
 
 target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
-                    ${PNG_LIBRARIES} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
-                    ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
+        ${PNG_LIBRARIES} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
+        ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
 target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
 
@@ -261,6 +265,9 @@ endif ()
 
 if (NOT ANDROID)
     file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} ${OPENAL_LIBRARY} DESTINATION . FOLLOW_SYMLINK_CHAIN)
+endif ()
+if (MINGW)
+    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/demo.exe.manifest DESTINATION .)
 endif ()
 
 find_package(Python3 QUIET)
@@ -300,7 +307,17 @@ if (UNIX)
             PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE
             DESTINATION .
             )
-endif()
+endif ()
+if (MINGW)
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/${EXECUTABLE_NAME}.exe.manifest
+            DESTINATION .
+            )
+endif ()
+if (MSVC)
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/VC_redist.x64.exe
+            DESTINATION .
+            )
+endif ()
 
 if (WIN32)
     set(CONTEXT_TARGET_OS "Windows")
