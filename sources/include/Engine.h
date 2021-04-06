@@ -53,7 +53,7 @@ class Engine : public Singleton<Engine> {
 
  private:
   view_ptr<InputSequencer> input_;
-  std::unique_ptr<Configurator> conf_;
+  std::unique_ptr<Configurator> config_;
   std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<Physics> physics_;
   std::unique_ptr<Sound> sound_;

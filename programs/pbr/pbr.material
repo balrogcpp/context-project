@@ -254,17 +254,31 @@ abstract material Plane : PBR
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vertex_program PbrTerrain_vs glsl glsles
+vertex_program PbrTerrain_vs_gl glsl
 {
 	source pbr.vert
-	//VERTEX_COMPRESSION
     preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {
         shared_params_ref PBR_Shared_vert
     }
 }
 
-fragment_program PbrTerrain_fs glsl glsles
+vertex_program PbrTerrain_vs_es glsles
+{
+	source pbr.vert
+    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8
+    default_params {
+        shared_params_ref PBR_Shared_vert
+    }
+}
+
+vertex_program PbrTerrain_vs unified
+{
+    delegate PbrTerrain_vs_gl
+    delegate PbrTerrain_vs_es
+}
+
+fragment_program PbrTerrain_fs_gl glsl
 {
 	source pbr.frag
     preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
@@ -277,11 +291,28 @@ fragment_program PbrTerrain_fs glsl glsles
     }
 }
 
+fragment_program PbrTerrain_fs_es glsles
+{
+	source pbr.frag
+    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8
+
+    default_params
+    {
+        shared_params_ref PBR_Shared_frag
+        param_named uShadowDepthOffset float 0.001
+        param_named uTerrainTexScale float 50.0
+    }
+}
+
+fragment_program PbrTerrain_fs unified
+{
+    delegate PbrTerrain_fs_gl
+    delegate PbrTerrain_fs_es
+}
+
+
 abstract material Terrain : PBR
 {
-    receive_shadows on
-    transparency_casts_shadows off
-
     technique
     {
         pass
@@ -301,7 +332,6 @@ abstract material Terrain : PBR
             vertex_program_ref PbrTerrain_vs
             {
                 param_named_auto uModelMatrix world_matrix
-                //param_named cWorldViewProjPrev matrix4x4 0
             }
 
             fragment_program_ref PbrTerrain_fs

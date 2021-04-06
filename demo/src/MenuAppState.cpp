@@ -20,7 +20,6 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#define IMGUI_ENABLE_FREETYPE
 #include "MenuAppState.h"
 #include "DemoDotAppState.h"
 #include "Renderer.h"

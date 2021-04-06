@@ -32,32 +32,7 @@ using namespace xio;
 
 namespace Demo {
 DemoDotAppState::DemoDotAppState() {
-////  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
-//  LoadFromFile("1.scene");
-//
-//  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-//  auto *root = scene->getRootSceneNode();
-//
-//  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
-//  auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
-//  root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
-//
-////  Ogre::Entity *entity = scene->createEntity("ely_vanguardsoldier_kerwinatienza_Mesh.mesh", "ely_vanguardsoldier_kerwinatienza_Mesh.mesh");
-////  auto *node = root->createChildSceneNode(Ogre::Vector3(0, 0, 0));
-////  node->scale(Ogre::Vector3(0.02));
-////  node->attachObject(entity);
-////  UpdateEntityMaterial(entity);
-////  anim1 = entity->getAnimationState("run");
-////  anim1->setLoop(true);
-////  anim1->setEnabled(true);
-//
-////  anim2 = entity->getAnimationState("jump");
-////  anim2->setLoop(true);
-////  anim2->setEnabled(true);
-//
-//  sound_->CreateSound("ambient", "test.ogg", false);
-//  sound_->SetVolume("ambient", 0.5);
-//  sound_->PlaySound("ambient");
+
 }
 
 DemoDotAppState::~DemoDotAppState() {
@@ -76,7 +51,7 @@ void DemoDotAppState::Resume() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
-  if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
+  if (SDL_GetScancodeFromKey(sym)==SDL_SCANCODE_ESCAPE) {
 	context_menu_ = true;
 	renderer_->GetWindow().SetCursorStatus(true, false, false);
   }
@@ -101,38 +76,44 @@ void DemoDotAppState::Update(float time) {
 //  anim1->addTime(time/4);
 //  anim2->addTime(time/4);
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID
   context_menu_ = true;
 #endif
 
   Ogre::ImGuiOverlay::NewFrame();
 
-  ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
-  ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-  ImGui::End();
-
-
-  if (!context_menu_) {
-	return;
-  }
-
-  // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
   {
-    using namespace ImGui;
+	using namespace ImGui;
 
-	static ImGuiIO& io = ImGui::GetIO();
-	SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f,0.5f));
+	static ImGuiIO &io = ImGui::GetIO();
+  SetNextWindowPos({0, 0}, ImGuiCond_Always);
 	SetNextWindowSize({0, 0}, ImGuiCond_Always);
 	SetNextWindowCollapsed(false, ImGuiCond_Always);
 	SetNextWindowBgAlpha(0.5);
-	SetNextWindowFocus();
+//  SetNextWindowFocus();
 
-	static float f = 0.0f;
-    static int counter = 0;
+	ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+				1000.0f/ImGui::GetIO().Framerate,
+				ImGui::GetIO().Framerate);
+	ImGui::End();
 
-    ImGui::Begin("", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);                          // Create a window called "Hello, world!" and append into it.
+	if (!context_menu_) {
+	  return;
+	}
 
-//    ImGui::SetWindowFontScale(4.0);
+	SetNextWindowPos(ImVec2(io.DisplaySize.x*0.5f, io.DisplaySize.y*0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	SetNextWindowSize({0, 0}, ImGuiCond_Always);
+	SetNextWindowCollapsed(false, ImGuiCond_Always);
+	SetNextWindowBgAlpha(0.5);
+//	SetNextWindowFocus();
+
+
+	ImGui::Begin("",
+				 nullptr,
+				 ImGuiWindowFlags_NoTitleBar
+					 | ImGuiWindowFlags_NoResize);                          // Create a window called "Hello, world!" and append into it.
+
 
 	ImGui::NewLine();
 
@@ -154,8 +135,7 @@ void DemoDotAppState::Update(float time) {
 
 	ImGui::NewLine();
 
-
-    ImGui::End();
+	ImGui::End();
 
 //	ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 //	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

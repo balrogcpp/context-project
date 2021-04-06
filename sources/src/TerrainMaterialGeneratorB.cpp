@@ -26,9 +26,7 @@
 #include "PbrShaderUtils.h"
 
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-#include <Terrain/OgreTerrainGroup.h>
 #include <Terrain/OgreTerrainQuadTreeNode.h>
-#include <Terrain/OgreTerrainMaterialGeneratorA.h>
 #include <Terrain/OgreTerrainMaterialGenerator.h>
 #include <Terrain/OgreTerrainAutoUpdateLod.h>
 #include <Terrain/OgreTerrain.h>
@@ -61,7 +59,12 @@ TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const {
-  return false;
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  return true;
+#else
+  static bool glsles = bool{Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"};
+  return glsles;
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -73,8 +76,8 @@ void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) {
 void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrain) {
   terrain->_setMorphRequired(true);
   terrain->_setNormalMapRequired(true);
-  terrain->_setLightMapRequired(lightmap_, true);
-  terrain->_setCompositeMapRequired(true);
+  terrain->_setLightMapRequired(lightmap_, false);
+  terrain->_setCompositeMapRequired(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -49,9 +49,9 @@ Window::Window(int w, int h, bool f)
   screen_w_ = static_cast<int>(DM.w);
   screen_h_ = static_cast<int>(DM.h);
 
-  flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
 
   if (w_==screen_w_ && h_==screen_h_) {
 	flags_ |= SDL_WINDOW_BORDERLESS;
@@ -126,9 +126,12 @@ SDL_SysWMinfo Window::GetInfo() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Window::SetCursorStatus(bool show, bool grab, bool relative) {
+  //This breaks input on > Android 9.0
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   SDL_ShowCursor(show);
   SDL_SetWindowGrab(window_, static_cast<SDL_bool>(grab));
   SDL_SetRelativeMouseMode(static_cast<SDL_bool>(relative));
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------

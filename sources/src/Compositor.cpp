@@ -92,7 +92,8 @@ Compositor::~Compositor() {
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Update(float time) {
 #if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
-  if (Ogre::Root::getSingleton().getRenderSystem()->getName()!="OpenGL ES 2.x Rendering Subsystem")
+  static bool glsles = bool{Ogre::Root::getSingleton().getRenderSystem()->getName()!="OpenGL ES 2.x Rendering Subsystem"};
+  if (glsles)
   	Pbr::Update(time);
 #endif
 }
@@ -184,11 +185,7 @@ void Compositor::InitMRT_() {
 void Compositor::InitOutput_() {
   string output_compositor;
 
-//  if (effects_["ssao"]) {
-//	output_compositor = "OutputSSAO";
-//  } else {
-	output_compositor = "Output";
-//  }
+  output_compositor = "Output";
 
   AddCompositorDisabled_(output_compositor);
 
@@ -216,11 +213,6 @@ void Compositor::InitOutput_() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Init() {
-//  if (Ogre::Root::getSingleton().getRenderSystem()->getName()=="OpenGL ES 2.x Rendering Subsystem")
-//	return;
-//#if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID
-//  return;
-//#endif
 
   InitMRT_();
 

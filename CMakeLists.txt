@@ -328,5 +328,4 @@ set(CPACK_GENERATOR "ZIP")
 
 include(CPack)
 
-#TODO tests
 add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)

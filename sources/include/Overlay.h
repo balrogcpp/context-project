@@ -23,9 +23,8 @@
 #pragma once
 #include "Component.h"
 #include "Singleton.h"
-#include "gorilla/Gorilla.h"
-#include "gorilla/OgreConsole.h"
 #include "ImGuiInputListener.h"
+
 
 namespace Ogre {
 class RenderTarget;
@@ -34,6 +33,15 @@ class SceneNode;
 class ImGuiOverlay;
 class OverlaySystem;
 class RenderTargetViewportEvent;
+}
+
+namespace Gorilla {
+class Silverback;
+class Screen;
+class Layer;
+class Caption;
+class Rectangle;
+class OgreConsole;
 }
 
 namespace xio {

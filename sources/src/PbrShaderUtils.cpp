@@ -152,11 +152,11 @@ void Pbr::UpdatePbrParams(const Ogre::MaterialPtr &material) {
 	frag_params->setNamedAutoConstant("cNearClipDistance", Ogre::GpuProgramParameters::ACT_NEAR_CLIP_DISTANCE);
 	frag_params->setNamedAutoConstant("cFarClipDistance", Ogre::GpuProgramParameters::ACT_FAR_CLIP_DISTANCE);
 
-//#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-//  frag_params->setNamedConstant("uLOD", 0.5f);
-//#else
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
+  frag_params->setNamedConstant("uLOD", 2.0f);
+#else
   frag_params->setNamedConstant("uLOD", 0.0f);
-//#endif
+#endif
 
 	gpu_vp_params_.push_back(vert_params);
 	gpu_fp_params_.push_back(frag_params);

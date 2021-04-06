@@ -29,8 +29,11 @@
 #include <Overlay/OgreImGuiOverlay.h>
 #endif
 
-#include "Overlay.h"
 #include "gorilla/Gorilla.h"
+#include "gorilla/OgreConsole.h"
+
+#include "Overlay.h"
+
 
 using namespace Gorilla;
 using namespace std;
@@ -66,8 +69,8 @@ Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : window_(render_wi
 
   imgui_ = make_unique<Ogre::ImGuiOverlay>();
   imgui_->setZOrder(300);
-//  imgui_->addFont("Roboto-Medium.ttf");
-//  imgui_->show();
+
+
   Ogre::OverlayManager::getSingleton().addOverlay(imgui_.get());
   window_->addListener(this);
 

@@ -48,12 +48,6 @@
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
 #include <Plugins/Assimp/OgreAssimpLoader.h>
 #endif
-//#ifdef OGRE_BUILD_COMPONENT_VOLUME
-//#include <Volume/OgreVolumeChunk.h>
-//#include <Volume/OgreVolumeCSGSource.h>
-//#include <Volume/OgreVolumeCacheSource.h>
-//#include <Volume/OgreVolumeTextureSource.h>
-//#endif
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreImGuiOverlay.h>
@@ -92,6 +86,8 @@ Renderer::Renderer(int w, int h, bool f) {
   xio::InitRtss();
   xio::CreateRtssShaders();
 
+  RestoreFullscreenAndroid();
+
   // Overlay
   overlay_ = make_unique<Overlay>(render_window_);
 
@@ -106,7 +102,6 @@ Renderer::Renderer(int w, int h, bool f) {
 
   compositor_->EnableEffect("ssao", conf_->Get<bool>("compositor_use_ssao"));
   compositor_->EnableEffect("bloom", conf_->Get<bool>("compositor_use_bloom"));
-  compositor_->EnableEffect("hdr", conf_->Get<bool>("compositor_use_hdr"));
   compositor_->EnableEffect("motion", conf_->Get<bool>("compositor_use_motion"));
   compositor_->Init();
 
@@ -212,7 +207,7 @@ void Renderer::InitResourceLocation_() {
 
   Assets::AddLocation("programs/common", internal_group);
   Assets::AddLocation("programs/rtss", internal_group);
-  Assets::AddLocation("programs/pbr", Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Assets::AddLocation("programs/pbr", internal_group);
   Assets::AddLocation("programs/particles", internal_group);
   Assets::AddLocation("programs/compositor", internal_group);
   Assets::AddLocation("programs/overlay", internal_group);
@@ -264,8 +259,7 @@ void Renderer::Resume() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Update(float time) {
-  //compositor_->Update(time);
-  //overlay_->Update(time);
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -288,6 +282,8 @@ void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy
 
 //----------------------------------------------------------------------------------------------------------------------
 void Renderer::Resize(int w, int h, bool f) {
+  window_->SetFullscreen(f);
+  window_->Resize(w, h);
   render_window_->resize(w, h);
 }
 

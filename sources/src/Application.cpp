@@ -65,7 +65,6 @@ Application::Application() {
 	lock_fps_ = conf_->Get<bool>("global_lock_fps");
 	target_fps_ = conf_->Get<int>("global_target_fps");
 
-	renderer_->RestoreFullscreenAndroid();
   }
   catch (Exception &e) {
 	Message_("Exception", e.getDescription());
@@ -152,7 +151,6 @@ void Application::Loop_() {
 		if (state_manager_->IsDirty()) {
 		  engine_->Pause();
 		  engine_->Cleanup();
-		  engine_->Refresh();
 		  state_manager_->InitNextState();
 		  engine_->Resume();
 		} else if (suspend_old) {
