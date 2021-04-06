@@ -37,10 +37,13 @@ int main(int argc, char* args[])
 #endif
 {
   try {
+
 	Application app;
-//	return app.Main(make_unique<Demo::DemoDotAppState>());
 	return app.Main(make_unique<Demo::MenuAppState>());
+
   } catch (...) {
 
   }
+
+  return 0;
 }

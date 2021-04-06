@@ -50,7 +50,7 @@ Application::Application() {
 #ifdef DEBUG
 	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
 #else
-	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
+	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_NORMAL);
 #endif
 #endif
 
