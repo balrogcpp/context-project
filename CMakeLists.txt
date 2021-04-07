@@ -239,14 +239,13 @@ elseif (UNIX AND NOT ANDROID)
 elseif (ANDROID)
     list(APPEND SYSTEM_LIBRARIES SDL2::hidapi android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
 elseif (MSVC)
-    list(APPEND SYSTEM_LIBRARIES zlibstatic winmm Version imm32 Setupapi)
+    list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 elseif (APPLE)
     list(APPEND SYSTEM_LIBRARIES)
 endif ()
 
-
 target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
-        ${PNG_LIBRARIES} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
+        ${PNG_LIBRARY} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
         ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
 target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
