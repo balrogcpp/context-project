@@ -25,13 +25,7 @@ project(xio-deps)
 include(CMakeDependentOption)
 include(ExternalProject)
 find_package(Git REQUIRED)
-find_package(Threads REQUIRED)
 
-if (NOT ANDROID)
-    find_package(OpenGL REQUIRED)
-else ()
-    find_package(OpenGLES2 REQUIRED)
-endif ()
 
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT})
 set(CONTEXT_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN})
@@ -63,7 +57,16 @@ externalproject_add(target-sdl
                     -G "${CMAKE_GENERATOR}"
                     )
 
-externalproject_add(target-bullet3
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
+    set(BULLET_USE_MT true)
+    set(BULLET_USE_OPENMP false)
+else()
+    set(BULLET_USE_MT true)
+    set(BULLET_USE_OPENMP true)
+endif ()
+
+externalproject_add(target-bullet
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
@@ -77,8 +80,8 @@ externalproject_add(target-bullet3
                     -DCMAKE_DEBUG_POSTFIX=
                     -DCMAKE_MINSIZEREL_POSTFIX=
                     -DCLAMP_VELOCITIES=0
-                    -DBULLET2_MULTITHREADING=true
-                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=false
+                    -DBULLET2_MULTITHREADING=${BULLET_USE_MT}
+                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=${BULLET_USE_OPENMP}
                     -DBUILD_BULLET2_DEMOS=false
                     -DBUILD_CPU_DEMOS=false
                     -DBUILD_EXTRAS=false
@@ -315,6 +318,9 @@ externalproject_add(target-assimp
                     -G "${CMAKE_GENERATOR}"
                     )
 
+if (ANDROID)
+    set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11.patch)
+endif ()
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zzip target-freetype target-sdl target-pugixml
@@ -323,8 +329,7 @@ externalproject_add(target-ogre
                     GIT_TAG v1.12.11
                     GIT_SHALLOW true
                     GIT_PROGRESS false
-                    PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre
-                        ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11.patch
+                    PATCH_COMMAND ${OGRE_PATCH_COMMAND}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -343,7 +348,6 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_RENDERSYSTEM_D3D9=false
                     -DOGRE_BUILD_PLUGIN_CG=false
                     -DOGRE_BUILD_RENDERSYSTEM_GL=false
-                    -DOGRE_BUILD_RENDERSYSTEM_GLES2=true
                     -DOGRE_BUILD_COMPONENT_OVERLAY=true
                     -DOGRE_BUILD_COMPONENT_BITES=false
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=true
@@ -439,5 +443,7 @@ list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-json)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet)
+
+
 add_custom_target(target-deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})

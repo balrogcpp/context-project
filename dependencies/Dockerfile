@@ -32,24 +32,20 @@ ADD CMakeLists.txt .
 ADD ./doc ./doc
 ADD ./CMake ./CMake
 
-ENV CC=clang
-ENV CXX=clang++
 
 RUN apt-get update && apt-get install -y python3 git gnutls-bin openssl libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
     && git config --global http.sslVerify false \
     && git config --global http.postBuffer 1048576000 \
-    && update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++ 10 \
-    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang 10 \
     && mkdir -p build-windows build-linux \
     && cd ${CONTEXT_HOME}/build-windows \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-w64.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. \
     && cmake --build . --target target-deps \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release/windows-mingw-x64/ \
+    && cd ${CONTEXT_HOME}/dependencies/external/Release/windows-gcc-mingw-x64/ \
     && rm -rf src tmp \
     && cd ${CONTEXT_HOME}/build-linux \
     && cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
     && cmake --build . --target target-deps \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-clang-x64/ \
+    && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-gcc-x64/ \
     && rm -rf src tmp \
     && cd ${CONTEXT_HOME} \
     && rm -rf build-windows build-linux \

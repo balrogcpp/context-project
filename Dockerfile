@@ -40,13 +40,11 @@ ADD CMakeLists.txt .
 ADD zip-dependencies.py .
 ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 
-ENV CC=clang
-ENV CXX=clang++
 
 RUN mkdir -p build-windows build-linux build-android \
     && python3 zip-dependencies.py \
     && cd build-windows \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-w64.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target package \
     && cd .. \
     && cd build-linux \

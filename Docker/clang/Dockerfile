@@ -30,7 +30,7 @@ ARG BINUTILS_VERSION=2.35.1
 ARG MINGW_VERSION=8.0.0
 ARG GCC_VERSION=10.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
-ARG CMAKE_VERSION=3.19.4
+ARG CMAKE_VERSION=3.20.0
 ARG CMAKE_HOME=/opt/cmake
 ARG NINJA_VERSION=1.10.2
 WORKDIR /mnt
@@ -42,7 +42,11 @@ RUN apt-get update \
     && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
-    && apt-get install -y g++ gcc clang lld llvm make autoconf file patch xz-utils bzip2 zip zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev\
+    && apt-get install -y g++-10 gcc-10 clang lld llvm make autoconf file patch xz-utils bzip2 zip zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev\
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc-10 10000 \
+        --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++-10 \
+    && update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 10000 \
+    && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 10000 \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
     && wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
