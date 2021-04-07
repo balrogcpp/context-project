@@ -21,6 +21,7 @@
 //SOFTWARE.
 
 #include "pcheader.h"
+#include <OgreSceneLoaderManager.h>
 #include "DotSceneLoaderB.h"
 #include "Physics.h"
 #include "PbrShaderUtils.h"
@@ -37,6 +38,8 @@
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>
+#include <OgrePixelCountLodStrategy.h>
+#include <OgreDistanceLodStrategy.h>
 #endif
 //Paging
 #ifdef OGRE_BUILD_COMPONENT_PAGING

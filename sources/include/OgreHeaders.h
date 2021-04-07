@@ -24,17 +24,7 @@
 
 //OGRE Core objects
 #include <Ogre.h>
-#include <OgreSceneLoaderManager.h>
-//LOD config
-#include <OgrePixelCountLodStrategy.h>
-#include <OgreDistanceLodStrategy.h>
-//RTShader System
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-#include <RTShaderSystem/OgreRTShaderSystem.h>
-#include <RTShaderSystem/OgreShaderGenerator.h>
-#endif
-//HLMS
-#ifdef OGRE_BUILD_COMPONENT_HLMS
-#include <HLMS/OgreHlmsManager.h>
-#include <HLMS/OgreHlmsPbsMaterial.h>
+//Overlay
+#ifdef OGRE_BUILD_COMPONENT_OVERLAY
+#include <Overlay/OgreImGuiOverlay.h>
 #endif

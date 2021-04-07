@@ -24,7 +24,6 @@
 #include "SDL2.hpp"
 #include "Configurator.h"
 #include "OgreHeaders.h"
-#include "imgui.h"
 //#include "gorilla/Gorilla.h"
 //#include "btogre/BtOgre.h"
 //#include "oggsound/OgreOggSound.h"

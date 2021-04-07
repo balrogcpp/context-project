@@ -25,6 +25,9 @@
 
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 
+#include <RTShaderSystem/OgreRTShaderSystem.h>
+#include <RTShaderSystem/OgreShaderGenerator.h>
+
 using namespace std;
 
 namespace xio {
