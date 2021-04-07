@@ -26,6 +26,7 @@
 #include "MeshUtils.h"
 #include "DotSceneLoaderB.h"
 #include "Physics.h"
+#include "ComponentLocator.h"
 #include "pgeometry/PagedGeometryAll.h"
 
 using namespace Forests;
@@ -235,7 +236,7 @@ void Forest::GenerateGrassStatic() {
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 1000000; i++) {
     Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
-    pos.y += loader_->GetHeigh(pos.x, pos.z);
+    pos.y += GetLoader().GetHeigh(pos.x, pos.z);
 
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
@@ -265,13 +266,13 @@ void Forest::GenerateRocksStatic() {
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 250; i++) {
     Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
-    pos.y += loader_->GetHeigh(pos.x, pos.z) - 0.1;
+    pos.y += GetLoader().GetHeigh(pos.x, pos.z) - 0.1;
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(2.0, 2.0*Ogre::Math::RangeRandom(0.85, 1.15), 2.0);
 
     auto *node = root_node->createChildSceneNode(pos, ori);
     node->scale(scale);
-    physics_->ProcessData(rock, node);
+    GetPhysics().ProcessData(rock, node);
     scene->destroySceneNode(node);
 
     rocks->addEntity(rock, pos, ori, scale);
@@ -362,7 +363,7 @@ void Forest::GenerateTreesPaged() {
 
     auto *node = root_node->createChildSceneNode(Ogre::Vector3(x, y, z), quat);
     node->scale(Ogre::Vector3(scale));
-    physics_->ProcessData(fir1EntPtr, node, "capsule");
+    GetPhysics().ProcessData(fir1EntPtr, node, "capsule");
     scene->destroySceneNode(node);
 
     treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, 0, z), Ogre::Degree(yaw), scale);

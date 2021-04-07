@@ -643,5 +643,8 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
 	AddRigidBody(entBody);
   }
 }
+bool Physics::IsThreaded() const {
+  return threaded_;
+}
 
 } //namespace

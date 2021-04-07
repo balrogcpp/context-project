@@ -22,24 +22,52 @@
 
 #include "pcheader.h"
 
+#include "Engine.h"
 #include "ComponentLocator.h"
+#include "Input.h"
 
 namespace xio {
 
-void ComponentLocator::LocateComponents(view_ptr<Configurator> conf,
-										view_ptr<InputSequencer> input,
-										view_ptr<Renderer> renderer,
-										view_ptr<Physics> physics,
-										view_ptr<Sound> sounds,
-										view_ptr<Overlay> overlay,
-										view_ptr<DotSceneLoaderB> loader) {
-  conf_ = conf;
-  input_ = input;
-  renderer_ = renderer;
-  physics_ = physics;
-  sound_ = sounds;
-  overlay_ = overlay;
-  loader_ = loader;
+//----------------------------------------------------------------------------------------------------------------------
+InputSequencer& GetIo() {
+  return InputSequencer::GetInstance();
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+Configurator& GetConf() {
+  static auto &config = *Engine::GetInstance().config_;
+  return config;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Renderer& GetRender() {
+  static auto &renderer = *Engine::GetInstance().renderer_;
+  return renderer;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Physics& GetPhysics() {
+  static auto &physics = *Engine::GetInstance().physics_;
+  return physics;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Audio& GetAudio() {
+  static auto &audio = *Engine::GetInstance().audio_;
+  return audio;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Overlay& GetOverlay() {
+  static auto &overlay = *Engine::GetInstance().overlay_;
+  return overlay;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+DotSceneLoaderB& GetLoader() {
+  static auto &loader = *Engine::GetInstance().loader_;
+  return loader;
+}
+
 
 } //namespace

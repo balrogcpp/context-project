@@ -24,13 +24,13 @@
 #include <OgreRoot.h>
 #include <OgreSceneNode.h>
 #include "Input.h"
-#include "Entity.h"
-#include "ComponentLocator.h"
+#include "Object.h"
+
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 #include "view_ptr.h"
 
 namespace xio {
-class CameraMan final : public Entity, public InputObserver {
+class CameraMan final : public Object, public InputObserver {
  public:
   enum class Style  // enumerator values for different styles of camera movement
   {

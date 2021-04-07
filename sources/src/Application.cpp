@@ -26,6 +26,7 @@
 #include "DesktopIcon.h"
 #include "Exception.h"
 #include "SDL2.hpp"
+#include "ComponentLocator.h"
 #include <iostream>
 
 #ifdef WIN32
@@ -67,13 +68,13 @@ Application::Application() {
 
 	state_manager_ = make_unique<StateManager>();
 
-	conf_->Get("verbose", verbose_);
+	GetConf().Get("verbose", verbose_);
 
 	if (verbose_)
 	  log_.reserve(10000);
 
-	lock_fps_ = conf_->Get<bool>("global_lock_fps");
-	target_fps_ = conf_->Get<int>("global_target_fps");
+	lock_fps_ = GetConf().Get<bool>("global_lock_fps");
+	target_fps_ = GetConf().Get<int>("global_target_fps");
 
   }
   catch (Exception &e) {

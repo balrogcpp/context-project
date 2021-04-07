@@ -1,5 +1,5 @@
 #pragma once
-#include "Entity.h"
+#include "Object.h"
 #include "Input.h"
 
 #define SCALE 0.2f
@@ -12,7 +12,7 @@
 #define JUMP_ACCEL SCALE*30.0f       // character jump acceleration in upward units per squared second
 #define GRAVITY SCALE*90.0f          // gravity in downward units per squared second
 
-class SinbadCharacterController : public xio::Entity, public xio::InputObserver {
+class SinbadCharacterController : public xio::Object, public xio::InputObserver {
  private:
   // all the animations our character has, and a null ID
   // some of these affect separate body parts and will be blended together

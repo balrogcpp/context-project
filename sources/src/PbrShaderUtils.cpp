@@ -22,6 +22,7 @@
 
 #include "pcheader.h"
 #include "PbrShaderUtils.h"
+#include "ComponentLocator.h"
 
 using namespace std;
 
@@ -91,7 +92,7 @@ void Pbr::Cleanup() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Pbr::Update(float time) {
-  if (conf_->Get<bool>("compositor_use_motion")) {
+  if (GetConf().Get<bool>("compositor_use_motion")) {
 	camera_ = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 	mvp_prev_ = mvp_;
 	mvp_ = camera_->getProjectionMatrixWithRSDepth()*camera_->getViewMatrix();

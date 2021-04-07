@@ -80,8 +80,10 @@ void Engine::InitComponents() {
   input_ = &InputSequencer::GetInstance();
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  physics_ = make_unique<Physics>(true);
-  sound_ = make_unique<Sound>(8, 8);
+  bool physics_threaded = false; //cause strange behavior sometimes
+  config_->Get("physics_threaded", physics_threaded);
+  physics_ = make_unique<Physics>(physics_threaded);
+  audio_ = make_unique<Audio>(8, 8);
 #else
   physics_ = make_unique<Physics>(false);
   sound_ = make_unique<Sound>(4, 4);
@@ -106,8 +108,43 @@ void Engine::InitComponents() {
   renderer_->GetWindow().SetCaption(config_->Get<string>("window_caption"));
   renderer_->Refresh();
 
-  ComponentLocator::LocateComponents(config_, input_, renderer_, physics_, sound_, overlay_, loader_);
+  //ComponentLocator::LocateComponents(config_, input_, renderer_, physics_, sound_, overlay_, loader_);
 }
+
+////----------------------------------------------------------------------------------------------------------------------
+//InputSequencer& Engine::GetIo() {
+//  return InputSequencer::GetInstance();
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------
+//Configurator& Engine::GetConf() {
+//  return *Engine::GetInstance().config_;
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------
+//Renderer& Engine::GetRender() {
+//  return *Engine::GetInstance().renderer_;
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------
+//Physics& Engine::GetPhysics() {
+//  return *Engine::GetInstance().physics_;
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------
+//Audio& Engine::GetAudio() {
+//  return *Engine::GetInstance().sound_;
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------
+//Overlay& Engine::GetOverlay() {
+//  return *Engine::GetInstance().overlay_;
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------
+//DotSceneLoaderB& Engine::GetLoader() {
+//  return *Engine::GetInstance().loader_;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 Engine& Engine::GetInstance() {

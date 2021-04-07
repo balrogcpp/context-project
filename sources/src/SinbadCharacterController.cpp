@@ -25,8 +25,10 @@
 #include "Ogre.h"
 #include "MeshUtils.h"
 #include "DotSceneLoaderB.h"
+#include "ComponentLocator.h"
 
 using namespace std;
+using namespace xio;
 
 Ogre::SceneNode *SinbadCharacterController::GetBodyNode() const {
   return mBodyNode;
@@ -147,8 +149,8 @@ void SinbadCharacterController::setupBody(Ogre::SceneManager *sceneMgr) {
   mBodyEnt->attachObjectToBone("Sheath.L", mSword1);
   mBodyEnt->attachObjectToBone("Sheath.R", mSword2);
 
-  xio::UpdateMeshMaterial("Sinbad.mesh");
-  xio::UpdateMeshMaterial("Sword.mesh");
+  UpdateMeshMaterial("Sinbad.mesh");
+  UpdateMeshMaterial("Sword.mesh");
 
   // create a couple of ribbon trails for the swords, just for fun
   Ogre::NameValuePairList params;
@@ -220,7 +222,7 @@ void SinbadCharacterController::updateBody(Ogre::Real deltaTime) {
   mGoalDirection = Ogre::Vector3::ZERO;   // we will calculate this
   float x = mBodyNode->getPosition().x;
   float z = mBodyNode->getPosition().z;
-  float y = loader_->GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
+  float y = GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
   mBodyNode->setPosition(x, y, z);
 
   if (mKeyDirection!=Ogre::Vector3::ZERO && mBaseAnimID!=ANIM_DANCE) {
@@ -257,9 +259,9 @@ void SinbadCharacterController::updateBody(Ogre::Real deltaTime) {
 	mVerticalVelocity -= GRAVITY*deltaTime;
 
 	Ogre::Vector3 pos = mBodyNode->getPosition();
-	if (pos.y <= loader_->GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT) {
+	if (pos.y <= GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT) {
 	  // if we've hit the ground, change to landing state
-	  pos.y = loader_->GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
+	  pos.y = GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
 	  mBodyNode->setPosition(pos);
 	  setBaseAnimation(ANIM_JUMP_END, true);
 	  mTimer = 0;

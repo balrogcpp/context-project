@@ -56,10 +56,10 @@ class JsonConfigurator;
 class Configurator;
 class Renderer;
 class Physics;
-class Sound;
+class Audio;
 class Overlay;
 
-class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB>, public Ogre::SceneLoader, public ComponentLocator {
+class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB>, public Ogre::SceneLoader {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();

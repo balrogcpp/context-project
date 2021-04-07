@@ -26,9 +26,10 @@
 #include "PbrShaderUtils.h"
 #include "MeshUtils.h"
 #include "XmlUtils.h"
-#include "Sound.h"
+#include "Audio.h"
 #include "SinbadCharacterController.h"
 #include "Renderer.h"
+#include "ComponentLocator.h"
 #include <pugixml.hpp>
 #include "btogre/BtOgre.h"
 
@@ -384,7 +385,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
     btRigidBody *entBody;
     converter = make_unique<BtOgre::StaticMeshToShapeConverter>(actor);
     auto *entShape = converter->createCapsule();
-    sound_->SetListener(camera->getParentSceneNode());
+    GetAudio().SetListener(camera->getParentSceneNode());
     float mass = 100.0f;
     entShape->calculateLocalInertia(mass, inertia);
     auto *bodyState = new BtOgre::RigidBodyState(parent);
@@ -395,7 +396,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
     entBody->setActivationState(DISABLE_DEACTIVATION);
     entBody->setFriction(1.0);
     entBody->setUserIndex(1);
-    physics_->AddRigidBody(entBody);
+    GetPhysics().AddRigidBody(entBody);
     camera_->SetRigidBody(entBody);
 
     camera_->AttachNode(parent);
@@ -630,9 +631,9 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
     // Process userDataReference
     if (auto element = xml_node.child("userData")) {
       ProcessUserData_(element, entity->getUserObjectBindings());
-      physics_->ProcessData(entity->getUserObjectBindings(), entity, parent);
+      GetPhysics().ProcessData(entity->getUserObjectBindings(), entity, parent);
     } else {
-      physics_->ProcessData(entity, parent);
+      GetPhysics().ProcessData(entity, parent);
     }
   }
   catch (Ogre::Exception &e) {
@@ -747,7 +748,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   auto *bodyState = new BtOgre::RigidBodyState(parent);
   btRigidBody *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
   entBody->setFriction(1);
-  physics_->AddRigidBody(entBody);
+  GetPhysics().AddRigidBody(entBody);
 
   const Ogre::uint32 WATER_MASK = 0xF00;
   entity->setVisibilityFlags(WATER_MASK);

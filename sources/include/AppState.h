@@ -24,7 +24,7 @@
 
 #include "NoCopy.h"
 #include "Input.h"
-#include "ComponentLocator.h"
+
 
 namespace xio {
 class StateManager;
@@ -33,8 +33,7 @@ class AppState
 	: public Ogre::RenderTargetListener,
 	  public Ogre::FrameListener,
 	  public InputObserver,
-	  public NoCopy,
-	  public ComponentLocator {
+	  public NoCopy {
  public:
   AppState();
   virtual ~AppState();

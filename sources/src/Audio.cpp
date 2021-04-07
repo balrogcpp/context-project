@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include "Sound.h"
+#include "Audio.h"
 #include "oggsound/OgreOggSound.h"
 #include "Exception.h"
 
@@ -31,7 +31,7 @@ using namespace std;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
-Sound::Sound(unsigned int max_sources, unsigned int queue_list_size) {
+Audio::Audio(unsigned int max_sources, unsigned int queue_list_size) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   putenv("ALSOFT_LOGLEVEL=LOG_NONE");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
@@ -48,37 +48,37 @@ Sound::Sound(unsigned int max_sources, unsigned int queue_list_size) {
   manager_->setResourceGroupName(Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 }
 //----------------------------------------------------------------------------------------------------------------------
-Sound::~Sound() {
+Audio::~Audio() {
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::Cleanup() {
+void Audio::Cleanup() {
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::Update(float time) {
+void Audio::Update(float time) {
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::Pause() {
+void Audio::Pause() {
   manager_->pauseAllSounds();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::Resume() {
+void Audio::Resume() {
   manager_->resumeAllPausedSounds();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::CreateSound(const string &name, const string &file, bool loop) {
+void Audio::CreateSound(const string &name, const string &file, bool loop) {
   auto *sound = manager_->createSound(name, file, true, loop, true, nullptr);
   Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->createChildSceneNode()->attachObject(sound);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::SetListener(Ogre::SceneNode *parent) {
+void Audio::SetListener(Ogre::SceneNode *parent) {
   auto *listener = manager_->getListener();
   if (!listener) {
     manager_->createListener();
@@ -88,7 +88,7 @@ void Sound::SetListener(Ogre::SceneNode *parent) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::PlaySound(const string &name, bool immediate) {
+void Audio::PlaySound(const string &name, bool immediate) {
   auto *sound = manager_->getSound(name);
   if (sound) {
     if (immediate)
@@ -100,19 +100,19 @@ void Sound::PlaySound(const string &name, bool immediate) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::SetMasterVolume(float volume) {
+void Audio::SetMasterVolume(float volume) {
   manager_->setMasterVolume(volume);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::SetMaxVolume(const string &name, float volume) {
+void Audio::SetMaxVolume(const string &name, float volume) {
   if (manager_->getSound(name)) {
     manager_->getSound(name)->setMaxVolume(volume);
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Sound::SetVolume(const string &name, float gain) {
+void Audio::SetVolume(const string &name, float gain) {
   if (manager_->getSound(name)) {
     manager_->getSound(name)->setVolume(gain);
   }

@@ -23,6 +23,7 @@
 #include "MenuAppState.h"
 #include "DemoDotAppState.h"
 #include "Renderer.h"
+#include "ComponentLocator.h"
 #include <Overlay/OgreImGuiOverlay.h>
 
 using namespace std;
@@ -49,7 +50,11 @@ void MenuAppState::Update(float time) {
 
 	const float hdx = 1920;
 	const float hdy = 1080;
-	float scale = 0.25f * renderer_->GetWindow().GetSize().first / hdx;
+	const float hddiag = sqrt(hdx * hdx + hdy * hdy);
+	float x = GetRender().GetWindow().GetSize().first;
+	float y = GetRender().GetWindow().GetSize().second;
+	static float diag = sqrt(x * x + y * y);
+	float scale = 0.25f * diag / hddiag;
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 	scale *= 4.0f;
 #endif
@@ -62,7 +67,7 @@ void MenuAppState::Update(float time) {
 
 	ImGui::NewLine();
 
-	if (ImGui::Button("        EXIT        "))
+	if (ImGui::Button("        EXIT           "))
 	  ChangeState();
 
 	ImGui::NewLine();
@@ -77,7 +82,7 @@ void MenuAppState::OnKeyDown(SDL_Keycode sym) {
 }
 
 void MenuAppState::Init() {
-  renderer_->GetWindow().SetCursorStatus(true, false, false);
+  GetRender().GetWindow().SetCursorStatus(true, false, false);
 
   ImGuiIO &io = ImGui::GetIO();
 }

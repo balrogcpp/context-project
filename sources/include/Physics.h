@@ -91,6 +91,8 @@ class Physics final : public Component, public Singleton<Physics> {
 	callback_ = callback;
   }
 
+  bool IsThreaded() const;
+
  private:
   void InitThread_();
 

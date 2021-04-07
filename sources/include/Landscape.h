@@ -22,7 +22,7 @@
 
 #pragma once
 #include "SubComponent.h"
-#include "ComponentLocator.h"
+
 #include <memory>
 
 namespace Ogre {
@@ -36,7 +36,7 @@ class xml_node;
 }
 
 namespace xio {
-class Landscape final : public ComponentLocator, public SubComponent {
+class Landscape final : public SubComponent {
  public:
   Landscape ();
   virtual ~Landscape ();

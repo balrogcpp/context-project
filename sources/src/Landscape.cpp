@@ -24,6 +24,7 @@
 #include "Landscape.h"
 #include "Physics.h"
 #include "Renderer.h"
+#include "ComponentLocator.h"
 #include <Terrain/OgreTerrainMaterialGeneratorA.h>
 #include "TerrainMaterialGeneratorB.h"
 #include "XmlUtils.h"
@@ -228,7 +229,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   while (terrainIterator.hasMoreElements()) {
 	auto *terrain = terrainIterator.getNext()->instance;
 
-	physics_->CreateTerrainHeightfieldShape(terrain->getSize(),
+	GetPhysics().CreateTerrainHeightfieldShape(terrain->getSize(),
 											terrain->getHeightData(),
 											terrain->getMinHeight(),
 											terrain->getMaxHeight(),

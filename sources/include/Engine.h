@@ -23,7 +23,7 @@
 #pragma once
 #include "Input.h"
 #include "Renderer.h"
-#include "Sound.h"
+#include "Audio.h"
 #include "Physics.h"
 #include "DotSceneLoaderB.h"
 #include "Overlay.h"
@@ -33,6 +33,15 @@
 #include "view_ptr.h"
 
 namespace xio {
+
+//InputSequencer& GetIo();
+//Configurator& GetConf();
+//Renderer& GetRender();
+//Physics& GetPhysics();
+//Audio& GetAudio();
+//Overlay& GetOverlay();
+//DotSceneLoaderB& GetLoader();
+
 
 class Engine : public Singleton<Engine> {
  public:
@@ -51,15 +60,31 @@ class Engine : public Singleton<Engine> {
   void RenderOneFrame();
   void RegComponent(view_ptr<Component> component);
 
+//  static InputSequencer& GetIo();
+//  static Configurator& GetConf();
+//  static Renderer& GetRender();
+//  static Physics& GetPhysics();
+//  static Audio& GetAudio();
+//  static Overlay& GetOverlay();
+//  static DotSceneLoaderB& GetLoader();
+
  private:
   view_ptr<InputSequencer> input_;
   std::unique_ptr<Configurator> config_;
   std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<Physics> physics_;
-  std::unique_ptr<Sound> sound_;
+  std::unique_ptr<Audio> audio_;
   std::unique_ptr<Overlay> overlay_;
   std::unique_ptr<DotSceneLoaderB> loader_;
   std::vector<view_ptr<Component>> components_;
+
+  friend InputSequencer& GetIo();
+  friend Configurator& GetConf();
+  friend Renderer& GetRender();
+  friend Physics& GetPhysics();
+  friend Audio& GetAudio();
+  friend Overlay& GetOverlay();
+  friend DotSceneLoaderB& GetLoader();
 };
 
 } //namespace

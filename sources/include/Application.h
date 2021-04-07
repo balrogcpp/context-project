@@ -25,12 +25,12 @@
 #include "Singleton.h"
 #include "Engine.h"
 #include "StateManager.h"
-#include "ComponentLocator.h"
+
 #include "view_ptr.h"
 
 namespace xio {
 
-class Application final : public WindowObserver, public Ogre::LogListener, public ComponentLocator, public Singleton<Application> {
+class Application final : public WindowObserver, public Ogre::LogListener, public Singleton<Application> {
  public:
   explicit Application();
   virtual ~Application();

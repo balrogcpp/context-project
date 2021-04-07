@@ -22,7 +22,7 @@
 
 #pragma once
 #include "SubComponent.h"
-#include "ComponentLocator.h"
+
 #include <functional>
 #include <memory>
 #include "view_ptr.h"
@@ -34,7 +34,7 @@ class GeometryPage;
 }
 
 namespace xio {
-class Forest final : public ComponentLocator, public SubComponent {
+class Forest final : public SubComponent {
  public:
   Forest();
   virtual ~Forest();

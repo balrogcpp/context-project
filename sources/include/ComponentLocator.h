@@ -21,38 +21,25 @@
 //SOFTWARE.
 
 #pragma once
-#include "view_ptr.h"
 
 namespace xio {
 
-class JsonConfigurator;
 class Configurator;
 class Renderer;
 class Physics;
-class Sound;
+class Audio;
 class Overlay;
 class DotSceneLoaderB;
 class InputSequencer;
 
-class ComponentLocator {
- public:
+InputSequencer& GetIo();
+Configurator& GetConf();
+Renderer& GetRender();
+Physics& GetPhysics();
+Audio& GetAudio();
+Overlay& GetOverlay();
+DotSceneLoaderB& GetLoader();
 
-  static void LocateComponents(view_ptr<Configurator> conf,
-							   view_ptr<InputSequencer> input,
-							   view_ptr<Renderer> renderer,
-							   view_ptr<Physics> physics,
-							   view_ptr<Sound> sounds,
-							   view_ptr<Overlay> overlay,
-							   view_ptr<DotSceneLoaderB> loader);
 
- protected:
-  inline static view_ptr<Configurator> conf_;
-  inline static view_ptr<Renderer> renderer_;
-  inline static view_ptr<Physics> physics_;
-  inline static view_ptr<Sound> sound_;
-  inline static view_ptr<Overlay> overlay_;
-  inline static view_ptr<DotSceneLoaderB> loader_;
-  inline static view_ptr<InputSequencer> input_;
-};
 
 } //namespace
