@@ -18,7 +18,7 @@ build:
     - docker rm -f abc
   artifacts:
     paths:
-      - ContextProjectDemo-Windows-x64-$CI_COMMIT_SHORT_SHA.zip
-      - ContextProjectDemo-Linux-x64-$CI_COMMIT_SHORT_SHA.zip
+      - artifacts/ContextProjectDemo-Windows-x64-$CI_COMMIT_SHORT_SHA.zip
+      - artifacts/ContextProjectDemo-Linux-x64-$CI_COMMIT_SHORT_SHA.zip
   only:
     - master
