@@ -10,15 +10,10 @@ variables:
 build:
   stage: build
   script:
-    - docker build --build-arg GIT_HASH=$CI_COMMIT_SHORT_SHA . -t context
-    - docker create -ti --name abc context bash
-    - mkdir artifacts
-    - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-Windows-x64-$CI_COMMIT_SHORT_SHA.zip .
-    - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-Linux-x64-$CI_COMMIT_SHORT_SHA.zip .
-    - docker rm -f abc
+    - "./build.sh"
   artifacts:
     paths:
-      - ContextProjectDemo-Windows-x64-$CI_COMMIT_SHORT_SHA.zip
-      - ContextProjectDemo-Linux-x64-$CI_COMMIT_SHORT_SHA.zip
+      - artifacts/ContextProjectDemo-Windows-x64-$CI_COMMIT_SHORT_SHA.zip
+      - artifacts/ContextProjectDemo-Linux-x64-$CI_COMMIT_SHORT_SHA.zip
   only:
     - master
