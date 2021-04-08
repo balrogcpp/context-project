@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,8 @@
 #include "MenuAppState.h"
 #include "DemoDotAppState.h"
 #include "Renderer.h"
+#include "ComponentLocator.h"
+#include <Overlay/OgreImGuiOverlay.h>
 
 using namespace std;
 using namespace xio;
@@ -30,16 +32,59 @@ using namespace xio;
 namespace Demo {
 
 void MenuAppState::Cleanup() {
+  Ogre::ImGuiOverlay::NewFrame();
+}
+
+void MenuAppState::Update(float time) {
+
+  Ogre::ImGuiOverlay::NewFrame();
+
+  {
+	static ImGuiIO &io = ImGui::GetIO();
+	ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x*0.5f, io.DisplaySize.y*0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
+	ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
+	ImGui::SetNextWindowFocus();
+
+	ImGui::Begin("", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+
+	const float hdx = 1920;
+	const float hdy = 1080;
+	const float hddiag = sqrt(hdx * hdx + hdy * hdy);
+	float x = GetRender().GetWindow().GetSize().first;
+	float y = GetRender().GetWindow().GetSize().second;
+	static float diag = sqrt(x * x + y * y);
+	float scale = 0.25f * diag / hddiag;
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+	scale *= 4.0f;
+#endif
+	ImGui::SetWindowFontScale(scale);
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("        DEMO        "))
+	  ChangeState(make_unique<DemoDotAppState>());
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("        EXIT           "))
+	  ChangeState();
+
+	ImGui::NewLine();
+
+	ImGui::End();
+  }
+
 }
 
 void MenuAppState::OnKeyDown(SDL_Keycode sym) {
-  if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_G) {
-	ChangeState(make_unique<DemoDotAppState>());
-  }
+
 }
 
 void MenuAppState::Init() {
-//  renderer_->GetWindow().SetCursorStatus(false, true, true);
+  GetRender().GetWindow().SetCursorStatus(true, false, false);
+
+  ImGuiIO &io = ImGui::GetIO();
 }
 
 }

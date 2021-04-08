@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -90,15 +90,15 @@ void UpdateMeshMaterial(Ogre::MeshPtr mesh, bool cast_shadows, const string &mat
 	  material = submesh->getMaterial();
 
 	  if (material) {
-		UpdatePbrParams(material);
+		Pbr::UpdatePbrParams(material);
 
 		if (cast_shadows)
-		  UpdatePbrShadowCaster(material);
+		  Pbr::UpdatePbrShadowCaster(material);
 
 		if (material->getReceiveShadows())
-		  UpdatePbrShadowReceiver(material);
+		  Pbr::UpdatePbrShadowReceiver(material);
 
-		UpdatePbrIbl(material, active_ibl);
+		Pbr::UpdatePbrIbl(material, active_ibl);
 	  }
 	}
   }

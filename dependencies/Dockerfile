@@ -1,6 +1,6 @@
 #MIT License
 #
-#Copyright (c) 2020 Andrey Vasiliev
+#Copyright (c) 2021 Andrew Vasiliev
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -29,22 +29,24 @@ WORKDIR ${CONTEXT_HOME}
 ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 ADD dependencies/patch ./dependencies/patch
 ADD CMakeLists.txt .
+ADD ./doc ./doc
 ADD ./CMake ./CMake
 
-RUN apt-get install -y git gnutls-bin openssl libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
+
+RUN apt-get update && apt-get install -y python3 git gnutls-bin openssl libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
     && git config --global http.sslVerify false \
     && git config --global http.postBuffer 1048576000 \
     && mkdir -p build-windows build-linux \
     && cd ${CONTEXT_HOME}/build-windows \
-    && cmake -DCONTEXT_ONLY_DEPS=true -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. \
-    && cmake --build . --target deps \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release/windows-mingw-x64/ \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. \
+    && cmake --build . --target target-deps \
+    && cd ${CONTEXT_HOME}/dependencies/external/Release/windows-gcc-mingw-x64/ \
     && rm -rf src tmp \
     && cd ${CONTEXT_HOME}/build-linux \
-    && cmake -DCONTEXT_ONLY_DEPS=true -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
-    && cmake --build . --target deps \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-gcc-x64 \
+    && cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
+    && cmake --build . --target target-deps \
+    && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-gcc-x64/ \
     && rm -rf src tmp \
     && cd ${CONTEXT_HOME} \
     && rm -rf build-windows build-linux \
-    && rm -rf CMake CMakeLists.txt dependencies/CMakeLists.txt \
+    && rm -rf doc CMake CMakeLists.txt dependencies/CMakeLists.txt dependencies/patch

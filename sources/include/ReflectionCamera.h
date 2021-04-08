@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
 #pragma once
 #include <Ogre.h>
 #include <vector>
+#include "view_ptr.h"
 
 namespace xio {
 class ReflectionCamera final : public Ogre::RenderTargetListener {
@@ -37,26 +38,20 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   void Clear_();
   void Init_(unsigned int tex_size);
 
-  std::shared_ptr<Ogre::Texture> reflection_tex_;
-  std::shared_ptr<Ogre::Texture> refraction_tex_;
   Ogre::Plane plane_;
-  Ogre::Camera *rcamera_ = nullptr;
-  Ogre::SceneManager *scene_ = nullptr;
+  view_ptr<Ogre::Camera> rcamera_ ;
+  view_ptr<Ogre::SceneManager> scene_ ;
   Ogre::ShadowTechnique technique_ = Ogre::SHADOWTYPE_NONE;
   bool pssm_shadows_ = false;
-  float far_clip_distance = 0.0;
-
 
  public:
+  void SetPlane(Ogre::Plane plane);
+
   const uint32_t SUBMERGED_MASK = 0x0F0;
   const uint32_t SURFACE_MASK = 0x00F;
   const uint32_t WATER_MASK = 0xF00;
-
-//----------------------------------------------------------------------------------------------------------------------
-  void SetPlane(Ogre::Plane plane);
-
-  std::shared_ptr<Ogre::Texture> GetReflectionTex() const noexcept;
-
-  std::shared_ptr<Ogre::Texture> GetRefractionTex() const noexcept;
+  std::shared_ptr<Ogre::Texture> reflection_tex_;
+  std::shared_ptr<Ogre::Texture> refraction_tex_;
 };
-}
+
+} //namespace

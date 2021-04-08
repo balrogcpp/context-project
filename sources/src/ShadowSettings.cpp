@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -30,12 +30,11 @@ namespace xio {
 ShadowSettings::ShadowSettings()
 	: pssm_split_count_(3),
 	  tex_count_(OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES),
-	  camera_(nullptr),
-	  scene_(nullptr),
-	  shadow_enable_(true),
-	  far_distance_(400),
-	  tex_size_(1024),
-	  tex_format_(16) {}
+	  scene_(Ogre::Root::getSingleton().getSceneManager("Default")),
+	  camera_(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"))
+	  {
+
+	  }
 
 //----------------------------------------------------------------------------------------------------------------------
 ShadowSettings::~ShadowSettings() {}
@@ -47,24 +46,26 @@ void ShadowSettings::UpdateParams() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void ShadowSettings::UpdateParams(bool enable, float far_distance, int tex_size, int tex_format) {
+  if (!enable) {
+	scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+	return;
+  }
+
   shadow_enable_ = enable;
   far_distance_ = far_distance;
   tex_size_ = tex_size;
   tex_format_ = tex_format;
 
-  scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
-  camera_ = scene_->getCamera("Default");
-
   scene_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
   scene_->setShadowFarDistance(far_distance_);
 
-  Ogre::PixelFormat texture_type;
-  if (tex_format==32)
-	texture_type = Ogre::PixelFormat::PF_DEPTH32;
-  else if (tex_format==16)
-	texture_type = Ogre::PixelFormat::PF_DEPTH16;
-  else
-	throw Exception("Unknown texture format, aborting;");
+  Ogre::PixelFormat texture_type = Ogre::PixelFormat::PF_DEPTH16;
+//  if (tex_format==32)
+//	texture_type = Ogre::PixelFormat::PF_DEPTH32;
+//  else if (tex_format==16)
+//	texture_type = Ogre::PixelFormat::PF_DEPTH16;
+//  else
+//	throw Exception("Unknown texture format, aborting;");
 
   scene_->setShadowTextureSize(tex_size_);
   scene_->setShadowTexturePixelFormat(texture_type);
@@ -88,9 +89,6 @@ void ShadowSettings::UpdateParams(bool enable, float far_distance, int tex_size,
 
   scene_->setShadowCameraSetup(pssm_);
   scene_->setShadowColour(Ogre::ColourValue::Black);
-
-  if (!enable)
-	scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

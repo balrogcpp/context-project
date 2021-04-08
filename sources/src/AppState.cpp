@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -28,17 +28,19 @@
 using namespace std;
 
 namespace xio {
-//----------------------------------------------------------------------------------------------------------------------
-AppState::AppState()
-{}
+
+AppState::AppState() {
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------
-AppState::~AppState(){}
+AppState::~AppState() {
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::LoadFromFile(const string &file_name) {
+void AppState::LoadFromFile(const string &file_name, const string &group) {
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  auto group = Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME;
   Ogre::SceneLoaderManager::getSingleton().load(file_name, group, scene->getRootSceneNode());
 }
 
@@ -52,12 +54,6 @@ void AppState::ChangeState(unique_ptr<AppState> &&app_state) {
 void AppState::ChangeState() {
   dirty_ = true;
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-//unique_ptr<AppState> AppState::GetNextState() {
-//  dirty_ = false;
-//  return move(next_);
-//}
 
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::SetNextState(unique_ptr<AppState> &&next_state) {

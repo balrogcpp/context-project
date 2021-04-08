@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -92,7 +92,7 @@ void ReflectionCamera::Init_(unsigned int tex_size) {
 																	  Ogre::TU_RENDERTARGET);
 
   Ogre::RenderTarget *rtt1 = reflection_tex_->getBuffer()->getRenderTarget();
-  Ogre::Viewport *vp1 = rtt1->addViewport(rcamera_);
+  Ogre::Viewport *vp1 = rtt1->addViewport(rcamera_.get());
   vp1->setOverlaysEnabled(false);
   vp1->setShadowsEnabled(false);
   // toggle reflection in camera
@@ -121,16 +121,6 @@ void ReflectionCamera::Init_(unsigned int tex_size) {
 //----------------------------------------------------------------------------------------------------------------------
 void ReflectionCamera::SetPlane(Ogre::Plane plane) {
   plane_ = plane;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-shared_ptr<Ogre::Texture> ReflectionCamera::GetReflectionTex() const noexcept {
-  return reflection_tex_;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-shared_ptr<Ogre::Texture> ReflectionCamera::GetRefractionTex() const noexcept {
-  return refraction_tex_;
 }
 
 } //namespace

@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,10 @@
 #include "DesktopIcon.h"
 #include "Exception.h"
 #include "SDL2.hpp"
+#include "ComponentLocator.h"
 #include <iostream>
 
-#ifdef _WIN32
+#ifdef WIN32
 extern "C"
 {
 __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
@@ -39,59 +40,85 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 namespace xio {
-Application::Application(char **argv) {
-  try {
-	Init_(argv);
-  }
-  catch (Exception &e) {
-	Message_("Exception occurred", e.getDescription());
-	throw e;
-  }
-  catch (Ogre::Exception &e) {
-	Message_("Exception occurred (OGRE)", e.getFullDescription());
-	throw e;
-  }
-  catch (exception &e) {
-	Message_("Exception occurred (exception)", e.what());
-	throw e;
-  }
-}
 
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Init_(char** argv) {
-  auto *logger = new Ogre::LogManager();
-  logger->createLog("ogre.log", true, false, true);
-  Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+Application::Application() {
+  try {
+
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+	auto *logger = new Ogre::LogManager();
+	logger->createLog(log_file_, false, false, true);
+	Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
 #ifdef DEBUG
-  Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
+	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
 #else
-  Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_LOW);
+	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_NORMAL);
 #endif
+#endif
+
+
 
 #if OGRE_PLATFORM==OGRE_PLATFORM_LINUX
-  DesktopIcon icon;
-  icon.Init();
-  icon.Save("XioDemo");
+	DesktopIcon icon;
+	icon.Init();
+	icon.Save("XioDemo");
 #endif
 
-  engine_ = make_unique<Engine>();
+	engine_ = &Engine::GetInstance();
+	engine_->InitComponents();
 
-  verbose_ = conf_->Get<bool>("global_verbose");
-  lock_fps_ = conf_->Get<bool>("global_lock_fps");
-  target_fps_ = conf_->Get<int>("global_target_fps");
+	state_manager_ = make_unique<StateManager>();
+
+	GetConf().Get("verbose", verbose_);
+
+	if (verbose_)
+	  log_.reserve(10000);
+
+	lock_fps_ = GetConf().Get<bool>("global_lock_fps");
+	target_fps_ = GetConf().Get<int>("global_target_fps");
+
+  }
+  catch (Exception &e) {
+	ExceptionMessage_("Exception", e.getDescription());
+  }
+  catch (Ogre::Exception &e) {
+	ExceptionMessage_("Exception (OGRE)", e.getFullDescription());
+  }
+  catch (exception &e) {
+	ExceptionMessage_("Exception (std::exception)", e.what());
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 Application::~Application() {
-
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+	Ogre::LogManager::getSingleton().getDefaultLog()->removeListener(this);
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::WriteLogToFile_(const string &file_name) {
+int Application::ExceptionMessage_(const string &caption, const string &message) {
+
+#ifdef _WIN32
+  MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
+#else
+  SDL_Log("%s", string(caption + " : " + message).c_str());
+  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption.c_str(), message.c_str(), nullptr);
+#endif
+
+  return 1;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Application::WriteLogToFile_() {
+  if (!verbose_)
+    return;
+
   ofstream f;
-  f.open(file_name);
+  f.open(log_file_);
+
   if (f.is_open())
 	f << log_;
+
 }
 //----------------------------------------------------------------------------------------------------------------------
 void Application::PrintLogToConsole_() {
@@ -101,43 +128,14 @@ void Application::PrintLogToConsole_() {
 //----------------------------------------------------------------------------------------------------------------------
 void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml, \
         bool maskDebug, const string &logName, bool &skipThisMessage) {
+
   log_.append(message);
   log_.append("\n");
+
 #ifdef DEBUG
   if (verbose_)
-	cout << message << "\n";
+	cout << message << '\n';
 #endif
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-int Application::GetCurrentFps() const {
-  return current_fps_;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Quit() {
-  running_ = false;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Event(const SDL_Event &evt) {
-  if (evt.type==SDL_WINDOWEVENT) {
-	if (evt.window.event==SDL_WINDOWEVENT_LEAVE || evt.window.event==SDL_WINDOWEVENT_MINIMIZED) {
-	  suspend_ = true;
-//		renderer_->GetWindow().SetCursorStatus(true, false, false);
-	  state_manager_.Pause();
-	} else if (evt.window.event==SDL_WINDOWEVENT_TAKE_FOCUS || evt.window.event==SDL_WINDOWEVENT_RESTORED
-		|| evt.window.event==SDL_WINDOWEVENT_MAXIMIZED) {
-	  suspend_ = false;
-//		renderer_->GetWindow().SetCursorStatus(false, true, true);
-	  state_manager_.Resume();
-	}
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Application::Other(uint8_t type, int32_t code, void *data1, void *data2) {
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -146,7 +144,7 @@ void Application::Loop_() {
 
   while (running_) {
 
-	if (state_manager_.IsActive()) {
+	if (state_manager_->IsActive()) {
 	  auto before_frame = chrono::system_clock::now().time_since_epoch();
 	  int64_t micros_before_frame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
 
@@ -159,10 +157,12 @@ void Application::Loop_() {
 	  engine_->Capture();
 
 	  if (!suspend_) {
-		if (state_manager_.IsDirty()) {
-		  engine_->Clean();
-		  engine_->Refresh();
-		  state_manager_.InitNextState();
+
+		if (state_manager_->IsDirty()) {
+		  engine_->Pause();
+		  engine_->Cleanup();
+		  state_manager_->InitNextState();
+		  engine_->Resume();
 		} else if (suspend_old) {
 		  engine_->Resume();
 		  suspend_old = false;
@@ -170,10 +170,11 @@ void Application::Loop_() {
 
 		auto before_update = chrono::system_clock::now().time_since_epoch();
 		int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
-		double frame_time = static_cast<double>(micros_before_update - time_of_last_frame_)/1e+6;
+		float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_)/1e+6;
 		time_of_last_frame_ = micros_before_update;
 		engine_->Update(frame_time);
-		state_manager_.Update(frame_time);
+		state_manager_->Update(frame_time);
+
 		engine_->RenderOneFrame();
 	  } else {
 		engine_->Pause();
@@ -206,55 +207,74 @@ void Application::Loop_() {
 	  running_ = false;
 	}
   }
+
+  engine_->Pause();
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Go_() {
-  if (state_manager_.IsActive()) {
-	state_manager_.InitCurState();
+  if (state_manager_->IsActive()) {
+	state_manager_->InitCurState();
 	running_ = true;
 	auto duration_before_update = chrono::system_clock::now().time_since_epoch();
 	time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
 	Loop_();
-	if (verbose_) {
-	  WriteLogToFile_("ogre.log");
-	  PrintLogToConsole_();
-	}
+
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-int Application::Message_(const string &caption, const string &message) {
-  WriteLogToFile_("error.log");
-  PrintLogToConsole_();
-  cerr << caption << '\n';
-  cerr << message << '\n';
-#ifdef _WIN32
-  MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
-#endif
-  return 1;
+void Application::Quit() {
+  running_ = false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Pause() {
+  suspend_ = true;
+  state_manager_->Pause();
+  engine_->Pause();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Resume() {
+  suspend_ = false;
+  state_manager_->Resume();
+  engine_->Resume();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Application::Event(const SDL_Event &evt) {
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 int Application::Main(unique_ptr <AppState> &&scene_ptr) {
   try {
-#if OGRE_COMPILER == OGRE_COMPILER_MSVC
-	  SDL_SetMainReady();
+
+#if OGRE_COMPILER==OGRE_COMPILER_MSVC
+	SDL_SetMainReady();
 #endif
-#ifndef DEBUG
+
 	ios_base::sync_with_stdio(false);
-#endif
-	state_manager_.SetInitialState(move(scene_ptr));
+
+	state_manager_->SetInitialState(move(scene_ptr));
 	Go_();
+
+	WriteLogToFile_();
+
+	SDL_Quit();
+
   }
   catch (Exception &e) {
-	return Message_("Exception occurred", e.getDescription());
+	return ExceptionMessage_("Exception", e.getDescription());
   }
   catch (Ogre::Exception &e) {
-	return Message_("Exception occurred (OGRE)", e.getFullDescription());
+	return ExceptionMessage_("Exception (OGRE)", e.getFullDescription());
   }
   catch (exception &e) {
-	return Message_("Exception occurred (exception)", e.what());
+	return ExceptionMessage_("Exception (std::exception)", e.what());
   }
+
 
   return 0;
 }

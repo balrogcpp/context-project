@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -21,41 +21,39 @@
 //SOFTWARE.
 
 #pragma once
-#include <OgreFrameListener.h>
-#include <OgreRenderTargetListener.h>
 #include <OgreLog.h>
+#include "Singleton.h"
 #include "Engine.h"
 #include "StateManager.h"
-#include "ComponentLocator.h"
+
 #include "view_ptr.h"
 
 namespace xio {
 
-class Application final : public WindowObserver, public Ogre::LogListener, public ComponentLocator {
+class Application final : public WindowObserver, public Ogre::LogListener, public Singleton<Application> {
  public:
-  explicit Application(char** argv = {});
+  explicit Application();
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&scene_ptr);
-  int GetCurrentFps() const;
 
  private:
-  void Init_(char** argv = {});
   void Loop_();
   void Go_();
-  int Message_(const std::string &caption, const std::string &message);
+  int ExceptionMessage_(const std::string &caption, const std::string &message);
 
-  void Event(const SDL_Event &evt) final;
-  void Other(uint8_t type, int32_t code, void *data1, void *data2) final;
-  void Quit() final;
+  void Event(const SDL_Event &evt) override;
+  void Quit() override;
+  void Pause() override;
+  void Resume() override;
 
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, \
-        bool maskDebug, const std::string &logName, bool &skipThisMessage) final;
+        bool maskDebug, const std::string &logName, bool &skipThisMessage) override;
 
-  void WriteLogToFile_(const std::string &file_name);
+  void WriteLogToFile_();
   void PrintLogToConsole_();
 
-  StateManager state_manager_;
-  std::unique_ptr<Engine> engine_;
+  std::unique_ptr<StateManager> state_manager_;
+  view_ptr<Engine> engine_;
 
   bool running_ = true;
   bool suspend_ = false;
@@ -64,13 +62,10 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   int64_t fps_counter_ = 0;
   int current_fps_ = 0;
   int target_fps_ = 60;
-#ifdef DEBUG
-  bool verbose_ = true;
-#else
-  bool verbose_ = false;
-#endif
   bool lock_fps_ = true;
   std::string log_;
+  std::string log_file_ = "Launch.log";
+  bool verbose_ = false;
 };
 
 } //namespace

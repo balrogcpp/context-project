@@ -1,6 +1,6 @@
 #MIT License
 #
-#Copyright (c) 2020 Andrey Vasiliev
+#Copyright (c) 2021 Andrew Vasiliev
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -28,4 +28,4 @@ ADD sources ./sources
 ADD doc ./doc
 ADD CMakeLists.txt .
 
-RUN mkdir build && cd build && cmake .. && cmake --build . --target xio-pdf && cd ..
+RUN mkdir build && cd build && cmake .. && cmake --build . --target pdf && cd ..

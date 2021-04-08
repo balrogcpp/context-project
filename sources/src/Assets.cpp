@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -25,61 +25,62 @@
 #include <filesystem>
 #include "Assets.h"
 #include "Exception.h"
+#include "Android.h"
 
 using namespace std;
 namespace fs = filesystem;
 
-namespace xio {
+namespace xio::Assets {
 
-static std::string FindPath(const std::string& file, int depth = 3) {
-	string path = file;
+static std::string FindPath(const std::string &path_, int depth = 3) {
+  string path = path_;
 
-	for (int i = 0; i < depth; i++) {
-		if (fs::exists(path))
-			return path;
-		else
-			path = string("../") + path;
-	}
+  for (int i = 0; i < depth; i++) {
+	if (fs::exists(path))
+	  return path;
+	else if (fs::exists(path + ".zip"))
+	  return path.append(".zip");
+	else
+	  path = string("../").append(path);
+  }
 
-	return string();
+  return string();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-bool Assets::StringSanityCheck(const string &str) {
-  if (str[0]=='#') {
+static bool CheckSymbol(char c) {
+  return (isalpha(c) || isdigit(c) || c=='.' || c==',' || c==';' || c=='_' || c=='-' || c=='/');
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+static bool StringSanityCheck(const string &str) {
+  if (str.empty() || str[0]=='#') {
 	return true;
   }
 
-  for (auto it : str) {
-	if (isalpha(it) || isdigit(it) || it=='.' || it==',' || it==';' || it=='_' || it=='-' || it=='/') {
-	} else {
-	  return false;
-	}
-  }
-
-  return true;
+  return any_of(str.begin(), str.end(), CheckSymbol);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::LeftTrim(string &s) {
+static void LeftTrim(string &s) {
   auto it = find_if(s.begin(), s.end(), [](char c) { return !isspace < char > (c, locale::classic()); });
   s.erase(s.begin(), it);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::RightTrim(string &s) {
+static void RightTrim(string &s) {
   auto it = find_if(s.rbegin(), s.rend(), [](char c) { return !isspace < char > (c, locale::classic()); });
   s.erase(it.base(), s.end());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::TrimString(string &s) {
+static void TrimString(string &s) {
   RightTrim(s);
   LeftTrim(s);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::PrintPathList(const vector <tuple<string, string, string>> &path_list) {
+void PrintPathList(const vector <tuple<string, string, string>> &path_list) {
   cout << "Path list:\n";
 
   for (const auto &it : path_list) {
@@ -90,7 +91,7 @@ void Assets::PrintPathList(const vector <tuple<string, string, string>> &path_li
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::PrintStringList(const vector <string> &string_list) {
+void PrintStringList(const vector <string> &string_list) {
   cout << "Path list:\n";
 
   for (const auto &it : string_list) {
@@ -101,35 +102,73 @@ void Assets::PrintStringList(const vector <string> &string_list) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Assets::LoadResources() {
-  Ogre::ResourceGroupManager::getSingletonPtr()->initialiseAllResourceGroups();
+void LoadResources() {
+  Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void
-Assets::InitGeneralResources(const vector <string> &path_list,
-							 const string &resource_file,
-							 bool verbose) {
-  const string default_group_name = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+void AddLocation(const string &path_, const string &group_, bool recursive) {
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
+  const std::string file_system = "FileSystem";
+  const std::string zip = "Zip";
+
+  string path = FindPath(path_);
+  Ogre::ResourceGroupManager &rgm = Ogre::ResourceGroupManager::getSingleton();
+
+  if (!path.empty()) {
+	if (fs::is_directory(path)) {
+
+	  rgm.addResourceLocation(path, file_system, group_, recursive);
+
+	} else if (fs::path(path).extension()==".zip") {
+	  rgm.addResourceLocation(path, zip, group_, recursive);
+	}
+  }
+
+#endif
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void AddLocationAndroid(AAssetManager* asset_mgr, const string &resource_file, const string &group_, bool verbose) {
+#if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID
+//  const string file_system = "APKFileSystem";
+//
+//
+//  AAssetDir* dir = AAssetManager_openDir(asset_mgr, path_.c_str());
+//  const char* fileName = NULL;
+//
+//  while((fileName = AAssetDir_getNextFileName(dir)) != NULL) {
+//	Ogre::LogManager::getSingleton().logMessage(string("Found directory: ") + fileName);
+//  }
+#endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void AddLocationRecursive(const string &path_,
+								  const string &group_,
+								  const string &resource_file,
+								  bool verbose) {
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
+  const string file_system = "FileSystem";
+  const string zip = "Zip";
 
   vector <string> file_list;
   vector <string> dir_list;
   vector <tuple<string, string, string>> resource_list;
   auto &ogre_resource_manager = Ogre::ResourceGroupManager::getSingleton();
 
-  for (const auto &it : path_list) {
-	string path = FindPath(it);
+  string path = FindPath(path_);
 
-	if (fs::exists(path))
-	  resource_list.push_back({path, "FileSystem", default_group_name});
-  }
+  if (fs::exists(path))
+	resource_list.push_back({path, file_system, group_});
 
   if (!resource_file.empty()) {
 	fstream list_file;
 	list_file.open(resource_file);
 
 	string line;
-	string path;
 	string type;
 	string group;
 
@@ -167,11 +206,7 @@ Assets::InitGeneralResources(const vector <string> &path_list,
 
   for (const auto &it : resource_list) {
 	ogre_resource_manager.addResourceLocation(get<0>(it), get<1>(it), get<2>(it));
-	if (find(begin(path_list), end(path_list), get<0>(it))==end(path_list)) {
-	  dir_list.push_back(get<0>(it));
-	} else {
-//	  throw Exception("Path " + get<0>(it) + " already registered. Aborting.");
-	}
+	dir_list.push_back(get<0>(it));
 
 	for (auto jt = fs::recursive_directory_iterator(get<0>(it)); jt!=fs::recursive_directory_iterator(); ++jt) {
 	  const auto file_path = jt->path().string();
@@ -179,34 +214,29 @@ Assets::InitGeneralResources(const vector <string> &path_list,
 
 	  if (jt->is_directory()) {
 		if (verbose) {
-		  cout << "Parsing directory:  " << file_path << '\n';
-		}
-		if (find(begin(path_list), end(path_list), file_name)==end(path_list)) {
-		  dir_list.push_back(file_name);
-		} else {
-//		  throw Exception("Path " + file_name + " already registered. Aborting.");
+		  Ogre::LogManager::getSingleton().logMessage(string("Found directory: ") + file_path);
 		}
 
-		ogre_resource_manager.addResourceLocation(file_path, "FileSystem", get<2>(it));
+		dir_list.push_back(file_name);
+
+		ogre_resource_manager.addResourceLocation(file_path, file_system, get<2>(it));
 
 	  } else if (jt->is_regular_file()) {
 		if (verbose) {
-		  cout << "Parsing file:  " << file_path << '\n';
+		  Ogre::LogManager::getSingleton().logMessage(string("Found file: ") + file_path);
 		}
 		if (fs::path(file_path).extension()==".zip") {
-		  if (find(begin(file_list), end(file_list), file_name)==end(file_list)) {
-			if (find(begin(extensions_list), end(extensions_list), fs::path(file_name).extension())!=end(extensions_list)) {
-			  file_list.push_back(file_name);
-			}
-		  } else {
-//			throw Exception("File " + file_name + " already exists. Aborting.");
+		  if (find(begin(extensions_list), end(extensions_list), fs::path(file_name).extension())
+			  !=end(extensions_list)) {
+			file_list.push_back(file_name);
 		  }
 
-		  ogre_resource_manager.addResourceLocation(file_path, "Zip", get<2>(it));
+		  ogre_resource_manager.addResourceLocation(file_path, zip, get<2>(it));
 		}
 	  }
 	}
   }
+#endif
 }
 
 } //namespace

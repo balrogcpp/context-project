@@ -1,6 +1,6 @@
 ﻿//MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,15 @@
 #include <OgreRoot.h>
 #include <OgreSceneNode.h>
 #include "Input.h"
-#include "Entity.h"
-#include "ComponentLocator.h"
+#include "Object.h"
+
 #include "BulletDynamics/Dynamics/btRigidBody.h"
+#include "view_ptr.h"
 
 namespace xio {
-class CameraMan final : public Entity, public InputObserver {
+class CameraMan final : public Object, public InputObserver {
  public:
-  enum   // enumerator values for different styles of camera movement
+  enum class Style  // enumerator values for different styles of camera movement
   {
     FREELOOK,
     ORBIT,
@@ -49,39 +50,35 @@ class CameraMan final : public Entity, public InputObserver {
   void OnKeyDown(SDL_Keycode sym) override;
   void OnKeyUp(SDL_Keycode sym) override;
 
-  Ogre::SceneNode *node_;
-  Ogre::SceneNode *camera_yaw_node_;
-  Ogre::SceneNode *camera_pitch_node_;
-  Ogre::SceneNode *camera_roll_node_;
-  btRigidBody *rigid_;
+ private:
+  view_ptr<Ogre::SceneNode> node_;
+  view_ptr<Ogre::SceneNode> camera_yaw_node_;
+  view_ptr<Ogre::SceneNode> camera_pitch_node_;
+  view_ptr<Ogre::SceneNode> camera_roll_node_;
+  view_ptr<btRigidBody> rigid_;
   Ogre::Degree dx_, dy_;
-  Ogre::Camera *camera_;
-  int style_;
-  Ogre::SceneNode *target_;
-  bool orbiting_;
-  bool moving_;
-  float top_speed_;
-  float run_speed_;
-  float animation_time_;
-  float anim_duration_;//ms
-  float const_speed_;
-  float heigh_;
-  bool move_forward_;
-  bool move_back_;
-  bool move_left_;
-  bool move_right_;
-  bool move_up_;
-  bool move_down_;
-  bool move_fast_;
-  bool stop_;
+  view_ptr<Ogre::Camera> camera_;
+  view_ptr<Ogre::SceneNode> target_;
+  Style style_ = Style::MANUAL;
+  float top_speed_ = 10;
+  float run_speed_ = 20;
+  float animation_time_ = 0.5;
+  float anim_duration_ = 0.5;//ms
+  float const_speed_ = 5;
+  bool move_forward_ = false;
+  bool move_back_ = false;
+  bool move_left_ = false;
+  bool move_right_ = false;
+  bool move_up_ = false;
+  bool move_down_ = false;
+  bool move_fast_ = false;
+  bool stop_ = false;
   Ogre::Vector3 offset_;
   Ogre::Vector3 velocity_;
   Ogre::Vector3 prev_pos_;
 
  public:
-  void SetRigidBody(btRigidBody *rigid_body);
-
-  btRigidBody *GetRigidBody() const;
+  void SetRigidBody(view_ptr<btRigidBody> rigid_body);
 
   Ogre::SceneNode *GetCameraNode() const;
 
@@ -93,10 +90,9 @@ class CameraMan final : public Entity, public InputObserver {
 
   void UnregCamera();
 
-  void UpdateStyle();
+  void SetStyle(Style style);
 
-  void SetStyle(int style);
-
-  int GetStyle() const noexcept;
+  Style GetStyle() const noexcept;
 };
-}
+
+} //namespace

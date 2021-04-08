@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -104,11 +104,6 @@ void CubeMapCamera::Init_(Ogre::SceneNode *creator, unsigned int tex_size) {
 	vp->setOverlaysEnabled(false);
 	targets_[i]->addListener(this);
   }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-shared_ptr<Ogre::Texture> CubeMapCamera::GetDyncubemap() const {
-  return cubemap_;
 }
 
 } //namespace

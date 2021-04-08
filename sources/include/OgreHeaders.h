@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -24,71 +24,7 @@
 
 //OGRE Core objects
 #include <Ogre.h>
-#include <OgreSceneLoaderManager.h>
-//LOD config
-#include <OgrePixelCountLodStrategy.h>
-#include <OgreDistanceLodStrategy.h>
-//LOD Generator
-#ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
-#include <MeshLodGenerator/OgreLodConfig.h>
-#include <MeshLodGenerator/OgreMeshLodGenerator.h>
-#endif
-//Paging
-#ifdef OGRE_BUILD_COMPONENT_PAGING
-#include <Paging/OgrePaging.h>
-#include <Paging/OgrePage.h>
-#endif
-//Terain
-#ifdef OGRE_BUILD_COMPONENT_TERRAIN
-#include <Terrain/OgreTerrainGroup.h>
-#include <Terrain/OgreTerrainQuadTreeNode.h>
-#include <Terrain/OgreTerrainMaterialGeneratorA.h>
-#include <Terrain/OgreTerrainMaterialGenerator.h>
-#include <Terrain/OgreTerrainAutoUpdateLod.h>
-#include <Terrain/OgreTerrain.h>
-#endif
-#ifdef OGRE_BUILD_COMPONENT_VOLUME
-#include <Volume/OgreVolumeChunk.h>
-#include <Volume/OgreVolumeCSGSource.h>
-#include <Volume/OgreVolumeCacheSource.h>
-#include <Volume/OgreVolumeTextureSource.h>
-#endif
-//RTShader System
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-#include <RTShaderSystem/OgreRTShaderSystem.h>
-#include <RTShaderSystem/OgreShaderGenerator.h>
-#endif
-//HLMS
-#ifdef OGRE_BUILD_COMPONENT_HLMS
-#include <HLMS/OgreHlmsManager.h>
-#include <HLMS/OgreHlmsPbsMaterial.h>
-#endif
-//Plugins
-#ifdef OGRE_BUILD_PLUGIN_PFX
-#include <Plugins/ParticleFX/OgreParticleFXPlugin.h>
-#endif
-#ifdef OGRE_BUILD_PLUGIN_OCTREE
-#include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
-#endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-#undef OGRE_BUILD_RENDERSYSTEM_GLES2
-#include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
-#endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-#include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
-#endif
-#ifdef OGRE_BUILD_PLUGIN_STBI
-#include <Plugins/STBICodec/OgreSTBICodec.h>
-#endif
-#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
-#include <Plugins/FreeImageCodec/OgreFreeImageCodec.h>
-#include <Plugins/FreeImageCodec/OgreFreeImageCodecExports.h>
-#endif
-#ifdef OGRE_BUILD_PLUGIN_ASSIMP
-#include <Plugins/Assimp/OgreAssimpLoader.h>
-#endif
+//Overlay
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
-#include <Overlay/OgreOverlay.h>
-#include <Overlay/OgreOverlayManager.h>
-#include <Overlay/OgreOverlaySystem.h>
+#include <Overlay/OgreImGuiOverlay.h>
 #endif

@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,15 @@
 
 #pragma once
 #include "NoCopy.h"
-#include "Configurator.h"
 #include "view_ptr.h"
 
 namespace xio {
+class Configurator;
+
 class Component : public NoCopy {
  public:
-  Component() {}
-  virtual ~Component() {}
+  Component();
+  virtual ~Component();
 
   virtual void Cleanup() = 0;
   virtual void Pause() = 0;
@@ -44,4 +45,5 @@ class Component : public NoCopy {
     conf_ = conf;
   }
 };
-}
+
+} //namespace

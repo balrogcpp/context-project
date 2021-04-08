@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasilev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -21,50 +21,29 @@
 //SOFTWARE.
 
 #include "DemoDotAppState.h"
+#include "MenuAppState.h"
 #include "Application.h"
-#include <string>
-#include <iostream>
-
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <locale>
-#include <shellapi.h>
-#endif
 
 using namespace std;
 using namespace xio;
 
-#if defined WIN32 && defined WINAPI_MAIN_FUNC
-INT WINAPI WinMain
-(
-    _In_ HINSTANCE hInstance,
-    _In_opt_ HINSTANCE hPrevInstance,
-    _In_ LPSTR lpCmdLine,
-    _In_ int nShowCmd
-)
-#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-#include <android_native_app_glue.h>
-#include <jni.h>
+#if defined WIN32 && defined NDEBUG
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
-void android_main(struct android_app* pApp)
+INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
 #else
-int main(int argc, char** argv)
+int main(int argc, char* args[])
 #endif
 {
   try {
-#if defined WIN32 && defined WINAPI_MAIN_FUNC
-    Application app;
-#else
-    Application app(argv);
-#endif
-    app.Main(make_unique<Demo::DemoDotAppState>());
-  }
-  catch (...) {
+
+	Application app;
+	return app.Main(make_unique<Demo::MenuAppState>());
+
+  } catch (...) {
 
   }
 
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   return 0;
-#endif
 }

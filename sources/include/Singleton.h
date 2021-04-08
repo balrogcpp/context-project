@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,8 @@ namespace xio{
 template <typename T> class Singleton : public NoCopy{
  public:
   Singleton() {
-    assert(!instanced_);
+    if (instanced_)
+      throw Exception("Only one instance can be created!\n");
 
     instanced_ = true;
   }
@@ -42,4 +43,4 @@ template <typename T> class Singleton : public NoCopy{
   inline static bool instanced_ = false;
 };
 
-}
+} //namespace

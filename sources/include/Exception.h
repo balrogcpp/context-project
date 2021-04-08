@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -33,22 +33,26 @@ class Exception : public std::exception {
  public:
   Exception() = default;
 
+//----------------------------------------------------------------------------------------------------------------------
   explicit Exception(std::string description)
 	  : description(std::move(description)) {};
 
+//----------------------------------------------------------------------------------------------------------------------
   ~Exception() noexcept override = default;
 
- public:
+//----------------------------------------------------------------------------------------------------------------------
   std::string getDescription() const noexcept {
 	return description;
   }
 
+//----------------------------------------------------------------------------------------------------------------------
   const char *what() const noexcept override {
 	return description.c_str();
   }
 
- protected:
+ private:
   std::string description = "Description not specified";
   size_t code = 0;
 };
-}
+
+} //namespace

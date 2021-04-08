@@ -1,6 +1,6 @@
 #MIT License
 #
-#Copyright (c) 2020 Andrey Vasiliev
+#Copyright (c) 2021 Andrew Vasiliev
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,6 @@ include(CMakeDependentOption)
 include(ExternalProject)
 find_package(Git REQUIRED)
 
-if (NOT ANDROID)
-    find_package(OpenGL REQUIRED)
-else ()
-    find_package(OpenGLES2 REQUIRED)
-endif ()
 
 set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT})
 set(CONTEXT_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN})
@@ -48,7 +43,7 @@ endif ()
 externalproject_add(target-sdl
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/SDL-mirror/SDL.git
+                    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
                     GIT_TAG release-2.0.14
                     GIT_SHALLOW true
                     GIT_PROGRESS false
@@ -56,18 +51,26 @@ externalproject_add(target-sdl
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DSDL_SHARED_ENABLED_BY_DEFAULT=false
                     -DDIRECTX=false
-                    -DSDL_AUDIO=false
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     )
 
-externalproject_add(target-bullet3
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
+    set(BULLET_USE_MT true)
+    set(BULLET_USE_OPENMP false)
+else()
+    set(BULLET_USE_MT true)
+    set(BULLET_USE_OPENMP true)
+endif ()
+
+externalproject_add(target-bullet
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
-                    GIT_TAG 3.08
+                    GIT_TAG 3.09
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -77,8 +80,8 @@ externalproject_add(target-bullet3
                     -DCMAKE_DEBUG_POSTFIX=
                     -DCMAKE_MINSIZEREL_POSTFIX=
                     -DCLAMP_VELOCITIES=0
-                    -DBULLET2_MULTITHREADING=true
-                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=true
+                    -DBULLET2_MULTITHREADING=${BULLET_USE_MT}
+                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=${BULLET_USE_OPENMP}
                     -DBUILD_BULLET2_DEMOS=false
                     -DBUILD_CPU_DEMOS=false
                     -DBUILD_EXTRAS=false
@@ -98,7 +101,7 @@ externalproject_add(target-bullet3
                     -G "${CMAKE_GENERATOR}"
                     )
 
-if (APPLE OR ANDROID)
+if (IOS OR ANDROID)
     set(OPENAL_LIBTYPE STATIC)
 else ()
     set(OPENAL_LIBTYPE SHARED)
@@ -136,7 +139,7 @@ externalproject_add(target-ogg
                     DEPENDS target-openal
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/xiph/ogg.git
-                    GIT_TAG v1.3.3
+                    GIT_TAG v1.3.4
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -152,7 +155,7 @@ externalproject_add(target-vorbis
                     DEPENDS target-ogg
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/xiph/vorbis.git
-                    GIT_TAG v1.3.6
+                    GIT_TAG v1.3.6 #version 1.3.7 can't find ogg @Android
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -180,6 +183,9 @@ externalproject_add(target-zlib
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
+                    TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll 
+                    TEST_AFTER_INSTALL true
                     )
 
 externalproject_add(target-zzip
@@ -187,7 +193,7 @@ externalproject_add(target-zzip
                     DEPENDS target-zlib
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/paroj/ZZIPlib.git
-                    GIT_TAG 4b4d9ca1134397dd6c0649fce2dfd80643e53cf6
+                    #GIT_TAG 4b4d9ca1134397dd6c0649fce2dfd80643e53cf6 repo is archived
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -195,25 +201,6 @@ externalproject_add(target-zzip
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
-                    )
-
-externalproject_add(target-yamlcpp
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-                    GIT_TAG yaml-cpp-0.6.3
-                    GIT_SHALLOW true
-                    GIT_PROGRESS false
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DYAML_BUILD_SHARED_LIBS=false
-                    -DYAML_CPP_BUILD_CONTRIB=false
-                    -DYAML_CPP_BUILD_TESTS=false
-                    -DYAML_CPP_BUILD_TOOLS=false
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}# -I /opt/android-ndk/sources/android/cpufeatures
                     -G "${CMAKE_GENERATOR}"
                     )
 
@@ -221,12 +208,30 @@ externalproject_add(target-pugixml
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/zeux/pugixml.git
-                    GIT_TAG v1.10
+                    GIT_TAG v1.11.4
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
+externalproject_add(target-png
+                    EXCLUDE_FROM_ALL true
+                    DEPENDS target-zlib
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/glennrp/libpng.git
+                    GIT_TAG v1.6.37
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DPNG_SHARED=false
+                    -DPNG_TESTS=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
@@ -234,34 +239,97 @@ externalproject_add(target-pugixml
 
 externalproject_add(target-freetype
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zlib
+                    DEPENDS target-png
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/aseprite/freetype2.git
-                    GIT_TAG VER-2-9-1
+                    GIT_REPOSITORY https://git.savannah.gnu.org/git/freetype/freetype2.git
+                    GIT_TAG VER-2-9-1 #2.10 compilation error
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DUNIX=true
+                    -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=true
                     -DBUILD_SHARED_LIBS=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
-                    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target install
                     )
 
+externalproject_add(target-rapidjson
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
+                    GIT_TAG v1.1.0
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DRAPIDJSON_BUILD_DOC=false
+                    -DRAPIDJSON_BUILD_EXAMPLES=false
+                    -DRAPIDJSON_BUILD_TESTS=false
+                    -DRAPIDJSON_BUILD_THIRDPARTY_GTEST=false
+                    -DRAPIDJSON_HAS_STDSTRING=true
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
+externalproject_add(target-json
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/nlohmann/json.git
+                    GIT_TAG v3.9.1
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    -DJSON_BuildTests=false
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
+externalproject_add(target-assimp
+                    EXCLUDE_FROM_ALL true
+                    DEPENDS target-zlib target-rapidjson
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/assimp/assimp.git
+                    GIT_TAG v5.0.1
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DINJECT_DEBUG_POSTFIX=false
+                    -DASSIMP_BUILD_TESTS=false
+                    -DASSIMP_BUILD_ASSIMP_VIEW=false
+                    -DBUILD_SHARED_LIBS=false
+                    -DASSIMP_BUILD_ASSIMP_TOOLS=false
+                    -DASSIMP_BUILD_ZLIB=false
+                    -DASSIMP_NO_EXPORT=true
+                    -DASSIMP_BUILD_SAMPLES=false
+                    -DASSIMP_INSTALL_PDB=false
+                    -DASSIMP_BUILD_IRR_IMPORTER=false
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    )
+
+if (ANDROID)
+    set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11.patch)
+endif ()
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zzip target-freetype
+                    DEPENDS target-zzip target-freetype target-sdl target-pugixml
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v1.12.11
                     GIT_SHALLOW true
                     GIT_PROGRESS false
-                    PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
-                        ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre/RenderSystems/GLSupport/include/GLSL
-                        ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
+                    PATCH_COMMAND ${OGRE_PATCH_COMMAND}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -282,7 +350,7 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_RENDERSYSTEM_GL=false
                     -DOGRE_BUILD_COMPONENT_OVERLAY=true
                     -DOGRE_BUILD_COMPONENT_BITES=false
-                    -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=false
+                    -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=true
                     -DOGRE_BUILD_COMPONENT_PAGING=false
                     -DOGRE_BUILD_COMPONENT_MESHLODGENERATOR=false
                     -DOGRE_BUILD_COMPONENT_PROPERTY=false
@@ -313,6 +381,10 @@ externalproject_add(target-ogre
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
+                    TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
+                        ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre/RenderSystems/GLSupport/include/GLSL
+                        ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
+                    TEST_AFTER_INSTALL true
                     )
 
 externalproject_add(target-lua
@@ -340,7 +412,7 @@ externalproject_add(target-sol
                     DEPENDS target-lua
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/ThePhD/sol2.git
-                    GIT_TAG v3.2.1
+                    GIT_TAG v3.2.3
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -351,31 +423,27 @@ externalproject_add(target-sol
                     -G "${CMAKE_GENERATOR}"
                     )
 
-if (ANDROID)
-    externalproject_add(target-cpuinfo
-            EXCLUDE_FROM_ALL true
-            PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-            GIT_REPOSITORY https://github.com/google/cpu_features.git
-            GIT_TAG v0.4.1
-            GIT_SHALLOW true
-            GIT_PROGRESS false
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-            -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-            ${CONTEXT_CMAKE_EXTRA_FLAGS}
-            -G "${CMAKE_GENERATOR}"
-            )
+if (UNIX AND NOT ANDROID)
+    externalproject_add(target-jemalloc
+                        EXCLUDE_FROM_ALL true
+                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                        GIT_REPOSITORY https://github.com/jemalloc/jemalloc.git
+                        GIT_TAG 5.2.1
+                        GIT_SHALLOW true
+                        GIT_PROGRESS false
+                        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./autogen.sh
+                        BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./configure --disable-stats --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
+                        )
 
-    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-cpuinfo)
-else ()
-
+    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
 endif ()
+
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-pugixml)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-yamlcpp)
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-json)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet3)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre)
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
-add_custom_target(deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet)
+
+
+add_custom_target(target-deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})

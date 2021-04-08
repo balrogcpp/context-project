@@ -1,15 +1,37 @@
 include(ExternalProject)
 
-externalproject_add(target-jemalloc
+externalproject_add(target-yamlcpp
         EXCLUDE_FROM_ALL true
         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-        GIT_REPOSITORY https://github.com/jemalloc/jemalloc.git
-        GIT_TAG 5.2.1
+        GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+        GIT_TAG yaml-cpp-0.6.3
         GIT_SHALLOW true
         GIT_PROGRESS false
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./autogen.sh
-        BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./configure --disable-stats --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DYAML_BUILD_SHARED_LIBS=false
+        -DYAML_CPP_BUILD_CONTRIB=false
+        -DYAML_CPP_BUILD_TESTS=false
+        -DYAML_CPP_BUILD_TOOLS=false
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        ${CONTEXT_CMAKE_EXTRA_FLAGS}
+        -G "${CMAKE_GENERATOR}"
+        )
+
+externalproject_add(target-cpuinfo
+        EXCLUDE_FROM_ALL true
+        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+        GIT_REPOSITORY https://github.com/google/cpu_features.git
+        GIT_TAG v0.6.0
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        ${CONTEXT_CMAKE_EXTRA_FLAGS}
+        -G "${CMAKE_GENERATOR}"
         )
 
 externalproject_add(target-gtest
@@ -264,48 +286,6 @@ externalproject_add(target-particles
         -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
         -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
         -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        ${CONTEXT_CMAKE_EXTRA_FLAGS}
-        -G "${CMAKE_GENERATOR}"
-        )
-
-externalproject_add(target-rapidjson
-        EXCLUDE_FROM_ALL true
-        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-        GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
-        GIT_TAG v1.1.0
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DRAPIDJSON_BUILD_DOC=false
-        -DRAPIDJSON_BUILD_EXAMPLES=false
-        -DRAPIDJSON_BUILD_TESTS=false
-        -DRAPIDJSON_BUILD_THIRDPARTY_GTEST=false
-        -DRAPIDJSON_HAS_STDSTRING=true
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        ${CONTEXT_CMAKE_EXTRA_FLAGS}
-        -G "${CMAKE_GENERATOR}"
-        )
-
-externalproject_add(target-assimp
-        EXCLUDE_FROM_ALL true
-        DEPENDS target-zlib target-rapidjson
-        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-        GIT_REPOSITORY https://github.com/assimp/assimp.git
-        GIT_TAG v5.0.1
-        GIT_SHALLOW true
-        GIT_PROGRESS false
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DASSIMP_BUILD_TESTS=false
-        -DBUILD_SHARED_LIBS=false
-        -DASSIMP_BUILD_ASSIMP_TOOLS=false
-        -DASSIMP_OPT_BUILD_PACKAGES=false
-        -DASSIMP_BUILD_ZLIB=false
-        -DASSIMP_NO_EXPORT=true
         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
         ${CONTEXT_CMAKE_EXTRA_FLAGS}
         -G "${CMAKE_GENERATOR}"

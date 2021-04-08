@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +22,60 @@
 
 #include "pcheader.h"
 
+#ifdef OGRE_BUILD_COMPONENT_OVERLAY
+#include <Overlay/OgreOverlay.h>
+#include <Overlay/OgreOverlaySystem.h>
+#include <Overlay/OgreOverlayManager.h>
+#include <Overlay/OgreImGuiOverlay.h>
+#endif
+
+#include "gorilla/Gorilla.h"
+#include "gorilla/OgreConsole.h"
+
 #include "Overlay.h"
-#include "Gorilla.h"
+
 
 using namespace Gorilla;
 using namespace std;
 
 namespace xio {
-Overlay::Overlay() {
-  atlas_ = make_unique<Silverback>();
-  atlas_->loadAtlas("dejavu");
-  auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
-  screen_ = atlas_->createScreen(viewport, "dejavu");
-  layer_ = screen_->createLayer(0);
-  Ogre::Real vpW = screen_->getWidth(), vpH = screen_->getHeight();
+Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : window_(render_window) {
 
-  // Init our drawing layer
-  layer_ = screen_->createLayer(0);
-  rect_ = layer_->createRectangle(0, 0, vpW, vpH);
-  rect_->background_colour(rgb(0, 0, 0, 0));
-  caption_ = layer_->createCaption(24, vpW - 55, 66, "");
-  caption_->width(0);
-  caption_->align(TextAlign_Right);
+  if (gorilla_) {
+    atlas_ = make_unique<Silverback>();
+    atlas_->loadAtlas("dejavu");
+    auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
+    screen_ = atlas_->createScreen(viewport, "dejavu");
+    layer_ = screen_->createLayer(0);
+    Ogre::Real vpW = screen_->getWidth(), vpH = screen_->getHeight();
 
-  console_ = make_unique<OgreConsole>();
-  console_->init(screen_);
-  console_->setVisible(false);
+    // Init our drawing layer
+    layer_ = screen_->createLayer(0);
+    rect_ = layer_->createRectangle(0, 0, vpW, vpH);
+    rect_->background_colour(rgb(0, 0, 0, 0));
+    caption_ = layer_->createCaption(24, vpW - 55, 66, "");
+    caption_->width(0);
+    caption_->align(TextAlign_Right);
+
+    console_ = make_unique<OgreConsole>();
+    console_->init(screen_.get());
+    console_->setVisible(false);
+
+  }
+
+  Ogre::SceneManager* sm = Ogre::Root::getSingletonPtr()->getSceneManager("Default");
+  overlay_ = new Ogre::OverlaySystem();
+  sm->addRenderQueueListener(overlay_.get());
+
+  imgui_ = make_unique<Ogre::ImGuiOverlay>();
+  imgui_->setZOrder(300);
+
+
+  Ogre::OverlayManager::getSingleton().addOverlay(imgui_.get());
+  window_->addListener(this);
+
+  imgui_listener_ = make_unique<ImGuiInputListener>();
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -56,19 +84,37 @@ Overlay::~Overlay() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+void Overlay::preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt)
+{
+  if(!evt.source->getOverlaysEnabled()) return;
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 void Overlay::Update(float time) {
-  caption_->text((1.0 / time));
+  if (gorilla_) caption_->text((1.0 / time));
+  imgui_->show();
 }
+
 //----------------------------------------------------------------------------------------------------------------------
-void Overlay::Text(const string &str) {
-  caption_->text(str);
+void Overlay::Cleanup() {
+
 }
+
 //----------------------------------------------------------------------------------------------------------------------
-void Overlay::Show() {
-  screen_->show();
+void Overlay::Pause() {
+
 }
+
 //----------------------------------------------------------------------------------------------------------------------
-void Overlay::Hide() {
-  screen_->hide();
+void Overlay::Resume() {
+
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+void Overlay::PrepareTexture(const std::string &name_, const std::string group_) {
+  imgui_->addFont(name_, group_);
 }
+
+
+} //namespace

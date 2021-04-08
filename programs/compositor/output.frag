@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -30,36 +30,70 @@
 #include "header.frag"
 
 #include "srgb.glsl"
+#include "fog.glsl"
 
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
+uniform sampler2D sSceneDepthSampler;
+
+#ifdef SSAO
+uniform sampler2D SsaoSampler;
+#endif
+
 #ifdef MANUAL_SRGB
 uniform float exposure;
 #endif
-#ifdef PCF_FILTER
+
+uniform vec3 uFogColour;
+uniform vec4 uFogParams;
+uniform float nearClipDistance;
+uniform float farClipDistance;
+
 uniform vec2 texelSize;
-#endif
+uniform float uScale;
+uniform float uMotionBlurEnable;
+uniform float uSSAOEnable;
 
 void main()
 {
-#ifndef PCF_FILTER
   vec3 scene = texture2D(SceneSampler, oUv0).rgb;
-#else
-  vec3 scene = vec3(0.0);
+#ifndef GL_ES
 
-  for (int x = -2; x < 2; x++)
-  for (int y = -2; y < 2; y++)
-  {
-    scene += texture2D(SceneSampler, vec2(oUv0.x + float(x) * texelSize.x, oUv0.y + float(y) * texelSize.y)).rgb;
+
+#ifdef SSAO
+if (uSSAOEnable > 0.0) {
+  scene.rgb *= texture2D(SsaoSampler, oUv0).r;
+}
+#endif
+
+  float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
+  float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
+  scene = ApplyFog(scene, uFogParams, uFogColour, fragmentWorldDepth);
+
+#ifdef MOTION_BLUR
+  if (uMotionBlurEnable > 0.0) {
+  vec2 velocity = uScale * texture2D(sSceneDepthSampler, oUv0).gb;
+  float speed = length(velocity / texelSize);
+  int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
+
+  for (int i = 1; i < nSamples; i++) {
+    vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
+    vec2 uv = oUv0 + offset;
+
+    float clampedDepth = texture2D(sSceneDepthSampler, uv).r;
+    float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
+    scene += ApplyFog(texture2D(SceneSampler, uv).rgb, uFogParams, uFogColour, fragmentWorldDepth);
   }
-  scene /= 16.0;
 
+  scene /= float(nSamples);
+}
 #endif
+
 #ifdef MANUAL_SRGB
-  const float gamma = 2.2;
-  vec3 mapped = vec3(1.0) - exp(-scene.rgb * exposure);
-  scene.rgb = pow(mapped, vec3(1.0 / gamma));
+  scene.rgb = LINEARtoSRGB(scene.rgb, exposure);
 #endif
 
+
+#endif
   gl_FragColor = vec4(scene.rgb, 1.0);
 }

@@ -1,7 +1,6 @@
-//Cpp file for dummy context2_deps target
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +26,8 @@
 #include "MeshUtils.h"
 #include "DotSceneLoaderB.h"
 #include "Physics.h"
-#include "PagedGeometryAll.h"
+#include "ComponentLocator.h"
+#include "pgeometry/PagedGeometryAll.h"
 
 using namespace Forests;
 using namespace std;
@@ -55,8 +55,8 @@ static void CreateGrassMesh(float width, float height) {
   sm->vertexData->vertexCount = 12;
   sm->indexData->indexCount = 18;
 
-  UpdatePbrParams("GrassCustom");
-  UpdatePbrShadowReceiver("GrassCustom");
+  Pbr::UpdatePbrParams("GrassCustom");
+  Pbr::UpdatePbrShadowReceiver("GrassCustom");
 
   // specify a vertex format declaration for our mesh: 3 floats for position, 3 floats for normal, 2 floats for UV
   VertexDeclaration *decl = sm->vertexData->vertexDeclaration;
@@ -130,8 +130,8 @@ static void CreateGrassMesh2(float width, float height) {
   const string grassMaterial = "GrassCustom";
   Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
 
-  UpdatePbrParams(tmp);
-  UpdatePbrShadowReceiver(tmp);
+  Pbr::UpdatePbrParams(tmp);
+  Pbr::UpdatePbrShadowReceiver(tmp);
 
   sm->setMaterialName(grassMaterial);
   sm->useSharedVertices = false;
@@ -208,13 +208,6 @@ Forest::Forest() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 Forest::~Forest() {
-  for (auto it : pgeometry_)
-    delete it;
-  for (auto it : ploaders_)
-    delete it;
-  for (auto it : gpages_)
-    delete it;
-
   auto &mesh_manager = Ogre::MeshManager::getSingleton();
   if (mesh_manager.getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
     mesh_manager.remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
@@ -222,10 +215,10 @@ Forest::~Forest() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::Update(float time) {
-  for (auto it : pgeometry_)
+  for (auto &it : pgeometry_)
     it->update();
 
-  for (auto it : gpages_)
+  for (auto &it : gpages_)
     it->update();
 }
 
@@ -243,7 +236,7 @@ void Forest::GenerateGrassStatic() {
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 1000000; i++) {
     Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
-    pos.y += loader_->GetHeigh(pos.x, pos.z);
+    pos.y += GetLoader().GetHeigh(pos.x, pos.z);
 
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
@@ -259,7 +252,7 @@ void Forest::GenerateGrassStatic() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Forest::GenerateTreesStatic() {
+void Forest::GenerateRocksStatic() {
   // create our grass mesh, and Init a grass entity from it
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   Ogre::Entity *rock = scene->createEntity("Rock", "rock.mesh");
@@ -273,13 +266,13 @@ void Forest::GenerateTreesStatic() {
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 250; i++) {
     Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
-    pos.y += loader_->GetHeigh(pos.x, pos.z);
+    pos.y += GetLoader().GetHeigh(pos.x, pos.z) - 0.1;
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(2.0, 2.0*Ogre::Math::RangeRandom(0.85, 1.15), 2.0);
 
     auto *node = root_node->createChildSceneNode(pos, ori);
     node->scale(scale);
-    physics_->ProcessData(rock, node);
+    GetPhysics().ProcessData(rock, node);
     scene->destroySceneNode(node);
 
     rocks->addEntity(rock, pos, ori, scale);
@@ -297,17 +290,18 @@ void Forest::GenerateTreesStatic() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateGrassPaged() {
-  auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 25);
-  pgeometry_.push_back(grass);
-  grass->addDetailLevel<GrassPage>(50, 10);//Draw grass up to 100
+  auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 5);
+  grass->addDetailLevel<GrassPage>(5, 5);//Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
-  ploaders_.push_back(grassLoader);
   grass->setPageLoader(grassLoader);
   grassLoader->setRenderQueueGroup(Ogre::RENDER_QUEUE_MAIN);
+
   if (heigh_func_)
     grassLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z)); });
-  UpdatePbrParams("GrassCustom");
-  UpdatePbrShadowReceiver("GrassCustom");
+
+  pgeometry_.push_back(unique_ptr<PagedGeometry>(grass));
+  ploaders_.push_back(unique_ptr<PageLoader>(grassLoader));
+
   GrassLayer *layer = grassLoader->addLayer("GrassCustom");
   layer->setFadeTechnique(FADETECH_ALPHA);
   layer->setRenderTechnique(GRASSTECH_CROSSQUADS);
@@ -316,32 +310,41 @@ void Forest::GenerateGrassPaged() {
   layer->setSwayDistribution(10.0f);
   layer->setSwayLength(1.0f);
   layer->setSwaySpeed(0.5f);
-  layer->setDensity(2.0f);
-  layer->setMapBounds(TBounds(-250, -250, 250, 250));
+  layer->setDensity(1.0f);
+  layer->setMapBounds(TBounds(-10, -10, 10, 10));
   layer->setDensityMap("grass_density.png");
+
+  Update(0);
+
+  Pbr::UpdatePbrParams("GrassCustom");
+  Pbr::UpdatePbrShadowReceiver("GrassCustom");
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateTreesPaged() {
-  const float bound = 50;
+  const float bound = 5;
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;
-  auto *trees = new PagedGeometry(scene->getCamera("Default"), 50);
-  pgeometry_.push_back(trees);
+  auto *trees = new PagedGeometry(scene->getCamera("Default"), 10);
 //  trees->addDetailLevel<WindBatchPage>(100, 20);
   trees->addDetailLevel<Forests::BatchPage>(200, 60);
-  auto *treeLoader = new TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
-  ploaders_.push_back(treeLoader);
+  auto *treeLoader = new TreeLoader2D(trees, TBounds(-6, -6, 6, 6));
   if (heigh_func_)
     treeLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z) - 0.1); });
 
+
+  pgeometry_.push_back(unique_ptr<PagedGeometry>(trees));
+  ploaders_.push_back(unique_ptr<PageLoader>(treeLoader));
+
   trees->setPageLoader(treeLoader);
   Ogre::Entity *fir1EntPtr = scene->createEntity("fir1", "fir05_30.mesh");
+
   UpdateMeshMaterial("fir05_30.mesh");
+
   auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
 
-  for (int i = 0; i < 50; i++) {
+  for (int i = 0; i < 5; i++) {
     yaw = Ogre::Math::RangeRandom(0, 360);
     if (Ogre::Math::RangeRandom(0, 1) <= 0.8f) {
       x = Ogre::Math::RangeRandom(-bound, bound);
@@ -360,18 +363,23 @@ void Forest::GenerateTreesPaged() {
 
     auto *node = root_node->createChildSceneNode(Ogre::Vector3(x, y, z), quat);
     node->scale(Ogre::Vector3(scale));
-    physics_->ProcessData(fir1EntPtr, node, "capsule");
+    GetPhysics().ProcessData(fir1EntPtr, node, "capsule");
     scene->destroySceneNode(node);
 
     treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, 0, z), Ogre::Degree(yaw), scale);
   }
+
+  Update(0);
+
+  Pbr::UpdatePbrParams("3D-Diggers/fir01_Batched");
+  Pbr::UpdatePbrParams("3D-Diggers/fir02_Batched");
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
   GenerateGrassPaged();
-  GenerateTreesPaged();
-  GenerateTreesStatic();
+//  GenerateTreesPaged();
+  GenerateRocksStatic();
 }
 
 } //namespace

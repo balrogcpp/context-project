@@ -1,6 +1,6 @@
 #MIT License
 #
-#Copyright (c) 2020 Andrey Vasiliev
+#Copyright (c) 2021 Andrew Vasiliev
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -34,23 +34,20 @@ ADD demo ./demo
 ADD doc ./doc
 ADD tests ./tests
 ADD LICENSE .
-ADD android ./android
 ADD programs ./programs
 ADD assets ./assets
 ADD CMakeLists.txt .
+ADD zip-dependencies.py .
 ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 
-ENV CC=clang
-ENV CXX=clang++
 
 RUN mkdir -p build-windows build-linux build-android \
+    && python3 zip-dependencies.py \
     && cd build-windows \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-w64.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target install && cd .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+    && cmake --build . --target package \
+    && cd .. \
     && cd build-linux \
     && cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target zip-deps \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target install \
-    && cmake --build . --target install-zip && cd .. \
-    && rm -rf build-windows build-linux build-android scenes
+    && cmake --build . --target package \
+    && cd ..

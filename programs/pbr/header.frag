@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -46,15 +46,18 @@ out vec4 gl_FragColor;
 #endif
 
 #else
+
 //GLSLES
+
 #extension GL_OES_standard_derivatives : enable
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
 #define textureCubeLod textureLodEXT
 #endif
 precision highp float;
-precision highp int;
+precision lowp int;
 precision lowp sampler2D;
+precision lowp samplerCube;
 #if VERSION != 100
 #define varying in
 #define texture1D texture

@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -55,9 +55,10 @@ class ShadowSettings : public NoCopy {
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm_;
   view_ptr<Ogre::Camera> camera_;
   view_ptr<Ogre::SceneManager> scene_;
-  bool shadow_enable_;
-  float far_distance_;
-  int16_t tex_size_;
-  int tex_format_;
+  bool shadow_enable_ = false;
+  float far_distance_ = 400;
+  int16_t tex_size_ = 1024;
+  int tex_format_ = 16;
 };
-}
+
+} //namespace

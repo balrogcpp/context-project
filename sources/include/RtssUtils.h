@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -22,35 +22,13 @@
 
 #pragma once
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-
+#include "Exception.h"
 #include <RTShaderSystem/OgreShaderGenerator.h>
 #include <exception>
 #include <iostream>
 #include <filesystem>
 
-namespace rtss {
-class RtssException : public std::exception {
- public:
-  RtssException() = default;
-
-  explicit RtssException(std::string description)
-	  : description(std::move(description)) {};
-
-  ~RtssException() noexcept override = default;
-
- public:
-  std::string getDescription() const noexcept {
-	return description;
-  }
-
-  const char *what() const noexcept override {
-	return description.c_str();
-  }
-
- protected:
-  std::string description = std::string("Description not specified");
-  size_t code = 0;
-};
+namespace xio {
 
 void InitRtss();
 
@@ -80,5 +58,7 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
  private:
   Ogre::RTShader::ShaderGenerator *shader_generator_;
 };
-}
+
+} //namespace
+
 #endif

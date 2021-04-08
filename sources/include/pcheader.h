@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,10 @@
 //SOFTWARE.
 
 #pragma once
+#include "SDL2.hpp"
+#include "Configurator.h"
 #include "OgreHeaders.h"
-#include "BtOgre.h"
-#include "OgreOggSound.h"
+//#include "gorilla/Gorilla.h"
+//#include "btogre/BtOgre.h"
+//#include "oggsound/OgreOggSound.h"
 #include "view_ptr.h"

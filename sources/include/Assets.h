@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -27,28 +27,30 @@
 #include <vector>
 #include <tuple>
 
+struct AAssetManager;
+
 namespace xio {
 
-class Assets {
+namespace Assets {
 
-  static bool StringSanityCheck(const std::string &str);
+void LoadResources();
 
-  static void LeftTrim(std::string &s);
 
-  static void RightTrim(std::string &s);
+void AddLocation(const std::string &path_,
+				 const std::string &group_ = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+				 bool recursive = false);
 
-  static void TrimString(std::string &s);
 
-  static void PrintPathList(const std::vector<std::tuple<std::string, std::string, std::string>> &path_list);
+void AddLocationRecursive(const std::string &path_,
+						  const std::string &group_ = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+						  const std::string &resource_file = "",
+						  bool verbose = false);
 
-  static void PrintStringList(const std::vector<std::string> &string_list);
 
- public:
-  static void LoadResources();
-
-  static void InitGeneralResources(const std::vector<std::string> &path_list,
-							  const std::string &resource_file = "",
-							  bool verbose = false);
+void AddLocationAndroid(AAssetManager *asset_mgr,
+						const std::string &resource_file,
+						const std::string &group_,
+						bool verbose = false);
 };
 
 } //namespace

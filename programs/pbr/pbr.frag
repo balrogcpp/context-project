@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -103,8 +103,10 @@ uniform sampler2D uRoughnessSampler;
 #ifdef HAS_OCCLUSIONMAP
 uniform sampler2D uOcclusionSampler;
 #endif
+#ifdef HAS_ORM
+uniform sampler2D uORMSampler;
+#endif
 #ifdef HAS_PARALLAXMAP
-uniform sampler2D uOffsetSampler;
 uniform float uOffsetScale;
 #endif
 
@@ -143,6 +145,8 @@ uniform int uShadowFilterIterations;
 in vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 in vec3 vPosition;
+in vec4 vScreenPosition;
+in vec4 vPrevScreenPosition;
 #ifdef HAS_COLOURS
 in vec3 vColor;
 #endif
@@ -158,10 +162,15 @@ uniform sampler2D uReflectionMap;
 in vec4 projectionCoord;
 #endif
 
+uniform float cNearClipDistance;
+uniform float cFarClipDistance;
+uniform float uFrameTime;
+
 const float M_PI = 3.141592653589793;
 
 //SRGB corretion
 #include "srgb.glsl"
+#include "fog.glsl"
 
 //Shadows block
 #ifdef SHADOWRECEIVER
@@ -278,7 +287,7 @@ float GetMetallic(vec2 uv) {
     metallic *= texture2D(uMetallicSampler, uv, uLOD).r;
 #endif
 
-    return metallic;
+    return clamp(metallic, 0.0, 1.0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -290,18 +299,26 @@ float GetRoughness(vec2 uv) {
     roughness *= texture2D(uRoughnessSampler, uv, uLOD).r;
 #endif
 
-    return roughness > c_MinRoughness ? roughness : c_MinRoughness;
+    return clamp(roughness, c_MinRoughness, 1.0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+float GetOcclusion(vec2 uv) {
+    float occlusion = 1.0;
+
+#ifdef HAS_OCCLUSIONMAP
+     occlusion *= texture2D(uOcclusionSampler, uv, uLOD).r;
+#endif
+
+    return occlusion;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 vec4 GetAlbedo(vec2 uv) {
     vec4 albedo = vec4(1.0);
 
-#ifdef HAS_ALPHA
     albedo = texture2D(uAlbedoSampler, uv, uLOD);
-#else
-    albedo = vec4(texture2D(uAlbedoSampler, uv, uLOD).rgb, 1.0);
-#endif
 
 #ifdef HAS_COLOURS
     albedo.rgb *= (uSurfaceDiffuseColour * vColor);
@@ -313,16 +330,26 @@ vec4 GetAlbedo(vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 ApplyFog(vec3 color) {
-    const float maxy = 500.0;
-    float exponent = vDepth * uFogParams.x;
-    float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
-    fog_value *= ((maxy - vPosition.y) / maxy);
-    return mix(color, uFogColour, fog_value);
-}
+//void GetORM(vec2 uv, out float occlusion, out float metallic, out float roughness) {
+//#ifdef HAS_ORM
+//    vec3 OMR = texture2D(uORMSampler, uv, uLOD).rgb;
+//
+//    metallic = uSurfaceShininessColour;
+//
+//    const float c_MinRoughness = 0.04;
+//    roughness = uSurfaceSpecularColour;
+//
+//    metallic *= OMR.b;
+//    roughness *= OMR.g;
+//    metallic = clamp(metallic, 0.0, 1.0);
+//    roughness = clamp(roughness, c_MinRoughness, 1.0);
+//
+//    occlusion = OMR.r;
+//#endif
+//}
 
-//----------------------------------------------------------------------------------------------------------------------
 #ifdef HAS_REFLECTION
+//----------------------------------------------------------------------------------------------------------------------
 vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
     vec4 projection = projectionCoord;
 
@@ -348,18 +375,19 @@ vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
 //----------------------------------------------------------------------------------------------------------------------
 vec2 ParallaxMapping(vec2 uv, vec3 viewDir)
 {
-    float displacement = uOffsetScale * texture2D(uOffsetSampler, uv, uLOD).r;
+    float displacement = uOffsetScale * texture2D(uNormalSampler, uv, uLOD).a;
     return uv - viewDir.xy * displacement;
 }
 #endif
 
 #include "lighting.glsl"
 
-#endif //!SHADOWCASTER
-
 #ifdef USE_IBL
 #include "ibl.glsl"
 #endif
+
+#endif //!SHADOWCASTER
+
 
 void main()
 {
@@ -375,19 +403,53 @@ void main()
     tex_coord = ParallaxMapping(tex_coord, v);
 #endif
 
-    // The albedo may be defined from a base texture or a flat color
     vec4 albedo = GetAlbedo(tex_coord);
-    float metallic = GetMetallic(tex_coord);
-    float roughness = GetRoughness(tex_coord);
+
+#ifndef GL_ES
+    float clippedDistance = (vDepth - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
+
+    vec2 a = (vScreenPosition.xz / vScreenPosition.w) * 0.5 + 0.5;
+    vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w) * 0.5 + 0.5;
+    vec2 velocity = (0.0166667 / uFrameTime) * vec2(a - b);
+
+    gl_FragData[1] = vec4(clippedDistance, velocity, 1.0);
+#endif
 
 #ifdef HAS_ALPHA
 #ifdef PAGED_GEOMETRY
     albedo.a *= vAlpha;
 #endif //PAGED_GEOMETRY
 
-    if (albedo.a < uAlphaRejection)
+    if (albedo.a < uAlphaRejection) {
         discard;
+    }
 #endif
+
+
+#ifdef HAS_ORM
+
+    vec3 ORM = texture2D(uORMSampler, tex_coord, uLOD).rgb;
+
+    float metallic = uSurfaceShininessColour;
+
+    const float c_MinRoughness = 0.04;
+    float roughness = uSurfaceSpecularColour;
+
+    float occlusion = ORM.r;
+    roughness *= ORM.g;
+    metallic *= ORM.b;
+
+    metallic = clamp(metallic, 0.0, 1.0);
+    roughness = clamp(roughness, c_MinRoughness, 1.0);
+
+#else
+
+    float metallic = GetMetallic(tex_coord);
+    float roughness = GetRoughness(tex_coord);
+    float occlusion = GetOcclusion(tex_coord);
+
+#endif
+
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
@@ -473,7 +535,6 @@ void main()
         float G = GeometricOcclusion(pbrInputs);
         float D = MicrofacetDistribution(pbrInputs);
         vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
-
         float tmp = NdotL * fSpotT * fAtten;
         vec3 colour = tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
@@ -485,7 +546,8 @@ void main()
                     shadow = (tmp > 0.002) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
                 } else {
                     if (i == 0) {
-                        shadow = (tmp > 0.002) ? CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], shadowMap0, shadowMap1, shadowMap2, vDepth, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations) : 1.0;
+                        shadow = (tmp > 0.002) ? CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], \
+                         shadowMap0, shadowMap1, shadowMap2, vDepth, uShadowDepthOffset, uShadowFilterSize*2.0, uShadowFilterIterations) : 1.0;
                     } else {
                         shadow = (tmp > 0.002) ? GetShadow(i + 2, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
                     }
@@ -510,7 +572,7 @@ void main()
 
 // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
-    total_colour *= (uSurfaceAmbientColour * texture2D(uOcclusionSampler, tex_coord, uLOD).r);
+    total_colour *= (uSurfaceAmbientColour * occlusion);
 #endif
 
 #ifdef HAS_EMISSIVEMAP
@@ -521,12 +583,11 @@ void main()
     total_colour = ApplyReflection(total_colour, n, v, metallic);
 #endif //HAS_REFLECTION
 
-    total_colour = ApplyFog(total_colour);
-
-#ifdef HAS_ALPHA
-    gl_FragColor = vec4(total_colour, albedo.a);
+#ifndef GL_ES
+    gl_FragData[0] = vec4(total_colour, albedo.a);
 #else
-    gl_FragColor = vec4(total_colour, 1.0);
+    total_colour = ApplyFog(total_colour, uFogParams, uFogColour, vDepth);
+    gl_FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), albedo.a);
 #endif
 
 #else //SHADOWCASTER

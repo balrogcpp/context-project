@@ -23,6 +23,8 @@
 #pragma once
 
 extern "C" {
-//#define SDL_MAIN_HANDLED
+#ifdef _MSC_VER
+#define SDL_MAIN_HANDLED
+#endif
 #include <SDL2/SDL.h>
 }

@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -23,24 +23,37 @@
 #pragma once
 #include <OgreMaterial.h>
 #include <string>
+#include <vector>
+
 
 #define OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES 4
 
+namespace Ogre {
+class Camera;
+}
+
 namespace xio {
 
-void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material);
+class Pbr {
+ public:
+  static void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material);
 
-void UpdatePbrParams(const Ogre::MaterialPtr &material);
+  static void UpdatePbrParams(const Ogre::MaterialPtr &material);
 
-void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material);
+  static void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material);
 
-void UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active = false);
+  static void UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active = false);
 
-void UpdatePbrParams(const std::string &material);
+  static void UpdatePbrParams(const std::string &material);
 
-void UpdatePbrIbl(const std::string &material, bool realtime);
+  static void UpdatePbrIbl(const std::string &material, bool realtime);
 
-void UpdatePbrShadowReceiver(const std::string &material);
+  static void UpdatePbrShadowReceiver(const std::string &material);
 
-void UpdatePbrShadowCaster(const std::string &material);
-}
+  static void UpdatePbrShadowCaster(const std::string &material);
+
+  static void Cleanup();
+  static void Update(float time);
+};
+
+} //namespace

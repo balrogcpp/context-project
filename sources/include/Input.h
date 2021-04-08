@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ extern "C" {
 #include <exception>
 #include "view_ptr.h"
 #include "Exception.h"
+#include "Singleton.h"
 
 
 namespace xio {
@@ -40,14 +41,10 @@ class InputObserver;
 class WindowObserver;
 
 //----------------------------------------------------------------------------------------------------------------------
-class InputSequencer {
+class InputSequencer : public Singleton<InputSequencer> {
  public:
   using KeyboardListenersList = std::vector<view_ptr<InputObserver>>;
   using OtherListenersList = std::vector<view_ptr<WindowObserver>>;
-
-  //Copy not allowed
-  InputSequencer(const InputSequencer &) = delete;
-  InputSequencer &operator=(const InputSequencer &) = delete;
 
   InputSequencer();
   virtual ~InputSequencer();
@@ -57,21 +54,15 @@ class InputSequencer {
  private:
   KeyboardListenersList io_listeners;
   OtherListenersList win_listeners;
-  inline static bool instanced_;
+  int HandleAppEvents(void *userdata, SDL_Event *event);
 
  public:
   void RegObserver(view_ptr<InputObserver> p);
-
   void UnregObserver(view_ptr<InputObserver> p);
-
   void RegWinObserver(view_ptr<WindowObserver> p);
-
   void UnregWinObserver(view_ptr<WindowObserver> p);
-
   void Clear();
-
   void Reserve(size_t size);
-
   void Capture();
 };
 
@@ -95,6 +86,7 @@ class InputObserver {
   virtual void OnMouseRbUp(int x, int y) {}
   virtual void OnMouseMbDown(int x, int y) {}
   virtual void OnMouseMbUp(int x, int y) {}
+  virtual void OnTextInput (const char* text) {}
 
   //Joystick
   virtual void OnJoystickAxis(int which, int axis, int value) {}
@@ -103,6 +95,7 @@ class InputObserver {
   virtual void OnJoystickHat(int which, int hat, int value) {}
   virtual void OnJoystickBall(int which, int ball, int xrel, int yrel) {}
 };
+
 //----------------------------------------------------------------------------------------------------------------------
 class WindowObserver {
  public:
@@ -111,6 +104,9 @@ class WindowObserver {
 
   virtual void Event(const SDL_Event &evt) {}
   virtual void Quit() {}
+  virtual void Pause() {}
+  virtual void Resume() {}
   virtual void Other(uint8_t type, int code, void *data1, void *data2) {}
 };
+
 } //namespace

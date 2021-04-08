@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@
 #include <OgreFrameListener.h>
 #include <OgreAny.h>
 #include <map>
+#include <thread>
 
 namespace BtOgre {
 class DebugDrawer;
@@ -58,17 +59,13 @@ struct ContactInfo {
 
 class Physics final : public Component, public Singleton<Physics> {
  public:
-  Physics();
+  Physics(bool threaded = false);
   virtual ~Physics();
 
-  void Cleanup() final;
-  void Update(float time) final;
-  void Resume() final {
-    pause_ = false;
-  }
-  void Pause() final {
-    pause_ = true;
-  }
+  void Cleanup() override;
+  void Update(float time) override;
+  void Resume() override;
+  void Pause() override;
 
   void DispatchCollisions();
   void AddRigidBody(btRigidBody *body);
@@ -90,18 +87,33 @@ class Physics final : public Component, public Singleton<Physics> {
                                      const Ogre::Vector3 &position,
                                      const float &scale);
 
+  void SetCallback(const std::function<void(int a, int b)> &callback) {
+	callback_ = callback;
+  }
+
+  bool IsThreaded() const;
+
  private:
+  void InitThread_();
+
   std::unique_ptr<BtOgre::DebugDrawer> dbg_draw_;
   std::unique_ptr<btAxisSweep3> broadphase_;
   std::unique_ptr<btDefaultCollisionConfiguration> configurator_;
   std::unique_ptr<btCollisionDispatcher> dispatcher_;
   std::unique_ptr<btSequentialImpulseConstraintSolver> solver_;
   std::unique_ptr<btDynamicsWorld> world_;
+  std::unique_ptr<std::thread> update_thread_;
+  std::mutex mutex_;
   std::map<const btCollisionObject *, ContactInfo> contacts_;
   std::function<void(int a, int b)> callback_;
-  int steps_ = 8;
-  bool pause_ = false;
+  int steps_ = 4;
+  bool threaded_ = false;
+  int64_t update_rate_ = 120;
+  std::atomic<bool> pause_ = true;
+  std::atomic<bool> running_ = false;
   bool debug_ = false;
+  int64_t time_of_last_frame_ = 0;
+  int64_t cumulated_time_ = 0;
   const std::string TYPE_STATIC = "static";
   const std::string TYPE_DYNAMIC = "dynamic";
   const std::string TYPE_ACTOR = "actor";
@@ -113,10 +125,6 @@ class Physics final : public Component, public Singleton<Physics> {
   const std::string PROXY_CYLINDER = "cylinder";
   const std::string PROXY_TRIMESH = "trimesh";
   const std::string PROXY_CONVEX = "convex";
-
- public:
-  void SetCallback(const std::function<void(int a, int b)> &callback) {
-    callback_ = callback;
-  }
 };
-}
+
+} //namespace

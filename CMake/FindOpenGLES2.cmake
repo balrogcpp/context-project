@@ -1,131 +1,78 @@
-#-------------------------------------------------------------------
-# This file is part of the CMake build system for OGRE
-#     (Object-oriented Graphics Rendering Engine)
-# For the latest info, see http://www.ogre3d.org/
+#.rst:
+# Find OpenGL ES 2
+# ----------------
 #
-# The contents of this file are placed in the public domain. Feel
-# free to make use of it in any way you like.
-#-------------------------------------------------------------------
-
-# - Try to find OpenGLES and EGL
-# If using ARM Mali emulation you can specify the parent directory that contains the bin and include directories by 
-# setting the MALI_SDK_ROOT variable in the environment.
+# Finds the OpenGL ES 2 library. This module defines:
 #
-# For AMD emulation use the AMD_SDK_ROOT variable
+#  OpenGLES2_FOUND          - True if OpenGL ES 2 library is found
+#  OpenGLES2::OpenGLES2     - OpenGL ES 2 imported target
 #
-# Once done this will define
-#  
-#  OPENGLES2_FOUND        - system has OpenGLES
-#  OPENGLES2_INCLUDE_DIR  - the GL include directory
-#  OPENGLES2_LIBRARIES    - Link these to use OpenGLES
+# Additionally these variables are defined for internal usage:
 #
-#  EGL_FOUND        - system has EGL
-#  EGL_INCLUDE_DIR  - the EGL include directory
-#  EGL_LIBRARIES    - Link these to use EGL
+#  OPENGLES2_LIBRARY        - OpenGL ES 2 library
+#
+# Please note this find module is tailored especially for the needs of Magnum.
+# In particular, it depends on its platform definitions and doesn't look for
+# OpenGL ES includes as Magnum has its own, generated using flextGL.
+#
 
-include(FindPkgMacros)
+#
+#   This file is part of Magnum.
+#
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+#               2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
+#
+#   Permission is hereby granted, free of charge, to any person obtaining a
+#   copy of this software and associated documentation files (the "Software"),
+#   to deal in the Software without restriction, including without limitation
+#   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#   and/or sell copies of the Software, and to permit persons to whom the
+#   Software is furnished to do so, subject to the following conditions:
+#
+#   The above copyright notice and this permission notice shall be included
+#   in all copies or substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#   DEALINGS IN THE SOFTWARE.
+#
 
-IF(APPLE)
-  create_search_paths(/Developer/Platforms)
-  findpkg_framework(OpenGLES2)
-  set(OPENGLES2_gl_LIBRARY "-framework OpenGLES")
-ELSEIF (WIN32)
-  getenv_path(AMD_SDK_ROOT)
-  getenv_path(MALI_SDK_ROOT)
+# Under Emscripten, GL is linked implicitly. With MINIMAL_RUNTIME you need to
+# specify -lGL. Simply set the library name to that.
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(OPENGLES2_LIBRARY GL CACHE STRING "Path to a library." FORCE)
+else()
+    find_library(OPENGLES2_LIBRARY NAMES
+            GLESv2
 
-  SET(POWERVR_SDK_PATH "C:/Imagination/PowerVR/GraphicsSDK/SDK_3.1/Builds")
-  FIND_PATH(OPENGLES2_INCLUDE_DIR GLES2/gl2.h
-                  ${ENV_AMD_SDK_ROOT}/include
-                  ${ENV_MALI_SDK_ROOT}/include
-                  ${POWERVR_SDK_PATH}/Include
-                  "C:/Imagination Technologies/PowerVR Insider SDK/OGLES2_WINDOWS_X86EMULATION_2.10/Builds/OGLES2/Include"
-  )
+            # ANGLE (CMake doesn't search for lib prefix on Windows)
+            libGLESv2
 
-  FIND_PATH(EGL_INCLUDE_DIR EGL/egl.h
-                  ${ENV_AMD_SDK_ROOT}/include
-                  ${ENV_MALI_SDK_ROOT}/include
-                  ${POWERVR_SDK_PATH}/Include
-                  "C:/Imagination Technologies/PowerVR Insider SDK/OGLES2_WINDOWS_X86EMULATION_2.10/Builds/OGLES2/Include"
-  )
-
-  FIND_LIBRARY(OPENGLES2_gl_LIBRARY
-      NAMES libGLESv2
-      PATHS ${ENV_AMD_SDK_ROOT}/x86
-            ${ENV_MALI_SDK_ROOT}/bin
-            ${POWERVR_SDK_PATH}/Windows/x86_32/Lib
-            "C:/Imagination Technologies/PowerVR Insider SDK/OGLES2_WINDOWS_X86EMULATION_2.10/Builds/OGLES2/WindowsX86/Lib"
-  )
-
-  FIND_LIBRARY(EGL_egl_LIBRARY
-      NAMES libEGL
-      PATHS ${ENV_AMD_SDK_ROOT}/x86
-            ${ENV_MALI_SDK_ROOT}/bin
-            ${POWERVR_SDK_PATH}/Windows/x86_32/Lib
-            "C:/Imagination Technologies/PowerVR Insider SDK/OGLES2_WINDOWS_X86EMULATION_2.10/Builds/OGLES2/WindowsX86/Lib"
-  )
-ELSE ()
-  getenv_path(AMD_SDK_ROOT)
-  getenv_path(MALI_SDK_ROOT)
-
-  FIND_PATH(OPENGLES2_INCLUDE_DIR GLES2/gl2.h
-    ${ENV_AMD_SDK_ROOT}/include
-    ${ENV_MALI_SDK_ROOT}/include
-    /opt/Imagination/PowerVR/GraphicsSDK/SDK_3.1/Builds/Include
-    /usr/openwin/share/include
-    /opt/graphics/OpenGL/include /usr/X11R6/include
-    /usr/include
-  )
-
-  FIND_LIBRARY(OPENGLES2_gl_LIBRARY
-    NAMES GLESv2
-    PATHS ${ENV_AMD_SDK_ROOT}/x86
-          ${ENV_MALI_SDK_ROOT}/bin
-          /opt/Imagination/PowerVR/GraphicsSDK/SDK_3.1/Builds/Linux/x86_32/Lib
-          /opt/graphics/OpenGL/lib
-          /usr/openwin/lib
-          /usr/shlib /usr/X11R6/lib
-          /usr/lib
-  )
-
-  FIND_PATH(EGL_INCLUDE_DIR EGL/egl.h
-    ${ENV_AMD_SDK_ROOT}/include
-    ${ENV_MALI_SDK_ROOT}/include
-    /opt/Imagination/PowerVR/GraphicsSDK/SDK_3.1/Builds/Include
-    /usr/openwin/share/include
-    /opt/graphics/OpenGL/include /usr/X11R6/include
-    /usr/include
-  )
-
-  FIND_LIBRARY(EGL_egl_LIBRARY
-    NAMES EGL
-    PATHS ${ENV_AMD_SDK_ROOT}/x86
-          ${ENV_MALI_SDK_ROOT}/bin
-          /opt/Imagination/PowerVR/GraphicsSDK/SDK_3.1/Builds/Linux/x86_32/Lib
-          /opt/graphics/OpenGL/lib
-          /usr/openwin/lib
-          /usr/shlib /usr/X11R6/lib
-          /usr/lib
-  )
-ENDIF ()
-
-IF(OPENGLES2_gl_LIBRARY)
-    SET( OPENGLES2_LIBRARIES ${OPENGLES2_gl_LIBRARY} ${OPENGLES2_LIBRARIES})
-    SET( OPENGLES2_FOUND TRUE )
-ENDIF(OPENGLES2_gl_LIBRARY)
-
-IF(EGL_egl_LIBRARY)
-  SET( EGL_LIBRARIES ${EGL_egl_LIBRARY} ${EGL_LIBRARIES})
-  SET( EGL_FOUND TRUE)
-ENDIF()
-
-if(EMSCRIPTEN)
-  SET( OPENGLES2_FOUND TRUE )
-  SET( EGL_FOUND TRUE)
+            # iOS
+            OpenGLES)
 endif()
 
-MARK_AS_ADVANCED(
-  OPENGLES2_INCLUDE_DIR
-  OPENGLES2_gl_LIBRARY
-  EGL_INCLUDE_DIR
-  EGL_egl_LIBRARY
-)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(OpenGLES2 DEFAULT_MSG
+        OPENGLES2_LIBRARY)
+
+if(NOT TARGET OpenGLES2::OpenGLES2)
+    # Work around BUGGY framework support on macOS. Do this also in case of
+    # Emscripten, since there we don't have a location either.
+    # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
+    if((CORRADE_TARGET_APPLE AND ${OPENGLES2_LIBRARY} MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
+        add_library(OpenGLES2::OpenGLES2 INTERFACE IMPORTED)
+        set_property(TARGET OpenGLES2::OpenGLES2 APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ${OPENGLES2_LIBRARY})
+    else()
+        add_library(OpenGLES2::OpenGLES2 UNKNOWN IMPORTED)
+        set_property(TARGET OpenGLES2::OpenGLES2 PROPERTY
+                IMPORTED_LOCATION ${OPENGLES2_LIBRARY})
+    endif()
+endif()
+
+mark_as_advanced(OPENGLES2_LIBRARY)

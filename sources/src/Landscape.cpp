@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,20 @@
 #include "Landscape.h"
 #include "Physics.h"
 #include "Renderer.h"
+#include "ComponentLocator.h"
 #include <Terrain/OgreTerrainMaterialGeneratorA.h>
 #include "TerrainMaterialGeneratorB.h"
 #include "XmlUtils.h"
 #include <pugixml.hpp>
+
+#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+#include <Terrain/OgreTerrainGroup.h>
+#include <Terrain/OgreTerrainQuadTreeNode.h>
+#include <Terrain/OgreTerrainMaterialGeneratorA.h>
+#include <Terrain/OgreTerrainMaterialGenerator.h>
+#include <Terrain/OgreTerrainAutoUpdateLod.h>
+#include <Terrain/OgreTerrain.h>
+#endif
 
 using namespace std;
 
@@ -134,10 +144,10 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 
   OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
   terrain_global_options->setUseVertexCompressionWhenAvailable(true);
-  terrain_global_options->setCastsDynamicShadows(false);
+  terrain_global_options->setCastsDynamicShadows(true);
   terrain_global_options->setCompositeMapDistance(200);
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
-  terrain_global_options->setUseRayBoxDistanceCalculation(false);
+  terrain_global_options->setUseRayBoxDistanceCalculation(true);
   terrain_global_options->setDefaultMaterialGenerator(make_shared<TerrainMaterialGeneratorB>());
 
   auto *scene_manager = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -177,7 +187,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
 //  defaultimp.layerList[2].textureNames.push_back("Rock20_diffspec.dds");
 //  defaultimp.layerList[2].textureNames.push_back("Rock20_normheight.dds");
 
-  for (auto pPageElement : xml_node.children("terrain")) {
+  for (auto &pPageElement : xml_node.children("terrain")) {
 	int pageX = Ogre::StringConverter::parseInt(pPageElement.attribute("x").value());
 	int pageY = Ogre::StringConverter::parseInt(pPageElement.attribute("y").value());
 
@@ -219,7 +229,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   while (terrainIterator.hasMoreElements()) {
 	auto *terrain = terrainIterator.getNext()->instance;
 
-	physics_->CreateTerrainHeightfieldShape(terrain->getSize(),
+	GetPhysics().CreateTerrainHeightfieldShape(terrain->getSize(),
 											terrain->getHeightData(),
 											terrain->getMinHeight(),
 											terrain->getMaxHeight(),

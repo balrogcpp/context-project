@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,8 @@
 
 #pragma once
 #include "NoCopy.h"
-#include <yaml-cpp/yaml.h>
+#include "Exception.h"
+#include <nlohmann/json.hpp>
 #include <filesystem>
 #include <string>
 
@@ -30,44 +31,45 @@ namespace xio {
 
 class Configurator : public NoCopy {
  public:
-  explicit Configurator(const std::string &file = "config.yaml") {
-    Load(file);
+
+  explicit Configurator(const std::string &file_name);
+
+  virtual ~Configurator();
+
+  void Load(const std::string &file_name);
+
+//----------------------------------------------------------------------------------------------------------------------
+  template<typename T>
+  void AddMember(const std::string &key, T &&value) {
+	document_[key] = value;
   }
 
-  Configurator(const Configurator &) = delete;
-  Configurator &operator=(const Configurator &) = delete;
-  virtual ~Configurator() {}
+//----------------------------------------------------------------------------------------------------------------------
+  template<typename T>
+  T Get(const std::string &key) {
+	T t{};
 
-  void Load(const std::string &file) {
-    document_.reset();
-    document_ = YAML::LoadFile(file);
+	if (document_.find(key)!=document_.end())
+	  t = static_cast<T>(document_[key]);
+
+	return t;
   }
+
+//----------------------------------------------------------------------------------------------------------------------
+  template<typename T>
+  bool Get(const std::string &key, T &t_) {
+
+	if (document_.find(key)!=document_.end()) {
+	  t_ = static_cast<T>(document_[key]);
+	  return true;
+	} else {
+	  return false;
+	}
+
+  }
+
  private:
-  YAML::Node document_;
-
- public:
-//----------------------------------------------------------------------------------------------------------------------
-  template<typename T>
-  void AddMember(const std::string &name, T &&value) {
-//	static auto &allocator = document_.GetAllocator();
-//	if (!document_.HasMember(name)) {
-//	  document_.AddMember(static_cast<rapidjson::GenericStringRef<char>>(name.c_str()), value, allocator);
-//	}
-
-  }
-
-//----------------------------------------------------------------------------------------------------------------------
-  template<typename T>
-  inline T Get(const std::string &str) {
-    T t{};
-
-    try {
-      t = document_[str].as<T>();
-    } catch (std::exception &e) {
-      //ignore
-    }
-
-    return t;
-  }
+  nlohmann::json document_;
 };
-}
+
+} //namespace

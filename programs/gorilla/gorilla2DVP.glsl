@@ -3,7 +3,7 @@
 #else
 #version 100
 precision highp float;
-precision highp int;
+precision lowp int;
 precision lowp sampler2D;
 #endif
 
@@ -13,6 +13,7 @@ attribute vec4 uv0;
 
 varying	vec4 oUv;
 varying	vec4 oColor;
+
 void main()
 {
 	oUv = uv0;

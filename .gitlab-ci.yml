@@ -5,6 +5,7 @@ services:
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
+  GIT_DEPTH: "1"
 
 build:
   stage: build
@@ -12,10 +13,12 @@ build:
     - docker build --build-arg GIT_HASH=$CI_COMMIT_SHORT_SHA . -t context
     - docker create -ti --name abc context bash
     - mkdir artifacts
-    - docker cp abc:/mnt/build/install/ContextProjectDemo-$CI_COMMIT_SHORT_SHA.zip .
+    - docker cp abc:/mnt/build/artifacts/install/ContextProjectDemo-Windows-x64-$CI_COMMIT_SHORT_SHA.zip .
+    - docker cp abc:/mnt/build/artifacts/install/ContextProjectDemo-Linux-x64-$CI_COMMIT_SHORT_SHA.zip .
     - docker rm -f abc
   artifacts:
     paths:
-      - ContextProjectDemo-$CI_COMMIT_SHORT_SHA.zip
+      - ContextProjectDemo-Windows-x64-$CI_COMMIT_SHORT_SHA.zip
+      - ContextProjectDemo-Linux-x64-$CI_COMMIT_SHORT_SHA.zip
   only:
     - master

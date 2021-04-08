@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -50,8 +50,11 @@ void StateManager::InitNextState() {
   }
 
   cur_state_ = move(cur_state_->next_);
-  cur_state_->Init();
-  Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
+
+  if (cur_state_) {
+	cur_state_->Init();
+	Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -62,17 +65,17 @@ void StateManager::SetInitialState(unique_ptr<AppState> &&next_state) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void StateManager::Update(float time) {
-	cur_state_->Update(time);
+  if (cur_state_) cur_state_->Update(time);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 bool StateManager::IsActive() const {
-	return static_cast<bool>(cur_state_);
+  return static_cast<bool>(cur_state_);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 bool StateManager::IsDirty() const {
-	return cur_state_->IsDirty();
+  return cur_state_->IsDirty();
 }
 
 //---------------------------------------------------------------------------------------------------------------------

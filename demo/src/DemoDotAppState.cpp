@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -22,86 +22,154 @@
 
 #include "DemoDotAppState.h"
 #include "MenuAppState.h"
-#include "Sound.h"
+#include "Renderer.h"
+#include "Audio.h"
+#include "PbrShaderUtils.h"
+#include "Engine.h"
+#include "ComponentLocator.h"
+#include <Overlay/OgreImGuiOverlay.h>
 
 using namespace std;
 using namespace xio;
 
 namespace Demo {
 DemoDotAppState::DemoDotAppState() {
-////  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
-//  LoadFromFile("1.scene");
-//
-//  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-//  auto *root = scene->getRootSceneNode();
-//
-//  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
-//  auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
-//  root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
-//
-////  Ogre::Entity *entity = scene->createEntity("ely_vanguardsoldier_kerwinatienza_Mesh.mesh", "ely_vanguardsoldier_kerwinatienza_Mesh.mesh");
-////  auto *node = root->createChildSceneNode(Ogre::Vector3(0, 0, 0));
-////  node->scale(Ogre::Vector3(0.02));
-////  node->attachObject(entity);
-////  UpdateEntityMaterial(entity);
-////  anim1 = entity->getAnimationState("run");
-////  anim1->setLoop(true);
-////  anim1->setEnabled(true);
-//
-////  anim2 = entity->getAnimationState("jump");
-////  anim2->setLoop(true);
-////  anim2->setEnabled(true);
-//
-//  sound_->CreateSound("ambient", "test.ogg", false);
-//  sound_->SetVolume("ambient", 0.5);
-//  sound_->PlaySound("ambient");
+
 }
 
 DemoDotAppState::~DemoDotAppState() {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Pause() {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Resume() {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
-  if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
-	ChangeState();
-  } else if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_F) {
-    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-
-    if (scene->hasLight("Point")) {
-      auto *light = scene->getLight("Point");
-      light->setVisible(!light->isVisible());
-    }
+  if (SDL_GetScancodeFromKey(sym)==SDL_SCANCODE_ESCAPE) {
+	context_menu_ = true;
+	GetRender().GetWindow().SetCursorStatus(true, false, false);
   }
+
 }
 
 void DemoDotAppState::Cleanup() {
+  Ogre::ImGuiOverlay::NewFrame();
 }
 
+static string ButtonText(const std::string &text, int length) {
+  string new_string = string((length - text.size())/2, ' ');
+  new_string.append(text);
+  new_string.append(string((length - text.size())/2, ' '));
+
+  return new_string;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Update(float time) {
 //  anim1->addTime(time/4);
 //  anim2->addTime(time/4);
+
+
+  Ogre::ImGuiOverlay::NewFrame();
+
+  {
+	static ImGuiIO &io = ImGui::GetIO();
+	ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
+	ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
+	ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
+	ImGui::SetNextWindowBgAlpha(0.5);
+
+	ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+
+	ImGui::SetWindowFontScale(0.25);
+
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+				1000.0f/ImGui::GetIO().Framerate,
+				ImGui::GetIO().Framerate);
+	ImGui::End();
+
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
+	if (!context_menu_) {
+	  return;
+	}
+#endif
+
+	ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x*0.5f, io.DisplaySize.y*0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
+	ImGui::SetNextWindowBgAlpha(0.5);
+	ImGui::SetNextWindowFocus();
+
+#if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID
+	ImGui::SetNextWindowCollapsed(true, ImGuiCond_Appearing);
+
+	ImGui::Begin("", nullptr, ImGuiWindowFlags_NoResize);
+#else
+	ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
+	ImGui::Begin("", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+#endif
+
+	const float hdx = 1920;
+	const float hdy = 1080;
+	const float hddiag = sqrt(hdx * hdx + hdy * hdy);
+	float x = GetRender().GetWindow().GetSize().first;
+	float y = GetRender().GetWindow().GetSize().second;
+	static float diag = sqrt(x * x + y * y);
+	float scale = 0.25f * diag / hddiag;
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+	scale *= 4.0f;
+#endif
+	ImGui::SetWindowFontScale(scale);
+
+
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("         RESUME          ")) {
+	  GetRender().GetWindow().SetCursorStatus(false, true, true);
+	  context_menu_ = false;
+	}
+
+#endif
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("        MAIN MENU        "))
+	  ChangeState(make_unique<MenuAppState>());
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("          EXIT           "))
+	  ChangeState();
+
+	ImGui::NewLine();
+
+	ImGui::End();
+  }
+
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Init() {
+  GetRender().GetWindow().SetCursorStatus(false, true, true);
 //  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
-  LoadFromFile("1.scene");
-//  next_ = make_unique<MenuAppState>();
-  SetNextState(make_unique<MenuAppState>());
+  LoadFromFile("1.scene", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *root = scene->getRootSceneNode();
 
-  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
-  auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
-  root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
+//  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
+//  xio::Pbr::UpdatePbrParams("Examples/Smoke");
+//  auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
+//  root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
 
 //  Ogre::Entity *entity = scene->createEntity("ely_vanguardsoldier_kerwinatienza_Mesh.mesh", "ely_vanguardsoldier_kerwinatienza_Mesh.mesh");
 //  auto *node = root->createChildSceneNode(Ogre::Vector3(0, 0, 0));
@@ -116,8 +184,9 @@ void DemoDotAppState::Init() {
 //  anim2->setLoop(true);
 //  anim2->setEnabled(true);
 
-  sound_->CreateSound("ambient", "test.ogg", false);
-  sound_->SetVolume("ambient", 0.5);
-  sound_->PlaySound("ambient");
+  GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
+  GetAudio().SetVolume("ambient", 0.5);
+  GetAudio().PlaySound("ambient");
 }
+
 }

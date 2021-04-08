@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -42,24 +42,27 @@ class Compositor : public Component, public Singleton<Compositor> {
   Compositor();
   virtual ~Compositor();
 
-  void Cleanup() final {}
-  void Pause() final {}
-  void Resume() final {}
-  void Update(float time) final;
-
-  void EnableEffect(const std::string &name, bool enable) {
-    effects_[name] = enable;
-  }
-
+  void Cleanup() override;
+  void Pause() override;
+  void Resume() override;
+  void Update(float time) override;
+  void EnableEffect(const std::string &name, bool enable = true);
   void Init();
 
  private:
+  void InitGbuffer_();
+  void AddCompositorEnabled_(const std::string &name);
+  void AddCompositorDisabled_(const std::string &name);
+  void EnableCompositor_(const std::string &name);
+  void InitMRT_();
+  void InitOutput_();
+
   std::map<std::string, bool> effects_;
   std::unique_ptr<GBufferSchemeHandler> gbuff_handler_;
-  Ogre::SceneManager *scene_;
-  Ogre::Camera *camera_;
-  Ogre::Viewport *viewport_;
-  Ogre::Matrix4 mvp_;
-  Ogre::Matrix4 mvp_prev_;
+  view_ptr<Ogre::CompositorManager> compositor_manager_;
+  view_ptr<Ogre::SceneManager> scene_;
+  view_ptr<Ogre::Camera> camera_;
+  view_ptr<Ogre::Viewport> viewport_;
 };
-}
+
+} //namespace

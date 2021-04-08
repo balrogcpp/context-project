@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,16 @@
 
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 
+#include <RTShaderSystem/OgreRTShaderSystem.h>
+#include <RTShaderSystem/OgreShaderGenerator.h>
+
 using namespace std;
 
-namespace rtss {
+namespace xio {
 
 void InitRtss() {
   if (!Ogre::RTShader::ShaderGenerator::initialize()) {
-	throw RtssException("RTTS System failed to initialize");
+	throw Exception("RTSS failed to initialize");
   }
 }
 
@@ -47,14 +50,14 @@ void CreateRtssShaders(const string &cache_path) {
   shader_generator->addSceneManager(scene_);
   viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
-  // Init and register the material manager listener if it doesn't exist yet.
-#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
   if (!filesystem::exists(cache_path) && !cache_path.empty())
 	filesystem::create_directories(cache_path);
-#endif
+
   shader_generator->setShaderCachePath(cache_path);
+
   Ogre::MaterialManager::getSingleton().addListener(new ShaderResolver(shader_generator));
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InitPssm(const vector<float> &split_points) {
   Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
@@ -106,12 +109,10 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
 	return false;
 
   auto &mShaderGenerator = Ogre::RTShader::ShaderGenerator::getSingleton();
-  auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name,
-																		  Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+  auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name);
 
   if (!originalMaterial) {
-	originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name,
-																	   Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+	originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name, Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
   }
 
   bool verbose = false;
@@ -152,18 +153,18 @@ Ogre::Technique *ShaderResolver::handleSchemeNotFound(unsigned short scheme_inde
 													  Ogre::Material *original_material,
 													  unsigned short lod_index,
 													  const Ogre::Renderable *renderable) {
-  static vector<string> material_list_;
+//  static vector<string> material_list_;
+//  string material_name = original_material->getName();
+//  if (find(material_list_.begin(), material_list_.end(), material_name)==material_list_.end()) {
+//	material_list_.push_back(material_name);
+//  } else {
+//	return nullptr;
+//  }
 
   if (scheme_name!=Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
 	return nullptr;
   }
 
-  string material_name = original_material->getName();
-  if (find(material_list_.begin(), material_list_.end(), material_name)==material_list_.end()) {
-	material_list_.push_back(material_name);
-  } else {
-	return nullptr;
-  }
 
   // Init shader generated technique for this material.
   bool techniqueCreated = shader_generator_->createShaderBasedTechnique(
@@ -215,4 +216,5 @@ bool ShaderResolver::beforeIlluminationPassesCleared(Ogre::Technique *technique)
 }
 
 } //namespace
+
 #endif

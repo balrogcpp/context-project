@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -29,11 +29,26 @@
 #endif
 #include "header.frag"
 #include "srgb.glsl"
+#include "fog.glsl"
 
 uniform samplerCube cubemap;
+uniform vec3 uFogColour;
+uniform vec4 uFogParams;
+
+in float vDepth;
+
 in vec3 TexCoords; // direction vector representing a 3D texture coordinate
+
 
 void main()
 {
-    gl_FragColor = vec4(SRGBtoLINEAR(textureCube(cubemap, TexCoords).rgb), 1.0);
+    vec3 color = SRGBtoLINEAR(textureCube(cubemap, TexCoords).rgb);
+
+#ifndef GL_ES
+    gl_FragData[0] = vec4(color, 1.0);
+    gl_FragData[1] = vec4(1.0, 0.0, 0.0, 1.0);
+#else
+    color = ApplyFog(color, uFogParams, uFogColour, vDepth);
+    gl_FragColor = vec4(LINEARtoSRGB(color, 1.0), 1.0);
+#endif
 }

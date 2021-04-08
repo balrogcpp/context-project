@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,9 @@
 #include "Window.h"
 #include "ShadowSettings.h"
 #include "Compositor.h"
+#include "Overlay.h"
 #include "Component.h"
-#include <vector>
-#include <string>
-#include <memory>
+#include "view_ptr.h"
 
 namespace Ogre {
 class Root;
@@ -45,41 +44,43 @@ class Renderer final : public Component, public Singleton<Renderer> {
   Renderer(int w, int h, bool f);
   virtual ~Renderer();
 
-  void Cleanup() final {}
-  void Pause() final {}
-  void Resume() final {}
-  void Update(float time) final { compositor_->Update(time);};
+  void Cleanup() override;
+  void Pause() override;
+  void Resume() override;
+  void Update(float time) override;
 
   void Refresh();
   void UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy);
   void UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format);
   void RenderOneFrame();
   void Resize(int w, int h, bool f);
+  void RestoreFullscreenAndroid_();
+
+  Window &GetWindow();
+  ShadowSettings &GetShadowSettings();
+  Compositor &GetCompositor();
+
 
  private:
-  void CreateCamera();
+  void InitOgrePlugins_();
+  void InitOgreRenderSystem_();
+  void InitOgreRenderSystem_GL3_();
+  void InitOgreRenderSystem_GLES2_();
+  void InitRenderWindow_();
+  void InitResourceLocation_();
+
+  std::string render_system_;
 
   std::unique_ptr<Window> window_;
-  std::unique_ptr<ShadowSettings> shadow_;
+  std::unique_ptr<ShadowSettings> shadow_settings_;
   std::unique_ptr<Compositor> compositor_;
+  std::unique_ptr<Overlay> overlay_;
 
-  Ogre::Root *root_;
-  Ogre::SceneManager *scene_;
-  Ogre::Camera *camera_;
-  Ogre::Viewport *viewport_;
-  Ogre::RenderWindow *ogre_;
-
- public:
-  Window &GetWindow() {
-    return *window_;
-  }
-
-  ShadowSettings &GetShadowSettings() {
-    return *shadow_;
-  }
-
-  Compositor &GetCompositor() {
-    return *compositor_;
-  }
+  view_ptr<Ogre::Root> root_;
+  view_ptr<Ogre::SceneManager> scene_;
+  view_ptr<Ogre::Camera> camera_;
+  view_ptr<Ogre::Viewport> viewport_;
+  view_ptr<Ogre::RenderWindow> render_window_;
 };
-}
+
+} //namespace

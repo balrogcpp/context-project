@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 
 #include "NoCopy.h"
 #include "Input.h"
-#include "ComponentLocator.h"
+
 
 namespace xio {
 class StateManager;
@@ -33,17 +33,15 @@ class AppState
 	: public Ogre::RenderTargetListener,
 	  public Ogre::FrameListener,
 	  public InputObserver,
-	  public NoCopy,
-	  public ComponentLocator {
+	  public NoCopy {
  public:
   AppState();
   virtual ~AppState();
 
   void ChangeState(std::unique_ptr<AppState> &&app_state);
   void ChangeState();
-//  std::unique_ptr<AppState> GetNextState();
   void SetNextState(std::unique_ptr<AppState> &&next_state);
-  void LoadFromFile(const std::string &file_name);
+  void LoadFromFile(const std::string &file_name, const std::string &group);
   bool IsDirty() const;
 
   virtual void Init() = 0;
@@ -57,4 +55,5 @@ class AppState
   std::unique_ptr<AppState> next_;
   bool dirty_ = false;
 };
-}
+
+} //namespace

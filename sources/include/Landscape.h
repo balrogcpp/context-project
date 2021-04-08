@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
 
 #pragma once
 #include "SubComponent.h"
-#include "ComponentLocator.h"
+
 #include <memory>
 
 namespace Ogre {
@@ -36,14 +36,14 @@ class xml_node;
 }
 
 namespace xio {
-class Landscape final : public ComponentLocator, public SubComponent {
+class Landscape final : public SubComponent {
  public:
   Landscape ();
   virtual ~Landscape ();
 
   void ProcessTerrainGroup(pugi::xml_node &xml_node);
   float GetHeigh(float x, float z);
-  void Update(float time) final {}
+  void Update(float time) override {}
 
  private:
   void GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image, const std::string &filename);
@@ -52,4 +52,5 @@ class Landscape final : public ComponentLocator, public SubComponent {
 
   std::unique_ptr<Ogre::TerrainGroup> terrain_;
 };
-}
+
+} //namespace

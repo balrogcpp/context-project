@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 #include "NoCopy.h"
 
 extern "C" {
-#define SDL_MAIN_HANDLED
 #include <SDL2/SDL_syswm.h>
 }
 
@@ -38,38 +37,29 @@ class Window : public NoCopy {
   explicit Window(int w, int h, bool f);
   virtual ~Window();
 
- private:
-  void Init_();
+ public:
+  std::string GetCaption() const;
+  void SetCaption(const std::string &caption);
+  float GetRatio() const;
+  std::pair<int, int> GetSize() const;
+  bool IsFullscreen() const;
+  SDL_SysWMinfo GetInfo() const;
+  void SetCursorStatus(bool show, bool grab, bool relative);
+  void SwapBuffers() const;
+  void Resize(int w, int h);
+  void SetFullscreen(bool f);
 
   SDL_Window *window_ = nullptr;
+  SDL_GLContext gl_context_ = nullptr;
+
+ private:
   uint32_t flags_ = 0;
-  SDL_GLContext context_ = nullptr;
   std::string caption_;
   bool f_ = false;
   int w_ = 1024;
   int h_ = 768;
   int screen_w_;
   int screen_h_;
-
- public:
-  std::string GetCaption() const noexcept;
-
-  void SetCaption(const std::string &caption);
-
-  float GetRatio() const noexcept;
-
-  std::pair<int, int> GetSize() const noexcept;
-
-  bool IsFullscreen() const noexcept;
-
-  SDL_SysWMinfo GetInfo() const noexcept;
-
-  void SetCursorStatus(bool show, bool grab, bool relative) noexcept;
-
-  void SwapBuffers() const noexcept;
-
-  void Resize(int w, int h) noexcept;
-
-  void SetFullscreen(bool f) noexcept;
 };
-}
+
+} //namespace

@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2020 Andrey Vasiliev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,9 @@ uniform float cOffsetScale; // [0, 1] The distance of the first sample. samples 
 uniform float cDefaultAccessibility; // the default value used in the lerp() expression for invalid samples [0, 1]
 uniform float cEdgeHighlight; // multiplier for edge highlighting in [1, 2] 1 is full highlighting 2 is off
 uniform float shadow_colour;
+uniform vec4 fog_params;
 
+//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
 //  const float nSampleNum = 32.0; // number of samples
@@ -52,13 +54,14 @@ void main()
 
   // get the depth of the current pixel and convert into world space unit [0, inf]
   float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
+  float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
 
-  if (clampedDepth <= 0.0) {
+  if (fragmentWorldDepth <= 0.0) {
     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     return;
   }
 
-  float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
+
   float accessibility = 0.0;
 
   // get rotation vector, rotation is tiled every 4 screen pixels
@@ -118,6 +121,12 @@ void main()
   accessibility *= cEdgeHighlight;
 
   accessibility = clamp(accessibility + shadow_colour, 0.0, 1.0);
+
+  float exponent = fragmentWorldDepth * fog_params.x;
+  float fog_value = clamp(1.0 / exp(exponent), 0.0, 1.0);
+  accessibility = mix(1.0, accessibility, fog_value);
+//  float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
+//  accessibility = mix(accessibility, 1.0, fog_value);
 
   // amplify and saturate if necessary
   gl_FragColor = vec4(vec3(accessibility), 1.0);

@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -175,4 +175,5 @@ Ogre::ColourValue ParseProperty(pugi::xml_node &xml_node) {
 						   xml_node.attribute("a")
 						   ? Ogre::StringConverter::parseReal(xml_node.attribute("a").value()) : 1);
 }
-}
+
+} //namespace

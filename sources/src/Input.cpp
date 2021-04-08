@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -28,16 +28,34 @@ using namespace std;
 
 namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
-InputSequencer::InputSequencer() {
-  if (instanced_) {
-	throw Exception("Only one instance of InputSequencer is allowed!\n");
-  }
+int InputSequencer::HandleAppEvents(void *userdata, SDL_Event *event) {
+	switch(event->type) {
+	  case SDL_APP_WILLENTERBACKGROUND:
+	  case SDL_APP_DIDENTERBACKGROUND: {
+		for_each(win_listeners.begin(), win_listeners.end(), [](auto it){it->Pause();});
+		return 0;
+	  }
 
-  Reserve(128);
-  instanced_ = true;
+	  case SDL_APP_WILLENTERFOREGROUND:
+	  case SDL_APP_DIDENTERFOREGROUND: {
+		for_each(win_listeners.begin(), win_listeners.end(), [](auto it){it->Resume();});
+		return 0;
+	  }
+
+	  default:
+	    return 1;
+	}
 }
 
-InputSequencer::~InputSequencer() {}
+//----------------------------------------------------------------------------------------------------------------------
+InputSequencer::InputSequencer() {
+  Reserve(128);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+InputSequencer::~InputSequencer() {
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 InputSequencer &InputSequencer::GetInstance() {
@@ -50,6 +68,7 @@ InputSequencer &InputSequencer::GetInstance() {
 void InputSequencer::RegObserver(view_ptr<InputObserver> p) {
   io_listeners.push_back(p);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::UnregObserver(view_ptr<InputObserver> p) {
   auto it = find(io_listeners.begin(), io_listeners.end(), p);
@@ -59,10 +78,20 @@ void InputSequencer::UnregObserver(view_ptr<InputObserver> p) {
 	io_listeners.pop_back();
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::RegWinObserver(view_ptr<WindowObserver> p) {
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  auto callback = [](void *userdata, SDL_Event *event) {
+	return InputSequencer::GetInstance().HandleAppEvents(userdata, event);
+  };
+
+  SDL_SetEventFilter(callback, nullptr);
+#endif
+
   win_listeners.push_back(p);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::UnregWinObserver(view_ptr<WindowObserver> p) {
   auto it = find(win_listeners.begin(), win_listeners.end(), p);
@@ -72,6 +101,7 @@ void InputSequencer::UnregWinObserver(view_ptr<WindowObserver> p) {
 	win_listeners.pop_back();
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::Clear() {
   io_listeners.clear();
@@ -79,11 +109,13 @@ void InputSequencer::Clear() {
   win_listeners.clear();
   win_listeners.shrink_to_fit();
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::Reserve(size_t size) {
   io_listeners.reserve(size);
   win_listeners.reserve(size);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::Capture() {
   SDL_Event event;
@@ -91,15 +123,15 @@ void InputSequencer::Capture() {
 
 	switch (event.type) {
 	  case SDL_KEYUP: {
-		for (auto it : io_listeners)
-		  it->OnKeyUp(event.key.keysym.sym);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnKeyUp(event.key.keysym.sym);});
 		break;
 	  }
+
 	  case SDL_KEYDOWN: {
-		for (auto it : io_listeners)
-		  it->OnKeyDown(event.key.keysym.sym);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnKeyDown(event.key.keysym.sym);});
 		break;
 	  }
+
 	  case SDL_MOUSEMOTION: {
 		for (auto it : io_listeners) {
 		  it->OnMouseMove(event.motion.x, event.motion.y,
@@ -111,41 +143,37 @@ void InputSequencer::Capture() {
 		}
 		break;
 	  }
+
 	  case SDL_MOUSEBUTTONDOWN: {
 		switch (event.button.button) {
 		  case SDL_BUTTON_LEFT: {
-			for (auto it : io_listeners)
-			  it->OnMouseLbDown(event.button.x, event.button.y);
+			for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseLbDown(event.button.x, event.button.y);});
 			break;
 		  }
 		  case SDL_BUTTON_RIGHT: {
-			for (auto it : io_listeners)
-			  it->OnMouseRbDown(event.button.x, event.button.y);
+			for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseRbDown(event.button.x, event.button.y);});
 			break;
 		  }
 		  case SDL_BUTTON_MIDDLE: {
-			for (auto it : io_listeners)
-			  it->OnMouseMbDown(event.button.x, event.button.y);
+			for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseMbDown(event.button.x, event.button.y);});
 			break;
 		  }
 		}
 		break;
 	  }
+
 	  case SDL_MOUSEBUTTONUP: {
 		switch (event.button.button) {
 		  case SDL_BUTTON_LEFT: {
-			for (auto it : io_listeners)
-			  it->OnMouseLbUp(event.button.x, event.button.y);
+			for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseLbUp(event.button.x, event.button.y);});
 			break;
 		  }
 		  case SDL_BUTTON_RIGHT: {
-			for (auto it : io_listeners)
-			  it->OnMouseRbUp(event.button.x, event.button.y);
+			for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseRbUp(event.button.x, event.button.y);});
 			break;
 		  }
 		  case SDL_BUTTON_MIDDLE: {
-			for (auto it : io_listeners)
-			  it->OnMouseMbUp(event.button.x, event.button.y);
+			for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseMbUp(event.button.x, event.button.y);});
 			break;
 		  }
 		}
@@ -153,66 +181,90 @@ void InputSequencer::Capture() {
 	  }
 
 	  case SDL_MOUSEWHEEL: {
-		for (auto it : io_listeners)
-		  it->OnMouseWheel(event.wheel.x, event.wheel.y);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnMouseWheel(event.wheel.x, event.wheel.y);});
 		break;
 	  }
 
 	  case SDL_JOYAXISMOTION: {
-		for (auto it : io_listeners)
-		  it->OnJoystickAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnJoystickAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);});
 		break;
 	  }
+
 	  case SDL_JOYBALLMOTION: {
-		for (auto it : io_listeners)
-		  it->OnJoystickBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnJoystickBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);});
 		break;
 	  }
+
 	  case SDL_JOYHATMOTION: {
-		for (auto it : io_listeners)
-		  it->OnJoystickHat(event.jhat.which, event.jhat.hat, event.jhat.value);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnJoystickHat(event.jhat.which, event.jhat.hat, event.jhat.value);});
 		break;
 	  }
+
 	  case SDL_JOYBUTTONDOWN: {
-		for (auto it : io_listeners)
-		  it->OnJoystickBtDown(event.jbutton.which, event.jbutton.button);
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnJoystickBtDown(event.jbutton.which, event.jbutton.button);});
 		break;
 	  }
+
 	  case SDL_JOYBUTTONUP: {
-		for (auto it : io_listeners) {
-		  if (it)
-			it->OnJoystickBtUp(event.jbutton.which, event.jbutton.button);
-		}
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnJoystickBtUp(event.jbutton.which, event.jbutton.button);});
 		break;
 	  }
+
 	  case SDL_QUIT: {
-		for (auto it : win_listeners)
-		  it->Quit();
+		for_each(win_listeners.begin(), win_listeners.end(), [](auto it){it->Quit();});
 		break;
 	  }
+
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+	  case SDL_TEXTINPUT: {
+		for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it){it->OnTextInput(event.text.text);});
+		break;
+	  }
+
+	  case SDL_WINDOWEVENT: {
+		switch (event.window.event) {
+		  case SDL_WINDOWEVENT_MINIMIZED:
+		  case SDL_WINDOWEVENT_FOCUS_LOST: {
+			for_each(win_listeners.begin(), win_listeners.end(), [](auto it){it->Pause();});
+			break;
+		  }
+
+		  case SDL_WINDOWEVENT_FOCUS_GAINED: {
+			for_each(win_listeners.begin(), win_listeners.end(), [](auto it){it->Resume();});
+			break;
+		  }
+		}
+
+		break;
+	  }
+#endif
+
 	  default: {
-		for (auto it : win_listeners)
-		  it->Event(event);
+		for_each(win_listeners.begin(), win_listeners.end(), [&event](auto it){it->Event(event);});
 	  }
 	}
   }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 InputObserver::InputObserver() {
   static auto &ref = InputSequencer::GetInstance();
   ref.RegObserver(this);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 InputObserver::~InputObserver() {
   static auto &ref = InputSequencer::GetInstance();
   ref.UnregObserver(this);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 WindowObserver::WindowObserver() {
   static auto &ref = InputSequencer::GetInstance();
   ref.RegWinObserver(this);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 WindowObserver::~WindowObserver() {
   static auto &ref = InputSequencer::GetInstance();
   ref.UnregWinObserver(this);

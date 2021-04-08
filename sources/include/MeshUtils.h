@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -56,4 +56,4 @@ void UpdateEntityMaterial(Ogre::Entity *entity,
 						  bool planar_reflection = false,
 						  bool active_ibl = false);
 
-}
+} //namespace

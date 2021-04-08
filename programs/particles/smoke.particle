@@ -1,5 +1,22 @@
 // Example particle systems
-material Examples/Smoke
+import Basic from pbr.material
+import Paged from pbr.material
+import PbrFx from pbr.material
+
+material Examples/Smoke : PbrFx
+{
+	technique
+	{
+		pass
+		{
+			scene_blend alpha_blend
+
+			set $Albedo leaf.png
+		}
+	}
+}
+
+material Examples/Smoke2
 {
 	technique
 	{
@@ -7,16 +24,19 @@ material Examples/Smoke
 		{
 			lighting off
 			scene_blend alpha_blend
-			depth_write off
+			depth_write on
 			diffuse vertexcolour
             fog_override true
-            alpha_rejection greater_equal 0
+            alpha_rejection greater_equal 127
 
 			texture_unit
 			{
 				texture leaf.png
 				tex_address_mode clamp
+				filtering bilinear
 			}
+
+			rtshader_system {}
 		}
 	}
 }

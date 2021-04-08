@@ -19,7 +19,7 @@ material Gorilla2D
 			diffuse vertexcolour
 			ambient vertexcolour
 			scene_blend alpha_blend
-			
+
 			vertex_program_ref gorilla2DVP
 			{
 			}
@@ -30,10 +30,12 @@ material Gorilla2D
 			
 			texture_unit 
 			{ 
-				texture atlas
-				filtering none none none
+				texture dejavu.png
+				filtering linear linear none
 				tex_address_mode clamp
-			} 
+			}
+
+			//rtshader_system{}
 		}
 	}
 }

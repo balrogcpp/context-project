@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrei Vasilev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@
 #include "Input.h"
 #include "Forest.h"
 #include "Landscape.h"
+#include "Scene.h"
 #include <OgreSceneLoader.h>
 #include <OgreVector4.h>
 #include <vector>
@@ -55,7 +56,7 @@ class JsonConfigurator;
 class Configurator;
 class Renderer;
 class Physics;
-class Sound;
+class Audio;
 class Overlay;
 
 class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB>, public Ogre::SceneLoader {
@@ -63,12 +64,12 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();
 
-  void Cleanup() final;
-  void Pause() final {}
-  void Resume() final {}
-  void Update(float time) final;
+  void Cleanup() override;
+  void Pause() override {}
+  void Resume() override {}
+  void Update(float time) override;
 
-  void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) final;
+  void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) override;
   float GetHeigh(float x, float z);
 
  private:
@@ -97,49 +98,24 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
 
   std::unique_ptr<ReflectionCamera> rcamera_;
   std::unique_ptr<CubeMapCamera> ccamera_;
-  static inline std::unique_ptr<Landscape> terrain_;
-  static inline std::unique_ptr<Forest> forest_;
   std::unique_ptr<CameraMan> camera_;
-  view_ptr<Ogre::SceneManager> scene_;
+  std::unique_ptr<Scene> scene_;
+
+  view_ptr<Ogre::SceneManager> ogre_scene_;
   view_ptr<Ogre::Root> root_;
   view_ptr<Ogre::SceneNode> root_node_;
   view_ptr<Ogre::SceneNode> attach_node_;
-  std::string group_name_;
+  std::string group_name_ = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+
   std::unique_ptr<SinbadCharacterController> sinbad_;
 
-  static inline view_ptr<Configurator> conf_;
-  static inline view_ptr<Renderer> renderer_;
-  static inline view_ptr<Physics> physics_;
-  static inline view_ptr<Sound> sound_;
-  static inline view_ptr<Overlay> overlay_;
-  static inline view_ptr<InputSequencer> input_;
-  
+  static inline std::unique_ptr<Landscape> terrain_;
+  static inline std::unique_ptr<Forest> forest_;
+
  public:
-//----------------------------------------------------------------------------------------------------------------------
-  static void LocateComponents(view_ptr<Configurator> conf,
-							   view_ptr<InputSequencer> input,
-							   view_ptr<Renderer> renderer,
-							   view_ptr<Physics> physics,
-							   view_ptr<Sound> sounds,
-							   view_ptr<Overlay> overlay) {
-	conf_ = conf;
-	input_ = input;
-	renderer_ = renderer;
-	physics_ = physics;
-	sound_ = sounds;
-	overlay_ = overlay;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  static Landscape &GetTerrain() {
-    return *terrain_;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  CameraMan &GetCamera() const {
-    return *camera_;
-  }
-//----------------------------------------------------------------------------------------------------------------------
-  static Forest &GetForest() {
-    return *forest_;
-  }
+  static Landscape &GetTerrain();
+  CameraMan &GetCamera() const;
+  static Forest &GetForest();
 };
-}
+
+} //namespace
