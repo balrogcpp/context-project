@@ -56,6 +56,8 @@ DotSceneLoaderB::DotSceneLoaderB() {
     Ogre::SceneLoaderManager::getSingleton().unregisterSceneLoader("DotSceneB");
 
   Ogre::SceneLoaderManager::getSingleton().registerSceneLoader("DotSceneB", {".scene", ".xml"}, this);
+
+  camera_ = make_unique<CameraMan>();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -82,6 +84,10 @@ Forest &DotSceneLoaderB::GetForest() {
 
 //---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::Update(float time) {
+  if (paused_) {
+	return;
+  }
+
   if (camera_) camera_->Update(time);
   if (terrain_) terrain_->Update(time);
   if (forest_) forest_->Update(time);
@@ -402,7 +408,6 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
     camera_->AttachNode(parent);
   } else {
     sinbad_ = make_unique<SinbadCharacterController>(ogre_scene_->getCamera("Default"));
-//    input_->RegObserver(sinbad_.get());
     camera_->AttachNode(parent, sinbad_->GetBodyNode());
   }
 

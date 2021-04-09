@@ -20,34 +20,3 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-FROM balrogcpp/xio-dependencies:latest
-
-ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/build
-ARG GIT_HASH=00000000
-WORKDIR ${CONTEXT_HOME}
-
-ADD sources ./sources
-ADD deploy ./deploy
-ADD CMake ./CMake
-ADD demo ./demo
-ADD doc ./doc
-ADD tests ./tests
-ADD LICENSE .
-ADD programs ./programs
-ADD assets ./assets
-ADD CMakeLists.txt .
-ADD zip-dependencies.py .
-ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
-
-
-RUN mkdir -p build-windows build-linux build-android \
-    && python3 zip-dependencies.py \
-    && cd build-windows \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-gcc-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target package \
-    && cd .. \
-    && cd build-linux \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target package \
-    && cd ..

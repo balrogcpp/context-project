@@ -45,7 +45,7 @@ Audio::Audio(unsigned int max_sources, unsigned int queue_list_size) {
   Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
   OgreOggSound::OgreOggSoundManager::getSingleton().init("", max_sources, queue_list_size);
   manager_ = &OgreOggSound::OgreOggSoundManager::getSingleton();
-  manager_->setResourceGroupName(Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+  manager_->setResourceGroupName(Ogre::RGN_AUTODETECT);
 }
 //----------------------------------------------------------------------------------------------------------------------
 Audio::~Audio() {

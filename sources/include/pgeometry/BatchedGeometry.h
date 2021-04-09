@@ -80,7 +80,7 @@ class BatchedGeometry : public Ogre::MovableObject {
     ///
     void setMaterial(Ogre::MaterialPtr &mat) { m_ptrMaterial = mat; }
     void setMaterialName(const Ogre::String &mat, const Ogre::String &rg =
-    Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME) {
+    Ogre::RGN_AUTODETECT) {
       m_ptrMaterial = Ogre::MaterialManager::getSingleton().getByName(mat, rg);
     }
 

@@ -153,13 +153,13 @@ void Render::InitOgreRenderSystem_() {
   	InitOgreRenderSystem_GL3_();
   else if (render_system_ == "gles2")
   	InitOgreRenderSystem_GLES2_();
-  else
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
+  else {
+#if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID || OGRE_PLATFORM==OGRE_PLATFORM_APPLE_IOS
 	InitOgreRenderSystem_GLES2_();
 #else
 	InitOgreRenderSystem_GL3_();
 #endif
-
+  }
 
 }
 
@@ -213,13 +213,17 @@ void Render::InitRenderWindow_() {
   const char true_str[] = "true";
   const char false_str[] = "false";
 
-  bool vsync_ = conf_->Get<bool>("vsync");
-  bool gamma_ = conf_->Get<bool>("gamma");
-  int fsaa_ = conf_->Get<int>("fsaa");
+  bool vsync = true;
+  bool gamma = false;
+  int fsaa = 0;
 
-  params["vsync"] = vsync_ ? true_str : false_str;
-  params["gamma"] = gamma_ ? true_str : false_str;
-  params["FSAA"] = to_string(fsaa_);
+  conf_->Get("vsync", vsync);
+  conf_->Get("gamma", gamma);
+  conf_->Get("fsaa", fsaa);
+
+  params["vsync"] = vsync ? true_str : false_str;
+  params["gamma"] = gamma ? true_str : false_str;
+  params["FSAA"] = to_string(fsaa);
 
 
   render_window_ = Ogre::Root::getSingleton().createRenderWindow("", 0, 0, false, &params);
@@ -228,8 +232,8 @@ void Render::InitRenderWindow_() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Render::InitResourceLocation_() {
-  const string internal_group = Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME;
-  const string default_group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+  const string internal_group = Ogre::RGN_INTERNAL;
+  const string default_group = Ogre::RGN_DEFAULT;
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
 
@@ -245,7 +249,7 @@ void Render::InitResourceLocation_() {
 
 #else
   Ogre::ResourceGroupManager& resGroupMan = Ogre::ResourceGroupManager::getSingleton();
-  Ogre::String defResGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+  Ogre::String defResGroup = Ogre::RGN_DEFAULT;
 
   const std::string file_system = "APKFileSystem";
   const std::string zip = "APKZip";

@@ -73,11 +73,7 @@ class Overlay final : public Component, public Singleton<Overlay>, public Ogre::
   view_ptr<Ogre::OverlaySystem> overlay_;
   view_ptr<Ogre::RenderWindow> render_window_;
 
-#ifdef DEBUG
   bool gorilla_ = false;
-#else
-  bool gorilla_ = false;
-#endif
 };
 
 } //namespace

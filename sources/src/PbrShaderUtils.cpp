@@ -235,7 +235,7 @@ void Pbr::UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active) {
   auto ibl_texture = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
 
   if (active) {
-	auto cubemap = Ogre::TextureManager::getSingleton().getByName("dyncubemap", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+	auto cubemap = Ogre::TextureManager::getSingleton().getByName("dyncubemap", Ogre::RGN_AUTODETECT);
 
 	if (ibl_texture)
 	  ibl_texture->setTexture(cubemap);

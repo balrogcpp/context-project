@@ -52,9 +52,9 @@ void MenuAppState::Update(float time) {
 	float x = GetWindow().GetSize().first;
 	float y = GetWindow().GetSize().second;
 	static float diag = sqrt(x * x + y * y);
-	float scale = 0.25f * diag / hddiag;
+	float scale = 0.5f * diag / hddiag;
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-	scale *= 4.0f;
+	scale *= 2.0f;
 #endif
 	ImGui::SetWindowFontScale(scale);
 

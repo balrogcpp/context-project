@@ -44,7 +44,7 @@ class VerboseListener final : public InputObserver {
   void OnJoystickBall(int which, int ball, int xrel, int yrel) override;
 
  public:
-  bool verbose = false;
+  bool verbose = true;
 };
 
 } //namespace

@@ -405,7 +405,7 @@ class Silverback : public Ogre::Singleton<Silverback>, public Ogre::GeneralAlloc
           to be "General".
   */
   void loadAtlas(const Ogre::String &name,
-                 const Ogre::String &group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+                 const Ogre::String &group = Ogre::RGN_DEFAULT);
 
   /*! function. createScreen
       desc.
@@ -2147,7 +2147,7 @@ class LineList : public Ogre::GeneralAllocatedObject {
 
   /*! function. end
       desc.
-          Stop line drawing and calculate vertices.
+          InMenu line drawing and calculate vertices.
       note.
           If "isClosed" is set to true, then the line list joins back to the first position.
   */
@@ -2348,7 +2348,7 @@ class QuadList : public Ogre::GeneralAllocatedObject {
 
   /*! function. end
       desc.
-          Stop drawing and calculate vertices.
+          InMenu drawing and calculate vertices.
   */
   void end();
 

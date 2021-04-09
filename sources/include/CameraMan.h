@@ -23,14 +23,14 @@
 #pragma once
 #include <OgreRoot.h>
 #include <OgreSceneNode.h>
-#include "Input.h"
+#include "InputHandler.h"
 #include "Object.h"
 
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 #include "view_ptr.h"
 
 namespace xio {
-class CameraMan final : public Object, public InputObserver {
+class CameraMan final : public Object, public MutedInputObserver {
  public:
   enum class Style  // enumerator values for different styles of camera movement
   {

@@ -22,19 +22,43 @@
 
 #pragma once
 #include "Input.h"
-
+#include "Component.h"
+#include "Singleton.h"
+#include <vector>
 
 namespace xio {
 
-class ImGuiInputListener final : public InputObserver {
+class CommandObserver {
  public:
-  ImGuiInputListener();
-  virtual ~ImGuiInputListener();
+
+};
+
+class MutedInputObserver : public InputObserverI {
+ public:
+  MutedInputObserver();
+  virtual ~MutedInputObserver();
+};
+
+class InputHandler final : public InputObserver, public Singleton<InputHandler> {
+ public:
+  InputHandler();
+  virtual ~InputHandler();
+
+
+  void RegObserver(view_ptr<MutedInputObserver> p);
+  void UnregObserver(view_ptr<MutedInputObserver> p);
+
+  void Pause();
+  void Resume();
+  void Cleanup();
+  void Update(float time);
+
+  //These methods are used to turn off inputs in for some listeners by request
 
   //Keyboard
   void OnKeyDown(SDL_Keycode sym) override;
   void OnKeyUp(SDL_Keycode sym) override;
-  void OnTextInput (const char* text) override;
+  void OnTextInput(const char *text) override;
 
   //Mouse
   void OnMouseMove(int dx, int dy) override;
@@ -47,6 +71,10 @@ class ImGuiInputListener final : public InputObserver {
   void OnMouseMbDown(int x, int y) override;
   void OnMouseMbUp(int x, int y) override;
 
+ private:
+  std::vector<view_ptr<MutedInputObserver>> io_listeners;
+  //std::vector<view_ptr<CommandObserver>> cmd_listeners;
+  bool paused_ = false;
 };
 
 } //namespace

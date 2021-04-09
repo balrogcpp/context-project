@@ -37,12 +37,12 @@ void LoadResources();
 
 
 void AddLocation(const std::string &path_,
-				 const std::string &group_ = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+				 const std::string &group_ = Ogre::RGN_DEFAULT,
 				 bool recursive = false);
 
 
 void AddLocationRecursive(const std::string &path_,
-						  const std::string &group_ = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+						  const std::string &group_ = Ogre::RGN_DEFAULT,
 						  const std::string &resource_file = "",
 						  bool verbose = false);
 

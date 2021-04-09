@@ -574,7 +574,7 @@ class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
       Abstract function
    */
   virtual void _pauseImpl() = 0;
-  /** Stop implementation.
+  /** InMenu implementation.
   @remarks
       Abstract function
    */

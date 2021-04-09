@@ -27,7 +27,7 @@
 using namespace std;
 using namespace xio;
 
-#if defined WIN32 && defined NDEBUG
+#if defined WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -38,12 +38,15 @@ int main(int argc, char* args[])
 {
   try {
 
+    // main app class object
 	Application app;
+	// main function
 	return app.Main(make_unique<Demo::MenuAppState>());
 
   } catch (...) {
-
+    // to avoid unhandled exception segfault especially on Android
   }
 
+  // to be sure app will return something to system
   return 0;
 }

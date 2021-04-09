@@ -117,7 +117,7 @@ void WindBatchPage::_updateShaders() {
 
     //If the shader hasn't been created yet, create it
     if (!HighLevelGpuProgramManager::getSingleton().getByName(vertexProgName,
-                                                              Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)) {
+                                                              Ogre::RGN_AUTODETECT)) {
       Pass *pass = ptrMat->getTechnique(0)->getPass(0);
       String vertexProgSource;
 

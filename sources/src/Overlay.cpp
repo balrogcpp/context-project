@@ -98,7 +98,7 @@ void Overlay::preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt)
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Update(float time) {
   if (gorilla_) caption_->text((1.0 / time));
-  imgui_->show();
+  //if (imgui_) imgui_->show();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -119,6 +119,7 @@ void Overlay::Resume() {
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::PrepareTexture(const std::string &name_, const std::string group_) {
   imgui_->addFont(name_, group_);
+  imgui_->show();
 }
 
 

@@ -212,7 +212,7 @@ class StaticBillboardSet {
   is used to keep the billboards facing the camera).
   */
   void setMaterial(const Ogre::String &materialName, const Ogre::String &resourceGroup =
-  Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+  Ogre::RGN_AUTODETECT);
 
   /**
   \brief Sets how many horizontal slices and vertical stacks the currently applied material is using.

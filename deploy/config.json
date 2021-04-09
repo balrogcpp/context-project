@@ -1,8 +1,9 @@
 {
   "verbose": true,
+  "verbose_input": true,
   "window_width": 1920,
   "window_high": 1080,
-  "physics_threaded": true,
+  "physics_threaded": false,
   "window_fullscreen": false,
   "compositor_use_bloom": false,
   "compositor_use_ssao": true,

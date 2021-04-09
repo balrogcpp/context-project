@@ -52,25 +52,26 @@ class SinbadCharacterController;
 
 namespace xio {
 class CameraMan;
-class JsonConfigurator;
 class Configurator;
 class Render;
 class Physics;
 class Audio;
 class Overlay;
 
-class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB>, public Ogre::SceneLoader {
+class DotSceneLoaderB final : public Component, public Ogre::SceneLoader, public Singleton<DotSceneLoaderB> {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();
 
   void Cleanup() override;
-  void Pause() override {}
-  void Resume() override {}
   void Update(float time) override;
 
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) override;
   float GetHeigh(float x, float z);
+
+  static Landscape &GetTerrain();
+  CameraMan &GetCamera() const;
+  static Forest &GetForest();
 
  private:
   void ProcessScene_(pugi::xml_node &xml_root);
@@ -105,17 +106,12 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   view_ptr<Ogre::Root> root_;
   view_ptr<Ogre::SceneNode> root_node_;
   view_ptr<Ogre::SceneNode> attach_node_;
-  std::string group_name_ = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+  std::string group_name_ = Ogre::RGN_DEFAULT;
 
   std::unique_ptr<SinbadCharacterController> sinbad_;
 
   static inline std::unique_ptr<Landscape> terrain_;
   static inline std::unique_ptr<Forest> forest_;
-
- public:
-  static Landscape &GetTerrain();
-  CameraMan &GetCamera() const;
-  static Forest &GetForest();
 };
 
 } //namespace

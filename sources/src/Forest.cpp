@@ -206,8 +206,8 @@ Forest::Forest() = default;
 //----------------------------------------------------------------------------------------------------------------------
 Forest::~Forest() {
   auto &mesh_manager = Ogre::MeshManager::getSingleton();
-  if (mesh_manager.getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
-    mesh_manager.remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+  if (mesh_manager.getByName("grass", Ogre::RGN_AUTODETECT))
+    mesh_manager.remove("grass", Ogre::RGN_AUTODETECT);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

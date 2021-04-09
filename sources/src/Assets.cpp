@@ -103,7 +103,7 @@ void PrintStringList(const vector <string> &string_list) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void LoadResources() {
-  Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(Ogre::RGN_INTERNAL);
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 }
 

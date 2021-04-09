@@ -20,8 +20,6 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "pcheader.h"
-
 #include "ImGuiInputListener.h"
 #include <imgui.h>
 
@@ -150,8 +148,8 @@ void ImGuiInputListener::OnMouseMove(int dx, int dy) {
 void ImGuiInputListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   static auto &io = ImGui::GetIO();
 
-  io.MousePos.x = x;
-  io.MousePos.y = y;
+  io.MousePos.x = static_cast<float>(x);
+  io.MousePos.y = static_cast<float>(y);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -162,7 +160,7 @@ template <typename T> static int sign(T val) {
 void ImGuiInputListener::OnMouseWheel(int x, int y) {
   static auto &io = ImGui::GetIO();
 
-  io.MouseWheel = sign(y);
+  io.MouseWheel = static_cast<float>(sign(y));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

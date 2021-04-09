@@ -48,19 +48,12 @@ int InputSequencer::HandleAppEvents(void *userdata, SDL_Event *event) {
 
 //----------------------------------------------------------------------------------------------------------------------
 InputSequencer::InputSequencer() {
-  Reserve(128);
+  Reserve(16);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 InputSequencer::~InputSequencer() {
 
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-InputSequencer &InputSequencer::GetInstance() {
-  static InputSequencer instance; // Guaranteed to be destroyed.
-  // Instantiated on first use.
-  return instance;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -104,8 +97,9 @@ void InputSequencer::UnregWinObserver(view_ptr<WindowObserver> p) {
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::Clear() {
   io_listeners.clear();
-  io_listeners.shrink_to_fit();
   win_listeners.clear();
+  Reserve(16);
+  io_listeners.shrink_to_fit();
   win_listeners.shrink_to_fit();
 }
 

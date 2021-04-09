@@ -468,7 +468,7 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
 	unique_ptr <BtOgre::StaticMeshToShapeConverter> converter;
 
 	if (proxy_type.find(".mesh")!=string::npos) {
-	  Ogre::MeshManager::getSingleton().load(proxy_type, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+	  Ogre::MeshManager::getSingleton().load(proxy_type, Ogre::RGN_AUTODETECT);
 	  auto mesh = Ogre::MeshManager::getSingleton().getByName(proxy_type);
 	  converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity, mesh);
 	  proxy_type = PROXY_TRIMESH;
@@ -516,14 +516,14 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
 	btVector3 inertia;
 
 	if (proxy_type.find(".mesh")!=string::npos) {
-	  Ogre::MeshManager::getSingleton().load(proxy_type, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+	  Ogre::MeshManager::getSingleton().load(proxy_type, Ogre::RGN_AUTODETECT);
 	  auto mesh = Ogre::MeshManager::getSingleton().getByName(proxy_type);
 	  converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity, mesh);
 	  proxy_type = PROXY_TRIMESH;
 	} else {
 	  if (entity->getMesh()->getNumLodLevels() > 0) {
 		auto lod = entity->getMesh()->getLodLevel(entity->getMesh()->getNumLodLevels() - 1).manualMesh;
-		Ogre::MeshManager::getSingleton().load("Cube.mesh", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+		Ogre::MeshManager::getSingleton().load("Cube.mesh", Ogre::RGN_DEFAULT);
 		converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity, lod);
 	  } else {
 		converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity);

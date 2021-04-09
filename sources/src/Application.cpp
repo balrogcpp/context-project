@@ -67,9 +67,13 @@ Application::Application() {
 	state_manager_ = make_unique<StateManager>();
 
 	GetConf().Get("verbose", verbose_);
+	GetConf().Get("verbose_input", verbose_input_);
 
 	if (verbose_)
 	  log_.reserve(10000);
+
+	if (verbose_input_)
+	  verbose_listener_ = make_unique<VerboseListener>();
 
 	lock_fps_ = GetConf().Get<bool>("lock_fps");
 	target_fps_ = GetConf().Get<int>("target_fps");
@@ -170,8 +174,8 @@ void Application::Loop_() {
 		int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
 		float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_)/1e+6;
 		time_of_last_frame_ = micros_before_update;
-		engine_->Update(frame_time);
 		state_manager_->Update(frame_time);
+		engine_->Update(frame_time);
 
 		engine_->RenderOneFrame();
 	  } else {

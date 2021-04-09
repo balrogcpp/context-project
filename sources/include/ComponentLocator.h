@@ -22,6 +22,7 @@
 
 #pragma once
 #include "Engine.h"
+#include "InputHandler.h"
 
 namespace xio {
 
@@ -35,8 +36,9 @@ class Overlay;
 class DotSceneLoaderB;
 class InputSequencer;
 
-InputSequencer& GetIo();
+InputHandler& GetIo();
 Configurator& GetConf();
+Engine& GetEngine();
 Render& GetRender();
 Window& GetWindow();
 Compositor& GetCompositor();

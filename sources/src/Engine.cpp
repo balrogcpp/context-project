@@ -32,9 +32,6 @@ Engine::Engine() {
   config_ = make_unique<Configurator>("config.json");
 #else
   config_ = make_unique<Configurator>("");
-  config_->AddMember("window_caption", "MyDemo");
-  config_->AddMember("window_width", 1024);
-  config_->AddMember("window_high", 768);
   config_->AddMember("window_fullscreen", true);
   config_->AddMember("compositor_use_bloom", false);
   config_->AddMember("compositor_use_ssao", false);
@@ -53,8 +50,9 @@ Engine::Engine() {
 
 
   Component::SetConfigurator(config_.get());
-  components_.reserve(128);
+  components_.reserve(16);
 
+  io_ = make_unique<InputHandler>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -69,15 +67,6 @@ void Engine::InitComponents() {
   bool window_fullscreen = config_->Get<bool>("window_fullscreen");
   renderer_ = make_unique<Render>(window_width, window_high, window_fullscreen);
 
-//  // Shadows param
-//  bool shadow_enable = config_->Get<bool>("shadows_enable");
-//  float shadow_far = config_->Get<float>("shadows_far_distance");
-//  int16_t tex_size = config_->Get<int>("shadows_texture_resolution");
-//  int tex_format = config_->Get<int>("shadows_texture_format");
-//
-//  renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
-
-  input_ = &InputSequencer::GetInstance();
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   bool physics_threaded = false; //cause strange behavior sometimes
@@ -86,7 +75,7 @@ void Engine::InitComponents() {
   audio_ = make_unique<Audio>(8, 8);
 #else
   physics_ = make_unique<Physics>(false);
-  sound_ = make_unique<Sound>(4, 4);
+  audio_ = make_unique<Audio>(4, 4);
 #endif
 
 
@@ -107,19 +96,12 @@ void Engine::InitComponents() {
   renderer_->UpdateParams(tfo, config_->Get<int>("anisotropy_level"));
   renderer_->GetWindow().SetCaption(config_->Get<string>("window_caption"));
   renderer_->Refresh();
-
-  //ComponentLocator::LocateComponents(config_, input_, renderer_, physics_, sound_, overlay_, loader_);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-Engine& Engine::GetInstance() {
-	static Engine engine;
-	return engine;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Capture() {
-  input_->Capture();
+  static auto &io = InputSequencer::GetInstance();
+  io.Capture();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -130,6 +112,20 @@ void Engine::RegComponent(view_ptr<Component> component) {
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Pause() {
   for_each(components_.begin(), components_.end(), [](view_ptr<Component> it) { it->Pause(); });
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Engine::InMenu() {
+  physics_->Pause();
+  loader_->Pause();
+  io_->Pause();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Engine::OffMenu() {
+  physics_->Resume();
+  loader_->Resume();
+  io_->Resume();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
