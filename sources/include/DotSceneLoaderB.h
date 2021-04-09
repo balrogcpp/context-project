@@ -54,7 +54,7 @@ namespace xio {
 class CameraMan;
 class JsonConfigurator;
 class Configurator;
-class Renderer;
+class Render;
 class Physics;
 class Audio;
 class Overlay;

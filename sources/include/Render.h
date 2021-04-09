@@ -39,10 +39,10 @@ class RenderWindow;
 }
 
 namespace xio {
-class Renderer final : public Component, public Singleton<Renderer> {
+class Render final : public Component, public Singleton<Render> {
  public:
-  Renderer(int w, int h, bool f);
-  virtual ~Renderer();
+  Render(int w, int h, bool f);
+  virtual ~Render();
 
   void Cleanup() override;
   void Pause() override;
@@ -57,7 +57,6 @@ class Renderer final : public Component, public Singleton<Renderer> {
   void RestoreFullscreenAndroid_();
 
   Window &GetWindow();
-  ShadowSettings &GetShadowSettings();
   Compositor &GetCompositor();
 
 

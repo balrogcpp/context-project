@@ -39,7 +39,7 @@ using namespace Gorilla;
 using namespace std;
 
 namespace xio {
-Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : window_(render_window) {
+Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : render_window_(render_window) {
 
   if (gorilla_) {
     atlas_ = make_unique<Silverback>();
@@ -72,9 +72,14 @@ Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : window_(render_wi
 
 
   Ogre::OverlayManager::getSingleton().addOverlay(imgui_.get());
-  window_->addListener(this);
+  render_window_->addListener(this);
 
   imgui_listener_ = make_unique<ImGuiInputListener>();
+
+  //Suppress ini file creation
+  ImGuiIO &io = ImGui::GetIO();
+  io.IniFilename = "";
+  io.LogFilename = "";
 
 }
 

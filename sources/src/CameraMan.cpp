@@ -22,9 +22,6 @@
 
 #include "pcheader.h"
 #include "CameraMan.h"
-#include "SDL2.hpp"
-#include <OgreRoot.h>
-#include <OgreSceneNode.h>
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 
 namespace xio {

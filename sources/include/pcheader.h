@@ -27,4 +27,5 @@
 //#include "gorilla/Gorilla.h"
 //#include "btogre/BtOgre.h"
 //#include "oggsound/OgreOggSound.h"
+#include <pugixml.hpp>
 #include "view_ptr.h"

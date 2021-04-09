@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #include "Input.h"
-#include "SDL2.hpp"
 #include <algorithm>
 
 using namespace std;

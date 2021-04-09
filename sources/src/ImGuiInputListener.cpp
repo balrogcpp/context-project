@@ -23,7 +23,6 @@
 #include "pcheader.h"
 
 #include "ImGuiInputListener.h"
-#include <OgreMath.h>
 #include <imgui.h>
 
 using namespace std;
@@ -143,8 +142,8 @@ void ImGuiInputListener::OnTextInput(const char *text) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnMouseMove(int dx, int dy) {
-//  static auto& io = ImGui::GetIO();
-//
+
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -156,10 +155,14 @@ void ImGuiInputListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bo
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+template <typename T> static int sign(T val) {
+  return (T(0) < val) - (val < T(0));
+}
+
 void ImGuiInputListener::OnMouseWheel(int x, int y) {
   static auto &io = ImGui::GetIO();
 
-  io.MouseWheel = Ogre::Math::Sign(y);
+  io.MouseWheel = sign(y);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

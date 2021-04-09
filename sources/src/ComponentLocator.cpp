@@ -40,9 +40,21 @@ Configurator& GetConf() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Renderer& GetRender() {
+Render& GetRender() {
   static auto &renderer = *Engine::GetInstance().renderer_;
   return renderer;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Window& GetWindow() {
+  static auto &window = GetRender().GetWindow();
+  return window;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Compositor& GetCompositor() {
+  static auto &compositor = GetRender().GetCompositor();
+  return compositor;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

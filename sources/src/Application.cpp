@@ -22,10 +22,8 @@
 
 #include "pcheader.h"
 #include "Application.h"
-#include "Overlay.h"
 #include "DesktopIcon.h"
 #include "Exception.h"
-#include "SDL2.hpp"
 #include "ComponentLocator.h"
 #include <iostream>
 
@@ -73,8 +71,8 @@ Application::Application() {
 	if (verbose_)
 	  log_.reserve(10000);
 
-	lock_fps_ = GetConf().Get<bool>("global_lock_fps");
-	target_fps_ = GetConf().Get<int>("global_target_fps");
+	lock_fps_ = GetConf().Get<bool>("lock_fps");
+	target_fps_ = GetConf().Get<int>("target_fps");
 
   }
   catch (Exception &e) {

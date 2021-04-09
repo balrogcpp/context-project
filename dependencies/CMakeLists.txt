@@ -318,8 +318,13 @@ externalproject_add(target-assimp
                     -G "${CMAKE_GENERATOR}"
                     )
 
-if (ANDROID)
+if (ANDROID OR IOS)
     set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11.patch)
+    # to be sure GLES2 is build for Mobile
+    set(OGRE_USE_GLES2 true)
+else()
+    # to be sure GLES2 is not build for Desktop
+    set(OGRE_USE_GLES2 false)
 endif ()
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
@@ -348,6 +353,7 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_RENDERSYSTEM_D3D9=false
                     -DOGRE_BUILD_PLUGIN_CG=false
                     -DOGRE_BUILD_RENDERSYSTEM_GL=false
+                    -DOGRE_BUILD_RENDERSYSTEM_GLES2=${OGRE_USE_GLES2}
                     -DOGRE_BUILD_COMPONENT_OVERLAY=true
                     -DOGRE_BUILD_COMPONENT_BITES=false
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=true

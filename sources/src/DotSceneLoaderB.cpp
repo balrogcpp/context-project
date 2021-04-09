@@ -23,13 +23,10 @@
 #include "pcheader.h"
 #include <OgreSceneLoaderManager.h>
 #include "DotSceneLoaderB.h"
-#include "Physics.h"
 #include "PbrShaderUtils.h"
 #include "MeshUtils.h"
 #include "XmlUtils.h"
-#include "Audio.h"
 #include "SinbadCharacterController.h"
-#include "Renderer.h"
 #include "ComponentLocator.h"
 #include <pugixml.hpp>
 #include "btogre/BtOgre.h"

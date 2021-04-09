@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #pragma once
-#include "NoCopy.h"
+#include "Singleton.h"
 #include "Exception.h"
 #include <nlohmann/json.hpp>
 #include <filesystem>
@@ -29,7 +29,7 @@
 
 namespace xio {
 
-class Configurator : public NoCopy {
+class Configurator : public Singleton<Configurator> {
  public:
 
   explicit Configurator(const std::string &file_name);

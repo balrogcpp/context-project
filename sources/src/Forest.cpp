@@ -22,10 +22,7 @@
 
 #include "pcheader.h"
 #include "Forest.h"
-#include "PbrShaderUtils.h"
-#include "MeshUtils.h"
-#include "DotSceneLoaderB.h"
-#include "Physics.h"
+#include "Utils.h"
 #include "ComponentLocator.h"
 #include "pgeometry/PagedGeometryAll.h"
 

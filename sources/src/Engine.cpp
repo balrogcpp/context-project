@@ -39,16 +39,16 @@ Engine::Engine() {
   config_->AddMember("compositor_use_bloom", false);
   config_->AddMember("compositor_use_ssao", false);
   config_->AddMember("compositor_use_motion", false);
-  config_->AddMember("global_target_fps", 30);
-  config_->AddMember("global_lock_fps", true);
-  config_->AddMember("graphics_vsync", false);
-  config_->AddMember("graphics_shadows_enable", false);
-  config_->AddMember("graphics_fsaa", 0);
-  config_->AddMember("graphics_filtration", "bilinear");
-  config_->AddMember("graphics_anisotropy_level", 8);
-  config_->AddMember("graphics_shadows_texture_resolution", 512);
-  config_->AddMember("graphics_shadows_far_distance", 400);
-  config_->AddMember("graphics_shadows_texture_format", 16);
+  config_->AddMember("target_fps", 30);
+  config_->AddMember("lock_fps", true);
+  config_->AddMember("vsync", false);
+  config_->AddMember("shadows_enable", false);
+  config_->AddMember("fsaa", 0);
+  config_->AddMember("filtration", "bilinear");
+  config_->AddMember("anisotropy_level", 8);
+  config_->AddMember("shadows_texture_resolution", 512);
+  config_->AddMember("shadows_far_distance", 400);
+  config_->AddMember("shadows_texture_format", 16);
 #endif
 
 
@@ -67,15 +67,15 @@ void Engine::InitComponents() {
   int window_width = config_->Get<int>("window_width");
   int window_high = config_->Get<int>("window_high");
   bool window_fullscreen = config_->Get<bool>("window_fullscreen");
-  renderer_ = make_unique<Renderer>(window_width, window_high, window_fullscreen);
+  renderer_ = make_unique<Render>(window_width, window_high, window_fullscreen);
 
-  // Shadows param
-  bool shadow_enable = config_->Get<bool>("graphics_shadows_enable");
-  float shadow_far = config_->Get<float>("graphics_shadows_far_distance");
-  int16_t tex_size = config_->Get<int>("graphics_shadows_texture_resolution");
-  int tex_format = config_->Get<int>("graphics_shadows_texture_format");
-
-  renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
+//  // Shadows param
+//  bool shadow_enable = config_->Get<bool>("shadows_enable");
+//  float shadow_far = config_->Get<float>("shadows_far_distance");
+//  int16_t tex_size = config_->Get<int>("shadows_texture_resolution");
+//  int tex_format = config_->Get<int>("shadows_texture_format");
+//
+//  renderer_->GetShadowSettings().UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
 
   input_ = &InputSequencer::GetInstance();
 
@@ -93,7 +93,7 @@ void Engine::InitComponents() {
   loader_ = make_unique<DotSceneLoaderB>();
 
 
-  string graphics_filtration = config_->Get<string>("graphics_filtration");
+  string graphics_filtration = config_->Get<string>("filtration");
   Ogre::TextureFilterOptions tfo = Ogre::TFO_BILINEAR;
   if (graphics_filtration=="anisotropic")
 	tfo = Ogre::TFO_ANISOTROPIC;
@@ -104,47 +104,12 @@ void Engine::InitComponents() {
   else if (graphics_filtration=="none")
 	tfo = Ogre::TFO_NONE;
 
-  renderer_->UpdateParams(tfo, config_->Get<int>("graphics_anisotropy_level"));
+  renderer_->UpdateParams(tfo, config_->Get<int>("anisotropy_level"));
   renderer_->GetWindow().SetCaption(config_->Get<string>("window_caption"));
   renderer_->Refresh();
 
   //ComponentLocator::LocateComponents(config_, input_, renderer_, physics_, sound_, overlay_, loader_);
 }
-
-////----------------------------------------------------------------------------------------------------------------------
-//InputSequencer& Engine::GetIo() {
-//  return InputSequencer::GetInstance();
-//}
-//
-////----------------------------------------------------------------------------------------------------------------------
-//Configurator& Engine::GetConf() {
-//  return *Engine::GetInstance().config_;
-//}
-//
-////----------------------------------------------------------------------------------------------------------------------
-//Renderer& Engine::GetRender() {
-//  return *Engine::GetInstance().renderer_;
-//}
-//
-////----------------------------------------------------------------------------------------------------------------------
-//Physics& Engine::GetPhysics() {
-//  return *Engine::GetInstance().physics_;
-//}
-//
-////----------------------------------------------------------------------------------------------------------------------
-//Audio& Engine::GetAudio() {
-//  return *Engine::GetInstance().sound_;
-//}
-//
-////----------------------------------------------------------------------------------------------------------------------
-//Overlay& Engine::GetOverlay() {
-//  return *Engine::GetInstance().overlay_;
-//}
-//
-////----------------------------------------------------------------------------------------------------------------------
-//DotSceneLoaderB& Engine::GetLoader() {
-//  return *Engine::GetInstance().loader_;
-//}
 
 //----------------------------------------------------------------------------------------------------------------------
 Engine& Engine::GetInstance() {

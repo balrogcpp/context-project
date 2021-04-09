@@ -22,19 +22,13 @@
 
 #include "pcheader.h"
 #include "Landscape.h"
-#include "Physics.h"
-#include "Renderer.h"
 #include "ComponentLocator.h"
-#include <Terrain/OgreTerrainMaterialGeneratorA.h>
 #include "TerrainMaterialGeneratorB.h"
-#include "XmlUtils.h"
-#include <pugixml.hpp>
+#include "Utils.h"
 
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <Terrain/OgreTerrainGroup.h>
 #include <Terrain/OgreTerrainQuadTreeNode.h>
-#include <Terrain/OgreTerrainMaterialGeneratorA.h>
-#include <Terrain/OgreTerrainMaterialGenerator.h>
 #include <Terrain/OgreTerrainAutoUpdateLod.h>
 #include <Terrain/OgreTerrain.h>
 #endif

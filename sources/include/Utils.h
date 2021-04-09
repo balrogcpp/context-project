@@ -21,30 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-#include "Engine.h"
-
-namespace xio {
-
-class Configurator;
-class Render;
-class Window;
-class Compositor;
-class Physics;
-class Audio;
-class Overlay;
-class DotSceneLoaderB;
-class InputSequencer;
-
-InputSequencer& GetIo();
-Configurator& GetConf();
-Render& GetRender();
-Window& GetWindow();
-Compositor& GetCompositor();
-Physics& GetPhysics();
-Audio& GetAudio();
-Overlay& GetOverlay();
-DotSceneLoaderB& GetLoader();
-
-
-
-} //namespace
+#include "PbrShaderUtils.h"
+#include "MeshUtils.h"
+#include "XmlUtils.h"

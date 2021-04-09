@@ -22,9 +22,7 @@
 
 #include "pcheader.h"
 #include "SinbadCharacterController.h"
-#include "Ogre.h"
-#include "MeshUtils.h"
-#include "DotSceneLoaderB.h"
+#include "Utils.h"
 #include "ComponentLocator.h"
 
 using namespace std;

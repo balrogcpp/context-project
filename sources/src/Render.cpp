@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include "Renderer.h"
+#include "Render.h"
 #include "Assets.h"
 #include "RtssUtils.h"
 #include "Exception.h"
@@ -58,7 +58,7 @@ using namespace std;
 namespace fs = filesystem;
 
 namespace xio {
-Renderer::Renderer(int w, int h, bool f) {
+Render::Render(int w, int h, bool f) {
   root_ = new Ogre::Root("");
 
   conf_->Get("render_system", render_system_);
@@ -107,15 +107,24 @@ Renderer::Renderer(int w, int h, bool f) {
   compositor_->Init();
 
   overlay_->PrepareTexture("Roboto-Medium", Ogre::RGN_INTERNAL);
+
+  // Shadows param
+  bool shadow_enable = conf_->Get<bool>("shadows_enable");
+  float shadow_far = conf_->Get<float>("shadows_far_distance");
+  int16_t tex_size = conf_->Get<int>("shadows_texture_resolution");
+  int tex_format = conf_->Get<int>("shadows_texture_format");
+
+  shadow_settings_->UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Renderer::~Renderer() {
+Render::~Render() {
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::InitOgrePlugins_() {
+void Render::InitOgrePlugins_() {
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
@@ -139,7 +148,7 @@ void Renderer::InitOgrePlugins_() {
 #endif
 
 }//----------------------------------------------------------------------------------------------------------------------
-void Renderer::InitOgreRenderSystem_() {
+void Render::InitOgreRenderSystem_() {
   if (render_system_ == "gl3")
   	InitOgreRenderSystem_GL3_();
   else if (render_system_ == "gles2")
@@ -155,7 +164,7 @@ void Renderer::InitOgreRenderSystem_() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::InitOgreRenderSystem_GL3_() {
+void Render::InitOgreRenderSystem_GL3_() {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *gl3plus_render_system = new Ogre::GL3PlusRenderSystem();
   gl3plus_render_system->setConfigOption("Separate Shader Objects", "Yes");
@@ -166,7 +175,7 @@ void Renderer::InitOgreRenderSystem_GL3_() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::InitRenderWindow_() {
+void Render::InitRenderWindow_() {
   Ogre::NameValuePairList params;
 
   SDL_SysWMinfo info = window_->GetInfo();
@@ -204,9 +213,9 @@ void Renderer::InitRenderWindow_() {
   const char true_str[] = "true";
   const char false_str[] = "false";
 
-  bool vsync_ = conf_->Get<bool>("graphics_vsync");
-  bool gamma_ = conf_->Get<bool>("graphics_gamma");
-  int fsaa_ = conf_->Get<int>("graphics_fsaa");
+  bool vsync_ = conf_->Get<bool>("vsync");
+  bool gamma_ = conf_->Get<bool>("gamma");
+  int fsaa_ = conf_->Get<int>("fsaa");
 
   params["vsync"] = vsync_ ? true_str : false_str;
   params["gamma"] = gamma_ ? true_str : false_str;
@@ -218,7 +227,7 @@ void Renderer::InitRenderWindow_() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::InitResourceLocation_() {
+void Render::InitResourceLocation_() {
   const string internal_group = Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME;
   const string default_group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
 
@@ -263,51 +272,51 @@ void Renderer::InitResourceLocation_() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::Cleanup() {
+void Render::Cleanup() {
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::Pause() {
+void Render::Pause() {
 
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::Resume() {
+void Render::Resume() {
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::Update(float time) {
+void Render::Update(float time) {
 
 };
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::Refresh() {
+void Render::Refresh() {
   if (shadow_settings_) shadow_settings_->UpdateParams();
   compositor_->Init();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format) {
+void Render::UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format) {
   if (shadow_settings_) shadow_settings_->UpdateParams(enable, far_distance, tex_size, tex_format);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
+void Render::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
   //Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
   Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::Resize(int w, int h, bool f) {
+void Render::Resize(int w, int h, bool f) {
   window_->SetFullscreen(f);
   window_->Resize(w, h);
   render_window_->resize(w, h);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::RestoreFullscreenAndroid_() {
+void Render::RestoreFullscreenAndroid_() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   SDL_DisplayMode DM;
   SDL_GetDesktopDisplayMode(0, &DM);
@@ -319,7 +328,7 @@ void Renderer::RestoreFullscreenAndroid_() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Renderer::RenderOneFrame() {
+void Render::RenderOneFrame() {
   root_->renderOneFrame();
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   window_->SwapBuffers();
@@ -327,17 +336,12 @@ void Renderer::RenderOneFrame() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Window &Renderer::GetWindow() {
+Window &Render::GetWindow() {
   return *window_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-ShadowSettings &Renderer::GetShadowSettings() {
-  return *shadow_settings_;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-Compositor &Renderer::GetCompositor() {
+Compositor &Render::GetCompositor() {
   return *compositor_;
 }
 

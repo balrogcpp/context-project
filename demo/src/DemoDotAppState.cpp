@@ -22,12 +22,8 @@
 
 #include "DemoDotAppState.h"
 #include "MenuAppState.h"
-#include "Renderer.h"
-#include "Audio.h"
-#include "PbrShaderUtils.h"
-#include "Engine.h"
+#include "Utils.h"
 #include "ComponentLocator.h"
-#include <Overlay/OgreImGuiOverlay.h>
 
 using namespace std;
 using namespace xio;
@@ -119,8 +115,8 @@ void DemoDotAppState::Update(float time) {
 	const float hdx = 1920;
 	const float hdy = 1080;
 	const float hddiag = sqrt(hdx * hdx + hdy * hdy);
-	float x = GetRender().GetWindow().GetSize().first;
-	float y = GetRender().GetWindow().GetSize().second;
+	float x = GetWindow().GetSize().first;
+	float y = GetWindow().GetSize().second;
 	static float diag = sqrt(x * x + y * y);
 	float scale = 0.25f * diag / hddiag;
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID

@@ -23,7 +23,6 @@
 #include "pcheader.h"
 #include "CubeMapCamera.h"
 
-#include <Ogre.h>
 
 using namespace std;
 

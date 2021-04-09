@@ -23,7 +23,6 @@
 #include "pcheader.h"
 #include "Window.h"
 #include "Exception.h"
-#include "SDL2.hpp"
 
 using namespace std;
 
