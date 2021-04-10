@@ -56,7 +56,7 @@ class Engine : public LazySingleton<Engine> {
 
  private:
   std::unique_ptr<InputHandler> io_;
-  std::unique_ptr<Configurator> config_;
+  std::unique_ptr<Configurator> conf_;
   std::unique_ptr<Render> renderer_;
   std::unique_ptr<Physics> physics_;
   std::unique_ptr<Audio> audio_;

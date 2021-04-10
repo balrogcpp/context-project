@@ -23,10 +23,10 @@
 #pragma once
 #include "Engine.h"
 #include "InputHandler.h"
+#include "Configurator.h"
 
 namespace xio {
 
-class Configurator;
 class Render;
 class Window;
 class Compositor;

@@ -36,7 +36,7 @@ InputHandler& GetIo() {
 
 //----------------------------------------------------------------------------------------------------------------------
 Configurator& GetConf() {
-  static auto &config = *Engine::GetInstance().config_;
+  static auto &config = *Engine::GetInstance().conf_;
   return config;
 }
 

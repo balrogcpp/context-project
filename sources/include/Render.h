@@ -49,8 +49,6 @@ class Render final : public Component, public Singleton<Render> {
   void Update(float time) override;
 
   void Refresh();
-  void UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy);
-  void UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format);
   void RenderOneFrame();
   void Resize(int w, int h, bool f);
   void RestoreFullscreenAndroid_();

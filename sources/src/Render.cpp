@@ -24,6 +24,7 @@
 #include "Render.h"
 #include "Assets.h"
 #include "RtssUtils.h"
+#include "Configurator.h"
 #include "Exception.h"
 
 
@@ -317,7 +318,8 @@ void Render::InitShadowSettings_() {
   pssm_->setSplitPadding(near_clip_distance);
 
   for (int i = 0; i < pssm_split_count_; i++)
-	pssm_->setOptimalAdjustFactor(i, static_cast<float>(i));
+	pssm_->setOptimalAdjustFactor(i, static_cast<float>(i*i));
+
 
 
   scene_->setShadowCameraSetup(pssm_);
@@ -368,21 +370,8 @@ void Render::Update(float time) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Render::Refresh() {
-  //if (shadow_settings_) shadow_settings_->UpdateParams();
   InitShadowSettings_();
   compositor_->Init();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Render::UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format) {
-//  if (shadow_settings_) shadow_settings_->UpdateParams(enable, far_distance, tex_size, tex_format);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Render::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
-  //Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
-//  Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
-//  Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

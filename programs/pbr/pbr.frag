@@ -549,7 +549,7 @@ void main()
                 } else {
                     if (i == 0) {
                         shadow = (tmp > 0.001) ? CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], \
-                         shadowMap0, shadowMap1, shadowMap2, vDepth, uShadowDepthOffset, uShadowFilterSize*2.0, uShadowFilterIterations) : 1.0;
+                         shadowMap0, shadowMap1, shadowMap2, vDepth, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/2) : 1.0;
                     } else {
                         shadow = (tmp > 0.001) ? GetShadow(i + 2, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
                     }

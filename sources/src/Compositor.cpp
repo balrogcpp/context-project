@@ -23,6 +23,7 @@
 #include "pcheader.h"
 #include "Compositor.h"
 #include "PbrShaderUtils.h"
+#include "Configurator.h"
 
 using namespace std;
 

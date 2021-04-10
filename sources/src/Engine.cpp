@@ -22,6 +22,7 @@
 
 #include "pcheader.h"
 #include "Engine.h"
+#include "Configurator.h"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ namespace xio {
 
 Engine::Engine() {
 #if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
-  config_ = make_unique<Configurator>("config.json");
+  conf_ = make_unique<Configurator>("config.json");
 #else
   config_ = make_unique<Configurator>("");
   config_->AddMember("window_fullscreen", true);
@@ -49,7 +50,7 @@ Engine::Engine() {
 #endif
 
 
-  Component::SetConfigurator(config_.get());
+  Component::SetConfigurator(conf_.get());
   components_.reserve(16);
 
   io_ = make_unique<InputHandler>();
@@ -62,15 +63,15 @@ Engine::~Engine() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::InitComponents() {
-  int window_width = config_->Get<int>("window_width");
-  int window_high = config_->Get<int>("window_high");
-  bool window_fullscreen = config_->Get<bool>("window_fullscreen");
+  int window_width = conf_->Get<int>("window_width");
+  int window_high = conf_->Get<int>("window_high");
+  bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
   renderer_ = make_unique<Render>(window_width, window_high, window_fullscreen);
 
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   bool physics_threaded = false; //cause strange behavior sometimes
-  config_->Get("physics_threaded", physics_threaded);
+  conf_->Get("physics_threaded", physics_threaded);
   physics_ = make_unique<Physics>(physics_threaded);
   audio_ = make_unique<Audio>(8, 8);
 #else
