@@ -124,7 +124,7 @@ void DemoDotAppState::Update(float time) {
 	static float diag = sqrt(x * x + y * y);
 	float scale = 0.5 * diag / hddiag;
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-	scale *= 2.0f;
+//	scale *= 2.0f;
 #endif
 	ImGui::SetWindowFontScale(scale);
 

@@ -57,6 +57,8 @@ uniform float uSSAOEnable;
 void main()
 {
   vec3 scene = texture2D(SceneSampler, oUv0).rgb;
+
+
 #ifndef GL_ES
 
 
@@ -94,6 +96,8 @@ if (uSSAOEnable > 0.0) {
 #endif
 
 
-#endif
+#endif //!GL_ES
+
+
   gl_FragColor = vec4(scene.rgb, 1.0);
 }

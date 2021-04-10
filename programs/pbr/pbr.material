@@ -379,7 +379,7 @@ abstract material Paged : Basic
             texture_unit Albedo
             {
                 texture $Albedo
-                filtering bilinear
+                //filtering bilinear
             }
 
             vertex_program_ref PbrPaged_vs {}
@@ -427,7 +427,7 @@ abstract material Grass : Basic
             texture_unit Albedo
             {
                 texture $Albedo
-                filtering bilinear
+                //filtering bilinear
                 tex_address_mode clamp
             }
 

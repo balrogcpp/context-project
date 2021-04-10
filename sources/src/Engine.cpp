@@ -82,19 +82,6 @@ void Engine::InitComponents() {
   loader_ = make_unique<DotSceneLoaderB>();
 
 
-  string graphics_filtration = config_->Get<string>("filtration");
-  Ogre::TextureFilterOptions tfo = Ogre::TFO_BILINEAR;
-  if (graphics_filtration=="anisotropic")
-	tfo = Ogre::TFO_ANISOTROPIC;
-  else if (graphics_filtration=="bilinear")
-	tfo = Ogre::TFO_BILINEAR;
-  else if (graphics_filtration=="trilinear")
-	tfo = Ogre::TFO_TRILINEAR;
-  else if (graphics_filtration=="none")
-	tfo = Ogre::TFO_NONE;
-
-  renderer_->UpdateParams(tfo, config_->Get<int>("anisotropy_level"));
-  renderer_->GetWindow().SetCaption(config_->Get<string>("window_caption"));
   renderer_->Refresh();
 }
 

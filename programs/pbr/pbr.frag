@@ -539,26 +539,31 @@ void main()
         vec3 colour = tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
 #ifdef SHADOWRECEIVER
+
+
         if (uLightCastsShadowsArray[i] > 0.0) {
             float shadow = 1.0;
             #if MAX_SHADOW_TEXTURES > 2
                 if (uLightAttenuationArray[0].x < 100000.0) {
-                    shadow = (tmp > 0.002) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
+                    shadow = (tmp > 0.001) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
                 } else {
                     if (i == 0) {
-                        shadow = (tmp > 0.002) ? CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], \
+                        shadow = (tmp > 0.001) ? CalcPSSMDepthShadow(pssmSplitPoints, lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], \
                          shadowMap0, shadowMap1, shadowMap2, vDepth, uShadowDepthOffset, uShadowFilterSize*2.0, uShadowFilterIterations) : 1.0;
                     } else {
-                        shadow = (tmp > 0.002) ? GetShadow(i + 2, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
+                        shadow = (tmp > 0.001) ? GetShadow(i + 2, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
                     }
                 }
             #else
-                shadow = (tmp > 0.002) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
+                shadow = (tmp > 0.001) ? GetShadow(i, uShadowDepthOffset, uShadowFilterSize, uShadowFilterIterations/4) : 1.0;
             #endif
 
             colour *= clamp(shadow + uShadowColour, 0.0, 1.0);
         }
+
+
 #endif
+
         total_colour += colour;
     }
 

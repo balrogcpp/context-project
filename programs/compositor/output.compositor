@@ -32,7 +32,7 @@ fragment_program Output_fs glsl glsles
 		param_named_auto uFogParams fog_params
         param_named_auto nearClipDistance near_clip_distance
         param_named_auto farClipDistance far_clip_distance
-        param_named uScale float 0.5
+        param_named uScale float 0.25
         param_named uSSAOEnable float 0.0
         param_named uMotionBlurEnable float 0.0
 	}

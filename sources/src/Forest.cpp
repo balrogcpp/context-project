@@ -288,7 +288,7 @@ void Forest::GenerateRocksStatic() {
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateGrassPaged() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 5);
-  grass->addDetailLevel<GrassPage>(5, 5);//Draw grass up to 100
+  grass->addDetailLevel<GrassPage>(25, 5);//Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
   grass->setPageLoader(grassLoader);
   grassLoader->setRenderQueueGroup(Ogre::RENDER_QUEUE_MAIN);
@@ -308,7 +308,7 @@ void Forest::GenerateGrassPaged() {
   layer->setSwayLength(1.0f);
   layer->setSwaySpeed(0.5f);
   layer->setDensity(1.0f);
-  layer->setMapBounds(TBounds(-10, -10, 10, 10));
+  layer->setMapBounds(TBounds(-100, -100, 100, 100));
   layer->setDensityMap("grass_density.png");
 
   Update(0);
@@ -375,7 +375,7 @@ void Forest::GenerateTreesPaged() {
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
   GenerateGrassPaged();
-//  GenerateTreesPaged();
+  GenerateTreesPaged();
   GenerateRocksStatic();
 }
 

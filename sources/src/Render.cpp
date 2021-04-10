@@ -47,7 +47,6 @@
 #include <Plugins/Assimp/OgreAssimpLoader.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
-#include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreImGuiOverlay.h>
 #endif
 
@@ -95,8 +94,6 @@ Render::Render(int w, int h, bool f) {
 
   Assets::LoadResources();
 
-  //Shadow block
-  shadow_settings_ = make_unique<ShadowSettings>();
   //Compositor block
   compositor_ = make_unique<Compositor>();
 
@@ -108,13 +105,9 @@ Render::Render(int w, int h, bool f) {
 
   overlay_->PrepareTexture("Roboto-Medium", Ogre::RGN_INTERNAL);
 
-  // Shadows param
-  bool shadow_enable = conf_->Get<bool>("shadows_enable");
-  float shadow_far = conf_->Get<float>("shadows_far_distance");
-  int16_t tex_size = conf_->Get<int>("shadows_texture_resolution");
-  int tex_format = conf_->Get<int>("shadows_texture_format");
+  InitTextureSettings_();
 
-  shadow_settings_->UpdateParams(shadow_enable, shadow_far, tex_size, tex_format);
+  InitShadowSettings_();
 
 }
 
@@ -276,6 +269,85 @@ void Render::InitResourceLocation_() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+void Render::InitShadowSettings_() {
+  // Shadows param
+  bool shadows_enable = true;
+  float shadow_far = 400;
+  int16_t tex_size = 1024;
+  int tex_format = 16;
+
+  conf_->Get("shadows_enable", shadows_enable);
+  conf_->Get("shadow_far", shadow_far);
+  conf_->Get("tex_format", tex_format);
+  conf_->Get("tex_size", tex_size);
+
+
+  if (!shadows_enable) {
+	scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+	return;
+  }
+
+  Ogre::PixelFormat texture_type = Ogre::PixelFormat::PF_DEPTH16;
+
+  scene_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+  scene_->setShadowFarDistance(shadow_far);
+
+
+  if (tex_format==32)
+	texture_type = Ogre::PixelFormat::PF_DEPTH32;
+  else if (tex_format==16)
+	texture_type = Ogre::PixelFormat::PF_DEPTH16;
+
+  scene_->setShadowTextureSize(tex_size);
+  scene_->setShadowTexturePixelFormat(texture_type);
+  scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
+  scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
+  scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
+
+  scene_->setShadowTextureSelfShadow(true);
+  scene_->setShadowCasterRenderBackFaces(true);
+  scene_->setShadowFarDistance(shadow_far);
+  auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+  scene_->setShadowTextureCasterMaterial(passCaterMaterial);
+
+  pssm_ = make_shared<Ogre::PSSMShadowCameraSetup>();
+  const float near_clip_distance = 0.001;
+  pssm_->calculateSplitPoints(pssm_split_count_, near_clip_distance, scene_->getShadowFarDistance());
+  split_points_ = pssm_->getSplitPoints();
+  pssm_->setSplitPadding(near_clip_distance);
+
+  for (int i = 0; i < pssm_split_count_; i++)
+	pssm_->setOptimalAdjustFactor(i, static_cast<float>(i));
+
+
+  scene_->setShadowCameraSetup(pssm_);
+  scene_->setShadowColour(Ogre::ColourValue::Black);
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void Render::InitTextureSettings_() {
+  string filtration = conf_->Get<string>("filtration");
+  unsigned int anisotropy = 4;
+
+  conf_->Get("anisotropy", anisotropy);
+
+  Ogre::TextureFilterOptions filtering = Ogre::TFO_ANISOTROPIC;
+
+  if (filtration=="anisotropic")
+	filtering = Ogre::TFO_ANISOTROPIC;
+  else if (filtration=="bilinear")
+	filtering = Ogre::TFO_BILINEAR;
+  else if (filtration=="trilinear")
+	filtering = Ogre::TFO_TRILINEAR;
+  else if (filtration=="none")
+	filtering = Ogre::TFO_NONE;
+
+  Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
+  Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 void Render::Cleanup() {
 
 }
@@ -296,20 +368,21 @@ void Render::Update(float time) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Render::Refresh() {
-  if (shadow_settings_) shadow_settings_->UpdateParams();
+  //if (shadow_settings_) shadow_settings_->UpdateParams();
+  InitShadowSettings_();
   compositor_->Init();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Render::UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format) {
-  if (shadow_settings_) shadow_settings_->UpdateParams(enable, far_distance, tex_size, tex_format);
+//  if (shadow_settings_) shadow_settings_->UpdateParams(enable, far_distance, tex_size, tex_format);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Render::UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy) {
   //Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
-  Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
-  Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
+//  Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
+//  Ogre::MaterialManager::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
