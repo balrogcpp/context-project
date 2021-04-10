@@ -20,7 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-FROM balrogcpp/clang-mingw-x86_64:latest
+FROM balrogcpp/gcc-mingw-x86_64:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt/build
@@ -38,7 +38,7 @@ RUN apt-get update && apt-get install -y python3 git gnutls-bin openssl libxaw7-
     && git config --global http.postBuffer 1048576000 \
     && mkdir -p build-windows build-linux \
     && cd ${CONTEXT_HOME}/build-windows \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-mingw.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-gcc-mingw.cmake -G Ninja .. \
     && cmake --build . --target target-deps \
     && cd ${CONTEXT_HOME}/dependencies/external/Release/windows-gcc-mingw-x64/ \
     && rm -rf src tmp \

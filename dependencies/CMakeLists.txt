@@ -40,6 +40,7 @@ if (ANDROID)
     set(CONTEXT_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
 
+
 externalproject_add(target-sdl
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -127,6 +128,7 @@ externalproject_add(target-openal
                     -DALSOFT_BACKEND_WINMM=false
                     -DALSOFT_BACKEND_WAVE=false
                     -DLIBTYPE=${OPENAL_LIBTYPE}
+                    -DALSOFT_OSX_FRAMEWORK=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
                     -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
@@ -319,12 +321,18 @@ externalproject_add(target-assimp
                     )
 
 if (ANDROID OR IOS)
-    set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11.patch)
+    set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-android.patch)
     # to be sure GLES2 is build for Mobile
     set(OGRE_USE_GLES2 true)
-else()
+else ()
     # to be sure GLES2 is not build for Desktop
     set(OGRE_USE_GLES2 false)
+endif ()
+# PCH on Apple cause objective-c error
+if (NOT APPLE)
+    set(OGRE_USE_PCH true)
+else ()
+    set(OGRE_USE_PCH false)
 endif ()
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
@@ -340,6 +348,8 @@ externalproject_add(target-ogre
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DOGRE_DEPENDENCIES_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DOGRE_ENABLE_PRECOMPILED_HEADERS=${OGRE_USE_PCH}
+                    -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=false
                     -DOGRE_ASSERT_MODE=1
                     -DOGRE_CONFIG_THREADS=3
                     -DOGRE_CONFIG_THREAD_PROVIDER=std
@@ -429,7 +439,7 @@ externalproject_add(target-sol
                     -G "${CMAKE_GENERATOR}"
                     )
 
-if (UNIX AND NOT ANDROID)
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     externalproject_add(target-jemalloc
                         EXCLUDE_FROM_ALL true
                         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}

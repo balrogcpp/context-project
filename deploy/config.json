@@ -1,6 +1,6 @@
 {
   "verbose": true,
-  "verbose_input": true,
+  "verbose_input": false,
   "window_width": 1920,
   "window_high": 1080,
   "physics_threaded": false,
