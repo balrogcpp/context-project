@@ -51,7 +51,7 @@ externalproject_add(target-sdl
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DSDL_SHARED_ENABLED_BY_DEFAULT=false
-                    -DDIRECTX=false
+                    -DRENDER_METAL=false #cause linking error on macos
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
@@ -188,7 +188,7 @@ externalproject_add(target-zlib
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll 
+                        ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll libz.dylib
                     TEST_AFTER_INSTALL true
                     )
 
@@ -254,6 +254,7 @@ externalproject_add(target-freetype
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DUNIX=true
                     -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=true
+                    -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=true
                     -DBUILD_SHARED_LIBS=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
@@ -367,6 +368,7 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_RENDERSYSTEM_D3D11=false
                     -DOGRE_BUILD_RENDERSYSTEM_D3D9=false
                     -DOGRE_BUILD_PLUGIN_CG=false
+                    -DOGRE_BUILD_RENDERSYSTEM_METAL=false
                     -DOGRE_BUILD_RENDERSYSTEM_GL=false
                     -DOGRE_BUILD_RENDERSYSTEM_GLES2=${OGRE_USE_GLES2}
                     -DOGRE_BUILD_COMPONENT_OVERLAY=true
@@ -460,6 +462,25 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
                         )
 
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
+endif ()
+
+#OMP is not present when crosscompile
+if (APPLE)
+    externalproject_add(target-omp
+                        EXCLUDE_FROM_ALL true
+                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                        GIT_REPOSITORY https://github.com/llvm-mirror/openmp.git
+                        GIT_SHALLOW true
+                        GIT_PROGRESS false
+                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                        ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                        -G "${CMAKE_GENERATOR}"
+                        )
+
+    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-omp)
 endif ()
 
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)

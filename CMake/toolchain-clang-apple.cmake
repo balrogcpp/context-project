@@ -1,9 +1,5 @@
 # OSXCross toolchain
 
-set(CMAKE_SYSTEM_NAME Darwin)
-set(CMAKE_SYSTEM_PROCESSOR x86_64)
-set(CMAKE_CROSSCOMPILING ON)
-
 macro(osxcross_getconf VAR)
     if(NOT ${VAR})
         set(${VAR} "$ENV{${VAR}}")
@@ -21,11 +17,12 @@ osxcross_getconf(OSXCROSS_TARGET_DIR)
 osxcross_getconf(OSXCROSS_TARGET)
 osxcross_getconf(OSXCROSS_SDK)
 
+set(CMAKE_SYSTEM_NAME "Darwin")
+string(REGEX REPLACE "-.*" "" CMAKE_SYSTEM_PROCESSOR "${OSXCROSS_HOST}")
 
-# which compilers to use for C and C++
-# cross compilers to use for C, C++ and Fortran
-set(CMAKE_C_COMPILER "${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-gcc")
-set(CMAKE_CXX_COMPILER "${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-g++")
+# specify the cross compiler
+set(CMAKE_C_COMPILER "${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-clang")
+set(CMAKE_CXX_COMPILER "${OSXCROSS_TARGET_DIR}/bin/${OSXCROSS_HOST}-clang++")
 
 # where is the target environment
 set(CMAKE_FIND_ROOT_PATH
