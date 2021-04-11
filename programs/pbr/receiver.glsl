@@ -64,7 +64,7 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
 {
   float avgBlockersDepth = 0.0;
   float blockersCount = 0.0;
-  const float penumbraFilterMaxSize = 0.1;
+  const float penumbraFilterMaxSize = 0.01;
 
   for(int i = 0; i < samplesCount; i++)
   {
@@ -83,7 +83,7 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
   if(blockersCount > 0.0)
   {
     avgBlockersDepth /= blockersCount;
-    return AvgBlockersDepthToPenumbra(1000.0, z_shadowMapView, avgBlockersDepth);
+    return AvgBlockersDepthToPenumbra(10000.0, z_shadowMapView, avgBlockersDepth);
   }
   else
   {
@@ -92,46 +92,40 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float CalcDepthShadow(sampler2D shadowMap, vec4 lightSpace, float offset, float filter_size, int iterations)
+float CalcDepthShadow(sampler2D shadowMap, vec4 lightSpace, const float offset, const float filter_size, const int iterations)
 {
   lightSpace /= lightSpace.w;
 
   lightSpace.z = lightSpace.z * 0.5 + 0.5; // convert -1..1 to 0..1
   float shadow = 1.0;
-  float compare = lightSpace.z;
+  float current_depth = lightSpace.z;
 
   float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
-  //float penumbra = Penumbra(shadowMap, gradientNoise, lightSpace.xy, compare, iterations);
+  //float penumbra = Penumbra(shadowMap, gradientNoise, lightSpace.xy, current_depth, iterations);
+
+//  float depth = texture2D(shadowMap, lightSpace.xy).x - offset;
+//  return (depth > current_depth) ? 1.0 : 0.0;
 
   for (int i = 0; i < iterations; i++)
   {
     lightSpace.xy += VogelDiskSample(i, iterations, gradientNoise) * filter_size;
     //lightSpace.xy += VogelDiskSample(i, iterations, gradientNoise) * penumbra * filter_size;
-    float depth = texture2D(shadowMap, lightSpace.xy).r;
-    shadow -= (( (depth - offset) < compare) ? 1.0 / float(iterations) : 0.0);
+    float depth = texture2D(shadowMap, lightSpace.xy).x - offset;
+    shadow -= ((depth < current_depth) ? 1.0 / float(iterations) : 0.0);
   }
 
   return shadow;
+
+
+//  vec2 moments = texture2D(shadowMap, lightSpace.xy).xy;
+//  float variance = moments.y - (moments.x * moments.x);
+//  variance = max(variance, 0.00002);
+//
+//  float d = current_depth - moments.x;
+//  float pMax = variance / (variance + d * d);
+//  return smoothstep(0.1f, 1.0f, pMax);
+
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-float CalcPSSMDepthShadow(vec4 pssmSplitPoints, vec4 lightSpacePos0, vec4 lightSpacePos1, vec4 lightSpacePos2, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, float camDepth, float offset, float filter_size, int iterations)
-{
-  // calculate shadow
-  if (camDepth <= pssmSplitPoints.x)
-  {
-    return CalcDepthShadow(shadowMap0, lightSpacePos0, offset, filter_size, iterations);
-  }
-  else if (camDepth <= pssmSplitPoints.y)
-  {
-    return CalcDepthShadow(shadowMap1, lightSpacePos1, offset, filter_size, iterations);
-  }
-  else if (camDepth <= pssmSplitPoints.z)
-  {
-    return CalcDepthShadow(shadowMap2, lightSpacePos2, offset, filter_size, iterations);
-  }
-
-  return 1.0;
-}
 
 #endif //RECEIVER_GLSL

@@ -25,6 +25,7 @@ shared_params PBR_Shared_frag
 {
     shared_param_named uNormalScale float 1.0
     shared_param_named uOffsetScale float 0.001
+    //shared_param_named uShadowDepthOffset float -0.0000001
 }
 
 shared_params PBR_Shared_vert
@@ -47,6 +48,9 @@ fragment_program PbrBasic_fs glsl glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    default_params {
+        shared_params_ref PBR_Shared_frag
+    }
 }
 
 fragment_program PBR_fs glsl glsles
@@ -219,7 +223,6 @@ fragment_program PbrReflective_fs glsl glsles
 
     default_params
     {
-        param_named uShadowDepthOffset float 0.0001
         shared_params_ref PBR_Shared_frag
     }
 }
@@ -286,7 +289,6 @@ fragment_program PbrTerrain_fs_gl glsl
     default_params
     {
         shared_params_ref PBR_Shared_frag
-        param_named uShadowDepthOffset float 0.001
         param_named uTerrainTexScale float 50.0
     }
 }
@@ -299,7 +301,6 @@ fragment_program PbrTerrain_fs_es glsles
     default_params
     {
         shared_params_ref PBR_Shared_frag
-        //param_named uShadowDepthOffset float 0.001
         param_named uTerrainTexScale float 50.0
     }
 }
@@ -336,6 +337,7 @@ abstract material Terrain : PBR
 
             fragment_program_ref PbrTerrain_fs
             {
+                //param_named uShadowDepthOffset float -0.00001
                 param_named uAlbedoSampler       int 0
                 param_named uNormalSampler       int 1
                 param_named uORMSampler          int 2
@@ -365,7 +367,7 @@ fragment_program PbrPaged_fs glsl glsles
 
 abstract material Paged : Basic
 {
-    receive_shadows off
+    receive_shadows on
     transparency_casts_shadows on
 
     set $Albedo white.dds
