@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-#TODO rework this
 
 import os
 import zipfile
