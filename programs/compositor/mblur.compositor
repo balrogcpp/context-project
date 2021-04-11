@@ -21,25 +21,19 @@
 //SOFTWARE.
 
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program Output_fs glsl glsles
+fragment_program MBlur_fs glsl glsles
 {
     source output.frag
-    preprocessor_defines SSAO,BLOOM,FOG
+    preprocessor_defines MOTION_BLUR,MAX_SAMPLES=8,SRGB
 	default_params
 	{
-		//param_named exposure float 1.0
-		param_named_auto uFogColour fog_colour
-		param_named_auto uFogParams fog_params
-        param_named_auto nearClipDistance near_clip_distance
-        param_named_auto farClipDistance far_clip_distance
-        //param_named uScale float 0.5
-        param_named uSSAOEnable float 0.0
-        //param_named uMotionBlurEnable float 0.0
-        param_named uBloomEnable float 0.0
+		param_named exposure float 1.0
+        param_named uScale float 0.25
+        param_named uMotionBlurEnable float 0.0
 	}
 }
 
-material Output
+material MBlur
 {
 	technique
 	{
@@ -50,18 +44,16 @@ material Output
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Output_fs
+			fragment_program_ref MBlur_fs
 			{
 			    param_named SceneSampler int 0
-			    //param_named_auto texelSize inverse_texture_size 0
+			    param_named_auto texelSize inverse_texture_size 0
 			    param_named sSceneDepthSampler int 1
-			    param_named SsaoSampler int 2
-			    param_named BloomSampler int 3
 			}
 
 			texture_unit
             {
-                content_type compositor MRT mrt 0
+                content_type compositor Output output
                 tex_address_mode clamp
                 filtering linear linear none
             }
@@ -73,34 +65,21 @@ material Output
                 filtering linear linear none
             }
 
-            texture_unit SSAO
-            {
-                //content_type compositor SSAO ssao
-                //tex_address_mode clamp
-                //filtering linear linear none
-            }
-
-            texture_unit Bloom
-            {
-                //content_type compositor Bloom bloom
-                //tex_address_mode clamp
-                //filtering linear linear none
-            }
 		}
 	}
 }
 
-compositor Output
+compositor MBlur
 {
     technique
     {
-        texture output target_width target_height PF_FLOAT16_RGB chain_scope
+        //texture_ref output Output output
 
-        target output
+        target_output
         {
             pass render_quad
             {
-                material Output
+                material MBlur
             }
         }
     }

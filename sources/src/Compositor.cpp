@@ -77,12 +77,18 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 Compositor::Compositor() {
   effects_["bloom"] = false;
   effects_["ssao"] = false;
-  effects_["motion"] = false;
+  effects_["mblur"] = false;
 
   compositor_manager_ = Ogre::CompositorManager::getSingletonPtr();
   scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   camera_ = scene_->getCamera("Default");
   viewport_ = camera_->getViewport();
+
+  EnableEffect("ssao", conf_->Get<bool>("enable_ssao"));
+  EnableEffect("bloom", conf_->Get<bool>("enable_bloom"));
+  EnableEffect("mblur", conf_->Get<bool>("enable_mblur"));
+  Init();
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -93,8 +99,10 @@ Compositor::~Compositor() {
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Update(float time) {
 #if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
-  static bool glsles = bool{Ogre::Root::getSingleton().getRenderSystem()->getName()!="OpenGL ES 2.x Rendering Subsystem"};
-  if (glsles)
+  static bool gl3 = bool{Ogre::Root::getSingleton().getRenderSystem()->getName()!="OpenGL ES 2.x Rendering Subsystem"};
+  static bool mblur = effects_["mblur"];
+
+  if (gl3 && mblur)
   	Pbr::Update(time);
 #endif
 }
@@ -172,10 +180,10 @@ void Compositor::InitMRT_() {
 
 #else
 
-//  auto *main_compositor = compositor_chain->getCompositor("MRT");
-//  auto *td = main_compositor->getTechnique()->getTextureDefinition("mrt");
-//  td->height = viewport_->getActualHeight() * 0.75;
-//  td->width = viewport_->getActualWidth() * 0.75;
+  auto *main_compositor = compositor_chain->getCompositor("MRT");
+  auto *td = main_compositor->getTechnique()->getTextureDefinition("mrt");
+  td->height = viewport_->getActualHeight() * 0.75;
+  td->width = viewport_->getActualWidth() * 0.75;
 
 #endif
 
@@ -185,31 +193,55 @@ void Compositor::InitMRT_() {
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::InitOutput_() {
   string output_compositor;
+  string mblur_compositor;
 
   output_compositor = "Output";
+  mblur_compositor = "MBlur";
 
   AddCompositorDisabled_(output_compositor);
+
 
   if (effects_["ssao"]) {
 	auto &material_manager = Ogre::MaterialManager::getSingleton();
 	auto material = material_manager.getByName(output_compositor);
 	auto *pass = material->getTechnique(0)->getPass(0);
+	auto fs_params = pass->getFragmentProgramParameters();
+
+
 	auto texture = pass->getTextureUnitState("SSAO");
 	texture->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
 	texture->setCompositorReference("SSAO", "ssao");
-	auto fs_params = pass->getFragmentProgramParameters();
 	fs_params->setNamedConstant("uSSAOEnable", 1.0f);
   }
 
-  if (effects_["motion"]) {
-    auto &material_manager = Ogre::MaterialManager::getSingleton();
-    auto material = material_manager.getByName(output_compositor);
-    auto *pass = material->getTechnique(0)->getPass(0);
-    auto fs_params = pass->getFragmentProgramParameters();
-	fs_params->setNamedConstant("uMotionBlurEnable", 1.0f);
+  if (effects_["bloom"]) {
+	auto &material_manager = Ogre::MaterialManager::getSingleton();
+	auto material = material_manager.getByName(output_compositor);
+	auto *pass = material->getTechnique(0)->getPass(0);
+	auto fs_params = pass->getFragmentProgramParameters();
+
+
+	auto texture = pass->getTextureUnitState("Bloom");
+	texture->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
+	texture->setCompositorReference("Bloom", "bloom");
+	fs_params->setNamedConstant("uBloomEnable", 1.0f);
   }
 
   EnableCompositor_(output_compositor);
+
+  {
+	auto &material_manager = Ogre::MaterialManager::getSingleton();
+	auto material = material_manager.getByName(mblur_compositor);
+	auto *pass = material->getTechnique(0)->getPass(0);
+	auto fs_params = pass->getFragmentProgramParameters();
+
+
+	if (effects_["mblur"])
+		fs_params->setNamedConstant("uMotionBlurEnable", 1.0f);
+
+	AddCompositorEnabled_("MBlur");
+  }
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -217,10 +249,19 @@ void Compositor::Init() {
 
   InitMRT_();
 
+
   if (effects_["ssao"]) {
 	AddCompositorEnabled_("SSAO");
 	AddCompositorEnabled_("BoxFilter/SSAO");
   }
+
+
+  if (effects_["bloom"]) {
+	AddCompositorEnabled_("Bloom");
+	AddCompositorEnabled_("FilterX/Bloom");
+	AddCompositorEnabled_("FilterY/Bloom");
+  }
+
 
   InitOutput_();
 }
