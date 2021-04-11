@@ -52,7 +52,9 @@ DesktopIcon::~DesktopIcon() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 void DesktopIcon::Init() {
+#if OGRE_PLATFORM != OGRE_PLATFORM_APPLE
   run_dir_ = filesystem::current_path().string();
+#endif
   output_ = skeleton_;
   output_ = regex_replace(output_, regex("EXEC"), run_dir_ + "/" + exec_);
   output_ = regex_replace(output_, regex("PATH"), run_dir_);

@@ -302,12 +302,35 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   if (Ogre::Root::getSingleton().getSceneManager("Default")->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
 
 	auto texture_config = ogre_scene_->getShadowTextureConfigList()[0];
+
+
 	if (ogre_scene_->getShadowTextureConfigList().size() < MAX_TEX_COUNT) {
 
 	  if (light->getType()==Ogre::Light::LT_POINT) {
 		light->setCastShadows(false);
 	  } else if (light->getType()==Ogre::Light::LT_SPOTLIGHT && light->getCastShadows()) {
-		static auto default_scs = Ogre::DefaultShadowCameraSetup::create();
+
+
+	    int camera_type = 4;
+
+	    conf_->Get("camera_type", camera_type);
+		static Ogre::ShadowCameraSetupPtr default_scs;
+
+	    switch (camera_type) {
+	      case 1:
+			default_scs = Ogre::DefaultShadowCameraSetup::create();
+	        break;
+	      case 2:
+			default_scs = Ogre::FocusedShadowCameraSetup::create();
+	        break;
+	      case 3:
+			//default_scs = Ogre::PlaneOptimalShadowCameraSetup::create();
+	        break;
+	      case 4:
+	      default:
+			default_scs = Ogre::LiSPSMShadowCameraSetup::create();
+	        break;
+	    }
 
 		light->setCustomShadowCameraSetup(default_scs);
 		size_t tex_count = ogre_scene_->getShadowTextureConfigList().size() + 1;
@@ -318,14 +341,38 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 		texture_config.width *= pow(2, -floor(index/3));
 		ogre_scene_->setShadowTextureConfig(index, texture_config);
 	  } else if (light->getType()==Ogre::Light::LT_DIRECTIONAL && light->getCastShadows()) {
+
+//		int camera_type = 4;
+//
+//		conf_->Get("camera_type", camera_type);
+//		static Ogre::ShadowCameraSetupPtr default_scs;
+//
+//		switch (camera_type) {
+//		  case 1:
+//			default_scs = Ogre::DefaultShadowCameraSetup::create();
+//			break;
+//		  case 2:
+//			default_scs = Ogre::FocusedShadowCameraSetup::create();
+//			break;
+//		  case 3:
+//			//default_scs = Ogre::PlaneOptimalShadowCameraSetup::create();
+//			break;
+//		  case 4:
+//		  default:
+//			default_scs = Ogre::LiSPSMShadowCameraSetup::create();
+//			break;
+//		}
+//
+//		light->setCustomShadowCameraSetup(default_scs);
+
 		size_t per_light = ogre_scene_->getShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL);
 		size_t tex_count = ogre_scene_->getShadowTextureConfigList().size() + per_light - 1;
 		ogre_scene_->setShadowTextureCount(tex_count);
 
 		for (size_t i = 1; i <= per_light; i++) {
 		  size_t index = tex_count - i;
-		  texture_config.height *= pow(2, -floor(index/3));
-		  texture_config.width *= pow(2, -floor(index/3));
+//		  texture_config.height *= pow(2, -floor(index/3));
+//		  texture_config.width *= pow(2, -floor(index/3));
 		  ogre_scene_->setShadowTextureConfig(index, texture_config);
 		}
 	  }

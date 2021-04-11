@@ -116,7 +116,7 @@ externalproject_add(target-openal
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
+                    -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DALSOFT_TESTS=false
@@ -130,12 +130,13 @@ externalproject_add(target-openal
                     -DLIBTYPE=${OPENAL_LIBTYPE}
                     -DALSOFT_OSX_FRAMEWORK=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-                    -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     )
 
+if (APPLE AND NOT IOS)
+    set(OGG_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogg ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogg-1.3.4-apple.patch)
+endif()
 externalproject_add(target-ogg
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-openal
@@ -144,6 +145,7 @@ externalproject_add(target-ogg
                     GIT_TAG v1.3.4
                     GIT_SHALLOW true
                     GIT_PROGRESS false
+                    PATCH_COMMAND ${OGG_PATCH_COMMAND}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -321,22 +323,25 @@ externalproject_add(target-assimp
                     )
 
 if (ANDROID OR IOS)
-    set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-android.patch)
     # to be sure GLES2 is build for Mobile
     set(OGRE_USE_GLES2 true)
 else ()
     # to be sure GLES2 is not build for Desktop
     set(OGRE_USE_GLES2 false)
 endif ()
-# PCH on Apple cause objective-c error
-if (NOT APPLE)
-    set(OGRE_USE_PCH true)
-else ()
+if(ANDROID)
+    set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-android.patch)
+endif()
+# PCH on Apple cause objective-c compilation error
+if (APPLE AND NOT IOS)
+    set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-apple.patch)
     set(OGRE_USE_PCH false)
-endif ()
+else()
+    set(OGRE_USE_PCH true)
+endif()
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zzip target-freetype target-sdl target-pugixml
+                    DEPENDS target-zzip target-freetype target-pugixml
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v1.12.11
@@ -344,7 +349,7 @@ externalproject_add(target-ogre
                     GIT_PROGRESS false
                     PATCH_COMMAND ${OGRE_PATCH_COMMAND}
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_FIND_ROOT_PATH=${CONTEXT_MINGW_FIND_ROOT_PATH}
+                    -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DOGRE_DEPENDENCIES_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -390,11 +395,13 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_TOOLS=false
                     -DOGRE_INSTALL_PDB=false
                     -DOGRE_INSTALL_DOCS=false
+                    -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=false
                     -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
                     -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
                     -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
                     -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    -DOGRE_BUILD_PLATFORM_APPLE_IOS=false
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
                     TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -458,6 +465,7 @@ endif ()
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-json)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sdl)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet)
 

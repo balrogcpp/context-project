@@ -71,8 +71,8 @@
 #	endif
 #elif OGRE_COMPILER == OGRE_COMPILER_GNUC || OGRE_COMPILER == OGRE_COMPILER_CLANG
 #   if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-#		include <al.h>
-#		include <alc.h>
+#		include <AL/al.h>
+#		include <AL/alc.h>
 #   else
 #		include <AL/al.h>
 #		include <AL/alc.h>

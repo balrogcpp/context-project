@@ -36,16 +36,10 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 int main(int argc, char* args[])
 #endif
 {
-  try {
-
-    // main app class object
-	Application app;
-	// main function
-	return app.Main(make_unique<Demo::MenuAppState>());
-
-  } catch (...) {
-    // to avoid unhandled exception segfault especially on Android
-  }
+  // main app class object
+  Application app;
+  // main function
+  return app.Main(make_unique<Demo::MenuAppState>());
 
   // to be sure app will return something to system
   return 0;

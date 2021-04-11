@@ -99,11 +99,6 @@ Render::Render(int w, int h, bool f) {
   compositor_ = make_unique<Compositor>();
 
 
-  compositor_->EnableEffect("ssao", conf_->Get<bool>("compositor_use_ssao"));
-  compositor_->EnableEffect("bloom", conf_->Get<bool>("compositor_use_bloom"));
-  compositor_->EnableEffect("motion", conf_->Get<bool>("compositor_use_motion"));
-  compositor_->Init();
-
   overlay_->PrepareTexture("Roboto-Medium", Ogre::RGN_INTERNAL);
 
   InitTextureSettings_();
@@ -141,7 +136,9 @@ void Render::InitOgrePlugins_() {
   ogre_scene_ = root_->createSceneManager(Ogre::ST_GENERIC, "Default");
 #endif
 
-}//----------------------------------------------------------------------------------------------------------------------
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 void Render::InitOgreRenderSystem_() {
   if (render_system_ == "gl3")
   	InitOgreRenderSystem_GL3_();
@@ -274,8 +271,8 @@ void Render::InitShadowSettings_() {
   // Shadows param
   bool shadows_enable = true;
   float shadow_far = 400;
-  int16_t tex_size = 1024;
-  int tex_format = 16;
+  int16_t tex_size = 256;
+  string tex_format = "D16";
 
   conf_->Get("shadows_enable", shadows_enable);
   conf_->Get("shadow_far", shadow_far);
@@ -294,10 +291,15 @@ void Render::InitShadowSettings_() {
   scene_->setShadowFarDistance(shadow_far);
 
 
-  if (tex_format==32)
+  if (tex_format=="F32")
+	texture_type = Ogre::PixelFormat::PF_FLOAT32_R;
+  else if (tex_format=="F16")
+	texture_type = Ogre::PixelFormat::PF_FLOAT16_R;
+  if (tex_format=="D32")
 	texture_type = Ogre::PixelFormat::PF_DEPTH32;
-  else if (tex_format==16)
+  else if (tex_format=="D16")
 	texture_type = Ogre::PixelFormat::PF_DEPTH16;
+
 
   scene_->setShadowTextureSize(tex_size);
   scene_->setShadowTexturePixelFormat(texture_type);
@@ -315,16 +317,20 @@ void Render::InitShadowSettings_() {
   const float near_clip_distance = 0.001;
   pssm_->calculateSplitPoints(pssm_split_count_, near_clip_distance, scene_->getShadowFarDistance());
   split_points_ = pssm_->getSplitPoints();
-  pssm_->setSplitPadding(near_clip_distance);
+//  pssm_->setSplitPadding(near_clip_distance);
+  pssm_->setSplitPadding(0.1);
 
   for (int i = 0; i < pssm_split_count_; i++)
-	pssm_->setOptimalAdjustFactor(i, static_cast<float>(i*i));
+	pssm_->setOptimalAdjustFactor(i, static_cast<float>(i));
 
 
 
   scene_->setShadowCameraSetup(pssm_);
   scene_->setShadowColour(Ogre::ColourValue::Black);
 
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -358,6 +364,7 @@ void Render::Cleanup() {
 void Render::Pause() {
 
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void Render::Resume() {
 

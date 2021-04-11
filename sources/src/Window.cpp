@@ -31,7 +31,7 @@ namespace xio {
 Window::Window(int w, int h, bool f)
 	: w_(w), h_(h), f_(f) {
 
-  if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
 	throw Exception("Failed to init SDL2");
   }
 

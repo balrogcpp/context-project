@@ -44,13 +44,19 @@ Application::Application() {
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
 	auto *logger = new Ogre::LogManager();
-	logger->createLog(log_file_, false, false, true);
-	Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+
+
 #ifdef DEBUG
+	logger->createLog(log_file_, true, true, true);
 	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
 #else
+	logger->createLog(log_file_, false, false, true);
 	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_NORMAL);
 #endif
+
+
+	Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+
 #endif
 
 
@@ -88,6 +94,9 @@ Application::Application() {
   catch (exception &e) {
 	ExceptionMessage_("Exception (std::exception)", e.what());
   }
+  catch (...) {
+	ExceptionMessage_("Exception", "Unhandled");
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -99,6 +108,10 @@ Application::~Application() {
 
 //----------------------------------------------------------------------------------------------------------------------
 int Application::ExceptionMessage_(const string &caption, const string &message) {
+
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  GetWindow().SetCursorStatus(true, false, false);
+#endif
 
 #ifdef _WIN32
   MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
@@ -275,6 +288,9 @@ int Application::Main(unique_ptr <AppState> &&scene_ptr) {
   }
   catch (exception &e) {
 	return ExceptionMessage_("Exception (std::exception)", e.what());
+  }
+  catch (...) {
+	ExceptionMessage_("Exception", "Unhandled");
   }
 
 
