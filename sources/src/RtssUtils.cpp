@@ -28,6 +28,21 @@
 #include <RTShaderSystem/OgreRTShaderSystem.h>
 #include <RTShaderSystem/OgreShaderGenerator.h>
 
+#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
+#include <filesystem>
+#else
+#include <ghc/filesystem.hpp>
+#endif
+
+using namespace std;
+
+#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
+namespace fs = filesystem;
+#else
+namespace fs = ghc::filesystem;
+#endif
+
+
 using namespace std;
 
 namespace xio {
@@ -50,8 +65,8 @@ void CreateRtssShaders(const string &cache_path) {
   shader_generator->addSceneManager(scene_);
   viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
-//  if (!filesystem::exists(cache_path) && !cache_path.empty())
-//	filesystem::create_directories(cache_path);
+  if (!fs::exists(cache_path) && !cache_path.empty())
+	fs::create_directories(cache_path);
 
   shader_generator->setShaderCachePath(cache_path);
 

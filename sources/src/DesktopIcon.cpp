@@ -24,10 +24,20 @@
 #include "DesktopIcon.h"
 
 #include <regex>
+#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
 #include <filesystem>
-#include <fstream>
+#else
+#include <ghc/filesystem.hpp>
+#endif
 
 using namespace std;
+
+#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
+namespace fs = filesystem;
+#else
+namespace fs = ghc::filesystem;
+#endif
+
 
 namespace xio {
 
@@ -52,9 +62,9 @@ DesktopIcon::~DesktopIcon() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 void DesktopIcon::Init() {
-#if OGRE_PLATFORM != OGRE_PLATFORM_APPLE
-  run_dir_ = filesystem::current_path().string();
-#endif
+  run_dir_ = fs::current_path().string();
+
+
   output_ = skeleton_;
   output_ = regex_replace(output_, regex("EXEC"), run_dir_ + "/" + exec_);
   output_ = regex_replace(output_, regex("PATH"), run_dir_);

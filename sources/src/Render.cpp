@@ -55,7 +55,7 @@
 #include "Android.h"
 
 using namespace std;
-namespace fs = filesystem;
+
 
 namespace xio {
 Render::Render(int w, int h, bool f) {

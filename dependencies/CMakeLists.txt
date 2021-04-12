@@ -465,8 +465,8 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 endif ()
 
 
-if (APPLE)
-    #OpenMP is not available when crosscompile
+#OpenMP is not available when crosscompile with clang
+if ((APPLE OR MINGW) AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     externalproject_add(target-omp
                         EXCLUDE_FROM_ALL true
                         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -482,8 +482,11 @@ if (APPLE)
                         )
 
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-omp)
+endif ()
 
-    #std::filesystem is not supported on MacOS before Catalina
+
+#std::filesystem is not supported on MacOS before Catalina
+if (APPLE)
     externalproject_add(target-filesystem
                         EXCLUDE_FROM_ALL true
                         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -496,14 +499,14 @@ if (APPLE)
                         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                         ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                        -G "${CMAKE_GENERATOR}"
                         -DGHC_FILESYSTEM_BUILD_TESTING=false
                         -DGHC_FILESYSTEM_BUILD_EXAMPLES=false
-                        -G "${CMAKE_GENERATOR}"
                         )
 
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
-
 endif ()
+
 
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-json)
