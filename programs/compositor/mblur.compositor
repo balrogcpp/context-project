@@ -20,56 +20,67 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#pragma once
-#include "Singleton.h"
-#include "Exception.h"
-#include <nlohmann/json.hpp>
-#include <filesystem>
-#include <string>
-
-namespace xio {
-
-class Configurator : public Singleton<Configurator> {
- public:
-
-  explicit Configurator(const std::string &file_name);
-
-  virtual ~Configurator();
-
-  void Load(const std::string &file_name);
-
 //----------------------------------------------------------------------------------------------------------------------
-  template<typename T>
-  void AddMember(const std::string &key, T &&value) {
-	document_[key] = value;
-  }
-
-//----------------------------------------------------------------------------------------------------------------------
-  template<typename T>
-  T Get(const std::string &key) {
-	T t{};
-
-	if (document_.find(key)!=document_.end())
-	  t = static_cast<T>(document_[key]);
-
-	return t;
-  }
-
-//----------------------------------------------------------------------------------------------------------------------
-  template<typename T>
-  bool Get(const std::string &key, T &t_) {
-
-	if (document_.find(key)!=document_.end()) {
-	  t_ = static_cast<T>(document_[key]);
-	  return true;
-	} else {
-	  return false;
+fragment_program MBlur_fs glsl glsles
+{
+    source output.frag
+    preprocessor_defines MOTION_BLUR,MAX_SAMPLES=8,SRGB
+	default_params
+	{
+		param_named exposure float 1.0
+        param_named uScale float 0.25
+        param_named uMotionBlurEnable float 0.0
 	}
+}
 
-  }
+material MBlur
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
 
- private:
-  nlohmann::json document_;
-};
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-} //namespace
+			fragment_program_ref MBlur_fs
+			{
+			    param_named SceneSampler int 0
+			    param_named_auto texelSize inverse_texture_size 0
+			    param_named sSceneDepthSampler int 1
+			}
+
+			texture_unit
+            {
+                content_type compositor Output output
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit
+            {
+                content_type compositor MRT mrt 1
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+		}
+	}
+}
+
+compositor MBlur
+{
+    technique
+    {
+        //texture_ref output Output output
+
+        target_output
+        {
+            pass render_quad
+            {
+                material MBlur
+            }
+        }
+    }
+}

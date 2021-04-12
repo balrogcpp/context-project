@@ -1,10 +1,9 @@
 #!/usr/bin/python3
 
-#TODO rework this
 
 import os
 import zipfile
-
+import shutil
 
 def make_archive(source, destination):
     destination = os.path.join(destination, source)
@@ -26,5 +25,7 @@ def make_archive(source, destination):
         zipf.close()
 
 
+if os.path.isdir("tmp"):
+    shutil.rmtree("tmp")
 make_archive("programs", "tmp")
 make_archive("assets", "tmp")

@@ -50,8 +50,8 @@ void CreateRtssShaders(const string &cache_path) {
   shader_generator->addSceneManager(scene_);
   viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
-  if (!filesystem::exists(cache_path) && !cache_path.empty())
-	filesystem::create_directories(cache_path);
+//  if (!filesystem::exists(cache_path) && !cache_path.empty())
+//	filesystem::create_directories(cache_path);
 
   shader_generator->setShaderCachePath(cache_path);
 
@@ -112,7 +112,7 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
   auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name);
 
   if (!originalMaterial) {
-	originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name, Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+	originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name, Ogre::RGN_INTERNAL);
   }
 
   bool verbose = false;

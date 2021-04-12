@@ -45,7 +45,7 @@ material bloom
 
 			texture_unit
             {
-                content_type compositor MRT scene
+                content_type compositor MRT mrt 0
                 tex_address_mode clamp
                 filtering linear linear none
             }
@@ -57,7 +57,7 @@ compositor Bloom
 {
     technique
     {
-        texture bloom target_width_scaled 0.25 target_height_scaled 0.25 PF_FLOAT16_RGB chain_scope pooled
+        texture bloom target_width_scaled 0.25 target_height_scaled 0.25 PF_FLOAT16_RGB chain_scope
 
         target bloom
         {

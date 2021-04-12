@@ -25,7 +25,6 @@ compositor MRT
     technique
     {
         texture mrt target_width target_height PF_FLOAT16_RGBA PF_FLOAT16_RGB chain_scope
-        //texture mrt target_width target_height PF_BYTE_RGBA chain_scope
 
         target mrt
         {

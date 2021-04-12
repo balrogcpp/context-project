@@ -34,7 +34,7 @@ uniform sampler2D SceneSampler;
 
 void main()
 {
-  vec3 color = texture2D(SceneSampler, oUv0).rgb;
+  vec3 color = texture2D(SceneSampler, oUv0, 1.0).rgb;
   vec3 bloom = vec3(0.0);
 
   float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));

@@ -26,6 +26,10 @@
 namespace xio {
 
 class VerboseListener final : public InputObserver {
+ public:
+  void SetVerbose(bool verbose);
+  bool IsVerbose();
+
  private:
   void OnKeyDown(SDL_Keycode sym) override;
   void OnKeyUp(SDL_Keycode sym) override;
@@ -43,8 +47,7 @@ class VerboseListener final : public InputObserver {
   void OnJoystickHat(int which, int hat, int value) override;
   void OnJoystickBall(int which, int ball, int xrel, int yrel) override;
 
- public:
-  bool verbose = false;
+  bool verbose_ = true;
 };
 
 } //namespace

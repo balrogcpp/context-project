@@ -22,12 +22,8 @@
 
 #include "DemoDotAppState.h"
 #include "MenuAppState.h"
-#include "Renderer.h"
-#include "Audio.h"
-#include "PbrShaderUtils.h"
-#include "Engine.h"
+#include "Utils.h"
 #include "ComponentLocator.h"
-#include <Overlay/OgreImGuiOverlay.h>
 
 using namespace std;
 using namespace xio;
@@ -55,6 +51,7 @@ void DemoDotAppState::Resume() {
 void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym)==SDL_SCANCODE_ESCAPE) {
 	context_menu_ = true;
+	GetEngine().InMenu();
 	GetRender().GetWindow().SetCursorStatus(true, false, false);
   }
 
@@ -98,7 +95,10 @@ void DemoDotAppState::Update(float time) {
 
 #if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
 	if (!context_menu_) {
+	  GetEngine().OffMenu();
 	  return;
+	} else {
+	  GetEngine().InMenu();
 	}
 #endif
 
@@ -119,25 +119,24 @@ void DemoDotAppState::Update(float time) {
 	const float hdx = 1920;
 	const float hdy = 1080;
 	const float hddiag = sqrt(hdx * hdx + hdy * hdy);
-	float x = GetRender().GetWindow().GetSize().first;
-	float y = GetRender().GetWindow().GetSize().second;
+	float x = GetWindow().GetSize().first;
+	float y = GetWindow().GetSize().second;
 	static float diag = sqrt(x * x + y * y);
-	float scale = 0.25f * diag / hddiag;
+	float scale = 0.5 * diag / hddiag;
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-	scale *= 4.0f;
+//	scale *= 2.0f;
 #endif
 	ImGui::SetWindowFontScale(scale);
 
 
 #if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
-
 	ImGui::NewLine();
 
 	if (ImGui::Button("         RESUME          ")) {
-	  GetRender().GetWindow().SetCursorStatus(false, true, true);
+	  GetWindow().SetCursorStatus(false, true, true);
+	  GetEngine().OffMenu();
 	  context_menu_ = false;
 	}
-
 #endif
 
 	ImGui::NewLine();
@@ -160,8 +159,8 @@ void DemoDotAppState::Update(float time) {
 //----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Init() {
   GetRender().GetWindow().SetCursorStatus(false, true, true);
-//  loader_->GetCamera().SetStyle(xio::CameraMan::FPS);
-  LoadFromFile("1.scene", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+//  GetLoader().GetCamera().SetStyle(xio::CameraMan::Style::FPS);
+  LoadFromFile("1.scene", Ogre::RGN_DEFAULT);
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *root = scene->getRootSceneNode();

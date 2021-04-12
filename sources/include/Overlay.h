@@ -71,13 +71,9 @@ class Overlay final : public Component, public Singleton<Overlay>, public Ogre::
   std::unique_ptr<ImGuiInputListener> imgui_listener_;
   std::unique_ptr<Ogre::ImGuiOverlay> imgui_;
   view_ptr<Ogre::OverlaySystem> overlay_;
-  view_ptr<Ogre::RenderWindow> window_;
+  view_ptr<Ogre::RenderWindow> render_window_;
 
-#ifdef DEBUG
   bool gorilla_ = false;
-#else
-  bool gorilla_ = false;
-#endif
 };
 
 } //namespace

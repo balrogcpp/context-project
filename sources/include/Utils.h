@@ -21,44 +21,6 @@
 //SOFTWARE.
 
 #pragma once
-#include "NoCopy.h"
-#include <OgreRoot.h>
-#include <OgreMaterialManager.h>
-#include <OgreShadowCameraSetupPSSM.h>
-#include <vector>
 #include "PbrShaderUtils.h"
-#include "view_ptr.h"
-
-namespace xio {
-class ShadowSettings : public NoCopy {
- public:
-  ShadowSettings();
-
-  virtual ~ShadowSettings();
-
-  void UpdateParams();
-
-  void UpdateParams(bool enable, float far_distance, int tex_size, int tex_format = 16);
-
-  void UpdateSplits(float padding, const std::vector<float> &pssm_factor);
-
-  void SetManualSplits(const std::vector<float> &split_points);
-
-  const std::vector<float> &GetSplitPoints();
-
-  const Ogre::PSSMShadowCameraSetup &GetPssmSetup();
-
- private:
-  int16_t pssm_split_count_;
-  int16_t tex_count_;
-  std::vector<float> split_points_;
-  std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm_;
-  view_ptr<Ogre::Camera> camera_;
-  view_ptr<Ogre::SceneManager> scene_;
-  bool shadow_enable_ = false;
-  float far_distance_ = 400;
-  int16_t tex_size_ = 1024;
-  int tex_format_ = 16;
-};
-
-} //namespace
+#include "MeshUtils.h"
+#include "XmlUtils.h"

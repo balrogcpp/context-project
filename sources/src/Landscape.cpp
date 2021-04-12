@@ -22,19 +22,13 @@
 
 #include "pcheader.h"
 #include "Landscape.h"
-#include "Physics.h"
-#include "Renderer.h"
 #include "ComponentLocator.h"
-#include <Terrain/OgreTerrainMaterialGeneratorA.h>
 #include "TerrainMaterialGeneratorB.h"
-#include "XmlUtils.h"
-#include <pugixml.hpp>
+#include "Utils.h"
 
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <Terrain/OgreTerrainGroup.h>
 #include <Terrain/OgreTerrainQuadTreeNode.h>
-#include <Terrain/OgreTerrainMaterialGeneratorA.h>
-#include <Terrain/OgreTerrainMaterialGenerator.h>
 #include <Terrain/OgreTerrainAutoUpdateLod.h>
 #include <Terrain/OgreTerrain.h>
 #endif
@@ -58,7 +52,7 @@ void Landscape::GetTerrainImage_(bool flipX,
 								 bool flipY,
 								 Ogre::Image &ogre_image,
 								 const string &filename = "terrain.dds") {
-  ogre_image.load(filename, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+  ogre_image.load(filename, Ogre::RGN_AUTODETECT);
 
   if (flipX)
 	ogre_image.flipAroundY();
@@ -99,7 +93,7 @@ void Landscape::InitBlendMaps_(Ogre::Terrain *terrain,
   auto *pBlend1 = blendMap->getBlendPointer();
 
   Ogre::Image img;
-  img.load(image, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+  img.load(image, Ogre::RGN_AUTODETECT);
 
   int bmSize = terrain->getLayerBlendMapSize();
 
@@ -124,7 +118,7 @@ void Landscape::InitBlendMaps_(Ogre::Terrain *terrain,
   // set up a colour map
   if (terrain->getGlobalColourMapEnabled()) {
 	Ogre::Image colourMap;
-	colourMap.load("testcolourmap.dds", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+	colourMap.load("testcolourmap.dds", Ogre::RGN_AUTODETECT);
 	terrain->getGlobalColourMap()->loadImage(colourMap);
   }
 }
@@ -154,7 +148,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   terrain_ = make_unique<Ogre::TerrainGroup>(scene_manager, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
   terrain_->setFilenameConvention("terrain", "bin");
   terrain_->setOrigin(Ogre::Vector3::ZERO);
-  terrain_->setResourceGroup(Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  terrain_->setResourceGroup(Ogre::RGN_DEFAULT);
 
   Ogre::Terrain::ImportData &defaultimp = terrain_->getDefaultImportSettings();
 

@@ -24,7 +24,6 @@
 #include "NoCopy.h"
 #include "Exception.h"
 #include <string>
-#include <cassert>
 
 namespace xio{
 
@@ -32,15 +31,27 @@ template <typename T> class Singleton : public NoCopy{
  public:
   Singleton() {
     if (instanced_)
-      throw Exception("Only one instance can be created!\n");
+      throw Exception(std::string("Only one instance of ") + __func__ + " can be created!\n");
 
     instanced_ = true;
   }
+
 
   virtual ~Singleton() = default;
 
  protected:
   inline static bool instanced_ = false;
 };
+
+
+template <typename T> class LazySingleton : public Singleton<T>{
+ public:
+  static T& GetInstance() {
+	static T t;
+	return t;
+  }
+
+};
+
 
 } //namespace

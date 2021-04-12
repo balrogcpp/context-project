@@ -25,25 +25,33 @@
 FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ENV MINGW=/mingw
+ARG MINGW_ROOT=/mingw
 ARG BINUTILS_VERSION=2.35.1
 ARG MINGW_VERSION=8.0.0
-ARG GCC_VERSION=10.2.0
+ARG GCC_VERSION=10.3.0
 ARG PKG_CONFIG_VERSION=0.29.2
+ARG CMAKE_VERSION=3.20.0
+ARG CMAKE_HOME=/opt/cmake
+ARG NINJA_VERSION=1.10.2
 WORKDIR /mnt
+
+ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 RUN apt-get update \
     && apt-get install -y g++ gcc make autoconf libssl1.1 wget ca-certificates zlib1g-dev libssl-dev libgmp-dev libmpfr-dev \
-        libmpc-dev libisl-dev libgmp10 libmpfr6 libmpc3 yasm file patch gperf xz-utils bzip2 zip \
+        libmpc-dev libisl-dev libmpfr6 libmpc3 yasm file patch gperf xz-utils bzip2 zip \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
     && wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
-    && mkdir -p ${MINGW}/include ${MINGW}/lib/pkgconfig \
+    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
+    && wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp && unzip /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
+    && mkdir -p ${MINGW_ROOT}/include ${MINGW_ROOT}/lib/pkgconfig \
+    && mkdir -p ${MINGW_ROOT}/include ${MINGW_ROOT}/lib/pkgconfig \
     && cd pkg-config-${PKG_CONFIG_VERSION} \
     && ./configure \
        --prefix=/usr \
-       --with-pc-path=${MINGW}/lib/pkgconfig \
+       --with-pc-path=${MINGW_ROOT}/lib/pkgconfig \
        --with-internal-glib \
        --disable-shared \
        --disable-nls \
@@ -101,11 +109,10 @@ RUN apt-get update \
       --disable-shared \
       --enable-static \
       --enable-threads=posix \
+      --enable-exceptions=seh \
       --enable-libgomp \
       --enable-libatomic \
       --enable-graphite \
-      --enable-libstdcxx-pch \
-      --enable-libstdcxx-debug \
       --disable-multilib \
       --enable-lto \
       --disable-nls \
@@ -172,6 +179,12 @@ RUN apt-get update \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 10000 \
         --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++ \
     && update-alternatives --install /usr/bin/mingw32-gcc mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc 10000 \
-        --slave /usr/bin/mingw32-g++ mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++
+        --slave /usr/bin/mingw32-g++ mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++ \
+    && ln -s /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
+    && ln -s /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a \
+    && chmod u+x /tmp/cmake-install.sh \
+    && mkdir /opt/cmake \
+    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
+    && rm /tmp/cmake-install.sh
 
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"

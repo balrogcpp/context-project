@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-
 #include "StateManager.h"
 
 using namespace std;

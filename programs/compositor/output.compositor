@@ -24,17 +24,18 @@
 fragment_program Output_fs glsl glsles
 {
     source output.frag
-    preprocessor_defines MAX_SAMPLES=8,MOTION_BLUR,SSAO
+    preprocessor_defines SSAO,BLOOM,FOG
 	default_params
 	{
-		param_named exposure float 1.0
+		//param_named exposure float 1.0
 		param_named_auto uFogColour fog_colour
 		param_named_auto uFogParams fog_params
         param_named_auto nearClipDistance near_clip_distance
         param_named_auto farClipDistance far_clip_distance
-        param_named uScale float 0.5
+        //param_named uScale float 0.5
         param_named uSSAOEnable float 0.0
-        param_named uMotionBlurEnable float 0.0
+        //param_named uMotionBlurEnable float 0.0
+        param_named uBloomEnable float 0.0
 	}
 }
 
@@ -52,9 +53,10 @@ material Output
 			fragment_program_ref Output_fs
 			{
 			    param_named SceneSampler int 0
-			    param_named_auto texelSize inverse_texture_size 0
+			    //param_named_auto texelSize inverse_texture_size 0
 			    param_named sSceneDepthSampler int 1
 			    param_named SsaoSampler int 2
+			    param_named BloomSampler int 3
 			}
 
 			texture_unit
@@ -77,6 +79,13 @@ material Output
                 //tex_address_mode clamp
                 //filtering linear linear none
             }
+
+            texture_unit Bloom
+            {
+                //content_type compositor Bloom bloom
+                //tex_address_mode clamp
+                //filtering linear linear none
+            }
 		}
 	}
 }
@@ -85,7 +94,9 @@ compositor Output
 {
     technique
     {
-        target_output
+        texture output target_width target_height PF_FLOAT16_RGB chain_scope
+
+        target output
         {
             pass render_quad
             {

@@ -24,25 +24,44 @@
 
 #include "Engine.h"
 #include "ComponentLocator.h"
-#include "Input.h"
+#include "InputHandler.h"
 
 namespace xio {
 
 //----------------------------------------------------------------------------------------------------------------------
-InputSequencer& GetIo() {
-  return InputSequencer::GetInstance();
+InputHandler& GetIo() {
+  static auto &io = *Engine::GetInstance().io_;
+  return io;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 Configurator& GetConf() {
-  static auto &config = *Engine::GetInstance().config_;
+  static auto &config = *Engine::GetInstance().conf_;
   return config;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Renderer& GetRender() {
+Engine& GetEngine() {
+  static auto &engine = Engine::GetInstance();
+  return engine;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Render& GetRender() {
   static auto &renderer = *Engine::GetInstance().renderer_;
   return renderer;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Window& GetWindow() {
+  static auto &window = GetRender().GetWindow();
+  return window;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+Compositor& GetCompositor() {
+  static auto &compositor = GetRender().GetCompositor();
+  return compositor;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

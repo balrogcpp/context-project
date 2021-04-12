@@ -22,6 +22,8 @@
 
 #include "pcheader.h"
 
+#include "Configurator.h"
+
 using namespace std;
 
 namespace xio {

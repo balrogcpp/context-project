@@ -25,6 +25,7 @@
 #include "Singleton.h"
 #include "Engine.h"
 #include "StateManager.h"
+#include "VerboseListener.h"
 
 #include "view_ptr.h"
 
@@ -53,6 +54,7 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   void PrintLogToConsole_();
 
   std::unique_ptr<StateManager> state_manager_;
+  std::unique_ptr<VerboseListener> verbose_listener_;
   view_ptr<Engine> engine_;
 
   bool running_ = true;
@@ -66,6 +68,7 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   std::string log_;
   std::string log_file_ = "Launch.log";
   bool verbose_ = false;
+  bool verbose_input_ = false;
 };
 
 } //namespace

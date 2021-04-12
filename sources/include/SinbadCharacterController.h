@@ -1,6 +1,6 @@
 #pragma once
 #include "Object.h"
-#include "Input.h"
+#include "InputHandler.h"
 
 #define SCALE 0.2f
 #define CHAR_HEIGHT SCALE*5.0f          // height of character's center of mass above ground
@@ -12,7 +12,7 @@
 #define JUMP_ACCEL SCALE*30.0f       // character jump acceleration in upward units per squared second
 #define GRAVITY SCALE*90.0f          // gravity in downward units per squared second
 
-class SinbadCharacterController : public xio::Object, public xio::InputObserver {
+class SinbadCharacterController : public xio::Object, public xio::MutedInputObserver {
  private:
   // all the animations our character has, and a null ID
   // some of these affect separate body parts and will be blended together

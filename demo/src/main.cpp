@@ -27,7 +27,7 @@
 using namespace std;
 using namespace xio;
 
-#if defined WIN32 && defined NDEBUG
+#if defined WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -36,14 +36,11 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 int main(int argc, char* args[])
 #endif
 {
-  try {
+  // main app class object
+  Application app;
+  // main function
+  return app.Main(make_unique<Demo::MenuAppState>());
 
-	Application app;
-	return app.Main(make_unique<Demo::MenuAppState>());
-
-  } catch (...) {
-
-  }
-
+  // to be sure app will return something to system
   return 0;
 }

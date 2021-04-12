@@ -24,7 +24,6 @@
 
 #include "Singleton.h"
 #include "Window.h"
-#include "ShadowSettings.h"
 #include "Compositor.h"
 #include "Overlay.h"
 #include "Component.h"
@@ -39,10 +38,10 @@ class RenderWindow;
 }
 
 namespace xio {
-class Renderer final : public Component, public Singleton<Renderer> {
+class Render final : public Component, public Singleton<Render> {
  public:
-  Renderer(int w, int h, bool f);
-  virtual ~Renderer();
+  Render(int w, int h, bool f);
+  virtual ~Render();
 
   void Cleanup() override;
   void Pause() override;
@@ -50,14 +49,11 @@ class Renderer final : public Component, public Singleton<Renderer> {
   void Update(float time) override;
 
   void Refresh();
-  void UpdateParams(Ogre::TextureFilterOptions filtering, int anisotropy);
-  void UpdateShadow(bool enable, float far_distance, int tex_size, int tex_format);
   void RenderOneFrame();
   void Resize(int w, int h, bool f);
   void RestoreFullscreenAndroid_();
 
   Window &GetWindow();
-  ShadowSettings &GetShadowSettings();
   Compositor &GetCompositor();
 
 
@@ -68,13 +64,17 @@ class Renderer final : public Component, public Singleton<Renderer> {
   void InitOgreRenderSystem_GLES2_();
   void InitRenderWindow_();
   void InitResourceLocation_();
+  void InitTextureSettings_();
+  void InitShadowSettings_();
 
   std::string render_system_;
 
   std::unique_ptr<Window> window_;
-  std::unique_ptr<ShadowSettings> shadow_settings_;
   std::unique_ptr<Compositor> compositor_;
   std::unique_ptr<Overlay> overlay_;
+  std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm_;
+  std::vector<float> split_points_;
+  const size_t pssm_split_count_ = 3;
 
   view_ptr<Ogre::Root> root_;
   view_ptr<Ogre::SceneManager> scene_;

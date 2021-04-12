@@ -22,10 +22,7 @@
 
 #include "pcheader.h"
 #include "Forest.h"
-#include "PbrShaderUtils.h"
-#include "MeshUtils.h"
-#include "DotSceneLoaderB.h"
-#include "Physics.h"
+#include "Utils.h"
 #include "ComponentLocator.h"
 #include "pgeometry/PagedGeometryAll.h"
 
@@ -209,8 +206,8 @@ Forest::Forest() = default;
 //----------------------------------------------------------------------------------------------------------------------
 Forest::~Forest() {
   auto &mesh_manager = Ogre::MeshManager::getSingleton();
-  if (mesh_manager.getByName("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
-    mesh_manager.remove("grass", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+  if (mesh_manager.getByName("grass", Ogre::RGN_AUTODETECT))
+    mesh_manager.remove("grass", Ogre::RGN_AUTODETECT);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -291,7 +288,7 @@ void Forest::GenerateRocksStatic() {
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateGrassPaged() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 5);
-  grass->addDetailLevel<GrassPage>(5, 5);//Draw grass up to 100
+  grass->addDetailLevel<GrassPage>(50, 10);//Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
   grass->setPageLoader(grassLoader);
   grassLoader->setRenderQueueGroup(Ogre::RENDER_QUEUE_MAIN);
@@ -311,7 +308,7 @@ void Forest::GenerateGrassPaged() {
   layer->setSwayLength(1.0f);
   layer->setSwaySpeed(0.5f);
   layer->setDensity(1.0f);
-  layer->setMapBounds(TBounds(-10, -10, 10, 10));
+  layer->setMapBounds(TBounds(-250, -250, 250, 250));
   layer->setDensityMap("grass_density.png");
 
   Update(0);
@@ -322,14 +319,14 @@ void Forest::GenerateGrassPaged() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::GenerateTreesPaged() {
-  const float bound = 5;
+  const float bound = 50;
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;
-  auto *trees = new PagedGeometry(scene->getCamera("Default"), 10);
+  auto *trees = new PagedGeometry(scene->getCamera("Default"), 50);
 //  trees->addDetailLevel<WindBatchPage>(100, 20);
   trees->addDetailLevel<Forests::BatchPage>(200, 60);
-  auto *treeLoader = new TreeLoader2D(trees, TBounds(-6, -6, 6, 6));
+  auto *treeLoader = new TreeLoader2D(trees, TBounds(-200, -200, 200, 200));
   if (heigh_func_)
     treeLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z) - 0.1); });
 
@@ -344,7 +341,7 @@ void Forest::GenerateTreesPaged() {
 
   auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
 
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 50; i++) {
     yaw = Ogre::Math::RangeRandom(0, 360);
     if (Ogre::Math::RangeRandom(0, 1) <= 0.8f) {
       x = Ogre::Math::RangeRandom(-bound, bound);
@@ -373,13 +370,15 @@ void Forest::GenerateTreesPaged() {
 
   Pbr::UpdatePbrParams("3D-Diggers/fir01_Batched");
   Pbr::UpdatePbrParams("3D-Diggers/fir02_Batched");
+  Pbr::UpdatePbrShadowReceiver("3D-Diggers/fir01_Batched");
+  Pbr::UpdatePbrShadowReceiver("3D-Diggers/fir02_Batched");
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
-  GenerateGrassPaged();
-//  GenerateTreesPaged();
-  GenerateRocksStatic();
+//  GenerateGrassPaged();
+  GenerateTreesPaged();
+//  GenerateRocksStatic();
 }
 
 } //namespace

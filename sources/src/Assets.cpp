@@ -21,11 +21,11 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include <iostream>
-#include <filesystem>
 #include "Assets.h"
 #include "Exception.h"
 #include "Android.h"
+#include <iostream>
+#include <filesystem>
 
 using namespace std;
 namespace fs = filesystem;
@@ -33,6 +33,7 @@ namespace fs = filesystem;
 namespace xio::Assets {
 
 static std::string FindPath(const std::string &path_, int depth = 3) {
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID && OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
   string path = path_;
 
   for (int i = 0; i < depth; i++) {
@@ -43,6 +44,7 @@ static std::string FindPath(const std::string &path_, int depth = 3) {
 	else
 	  path = string("../").append(path);
   }
+#endif
 
   return string();
 }
@@ -103,13 +105,13 @@ void PrintStringList(const vector <string> &string_list) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void LoadResources() {
-  Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+  Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(Ogre::RGN_INTERNAL);
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void AddLocation(const string &path_, const string &group_, bool recursive) {
-#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID && OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
   const std::string file_system = "FileSystem";
   const std::string zip = "Zip";
 
@@ -150,7 +152,7 @@ void AddLocationRecursive(const string &path_,
 								  const string &group_,
 								  const string &resource_file,
 								  bool verbose) {
-#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID && OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
   const string file_system = "FileSystem";
   const string zip = "Zip";
 

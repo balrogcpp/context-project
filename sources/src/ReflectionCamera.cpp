@@ -83,7 +83,7 @@ void ReflectionCamera::Init_(unsigned int tex_size) {
   rcamera_->setAutoAspectRatio(false);
 
   reflection_tex_ = Ogre::TextureManager::getSingleton().createManual("Reflection",
-																	  Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+																	  Ogre::RGN_DEFAULT,
 																	  Ogre::TEX_TYPE_2D,
 																	  tex_size,
 																	  tex_size,
@@ -100,7 +100,7 @@ void ReflectionCamera::Init_(unsigned int tex_size) {
   vp1->setVisibilityMask(SURFACE_MASK);
 
   refraction_tex_ = Ogre::TextureManager::getSingleton().createManual("Refraction",
-																	  Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+																	  Ogre::RGN_DEFAULT,
 																	  Ogre::TEX_TYPE_2D,
 																	  tex_size,
 																	  tex_size,

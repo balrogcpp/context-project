@@ -22,10 +22,8 @@
 
 #include "pcheader.h"
 #include "Application.h"
-#include "Overlay.h"
 #include "DesktopIcon.h"
 #include "Exception.h"
-#include "SDL2.hpp"
 #include "ComponentLocator.h"
 #include <iostream>
 
@@ -46,13 +44,19 @@ Application::Application() {
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
 	auto *logger = new Ogre::LogManager();
-	logger->createLog(log_file_, false, false, true);
-	Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+
+
 #ifdef DEBUG
+	logger->createLog(log_file_, true, true, true);
 	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
 #else
+	logger->createLog(log_file_, false, false, true);
 	Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_NORMAL);
 #endif
+
+
+	Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
+
 #endif
 
 
@@ -69,12 +73,16 @@ Application::Application() {
 	state_manager_ = make_unique<StateManager>();
 
 	GetConf().Get("verbose", verbose_);
+	GetConf().Get("verbose_input", verbose_input_);
 
 	if (verbose_)
 	  log_.reserve(10000);
 
-	lock_fps_ = GetConf().Get<bool>("global_lock_fps");
-	target_fps_ = GetConf().Get<int>("global_target_fps");
+	if (verbose_input_)
+	  verbose_listener_ = make_unique<VerboseListener>();
+
+	lock_fps_ = GetConf().Get<bool>("lock_fps");
+	target_fps_ = GetConf().Get<int>("target_fps");
 
   }
   catch (Exception &e) {
@@ -85,6 +93,9 @@ Application::Application() {
   }
   catch (exception &e) {
 	ExceptionMessage_("Exception (std::exception)", e.what());
+  }
+  catch (...) {
+	ExceptionMessage_("Exception", "Unhandled");
   }
 }
 
@@ -97,6 +108,10 @@ Application::~Application() {
 
 //----------------------------------------------------------------------------------------------------------------------
 int Application::ExceptionMessage_(const string &caption, const string &message) {
+
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  GetWindow().SetCursorStatus(true, false, false);
+#endif
 
 #ifdef _WIN32
   MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
@@ -172,8 +187,8 @@ void Application::Loop_() {
 		int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
 		float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_)/1e+6;
 		time_of_last_frame_ = micros_before_update;
-		engine_->Update(frame_time);
 		state_manager_->Update(frame_time);
+		engine_->Update(frame_time);
 
 		engine_->RenderOneFrame();
 	  } else {
@@ -273,6 +288,9 @@ int Application::Main(unique_ptr <AppState> &&scene_ptr) {
   }
   catch (exception &e) {
 	return ExceptionMessage_("Exception (std::exception)", e.what());
+  }
+  catch (...) {
+	ExceptionMessage_("Exception", "Unhandled");
   }
 
 

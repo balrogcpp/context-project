@@ -22,9 +22,10 @@
 
 #pragma once
 #include "SDL2.hpp"
-#include "Configurator.h"
 #include "OgreHeaders.h"
+#include <nlohmann/json.hpp>
+#include <pugixml.hpp>
+#include "view_ptr.h"
 //#include "gorilla/Gorilla.h"
 //#include "btogre/BtOgre.h"
 //#include "oggsound/OgreOggSound.h"
-#include "view_ptr.h"

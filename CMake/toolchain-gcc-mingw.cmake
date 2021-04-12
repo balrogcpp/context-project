@@ -33,7 +33,7 @@ set(CMAKE_ASM-ATT_COMPILER ${TOOLCHAIN_PREFIX}-as)
 set(CMAKE_RC_COMPILER ${TOOLCHAIN_PREFIX}-windres)
 
 # target environment on the build host system
-set(CONTEXT_MINGW_FIND_ROOT_PATH /usr/${TOOLCHAIN_PREFIX})
+set(CMAKE_EXTRA_ROOT_PATH /usr/${TOOLCHAIN_PREFIX})
 
 # adjust the default behaviour of the FIND_XXX() commands:
 # search headers and libraries in the target environment, search

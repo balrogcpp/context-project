@@ -23,7 +23,6 @@
 #include "pcheader.h"
 #include "CubeMapCamera.h"
 
-#include <Ogre.h>
 
 using namespace std;
 
@@ -88,7 +87,7 @@ void CubeMapCamera::Init_(Ogre::SceneNode *creator, unsigned int tex_size) {
   camera_node_->setFixedYawAxis(false);
   camera_node_->attachObject(camera_);
   cubemap_ = Ogre::TextureManager::getSingleton().createManual("dyncubemap",
-															   Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+															   Ogre::RGN_DEFAULT,
 															   Ogre::TEX_TYPE_CUBE_MAP,
 															   tex_size,
 															   tex_size,

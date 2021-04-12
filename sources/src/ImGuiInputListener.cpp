@@ -20,10 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "pcheader.h"
-
 #include "ImGuiInputListener.h"
-#include <OgreMath.h>
 #include <imgui.h>
 
 using namespace std;
@@ -143,23 +140,27 @@ void ImGuiInputListener::OnTextInput(const char *text) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnMouseMove(int dx, int dy) {
-//  static auto& io = ImGui::GetIO();
-//
+
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   static auto &io = ImGui::GetIO();
 
-  io.MousePos.x = x;
-  io.MousePos.y = y;
+  io.MousePos.x = static_cast<float>(x);
+  io.MousePos.y = static_cast<float>(y);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+template <typename T> static int sign(T val) {
+  return (T(0) < val) - (val < T(0));
+}
+
 void ImGuiInputListener::OnMouseWheel(int x, int y) {
   static auto &io = ImGui::GetIO();
 
-  io.MouseWheel = Ogre::Math::Sign(y);
+  io.MouseWheel = static_cast<float>(sign(y));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
