@@ -464,8 +464,9 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
 endif ()
 
-#OMP is not present when crosscompile
+
 if (APPLE)
+    #OpenMP is not available when crosscompile
     externalproject_add(target-omp
                         EXCLUDE_FROM_ALL true
                         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -481,6 +482,27 @@ if (APPLE)
                         )
 
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-omp)
+
+    #std::filesystem is not supported on MacOS before Catalina
+    externalproject_add(target-filesystem
+                        EXCLUDE_FROM_ALL true
+                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                        GIT_REPOSITORY https://github.com/gulrak/filesystem.git
+                        GIT_TAG v1.5.4
+                        GIT_SHALLOW true
+                        GIT_PROGRESS false
+                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                        ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                        -DGHC_FILESYSTEM_BUILD_TESTING=false
+                        -DGHC_FILESYSTEM_BUILD_EXAMPLES=false
+                        -G "${CMAKE_GENERATOR}"
+                        )
+
+    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
+
 endif ()
 
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
