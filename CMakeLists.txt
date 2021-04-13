@@ -181,7 +181,7 @@ if (APPLE)
     set(CMAKE_USE_PTHREADS_INIT 1)
     set(THREADS_PREFER_PTHREAD_FLAG ON)
 endif ()
-if (NOT ANDROID)
+if (NOT ANDROID AND NOT IOS)
     find_package(OpenGL REQUIRED)
 else ()
     find_package(OpenGLES2 REQUIRED)
@@ -249,7 +249,7 @@ elseif (ANDROID)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 elseif (APPLE)
-    #    list(APPEND SYSTEM_LIBRARIES gomp)
+
 endif ()
 
 target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
@@ -269,8 +269,11 @@ file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
+# TODO: it may be better idea to install only dll that are needed
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
+elseif (APPLE)
+    file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/*.dylib*)
 elseif (UNIX)
     #file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/*.so*)
 endif ()
@@ -285,6 +288,7 @@ endif ()
 find_package(Python3 QUIET)
 
 if (NOT Python3_Interpreter_FOUND)
+    message("Python is needed to create package")
     return()
 endif ()
 
@@ -305,30 +309,22 @@ set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 set(CMAKE_FIND_ROOT_PATH "${ANDROID_NDK};${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
 
 
-install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB}
-        PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
-        DESTINATION .
-        )
+install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION . )
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/assets ${CMAKE_SOURCE_DIR}/tmp/programs DESTINATION . )
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/assets ${CMAKE_SOURCE_DIR}/tmp/programs
-        DESTINATION .
-        )
-
-if (UNIX)
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/start.sh
-            PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE
-            DESTINATION .
-            )
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/Launch.sh PERMISSIONS OWNER_EXECUTE DESTINATION . )
+endif ()
+if (WIN32)
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/Launch.bat DESTINATION . )
 endif ()
 if (MINGW)
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/${EXECUTABLE_NAME}.exe.manifest
-            DESTINATION .
-            )
+    #MinGW can't compile .manifest files into executable
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/${EXECUTABLE_NAME}.exe.manifest DESTINATION . )
 endif ()
 if (MSVC)
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/VC_redist.x64.exe
-            DESTINATION .
-            )
+    # Microsoft doesn't include MSVC dll in standart installation
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/VC_redist.x64.exe DESTINATION . )
 endif ()
 
 

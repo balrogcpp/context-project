@@ -32,6 +32,14 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
 
   virtual ~ReflectionCamera();
 
+  void SetPlane(Ogre::Plane plane);
+
+  const uint32_t SUBMERGED_MASK = 0x0F0;
+  const uint32_t SURFACE_MASK = 0x00F;
+  const uint32_t WATER_MASK = 0xF00;
+  std::shared_ptr<Ogre::Texture> reflection_tex_;
+  std::shared_ptr<Ogre::Texture> refraction_tex_;
+
  private:
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
@@ -44,14 +52,6 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   Ogre::ShadowTechnique technique_ = Ogre::SHADOWTYPE_NONE;
   bool pssm_shadows_ = false;
 
- public:
-  void SetPlane(Ogre::Plane plane);
-
-  const uint32_t SUBMERGED_MASK = 0x0F0;
-  const uint32_t SURFACE_MASK = 0x00F;
-  const uint32_t WATER_MASK = 0xF00;
-  std::shared_ptr<Ogre::Texture> reflection_tex_;
-  std::shared_ptr<Ogre::Texture> refraction_tex_;
 };
 
 } //namespace
