@@ -32,7 +32,8 @@ endif ()
 
 # set input and output files
 set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
-set(DOXYGEN_OUT ${CONTEXT_WORK_DIR}/Doxyfile)
+set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
 
 # request to configure the file
 configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
@@ -50,10 +51,9 @@ if (UNIX)
 elseif (WIN32)
     set(DOXYGEN_MAKE_COMMAND make.bat)
 endif ()
-
 if (${LATEX_PDFLATEX_FOUND})
     add_custom_target(doc-pdf
-            DEPENDS doxygen
+            DEPENDS doc-doxygen
             COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ARTIFACT_DIR}/Doxygen/latex ${DOXYGEN_MAKE_COMMAND}
             COMMAND ${CMAKE_COMMAND} -E copy ${CONTEXT_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${CONTEXT_ARTIFACT_DIR}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
