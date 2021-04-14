@@ -53,11 +53,7 @@ if (NOT ANDROID)
     endif ()
 endif ()
 
-if (PTR_SIZE EQUAL 8)
-    set(CONTEXT_PLATFORM "x64" CACHE STRING "")
-elseif (PTR_SIZE EQUAL 4)
-    set(CONTEXT_PLATFORM "x32" CACHE STRING "")
-endif ()
+
 if (WIN32)
     set(CONTEXT_EXTERNAL_TOOLCHAIN "windows")
 elseif (ANDROID)
@@ -87,13 +83,13 @@ else ()
 endif ()
 
 set(CONTEXT_EXTERNAL_TOOLCHAIN ${CONTEXT_EXTERNAL_TOOLCHAIN} CACHE STRING "")
-set(CONTEXT_EXTERNAL_PLATROFM ${CONTEXT_PLATFORM} CACHE STRING "")
+set(CONTEXT_EXTERNAL_PLATROFM ${CMAKE_SYSTEM_PROCESSOR} CACHE STRING "")
 set(CONTEXT_FORCE_PLATFORM "" CACHE STRING "")
-set(CONTEXT_BUILD_PLATFORM ${CONTEXT_PLATFORM})
+set(CONTEXT_BUILD_PLATFORM ${CMAKE_SYSTEM_PROCESSOR})
 
 processorcount(CONTEXT_PROCESSOR_COUNT)
 set(CMAKE_BUILD_PARALLEL_LEVEL ${CONTEXT_PROCESSOR_COUNT})
-set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
+set(MAKE_COMMAND make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT ANDROID)
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
@@ -113,13 +109,18 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     endif ()
 
+    string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -pthread -fopenmp")
+    string(APPEND CMAKE_C_FLAGS " -msse4.1 -pthread -fopenmp")
+
     # With PIE most of linuxes don't recognize binary
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
     endif ()
 
-    string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -pthread -fopenmp")
-    string(APPEND CMAKE_C_FLAGS " -msse4.1 -pthread -fopenmp")
+    if ((APPLE OR MINGW) AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-openmp")
+        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-openmp")
+    endif ()
 
 
 elseif (ANDROID AND ${CMAKE_BUILD_TYPE} STREQUAL "Release")
@@ -128,6 +129,7 @@ elseif (ANDROID AND ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 
     string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin -flto=thin")
     string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-linker-plugin -flto=thin")
+
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -163,9 +165,10 @@ set(CONTEXT_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/xio CACHE PATH "")
 set(CONTEXT_INCLUDE_DIR ${CONTEXT_SOURCE_DIR}/include CACHE PATH "")
 set(CONTEXT_THIRDPARTY_ROOT ${CONTEXT_ROOT_DIR}/sources CACHE PATH "")
 set(CONTEXT_THIRDPARTY_DIR ${CONTEXT_THIRDPARTY_ROOT} CACHE PATH "")
+set(CONTEXT_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts CACHE PATH "")
+
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/dependencies ${CONTEXT_WORK_DIR}/dependencies)
-
 add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
 
 
@@ -181,15 +184,13 @@ if (APPLE)
     set(CMAKE_USE_PTHREADS_INIT 1)
     set(THREADS_PREFER_PTHREAD_FLAG ON)
 endif ()
-if (NOT ANDROID)
+if (NOT ANDROID AND NOT IOS)
     find_package(OpenGL REQUIRED)
 else ()
     find_package(OpenGLES2 REQUIRED)
 endif ()
-if (NOT APPLE)
-    find_package(OpenMP REQUIRED)
-endif ()
 find_package(Threads REQUIRED)
+find_package(OpenMP QUIET)
 find_package(OGRE QUIET)
 find_package(Bullet QUIET)
 find_package(SDL2 QUIET)
@@ -251,7 +252,7 @@ elseif (ANDROID)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 elseif (APPLE)
-    #    list(APPEND SYSTEM_LIBRARIES gomp)
+
 endif ()
 
 target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
@@ -271,22 +272,26 @@ file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
+# TODO: it may be better idea to install only dll that are needed
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
+elseif (APPLE)
+    #file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/*.dylib*)
 elseif (UNIX)
     #file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/*.so*)
 endif ()
 
 if (NOT ANDROID)
-    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} ${OPENAL_LIBRARY} DESTINATION .)
+    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} ${OPENAL_LIBRARY} DESTINATION . )
 endif ()
 if (MINGW)
-    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/demo.exe.manifest DESTINATION .)
+    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/demo.exe.manifest DESTINATION . )
 endif ()
 
 find_package(Python3 QUIET)
 
 if (NOT Python3_Interpreter_FOUND)
+    message("Python is needed to create package")
     return()
 endif ()
 
@@ -307,35 +312,26 @@ set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 set(CMAKE_FIND_ROOT_PATH "${ANDROID_NDK};${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
 
 
-install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB}
-        PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ
-        DESTINATION .
-        )
+install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION . )
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/assets ${CMAKE_SOURCE_DIR}/tmp/programs DESTINATION . )
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/assets ${CMAKE_SOURCE_DIR}/tmp/programs
-        DESTINATION .
-        )
-
-if (UNIX)
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/start.sh
-            PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE
-            DESTINATION .
-            )
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/Launch.sh PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION . )
+endif ()
+if (WIN32)
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/Launch.bat DESTINATION . )
 endif ()
 if (MINGW)
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/${EXECUTABLE_NAME}.exe.manifest
-            DESTINATION .
-            )
+    #MinGW can't compile .manifest files into executable
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/${EXECUTABLE_NAME}.exe.manifest DESTINATION . )
 endif ()
 if (MSVC)
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/VC_redist.x64.exe
-            DESTINATION .
-            )
+    # Microsoft doesn't include MSVC dll in standart installation
+    install(FILES ${CMAKE_SOURCE_DIR}/deploy/VC_redist.x64.exe DESTINATION . )
 endif ()
 
 
 set(CONTEXT_PACKAGE_NAME "ContextProjectDemo")
-set(CONTEXT_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts)
 set(CONTEXT_ARTIFACT_NAME ${CONTEXT_PACKAGE_NAME}-${CONTEXT_EXTERNAL_TOOLCHAIN}-${GIT_SHA1})
 
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})

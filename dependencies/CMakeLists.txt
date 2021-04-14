@@ -27,7 +27,6 @@ include(ExternalProject)
 find_package(Git REQUIRED)
 
 
-set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT})
 set(CONTEXT_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN})
 set(CONTEXT_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN}/sdk CACHE PATH "")
 set(CONTEXT_EXTERNAL_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/patch)
@@ -50,22 +49,14 @@ externalproject_add(target-sdl
                     GIT_PROGRESS false
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DSDL_SHARED_ENABLED_BY_DEFAULT=false
-                    -DRENDER_METAL=false #cause linking error on macos
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
+                    -DSDL_SHARED_ENABLED_BY_DEFAULT=false
+                    -DRENDER_METAL=false #cause linking error on macos
                     )
 
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
-    set(BULLET_USE_MT true)
-    set(BULLET_USE_OPENMP false)
-else()
-    set(BULLET_USE_MT true)
-    set(BULLET_USE_OPENMP true)
-endif ()
 
 externalproject_add(target-bullet
                     EXCLUDE_FROM_ALL true
@@ -77,12 +68,15 @@ externalproject_add(target-bullet
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
                     -DCMAKE_RELWITHDEBINFO_POSTFIX=
                     -DCMAKE_DEBUG_POSTFIX=
                     -DCMAKE_MINSIZEREL_POSTFIX=
                     -DCLAMP_VELOCITIES=0
-                    -DBULLET2_MULTITHREADING=${BULLET_USE_MT}
-                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=${BULLET_USE_OPENMP}
+                    -DBULLET2_MULTITHREADING=true
+                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=true
                     -DBUILD_BULLET2_DEMOS=false
                     -DBUILD_CPU_DEMOS=false
                     -DBUILD_EXTRAS=false
@@ -97,9 +91,6 @@ externalproject_add(target-bullet
                     -DUSE_MSVC_AVX=false
                     -DUSE_MSVC_FAST_FLOATINGPOINT=true
                     -DUSE_MSVC_RUNTIME_LIBRARY_DLL=true
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
                     )
 
 if (IOS OR ANDROID)
@@ -119,6 +110,9 @@ externalproject_add(target-openal
                     -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
                     -DALSOFT_TESTS=false
                     -DALSOFT_UTILS=false
                     -DALSOFT_EXAMPLES=false
@@ -129,12 +123,9 @@ externalproject_add(target-openal
                     -DALSOFT_BACKEND_WAVE=false
                     -DLIBTYPE=${OPENAL_LIBTYPE}
                     -DALSOFT_OSX_FRAMEWORK=false
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
                     )
 
-if (APPLE AND NOT IOS)
+if (APPLE)
     set(OGG_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogg ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogg-1.3.4-apple.patch)
 endif()
 externalproject_add(target-ogg
@@ -154,6 +145,7 @@ externalproject_add(target-ogg
                     -G "${CMAKE_GENERATOR}"
                     )
 
+
 externalproject_add(target-vorbis
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-ogg
@@ -165,12 +157,13 @@ externalproject_add(target-vorbis
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DOGG_INCLUDE_DIRS=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
-                    -DOGG_LIBRARIES=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libogg.a
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
+                    -DOGG_INCLUDE_DIRS=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
+                    -DOGG_LIBRARIES=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libogg.a
                     )
+
 
 externalproject_add(target-zlib
                     EXCLUDE_FROM_ALL true
@@ -183,14 +176,15 @@ externalproject_add(target-zlib
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                    -DBUILD_SHARED_LIBS=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
+                    -DBUILD_SHARED_LIBS=false
                     TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll libz.dylib
+                        ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll lib/libz.dylib
                     TEST_AFTER_INSTALL true
                     )
+
 
 externalproject_add(target-zzip
                     EXCLUDE_FROM_ALL true
@@ -208,6 +202,7 @@ externalproject_add(target-zzip
                     -G "${CMAKE_GENERATOR}"
                     )
 
+
 externalproject_add(target-pugixml
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -223,6 +218,7 @@ externalproject_add(target-pugixml
                     -G "${CMAKE_GENERATOR}"
                     )
 
+
 externalproject_add(target-png
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib
@@ -234,12 +230,13 @@ externalproject_add(target-png
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DPNG_SHARED=false
-                    -DPNG_TESTS=false
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
+                    -DPNG_SHARED=false
+                    -DPNG_TESTS=false
                     )
+
 
 externalproject_add(target-freetype
                     EXCLUDE_FROM_ALL true
@@ -252,14 +249,15 @@ externalproject_add(target-freetype
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
                     -DUNIX=true
                     -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=true
                     -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=true
                     -DBUILD_SHARED_LIBS=false
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
                     )
+
 
 externalproject_add(target-rapidjson
                     EXCLUDE_FROM_ALL true
@@ -271,15 +269,16 @@ externalproject_add(target-rapidjson
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
                     -DRAPIDJSON_BUILD_DOC=false
                     -DRAPIDJSON_BUILD_EXAMPLES=false
                     -DRAPIDJSON_BUILD_TESTS=false
                     -DRAPIDJSON_BUILD_THIRDPARTY_GTEST=false
                     -DRAPIDJSON_HAS_STDSTRING=true
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
                     )
+
 
 externalproject_add(target-json
                     EXCLUDE_FROM_ALL true
@@ -292,10 +291,11 @@ externalproject_add(target-json
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    -DJSON_BuildTests=false
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -G "${CMAKE_GENERATOR}"
+                    -DJSON_BuildTests=false
                     )
+
 
 externalproject_add(target-assimp
                     EXCLUDE_FROM_ALL true
@@ -308,6 +308,9 @@ externalproject_add(target-assimp
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
                     -DINJECT_DEBUG_POSTFIX=false
                     -DASSIMP_BUILD_TESTS=false
                     -DASSIMP_BUILD_ASSIMP_VIEW=false
@@ -318,27 +321,26 @@ externalproject_add(target-assimp
                     -DASSIMP_BUILD_SAMPLES=false
                     -DASSIMP_INSTALL_PDB=false
                     -DASSIMP_BUILD_IRR_IMPORTER=false
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
                     )
 
+
 if (ANDROID OR IOS)
-    # to be sure GLES2 is build for Mobile
+    # to be sure GLES2 is built for Mobile
     set(OGRE_USE_GLES2 true)
 else ()
-    # to be sure GLES2 is not build for Desktop
+    # to be sure GLES2 is not built for Desktop
     set(OGRE_USE_GLES2 false)
 endif ()
 if(ANDROID)
+    #Fix will be available on next release
     set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-android.patch)
 endif()
 # PCH on Apple cause objective-c compilation error
-if (APPLE AND NOT IOS)
+set(OGRE_USE_PCH true)
+if (APPLE)
     set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-apple.patch)
     set(OGRE_USE_PCH false)
 else()
-    set(OGRE_USE_PCH true)
 endif()
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
@@ -353,6 +355,8 @@ externalproject_add(target-ogre
                     -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
                     -DOGRE_DEPENDENCIES_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DOGRE_ENABLE_PRECOMPILED_HEADERS=${OGRE_USE_PCH}
                     -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=false
@@ -398,19 +402,14 @@ externalproject_add(target-ogre
                     -DOGRE_INSTALL_PDB=false
                     -DOGRE_INSTALL_DOCS=false
                     -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=false
-                    -DCMAKE_CXX_FLAGS=${CONTEXT_EXTERNAL_CXX_FLAGS}
-                    -DCMAKE_EXE_LINKER_FLAGS=${CONTEXT_EXTERNAL_EXE_LINKER_FLAGS}
-                    -DCMAKE_STATIC_LINKER_FLAGS=${CONTEXT_EXTERNAL_STATIC_LINKER_FLAGS}
-                    -DCMAKE_SHARED_LINKER_FLAGS=${CONTEXT_EXTERNAL_SHARED_LINKER_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     -DOGRE_BUILD_PLATFORM_APPLE_IOS=false
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
                     TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
                         ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre/RenderSystems/GLSupport/include/GLSL
                         ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
                     TEST_AFTER_INSTALL true
                     )
+
 
 externalproject_add(target-lua
                     EXCLUDE_FROM_ALL true
@@ -422,15 +421,17 @@ externalproject_add(target-lua
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
                     -DLUA_EXE=false
                     -DLUA_DOC=false
                     -DLUA_BUILD_WLUA=false
                     -DBUILD_SHARED_LIBS=false
                     -DLUA_USE_READLINE=false
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -G "${CMAKE_GENERATOR}"
                     )
+
+
 
 externalproject_add(target-sol
                     EXCLUDE_FROM_ALL true
@@ -448,6 +449,7 @@ externalproject_add(target-sol
                     -G "${CMAKE_GENERATOR}"
                     )
 
+
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     externalproject_add(target-jemalloc
                         EXCLUDE_FROM_ALL true
@@ -458,14 +460,15 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
                         GIT_PROGRESS false
                         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./autogen.sh
                         BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./configure --disable-stats --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
+                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${MAKE_COMMAND} install_lib_static
                         )
 
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
 endif ()
 
-#OMP is not present when crosscompile
-if (APPLE)
+
+#OpenMP is not available when crosscompile with clang
+if ((APPLE OR MINGW) AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     externalproject_add(target-omp
                         EXCLUDE_FROM_ALL true
                         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -477,11 +480,37 @@ if (APPLE)
                         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                         ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                        -DENABLE_LIBOMPTARGET=false
+                        -DLIBOMP_ENABLE_SHARED=false
                         -G "${CMAKE_GENERATOR}"
                         )
 
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-omp)
 endif ()
+
+
+#std::filesystem is not supported on MacOS before Catalina
+if (APPLE)
+    externalproject_add(target-filesystem
+                        EXCLUDE_FROM_ALL true
+                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                        GIT_REPOSITORY https://github.com/gulrak/filesystem.git
+                        GIT_TAG v1.5.4
+                        GIT_SHALLOW true
+                        GIT_PROGRESS false
+                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                        ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                        -G "${CMAKE_GENERATOR}"
+                        -DGHC_FILESYSTEM_BUILD_TESTING=false
+                        -DGHC_FILESYSTEM_BUILD_EXAMPLES=false
+                        )
+
+    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
+endif ()
+
 
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-json)

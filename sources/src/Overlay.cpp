@@ -29,39 +29,15 @@
 #include <Overlay/OgreImGuiOverlay.h>
 #endif
 
-#include "gorilla/Gorilla.h"
-#include "gorilla/OgreConsole.h"
 
 #include "Overlay.h"
 
 
-using namespace Gorilla;
 using namespace std;
 
 namespace xio {
 Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : render_window_(render_window) {
 
-  if (gorilla_) {
-    atlas_ = make_unique<Silverback>();
-    atlas_->loadAtlas("dejavu");
-    auto *viewport = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
-    screen_ = atlas_->createScreen(viewport, "dejavu");
-    layer_ = screen_->createLayer(0);
-    Ogre::Real vpW = screen_->getWidth(), vpH = screen_->getHeight();
-
-    // Init our drawing layer
-    layer_ = screen_->createLayer(0);
-    rect_ = layer_->createRectangle(0, 0, vpW, vpH);
-    rect_->background_colour(rgb(0, 0, 0, 0));
-    caption_ = layer_->createCaption(24, vpW - 55, 66, "");
-    caption_->width(0);
-    caption_->align(TextAlign_Right);
-
-    console_ = make_unique<OgreConsole>();
-    console_->init(screen_.get());
-    console_->setVisible(false);
-
-  }
 
   Ogre::SceneManager* sm = Ogre::Root::getSingletonPtr()->getSceneManager("Default");
   overlay_ = new Ogre::OverlaySystem();
@@ -97,8 +73,7 @@ void Overlay::preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt)
 
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::Update(float time) {
-  if (gorilla_) caption_->text((1.0 / time));
-  //if (imgui_) imgui_->show();
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

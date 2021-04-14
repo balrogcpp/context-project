@@ -12,10 +12,10 @@
   "lock_fps": true,
   "vsync": true,
   "shadows_enable": true,
-  "fsaa": 4,
+  "fsaa": 0,
   "filtration": "anisotropic",
-  "anisotropy_level": 8,
-  "tex_size": 2048,
+  "anisotropy_level": 4,
+  "tex_size": 1024,
   "shadow_far": 400,
   "tex_format": "D16",
   "shadow_camera": 4

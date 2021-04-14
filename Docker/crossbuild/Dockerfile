@@ -24,28 +24,47 @@
 
 FROM ubuntu:20.04
 
-ARG DEBIAN_FRONTEND=noninteractive
-ARG MINGW_ROOT=/mingw
-ARG BINUTILS_VERSION=2.35.1
-ARG MINGW_VERSION=8.0.0
-ARG GCC_VERSION=10.3.0
-ARG PKG_CONFIG_VERSION=0.29.2
-ARG CMAKE_VERSION=3.20.0
-ARG CMAKE_HOME=/opt/cmake
-ARG NINJA_VERSION=1.10.2
+ENV DEBIAN_FRONTEND=noninteractive
+ENV MINGW_ROOT=/mingw
+ENV BINUTILS_VERSION=2.35.1
+ENV MINGW_VERSION=8.0.0
+ENV GCC_VERSION=10.3.0
+ENV PKG_CONFIG_VERSION=0.29.2
+ENV CMAKE_VERSION=3.20.0
+ENV CMAKE_HOME=/opt/cmake
+ENV OSXCROSS_HOME=/opt/osxcross
+ENV NINJA_VERSION=1.10.2
+ENV MACOSX_VERSION=10.15
 WORKDIR /mnt
 
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+ENV PATH="${OSXCROSS_HOME}/target/bin:${PATH}"
 
 RUN apt-get update \
-    && apt-get install -y g++ gcc make autoconf libssl1.1 wget ca-certificates zlib1g-dev libssl-dev libgmp-dev libmpfr-dev \
+    && apt-get install -y wget ca-certificates gnupg2 \
+    && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
+    && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
+    && apt-get update \
+    && apt-get install -y git g++ gcc clang lld llvm make autoconf libssl1.1 wget ca-certificates zlib1g-dev libssl-dev libgmp-dev libmpfr-dev \
         libmpc-dev libisl-dev libmpfr6 libmpc3 yasm file patch gperf xz-utils bzip2 zip \
+        lzma-dev libxml2-dev \
+    && update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 9000 \
+    && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 9000 \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
     && wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
-    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
     && wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp && unzip /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
+    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
+    && wget https://github.com/tpoechtrager/osxcross/archive/refs/heads/master.zip -O /tmp/osxcross.zip && unzip /tmp/osxcross.zip -d /tmp && mv /tmp/osxcross-master ${OSXCROSS_HOME} && rm /tmp/osxcross.zip \
+    && wget https://github.com/joseluisq/macosx-sdks/releases/download/${MACOSX_VERSION}/MacOSX${MACOSX_VERSION}.sdk.tar.xz -O ${OSXCROSS_HOME}/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \
+    && chmod u+x /tmp/cmake-install.sh \
+    && mkdir /opt/cmake \
+    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
+    && rm /tmp/cmake-install.sh \
+    && cd ${OSXCROSS_HOME} \
+    && UNATTENDED=1 ./build.sh \
+    && cd /mnt \
     && mkdir -p ${MINGW_ROOT}/include ${MINGW_ROOT}/lib/pkgconfig \
     && cd pkg-config-${PKG_CONFIG_VERSION} \
     && ./configure \
@@ -171,8 +190,11 @@ RUN apt-get update \
     && rm -rf gcc-${GCC_VERSION} \
     && rm -rf gcc-mingw32 \
     && rm -rf gcc-linux \
+    && sed -i '$d' /etc/apt/sources.list \
+    && apt-get update \
     && apt-get -y purge libssl1.1 wget ca-certificates zlib1g-dev libssl-dev libgmp-dev libmpfr-dev \
                          libmpc-dev libisl-dev xz-utils bzip2 zip \
+                         git lzma-dev libxml2-dev \
     && apt-get -y autoremove \
     && apt-get clean \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 10000 \
@@ -180,10 +202,4 @@ RUN apt-get update \
     && update-alternatives --install /usr/bin/mingw32-gcc mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc 10000 \
         --slave /usr/bin/mingw32-g++ mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++ \
     && ln -s /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
-    && ln -s /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a \
-    && chmod u+x /tmp/cmake-install.sh \
-    && mkdir /opt/cmake \
-    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
-    && rm /tmp/cmake-install.sh
-
-ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+    && ln -s /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a

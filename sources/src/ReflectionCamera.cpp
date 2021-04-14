@@ -75,6 +75,11 @@ void ReflectionCamera::Clear_() {
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ReflectionCamera::Init_(unsigned int tex_size) {
+  using namespace Ogre;
+  auto size = tex_size;
+  auto& tex_manager = Ogre::TextureManager::getSingleton();
+
+
   // create our reflection & refraction render textures, and setup their render targets
   scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *camera = scene_->getCamera("Default");
@@ -82,14 +87,7 @@ void ReflectionCamera::Init_(unsigned int tex_size) {
   rcamera_ = camera;
   rcamera_->setAutoAspectRatio(false);
 
-  reflection_tex_ = Ogre::TextureManager::getSingleton().createManual("Reflection",
-																	  Ogre::RGN_DEFAULT,
-																	  Ogre::TEX_TYPE_2D,
-																	  tex_size,
-																	  tex_size,
-																	  0,
-																	  Ogre::PF_R8G8B8,
-																	  Ogre::TU_RENDERTARGET);
+  reflection_tex_ = tex_manager.createManual("Reflection", RGN_DEFAULT, TEX_TYPE_2D, size, size,0,PF_R8G8B8,TU_RENDERTARGET);
 
   Ogre::RenderTarget *rtt1 = reflection_tex_->getBuffer()->getRenderTarget();
   Ogre::Viewport *vp1 = rtt1->addViewport(rcamera_.get());
@@ -99,14 +97,7 @@ void ReflectionCamera::Init_(unsigned int tex_size) {
   rtt1->addListener(this);
   vp1->setVisibilityMask(SURFACE_MASK);
 
-  refraction_tex_ = Ogre::TextureManager::getSingleton().createManual("Refraction",
-																	  Ogre::RGN_DEFAULT,
-																	  Ogre::TEX_TYPE_2D,
-																	  tex_size,
-																	  tex_size,
-																	  0,
-																	  Ogre::PF_R8G8B8,
-																	  Ogre::TU_RENDERTARGET);
+  refraction_tex_ = tex_manager.createManual("Refraction",RGN_DEFAULT,TEX_TYPE_2D,size,size,0,PF_R8G8B8,TU_RENDERTARGET);
 
   Ogre::RenderTarget *rtt2 = refraction_tex_->getBuffer()->getRenderTarget();
   Ogre::Viewport *vp2 = rtt2->addViewport(camera);

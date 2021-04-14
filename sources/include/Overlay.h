@@ -35,14 +35,6 @@ class OverlaySystem;
 class RenderTargetViewportEvent;
 }
 
-namespace Gorilla {
-class Silverback;
-class Screen;
-class Layer;
-class Caption;
-class Rectangle;
-class OgreConsole;
-}
 
 namespace xio {
 class Overlay final : public Component, public Singleton<Overlay>, public Ogre::RenderTargetListener {
@@ -60,13 +52,6 @@ class Overlay final : public Component, public Singleton<Overlay>, public Ogre::
   void PrepareTexture(const std::string &name_, const std::string group_ = Ogre::RGN_AUTODETECT);
 
  private:
-
-  std::unique_ptr<Gorilla::Silverback> atlas_;
-  std::unique_ptr<Gorilla::OgreConsole> console_;
-  view_ptr<Gorilla::Screen> screen_;
-  view_ptr<Gorilla::Layer> layer_;
-  view_ptr<Gorilla::Caption> caption_;
-  view_ptr<Gorilla::Rectangle> rect_;
 
   std::unique_ptr<ImGuiInputListener> imgui_listener_;
   std::unique_ptr<Ogre::ImGuiOverlay> imgui_;

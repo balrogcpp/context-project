@@ -25,15 +25,24 @@
 #include "Exception.h"
 #include "Android.h"
 #include <iostream>
+#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
 #include <filesystem>
+#else
+#include <ghc/filesystem.hpp>
+#endif
 
 using namespace std;
+
+#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
 namespace fs = filesystem;
+#else
+namespace fs = ghc::filesystem;
+#endif
 
 namespace xio::Assets {
 
 static std::string FindPath(const std::string &path_, int depth = 3) {
-#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID && OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
   string path = path_;
 
   for (int i = 0; i < depth; i++) {
@@ -111,7 +120,7 @@ void LoadResources() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void AddLocation(const string &path_, const string &group_, bool recursive) {
-#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID && OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
   const std::string file_system = "FileSystem";
   const std::string zip = "Zip";
 
@@ -152,7 +161,7 @@ void AddLocationRecursive(const string &path_,
 								  const string &group_,
 								  const string &resource_file,
 								  bool verbose) {
-#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID && OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
   const string file_system = "FileSystem";
   const string zip = "Zip";
 

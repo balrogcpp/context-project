@@ -41,13 +41,27 @@ ADD zip-dependencies.py .
 ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 
 
-RUN mkdir -p build-windows build-linux build-android \
-    && python3 zip-dependencies.py \
-    && cd build-windows \
+RUN python3 zip-dependencies.py
+
+
+RUN mkdir build-apple && cd build-apple \
+    && export OSXCROSS_HOST=x86_64-apple-darwin19 \
+    && eval `x86_64-apple-darwin19-osxcross-conf` \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+    && cmake --build . --target package \
+    && cd .. \
+    && rm -rf build-apple
+
+
+RUN mkdir build-windows && cd build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-gcc-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target package \
     && cd .. \
-    && cd build-linux \
+    && rm -rf build-windows
+
+
+RUN mkdir build-linux && cd build-linux \
     && cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target package \
-    && cd ..
+    && cd .. \
+    && rm -rf build-linux

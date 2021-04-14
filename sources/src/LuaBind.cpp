@@ -20,38 +20,13 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#pragma once
-#include <Ogre.h>
-#include <vector>
-#include "view_ptr.h"
+#include "pcheader.h"
+#include "LuaBind.h"
+#include <sol/sol.hpp>
+
+
+using namespace std;
 
 namespace xio {
-class ReflectionCamera final : public Ogre::RenderTargetListener {
- public:
-  ReflectionCamera(Ogre::Plane plane, unsigned int tex_size);
-
-  virtual ~ReflectionCamera();
-
-  void SetPlane(Ogre::Plane plane);
-
-  const uint32_t SUBMERGED_MASK = 0x0F0;
-  const uint32_t SURFACE_MASK = 0x00F;
-  const uint32_t WATER_MASK = 0xF00;
-  std::shared_ptr<Ogre::Texture> reflection_tex_;
-  std::shared_ptr<Ogre::Texture> refraction_tex_;
-
- private:
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
-  void Clear_();
-  void Init_(unsigned int tex_size);
-
-  Ogre::Plane plane_;
-  view_ptr<Ogre::Camera> rcamera_ ;
-  view_ptr<Ogre::SceneManager> scene_ ;
-  Ogre::ShadowTechnique technique_ = Ogre::SHADOWTYPE_NONE;
-  bool pssm_shadows_ = false;
-
-};
 
 } //namespace

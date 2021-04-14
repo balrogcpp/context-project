@@ -31,21 +31,20 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size);
   virtual ~CubeMapCamera();
 
-  //----------------------------------------------------------------------------------------------------------------------
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
+
+  std::shared_ptr<Ogre::Texture> cubemap_;
 
  private:
   void Clear_();
   void Init_(Ogre::SceneNode *creator, unsigned int tex_size);
 
-  Ogre::SceneManager *scene_;
-  Ogre::Camera *camera_;
-  Ogre::SceneNode *camera_node_;
-  std::array<Ogre::RenderTarget*, 6> targets_;
+  Ogre::SceneManager *scene_ = nullptr;
+  Ogre::Camera *camera_ = nullptr;
+  Ogre::SceneNode *camera_node_ = nullptr;
+  std::array<Ogre::RenderTarget*, 6> targets_{ nullptr };
 
- public:
-  std::shared_ptr<Ogre::Texture> cubemap_;
 };
 
 } //namespace
