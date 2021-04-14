@@ -47,7 +47,7 @@ add_custom_target(doc-doxygen
         )
 
 if (UNIX)
-    set(DOXYGEN_MAKE_COMMAND ${CONTEXT_MAKE})
+    set(DOXYGEN_MAKE_COMMAND ${MAKE_COMMAND})
 elseif (WIN32)
     set(DOXYGEN_MAKE_COMMAND make.bat)
 endif ()

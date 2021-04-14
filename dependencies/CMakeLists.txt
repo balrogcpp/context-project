@@ -27,7 +27,6 @@ include(ExternalProject)
 find_package(Git REQUIRED)
 
 
-set(CONTEXT_MAKE make -j${CONTEXT_PROCESSOR_COUNT})
 set(CONTEXT_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN})
 set(CONTEXT_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${CONTEXT_EXTERNAL_TOOLCHAIN}/sdk CACHE PATH "")
 set(CONTEXT_EXTERNAL_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/patch)
@@ -182,7 +181,7 @@ externalproject_add(target-zlib
                     -G "${CMAKE_GENERATOR}"
                     -DBUILD_SHARED_LIBS=false
                     TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll libz.dylib
+                        ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll lib/libz.dylib
                     TEST_AFTER_INSTALL true
                     )
 
@@ -461,7 +460,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
                         GIT_PROGRESS false
                         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./autogen.sh
                         BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./configure --disable-stats --prefix ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${CONTEXT_MAKE} install_lib_static
+                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${MAKE_COMMAND} install_lib_static
                         )
 
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-jemalloc)
@@ -481,6 +480,8 @@ if ((APPLE OR MINGW) AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
                         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                         ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                        -DENABLE_LIBOMPTARGET=false
+                        -DLIBOMP_ENABLE_SHARED=false
                         -G "${CMAKE_GENERATOR}"
                         )
 
