@@ -15,7 +15,7 @@ build:
     - mkdir artifacts
     - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-windows-gcc-mingw-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
     - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-linux-gcc-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
-    - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-aple-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
+    - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-apple-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
     - docker rm -f abc
   artifacts:
     paths:
