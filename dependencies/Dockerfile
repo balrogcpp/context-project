@@ -43,7 +43,7 @@ RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
     && eval `x86_64-apple-darwin19-osxcross-conf` \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -G Ninja .. \
     && cmake --build . --target target-deps \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release/apple-clang-x86_64 \
+    && cd ${CONTEXT_HOME}/dependencies/external/Release/apple-darwin-clang-x86_64 \
     && rm -rf src tmp ${CONTEXT_HOME}/build-apple \
     && rm -rf ${CONTEXT_HOME}/build-apple
 
