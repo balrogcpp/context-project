@@ -432,7 +432,6 @@ externalproject_add(target-lua
                     )
 
 
-
 externalproject_add(target-sol
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-lua
@@ -468,11 +467,12 @@ endif ()
 
 
 #OpenMP is not available when crosscompile with clang
-if ((APPLE OR MINGW) AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin"))
     externalproject_add(target-omp
                         EXCLUDE_FROM_ALL true
                         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                        GIT_REPOSITORY https://github.com/llvm-mirror/openmp.git
+                        GIT_REPOSITORY https://github.com/llvm-project/openmp.git
+                        GIT_TAG release_90
                         GIT_SHALLOW true
                         GIT_PROGRESS false
                         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -490,26 +490,24 @@ endif ()
 
 
 #std::filesystem is not supported on MacOS before Catalina
-if (APPLE)
-    externalproject_add(target-filesystem
-                        EXCLUDE_FROM_ALL true
-                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                        GIT_REPOSITORY https://github.com/gulrak/filesystem.git
-                        GIT_TAG v1.5.4
-                        GIT_SHALLOW true
-                        GIT_PROGRESS false
-                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                        ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                        -G "${CMAKE_GENERATOR}"
-                        -DGHC_FILESYSTEM_BUILD_TESTING=false
-                        -DGHC_FILESYSTEM_BUILD_EXAMPLES=false
-                        )
+externalproject_add(target-filesystem
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/gulrak/filesystem.git
+                    GIT_TAG v1.5.4
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -G "${CMAKE_GENERATOR}"
+                    -DGHC_FILESYSTEM_BUILD_TESTING=false
+                    -DGHC_FILESYSTEM_BUILD_EXAMPLES=false
+                    )
 
-    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
-endif ()
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
 
 
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)

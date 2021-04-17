@@ -20,44 +20,59 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-#Purpose of this image is to provide latest gcc and mingw-w64, only way to get them is manually compile
 
-FROM ubuntu:20.04
+FROM ubuntu:16.04
 
 ARG DEBIAN_FRONTEND=noninteractive
+WORKDIR /mnt
+
+RUN apt-get update \
+    && apt-get install -y gcc g++ zip wget ca-certificates gnupg2 make autoconf
+
+
+# Build GCC&Mingw from source, ubuntu ppa contains old versions
 ARG MINGW_ROOT=/mingw
 ARG BINUTILS_VERSION=2.35.1
 ARG MINGW_VERSION=8.0.0
 ARG GCC_VERSION=10.3.0
 ARG PKG_CONFIG_VERSION=0.29.2
-ARG CMAKE_VERSION=3.20.0
-ARG CMAKE_HOME=/opt/cmake
-ARG NINJA_VERSION=1.10.2
-WORKDIR /mnt
 
-ENV PATH="${CMAKE_HOME}/bin:${PATH}"
-
-RUN apt-get update \
-    && apt-get install -y wget ca-certificates gnupg2 \
-    && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
-    && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
-    && apt-get update \
-    && apt-get install -y g++-10 gcc-10 clang lld llvm make autoconf file patch xz-utils bzip2 zip zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev\
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc-10 10000 \
-        --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++-10 \
-    && update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 10000 \
-    && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 10000 \
+RUN apt-get install -y xz-utils bzip2 zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
     && wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
-    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
-    && wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp && unzip /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
     && mkdir -p ${MINGW_ROOT}/include ${MINGW_ROOT}/lib/pkgconfig \
+    && cd pkg-config-${PKG_CONFIG_VERSION} \
+    && ./configure \
+       --prefix=/usr \
+       --with-pc-path=${MINGW_ROOT}/lib/pkgconfig \
+       --with-internal-glib \
+       --disable-shared \
+       --disable-nls \
+    && make -j`nproc` > /dev/null \
+    && make install > /dev/null \
+    && cd .. \
     && mkdir binutils-${BINUTILS_VERSION}-mingw \
     && cd binutils-${BINUTILS_VERSION}-mingw \
     && ../binutils-${BINUTILS_VERSION}/configure \
       --prefix=/usr \
       --target=x86_64-w64-mingw32 \
+      --disable-shared \
+      --enable-static \
+      --enable-lto \
+      --enable-plugins \
+      --disable-multilib \
+      --disable-nls \
+      --disable-werror \
+      --with-system-zlib \
+    && make -j`nproc` > /dev/null \
+    && make install > /dev/null \
+    && cd .. \
+    && mkdir binutils-${BINUTILS_VERSION}-linux \
+    && cd binutils-${BINUTILS_VERSION}-linux \
+    && ../binutils-${BINUTILS_VERSION}/configure \
+      --prefix=/usr \
+      --target=x86_64-linux-gnu \
       --disable-shared \
       --enable-static \
       --enable-lto \
@@ -99,6 +114,16 @@ RUN apt-get update \
     && make -j`nproc` all-gcc > /dev/null \
     && make install-gcc > /dev/null \
     && cd .. \
+    && mkdir gcc-linux \
+    && cd gcc-linux \
+    && ../gcc-${GCC_VERSION}/configure \
+      --prefix=/usr \
+      --target=x86_64-linux-gnu \
+      --enable-languages=c,c++ \
+      --disable-multilib \
+    && make -j`nproc` all-gcc > /dev/null \
+    && make install-gcc > /dev/null \
+    && cd .. \
     && cd mingw-w64 \
     && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-crt/configure \
       --prefix=/usr/x86_64-w64-mingw32 \
@@ -127,6 +152,8 @@ RUN apt-get update \
     && rm /mnt/gcc-mingw32/gcc/xgcc \
     && mv /mnt/gcc-mingw32/gcc/xgcc.bak /mnt/gcc-mingw32/gcc/xgcc \
     && make install > /dev/null \
+    && cd .. \
+    && cd gcc-linux \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
     && cd .. \
@@ -139,16 +166,60 @@ RUN apt-get update \
     && rm -rf gcc-${GCC_VERSION} \
     && rm -rf gcc-mingw32 \
     && rm -rf gcc-linux \
-    && sed -i '$d' /etc/apt/sources.list \
-    && apt-get update \
-    && apt-get -y purge wget zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev xz-utils bzip2 zip \
+    && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev \
     && apt-get -y autoremove \
     && apt-get clean \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 10000 \
+        --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++ \
     && update-alternatives --install /usr/bin/mingw32-gcc mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc 10000 \
         --slave /usr/bin/mingw32-g++ mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++ \
     && ln -s /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
-    && ln -s /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a \
+    && ln -s /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
+
+
+ENV CMAKE_VERSION=3.20.0
+ENV CMAKE_HOME=/opt/cmake
+ENV NINJA_VERSION=1.10.2
+ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+
+RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp && unzip /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
+    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
     && chmod u+x /tmp/cmake-install.sh \
     && mkdir /opt/cmake \
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
     && rm /tmp/cmake-install.sh
+
+
+ENV LLVM_VERSION=12.0.0-rc5
+ENV LLVM_HOME=/usr
+
+RUN echo 'deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main' >> /etc/apt/sources.list \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776  \
+    && apt-get update \
+    && apt-get install -y git python3 \
+    && cd /mnt \
+    && git clone --depth 1 -b llvmorg-${LLVM_VERSION} https://github.com/llvm/llvm-project.git \
+    && cd llvm-project \
+    && mkdir build \
+    && cd build \
+    && export LD_LIBRARY_PATH=/usr/lib64 \
+    && export DT_RPATH=/usr/lib64 \
+    && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${LLVM_HOME} -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_ENABLE_PROJECTS=-"llvm;clang;libcxx;libcxxabi;lld;compiler-rt;openmp" ../llvm \
+    && cmake --build . --target install \
+    && cd ../../ \
+    && rm -rf llvm-project
+
+
+ENV OSXCROSS_HOME=/opt/osxcross
+ENV MACOSX_VERSION=10.15
+ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+ENV PATH="${OSXCROSS_HOME}/target/bin:${PATH}"
+
+RUN apt-get install -y git lzma-dev libxml2-dev libssl-dev \
+    && wget https://github.com/tpoechtrager/osxcross/archive/refs/heads/master.zip -O /tmp/osxcross.zip && unzip /tmp/osxcross.zip -d /tmp && mv /tmp/osxcross-master ${OSXCROSS_HOME} && rm /tmp/osxcross.zip \
+    && wget https://github.com/joseluisq/macosx-sdks/releases/download/${MACOSX_VERSION}/MacOSX${MACOSX_VERSION}.sdk.tar.xz -O ${OSXCROSS_HOME}/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \
+    && cd ${OSXCROSS_HOME} \
+    && UNATTENDED=1 ./build.sh \
+    && apt-get -y purge lzma-dev libxml2-dev libssl-dev \
+    && apt-get -y autoremove \
+    && apt-get clean

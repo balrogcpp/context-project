@@ -1,9 +1,9 @@
 #!/bin/bash
 
-docker build . -f Docker/gcc/Dockerfile -t balrogcpp/gcc-mingw-x86_64 \
+docker build . -f Docker/clang/Dockerfile -t balrogcpp/clang-cross \
 && docker build . -f dependencies/Dockerfile -t balrogcpp/xio-dependencies \
 && docker login \
-&& docker push balrogcpp/gcc-mingw-x86_64 \
+&& docker push balrogcpp/clang-cross \
 && docker push balrogcpp/xio-dependencies
 
 exit 0

@@ -44,13 +44,12 @@ ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 RUN python3 zip-dependencies.py
 
 
-RUN mkdir build-apple && cd build-apple \
-    && export OSXCROSS_HOST=x86_64-apple-darwin19 \
-    && eval `x86_64-apple-darwin19-osxcross-conf` \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+RUN mkdir build-linux && cd build-linux \
+    && export LD_LIBRARY_PATH=/usr/lib64\
+    && cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target package \
     && cd .. \
-    && rm -rf build-apple
+    && rm -rf build-linux
 
 
 RUN mkdir build-windows && cd build-windows \
@@ -60,8 +59,10 @@ RUN mkdir build-windows && cd build-windows \
     && rm -rf build-windows
 
 
-RUN mkdir build-linux && cd build-linux \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+RUN mkdir build-apple && cd build-apple \
+    && export OSXCROSS_HOST=x86_64-apple-darwin19 \
+    && eval `x86_64-apple-darwin19-osxcross-conf` \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target package \
     && cd .. \
-    && rm -rf build-linux
+    && rm -rf build-apple

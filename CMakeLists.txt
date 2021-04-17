@@ -127,15 +127,20 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -pthread -fopenmp")
     string(APPEND CMAKE_C_FLAGS " -msse4.1 -pthread -fopenmp")
 
-    # With PIE most of linuxes don't recognize binary
-    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # gcc links everything as shared libraries by default
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
     endif ()
 
-    if ((APPLE OR MINGW OR ANDROID) AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-openmp")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-openmp")
     endif ()
+
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
+        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
+    endif()
 
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -191,7 +196,7 @@ if (NOT ANDROID AND NOT IOS)
 else ()
     find_package(OpenGLES2 REQUIRED)
 endif ()
-find_package(Threads REQUIRED)
+find_package(Threads QUIET)
 find_package(OpenMP QUIET)
 find_package(OGRE QUIET)
 find_package(Bullet QUIET)
@@ -248,7 +253,7 @@ if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     #jemalloc fix problems with memory bloat on linux
-    list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl jemalloc.a)
+    list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl)
 elseif (ANDROID)
     list(APPEND SYSTEM_LIBRARIES SDL2::hidapi android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
 elseif (MSVC)
