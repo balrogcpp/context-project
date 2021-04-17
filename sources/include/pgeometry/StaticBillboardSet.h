@@ -74,7 +74,7 @@ class StaticBillboardSet {
         yScaleHalf(0.5f * yScale),
         texcoordIndexU(texcrdIndexU),
         texcoordIndexV(texcrdIndexV) {
-      Ogre::Root::getSingletonPtr()->getRenderSystem()->convertColourValue(clr, &color);
+        color = clr.getAsBYTE();
     }
 
     // SVA mem friendly aligment

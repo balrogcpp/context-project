@@ -24,9 +24,6 @@
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 #include "Exception.h"
 #include <RTShaderSystem/OgreShaderGenerator.h>
-#include <exception>
-#include <iostream>
-#include <filesystem>
 
 namespace xio {
 

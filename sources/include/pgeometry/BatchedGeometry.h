@@ -71,11 +71,11 @@ class BatchedGeometry : public Ogre::MovableObject {
     ///
     void addSelfToRenderQueue(Ogre::RenderQueueGroup *rqg);
     ///
-    void getRenderOperation(Ogre::RenderOperation &op);
+    void getRenderOperation(Ogre::RenderOperation &op) override;
     ///
-    Ogre::Real getSquaredViewDepth(const Ogre::Camera *cam) const;
+    Ogre::Real getSquaredViewDepth(const Ogre::Camera *cam) const override;
     ///
-    const Ogre::LightList &getLights(void) const;
+    const Ogre::LightList &getLights() const override;
 
     ///
     void setMaterial(Ogre::MaterialPtr &mat) { m_ptrMaterial = mat; }
@@ -90,11 +90,11 @@ class BatchedGeometry : public Ogre::MovableObject {
       return m_ptrMaterial->getBestTechnique(m_ptrMaterial->getLodIndex(
           m_pParentGeom->m_fMinDistanceSquared * m_pParentGeom->m_fMinDistanceSquared));
     }
-    const Ogre::MaterialPtr &getMaterial(void) const override { return m_ptrMaterial; }
-    void getWorldTransforms(Ogre::Matrix4 *xform) const { *xform = m_pParentGeom->_getParentNodeFullTransform(); }
-    const Ogre::Quaternion &getWorldOrientation(void) const { return m_pParentGeom->m_pSceneNode->_getDerivedOrientation(); }
-    const Ogre::Vector3 &getWorldPosition(void) const { return m_pParentGeom->m_pSceneNode->_getDerivedPosition(); }
-    bool castsShadows(void) const { return m_pParentGeom->getCastShadows(); }
+    const Ogre::MaterialPtr &getMaterial() const override { return m_ptrMaterial; }
+    void getWorldTransforms(Ogre::Matrix4 *xform) const override { *xform = m_pParentGeom->_getParentNodeFullTransform(); }
+    const Ogre::Quaternion &getWorldOrientation() const { return m_pParentGeom->m_pSceneNode->_getDerivedOrientation(); }
+    const Ogre::Vector3 &getWorldPosition() const { return m_pParentGeom->m_pSceneNode->_getDerivedPosition(); }
+    bool castsShadows() const { return m_pParentGeom->getCastShadows(); }
 
     // internal fuctions
    private:
@@ -156,12 +156,12 @@ class BatchedGeometry : public Ogre::MovableObject {
 
   Ogre::Vector3 _convertToLocal(const Ogre::Vector3 &globalVec) const;
 
-  const Ogre::AxisAlignedBox &getBoundingBox(void) const { return m_boundsAAB; }
-  Ogre::Real getBoundingRadius(void) const { return m_fRadius; }
+  const Ogre::AxisAlignedBox &getBoundingBox() const { return m_boundsAAB; }
+  Ogre::Real getBoundingRadius() const { return m_fRadius; }
 
  private:
   bool isVisible();
-  const Ogre::String &getMovableType(void) const;
+  const Ogre::String &getMovableType() const;
   void visitRenderables(Ogre::Renderable::Visitor *visitor, bool debugRenderables) { /* empty */ }
   void _notifyCurrentCamera(Ogre::Camera *cam);
   void _updateRenderQueue(Ogre::RenderQueue *queue);

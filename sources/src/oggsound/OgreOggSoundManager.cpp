@@ -752,13 +752,13 @@ OgreOggISound *OgreOggSoundManager::getSound(const std::string &name) {
 #	endif
 #endif
 
-  SoundMap::iterator i = mSoundMap.find(name);
-  if (i == mSoundMap.end()) return 0;
+  auto i = mSoundMap.find(name);
+  if (i == mSoundMap.end()) return nullptr;
 #if OGGSOUND_THREADED
   if ( !i->second->_isDestroying() )
       return i->second;
   else
-      return 0;
+      return nullptr;
 #else
   return i->second;
 #endif
@@ -2118,19 +2118,19 @@ void OgreOggSoundManager::_destroyAllSoundsImpl() {
 #endif
 
   // Get a list of all sound names
-  for (SoundMap::iterator i = mSoundMap.begin(); i != mSoundMap.end(); ++i)
-    soundList.push_back(i->first);
+  for (auto &i : mSoundMap)
+    soundList.push_back(i.first);
 
   // Destroy individually outside mSoundMap iteration
-  for (StringVector::iterator i = soundList.begin(); i != soundList.end(); ++i) {
-    OgreOggISound *sound = 0;
-    if (sound = getSound((*i)))
+	for (auto &i : soundList) {
+    OgreOggISound *sound = getSound(i);
+    if (sound)
       _destroySoundImpl(sound);
   }
   soundList.clear();
 
   // Shared buffers
-  SharedBufferList::iterator b = mSharedBuffers.begin();
+  auto b = mSharedBuffers.begin();
   while (b != mSharedBuffers.end()) {
     if (b->second->mRefCount > 0)
       alDeleteBuffers(1, &b->second->mAudioBuffer);
@@ -2571,11 +2571,11 @@ sharedAudioBuffer *OgreOggSoundManager::_getSharedBuffer(const String &sName) {
 /*/////////////////////////////////////////////////////////////////*/
 Ogre::DataStreamPtr OgreOggSoundManager::_openStream(const Ogre::String &file) const {
   Ogre::DataStreamPtr result;
-  Ogre::ResourceGroupManager *groupManager = 0;
+  auto *groupManager = Ogre::ResourceGroupManager::getSingletonPtr();
   Ogre::String group;
 
   try {
-    if (groupManager = Ogre::ResourceGroupManager::getSingletonPtr()) {
+    if (groupManager) {
       // Have to use the getter to retrieve the mResourceGroupName member since this function can be called in a separate
       // thread and the getter has thread safety.
       const Ogre::String resourceGroupName = getResourceGroupName();
@@ -2752,6 +2752,8 @@ void OgreOggSoundManager::_performAction(const SoundAction& act)
             // Delete
             OGRE_DELETE_T(c, cSound, Ogre::MEMCATEGORY_GENERAL);
         }
+        break;
+      case LQ_DESTROY_TEMPORARY:
         break;
 #if HAVE_EFX
     case LQ_ATTACH_EFX:

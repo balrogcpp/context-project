@@ -24,19 +24,15 @@
 #include "DesktopIcon.h"
 
 #include <regex>
-#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
+#if HAS_FILESYSTEM
 #include <filesystem>
+namespace fs = std::filesystem;
 #else
 #include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
 #endif
 
 using namespace std;
-
-#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
-namespace fs = filesystem;
-#else
-namespace fs = ghc::filesystem;
-#endif
 
 
 namespace xio {

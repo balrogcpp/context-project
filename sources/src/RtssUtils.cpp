@@ -22,28 +22,23 @@
 
 #include "pcheader.h"
 #include "RtssUtils.h"
+#include <iostream>
 
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 
 #include <RTShaderSystem/OgreRTShaderSystem.h>
 #include <RTShaderSystem/OgreShaderGenerator.h>
 
-#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
+#if HAS_FILESYSTEM
 #include <filesystem>
+namespace fs = std::filesystem;
 #else
 #include <ghc/filesystem.hpp>
-#endif
-
-using namespace std;
-
-#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
-namespace fs = filesystem;
-#else
 namespace fs = ghc::filesystem;
 #endif
 
-
 using namespace std;
+
 
 namespace xio {
 

@@ -484,6 +484,10 @@ void OgreOggISound::_updateFade(float fTime) {
           stop();
         }
           break;
+        case FC_NONE: {
+
+        }
+          break;
       }
     } else {
       float vol = (mFadeEndVol - mFadeInitVol) * (mFadeTimer / mFadeTime);

@@ -26,6 +26,3 @@
 #include <nlohmann/json.hpp>
 #include <pugixml.hpp>
 #include "view_ptr.h"
-//#include "gorilla/Gorilla.h"
-//#include "btogre/BtOgre.h"
-//#include "oggsound/OgreOggSound.h"
