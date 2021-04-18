@@ -38,6 +38,7 @@ ARG GCC_VERSION=10.3.0
 ARG PKG_CONFIG_VERSION=0.29.2
 
 RUN apt-get install -y xz-utils bzip2 zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev \
+    && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
     && wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
@@ -193,33 +194,37 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
 ENV LLVM_VERSION=12.0.0-rc5
 ENV LLVM_HOME=/usr
 
-RUN echo 'deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main' >> /etc/apt/sources.list \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776  \
-    && apt-get update \
-    && apt-get install -y git python3 \
+RUN apt-get install -y git python3 \
     && cd /mnt \
     && git clone --depth 1 -b llvmorg-${LLVM_VERSION} https://github.com/llvm/llvm-project.git \
     && cd llvm-project \
     && mkdir build \
     && cd build \
     && export LD_LIBRARY_PATH=/usr/lib64 \
-    && export DT_RPATH=/usr/lib64 \
     && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${LLVM_HOME} -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_ENABLE_PROJECTS=-"llvm;clang;libcxx;libcxxabi;lld;compiler-rt;openmp" ../llvm \
     && cmake --build . --target install \
     && cd ../../ \
-    && rm -rf llvm-project
+    && rm -rf llvm-project \
+    && apt-get -y purge git python3 \
+    && apt-get -y autoremove \
+    && apt-get clean
 
 
-ENV OSXCROSS_HOME=/opt/osxcross
+ENV OSXCROSS_ROOT=/opt/osxcross
+ENV OSXCROSS_HOME=/opt
 ENV MACOSX_VERSION=10.15
-ENV PATH="${CMAKE_HOME}/bin:${PATH}"
-ENV PATH="${OSXCROSS_HOME}/target/bin:${PATH}"
+ENV PATH="${OSXCROSS_ROOT}/target/bin:${PATH}"
 
-RUN apt-get install -y git lzma-dev libxml2-dev libssl-dev \
-    && wget https://github.com/tpoechtrager/osxcross/archive/refs/heads/master.zip -O /tmp/osxcross.zip && unzip /tmp/osxcross.zip -d /tmp && mv /tmp/osxcross-master ${OSXCROSS_HOME} && rm /tmp/osxcross.zip \
-    && wget https://github.com/joseluisq/macosx-sdks/releases/download/${MACOSX_VERSION}/MacOSX${MACOSX_VERSION}.sdk.tar.xz -O ${OSXCROSS_HOME}/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \
+RUN apt-get install -y git python3 lzma-dev libxml2-dev libssl-dev \
     && cd ${OSXCROSS_HOME} \
+    && git clone --depth 1 https://github.com/tpoechtrager/osxcross.git \
+    && wget https://github.com/balrogcpp/MacOSXsdk/raw/master/MacOSX${MACOSX_VERSION}.sdk.tar.xz -O ${OSXCROSS_ROOT}/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \
+    && cd ${OSXCROSS_ROOT} \
+    && export LD_LIBRARY_PATH=/usr/lib64 \
     && UNATTENDED=1 ./build.sh \
-    && apt-get -y purge lzma-dev libxml2-dev libssl-dev \
+    && rm ${OSXCROSS_ROOT}/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \
+    && rm -rf ${OSXCROSS_ROOT}/build \
+    && rm -rf `find  . -type d -name .git` \
+    && apt-get -y purge git python3 lzma-dev libxml2-dev libssl-dev \
     && apt-get -y autoremove \
     && apt-get clean

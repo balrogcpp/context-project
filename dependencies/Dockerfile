@@ -55,6 +55,7 @@ RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
 
 
 RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
+    && export LD_LIBRARY_PATH=/usr/lib64 \
     && export OSXCROSS_HOST=x86_64-apple-darwin19 \
     && eval `x86_64-apple-darwin19-osxcross-conf` \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -G Ninja .. \
