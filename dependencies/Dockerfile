@@ -33,9 +33,7 @@ ADD ./doc ./doc
 ADD ./CMake ./CMake
 
 
-RUN apt-get update && apt-get install -y python3 git gnutls-bin openssl libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
-    && git config --global http.sslVerify false \
-    && git config --global http.postBuffer 1048576000
+RUN apt-get update && apt-get install -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev
 
 
 RUN mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \

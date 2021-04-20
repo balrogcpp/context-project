@@ -736,8 +736,8 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   float distance = GetAttribReal(xml_node, "distance", 0.0f);
   float width = GetAttribReal(xml_node, "width", 1.0f);
   float height = GetAttribReal(xml_node, "height", width);
-  int xSegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "xSegments"), width / 10.0f);
-  int ySegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "ySegments"), height / 10.0f);
+  int xSegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "xSegments"), width / 5.0f);
+  int ySegments = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "ySegments"), height / 5.0f);
   int numTexCoordSets = Ogre::StringConverter::parseInt(GetAttrib(xml_node, "numTexCoordSets"), 1);
   float uTile = GetAttribReal(xml_node, "uTile", width / 10.0f);
   float vTile = GetAttribReal(xml_node, "vTile", height / 10.0f);
@@ -753,15 +753,19 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 
   string mesh_name = name + "_mesh";
 
-  Ogre::MeshPtr plane_mesh = Ogre::MeshManager::getSingleton().getByName(mesh_name);
+  auto &mesh_mgr = Ogre::MeshManager::getSingleton();
+
+  Ogre::MeshPtr plane_mesh = mesh_mgr.getByName(mesh_name);
+
   if (plane_mesh)
-    Ogre::MeshManager::getSingleton().remove(plane_mesh);
+	mesh_mgr.remove(plane_mesh);
+
   Ogre::MeshPtr res =
-      Ogre::MeshManager::getSingletonPtr()->createPlane(mesh_name, group_name_, plane, width, height, xSegments,
+	  mesh_mgr.createPlane(mesh_name, group_name_, plane, width, height, xSegments,
                                                         ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
   res->buildTangentVectors();
   Ogre::Entity *entity = ogre_scene_->createEntity(name, mesh_name);
-  entity->setCastShadows(false);
+  entity->setCastShadows(true);
 
   if (material.empty())
     return;
@@ -798,7 +802,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
 
   auto *entShape = converter->createTrimesh();
   auto *bodyState = new BtOgre::RigidBodyState(parent);
-  btRigidBody *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+  auto *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
   entBody->setFriction(1);
   GetPhysics().AddRigidBody(entBody);
 
