@@ -101,11 +101,8 @@ processorcount(CONTEXT_PROCESSOR_COUNT)
 set(CMAKE_BUILD_PARALLEL_LEVEL ${CONTEXT_PROCESSOR_COUNT})
 set(MAKE_COMMAND make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 
-if (ANDROID)
-    string(APPEND CONTEXT_TOOLCHAIN "-${ANDROID_ABI}")
-else ()
-    string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
-endif ()
+
+string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
 
 
 # Compilation flags definition
@@ -236,7 +233,6 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTA
 
 file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h demo/*.hpp deploy/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
 
-set(EXECUTABLE_NAME demo)
 
 if (ANDROID)
     add_library(demo SHARED ${SOURCE_FILES})
@@ -256,7 +252,7 @@ if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     #jemalloc fix problems with memory bloat on linux
-    list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl)
+    list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl jemalloc.a)
 elseif (ANDROID)
     list(APPEND SYSTEM_LIBRARIES SDL2::hidapi android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
 elseif (MSVC)
@@ -285,7 +281,7 @@ set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 # TODO: it may be better idea to install only dll that are needed
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
-    file(INSTALL ${OPENAL_LIBRARY} DESTINATION .)
+    file(INSTALL ${EXTERNAL_DLL_GLOB} DESTINATION .)
 endif ()
 
 if (NOT ANDROID)
@@ -321,6 +317,7 @@ set(CMAKE_FIND_ROOT_PATH "${ANDROID_NDK};${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTER
 
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION .)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/assets ${CMAKE_SOURCE_DIR}/tmp/programs DESTINATION .)
+set(EXECUTABLE_NAME demo)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(FILES ${CMAKE_SOURCE_DIR}/deploy/Launch.sh PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
@@ -333,7 +330,7 @@ if (MINGW)
     install(FILES ${CMAKE_SOURCE_DIR}/deploy/${EXECUTABLE_NAME}.exe.manifest DESTINATION .)
 endif ()
 if (MSVC)
-    # Microsoft doesn't include MSVC dll in standart installation
+    # Microsoft doesn't include MSVC dll's in standart installation
     install(FILES ${CMAKE_SOURCE_DIR}/deploy/VC_redist.x64.exe DESTINATION .)
 endif ()
 
@@ -349,7 +346,11 @@ set(CPACK_PACKAGE_NAME ${CONTEXT_ARTIFACT_NAME})
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 
+
 set(CPACK_GENERATOR "ZIP")
+if(MSVC)
+    set(CPACK_GENERATOR "ZIP" "NSIS")
+endif()
 
 include(CPack)
 
