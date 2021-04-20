@@ -50,7 +50,7 @@ class BatchPage : public GeometryPage {
   virtual ~BatchPage();
 
   /// Replace pure virtual GeometryPage::init
-  void init(PagedGeometry *geom, const Ogre::Any &data);
+  void init(PagedGeometry *geom, const Ogre::Any &data) override;
 
   void addEntity(Ogre::Entity *ent, const Ogre::Vector3 &position, const Ogre::Quaternion &rotation,
                  const Ogre::Vector3 &scale, const Ogre::ColourValue &color);
@@ -66,12 +66,12 @@ class BatchPage : public GeometryPage {
     a++;
   }
 
-  void clearBoundingBox() {
+  void clearBoundingBox() override {
     int a = 0;
     a++;
   }
 
-  const Ogre::AxisAlignedBox &getBoundingBox() { return m_pBatchGeom->getBoundingBox(); }
+  const Ogre::AxisAlignedBox &getBoundingBox() override { return m_pBatchGeom->getBoundingBox(); }
 
  protected :
   virtual void _updateShaders();

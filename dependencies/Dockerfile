@@ -20,7 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-FROM balrogcpp/crossbuild:latest
+FROM balrogcpp/clang-cross:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt/build
@@ -33,19 +33,15 @@ ADD ./doc ./doc
 ADD ./CMake ./CMake
 
 
-RUN apt-get update && apt-get install -y python3 git gnutls-bin openssl libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
-    && git config --global http.sslVerify false \
-    && git config --global http.postBuffer 1048576000
+RUN apt-get update && apt-get install -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev
 
 
-RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
-    && export OSXCROSS_HOST=x86_64-apple-darwin19 \
-    && eval `x86_64-apple-darwin19-osxcross-conf` \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -G Ninja .. \
+RUN mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
+    && cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
     && cmake --build . --target target-deps \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release/apple-clang-x86_64 \
-    && rm -rf src tmp ${CONTEXT_HOME}/build-apple \
-    && rm -rf ${CONTEXT_HOME}/build-apple
+    && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-gcc-x86_64 \
+    && rm -rf src tmp \
+    && rm -rf ${CONTEXT_HOME}/build-linux
 
 
 RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
@@ -56,12 +52,15 @@ RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
     && rm -rf ${CONTEXT_HOME}/build-windows
 
 
-RUN mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
-    && cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
+RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
+    && export LD_LIBRARY_PATH=/usr/lib64 \
+    && export OSXCROSS_HOST=x86_64-apple-darwin19 \
+    && eval `x86_64-apple-darwin19-osxcross-conf` \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -G Ninja .. \
     && cmake --build . --target target-deps \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-gcc-x86_64 \
-    && rm -rf src tmp \
-    && rm -rf ${CONTEXT_HOME}/build-linux
+    && cd ${CONTEXT_HOME}/dependencies/external/Release/apple-darwin-clang-x86_64 \
+    && rm -rf src tmp ${CONTEXT_HOME}/build-apple \
+    && rm -rf ${CONTEXT_HOME}/build-apple
 
 
 RUN cd ${CONTEXT_HOME} \

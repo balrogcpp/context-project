@@ -51,7 +51,7 @@ class WindBatchPage : public BatchPage {
   WindBatchPage() : m_pPagedGeom(nullptr) { /* empty */ }
 
   ///
-  void init(PagedGeometry *geom, const Ogre::Any &data);
+  void init(PagedGeometry *geom, const Ogre::Any &data) override;
 
  protected:
   void _updateShaders() override;

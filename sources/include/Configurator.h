@@ -24,7 +24,6 @@
 #include "Singleton.h"
 #include "Exception.h"
 #include <nlohmann/json.hpp>
-#include <filesystem>
 #include <string>
 
 namespace xio {
@@ -49,8 +48,8 @@ class Configurator : public Singleton<Configurator> {
   T Get(const std::string &key) {
 	T t{};
 
-	if (document_.find(key)!=document_.end())
-	  t = static_cast<T>(document_[key]);
+	if (document_.find(key.c_str())!=document_.end())
+	  t = static_cast<T>(document_[key.c_str()]);
 
 	return t;
   }
@@ -59,8 +58,8 @@ class Configurator : public Singleton<Configurator> {
   template<typename T>
   bool Get(const std::string &key, T &t_) {
 
-	if (document_.find(key)!=document_.end()) {
-	  t_ = static_cast<T>(document_[key]);
+	if (document_.find(key.c_str())!=document_.end()) {
+	  t_ = static_cast<T>(document_[key.c_str()]);
 	  return true;
 	} else {
 	  return false;

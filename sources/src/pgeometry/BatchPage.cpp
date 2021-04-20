@@ -213,6 +213,8 @@ void BatchPage::_updateShaders() {
             break;
           case VET_FLOAT4: uvType = "4";
             break;
+          default:
+            break;
         }
         tmpName << uvType << '_';
       }
@@ -262,6 +264,8 @@ void BatchPage::_updateShaders() {
               case VET_FLOAT3: uvType = "float3";
                 break;
               case VET_FLOAT4: uvType = "float4";
+                break;
+              default:
                 break;
             }
 

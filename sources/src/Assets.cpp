@@ -25,19 +25,16 @@
 #include "Exception.h"
 #include "Android.h"
 #include <iostream>
-#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
+#if HAS_FILESYSTEM
 #include <filesystem>
+namespace fs = std::filesystem;
 #else
 #include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
 #endif
 
 using namespace std;
 
-#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
-namespace fs = filesystem;
-#else
-namespace fs = ghc::filesystem;
-#endif
 
 namespace xio::Assets {
 
@@ -74,13 +71,13 @@ static bool StringSanityCheck(const string &str) {
 
 //----------------------------------------------------------------------------------------------------------------------
 static void LeftTrim(string &s) {
-  auto it = find_if(s.begin(), s.end(), [](char c) { return !isspace < char > (c, locale::classic()); });
+  auto it = find_if(s.begin(), s.end(), [](char c) { return !isspace (c); });
   s.erase(s.begin(), it);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 static void RightTrim(string &s) {
-  auto it = find_if(s.rbegin(), s.rend(), [](char c) { return !isspace < char > (c, locale::classic()); });
+  auto it = find_if(s.rbegin(), s.rend(), [](char c) { return !isspace (c); });
   s.erase(it.base(), s.end());
 }
 

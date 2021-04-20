@@ -49,7 +49,7 @@ class _OGGSOUND_EXPORT OgreOggSoundFactory : public Ogre::MovableObjectFactory {
 #elif OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR > 0
   Ogre::MovableObject* createInstanceImpl(Ogre::IdType id, Ogre::ObjectMemoryManager *objectMemoryManager, Ogre::SceneManager* manager, const Ogre::NameValuePairList* params = 0);
 #else
-  Ogre::MovableObject *createInstanceImpl(const Ogre::String &name, const Ogre::NameValuePairList *params);
+  Ogre::MovableObject *createInstanceImpl(const Ogre::String &name, const Ogre::NameValuePairList *params) override;
 #endif
  public:
   OgreOggSoundFactory() {}
@@ -57,7 +57,7 @@ class _OGGSOUND_EXPORT OgreOggSoundFactory : public Ogre::MovableObjectFactory {
 
   static Ogre::String FACTORY_TYPE_NAME;
 
-  const Ogre::String &getType(void) const;
+  const Ogre::String &getType(void) const override;
   void destroyInstance(Ogre::MovableObject *obj) override;
 };
 }

@@ -62,10 +62,13 @@ inline float RandomTable::getRangeRandom(float start, float end) {
 
 inline void RandomTable::generateRandomNumbers() {
   // using our Mersenne Twister (preferred way)
-  std::mt19937 rng;
+  using namespace std::chrono;
+  auto time = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
+
+  std::mt19937 rng(time);
   auto duration_before_frame = std::chrono::system_clock::now().time_since_epoch();
   long millis = std::chrono::duration_cast<std::chrono::microseconds>(duration_before_frame).count();
   rng.seed(millis);
   for (unsigned long i = 0; i < tableSize; i++)
-    table[i] = float(rng()) / rng.max();
+    table[i] = static_cast<float>(rng()) / static_cast<float>(std::mt19937::max());
 }

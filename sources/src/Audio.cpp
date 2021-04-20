@@ -33,9 +33,9 @@ namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 Audio::Audio(unsigned int max_sources, unsigned int queue_list_size) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  putenv("ALSOFT_LOGLEVEL=LOG_NONE");
+  putenv((char*)"ALSOFT_LOGLEVEL=LOG_NONE");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  _putenv("ALSOFT_LOGLEVEL=LOG_NONE");
+  _putenv((char*)"ALSOFT_LOGLEVEL=LOG_NONE");
 #endif
 
   // Init new factory
