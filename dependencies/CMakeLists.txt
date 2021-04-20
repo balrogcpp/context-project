@@ -483,7 +483,13 @@ endif ()
 
 
 #OpenMP is not available when crosscompile with clang
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin"))
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    if (WIN32)
+        set(OMP_SHARED true)
+    else ()
+        set(OMP_SHARED false)
+    endif ()
+
     externalproject_add(target-omp
                         EXCLUDE_FROM_ALL true
                         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -499,10 +505,12 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND (CMAKE_SYSTEM_NAME STREQUAL "Linu
                         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                         ${CONTEXT_CMAKE_EXTRA_FLAGS}
                         -DENABLE_LIBOMPTARGET=false
-                        -DLIBOMP_ENABLE_SHARED=false
+                        -DLIBOMP_ENABLE_SHARED=${OMP_SHARED}
                         )
 
+if ((CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin"))
     list(APPEND CONTEXT_DEPENDENCY_TARGETS target-omp)
+endif()
 endif ()
 
 

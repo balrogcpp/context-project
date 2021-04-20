@@ -269,4 +269,7 @@ RUN apt-get install -y lzma-dev libxml2-dev libssl-dev \
     && apt-get -y autoremove \
     && apt-get clean
 
+RUN eval `x86_64-apple-darwin19-osxcross-conf`
+
+ENV OSXCROSS_HOST=x86_64-apple-darwin19
 ENV PATH="${OSXCROSS_ROOT}/target/bin:${PATH}"

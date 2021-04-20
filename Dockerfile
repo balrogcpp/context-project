@@ -62,7 +62,6 @@ RUN mkdir build-windows && cd build-windows \
 
 
 RUN mkdir build-apple && cd build-apple \
-    && export LD_LIBRARY_PATH=/usr/lib64 \
     && export OSXCROSS_HOST=x86_64-apple-darwin19 \
     && eval `x86_64-apple-darwin19-osxcross-conf` \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
