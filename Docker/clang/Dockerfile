@@ -21,16 +21,18 @@
 #SOFTWARE.
 
 
-FROM ubuntu:12.04
+FROM ubuntu:16.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /mnt
 
-# To get latest git, ubuntu 12.04 has too old version
-RUN echo 'deb http://ppa.launchpad.net/git-core/ppa/ubuntu precise main' >> /etc/apt/sources.list \
+# To guarantee latest git is used
+RUN apt-get update \
+    && apt-get install -y gcc g++ zip wget ca-certificates gnupg2 make autoconf file patch xz-utils bzip2 \
+    && echo 'deb http://ppa.launchpad.net/git-core/ppa/ubuntu xenial main' >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E1DD270288B4E6030699E45FA1715D88E1DF1F24 \
     && apt-get update \
-    && apt-get install -y git gcc g++ zip wget ca-certificates gnupg2 make autoconf file patch xz-utils bzip2
+    && apt-get install -y git
 
 
 # Build GCC&Mingw from source, ubuntu ppa contains old versions
@@ -57,11 +59,11 @@ RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev l
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
     && cd .. \
-    && mkdir binutils-${BINUTILS_VERSION}-mingw \
-    && cd binutils-${BINUTILS_VERSION}-mingw \
+    && mkdir binutils-${BINUTILS_VERSION}-linux \
+    && cd binutils-${BINUTILS_VERSION}-linux \
     && ../binutils-${BINUTILS_VERSION}/configure \
       --prefix=${GCC_HOME} \
-      --target=x86_64-w64-mingw32 \
+      --target=x86_64-linux-gnu \
       --disable-shared \
       --enable-static \
       --enable-lto \
@@ -73,11 +75,27 @@ RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev l
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
     && cd .. \
-    && mkdir binutils-${BINUTILS_VERSION}-linux \
-    && cd binutils-${BINUTILS_VERSION}-linux \
-    && ../binutils-${BINUTILS_VERSION}/configure \
+    && mkdir gcc-linux \
+    && cd gcc-linux \
+    && ../gcc-${GCC_VERSION}/configure \
       --prefix=${GCC_HOME} \
       --target=x86_64-linux-gnu \
+      --enable-languages=c,c++ \
+      --disable-multilib \
+      --enable-libgomp \
+      --enable-libatomic \
+      --enable-graphite \
+      --disable-multilib \
+      --enable-lto \
+      --disable-werror \
+    && make -j`nproc` all-gcc > /dev/null \
+    && make install-gcc > /dev/null \
+    && cd .. \
+    && mkdir binutils-${BINUTILS_VERSION}-mingw \
+    && cd binutils-${BINUTILS_VERSION}-mingw \
+    && ../binutils-${BINUTILS_VERSION}/configure \
+      --prefix=${GCC_HOME} \
+      --target=x86_64-w64-mingw32 \
       --disable-shared \
       --enable-static \
       --enable-lto \
@@ -116,16 +134,6 @@ RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev l
       --enable-lto \
       --disable-nls \
       --disable-werror \
-    && make -j`nproc` all-gcc > /dev/null \
-    && make install-gcc > /dev/null \
-    && cd .. \
-    && mkdir gcc-linux \
-    && cd gcc-linux \
-    && ../gcc-${GCC_VERSION}/configure \
-      --prefix=${GCC_HOME} \
-      --target=x86_64-linux-gnu \
-      --enable-languages=c,c++ \
-      --disable-multilib \
     && make -j`nproc` all-gcc > /dev/null \
     && make install-gcc > /dev/null \
     && cd .. \
@@ -234,11 +242,11 @@ RUN update-alternatives --install /usr/local/bin/python3 python3 /usr/local/bin/
 
 
 ########################################################################################################################
-ARG LLVM_VERSION=12.0.0-rc5
+ARG LLVM_VERSION=12.0.0
 ARG LLVM_HOME=/usr
 
 RUN cd /mnt \
-    && git clone --depth 1 -b llvmorg-${LLVM_VERSION} https://github.com/llvm/llvm-project.git \
+    && git clone --depth 1 https://github.com/llvm/llvm-project.git \
     && cd llvm-project \
     && mkdir build \
     && cd build \
@@ -269,7 +277,7 @@ RUN apt-get install -y lzma-dev libxml2-dev libssl-dev \
     && apt-get -y autoremove \
     && apt-get clean
 
-RUN eval `x86_64-apple-darwin19-osxcross-conf`
+RUN eval `${OSXCROSS_ROOT}/target/bin/x86_64-apple-darwin19-osxcross-conf`
 
 ENV OSXCROSS_HOST=x86_64-apple-darwin19
 ENV PATH="${OSXCROSS_ROOT}/target/bin:${PATH}"

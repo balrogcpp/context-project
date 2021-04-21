@@ -67,7 +67,7 @@ elseif (APPLE)
     endif ()
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(CONTEXT_TOOLCHAIN "linux")
-else()
+else ()
     set(CONTEXT_TOOLCHAIN ${CMAKE_SYSTEM_NAME})
 endif ()
 
@@ -85,10 +85,9 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     if (MSVC)
         string(APPEND CONTEXT_TOOLCHAIN "-msvc")
     endif ()
-else ()
-if (MSVC)
+elseif (MSVC)
     string(APPEND CONTEXT_TOOLCHAIN "-msvc")
-endif ()
+else ()
     string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_CXX_COMPILER_ID}")
 endif ()
 
@@ -110,6 +109,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
         string(APPEND CMAKE_CXX_FLAGS " -Ofast -funroll-loops -DNDEBUG")
         string(APPEND CMAKE_C_FLAGS " -Ofast -funroll-loops -DNDEBUG")
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
+            string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
+        endif ()
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-linker-plugin")
         if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -124,23 +127,31 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     endif ()
 
-    string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -pthread -fopenmp")
-    string(APPEND CMAKE_C_FLAGS " -msse4.1 -pthread -fopenmp")
+    string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -pthread")
+    string(APPEND CMAKE_C_FLAGS " -msse4.1 -pthread")
 
     # gcc links everything as shared libraries by default
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
     endif ()
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-openmp")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-openmp")
-    endif ()
 
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
-    endif()
+    endif ()
+
+    set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
+    set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
+
+    #Clang require -fopenmp
+    string(APPEND CMAKE_CXX_FLAGS  " -fopenmp")
+    string(APPEND CMAKE_C_FLAGS " -fopenmp")
+
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-openmp")
+        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-openmp")
+    endif ()
 
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -160,7 +171,6 @@ elseif (MSVC)
         string(APPEND CMAKE_EXE_LINKER_FLAGS " /SUBSYSTEM:WINDOWS")
     endif ()
 endif ()
-
 
 
 set(CONTEXT_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "")
@@ -348,9 +358,9 @@ set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 
 
 set(CPACK_GENERATOR "ZIP")
-if(MSVC)
+if (MSVC)
     set(CPACK_GENERATOR "ZIP" "NSIS")
-endif()
+endif ()
 
 include(CPack)
 

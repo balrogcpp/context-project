@@ -370,6 +370,8 @@ externalproject_add(target-ogre
                     -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
+                    -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -DOGRE_DEPENDENCIES_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DOGRE_ENABLE_PRECOMPILED_HEADERS=${OGRE_USE_PCH}
