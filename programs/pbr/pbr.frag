@@ -225,18 +225,18 @@ float GetShadow(const int counter) {
 
 
 //----------------------------------------------------------------------------------------------------------------------
-float CalcPSSMDepthShadow(vec4 pssmSplitPoints, vec4 lightSpacePos0, vec4 lightSpacePos1, vec4 lightSpacePos2, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, float camDepth)
+float CalcPSSMDepthShadow(vec4 pssmSplitPoints, vec4 lightSpacePos0, vec4 lightSpacePos1, vec4 lightSpacePos2, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2)
 {
     // calculate shadow
-    if (camDepth <= pssmSplitPoints.x)
+    if (vDepth <= pssmSplitPoints.x)
     {
         return CalcDepthShadow(shadowMap0, lightSpacePos0, uShadowDepthOffset, shadowTexel0*uShadowFilterSize, uShadowFilterIterations);
     }
-    else if (camDepth <= pssmSplitPoints.y)
+    else if (vDepth <= pssmSplitPoints.y)
     {
         return CalcDepthShadow(shadowMap1, lightSpacePos1, uShadowDepthOffset, shadowTexel1*uShadowFilterSize, uShadowFilterIterations);
     }
-    else if (camDepth <= pssmSplitPoints.z)
+    else if (vDepth <= pssmSplitPoints.z)
     {
         return CalcDepthShadow(shadowMap2, lightSpacePos2, uShadowDepthOffset, shadowTexel2*uShadowFilterSize, uShadowFilterIterations);
     }
@@ -586,7 +586,7 @@ void main()
                     if (i == 0) {
                         shadow = (tmp > EPSILON) ? CalcPSSMDepthShadow(pssmSplitPoints, \
                                                     lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], \
-                                                    shadowMap0, shadowMap1, shadowMap2, vDepth) : 1.0;
+                                                    shadowMap0, shadowMap1, shadowMap2) : 1.0;
                     } else {
                         shadow = (tmp > EPSILON) ? GetShadow(i + 2) : 1.0;
                     }
@@ -601,8 +601,7 @@ void main()
 
 #endif
 
-        vec3 colour = tmp * uLightDiffuseScaledColourArray[i] * (shadow_clamped * diffuseContrib + shadow * specContrib);
-//        vec3 colour = shadow_clamped * tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
+        vec3 colour = shadow_clamped * tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
         total_colour += colour;
     }

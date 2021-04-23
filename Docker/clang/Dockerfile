@@ -280,4 +280,5 @@ RUN apt-get install -y lzma-dev libxml2-dev libssl-dev \
 RUN eval `${OSXCROSS_ROOT}/target/bin/x86_64-apple-darwin19-osxcross-conf`
 
 ENV OSXCROSS_HOST=x86_64-apple-darwin19
+ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/target/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/target/bin:${PATH}"

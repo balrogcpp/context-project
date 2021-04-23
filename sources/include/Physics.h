@@ -37,11 +37,16 @@ class Entity;
 class SceneNode;
 }
 
+class btDbvtBroadphase;
 class btAxisSweep3;
 class btDefaultCollisionConfiguration;
 class btCollisionDispatcher;
+class btCollisionDispatcherMt;
 class btSequentialImpulseConstraintSolver;
+class btSequentialImpulseConstraintSolverMt;
 class btDynamicsWorld;
+class btDiscreteDynamicsWorld;
+class btDiscreteDynamicsWorldMt;
 class btRigidBody;
 class btCollisionObject;
 
@@ -97,18 +102,17 @@ class Physics final : public Component, public Singleton<Physics> {
   void InitThread_();
 
   std::unique_ptr<BtOgre::DebugDrawer> dbg_draw_;
-  std::unique_ptr<btAxisSweep3> broadphase_;
+  std::unique_ptr<btDbvtBroadphase> broadphase_;
   std::unique_ptr<btDefaultCollisionConfiguration> configurator_;
-  std::unique_ptr<btCollisionDispatcher> dispatcher_;
-  std::unique_ptr<btSequentialImpulseConstraintSolver> solver_;
-  std::unique_ptr<btDynamicsWorld> world_;
+  std::unique_ptr<btCollisionDispatcherMt> dispatcher_;
+  std::unique_ptr<btSequentialImpulseConstraintSolverMt> solver_;
+  std::unique_ptr<btDiscreteDynamicsWorldMt> world_;
   std::unique_ptr<std::thread> update_thread_;
-  std::mutex mutex_;
   std::map<const btCollisionObject *, ContactInfo> contacts_;
   std::function<void(int a, int b)> callback_;
   int steps_ = 4;
   bool threaded_ = false;
-  int64_t update_rate_ = 120;
+  int64_t update_rate_ = 60;
   std::atomic<bool> pause_ = true;
   std::atomic<bool> running_ = false;
   bool debug_ = false;

@@ -23,6 +23,9 @@
 #include "pcheader.h"
 #include "Physics.h"
 #include "btogre/BtOgre.h"
+#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
+#include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
+#include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
 
 using namespace std;
 
@@ -30,14 +33,25 @@ namespace xio {
 
 Physics::Physics(bool threaded) : threaded_(threaded)
 {
-  broadphase_ = make_unique<btAxisSweep3>(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000), 1024);
+  auto* sheduler = btCreateDefaultTaskScheduler();
+
+  if(!sheduler)
+    throw Exception("Bullet physics no task sheduler available");
+
+  btSetTaskScheduler( sheduler );
+  broadphase_ = make_unique<btDbvtBroadphase>();
   configurator_ = make_unique<btDefaultCollisionConfiguration>();
-  dispatcher_ = make_unique<btCollisionDispatcher>(configurator_.get());
-  solver_ = make_unique<btSequentialImpulseConstraintSolver>();
-  world_ = make_unique<btDiscreteDynamicsWorld>(dispatcher_.get(),
+  dispatcher_ = make_unique<btCollisionDispatcherMt>(configurator_.get(), 40);
+  solver_ = make_unique<btSequentialImpulseConstraintSolverMt>();
+
+  btConstraintSolverPoolMt* solverPool = new btConstraintSolverPoolMt( BT_MAX_THREAD_COUNT);
+
+  world_ = make_unique<btDiscreteDynamicsWorldMt>(dispatcher_.get(),
 												broadphase_.get(),
+												solverPool,
 												solver_.get(),
 												configurator_.get());
+
 
   world_->setGravity(btVector3(0.0, -9.8, 0.0));
 
@@ -78,7 +92,7 @@ void Physics::InitThread_() {
 
 	  //Actually do calculations
 	  if (!pause_) {
-		world_->stepSimulation(frame_time, steps_);
+		world_->stepSimulation(frame_time, steps_, 1.0f/update_rate_);
 
 		if (debug_)
 		  dbg_draw_->step();
@@ -120,7 +134,7 @@ void Physics::Update(float time) {
   if (pause_)
 	return;
 
-  world_->stepSimulation(time, steps_);
+  world_->stepSimulation(time, steps_, 1.0f/update_rate_);
 
   if (debug_)
 	dbg_draw_->step();

@@ -107,8 +107,8 @@ string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
 # Compilation flags definition
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-        string(APPEND CMAKE_CXX_FLAGS " -Ofast -funroll-loops -DNDEBUG")
-        string(APPEND CMAKE_C_FLAGS " -Ofast -funroll-loops -DNDEBUG")
+        string(APPEND CMAKE_CXX_FLAGS " -O3 -ffast-math -funroll-loops -DNDEBUG")
+        string(APPEND CMAKE_C_FLAGS " -O3 -ffast-math -funroll-loops -DNDEBUG")
         if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
             string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
@@ -127,8 +127,13 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     endif ()
 
-    string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -pthread")
-    string(APPEND CMAKE_C_FLAGS " -msse4.1 -pthread")
+    if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+        string(APPEND CMAKE_CXX_FLAGS " -msse4.1")
+        string(APPEND CMAKE_C_FLAGS " -msse4.1")
+    endif ()
+
+    string(APPEND CMAKE_CXX_FLAGS " -pthread")
+    string(APPEND CMAKE_C_FLAGS " -pthread")
 
     # gcc links everything as shared libraries by default
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -141,24 +146,37 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
     endif ()
 
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL")
+        string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL")
+    endif ()
+
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-ld=lld")
+        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-ld=lld")
+    endif ()
+
+
     set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
     set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 
     #Clang require -fopenmp
-    string(APPEND CMAKE_CXX_FLAGS  " -fopenmp")
-    string(APPEND CMAKE_C_FLAGS " -fopenmp")
+    if (USE_OPENMP)
+        string(APPEND CMAKE_CXX_FLAGS " -fopenmp")
+        string(APPEND CMAKE_C_FLAGS " -fopenmp")
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-openmp")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-openmp")
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-openmp -fuse-ld=lld")
+            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-openmp -fuse-ld=lld")
+        endif ()
     endif ()
 
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
-    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS-")
-    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS-")
+    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF")
+    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF")
 
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
         string(APPEND CMAKE_CXX_FLAGS " /O2 /fp:fast /GL")
@@ -190,7 +208,7 @@ add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
 
 
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
-set(CMAKE_FIND_ROOT_PATH "${ANDROID_NDK};${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
+set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
 
 
 # assume built-in pthreads on MacOS
@@ -288,7 +306,7 @@ file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
-# TODO: it may be better idea to install only dll that are needed
+
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
     file(INSTALL ${EXTERNAL_DLL_GLOB} DESTINATION .)
@@ -322,7 +340,7 @@ set(CONTEXT_ZIP_NAME ContextProjectDemo-${GIT_SHA1} CACHE PATH "")
 set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
 
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
-set(CMAKE_FIND_ROOT_PATH "${ANDROID_NDK};${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
+set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
 
 
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION .)

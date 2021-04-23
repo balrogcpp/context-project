@@ -72,13 +72,15 @@ externalproject_add(target-bullet
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
+                    -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -DCMAKE_RELWITHDEBINFO_POSTFIX=
                     -DCMAKE_DEBUG_POSTFIX=
                     -DCMAKE_MINSIZEREL_POSTFIX=
                     -DCLAMP_VELOCITIES=0
                     -DBULLET2_MULTITHREADING=true
-                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=true
+                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=false
                     -DBUILD_BULLET2_DEMOS=false
                     -DBUILD_CPU_DEMOS=false
                     -DBUILD_EXTRAS=false
@@ -484,39 +486,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 endif ()
 
 
-#OpenMP is not available when crosscompile with clang
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    if (WIN32)
-        set(OMP_SHARED true)
-    else ()
-        set(OMP_SHARED false)
-    endif ()
-
-    externalproject_add(target-omp
-                        EXCLUDE_FROM_ALL true
-                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                        GIT_REPOSITORY https://github.com/llvm-project/openmp.git
-                        GIT_TAG release_90
-                        GIT_SHALLOW true
-                        GIT_PROGRESS false
-                        CMAKE_ARGS
-                        -G "${CMAKE_GENERATOR}"
-                        -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-                        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                        ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                        -DENABLE_LIBOMPTARGET=false
-                        -DLIBOMP_ENABLE_SHARED=${OMP_SHARED}
-                        )
-
-if ((CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin"))
-    list(APPEND CONTEXT_DEPENDENCY_TARGETS target-omp)
-endif()
-endif ()
-
-
-#std::filesystem is not supported on MacOS before Catalina
+#std::filesystem is not supported on some platforms with c++17 support
 externalproject_add(target-filesystem
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
