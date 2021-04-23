@@ -147,7 +147,7 @@ uniform float shadowTexel7;
 #endif
 
 uniform vec4 pssmSplitPoints;
-uniform float uShadowColour;
+uniform vec3 uShadowColour;
 uniform float uShadowDepthOffset;
 uniform float uShadowFilterSize;
 uniform int uShadowFilterIterations;
@@ -436,6 +436,8 @@ void main()
 #endif
 
     vec4 albedo = GetAlbedo(tex_coord);
+    vec3 color = albedo.rgb;
+    float alpha = albedo.a;
 
 #ifndef GL_ES
     float clippedDistance = (vDepth - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
@@ -486,9 +488,9 @@ void main()
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
     const vec3 f0 = vec3(0.04);
-    vec3 diffuseColor = albedo.rgb * (vec3(1.0) - f0);
+    vec3 diffuseColor = color * (vec3(1.0) - f0);
     diffuseColor *= (1.0 - metallic);
-    vec3 specularColor = mix(f0, albedo.rgb, metallic);
+    vec3 specularColor = mix(f0, color, metallic);
 
     // Compute reflectance.
     float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
@@ -569,10 +571,9 @@ void main()
         vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
         float tmp = NdotL * fSpotT * fAtten;
 
-        float shadow = 1.0;
-        float shadow_clamped = 1.0;
 
 #ifdef SHADOWRECEIVER
+        float shadow = 1.0;
 
 
         if (uLightCastsShadowsArray[i] > 0.0) {
@@ -595,13 +596,13 @@ void main()
                 shadow = (tmp > EPSILON) ? GetShadow(i) : 1.0;
             #endif
 
-
-            shadow_clamped = clamp(shadow + uShadowColour, 0.0, 1.0);
         }
 
+    vec3 colour = uShadowColour * color + shadow * tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
+#else
+    vec3 colour = tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 #endif
 
-        vec3 colour = shadow_clamped * tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 
         total_colour += colour;
     }
@@ -611,7 +612,7 @@ void main()
     vec3 reflection = -normalize(reflect(v, n));
     total_colour += GetIBLContribution(diffuseColor, specularColor, roughness, NdotV, n, reflection);
 #else
-    total_colour += (uAmbientLightColour * albedo.rgb);
+    total_colour += (uAmbientLightColour * color);
 #endif
 
 // Apply optional PBR terms for additional (optional) shading

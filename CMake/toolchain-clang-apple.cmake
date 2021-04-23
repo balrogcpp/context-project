@@ -1,4 +1,5 @@
 # OSXCross toolchain
+set(CMAKE_CROSSCOMPILING ON)
 
 macro(osxcross_getconf VAR)
     if(NOT ${VAR})

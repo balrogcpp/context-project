@@ -151,25 +151,21 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL")
     endif ()
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-ld=lld")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-ld=lld")
-    endif ()
-
 
     set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
     set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 
-    #Clang require -fopenmp
-    if (USE_OPENMP)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -fopenmp -static-openmp")
+        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fopenmp -static-openmp")
+    endif ()
+
+    #_GLIBCXX_PARALLEL with GCC needs OpenMP
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         string(APPEND CMAKE_CXX_FLAGS " -fopenmp")
         string(APPEND CMAKE_C_FLAGS " -fopenmp")
-
-        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-openmp")
-            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-openmp")
-        endif ()
     endif ()
+
 
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)

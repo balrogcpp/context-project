@@ -24,5 +24,5 @@
 #include "PagedGeometry.h"
 #include "GrassLoader.h"
 #include "BatchPage.h"
-#include "TreeLoader2D.h"
+#include "WindBatchPage.h"
 #include "TreeLoader3D.h"
