@@ -63,7 +63,7 @@ Window::Window(int w, int h, bool f)
 	h_ = screen_h_;
   }
 
-  window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w_, h_, flags_);
+  window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w_, h_, flags_);
 #else
 
 
@@ -81,7 +81,7 @@ Window::Window(int w, int h, bool f)
   w_ = screen_w_;
   h_ = screen_h_;
 
-  window_ = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen_w_, screen_h_, flags_);
+  window_ = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_w_, screen_h_, flags_);
   gl_context_ = SDL_GL_CreateContext(window_);
 
 #endif
