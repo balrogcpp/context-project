@@ -43,7 +43,9 @@ ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 
 
 
-RUN python3 zip-dependencies.py
+RUN python3 zip-dependencies.py \
+    && update-alternatives --install /usr/bin/ld ld /usr/bin/ld.lld 10300 \
+    && update-alternatives --install /usr/bin/x86_64-w64-mingw32-ld x86_64-w64-mingw32-ld /usr/bin/ld.lld 10300
 
 
 RUN mkdir build-linux && cd build-linux \
