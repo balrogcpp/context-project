@@ -346,23 +346,18 @@ else ()
     # to be sure GLES2 is not built for Desktop
     set(OGRE_USE_GLES2 false)
 endif ()
-if(ANDROID)
-    #Fix will be available on next release
-    set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-android.patch)
-endif()
 # PCH on Apple cause objective-c compilation error
 set(OGRE_USE_PCH true)
 if (APPLE)
     set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-apple.patch)
     set(OGRE_USE_PCH false)
-else()
 endif()
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zzip target-freetype target-pugixml
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v1.12.11
+                    GIT_TAG v1.12.12
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     PATCH_COMMAND ${OGRE_PATCH_COMMAND}
