@@ -237,7 +237,7 @@ find_package(Lua51 QUIET)
 find_package(assimp QUIET)
 find_package(PNG QUIET)
 find_package(freetype QUIET)
-#find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
+find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
 
 if (NOT ANDROID)
     if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND OR NOT PNG_FOUND)

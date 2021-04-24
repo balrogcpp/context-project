@@ -118,6 +118,25 @@ void UpdateMeshMaterial(const string &mesh_name, bool cast_shadows, const string
 void UpdateEntityMaterial(Ogre::Entity *entity, bool cast_shadows, const string &material_name, bool planar_reflection, bool active_ibl) {
   try {
 	entity->setCastShadows(cast_shadows);
+	entity->setMaterialName(material_name);
+
+	if (!material_name.empty()) {
+		Ogre::MaterialPtr material;
+		material = Ogre::MaterialManager::getSingleton().getByName(material_name);
+
+		if (material) {
+			Pbr::UpdatePbrParams(material);
+
+			if (cast_shadows)
+				Pbr::UpdatePbrShadowCaster(material);
+
+			if (material->getReceiveShadows())
+				Pbr::UpdatePbrShadowReceiver(material);
+
+			Pbr::UpdatePbrIbl(material, active_ibl);
+		}
+
+	}
 
 	UpdateMeshMaterial(entity->getMesh(), cast_shadows, material_name, planar_reflection, active_ibl);
   }

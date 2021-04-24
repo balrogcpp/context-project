@@ -342,9 +342,11 @@ externalproject_add(target-assimp
 if (ANDROID OR IOS)
     # to be sure GLES2 is built for Mobile
     set(OGRE_USE_GLES2 true)
+    set(OGRE_USE_ASSIMP false)
 else ()
     # to be sure GLES2 is not built for Desktop
     set(OGRE_USE_GLES2 false)
+    set(OGRE_USE_ASSIMP true)
 endif ()
 # PCH on Apple cause objective-c compilation error
 set(OGRE_USE_PCH true)
@@ -354,7 +356,7 @@ if (APPLE)
 endif()
 externalproject_add(target-ogre
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zzip target-freetype target-pugixml
+                    DEPENDS target-zzip target-freetype target-pugixml target-assimp
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v1.12.12
@@ -398,7 +400,7 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_COMPONENT_TERRAIN=true
                     -DOGRE_BUILD_PLUGIN_FREEIMAGE=false
                     -DOGRE_BUILD_PLUGIN_EXRCODEC=false
-                    -DOGRE_BUILD_PLUGIN_ASSIMP=false
+                    -DOGRE_BUILD_PLUGIN_ASSIMP=${OGRE_USE_ASSIMP}
                     -DOGRE_BUILD_PLUGIN_STBI=true
                     -DOGRE_BUILD_PLUGIN_BSP=false
                     -DOGRE_BUILD_PLUGIN_PCZ=false
