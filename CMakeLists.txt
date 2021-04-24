@@ -109,10 +109,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
         string(APPEND CMAKE_CXX_FLAGS " -Ofast -funroll-loops -DNDEBUG")
         string(APPEND CMAKE_C_FLAGS " -Ofast -funroll-loops -DNDEBUG")
-        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
-            string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
-        endif ()
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-linker-plugin")
         if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -132,8 +128,16 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_C_FLAGS " -msse4.1")
     endif ()
 
-    string(APPEND CMAKE_CXX_FLAGS " -pthread")
-    string(APPEND CMAKE_C_FLAGS " -pthread")
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
+        string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
+    endif ()
+
+
+    #This flags are useful for dependencies build
+    set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
+    set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
+
 
     # gcc links everything as shared libraries by default
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -146,26 +150,25 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
     endif ()
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL")
-        string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL")
+    string(APPEND CMAKE_CXX_FLAGS " -pthread")
+    string(APPEND CMAKE_C_FLAGS " -pthread")
+
+
+    if (USE_OPENMP)
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL")
+            string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL")
+
+            string(APPEND CMAKE_CXX_FLAGS " -fopenmp")
+            string(APPEND CMAKE_C_FLAGS " -fopenmp")
+        endif ()
+
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            string(APPEND CMAKE_EXE_LINKER_FLAGS " -fopenmp -static-openmp")
+            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fopenmp -static-openmp")
+        endif ()
+
     endif ()
-
-
-    set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
-    set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
-
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -fopenmp -static-openmp")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fopenmp -static-openmp")
-    endif ()
-
-    #_GLIBCXX_PARALLEL with GCC needs OpenMP
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        string(APPEND CMAKE_CXX_FLAGS " -fopenmp")
-        string(APPEND CMAKE_C_FLAGS " -fopenmp")
-    endif ()
-
 
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)

@@ -451,10 +451,10 @@ void main()
 
 #ifdef HAS_ALPHA
 #ifdef PAGED_GEOMETRY
-    albedo.a *= vAlpha;
+    alpha *= vAlpha;
 #endif //PAGED_GEOMETRY
 
-    if (albedo.a < uAlphaRejection) {
+    if (alpha < uAlphaRejection) {
         discard;
     }
 #endif
@@ -598,13 +598,10 @@ void main()
 
         }
 
-    vec3 colour = uShadowColour * color + shadow * tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
+        total_colour += uShadowColour * color + shadow * tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 #else
-    vec3 colour = tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
+    total_colour += tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 #endif
-
-
-        total_colour += colour;
     }
 
 // Calculate lighting contribution from image based lighting source (IBL)
@@ -629,10 +626,10 @@ void main()
 #endif //HAS_REFLECTION
 
 #ifndef GL_ES
-    gl_FragData[0] = vec4(total_colour, albedo.a);
+    gl_FragData[0] = vec4(total_colour, alpha);
 #else
     total_colour = ApplyFog(total_colour, uFogParams, uFogColour, vDepth);
-    gl_FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), albedo.a);
+    gl_FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), alpha);
 #endif
 
 #else //SHADOWCASTER
