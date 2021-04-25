@@ -246,16 +246,19 @@ ARG LLVM_VERSION=12.0.0
 ARG LLVM_HOME=/usr
 
 RUN cd /mnt \
-    && git clone --depth 1 https://github.com/llvm/llvm-project.git \
+    && apt-get install -y zlib1g-dev lzma-dev libxml2-dev libssl-dev \
+    && git clone --depth 1 -b llvmorg-${LLVM_VERSION} https://github.com/llvm/llvm-project.git \
     && cd llvm-project \
     && mkdir build \
     && cd build \
     && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${LLVM_HOME} -DLLVM_TARGETS_TO_BUILD="X86" \
-             -DLLVM_ENABLE_PROJECTS=-"llvm;clang;libcxx;libcxxabi;lld;compiler-rt;openmp" ../llvm \
+             -DLLVM_ENABLE_PROJECTS=-"llvm;clang;libcxx;libcxxabi;lld;compiler-rt;openmp" \
+             -DLLVM_BUILD_UTILS=false -DLLVM_ENABLE_ASSERTIONS=false -DLLVM_ENABLE_ZLIB=true ../llvm \
     && cmake --build . --target install \
     && cd ../../ \
     && rm -rf llvm-project \
-    && apt-get -y autoremove \
+    && apt-get purge -y zlib1g-dev lzma-dev libxml2-dev libssl-dev \
+    && apt-get autoremove -y \
     && apt-get clean
 
 
