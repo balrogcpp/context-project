@@ -33,23 +33,26 @@ ADD ./doc ./doc
 ADD ./CMake ./CMake
 
 
-RUN apt-get update && apt-get install -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev
 
-
-RUN mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
-    && cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
-    && cmake --build . --target target-deps \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-gcc-x86_64 \
-    && rm -rf src tmp \
-    && rm -rf ${CONTEXT_HOME}/build-linux
+RUN apt-get update && apt-get install -y git libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libxml2
 
 
 RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-gcc-mingw.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -G Ninja .. \
     && cmake --build . --target target-deps \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release/windows-gcc-mingw-x86_64 \
+    && cd ${CONTEXT_HOME}/dependencies/external/Release/windows-clang-mingw-x86_64 \
     && rm -rf src tmp \
     && rm -rf ${CONTEXT_HOME}/build-windows
+
+
+ RUN mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
+     && export CC=clang \
+     && export CXX=clang++ \
+     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -G Ninja .. \
+     && cmake --build . --target target-deps \
+     && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-clang-x86_64 \
+     && rm -rf src tmp \
+     && rm -rf ${CONTEXT_HOME}/build-linux
 
 
 RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \

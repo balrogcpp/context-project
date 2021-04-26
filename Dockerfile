@@ -41,26 +41,24 @@ ADD zip-dependencies.py .
 ADD dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 
 
+RUN python3 zip-dependencies.py
 
 
-RUN python3 zip-dependencies.py \
-    && update-alternatives --install /usr/bin/ld ld /usr/bin/ld.lld 10300 \
-    && update-alternatives --install /usr/bin/x86_64-w64-mingw32-ld x86_64-w64-mingw32-ld /usr/bin/ld.lld 10300
+RUN mkdir build-windows && cd build-windows \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+    && cmake --build . --target target-crt \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+    && cmake --build . --target package \
+    && cd .. \
+    && rm -rf build-windows
 
 
 RUN mkdir build-linux && cd build-linux \
     && export LD_LIBRARY_PATH=/usr/lib64\
-    && cmake -DCMAKE_BUILD_TYPE=Release -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target package \
     && cd .. \
     && rm -rf build-linux
-
-
-RUN mkdir build-windows && cd build-windows \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-gcc-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target package \
-    && cd .. \
-    && rm -rf build-windows
 
 
 RUN mkdir build-apple && cd build-apple \

@@ -13,14 +13,14 @@ build:
     - docker build --build-arg GIT_HASH=$CI_COMMIT_SHORT_SHA . -t context
     - docker create -ti --name abc context bash
     - mkdir artifacts
-    - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-windows-gcc-mingw-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
-    - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-linux-gcc-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
+    - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-linux-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
+    - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-windows-clang-mingw-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
     - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-apple-darwin-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
     - docker rm -f abc
   artifacts:
     paths:
-      - artifacts/ContextProjectDemo-windows-gcc-mingw-x86_64-$CI_COMMIT_SHORT_SHA.zip
-      - artifacts/ContextProjectDemo-linux-gcc-x86_64-$CI_COMMIT_SHORT_SHA.zip
+      - artifacts/ContextProjectDemo-linux-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip
+      - artifacts/ContextProjectDemo-windows-clang-mingw-x86_64-$CI_COMMIT_SHORT_SHA.zip
       - artifacts/ContextProjectDemo-apple-darwin-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip
   only:
     - master

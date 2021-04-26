@@ -29,6 +29,9 @@ set(triple x86_64-w64-mingw32)
 # cross compilers to use for C, C++ and Fortran
 set(CMAKE_EXE_LINKER_FLAGS " -fuse-ld=lld")
 set(CMAKE_SHARED_LINKER_FLAGS " -fuse-ld=lld")
+string(APPEND CMAKE_CXX_FLAGS " -pthread")
+string(APPEND CMAKE_C_FLAGS " -pthread")
+
 #set(CMAKE_RC_COMPILER llvm-rc)
 set(CMAKE_RC_COMPILER x86_64-w64-mingw32-windres)
 set(CMAKE_AR llvm-ar)

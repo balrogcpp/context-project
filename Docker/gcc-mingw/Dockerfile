@@ -21,32 +21,32 @@
 #SOFTWARE.
 
 
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /mnt
 
 RUN apt-get update \
-    && apt-get install -y gcc g++ zip wget ca-certificates gnupg2 make autoconf
+    && apt-get install -y gcc g++ zip wget ca-certificates gnupg2 make autoconf file patch xz-utils bzip2
 
 
+# Build GCC&Mingw from source, ubuntu ppa contains old versions
 ARG MINGW_ROOT=/mingw
+ARG GCC_HOME=/usr
 ARG BINUTILS_VERSION=2.35.1
 ARG MINGW_VERSION=8.0.0
 ARG GCC_VERSION=10.3.0
 ARG PKG_CONFIG_VERSION=0.29.2
 
 # Build GCC&Mingw from source, ubuntu ppa contains old versions
-RUN apt-get install -y xz-utils bzip2 zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev \
+RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
-    && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
     && wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
-    && mkdir -p ${MINGW_ROOT}/include ${MINGW_ROOT}/lib/pkgconfig \
-    && mkdir binutils-${BINUTILS_VERSION}-mingw \
-    && cd binutils-${BINUTILS_VERSION}-mingw \
+    && mkdir binutils-${BINUTILS_VERSION}-linux \
+    && cd binutils-${BINUTILS_VERSION}-linux \
     && ../binutils-${BINUTILS_VERSION}/configure \
-      --prefix=/usr \
-      --target=x86_64-w64-mingw32 \
+      --prefix=${GCC_HOME} \
+      --target=x86_64-linux-gnu \
       --disable-shared \
       --enable-static \
       --enable-lto \
@@ -58,11 +58,57 @@ RUN apt-get install -y xz-utils bzip2 zlib1g-dev libgmp-dev libmpfr-dev libmpc-d
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
     && cd .. \
-    && mkdir binutils-${BINUTILS_VERSION}-linux \
-    && cd binutils-${BINUTILS_VERSION}-linux \
-    && ../binutils-${BINUTILS_VERSION}/configure \
-      --prefix=/usr \
+    && mkdir gcc-linux \
+    && cd gcc-linux \
+    && ../gcc-${GCC_VERSION}/configure \
+      --prefix=${GCC_HOME} \
       --target=x86_64-linux-gnu \
+      --enable-languages=c,c++ \
+      --disable-multilib \
+      --enable-libgomp \
+      --enable-libatomic \
+      --enable-graphite \
+      --disable-multilib \
+      --enable-lto \
+      --disable-werror \
+    && make -j`nproc` all-gcc > /dev/null \
+    && make install-gcc > /dev/null \
+    && cd .. \
+    && cd gcc-linux \
+    && make -j`nproc` > /dev/null \
+    && make install > /dev/null \
+    && cd .. \
+    && rm -rf binutils-${BINUTILS_VERSION} \
+    && rm -rf binutils-${BINUTILS_VERSION}-linux \
+    && rm -rf gcc-${GCC_VERSION} \
+    && rm -rf gcc-linux \
+    && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev \
+    && apt-get -y autoremove \
+    && apt-get clean
+
+
+# Build GCC&Mingw from source, ubuntu ppa contains old versions
+RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev \
+    && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
+    && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
+    && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
+    && wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
+    && mkdir -p ${MINGW_ROOT}/include ${MINGW_ROOT}/lib/pkgconfig \
+    && cd pkg-config-${PKG_CONFIG_VERSION} \
+    && ./configure \
+       --prefix=${GCC_HOME} \
+       --with-pc-path=${MINGW_ROOT}/lib/pkgconfig \
+       --with-internal-glib \
+       --disable-shared \
+       --disable-nls \
+    && make -j`nproc` > /dev/null \
+    && make install > /dev/null \
+    && cd .. \
+    && mkdir binutils-${BINUTILS_VERSION}-mingw \
+    && cd binutils-${BINUTILS_VERSION}-mingw \
+    && ../binutils-${BINUTILS_VERSION}/configure \
+      --prefix=${GCC_HOME} \
+      --target=x86_64-w64-mingw32 \
       --disable-shared \
       --enable-static \
       --enable-lto \
@@ -77,7 +123,7 @@ RUN apt-get install -y xz-utils bzip2 zlib1g-dev libgmp-dev libmpfr-dev libmpc-d
     && mkdir mingw-w64 \
     && cd mingw-w64 \
     && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-headers/configure \
-      --prefix=/usr/x86_64-w64-mingw32 \
+      --prefix=${GCC_HOME}/x86_64-w64-mingw32 \
       --host=x86_64-w64-mingw32 \
       --enable-sdk=all \
       --enable-secure-api \
@@ -87,7 +133,7 @@ RUN apt-get install -y xz-utils bzip2 zlib1g-dev libgmp-dev libmpfr-dev libmpc-d
     && mkdir gcc-mingw32 \
     && cd gcc-mingw32 \
     && ../gcc-${GCC_VERSION}/configure \
-      --prefix=/usr \
+      --prefix=${GCC_HOME} \
       --target=x86_64-w64-mingw32 \
       --enable-languages=c,c++ \
       --disable-shared \
@@ -104,19 +150,9 @@ RUN apt-get install -y xz-utils bzip2 zlib1g-dev libgmp-dev libmpfr-dev libmpc-d
     && make -j`nproc` all-gcc > /dev/null \
     && make install-gcc > /dev/null \
     && cd .. \
-    && mkdir gcc-linux \
-    && cd gcc-linux \
-    && ../gcc-${GCC_VERSION}/configure \
-      --prefix=/usr \
-      --target=x86_64-linux-gnu \
-      --enable-languages=c,c++ \
-      --disable-multilib \
-    && make -j`nproc` all-gcc > /dev/null \
-    && make install-gcc > /dev/null \
-    && cd .. \
     && cd mingw-w64 \
     && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-crt/configure \
-      --prefix=/usr/x86_64-w64-mingw32 \
+      --prefix=${GCC_HOME}/x86_64-w64-mingw32 \
       --host=x86_64-w64-mingw32 \
       --enable-wildcard \
       --disable-lib32 \
@@ -126,7 +162,7 @@ RUN apt-get install -y xz-utils bzip2 zlib1g-dev libgmp-dev libmpfr-dev libmpc-d
     && cd .. \
     && cd mingw-w64 \
     && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-libraries/winpthreads/configure \
-      --prefix=/usr/x86_64-w64-mingw32 \
+      --prefix=${GCC_HOME}/x86_64-w64-mingw32 \
       --host=x86_64-w64-mingw32 \
       --enable-static \
       --disable-shared \
@@ -143,28 +179,26 @@ RUN apt-get install -y xz-utils bzip2 zlib1g-dev libgmp-dev libmpfr-dev libmpc-d
     && mv /mnt/gcc-mingw32/gcc/xgcc.bak /mnt/gcc-mingw32/gcc/xgcc \
     && make install > /dev/null \
     && cd .. \
-    && cd gcc-linux \
-    && make -j`nproc` > /dev/null \
-    && make install > /dev/null \
-    && cd .. \
     && rm -rf pkg-config-${PKG_CONFIG_VERSION} \
     && rm -rf binutils-${BINUTILS_VERSION} \
     && rm -rf binutils-${BINUTILS_VERSION}-mingw \
-    && rm -rf binutils-${BINUTILS_VERSION}-linux \
     && rm -rf mingw-w64-v${MINGW_VERSION} \
     && rm -rf mingw-w64 \
     && rm -rf gcc-${GCC_VERSION} \
     && rm -rf gcc-mingw32 \
-    && rm -rf gcc-linux \
     && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev \
     && apt-get -y autoremove \
-    && apt-get clean \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/x86_64-linux-gnu-gcc 10000 \
-        --slave /usr/bin/g++ g++ /usr/bin/x86_64-linux-gnu-g++ \
-    && update-alternatives --install /usr/bin/mingw32-gcc mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc 10000 \
-        --slave /usr/bin/mingw32-g++ mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++ \
-    && ln -s /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
-    && ln -s /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a /usr/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
+    && apt-get clean
+
+RUN update-alternatives --install ${GCC_HOME}/bin/gcc gcc ${GCC_HOME}/bin/x86_64-linux-gnu-gcc 10300 \
+        --slave ${GCC_HOME}/bin/g++ g++ ${GCC_HOME}/bin/x86_64-linux-gnu-g++ \
+    && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 10300 \
+        --slave ${GCC_HOME}/bin/mingw32-g++ mingw32-g++ ${GCC_HOME}/bin/x86_64-w64-mingw32-g++ \
+    && update-alternatives --install /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 10300 \
+    && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
+    && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
+
+ENV LD_LIBRARY_PATH="${GCC_HOME}/lib64:${LD_LIBRARY_PATH}"
 
 
 ENV CMAKE_VERSION=3.20.0

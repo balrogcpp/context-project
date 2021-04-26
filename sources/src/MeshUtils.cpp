@@ -118,9 +118,10 @@ void UpdateMeshMaterial(const string &mesh_name, bool cast_shadows, const string
 void UpdateEntityMaterial(Ogre::Entity *entity, bool cast_shadows, const string &material_name, bool planar_reflection, bool active_ibl) {
   try {
 	entity->setCastShadows(cast_shadows);
-	entity->setMaterialName(material_name);
 
 	if (!material_name.empty()) {
+		entity->setMaterialName(material_name);
+
 		Ogre::MaterialPtr material;
 		material = Ogre::MaterialManager::getSingleton().getByName(material_name);
 

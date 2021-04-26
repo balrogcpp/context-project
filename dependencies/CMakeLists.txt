@@ -102,12 +102,11 @@ if (IOS OR ANDROID)
 else ()
     set(OPENAL_LIBTYPE SHARED)
 endif ()
-
 externalproject_add(target-openal
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/kcat/openal-soft.git
-                    GIT_TAG 1.21.1
+                    GIT_TAG openal-soft-1.20.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -131,7 +130,9 @@ externalproject_add(target-openal
                     )
 
 if (APPLE)
-    set(OGG_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogg ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogg-1.3.4-apple.patch)
+    set(CHDIR_OGG ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogg)
+    set(OGG_UPDATE_COMMAND ${CHDIR_OGG} ${GIT_EXECUTABLE} reset --hard)
+    set(OGG_PATCH_COMMAND ${CHDIR_OGG} ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogg-1.3.4-apple.patch)
 endif()
 externalproject_add(target-ogg
                     EXCLUDE_FROM_ALL true
@@ -141,6 +142,7 @@ externalproject_add(target-ogg
                     GIT_TAG v1.3.4
                     GIT_SHALLOW true
                     GIT_PROGRESS false
+                    UPDATE_COMMAND ${OGG_UPDATE_COMMAND}
                     PATCH_COMMAND ${OGG_PATCH_COMMAND}
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
@@ -311,6 +313,9 @@ externalproject_add(target-json
                     )
 
 
+set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-assimp)
+set(ASSIMP_UPDATE_COMMAND ${ASSIMP_CHDIR}  ${GIT_EXECUTABLE} reset --hard)
+set(ASSIMP_PATCH_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/assimp-5.0.1.patch)
 externalproject_add(target-assimp
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-rapidjson
@@ -319,39 +324,70 @@ externalproject_add(target-assimp
                     GIT_TAG v5.0.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
+                    UPDATE_COMMAND ${ASSIMP_UPDATE_COMMAND}
+                    PATCH_COMMAND ${ASSIMP_PATCH_COMMAND}
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
+                    -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -DINJECT_DEBUG_POSTFIX=false
                     -DASSIMP_BUILD_TESTS=false
-                    -DASSIMP_BUILD_ASSIMP_VIEW=false
                     -DBUILD_SHARED_LIBS=false
                     -DASSIMP_BUILD_ASSIMP_TOOLS=false
                     -DASSIMP_BUILD_ZLIB=false
                     -DASSIMP_NO_EXPORT=true
                     -DASSIMP_BUILD_SAMPLES=false
                     -DASSIMP_INSTALL_PDB=false
+                    -DASSIMP_BUILD_ASE_IMPORTER=false
+                    -DASSIMP_BUILD_OFF_IMPORTER=false
                     -DASSIMP_BUILD_IRR_IMPORTER=false
+                    -DASSIMP_BUILD_IRRMESH_IMPORTER=false
+                    -DASSIMP_BUILD_OGRE_IMPORTER=false
+                    -DASSIMP_BUILD_AMF_IMPORTER=false
+                    -DASSIMP_BUILD_AC_IMPORTER=false
+                    -DASSIMP_BUILD_ASSBIN_IMPORTER=false
+                    -DASSIMP_BUILD_B3D_IMPORTER=false
+                    -DASSIMP_BUILD_BVH_IMPORTER=false
+                    -DASSIMP_BUILD_DXF_IMPORTER=false
+                    -DASSIMP_BUILD_CSM_IMPORTER=false
+                    -DASSIMP_BUILD_HMP_IMPORTER=false
+                    -DASSIMP_BUILD_LWO_IMPORTER=false
+                    -DASSIMP_BUILD_LWS_IMPORTER=false
+                    -DASSIMP_BUILD_MD2_IMPORTER=false
+                    -DASSIMP_BUILD_MD3_IMPORTER=false
+                    -DASSIMP_BUILD_MD5_IMPORTER=false
+                    -DASSIMP_BUILD_MDC_IMPORTER=false
+                    -DASSIMP_BUILD_MDL_IMPORTER=false
+                    -DASSIMP_BUILD_NFF_IMPORTER=false
+                    -DASSIMP_BUILD_NDO_IMPORTER=false
+                    -DASSIMP_BUILD_Q3D_IMPORTER=false
+                    -DASSIMP_BUILD_Q3BSP_IMPORTER=false
+                    -DASSIMP_BUILD_SIB_IMPORTER=false
+                    -DASSIMP_BUILD_TERRAGEN_IMPORTER=false
+                    -DASSIMP_BUILD_3MF_IMPORTER=false
+                    -DASSIMP_BUILD_MMD_IMPORTER=false
+                    -DASSIMP_BUILD_STEP_IMPORTER=false
                     )
 
 
 if (ANDROID OR IOS)
     # to be sure GLES2 is built for Mobile
     set(OGRE_USE_GLES2 true)
-    set(OGRE_USE_ASSIMP false)
 else ()
     # to be sure GLES2 is not built for Desktop
     set(OGRE_USE_GLES2 false)
-    set(OGRE_USE_ASSIMP true)
 endif ()
 # PCH on Apple cause objective-c compilation error
 set(OGRE_USE_PCH true)
 if (APPLE)
-    set(OGRE_PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-apple.patch)
+    set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre)
+    set(OGRE_UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard)
+    set(OGRE_PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-apple.patch)
     set(OGRE_USE_PCH false)
 endif()
 externalproject_add(target-ogre
@@ -362,6 +398,7 @@ externalproject_add(target-ogre
                     GIT_TAG v1.12.12
                     GIT_SHALLOW true
                     GIT_PROGRESS false
+                    UPDATE_COMMAND ${OGRE_UPDATE_COMMAND}
                     PATCH_COMMAND ${OGRE_PATCH_COMMAND}
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
@@ -400,7 +437,7 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_COMPONENT_TERRAIN=true
                     -DOGRE_BUILD_PLUGIN_FREEIMAGE=false
                     -DOGRE_BUILD_PLUGIN_EXRCODEC=false
-                    -DOGRE_BUILD_PLUGIN_ASSIMP=${OGRE_USE_ASSIMP}
+                    -DOGRE_BUILD_PLUGIN_ASSIMP=true
                     -DOGRE_BUILD_PLUGIN_STBI=true
                     -DOGRE_BUILD_PLUGIN_BSP=false
                     -DOGRE_BUILD_PLUGIN_PCZ=false
@@ -505,7 +542,7 @@ externalproject_add(target-filesystem
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-#OpenMP is not available when crosscompile with clang
+#OpenMP is not available when crosscompile with clang-cross
     if (WIN32)
         set(OMP_SHARED true)
     else ()
@@ -525,14 +562,29 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-            ${CONTEXT_CMAKE_EXTRA_FLAGS}
             -DENABLE_LIBOMPTARGET=false
             -DLIBOMP_ENABLE_SHARED=${OMP_SHARED}
             )
 
-    if ((CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin"))
-        list(APPEND CONTEXT_DEPENDENCY_TARGETS target-omp)
-    endif()
+    externalproject_add(target-crt
+            EXCLUDE_FROM_ALL true
+            PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+            GIT_REPOSITORY https://github.com/llvm-project/compiler-rt.git
+            GIT_TAG release_90
+            GIT_SHALLOW true
+            GIT_PROGRESS false
+            CMAKE_ARGS
+            -G "${CMAKE_GENERATOR}"
+            -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+            -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+            -DCOMPILER_RT_BUILD_SANITIZERS=false
+            -DCOMPILER_RT_BUILD_XRAY=false
+            -DCOMPILER_RT_BUILD_PROFILE=false
+            -DCOMPILER_RT_BUILD_LIBFUZZER=false
+            )
+
 endif ()
 
 
