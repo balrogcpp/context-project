@@ -314,10 +314,11 @@ externalproject_add(target-json
                     -DJSON_BuildTests=false
                     )
 
-
-set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-assimp)
-set(ASSIMP_UPDATE_COMMAND ${ASSIMP_CHDIR}  ${GIT_EXECUTABLE} reset --hard)
-set(ASSIMP_PATCH_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/assimp-5.0.1.patch)
+if(NOT MSVC)
+    set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-assimp)
+    set(ASSIMP_UPDATE_COMMAND ${ASSIMP_CHDIR}  ${GIT_EXECUTABLE} reset --hard)
+    set(ASSIMP_PATCH_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/assimp-5.0.1.patch)
+endif()
 externalproject_add(target-assimp
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-zlib target-rapidjson

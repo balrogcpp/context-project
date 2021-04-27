@@ -288,7 +288,7 @@ elseif (APPLE)
 
 endif ()
 
-target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic assimp ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
+target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic assimp::assimp ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
         ${PNG_LIBRARY} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
         ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
@@ -375,9 +375,10 @@ set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 
 
 set(CPACK_GENERATOR "ZIP")
-if (MSVC)
-    set(CPACK_GENERATOR "ZIP" "NSIS")
-endif ()
+#NSIS is not ready
+# if (MSVC)
+#     set(CPACK_GENERATOR "ZIP" "NSIS")
+# endif ()
 
 include(CPack)
 
