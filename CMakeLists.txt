@@ -239,13 +239,14 @@ find_package(PNG QUIET)
 find_package(freetype QUIET)
 find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
 
+
 if (NOT ANDROID AND NOT IOS)
-    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND OR NOT PNG_FOUND OR NOT ASSIMP_IRRXML_LIBRARY)
+    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND OR NOT PNG_FOUND OR NOT ASSIMP_IRRXML_LIBRARY OR NOT assimp_FOUND)
         message("Please build dependencies before executable")
         return()
     endif ()
 else ()
-    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND OR NOT PNG_FOUND OR NOT ASSIMP_IRRXML_LIBRARY)
+    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND OR NOT PNG_FOUND OR NOT ASSIMP_IRRXML_LIBRARY OR NOT assimp_FOUND)
         add_library(target-deps-dummy SHARED android/app/src/main/cpp/main.cpp)
         add_dependencies(target-deps-dummy target-deps)
         return()
@@ -288,7 +289,7 @@ elseif (APPLE)
 
 endif ()
 
-target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic assimp::assimp ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
+target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
         ${PNG_LIBRARY} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
         ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
