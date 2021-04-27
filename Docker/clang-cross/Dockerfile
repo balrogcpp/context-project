@@ -176,7 +176,7 @@ ARG OSXCROSS_ROOT=/opt/osxcross
 ARG OSXCROSS_HOME=/opt
 ARG MACOSX_VERSION=10.15
 
-RUN apt-get install -y lzma-dev libxml2-dev libssl-dev \
+RUN apt-get install -y libxml2 lzma-dev libxml2-dev libssl-dev \
     && cd ${OSXCROSS_HOME} \
     && git clone --depth 1 https://github.com/tpoechtrager/osxcross.git \
     && wget https://github.com/balrogcpp/MacOSXsdk/raw/master/MacOSX${MACOSX_VERSION}.sdk.tar.xz -O ${OSXCROSS_ROOT}/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \

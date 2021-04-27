@@ -46,8 +46,6 @@ RUN python3 zip-dependencies.py
 
 RUN mkdir build-windows && cd build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target target-crt \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target package \
     && cd .. \
     && rm -rf build-windows

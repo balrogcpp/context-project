@@ -27,14 +27,13 @@ ARG CONTEXT_HOME=/mnt/build
 WORKDIR ${CONTEXT_HOME}
 
 ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
-ADD dependencies/patch ./dependencies/patch
-ADD ./dependencies/CMakeLists.txt .
+ADD ./dependencies/patch ./dependencies/patch
+ADD ./CMakeLists.txt ./CMakeLists.txt
 ADD ./doc ./doc
 ADD ./CMake ./CMake
 
 
-
-RUN apt-get update && apt-get install -y git libxaw7-dev libxrandr-dev libglew-dev libpulse-dev
+RUN apt-get update && apt-get install -y git
 
 
 RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
