@@ -102,12 +102,6 @@ ShaderResolver::ShaderResolver(Ogre::RTShader::ShaderGenerator *shader_generator
 
 //----------------------------------------------------------------------------------------------------------------------
 bool ShaderResolver::FixMaterial(const string &material_name) {
-  static vector<string> material_list_;
-
-  if (find(material_list_.begin(), material_list_.end(), material_name)==material_list_.end())
-	material_list_.push_back(material_name);
-  else
-	return false;
 
   auto &mShaderGenerator = Ogre::RTShader::ShaderGenerator::getSingleton();
   auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name);
