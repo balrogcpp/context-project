@@ -116,6 +116,8 @@ externalproject_add(target-openal
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
+                    -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -DALSOFT_TESTS=false
                     -DALSOFT_UTILS=false

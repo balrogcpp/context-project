@@ -128,7 +128,9 @@ void Render::InitOgrePlugins_() {
   Ogre::Root::getSingleton().installPlugin(new Ogre::FreeImagePlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
+#ifdef DEBUG
   Ogre::Root::getSingleton().installPlugin(new Ogre::AssimpPlugin());
+#endif
 #endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
