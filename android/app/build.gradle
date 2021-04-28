@@ -13,7 +13,7 @@ android {
         versionName    '1.0'
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_ARM_NEON=ON'
+                arguments '-DANDROID_ARM_NEON=ON -G "Ninja"'
             }
         }
     }

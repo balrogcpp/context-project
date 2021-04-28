@@ -20,11 +20,19 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-FROM balrogcpp/clang-cross:latest
+FROM balrogcpp/clang-linux:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt/build
 WORKDIR ${CONTEXT_HOME}
+
+
+
+
+RUN apt-get update \
+    && apt-get install -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
+    && apt-get clean
+
 
 ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 ADD ./dependencies/patch ./dependencies/patch
@@ -33,24 +41,15 @@ ADD ./doc ./doc
 ADD ./CMake ./CMake
 
 
-RUN apt-get update && apt-get install -y git
+ENV CC=clang
+ENV CXX=clang++
 
-
-RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -G Ninja .. \
-    && cmake --build . --target target-deps \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release/windows-clang-mingw-x86_64 \
-    && rm -rf src tmp \
-    && rm -rf ${CONTEXT_HOME}/build-windows
-
-
-RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
-    && eval `x86_64-apple-darwin19-osxcross-conf` \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -G Ninja .. \
-    && cmake --build . --target target-deps \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release/apple-darwin-clang-x86_64 \
-    && rm -rf src tmp ${CONTEXT_HOME}/build-apple \
-    && rm -rf ${CONTEXT_HOME}/build-apple
+RUN mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
+     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -G Ninja .. \
+     && cmake --build . --target target-deps \
+     && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-clang-x86_64 \
+     && rm -rf src tmp \
+     && rm -rf ${CONTEXT_HOME}/build-linux
 
 
 RUN cd ${CONTEXT_HOME} \

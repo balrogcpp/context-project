@@ -122,6 +122,7 @@ externalproject_add(target-openal
                     -DALSOFT_TESTS=false
                     -DALSOFT_UTILS=false
                     -DALSOFT_EXAMPLES=false
+                    -DALSOFT_CONFIG=false
                     -DALSOFT_BACKEND_SDL2=false
                     -DALSOFT_BACKEND_SNDIO=false
                     -DALSOFT_BACKEND_WASAPI=false
@@ -542,7 +543,6 @@ externalproject_add(target-filesystem
                     -DGHC_FILESYSTEM_BUILD_EXAMPLES=false
                     )
 
-list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 #OpenMP is not available when crosscompile with clang-cross
@@ -591,6 +591,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 endif ()
 
 
+list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-json)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)

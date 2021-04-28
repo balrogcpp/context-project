@@ -28,7 +28,8 @@ WORKDIR /mnt
 
 
 RUN apt-get update \
-    && apt-get install -y git gcc g++ python python3 zip wget ca-certificates gnupg2 make autoconf file patch xz-utils bzip2
+    && apt-get install -y git gcc g++ python python3 zip wget ca-certificates gnupg2 make autoconf file patch \
+    && apt-get clean
 
 
 ########################################################################################################################
@@ -40,7 +41,7 @@ ARG MINGW_VERSION=8.0.0
 ARG GCC_VERSION=10.3.0
 ARG PKG_CONFIG_VERSION=0.29.2
 
-RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev \
+RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev xz-utils bzip2 \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
@@ -138,7 +139,7 @@ RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev l
     && rm -rf mingw-w64 \
     && rm -rf gcc-${GCC_VERSION} \
     && rm -rf gcc-mingw32 \
-    && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev \
+    && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev xz-utils bzip2 \
     && apt-get -y autoremove \
     && apt-get clean
 
@@ -168,7 +169,8 @@ RUN apt-get install -y wget ca-certificates gnupg2 apt-transport-https \
     && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
-    && apt-get install -y llvm clang lld
+    && apt-get install -y llvm clang lld \
+    && apt-get clean
 
 
 ########################################################################################################################
@@ -176,7 +178,7 @@ ARG OSXCROSS_ROOT=/opt/osxcross
 ARG OSXCROSS_HOME=/opt
 ARG MACOSX_VERSION=10.15
 
-RUN apt-get install -y libxml2 lzma-dev libxml2-dev libssl-dev \
+RUN apt-get install -y libxml2 lzma-dev libxml2-dev libssl-dev xz-utils \
     && cd ${OSXCROSS_HOME} \
     && git clone --depth 1 https://github.com/tpoechtrager/osxcross.git \
     && wget https://github.com/balrogcpp/MacOSXsdk/raw/master/MacOSX${MACOSX_VERSION}.sdk.tar.xz -O ${OSXCROSS_ROOT}/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \
@@ -185,9 +187,10 @@ RUN apt-get install -y libxml2 lzma-dev libxml2-dev libssl-dev \
     && rm ${OSXCROSS_ROOT}/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \
     && rm -rf ${OSXCROSS_ROOT}/build \
     && rm -rf `find  . -type d -name .git` \
-    && apt-get -y purge lzma-dev libxml2-dev libssl-dev \
+    && apt-get -y purge lzma-dev libxml2-dev libssl-dev xz-utils \
     && apt-get -y autoremove \
     && apt-get clean
+
 
 RUN eval `${OSXCROSS_ROOT}/target/bin/x86_64-apple-darwin19-osxcross-conf`
 
