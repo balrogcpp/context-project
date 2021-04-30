@@ -8,7 +8,7 @@ WORKDIR ${CONTEXT_HOME}
 
 ADD ./sources ./sources
 ADD ./deploy ./deploy
-ADD ./CMake ./CMake
+ADD ./cmake ./cmake
 ADD ./demo ./demo
 ADD ./doc ./doc
 ADD ./tests ./tests

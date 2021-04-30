@@ -38,14 +38,14 @@ ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 ADD ./dependencies/patch ./dependencies/patch
 ADD ./CMakeLists.txt ./CMakeLists.txt
 ADD ./doc ./doc
-ADD ./CMake ./CMake
+ADD ./cmake ./cmake
 
 
 ENV CC=clang
 ENV CXX=clang++
 
 RUN mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
-     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -G Ninja .. \
+     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
      && cmake --build . --target target-deps \
      && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-clang-x86_64 \
      && rm -rf src tmp \

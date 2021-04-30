@@ -29,7 +29,7 @@ WORKDIR ${CONTEXT_HOME}
 
 ADD ./sources ./sources
 ADD ./deploy ./deploy
-ADD ./CMake ./CMake
+ADD ./cmake ./cmake
 ADD ./demo ./demo
 ADD ./doc ./doc
 ADD ./tests ./tests
@@ -45,7 +45,7 @@ RUN python3 zip-dependencies.py
 
 
 RUN mkdir build-windows && cd build-windows \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target package \
     && cd .. \
     && rm -rf build-windows
@@ -53,7 +53,7 @@ RUN mkdir build-windows && cd build-windows \
 
 RUN mkdir build-apple && cd build-apple \
     && eval `x86_64-apple-darwin19-osxcross-conf` \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target package \
     && cd .. \
     && rm -rf build-apple

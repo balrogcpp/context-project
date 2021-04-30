@@ -25,7 +25,7 @@ ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 ADD ./dependencies/patch ./dependencies/patch
 ADD ./CMakeLists.txt ./CMakeLists.txt
 ADD ./doc ./doc
-ADD ./CMake ./CMake
+ADD ./cmake ./cmake
 ADD ./android ./android
 
 

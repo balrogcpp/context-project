@@ -32,11 +32,11 @@ ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 ADD ./dependencies/patch ./dependencies/patch
 ADD ./CMakeLists.txt ./CMakeLists.txt
 ADD ./doc ./doc
-ADD ./CMake ./CMake
+ADD ./cmake ./cmake
 
 
 RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
     && cmake --build . --target target-deps \
     && cd ${CONTEXT_HOME}/dependencies/external/Release/windows-clang-mingw-x86_64 \
     && rm -rf src tmp \
@@ -45,7 +45,7 @@ RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
 
 RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
     && eval `x86_64-apple-darwin19-osxcross-conf` \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -G Ninja .. \
     && cmake --build . --target target-deps \
     && cd ${CONTEXT_HOME}/dependencies/external/Release/apple-darwin-clang-x86_64 \
     && rm -rf src tmp ${CONTEXT_HOME}/build-apple \
