@@ -379,16 +379,10 @@ externalproject_add(target-assimp
                     )
 
 
-if (ANDROID OR IOS)
-    # to be sure GLES2 is built for Mobile
-    set(OGRE_USE_GLES2 true)
-else ()
-    # to be sure GLES2 is not built for Desktop
-    set(OGRE_USE_GLES2 false)
-endif ()
 # PCH on Apple cause objective-c compilation error
-set(OGRE_USE_PCH true)
-if (APPLE)
+if (NOT APPLE)
+    set(OGRE_USE_PCH true)
+else()
     set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre)
     set(OGRE_UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard)
     set(OGRE_PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-apple.patch)
@@ -430,7 +424,6 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_PLUGIN_CG=false
                     -DOGRE_BUILD_RENDERSYSTEM_METAL=false
                     -DOGRE_BUILD_RENDERSYSTEM_GL=false
-                    -DOGRE_BUILD_RENDERSYSTEM_GLES2=${OGRE_USE_GLES2}
                     -DOGRE_BUILD_COMPONENT_OVERLAY=true
                     -DOGRE_BUILD_COMPONENT_BITES=false
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=true

@@ -28,6 +28,43 @@ using namespace std;
 
 namespace xio {
 
+//----------------------------------------------------------------------------------------------------------------------
+void Window::InitGlContext_() {
+  constexpr array<pair<int, int>, 10> ver = {make_pair(4, 5),
+													   make_pair(4, 4),
+													   make_pair(4, 3),
+													   make_pair(4, 2),
+													   make_pair(4, 1),
+													   make_pair(4, 0),
+													   make_pair(3, 3),
+													   make_pair(3, 2),
+													   make_pair(3, 1),
+													   make_pair(3, 0)
+  };
+
+
+
+  if (!gl_context_) {
+	for (const auto &it : ver) {
+	  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, it.first);
+	  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, it.second);
+
+	  gl_context_ = SDL_GL_CreateContext(window_);
+
+	  if (gl_context_)
+		break;
+	}
+  }
+
+  if (!gl_context_) {
+	throw Exception("Failed to Create SDL_GL_Context");
+  }
+
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
 Window::Window(int w, int h, bool f)
 	: w_(w), h_(h), f_(f) {
 
@@ -48,8 +85,11 @@ Window::Window(int w, int h, bool f)
   screen_w_ = static_cast<int>(DM.w);
   screen_h_ = static_cast<int>(DM.h);
 
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
+#if OGRE_PLATFORM==OGRE_PLATFORM_LINUX
+//  flags_ |= SDL_WINDOW_OPENGL;
+#endif
 
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
 
   if (w_==screen_w_ && h_==screen_h_) {
@@ -63,7 +103,12 @@ Window::Window(int w, int h, bool f)
 	h_ = screen_h_;
   }
 
+
   window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w_, h_, flags_);
+
+#if OGRE_PLATFORM==OGRE_PLATFORM_LINUX
+//  InitGlContext_();
+#endif
 #else
 
 
@@ -128,12 +173,15 @@ SDL_SysWMinfo Window::GetInfo() const {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Window::SetCursorStatus(bool show, bool grab, bool relative) {
+void Window::Grab(bool grab) {
   //This breaks input on > Android 9.0
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  SDL_ShowCursor(show);
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
+  SDL_ShowCursor(!grab);
   SDL_SetWindowGrab(window_, static_cast<SDL_bool>(grab));
-  SDL_SetRelativeMouseMode(static_cast<SDL_bool>(relative));
+#if OGRE_PLATFORM!=OGRE_PLATFORM_APPLE
+  // osx workaround: mouse motion events are gone otherwise
+  SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
+#endif
 #endif
 }
 
@@ -155,7 +203,7 @@ void Window::SetFullscreen(bool f) {
   f_ = f;
 
   if (f) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
 	SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
 #else
 	SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_FULLSCREEN);

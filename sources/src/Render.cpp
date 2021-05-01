@@ -173,6 +173,7 @@ void Render::InitRenderWindow_() {
 
   SDL_SysWMinfo info = window_->GetInfo();
 
+
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
@@ -240,6 +241,7 @@ void Render::InitResourceLocation_() {
   Assets::AddLocationRecursive("assets", default_group, "resources.list");
 
 #else
+
   Ogre::ResourceGroupManager& resGroupMan = Ogre::ResourceGroupManager::getSingleton();
   Ogre::String defResGroup = Ogre::RGN_DEFAULT;
 
@@ -395,7 +397,6 @@ void Render::RestoreFullscreenAndroid_() {
   SDL_GetDesktopDisplayMode(0, &DM);
   int screen_w = static_cast<int>(DM.w);
   int screen_h = static_cast<int>(DM.h);
-//  Resize(screen_w, screen_h, true);
   render_window_->resize(screen_w, screen_h);
 #endif
 }

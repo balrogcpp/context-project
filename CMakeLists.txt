@@ -41,6 +41,8 @@ include(ProcessorCount)
 
 check_type_size("void*" PTR_SIZE BUILTIN_TYPES_ONLY)
 
+
+# Build type definition
 if (NOT ANDROID)
     if (NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE RelWithDebInfo)
@@ -52,6 +54,7 @@ if (NOT ANDROID)
         message(SEND_ERROR "Debug build is not working with MSVC right now")
     endif ()
 endif ()
+
 
 # Platform definition
 if (WIN32)
@@ -70,6 +73,7 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 else ()
     set(CONTEXT_TOOLCHAIN ${CMAKE_SYSTEM_NAME})
 endif ()
+
 
 # Toolchain definition
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -107,8 +111,8 @@ string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
 # Compilation flags definition
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-        string(APPEND CMAKE_CXX_FLAGS " -s -Ofast -funroll-loops -DNDEBUG")
-        string(APPEND CMAKE_C_FLAGS " -s -Ofast -funroll-loops -DNDEBUG")
+        string(APPEND CMAKE_CXX_FLAGS " -Wall -s -Ofast -funroll-loops -DNDEBUG")
+        string(APPEND CMAKE_C_FLAGS " -Wall -s -Ofast -funroll-loops -DNDEBUG")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-linker-plugin")
         if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -285,8 +289,6 @@ elseif (ANDROID)
     list(APPEND SYSTEM_LIBRARIES SDL2::hidapi android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
-elseif (APPLE)
-
 endif ()
 
 target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}

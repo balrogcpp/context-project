@@ -34,7 +34,9 @@ namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 void Render::InitOgreRenderSystem_GLES2_() {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+#ifdef DEBUG
   Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem());
+#endif
 #endif
 
 }

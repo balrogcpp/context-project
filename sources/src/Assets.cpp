@@ -198,8 +198,6 @@ void AddLocationRecursive(const string &path_,
 		getline(ss, group, ';');
 		resource_list.push_back({path, type, group});
 	  }
-
-	  list_file.close();
 	}
   }
 

@@ -52,7 +52,7 @@ void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym)==SDL_SCANCODE_ESCAPE) {
 	context_menu_ = true;
 	GetEngine().InMenu();
-	GetRender().GetWindow().SetCursorStatus(true, false, false);
+	GetRender().GetWindow().Grab(false);
   }
 
 }
@@ -133,7 +133,7 @@ void DemoDotAppState::Update(float time) {
 	ImGui::NewLine();
 
 	if (ImGui::Button("         RESUME          ")) {
-	  GetWindow().SetCursorStatus(false, true, true);
+	  GetWindow().Grab(true);
 	  GetEngine().OffMenu();
 	  context_menu_ = false;
 	}
@@ -158,8 +158,8 @@ void DemoDotAppState::Update(float time) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Init() {
-  GetRender().GetWindow().SetCursorStatus(false, true, true);
-//  GetLoader().GetCamera().SetStyle(xio::CameraMan::Style::FPS);
+  GetRender().GetWindow().Grab(true);
+  GetLoader().GetCamera().SetStyle(xio::CameraMan::Style::FPS);
   LoadFromFile("1.scene", Ogre::RGN_DEFAULT);
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");

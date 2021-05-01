@@ -80,7 +80,7 @@ void MenuAppState::OnKeyDown(SDL_Keycode sym) {
 }
 
 void MenuAppState::Init() {
-  GetWindow().SetCursorStatus(true, false, false);
+  GetWindow().Grab(false);
 
   ImGuiIO &io = ImGui::GetIO();
 }
