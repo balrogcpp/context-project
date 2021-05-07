@@ -237,6 +237,7 @@ void Render::InitResourceLocation_() {
   Assets::AddLocation("programs/particles", internal_group);
   Assets::AddLocation("programs/compositor", internal_group);
   Assets::AddLocation("programs/overlay", internal_group);
+  Assets::AddLocation("programs/gorilla", internal_group);
 
   Assets::AddLocationRecursive("assets", default_group, "resources.list");
 
@@ -254,6 +255,7 @@ void Render::InitResourceLocation_() {
   resGroupMan.addResourceLocation("/programs/particles.zip", zip, internal_group);
   resGroupMan.addResourceLocation("/programs/compositor.zip", zip, internal_group);
   resGroupMan.addResourceLocation("/programs/overlay.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/gorilla.zip", zip, internal_group);
 
   resGroupMan.addResourceLocation("/assets/material.zip", zip, default_group);
   resGroupMan.addResourceLocation("/assets/models.zip", zip, default_group);
