@@ -33,7 +33,7 @@ enable_language(CXX)
 
 project(xio CXX)
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 
 include(CheckTypeSize)

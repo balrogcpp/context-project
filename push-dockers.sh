@@ -9,10 +9,10 @@ docker build . -f docker/clang-linux/Dockerfile -t balrogcpp/clang-linux \
 && docker build . -f docker/deps-android/Dockerfile -t balrogcpp/xio-deps-android \
 && docker login \
 && docker push balrogcpp/clang-linux \
-&& docker push balrogcpp/clang-cross \
-&& docker push balrogcpp/clang-android \
 && docker push balrogcpp/xio-deps-linux \
+&& docker push balrogcpp/clang-cross \
 && docker push balrogcpp/xio-deps-cross \
+&& docker push balrogcpp/clang-android \
 && docker push balrogcpp/xio-deps-android
 
 
