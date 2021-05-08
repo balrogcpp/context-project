@@ -41,14 +41,6 @@ ReflectionCamera::~ReflectionCamera() {
 void ReflectionCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   rcamera_->enableReflection(plane_);
   rcamera_->setLodBias(0.001);
-
-  technique_ = scene_->getShadowTechnique();
-
-  if (scene_->hasLight("Sun")) {
-	pssm_shadows_ = scene_->getLight("Sun")->getCastShadows();
-  } else {
-	pssm_shadows_ = false;
-  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
