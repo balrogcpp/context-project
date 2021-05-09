@@ -51,4 +51,6 @@ RUN cd ./android \
     && ./gradlew assembleRelease \
     && rm -rf app/.cxx \
     && cd ${CONTEXT_HOME}/dependencies/external/Release/android-clang-aarch64 \
-    && rm -rf src tmp
+    && rm -rf src tmp \
+    && cd ${ANDROID_HOME} \
+    && rm -rf emulator tools

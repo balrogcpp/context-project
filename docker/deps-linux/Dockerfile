@@ -5,19 +5,6 @@ ARG CONTEXT_HOME=/mnt/build
 ARG GIT_HASH=00000000
 WORKDIR ${CONTEXT_HOME}
 
-ADD ./sources ./sources
-ADD ./deploy ./deploy
-ADD ./cmake ./cmake
-ADD ./demo ./demo
-ADD ./doc ./doc
-ADD ./tests ./tests
-ADD ./LICENSE .
-ADD ./programs ./programs
-ADD ./assets ./assets
-ADD ./CMakeLists.txt .
-ADD ./zip-dependencies.py .
-ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
-
 
 RUN apt-get update \
     && apt-get install -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
