@@ -21,9 +21,13 @@ build:
     - docker create -ti --name abc balrogcpp/xio-cross bash
     - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-windows-clang-mingw-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
     - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-apple-darwin-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
+    - docker cp abc:/mnt/build/artifacts/app-arm64-v8a-$CI_COMMIT_SHORT_SHA.apk artifacts
     - docker rm -f abc
+    - docker rmi balrogcpp/xio-cross
+    - docker rmi balrogcpp/deps-cross
   artifacts:
     paths:
       - artifacts/ContextProjectDemo-linux-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip
       - artifacts/ContextProjectDemo-windows-clang-mingw-x86_64-$CI_COMMIT_SHORT_SHA.zip
       - artifacts/ContextProjectDemo-apple-darwin-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip
+      - artifacts/app-arm64-v8a-$CI_COMMIT_SHORT_SHA.apk

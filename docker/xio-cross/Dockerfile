@@ -38,11 +38,11 @@ RUN mkdir build-apple && cd build-apple \
     && rm -rf build-apple
 
 
-#RUN cd ./android \
-#    && ./gradlew assembleRelease \
-#    && cd ../ \
-#    && rm -rf ${CONTEXT_HOME}/dependencies/external \
-#    && rm -rf ${ANDROID_HOME} \
-#    && cd ../
-#
-#RUN mv android/app/build/outputs/apk/release/app-arm64-v8a-release.apk artifacts/app-arm64-v8a-$GIT_HASH.apk
+RUN cd ./android \
+    && ./gradlew assembleRelease \
+    && cd ../ \
+    && rm -rf ${CONTEXT_HOME}/dependencies/external \
+    && rm -rf ${ANDROID_HOME} \
+    && cd ../
+
+RUN mv android/app/build/outputs/apk/release/app-arm64-v8a-release.apk artifacts/app-arm64-v8a-$GIT_HASH.apk
