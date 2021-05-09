@@ -15,13 +15,13 @@ build:
     - mkdir artifacts
     - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-linux-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
     - docker rm -f abc
-    - yes | docker system prune -a
+    - yes | docker container prune
     - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD`  . -f docker/xio-cross/Dockerfile -t balrogcpp/xio-cross
     - docker create -ti --name abc balrogcpp/xio-cross bash
     - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-windows-clang-mingw-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
     - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-apple-darwin-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
     - docker rm -f abc
-    - yes | docker system prune -a
+    - yes | docker container prune
   artifacts:
     paths:
       - artifacts/ContextProjectDemo-linux-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip
