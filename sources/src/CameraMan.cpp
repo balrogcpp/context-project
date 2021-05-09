@@ -46,6 +46,7 @@ void CameraMan::ManualStop() {
 	velocity_ = Ogre::Vector3::ZERO;
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 void CameraMan::Update(float time) {
   if (style_==Style::FREELOOK) {

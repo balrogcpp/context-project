@@ -171,7 +171,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
             string(APPEND CMAKE_EXE_LINKER_FLAGS " -fopenmp -static-openmp")
             string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fopenmp -static-openmp")
         endif ()
-
     endif ()
 
 elseif (MSVC)

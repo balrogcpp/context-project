@@ -201,7 +201,9 @@ static void CreateGrassMesh2(float width, float height) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Forest::Forest() = default;
+Forest::Forest() {
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 Forest::~Forest() {
@@ -352,9 +354,10 @@ void Forest::GenerateTreesPaged() {
       x = Ogre::Math::RangeRandom(-bound, bound);
       z = Ogre::Math::RangeRandom(-bound, bound);
     }
+
     y = heigh_func_(x, z);
     scale = Ogre::Math::RangeRandom(0.9f, 1.1f);
-    scale *= 0.1;
+    scale *= 0.2;
     Ogre::Quaternion quat;
     quat.FromAngleAxis(Ogre::Degree(yaw), Ogre::Vector3::UNIT_Y);
 
@@ -363,7 +366,7 @@ void Forest::GenerateTreesPaged() {
     GetPhysics().ProcessData(fir1EntPtr, node, "capsule");
     scene->destroySceneNode(node);
 
-    treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, 0, z), Ogre::Degree(yaw), scale);
+    treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
   }
 
   Update(0);
@@ -376,7 +379,7 @@ void Forest::GenerateTreesPaged() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Forest::ProcessForest() {
-  GenerateGrassPaged();
+//  GenerateGrassPaged();
 //  GenerateTreesPaged();
 //  GenerateRocksStatic();
 }

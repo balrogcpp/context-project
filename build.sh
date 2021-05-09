@@ -19,13 +19,4 @@ docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD`  . -f docker/xi
 docker rm -f abc
 
 
-
-docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD`  . -f docker/xio-android/Dockerfile -t balrogcpp/xio-android \
-&& docker create -ti --name abc balrogcpp/xio-android bash \
-&& docker cp abc:/mnt/build/artifacts/app-arm64-v8a-release.apk artifacts \
-&& docker cp abc:/mnt/build/artifacts/app-x86_64-release.apk  artifacts
-
-docker rm -f abc
-
-
 exit 0

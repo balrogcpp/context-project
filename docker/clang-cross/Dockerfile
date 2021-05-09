@@ -151,7 +151,7 @@ RUN update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_
 
 
 ########################################################################################################################
-ENV CMAKE_VERSION=3.20.0
+ENV CMAKE_VERSION=3.20.2
 ENV CMAKE_HOME=/opt/cmake
 ENV NINJA_VERSION=1.10.2
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
@@ -159,7 +159,7 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp && unzip /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
     && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
     && chmod u+x /tmp/cmake-install.sh \
-    && mkdir /opt/cmake \
+    && mkdir ${CMAKE_HOME} \
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
     && rm /tmp/cmake-install.sh
 
@@ -197,3 +197,26 @@ RUN eval `${OSXCROSS_ROOT}/target/bin/x86_64-apple-darwin19-osxcross-conf`
 ENV OSXCROSS_HOST=x86_64-apple-darwin19
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/target/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/target/bin:${PATH}"
+
+
+########################################################################################################################
+ENV ANDROID_HOME=/opt/android-sdk
+
+RUN apt-get update \
+    && apt-get install -y git wget zip openjdk-8-jdk \
+    && apt-get clean
+
+WORKDIR /opt
+
+
+########################################################################################################################
+RUN wget https://dl.google.com/android/repository/commandlinetools-linux-6609375_latest.zip -O tools.zip \
+    && unzip tools.zip \
+    && rm tools.zip \
+    && cd tools/bin \
+    && export ANDROID_HOME=/opt/android-sdk \
+    && yes | ./sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
+    && cd ../
+
+ENV PATH="/opt/tools/bin:${PATH}"
+ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"

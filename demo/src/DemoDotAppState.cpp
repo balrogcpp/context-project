@@ -159,7 +159,7 @@ void DemoDotAppState::Update(float time) {
 //----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Init() {
   GetRender().GetWindow().Grab(true);
-  GetLoader().GetCamera().SetStyle(xio::CameraMan::Style::FPS);
+//  GetLoader().GetCamera().SetStyle(xio::CameraMan::Style::FPS);
   LoadFromFile("1.scene", Ogre::RGN_DEFAULT);
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");

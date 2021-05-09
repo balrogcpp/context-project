@@ -74,13 +74,13 @@ void InputHandler::UnregObserver(view_ptr<MutedInputObserver> p) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void InputHandler::OnKeyDown(SDL_Keycode sym) {
-  //if(!paused_)
+  if(!paused_)
   for_each(io_listeners.begin(), io_listeners.end(), [=](auto it){it->OnKeyDown(sym);});
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void InputHandler::OnKeyUp(SDL_Keycode sym) {
-  //if(!paused_)
+//  if(!paused_)
   for_each(io_listeners.begin(), io_listeners.end(), [=](auto it){it->OnKeyUp(sym);});
 }
 
@@ -104,10 +104,6 @@ void InputHandler::OnMouseMove(int x, int y, int dx, int dy, bool left, bool rig
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-template <typename T> static int sign(T val) {
-  return (T(0) < val) - (val < T(0));
-}
-
 void InputHandler::OnMouseWheel(int x, int y) {
   if(!paused_)
   for_each(io_listeners.begin(), io_listeners.end(), [=](auto it){it->OnMouseWheel(x, y);});
@@ -133,6 +129,7 @@ void InputHandler::OnMouseRbDown(int x, int y) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void InputHandler::OnMouseRbUp(int x, int y) {
+  if(!paused_)
   for_each(io_listeners.begin(), io_listeners.end(), [=](auto it){it->OnMouseRbUp(x, y);});
 }
 
