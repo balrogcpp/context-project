@@ -142,10 +142,12 @@ void Render::InitOgrePlugins_() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Render::InitOgreRenderSystem_() {
-  if (render_system_ == "gl3")
-  	InitOgreRenderSystem_GL3_();
-  else if (render_system_ == "gles2")
-  	InitOgreRenderSystem_GLES2_();
+  if (render_system_ == "gl3") {
+	InitOgreRenderSystem_GL3_();
+  }
+  else if (render_system_ == "gles2") {
+	InitOgreRenderSystem_GLES2_();
+  }
   else {
 #if OGRE_PLATFORM==OGRE_PLATFORM_ANDROID || OGRE_PLATFORM==OGRE_PLATFORM_APPLE_IOS
 	InitOgreRenderSystem_GLES2_();

@@ -86,9 +86,6 @@ Window::Window(int w, int h, bool f)
   screen_h_ = static_cast<int>(DM.h);
 
 #if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
-#if OGRE_PLATFORM==OGRE_PLATFORM_LINUX
-//  flags_ |= SDL_WINDOW_OPENGL;
-#endif
 
   flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
 
@@ -106,9 +103,6 @@ Window::Window(int w, int h, bool f)
 
   window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w_, h_, flags_);
 
-#if OGRE_PLATFORM==OGRE_PLATFORM_LINUX
-//  InitGlContext_();
-#endif
 #else
 
 
