@@ -38,6 +38,8 @@ RUN mkdir build-apple && cd build-apple \
     && rm -rf build-apple
 
 
+ADD ./android ./android
+
 RUN cd ./android \
     && ./gradlew assembleRelease \
     && cd ../ \

@@ -9,7 +9,7 @@ docker build . -f docker/clang-linux/Dockerfile -t balrogcpp/clang-linux \
 && docker push balrogcpp/clang-linux \
 && docker push balrogcpp/clang-cross \
 && docker push balrogcpp/deps-linux \
-&& docker push balrogcpp/deps-cross \
+&& docker push balrogcpp/deps-cross
 
 
 exit 0

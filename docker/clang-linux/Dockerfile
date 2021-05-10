@@ -57,7 +57,7 @@ RUN update-alternatives --install /usr/local/bin/python3 python3 /usr/local/bin/
 
 
 ########################################################################################################################
-ENV CMAKE_VERSION=3.20.0
+ENV CMAKE_VERSION=3.20.2
 ENV CMAKE_HOME=/opt/cmake
 ENV NINJA_VERSION=1.10.2
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
