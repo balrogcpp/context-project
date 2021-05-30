@@ -103,7 +103,7 @@ class PhysicsSystem final : public Component, public Singleton<PhysicsSystem> {
 
   std::unique_ptr<BtOgre::DebugDrawer> dbg_draw_;
   std::unique_ptr<btDbvtBroadphase> broadphase_;
-  std::unique_ptr<btDefaultCollisionConfiguration> configurator_;
+  std::unique_ptr<btDefaultCollisionConfiguration> config_;
   std::unique_ptr<btCollisionDispatcherMt> dispatcher_;
   std::unique_ptr<btSequentialImpulseConstraintSolverMt> solver_;
   std::unique_ptr<btDiscreteDynamicsWorldMt> world_;

@@ -38,7 +38,7 @@ class SubComponent : public NoCopy {
   inline static view_ptr<Config> conf_;
 
  public:
-  static void SetConfigurator(view_ptr<Config> conf) {
+  static void SetConfig(view_ptr<Config> conf) {
     conf_ = conf;
   }
 };

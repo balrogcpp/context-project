@@ -41,17 +41,17 @@ PhysicsSystem::PhysicsSystem(bool threaded) : threaded_(threaded)
 
   btSetTaskScheduler( sheduler );
   broadphase_ = make_unique<btDbvtBroadphase>();
-  configurator_ = make_unique<btDefaultCollisionConfiguration>();
-  dispatcher_ = make_unique<btCollisionDispatcherMt>(configurator_.get(), 40);
+  config_ = make_unique<btDefaultCollisionConfiguration>();
+  dispatcher_ = make_unique<btCollisionDispatcherMt>(config_.get(), 40);
   solver_ = make_unique<btSequentialImpulseConstraintSolverMt>();
 
   btConstraintSolverPoolMt* solverPool = new btConstraintSolverPoolMt( BT_MAX_THREAD_COUNT);
 
   world_ = make_unique<btDiscreteDynamicsWorldMt>(dispatcher_.get(),
-												broadphase_.get(),
-												solverPool,
-												solver_.get(),
-												configurator_.get());
+												  broadphase_.get(),
+												  solverPool,
+												  solver_.get(),
+												  config_.get());
 
 
   world_->setGravity(btVector3(0.0, -9.8, 0.0));

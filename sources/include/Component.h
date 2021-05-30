@@ -42,7 +42,7 @@ class Component : public NoCopy {
   bool paused_ = false;
 
  public:
-  static void SetConfigurator(view_ptr<Config> conf) {
+  static void SetConfig(view_ptr<Config> conf) {
     conf_ = conf;
   }
 };

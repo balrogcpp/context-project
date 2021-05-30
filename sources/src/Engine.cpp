@@ -33,7 +33,7 @@ Engine::Engine() {
 #if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
   conf_ = make_unique<Config>("config.json");
 #else
-  conf_ = make_unique<Configurator>("");
+  conf_ = make_unique<Config>("");
   conf_->AddMember("window_fullscreen", true);
   conf_->AddMember("compositor_use_bloom", false);
   conf_->AddMember("compositor_use_ssao", false);
@@ -50,8 +50,7 @@ Engine::Engine() {
   conf_->AddMember("shadows_texture_format", 16);
 #endif
 
-
-  Component::SetConfigurator(conf_.get());
+  Component::SetConfig(conf_.get());
   components_.reserve(16);
 
   io_ = make_unique<InputHandler>();
@@ -76,8 +75,8 @@ void Engine::InitComponents() {
   physics_ = make_unique<PhysicsSystem>(physics_threaded);
   audio_ = make_unique<AudioSystem>(8, 8);
 #else
-  physics_ = make_unique<Physics>(false);
-  audio_ = make_unique<Audio>(4, 4);
+  physics_ = make_unique<PhysicsSystem>(false);
+  audio_ = make_unique<AudioSystem>(4, 4);
 #endif
 
 
