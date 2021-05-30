@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include "Assets.h"
+#include "AssetManager.h"
 #include "Exception.h"
 #include "Android.h"
 #include <iostream>
@@ -36,8 +36,9 @@ namespace fs = ghc::filesystem;
 using namespace std;
 
 
-namespace xio::Assets {
+namespace xio::AssetManager {
 
+//----------------------------------------------------------------------------------------------------------------------
 static std::string FindPath(const std::string &path_, int depth = 3) {
 #if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
   string path = path_;

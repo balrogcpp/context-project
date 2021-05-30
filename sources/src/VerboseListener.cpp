@@ -27,6 +27,7 @@ using namespace std;
 
 namespace xio {
 
+//----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::SetVerbose(bool verbose) {
   verbose_ = verbose;
 }

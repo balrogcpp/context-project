@@ -27,6 +27,7 @@ using namespace std;
 
 namespace xio {
 
+//----------------------------------------------------------------------------------------------------------------------
 InputHandler::InputHandler() {
   io_listeners.reserve(32);
 }

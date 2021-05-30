@@ -35,6 +35,7 @@ using namespace std;
 
 namespace xio {
 
+//----------------------------------------------------------------------------------------------------------------------
 void InitRtss() {
   if (!Ogre::RTShader::ShaderGenerator::initialize()) {
 	throw Exception("RTSS failed to initialize");

@@ -52,8 +52,9 @@ void Window::InitGlContext_() {
 
 	  gl_context_ = SDL_GL_CreateContext(window_);
 
-	  if (gl_context_)
+	  if (gl_context_) {
 		break;
+	  }
 	}
   }
 
@@ -87,8 +88,6 @@ Window::Window(int w, int h, bool f)
 
 #if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
 
-  flags_ |= SDL_WINDOW_ALLOW_HIGHDPI;
-
   if (w_==screen_w_ && h_==screen_h_) {
 	flags_ |= SDL_WINDOW_BORDERLESS;
   }
@@ -101,7 +100,9 @@ Window::Window(int w, int h, bool f)
   }
 
 
-  window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w_, h_, flags_);
+  window_ = SDL_CreateWindow(caption_.c_str(),
+							 SDL_WINDOWPOS_UNDEFINED_DISPLAY(0), SDL_WINDOWPOS_UNDEFINED_DISPLAY(0),
+							 w_, h_, flags_);
 
 #else
 
@@ -126,16 +127,19 @@ Window::Window(int w, int h, bool f)
 #endif
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------
 Window::~Window() {
   SDL_SetWindowFullscreen(window_, SDL_FALSE);
   SDL_DestroyWindow(window_);
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------
 string Window::GetCaption() const {
   return caption_;
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 void Window::SetCaption(const string &caption) {
@@ -143,20 +147,24 @@ void Window::SetCaption(const string &caption) {
   SDL_SetWindowTitle(window_, caption.c_str());
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------
 pair<int, int> Window::GetSize() const {
   return make_pair(w_, h_);
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 float Window::GetRatio() const {
   return static_cast<float>(w_)/static_cast<float>(h_);
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------
 bool Window::IsFullscreen() const {
   return f_;
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 SDL_SysWMinfo Window::GetInfo() const {
@@ -165,6 +173,7 @@ SDL_SysWMinfo Window::GetInfo() const {
   SDL_GetWindowWMInfo(window_, &info);
   return info;
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 void Window::Grab(bool grab) {
@@ -184,6 +193,7 @@ void Window::SwapBuffers() const {
   SDL_GL_SwapWindow(window_);
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------
 void Window::Resize(int w, int h) {
   w_ = w;
@@ -191,6 +201,7 @@ void Window::Resize(int w, int h) {
   SDL_SetWindowPosition(window_, (screen_w_ - w_)/2, (screen_h_ - h_)/2);
   SDL_SetWindowSize(window_, w_, h_);
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 void Window::SetFullscreen(bool f) {

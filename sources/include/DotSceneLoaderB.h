@@ -27,7 +27,7 @@
 #include "ReflectionCamera.h"
 #include "CubeMapCamera.h"
 #include "Input.h"
-#include "Forest.h"
+#include "VegetationSystem.h"
 #include "Landscape.h"
 #include "Scene.h"
 #include <OgreSceneLoader.h>
@@ -52,11 +52,32 @@ class SinbadCharacterController;
 
 namespace xio {
 class CameraMan;
-class Configurator;
-class Render;
-class Physics;
-class Audio;
+class Config;
+class RenderSystem;
+class PhysicsSystem;
+class AudioSystem;
 class Overlay;
+
+std::string GetAttrib(const pugi::xml_node &xml_node,
+					  const std::string &attrib,
+					  const std::string &defaultValue = "");
+
+float GetAttribReal(const pugi::xml_node &xml_node, const std::string &attrib, float defaultValue = 0);
+
+int GetAttribInt(const pugi::xml_node &xml_node, const std::string &attrib, int defaultValue = 0);
+
+bool GetAttribBool(const pugi::xml_node &xml_node, const std::string &attrib, bool defaultValue = false);
+
+Ogre::Vector3 ParseVector3(const pugi::xml_node &xml_node);
+
+Ogre::Vector3 ParsePosition(const pugi::xml_node &xml_node);
+
+Ogre::Vector3 ParseScale(const pugi::xml_node &xml_node);
+
+Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node);
+
+Ogre::ColourValue ParseColour(pugi::xml_node &xml_node);
+
 
 class DotSceneLoaderB final : public Component, public Ogre::SceneLoader, public Singleton<DotSceneLoaderB> {
  public:
@@ -71,7 +92,7 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader, public
 
   static Landscape &GetTerrain();
   CameraMan &GetCamera() const;
-  static Forest &GetForest();
+  static VegetationSystem &GetForest();
 
  private:
   void ProcessScene_(pugi::xml_node &xml_root);
@@ -111,7 +132,7 @@ class DotSceneLoaderB final : public Component, public Ogre::SceneLoader, public
   std::unique_ptr<SinbadCharacterController> sinbad_;
 
   static inline std::unique_ptr<Landscape> terrain_;
-  static inline std::unique_ptr<Forest> forest_;
+  static inline std::unique_ptr<VegetationSystem> forest_;
 };
 
 } //namespace

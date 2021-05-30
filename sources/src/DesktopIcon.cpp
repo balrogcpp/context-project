@@ -37,6 +37,7 @@ using namespace std;
 
 namespace xio {
 
+//----------------------------------------------------------------------------------------------------------------------
 DesktopIcon::DesktopIcon()
 	: exec_("demo"), version_("1.0"), name_("XioDemo"),
 	  skeleton_{"[Desktop Entry]\n"

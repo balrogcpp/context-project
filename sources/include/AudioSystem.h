@@ -1,6 +1,6 @@
 //MIT License
 //
-//Copyright (c) 2021 Andrey Vasiliev
+//Copyright (c) 2021 Andrew Vasiliev
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +20,36 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-#include "pcheader.h"
+#pragma once
+#include "Component.h"
+#include "Singleton.h"
+#include <string>
+#include "view_ptr.h"
 
-#include "Configurator.h"
-
-using namespace std;
+namespace OgreOggSound{
+  class OgreOggSoundManager;
+}
 
 namespace xio {
+class AudioSystem final : public Component, public Singleton<AudioSystem> {
+ public:
+  AudioSystem(unsigned int max_sources, unsigned int queue_list_size);
+  virtual ~AudioSystem();
 
-//----------------------------------------------------------------------------------------------------------------------
-Configurator::Configurator(const string &file_name) {
-  if (!file_name.empty())
-  	Load(file_name);
-}
+  void Cleanup() override;
+  void Pause() override;
+  void Resume() override;
+  void Update(float time) override;
 
-//----------------------------------------------------------------------------------------------------------------------
-Configurator::~Configurator() {
+  void CreateSound(const std::string &name, const std::string &file, bool loop = false);
+  void PlaySound(const std::string &name, bool immediate = true);
+  void SetMasterVolume(float volume);
+  void SetMaxVolume(const std::string &name, float volume);
+  void SetVolume(const std::string &name, float gain);
+  void SetListener(Ogre::SceneNode *parent);
 
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void Configurator::Load(const string &file_name) {
-  ifstream ifs(file_name);
-
-  if (!ifs.is_open())
-	throw Exception("Error during parsing of " + file_name + " : can't open file");
-
-  ifs >> document_;
-}
+ private:
+  view_ptr<OgreOggSound::OgreOggSoundManager> manager_;
+};
 
 } //namespace

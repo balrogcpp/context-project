@@ -25,7 +25,7 @@
 #include "view_ptr.h"
 
 namespace xio {
-class Configurator;
+class Config;
 
 class Component : public NoCopy {
  public:
@@ -38,11 +38,11 @@ class Component : public NoCopy {
   virtual void Update(float time) = 0;
 
  protected:
-  inline static view_ptr<Configurator> conf_;
+  inline static view_ptr<Config> conf_;
   bool paused_ = false;
 
  public:
-  static void SetConfigurator(view_ptr<Configurator> conf) {
+  static void SetConfigurator(view_ptr<Config> conf) {
     conf_ = conf;
   }
 };

@@ -28,7 +28,8 @@ using namespace std;
 
 namespace xio {
 
-bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
+//----------------------------------------------------------------------------------------------------------------------
+static bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
   bool hasTangents = false;
   bool hasUVs = false;
   auto &elementList = vertex_declaration->getElements();
@@ -66,12 +67,6 @@ void EnsureHasTangents(Ogre::MeshPtr mesh) {
 
   if (generateTangents) {
 	mesh->buildTangentVectors();
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void UpdateMeshEdgeList(Ogre::Entity *entity) {
-  if (!entity->getMesh()->isEdgeListBuilt()) {
-	entity->getMesh()->buildEdgeList();
   }
 }
 

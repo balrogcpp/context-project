@@ -25,6 +25,8 @@
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 
 namespace xio {
+
+//----------------------------------------------------------------------------------------------------------------------
 CameraMan::CameraMan() {
 
 }

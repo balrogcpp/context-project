@@ -38,10 +38,10 @@ class RenderWindow;
 }
 
 namespace xio {
-class Render final : public Component, public Singleton<Render> {
+class RenderSystem final : public Component, public Singleton<RenderSystem> {
  public:
-  Render(int w, int h, bool f);
-  virtual ~Render();
+  RenderSystem(int w, int h, bool f);
+  virtual ~RenderSystem();
 
   void Cleanup() override;
   void Pause() override;

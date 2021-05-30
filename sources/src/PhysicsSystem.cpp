@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include "Physics.h"
+#include "PhysicsSystem.h"
 #include "btogre/BtOgre.h"
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
@@ -31,7 +31,8 @@ using namespace std;
 
 namespace xio {
 
-Physics::Physics(bool threaded) : threaded_(threaded)
+//----------------------------------------------------------------------------------------------------------------------
+PhysicsSystem::PhysicsSystem(bool threaded) : threaded_(threaded)
 {
   auto* sheduler = btCreateDefaultTaskScheduler();
 
@@ -70,14 +71,14 @@ Physics::Physics(bool threaded) : threaded_(threaded)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Physics::~Physics() {
+PhysicsSystem::~PhysicsSystem() {
   running_ = false;
 
   Cleanup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::InitThread_() {
+void PhysicsSystem::InitThread_() {
   if (!threaded_)
     return;
 
@@ -117,17 +118,17 @@ void Physics::InitThread_() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::Resume() {
+void PhysicsSystem::Resume() {
   pause_ = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::Pause() {
+void PhysicsSystem::Pause() {
   pause_ = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::Update(float time) {
+void PhysicsSystem::Update(float time) {
   if (threaded_)
     return;
 
@@ -143,7 +144,7 @@ void Physics::Update(float time) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::DispatchCollisions() {
+void PhysicsSystem::DispatchCollisions() {
   map<const btCollisionObject *, ContactInfo> new_contacts;
 
   /* Browse all collision pairs */
@@ -190,7 +191,7 @@ void Physics::DispatchCollisions() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::Cleanup() {
+void PhysicsSystem::Cleanup() {
   world_->clearForces();
 
   //remove the rigidbodies from the dynamics world and delete them
@@ -208,12 +209,12 @@ void Physics::Cleanup() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::AddRigidBody(btRigidBody *body) {
+void PhysicsSystem::AddRigidBody(btRigidBody *body) {
   world_->addRigidBody(body);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::CreateTerrainHeightfieldShape(int size,
+void PhysicsSystem::CreateTerrainHeightfieldShape(int size,
 											float *data,
 											const float &min_height,
 											const float &max_height,
@@ -266,7 +267,7 @@ void Physics::CreateTerrainHeightfieldShape(int size,
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::ProcessData(Ogre::Entity *entity,
+void PhysicsSystem::ProcessData(Ogre::Entity *entity,
 						  Ogre::SceneNode *parent_node,
 						  const string &proxy_type,
 						  const string &physics_type,
@@ -450,7 +451,7 @@ void Physics::ProcessData(Ogre::Entity *entity,
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
+void PhysicsSystem::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
 						  Ogre::Entity *entity,
 						  Ogre::SceneNode *parent_node) {
 
@@ -657,7 +658,7 @@ void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
 	AddRigidBody(entBody);
   }
 }
-bool Physics::IsThreaded() const {
+bool PhysicsSystem::IsThreaded() const {
   return threaded_;
 }
 

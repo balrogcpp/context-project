@@ -21,7 +21,7 @@
 //SOFTWARE.
 
 #include "pcheader.h"
-#include "Audio.h"
+#include "AudioSystem.h"
 #include "oggsound/OgreOggSound.h"
 #include "Exception.h"
 
@@ -30,8 +30,9 @@
 using namespace std;
 
 namespace xio {
+
 //----------------------------------------------------------------------------------------------------------------------
-Audio::Audio(unsigned int max_sources, unsigned int queue_list_size) {
+AudioSystem::AudioSystem(unsigned int max_sources, unsigned int queue_list_size) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   putenv((char*)"ALSOFT_LOGLEVEL=LOG_NONE");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
@@ -47,38 +48,39 @@ Audio::Audio(unsigned int max_sources, unsigned int queue_list_size) {
   manager_ = &OgreOggSound::OgreOggSoundManager::getSingleton();
   manager_->setResourceGroupName(Ogre::RGN_AUTODETECT);
 }
+
 //----------------------------------------------------------------------------------------------------------------------
-Audio::~Audio() {
+AudioSystem::~AudioSystem() {
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Audio::Cleanup() {
+void AudioSystem::Cleanup() {
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Audio::Update(float time) {
+void AudioSystem::Update(float time) {
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Audio::Pause() {
+void AudioSystem::Pause() {
   manager_->pauseAllSounds();
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Audio::Resume() {
+void AudioSystem::Resume() {
   manager_->resumeAllPausedSounds();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Audio::CreateSound(const string &name, const string &file, bool loop) {
+void AudioSystem::CreateSound(const string &name, const string &file, bool loop) {
   auto *sound = manager_->createSound(name, file, true, loop, true, nullptr);
   Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->createChildSceneNode()->attachObject(sound);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Audio::SetListener(Ogre::SceneNode *parent) {
+void AudioSystem::SetListener(Ogre::SceneNode *parent) {
   auto *listener = manager_->getListener();
   if (!listener) {
     manager_->createListener();
@@ -88,7 +90,7 @@ void Audio::SetListener(Ogre::SceneNode *parent) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Audio::PlaySound(const string &name, bool immediate) {
+void AudioSystem::PlaySound(const string &name, bool immediate) {
   auto *sound = manager_->getSound(name);
   if (sound) {
     if (immediate)
@@ -100,19 +102,19 @@ void Audio::PlaySound(const string &name, bool immediate) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Audio::SetMasterVolume(float volume) {
+void AudioSystem::SetMasterVolume(float volume) {
   manager_->setMasterVolume(volume);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Audio::SetMaxVolume(const string &name, float volume) {
+void AudioSystem::SetMaxVolume(const string &name, float volume) {
   if (manager_->getSound(name)) {
     manager_->getSound(name)->setMaxVolume(volume);
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Audio::SetVolume(const string &name, float gain) {
+void AudioSystem::SetVolume(const string &name, float gain) {
   if (manager_->getSound(name)) {
     manager_->getSound(name)->setVolume(gain);
   }

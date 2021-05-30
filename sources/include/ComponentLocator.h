@@ -23,27 +23,27 @@
 #pragma once
 #include "Engine.h"
 #include "InputHandler.h"
-#include "Configurator.h"
+#include "Config.h"
 
 namespace xio {
 
-class Render;
+class RenderSystem;
 class Window;
 class Compositor;
-class Physics;
-class Audio;
+class PhysicsSystem;
+class AudioSystem;
 class Overlay;
 class DotSceneLoaderB;
 class InputSequencer;
 
 InputHandler& GetIo();
-Configurator& GetConf();
+Config& GetConf();
 Engine& GetEngine();
-Render& GetRender();
+RenderSystem& GetRS();
 Window& GetWindow();
 Compositor& GetCompositor();
-Physics& GetPhysics();
-Audio& GetAudio();
+PhysicsSystem& GetPhysics();
+AudioSystem& GetAudio();
 Overlay& GetOverlay();
 DotSceneLoaderB& GetLoader();
 

@@ -27,6 +27,8 @@
 using namespace std;
 
 namespace xio {
+
+//----------------------------------------------------------------------------------------------------------------------
 CubeMapCamera::CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size) {
   Init_(creator, tex_size);
 }

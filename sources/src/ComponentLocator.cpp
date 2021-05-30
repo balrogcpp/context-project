@@ -35,7 +35,7 @@ InputHandler& GetIo() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Configurator& GetConf() {
+Config& GetConf() {
   static auto &config = *Engine::GetInstance().conf_;
   return config;
 }
@@ -47,31 +47,31 @@ Engine& GetEngine() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Render& GetRender() {
+RenderSystem& GetRS() {
   static auto &renderer = *Engine::GetInstance().renderer_;
   return renderer;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 Window& GetWindow() {
-  static auto &window = GetRender().GetWindow();
+  static auto &window = GetRS().GetWindow();
   return window;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 Compositor& GetCompositor() {
-  static auto &compositor = GetRender().GetCompositor();
+  static auto &compositor = GetRS().GetCompositor();
   return compositor;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Physics& GetPhysics() {
+PhysicsSystem& GetPhysics() {
   static auto &physics = *Engine::GetInstance().physics_;
   return physics;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Audio& GetAudio() {
+AudioSystem& GetAudio() {
   static auto &audio = *Engine::GetInstance().audio_;
   return audio;
 }

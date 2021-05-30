@@ -23,22 +23,25 @@
 #include "pcheader.h"
 #include "Compositor.h"
 #include "PbrShaderUtils.h"
-#include "Configurator.h"
+#include "Config.h"
 
 using namespace std;
 
 namespace xio {
 
+//----------------------------------------------------------------------------------------------------------------------
 class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
 
   GBufferSchemeHandler() {
 	ref_mat_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer");
 
-	if (!ref_mat_)
+	if (!ref_mat_) {
 	  throw Exception("No available materials for Compositor::GBufferSchemeHandler");
+	}
 
 	ref_mat_->load();
+
   }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -54,6 +57,7 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 	*gbufPass = *ref_mat_->getTechnique(0)->getPass(0);
 
 	return gBufferTech;
+
   }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -65,6 +69,7 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 	for (auto &it : gpu_vp_params_) {
 	  it->setNamedConstant("cWorldViewProjPrev", mvp_prev);
 	}
+
   }
 
  private:
@@ -102,9 +107,11 @@ void Compositor::Update(float time) {
   static bool gl3 = bool{Ogre::Root::getSingleton().getRenderSystem()->getName()!="OpenGL ES 2.x Rendering Subsystem"};
   static bool mblur = effects_["mblur"];
 
-  if (gl3 && mblur)
-  	Pbr::Update(time);
+  if (gl3 && mblur) {
+	Pbr::Update(time);
+  }
 #endif
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -129,31 +136,38 @@ void Compositor::Resume() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::InitGbuffer_() {
-    if (!gbuff_handler_) {
+  if (!gbuff_handler_) {
 	gbuff_handler_ = make_unique<GBufferSchemeHandler>();
 	Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_.get(), "GBuffer");
   }
 
-  if (compositor_manager_->addCompositor(viewport_.get(), "GBuffer"))
+  if (compositor_manager_->addCompositor(viewport_.get(), "GBuffer")) {
 	compositor_manager_->setCompositorEnabled(viewport_.get(), "GBuffer", true);
-  else
+  }
+  else {
 	Ogre::LogManager::getSingleton().logMessage("Failed to add GBuffer compositor\n");
+  }
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::AddCompositorEnabled_(const std::string &name) {
-  if (compositor_manager_->addCompositor(viewport_.get(), name))
+  if (compositor_manager_->addCompositor(viewport_.get(), name)) {
 	compositor_manager_->setCompositorEnabled(viewport_.get(), name, true);
-  else
-    throw Exception(string("Failed to add ") + name + " compositor");
+  }
+  else {
+	throw Exception(string("Failed to add ") + name + " compositor");
+  }
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::AddCompositorDisabled_(const std::string &name) {
-  if (compositor_manager_->addCompositor(viewport_.get(), name))
+  if (compositor_manager_->addCompositor(viewport_.get(), name)) {
 	compositor_manager_->setCompositorEnabled(viewport_.get(), name, false);
-  else
-    throw Exception(string("Failed to add ") + name + " compositor");
+  } else {
+	throw Exception(string("Failed to add ") + name + " compositor");
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -163,10 +177,12 @@ void Compositor::EnableCompositor_(const std::string &name) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::InitMRT_() {
-  if (compositor_manager_->addCompositor(viewport_.get(), "MRT"))
+  if (compositor_manager_->addCompositor(viewport_.get(), "MRT")) {
 	compositor_manager_->setCompositorEnabled(viewport_.get(), "MRT", false);
-  else
+  }
+  else {
 	Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add MRT compositor\n");
+  }
 
   auto *compositor_chain = compositor_manager_->getCompositorChain(viewport_.get());
 #if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
@@ -200,13 +216,11 @@ void Compositor::InitOutput_() {
 
   AddCompositorDisabled_(output_compositor);
 
-
   if (effects_["ssao"]) {
 	auto &material_manager = Ogre::MaterialManager::getSingleton();
 	auto material = material_manager.getByName(output_compositor);
 	auto *pass = material->getTechnique(0)->getPass(0);
 	auto fs_params = pass->getFragmentProgramParameters();
-
 
 	auto texture = pass->getTextureUnitState("SSAO");
 	texture->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
@@ -220,7 +234,6 @@ void Compositor::InitOutput_() {
 	auto *pass = material->getTechnique(0)->getPass(0);
 	auto fs_params = pass->getFragmentProgramParameters();
 
-
 	auto texture = pass->getTextureUnitState("Bloom");
 	texture->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
 	texture->setCompositorReference("Bloom", "bloom");
@@ -229,39 +242,34 @@ void Compositor::InitOutput_() {
 
   EnableCompositor_(output_compositor);
 
-  {
-	auto &material_manager = Ogre::MaterialManager::getSingleton();
-	auto material = material_manager.getByName(mblur_compositor);
-	auto *pass = material->getTechnique(0)->getPass(0);
-	auto fs_params = pass->getFragmentProgramParameters();
+  auto &material_manager = Ogre::MaterialManager::getSingleton();
+  auto material = material_manager.getByName(mblur_compositor);
+  auto *pass = material->getTechnique(0)->getPass(0);
+  auto fs_params = pass->getFragmentProgramParameters();
 
-
-	if (effects_["mblur"])
-		fs_params->setNamedConstant("uMotionBlurEnable", 1.0f);
-
-	AddCompositorEnabled_("MBlur");
+  if (effects_["mblur"]) {
+	fs_params->setNamedConstant("uMotionBlurEnable", 1.0f);
   }
 
+  AddCompositorEnabled_("MBlur");
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Init() {
 
   InitMRT_();
 
-
   if (effects_["ssao"]) {
 	AddCompositorEnabled_("SSAO");
 	AddCompositorEnabled_("BoxFilter/SSAO");
   }
-
 
   if (effects_["bloom"]) {
 	AddCompositorEnabled_("Bloom");
 	AddCompositorEnabled_("FilterX/Bloom");
 	AddCompositorEnabled_("FilterY/Bloom");
   }
-
 
   InitOutput_();
 }

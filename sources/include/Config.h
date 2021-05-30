@@ -28,12 +28,12 @@
 
 namespace xio {
 
-class Configurator : public Singleton<Configurator> {
+class Config : public Singleton<Config> {
  public:
 
-  explicit Configurator(const std::string &file_name);
+  explicit Config(const std::string &file_name);
 
-  virtual ~Configurator();
+  virtual ~Config();
 
   void Load(const std::string &file_name);
 

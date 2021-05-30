@@ -27,6 +27,7 @@ using namespace std;
 
 namespace xio {
 
+//----------------------------------------------------------------------------------------------------------------------
 ReflectionCamera::ReflectionCamera(Ogre::Plane plane, unsigned int tex_size) {
   SetPlane(plane);
   Init_(tex_size);

@@ -26,6 +26,7 @@
 using namespace std;
 
 namespace xio {
+
 //----------------------------------------------------------------------------------------------------------------------
 int InputSequencer::HandleAppEvents(void *userdata, SDL_Event *event) {
 	switch(event->type) {

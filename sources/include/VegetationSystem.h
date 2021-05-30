@@ -34,10 +34,11 @@ class GeometryPage;
 }
 
 namespace xio {
-class Forest final : public SubComponent {
+
+class VegetationSystem final : public SubComponent {
  public:
-  Forest();
-  virtual ~Forest();
+  VegetationSystem();
+  virtual ~VegetationSystem();
   void GenerateGrassStatic();
   void GenerateGrassPaged();
   void GenerateRocksStatic();

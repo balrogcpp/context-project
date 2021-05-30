@@ -22,7 +22,6 @@
 
 #include "DemoDotAppState.h"
 #include "MenuAppState.h"
-#include "Utils.h"
 #include "ComponentLocator.h"
 
 using namespace std;
@@ -33,6 +32,7 @@ DemoDotAppState::DemoDotAppState() {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 DemoDotAppState::~DemoDotAppState() {
 
 }
@@ -52,13 +52,13 @@ void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym)==SDL_SCANCODE_ESCAPE) {
 	context_menu_ = true;
 	GetEngine().InMenu();
-	GetRender().GetWindow().Grab(false);
+	GetRS().GetWindow().Grab(false);
   }
 
 }
 
 void DemoDotAppState::Cleanup() {
-  Ogre::ImGuiOverlay::NewFrame();
+
 }
 
 static string ButtonText(const std::string &text, int length) {
@@ -158,7 +158,7 @@ void DemoDotAppState::Update(float time) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Init() {
-  GetRender().GetWindow().Grab(true);
+  GetRS().GetWindow().Grab(true);
 //  GetLoader().GetCamera().SetStyle(xio::CameraMan::Style::FPS);
   LoadFromFile("1.scene", Ogre::RGN_DEFAULT);
 

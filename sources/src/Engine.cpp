@@ -22,15 +22,16 @@
 
 #include "pcheader.h"
 #include "Engine.h"
-#include "Configurator.h"
+#include "Config.h"
 
 using namespace std;
 
 namespace xio {
 
+//----------------------------------------------------------------------------------------------------------------------
 Engine::Engine() {
 #if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
-  conf_ = make_unique<Configurator>("config.json");
+  conf_ = make_unique<Config>("config.json");
 #else
   conf_ = make_unique<Configurator>("");
   conf_->AddMember("window_fullscreen", true);
@@ -66,14 +67,14 @@ void Engine::InitComponents() {
   int window_width = conf_->Get<int>("window_width");
   int window_high = conf_->Get<int>("window_high");
   bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
-  renderer_ = make_unique<Render>(window_width, window_high, window_fullscreen);
+  renderer_ = make_unique<RenderSystem>(window_width, window_high, window_fullscreen);
 
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   bool physics_threaded = false; //cause strange behavior sometimes
   conf_->Get("physics_threaded", physics_threaded);
-  physics_ = make_unique<Physics>(physics_threaded);
-  audio_ = make_unique<Audio>(8, 8);
+  physics_ = make_unique<PhysicsSystem>(physics_threaded);
+  audio_ = make_unique<AudioSystem>(8, 8);
 #else
   physics_ = make_unique<Physics>(false);
   audio_ = make_unique<Audio>(4, 4);

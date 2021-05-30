@@ -38,7 +38,7 @@ externalproject_add(target-gtest
         EXCLUDE_FROM_ALL true
         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
         GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG release-1.8.1
+        GIT_TAG release-1.10.0
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -58,7 +58,7 @@ externalproject_add(target-gbenchmark
         EXCLUDE_FROM_ALL true
         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
         GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v1.5.0
+        GIT_TAG v1.5.3
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
