@@ -243,17 +243,32 @@ find_package(freetype QUIET)
 find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
 
 
-if (NOT ANDROID AND NOT IOS)
-    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND OR NOT PNG_FOUND OR NOT ASSIMP_IRRXML_LIBRARY OR NOT assimp_FOUND)
-        message("Please build dependencies before executable")
-        return()
+macro(insert_dependency VARIABLE PACKAGE)
+    if (NOT ${VARIABLE})
+        message("-- ${VARIABLE} not found. Please build ${PACKAGE} first")
+        set(ANY_NOT_FOUND true)
+    else ()
+        message("-- ${PACKAGE} found")
     endif ()
-else ()
-    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND OR NOT PNG_FOUND OR NOT ASSIMP_IRRXML_LIBRARY OR NOT assimp_FOUND)
-        add_library(target-deps-dummy SHARED android/app/src/main/cpp/main.cpp)
-        add_dependencies(target-deps-dummy target-deps)
-        return()
-    endif ()
+endmacro()
+
+insert_dependency(OGRE_FOUND OGRE)
+insert_dependency(Bullet_FOUND Bullet)
+insert_dependency(sol2_FOUND SOL2)
+insert_dependency(OpenAL_FOUND OpenAL)
+insert_dependency(SDL2_FOUND SDL2)
+insert_dependency(PNG_FOUND LibPNG)
+insert_dependency(assimp_FOUND assimp)
+
+message("")
+
+if (ANDROID OR IOS)
+    add_library(target-deps-dummy SHARED android/app/src/main/cpp/main.cpp)
+    add_dependencies(target-deps-dummy target-deps)
+endif ()
+
+if (ANY_NOT_FOUND)
+    return()
 endif ()
 
 
@@ -320,12 +335,6 @@ if (MINGW)
     file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/demo.exe.manifest DESTINATION .)
 endif ()
 
-find_package(Python3 QUIET)
-
-if (NOT Python3_Interpreter_FOUND)
-    message("Python is needed to create package")
-    return()
-endif ()
 
 if (NOT GIT_SHA1)
     execute_process(

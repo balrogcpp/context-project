@@ -33,8 +33,8 @@ class Component : public NoCopy {
   virtual ~Component();
 
   virtual void Cleanup() = 0;
-  virtual void Pause() {paused_ = true;}
-  virtual void Resume() {paused_ = false;}
+  virtual void Pause() { paused_ = true; }
+  virtual void Resume() { paused_ = false; }
   virtual void Update(float time) = 0;
 
  protected:
@@ -43,7 +43,7 @@ class Component : public NoCopy {
 
  public:
   static void SetConfig(view_ptr<Config> conf) {
-    conf_ = conf;
+	conf_ = conf;
   }
 };
 
