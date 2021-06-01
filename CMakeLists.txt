@@ -252,6 +252,8 @@ macro(insert_dependency VARIABLE PACKAGE)
     endif ()
 endmacro()
 
+message("")
+
 insert_dependency(OGRE_FOUND OGRE)
 insert_dependency(Bullet_FOUND Bullet)
 insert_dependency(sol2_FOUND SOL2)
@@ -262,7 +264,7 @@ insert_dependency(assimp_FOUND assimp)
 
 message("")
 
-if (ANDROID OR IOS)
+if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(target-deps-dummy SHARED android/app/src/main/cpp/main.cpp)
     add_dependencies(target-deps-dummy target-deps)
 endif ()
