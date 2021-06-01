@@ -94,7 +94,7 @@ compositor Output
 {
     technique
     {
-        texture output target_width target_height PF_FLOAT16_RGB chain_scope
+        texture output target_width target_height PF_FLOAT16_RGB chain_scope pooled
 
         target output
         {

@@ -27,6 +27,7 @@
 using namespace std;
 
 namespace xio {
+
 //----------------------------------------------------------------------------------------------------------------------
 void Pbr::UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
   auto *pass = material->getTechnique(0)->getPass(0);

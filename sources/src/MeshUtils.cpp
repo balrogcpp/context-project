@@ -28,7 +28,8 @@ using namespace std;
 
 namespace xio {
 
-bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
+//----------------------------------------------------------------------------------------------------------------------
+static bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
   bool hasTangents = false;
   bool hasUVs = false;
   auto &elementList = vertex_declaration->getElements();
@@ -66,12 +67,6 @@ void EnsureHasTangents(Ogre::MeshPtr mesh) {
 
   if (generateTangents) {
 	mesh->buildTangentVectors();
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------
-void UpdateMeshEdgeList(Ogre::Entity *entity) {
-  if (!entity->getMesh()->isEdgeListBuilt()) {
-	entity->getMesh()->buildEdgeList();
   }
 }
 
@@ -118,6 +113,26 @@ void UpdateMeshMaterial(const string &mesh_name, bool cast_shadows, const string
 void UpdateEntityMaterial(Ogre::Entity *entity, bool cast_shadows, const string &material_name, bool planar_reflection, bool active_ibl) {
   try {
 	entity->setCastShadows(cast_shadows);
+
+	if (!material_name.empty()) {
+		entity->setMaterialName(material_name);
+
+		Ogre::MaterialPtr material;
+		material = Ogre::MaterialManager::getSingleton().getByName(material_name);
+
+		if (material) {
+			Pbr::UpdatePbrParams(material);
+
+			if (cast_shadows)
+				Pbr::UpdatePbrShadowCaster(material);
+
+			if (material->getReceiveShadows())
+				Pbr::UpdatePbrShadowReceiver(material);
+
+			Pbr::UpdatePbrIbl(material, active_ibl);
+		}
+
+	}
 
 	UpdateMeshMaterial(entity->getMesh(), cast_shadows, material_name, planar_reflection, active_ibl);
   }

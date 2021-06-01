@@ -25,7 +25,6 @@ shared_params PBR_Shared_frag
 {
     shared_param_named uNormalScale float 1.0
     shared_param_named uOffsetScale float 0.001
-    //shared_param_named uShadowDepthOffset float -0.0000001
 }
 
 shared_params PBR_Shared_vert
@@ -337,7 +336,6 @@ abstract material Terrain : PBR
 
             fragment_program_ref PbrTerrain_fs
             {
-                //param_named uShadowDepthOffset float -0.00001
                 param_named uAlbedoSampler       int 0
                 param_named uNormalSampler       int 1
                 param_named uORMSampler          int 2
@@ -367,7 +365,7 @@ fragment_program PbrPaged_fs glsl glsles
 
 abstract material Paged : Basic
 {
-    receive_shadows on
+    receive_shadows off
     transparency_casts_shadows on
 
     set $Albedo white.dds
@@ -422,13 +420,40 @@ abstract material Grass : Basic
         {
             alpha_rejection greater_equal 128
             cull_hardware none
-            //cull_software none
             //scene_blend alpha_blend
 
             texture_unit Albedo
             {
                 texture $Albedo
                 tex_address_mode clamp
+            }
+
+            vertex_program_ref PbrGrass_vs {}
+
+            fragment_program_ref PbrGrass_fs
+            {
+                param_named uAlbedoSampler int 0
+            }
+        }
+    }
+}
+
+abstract material Plant : Basic
+{
+    receive_shadows on
+    transparency_casts_shadows on
+
+    set $Albedo white.dds
+
+    technique
+    {
+        pass
+        {
+            alpha_rejection greater_equal 128
+
+            texture_unit Albedo
+            {
+                texture $Albedo
             }
 
             vertex_program_ref PbrGrass_vs {}

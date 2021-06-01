@@ -29,10 +29,12 @@ using namespace xio;
 
 namespace Demo {
 
+//----------------------------------------------------------------------------------------------------------------------
 void MenuAppState::Cleanup() {
-  Ogre::ImGuiOverlay::NewFrame();
+
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MenuAppState::Update(float time) {
 
   Ogre::ImGuiOverlay::NewFrame();
@@ -75,12 +77,14 @@ void MenuAppState::Update(float time) {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MenuAppState::OnKeyDown(SDL_Keycode sym) {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MenuAppState::Init() {
-  GetWindow().SetCursorStatus(true, false, false);
+  GetWindow().Grab(false);
 
   ImGuiIO &io = ImGui::GetIO();
 }

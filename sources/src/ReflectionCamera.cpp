@@ -27,6 +27,7 @@ using namespace std;
 
 namespace xio {
 
+//----------------------------------------------------------------------------------------------------------------------
 ReflectionCamera::ReflectionCamera(Ogre::Plane plane, unsigned int tex_size) {
   SetPlane(plane);
   Init_(tex_size);
@@ -41,14 +42,6 @@ ReflectionCamera::~ReflectionCamera() {
 void ReflectionCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   rcamera_->enableReflection(plane_);
   rcamera_->setLodBias(0.001);
-
-  technique_ = scene_->getShadowTechnique();
-
-  if (scene_->hasLight("Sun")) {
-	pssm_shadows_ = scene_->getLight("Sun")->getCastShadows();
-  } else {
-	pssm_shadows_ = false;
-  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

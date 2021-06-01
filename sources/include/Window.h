@@ -44,15 +44,18 @@ class Window : public NoCopy {
   std::pair<int, int> GetSize() const;
   bool IsFullscreen() const;
   SDL_SysWMinfo GetInfo() const;
-  void SetCursorStatus(bool show, bool grab, bool relative);
+  void Grab(bool grab);
   void SwapBuffers() const;
   void Resize(int w, int h);
   void SetFullscreen(bool f);
 
+
+ private:
+  void InitGlContext_();
+
   SDL_Window *window_ = nullptr;
   SDL_GLContext gl_context_ = nullptr;
 
- private:
   uint32_t flags_ = 0;
   std::string caption_;
   bool f_ = false;

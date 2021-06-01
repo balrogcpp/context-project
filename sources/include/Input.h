@@ -27,7 +27,7 @@ extern "C" {
 #include <SDL2/SDL_events.h>
 }
 
-#include <vector>
+#include <set>
 #include <string>
 #include <exception>
 #include "view_ptr.h"
@@ -51,13 +51,11 @@ class InputSequencer : public LazySingleton<InputSequencer> {
   void UnregObserver(view_ptr<InputObserver> p);
   void RegWinObserver(view_ptr<WindowObserver> p);
   void UnregWinObserver(view_ptr<WindowObserver> p);
-  void Clear();
-  void Reserve(size_t size);
   void Capture();
 
  private:
-  std::vector<view_ptr<InputObserver>> io_listeners;
-  std::vector<view_ptr<WindowObserver>> win_listeners;
+  std::set<view_ptr<InputObserver>> io_listeners;
+  std::set<view_ptr<WindowObserver>> win_listeners;
   int HandleAppEvents(void *userdata, SDL_Event *event);
 
 };

@@ -33,7 +33,7 @@ enable_language(CXX)
 
 project(xio CXX)
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 
 include(CheckTypeSize)
@@ -41,6 +41,8 @@ include(ProcessorCount)
 
 check_type_size("void*" PTR_SIZE BUILTIN_TYPES_ONLY)
 
+
+# Build type definition
 if (NOT ANDROID)
     if (NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE RelWithDebInfo)
@@ -52,6 +54,7 @@ if (NOT ANDROID)
         message(SEND_ERROR "Debug build is not working with MSVC right now")
     endif ()
 endif ()
+
 
 # Platform definition
 if (WIN32)
@@ -67,9 +70,10 @@ elseif (APPLE)
     endif ()
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(CONTEXT_TOOLCHAIN "linux")
-else()
+else ()
     set(CONTEXT_TOOLCHAIN ${CMAKE_SYSTEM_NAME})
 endif ()
+
 
 # Toolchain definition
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -85,10 +89,9 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     if (MSVC)
         string(APPEND CONTEXT_TOOLCHAIN "-msvc")
     endif ()
-else ()
-if (MSVC)
+elseif (MSVC)
     string(APPEND CONTEXT_TOOLCHAIN "-msvc")
-endif ()
+else ()
     string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_CXX_COMPILER_ID}")
 endif ()
 
@@ -101,18 +104,15 @@ processorcount(CONTEXT_PROCESSOR_COUNT)
 set(CMAKE_BUILD_PARALLEL_LEVEL ${CONTEXT_PROCESSOR_COUNT})
 set(MAKE_COMMAND make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 
-if (ANDROID)
-    string(APPEND CONTEXT_TOOLCHAIN "-${ANDROID_ABI}")
-else ()
-    string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
-endif ()
+
+string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
 
 
 # Compilation flags definition
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-        string(APPEND CMAKE_CXX_FLAGS " -Ofast -funroll-loops -DNDEBUG")
-        string(APPEND CMAKE_C_FLAGS " -Ofast -funroll-loops -DNDEBUG")
+        string(APPEND CMAKE_CXX_FLAGS " -Wall -s -Ofast -funroll-loops -DNDEBUG")
+        string(APPEND CMAKE_C_FLAGS " -Wall -s -Ofast -funroll-loops -DNDEBUG")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-linker-plugin")
         if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -127,30 +127,58 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     endif ()
 
-    string(APPEND CMAKE_CXX_FLAGS " -msse4.1 -pthread -fopenmp")
-    string(APPEND CMAKE_C_FLAGS " -msse4.1 -pthread -fopenmp")
+    if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+        string(APPEND CMAKE_CXX_FLAGS " -msse4.1")
+        string(APPEND CMAKE_C_FLAGS " -msse4.1")
+    endif ()
 
-    # gcc links everything as shared libraries by default
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
+        string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
+    endif ()
+
+
+    #This flags are useful for dependencies build
+    set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
+    set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
+
+
+    # gcc-mingw links everything as shared libraries by default
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
     endif ()
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-openmp")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-openmp")
-    endif ()
 
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
-    endif()
+    endif ()
+
+    string(APPEND CMAKE_CXX_FLAGS " -pthread")
+    string(APPEND CMAKE_C_FLAGS " -pthread")
+
+
+    if (USE_OPENMP)
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL")
+            string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL")
+
+            string(APPEND CMAKE_CXX_FLAGS " -fopenmp")
+            string(APPEND CMAKE_C_FLAGS " -fopenmp")
+        endif ()
+
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            string(APPEND CMAKE_EXE_LINKER_FLAGS " -fopenmp -static-openmp")
+            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fopenmp -static-openmp")
+        endif ()
+    endif ()
 
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
-    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS-")
-    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS-")
+    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF")
+    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF")
 
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
         string(APPEND CMAKE_CXX_FLAGS " /O2 /fp:fast /GL")
@@ -163,7 +191,6 @@ elseif (MSVC)
         string(APPEND CMAKE_EXE_LINKER_FLAGS " /SUBSYSTEM:WINDOWS")
     endif ()
 endif ()
-
 
 
 set(CONTEXT_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "")
@@ -183,7 +210,7 @@ add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
 
 
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
-set(CMAKE_FIND_ROOT_PATH "${ANDROID_NDK};${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
+set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
 
 
 # assume built-in pthreads on MacOS
@@ -213,19 +240,35 @@ find_package(Lua51 QUIET)
 find_package(assimp QUIET)
 find_package(PNG QUIET)
 find_package(freetype QUIET)
-#find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
+find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
 
-if (NOT ANDROID)
-    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND OR NOT PNG_FOUND)
-        message("Please build dependencies before executable")
-        return()
+
+macro(insert_dependency VARIABLE PACKAGE)
+    if (NOT ${VARIABLE})
+        message("-- ${VARIABLE} not found. Please build ${PACKAGE} first")
+        set(ANY_NOT_FOUND true)
+    else ()
+        message("-- ${PACKAGE} found")
     endif ()
-else ()
-    if (NOT OGRE_FOUND OR NOT Bullet_FOUND OR NOT sol2_FOUND OR NOT OpenAL_FOUND OR NOT SDL2_FOUND OR NOT PNG_FOUND)
-        add_library(target-deps-dummy SHARED android/app/src/main/cpp/main.cpp)
-        add_dependencies(target-deps-dummy target-deps)
-        return()
-    endif ()
+endmacro()
+
+insert_dependency(OGRE_FOUND OGRE)
+insert_dependency(Bullet_FOUND Bullet)
+insert_dependency(sol2_FOUND SOL2)
+insert_dependency(OpenAL_FOUND OpenAL)
+insert_dependency(SDL2_FOUND SDL2)
+insert_dependency(PNG_FOUND LibPNG)
+insert_dependency(assimp_FOUND assimp)
+
+message("")
+
+if (ANDROID OR IOS)
+    add_library(target-deps-dummy SHARED android/app/src/main/cpp/main.cpp)
+    add_dependencies(target-deps-dummy target-deps)
+endif ()
+
+if (ANY_NOT_FOUND)
+    return()
 endif ()
 
 
@@ -236,7 +279,6 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTA
 
 file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h demo/*.hpp deploy/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
 
-set(EXECUTABLE_NAME demo)
 
 if (ANDROID)
     add_library(demo SHARED ${SOURCE_FILES})
@@ -256,16 +298,14 @@ if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     #jemalloc fix problems with memory bloat on linux
-    list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl)
+    list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl jemalloc.a)
 elseif (ANDROID)
     list(APPEND SYSTEM_LIBRARIES SDL2::hidapi android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
-elseif (APPLE)
-
 endif ()
 
-target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
+target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
         ${PNG_LIBRARY} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
         ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
@@ -282,10 +322,10 @@ file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
-# TODO: it may be better idea to install only dll that are needed
+
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
-    file(INSTALL ${OPENAL_LIBRARY} DESTINATION .)
+    file(INSTALL ${EXTERNAL_DLL_GLOB} DESTINATION .)
 endif ()
 
 if (NOT ANDROID)
@@ -295,12 +335,6 @@ if (MINGW)
     file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/demo.exe.manifest DESTINATION .)
 endif ()
 
-find_package(Python3 QUIET)
-
-if (NOT Python3_Interpreter_FOUND)
-    message("Python is needed to create package")
-    return()
-endif ()
 
 if (NOT GIT_SHA1)
     execute_process(
@@ -316,11 +350,12 @@ set(CONTEXT_ZIP_NAME ContextProjectDemo-${GIT_SHA1} CACHE PATH "")
 set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
 
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
-set(CMAKE_FIND_ROOT_PATH "${ANDROID_NDK};${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
+set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
 
 
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION .)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/assets ${CMAKE_SOURCE_DIR}/tmp/programs DESTINATION .)
+set(EXECUTABLE_NAME demo)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(FILES ${CMAKE_SOURCE_DIR}/deploy/Launch.sh PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
@@ -333,7 +368,7 @@ if (MINGW)
     install(FILES ${CMAKE_SOURCE_DIR}/deploy/${EXECUTABLE_NAME}.exe.manifest DESTINATION .)
 endif ()
 if (MSVC)
-    # Microsoft doesn't include MSVC dll in standart installation
+    # Microsoft doesn't include MSVC dll's in standart installation
     install(FILES ${CMAKE_SOURCE_DIR}/deploy/VC_redist.x64.exe DESTINATION .)
 endif ()
 
@@ -349,7 +384,12 @@ set(CPACK_PACKAGE_NAME ${CONTEXT_ARTIFACT_NAME})
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 
+
 set(CPACK_GENERATOR "ZIP")
+#NSIS is not ready
+# if (MSVC)
+#     set(CPACK_GENERATOR "ZIP" "NSIS")
+# endif ()
 
 include(CPack)
 

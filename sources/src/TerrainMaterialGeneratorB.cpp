@@ -33,9 +33,11 @@
 #endif
 
 using namespace std;
+using namespace Ogre;
 
 namespace xio {
 
+//----------------------------------------------------------------------------------------------------------------------
 TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
   mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
 
@@ -47,9 +49,7 @@ TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
 TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
-TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent,
-												  const Ogre::String &name,
-												  const Ogre::String &desc)
+TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent, const String &name, const String &desc)
 	: Profile(parent, name, desc) {
 
 }

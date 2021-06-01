@@ -12,3 +12,5 @@
 /Doxygen/
 /tmp/
 /venv/
+/.gradle/
+/.idea/

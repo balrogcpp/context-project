@@ -22,7 +22,6 @@
 
 #include "DemoDotAppState.h"
 #include "MenuAppState.h"
-#include "Utils.h"
 #include "ComponentLocator.h"
 
 using namespace std;
@@ -33,6 +32,7 @@ DemoDotAppState::DemoDotAppState() {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 DemoDotAppState::~DemoDotAppState() {
 
 }
@@ -52,13 +52,13 @@ void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym)==SDL_SCANCODE_ESCAPE) {
 	context_menu_ = true;
 	GetEngine().InMenu();
-	GetRender().GetWindow().SetCursorStatus(true, false, false);
+	GetRS().GetWindow().Grab(false);
   }
 
 }
 
 void DemoDotAppState::Cleanup() {
-  Ogre::ImGuiOverlay::NewFrame();
+
 }
 
 static string ButtonText(const std::string &text, int length) {
@@ -133,7 +133,7 @@ void DemoDotAppState::Update(float time) {
 	ImGui::NewLine();
 
 	if (ImGui::Button("         RESUME          ")) {
-	  GetWindow().SetCursorStatus(false, true, true);
+	  GetWindow().Grab(true);
 	  GetEngine().OffMenu();
 	  context_menu_ = false;
 	}
@@ -158,7 +158,7 @@ void DemoDotAppState::Update(float time) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Init() {
-  GetRender().GetWindow().SetCursorStatus(false, true, true);
+  GetRS().GetWindow().Grab(true);
 //  GetLoader().GetCamera().SetStyle(xio::CameraMan::Style::FPS);
   LoadFromFile("1.scene", Ogre::RGN_DEFAULT);
 

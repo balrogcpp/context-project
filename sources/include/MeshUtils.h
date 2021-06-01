@@ -32,11 +32,7 @@ class Entity;
 
 namespace xio {
 
-bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration);
-
 void EnsureHasTangents(Ogre::MeshPtr mesh);
-
-void UpdateMeshEdgeList(Ogre::Entity *entity);
 
 void UpdateMeshMaterial(Ogre::MeshPtr mesh,
 						bool cast_shadows = true,

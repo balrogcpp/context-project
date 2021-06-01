@@ -24,7 +24,6 @@
 #include "Landscape.h"
 #include "ComponentLocator.h"
 #include "TerrainMaterialGeneratorB.h"
-#include "Utils.h"
 
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <Terrain/OgreTerrainGroup.h>
@@ -37,7 +36,10 @@ using namespace std;
 
 namespace xio {
 
-Landscape::Landscape() = default;
+//----------------------------------------------------------------------------------------------------------------------
+Landscape::Landscape() {
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 Landscape::~Landscape() {

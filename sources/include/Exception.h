@@ -52,7 +52,6 @@ class Exception : public std::exception {
 
  private:
   std::string description = "Description not specified";
-  size_t code = 0;
 };
 
 } //namespace

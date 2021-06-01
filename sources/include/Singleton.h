@@ -23,21 +23,16 @@
 #pragma once
 #include "NoCopy.h"
 #include "Exception.h"
-#include <string>
-
 namespace xio{
 
 template <typename T> class Singleton : public NoCopy{
  public:
   Singleton() {
     if (instanced_)
-      throw Exception(std::string("Only one instance of ") + __func__ + " can be created!\n");
+      throw Exception("Only one instance of Singleton can be created!\n");
 
     instanced_ = true;
   }
-
-
-  virtual ~Singleton() = default;
 
  protected:
   inline static bool instanced_ = false;

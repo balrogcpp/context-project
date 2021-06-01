@@ -147,7 +147,7 @@ uniform float shadowTexel7;
 #endif
 
 uniform vec4 pssmSplitPoints;
-uniform float uShadowColour;
+uniform vec3 uShadowColour;
 uniform float uShadowDepthOffset;
 uniform float uShadowFilterSize;
 uniform int uShadowFilterIterations;
@@ -225,18 +225,18 @@ float GetShadow(const int counter) {
 
 
 //----------------------------------------------------------------------------------------------------------------------
-float CalcPSSMDepthShadow(vec4 pssmSplitPoints, vec4 lightSpacePos0, vec4 lightSpacePos1, vec4 lightSpacePos2, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, float camDepth)
+float CalcPSSMDepthShadow(vec4 pssmSplitPoints, vec4 lightSpacePos0, vec4 lightSpacePos1, vec4 lightSpacePos2, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2)
 {
     // calculate shadow
-    if (camDepth <= pssmSplitPoints.x)
+    if (vDepth <= pssmSplitPoints.x)
     {
         return CalcDepthShadow(shadowMap0, lightSpacePos0, uShadowDepthOffset, shadowTexel0*uShadowFilterSize, uShadowFilterIterations);
     }
-    else if (camDepth <= pssmSplitPoints.y)
+    else if (vDepth <= pssmSplitPoints.y)
     {
         return CalcDepthShadow(shadowMap1, lightSpacePos1, uShadowDepthOffset, shadowTexel1*uShadowFilterSize, uShadowFilterIterations);
     }
-    else if (camDepth <= pssmSplitPoints.z)
+    else if (vDepth <= pssmSplitPoints.z)
     {
         return CalcDepthShadow(shadowMap2, lightSpacePos2, uShadowDepthOffset, shadowTexel2*uShadowFilterSize, uShadowFilterIterations);
     }
@@ -436,6 +436,8 @@ void main()
 #endif
 
     vec4 albedo = GetAlbedo(tex_coord);
+    vec3 color = albedo.rgb;
+    float alpha = albedo.a;
 
 #ifndef GL_ES
     float clippedDistance = (vDepth - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
@@ -449,10 +451,10 @@ void main()
 
 #ifdef HAS_ALPHA
 #ifdef PAGED_GEOMETRY
-    albedo.a *= vAlpha;
+    alpha *= vAlpha;
 #endif //PAGED_GEOMETRY
 
-    if (albedo.a < uAlphaRejection) {
+    if (alpha < uAlphaRejection) {
         discard;
     }
 #endif
@@ -486,9 +488,9 @@ void main()
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
     const vec3 f0 = vec3(0.04);
-    vec3 diffuseColor = albedo.rgb * (vec3(1.0) - f0);
+    vec3 diffuseColor = color * (vec3(1.0) - f0);
     diffuseColor *= (1.0 - metallic);
-    vec3 specularColor = mix(f0, albedo.rgb, metallic);
+    vec3 specularColor = mix(f0, color, metallic);
 
     // Compute reflectance.
     float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
@@ -569,10 +571,9 @@ void main()
         vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
         float tmp = NdotL * fSpotT * fAtten;
 
-        float shadow = 1.0;
-        float shadow_clamped = 1.0;
 
 #ifdef SHADOWRECEIVER
+        float shadow = 1.0;
 
 
         if (uLightCastsShadowsArray[i] > 0.0) {
@@ -586,7 +587,7 @@ void main()
                     if (i == 0) {
                         shadow = (tmp > EPSILON) ? CalcPSSMDepthShadow(pssmSplitPoints, \
                                                     lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], \
-                                                    shadowMap0, shadowMap1, shadowMap2, vDepth) : 1.0;
+                                                    shadowMap0, shadowMap1, shadowMap2) : 1.0;
                     } else {
                         shadow = (tmp > EPSILON) ? GetShadow(i + 2) : 1.0;
                     }
@@ -595,16 +596,12 @@ void main()
                 shadow = (tmp > EPSILON) ? GetShadow(i) : 1.0;
             #endif
 
-
-            shadow_clamped = clamp(shadow + uShadowColour, 0.0, 1.0);
         }
 
+        total_colour += uShadowColour * color + shadow * tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
+#else
+    total_colour += tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
 #endif
-
-        vec3 colour = tmp * uLightDiffuseScaledColourArray[i] * (shadow_clamped * diffuseContrib + shadow * specContrib);
-//        vec3 colour = shadow_clamped * tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
-
-        total_colour += colour;
     }
 
 // Calculate lighting contribution from image based lighting source (IBL)
@@ -612,7 +609,7 @@ void main()
     vec3 reflection = -normalize(reflect(v, n));
     total_colour += GetIBLContribution(diffuseColor, specularColor, roughness, NdotV, n, reflection);
 #else
-    total_colour += (uAmbientLightColour * albedo.rgb);
+    total_colour += (uAmbientLightColour * color);
 #endif
 
 // Apply optional PBR terms for additional (optional) shading
@@ -629,10 +626,10 @@ void main()
 #endif //HAS_REFLECTION
 
 #ifndef GL_ES
-    gl_FragData[0] = vec4(total_colour, albedo.a);
+    gl_FragData[0] = vec4(total_colour, alpha);
 #else
     total_colour = ApplyFog(total_colour, uFogParams, uFogColour, vDepth);
-    gl_FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), albedo.a);
+    gl_FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), alpha);
 #endif
 
 #else //SHADOWCASTER

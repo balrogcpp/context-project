@@ -29,19 +29,13 @@
 #include <RTShaderSystem/OgreRTShaderSystem.h>
 #include <RTShaderSystem/OgreShaderGenerator.h>
 
-#if HAS_FILESYSTEM
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
-#include <ghc/filesystem.hpp>
-namespace fs = ghc::filesystem;
-#endif
 
 using namespace std;
 
 
 namespace xio {
 
+//----------------------------------------------------------------------------------------------------------------------
 void InitRtss() {
   if (!Ogre::RTShader::ShaderGenerator::initialize()) {
 	throw Exception("RTSS failed to initialize");
@@ -60,8 +54,6 @@ void CreateRtssShaders(const string &cache_path) {
   shader_generator->addSceneManager(scene_);
   viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
-  if (!fs::exists(cache_path) && !cache_path.empty())
-	fs::create_directories(cache_path);
 
   shader_generator->setShaderCachePath(cache_path);
 
@@ -111,12 +103,6 @@ ShaderResolver::ShaderResolver(Ogre::RTShader::ShaderGenerator *shader_generator
 
 //----------------------------------------------------------------------------------------------------------------------
 bool ShaderResolver::FixMaterial(const string &material_name) {
-  static vector<string> material_list_;
-
-  if (find(material_list_.begin(), material_list_.end(), material_name)==material_list_.end())
-	material_list_.push_back(material_name);
-  else
-	return false;
 
   auto &mShaderGenerator = Ogre::RTShader::ShaderGenerator::getSingleton();
   auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name);
@@ -163,13 +149,6 @@ Ogre::Technique *ShaderResolver::handleSchemeNotFound(unsigned short scheme_inde
 													  Ogre::Material *original_material,
 													  unsigned short lod_index,
 													  const Ogre::Renderable *renderable) {
-//  static vector<string> material_list_;
-//  string material_name = original_material->getName();
-//  if (find(material_list_.begin(), material_list_.end(), material_name)==material_list_.end()) {
-//	material_list_.push_back(material_name);
-//  } else {
-//	return nullptr;
-//  }
 
   if (scheme_name!=Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
 	return nullptr;

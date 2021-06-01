@@ -28,6 +28,8 @@
 using namespace std;
 
 namespace xio {
+
+//----------------------------------------------------------------------------------------------------------------------
 Component::Component() {
 	Engine::GetInstance().RegComponent(this);
 }

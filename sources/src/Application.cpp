@@ -39,6 +39,7 @@ using namespace std;
 
 namespace xio {
 
+//----------------------------------------------------------------------------------------------------------------------
 Application::Application() {
   try {
 
@@ -110,7 +111,7 @@ Application::~Application() {
 int Application::ExceptionMessage_(const string &caption, const string &message) {
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  GetWindow().SetCursorStatus(true, false, false);
+  GetWindow().Grab(false);
 #endif
 
 #ifdef _WIN32

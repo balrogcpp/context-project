@@ -22,9 +22,9 @@
 
 #pragma once
 #include "InputHandler.h"
-#include "Render.h"
-#include "Audio.h"
-#include "Physics.h"
+#include "RenderSystem.h"
+#include "AudioSystem.h"
+#include "PhysicsSystem.h"
 #include "DotSceneLoaderB.h"
 #include "Overlay.h"
 #include "AppState.h"
@@ -56,22 +56,22 @@ class Engine : public LazySingleton<Engine> {
 
  private:
   std::unique_ptr<InputHandler> io_;
-  std::unique_ptr<Configurator> conf_;
-  std::unique_ptr<Render> renderer_;
-  std::unique_ptr<Physics> physics_;
-  std::unique_ptr<Audio> audio_;
+  std::unique_ptr<Config> conf_;
+  std::unique_ptr<RenderSystem> renderer_;
+  std::unique_ptr<PhysicsSystem> physics_;
+  std::unique_ptr<AudioSystem> audio_;
   std::unique_ptr<Overlay> overlay_;
   std::unique_ptr<DotSceneLoaderB> loader_;
   std::vector<view_ptr<Component>> components_;
 
 
   friend InputHandler& GetIo();
-  friend Configurator& GetConf();
-  friend Render& GetRender();
+  friend Config& GetConf();
+  friend RenderSystem& GetRS();
   friend Window& GetWindow();
   friend Compositor& GetCompositor();
-  friend Physics& GetPhysics();
-  friend Audio& GetAudio();
+  friend PhysicsSystem& GetPhysics();
+  friend AudioSystem& GetAudio();
   friend Overlay& GetOverlay();
   friend DotSceneLoaderB& GetLoader();
 };

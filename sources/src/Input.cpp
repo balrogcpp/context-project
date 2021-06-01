@@ -26,6 +26,7 @@
 using namespace std;
 
 namespace xio {
+
 //----------------------------------------------------------------------------------------------------------------------
 int InputSequencer::HandleAppEvents(void *userdata, SDL_Event *event) {
 	switch(event->type) {
@@ -48,7 +49,7 @@ int InputSequencer::HandleAppEvents(void *userdata, SDL_Event *event) {
 
 //----------------------------------------------------------------------------------------------------------------------
 InputSequencer::InputSequencer() {
-  Reserve(16);
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -58,17 +59,12 @@ InputSequencer::~InputSequencer() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::RegObserver(view_ptr<InputObserver> p) {
-  io_listeners.push_back(p);
+  io_listeners.insert(p);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::UnregObserver(view_ptr<InputObserver> p) {
-  auto it = find(io_listeners.begin(), io_listeners.end(), p);
-
-  if (it!=io_listeners.end()) {
-	iter_swap(it, prev(io_listeners.end()));
-	io_listeners.pop_back();
-  }
+  io_listeners.erase(p);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -81,32 +77,12 @@ void InputSequencer::RegWinObserver(view_ptr<WindowObserver> p) {
   SDL_SetEventFilter(callback, nullptr);
 #endif
 
-  win_listeners.push_back(p);
+  win_listeners.insert(p);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::UnregWinObserver(view_ptr<WindowObserver> p) {
-  auto it = find(win_listeners.begin(), win_listeners.end(), p);
-
-  if (it!=win_listeners.end()) {
-	iter_swap(it, prev(win_listeners.end()));
-	win_listeners.pop_back();
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::Clear() {
-  io_listeners.clear();
-  win_listeners.clear();
-  Reserve(16);
-  io_listeners.shrink_to_fit();
-  win_listeners.shrink_to_fit();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::Reserve(size_t size) {
-  io_listeners.reserve(size);
-  win_listeners.reserve(size);
+  win_listeners.erase(p);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
