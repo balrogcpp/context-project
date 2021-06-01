@@ -19,5 +19,6 @@ docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD`  . -f docker/bu
 
 docker rm -f abc
 
+yes | docker system prune
 
 exit 0

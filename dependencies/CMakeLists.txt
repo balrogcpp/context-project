@@ -97,6 +97,7 @@ externalproject_add(target-bullet
                     -DUSE_MSVC_RUNTIME_LIBRARY_DLL=true
                     )
 
+
 if (IOS OR ANDROID)
     set(OPENAL_LIBTYPE STATIC)
 else ()
@@ -131,6 +132,7 @@ externalproject_add(target-openal
                     -DLIBTYPE=${OPENAL_LIBTYPE}
                     -DALSOFT_OSX_FRAMEWORK=false
                     )
+
 
 if (APPLE)
     set(CHDIR_OGG ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogg)
@@ -314,6 +316,7 @@ externalproject_add(target-json
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -DJSON_BuildTests=false
                     )
+
 
 if(NOT MSVC)
     set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-assimp)
@@ -544,7 +547,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     else ()
         set(OMP_SHARED false)
     endif ()
-
     externalproject_add(target-omp
             EXCLUDE_FROM_ALL true
             PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -561,6 +563,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             -DENABLE_LIBOMPTARGET=false
             -DLIBOMP_ENABLE_SHARED=${OMP_SHARED}
             )
+
 
     externalproject_add(target-crt
             EXCLUDE_FROM_ALL true
@@ -582,6 +585,23 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             )
 
 endif ()
+
+
+externalproject_add(target-gtest
+        EXCLUDE_FROM_ALL true
+        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG release-1.10.0
+        GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+        GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+        -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DBUILD_GMOCK=false
+        ${CONTEXT_CMAKE_EXTRA_FLAGS}
+        -G "${CMAKE_GENERATOR}"
+        )
 
 
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
