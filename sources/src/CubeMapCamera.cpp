@@ -1,28 +1,28 @@
-//MIT License
+// MIT License
 //
-//Copyright (c) 2021 Andrew Vasiliev
+// Copyright (c) 2021 Andrew Vasiliev
 //
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
-#include "pcheader.h"
 #include "CubeMapCamera.h"
 
+#include "pcheader.h"
 
 using namespace std;
 
@@ -34,24 +34,23 @@ CubeMapCamera::CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-CubeMapCamera::~CubeMapCamera() {
-  Clear_();
-}
+CubeMapCamera::~CubeMapCamera() { Clear_(); }
 
 //----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
-  // point the camera in the right direction based on which face of the cubemap this is
+  // point the camera in the right direction based on which face of the cubemap
+  // this is
   camera_node_->setOrientation(Ogre::Quaternion::IDENTITY);
-  if (evt.source==targets_[0]) 
-	camera_node_->yaw(Ogre::Degree(-90));
-  else if (evt.source==targets_[1]) 
-	camera_node_->yaw(Ogre::Degree(90));
-  else if (evt.source==targets_[2]) 
-	camera_node_->pitch(Ogre::Degree(90));
-  else if (evt.source==targets_[3]) 
-	camera_node_->pitch(Ogre::Degree(-90));
-  else if (evt.source==targets_[5]) 
-	camera_node_->yaw(Ogre::Degree(180));
+  if (evt.source == targets_[0])
+    camera_node_->yaw(Ogre::Degree(-90));
+  else if (evt.source == targets_[1])
+    camera_node_->yaw(Ogre::Degree(90));
+  else if (evt.source == targets_[2])
+    camera_node_->pitch(Ogre::Degree(90));
+  else if (evt.source == targets_[3])
+    camera_node_->pitch(Ogre::Degree(-90));
+  else if (evt.source == targets_[5])
+    camera_node_->yaw(Ogre::Degree(180));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -62,18 +61,18 @@ void CubeMapCamera::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
 //----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::Clear_() {
   if (cubemap_) {
-	for (auto it : targets_) {
-	  it->removeAllListeners();
-	  it->removeAllViewports();
-	  it = nullptr;
-	}
+    for (auto it : targets_) {
+      it->removeAllListeners();
+      it->removeAllViewports();
+      it = nullptr;
+    }
 
-	Ogre::TextureManager::getSingleton().remove(cubemap_);
+    Ogre::TextureManager::getSingleton().remove(cubemap_);
   }
 
   if (camera_) {
-	scene_->destroyCamera(camera_);
-	camera_ = nullptr;
+    scene_->destroyCamera(camera_);
+    camera_ = nullptr;
   }
 
   camera_node_ = nullptr;
@@ -83,8 +82,7 @@ void CubeMapCamera::Clear_() {
 void CubeMapCamera::Init_(Ogre::SceneNode *creator, unsigned int tex_size) {
   using namespace Ogre;
   auto size = tex_size;
-  auto& tex_manager = Ogre::TextureManager::getSingleton();
-
+  auto &tex_manager = Ogre::TextureManager::getSingleton();
 
   scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *main_camera = scene_->getCamera("Default");
@@ -98,16 +96,19 @@ void CubeMapCamera::Init_(Ogre::SceneNode *creator, unsigned int tex_size) {
   camera_node_ = creator->createChildSceneNode();
   camera_node_->setFixedYawAxis(false);
   camera_node_->attachObject(camera_);
-  cubemap_ = tex_manager.createManual("dyncubemap", RGN_DEFAULT, TEX_TYPE_CUBE_MAP, size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
+  cubemap_ =
+      tex_manager.createManual("dyncubemap", RGN_DEFAULT, TEX_TYPE_CUBE_MAP,
+                               size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
 
-  // assign our camera to all 6 render targets of the texture (1 for each direction)
+  // assign our camera to all 6 render targets of the texture (1 for each
+  // direction)
   for (int i = 0; i < 6; i++) {
-	targets_[i] = cubemap_->getBuffer(i)->getRenderTarget();
-	Ogre::Viewport *vp = targets_[i]->addViewport(camera_);
-	vp->setShadowsEnabled(false);
-	vp->setOverlaysEnabled(false);
-	targets_[i]->addListener(this);
+    targets_[i] = cubemap_->getBuffer(i)->getRenderTarget();
+    Ogre::Viewport *vp = targets_[i]->addViewport(camera_);
+    vp->setShadowsEnabled(false);
+    vp->setOverlaysEnabled(false);
+    targets_[i]->addListener(this);
   }
 }
 
-} //namespace
+}  // namespace xio

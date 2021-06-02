@@ -20,30 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
-#include <map>
-#include <string>
+#include "System.h"
 
-#include "NoCopy.h"
+#include "Engine.h"
+#include "pcheader.h"
+
+using namespace std;
 
 namespace xio {
-class DesktopIcon : public NoCopy {
- public:
-  DesktopIcon();
-  virtual ~DesktopIcon();
 
-  void Init();
-  void Save(const std::string &icon_name);
+//----------------------------------------------------------------------------------------------------------------------
+System::System() { Engine::GetInstance().RegComponent(this); }
 
- private:
-  std::string run_dir_;
-  std::string exec_;
-  std::string icon_;
-  std::string version_;
-  std::string name_;
-  std::map<std::string, std::string> properties;
-  std::string output_;
-  const std::string skeleton_;
-};
+//----------------------------------------------------------------------------------------------------------------------
+System::~System() {}
 
 }  // namespace xio

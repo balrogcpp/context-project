@@ -21,29 +21,24 @@
 // SOFTWARE.
 
 #pragma once
-#include <map>
-#include <string>
-
 #include "NoCopy.h"
+#include "view_ptr.h"
 
 namespace xio {
-class DesktopIcon : public NoCopy {
+class Config;
+
+class SubSystem : public NoCopy {
  public:
-  DesktopIcon();
-  virtual ~DesktopIcon();
+  SubSystem() {}
+  virtual ~SubSystem() {}
 
-  void Init();
-  void Save(const std::string &icon_name);
+  virtual void Update(float time) = 0;
 
- private:
-  std::string run_dir_;
-  std::string exec_;
-  std::string icon_;
-  std::string version_;
-  std::string name_;
-  std::map<std::string, std::string> properties;
-  std::string output_;
-  const std::string skeleton_;
+ protected:
+  inline static view_ptr<Config> conf_;
+
+ public:
+  static void SetConfig(view_ptr<Config> conf) { conf_ = conf; }
 };
 
 }  // namespace xio

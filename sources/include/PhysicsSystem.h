@@ -1,32 +1,34 @@
-//MIT License
+// MIT License
 //
-//Copyright (c) 2021 Andrew Vasiliev
+// Copyright (c) 2021 Andrew Vasiliev
 //
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #pragma once
-#include "Component.h"
-#include "Singleton.h"
-#include <OgreFrameListener.h>
 #include <OgreAny.h>
+#include <OgreFrameListener.h>
+
 #include <map>
 #include <thread>
+
+#include "Singleton.h"
+#include "System.h"
 
 namespace BtOgre {
 class DebugDrawer;
@@ -35,7 +37,7 @@ class DebugDrawer;
 namespace Ogre {
 class Entity;
 class SceneNode;
-}
+}  // namespace Ogre
 
 class btDbvtBroadphase;
 class btAxisSweep3;
@@ -62,7 +64,7 @@ struct ContactInfo {
   int points_;
 };
 
-class PhysicsSystem final : public Component, public Singleton<PhysicsSystem> {
+class PhysicsSystem final : public System, public Singleton<PhysicsSystem> {
  public:
   PhysicsSystem(bool threaded = false);
   virtual ~PhysicsSystem();
@@ -74,26 +76,22 @@ class PhysicsSystem final : public Component, public Singleton<PhysicsSystem> {
 
   void DispatchCollisions();
   void AddRigidBody(btRigidBody *body);
-  void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);
-  void ProcessData(Ogre::Entity *entity,
-                   Ogre::SceneNode *parent_node = nullptr,
+  void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity,
+                   Ogre::SceneNode *parent_node);
+  void ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent_node = nullptr,
                    const std::string &proxy_type = "box",
-                   const std::string &physics_type = "static",
-                   float mass = 0.0,
-                   float mass_radius = 0.0,
-                   float inertia_tensor = 0.0,
-                   float velocity_min = 0.0,
-                   float velocity_max = 0.0,
+                   const std::string &physics_type = "static", float mass = 0.0,
+                   float mass_radius = 0.0, float inertia_tensor = 0.0,
+                   float velocity_min = 0.0, float velocity_max = 0.0,
                    float friction = 1.0);
-  void CreateTerrainHeightfieldShape(int size,
-                                     float *data,
+  void CreateTerrainHeightfieldShape(int size, float *data,
                                      const float &min_height,
                                      const float &max_height,
                                      const Ogre::Vector3 &position,
                                      const float &scale);
 
   void SetCallback(const std::function<void(int a, int b)> &callback) {
-	callback_ = callback;
+    callback_ = callback;
   }
 
   bool IsThreaded() const;
@@ -131,4 +129,4 @@ class PhysicsSystem final : public Component, public Singleton<PhysicsSystem> {
   const std::string PROXY_CONVEX = "convex";
 };
 
-} //namespace
+}  // namespace xio

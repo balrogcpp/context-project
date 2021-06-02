@@ -1,27 +1,28 @@
-//MIT License
+// MIT License
 //
-//Copyright (c) 2021 Andrew Vasiliev
+// Copyright (c) 2021 Andrew Vasiliev
 //
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+#include "ReflectionCamera.h"
 
 #include "pcheader.h"
-#include "ReflectionCamera.h"
 
 using namespace std;
 
@@ -34,18 +35,18 @@ ReflectionCamera::ReflectionCamera(Ogre::Plane plane, unsigned int tex_size) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-ReflectionCamera::~ReflectionCamera() {
-  Clear_();
-}
+ReflectionCamera::~ReflectionCamera() { Clear_(); }
 
 //----------------------------------------------------------------------------------------------------------------------
-void ReflectionCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+void ReflectionCamera::preRenderTargetUpdate(
+    const Ogre::RenderTargetEvent &evt) {
   rcamera_->enableReflection(plane_);
   rcamera_->setLodBias(0.001);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void ReflectionCamera::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+void ReflectionCamera::postRenderTargetUpdate(
+    const Ogre::RenderTargetEvent &evt) {
   rcamera_->disableReflection();
   rcamera_->setLodBias(1.0);
 }
@@ -53,34 +54,36 @@ void ReflectionCamera::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt
 //----------------------------------------------------------------------------------------------------------------------
 void ReflectionCamera::Clear_() {
   if (reflection_tex_) {
-	Ogre::RenderTarget *rtt = reflection_tex_->getBuffer()->getRenderTarget();
-	rtt->removeAllListeners();
-	rtt->removeAllViewports();
-	Ogre::TextureManager::getSingleton().remove(reflection_tex_);
+    Ogre::RenderTarget *rtt = reflection_tex_->getBuffer()->getRenderTarget();
+    rtt->removeAllListeners();
+    rtt->removeAllViewports();
+    Ogre::TextureManager::getSingleton().remove(reflection_tex_);
   }
 
   if (refraction_tex_) {
-	Ogre::RenderTarget *rtt = refraction_tex_->getBuffer()->getRenderTarget();
-	rtt->removeAllListeners();
-	rtt->removeAllViewports();
-	Ogre::TextureManager::getSingleton().remove(refraction_tex_);
+    Ogre::RenderTarget *rtt = refraction_tex_->getBuffer()->getRenderTarget();
+    rtt->removeAllListeners();
+    rtt->removeAllViewports();
+    Ogre::TextureManager::getSingleton().remove(refraction_tex_);
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void ReflectionCamera::Init_(unsigned int tex_size) {
   using namespace Ogre;
   auto size = tex_size;
-  auto& tex_manager = Ogre::TextureManager::getSingleton();
+  auto &tex_manager = Ogre::TextureManager::getSingleton();
 
-
-  // create our reflection & refraction render textures, and setup their render targets
+  // create our reflection & refraction render textures, and setup their render
+  // targets
   scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *camera = scene_->getCamera("Default");
 
   rcamera_ = camera;
   rcamera_->setAutoAspectRatio(false);
 
-  reflection_tex_ = tex_manager.createManual("Reflection", RGN_DEFAULT, TEX_TYPE_2D, size, size,0,PF_R8G8B8,TU_RENDERTARGET);
+  reflection_tex_ =
+      tex_manager.createManual("Reflection", RGN_DEFAULT, TEX_TYPE_2D, size,
+                               size, 0, PF_R8G8B8, TU_RENDERTARGET);
 
   Ogre::RenderTarget *rtt1 = reflection_tex_->getBuffer()->getRenderTarget();
   Ogre::Viewport *vp1 = rtt1->addViewport(rcamera_.get());
@@ -90,7 +93,9 @@ void ReflectionCamera::Init_(unsigned int tex_size) {
   rtt1->addListener(this);
   vp1->setVisibilityMask(SURFACE_MASK);
 
-  refraction_tex_ = tex_manager.createManual("Refraction",RGN_DEFAULT,TEX_TYPE_2D,size,size,0,PF_R8G8B8,TU_RENDERTARGET);
+  refraction_tex_ =
+      tex_manager.createManual("Refraction", RGN_DEFAULT, TEX_TYPE_2D, size,
+                               size, 0, PF_R8G8B8, TU_RENDERTARGET);
 
   Ogre::RenderTarget *rtt2 = refraction_tex_->getBuffer()->getRenderTarget();
   Ogre::Viewport *vp2 = rtt2->addViewport(camera);
@@ -103,8 +108,6 @@ void ReflectionCamera::Init_(unsigned int tex_size) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void ReflectionCamera::SetPlane(Ogre::Plane plane) {
-  plane_ = plane;
-}
+void ReflectionCamera::SetPlane(Ogre::Plane plane) { plane_ = plane; }
 
-} //namespace
+}  // namespace xio
