@@ -604,12 +604,20 @@ externalproject_add(target-gtest
         )
 
 
+externalproject_add(target-assets
+        EXCLUDE_FROM_ALL true
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git assets2
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E true
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E true
+        )
+
+
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-json)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet)
-
 
 add_custom_target(target-deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})

@@ -177,8 +177,8 @@ elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
-    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF")
-    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF")
+    string(APPEND CMAKE_CXX_FLAGS " /Wall /arch:SSE2 /EHa /MP /GS- /GF")
+    string(APPEND CMAKE_C_FLAGS " /Wall /arch:SSE2 /EHa /MP /GS- /GF")
 
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
         string(APPEND CMAKE_CXX_FLAGS " /O2 /fp:fast /GL")
@@ -245,12 +245,13 @@ find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
 
 macro(insert_dependency VARIABLE PACKAGE)
     if (NOT ${VARIABLE})
-        message("-- ${VARIABLE} not found. Please build ${PACKAGE} first")
+        message("-- Not found ${VARIABLE}. Please build ${PACKAGE} first")
         set(ANY_NOT_FOUND true)
     else ()
-        message("-- ${PACKAGE} found")
+        message("-- Found ${PACKAGE}")
     endif ()
 endmacro()
+
 
 message("")
 
@@ -387,11 +388,8 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 
 
-set(CPACK_GENERATOR "ZIP")
 #NSIS is not ready
-# if (MSVC)
-#     set(CPACK_GENERATOR "ZIP" "NSIS")
-# endif ()
+set(CPACK_GENERATOR "ZIP")
 
 include(CPack)
 
