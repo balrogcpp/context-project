@@ -604,9 +604,18 @@ externalproject_add(target-gtest
         )
 
 
-externalproject_add(target-assets
+externalproject_add(assets
         EXCLUDE_FROM_ALL true
-        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git assets2
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git assets
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E true
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E true
+        )
+
+
+externalproject_add(assets_ssh
+        EXCLUDE_FROM_ALL true
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 git@github.com:balrogcpp/scenes.git assets
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
         INSTALL_COMMAND ${CMAKE_COMMAND} -E true
