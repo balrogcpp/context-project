@@ -45,19 +45,15 @@ PhysicsSystem::PhysicsSystem(bool threaded) : threaded_(threaded) {
   dispatcher_ = make_unique<btCollisionDispatcherMt>(config_.get(), 40);
   solver_ = make_unique<btSequentialImpulseConstraintSolverMt>();
 
-  btConstraintSolverPoolMt *solverPool =
-      new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT);
+  btConstraintSolverPoolMt *solverPool = new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT);
 
-  world_ = make_unique<btDiscreteDynamicsWorldMt>(dispatcher_.get(),
-                                                  broadphase_.get(), solverPool,
+  world_ = make_unique<btDiscreteDynamicsWorldMt>(dispatcher_.get(), broadphase_.get(), solverPool,
                                                   solver_.get(), config_.get());
 
   world_->setGravity(btVector3(0.0, -9.8, 0.0));
 
   if (debug_) {
-    auto *node = Ogre::Root::getSingleton()
-                     .getSceneManager("Default")
-                     ->getRootSceneNode();
+    auto *node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
     dbg_draw_ = make_unique<BtOgre::DebugDrawer>(node, world_.get());
     dbg_draw_->setDebugMode(debug_);
     world_->setDebugDrawer(dbg_draw_.get());
@@ -81,17 +77,16 @@ PhysicsSystem::~PhysicsSystem() {
 void PhysicsSystem::InitThread_() {
   if (!threaded_) return;
 
-  time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(
-                            chrono::system_clock::now().time_since_epoch())
-                            .count();
+  time_of_last_frame_ =
+      chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch())
+          .count();
 
   function<void(void)> update_func_ = [&]() {
     while (running_) {
       auto before_update = chrono::system_clock::now().time_since_epoch();
       int64_t micros_before_update =
           chrono::duration_cast<chrono::microseconds>(before_update).count();
-      float frame_time =
-          static_cast<float>(micros_before_update - time_of_last_frame_) / 1e+6;
+      float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_) / 1e+6;
       time_of_last_frame_ = micros_before_update;
 
       // Actually do calculations
@@ -144,8 +139,7 @@ void PhysicsSystem::DispatchCollisions() {
 
   /* Browse all collision pairs */
   for (size_t i = 0; i < world_->getDispatcher()->getNumManifolds(); i++) {
-    btPersistentManifold *manifold =
-        world_->getDispatcher()->getManifoldByIndexInternal(i);
+    btPersistentManifold *manifold = world_->getDispatcher()->getManifoldByIndexInternal(i);
     auto *obA = manifold->getBody0();
     auto *obB = manifold->getBody1();
 
@@ -177,8 +171,7 @@ void PhysicsSystem::DispatchCollisions() {
       //      }
     }
 
-    if (detected && callback_)
-      callback_(it.first->getUserIndex(), it.first->getUserIndex());
+    if (detected && callback_) callback_(it.first->getUserIndex(), it.first->getUserIndex());
   }
 
   /* ... and removed contacts */
@@ -207,13 +200,10 @@ void PhysicsSystem::Cleanup() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsSystem::AddRigidBody(btRigidBody *body) {
-  world_->addRigidBody(body);
-}
+void PhysicsSystem::AddRigidBody(btRigidBody *body) { world_->addRigidBody(body); }
 
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsSystem::CreateTerrainHeightfieldShape(int size, float *data,
-                                                  const float &min_height,
+void PhysicsSystem::CreateTerrainHeightfieldShape(int size, float *data, const float &min_height,
                                                   const float &max_height,
                                                   const Ogre::Vector3 &position,
                                                   const float &scale) {
@@ -222,25 +212,23 @@ void PhysicsSystem::CreateTerrainHeightfieldShape(int size, float *data,
   assert(terrainHeights != 0);
 
   for (int i = 0; i < size; i++) {
-    memcpy(terrainHeights + size * i, data + size * (size - i - 1),
-           sizeof(float) * size);
+    memcpy(terrainHeights + size * i, data + size * (size - i - 1), sizeof(float) * size);
   }
 
   const btScalar heightScale = 1.0f;
 
   btVector3 localScaling(scale, heightScale, scale);
 
-  auto *terrainShape =
-      new btHeightfieldTerrainShape(size, size, terrainHeights, 1, min_height,
-                                    max_height, 1, PHY_FLOAT, false);
+  auto *terrainShape = new btHeightfieldTerrainShape(size, size, terrainHeights, 1, min_height,
+                                                     max_height, 1, PHY_FLOAT, false);
 
   terrainShape->setUseDiamondSubdivision(true);
   terrainShape->setLocalScaling(localScaling);
 
   auto *groundMotionState = new btDefaultMotionState(
       btTransform(btQuaternion(0, 0, 0, 1), btVector3(size / 2, 0, size / 2)));
-  btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(
-      0, groundMotionState, terrainShape, btVector3(0, 0, 0));
+  btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, terrainShape,
+                                                             btVector3(0, 0, 0));
 
   // Init Rigid Body using 0 mass so it is static
   auto *entBody = new btRigidBody(groundRigidBodyCI);
@@ -249,10 +237,8 @@ void PhysicsSystem::CreateTerrainHeightfieldShape(int size, float *data,
   entBody->setHitFraction(0.8f);
   entBody->setRestitution(0.6f);
   entBody->getWorldTransform().setOrigin(
-      btVector3(position.x, position.y + (max_height - min_height) / 2 - 0.5,
-                position.z));
-  entBody->getWorldTransform().setRotation(
-      BtOgre::Convert::toBullet(Ogre::Quaternion::IDENTITY));
+      btVector3(position.x, position.y + (max_height - min_height) / 2 - 0.5, position.z));
+  entBody->getWorldTransform().setRotation(BtOgre::Convert::toBullet(Ogre::Quaternion::IDENTITY));
   entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
   entBody->setUserIndex(0);
@@ -261,13 +247,10 @@ void PhysicsSystem::CreateTerrainHeightfieldShape(int size, float *data,
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsSystem::ProcessData(Ogre::Entity *entity,
-                                Ogre::SceneNode *parent_node,
-                                const string &proxy_type,
-                                const string &physics_type, float mass,
-                                float mass_radius, float inertia_tensor,
-                                float velocity_min, float velocity_max,
-                                float friction) {
+void PhysicsSystem::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent_node,
+                                const string &proxy_type, const string &physics_type, float mass,
+                                float mass_radius, float inertia_tensor, float velocity_min,
+                                float velocity_max, float friction) {
   btRigidBody *entBody = nullptr;
 
   if (physics_type == TYPE_STATIC) {
@@ -277,8 +260,7 @@ void PhysicsSystem::ProcessData(Ogre::Entity *entity,
       converter = make_unique<BtOgre::StaticMeshToShapeConverter>(
           entity->getManualLodLevel(entity->getNumManualLodLevels() - 1));
     else
-      converter =
-          make_unique<BtOgre::StaticMeshToShapeConverter>(entity, parent_node);
+      converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity, parent_node);
 
     if (proxy_type == PROXY_CAPSULE) {
       auto *entShape = converter->createCapsule();
@@ -445,48 +427,30 @@ void PhysicsSystem::ProcessData(Ogre::Entity *entity,
 
 //----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
-                                Ogre::Entity *entity,
-                                Ogre::SceneNode *parent_node) {
+                                Ogre::Entity *entity, Ogre::SceneNode *parent_node) {
   string proxy_type;
   if (user_object_bindings.getUserAny("proxy").has_value())
-    proxy_type =
-        Ogre::any_cast<string>(user_object_bindings.getUserAny("proxy"));
+    proxy_type = Ogre::any_cast<string>(user_object_bindings.getUserAny("proxy"));
 
-  string physics_type =
-      Ogre::any_cast<string>(user_object_bindings.getUserAny("physics_type"));
+  string physics_type = Ogre::any_cast<string>(user_object_bindings.getUserAny("physics_type"));
   float mass = Ogre::any_cast<float>(user_object_bindings.getUserAny("mass"));
-  float mass_radius =
-      Ogre::any_cast<float>(user_object_bindings.getUserAny("mass_radius"));
-  float inertia_tensor =
-      Ogre::any_cast<float>(user_object_bindings.getUserAny("inertia_tensor"));
-  float velocity_min =
-      Ogre::any_cast<float>(user_object_bindings.getUserAny("velocity_min"));
-  float velocity_max =
-      Ogre::any_cast<float>(user_object_bindings.getUserAny("velocity_max"));
-  bool lock_trans_x =
-      Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_x"));
-  bool lock_trans_y =
-      Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_y"));
-  bool lock_trans_z =
-      Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_z"));
-  bool lock_rot_x =
-      Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_x"));
-  bool lock_rot_y =
-      Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_y"));
-  bool lock_rot_z =
-      Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_z"));
-  bool anisotropic_friction = Ogre::any_cast<bool>(
-      user_object_bindings.getUserAny("anisotropic_friction"));
-  float friction_x =
-      Ogre::any_cast<float>(user_object_bindings.getUserAny("friction_x"));
-  float friction_y =
-      Ogre::any_cast<float>(user_object_bindings.getUserAny("friction_y"));
-  float friction_z =
-      Ogre::any_cast<float>(user_object_bindings.getUserAny("friction_z"));
-  float damping_trans =
-      Ogre::any_cast<float>(user_object_bindings.getUserAny("damping_trans"));
-  float damping_rot =
-      Ogre::any_cast<float>(user_object_bindings.getUserAny("damping_rot"));
+  float mass_radius = Ogre::any_cast<float>(user_object_bindings.getUserAny("mass_radius"));
+  float inertia_tensor = Ogre::any_cast<float>(user_object_bindings.getUserAny("inertia_tensor"));
+  float velocity_min = Ogre::any_cast<float>(user_object_bindings.getUserAny("velocity_min"));
+  float velocity_max = Ogre::any_cast<float>(user_object_bindings.getUserAny("velocity_max"));
+  bool lock_trans_x = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_x"));
+  bool lock_trans_y = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_y"));
+  bool lock_trans_z = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_z"));
+  bool lock_rot_x = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_x"));
+  bool lock_rot_y = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_y"));
+  bool lock_rot_z = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_z"));
+  bool anisotropic_friction =
+      Ogre::any_cast<bool>(user_object_bindings.getUserAny("anisotropic_friction"));
+  float friction_x = Ogre::any_cast<float>(user_object_bindings.getUserAny("friction_x"));
+  float friction_y = Ogre::any_cast<float>(user_object_bindings.getUserAny("friction_y"));
+  float friction_z = Ogre::any_cast<float>(user_object_bindings.getUserAny("friction_z"));
+  float damping_trans = Ogre::any_cast<float>(user_object_bindings.getUserAny("damping_trans"));
+  float damping_rot = Ogre::any_cast<float>(user_object_bindings.getUserAny("damping_rot"));
   btRigidBody *entBody = nullptr;
 
   if (physics_type == TYPE_STATIC) {
@@ -547,12 +511,10 @@ void PhysicsSystem::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
       proxy_type = PROXY_TRIMESH;
     } else {
       if (entity->getMesh()->getNumLodLevels() > 0) {
-        auto lod = entity->getMesh()
-                       ->getLodLevel(entity->getMesh()->getNumLodLevels() - 1)
-                       .manualMesh;
+        auto lod =
+            entity->getMesh()->getLodLevel(entity->getMesh()->getNumLodLevels() - 1).manualMesh;
         Ogre::MeshManager::getSingleton().load("Cube.mesh", Ogre::RGN_DEFAULT);
-        converter =
-            make_unique<BtOgre::StaticMeshToShapeConverter>(entity, lod);
+        converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity, lod);
       } else {
         converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
       }

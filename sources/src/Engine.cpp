@@ -65,8 +65,7 @@ void Engine::InitComponents() {
   int window_width = conf_->Get<int>("window_width");
   int window_high = conf_->Get<int>("window_high");
   bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
-  renderer_ =
-      make_unique<RenderSystem>(window_width, window_high, window_fullscreen);
+  renderer_ = make_unique<RenderSystem>(window_width, window_high, window_fullscreen);
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   bool physics_threaded = false;  // cause strange behavior sometimes
@@ -90,14 +89,11 @@ void Engine::Capture() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Engine::RegComponent(view_ptr<System> component) {
-  components_.push_back(component);
-}
+void Engine::RegComponent(view_ptr<System> component) { components_.push_back(component); }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Pause() {
-  for_each(components_.begin(), components_.end(),
-           [](view_ptr<System> it) { it->Pause(); });
+  for_each(components_.begin(), components_.end(), [](view_ptr<System> it) { it->Pause(); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -116,14 +112,12 @@ void Engine::OffMenu() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Resume() {
-  for_each(components_.begin(), components_.end(),
-           [](view_ptr<System> it) { it->Resume(); });
+  for_each(components_.begin(), components_.end(), [](view_ptr<System> it) { it->Resume(); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Cleanup() {
-  for_each(components_.begin(), components_.end(),
-           [](view_ptr<System> it) { it->Cleanup(); });
+  for_each(components_.begin(), components_.end(), [](view_ptr<System> it) { it->Cleanup(); });
   Refresh();
 }
 

@@ -98,8 +98,7 @@ Application::~Application() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-int Application::ExceptionMessage_(const string &caption,
-                                   const string &message) {
+int Application::ExceptionMessage_(const string &caption, const string &message) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   GetWindow().Grab(false);
 #endif
@@ -108,8 +107,7 @@ int Application::ExceptionMessage_(const string &caption,
   MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
 #else
   SDL_Log("%s", string(caption + " : " + message).c_str());
-  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption.c_str(),
-                           message.c_str(), nullptr);
+  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption.c_str(), message.c_str(), nullptr);
 #endif
 
   return 1;
@@ -128,8 +126,7 @@ void Application::WriteLogToFile_() {
 void Application::PrintLogToConsole_() { cout << log_ << flush; }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::messageLogged(const string &message,
-                                Ogre::LogMessageLevel lml, bool maskDebug,
+void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml, bool maskDebug,
                                 const string &logName, bool &skipThisMessage) {
   log_.append(message);
   log_.append("\n");
@@ -171,9 +168,7 @@ void Application::Loop_() {
         auto before_update = chrono::system_clock::now().time_since_epoch();
         int64_t micros_before_update =
             chrono::duration_cast<chrono::microseconds>(before_update).count();
-        float frame_time =
-            static_cast<float>(micros_before_update - time_of_last_frame_) /
-            1e+6;
+        float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_) / 1e+6;
         time_of_last_frame_ = micros_before_update;
         state_manager_->Update(frame_time);
         engine_->Update(frame_time);
@@ -188,11 +183,9 @@ void Application::Loop_() {
       if (verbose_) cout << flush;
 #endif
 
-      auto duration_after_render =
-          chrono::system_clock::now().time_since_epoch();
+      auto duration_after_render = chrono::system_clock::now().time_since_epoch();
       auto micros_after_render =
-          chrono::duration_cast<chrono::microseconds>(duration_after_render)
-              .count();
+          chrono::duration_cast<chrono::microseconds>(duration_after_render).count();
       auto render_time = micros_after_render - micros_before_frame;
 
       if (lock_fps_) {
@@ -202,8 +195,7 @@ void Application::Loop_() {
 
       auto duration_after_loop = chrono::system_clock::now().time_since_epoch();
       int64_t micros_after_loop =
-          chrono::duration_cast<chrono::microseconds>(duration_after_loop)
-              .count();
+          chrono::duration_cast<chrono::microseconds>(duration_after_loop).count();
 
       int64_t time_since_last_frame_ = micros_after_loop - micros_before_frame;
       cumulated_time_ += time_since_last_frame_;
@@ -222,11 +214,9 @@ void Application::Go_() {
   if (state_manager_->IsActive()) {
     state_manager_->InitCurState();
     running_ = true;
-    auto duration_before_update =
-        chrono::system_clock::now().time_since_epoch();
+    auto duration_before_update = chrono::system_clock::now().time_since_epoch();
     time_of_last_frame_ =
-        chrono::duration_cast<chrono::microseconds>(duration_before_update)
-            .count();
+        chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
     Loop_();
   }
 }

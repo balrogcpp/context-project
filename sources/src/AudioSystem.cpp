@@ -33,8 +33,7 @@ using namespace std;
 namespace xio {
 
 //----------------------------------------------------------------------------------------------------------------------
-AudioSystem::AudioSystem(unsigned int max_sources,
-                         unsigned int queue_list_size) {
+AudioSystem::AudioSystem(unsigned int max_sources, unsigned int queue_list_size) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
@@ -42,14 +41,12 @@ AudioSystem::AudioSystem(unsigned int max_sources,
 #endif
 
   // Init new factory
-  auto *mOgreOggSoundFactory = OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory,
-                                          Ogre::MEMCATEGORY_GENERAL)();
+  auto *mOgreOggSoundFactory =
+      OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
 
   // Register
-  Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory,
-                                                     true);
-  OgreOggSound::OgreOggSoundManager::getSingleton().init("", max_sources,
-                                                         queue_list_size);
+  Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
+  OgreOggSound::OgreOggSoundManager::getSingleton().init("", max_sources, queue_list_size);
   manager_ = &OgreOggSound::OgreOggSoundManager::getSingleton();
   manager_->setResourceGroupName(Ogre::RGN_AUTODETECT);
 }
@@ -69,8 +66,7 @@ void AudioSystem::Pause() { manager_->pauseAllSounds(); }
 void AudioSystem::Resume() { manager_->resumeAllPausedSounds(); }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AudioSystem::CreateSound(const string &name, const string &file,
-                              bool loop) {
+void AudioSystem::CreateSound(const string &name, const string &file, bool loop) {
   auto *sound = manager_->createSound(name, file, true, loop, true, nullptr);
   Ogre::Root::getSingleton()
       .getSceneManager("Default")
@@ -101,9 +97,7 @@ void AudioSystem::PlaySound(const string &name, bool immediate) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AudioSystem::SetMasterVolume(float volume) {
-  manager_->setMasterVolume(volume);
-}
+void AudioSystem::SetMasterVolume(float volume) { manager_->setMasterVolume(volume); }
 
 //----------------------------------------------------------------------------------------------------------------------
 void AudioSystem::SetMaxVolume(const string &name, float volume) {

@@ -42,8 +42,8 @@ namespace xio {
 
 //----------------------------------------------------------------------------------------------------------------------
 TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
-  mProfiles.push_back(OGRE_NEW SM2Profile(
-      this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
+  mProfiles.push_back(
+      OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
 
   // TODO - check hardware capabilities & use fallbacks if required (more
   // profiles needed)
@@ -54,22 +54,20 @@ TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
 TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
-TerrainMaterialGeneratorB::SM2Profile::SM2Profile(
-    TerrainMaterialGenerator *parent, const String &name, const String &desc)
+TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent,
+                                                  const String &name, const String &desc)
     : Profile(parent, name, desc) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
 //----------------------------------------------------------------------------------------------------------------------
-bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported()
-    const {
+bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   return true;
 #else
-  static bool glsles =
-      bool{Ogre::Root::getSingleton().getRenderSystem()->getName() ==
-           "OpenGL ES 2.x Rendering Subsystem"};
+  static bool glsles = bool{Ogre::Root::getSingleton().getRenderSystem()->getName() ==
+                            "OpenGL ES 2.x Rendering Subsystem"};
   return glsles;
 #endif
 }
@@ -80,8 +78,7 @@ void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void TerrainMaterialGeneratorB::SM2Profile::requestOptions(
-    Ogre::Terrain *terrain) {
+void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrain) {
   terrain->_setMorphRequired(true);
   terrain->_setNormalMapRequired(true);
   terrain->_setLightMapRequired(lightmap_, false);
@@ -89,24 +86,20 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(
-    const Ogre::Terrain *terrain) {
+Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *terrain) {
   string material_name = "TerrainCustom";
   const int GENERATOR = 0;
 
   if (isVertexCompressionSupported()) {
-    auto material =
-        Ogre::MaterialManager::getSingleton().getByName(material_name);
+    auto material = Ogre::MaterialManager::getSingleton().getByName(material_name);
     if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
-      auto vert_params =
-          material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
-      auto &constants = vert_params->getConstantDefinitions();
+      auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+
       Ogre::Matrix4 posIndexToObjectSpace;
       terrain->getPointTransform(&posIndexToObjectSpace);
 
       vert_params->setIgnoreMissingParams(true);
-      vert_params->setNamedConstant("posIndexToObjectSpace",
-                                    posIndexToObjectSpace);
+      vert_params->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
 
       Ogre::Real baseUVScale = 1.0f / (terrain->getSize() - 1);
       vert_params->setNamedConstant("baseUVScale", baseUVScale);
@@ -125,19 +118,15 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(
 
     return Ogre::MaterialManager::getSingleton().getByName(new_name);
   } else {
-    auto new_material = Ogre::MaterialManager::getSingleton()
-                            .getByName(material_name)
-                            ->clone(new_name);
+    auto new_material =
+        Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(new_name);
 
     auto *texture_state =
-        new_material->getTechnique(0)->getPass(0)->getTextureUnitState(
-            "GlobalNormal");
+        new_material->getTechnique(0)->getPass(0)->getTextureUnitState("GlobalNormal");
     if (texture_state) {
       texture_state->setTexture(normalmap);
-      texture_state->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR,
-                                         Ogre::FO_NONE);
-      texture_state->setTextureAddressingMode(
-          Ogre::TextureUnitState::TAM_CLAMP);
+      texture_state->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_NONE);
+      texture_state->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
     }
 
     Pbr::UpdatePbrParams(new_name);
@@ -148,8 +137,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Ogre::MaterialPtr
-TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(
+Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(
     const Ogre::Terrain *terrain) {
   string material_name = "TerrainCustom";
   const int GENERATOR = 1;
@@ -161,9 +149,8 @@ TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(
   if (Ogre::MaterialManager::getSingleton().resourceExists(new_name)) {
     return Ogre::MaterialManager::getSingleton().getByName(new_name);
   } else {
-    auto new_material = Ogre::MaterialManager::getSingleton()
-                            .getByName(material_name)
-                            ->clone(new_name);
+    auto new_material =
+        Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(new_name);
     return new_material;
   }
 }

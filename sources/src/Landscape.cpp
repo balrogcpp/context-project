@@ -49,8 +49,7 @@ Landscape::~Landscape() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Landscape::GetTerrainImage_(bool flipX, bool flipY,
-                                 Ogre::Image &ogre_image,
+void Landscape::GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image,
                                  const string &filename = "terrain.dds") {
   ogre_image.load(filename, Ogre::RGN_AUTODETECT);
 
@@ -60,8 +59,7 @@ void Landscape::GetTerrainImage_(bool flipX, bool flipY,
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Landscape::DefineTerrain_(long x, long y, bool flat,
-                               const string &filename = "terrain.dds") {
+void Landscape::DefineTerrain_(long x, long y, bool flat, const string &filename = "terrain.dds") {
   // if a file is available, use it
   // if not, generate file from import
 
@@ -77,8 +75,8 @@ void Landscape::DefineTerrain_(long x, long y, bool flat,
   GetTerrainImage_(x % 2 != 0, y % 2 != 0, image, filename);
 
   string cached = terrain_->generateFilename(x, y);
-  if (Ogre::ResourceGroupManager::getSingleton().resourceExists(
-          terrain_->getResourceGroup(), cached)) {
+  if (Ogre::ResourceGroupManager::getSingleton().resourceExists(terrain_->getResourceGroup(),
+                                                                cached)) {
     terrain_->defineTerrain(x, y);
   } else {
     terrain_->defineTerrain(x, y, &image);
@@ -126,32 +124,25 @@ void Landscape::InitBlendMaps_(Ogre::Terrain *terrain, int layer,
 void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   float worldSize = GetAttribReal(xml_node, "worldSize");
   int mapSize = GetAttribInt(xml_node, "mapSize");
-  int minBatchSize = Ogre::StringConverter::parseInt(
-      xml_node.attribute("minBatchSize").value());
-  int maxBatchSize = Ogre::StringConverter::parseInt(
-      xml_node.attribute("maxBatchSize").value());
-  int inputScale =
-      Ogre::StringConverter::parseInt(xml_node.attribute("inputScale").value());
+  int minBatchSize = Ogre::StringConverter::parseInt(xml_node.attribute("minBatchSize").value());
+  int maxBatchSize = Ogre::StringConverter::parseInt(xml_node.attribute("maxBatchSize").value());
+  int inputScale = Ogre::StringConverter::parseInt(xml_node.attribute("inputScale").value());
   int tuningMaxPixelError = GetAttribInt(xml_node, "tuningMaxPixelError", 8);
   auto *terrain_global_options = Ogre::TerrainGlobalOptions::getSingletonPtr();
 
-  if (!terrain_global_options)
-    terrain_global_options = new Ogre::TerrainGlobalOptions();
+  if (!terrain_global_options) terrain_global_options = new Ogre::TerrainGlobalOptions();
 
-  OgreAssert(terrain_global_options,
-             "Ogre::TerrainGlobalOptions not available");
+  OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
   terrain_global_options->setUseVertexCompressionWhenAvailable(true);
   terrain_global_options->setCastsDynamicShadows(true);
   terrain_global_options->setCompositeMapDistance(200);
-  terrain_global_options->setMaxPixelError(
-      static_cast<float>(tuningMaxPixelError));
+  terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
   terrain_global_options->setUseRayBoxDistanceCalculation(true);
-  terrain_global_options->setDefaultMaterialGenerator(
-      make_shared<TerrainMaterialGeneratorB>());
+  terrain_global_options->setDefaultMaterialGenerator(make_shared<TerrainMaterialGeneratorB>());
 
   auto *scene_manager = Ogre::Root::getSingleton().getSceneManager("Default");
-  terrain_ = make_unique<Ogre::TerrainGroup>(
-      scene_manager, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
+  terrain_ =
+      make_unique<Ogre::TerrainGroup>(scene_manager, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
   terrain_->setFilenameConvention("terrain", "bin");
   terrain_->setOrigin(Ogre::Vector3::ZERO);
   terrain_->setResourceGroup(Ogre::RGN_DEFAULT);
@@ -192,10 +183,8 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   //  defaultimp.layerList[2].textureNames.push_back("Rock20_normheight.dds");
 
   for (auto &pPageElement : xml_node.children("terrain")) {
-    int pageX =
-        Ogre::StringConverter::parseInt(pPageElement.attribute("x").value());
-    int pageY =
-        Ogre::StringConverter::parseInt(pPageElement.attribute("y").value());
+    int pageX = Ogre::StringConverter::parseInt(pPageElement.attribute("x").value());
+    int pageY = Ogre::StringConverter::parseInt(pPageElement.attribute("y").value());
 
     string heighmap = pPageElement.attribute("heightmap").value();
     DefineTerrain_(pageX, pageY, false, heighmap);
@@ -203,16 +192,14 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     terrain_->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
 
     int layers_count = 0;
-    for (const auto &pLayerElement : pPageElement.children("layer"))
-      layers_count++;
+    for (const auto &pLayerElement : pPageElement.children("layer")) layers_count++;
 
     defaultimp.layerList.resize(layers_count);
 
     int layer_counter = 0;
     for (auto pLayerElement : pPageElement.children("layer")) {
       defaultimp.layerList[layer_counter].worldSize =
-          Ogre::StringConverter::parseInt(
-              pLayerElement.attribute("scale").value());
+          Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
       defaultimp.layerList[layer_counter].textureNames.push_back(
           pLayerElement.attribute("diffuse").value());
       defaultimp.layerList[layer_counter].textureNames.push_back(

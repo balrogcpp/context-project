@@ -67,8 +67,7 @@ class InputObserverI {
 
   // Mouse
   virtual void OnMouseMove(int dx, int dy) {}
-  virtual void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right,
-                           bool middle) {}
+  virtual void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {}
   virtual void OnMouseWheel(int x, int y) {}
   virtual void OnMouseLbDown(int x, int y) {}
   virtual void OnMouseLbUp(int x, int y) {}
@@ -98,8 +97,7 @@ class InputObserver : public InputObserverI, public NoCopy {
 
   // Mouse
   void OnMouseMove(int dx, int dy) override {}
-  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right,
-                   bool middle) override {}
+  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override {}
   void OnMouseWheel(int x, int y) override {}
   void OnMouseLbDown(int x, int y) override {}
   void OnMouseLbUp(int x, int y) override {}

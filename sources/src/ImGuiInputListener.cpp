@@ -137,8 +137,8 @@ void ImGuiInputListener::OnTextInput(const char *text) {
 void ImGuiInputListener::OnMouseMove(int dx, int dy) {}
 
 //----------------------------------------------------------------------------------------------------------------------
-void ImGuiInputListener::OnMouseMove(int x, int y, int dx, int dy, bool left,
-                                     bool right, bool middle) {
+void ImGuiInputListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right,
+                                     bool middle) {
   static auto &io = ImGui::GetIO();
 
   io.MousePos.x = static_cast<float>(x);

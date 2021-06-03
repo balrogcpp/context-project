@@ -39,8 +39,7 @@ AppState::~AppState() {}
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::LoadFromFile(const string &file_name, const string &group) {
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  Ogre::SceneLoaderManager::getSingleton().load(file_name, group,
-                                                scene->getRootSceneNode());
+  Ogre::SceneLoaderManager::getSingleton().load(file_name, group, scene->getRootSceneNode());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -53,9 +52,7 @@ void AppState::ChangeState(unique_ptr<AppState> &&app_state) {
 void AppState::ChangeState() { dirty_ = true; }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::SetNextState(unique_ptr<AppState> &&next_state) {
-  next_ = move(next_state);
-}
+void AppState::SetNextState(unique_ptr<AppState> &&next_state) { next_ = move(next_state); }
 
 //----------------------------------------------------------------------------------------------------------------------
 bool AppState::IsDirty() const { return dirty_; }

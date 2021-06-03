@@ -63,17 +63,14 @@ static void CreateGrassMesh(float width, float height) {
   VertexDeclaration *decl = sm->vertexData->vertexDeclaration;
   decl->addElement(0, 0, VET_FLOAT3, VES_POSITION);
   decl->addElement(0, sizeof(float) * 3, VET_FLOAT3, VES_NORMAL);
-  decl->addElement(0, sizeof(float) * 6, VET_FLOAT2, VES_TEXTURE_COORDINATES,
-                   0);
+  decl->addElement(0, sizeof(float) * 6, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0);
 
   // create a vertex buffer
-  HardwareVertexBufferSharedPtr vb =
-      HardwareBufferManager::getSingleton().createVertexBuffer(
-          decl->getVertexSize(0), sm->vertexData->vertexCount,
-          HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+  HardwareVertexBufferSharedPtr vb = HardwareBufferManager::getSingleton().createVertexBuffer(
+      decl->getVertexSize(0), sm->vertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
-  GrassVertex *verts = (GrassVertex *)vb->lock(
-      HardwareBuffer::HBL_DISCARD);  // start filling in vertex data
+  GrassVertex *verts =
+      (GrassVertex *)vb->lock(HardwareBuffer::HBL_DISCARD);  // start filling in vertex data
 
   for (unsigned int i = 0; i < 3; i++)  // each grass mesh consists of 3 planes
   {
@@ -101,18 +98,16 @@ static void CreateGrassMesh(float width, float height) {
 
   vb->unlock();  // commit vertex changes
 
-  sm->vertexData->vertexBufferBinding->setBinding(
-      0, vb);  // bind vertex buffer to our submesh
+  sm->vertexData->vertexBufferBinding->setBinding(0, vb);  // bind vertex buffer to our submesh
 
   // create an index buffer
-  sm->indexData->indexBuffer =
-      HardwareBufferManager::getSingleton().createIndexBuffer(
-          HardwareIndexBuffer::IT_16BIT, sm->indexData->indexCount,
-          HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+  sm->indexData->indexBuffer = HardwareBufferManager::getSingleton().createIndexBuffer(
+      HardwareIndexBuffer::IT_16BIT, sm->indexData->indexCount,
+      HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
   // start filling in index data
-  Ogre::uint16 *indices = (Ogre::uint16 *)sm->indexData->indexBuffer->lock(
-      HardwareBuffer::HBL_DISCARD);
+  Ogre::uint16 *indices =
+      (Ogre::uint16 *)sm->indexData->indexBuffer->lock(HardwareBuffer::HBL_DISCARD);
 
   for (unsigned int i = 0; i < 3; i++)  // each grass mesh consists of 3 planes
   {
@@ -132,14 +127,12 @@ static void CreateGrassMesh(float width, float height) {
 
 //----------------------------------------------------------------------------------------------------------------------
 static void CreateGrassMesh2(float width, float height) {
-  Ogre::MeshPtr mesh =
-      Ogre::MeshManager::getSingleton().createManual("grass", "General");
+  Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
 
   // Init a submesh with the grass material
   Ogre::SubMesh *sm = mesh->createSubMesh();
   const string grassMaterial = "GrassCustom";
-  Ogre::MaterialPtr tmp =
-      Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
+  Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
 
   Pbr::UpdatePbrParams(tmp);
   Pbr::UpdatePbrShadowReceiver(tmp);
@@ -156,8 +149,7 @@ static void CreateGrassMesh2(float width, float height) {
   Ogre::VertexDeclaration *decl = sm->vertexData->vertexDeclaration;
   decl->addElement(0, 0, Ogre::VET_FLOAT3, Ogre::VES_POSITION);
   decl->addElement(0, sizeof(float) * 3, Ogre::VET_FLOAT3, Ogre::VES_NORMAL);
-  decl->addElement(0, sizeof(float) * 6, Ogre::VET_FLOAT2,
-                   Ogre::VES_TEXTURE_COORDINATES, 0);
+  decl->addElement(0, sizeof(float) * 6, Ogre::VET_FLOAT2, Ogre::VES_TEXTURE_COORDINATES, 0);
 
   // Init a vertex buffer
   Ogre::HardwareVertexBufferSharedPtr vb =
@@ -165,8 +157,8 @@ static void CreateGrassMesh2(float width, float height) {
           decl->getVertexSize(0), sm->vertexData->vertexCount,
           Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
-  auto *verts = (GrassVertex *)vb->lock(
-      Ogre::HardwareBuffer::HBL_DISCARD);  // start filling in vertex data
+  auto *verts =
+      (GrassVertex *)vb->lock(Ogre::HardwareBuffer::HBL_DISCARD);  // start filling in vertex data
 
   for (int i = 0; i < 2; i++)  // each grass mesh consists of 3 planes
   {
@@ -194,18 +186,16 @@ static void CreateGrassMesh2(float width, float height) {
 
   vb->unlock();  // commit vertex changes
 
-  sm->vertexData->vertexBufferBinding->setBinding(
-      0, vb);  // bind vertex buffer to our submesh
+  sm->vertexData->vertexBufferBinding->setBinding(0, vb);  // bind vertex buffer to our submesh
 
   // Init an index buffer
-  sm->indexData->indexBuffer =
-      Ogre::HardwareBufferManager::getSingleton().createIndexBuffer(
-          Ogre::HardwareIndexBuffer::IT_16BIT, sm->indexData->indexCount,
-          Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+  sm->indexData->indexBuffer = Ogre::HardwareBufferManager::getSingleton().createIndexBuffer(
+      Ogre::HardwareIndexBuffer::IT_16BIT, sm->indexData->indexCount,
+      Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
   // start filling in index data
-  Ogre::uint16 *indices = (Ogre::uint16 *)sm->indexData->indexBuffer->lock(
-      Ogre::HardwareBuffer::HBL_DISCARD);
+  Ogre::uint16 *indices =
+      (Ogre::uint16 *)sm->indexData->indexBuffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
 
   for (unsigned int i = 0; i < 2; i++)  // each grass mesh consists of 3 planes
   {
@@ -257,8 +247,7 @@ void VegetationSystem::GenerateGrassStatic() {
                       Ogre::Math::RangeRandom(-bounds, bounds));
     pos.y += GetLoader().GetHeigh(pos.x, pos.z);
 
-    Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)),
-                         Ogre::Vector3::UNIT_Y);
+    Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
     field->addEntity(grass, pos, ori, scale);
   }
@@ -280,8 +269,7 @@ void VegetationSystem::GenerateRocksStatic() {
 
   // Init a static geometry field, which we will populate with grass
   auto *rocks = scene->createStaticGeometry("Rocks");
-  auto *root_node =
-      Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
+  auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
 
   const float bounds = 100.0f;
   // add grass uniformly throughout the field, with some random variations
@@ -289,8 +277,7 @@ void VegetationSystem::GenerateRocksStatic() {
     Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0,
                       Ogre::Math::RangeRandom(-bounds, bounds));
     pos.y += GetLoader().GetHeigh(pos.x, pos.z) - 0.1;
-    Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)),
-                         Ogre::Vector3::UNIT_Y);
+    Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(2.0, 2.0 * Ogre::Math::RangeRandom(0.85, 1.15), 2.0);
 
     auto *node = root_node->createChildSceneNode(pos, ori);
@@ -314,9 +301,7 @@ void VegetationSystem::GenerateRocksStatic() {
 //----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::GenerateGrassPaged() {
   auto *grass = new PagedGeometry(
-      Ogre::Root::getSingleton().getSceneManager("Default")->getCamera(
-          "Default"),
-      5);
+      Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 5);
   grass->addDetailLevel<GrassPage>(50, 10);  // Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
   grass->setPageLoader(grassLoader);
@@ -369,8 +354,7 @@ void VegetationSystem::GenerateTreesPaged() {
 
   UpdateMeshMaterial("fir05_30.mesh");
 
-  auto *root_node =
-      Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
+  auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
 
   for (int i = 0; i < 50; i++) {
     yaw = Ogre::Math::RangeRandom(0, 360);
@@ -401,8 +385,7 @@ void VegetationSystem::GenerateTreesPaged() {
     GetPhysics().ProcessData(fir1EntPtr, node, "capsule");
     scene->destroySceneNode(node);
 
-    treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, y, z), Ogre::Degree(yaw),
-                        scale);
+    treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
   }
 
   Update(0);

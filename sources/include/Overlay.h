@@ -35,9 +35,7 @@ class RenderTargetViewportEvent;
 }  // namespace Ogre
 
 namespace xio {
-class Overlay final : public System,
-                      public Singleton<Overlay>,
-                      public Ogre::RenderTargetListener {
+class Overlay final : public System, public Singleton<Overlay>, public Ogre::RenderTargetListener {
  public:
   Overlay(view_ptr<Ogre::RenderWindow> render_window);
   virtual ~Overlay();
@@ -48,16 +46,13 @@ class Overlay final : public System,
   void Update(float time) override;
   void preViewportUpdate(const Ogre::RenderTargetViewportEvent &evt) override;
 
-  void PrepareTexture(const std::string &name_,
-                      const std::string group_ = Ogre::RGN_AUTODETECT);
+  void PrepareTexture(const std::string &name_, const std::string group_ = Ogre::RGN_AUTODETECT);
 
  private:
   std::unique_ptr<ImGuiInputListener> imgui_listener_;
   std::unique_ptr<Ogre::ImGuiOverlay> imgui_;
   view_ptr<Ogre::OverlaySystem> overlay_;
   view_ptr<Ogre::RenderWindow> render_window_;
-
-  bool gorilla_ = false;
 };
 
 }  // namespace xio

@@ -34,10 +34,8 @@
 using namespace std;
 
 namespace xio {
-Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window)
-    : render_window_(render_window) {
-  Ogre::SceneManager* sm =
-      Ogre::Root::getSingletonPtr()->getSceneManager("Default");
+Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : render_window_(render_window) {
+  Ogre::SceneManager* sm = Ogre::Root::getSingletonPtr()->getSceneManager("Default");
   overlay_ = new Ogre::OverlaySystem();
   sm->addRenderQueueListener(overlay_.get());
 
@@ -76,8 +74,7 @@ void Overlay::Pause() {}
 void Overlay::Resume() {}
 
 //----------------------------------------------------------------------------------------------------------------------
-void Overlay::PrepareTexture(const std::string& name_,
-                             const std::string group_) {
+void Overlay::PrepareTexture(const std::string& name_, const std::string group_) {
   imgui_->addFont(name_, group_);
   imgui_->show();
 }

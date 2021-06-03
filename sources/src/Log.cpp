@@ -9,8 +9,7 @@
 using namespace std;
 
 namespace xio {
-void LogMessage(const std::string& message, Ogre::LogMessageLevel lml,
-                bool maskDebug) {
+void LogMessage(const std::string& message, Ogre::LogMessageLevel lml, bool maskDebug) {
   Ogre::LogManager::getSingleton().logMessage(message, lml, maskDebug);
 }
 }  // namespace xio

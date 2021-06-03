@@ -52,8 +52,7 @@ using SC = Ogre::StringConverter;
 namespace xio {
 
 //----------------------------------------------------------------------------------------------------------------------
-string GetAttrib(const pugi::xml_node &xml_node, const string &attrib,
-                 const string &defaultValue) {
+string GetAttrib(const pugi::xml_node &xml_node, const string &attrib, const string &defaultValue) {
   if (auto anode = xml_node.attribute(attrib.c_str())) {
     return anode.value();
   } else {
@@ -62,8 +61,7 @@ string GetAttrib(const pugi::xml_node &xml_node, const string &attrib,
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float GetAttribReal(const pugi::xml_node &xml_node, const string &attrib,
-                    float defaultValue) {
+float GetAttribReal(const pugi::xml_node &xml_node, const string &attrib, float defaultValue) {
   if (auto anode = xml_node.attribute(attrib.c_str())) {
     return SC::parseReal(anode.value());
   } else {
@@ -72,8 +70,7 @@ float GetAttribReal(const pugi::xml_node &xml_node, const string &attrib,
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-int GetAttribInt(const pugi::xml_node &xml_node, const string &attrib,
-                 int defaultValue) {
+int GetAttribInt(const pugi::xml_node &xml_node, const string &attrib, int defaultValue) {
   if (auto anode = xml_node.attribute(attrib.c_str())) {
     return SC::parseInt(anode.value());
   } else {
@@ -82,8 +79,7 @@ int GetAttribInt(const pugi::xml_node &xml_node, const string &attrib,
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-bool GetAttribBool(const pugi::xml_node &xml_node, const string &attrib,
-                   bool defaultValue) {
+bool GetAttribBool(const pugi::xml_node &xml_node, const string &attrib, bool defaultValue) {
   if (auto anode = xml_node.attribute(attrib.c_str())) {
     return anode.as_bool();
   } else {
@@ -137,10 +133,9 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node) {
     orientation.FromAngleAxis(Ogre::Angle(angle), axis);
   } else if (xml_node.attribute("angleX")) {
     Ogre::Matrix3 rot;
-    rot.FromEulerAnglesXYZ(
-        SC::parseAngle(xml_node.attribute("angleX").value()),
-        SC::parseAngle(xml_node.attribute("angleY").value()),
-        SC::parseAngle(xml_node.attribute("angleZ").value()));
+    rot.FromEulerAnglesXYZ(SC::parseAngle(xml_node.attribute("angleX").value()),
+                           SC::parseAngle(xml_node.attribute("angleY").value()),
+                           SC::parseAngle(xml_node.attribute("angleZ").value()));
     orientation.FromRotationMatrix(rot);
   } else if (xml_node.attribute("x")) {
     orientation.x = SC::parseReal(xml_node.attribute("x").value());
@@ -220,16 +215,14 @@ void DotSceneLoaderB::Update(float time) {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream,
-                           const string &group_name,
+void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const string &group_name,
                            Ogre::SceneNode *root_node) {
   group_name_ = group_name;
   ogre_scene_ = root_node->getCreator();
 
   pugi::xml_document XMLDoc;  // character type defaults to char
 
-  auto result =
-      XMLDoc.load_buffer(stream->getAsString().c_str(), stream->size());
+  auto result = XMLDoc.load_buffer(stream->getAsString().c_str(), stream->size());
 
   if (!result) {
     Ogre::LogManager::getSingleton().stream(Ogre::LML_CRITICAL)
@@ -254,8 +247,7 @@ void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream,
 
   if (!terrain_) terrain_ = make_unique<Landscape>();
   if (!forest_) forest_ = make_unique<VegetationSystem>();
-  forest_->SetHeighFunc(
-      [](float x, float z) { return terrain_->GetHeigh(x, z); });
+  forest_->SetHeighFunc([](float x, float z) { return terrain_->GetHeigh(x, z); });
   assert(!scene_);
   scene_ = make_unique<Scene>();
 
@@ -286,24 +278,20 @@ void DotSceneLoaderB::ProcessScene_(pugi::xml_node &xml_root) {
   // Process the scene parameters
   string version = GetAttrib(xml_root, "formatVersion", "unknown");
 
-  string message =
-      "[DotSceneLoader] Parsing dotScene file with version " + version;
+  string message = "[DotSceneLoader] Parsing dotScene file with version " + version;
 
   if (xml_root.attribute("sceneManager"))
-    message +=
-        ", scene manager " + string(xml_root.attribute("sceneManager").value());
+    message += ", scene manager " + string(xml_root.attribute("sceneManager").value());
 
   if (xml_root.attribute("minOgreVersion"))
-    message += ", min. Ogre version " +
-               string(xml_root.attribute("minOgreVersion").value());
+    message += ", min. Ogre version " + string(xml_root.attribute("minOgreVersion").value());
 
   if (xml_root.attribute("author"))
     message += ", author " + string(xml_root.attribute("author").value());
 
   Ogre::LogManager::getSingleton().logMessage(message);
 
-  if (auto element = xml_root.child("environment"))
-    ProcessEnvironment_(element);
+  if (auto element = xml_root.child("environment")) ProcessEnvironment_(element);
 
   if (auto element = xml_root.child("terrainGroup")) ProcessLandscape_(element);
 
@@ -351,10 +339,8 @@ void DotSceneLoaderB::ProcessExternals_(pugi::xml_node &xml_node) {
 //---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessEnvironment_(pugi::xml_node &xml_node) {
   // Process camera
-  auto *viewport = Ogre::Root::getSingleton()
-                       .getSceneManager("Default")
-                       ->getCamera("Default")
-                       ->getViewport();
+  auto *viewport =
+      Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
 
   // Process fog
   if (auto element = xml_node.child("fog")) ProcessFog_(element);
@@ -381,8 +367,7 @@ void DotSceneLoaderB::ProcessEnvironment_(pugi::xml_node &xml_node) {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessLightRange_(pugi::xml_node &xml_node,
-                                         Ogre::Light *light) {
+void DotSceneLoaderB::ProcessLightRange_(pugi::xml_node &xml_node, Ogre::Light *light) {
   // Process attributes
   float inner = GetAttribReal(xml_node, "inner");
   float outer = GetAttribReal(xml_node, "outer");
@@ -393,8 +378,7 @@ void DotSceneLoaderB::ProcessLightRange_(pugi::xml_node &xml_node,
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessLightAttenuation_(pugi::xml_node &xml_node,
-                                               Ogre::Light *light) {
+void DotSceneLoaderB::ProcessLightAttenuation_(pugi::xml_node &xml_node, Ogre::Light *light) {
   // Process attributes
   float range = GetAttribReal(xml_node, "range");
   float constant = GetAttribReal(xml_node, "constant");
@@ -406,8 +390,7 @@ void DotSceneLoaderB::ProcessLightAttenuation_(pugi::xml_node &xml_node,
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node,
-                                    Ogre::SceneNode *parent) {
+void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   // Process attributes
   string name = GetAttrib(xml_node, "name");
   const size_t MAX_TEX_COUNT = 9;
@@ -431,16 +414,14 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node,
   light->setVisible(GetAttribBool(xml_node, "visible", true));
   light->setCastShadows(GetAttribBool(xml_node, "castShadows", false));
 
-  if (Ogre::Root::getSingleton()
-          .getSceneManager("Default")
-          ->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
+  if (Ogre::Root::getSingleton().getSceneManager("Default")->getShadowTechnique() !=
+      Ogre::SHADOWTYPE_NONE) {
     auto texture_config = ogre_scene_->getShadowTextureConfigList()[0];
 
     if (ogre_scene_->getShadowTextureConfigList().size() < MAX_TEX_COUNT) {
       if (light->getType() == Ogre::Light::LT_POINT) {
         light->setCastShadows(false);
-      } else if (light->getType() == Ogre::Light::LT_SPOTLIGHT &&
-                 light->getCastShadows()) {
+      } else if (light->getType() == Ogre::Light::LT_SPOTLIGHT && light->getCastShadows()) {
         int camera_type = 4;
 
         conf_->Get("camera_type", camera_type);
@@ -470,12 +451,10 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node,
         texture_config.height *= pow(2, -floor(index / 3));
         texture_config.width *= pow(2, -floor(index / 3));
         ogre_scene_->setShadowTextureConfig(index, texture_config);
-      } else if (light->getType() == Ogre::Light::LT_DIRECTIONAL &&
-                 light->getCastShadows()) {
-        size_t per_light = ogre_scene_->getShadowTextureCountPerLightType(
-            Ogre::Light::LT_DIRECTIONAL);
-        size_t tex_count =
-            ogre_scene_->getShadowTextureConfigList().size() + per_light - 1;
+      } else if (light->getType() == Ogre::Light::LT_DIRECTIONAL && light->getCastShadows()) {
+        size_t per_light =
+            ogre_scene_->getShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL);
+        size_t tex_count = ogre_scene_->getShadowTextureConfigList().size() + per_light - 1;
         ogre_scene_->setShadowTextureCount(tex_count);
 
         for (size_t i = 1; i <= per_light; i++) {
@@ -521,8 +500,7 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node,
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node,
-                                     Ogre::SceneNode *parent) {
+void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   // Process attributes
   string name = GetAttrib(xml_node, "name");
   float fov = GetAttribReal(xml_node, "fov", 90);
@@ -530,9 +508,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node,
   string projectionType = GetAttrib(xml_node, "projectionType", "perspective");
 
   // Init the camera
-  auto *camera =
-      Ogre::Root::getSingleton().getSceneManager("Default")->getCamera(
-          "Default");
+  auto *camera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
   if (!camera_) camera_ = make_unique<CameraMan>();
 
@@ -565,8 +541,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node,
 
     camera_->AttachNode(parent);
   } else {
-    sinbad_ = make_unique<SinbadCharacterController>(
-        ogre_scene_->getCamera("Default"));
+    sinbad_ = make_unique<SinbadCharacterController>(ogre_scene_->getCamera("Default"));
     camera_->AttachNode(parent, sinbad_->GetBodyNode());
   }
 
@@ -594,15 +569,12 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node,
 
   // Process userDataReference
   if (auto element = xml_node.child("userData")) {
-    ProcessUserData_(
-        element,
-        static_cast<Ogre::MovableObject *>(camera)->getUserObjectBindings());
+    ProcessUserData_(element, static_cast<Ogre::MovableObject *>(camera)->getUserObjectBindings());
   }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessNode_(pugi::xml_node &xml_node,
-                                   Ogre::SceneNode *parent) {
+void DotSceneLoaderB::ProcessNode_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   // Construct the node's name
   string name = GetAttrib(xml_node, "name");
 
@@ -654,12 +626,10 @@ void DotSceneLoaderB::ProcessNode_(pugi::xml_node &xml_node,
   }
 
   // Process lookTarget
-  if (auto element = xml_node.child("lookTarget"))
-    ProcessLookTarget_(element, node);
+  if (auto element = xml_node.child("lookTarget")) ProcessLookTarget_(element, node);
 
   // Process trackTarget
-  if (auto element = xml_node.child("trackTarget"))
-    ProcessTrackTarget_(element, node);
+  if (auto element = xml_node.child("trackTarget")) ProcessTrackTarget_(element, node);
 
   // Process node (*)
   for (auto element : xml_node.children("node")) {
@@ -703,8 +673,7 @@ void DotSceneLoaderB::ProcessNode_(pugi::xml_node &xml_node,
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessLookTarget_(pugi::xml_node &xml_node,
-                                         Ogre::SceneNode *parent) {
+void DotSceneLoaderB::ProcessLookTarget_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   //! @todo Is this correct? Cause I don't have a clue actually
 
   // Process attributes
@@ -744,22 +713,19 @@ void DotSceneLoaderB::ProcessLookTarget_(pugi::xml_node &xml_node,
 
     parent->lookAt(position, relativeTo, localDirection);
   } catch (Ogre::Exception &e) {
-    Ogre::LogManager::getSingleton().logMessage(
-        "[DotSceneLoader] Error processing a look target!");
+    Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error processing a look target!");
   }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessTrackTarget_(pugi::xml_node &xml_node,
-                                          Ogre::SceneNode *parent) {
+void DotSceneLoaderB::ProcessTrackTarget_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   // Process attributes
   string nodeName = GetAttrib(xml_node, "nodeName");
 
   // Process localDirection
   Ogre::Vector3 localDirection = Ogre::Vector3::NEGATIVE_UNIT_Z;
 
-  if (auto element = xml_node.child("localDirection"))
-    localDirection = ParseVector3(element);
+  if (auto element = xml_node.child("localDirection")) localDirection = ParseVector3(element);
 
   // Process offset
   Ogre::Vector3 offset = Ogre::Vector3::ZERO;
@@ -777,8 +743,7 @@ void DotSceneLoaderB::ProcessTrackTarget_(pugi::xml_node &xml_node,
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node,
-                                     Ogre::SceneNode *parent) {
+void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   // Process attributes
   string name = GetAttrib(xml_node, "name");
   string id = GetAttrib(xml_node, "id");
@@ -793,8 +758,7 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node,
 
   try {
     parent->attachObject(entity);
-    UpdateEntityMaterial(entity, cast_shadows, material_name, planar_reflection,
-                         active_ibl);
+    UpdateEntityMaterial(entity, cast_shadows, material_name, planar_reflection, active_ibl);
 
     // Process userDataReference
     if (auto element = xml_node.child("userData")) {
@@ -805,37 +769,31 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node,
     }
   } catch (Ogre::Exception &e) {
     Ogre::LogManager::getSingleton().logMessage(e.getFullDescription());
-    Ogre::LogManager::getSingleton().logMessage(
-        "[DotSceneLoader] Error loading an entity!");
+    Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
   }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessParticleSystem_(pugi::xml_node &xml_node,
-                                             Ogre::SceneNode *parent) {
+void DotSceneLoaderB::ProcessParticleSystem_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   // Process attributes
   string name = GetAttrib(xml_node, "name");
   string templateName = GetAttrib(xml_node, "template");
   bool attachedCamera = GetAttribBool(xml_node, "attachedCamera", false);
 
   if (templateName.empty()) {
-    templateName =
-        GetAttrib(xml_node, "file");  // compatibility with old scenes
+    templateName = GetAttrib(xml_node, "file");  // compatibility with old scenes
   }
 
   // Init the particle system
   try {
-    Ogre::ParticleSystem *pParticles =
-        ogre_scene_->createParticleSystem(name, templateName);
+    Ogre::ParticleSystem *pParticles = ogre_scene_->createParticleSystem(name, templateName);
     Pbr::UpdatePbrParams(pParticles->getMaterialName());
 
     const Ogre::uint32 WATER_MASK = 0xF00;
     pParticles->setVisibilityFlags(WATER_MASK);
 
     if (attachedCamera) {
-      auto *camera =
-          Ogre::Root::getSingleton().getSceneManager("Default")->getCamera(
-              "Default");
+      auto *camera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
       camera->getParentSceneNode()
           ->createChildSceneNode(Ogre::Vector3{0, 10, 0})
           ->attachObject(pParticles);
@@ -849,14 +807,12 @@ void DotSceneLoaderB::ProcessParticleSystem_(pugi::xml_node &xml_node,
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessBillboardSet_(pugi::xml_node &xml_node,
-                                           Ogre::SceneNode *parent) {
+void DotSceneLoaderB::ProcessBillboardSet_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   //! @todo Implement this
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node,
-                                    Ogre::SceneNode *parent) {
+void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *parent) {
   string name = GetAttrib(xml_node, "name");
   float distance = GetAttribReal(xml_node, "distance", 0.0f);
   float width = GetAttribReal(xml_node, "width", 1.0f);
@@ -884,9 +840,9 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node,
 
   if (plane_mesh) mesh_mgr.remove(plane_mesh);
 
-  Ogre::MeshPtr res = mesh_mgr.createPlane(
-      mesh_name, group_name_, plane, width, height, xSegments, ySegments,
-      hasNormals, numTexCoordSets, uTile, vTile, up);
+  Ogre::MeshPtr res =
+      mesh_mgr.createPlane(mesh_name, group_name_, plane, width, height, xSegments, ySegments,
+                           hasNormals, numTexCoordSets, uTile, vTile, up);
   res->buildTangentVectors();
   Ogre::Entity *entity = ogre_scene_->createEntity(name, mesh_name);
   entity->setCastShadows(true);
@@ -895,11 +851,9 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node,
 
   if (!material.empty()) {
     entity->setMaterialName(material);
-    Ogre::MaterialPtr material_ptr =
-        Ogre::MaterialManager::getSingleton().getByName(material);
+    Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
     Pbr::UpdatePbrParams(material);
-    if (material_ptr->getReceiveShadows())
-      Pbr::UpdatePbrShadowReceiver(material);
+    if (material_ptr->getReceiveShadows()) Pbr::UpdatePbrShadowReceiver(material);
   }
 
   if (reflection) {
@@ -908,18 +862,15 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node,
 
     rcamera_->SetPlane(plane);
 
-    Ogre::MaterialPtr material_ptr =
-        Ogre::MaterialManager::getSingleton().getByName(material);
+    Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
 
     auto material_unit =
-        material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState(
-            "ReflectionMap");
+        material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("ReflectionMap");
 
     if (material_unit) {
       material_unit->setTexture(rcamera_->reflection_tex_);
       material_unit->setTextureAddressingMode(Ogre::TAM_CLAMP);
-      material_unit->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR,
-                                         Ogre::FO_POINT);
+      material_unit->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
     }
   }
 
@@ -939,9 +890,7 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node,
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessForest_(pugi::xml_node &xml_node) {
-  forest_->ProcessForest();
-}
+void DotSceneLoaderB::ProcessForest_(pugi::xml_node &xml_node) { forest_->ProcessForest(); }
 
 //---------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::ProcessLandscape_(pugi::xml_node &xml_node) {
@@ -999,13 +948,10 @@ void DotSceneLoaderB::ProcessSkyBox_(pugi::xml_node &xml_node) {
     rotation = ParseRotation(element);
   }
 
-  Ogre::MaterialPtr material_ptr =
-      Ogre::MaterialManager::getSingleton().getByName(material);
+  Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
 
-  if (material_ptr->getTechnique(0)->getPass(0)->getNumTextureUnitStates() >
-      0) {
-    auto texture_unit =
-        material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState(0);
+  if (material_ptr->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
+    auto texture_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState(0);
 
     if (texture_unit) {
       texture_unit->setTextureName(cubemap);
@@ -1013,8 +959,7 @@ void DotSceneLoaderB::ProcessSkyBox_(pugi::xml_node &xml_node) {
   }
 
   // Setup the sky box
-  ogre_scene_->setSkyBox(true, material, distance, drawFirst, rotation,
-                         group_name_);
+  ogre_scene_->setSkyBox(true, material, distance, drawFirst, rotation, group_name_);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1039,8 +984,8 @@ void DotSceneLoaderB::ProcessSkyDome_(pugi::xml_node &xml_node) {
   }
 
   // Setup the sky dome
-  ogre_scene_->setSkyDome(true, material, curvature, tiling, distance,
-                          drawFirst, rotation, 16, 16, -1, group_name_);
+  ogre_scene_->setSkyDome(true, material, curvature, tiling, distance, drawFirst, rotation, 16, 16,
+                          -1, group_name_);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1060,13 +1005,12 @@ void DotSceneLoaderB::ProcessSkyPlane_(pugi::xml_node &xml_node) {
   Ogre::Plane plane;
   plane.normal = Ogre::Vector3(planeX, planeY, planeZ);
   plane.d = planeD;
-  ogre_scene_->setSkyPlane(true, plane, material, scale, tiling, drawFirst, bow,
-                           1, 1, group_name_);
+  ogre_scene_->setSkyPlane(true, plane, material, scale, tiling, drawFirst, bow, 1, 1, group_name_);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DotSceneLoaderB::ProcessUserData_(
-    pugi::xml_node &xml_node, Ogre::UserObjectBindings &user_object_bindings) {
+void DotSceneLoaderB::ProcessUserData_(pugi::xml_node &xml_node,
+                                       Ogre::UserObjectBindings &user_object_bindings) {
   // Process node (*)
   for (auto element : xml_node.children("property")) {
     string name = GetAttrib(element, "name");

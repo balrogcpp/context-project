@@ -69,7 +69,7 @@ class OgreConsole
 					 Ogre::LogMessageLevel lml,
 					 bool maskDebug,
 					 const Ogre::String &logName,
-					 bool &skip);
+					 bool &skip) override;
 #endif
  private:
 

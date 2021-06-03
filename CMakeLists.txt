@@ -110,9 +110,11 @@ string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
 
 # Compilation flags definition
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    string(APPEND CMAKE_CXX_FLAGS " -Werror -Wno-error=deprecated-declarations -Wno-error=switch")
+    string(APPEND CMAKE_C_FLAGS " -Werror -Wno-error=deprecated-declarations -Wno-error=switch")
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-        string(APPEND CMAKE_CXX_FLAGS " -Wall -s -Ofast -funroll-loops -DNDEBUG")
-        string(APPEND CMAKE_C_FLAGS " -Wall -s -Ofast -funroll-loops -DNDEBUG")
+        string(APPEND CMAKE_CXX_FLAGS " -s -Ofast -funroll-loops -DNDEBUG")
+        string(APPEND CMAKE_C_FLAGS " -s -Ofast -funroll-loops -DNDEBUG")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-linker-plugin")
         if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

@@ -109,8 +109,7 @@ RenderSystem::~RenderSystem() {}
 //----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::InitOgrePlugins_() {
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
-  Ogre::Root::getSingleton().addSceneManagerFactory(
-      new Ogre::OctreeSceneManagerFactory());
+  Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
 #endif  // OGRE_BUILD_PLUGIN_OCTREE
 #ifdef OGRE_BUILD_PLUGIN_PFX
   Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
@@ -140,8 +139,7 @@ void RenderSystem::InitOgreRenderSystem_() {
   } else if (render_system_ == "gles2") {
     InitOgreRenderSystem_GLES2_();
   } else {
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || \
-    OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
     InitOgreRenderSystem_GLES2_();
 #else
     InitOgreRenderSystem_GL3_();
@@ -166,33 +164,27 @@ void RenderSystem::InitRenderWindow_() {
   SDL_SysWMinfo info = window_->GetInfo();
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  params["externalWindowHandle"] =
-      to_string(reinterpret_cast<size_t>(info.info.win.window));
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  params["externalWindowHandle"] =
-      to_string(reinterpret_cast<size_t>(info.info.x11.window));
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  params["externalWindowHandle"] =
-      to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
 
   jclass class_activity = env->FindClass("android/app/Activity");
   jclass class_resources = env->FindClass("android/content/res/Resources");
-  jmethodID method_get_resources = env->GetMethodID(
-      class_activity, "getResources", "()Landroid/content/res/Resources;");
-  jmethodID method_get_assets = env->GetMethodID(
-      class_resources, "getAssets", "()Landroid/content/res/AssetManager;");
+  jmethodID method_get_resources =
+      env->GetMethodID(class_activity, "getResources", "()Landroid/content/res/Resources;");
+  jmethodID method_get_assets =
+      env->GetMethodID(class_resources, "getAssets", "()Landroid/content/res/AssetManager;");
   jobject raw_activity = (jobject)SDL_AndroidGetActivity();
-  jobject raw_resources =
-      env->CallObjectMethod(raw_activity, method_get_resources);
-  jobject raw_asset_manager =
-      env->CallObjectMethod(raw_resources, method_get_assets);
+  jobject raw_resources = env->CallObjectMethod(raw_activity, method_get_resources);
+  jobject raw_asset_manager = env->CallObjectMethod(raw_resources, method_get_assets);
 
   params["currentGLContext"] = "true";
   params["externalGLControl"] = "true";
-  params["externalWindowHandle"] =
-      to_string(reinterpret_cast<size_t>(info.info.android.window));
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
   params["preserveContext"] = "true";
 
   AAssetManager* asset_manager = AAssetManager_fromJava(env, raw_asset_manager);
@@ -220,8 +212,7 @@ void RenderSystem::InitRenderWindow_() {
   params["gamma"] = gamma ? true_str : false_str;
   params["FSAA"] = to_string(fsaa);
 
-  render_window_ =
-      Ogre::Root::getSingleton().createRenderWindow("", 0, 0, false, &params);
+  render_window_ = Ogre::Root::getSingleton().createRenderWindow("", 0, 0, false, &params);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -243,8 +234,7 @@ void RenderSystem::InitResourceLocation_() {
 
 #else
 
-  Ogre::ResourceGroupManager &resGroupMan =
-      Ogre::ResourceGroupManager::getSingleton();
+  Ogre::ResourceGroupManager &resGroupMan = Ogre::ResourceGroupManager::getSingleton();
   Ogre::String defResGroup = Ogre::RGN_DEFAULT;
 
   const std::string file_system = "APKFileSystem";
@@ -253,10 +243,8 @@ void RenderSystem::InitResourceLocation_() {
   resGroupMan.addResourceLocation("/programs/common.zip", zip, internal_group);
   resGroupMan.addResourceLocation("/programs/rtss.zip", zip, internal_group);
   resGroupMan.addResourceLocation("/programs/pbr.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/particles.zip", zip,
-                                  internal_group);
-  resGroupMan.addResourceLocation("/programs/compositor.zip", zip,
-                                  internal_group);
+  resGroupMan.addResourceLocation("/programs/particles.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/compositor.zip", zip, internal_group);
   resGroupMan.addResourceLocation("/programs/overlay.zip", zip, internal_group);
   resGroupMan.addResourceLocation("/programs/gorilla.zip", zip, internal_group);
 
@@ -313,8 +301,7 @@ void RenderSystem::InitShadowSettings_() {
   scene_->setShadowTextureSelfShadow(true);
   scene_->setShadowCasterRenderBackFaces(true);
   scene_->setShadowFarDistance(shadow_far);
-  auto passCaterMaterial =
-      Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+  auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
   scene_->setShadowTextureCasterMaterial(passCaterMaterial);
 
   pssm_ = make_shared<Ogre::PSSMShadowCameraSetup>();
@@ -333,8 +320,7 @@ void RenderSystem::InitShadowSettings_() {
   scene_->setShadowColour(Ogre::ColourValue::Black);
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(
-      Ogre::MIP_UNLIMITED);
+  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
 #endif
 }
 
@@ -400,8 +386,7 @@ void RenderSystem::RestoreFullscreenAndroid_() {
 //----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::RenderOneFrame() {
   root_->renderOneFrame();
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || \
-    OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   window_->SwapBuffers();
 #endif
 }

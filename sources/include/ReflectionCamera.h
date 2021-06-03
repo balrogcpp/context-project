@@ -51,8 +51,6 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   Ogre::Plane plane_;
   view_ptr<Ogre::Camera> rcamera_;
   view_ptr<Ogre::SceneManager> scene_;
-  Ogre::ShadowTechnique technique_ = Ogre::SHADOWTYPE_NONE;
-  bool pssm_shadows_ = false;
 };
 
 }  // namespace xio

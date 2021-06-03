@@ -48,30 +48,25 @@ void CreateRtssShaders(const string &cache_path) {
   auto *camera_ = scene_->getCamera("Default");
   auto *viewport_ = camera_->getViewport();
 
-  viewport_->setMaterialScheme(
-      Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+  viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
   auto *shader_generator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
   shader_generator->addSceneManager(scene_);
-  viewport_->setMaterialScheme(
-      Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+  viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
   shader_generator->setShaderCachePath(cache_path);
 
-  Ogre::MaterialManager::getSingleton().addListener(
-      new ShaderResolver(shader_generator));
+  Ogre::MaterialManager::getSingleton().addListener(new ShaderResolver(shader_generator));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void InitPssm(const vector<float> &split_points) {
-  Ogre::RTShader::ShaderGenerator &rtShaderGen =
-      Ogre::RTShader::ShaderGenerator::getSingleton();
-  auto subRenderState =
-      rtShaderGen.createSubRenderState<Ogre::RTShader::IntegratedPSSM3>();
-  Ogre::RTShader::RenderState *schemRenderState = rtShaderGen.getRenderState(
-      Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+  Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
+  auto subRenderState = rtShaderGen.createSubRenderState<Ogre::RTShader::IntegratedPSSM3>();
+  Ogre::RTShader::RenderState *schemRenderState =
+      rtShaderGen.getRenderState(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
   subRenderState->setSplitPoints(split_points);
-  //  schemRenderState->addTemplateSubRenderState(subRenderState);
+  schemRenderState->addTemplateSubRenderState(subRenderState);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -79,59 +74,49 @@ void InitInstansing() {
   auto *scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *camera_ = scene_->getCamera("Default");
   auto *viewport_ = camera_->getViewport();
-  Ogre::RTShader::ShaderGenerator &rtShaderGen =
-      Ogre::RTShader::ShaderGenerator::getSingleton();
-  viewport_->setMaterialScheme(
-      Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
-  Ogre::RTShader::RenderState *schemRenderState = rtShaderGen.getRenderState(
-      Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+  Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
+  viewport_->setMaterialScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+  Ogre::RTShader::RenderState *schemRenderState =
+      rtShaderGen.getRenderState(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
   Ogre::RTShader::SubRenderState *subRenderState =
       rtShaderGen.createSubRenderState<Ogre::RTShader::IntegratedPSSM3>();
   schemRenderState->addTemplateSubRenderState(subRenderState);
 
   // Add the hardware skinning to the shader generator default render state
-  subRenderState =
-      rtShaderGen.createSubRenderState<Ogre::RTShader::HardwareSkinning>();
+  subRenderState = rtShaderGen.createSubRenderState<Ogre::RTShader::HardwareSkinning>();
   schemRenderState->addTemplateSubRenderState(subRenderState);
 
   // increase max bone count for higher efficiency
-  Ogre::RTShader::HardwareSkinningFactory::getSingleton()
-      .setMaxCalculableBoneCount(80);
+  Ogre::RTShader::HardwareSkinningFactory::getSingleton().setMaxCalculableBoneCount(80);
 
   // re-generate shaders to include new SRSs
-  rtShaderGen.invalidateScheme(
-      Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
-  rtShaderGen.validateScheme(
-      Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+  rtShaderGen.invalidateScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+  rtShaderGen.validateScheme(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
   // update scheme for FFP supporting rendersystems
-  Ogre::MaterialManager::getSingleton().setActiveScheme(
-      viewport_->getMaterialScheme());
+  Ogre::MaterialManager::getSingleton().setActiveScheme(viewport_->getMaterialScheme());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-ShaderResolver::ShaderResolver(
-    Ogre::RTShader::ShaderGenerator *shader_generator) {
+ShaderResolver::ShaderResolver(Ogre::RTShader::ShaderGenerator *shader_generator) {
   shader_generator_ = shader_generator;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 bool ShaderResolver::FixMaterial(const string &material_name) {
   auto &mShaderGenerator = Ogre::RTShader::ShaderGenerator::getSingleton();
-  auto originalMaterial =
-      Ogre::MaterialManager::getSingleton().getByName(material_name);
+  auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name);
 
   if (!originalMaterial) {
-    originalMaterial = Ogre::MaterialManager::getSingleton().getByName(
-        material_name, Ogre::RGN_INTERNAL);
+    originalMaterial =
+        Ogre::MaterialManager::getSingleton().getByName(material_name, Ogre::RGN_INTERNAL);
   }
 
   bool verbose = false;
 
   if (!originalMaterial) {
     if (verbose)
-      cout << "Requested to fix material " << material_name
-           << " but it does not exist\n";
+      cout << "Requested to fix material " << material_name << " but it does not exist\n";
 
     return false;
   } else {
@@ -146,9 +131,8 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
   // Case technique registration succeeded.
   if (techniqueCreated) {
     // Force creating the shaders for the generated technique.
-    mShaderGenerator.validateMaterial(
-        Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME,
-        originalMaterial->getName(), originalMaterial->getGroup());
+    mShaderGenerator.validateMaterial(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME,
+                                      originalMaterial->getName(), originalMaterial->getGroup());
   } else {
     originalMaterial->getTechnique(0)->setSchemeName(
         Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
@@ -158,24 +142,23 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Ogre::Technique *ShaderResolver::handleSchemeNotFound(
-    unsigned short scheme_index, const string &scheme_name,
-    Ogre::Material *original_material, unsigned short lod_index,
-    const Ogre::Renderable *renderable) {
+Ogre::Technique *ShaderResolver::handleSchemeNotFound(unsigned short scheme_index,
+                                                      const string &scheme_name,
+                                                      Ogre::Material *original_material,
+                                                      unsigned short lod_index,
+                                                      const Ogre::Renderable *renderable) {
   if (scheme_name != Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
     return nullptr;
   }
 
   // Init shader generated technique for this material.
   bool techniqueCreated = shader_generator_->createShaderBasedTechnique(
-      *original_material, Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
-      scheme_name);
+      *original_material, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, scheme_name);
 
   // Case technique registration succeeded.
   if (techniqueCreated) {
     // Force creating the shaders for the generated technique.
-    shader_generator_->validateMaterial(scheme_name,
-                                        original_material->getName(),
+    shader_generator_->validateMaterial(scheme_name, original_material->getName(),
                                         original_material->getGroup());
 
     // Grab the generated technique.
@@ -193,13 +176,11 @@ Ogre::Technique *ShaderResolver::handleSchemeNotFound(
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-bool ShaderResolver::afterIlluminationPassesCreated(
-    Ogre::Technique *technique) {
-  if (technique->getSchemeName() ==
-      Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
+bool ShaderResolver::afterIlluminationPassesCreated(Ogre::Technique *technique) {
+  if (technique->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
     Ogre::Material *mat = technique->getParent();
-    shader_generator_->validateMaterialIlluminationPasses(
-        technique->getSchemeName(), mat->getName(), mat->getGroup());
+    shader_generator_->validateMaterialIlluminationPasses(technique->getSchemeName(),
+                                                          mat->getName(), mat->getGroup());
     return true;
   } else {
     return false;
@@ -207,13 +188,11 @@ bool ShaderResolver::afterIlluminationPassesCreated(
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-bool ShaderResolver::beforeIlluminationPassesCleared(
-    Ogre::Technique *technique) {
-  if (technique->getSchemeName() ==
-      Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
+bool ShaderResolver::beforeIlluminationPassesCleared(Ogre::Technique *technique) {
+  if (technique->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
     Ogre::Material *mat = technique->getParent();
-    shader_generator_->invalidateMaterialIlluminationPasses(
-        technique->getSchemeName(), mat->getName(), mat->getGroup());
+    shader_generator_->invalidateMaterialIlluminationPasses(technique->getSchemeName(),
+                                                            mat->getName(), mat->getGroup());
     return true;
   } else {
     return false;

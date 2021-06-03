@@ -74,8 +74,7 @@ void DesktopIcon::Init() {
 //----------------------------------------------------------------------------------------------------------------------
 void DesktopIcon::Save(const string &icon_name) {
   string home_dir = string(getenv("HOME"));
-  string path =
-      home_dir + "/.local/share/applications/" + icon_name + ".desktop";
+  string path = home_dir + "/.local/share/applications/" + icon_name + ".desktop";
 
   ifstream in;
   in.open(path);

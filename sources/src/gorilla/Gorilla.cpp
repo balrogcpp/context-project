@@ -1501,7 +1501,7 @@ void Polygon::_redraw() {
         lastUV = thisUV;
       }
     } else {
-      Ogre::Vector2 uv = uv = mLayer->_getSolidUV();
+      Ogre::Vector2 uv = mLayer->_getSolidUV();
 
       for (size_t i = 0; i < mSides; i++) {
         PUSH_VERTEX(mVertices, temp, mLeft, mTop, uv, mBackgroundColour);

@@ -111,16 +111,15 @@ void CameraMan::Update(float time) {
     // orientation quaternion and the cameraYawNode's orientation
     // quaternion to translate the camera accoding to the camera's
     // orientation around the Y-axis and the X-axis.
-    Ogre::Vector3 velocity = camera_yaw_node_->getOrientation() *
-                             camera_pitch_node_->getOrientation() * velocity_;
+    Ogre::Vector3 velocity =
+        camera_yaw_node_->getOrientation() * camera_pitch_node_->getOrientation() * velocity_;
 
     if (rigid_) {
       if (!velocity_.isZeroLength()) {
         rigid_->setFriction(1.0);
         float speed = rigid_->getLinearVelocity().length();
         if (speed < const_speed_)
-          rigid_->applyCentralForce(
-              btVector3(velocity.x, 0, velocity.z).normalize() * 10000.0f);
+          rigid_->applyCentralForce(btVector3(velocity.x, 0, velocity.z).normalize() * 10000.0f);
       } else {
         rigid_->setFriction(10.0);
       }
@@ -141,9 +140,7 @@ void CameraMan::Update(float time) {
 
     // Angle of rotation around the X-axis.
     pitchAngle =
-        (2 *
-         Ogre::Degree(Ogre::Math::ACos(camera_pitch_node_->getOrientation().w))
-             .valueDegrees());
+        (2 * Ogre::Degree(Ogre::Math::ACos(camera_pitch_node_->getOrientation().w)).valueDegrees());
 
     // Just to determine the sign of the angle we pick up above, the
     // value itself does not interest us.
@@ -153,12 +150,12 @@ void CameraMan::Update(float time) {
     if (pitchAngle > 90.0f) {
       if (pitchAngleSign > 0)
         // Set orientation to 90 degrees on X-axis.
-        camera_pitch_node_->setOrientation(Ogre::Quaternion(
-            Ogre::Math::Sqrt(0.5f), Ogre::Math::Sqrt(0.5f), 0, 0));
+        camera_pitch_node_->setOrientation(
+            Ogre::Quaternion(Ogre::Math::Sqrt(0.5f), Ogre::Math::Sqrt(0.5f), 0, 0));
       else if (pitchAngleSign < 0)
         // Sets orientation to -90 degrees on X-axis.
-        camera_pitch_node_->setOrientation(Ogre::Quaternion(
-            Ogre::Math::Sqrt(0.5f), -Ogre::Math::Sqrt(0.5f), 0, 0));
+        camera_pitch_node_->setOrientation(
+            Ogre::Quaternion(Ogre::Math::Sqrt(0.5f), -Ogre::Math::Sqrt(0.5f), 0, 0));
     }
     dx_ = 0;
     dy_ = 0;
@@ -166,8 +163,7 @@ void CameraMan::Update(float time) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right,
-                            bool middle) {
+void CameraMan::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   if (!stop_) {
     if (style_ == Style::FREELOOK) {
       node_->yaw(Ogre::Degree(-dx));
@@ -259,9 +255,7 @@ void CameraMan::OnKeyUp(SDL_Keycode sym) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::SetRigidBody(view_ptr<btRigidBody> rigid_body) {
-  rigid_ = rigid_body;
-}
+void CameraMan::SetRigidBody(view_ptr<btRigidBody> rigid_body) { rigid_ = rigid_body; }
 
 //----------------------------------------------------------------------------------------------------------------------
 Ogre::SceneNode *CameraMan::GetCameraNode() const {
@@ -338,8 +332,7 @@ void CameraMan::AttachCamera(Ogre::SceneNode *parent, Ogre::Camera *camera,
     ManualStop();
     node_->setAutoTracking(false);
   } else if (style_ == Style::FPS) {
-    node_->setFixedYawAxis(
-        true, Ogre::Vector3::UNIT_Z);  // also fix axis with lookAt calls
+    node_->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z);  // also fix axis with lookAt calls
     node_->setAutoTracking(false);
   }
 }

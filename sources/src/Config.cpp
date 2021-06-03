@@ -43,8 +43,7 @@ void Config::Load(const string &file_name) {
   ifstream ifs(file_name);
 
   if (!ifs.is_open()) {
-    throw Exception("Error during parsing of " + file_name +
-                    " : can't open file");
+    throw Exception("Error during parsing of " + file_name + " : can't open file");
   }
 
   ifs >> document_;

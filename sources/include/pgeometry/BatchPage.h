@@ -53,18 +53,18 @@ class BatchPage : public GeometryPage {
   void init(PagedGeometry *geom, const Ogre::Any &data) override;
 
   void addEntity(Ogre::Entity *ent, const Ogre::Vector3 &position, const Ogre::Quaternion &rotation,
-                 const Ogre::Vector3 &scale, const Ogre::ColourValue &color);
-  void removeEntities();
+                 const Ogre::Vector3 &scale, const Ogre::ColourValue &color) override;
+  void removeEntities() override;
 
-  void build();
+  void build() override;
 
-  void setVisible(bool visible);
-  void setFade(bool enabled, Ogre::Real visibleDist, Ogre::Real invisibleDist);
+  void setVisible(bool visible) override;
+  void setFade(bool enabled, Ogre::Real visibleDist, Ogre::Real invisibleDist) override;
 
-  void addEntityToBoundingBox() {
-    int a = 0;
-    a++;
-  }
+//  void addEntityToBoundingBox() {
+//    int a = 0;
+//    a++;
+//  }
 
   void clearBoundingBox() override {
     int a = 0;

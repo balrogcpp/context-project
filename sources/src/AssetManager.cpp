@@ -60,8 +60,8 @@ static string FindPath(const string &path_, int depth = 3) {
 
 //----------------------------------------------------------------------------------------------------------------------
 static bool CheckSymbol(char c) {
-  return (isalpha(c) || isdigit(c) || c == '.' || c == ',' || c == ';' ||
-          c == '_' || c == '-' || c == '/');
+  return (isalpha(c) || isdigit(c) || c == '.' || c == ',' || c == ';' || c == '_' || c == '-' ||
+          c == '/');
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -119,8 +119,8 @@ void AddLocation(const string &path_, const string &group_, bool recursive) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AddLocationAndroid(AAssetManager *asset_mgr, const string &resource_file,
-                        const string &group_, bool verbose) {
+void AddLocationAndroid(AAssetManager *asset_mgr, const string &resource_file, const string &group_,
+                        bool verbose) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 //  const string file_system = "APKFileSystem";
 //
@@ -136,8 +136,8 @@ void AddLocationAndroid(AAssetManager *asset_mgr, const string &resource_file,
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AddLocationRecursive(const string &path_, const string &group_,
-                          const string &resource_file, bool verbose) {
+void AddLocationRecursive(const string &path_, const string &group_, const string &resource_file,
+                          bool verbose) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   const string file_system = "FileSystem";
   const string zip = "Zip";
@@ -183,13 +183,11 @@ void AddLocationRecursive(const string &path_, const string &group_,
     }
   }
 
-
   const static vector<string> extensions_list = {
-      ".glsl",    ".glslt", ".hlsl",     ".hlslt",      ".gles",     ".cg",
-      ".vert",    ".frag",  ".material", ".compositor", ".particle", ".fx",
-      ".program", ".dds",   ".bmp",      ".png",        ".tga",      ".jpg",
-      ".jpeg",    ".mesh",  ".xml",      ".scene",      ".json",     ".wav",
-      ".ogg",     ".mp3",   ".flac"};
+      ".glsl",  ".glslt",    ".hlsl",       ".hlslt",    ".gles", ".cg",      ".vert",
+      ".frag",  ".material", ".compositor", ".particle", ".fx",   ".program", ".dds",
+      ".bmp",   ".png",      ".tga",        ".jpg",      ".jpeg", ".mesh",    ".xml",
+      ".scene", ".json",     ".wav",        ".ogg",      ".mp3",  ".flac"};
 
   for (const auto &it : resource_list) {
     orm.addResourceLocation(get<0>(it), get<1>(it), get<2>(it));

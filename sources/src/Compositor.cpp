@@ -37,18 +37,15 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     ref_mat_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer");
 
     if (!ref_mat_) {
-      throw Exception(
-          "No available materials for Compositor::GBufferSchemeHandler");
+      throw Exception("No available materials for Compositor::GBufferSchemeHandler");
     }
 
     ref_mat_->load();
   }
 
   //----------------------------------------------------------------------------------------------------------------------
-  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex,
-                                        const Ogre::String &schemeName,
-                                        Ogre::Material *originalMaterial,
-                                        unsigned short lodIndex,
+  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const Ogre::String &schemeName,
+                                        Ogre::Material *originalMaterial, unsigned short lodIndex,
                                         const Ogre::Renderable *rend) override {
     Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
 
@@ -110,9 +107,7 @@ void Compositor::Update(float time) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Compositor::EnableEffect(const std::string &name, bool enable) {
-  effects_[name] = enable;
-}
+void Compositor::EnableEffect(const std::string &name, bool enable) { effects_[name] = enable; }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Cleanup() { Pbr::Cleanup(); }
@@ -127,15 +122,13 @@ void Compositor::Resume() {}
 void Compositor::InitGbuffer_() {
   if (!gbuff_handler_) {
     gbuff_handler_ = make_unique<GBufferSchemeHandler>();
-    Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_.get(),
-                                                      "GBuffer");
+    Ogre::MaterialManager::getSingleton().addListener(gbuff_handler_.get(), "GBuffer");
   }
 
   if (compositor_manager_->addCompositor(viewport_.get(), "GBuffer")) {
     compositor_manager_->setCompositorEnabled(viewport_.get(), "GBuffer", true);
   } else {
-    Ogre::LogManager::getSingleton().logMessage(
-        "Failed to add GBuffer compositor\n");
+    Ogre::LogManager::getSingleton().logMessage("Failed to add GBuffer compositor\n");
   }
 }
 
@@ -167,12 +160,10 @@ void Compositor::InitMRT_() {
   if (compositor_manager_->addCompositor(viewport_.get(), "MRT")) {
     compositor_manager_->setCompositorEnabled(viewport_.get(), "MRT", false);
   } else {
-    Ogre::LogManager::getSingleton().logMessage(
-        "Context core:: Failed to add MRT compositor\n");
+    Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add MRT compositor\n");
   }
 
-  auto *compositor_chain =
-      compositor_manager_->getCompositorChain(viewport_.get());
+  auto *compositor_chain = compositor_manager_->getCompositorChain(viewport_.get());
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
 
   if (conf_->Get<bool>("window_fullscreen")) {
