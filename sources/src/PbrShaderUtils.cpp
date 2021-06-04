@@ -115,7 +115,7 @@ void Pbr::Update(float time) {
 //----------------------------------------------------------------------------------------------------------------------
 void Pbr::UpdatePbrParams(const Ogre::MaterialPtr &material) {
   using GPU = Ogre::GpuProgramParameters::AutoConstantType;
-  const int MAX_SHADOWS = OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES;
+//  const int MAX_SHADOWS = OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES;
   const int MAX_LIGHTS = OGRE_MAX_SIMULTANEOUS_LIGHTS;
 
   for (int i = 0; i < material->getNumTechniques(); i++) {
@@ -216,7 +216,7 @@ void Pbr::UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
     Ogre::Vector4 splitPoints;
     const Ogre::PSSMShadowCameraSetup::SplitPointList &splitPointList = pssm->getSplitPoints();
 
-    for (int j = 0; j < pssm->getSplitCount(); j++) {
+    for (unsigned j = 0; j < pssm->getSplitCount(); j++) {
       splitPoints[j] = splitPointList[j + 1];
     }
 

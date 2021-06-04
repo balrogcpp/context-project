@@ -31,7 +31,7 @@
 
 #include "gorilla/Gorilla.h"
 
-#pragma warning ( disable : 4244 )
+//#pragma warning ( disable : 4244 )
 
 #if OGRE_VERSION < 67584 // 1.8.0
 template<> Gorilla::Silverback* Ogre::Singleton<Gorilla::Silverback>::ms_Singleton = 0;

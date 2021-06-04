@@ -49,7 +49,7 @@ OgreOggStreamWavSound::OgreOggStreamWavSound(
 #if OGRE_VERSION_MAJOR == 2
     , id, objMemMgr, renderQueueId
 #endif
-), mLoopOffsetBytes(0), mStreamEOF(false), mLastOffset(0.f) {
+) , mStreamEOF(false), mLoopOffsetBytes(0), mLastOffset(0.f) {
   mBuffers.reset(new BufferList(NUM_BUFFERS, AL_NONE));
   mFormatData.mFormat = 0;
   mStream = true;
@@ -460,7 +460,7 @@ bool OgreOggStreamWavSound::_stream(ALuint buffer) {
   memset(data, 0, mBufferSize);
 
   // Read only what was asked for
-  while (!mStreamEOF && (static_cast<int>(audioData.size()) < mBufferSize)) {
+  while (!mStreamEOF && (audioData.size() < mBufferSize)) {
     size_t currPos = mAudioStream->tell();
     // Is looping about to occur?
     if ((currPos + mBufferSize) > mAudioEnd) {

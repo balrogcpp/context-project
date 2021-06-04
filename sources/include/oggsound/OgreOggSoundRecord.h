@@ -56,13 +56,13 @@ struct wFormat {
 
 //! WAVE file header information
 struct WAVEHEADER {
-  char szRIFF[4];
+  char szRIFF[5];
   int lRIFFSize;
-  char szWave[4];
-  char szFmt[4];
+  char szWave[5];
+  char szFmt[5];
   int lFmtSize;
   wFormat wfex;
-  char szData[4];
+  char szData[5];
   int lDataSize;
 };
 
@@ -81,24 +81,24 @@ class _OGGSOUND_EXPORT OgreOggSoundRecord {
 
  private:
 
-  ALCdevice *mDevice;
-  ALCcontext *mContext;
-  ALCdevice *mCaptureDevice;
+  ALCdevice *mDevice = nullptr;
+  ALCcontext *mContext = nullptr;
+  ALCdevice *mCaptureDevice = nullptr;
   const ALCchar *mDefaultCaptureDevice;
   ALint mSamplesAvailable;
   std::ofstream mFile;
-  ALchar *mBuffer;
+  ALchar *mBuffer= nullptr;
   WAVEHEADER mWaveHeader;
   ALint mDataSize;
-  ALint mSize;
+  ALint mSize = 0;
   RecordDeviceList mDeviceList;
   Ogre::String mOutputFile;
   Ogre::String mDeviceName;
   ALCuint mFreq;
   ALCenum mFormat;
   ALsizei mBufferSize;
-  unsigned short mBitsPerSample;
-  unsigned short mNumChannels;
+  unsigned short mBitsPerSample = 16;
+  unsigned short mNumChannels = 2;
   bool mRecording;
 
   /** Updates recording from the capture device

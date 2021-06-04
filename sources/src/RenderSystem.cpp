@@ -312,7 +312,7 @@ void RenderSystem::InitShadowSettings_() {
   //  pssm_->setSplitPadding(near_clip_distance);
   pssm_->setSplitPadding(0.1);
 
-  for (int i = 0; i < pssm_split_count_; i++) {
+  for (size_t i = 0; i < pssm_split_count_; i++) {
     pssm_->setOptimalAdjustFactor(i, static_cast<float>(i));
   }
 

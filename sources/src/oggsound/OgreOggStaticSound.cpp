@@ -49,7 +49,7 @@ OgreOggStaticSound::OgreOggStaticSound(
 #if OGRE_VERSION_MAJOR == 2
     , id, objMemMgr, renderQueueId
 #endif
-), mVorbisInfo(0), mVorbisComment(0), mPreviousOffset(0), mAudioName("") {
+) {
   mStream = false;
   mBuffers.reset(new BufferList(1, AL_NONE));
 }

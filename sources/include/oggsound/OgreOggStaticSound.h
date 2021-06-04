@@ -155,11 +155,11 @@ class _OGGSOUND_EXPORT OgreOggStaticSound : public OgreOggISound {
    * Ogg file variables
    */
   OggVorbis_File mOggStream;            // OggVorbis file structure
-  vorbis_info *mVorbisInfo;        // Vorbis info
-  vorbis_comment *mVorbisComment;        // Vorbis comments
+  vorbis_info *mVorbisInfo = 0;        // Vorbis info
+  vorbis_comment *mVorbisComment = 0;        // Vorbis comments
   Ogre::String mAudioName;            // Name of audio file stream (Used with shared buffers)
   std::vector<char> mBufferData;        // Sound data buffer
-  ALint mPreviousOffset;                // Current play position
+  ALint mPreviousOffset = 0;                // Current play position
 
   friend class OgreOggSoundManager;
 };

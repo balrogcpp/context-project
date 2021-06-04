@@ -40,9 +40,9 @@ using namespace std;
 
 namespace xio::AssetManager {
 
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
 //----------------------------------------------------------------------------------------------------------------------
 static string FindPath(const string &path_, int depth = 3) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   string path = path_;
 
   for (int i = 0; i < depth; i++) {
@@ -53,7 +53,6 @@ static string FindPath(const string &path_, int depth = 3) {
     else
       path = string("../").append(path);
   }
-#endif
 
   return string();
 }
@@ -90,6 +89,7 @@ static void TrimString(string &s) {
   RightTrim(s);
   LeftTrim(s);
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 void LoadResources() {

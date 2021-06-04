@@ -192,7 +192,11 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     terrain_->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
 
     int layers_count = 0;
-    for (const auto &pLayerElement : pPageElement.children("layer")) layers_count++;
+    //    for (const auto &pLayerElement : pPageElement.children("layer")) layers_count++;
+    for (auto pLayerElement = pPageElement.children("layer").begin();
+         pLayerElement != pPageElement.children("layer").end(); pLayerElement++) {
+      layers_count++;
+    }
 
     defaultimp.layerList.resize(layers_count);
 

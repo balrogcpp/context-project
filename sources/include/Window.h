@@ -57,9 +57,9 @@ class Window : public NoCopy {
 
   uint32_t flags_ = 0;
   std::string caption_;
-  bool f_ = false;
   int w_ = 1024;
   int h_ = 768;
+  bool f_ = false;
   int screen_w_;
   int screen_h_;
 };

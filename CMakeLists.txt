@@ -110,8 +110,6 @@ string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
 
 # Compilation flags definition
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    string(APPEND CMAKE_CXX_FLAGS " -Werror -Wno-error=deprecated-declarations -Wno-error=switch")
-    string(APPEND CMAKE_C_FLAGS " -Werror -Wno-error=deprecated-declarations -Wno-error=switch")
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
         string(APPEND CMAKE_CXX_FLAGS " -s -Ofast -funroll-loops -DNDEBUG")
         string(APPEND CMAKE_C_FLAGS " -s -Ofast -funroll-loops -DNDEBUG")
@@ -144,6 +142,16 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
     set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 
+    string(APPEND CMAKE_CXX_FLAGS " -Wall -Werror -Wno-error=switch")
+    #For OGRE
+    string(APPEND CMAKE_CXX_FLAGS " -Wno-error=deprecated-declarations")
+    #For Bullet
+    string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-but-set-variable")
+
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-command-line-argument")
+        string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unknown-warning-option")
+    endif ()
 
     # gcc-mingw links everything as shared libraries by default
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

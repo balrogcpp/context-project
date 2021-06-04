@@ -41,7 +41,7 @@ void WindBatchPage::init(PagedGeometry *geom, const Any &data) {
   m_pPagedGeom = geom;
   m_bFadeEnabled = false;
 
-  const RenderSystemCapabilities *caps = Root::getSingleton().getRenderSystem()->getCapabilities();
+//  const RenderSystemCapabilities *caps = Root::getSingleton().getRenderSystem()->getCapabilities();
 
   ++s_nRefCount;
 }
@@ -118,7 +118,7 @@ void WindBatchPage::_updateShaders() {
     //If the shader hasn't been created yet, create it
     if (!HighLevelGpuProgramManager::getSingleton().getByName(vertexProgName,
                                                               Ogre::RGN_AUTODETECT)) {
-      Pass *pass = ptrMat->getTechnique(0)->getPass(0);
+//      Pass *pass = ptrMat->getTechnique(0)->getPass(0);
       String vertexProgSource;
 
       if (!shaderLanguage.compare("hlsl") || !shaderLanguage.compare("cg")) {

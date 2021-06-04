@@ -135,50 +135,51 @@ void PhysicsSystem::Update(float time) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::DispatchCollisions() {
-  map<const btCollisionObject *, ContactInfo> new_contacts;
+//  map<const btCollisionObject *, ContactInfo> new_contacts;
 
   /* Browse all collision pairs */
-  for (size_t i = 0; i < world_->getDispatcher()->getNumManifolds(); i++) {
-    btPersistentManifold *manifold = world_->getDispatcher()->getManifoldByIndexInternal(i);
-    auto *obA = manifold->getBody0();
-    auto *obB = manifold->getBody1();
+
+//  for (size_t i = 0; i < world_->getDispatcher()->getNumManifolds(); i++) {
+//    btPersistentManifold *manifold = world_->getDispatcher()->getManifoldByIndexInternal(i);
+//    auto *obA = manifold->getBody0();
+//    auto *obB = manifold->getBody1();
 
     /* Check all contacts points */
-    for (size_t j = 0; j < manifold->getNumContacts(); j++) {
-      btManifoldPoint &pt = manifold->getContactPoint(j);
-      if (pt.getDistance() < 1E-6) {
-        const btVector3 &ptA = pt.getPositionWorldOnA();
-        const btVector3 &ptB = pt.getPositionWorldOnB();
-        const btVector3 &normalOnB = pt.m_normalWorldOnB;
-        if (new_contacts.find(obA) == new_contacts.end())
-          new_contacts[obA] = {obB, manifold->getNumContacts()};
-      }
-    }
-  }
+//    for (size_t j = 0; j < manifold->getNumContacts(); j++) {
+//      btManifoldPoint &pt = manifold->getContactPoint(j);
+//      if (pt.getDistance() < 1E-6) {
+//        const btVector3 &ptA = pt.getPositionWorldOnA();
+//        const btVector3 &ptB = pt.getPositionWorldOnB();
+//        const btVector3 &normalOnB = pt.m_normalWorldOnB;
+//        if (new_contacts.find(obA) == new_contacts.end())
+//          new_contacts[obA] = {obB, manifold->getNumContacts()};
+//      }
+//    }
+//  }
 
   /* Check for added contacts ... */
-  for (const auto &it : new_contacts) {
-    bool detected = false;
-    if (contacts_.find(it.first) == contacts_.end()) {
-      detected = true;
-    } else {
-      contacts_.erase(it.first);
-      //      if (new_contacts[it.first].points_ == contacts_[it.first].points_)
-      //      {
-      //        contacts_.erase(it.first);
-      //      } else {
-      //        detected = true;
-      //      }
-    }
+//  for (const auto &it : new_contacts) {
+//    bool detected = false;
+//    if (contacts_.find(it.first) == contacts_.end()) {
+//      detected = true;
+//    } else {
+//      contacts_.erase(it.first);
+//            if (new_contacts[it.first].points_ == contacts_[it.first].points_)
+//            {
+//              contacts_.erase(it.first);
+//            } else {
+//              detected = true;
+//            }
+//    }
 
-    if (detected && callback_) callback_(it.first->getUserIndex(), it.first->getUserIndex());
-  }
+//    if (detected && callback_) callback_(it.first->getUserIndex(), it.first->getUserIndex());
+//  }
 
   /* ... and removed contacts */
-  for (const auto &it : contacts_) {
-  }
-  contacts_.clear();
-  contacts_ = new_contacts;
+//  for (const auto &it : contacts_) {
+//  }
+//  contacts_.clear();
+//  contacts_ = new_contacts;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -434,23 +435,23 @@ void PhysicsSystem::ProcessData(Ogre::UserObjectBindings &user_object_bindings,
 
   string physics_type = Ogre::any_cast<string>(user_object_bindings.getUserAny("physics_type"));
   float mass = Ogre::any_cast<float>(user_object_bindings.getUserAny("mass"));
-  float mass_radius = Ogre::any_cast<float>(user_object_bindings.getUserAny("mass_radius"));
-  float inertia_tensor = Ogre::any_cast<float>(user_object_bindings.getUserAny("inertia_tensor"));
-  float velocity_min = Ogre::any_cast<float>(user_object_bindings.getUserAny("velocity_min"));
-  float velocity_max = Ogre::any_cast<float>(user_object_bindings.getUserAny("velocity_max"));
-  bool lock_trans_x = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_x"));
-  bool lock_trans_y = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_y"));
-  bool lock_trans_z = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_z"));
-  bool lock_rot_x = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_x"));
-  bool lock_rot_y = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_y"));
-  bool lock_rot_z = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_z"));
+//  float mass_radius = Ogre::any_cast<float>(user_object_bindings.getUserAny("mass_radius"));
+//  float inertia_tensor = Ogre::any_cast<float>(user_object_bindings.getUserAny("inertia_tensor"));
+//  float velocity_min = Ogre::any_cast<float>(user_object_bindings.getUserAny("velocity_min"));
+//  float velocity_max = Ogre::any_cast<float>(user_object_bindings.getUserAny("velocity_max"));
+//  bool lock_trans_x = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_x"));
+//  bool lock_trans_y = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_y"));
+//  bool lock_trans_z = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_trans_z"));
+//  bool lock_rot_x = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_x"));
+//  bool lock_rot_y = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_y"));
+//  bool lock_rot_z = Ogre::any_cast<bool>(user_object_bindings.getUserAny("lock_rot_z"));
   bool anisotropic_friction =
       Ogre::any_cast<bool>(user_object_bindings.getUserAny("anisotropic_friction"));
   float friction_x = Ogre::any_cast<float>(user_object_bindings.getUserAny("friction_x"));
   float friction_y = Ogre::any_cast<float>(user_object_bindings.getUserAny("friction_y"));
   float friction_z = Ogre::any_cast<float>(user_object_bindings.getUserAny("friction_z"));
-  float damping_trans = Ogre::any_cast<float>(user_object_bindings.getUserAny("damping_trans"));
-  float damping_rot = Ogre::any_cast<float>(user_object_bindings.getUserAny("damping_rot"));
+//  float damping_trans = Ogre::any_cast<float>(user_object_bindings.getUserAny("damping_trans"));
+//  float damping_rot = Ogre::any_cast<float>(user_object_bindings.getUserAny("damping_rot"));
   btRigidBody *entBody = nullptr;
 
   if (physics_type == TYPE_STATIC) {

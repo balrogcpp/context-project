@@ -60,11 +60,9 @@ Window::Window(int w, int h, bool f) : w_(w), h_(h), f_(f) {
     throw Exception("Failed to init SDL2");
   }
 
-  /* Open the first available controller. */
-  SDL_GameController *controller = nullptr;
   for (int i = 0; i < SDL_NumJoysticks(); ++i) {
     if (SDL_IsGameController(i)) {
-      controller = SDL_GameControllerOpen(i);
+      SDL_GameControllerOpen(i);
     }
   }
 

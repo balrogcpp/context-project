@@ -61,13 +61,13 @@ void DemoDotAppState::Cleanup() {
 
 }
 
-static string ButtonText(const std::string &text, int length) {
-  string new_string = string((length - text.size())/2, ' ');
-  new_string.append(text);
-  new_string.append(string((length - text.size())/2, ' '));
-
-  return new_string;
-}
+//static string ButtonText(const std::string &text, int length) {
+//  string new_string = string((length - text.size())/2, ' ');
+//  new_string.append(text);
+//  new_string.append(string((length - text.size())/2, ' '));
+//
+//  return new_string;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Update(float time) {

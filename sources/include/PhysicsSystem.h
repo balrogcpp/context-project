@@ -39,7 +39,7 @@ class Entity;
 class SceneNode;
 }  // namespace Ogre
 
-class btDbvtBroadphase;
+struct btDbvtBroadphase;
 class btAxisSweep3;
 class btDefaultCollisionConfiguration;
 class btCollisionDispatcher;
@@ -115,12 +115,12 @@ class PhysicsSystem final : public System, public Singleton<PhysicsSystem> {
   std::atomic<bool> running_ = false;
   bool debug_ = false;
   int64_t time_of_last_frame_ = 0;
-  int64_t cumulated_time_ = 0;
+//  int64_t cumulated_time_ = 0;
   const std::string TYPE_STATIC = "static";
   const std::string TYPE_DYNAMIC = "dynamic";
-  const std::string TYPE_ACTOR = "actor";
+//  const std::string TYPE_ACTOR = "actor";
   const std::string TYPE_GHOST = "ghost";
-  const std::string TYPE_NONE = "none";
+//  const std::string TYPE_NONE = "none";
   const std::string PROXY_BOX = "box";
   const std::string PROXY_CAPSULE = "capsule";
   const std::string PROXY_SPHERE = "sphere";

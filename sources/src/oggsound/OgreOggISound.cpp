@@ -1,40 +1,41 @@
 /**
-* @file OgreOggISound.cpp
-* @author  Ian Stangoe
-* @version v1.26
-*
-* @section LICENSE
-* 
-* This source file is part of OgreOggSound, an OpenAL wrapper library for   
-* use with the Ogre Rendering Engine.										 
-*                                                                           
-* Copyright (c) 2013 Ian Stangoe
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE. 	 
-*
-*/
-
-#include "pcheader.h"
+ * @file OgreOggISound.cpp
+ * @author  Ian Stangoe
+ * @version v1.26
+ *
+ * @section LICENSE
+ *
+ * This source file is part of OgreOggSound, an OpenAL wrapper library for
+ * use with the Ogre Rendering Engine.
+ *
+ * Copyright (c) 2013 Ian Stangoe
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
 
 #include "oggsound/OgreOggISound.h"
-#include "oggsound/OgreOggSound.h"
+
 #include <OgreMovableObject.h>
+
+#include "oggsound/OgreOggSound.h"
+#include "pcheader.h"
 
 namespace OgreOggSound {
 /*
@@ -48,81 +49,40 @@ size_t OOSStreamRead(void *ptr, size_t size, size_t nmemb, void *datasource) {
 int OOSStreamSeek(void *datasource, ogg_int64_t offset, int whence) {
   Ogre::DataStreamPtr dataStream = *reinterpret_cast<Ogre::DataStreamPtr *>(datasource);
   switch (whence) {
-    case SEEK_SET: dataStream->seek(offset);
+    case SEEK_SET:
+      dataStream->seek(offset);
       break;
-    case SEEK_END: dataStream->seek(dataStream->size());
+    case SEEK_END:
+      dataStream->seek(dataStream->size());
       // Falling through purposefully here
-    case SEEK_CUR: dataStream->skip(offset);
+    case SEEK_CUR:
+      dataStream->skip(offset);
       break;
   }
 
   return 0;
 }
-int OOSStreamClose(void *datasource) {
-  return 0;
-}
+int OOSStreamClose(void *datasource) { return 0; }
 long OOSStreamTell(void *datasource) {
   Ogre::DataStreamPtr dataStream = *reinterpret_cast<Ogre::DataStreamPtr *>(datasource);
   return static_cast<long>(dataStream->tell());
 }
 
 /*/////////////////////////////////////////////////////////////////*/
-OgreOggISound::OgreOggISound(
-    const Ogre::String &name, Ogre::SceneManager *scnMgr
+OgreOggISound::OgreOggISound(const Ogre::String &name, Ogre::SceneManager *scnMgr
 #if OGRE_VERSION_MAJOR == 2
-    , Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+                             ,
+                             Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr,
+                             Ogre::uint8 renderQueueId
 #endif
-) :
+                             )
+    :
 #if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0
-    MovableObject(id, objMemMgr, renderQueueId),
+      MovableObject(id, objMemMgr, renderQueueId),
 #elif OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR > 0
-    MovableObject(id, objMemMgr, scnMgr, renderQueueId),
+      MovableObject(id, objMemMgr, scnMgr, renderQueueId),
 #endif
-    mName(name),
-    mSource(0),
-    mLoop(false),
-    mState(SS_NONE),
-    mPosition(0, 0, 0),
-    mReferenceDistance(1.0f),
-    mDirection(0, 0, 0),
-    mVelocity(0, 0, 0),
-    mGain(1.0f),
-    mMaxDistance(1E10),
-    mMaxGain(1.0f),
-    mMinGain(0.0f),
-    mPitch(1.0f),
-    mRolloffFactor(1.0f),
-    mInnerConeAngle(360.0f),
-    mOuterConeAngle(360.0f),
-    mOuterConeGain(0.0f),
-    mPlayTime(0.0f),
-    mFadeTimer(0.0f),
-    mFadeTime(1.0f),
-    mFadeInitVol(0),
-    mFadeEndVol(1),
-    mFade(false),
-    mFadeEndAction(OgreOggSound::FC_NONE),
-    mStream(false),
-    mGiveUpSource(false),
-    mPlayPosChanged(false),
-    mPlayPos(0.f),
-    mPriority(0),
-    mScnMan(scnMgr),
-    mAudioOffset(0),
-    mAudioEnd(0),
-    mLoopOffset(0)
-#if OGRE_VERSION_MAJOR == 1
-    ,
-    mLocalTransformDirty(true)
-#endif
-    ,
-    mDisable3D(false),
-    mSeekable(true),
-    mSourceRelative(false),
-    mTemporary(false),
-    mInitialised(false),
-    mAwaitingDestruction(0),
-    mSoundListener(0) {
+      mName(name) {
   // Init some oggVorbis callbacks
   mOggCallbacks.read_func = OOSStreamRead;
   mOggCallbacks.close_func = OOSStreamClose;
@@ -135,9 +95,7 @@ OgreOggISound::OgreOggISound(
 #endif
 }
 /*/////////////////////////////////////////////////////////////////*/
-OgreOggISound::~OgreOggISound() {
-  mAudioStream.reset();
-}
+OgreOggISound::~OgreOggISound() { mAudioStream.reset(); }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::_getSharedProperties(BufferListPtr &buffers, float &length, ALenum &format) {
   buffers = mBuffers;
@@ -218,14 +176,14 @@ void OgreOggISound::disable3D(bool disable) {
       alSource3f(mSource, AL_VELOCITY, mPosition.x, mPosition.y, mPosition.z);
     }
   }
-    /** Enable 3D
-    @remarks
-        Set listener relative to AL_FALSE
-        If Source available then settings are applied immediately
-        else they are applied next time the sound is initialised.
-        NOTE:- If previously disabled, Reference distance will still be set to 1.
-        Should be reset as required by user AFTER calling this function.
-    */
+  /** Enable 3D
+  @remarks
+      Set listener relative to AL_FALSE
+      If Source available then settings are applied immediately
+      else they are applied next time the sound is initialised.
+      NOTE:- If previously disabled, Reference distance will still be set to 1.
+      Should be reset as required by user AFTER calling this function.
+  */
   else {
     mSourceRelative = false;
 
@@ -450,7 +408,7 @@ float OgreOggISound::getVolume() const {
     alGetSourcef(mSource, AL_GAIN, &vol);
     return vol;
   }
-    // If not - return requested setting.
+  // If not - return requested setting.
   else
     return mGain;
 }
@@ -464,8 +422,7 @@ void OgreOggISound::startFade(bool fDir, float fadeTime, FadeControl actionOnCom
   mFadeTime = fadeTime;
   // Automatically start if not currently playing
   if (mFadeEndVol == mMaxGain)
-    if (!isPlaying())
-      this->play();
+    if (!isPlaying()) this->play();
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::_updateFade(float fTime) {
@@ -474,20 +431,17 @@ void OgreOggISound::_updateFade(float fTime) {
       setVolume(mFadeEndVol);
       mFade = false;
       // Perform requested action on completion
-      // NOTE:- Must Go through SoundManager when using threads to avoid any corruption/mutex issues.
+      // NOTE:- Must Go through SoundManager when using threads to avoid any corruption/mutex
+      // issues.
       switch (mFadeEndAction) {
         case FC_PAUSE: {
           pause();
-        }
-          break;
+        } break;
         case FC_STOP: {
           stop();
-        }
-          break;
+        } break;
         case FC_NONE: {
-
-        }
-          break;
+        } break;
       }
     } else {
       float vol = (mFadeEndVol - mFadeInitVol) * (mFadeTimer / mFadeTime);
@@ -503,16 +457,14 @@ void OgreOggISound::_markPlayPosition() {
       to be 1/4 second out, so may need to look at this..
       for now just re-use buffers
   */
-  if (!mSeekable || (mSource == AL_NONE) || mStream)
-    return;
+  if (!mSeekable || (mSource == AL_NONE) || mStream) return;
 
   alSourcePause(mSource);
   alGetSourcef(mSource, AL_SEC_OFFSET, &mPlayPos);
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::_recoverPlayPosition() {
-  if (!mSeekable || (mSource == AL_NONE) || mStream)
-    return;
+  if (!mSeekable || (mSource == AL_NONE) || mStream) return;
 
   alGetError();
   alSourcef(mSource, AL_SEC_OFFSET, mPlayPos);
@@ -525,13 +477,13 @@ void OgreOggISound::_recoverPlayPosition() {
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::setPlayPosition(float seconds) {
   // Invalid time - exit
-  if (!mSeekable || mPlayTime <= 0.f || seconds < 0.f)
-    return;
+  if (!mSeekable || mPlayTime <= 0.f || seconds < 0.f) return;
 
   // Wrap time
   if (seconds > mPlayTime) {
-    do { seconds -= mPlayTime; }
-    while (seconds > mPlayTime);
+    do {
+      seconds -= mPlayTime;
+    } while (seconds > mPlayTime);
   }
 
   // Set offset if source available
@@ -546,7 +498,7 @@ void OgreOggISound::setPlayPosition(float seconds) {
     // Reset flag
     mPlayPosChanged = false;
   }
-    // Mark it so it can be applied when sound receives a source
+  // Mark it so it can be applied when sound receives a source
   else {
     mPlayPosChanged = true;
     mPlayPos = seconds;
@@ -555,16 +507,16 @@ void OgreOggISound::setPlayPosition(float seconds) {
 /*/////////////////////////////////////////////////////////////////*/
 float OgreOggISound::getPlayPosition() const {
   // Invalid time - exit
-  if (!mSeekable || !mSource)
-    return -1.f;
+  if (!mSeekable || !mSource) return -1.f;
 
   // Set offset if source available
   ALfloat offset = -1.f;
   alGetError();
   alGetSourcef(mSource, AL_SEC_OFFSET, &offset);
   if (alGetError()) {
-    Ogre::LogManager::getSingleton().logMessage("***--- OgreOggISound::setPlayPosition() - Error getting play position",
-                                                Ogre::LML_CRITICAL);
+    Ogre::LogManager::getSingleton().logMessage(
+        "***--- OgreOggISound::setPlayPosition() - Error getting play position",
+        Ogre::LML_CRITICAL);
     return -1.f;
   }
 
@@ -581,24 +533,21 @@ bool OgreOggISound::addCuePoint(float seconds) {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::removeCuePoint(unsigned short index) {
-  if (mCuePoints.empty() || ((int) mCuePoints.size() <= index))
-    return;
+  if (mCuePoints.empty() || ((int)mCuePoints.size() <= index)) return;
 
   // Erase element
   mCuePoints.erase(mCuePoints.begin() + index);
 }
 /*/////////////////////////////////////////////////////////////////*/
 float OgreOggISound::getCuePoint(unsigned short index) {
-  if (mCuePoints.empty() || ((int) mCuePoints.size() <= index))
-    return -1.f;
+  if (mCuePoints.empty() || ((int)mCuePoints.size() <= index)) return -1.f;
 
   // get element
   return mCuePoints.at(index);
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::setCuePoint(unsigned short index) {
-  if (mCuePoints.empty() || ((int) mCuePoints.size() <= index))
-    return;
+  if (mCuePoints.empty() || ((int)mCuePoints.size() <= index)) return;
 
   // set cue point
   setPlayPosition(mCuePoints.at(index));
@@ -628,17 +577,17 @@ void OgreOggISound::update(float fTime) {
   }
 #else
   if (!mDisable3D && mParentNode && mSource != AL_NONE) {
-      Ogre::Vector3    newPos    = mParentNode->_getDerivedPosition();
-      if (newPos != mPosition) {
-          mPosition = newPos;
-          alSource3f(mSource, AL_POSITION, mPosition.x, mPosition.y, mPosition.z);
-      }
+    Ogre::Vector3 newPos = mParentNode->_getDerivedPosition();
+    if (newPos != mPosition) {
+      mPosition = newPos;
+      alSource3f(mSource, AL_POSITION, mPosition.x, mPosition.y, mPosition.z);
+    }
 
-      Ogre::Vector3    newDir = -mParentNode->_getDerivedOrientation().zAxis();
-      if (newDir != mDirection) {
-          mDirection = newDir;
-          alSource3f(mSource, AL_DIRECTION, mDirection.x, mDirection.y, mDirection.z);
-      }
+    Ogre::Vector3 newDir = -mParentNode->_getDerivedOrientation().zAxis();
+    if (newDir != mDirection) {
+      mDirection = newDir;
+      alSource3f(mSource, AL_DIRECTION, mDirection.x, mDirection.y, mDirection.z);
+    }
   }
 #endif
 
@@ -654,25 +603,21 @@ const Ogre::AxisAlignedBox &OgreOggISound::getBoundingBox(void) const {
   return aab;
 }
 /*/////////////////////////////////////////////////////////////////*/
-float OgreOggISound::getBoundingRadius(void) const {
-  return 0;
-}
+float OgreOggISound::getBoundingRadius(void) const { return 0; }
 /*/////////////////////////////////////////////////////////////////*/
-void OgreOggISound::_updateRenderQueue(Ogre::RenderQueue *queue) {
-  return;
-}
+void OgreOggISound::_updateRenderQueue(Ogre::RenderQueue *queue) { return; }
 /*/////////////////////////////////////////////////////////////////*/
-void OgreOggISound::_notifyAttached(
-    Ogre::Node *node
+void OgreOggISound::_notifyAttached(Ogre::Node *node
 #if OGRE_VERSION_MAJOR == 1
-    , bool isTagPoint
+                                    ,
+                                    bool isTagPoint
 #endif
 ) {
   // Call base class notify
-  Ogre::MovableObject::_notifyAttached(
-      node
+  Ogre::MovableObject::_notifyAttached(node
 #if OGRE_VERSION_MAJOR == 1
-      , isTagPoint
+                                       ,
+                                       isTagPoint
 #endif
   );
 
@@ -703,8 +648,8 @@ void OgreOggISound::_notifyMoved(void) {
   mLocalTransformDirty = true;
 }
 #else
-void OgreOggISound::_updateRenderQueue(Ogre::RenderQueue *queue, Ogre::Camera *camera, const Ogre::Camera *lodCamera) {
-}
+void OgreOggISound::_updateRenderQueue(Ogre::RenderQueue *queue, Ogre::Camera *camera,
+                                       const Ogre::Camera *lodCamera) {}
 #endif
 #if OGRE_VERSION_MAJOR == 1 || OGRE_VERSION_MINOR == 0
 /*/////////////////////////////////////////////////////////////////*/
@@ -712,4 +657,4 @@ void OgreOggISound::visitRenderables(Ogre::Renderable::Visitor *visitor, bool de
   return;
 }
 #endif
-}
+}  // namespace OgreOggSound
