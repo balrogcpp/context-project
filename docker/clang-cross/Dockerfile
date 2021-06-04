@@ -128,7 +128,7 @@ RUN update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_
 
 
 ########################################################################################################################
-ENV CMAKE_VERSION=3.20.2
+ENV CMAKE_VERSION=3.20.3
 ENV CMAKE_HOME=/opt/cmake
 ENV NINJA_VERSION=1.10.2
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
