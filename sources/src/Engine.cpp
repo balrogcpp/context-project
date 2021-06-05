@@ -1,28 +1,29 @@
-//MIT License
+// MIT License
 //
-//Copyright (c) 2021 Andrew Vasiliev
+// Copyright (c) 2021 Andrew Vasiliev
 //
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
-#include "pcheader.h"
 #include "Engine.h"
+
 #include "Config.h"
+#include "pcheader.h"
 
 using namespace std;
 
@@ -30,7 +31,7 @@ namespace xio {
 
 //----------------------------------------------------------------------------------------------------------------------
 Engine::Engine() {
-#if OGRE_PLATFORM!=OGRE_PLATFORM_ANDROID
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   conf_ = make_unique<Config>("config.json");
 #else
   conf_ = make_unique<Config>("");
@@ -50,16 +51,14 @@ Engine::Engine() {
   conf_->AddMember("shadows_texture_format", 16);
 #endif
 
-  Component::SetConfig(conf_.get());
+  System::SetConfig(conf_.get());
   components_.reserve(16);
 
   io_ = make_unique<InputHandler>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Engine::~Engine() {
-
-}
+Engine::~Engine() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::InitComponents() {
@@ -68,9 +67,8 @@ void Engine::InitComponents() {
   bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
   renderer_ = make_unique<RenderSystem>(window_width, window_high, window_fullscreen);
 
-
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  bool physics_threaded = false; //cause strange behavior sometimes
+  bool physics_threaded = false;  // cause strange behavior sometimes
   conf_->Get("physics_threaded", physics_threaded);
   physics_ = make_unique<PhysicsSystem>(physics_threaded);
   audio_ = make_unique<AudioSystem>(8, 8);
@@ -79,9 +77,7 @@ void Engine::InitComponents() {
   audio_ = make_unique<AudioSystem>(4, 4);
 #endif
 
-
   loader_ = make_unique<DotSceneLoaderB>();
-
 
   renderer_->Refresh();
 }
@@ -93,13 +89,11 @@ void Engine::Capture() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Engine::RegComponent(view_ptr<Component> component) {
-  components_.push_back(component);
-}
+void Engine::RegComponent(view_ptr<System> component) { components_.push_back(component); }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Pause() {
-  for_each(components_.begin(), components_.end(), [](view_ptr<Component> it) { it->Pause(); });
+  for_each(components_.begin(), components_.end(), [](view_ptr<System> it) { it->Pause(); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -118,28 +112,25 @@ void Engine::OffMenu() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Resume() {
-  for_each(components_.begin(), components_.end(), [](view_ptr<Component> it) { it->Resume(); });
+  for_each(components_.begin(), components_.end(), [](view_ptr<System> it) { it->Resume(); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Cleanup() {
-  for_each(components_.begin(), components_.end(), [](view_ptr<Component> it) { it->Cleanup(); });
+  for_each(components_.begin(), components_.end(), [](view_ptr<System> it) { it->Cleanup(); });
   Refresh();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Update(float time) {
-  for_each(components_.begin(), components_.end(), [time](view_ptr<Component> it) { it->Update(time); });
+  for_each(components_.begin(), components_.end(),
+           [time](view_ptr<System> it) { it->Update(time); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Engine::RenderOneFrame() {
-  renderer_->RenderOneFrame();
-}
+void Engine::RenderOneFrame() { renderer_->RenderOneFrame(); }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Engine::Refresh() {
-  renderer_->Refresh();
-}
+void Engine::Refresh() { renderer_->Refresh(); }
 
-} //namespace
+}  // namespace xio

@@ -86,7 +86,7 @@ void MenuAppState::OnKeyDown(SDL_Keycode sym) {
 void MenuAppState::Init() {
   GetWindow().Grab(false);
 
-  ImGuiIO &io = ImGui::GetIO();
+//  ImGuiIO &io = ImGui::GetIO();
 }
 
 }

@@ -1,29 +1,30 @@
-//MIT License
+// MIT License
 //
-//Copyright (c) 2021 Andrew Vasiliev
+// Copyright (c) 2021 Andrew Vasiliev
 //
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
-#include "pcheader.h"
 #include "Compositor.h"
-#include "PbrShaderUtils.h"
+
 #include "Config.h"
+#include "PbrShaderUtils.h"
+#include "pcheader.h"
 
 using namespace std;
 
@@ -32,7 +33,6 @@ namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
-
   GBufferSchemeHandler() {
     ref_mat_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer");
 
@@ -41,14 +41,11 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     }
 
     ref_mat_->load();
-
   }
 
-//----------------------------------------------------------------------------------------------------------------------
-  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex,
-                                        const Ogre::String &schemeName,
-                                        Ogre::Material *originalMaterial,
-                                        unsigned short lodIndex,
+  //----------------------------------------------------------------------------------------------------------------------
+  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const Ogre::String &schemeName,
+                                        Ogre::Material *originalMaterial, unsigned short lodIndex,
                                         const Ogre::Renderable *rend) override {
     Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
 
@@ -57,10 +54,9 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     *gbufPass = *ref_mat_->getTechnique(0)->getPass(0);
 
     return gBufferTech;
-
   }
 
-//----------------------------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------------------------
   void Update(Ogre::Matrix4 mvp_prev, float time) {
     for (auto &it : gpu_fp_params_) {
       it->setNamedConstant("uFrameTime", time);
@@ -69,7 +65,6 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     for (auto &it : gpu_vp_params_) {
       it->setNamedConstant("cWorldViewProjPrev", mvp_prev);
     }
-
   }
 
  private:
@@ -93,46 +88,35 @@ Compositor::Compositor() {
   EnableEffect("bloom", conf_->Get<bool>("enable_bloom"));
   EnableEffect("mblur", conf_->Get<bool>("enable_mblur"));
   Init();
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Compositor::~Compositor() {
-
-}
+Compositor::~Compositor() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Update(float time) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  static bool gl3 = Ogre::Root::getSingleton().getRenderSystem()->getName() != "OpenGL ES 2.x Rendering Subsystem";
+  static bool gl3 = Ogre::Root::getSingleton().getRenderSystem()->getName() !=
+                    "OpenGL ES 2.x Rendering Subsystem";
   static bool mblur = effects_["mblur"];
 
   if (gl3 && mblur) {
     Pbr::Update(time);
   }
 #endif
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Compositor::EnableEffect(const std::string &name, bool enable) {
-  effects_[name] = enable;
-}
+void Compositor::EnableEffect(const std::string &name, bool enable) { effects_[name] = enable; }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Compositor::Cleanup() {
-  Pbr::Cleanup();
-}
+void Compositor::Cleanup() { Pbr::Cleanup(); }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Compositor::Pause() {
-
-}
+void Compositor::Pause() {}
 
 //----------------------------------------------------------------------------------------------------------------------
-void Compositor::Resume() {
-
-}
+void Compositor::Resume() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::InitGbuffer_() {
@@ -146,7 +130,6 @@ void Compositor::InitGbuffer_() {
   } else {
     Ogre::LogManager::getSingleton().logMessage("Failed to add GBuffer compositor\n");
   }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -156,7 +139,6 @@ void Compositor::AddCompositorEnabled_(const std::string &name) {
   } else {
     throw Exception(string("Failed to add ") + name + " compositor");
   }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -253,7 +235,6 @@ void Compositor::InitOutput_() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Init() {
-
   InitMRT_();
 
   if (effects_["ssao"]) {
@@ -270,4 +251,4 @@ void Compositor::Init() {
   InitOutput_();
 }
 
-} //namespace
+}  // namespace xio

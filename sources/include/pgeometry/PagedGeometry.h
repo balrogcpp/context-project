@@ -976,25 +976,24 @@ class GeometryPage {
 
  private:
   //These values and functions are used by the GeometryPageManager internally.
-  Ogre::Vector3 _centerPoint;        //The central point of this page (used to visibility calculation)
-  int _xIndex, _zIndex;            //The absolute grid position of this page
-  unsigned long _inactiveTime;    //How long this page has been inactive (used to calculate expired pages)
-  bool _visible;        //Flag indicating if page is visible
-  bool _fadeEnable;    //Flag indicating if page fading is enabled
-
-  bool _pending;        //Flag indicating if page needs loading
-  bool _loaded;        //Flag indicating if page is loaded
-  bool _needsUnload;    //Flag indicating if page needs unloading before next load
-  bool _keepLoaded;    //Flag indicating if the page should not be unloaded
+  Ogre::Vector3 _centerPoint = Ogre::Vector3::ZERO;        //The central point of this page (used to visibility calculation)
+  int _xIndex = 0, _zIndex = 0;            //The absolute grid position of this page
+  unsigned long _inactiveTime = 0;    //How long this page has been inactive (used to calculate expired pages)
+  bool _visible = false;        //Flag indicating if page is visible
+  bool _fadeEnable = false;    //Flag indicating if page fading is enabled
+  bool _pending = false;        //Flag indicating if page needs loading
+  bool _loaded = false;        //Flag indicating if page is loaded
+  bool _needsUnload = false;    //Flag indicating if page needs unloading before next load
+  bool _keepLoaded = false;    //Flag indicating if the page should not be unloaded
   std::list<GeometryPage *>::iterator _iter;    //Iterator in loadedList
 
   Ogre::AxisAlignedBox _trueBounds;    //Actual bounding box of the 3D pgeometry added to this page
-  bool _trueBoundsUndefined;            //Flag indicating if _trueBounds has not been defined yet
+  bool _trueBoundsUndefined = true;            //Flag indicating if _trueBounds has not been defined yet
 
-  void *_userData;    //Misc. data associated with this page by the PageLoader
+  void *_userData = nullptr;    //Misc. data associated with this page by the PageLoader
 
-  bool mHasQueryFlag;
-  Ogre::uint32 mQueryFlag;
+  bool mHasQueryFlag = false;
+  Ogre::uint32 mQueryFlag = 0;
 };
 
 
@@ -1388,9 +1387,10 @@ class GeometryPageManager {
   PagedGeometry *mainGeom;
 
   //geomGrid is a 2D array storing all the GeometryPage instances managed by this object.
-  GeometryPage **geomGrid;    //A dynamic 2D array of pointers (2D grid of GeometryPage's)
-  GeometryPage **scrollBuffer; //A dynamic 1D array of pointers (temporary GeometryPage's used in scrolling geomGrid)
-  int geomGridX, geomGridZ;    //The dimensions of the dynamic array
+  GeometryPage **geomGrid = nullptr;    //A dynamic 2D array of pointers (2D grid of GeometryPage's)
+  GeometryPage **scrollBuffer = nullptr; //A dynamic 1D array of pointers (temporary GeometryPage's used in scrolling geomGrid)
+  int geomGridX = 0;
+  int geomGridZ = 0;    //The dimensions of the dynamic array
   TBounds gridBounds;        //Current grid bounds
 
   //Fade transitions
@@ -1428,7 +1428,7 @@ class GeometryPageManager {
   void _scrollGridPages(int shiftX, int shiftZ);
 
   //Timer counting how long it has been since the last page has been cached
-  unsigned long cacheTimer;
+  unsigned long cacheTimer = 0;
 
   TPGeometryPages pendingList;    //Pages of pgeometry to be loaded
   TPGeometryPages loadedList;    //Pages of pgeometry already loaded
@@ -1456,7 +1456,7 @@ inline GeometryPageManager *PagedGeometry::addDetailLevel(Ogre::Real maxRange,
   GeometryPageManager *mgr = new GeometryPageManager(this);
 
   //If vertex shaders aren't supported, don't use transitions
-  Ogre::Root *root = root->getSingletonPtr();    //Work-around for Linux compiler bug
+  Ogre::Root *root = Ogre::Root::getSingletonPtr();    //Work-around for Linux compiler bug
   if (!root->getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_VERTEX_PROGRAM))
     transitionLength = 0;
 

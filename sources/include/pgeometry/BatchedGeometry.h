@@ -115,19 +115,19 @@ class BatchedGeometry : public Ogre::MovableObject {
     // Data section class SubBatch
 
    public:
-    Ogre::VertexData *m_pVertexData;          ///<
-    Ogre::IndexData *m_pIndexData;           ///<
+    Ogre::VertexData *m_pVertexData = nullptr;          ///<
+    Ogre::IndexData *m_pIndexData = nullptr;           ///<
 
    protected:
-    bool m_Built;                ///<
-    bool m_RequireVertexColors;  ///<
-    Ogre::SubMesh *m_pSubMesh;             ///< Ogre::SubMesh for Index/Vertex buffers manipulation
-    BatchedGeometry *m_pParentGeom;          ///<
+    bool m_Built = false;                ///<
+    bool m_RequireVertexColors = false;  ///<
+    Ogre::SubMesh *m_pSubMesh = nullptr;             ///< Ogre::SubMesh for Index/Vertex buffers manipulation
+    BatchedGeometry *m_pParentGeom = nullptr;          ///<
     Ogre::MaterialPtr m_ptrMaterial;          ///<
     TMeshQueue m_queueMesh;            ///< The list of meshes to be added to this batch
 
    private:
-    Ogre::Technique *m_pBestTechnique;       ///< Technique recalculated every frame
+    Ogre::Technique *m_pBestTechnique = nullptr;       ///< Technique recalculated every frame
 
   }; // end class SubBatch
   //-----------------------------------------------------------------------
@@ -156,15 +156,15 @@ class BatchedGeometry : public Ogre::MovableObject {
 
   Ogre::Vector3 _convertToLocal(const Ogre::Vector3 &globalVec) const;
 
-  const Ogre::AxisAlignedBox &getBoundingBox() const { return m_boundsAAB; }
-  Ogre::Real getBoundingRadius() const { return m_fRadius; }
+  const Ogre::AxisAlignedBox &getBoundingBox() const override { return m_boundsAAB; }
+  Ogre::Real getBoundingRadius() const override { return m_fRadius; }
 
  private:
-  bool isVisible();
-  const Ogre::String &getMovableType() const;
-  void visitRenderables(Ogre::Renderable::Visitor *visitor, bool debugRenderables) { /* empty */ }
-  void _notifyCurrentCamera(Ogre::Camera *cam);
-  void _updateRenderQueue(Ogre::RenderQueue *queue);
+  bool isVisible() const override;
+  const Ogre::String &getMovableType() const override;
+  void visitRenderables(Ogre::Renderable::Visitor *visitor, bool debugRenderables) override { /* empty */ }
+  void _notifyCurrentCamera(Ogre::Camera *cam) override;
+  void _updateRenderQueue(Ogre::RenderQueue *queue) override;
 
  protected:
   static Ogre::String getFormatString(Ogre::SubEntity *ent);
@@ -173,20 +173,20 @@ class BatchedGeometry : public Ogre::MovableObject {
 
   // Data section of BatchedGeometry class
  protected:
-  bool m_Built;
-  bool m_BoundsUndefined;
-  Ogre::Vector3 m_vecCenter;
+  bool m_Built = false;
+  bool m_BoundsUndefined = true;
+  Ogre::Vector3 m_vecCenter = Ogre::Vector3::ZERO;
   Ogre::AxisAlignedBox m_boundsAAB;
   TSubBatchMap m_mapSubBatch;
   /// Internal matrix for remap vertex type to vertex size instead call VertexElement::getTypeSize
   static const size_t s_vertexType2Size[Ogre::VET_COLOUR_ABGR + 1];
 
  private:
-  bool m_bWithinFarDistance;
-  Ogre::Real m_fRadius;
-  Ogre::Real m_fMinDistanceSquared;
-  Ogre::SceneManager *m_pSceneMgr;
-  Ogre::SceneNode *m_pSceneNode;
+  bool m_bWithinFarDistance = false;
+  Ogre::Real m_fRadius = 0.0;
+  Ogre::Real m_fMinDistanceSquared = 0.0;
+  Ogre::SceneManager *m_pSceneMgr = nullptr;
+  Ogre::SceneNode *m_pSceneNode = nullptr;
   Ogre::SceneNode *m_pParentSceneNode;
 };
 }

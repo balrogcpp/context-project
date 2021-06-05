@@ -1,26 +1,27 @@
-//MIT License
+// MIT License
 //
-//Copyright (c) 2021 Andrew Vasiliev
+// Copyright (c) 2021 Andrew Vasiliev
 //
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include "ImGuiInputListener.h"
+
 #include <imgui.h>
 
 using namespace std;
@@ -29,48 +30,44 @@ namespace xio {
 
 /// map sdl2 mouse buttons to imgui
 static int sdl2imgui(int b) {
-
   switch (b) {
-	case 2: return 2;
-	case 3: return 1;
-	default: return b - 1;
+    case 2:
+      return 2;
+    case 3:
+      return 1;
+    default:
+      return b - 1;
   }
 }
 
 /// SDL2 keycode to scancode
-static int kc2sc(int kc) {
-
-  return kc & ~(1 << 30);
-}
+static int kc2sc(int kc) { return kc & ~(1 << 30); }
 
 //----------------------------------------------------------------------------------------------------------------------
 static int keypad2kc(int sym, int mod) {
-
-  if (sym < SDLK_KP_1 || sym > SDLK_KP_PERIOD)
-	return sym;
-  bool numlock = (mod & KMOD_NUM)!=0;
-  if (numlock)
-	return sym;
-  if (sym==SDLK_KP_1)
-	sym = SDLK_END;
-  else if (sym==SDLK_KP_2)
-	sym = SDLK_DOWN;
-  else if (sym==SDLK_KP_3)
-	sym = SDLK_PAGEDOWN;
-  else if (sym==SDLK_KP_4)
-	sym = SDLK_LEFT;
-  else if (sym==SDLK_KP_6)
-	sym = SDLK_RIGHT;
-  else if (sym==SDLK_KP_7)
-	sym = SDLK_HOME;
-  else if (sym==SDLK_KP_8)
-	sym = SDLK_UP;
-  else if (sym==SDLK_KP_9)
-	sym = SDLK_PAGEUP;
-  else if (sym==SDLK_KP_0)
-	sym = SDLK_INSERT;
-  else if (sym==SDLK_KP_PERIOD)
-	sym = SDLK_DELETE;
+  if (sym < SDLK_KP_1 || sym > SDLK_KP_PERIOD) return sym;
+  bool numlock = (mod & KMOD_NUM) != 0;
+  if (numlock) return sym;
+  if (sym == SDLK_KP_1)
+    sym = SDLK_END;
+  else if (sym == SDLK_KP_2)
+    sym = SDLK_DOWN;
+  else if (sym == SDLK_KP_3)
+    sym = SDLK_PAGEDOWN;
+  else if (sym == SDLK_KP_4)
+    sym = SDLK_LEFT;
+  else if (sym == SDLK_KP_6)
+    sym = SDLK_RIGHT;
+  else if (sym == SDLK_KP_7)
+    sym = SDLK_HOME;
+  else if (sym == SDLK_KP_8)
+    sym = SDLK_UP;
+  else if (sym == SDLK_KP_9)
+    sym = SDLK_PAGEUP;
+  else if (sym == SDLK_KP_0)
+    sym = SDLK_INSERT;
+  else if (sym == SDLK_KP_PERIOD)
+    sym = SDLK_DELETE;
   return sym;
 }
 
@@ -78,8 +75,8 @@ static int keypad2kc(int sym, int mod) {
 ImGuiInputListener::ImGuiInputListener() {
   static ImGuiIO &io = ImGui::GetIO();
 
-  // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array that we will
-  // update during the application lifetime.
+  // Keyboard mapping. ImGui will use those indices to peek into the
+  // io.KeyDown[] array that we will update during the application lifetime.
   io.KeyMap[ImGuiKey_Tab] = '\t';
   io.KeyMap[ImGuiKey_LeftArrow] = kc2sc(SDLK_LEFT);
   io.KeyMap[ImGuiKey_RightArrow] = kc2sc(SDLK_RIGHT);
@@ -105,9 +102,7 @@ ImGuiInputListener::ImGuiInputListener() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-ImGuiInputListener::~ImGuiInputListener() {
-
-}
+ImGuiInputListener::~ImGuiInputListener() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnKeyDown(SDL_Keycode sym) {
@@ -136,16 +131,14 @@ void ImGuiInputListener::OnTextInput(const char *text) {
   io.AddInputCharactersUTF8(text);
 }
 
-//Mouse
+// Mouse
 
 //----------------------------------------------------------------------------------------------------------------------
-void ImGuiInputListener::OnMouseMove(int dx, int dy) {
-
-
-}
+void ImGuiInputListener::OnMouseMove(int dx, int dy) {}
 
 //----------------------------------------------------------------------------------------------------------------------
-void ImGuiInputListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
+void ImGuiInputListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right,
+                                     bool middle) {
   static auto &io = ImGui::GetIO();
 
   io.MousePos.x = static_cast<float>(x);
@@ -153,7 +146,8 @@ void ImGuiInputListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bo
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-template <typename T> static int sign(T val) {
+template <typename T>
+static int sign(T val) {
   return (T(0) < val) - (val < T(0));
 }
 
@@ -169,7 +163,7 @@ void ImGuiInputListener::OnMouseLbDown(int x, int y) {
 
   int b = sdl2imgui(SDL_BUTTON_LEFT);
   if (b < 5) {
-	io.MouseDown[b] = true;
+    io.MouseDown[b] = true;
   }
 }
 
@@ -179,9 +173,8 @@ void ImGuiInputListener::OnMouseLbUp(int x, int y) {
 
   int b = sdl2imgui(SDL_BUTTON_LEFT);
   if (b < 5) {
-	io.MouseDown[b] = false;
+    io.MouseDown[b] = false;
   }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -190,9 +183,8 @@ void ImGuiInputListener::OnMouseRbDown(int x, int y) {
 
   int b = sdl2imgui(SDL_BUTTON_RIGHT);
   if (b < 5) {
-	io.MouseDown[b] = true;
+    io.MouseDown[b] = true;
   }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -201,9 +193,8 @@ void ImGuiInputListener::OnMouseRbUp(int x, int y) {
 
   int b = sdl2imgui(SDL_BUTTON_RIGHT);
   if (b < 5) {
-	io.MouseDown[b] = false;
+    io.MouseDown[b] = false;
   }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -212,9 +203,8 @@ void ImGuiInputListener::OnMouseMbDown(int x, int y) {
 
   int b = sdl2imgui(SDL_BUTTON_MIDDLE);
   if (b < 5) {
-	io.MouseDown[b] = true;
+    io.MouseDown[b] = true;
   }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -223,9 +213,8 @@ void ImGuiInputListener::OnMouseMbUp(int x, int y) {
 
   int b = sdl2imgui(SDL_BUTTON_MIDDLE);
   if (b < 5) {
-	io.MouseDown[b] = false;
+    io.MouseDown[b] = false;
   }
-
 }
 
-} //namespace
+}  // namespace xio

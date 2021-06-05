@@ -678,7 +678,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
    */
   void _updateBuffers();
 
-  LocklessQueue<SoundAction>* mActionsList;
+  LocklessQueue<SoundAction>* mActionsList = nullptr;
 
 #ifdef POCO_THREAD
   static Poco::Thread* mUpdateThread;
@@ -702,7 +702,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       disadvantage that it will block the main thread. NOTE:- this doesn't affect
       buffer updates, which will still be handled asynchronously.
   */
-  bool mForceMutex;
+  bool mForceMutex = false;
 
   /** Performs a requested action.
   @param act
@@ -928,10 +928,10 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   /**
    * OpenAL device objects
    */
-  ALCdevice *mDevice;                        // OpenAL device
-  ALCcontext *mContext;                    // OpenAL context
+  ALCdevice *mDevice = nullptr;                        // OpenAL device
+  ALCcontext *mContext = nullptr;                    // OpenAL context
 
-  ALfloat mOrigVolume;                    // Used to revert volume after a mute
+  ALfloat mOrigVolume = 1.0;                    // Used to revert volume after a mute
 
   /** Sound lists
    */
@@ -946,19 +946,19 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
 
   /** Fading vars
   */
-  Ogre::Real mFadeTime;                    // Time over which to fade
-  Ogre::Real mFadeTimer;                    // Timer for fade
-  bool mFadeIn;                            // Direction fade in/out
-  bool mFadeVolume;                        // Flag for fading
+  Ogre::Real mFadeTime = 0.0;                    // Time over which to fade
+  Ogre::Real mFadeTimer = 0.0;                    // Timer for fade
+  bool mFadeIn = false;                            // Direction fade in/out
+  bool mFadeVolume = false;                        // Flag for fading
   long update_time = 10;
 
-  ALCchar *mDeviceStrings;                // List of available devices strings
-  unsigned int mNumSources;                // Number of sources available for sounds
-  unsigned int mMaxSources;                // Maximum Number of sources to allocate
+  ALCchar *mDeviceStrings = nullptr;                // List of available devices strings
+  unsigned int mNumSources = 0;                // Number of sources available for sounds
+  unsigned int mMaxSources = 10;                // Maximum Number of sources to allocate
 
-  float mGlobalPitch;                        // Global pitch modifier
+  float mGlobalPitch = 1.0;                        // Global pitch modifier
 
-  OgreOggSoundRecord *mRecorder;            // recorder object
+  OgreOggSoundRecord *mRecorder = nullptr;            // recorder object
 
   //! sorts sound list by distance
   struct _sortNearToFar;
@@ -1048,7 +1048,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
 
   /**	Listener pointer
    */
-  OgreOggListener *mListener;                // InputListener object
+  OgreOggListener *mListener  = nullptr;                // InputListener object
 
   friend class OgreOggSoundFactory;
 };

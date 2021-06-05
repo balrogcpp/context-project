@@ -52,15 +52,8 @@ const size_t BatchedGeometry::s_vertexType2Size[VET_COLOUR_ABGR + 1] = {
 //-------------------------------------------------------------------------------------
 ///
 BatchedGeometry::BatchedGeometry(Ogre::SceneManager *mgr, Ogre::SceneNode *rootSceneNode) :
-    m_fRadius(0.f),
-    m_fMinDistanceSquared(0.f),
     m_pSceneMgr(mgr),
-    m_pSceneNode(nullptr),
-    m_pParentSceneNode(rootSceneNode),
-    m_bWithinFarDistance(false),
-    m_Built(false),
-    m_vecCenter(Ogre::Vector3::ZERO),
-    m_BoundsUndefined(true) {
+    m_pParentSceneNode(rootSceneNode) {
   assert(rootSceneNode);
 }
 
@@ -374,7 +367,7 @@ void BatchedGeometry::_updateRenderQueue(RenderQueue *queue) {
 
 //-----------------------------------------------------------------------------
 ///
-bool BatchedGeometry::isVisible() {
+bool BatchedGeometry::isVisible() const {
   return mVisible && m_bWithinFarDistance;
 }
 
@@ -414,12 +407,6 @@ Ogre::Vector3 BatchedGeometry::_convertToLocal(const Vector3 &globalVec) const {
 //-----------------------------------------------------------------------------
 ///
 BatchedGeometry::SubBatch::SubBatch(BatchedGeometry *parent, SubEntity *ent) :
-    m_pBestTechnique(nullptr),
-    m_pVertexData(0),
-    m_pIndexData(0),
-    m_Built(false),
-    m_RequireVertexColors(false),
-    m_pSubMesh(0),
     m_pParentGeom(parent) {
   assert(ent);
   m_pSubMesh = ent->getSubMesh();
@@ -521,8 +508,8 @@ void BatchedGeometry::SubBatch::build() {
       destIndexType, m_pIndexData->indexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
   //Lock the index buffer
-  uint32 *indexBuffer32;
-  uint16 *indexBuffer16;
+  uint32 *indexBuffer32 = nullptr;
+  uint16 *indexBuffer16 = nullptr;
   if (destIndexType == HardwareIndexBuffer::IT_32BIT)
     indexBuffer32 = static_cast<uint32 *>(m_pIndexData->indexBuffer->lock(HardwareBuffer::HBL_DISCARD));
   else

@@ -63,7 +63,7 @@ externalproject_add(target-bullet
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
-                    GIT_TAG 3.09
+                    GIT_TAG 3.17
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -103,13 +103,20 @@ if (IOS OR ANDROID)
 else ()
     set(OPENAL_LIBTYPE SHARED)
 endif ()
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
+    set(OPENAL_CHDIR ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-openal)
+    set(OPENAL_UPDATE_COMMAND ${OPENAL_CHDIR}  ${GIT_EXECUTABLE} reset --hard)
+    set(OPENAL_PATCH_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/openal-1.21.1-clang-mingw.patch)
+endif()
 externalproject_add(target-openal
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/kcat/openal-soft.git
-                    GIT_TAG openal-soft-1.20.1
+                    GIT_TAG 1.21.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
+                    UPDATE_COMMAND ${OPENAL_UPDATE_COMMAND}
+                    PATCH_COMMAND ${OPENAL_PATCH_COMMAND}
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -134,21 +141,14 @@ externalproject_add(target-openal
                     )
 
 
-if (APPLE)
-    set(CHDIR_OGG ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogg)
-    set(OGG_UPDATE_COMMAND ${CHDIR_OGG} ${GIT_EXECUTABLE} reset --hard)
-    set(OGG_PATCH_COMMAND ${CHDIR_OGG} ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/ogg-1.3.4-apple.patch)
-endif()
 externalproject_add(target-ogg
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-openal
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/xiph/ogg.git
-                    GIT_TAG v1.3.4
+                    GIT_TAG v1.3.5
                     GIT_SHALLOW true
                     GIT_PROGRESS false
-                    UPDATE_COMMAND ${OGG_UPDATE_COMMAND}
-                    PATCH_COMMAND ${OGG_PATCH_COMMAND}
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
@@ -164,7 +164,7 @@ externalproject_add(target-vorbis
                     DEPENDS target-ogg
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/xiph/vorbis.git
-                    GIT_TAG v1.3.6 #version 1.3.7 can't find ogg @Android
+                    GIT_TAG v1.3.7
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -174,8 +174,8 @@ externalproject_add(target-vorbis
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DOGG_INCLUDE_DIRS=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
-                    -DOGG_LIBRARIES=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libogg.a
+                    -DOGG_INCLUDE_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include #for Android
+                    -DOGG_LIBRARY=${CONTEXT_EXTERNAL_INSTALL_LOCATION}/lib/libogg.a #for Android
                     )
 
 
@@ -260,8 +260,8 @@ externalproject_add(target-freetype
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-png
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://git.savannah.gnu.org/git/freetype/freetype2.git
-                    GIT_TAG VER-2-9-1 #2.10 compilation error
+                    GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
+                    GIT_TAG VER-2-10-4
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -271,7 +271,6 @@ externalproject_add(target-freetype
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DUNIX=true
                     -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=true
                     -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=true
                     -DBUILD_SHARED_LIBS=false
@@ -525,7 +524,7 @@ externalproject_add(target-filesystem
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/gulrak/filesystem.git
-                    GIT_TAG v1.5.4
+                    GIT_TAG v1.5.6
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -604,12 +603,29 @@ externalproject_add(target-gtest
         )
 
 
+externalproject_add(assets
+        EXCLUDE_FROM_ALL true
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git assets
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E true
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E true
+        )
+
+
+externalproject_add(assets_ssh
+        EXCLUDE_FROM_ALL true
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 git@github.com:balrogcpp/scenes.git assets
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E true
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E true
+        )
+
+
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-json)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet)
-
 
 add_custom_target(target-deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})

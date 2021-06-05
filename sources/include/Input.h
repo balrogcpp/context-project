@@ -1,39 +1,40 @@
-//MIT License
+// MIT License
 //
-//Copyright (c) 2021 Andrew Vasiliev
+// Copyright (c) 2021 Andrew Vasiliev
 //
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #pragma once
 
 extern "C" {
-#include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_events.h>
+#include <SDL2/SDL_keycode.h>
 }
 
+#include <exception>
 #include <set>
 #include <string>
-#include <exception>
-#include "view_ptr.h"
+
 #include "Exception.h"
-#include "Singleton.h"
 #include "NoCopy.h"
+#include "Singleton.h"
+#include "view_ptr.h"
 
 namespace xio {
 class InputSequencer;
@@ -46,7 +47,6 @@ class InputSequencer : public LazySingleton<InputSequencer> {
   InputSequencer();
   virtual ~InputSequencer();
 
-
   void RegObserver(view_ptr<InputObserver> p);
   void UnregObserver(view_ptr<InputObserver> p);
   void RegWinObserver(view_ptr<WindowObserver> p);
@@ -57,16 +57,15 @@ class InputSequencer : public LazySingleton<InputSequencer> {
   std::set<view_ptr<InputObserver>> io_listeners;
   std::set<view_ptr<WindowObserver>> win_listeners;
   int HandleAppEvents(void *userdata, SDL_Event *event);
-
 };
 
 class InputObserverI {
  public:
-  //Keyboard
-  virtual void OnKeyDown(SDL_Keycode sym)  = 0;
+  // Keyboard
+  virtual void OnKeyDown(SDL_Keycode sym) = 0;
   virtual void OnKeyUp(SDL_Keycode sym) = 0;
 
-  //Mouse
+  // Mouse
   virtual void OnMouseMove(int dx, int dy) {}
   virtual void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {}
   virtual void OnMouseWheel(int x, int y) {}
@@ -78,13 +77,12 @@ class InputObserverI {
   virtual void OnMouseMbUp(int x, int y) {}
   virtual void OnTextInput(const char *text) {}
 
-  //Joystick
+  // Joystick
   virtual void OnJoystickAxis(int which, int axis, int value) {}
   virtual void OnJoystickBtDown(int which, int button) {}
   virtual void OnJoystickBtUp(int which, int button) {}
   virtual void OnJoystickHat(int which, int hat, int value) {}
   virtual void OnJoystickBall(int which, int ball, int xrel, int yrel) {}
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -93,11 +91,11 @@ class InputObserver : public InputObserverI, public NoCopy {
   InputObserver();
   virtual ~InputObserver();
 
-  //Keyboard
+  // Keyboard
   void OnKeyDown(SDL_Keycode sym) override {}
   void OnKeyUp(SDL_Keycode sym) override {}
 
-  //Mouse
+  // Mouse
   void OnMouseMove(int dx, int dy) override {}
   void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override {}
   void OnMouseWheel(int x, int y) override {}
@@ -109,7 +107,7 @@ class InputObserver : public InputObserverI, public NoCopy {
   void OnMouseMbUp(int x, int y) override {}
   void OnTextInput(const char *text) override {}
 
-  //Joystick
+  // Joystick
   void OnJoystickAxis(int which, int axis, int value) override {}
   void OnJoystickBtDown(int which, int button) override {}
   void OnJoystickBtUp(int which, int button) override {}
@@ -130,4 +128,4 @@ class WindowObserver : public NoCopy {
   virtual void Other(uint8_t type, int code, void *data1, void *data2) {}
 };
 
-} //namespace
+}  // namespace xio

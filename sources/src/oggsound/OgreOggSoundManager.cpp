@@ -76,14 +76,9 @@ OgreOggSoundManager &OgreOggSoundManager::getSingleton() {
 }
 
 /*/////////////////////////////////////////////////////////////////*/
-OgreOggSoundManager::OgreOggSoundManager() :
-    mNumSources(0),
-    mOrigVolume(1.f),
-    mDevice(nullptr),
-    mContext(nullptr),
-    mListener(nullptr)
+OgreOggSoundManager::OgreOggSoundManager()
 #if HAVE_EFX
-,mEAXSupport(false)
+mEAXSupport(false)
 ,mEFXSupport(false)
 ,mXRamSupport(false)
 ,mXRamSize(0)
@@ -93,21 +88,6 @@ OgreOggSoundManager::OgreOggSoundManager() :
 ,mXRamAccessible(0)
 ,mCurrentXRamMode(0)
 ,mEAXVersion(0)
-#endif
-    ,
-    mRecorder(nullptr),
-    mDeviceStrings(nullptr),
-    mMaxSources(100),
-    mResourceGroupName(""),
-    mGlobalPitch(1.f),
-    mSoundsToDestroy(nullptr),
-    mFadeVolume(false),
-    mFadeIn(false),
-    mFadeTime(0.f),
-    mFadeTimer(0.f)
-#if OGGSOUND_THREADED
-,mActionsList(0)
-,mForceMutex(false)
 #endif
 {
 #if HAVE_EFX
@@ -455,8 +435,8 @@ bool OgreOggSoundManager::init(const std::string &deviceName,
     Ogre::LogManager::getSingleton().logMessage("*** --- Recording devices NOT detected!", Ogre::LML_NORMAL);
   else {
     LogManager::getSingleton().logMessage("*** --- Recording devices available:", Ogre::LML_NORMAL);
-    OgreOggSoundRecord *r = 0;
-    if (r = createRecorder()) {
+    OgreOggSoundRecord *r = createRecorder();
+    if (r) {
       OgreOggSoundRecord::RecordDeviceList list = r->getCaptureDeviceList();
       for (OgreOggSoundRecord::RecordDeviceList::iterator iter = list.begin(); iter != list.end(); ++iter)
         Ogre::LogManager::getSingleton().logMessage("***--- '" + (*iter) + "'", Ogre::LML_NORMAL);
@@ -1069,7 +1049,7 @@ bool OgreOggSoundManager::_requestSoundSource(OgreOggISound *sound) {
     }
 
     // Check priority...
-    Ogre::uint8 priority = sound->getPriority();
+//    Ogre::uint8 priority = sound->getPriority();
     iter = mActiveSounds.begin();
 
     // Search for a lower priority sound
@@ -1210,7 +1190,7 @@ OgreOggSoundRecord *OgreOggSoundManager::createRecorder() {
   if (mDevice)
     return (OGRE_NEW_T(OgreOggSoundRecord, Ogre::MEMCATEGORY_GENERAL)(*mDevice));
   else
-    return 0;
+    return nullptr;
 }
 
 #endif

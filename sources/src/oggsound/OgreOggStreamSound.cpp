@@ -327,7 +327,7 @@ bool OgreOggStreamSound::_stream(ALuint buffer) {
   memset(data, 0, mBufferSize);
 
   // Read only what was asked for
-  while (!mStreamEOF && (static_cast<int>(audioData.size()) < mBufferSize)) {
+  while (!mStreamEOF && (audioData.size() < mBufferSize)) {
     int bytes = 0;
     // Read up to a buffer's worth of data
     bytes = ov_read(&mOggStream, data, static_cast<int>(mBufferSize), 0, 2, 1, &section);

@@ -4,8 +4,12 @@ ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /mnt
 
 
-RUN apt-get update \
-    && apt-get install -y zip wget ca-certificates gnupg2 make autoconf file patch \
+RUN rm /etc/apt/sources.list \
+    && echo 'deb http://old-releases.ubuntu.com/ubuntu/ precise main restricted universe multiverse' >> /etc/apt/sources.list \
+    && echo 'deb http://old-releases.ubuntu.com/ubuntu/ precise-updates main restricted universe multiverse' >> /etc/apt/sources.list \
+    && echo 'deb http://old-releases.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse' >> /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y zip xz-utils wget ca-certificates gnupg2 make autoconf file patch \
     && apt-get clean
 
 
@@ -59,7 +63,7 @@ RUN update-alternatives --install /usr/local/bin/python3 python3 /usr/local/bin/
 
 
 ########################################################################################################################
-ENV CMAKE_VERSION=3.20.2
+ENV CMAKE_VERSION=3.20.3
 ENV CMAKE_HOME=/opt/cmake
 ENV NINJA_VERSION=1.10.2
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"

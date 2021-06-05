@@ -11,5 +11,6 @@ docker build . -f docker/clang-linux/Dockerfile -t balrogcpp/clang-linux \
 && docker push balrogcpp/deps-linux \
 && docker push balrogcpp/deps-cross
 
+yes | docker system prune
 
 exit 0

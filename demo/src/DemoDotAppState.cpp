@@ -61,13 +61,13 @@ void DemoDotAppState::Cleanup() {
 
 }
 
-static string ButtonText(const std::string &text, int length) {
-  string new_string = string((length - text.size())/2, ' ');
-  new_string.append(text);
-  new_string.append(string((length - text.size())/2, ' '));
-
-  return new_string;
-}
+//static string ButtonText(const std::string &text, int length) {
+//  string new_string = string((length - text.size())/2, ' ');
+//  new_string.append(text);
+//  new_string.append(string((length - text.size())/2, ' '));
+//
+//  return new_string;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Update(float time) {
@@ -162,8 +162,8 @@ void DemoDotAppState::Init() {
 //  GetLoader().GetCamera().SetStyle(xio::CameraMan::Style::FPS);
   LoadFromFile("1.scene", Ogre::RGN_DEFAULT);
 
-  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  auto *root = scene->getRootSceneNode();
+//  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+//  auto *root = scene->getRootSceneNode();
 
 //  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
 //  xio::Pbr::UpdatePbrParams("Examples/Smoke");

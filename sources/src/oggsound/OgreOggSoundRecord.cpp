@@ -41,17 +41,8 @@ namespace OgreOggSound {
 /*/////////////////////////////////////////////////////////////////*/
 OgreOggSoundRecord::OgreOggSoundRecord(ALCdevice &alDevice) :
     mDevice(&alDevice),
-    mContext(0),
-    mCaptureDevice(0),
-    mDefaultCaptureDevice(0),
-    mSamplesAvailable(0),
-    mDataSize(0),
-    mBuffer(0),
-    mSize(0),
     mOutputFile("output.wav"),
     mFreq(44100),
-    mBitsPerSample(16),
-    mNumChannels(2),
     mFormat(AL_FORMAT_STEREO16),
     mBufferSize(8820),
     mRecording(false) {

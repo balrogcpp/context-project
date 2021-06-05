@@ -111,8 +111,8 @@ string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
 # Compilation flags definition
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-        string(APPEND CMAKE_CXX_FLAGS " -Wall -s -Ofast -funroll-loops -DNDEBUG")
-        string(APPEND CMAKE_C_FLAGS " -Wall -s -Ofast -funroll-loops -DNDEBUG")
+        string(APPEND CMAKE_CXX_FLAGS " -s -Ofast -funroll-loops -DNDEBUG")
+        string(APPEND CMAKE_C_FLAGS " -s -Ofast -funroll-loops -DNDEBUG")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-linker-plugin")
         if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -137,11 +137,27 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
     endif ()
 
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND MINGW)
+        string(APPEND CMAKE_CXX_FLAGS " -mwindows")
+        string(APPEND CMAKE_C_FLAGS " -mwindows")
+    endif ()
 
     #This flags are useful for dependencies build
     set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
     set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 
+    if (NOT DISABLE_WERROR)
+        string(APPEND CMAKE_CXX_FLAGS " -Wall -Werror -Wno-error=switch")
+        #For OGRE
+        string(APPEND CMAKE_CXX_FLAGS " -Wno-error=deprecated-declarations")
+        #For Bullet
+        string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-but-set-variable")
+
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-command-line-argument")
+            string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unknown-warning-option")
+        endif ()
+    endif ()
 
     # gcc-mingw links everything as shared libraries by default
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -177,8 +193,8 @@ elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
-    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF")
-    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF")
+    string(APPEND CMAKE_CXX_FLAGS " /Wall /arch:SSE2 /EHa /MP /GS- /GF")
+    string(APPEND CMAKE_C_FLAGS " /Wall /arch:SSE2 /EHa /MP /GS- /GF")
 
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
         string(APPEND CMAKE_CXX_FLAGS " /O2 /fp:fast /GL")
@@ -245,12 +261,13 @@ find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
 
 macro(insert_dependency VARIABLE PACKAGE)
     if (NOT ${VARIABLE})
-        message("-- ${VARIABLE} not found. Please build ${PACKAGE} first")
+        message("-- Not found ${VARIABLE}. Please build ${PACKAGE} first")
         set(ANY_NOT_FOUND true)
     else ()
-        message("-- ${PACKAGE} found")
+        message("-- Found ${PACKAGE}")
     endif ()
 endmacro()
+
 
 message("")
 
@@ -387,11 +404,8 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 
 
-set(CPACK_GENERATOR "ZIP")
 #NSIS is not ready
-# if (MSVC)
-#     set(CPACK_GENERATOR "ZIP" "NSIS")
-# endif ()
+set(CPACK_GENERATOR "ZIP")
 
 include(CPack)
 

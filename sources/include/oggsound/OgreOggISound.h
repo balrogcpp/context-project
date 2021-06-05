@@ -661,64 +661,64 @@ class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
   /**
    * Variables used to fade sound
    */
-  float mFadeTimer;
-  float mFadeTime;
-  float mFadeInitVol;
-  float mFadeEndVol;
+  float mFadeTimer = 0.0;
+  float mFadeTime = 1.0;
+  float mFadeInitVol = 0.0;
+  float mFadeEndVol = 1.0;
   bool mFade;
-  FadeControl mFadeEndAction;
+  FadeControl mFadeEndAction = OgreOggSound::FC_NONE;
 
   // Ogre resource stream pointer
   Ogre::DataStreamPtr mAudioStream;
   ov_callbacks mOggCallbacks;
 
-  SoundListener *mSoundListener;    // Callback object
+  SoundListener *mSoundListener = nullptr;    // Callback object
   size_t mBufferSize;                // Size of audio buffer (250ms)
 
   /** Sound properties
    */
-  ALuint mSource;                    // OpenAL Source
-  Ogre::SceneManager *mScnMan;    // SceneManager pointer for plugin registered sounds
-  Ogre::uint8 mPriority;            // Priority assigned to source
-  Ogre::Vector3 mPosition;        // 3D position
-  Ogre::Vector3 mDirection;        // 3D direction
-  Ogre::Vector3 mVelocity;        // 3D velocity
-  float mGain;                    // Current volume
-  float mMaxGain;                    // Minimum volume
-  float mMinGain;                    // Maximum volume
-  float mMaxDistance;                // Maximum attenuation distance
-  float mRolloffFactor;            // Rolloff factor for attenuation
-  float mReferenceDistance;        // Half-volume distance for attenuation
-  float mPitch;                    // Current pitch
-  float mOuterConeGain;            // Outer cone volume
-  float mInnerConeAngle;            // Inner cone angle
-  float mOuterConeAngle;            // outer cone angle
-  float mPlayTime;                // Time in seconds of sound file
   Ogre::String mName;                // Sound name
-  SoundState mState;                // Sound state
-  bool mLoop;                        // loop status
-  bool mDisable3D;                // 3D status
-  bool mGiveUpSource;                // Flag to indicate whether sound should release its source when stopped
-  bool mStream;                    // Stream flag
-  bool mSourceRelative;            // Relative position flag
+  ALuint mSource = 0;                    // OpenAL Source
+  Ogre::SceneManager *mScnMan = nullptr;    // SceneManager pointer for plugin registered sounds
+  Ogre::uint8 mPriority = 0;            // Priority assigned to source
+  Ogre::Vector3 mPosition = {0, 0, 0};        // 3D position
+  Ogre::Vector3 mDirection = {0, 0, 0};        // 3D direction
+  Ogre::Vector3 mVelocity = {0, 0, 0};        // 3D velocity
+  float mGain = 1.0;                    // Current volume
+  float mMaxGain = 1.0;                    // Minimum volume
+  float mMinGain = 0.0;                    // Maximum volume
+  float mMaxDistance = 1E10;                // Maximum attenuation distance
+  float mRolloffFactor = 1.0;            // Rolloff factor for attenuation
+  float mReferenceDistance = 1.0;        // Half-volume distance for attenuation
+  float mPitch = 1.0;                    // Current pitch
+  float mOuterConeGain = 0.0;            // Outer cone volume
+  float mInnerConeAngle = 360.0;            // Inner cone angle
+  float mOuterConeAngle = 360.0;            // outer cone angle
+  float mPlayTime = 0.0;                // Time in seconds of sound file
+  SoundState mState = SS_NONE;                // Sound state
+  bool mLoop = false;                        // loop status
+  bool mDisable3D = false;                // 3D status
+  bool mGiveUpSource = false;                // Flag to indicate whether sound should release its source when stopped
+  bool mStream = false;                    // Stream flag
+  bool mSourceRelative = false;            // Relative position flag
 #if OGRE_VERSION_MAJOR == 1
-  bool mLocalTransformDirty;        // Transformation update flag
+  bool mLocalTransformDirty = true;        // Transformation update flag
 #endif
   bool mPlayPosChanged;            // Flag indicating playback position has changed
-  bool mSeekable;                    // Flag indicating seeking available
-  bool mTemporary;                // Flag indicating sound is temporary
-  bool mInitialised;                // Flag indicating sound is initailised
-  Ogre::uint8 mAwaitingDestruction; // Imminent destruction flag
+  bool mSeekable = true;                    // Flag indicating seeking available
+  bool mTemporary = false;                // Flag indicating sound is temporary
+  bool mInitialised = false;                // Flag indicating sound is initailised
+  Ogre::uint8 mAwaitingDestruction = 0; // Imminent destruction flag
 
   BufferListPtr mBuffers;            // Audio buffer(s)
   ALenum mFormat;                    // OpenAL format
 
-  unsigned long mAudioOffset;        // offset to audio data
-  unsigned long mAudioEnd;        // offset to end of audio data
-  float mLoopOffset;                // offset to start of loop point
+  unsigned long mAudioOffset = 0;        // offset to audio data
+  unsigned long mAudioEnd = 0;        // offset to end of audio data
+  float mLoopOffset = 0;                // offset to start of loop point
   float mLoopStart;                // offset in seconds to start of loopable audio data
 
-  ALfloat mPlayPos;                // Playback position in seconds
+  ALfloat mPlayPos = 0.0;                // Playback position in seconds
   std::deque<float> mCuePoints;    // List of play position points
 
 #if OGGSOUND_THREADED
