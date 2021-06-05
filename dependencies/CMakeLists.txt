@@ -103,13 +103,20 @@ if (IOS OR ANDROID)
 else ()
     set(OPENAL_LIBTYPE SHARED)
 endif ()
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
+    set(OPENAL_CHDIR ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-openal)
+    set(OPENAL_UPDATE_COMMAND ${OPENAL_CHDIR}  ${GIT_EXECUTABLE} reset --hard)
+    set(OPENAL_PATCH_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} apply ${CONTEXT_EXTERNAL_PATCH_LOCATION}/openal-1.21.1-clang-mingw.patch)
+endif()
 externalproject_add(target-openal
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/kcat/openal-soft.git
-                    GIT_TAG openal-soft-1.20.1 #1.21.1 openal-soft-1.20.1 Failed to link @MinGW
+                    GIT_TAG 1.21.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
+                    UPDATE_COMMAND ${OPENAL_UPDATE_COMMAND}
+                    PATCH_COMMAND ${OPENAL_PATCH_COMMAND}
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}

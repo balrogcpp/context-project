@@ -137,20 +137,26 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
     endif ()
 
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND MINGW)
+        string(APPEND CMAKE_CXX_FLAGS " -mwindows")
+        string(APPEND CMAKE_C_FLAGS " -mwindows")
+    endif ()
 
     #This flags are useful for dependencies build
     set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
     set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 
-    string(APPEND CMAKE_CXX_FLAGS " -Wall -Werror -Wno-error=switch")
-    #For OGRE
-    string(APPEND CMAKE_CXX_FLAGS " -Wno-error=deprecated-declarations")
-    #For Bullet
-    string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-but-set-variable")
+    if (NOT DISABLE_WERROR)
+        string(APPEND CMAKE_CXX_FLAGS " -Wall -Werror -Wno-error=switch")
+        #For OGRE
+        string(APPEND CMAKE_CXX_FLAGS " -Wno-error=deprecated-declarations")
+        #For Bullet
+        string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-but-set-variable")
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-command-line-argument")
-        string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unknown-warning-option")
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-command-line-argument")
+            string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unknown-warning-option")
+        endif ()
     endif ()
 
     # gcc-mingw links everything as shared libraries by default
