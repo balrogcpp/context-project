@@ -31,9 +31,9 @@ namespace xio {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Window::InitGlContext_() {
-  constexpr array<pair<int, int>, 10> ver = {
-      make_pair(4, 5), make_pair(4, 4), make_pair(4, 3), make_pair(4, 2), make_pair(4, 1),
-      make_pair(4, 0), make_pair(3, 3), make_pair(3, 2), make_pair(3, 1), make_pair(3, 0)};
+  constexpr array<pair<int, int>, 10> ver = {make_pair(4, 5), make_pair(4, 4), make_pair(4, 3), make_pair(4, 2),
+                                             make_pair(4, 1), make_pair(4, 0), make_pair(3, 3), make_pair(3, 2),
+                                             make_pair(3, 1), make_pair(3, 0)};
 
   if (!gl_context_) {
     for (const auto &it : ver) {
@@ -84,8 +84,8 @@ Window::Window(int w, int h, bool f) : w_(w), h_(h), f_(f) {
     h_ = screen_h_;
   }
 
-  window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(0),
-                             SDL_WINDOWPOS_UNDEFINED_DISPLAY(0), w_, h_, flags_);
+  window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(0), SDL_WINDOWPOS_UNDEFINED_DISPLAY(0),
+                             w_, h_, flags_);
 
 #else
 
@@ -103,8 +103,7 @@ Window::Window(int w, int h, bool f) : w_(w), h_(h), f_(f) {
   w_ = screen_w_;
   h_ = screen_h_;
 
-  window_ = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_w_,
-                             screen_h_, flags_);
+  window_ = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_w_, screen_h_, flags_);
   gl_context_ = SDL_GL_CreateContext(window_);
 
 #endif
@@ -172,8 +171,7 @@ void Window::SetFullscreen(bool f) {
 
   if (f) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-    SDL_SetWindowFullscreen(window_,
-                            flags_ | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
+    SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
 #else
     SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_FULLSCREEN);
 #endif

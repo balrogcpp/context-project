@@ -31,9 +31,7 @@
 
 namespace xio {
 
-class Application final : public WindowObserver,
-                          public Ogre::LogListener,
-                          public Singleton<Application> {
+class Application final : public WindowObserver, public Ogre::LogListener, public Singleton<Application> {
  public:
   explicit Application();
   virtual ~Application();
@@ -49,8 +47,7 @@ class Application final : public WindowObserver,
   void Pause() override;
   void Resume() override;
 
-  void messageLogged(const std::string &message, Ogre::LogMessageLevel lml,
-                     bool maskDebug, const std::string &logName,
+  void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, bool maskDebug, const std::string &logName,
                      bool &skipThisMessage) override;
 
   void WriteLogToFile_();

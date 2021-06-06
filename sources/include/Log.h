@@ -8,6 +8,5 @@
 #include <string>
 
 namespace xio {
-void LogMessage(const std::string& message, Ogre::LogMessageLevel lml = Ogre::LML_NORMAL,
-                bool maskDebug = false);
+void LogMessage(const std::string& message, Ogre::LogMessageLevel lml = Ogre::LML_NORMAL, bool maskDebug = false);
 }

@@ -75,8 +75,7 @@ void Landscape::DefineTerrain_(long x, long y, bool flat, const string &filename
   GetTerrainImage_(x % 2 != 0, y % 2 != 0, image, filename);
 
   string cached = terrain_->generateFilename(x, y);
-  if (Ogre::ResourceGroupManager::getSingleton().resourceExists(terrain_->getResourceGroup(),
-                                                                cached)) {
+  if (Ogre::ResourceGroupManager::getSingleton().resourceExists(terrain_->getResourceGroup(), cached)) {
     terrain_->defineTerrain(x, y);
   } else {
     terrain_->defineTerrain(x, y, &image);
@@ -84,8 +83,7 @@ void Landscape::DefineTerrain_(long x, long y, bool flat, const string &filename
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Landscape::InitBlendMaps_(Ogre::Terrain *terrain, int layer,
-                               const string &image = "terrain_blendmap.dds") {
+void Landscape::InitBlendMaps_(Ogre::Terrain *terrain, int layer, const string &image = "terrain_blendmap.dds") {
   Ogre::TerrainLayerBlendMap *blendMap = terrain->getLayerBlendMap(layer);
   auto *pBlend1 = blendMap->getBlendPointer();
 
@@ -141,8 +139,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   terrain_global_options->setDefaultMaterialGenerator(make_shared<TerrainMaterialGeneratorB>());
 
   auto *scene_manager = Ogre::Root::getSingleton().getSceneManager("Default");
-  terrain_ =
-      make_unique<Ogre::TerrainGroup>(scene_manager, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
+  terrain_ = make_unique<Ogre::TerrainGroup>(scene_manager, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
   terrain_->setFilenameConvention("terrain", "bin");
   terrain_->setOrigin(Ogre::Vector3::ZERO);
   terrain_->setResourceGroup(Ogre::RGN_DEFAULT);
@@ -204,10 +201,8 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     for (auto pLayerElement : pPageElement.children("layer")) {
       defaultimp.layerList[layer_counter].worldSize =
           Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
-      defaultimp.layerList[layer_counter].textureNames.push_back(
-          pLayerElement.attribute("diffuse").value());
-      defaultimp.layerList[layer_counter].textureNames.push_back(
-          pLayerElement.attribute("normal").value());
+      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
+      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
 
       layer_counter++;
     }
@@ -216,8 +211,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
     for (auto pLayerElement : pPageElement.children("layer")) {
       layer_counter++;
       if (layer_counter != layers_count) {
-        InitBlendMaps_(terrain_->getTerrain(pageX, pageY), layer_counter,
-                       pLayerElement.attribute("blendmap").value());
+        InitBlendMaps_(terrain_->getTerrain(pageX, pageY), layer_counter, pLayerElement.attribute("blendmap").value());
       }
     }
   }
@@ -229,10 +223,9 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   while (terrainIterator.hasMoreElements()) {
     auto *terrain = terrainIterator.getNext()->instance;
 
-    GetPhysics().CreateTerrainHeightfieldShape(
-        terrain->getSize(), terrain->getHeightData(), terrain->getMinHeight(),
-        terrain->getMaxHeight(), terrain->getPosition(),
-        terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1)));
+    GetPhysics().CreateTerrainHeightfieldShape(terrain->getSize(), terrain->getHeightData(), terrain->getMinHeight(),
+                                               terrain->getMaxHeight(), terrain->getPosition(),
+                                               terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1)));
   }
 }
 

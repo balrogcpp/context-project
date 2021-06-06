@@ -60,17 +60,13 @@ class PhysicsSystem;
 class AudioSystem;
 class Overlay;
 
-std::string GetAttrib(const pugi::xml_node &xml_node, const std::string &attrib,
-                      const std::string &defaultValue = "");
+std::string GetAttrib(const pugi::xml_node &xml_node, const std::string &attrib, const std::string &defaultValue = "");
 
-float GetAttribReal(const pugi::xml_node &xml_node, const std::string &attrib,
-                    float defaultValue = 0);
+float GetAttribReal(const pugi::xml_node &xml_node, const std::string &attrib, float defaultValue = 0);
 
-int GetAttribInt(const pugi::xml_node &xml_node, const std::string &attrib,
-                 int defaultValue = 0);
+int GetAttribInt(const pugi::xml_node &xml_node, const std::string &attrib, int defaultValue = 0);
 
-bool GetAttribBool(const pugi::xml_node &xml_node, const std::string &attrib,
-                   bool defaultValue = false);
+bool GetAttribBool(const pugi::xml_node &xml_node, const std::string &attrib, bool defaultValue = false);
 
 Ogre::Vector3 ParseVector3(const pugi::xml_node &xml_node);
 
@@ -82,9 +78,7 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node);
 
 Ogre::ColourValue ParseColour(pugi::xml_node &xml_node);
 
-class DotSceneLoaderB final : public System,
-                              public Ogre::SceneLoader,
-                              public Singleton<DotSceneLoaderB> {
+class DotSceneLoaderB final : public System, public Ogre::SceneLoader, public Singleton<DotSceneLoaderB> {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();
@@ -92,8 +86,7 @@ class DotSceneLoaderB final : public System,
   void Cleanup() override;
   void Update(float time) override;
 
-  void load(Ogre::DataStreamPtr &stream, const std::string &group_name,
-            Ogre::SceneNode *root_node) override;
+  void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) override;
   float GetHeigh(float x, float z);
 
   static Landscape &GetTerrain();
@@ -105,19 +98,14 @@ class DotSceneLoaderB final : public System,
   void ProcessNodes_(pugi::xml_node &xml_node);
   void ProcessExternals_(pugi::xml_node &xml_node);
   void ProcessEnvironment_(pugi::xml_node &xml_node);
-  void ProcessUserData_(pugi::xml_node &xml_node,
-                        Ogre::UserObjectBindings &user_object_bindings);
-  void ProcessLight_(pugi::xml_node &xml_node,
-                     Ogre::SceneNode *parent = nullptr);
-  void ProcessCamera_(pugi::xml_node &xml_node,
-                      Ogre::SceneNode *parent = nullptr);
-  void ProcessNode_(pugi::xml_node &xml_node,
-                    Ogre::SceneNode *parent = nullptr);
+  void ProcessUserData_(pugi::xml_node &xml_node, Ogre::UserObjectBindings &user_object_bindings);
+  void ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
+  void ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
+  void ProcessNode_(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
   void ProcessLookTarget_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
   void ProcessTrackTarget_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
   void ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessParticleSystem_(pugi::xml_node &xml_node,
-                              Ogre::SceneNode *parent);
+  void ProcessParticleSystem_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
   void ProcessBillboardSet_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
   void ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
   void ProcessForest_(pugi::xml_node &xml_node);

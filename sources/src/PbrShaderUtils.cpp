@@ -38,8 +38,7 @@ void Pbr::UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
   string material_name = material->getName();
 
   if (num_textures > 0 && alpha_rejection > 0 && transparency_casts_shadows) {
-    auto caster_material =
-        Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
+    auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
     string caster_name = "PSSM/shadow_caster_alpha/" + material_name;
     Ogre::MaterialPtr new_caster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
 
@@ -115,7 +114,7 @@ void Pbr::Update(float time) {
 //----------------------------------------------------------------------------------------------------------------------
 void Pbr::UpdatePbrParams(const Ogre::MaterialPtr &material) {
   using GPU = Ogre::GpuProgramParameters::AutoConstantType;
-//  const int MAX_SHADOWS = OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES;
+  //  const int MAX_SHADOWS = OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES;
   const int MAX_LIGHTS = OGRE_MAX_SIMULTANEOUS_LIGHTS;
 
   for (int i = 0; i < material->getNumTechniques(); i++) {
@@ -150,16 +149,12 @@ void Pbr::UpdatePbrParams(const Ogre::MaterialPtr &material) {
     frag_params->setNamedAutoConstant("uSurfaceEmissiveColour", GPU::ACT_SURFACE_EMISSIVE_COLOUR);
     frag_params->setNamedAutoConstant("uAmbientLightColour", GPU::ACT_AMBIENT_LIGHT_COLOUR);
     frag_params->setNamedAutoConstant("uLightCount", GPU::ACT_LIGHT_COUNT);
-    frag_params->setNamedAutoConstant("uLightPositionArray", GPU::ACT_LIGHT_POSITION_ARRAY,
-                                      MAX_LIGHTS);
-    frag_params->setNamedAutoConstant("uLightDirectionArray", GPU::ACT_LIGHT_DIRECTION_ARRAY,
-                                      MAX_LIGHTS);
+    frag_params->setNamedAutoConstant("uLightPositionArray", GPU::ACT_LIGHT_POSITION_ARRAY, MAX_LIGHTS);
+    frag_params->setNamedAutoConstant("uLightDirectionArray", GPU::ACT_LIGHT_DIRECTION_ARRAY, MAX_LIGHTS);
     frag_params->setNamedAutoConstant("uLightDiffuseScaledColourArray",
                                       GPU::ACT_LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY, MAX_LIGHTS);
-    frag_params->setNamedAutoConstant("uLightAttenuationArray", GPU::ACT_LIGHT_ATTENUATION_ARRAY,
-                                      MAX_LIGHTS);
-    frag_params->setNamedAutoConstant("uLightSpotParamsArray", GPU::ACT_SPOTLIGHT_PARAMS_ARRAY,
-                                      MAX_LIGHTS);
+    frag_params->setNamedAutoConstant("uLightAttenuationArray", GPU::ACT_LIGHT_ATTENUATION_ARRAY, MAX_LIGHTS);
+    frag_params->setNamedAutoConstant("uLightSpotParamsArray", GPU::ACT_SPOTLIGHT_PARAMS_ARRAY, MAX_LIGHTS);
     frag_params->setNamedAutoConstant("uFogColour", GPU::ACT_FOG_COLOUR);
     frag_params->setNamedAutoConstant("uFogParams", GPU::ACT_FOG_PARAMS);
     frag_params->setNamedAutoConstant("uCameraPosition", GPU::ACT_CAMERA_POSITION);
@@ -179,16 +174,13 @@ void Pbr::UpdatePbrParams(const Ogre::MaterialPtr &material) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Pbr::UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
-  if (Ogre::Root::getSingleton().getSceneManager("Default")->getShadowTechnique() ==
-      Ogre::SHADOWTYPE_NONE)
-    return;
+  if (Ogre::Root::getSingleton().getSceneManager("Default")->getShadowTechnique() == Ogre::SHADOWTYPE_NONE) return;
 
   using GPU = Ogre::GpuProgramParameters::AutoConstantType;
   const int MAX_SHADOWS = OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES;
 
   for (int i = 0; i < material->getNumTechniques(); i++) {
-    if (!material->getReceiveShadows() ||
-        !material->getTechnique(i)->getPass(0)->hasVertexProgram() ||
+    if (!material->getReceiveShadows() || !material->getTechnique(i)->getPass(0)->hasVertexProgram() ||
         !material->getTechnique(i)->getPass(0)->hasFragmentProgram()) {
       return;
     }
@@ -207,8 +199,7 @@ void Pbr::UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
     }
 
     vp->setNamedConstant("uShadowTextureCount", MAX_SHADOWS);
-    vp->setNamedAutoConstant("uTexWorldViewProjMatrixArray",
-                             GPU::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY, MAX_SHADOWS);
+    vp->setNamedAutoConstant("uTexWorldViewProjMatrixArray", GPU::ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY, MAX_SHADOWS);
 
     auto fp = material->getTechnique(i)->getPass(0)->getFragmentProgramParameters();
     fp->setIgnoreMissingParams(true);
@@ -228,8 +219,7 @@ void Pbr::UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
 
     fp->setNamedConstant("pssmSplitPoints", splitPoints);
     fp->setNamedAutoConstant("uShadowColour", GPU::ACT_SHADOW_COLOUR);
-    fp->setNamedAutoConstant("uLightCastsShadowsArray", GPU::ACT_LIGHT_CASTS_SHADOWS_ARRAY,
-                             MAX_SHADOWS);
+    fp->setNamedAutoConstant("uLightCastsShadowsArray", GPU::ACT_LIGHT_CASTS_SHADOWS_ARRAY, MAX_SHADOWS);
     fp->setNamedConstant("uShadowFilterSize", 4.0f);
     fp->setNamedConstant("uShadowFilterIterations", 16);
     // fp->setNamedConstant("uShadowDepthOffset", 0.0f);
@@ -248,8 +238,7 @@ void Pbr::UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material) {
       tu->setTextureBorderColour(Ogre::ColourValue::White);
       // tu->setTextureFiltering(Ogre::TFO_NONE);
       fp->setNamedConstant("shadowMap" + to_string(j), texture_count + j);
-      fp->setNamedAutoConstant("shadowTexel" + to_string(j), GPU::ACT_INVERSE_TEXTURE_SIZE,
-                               texture_count + j);
+      fp->setNamedAutoConstant("shadowTexel" + to_string(j), GPU::ACT_INVERSE_TEXTURE_SIZE, texture_count + j);
     }
   }
 }
@@ -259,8 +248,7 @@ void Pbr::UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active) {
   auto ibl_texture = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
 
   if (active) {
-    auto cubemap =
-        Ogre::TextureManager::getSingleton().getByName("dyncubemap", Ogre::RGN_AUTODETECT);
+    auto cubemap = Ogre::TextureManager::getSingleton().getByName("dyncubemap", Ogre::RGN_AUTODETECT);
 
     if (ibl_texture) ibl_texture->setTexture(cubemap);
   } else {

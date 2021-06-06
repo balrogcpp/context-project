@@ -34,8 +34,7 @@ namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::InitOgreRenderSystem_GLES2_() {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-#if defined DEBUG || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || \
-    OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
+#if defined DEBUG || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
   Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem());
 #endif
 #endif

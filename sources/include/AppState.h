@@ -28,9 +28,7 @@
 namespace xio {
 class StateManager;
 
-class AppState : public Ogre::RenderTargetListener,
-                 public Ogre::FrameListener,
-                 public InputObserver {
+class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputObserver {
  public:
   AppState();
   virtual ~AppState();

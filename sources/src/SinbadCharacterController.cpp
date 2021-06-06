@@ -144,8 +144,7 @@ void SinbadCharacterController::OnMouseRbDown(int x, int y) {
 //----------------------------------------------------------------------------------------------------------------------
 void SinbadCharacterController::setupBody(Ogre::SceneManager *sceneMgr) {
   // create main model
-  mBodyNode =
-      sceneMgr->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * CHAR_HEIGHT);
+  mBodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * CHAR_HEIGHT);
   mBodyEnt = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
   mBodyNode->attachObject(mBodyEnt);
   mBodyNode->scale(Ogre::Vector3{SCALE});
@@ -185,10 +184,9 @@ void SinbadCharacterController::setupAnimations() {
   // this is very important due to the nature of the exported animations
   mBodyEnt->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
 
-  Ogre::String animNames[NUM_ANIMS] = {
-      "IdleBase",     "IdleTop",    "RunBase",       "RunTop",          "HandsClosed",
-      "HandsRelaxed", "DrawSwords", "SliceVertical", "SliceHorizontal", "Dance",
-      "JumpStart",    "JumpLoop",   "JumpEnd"};
+  Ogre::String animNames[NUM_ANIMS] = {"IdleBase",     "IdleTop",    "RunBase",       "RunTop",          "HandsClosed",
+                                       "HandsRelaxed", "DrawSwords", "SliceVertical", "SliceHorizontal", "Dance",
+                                       "JumpStart",    "JumpLoop",   "JumpEnd"};
 
   // populate our animation list
   for (int i = 0; i < NUM_ANIMS; i++) {
@@ -259,8 +257,7 @@ void SinbadCharacterController::updateBody(Ogre::Real deltaTime) {
     mBodyNode->yaw(Ogre::Degree(yawToGoal));
 
     // move in current body direction (not the goal direction)
-    mBodyNode->translate(0, 0, deltaTime * RUN_SPEED * mAnims[mBaseAnimID]->getWeight(),
-                         Ogre::Node::TS_LOCAL);
+    mBodyNode->translate(0, 0, deltaTime * RUN_SPEED * mAnims[mBaseAnimID]->getWeight(), Ogre::Node::TS_LOCAL);
   }
 
   if (mBaseAnimID == ANIM_JUMP_LOOP) {
@@ -291,8 +288,7 @@ void SinbadCharacterController::updateAnimations(Ogre::Real deltaTime) {
     topAnimSpeed = mSwordsDrawn ? -1 : 1;
 
     // half-way through the animation is when the hand grasps the handles...
-    if (mTimer >= mAnims[mTopAnimID]->getLength() / 2 &&
-        mTimer - deltaTime < mAnims[mTopAnimID]->getLength() / 2) {
+    if (mTimer >= mAnims[mTopAnimID]->getLength() / 2 && mTimer - deltaTime < mAnims[mTopAnimID]->getLength() / 2) {
       // so transfer the swords from the sheaths to the hands
       mBodyEnt->detachAllObjectsFromBone();
       mBodyEnt->attachObjectToBone(mSwordsDrawn ? "Sheath.L" : "Handle.L", mSword1);
@@ -397,24 +393,20 @@ void SinbadCharacterController::updateCamera(Ogre::Real deltaTime) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::updateCameraGoal(Ogre::Real deltaYaw, Ogre::Real deltaPitch,
-                                                 Ogre::Real deltaZoom) {
+void SinbadCharacterController::updateCameraGoal(Ogre::Real deltaYaw, Ogre::Real deltaPitch, Ogre::Real deltaZoom) {
   mCameraPivot->yaw(Ogre::Degree(deltaYaw), Ogre::Node::TS_PARENT);
 
   // bound the pitch
-  if (!(mPivotPitch + deltaPitch > 25 && deltaPitch > 0) &&
-      !(mPivotPitch + deltaPitch < -60 && deltaPitch < 0)) {
+  if (!(mPivotPitch + deltaPitch > 25 && deltaPitch > 0) && !(mPivotPitch + deltaPitch < -60 && deltaPitch < 0)) {
     mCameraPivot->pitch(Ogre::Degree(deltaPitch), Ogre::Node::TS_LOCAL);
     mPivotPitch += deltaPitch;
   }
 
-  Ogre::Real dist =
-      mCameraGoal->_getDerivedPosition().distance(mCameraPivot->_getDerivedPosition());
+  Ogre::Real dist = mCameraGoal->_getDerivedPosition().distance(mCameraPivot->_getDerivedPosition());
   Ogre::Real distChange = deltaZoom * dist;
 
   // bound the zoom
-  if (!(dist + distChange < SCALE * 8 && distChange < 0) &&
-      !(dist + distChange > SCALE * 40 && distChange > 0)) {
+  if (!(dist + distChange < SCALE * 8 && distChange < 0) && !(dist + distChange > SCALE * 40 && distChange > 0)) {
     mCameraGoal->translate(0, 0, distChange, Ogre::Node::TS_LOCAL);
   }
 }

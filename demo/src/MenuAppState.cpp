@@ -62,13 +62,15 @@ void MenuAppState::Update(float time) {
 
 	ImGui::NewLine();
 
-	if (ImGui::Button("        DEMO        "))
-	  ChangeState(make_unique<DemoDotAppState>());
+	if (ImGui::Button("        DEMO        ")) {
+          ChangeState(make_unique<DemoDotAppState>());
+        }
 
 	ImGui::NewLine();
 
-	if (ImGui::Button("        EXIT           "))
-	  ChangeState();
+	if (ImGui::Button("        EXIT           ")) {
+          ChangeState();
+        }
 
 	ImGui::NewLine();
 
@@ -85,8 +87,6 @@ void MenuAppState::OnKeyDown(SDL_Keycode sym) {
 //----------------------------------------------------------------------------------------------------------------------
 void MenuAppState::Init() {
   GetWindow().Grab(false);
-
-//  ImGuiIO &io = ImGui::GetIO();
 }
 
 }

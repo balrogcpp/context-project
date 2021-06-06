@@ -39,8 +39,7 @@ class MutedInputObserver : public InputObserverI {
   virtual ~MutedInputObserver();
 };
 
-class InputHandler final : public InputObserver,
-                           public Singleton<InputHandler> {
+class InputHandler final : public InputObserver, public Singleton<InputHandler> {
  public:
   InputHandler();
   virtual ~InputHandler();
@@ -62,8 +61,7 @@ class InputHandler final : public InputObserver,
 
   // Mouse
   void OnMouseMove(int dx, int dy) override;
-  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right,
-                   bool middle) override;
+  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override;
   void OnMouseWheel(int x, int y) override;
   void OnMouseLbDown(int x, int y) override;
   void OnMouseLbUp(int x, int y) override;

@@ -46,8 +46,7 @@ class CameraMan final : public Object, public MutedInputObserver {
   //----------------------------------------------------------------------------------------------------------------------
   void ManualStop();
   void Update(float time) override;
-  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right,
-                   bool middle) override;
+  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override;
   void OnKeyDown(SDL_Keycode sym) override;
   void OnKeyUp(SDL_Keycode sym) override;
 
@@ -87,8 +86,7 @@ class CameraMan final : public Object, public MutedInputObserver {
 
   void AttachNode(Ogre::SceneNode *parent, Ogre::SceneNode *proxy = nullptr);
 
-  void AttachCamera(Ogre::SceneNode *parent, Ogre::Camera *camera,
-                    Ogre::SceneNode *proxy = nullptr);
+  void AttachCamera(Ogre::SceneNode *parent, Ogre::Camera *camera, Ogre::SceneNode *proxy = nullptr);
 
   void UnregCamera();
 

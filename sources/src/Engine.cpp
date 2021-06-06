@@ -123,8 +123,7 @@ void Engine::Cleanup() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Update(float time) {
-  for_each(components_.begin(), components_.end(),
-           [time](view_ptr<System> it) { it->Update(time); });
+  for_each(components_.begin(), components_.end(), [time](view_ptr<System> it) { it->Update(time); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------

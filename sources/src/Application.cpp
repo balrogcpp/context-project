@@ -126,8 +126,8 @@ void Application::WriteLogToFile_() {
 void Application::PrintLogToConsole_() { cout << log_ << flush; }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml, bool maskDebug,
-                                const string &logName, bool &skipThisMessage) {
+void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml, bool maskDebug, const string &logName,
+                                bool &skipThisMessage) {
   log_.append(message);
   log_.append("\n");
 
@@ -143,8 +143,7 @@ void Application::Loop_() {
   while (running_) {
     if (state_manager_->IsActive()) {
       auto before_frame = chrono::system_clock::now().time_since_epoch();
-      int64_t micros_before_frame =
-          chrono::duration_cast<chrono::microseconds>(before_frame).count();
+      int64_t micros_before_frame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
 
       if (cumulated_time_ > 1e+6) {
         current_fps_ = fps_counter_;
@@ -166,8 +165,7 @@ void Application::Loop_() {
         }
 
         auto before_update = chrono::system_clock::now().time_since_epoch();
-        int64_t micros_before_update =
-            chrono::duration_cast<chrono::microseconds>(before_update).count();
+        int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
         float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_) / 1e+6;
         time_of_last_frame_ = micros_before_update;
         state_manager_->Update(frame_time);
@@ -184,8 +182,7 @@ void Application::Loop_() {
 #endif
 
       auto duration_after_render = chrono::system_clock::now().time_since_epoch();
-      auto micros_after_render =
-          chrono::duration_cast<chrono::microseconds>(duration_after_render).count();
+      auto micros_after_render = chrono::duration_cast<chrono::microseconds>(duration_after_render).count();
       auto render_time = micros_after_render - micros_before_frame;
 
       if (lock_fps_) {
@@ -194,8 +191,7 @@ void Application::Loop_() {
       }
 
       auto duration_after_loop = chrono::system_clock::now().time_since_epoch();
-      int64_t micros_after_loop =
-          chrono::duration_cast<chrono::microseconds>(duration_after_loop).count();
+      int64_t micros_after_loop = chrono::duration_cast<chrono::microseconds>(duration_after_loop).count();
 
       int64_t time_since_last_frame_ = micros_after_loop - micros_before_frame;
       cumulated_time_ += time_since_last_frame_;
@@ -215,8 +211,7 @@ void Application::Go_() {
     state_manager_->InitCurState();
     running_ = true;
     auto duration_before_update = chrono::system_clock::now().time_since_epoch();
-    time_of_last_frame_ =
-        chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
+    time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
     Loop_();
   }
 }

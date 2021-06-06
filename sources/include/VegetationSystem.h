@@ -52,15 +52,12 @@ class VegetationSystem final : public SubSystem {
   std::vector<std::unique_ptr<Forests::PageLoader>> ploaders_;
   std::vector<std::unique_ptr<Forests::GeometryPage>> gpages_;
   std::vector<view_ptr<Ogre::StaticGeometry>> sgeometry_;
-//  const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
-//  const Ogre::uint32 SURFACE_MASK = 0x00F;
-//  const Ogre::uint32 WATER_MASK = 0xF00;
+  //  const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
+  //  const Ogre::uint32 SURFACE_MASK = 0x00F;
+  //  const Ogre::uint32 WATER_MASK = 0xF00;
 
  public:
-  static void SetHeighFunc(
-      const std::function<float(float, float)> &heigh_func) {
-    heigh_func_ = heigh_func;
-  }
+  static void SetHeighFunc(const std::function<float(float, float)> &heigh_func) { heigh_func_ = heigh_func; }
 };
 
 }  // namespace xio

@@ -42,10 +42,8 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
 
   static bool FixMaterial(const std::string &material_name);
 
-  Ogre::Technique *handleSchemeNotFound(unsigned short scheme_index,
-                                        const std::string &scheme_name,
-                                        Ogre::Material *original_material,
-                                        unsigned short lod_index,
+  Ogre::Technique *handleSchemeNotFound(unsigned short scheme_index, const std::string &scheme_name,
+                                        Ogre::Material *original_material, unsigned short lod_index,
                                         const Ogre::Renderable *renderable);
 
   bool afterIlluminationPassesCreated(Ogre::Technique *technique);

@@ -43,8 +43,7 @@ namespace xio {
 static void CreateGrassMesh(float width, float height) {
   using namespace Ogre;
 
-  MeshPtr mesh = MeshManager::getSingleton().createManual(
-      "grass", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  MeshPtr mesh = MeshManager::getSingleton().createManual("grass", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
   // create a submesh with the grass material
   SubMesh *sm = mesh->createSubMesh();
@@ -69,8 +68,7 @@ static void CreateGrassMesh(float width, float height) {
   HardwareVertexBufferSharedPtr vb = HardwareBufferManager::getSingleton().createVertexBuffer(
       decl->getVertexSize(0), sm->vertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
-  GrassVertex *verts =
-      (GrassVertex *)vb->lock(HardwareBuffer::HBL_DISCARD);  // start filling in vertex data
+  GrassVertex *verts = (GrassVertex *)vb->lock(HardwareBuffer::HBL_DISCARD);  // start filling in vertex data
 
   for (unsigned int i = 0; i < 3; i++)  // each grass mesh consists of 3 planes
   {
@@ -102,12 +100,10 @@ static void CreateGrassMesh(float width, float height) {
 
   // create an index buffer
   sm->indexData->indexBuffer = HardwareBufferManager::getSingleton().createIndexBuffer(
-      HardwareIndexBuffer::IT_16BIT, sm->indexData->indexCount,
-      HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+      HardwareIndexBuffer::IT_16BIT, sm->indexData->indexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
   // start filling in index data
-  Ogre::uint16 *indices =
-      (Ogre::uint16 *)sm->indexData->indexBuffer->lock(HardwareBuffer::HBL_DISCARD);
+  Ogre::uint16 *indices = (Ogre::uint16 *)sm->indexData->indexBuffer->lock(HardwareBuffer::HBL_DISCARD);
 
   for (unsigned int i = 0; i < 3; i++)  // each grass mesh consists of 3 planes
   {
@@ -126,7 +122,7 @@ static void CreateGrassMesh(float width, float height) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//static void CreateGrassMesh2(float width, float height) {
+// static void CreateGrassMesh2(float width, float height) {
 //  Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
 //
 //  // Init a submesh with the grass material
@@ -219,8 +215,7 @@ VegetationSystem::VegetationSystem() {}
 //----------------------------------------------------------------------------------------------------------------------
 VegetationSystem::~VegetationSystem() {
   auto &mesh_manager = Ogre::MeshManager::getSingleton();
-  if (mesh_manager.getByName("grass", Ogre::RGN_AUTODETECT))
-    mesh_manager.remove("grass", Ogre::RGN_AUTODETECT);
+  if (mesh_manager.getByName("grass", Ogre::RGN_AUTODETECT)) mesh_manager.remove("grass", Ogre::RGN_AUTODETECT);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -243,8 +238,7 @@ void VegetationSystem::GenerateGrassStatic() {
   const float bounds = 500.0f;
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 1000000; i++) {
-    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0,
-                      Ogre::Math::RangeRandom(-bounds, bounds));
+    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
     pos.y += GetLoader().GetHeigh(pos.x, pos.z);
 
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
@@ -252,7 +246,7 @@ void VegetationSystem::GenerateGrassStatic() {
     field->addEntity(grass, pos, ori, scale);
   }
 
-//  field->setVisibilityFlags(SUBMERGED_MASK);
+  //  field->setVisibilityFlags(SUBMERGED_MASK);
   //  field->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
   field->build();
   field->setCastShadows(false);
@@ -274,8 +268,7 @@ void VegetationSystem::GenerateRocksStatic() {
   const float bounds = 100.0f;
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 250; i++) {
-    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0,
-                      Ogre::Math::RangeRandom(-bounds, bounds));
+    Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
     pos.y += GetLoader().GetHeigh(pos.x, pos.z) - 0.1;
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(2.0, 2.0 * Ogre::Math::RangeRandom(0.85, 1.15), 2.0);
@@ -300,16 +293,14 @@ void VegetationSystem::GenerateRocksStatic() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::GenerateGrassPaged() {
-  auto *grass = new PagedGeometry(
-      Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 5);
+  auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 5);
   grass->addDetailLevel<GrassPage>(50, 10);  // Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
   grass->setPageLoader(grassLoader);
   grassLoader->setRenderQueueGroup(Ogre::RENDER_QUEUE_MAIN);
 
   if (heigh_func_)
-    grassLoader->setHeightFunction(
-        [](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z)); });
+    grassLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z)); });
 
   pgeometry_.push_back(unique_ptr<PagedGeometry>(grass));
   ploaders_.push_back(unique_ptr<PageLoader>(grassLoader));

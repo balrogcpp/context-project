@@ -29,8 +29,7 @@ template <typename T>
 class Singleton : public NoCopy {
  public:
   Singleton() {
-    if (instanced_)
-      throw Exception("Only one instance of Singleton can be created!\n");
+    if (instanced_) throw Exception("Only one instance of Singleton can be created!\n");
 
     instanced_ = true;
   }

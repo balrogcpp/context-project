@@ -111,8 +111,7 @@ void CameraMan::Update(float time) {
     // orientation quaternion and the cameraYawNode's orientation
     // quaternion to translate the camera accoding to the camera's
     // orientation around the Y-axis and the X-axis.
-    Ogre::Vector3 velocity =
-        camera_yaw_node_->getOrientation() * camera_pitch_node_->getOrientation() * velocity_;
+    Ogre::Vector3 velocity = camera_yaw_node_->getOrientation() * camera_pitch_node_->getOrientation() * velocity_;
 
     if (rigid_) {
       if (!velocity_.isZeroLength()) {
@@ -139,8 +138,7 @@ void CameraMan::Update(float time) {
     }
 
     // Angle of rotation around the X-axis.
-    pitchAngle =
-        (2 * Ogre::Degree(Ogre::Math::ACos(camera_pitch_node_->getOrientation().w)).valueDegrees());
+    pitchAngle = (2 * Ogre::Degree(Ogre::Math::ACos(camera_pitch_node_->getOrientation().w)).valueDegrees());
 
     // Just to determine the sign of the angle we pick up above, the
     // value itself does not interest us.
@@ -150,12 +148,10 @@ void CameraMan::Update(float time) {
     if (pitchAngle > 90.0f) {
       if (pitchAngleSign > 0)
         // Set orientation to 90 degrees on X-axis.
-        camera_pitch_node_->setOrientation(
-            Ogre::Quaternion(Ogre::Math::Sqrt(0.5f), Ogre::Math::Sqrt(0.5f), 0, 0));
+        camera_pitch_node_->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f), Ogre::Math::Sqrt(0.5f), 0, 0));
       else if (pitchAngleSign < 0)
         // Sets orientation to -90 degrees on X-axis.
-        camera_pitch_node_->setOrientation(
-            Ogre::Quaternion(Ogre::Math::Sqrt(0.5f), -Ogre::Math::Sqrt(0.5f), 0, 0));
+        camera_pitch_node_->setOrientation(Ogre::Quaternion(Ogre::Math::Sqrt(0.5f), -Ogre::Math::Sqrt(0.5f), 0, 0));
     }
     dx_ = 0;
     dy_ = 0;
@@ -303,8 +299,7 @@ void CameraMan::AttachNode(Ogre::SceneNode *parent, Ogre::SceneNode *proxy) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void CameraMan::AttachCamera(Ogre::SceneNode *parent, Ogre::Camera *camera,
-                             Ogre::SceneNode *proxy) {
+void CameraMan::AttachCamera(Ogre::SceneNode *parent, Ogre::Camera *camera, Ogre::SceneNode *proxy) {
   node_ = parent;
   camera_ = camera;
 

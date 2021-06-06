@@ -29,9 +29,7 @@ using namespace std;
 namespace xio {
 
 //----------------------------------------------------------------------------------------------------------------------
-CubeMapCamera::CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size) {
-  Init_(creator, tex_size);
-}
+CubeMapCamera::CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size) { Init_(creator, tex_size); }
 
 //----------------------------------------------------------------------------------------------------------------------
 CubeMapCamera::~CubeMapCamera() { Clear_(); }
@@ -94,8 +92,8 @@ void CubeMapCamera::Init_(Ogre::SceneNode *creator, unsigned int tex_size) {
   camera_node_ = creator->createChildSceneNode();
   camera_node_->setFixedYawAxis(false);
   camera_node_->attachObject(camera_);
-  cubemap_ = tex_manager.createManual("dyncubemap", RGN_DEFAULT, TEX_TYPE_CUBE_MAP, size, size, 0,
-                                      PF_R8G8B8, TU_RENDERTARGET);
+  cubemap_ =
+      tex_manager.createManual("dyncubemap", RGN_DEFAULT, TEX_TYPE_CUBE_MAP, size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
 
   // assign our camera to all 6 render targets of the texture (1 for each
   // direction)

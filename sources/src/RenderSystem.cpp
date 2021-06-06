@@ -176,8 +176,7 @@ void RenderSystem::InitRenderWindow_() {
   jclass class_resources = env->FindClass("android/content/res/Resources");
   jmethodID method_get_resources =
       env->GetMethodID(class_activity, "getResources", "()Landroid/content/res/Resources;");
-  jmethodID method_get_assets =
-      env->GetMethodID(class_resources, "getAssets", "()Landroid/content/res/AssetManager;");
+  jmethodID method_get_assets = env->GetMethodID(class_resources, "getAssets", "()Landroid/content/res/AssetManager;");
   jobject raw_activity = (jobject)SDL_AndroidGetActivity();
   jobject raw_resources = env->CallObjectMethod(raw_activity, method_get_resources);
   jobject raw_asset_manager = env->CallObjectMethod(raw_resources, method_get_assets);
@@ -191,10 +190,8 @@ void RenderSystem::InitRenderWindow_() {
   AConfiguration* mAConfig = AConfiguration_new();
   AConfiguration_fromAssetManager(mAConfig, asset_manager);
 
-  Ogre::ArchiveManager::getSingleton().addArchiveFactory(
-      new Ogre::APKFileSystemArchiveFactory(asset_manager));
-  Ogre::ArchiveManager::getSingleton().addArchiveFactory(
-      new Ogre::APKZipArchiveFactory(asset_manager));
+  Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(asset_manager));
+  Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKZipArchiveFactory(asset_manager));
 #endif
 
   const char true_str[] = "true";
@@ -306,8 +303,7 @@ void RenderSystem::InitShadowSettings_() {
 
   pssm_ = make_shared<Ogre::PSSMShadowCameraSetup>();
   const float near_clip_distance = 0.001;
-  pssm_->calculateSplitPoints(pssm_split_count_, near_clip_distance,
-                              scene_->getShadowFarDistance());
+  pssm_->calculateSplitPoints(pssm_split_count_, near_clip_distance, scene_->getShadowFarDistance());
   split_points_ = pssm_->getSplitPoints();
   //  pssm_->setSplitPadding(near_clip_distance);
   pssm_->setSplitPadding(0.1);

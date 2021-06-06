@@ -42,8 +42,7 @@ class AudioSystem final : public System, public Singleton<AudioSystem> {
   void Resume() override;
   void Update(float time) override;
 
-  void CreateSound(const std::string &name, const std::string &file,
-                   bool loop = false);
+  void CreateSound(const std::string &name, const std::string &file, bool loop = false);
   void PlaySound(const std::string &name, bool immediate = true);
   void SetMasterVolume(float volume);
   void SetMaxVolume(const std::string &name, float volume);

@@ -49,11 +49,9 @@ void VerboseListener::OnKeyUp(SDL_Keycode sym) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void VerboseListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right,
-                                  bool middle) {
+void VerboseListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   if (verbose_) {
-    printf("%s x %d y %d dx %d dy %d left %d right %d middle %d\n", __func__, x, y, dx, dy, left,
-           right, middle);
+    printf("%s x %d y %d dx %d dy %d left %d right %d middle %d\n", __func__, x, y, dx, dy, left, right, middle);
   }
 }
 

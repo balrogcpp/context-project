@@ -96,8 +96,7 @@ Compositor::~Compositor() {}
 //----------------------------------------------------------------------------------------------------------------------
 void Compositor::Update(float time) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  static bool gl3 = Ogre::Root::getSingleton().getRenderSystem()->getName() !=
-                    "OpenGL ES 2.x Rendering Subsystem";
+  static bool gl3 = Ogre::Root::getSingleton().getRenderSystem()->getName() != "OpenGL ES 2.x Rendering Subsystem";
   static bool mblur = effects_["mblur"];
 
   if (gl3 && mblur) {

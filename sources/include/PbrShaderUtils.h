@@ -42,8 +42,7 @@ class Pbr {
 
   static void UpdatePbrShadowReceiver(const Ogre::MaterialPtr &material);
 
-  static void UpdatePbrIbl(const Ogre::MaterialPtr &material,
-                           bool active = false);
+  static void UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active = false);
 
   static void UpdatePbrParams(const std::string &material);
 

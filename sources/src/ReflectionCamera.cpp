@@ -79,8 +79,8 @@ void ReflectionCamera::Init_(unsigned int tex_size) {
   rcamera_ = camera;
   rcamera_->setAutoAspectRatio(false);
 
-  reflection_tex_ = tex_manager.createManual("Reflection", RGN_DEFAULT, TEX_TYPE_2D, size, size, 0,
-                                             PF_R8G8B8, TU_RENDERTARGET);
+  reflection_tex_ =
+      tex_manager.createManual("Reflection", RGN_DEFAULT, TEX_TYPE_2D, size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
 
   Ogre::RenderTarget *rtt1 = reflection_tex_->getBuffer()->getRenderTarget();
   Ogre::Viewport *vp1 = rtt1->addViewport(rcamera_.get());
@@ -90,8 +90,8 @@ void ReflectionCamera::Init_(unsigned int tex_size) {
   rtt1->addListener(this);
   vp1->setVisibilityMask(SURFACE_MASK);
 
-  refraction_tex_ = tex_manager.createManual("Refraction", RGN_DEFAULT, TEX_TYPE_2D, size, size, 0,
-                                             PF_R8G8B8, TU_RENDERTARGET);
+  refraction_tex_ =
+      tex_manager.createManual("Refraction", RGN_DEFAULT, TEX_TYPE_2D, size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
 
   Ogre::RenderTarget *rtt2 = refraction_tex_->getBuffer()->getRenderTarget();
   Ogre::Viewport *vp2 = rtt2->addViewport(camera);

@@ -22,10 +22,10 @@
 
 #pragma once
 
+#include <exception>
+#include <stdexcept>
 #include <string>
 #include <utility>
-#include <stdexcept>
-#include <exception>
 
 namespace xio {
 
@@ -34,8 +34,7 @@ class Exception : public std::exception {
   Exception() = default;
 
   //----------------------------------------------------------------------------------------------------------------------
-  explicit Exception(std::string description)
-      : description(std::move(description)){};
+  explicit Exception(std::string description) : description(std::move(description)){};
 
   //----------------------------------------------------------------------------------------------------------------------
   ~Exception() noexcept override = default;
@@ -51,14 +50,14 @@ class Exception : public std::exception {
 };
 
 /////Throw exception
-//void Assert(bool result, std::string message) {
-//  if (!result) {
-//    throw Exception(std::move(message));
-//  }
-//}
+// void Assert(bool result, std::string message) {
+//   if (!result) {
+//     throw Exception(std::move(message));
+//   }
+// }
 //
 /////Throw exception
-//void Throw(std::string message) {
-//  throw Exception(std::move(message));
-//}
+// void Throw(std::string message) {
+//   throw Exception(std::move(message));
+// }
 }  // namespace xio

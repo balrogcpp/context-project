@@ -41,8 +41,7 @@ AudioSystem::AudioSystem(unsigned int max_sources, unsigned int queue_list_size)
 #endif
 
   // Init new factory
-  auto *mOgreOggSoundFactory =
-      OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
+  auto *mOgreOggSoundFactory = OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
 
   // Register
   Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
@@ -68,11 +67,8 @@ void AudioSystem::Resume() { manager_->resumeAllPausedSounds(); }
 //----------------------------------------------------------------------------------------------------------------------
 void AudioSystem::CreateSound(const string &name, const string &file, bool loop) {
   auto *sound = manager_->createSound(name, file, true, loop, true, nullptr);
-  Ogre::Root::getSingleton()
-      .getSceneManager("Default")
-      ->getRootSceneNode()
-      ->createChildSceneNode()
-      ->attachObject(sound);
+  Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->createChildSceneNode()->attachObject(
+      sound);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
