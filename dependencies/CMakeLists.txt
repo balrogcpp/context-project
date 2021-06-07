@@ -55,6 +55,7 @@ externalproject_add(target-sdl
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -DSDL_SHARED_ENABLED_BY_DEFAULT=false
+                    -DLIBC=true
                     -DRENDER_METAL=false #cause linking error on macos
                     )
 

@@ -193,12 +193,12 @@ elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
-    string(APPEND CMAKE_CXX_FLAGS " /Wall /arch:SSE2 /EHa /MP /GS- /GF")
-    string(APPEND CMAKE_C_FLAGS " /Wall /arch:SSE2 /EHa /MP /GS- /GF")
+    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF")
+    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF")
 
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-        string(APPEND CMAKE_CXX_FLAGS " /O2 /fp:fast /GL")
-        string(APPEND CMAKE_C_FLAGS " /O2 /fp:fast /GL")
+        string(APPEND CMAKE_CXX_FLAGS " /O2 /Ot /fp:fast /GL")
+        string(APPEND CMAKE_C_FLAGS " /O2 /Ot /fp:fast /GL")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF /SUBSYSTEM:WINDOWS")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF")
     else ()
@@ -206,6 +206,10 @@ elseif (MSVC)
         string(APPEND CMAKE_C_FLAGS " /D \"DEBUG\"")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " /SUBSYSTEM:WINDOWS")
     endif ()
+
+    #This flags are useful for dependencies build
+    set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
+    set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 endif ()
 
 
