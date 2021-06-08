@@ -5,6 +5,7 @@ import os
 import zipfile
 import shutil
 
+
 def make_archive(source, destination):
     destination = os.path.join(destination, source)
     destination = os.path.abspath(destination)
@@ -17,12 +18,12 @@ def make_archive(source, destination):
         if os.path.isfile(os.path.join(source, folder)):
             continue
 
-        zipf = zipfile.ZipFile(os.path.join(destination, folder) + ".zip", 'w', zipfile.ZIP_DEFLATED)
+        zip_file = zipfile.ZipFile(os.path.join(destination, folder) + ".zip", 'w', zipfile.ZIP_DEFLATED)
 
         for root, dirs, files in os.walk(os.path.join(source, folder)):
             for filename in files:
-                zipf.write(os.path.abspath(os.path.join(root, filename)), arcname=filename)
-        zipf.close()
+                zip_file.write(os.path.abspath(os.path.join(root, filename)), arcname=filename)
+        zip_file.close()
 
 
 if os.path.isdir("tmp"):
