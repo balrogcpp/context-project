@@ -20,16 +20,17 @@ void CubeMapCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   // point the camera in the right direction based on which face of the cubemap
   // this is
   camera_node_->setOrientation(Ogre::Quaternion::IDENTITY);
-  if (evt.source == targets_[0])
+  if (evt.source == targets_[0]) {
     camera_node_->yaw(Ogre::Degree(-90));
-  else if (evt.source == targets_[1])
+  } else if (evt.source == targets_[1]) {
     camera_node_->yaw(Ogre::Degree(90));
-  else if (evt.source == targets_[2])
+  } else if (evt.source == targets_[2]) {
     camera_node_->pitch(Ogre::Degree(90));
-  else if (evt.source == targets_[3])
+  } else if (evt.source == targets_[3]) {
     camera_node_->pitch(Ogre::Degree(-90));
-  else if (evt.source == targets_[5])
+  } else if (evt.source == targets_[5]) {
     camera_node_->yaw(Ogre::Degree(180));
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

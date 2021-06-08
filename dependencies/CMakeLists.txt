@@ -581,21 +581,22 @@ externalproject_add(target-gtest
         )
 
 
-externalproject_add(target-glsl-optimizer
-        EXCLUDE_FROM_ALL true
-        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-        GIT_REPOSITORY https://github.com/aras-p/glsl-optimizer.git
-        #GIT_TAG release-1.10.0
-        GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-        GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-        -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        ${CONTEXT_CMAKE_EXTRA_FLAGS}
-        -G "${CMAKE_GENERATOR}"
-        )
-
+if (NOT MSVC)
+    externalproject_add(target-glsl-optimizer
+                        EXCLUDE_FROM_ALL true
+                        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                        GIT_REPOSITORY https://github.com/aras-p/glsl-optimizer.git
+                        #GIT_TAG release-1.10.0
+                        GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                        GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
+                        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                        ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                        -G "${CMAKE_GENERATOR}"
+                        )
+endif ()
 
 externalproject_add(assets
         EXCLUDE_FROM_ALL true
