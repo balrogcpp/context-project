@@ -36,7 +36,7 @@ InputHandler& GetIo() {
 
 //----------------------------------------------------------------------------------------------------------------------
 Config& GetConf() {
-  static auto& config = *Engine::GetInstance().conf_;
+  static auto& config = *Engine::GetInstance().config_;
   return config;
 }
 
@@ -48,7 +48,7 @@ Engine& GetEngine() {
 
 //----------------------------------------------------------------------------------------------------------------------
 RenderSystem& GetRS() {
-  static auto& renderer = *Engine::GetInstance().renderer_;
+  static auto& renderer = *Engine::GetInstance().rs_;
   return renderer;
 }
 
@@ -66,13 +66,13 @@ Compositor& GetCompositor() {
 
 //----------------------------------------------------------------------------------------------------------------------
 PhysicsSystem& GetPhysics() {
-  static auto& physics = *Engine::GetInstance().physics_;
+  static auto& physics = *Engine::GetInstance().ps_;
   return physics;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 AudioSystem& GetAudio() {
-  static auto& audio = *Engine::GetInstance().audio_;
+  static auto& audio = *Engine::GetInstance().as_;
   return audio;
 }
 

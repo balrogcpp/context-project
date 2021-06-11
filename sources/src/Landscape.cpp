@@ -140,7 +140,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   //  matProfile->setReceiveDynamicShadowsEnabled(true);
   //  matProfile->setReceiveDynamicShadowsDepth(true);
   //  matProfile->setReceiveDynamicShadowsLowLod(false);
-  //  matProfile->setReceiveDynamicShadowsPSSM(renderer_->GetShadowSettings().GetPssmSetup());
+  //  matProfile->setReceiveDynamicShadowsPSSM(rs_->GetShadowSettings().GetPssmSetup());
   //
   //  Ogre::Image combined;
   //  combined.loadTwoImagesAsRGBA("Ground23_col.jpg", "Ground23_spec.png",

@@ -13,26 +13,26 @@ namespace xio {
 //----------------------------------------------------------------------------------------------------------------------
 Engine::Engine() {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  conf_ = make_unique<Config>("config.json");
+  config_ = make_unique<Config>("config.json");
 #else
-  conf_ = make_unique<Config>("");
-  conf_->AddMember("window_fullscreen", true);
-  conf_->AddMember("compositor_use_bloom", false);
-  conf_->AddMember("compositor_use_ssao", false);
-  conf_->AddMember("compositor_use_motion", false);
-  conf_->AddMember("target_fps", 30);
-  conf_->AddMember("lock_fps", true);
-  conf_->AddMember("vsync", false);
-  conf_->AddMember("shadows_enable", false);
-  conf_->AddMember("fsaa", 0);
-  conf_->AddMember("filtration", "bilinear");
-  conf_->AddMember("anisotropy_level", 8);
-  conf_->AddMember("shadows_texture_resolution", 512);
-  conf_->AddMember("shadows_far_distance", 400);
-  conf_->AddMember("shadows_texture_format", 16);
+  config_ = make_unique<Config>("");
+  config_->AddMember("window_fullscreen", true);
+  config_->AddMember("compositor_use_bloom", false);
+  config_->AddMember("compositor_use_ssao", false);
+  config_->AddMember("compositor_use_motion", false);
+  config_->AddMember("target_fps", 30);
+  config_->AddMember("lock_fps", true);
+  config_->AddMember("vsync", false);
+  config_->AddMember("shadows_enable", false);
+  config_->AddMember("fsaa", 0);
+  config_->AddMember("filtration", "bilinear");
+  config_->AddMember("anisotropy_level", 8);
+  config_->AddMember("shadows_texture_resolution", 512);
+  config_->AddMember("shadows_far_distance", 400);
+  config_->AddMember("shadows_texture_format", 16);
 #endif
 
-  System::SetConfig(conf_.get());
+  System::SetConfig(config_.get());
   components_.reserve(16);
 
   io_ = make_unique<InputHandler>();
@@ -42,25 +42,25 @@ Engine::Engine() {
 Engine::~Engine() {}
 
 //----------------------------------------------------------------------------------------------------------------------
-void Engine::InitComponents() {
-  int window_width = conf_->Get<int>("window_width");
-  int window_high = conf_->Get<int>("window_high");
-  bool window_fullscreen = conf_->Get<bool>("window_fullscreen");
-  renderer_ = make_unique<RenderSystem>(window_width, window_high, window_fullscreen);
+void Engine::InitSystems() {
+  int window_width = config_->Get<int>("window_width");
+  int window_high = config_->Get<int>("window_high");
+  bool window_fullscreen = config_->Get<bool>("window_fullscreen");
+  rs_ = make_unique<RenderSystem>(window_width, window_high, window_fullscreen);
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   bool physics_threaded = false;  // cause strange behavior sometimes
-  conf_->Get("physics_threaded", physics_threaded);
-  physics_ = make_unique<PhysicsSystem>(physics_threaded);
-  audio_ = make_unique<AudioSystem>(8, 8);
+  config_->Get("physics_threaded", physics_threaded);
+  ps_ = make_unique<PhysicsSystem>(physics_threaded);
+  as_ = make_unique<AudioSystem>(8, 8);
 #else
-  physics_ = make_unique<PhysicsSystem>(false);
-  audio_ = make_unique<AudioSystem>(4, 4);
+  ps_ = make_unique<PhysicsSystem>(false);
+  as_ = make_unique<AudioSystem>(4, 4);
 #endif
 
   loader_ = make_unique<DotSceneLoaderB>();
 
-  renderer_->Refresh();
+  rs_->Refresh();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ void Engine::Capture() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Engine::RegComponent(view_ptr<System> component) { components_.push_back(component); }
+void Engine::RegSystem(view_ptr<System> system) { components_.push_back(system); }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Pause() {
@@ -79,14 +79,14 @@ void Engine::Pause() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::InMenu() {
-  physics_->Pause();
+  ps_->Pause();
   loader_->Pause();
   io_->Pause();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::OffMenu() {
-  physics_->Resume();
+  ps_->Resume();
   loader_->Resume();
   io_->Resume();
 }
@@ -108,9 +108,9 @@ void Engine::Update(float time) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Engine::RenderOneFrame() { renderer_->RenderOneFrame(); }
+void Engine::RenderOneFrame() { rs_->RenderOneFrame(); }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Engine::Refresh() { renderer_->Refresh(); }
+void Engine::Refresh() { rs_->Refresh(); }
 
 }  // namespace xio

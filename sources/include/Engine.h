@@ -20,7 +20,7 @@ class Engine : public LazySingleton<Engine> {
   Engine();
   virtual ~Engine();
 
-  void InitComponents();
+  void InitSystems();
   void Capture();
   void Pause();
   void InMenu();
@@ -30,14 +30,14 @@ class Engine : public LazySingleton<Engine> {
   void Refresh();
   void Update(float time);
   void RenderOneFrame();
-  void RegComponent(view_ptr<System> component);
+  void RegSystem(view_ptr<System> system);
 
  private:
   std::unique_ptr<InputHandler> io_;
-  std::unique_ptr<Config> conf_;
-  std::unique_ptr<RenderSystem> renderer_;
-  std::unique_ptr<PhysicsSystem> physics_;
-  std::unique_ptr<AudioSystem> audio_;
+  std::unique_ptr<Config> config_;
+  std::unique_ptr<RenderSystem> rs_;
+  std::unique_ptr<PhysicsSystem> ps_;
+  std::unique_ptr<AudioSystem> as_;
   std::unique_ptr<Overlay> overlay_;
   std::unique_ptr<DotSceneLoaderB> loader_;
   std::vector<view_ptr<System>> components_;

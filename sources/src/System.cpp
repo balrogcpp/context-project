@@ -11,7 +11,7 @@ using namespace std;
 namespace xio {
 
 //----------------------------------------------------------------------------------------------------------------------
-System::System() { Engine::GetInstance().RegComponent(this); }
+System::System() { Engine::GetInstance().RegSystem(this); }
 
 //----------------------------------------------------------------------------------------------------------------------
 System::~System() {}

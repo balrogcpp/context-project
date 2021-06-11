@@ -46,7 +46,7 @@ Application::Application() {
 #endif
 
     engine_ = &Engine::GetInstance();
-    engine_->InitComponents();
+    engine_->InitSystems();
 
     state_manager_ = make_unique<StateManager>();
 
