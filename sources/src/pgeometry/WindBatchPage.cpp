@@ -1,18 +1,25 @@
 /*-------------------------------------------------------------------------------------
 Copyright (c) 2006 John Judnich
 
-This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
-    1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
-    2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable
+for any damages arising from the use of this software. Permission is granted to anyone to use this software for any
+purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following
+restrictions:
+    1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software.
+If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not
+required.
+    2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original
+software.
     3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
-//WindBatchPage.cpp
-//WindBatchPage is an extension to PagedGeometry which displays entities as static geometry but that is affected by wind.
+// WindBatchPage.cpp
+// WindBatchPage is an extension to PagedGeometry which displays entities as static geometry but that is affected by
+// wind.
 //-------------------------------------------------------------------------------------
-#include "pcheader.h"
 #include "pgeometry/WindBatchPage.h"
+
+#include "pcheader.h"
 #include "pgeometry/WindBatchedGeometry.h"
 
 // to dump the shader source in a file
@@ -28,12 +35,12 @@ using namespace Forests;
 void WindBatchPage::init(PagedGeometry *geom, const Any &data) {
   int datacast = data.has_value() ? Ogre::any_cast<int>(data) : 0;
 #ifdef _DEBUG
-  if (datacast < 0)
- {
-      OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
-       "Data of WindBatchPage must be a positive integer. It representing the LOD level this detail level stores.",
-       "WindBatchPage::WindBatchPage");
- }
+  if (datacast < 0) {
+    OGRE_EXCEPT(
+        Exception::ERR_INVALIDPARAMS,
+        "Data of WindBatchPage must be a positive integer. It representing the LOD level this detail level stores.",
+        "WindBatchPage::WindBatchPage");
+  }
 #endif
 
   m_pBatchGeom = new WindBatchedGeometry(geom->getSceneManager(), geom->getSceneNode(), geom);
@@ -41,7 +48,7 @@ void WindBatchPage::init(PagedGeometry *geom, const Any &data) {
   m_pPagedGeom = geom;
   m_bFadeEnabled = false;
 
-//  const RenderSystemCapabilities *caps = Root::getSingleton().getRenderSystem()->getCapabilities();
+  //  const RenderSystemCapabilities *caps = Root::getSingleton().getRenderSystem()->getCapabilities();
 
   ++s_nRefCount;
 }
@@ -49,8 +56,7 @@ void WindBatchPage::init(PagedGeometry *geom, const Any &data) {
 //-----------------------------------------------------------------------------
 ///
 void WindBatchPage::_updateShaders() {
-  if (!m_bShadersSupported)
-    return;
+  if (!m_bShadersSupported) return;
 
   unsigned int i = 0;
   BatchedGeometry::TSubBatchIterator it = m_pBatchGeom->getSubBatchIterator();
@@ -58,7 +64,7 @@ void WindBatchPage::_updateShaders() {
     BatchedGeometry::SubBatch *subBatch = it.getNext();
     const MaterialPtr &ptrMat = m_vecUnfadedMaterials[i++];
 
-    //Check if lighting should be enabled
+    // Check if lighting should be enabled
     bool lightingEnabled = false;
     for (unsigned short t = 0, techCnt = ptrMat->getNumTechniques(); t < techCnt; ++t) {
       Technique *tech = ptrMat->getTechnique(t);
@@ -69,32 +75,32 @@ void WindBatchPage::_updateShaders() {
         }
       }
 
-      if (lightingEnabled)
-        break;
+      if (lightingEnabled) break;
     }
 
-    //Compile the shader script based on various material / fade options
+    // Compile the shader script based on various material / fade options
     Ogre::StringStream tmpName;
     tmpName << "BatchPage_";
-    if (m_bFadeEnabled)
-      tmpName << "fade_";
-    if (lightingEnabled)
-      tmpName << "lit_";
-    if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr)
-      tmpName << "clr_";
+    if (m_bFadeEnabled) tmpName << "fade_";
+    if (lightingEnabled) tmpName << "lit_";
+    if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) tmpName << "clr_";
 
     for (unsigned short i = 0; i < subBatch->m_pVertexData->vertexDeclaration->getElementCount(); ++i) {
       const VertexElement *el = subBatch->m_pVertexData->vertexDeclaration->getElement(i);
       if (el->getSemantic() == VES_TEXTURE_COORDINATES) {
         String uvType;
         switch (el->getType()) {
-          case VET_FLOAT1: uvType = "1";
+          case VET_FLOAT1:
+            uvType = "1";
             break;
-          case VET_FLOAT2: uvType = "2";
+          case VET_FLOAT2:
+            uvType = "2";
             break;
-          case VET_FLOAT3: uvType = "3";
+          case VET_FLOAT3:
+            uvType = "3";
             break;
-          case VET_FLOAT4: uvType = "4";
+          case VET_FLOAT4:
+            uvType = "4";
             break;
         }
         tmpName << uvType << '_';
@@ -115,14 +121,12 @@ void WindBatchPage::_updateShaders() {
     else
       shaderLanguage = "cg";
 
-    //If the shader hasn't been created yet, create it
-    if (!HighLevelGpuProgramManager::getSingleton().getByName(vertexProgName,
-                                                              Ogre::RGN_AUTODETECT)) {
-//      Pass *pass = ptrMat->getTechnique(0)->getPass(0);
+    // If the shader hasn't been created yet, create it
+    if (!HighLevelGpuProgramManager::getSingleton().getByName(vertexProgName, Ogre::RGN_AUTODETECT)) {
+      //      Pass *pass = ptrMat->getTechnique(0)->getPass(0);
       String vertexProgSource;
 
       if (!shaderLanguage.compare("hlsl") || !shaderLanguage.compare("cg")) {
-
         vertexProgSource =
             "void main( \n"
             "	float4 iPosition : POSITION, \n"
@@ -130,8 +134,7 @@ void WindBatchPage::_updateShaders() {
             "	out float4 oPosition : POSITION, \n";
 
         if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) {
-          vertexProgSource +=
-              "	float4 iColor	 : COLOR, \n";
+          vertexProgSource += "	float4 iColor	 : COLOR, \n";
         }
 
         int texNum = 0;
@@ -157,22 +160,26 @@ void WindBatchPage::_updateShaders() {
               } else {
                 String uvType = "";
                 switch (el->getType()) {
-                  case VET_FLOAT1: uvType = "float";
+                  case VET_FLOAT1:
+                    uvType = "float";
                     break;
-                  case VET_FLOAT2: uvType = "float2";
+                  case VET_FLOAT2:
+                    uvType = "float2";
                     break;
-                  case VET_FLOAT3: uvType = "float3";
+                  case VET_FLOAT3:
+                    uvType = "float3";
                     break;
-                  case VET_FLOAT4: uvType = "float4";
+                  case VET_FLOAT4:
+                    uvType = "float4";
                     break;
                 }
 
-                vertexProgSource +=
-                    "	" + uvType + " iUV" + StringConverter::toString(texNum) + "			: TEXCOORD"
-                        + StringConverter::toString(texNum) + ", \n"
-                                                              "	out " + uvType + " oUV"
-                        + StringConverter::toString(texNum) + "		: TEXCOORD" + StringConverter::toString(texNum)
-                        + ", \n";
+                vertexProgSource += "	" + uvType + " iUV" + StringConverter::toString(texNum) +
+                                    "			: TEXCOORD" + StringConverter::toString(texNum) +
+                                    ", \n"
+                                    "	out " +
+                                    uvType + " oUV" + StringConverter::toString(texNum) + "		: TEXCOORD" +
+                                    StringConverter::toString(texNum) + ", \n";
               }
               ++texNum;
             }
@@ -203,38 +210,33 @@ void WindBatchPage::_updateShaders() {
             "{	\n";
 
         if (lightingEnabled) {
-          //Perform lighting calculations (no specular)
+          // Perform lighting calculations (no specular)
           vertexProgSource +=
               "	float3 light = normalize(objSpaceLight.xyz - (iPosition.xyz * objSpaceLight.w)); \n"
               "	float diffuseFactor = max(dot(normal, light), 0); \n";
 
           if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) {
-            vertexProgSource +=
-                "	oColor = (lightAmbient + diffuseFactor * lightDiffuse) * iColor; \n";
+            vertexProgSource += "	oColor = (lightAmbient + diffuseFactor * lightDiffuse) * iColor; \n";
           } else {
-            vertexProgSource +=
-                "	oColor = (lightAmbient + diffuseFactor * lightDiffuse); \n";
+            vertexProgSource += "	oColor = (lightAmbient + diffuseFactor * lightDiffuse); \n";
           }
         } else {
           if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) {
-            vertexProgSource +=
-                "	oColor = iColor; \n";
+            vertexProgSource += "	oColor = iColor; \n";
           } else {
-            vertexProgSource +=
-                "	oColor = float4(1, 1, 1, 1); \n";
+            vertexProgSource += "	oColor = float4(1, 1, 1, 1); \n";
           }
         }
 
         if (m_bFadeEnabled) {
-          //Fade out in the distance
+          // Fade out in the distance
           vertexProgSource +=
               "	float dist = distance(camPos.xz, iPosition.xz); \n"
               "	oColor.a *= (invisibleDist - dist) / fadeGap; \n";
         }
 
         for (unsigned short i = 0; i < texCoordCount - 2; ++i) {
-          vertexProgSource +=
-              "	oUV" + StringConverter::toString(i) + " = iUV" + StringConverter::toString(i) + "; \n";
+          vertexProgSource += "	oUV" + StringConverter::toString(i) + " = iUV" + StringConverter::toString(i) + "; \n";
         }
 
         vertexProgSource +=
@@ -244,21 +246,21 @@ void WindBatchPage::_updateShaders() {
             "	float factorY = params.w; \n"
             "	float4 tmpPos = iPosition; \n"
 
-            /*
-            2 different methods are used to for the sin calculation :
-            - the first one gives a better effect but at the cost of a few fps because of the 2 sines
-            - the second one uses less ressources but is a bit less realistic
+/*
+2 different methods are used to for the sin calculation :
+- the first one gives a better effect but at the cost of a few fps because of the 2 sines
+- the second one uses less ressources but is a bit less realistic
 
-                a sin approximation could be use to optimize performances
-            */
-            #if 0
+    a sin approximation could be use to optimize performances
+*/
+#if 0
             "	tmpPos.y += sin(time + originPos.z + tmpPos.y + tmpPos.x) * radiusCoeff * radiusCoeff * factorY; \n"
 					"	tmpPos.x += sin(time + originPos.z ) * heightCoeff * heightCoeff * factorX ; \n"
-            #else
+#else
             "	float sinval = sin(time + originPos.z ); \n"
             "	tmpPos.y += sinval * radiusCoeff * radiusCoeff * factorY; \n"
             "	tmpPos.x += sinval * heightCoeff * heightCoeff * factorX ; \n"
-            #endif
+#endif
             "	oPosition = mul(worldViewProj, tmpPos); \n"
             "	oFog = oPosition.z; \n"
             "}";
@@ -306,9 +308,8 @@ void WindBatchPage::_updateShaders() {
                 vertexProgSource +=
                     "	vec4 originPos = gl_MultiTexCoord" + StringConverter::toString(texCoordCount - 1) + "; \n";
               } else {
-                vertexProgSource +=
-                    "	gl_TexCoord[" + StringConverter::toString(texNum) + "]	= gl_MultiTexCoord"
-                        + StringConverter::toString(texNum) + "; \n";
+                vertexProgSource += "	gl_TexCoord[" + StringConverter::toString(texNum) + "]	= gl_MultiTexCoord" +
+                                    StringConverter::toString(texNum) + "; \n";
               }
               ++texNum;
             }
@@ -316,17 +317,15 @@ void WindBatchPage::_updateShaders() {
         }
 
         if (lightingEnabled) {
-          //Perform lighting calculations (no specular)
+          // Perform lighting calculations (no specular)
           vertexProgSource +=
               "	vec3 light = normalize(objSpaceLight.xyz - (gl_Vertex.xyz * objSpaceLight.w)); \n"
               "	float diffuseFactor = max(dot(gl_Normal.xyz, light), 0.0); \n";
 
           if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) {
-            vertexProgSource +=
-                "	gl_FrontColor = (lightAmbient + diffuseFactor * lightDiffuse) * gl_Color; \n";
+            vertexProgSource += "	gl_FrontColor = (lightAmbient + diffuseFactor * lightDiffuse) * gl_Color; \n";
           } else {
-            vertexProgSource +=
-                "	gl_FrontColor = (lightAmbient + diffuseFactor * lightDiffuse); \n";
+            vertexProgSource += "	gl_FrontColor = (lightAmbient + diffuseFactor * lightDiffuse); \n";
           }
         } else {
           if (subBatch->m_pVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE) != nullptr) {
@@ -337,7 +336,7 @@ void WindBatchPage::_updateShaders() {
         }
 
         if (m_bFadeEnabled) {
-          //Fade out in the distance
+          // Fade out in the distance
           vertexProgSource +=
               "	float dist = distance(camPos.xz, gl_Vertex.xz);	\n"
               "	gl_FrontColor.a *= (invisibleDist - dist) / fadeGap; \n";
@@ -350,39 +349,37 @@ void WindBatchPage::_updateShaders() {
             "	float factorY = params.w; \n"
             "	vec4 tmpPos = gl_Vertex; \n"
 
-            /*
-            2 different methods are used to for the sin calculation :
-            - the first one gives a better effect but at the cost of a few fps because of the 2 sines
-            - the second one uses less ressources but is a bit less realistic
+/*
+2 different methods are used to for the sin calculation :
+- the first one gives a better effect but at the cost of a few fps because of the 2 sines
+- the second one uses less ressources but is a bit less realistic
 
-            a sin approximation could be use to optimize performances
-            */
-            #if 1
+a sin approximation could be use to optimize performances
+*/
+#if 1
             "	tmpPos.y += sin(time + originPos.z + tmpPos.y + tmpPos.x) * radiusCoeff * radiusCoeff * factorY; \n"
             "	tmpPos.x += sin(time + originPos.z ) * heightCoeff * heightCoeff * factorX; \n"
-            #else
+#else
 
             "	float sinval = sin(time + originPos.z ); \n"
-					"	tmpPos.y += sinval * radiusCoeff * radiusCoeff * factorY; \n"
-					"	tmpPos.x += sinval * heightCoeff * heightCoeff * factorX; \n"
-            #endif
+            "	tmpPos.y += sinval * radiusCoeff * radiusCoeff * factorY; \n"
+            "	tmpPos.x += sinval * heightCoeff * heightCoeff * factorX; \n"
+#endif
             "	gl_Position = worldViewProj * tmpPos; \n"
             "	gl_FogFragCoord = gl_Position.z; \n"
             "}";
       }
 
       // test for shader source
-      //std::ofstream shaderOutput;
-      //shaderOutput.open((vertexProgName+std::string(".cg")).c_str());
-      //shaderOutput << vertexProgSource;
-      //shaderOutput.close();
+      // std::ofstream shaderOutput;
+      // shaderOutput.open((vertexProgName+std::string(".cg")).c_str());
+      // shaderOutput << vertexProgSource;
+      // shaderOutput.close();
 
       // end test for shader source
 
       HighLevelGpuProgramPtr vertexShader = HighLevelGpuProgramManager::getSingleton().createProgram(
-          vertexProgName,
-          ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-          shaderLanguage, GPT_VERTEX_PROGRAM);
+          vertexProgName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, shaderLanguage, GPT_VERTEX_PROGRAM);
 
       vertexShader->setSource(vertexProgSource);
 
@@ -398,7 +395,7 @@ void WindBatchPage::_updateShaders() {
       vertexShader->load();
     }
 
-    //Now that the shader is ready to be applied, apply it
+    // Now that the shader is ready to be applied, apply it
     Ogre::StringStream materialSignature;
     materialSignature << "BatchMat|";
     materialSignature << ptrMat->getName() << "|";
@@ -407,21 +404,20 @@ void WindBatchPage::_updateShaders() {
       materialSignature << m_fInvisibleDist << "|";
     }
 
-    //Search for the desired material
+    // Search for the desired material
     MaterialPtr generatedMaterial = MaterialManager::getSingleton().getByName(materialSignature.str());
     if (!generatedMaterial) {
-      //Clone the material
+      // Clone the material
       generatedMaterial = ptrMat->clone(materialSignature.str());
 
-      //And apply the fade shader
+      // And apply the fade shader
       for (unsigned short t = 0; t < generatedMaterial->getNumTechniques(); ++t) {
         Technique *tech = generatedMaterial->getTechnique(t);
         for (unsigned short p = 0; p < tech->getNumPasses(); ++p) {
           Pass *pass = tech->getPass(p);
 
-          //Setup vertex program
-          if (pass->getVertexProgramName() == "")
-            pass->setVertexProgram(vertexProgName);
+          // Setup vertex program
+          if (pass->getVertexProgramName() == "") pass->setVertexProgram(vertexProgName);
 
           try {
             GpuProgramParametersSharedPtr params = pass->getVertexProgramParameters();
@@ -430,7 +426,7 @@ void WindBatchPage::_updateShaders() {
               params->setNamedAutoConstant("objSpaceLight", GpuProgramParameters::ACT_LIGHT_POSITION_OBJECT_SPACE);
               params->setNamedAutoConstant("lightDiffuse", GpuProgramParameters::ACT_DERIVED_LIGHT_DIFFUSE_COLOUR);
               params->setNamedAutoConstant("lightAmbient", GpuProgramParameters::ACT_DERIVED_AMBIENT_LIGHT_COLOUR);
-              //params->setNamedAutoConstant("matAmbient", GpuProgramParameters::ACT_SURFACE_AMBIENT_COLOUR);
+              // params->setNamedAutoConstant("matAmbient", GpuProgramParameters::ACT_SURFACE_AMBIENT_COLOUR);
             }
 
             params->setNamedConstantFromTime("time", 1);
@@ -439,25 +435,22 @@ void WindBatchPage::_updateShaders() {
             if (m_bFadeEnabled) {
               params->setNamedAutoConstant("camPos", GpuProgramParameters::ACT_CAMERA_POSITION_OBJECT_SPACE);
 
-              //Set fade ranges
+              // Set fade ranges
               params->setNamedAutoConstant("invisibleDist", GpuProgramParameters::ACT_CUSTOM);
               params->setNamedConstant("invisibleDist", m_fInvisibleDist);
 
               params->setNamedAutoConstant("fadeGap", GpuProgramParameters::ACT_CUSTOM);
               params->setNamedConstant("fadeGap", m_fInvisibleDist - m_fVisibleDist);
 
-              if (pass->getAlphaRejectFunction() == CMPF_ALWAYS_PASS)
-                pass->setSceneBlending(SBT_TRANSPARENT_ALPHA);
+              if (pass->getAlphaRejectFunction() == CMPF_ALWAYS_PASS) pass->setSceneBlending(SBT_TRANSPARENT_ALPHA);
             }
-          }
-          catch (const Ogre::Exception &e) {
+          } catch (const Ogre::Exception &e) {
             // test for shader source
             std::ofstream shaderOutput;
             shaderOutput.open("exception.log");
             shaderOutput << e.getDescription();
             shaderOutput.close();
-          }
-          catch (...) {
+          } catch (...) {
             OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR,
                         "Error configuring batched geometry transitions. If you're using materials with custom\
                      vertex shaders, they will need to implement fade transitions to be compatible with BatchPage.",
@@ -465,10 +458,9 @@ void WindBatchPage::_updateShaders() {
           }
         }
       }
-
     }
 
-    //Apply the material
+    // Apply the material
     subBatch->setMaterial(generatedMaterial);
   }
 }

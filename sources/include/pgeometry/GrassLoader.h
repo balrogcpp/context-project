@@ -1,29 +1,33 @@
 /*-------------------------------------------------------------------------------------
 Copyright (c) 2006 John Judnich
 
-This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
-    1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
-    2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable
+for any damages arising from the use of this software. Permission is granted to anyone to use this software for any
+purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following
+restrictions:
+    1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software.
+If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not
+required.
+    2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original
+software.
     3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
 #pragma once
 
+#include "OgreMaterial.h"
+#include "OgrePixelFormat.h"
+#include "OgrePrerequisites.h"
+#include "OgreStringConverter.h"
 #include "PagedGeometry.h"
 #include "PropertyMaps.h"
 #include "RandomTable.h"
-
-#include "OgrePrerequisites.h"
-#include "OgreMaterial.h"
-#include "OgrePixelFormat.h"
-#include "OgreStringConverter.h"
 
 namespace Forests {
 
 class GrassLayer;
 
-/** \brief A PageLoader-derived object you can use with PagedGeometry to produce realistic grass. 
+/** \brief A PageLoader-derived object you can use with PagedGeometry to produce realistic grass.
 
 Using a GrassLoader is simple - simply create an instance, attach it to your PagedGeometry object
 with PagedGeometry::setPageLoader(), and add your grass. Important: For best performance, it is
@@ -183,28 +187,22 @@ class GrassLoader : public PageLoader {
  private:
   friend class GrassLayer;
 
-  //Helper functions
-  Ogre::Mesh *generateGrass_QUAD(PageInfo &page,
-                                 GrassLayer *layer,
-                                 const float *grassPositions,
+  // Helper functions
+  Ogre::Mesh *generateGrass_QUAD(PageInfo &page, GrassLayer *layer, const float *grassPositions,
                                  unsigned int grassCount);
-  Ogre::Mesh *generateGrass_CROSSQUADS(PageInfo &page,
-                                       GrassLayer *layer,
-                                       const float *grassPositions,
+  Ogre::Mesh *generateGrass_CROSSQUADS(PageInfo &page, GrassLayer *layer, const float *grassPositions,
                                        unsigned int grassCount);
-  Ogre::Mesh *generateGrass_SPRITE(PageInfo &page,
-                                   GrassLayer *layer,
-                                   const float *grassPositions,
+  Ogre::Mesh *generateGrass_SPRITE(PageInfo &page, GrassLayer *layer, const float *grassPositions,
                                    unsigned int grassCount);
 
-  //List of grass types
+  // List of grass types
   std::list<GrassLayer *> layerList;
 
-  //Height data
-  Ogre::Real (*heightFunction)(Ogre::Real x, Ogre::Real z, void *userData);    //Pointer to height function
+  // Height data
+  Ogre::Real (*heightFunction)(Ogre::Real x, Ogre::Real z, void *userData);  // Pointer to height function
   void *heightFunctionUserData;
 
-  //Misc.
+  // Misc.
   PagedGeometry *geom;
   Ogre::uint8 renderQueue;
   float densityFactor;
@@ -212,7 +210,7 @@ class GrassLoader : public PageLoader {
   // random table
   RandomTable *rTable;
 
-  //Animation
+  // Animation
   Ogre::Timer windTimer;
   Ogre::Vector3 windDir;
   unsigned long lastTime;
@@ -220,9 +218,7 @@ class GrassLoader : public PageLoader {
   bool autoEdgeBuildEnabled;
 
   static unsigned long GUID;
-  static inline Ogre::String getUniqueID() {
-    return "GrassLDR" + Ogre::StringConverter::toString(++GUID);
-  }
+  static inline Ogre::String getUniqueID() { return "GrassLDR" + Ogre::StringConverter::toString(++GUID); }
 };
 
 /** \brief A technique used to render grass. Passed to GrassLayer::setRenderTechnique(). */
@@ -239,9 +235,11 @@ enum GrassTechnique {
 enum FadeTechnique {
   /// Grass that fades into the distance with transparency. Fairly effective in most cases.
   FADETECH_ALPHA,
-  /// Grass that fades in by "growing" up out of the ground. Very effective when grass fades in against the sky, or with alpha-rejected grass.
+  /// Grass that fades in by "growing" up out of the ground. Very effective when grass fades in against the sky, or with
+  /// alpha-rejected grass.
   FADETECH_GROW,
-  /// Grass that fades in by slowly becoming opaque while it "grows" up out of the ground. Effective with alpha grass fading in against the sky.
+  /// Grass that fades in by slowly becoming opaque while it "grows" up out of the ground. Effective with alpha grass
+  /// fading in against the sky.
   FADETECH_ALPHAGROW
 };
 
@@ -301,10 +299,8 @@ class GrassLayer {
   void setMaxSlope(const float maxSlopeRatio) { maxSlope = maxSlopeRatio; }
 
   void setMaxSlope(Ogre::Radian maxSlopeAngle) {
-    if (maxSlopeAngle > Ogre::Degree(89.99f))
-      maxSlopeAngle = Ogre::Degree(89.99f);
-    if (maxSlopeAngle < Ogre::Degree(0))
-      maxSlopeAngle = Ogre::Degree(0);
+    if (maxSlopeAngle > Ogre::Degree(89.99f)) maxSlopeAngle = Ogre::Degree(89.99f);
+    if (maxSlopeAngle < Ogre::Degree(0)) maxSlopeAngle = Ogre::Degree(0);
 
     maxSlope = Ogre::Math::Tan(maxSlopeAngle);
   }
@@ -413,9 +409,7 @@ class GrassLayer {
 
   \note The grass system is infinite, so there's no need to worry about using too expansive
   boundaries. This setting simply configures the behavior of density and color maps. */
-  void setMapBounds(const TBounds &bounds) {
-    mapBounds = bounds;
-  }
+  void setMapBounds(const TBounds &bounds) { mapBounds = bounds; }
 
   /** \brief Gets a pointer to the density map being used
 
@@ -487,7 +481,7 @@ class GrassLayer {
   void setAnimationEnabled(bool enabled);
 
   /** \brief Enables/disables lighting on this layer
-  */
+   */
   void setLightingEnabled(bool enabled);
 
   /** \brief Sets how far grass should sway back and forth
@@ -518,24 +512,24 @@ class GrassLayer {
   /** \brief Do not delete a GrassLayer yourself - the GrassLoader will do this automatically when it's deleted */
   virtual ~GrassLayer();
 
-  //Updates the vertex shader used by this layer based on the animate enable status
+  // Updates the vertex shader used by this layer based on the animate enable status
   void _updateShaders();
 
-  //Used by GrassLoader::loadPage() - populates an array with a uniform distribution of grass
-  //Returns the override number of grasses, which will always be <= grassCount
+  // Used by GrassLoader::loadPage() - populates an array with a uniform distribution of grass
+  // Returns the override number of grasses, which will always be <= grassCount
   unsigned int _populateGrassList_Uniform(PageInfo page, float *posBuff, unsigned int grassCount);
 
-  //Used by GrassLoader::loadPage() - populates an array of grass positions based on the density map
-  //Returns the override number of grasses, which will always be <= grassCount
+  // Used by GrassLoader::loadPage() - populates an array of grass positions based on the density map
+  // Returns the override number of grasses, which will always be <= grassCount
   unsigned int _populateGrassList_UnfilteredDM(PageInfo page, float *posBuff, unsigned int grassCount);
 
-  //Variation of _populateGrassList(), using bilinear filtering on the density map lookups
-  //Returns the override number of grasses, which will always be <= grassCount
+  // Variation of _populateGrassList(), using bilinear filtering on the density map lookups
+  // Returns the override number of grasses, which will always be <= grassCount
   unsigned int _populateGrassList_BilinearDM(PageInfo page, float *posBuff, unsigned int grassCount);
 
   GrassLoader *parent;
 
-  //Grass material/shape properties
+  // Grass material/shape properties
   Ogre::MaterialPtr material;
   Ogre::Real density;
   Ogre::Real minWidth, maxWidth;
@@ -547,7 +541,7 @@ class GrassLayer {
   FadeTechnique fadeTechnique;
   GrassTechnique renderTechnique;
 
-  //Property maps
+  // Property maps
   TBounds mapBounds;
 
   DensityMap *densityMap;
@@ -556,11 +550,11 @@ class GrassLayer {
   ColorMap *colorMap;
   MapFilter colorMapFilter;
 
-  //Grass shader properties
+  // Grass shader properties
   bool animate, blend, lighting, shaderNeedsUpdate;
   Ogre::Real animMag, animSpeed, animFreq;
 
-  //Current frame of animation for this layer
+  // Current frame of animation for this layer
   Ogre::Real waveCount;
 
   PagedGeometry *geom;
@@ -578,11 +572,8 @@ class GrassPage : public GeometryPage {
   void init(PagedGeometry *geom, const Ogre::Any &data);
   virtual ~GrassPage();
 
-  void addEntity(Ogre::Entity *ent,
-                 const Ogre::Vector3 &position,
-                 const Ogre::Quaternion &rotation,
-                 const Ogre::Vector3 &scale,
-                 const Ogre::ColourValue &color);
+  void addEntity(Ogre::Entity *ent, const Ogre::Vector3 &position, const Ogre::Quaternion &rotation,
+                 const Ogre::Vector3 &scale, const Ogre::ColourValue &color);
   void removeEntities();
   void setFade(bool enabled, Ogre::Real visibleDist, Ogre::Real invisibleDist) {}
   void setVisible(bool visible);
@@ -594,8 +585,6 @@ class GrassPage : public GeometryPage {
   std::list<Ogre::SceneNode *> nodeList;
 
   static unsigned long GUID;
-  static inline Ogre::String getUniqueID() {
-    return "GrassPage" + Ogre::StringConverter::toString(++GUID);
-  }
+  static inline Ogre::String getUniqueID() { return "GrassPage" + Ogre::StringConverter::toString(++GUID); }
 };
-}
+}  // namespace Forests

@@ -126,7 +126,7 @@ void Application::Loop_() {
       auto before_frame = chrono::system_clock::now().time_since_epoch();
       int64_t micros_before_frame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
 
-      if (cumulated_time_ > 1e+6) {
+      if (cumulated_time_ > int64_t(1e+6)) {
         current_fps_ = fps_counter_;
         cumulated_time_ = 0;
         fps_counter_ = 0;

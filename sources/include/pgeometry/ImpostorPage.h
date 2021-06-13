@@ -2,46 +2,51 @@
 Copyright (c) 2006 John Judnich
 Modified 2008 by Erik Hjortsberg (erik.hjortsberg@iteam.se)
 
-This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
-1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
-2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable
+for any damages arising from the use of this software. Permission is granted to anyone to use this software for any
+purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following
+restrictions:
+1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If
+you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not
+required.
+2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original
+software.
 3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
-//ImpostorPage.h
-//ImposterPage is an extension to PagedGeometry which displays entities as imposters.
+// ImpostorPage.h
+// ImposterPage is an extension to PagedGeometry which displays entities as imposters.
 //-------------------------------------------------------------------------------------
 
 #pragma once
+#include <OgrePrerequisites.h>
+#include <OgreRenderTexture.h>
+#include <OgreTextureManager.h>
+
 #include "PagedGeometry.h"
 #include "StaticBillboardSet.h"
-
-#include <OgrePrerequisites.h>
-#include <OgreTextureManager.h>
-#include <OgreRenderTexture.h>
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 // linux memory fix
 #include <memory>
 #endif
 
-//The number of angle increments around the yaw axis to render impostor "snapshots" of trees
+// The number of angle increments around the yaw axis to render impostor "snapshots" of trees
 #define IMPOSTOR_YAW_ANGLES 8
 
-//The number of angle increments around the pitch axis to render impostor "snapshots" of trees
+// The number of angle increments around the pitch axis to render impostor "snapshots" of trees
 #define IMPOSTOR_PITCH_ANGLES 4
 
-//When IMPOSTOR_RENDER_ABOVE_ONLY is defined, impostor images will only be rendered from angles around and
-//above entities. If this is disabled, bottom views of the entities will be rendered to the impostor atlas
-//and therefore allow those angles to be viewed from a distance. However, this requires the IMPOSTOR_PITCH_ANGLES
-//to be doubled to maintain an equal level of impostor angle correctness compared to when impostors are rendered
-//from above only.
+// When IMPOSTOR_RENDER_ABOVE_ONLY is defined, impostor images will only be rendered from angles around and
+// above entities. If this is disabled, bottom views of the entities will be rendered to the impostor atlas
+// and therefore allow those angles to be viewed from a distance. However, this requires the IMPOSTOR_PITCH_ANGLES
+// to be doubled to maintain an equal level of impostor angle correctness compared to when impostors are rendered
+// from above only.
 #define IMPOSTOR_RENDER_ABOVE_ONLY
 
-//When IMPOSTOR_FILE_SAVE is defined, impostor textures will be read and saved to disc; if not, they will stay
-//in memory and need to be regenerated each time the application is run (remove or comment out the line below if this
-//is desired)
+// When IMPOSTOR_FILE_SAVE is defined, impostor textures will be read and saved to disc; if not, they will stay
+// in memory and need to be regenerated each time the application is run (remove or comment out the line below if this
+// is desired)
 //#define IMPOSTOR_FILE_SAVE
 
 namespace Forests {
@@ -50,10 +55,7 @@ class ImpostorBatch;
 class ImpostorTexture;
 
 /// Blend modes used by ImpostorPage::setBlendMode()
-enum ImpostorBlendMode {
-  ALPHA_REJECT_IMPOSTOR,
-  ALPHA_BLEND_IMPOSTOR
-};
+enum ImpostorBlendMode { ALPHA_REJECT_IMPOSTOR, ALPHA_BLEND_IMPOSTOR };
 
 //--------------------------------------------------------------------------
 /// \brief The ImpostorPage class renders entities as impostors (billboard images that look just like the real entity).
@@ -108,10 +110,8 @@ class ImpostorPage : public GeometryPage {
 
   ///
   bool injectImpostorBatch(const Ogre::String &key, ImpostorBatch *injectedBatch) {
-    return injectedBatch ?
-           m_mapImpostorBatches.insert(TImpostorBatchs::value_type(key, injectedBatch)).second : false;
+    return injectedBatch ? m_mapImpostorBatches.insert(TImpostorBatchs::value_type(key, injectedBatch)).second : false;
   }
-
 
   // Static functions
 
@@ -212,45 +212,37 @@ class ImpostorPage : public GeometryPage {
   static void regenerateAll();
 
  protected:
-  Ogre::SceneManager *m_pSceneMgr;               ///<
-  PagedGeometry *m_pPagedGeom;              ///<
-  ImpostorBlendMode m_blendMode;               ///<
-  Ogre::uint m_nInstanceID;             ///<
-  Ogre::uint m_nAveCount;               ///<
-  Ogre::Vector3 m_vecCenter;               ///<
+  Ogre::SceneManager *m_pSceneMgr;       ///<
+  PagedGeometry *m_pPagedGeom;           ///<
+  ImpostorBlendMode m_blendMode;         ///<
+  Ogre::uint m_nInstanceID;              ///<
+  Ogre::uint m_nAveCount;                ///<
+  Ogre::Vector3 m_vecCenter;             ///<
   Ogre::Timer m_timerUpdate;             ///<
-  TImpostorBatchs m_mapImpostorBatches;      ///<
+  TImpostorBatchs m_mapImpostorBatches;  ///<
 
  private:
-
-  static Ogre::uint s_nImpostorResolution;     ///<
-  static Ogre::uint s_nSelfInstances;          ///<
-  static Ogre::uint s_nUpdateInstanceID;       ///<
-  static Ogre::ColourValue s_clrImpostorBackground;   ///<
-  static Ogre::BillboardOrigin s_impostorPivot;           ///<
-}; // end class ImpostorPage
-
+  static Ogre::uint s_nImpostorResolution;           ///<
+  static Ogre::uint s_nSelfInstances;                ///<
+  static Ogre::uint s_nUpdateInstanceID;             ///<
+  static Ogre::ColourValue s_clrImpostorBackground;  ///<
+  static Ogre::BillboardOrigin s_impostorPivot;      ///<
+};                                                   // end class ImpostorPage
 
 //-------------------------------------------------------------------------------------
-//This is used internally by ImpostorPage to store a "batch" of impostors. Similar
-//impostors are all batched into ImpostorBatch'es, which contain a BillboardSet (where
-//the actual billboards are), and a pointer to an existing ImpostorTexture.
+// This is used internally by ImpostorPage to store a "batch" of impostors. Similar
+// impostors are all batched into ImpostorBatch'es, which contain a BillboardSet (where
+// the actual billboards are), and a pointer to an existing ImpostorTexture.
 class ImpostorBatch {
  public:
   static ImpostorBatch *getBatch(ImpostorPage *group, Ogre::Entity *entity);
   virtual ~ImpostorBatch();
 
-  inline void build() {
-    bbset->build();
-  }
+  inline void build() { bbset->build(); }
 
-  inline void clear() {
-    bbset->clear();
-  }
+  inline void clear() { bbset->clear(); }
 
-  inline void setVisible(bool visible) {
-    bbset->setVisible(visible);
-  }
+  inline void setVisible(bool visible) { bbset->setVisible(visible); }
 
   inline void setFade(bool enabled, Ogre::Real visibleDist, Ogre::Real invisibleDist) {
     bbset->setFade(enabled, visibleDist, invisibleDist);
@@ -259,8 +251,8 @@ class ImpostorBatch {
   ///
   void setBillboardOrigin(Ogre::BillboardOrigin origin);
   ///
-  void addBillboard(const Ogre::Vector3 &position, const Ogre::Quaternion &rotation,
-                    const Ogre::Vector3 &scale, const Ogre::ColourValue &color = Ogre::ColourValue::White);
+  void addBillboard(const Ogre::Vector3 &position, const Ogre::Quaternion &rotation, const Ogre::Vector3 &scale,
+                    const Ogre::ColourValue &color = Ogre::ColourValue::White);
   ///
   void setAngle(Ogre::Real pitchDeg, Ogre::Real yawDeg);
 
@@ -290,25 +282,26 @@ class ImpostorBatch {
 class ImpostorTextureResourceLoader : public Ogre::ManualResourceLoader {
  public:
   /**
-  *    Ctor.
-  * @param renderContext The ImpostorTexture to which this instance belongs.
-  */
+   *    Ctor.
+   * @param renderContext The ImpostorTexture to which this instance belongs.
+   */
   ImpostorTextureResourceLoader(ImpostorTexture &impostorTexture);
 
   /**
-  *    At load time the texture will be rerendered.
-  * @param resource
-  */
+   *    At load time the texture will be rerendered.
+   * @param resource
+   */
   virtual void loadResource(Ogre::Resource *resource);
+
  protected:
   ImpostorTexture &texture;
 };
 
 //-------------------------------------------------------------------------------------
-//This is used internally by ImpostorPage. An ImpostorTexture is actually multiple
-//images of an entity from various rotations. ImpostorTextures are applied
-//to billboards to create the effect of 3D shapes, when in reality they are simply
-//flat billboards.
+// This is used internally by ImpostorPage. An ImpostorTexture is actually multiple
+// images of an entity from various rotations. ImpostorTextures are applied
+// to billboards to create the effect of 3D shapes, when in reality they are simply
+// flat billboards.
 class ImpostorTexture {
   friend class ImpostorBatch;
   friend class ImpostorTextureResourceLoader;
@@ -333,8 +326,8 @@ class ImpostorTexture {
  protected:
   ImpostorTexture(ImpostorPage *group, Ogre::Entity *entity);
 
-  void renderTextures(bool force);    // Renders the impostor texture grid
-  void updateMaterials();                // Updates the materials to use the latest rendered impostor texture grid
+  void renderTextures(bool force);  // Renders the impostor texture grid
+  void updateMaterials();           // Updates the materials to use the latest rendered impostor texture grid
 
   static std::map<Ogre::String, ImpostorTexture *> selfList;
   Ogre::SceneManager *sceneMgr;
@@ -355,27 +348,25 @@ class ImpostorTexture {
     return prefix + Ogre::StringConverter::toString(++GUID);
   }
 
-  //This will only be used when IMPOSTOR_FILE_SAVE is set to 0
+  // This will only be used when IMPOSTOR_FILE_SAVE is set to 0
   std::shared_ptr<ImpostorTextureResourceLoader> loader;
 };
 
 //-------------------------------------------------------------------------------------
-//This is an inline function from ImposterBatch that had to be defined down below the
-//ImpostorTexture class, because it uses it.
+// This is an inline function from ImposterBatch that had to be defined down below the
+// ImpostorTexture class, because it uses it.
 inline void ImpostorBatch::addBillboard(const Ogre::Vector3 &position, const Ogre::Quaternion &rotation,
                                         const Ogre::Vector3 &scale, const Ogre::ColourValue &color) {
-  //float degrees = (Math::ACos(rotation.w)*2.0f).valueDegrees();
+  // float degrees = (Math::ACos(rotation.w)*2.0f).valueDegrees();
   const Ogre::Vector3 zVector = rotation * Ogre::Vector3::UNIT_Z;
-  float degrees = (float) Ogre::Math::ATan2(zVector.x, zVector.z).valueDegrees();
-  if (degrees < 0.f)
-    degrees += 360.f;
+  float degrees = (float)Ogre::Math::ATan2(zVector.x, zVector.z).valueDegrees();
+  if (degrees < 0.f) degrees += 360.f;
 
   int n = int(IMPOSTOR_YAW_ANGLES * (degrees / 360.0f) + 0.5f);
   Ogre::uint16 texCoordIndx = (IMPOSTOR_YAW_ANGLES - n) % IMPOSTOR_YAW_ANGLES;
 
   bbset->createBillboard(position + (rotation * entityBBCenter) * scale,
                          float(m_pTexture->entityDiameter * 0.5f * (scale.x + scale.z)),
-                         float(m_pTexture->entityDiameter * scale.y),
-                         color, texCoordIndx);
+                         float(m_pTexture->entityDiameter * scale.y), color, texCoordIndx);
 }
-}  // end namespace
+}  // namespace Forests

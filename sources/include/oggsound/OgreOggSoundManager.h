@@ -1,59 +1,59 @@
 /**
-* @file OgreOggSoundManager.h
-* @author  Ian Stangoe
-* @version v1.26
-*
-* @section LICENSE
-* 
-* This source file is part of OgreOggSound, an OpenAL wrapper library for   
-* use with the Ogre Rendering Engine.										 
-*                                                                           
-* Copyright (c) 2013 Ian Stangoe
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.  
-*
-* @section DESCRIPTION
-* 
-* Manages the audio library
-*/
+ * @file OgreOggSoundManager.h
+ * @author  Ian Stangoe
+ * @version v1.26
+ *
+ * @section LICENSE
+ *
+ * This source file is part of OgreOggSound, an OpenAL wrapper library for
+ * use with the Ogre Rendering Engine.
+ *
+ * Copyright (c) 2013 Ian Stangoe
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @section DESCRIPTION
+ *
+ * Manages the audio library
+ */
 
 #pragma once
-
-#include "OgreOggSoundPrereqs.h"
-#include "OgreOggSound.h"
-#include "OgreOggISound.h"
-#include "LocklessQueue.h"
 
 #include <map>
 #include <string>
 
+#include "LocklessQueue.h"
+#include "OgreOggISound.h"
+#include "OgreOggSound.h"
+#include "OgreOggSoundPrereqs.h"
+
 #if OGGSOUND_THREADED
-#	ifdef POCO_THREAD
-#		include "Poco/ScopedLock.hpp"
-#		include "Poco/Thread.hpp"
-#		include "Poco/Mutex.hpp"
-#	else 
-#include <thread>
-#include <mutex>
+#ifdef POCO_THREAD
+#include "Poco/ScopedLock.hpp"
+#include "Poco/Thread.hpp"
+#include "Poco/Mutex.hpp"
+#else
 #include <chrono>
 #include <functional>
-#	endif
+#include <mutex>
+#include <thread>
+#endif
 #endif
 
 namespace OgreOggSound {
@@ -108,11 +108,9 @@ struct efxProperty {
 };
 
 //! Sound Manager: Manages all sounds for an application
-class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSoundManager>
+class _OGGSOUND_EXPORT OgreOggSoundManager  // : public Ogre::Singleton<OgreOggSoundManager>
 {
-
  public:
-
   // Version string
   static const Ogre::String OGREOGGSOUND_VERSION_STRING;
 
@@ -151,15 +149,13 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param queueListSize
           Desired size of queue list (optional | Multi-threaded ONLY)
    */
-  bool init(const std::string &deviceName = "",
-            unsigned int maxSources = 100,
-            unsigned int queueListSize = 100,
+  bool init(const std::string &deviceName = "", unsigned int maxSources = 100, unsigned int queueListSize = 100,
             Ogre::SceneManager *sMan = 0);
   /** Gets the openal device ptr
-  */
+   */
   const ALCdevice *getOpenalDevice() { return mDevice; }
   /** Gets the openal context ptr
-  */
+   */
   const ALCcontext *getOpenalContext() { return mContext; }
   /** Sets the global volume for all sounds
       @param vol
@@ -198,15 +194,11 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
           Pointer to SceneManager this sound belongs - 0 defaults to first SceneManager defined.
       @param immediately
           Optional flag to indicate creation should occur immediately and not be passed to background thread
-          for queueing. Can be used to overcome the random creation time which might not be acceptable (MULTI-THREADED ONLY)
+          for queueing. Can be used to overcome the random creation time which might not be acceptable (MULTI-THREADED
+  ONLY)
    */
-  OgreOggISound *createSound(const std::string &name,
-                             const std::string &file,
-                             bool stream = false,
-                             bool loop = false,
-                             bool preBuffer = false,
-                             Ogre::SceneManager *scnMgr = 0,
-                             bool immediate = false);
+  OgreOggISound *createSound(const std::string &name, const std::string &file, bool stream = false, bool loop = false,
+                             bool preBuffer = false, Ogre::SceneManager *scnMgr = 0, bool immediate = false);
   /** Gets a named sound.
   @remarks
       Returns a named sound object if defined, nullptr otherwise.
@@ -402,7 +394,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   @remarks
       Currently defaults to AL_STORAGE_AUTO.
    */
-  void setXRamBuffer(ALsizei numBuffers, ALuint* buffers);
+  void setXRamBuffer(ALsizei numBuffers, ALuint *buffers);
   /** Sets XRam buffers storage mode.
   @remarks
       Should be called before creating any sounds
@@ -414,7 +406,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param unit
           units(meters).
    */
-  void setEFXDistanceUnits(float unit=3.3f);
+  void setEFXDistanceUnits(float unit = 3.3f);
   /** Creates a specified EFX filter
   @remarks
       Creates a specified EFX filter if hardware supports it.
@@ -427,7 +419,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param hfgain
           see OpenAL docs for available filters.
    */
-  bool createEFXFilter(const std::string& eName, ALint type, ALfloat gain=1.0, ALfloat hfGain=1.0);
+  bool createEFXFilter(const std::string &eName, ALint type, ALfloat gain = 1.0, ALfloat hfGain = 1.0);
   /** Creates a specified EFX effect
   @remarks
       Creates a specified EFX effect if hardware supports it. Optional reverb
@@ -440,7 +432,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param props
           legacy structure describing a preset reverb effect.
    */
-  bool createEFXEffect(const std::string& eName, ALint type, EAXREVERBPROPERTIES* props=0);
+  bool createEFXEffect(const std::string &eName, ALint type, EAXREVERBPROPERTIES *props = 0);
   /** Sets extended properties on a specified sounds source
   @remarks
       Tries to set EFX extended source properties.
@@ -453,7 +445,8 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param coneOuterHF
           cone outer gain factor for High frequencies.
    */
-  bool setEFXSoundProperties(const std::string& sName, float airAbsorption=0.f, float roomRolloff=0.f, float coneOuterHF=0.f);
+  bool setEFXSoundProperties(const std::string &sName, float airAbsorption = 0.f, float roomRolloff = 0.f,
+                             float coneOuterHF = 0.f);
   /** Sets extended properties on a specified sounds source
   @remarks
       Tries to set EFX extended source properties.
@@ -466,7 +459,8 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param coneOuterHF
           cone outer gain factor for High frequencies.
    */
-  bool _setEFXSoundPropertiesImpl(OgreOggISound* sound=0, float airAbsorption=0.f, float roomRolloff=0.f, float coneOuterHF=0.f);
+  bool _setEFXSoundPropertiesImpl(OgreOggISound *sound = 0, float airAbsorption = 0.f, float roomRolloff = 0.f,
+                                  float coneOuterHF = 0.f);
   /** Sets a specified paremeter on an effect
   @remarks
       Tries to set a parameter value on a specified effect. Returns true/false.
@@ -479,7 +473,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param param
           float value to set.
    */
-  bool setEFXEffectParameter(const std::string& eName, ALint effectType, ALenum attrib, ALfloat param);
+  bool setEFXEffectParameter(const std::string &eName, ALint effectType, ALenum attrib, ALfloat param);
   /** Sets a specified paremeter on an effect
   @remarks
       Tries to set a parameter value on a specified effect. Returns true/false.
@@ -492,7 +486,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param params
           vector pointer of float values to set.
    */
-  bool setEFXEffectParameter(const std::string& eName, ALint type, ALenum attrib, ALfloat* params=0);
+  bool setEFXEffectParameter(const std::string &eName, ALint type, ALenum attrib, ALfloat *params = 0);
   /** Sets a specified paremeter on an effect
   @remarks
       Tries to set a parameter value on a specified effect. Returns true/false.
@@ -505,7 +499,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param param
           integer value to set.
    */
-  bool setEFXEffectParameter(const std::string& eName, ALint type, ALenum attrib, ALint param);
+  bool setEFXEffectParameter(const std::string &eName, ALint type, ALenum attrib, ALint param);
   /** Sets a specified paremeter on an effect
   @remarks
       Tries to set a parameter value on a specified effect. Returns true/false.
@@ -518,7 +512,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param params
           vector pointer of integer values to set.
    */
-  bool setEFXEffectParameter(const std::string& eName, ALint type, ALenum attrib, ALint* params=0);
+  bool setEFXEffectParameter(const std::string &eName, ALint type, ALenum attrib, ALint *params = 0);
   /** Gets the maximum number of Auxiliary Effect slots per source
   @remarks
       Determines how many simultaneous effects can be applied to
@@ -549,7 +543,8 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param filter
           name of filter as defined when created
    */
-  bool attachEffectToSound(const std::string& sName, ALuint slot, const Ogre::String& effect="", const Ogre::String& filter="");
+  bool attachEffectToSound(const std::string &sName, ALuint slot, const Ogre::String &effect = "",
+                           const Ogre::String &filter = "");
   /** Attaches a filter to a sound
   @remarks
       Currently sound must have a source attached prior to this call.
@@ -558,7 +553,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param filter
           name of filter as defined when created
    */
-  bool attachFilterToSound(const std::string& sName, const Ogre::String& filter="");
+  bool attachFilterToSound(const std::string &sName, const Ogre::String &filter = "");
   /** Detaches all effects from a sound
   @remarks
       Currently sound must have a source attached prior to this call.
@@ -567,14 +562,14 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param slotID
           slot ID
    */
-  bool detachEffectFromSound(const std::string& sName, ALuint slotID);
+  bool detachEffectFromSound(const std::string &sName, ALuint slotID);
   /** Detaches all filters from a sound
   @remarks
       Currently sound must have a source attached prior to this call.
       @param sName
           name of sound
    */
-  bool detachFilterFromSound(const std::string& sName);
+  bool detachFilterFromSound(const std::string &sName);
   /** Attaches an effect to a sound
   @remarks
       Currently sound must have a source attached prior to this call.
@@ -587,7 +582,8 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param filter
           name of filter as defined when created
    */
-  bool _attachEffectToSoundImpl(OgreOggISound* sound=0, ALuint slot=255, const Ogre::String& effect="", const Ogre::String& filter="");
+  bool _attachEffectToSoundImpl(OgreOggISound *sound = 0, ALuint slot = 255, const Ogre::String &effect = "",
+                                const Ogre::String &filter = "");
   /** Attaches a filter to a sound
   @remarks
       Currently sound must have a source attached prior to this call.
@@ -596,7 +592,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param filter
           name of filter as defined when created
    */
-  bool _attachFilterToSoundImpl(OgreOggISound* sound=0, const Ogre::String& filter="");
+  bool _attachFilterToSoundImpl(OgreOggISound *sound = 0, const Ogre::String &filter = "");
   /** Detaches all effects from a sound
   @remarks
       Currently sound must have a source attached prior to this call.
@@ -605,14 +601,14 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param slotID
           slot ID
    */
-  bool _detachEffectFromSoundImpl(OgreOggISound* sound=0, ALuint slotID=255);
+  bool _detachEffectFromSoundImpl(OgreOggISound *sound = 0, ALuint slotID = 255);
   /** Detaches all filters from a sound
   @remarks
       Currently sound must have a source attached prior to this call.
       @param sound
           sound pointer
    */
-  bool _detachFilterFromSoundImpl(OgreOggISound* sound=0);
+  bool _detachFilterFromSoundImpl(OgreOggISound *sound = 0);
   /** Returns whether a specified effect is supported
       @param effectID
           OpenAL effect/filter id. (AL_EFFECT... | AL_FILTER...)
@@ -633,15 +629,15 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
 #endif
 
 #if OGGSOUND_THREADED
-#	if POCO_THREAD
+#if POCO_THREAD
   static Poco::Mutex mMutex;
   static Poco::Mutex mSoundMutex;
   static Poco::Mutex mResourceGroupNameMutex;
-#	else
+#else
   static std::mutex mMutex;
   static std::mutex mSoundMutex;
   static std::mutex mResourceGroupNameMutex;
-#	endif
+#endif
 
   /** Pushes a sound action request onto the queue
   @remarks
@@ -653,17 +649,16 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       @param action
           Action to perform.
   */
-  void _requestSoundAction(const SoundAction& action);
+  void _requestSoundAction(const SoundAction &action);
   /** Sets the mForceMutex flag for switching between non-blocking/blocking action calls.
   @remarks
       @param on
           Flag indicating status of mForceMutex var.
   */
-  inline void setForceMutex(bool on) { mForceMutex=on; }
+  inline void setForceMutex(bool on) { mForceMutex = on; }
 #endif
 
  private:
-
   LocklessQueue<OgreOggISound *> *mSoundsToDestroy;
 
 #if OGGSOUND_THREADED
@@ -678,19 +673,18 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
    */
   void _updateBuffers();
 
-  LocklessQueue<SoundAction>* mActionsList = nullptr;
+  LocklessQueue<SoundAction> *mActionsList = nullptr;
 
 #ifdef POCO_THREAD
-  static Poco::Thread* mUpdateThread;
-  class Updater : public Poco::Runnable
-  {
-  public:
-      virtual void run();
+  static Poco::Thread *mUpdateThread;
+  class Updater : public Poco::Runnable {
+   public:
+    virtual void run();
   };
   friend class Updater;
-  static Updater* mUpdater;
+  static Updater *mUpdater;
 #else
-  static std::thread* mUpdateThread;
+  static std::thread *mUpdateThread;
 #endif
   static bool mShuttingDown;
 
@@ -708,7 +702,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   @param act
       Action struct describing action to perform
    */
-  void _performAction(const SoundAction& act);
+  void _performAction(const SoundAction &act);
 
   /** Threaded function for streaming updates
   @remarks
@@ -721,25 +715,23 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
       stopped by OpenAL. Static sounds do not suffer this problem because all the
       audio data is preloaded into memory.
    */
-  static void threadUpdate()
-  {
-      while(!mShuttingDown)
+  static void threadUpdate() {
+    while (!mShuttingDown) {
       {
-          {
 #ifdef POCO_THREAD
-              Poco::Mutex::ScopedLock l(OgreOggSoundManager::getSingletonPtr()->mMutex);
+        Poco::Mutex::ScopedLock l(OgreOggSoundManager::getSingletonPtr()->mMutex);
 #else
-              std::lock_guard lock(OgreOggSoundManager::getSingletonPtr()->mMutex);
+        std::lock_guard lock(OgreOggSoundManager::getSingletonPtr()->mMutex);
 #endif
-              OgreOggSoundManager::getSingletonPtr()->_updateBuffers();
-              OgreOggSoundManager::getSingletonPtr()->_processQueuedSounds();
-          }
-#ifdef POCO_THREAD
-          Poco::Thread::sleep(10);
-#else
-          std::this_thread::sleep_for(std::chrono::microseconds(OGGSOUND_UTIME));
-#endif
+        OgreOggSoundManager::getSingletonPtr()->_updateBuffers();
+        OgreOggSoundManager::getSingletonPtr()->_processQueuedSounds();
       }
+#ifdef POCO_THREAD
+      Poco::Thread::sleep(10);
+#else
+      std::this_thread::sleep_for(std::chrono::microseconds(OGGSOUND_UTIME));
+#endif
+    }
   }
 #endif
   /** Creates a single sound object (implementation).
@@ -761,18 +753,12 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
           Flag indicating if a source should be attached at creation.
    */
 
-  OgreOggISound *_createSoundImpl(
-      Ogre::SceneManager *scnMgr,
-      const std::string &name,
+  OgreOggISound *_createSoundImpl(Ogre::SceneManager *scnMgr, const std::string &name,
 #if OGRE_VERSION_MAJOR == 2
-      Ogre::IdType id,
+                                  Ogre::IdType id,
 #endif
-      const std::string &file,
-      bool stream = false,
-      bool loop = false,
-      bool preBuffer = false,
-      bool immediate = false
-  );
+                                  const std::string &file, bool stream = false, bool loop = false,
+                                  bool preBuffer = false, bool immediate = false);
 
   /** Implementation of sound loading
   @param sound
@@ -869,17 +855,17 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   @param fName
       name of filter as defined when created.
    */
-  ALuint _getEFXFilter(const std::string& fName);
+  ALuint _getEFXFilter(const std::string &fName);
   /** Gets a specified EFX Effect
   @param eName
       name of effect as defined when created.
    */
-  ALuint _getEFXEffect(const std::string& eName);
+  ALuint _getEFXEffect(const std::string &eName);
   /** Gets a specified EFX Effect slot
   @param slotID
       index of auxiliary effect slot
    */
-  ALuint _getEFXSlot(int slotID=0);
+  ALuint _getEFXSlot(int slotID = 0);
   /** Sets EAX reverb properties using a specified present
   @param pEFXEAXReverb
       pointer to converted EFXEAXREVERBPROPERTIES structure object
@@ -928,37 +914,37 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   /**
    * OpenAL device objects
    */
-  ALCdevice *mDevice = nullptr;                        // OpenAL device
-  ALCcontext *mContext = nullptr;                    // OpenAL context
+  ALCdevice *mDevice = nullptr;    // OpenAL device
+  ALCcontext *mContext = nullptr;  // OpenAL context
 
-  ALfloat mOrigVolume = 1.0;                    // Used to revert volume after a mute
+  ALfloat mOrigVolume = 1.0;  // Used to revert volume after a mute
 
   /** Sound lists
    */
-  SoundMap mSoundMap;                        // Map of all sounds
-  ActiveList mActiveSounds;                // list of sounds currently active
-  ActiveList mPausedSounds;                // list of sounds currently paused
-  ActiveList mSoundsToReactivate;            // list of sounds that need re-activating when sources become available
-  ActiveList mWaitingSounds;                // list of sounds that need playing when sources become available
-  SourceList mSourcePool;                    // List of available sources
-  FeatureList mEFXSupportList;            // List of supported EFX effects by OpenAL ID
-  SharedBufferList mSharedBuffers;        // List of shared static buffers
+  SoundMap mSoundMap;               // Map of all sounds
+  ActiveList mActiveSounds;         // list of sounds currently active
+  ActiveList mPausedSounds;         // list of sounds currently paused
+  ActiveList mSoundsToReactivate;   // list of sounds that need re-activating when sources become available
+  ActiveList mWaitingSounds;        // list of sounds that need playing when sources become available
+  SourceList mSourcePool;           // List of available sources
+  FeatureList mEFXSupportList;      // List of supported EFX effects by OpenAL ID
+  SharedBufferList mSharedBuffers;  // List of shared static buffers
 
   /** Fading vars
-  */
-  Ogre::Real mFadeTime = 0.0;                    // Time over which to fade
-  Ogre::Real mFadeTimer = 0.0;                    // Timer for fade
-  bool mFadeIn = false;                            // Direction fade in/out
-  bool mFadeVolume = false;                        // Flag for fading
+   */
+  Ogre::Real mFadeTime = 0.0;   // Time over which to fade
+  Ogre::Real mFadeTimer = 0.0;  // Timer for fade
+  bool mFadeIn = false;         // Direction fade in/out
+  bool mFadeVolume = false;     // Flag for fading
   long update_time = 10;
 
-  ALCchar *mDeviceStrings = nullptr;                // List of available devices strings
-  unsigned int mNumSources = 0;                // Number of sources available for sounds
-  unsigned int mMaxSources = 10;                // Maximum Number of sources to allocate
+  ALCchar *mDeviceStrings = nullptr;  // List of available devices strings
+  unsigned int mNumSources = 0;       // Number of sources available for sounds
+  unsigned int mMaxSources = 10;      // Maximum Number of sources to allocate
 
-  float mGlobalPitch = 1.0;                        // Global pitch modifier
+  float mGlobalPitch = 1.0;  // Global pitch modifier
 
-  OgreOggSoundRecord *mRecorder = nullptr;            // recorder object
+  OgreOggSoundRecord *mRecorder = nullptr;  // recorder object
 
   //! sorts sound list by distance
   struct _sortNearToFar;
@@ -967,8 +953,8 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
 
 #if HAVE_EFX
   /**	EFX Support
-  */
-  bool mEFXSupport;						// EFX present flag
+   */
+  bool mEFXSupport;  // EFX present flag
 
   // Effect objects
   LPALGENEFFECTS alGenEffects;
@@ -983,7 +969,7 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   LPALGETEFFECTF alGetEffectf;
   LPALGETEFFECTFV alGetEffectfv;
 
-  //Filter objects
+  // Filter objects
   LPALGENFILTERS alGenFilters;
   LPALDELETEFILTERS alDeleteFilters;
   LPALISFILTER alIsFilter;
@@ -1010,46 +996,40 @@ class _OGGSOUND_EXPORT OgreOggSoundManager// : public Ogre::Singleton<OgreOggSou
   LPALGETAUXILIARYEFFECTSLOTFV alGetAuxiliaryEffectSlotfv;
 
   /**	XRAM Support
-  */
-  typedef ALboolean (__cdecl *LPEAXSETBUFFERMODE)(ALsizei n, ALuint *buffers, ALint value);
-  typedef ALenum    (__cdecl *LPEAXGETBUFFERMODE)(ALuint buffer, ALint *value);
+   */
+  typedef ALboolean(__cdecl *LPEAXSETBUFFERMODE)(ALsizei n, ALuint *buffers, ALint value);
+  typedef ALenum(__cdecl *LPEAXGETBUFFERMODE)(ALuint buffer, ALint *value);
 
   LPEAXSETBUFFERMODE mEAXSetBufferMode;
   LPEAXGETBUFFERMODE mEAXGetBufferMode;
 
   /**	EAX Support
-  */
-  bool mEAXSupport;						// EAX present flag
-  int mEAXVersion;						// EAX version ID
+   */
+  bool mEAXSupport;  // EAX present flag
+  int mEAXVersion;   // EAX version ID
 
   bool mXRamSupport;
 
-  EffectList mFilterList;					// List of EFX filters
-  EffectList mEffectList;					// List of EFX effects
-  SourceList mEffectSlotList;				// List of EFX effect slots
+  EffectList mFilterList;      // List of EFX filters
+  EffectList mEffectList;      // List of EFX effects
+  SourceList mEffectSlotList;  // List of EFX effect slots
 
-  ALint mNumEffectSlots;					// Number of effect slots available
-  ALint mNumSendsPerSource;				// Number of aux sends per source
+  ALint mNumEffectSlots;     // Number of effect slots available
+  ALint mNumSendsPerSource;  // Number of aux sends per source
 
-  ALenum	mXRamSize,
-          mXRamFree,
-          mXRamAuto,
-          mXRamHardware,
-          mXRamAccessible,
-          mCurrentXRamMode;
+  ALenum mXRamSize, mXRamFree, mXRamAuto, mXRamHardware, mXRamAccessible, mCurrentXRamMode;
 
-  ALint	mXRamSizeMB,
-          mXRamFreeMB;
+  ALint mXRamSizeMB, mXRamFreeMB;
 #endif
 
-  Ogre::String mResourceGroupName;        // Resource group name to search for all sounds
+  Ogre::String mResourceGroupName;  // Resource group name to search for all sounds
 
-  Ogre::SceneManager *mSceneMgr;            // Default SceneManager to use to create sound objects
+  Ogre::SceneManager *mSceneMgr;  // Default SceneManager to use to create sound objects
 
   /**	Listener pointer
    */
-  OgreOggListener *mListener  = nullptr;                // InputListener object
+  OgreOggListener *mListener = nullptr;  // InputListener object
 
   friend class OgreOggSoundFactory;
 };
-}
+}  // namespace OgreOggSound

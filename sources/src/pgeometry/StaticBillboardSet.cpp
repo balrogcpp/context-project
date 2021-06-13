@@ -1,43 +1,48 @@
 /*-------------------------------------------------------------------------------------
 Copyright (c) 2006 John Judnich
 
-This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
-1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
-2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable
+for any damages arising from the use of this software. Permission is granted to anyone to use this software for any
+purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following
+restrictions:
+1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If
+you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not
+required.
+2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original
+software.
 3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
-//StaticBillboardSet.h
-//Provides a method of displaying billboards faster than Ogre's built-in BillboardSet
-//functions by taking advantage of the static nature of billboards (note: StaticBillboardSet
-//does not allow billboards to be moved or deleted individually in real-time)
+// StaticBillboardSet.h
+// Provides a method of displaying billboards faster than Ogre's built-in BillboardSet
+// functions by taking advantage of the static nature of billboards (note: StaticBillboardSet
+// does not allow billboards to be moved or deleted individually in real-time)
 //-------------------------------------------------------------------------------------
 
-#include <OgreRoot.h>
-#include <OgreCamera.h>
-#include <OgreVector3.h>
-#include <OgreMeshManager.h>
-#include <OgreMesh.h>
-#include <OgreSubMesh.h>
-#include <OgreMaterialManager.h>
-#include <OgreMaterial.h>
-#include <OgreBillboardSet.h>
+#include "pgeometry/StaticBillboardSet.h"
+
 #include <OgreBillboard.h>
+#include <OgreBillboardSet.h>
+#include <OgreCamera.h>
+#include <OgreEntity.h>
+#include <OgreHardwareBuffer.h>
+#include <OgreHardwareBufferManager.h>
+#include <OgreHighLevelGpuProgram.h>
+#include <OgreHighLevelGpuProgramManager.h>
+#include <OgreLogManager.h>
+#include <OgreMaterial.h>
+#include <OgreMaterialManager.h>
+#include <OgreMesh.h>
+#include <OgreMeshManager.h>
+#include <OgreRenderSystem.h>
+#include <OgreRenderSystemCapabilities.h>
+#include <OgreRoot.h>
 #include <OgreSceneNode.h>
 #include <OgreString.h>
 #include <OgreStringConverter.h>
-#include <OgreRenderSystem.h>
-#include <OgreRenderSystemCapabilities.h>
-#include <OgreHighLevelGpuProgramManager.h>
-#include <OgreHighLevelGpuProgram.h>
-#include <OgreHardwareBufferManager.h>
-#include <OgreHardwareBuffer.h>
-#include <OgreLogManager.h>
-#include <OgreEntity.h>
+#include <OgreSubMesh.h>
 #include <OgreTechnique.h>
-
-#include "pgeometry/StaticBillboardSet.h"
+#include <OgreVector3.h>
 
 using namespace Ogre;
 using namespace Forests;
@@ -50,41 +55,40 @@ unsigned long StaticBillboardSet::GUID = 0;
 
 //-----------------------------------------------------------------------------
 /// Constructor
-StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNode, BillboardMethod method) :
-    mVisible(true),
-    mFadeEnabled(false),
-    mRenderMethod(method),
-    mpSceneMgr(mgr),
-    mpSceneNode(nullptr),
-    mpEntity(nullptr),
-    mfUFactor(1.f),
-    mfVFactor(1.f),
-    mpFallbackBillboardSet(nullptr),
-    mBBOrigin(BBO_CENTER),
-    mFadeVisibleDist(0.f),
-    mFadeInvisibleDist(0.f) {
+StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNode, BillboardMethod method)
+    : mVisible(true),
+      mFadeEnabled(false),
+      mRenderMethod(method),
+      mpSceneMgr(mgr),
+      mpSceneNode(nullptr),
+      mpEntity(nullptr),
+      mfUFactor(1.f),
+      mfVFactor(1.f),
+      mpFallbackBillboardSet(nullptr),
+      mBBOrigin(BBO_CENTER),
+      mFadeVisibleDist(0.f),
+      mFadeInvisibleDist(0.f) {
   assert(rootSceneNode);
 
-  //Fall back to BB_METHOD_COMPATIBLE if vertex shaders are not available
+  // Fall back to BB_METHOD_COMPATIBLE if vertex shaders are not available
   if (method == BB_METHOD_ACCELERATED) {
     const RenderSystemCapabilities *caps = Root::getSingleton().getRenderSystem()->getCapabilities();
-    if (!caps->hasCapability(RSC_VERTEX_PROGRAM))
-      mRenderMethod = BB_METHOD_COMPATIBLE;
+    if (!caps->hasCapability(RSC_VERTEX_PROGRAM)) mRenderMethod = BB_METHOD_COMPATIBLE;
   }
 
   mpSceneNode = rootSceneNode->createChildSceneNode();
   mEntityName = getUniqueID("SBSentity");
 
   if (mRenderMethod == BB_METHOD_ACCELERATED) {
-    //Load vertex shader to align billboards to face the camera (if not loaded already)
+    // Load vertex shader to align billboards to face the camera (if not loaded already)
     if (s_nSelfInstances == 0) {
       HighLevelGpuProgramManager &mgr = HighLevelGpuProgramManager::getSingleton();
       s_isGLSL = mgr.isLanguageSupported("glsl");
       Ogre::String shaderLanguage = s_isGLSL ? "glsl" : mgr.isLanguageSupported("hlsl") ? "hlsl" : "cg";
 
-      //First shader, simple camera-alignment
+      // First shader, simple camera-alignment
       String vertexProg;
-      if (!s_isGLSL) // DirectX HLSL or nVidia CG
+      if (!s_isGLSL)  // DirectX HLSL or nVidia CG
       {
         vertexProg =
             "void Sprite_vp(	\n"
@@ -101,23 +105,23 @@ StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNo
             "	uniform float    vScroll, \n"
             "	uniform float4   preRotatedQuad[4] )	\n"
             "{	\n"
-            //Face the camera
+            // Face the camera
             "	float4 vCenter = float4( position.x, position.y, position.z, 1.0f );	\n"
             "	float4 vScale = float4( normal.x, normal.y, normal.x, 1.0f );	\n"
             "	oPosition = mul( worldViewProj, vCenter + (preRotatedQuad[normal.z] * vScale) );  \n"
 
-            //Color
+            // Color
             "	oColor = color;   \n"
 
-            //UV Scroll
+            // UV Scroll
             "	oUv = uv;	\n"
             "	oUv.x += uScroll; \n"
             "	oUv.y += vScroll; \n"
 
-            //Fog
+            // Fog
             "	oFog = oPosition.z; \n"
             "}";
-      } else     // OpenGL GLSL
+      } else  // OpenGL GLSL
       {
         vertexProg =
             "uniform mat4 worldViewProj;\n"
@@ -126,26 +130,26 @@ StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNo
             "uniform vec4  preRotatedQuad[4]; \n"
 
             "void main() { \n"
-            //Face the camera
+            // Face the camera
             "	vec4 vCenter = vec4( gl_Vertex.x, gl_Vertex.y, gl_Vertex.z, 1.0 ); \n"
             "	vec4 vScale = vec4( gl_Normal.x, gl_Normal.y, gl_Normal.x , 1.0 ); \n"
             "	gl_Position = worldViewProj * (vCenter + (preRotatedQuad[int(gl_Normal.z)] * vScale) ); \n"
 
-            //Color
+            // Color
             "	gl_FrontColor = gl_Color; \n"
 
-            //UV Scroll
+            // UV Scroll
             "	gl_TexCoord[0] = gl_MultiTexCoord0; \n"
             "	gl_TexCoord[0].x += uScroll; \n"
             "	gl_TexCoord[0].y += vScroll; \n"
 
-            //Fog
+            // Fog
             "	gl_FogFragCoord = gl_Position.z; \n"
             "}";
       }
 
-      HighLevelGpuProgramPtr vertexShader = HighLevelGpuProgramManager::getSingleton().getByName("Sprite_vp",
-                                                                                                 ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+      HighLevelGpuProgramPtr vertexShader = HighLevelGpuProgramManager::getSingleton().getByName(
+          "Sprite_vp", ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
       OgreAssert(!vertexShader, "Sprite_vp already exist");
 
       vertexShader = HighLevelGpuProgramManager::getSingleton().createProgram(
@@ -168,11 +172,10 @@ StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNo
       // compile vertex shader
       vertexShader->load();
 
-
       //====================================================================
-      //Second shader, camera alignment and distance based fading
+      // Second shader, camera alignment and distance based fading
       String vertexProg2;
-      if (!s_isGLSL) // DirectX HLSL or nVidia CG
+      if (!s_isGLSL)  // DirectX HLSL or nVidia CG
       {
         vertexProg2 =
             "void SpriteFade_vp(	\n"
@@ -194,26 +197,26 @@ StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNo
             "	uniform float    vScroll, \n"
             "	uniform float4   preRotatedQuad[4] )	\n"
             "{	\n"
-            //Face the camera
+            // Face the camera
             "	float4 vCenter = float4( position.x, position.y, position.z, 1.0f );	\n"
             "	float4 vScale = float4( normal.x, normal.y, normal.x, 1.0f );	\n"
             "	oPosition = mul( worldViewProj, vCenter + (preRotatedQuad[normal.z] * vScale) );  \n"
 
             "	oColor.rgb = color.rgb;   \n"
 
-            //Fade out in the distance
+            // Fade out in the distance
             "	float dist = distance(camPos.xz, position.xz);	\n"
             "	oColor.a = (invisibleDist - dist) / fadeGap;   \n"
 
-            //UV scroll
+            // UV scroll
             "	oUv = uv;	\n"
             "	oUv.x += uScroll; \n"
             "	oUv.y += vScroll; \n"
 
-            //Fog
+            // Fog
             "	oFog = oPosition.z; \n"
             "}";
-      } else        // OpenGL GLSL
+      } else  // OpenGL GLSL
       {
         vertexProg2 =
             "uniform mat4 worldViewProj;\n"
@@ -225,40 +228,37 @@ StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNo
             "uniform vec4  preRotatedQuad[4]; \n"
 
             "void main() { \n"
-            //Face the camera
+            // Face the camera
             "	vec4 vCenter = vec4( gl_Vertex.x, gl_Vertex.y, gl_Vertex.z, 1.0 ); \n"
             "	vec4 vScale = vec4( gl_Normal.x, gl_Normal.y, gl_Normal.x , 1.0 ); \n"
             "	gl_Position = worldViewProj * (vCenter + (preRotatedQuad[int(gl_Normal.z)] * vScale) ); \n"
 
             "	gl_FrontColor.xyz = gl_Color.xyz; \n"
 
-            //Fade out in the distance
+            // Fade out in the distance
             "	vec4 position = gl_Vertex; \n"
             "	float dist = distance(camPos.xz, position.xz); \n"
             "	gl_FrontColor.w = (invisibleDist - dist) / fadeGap; \n"
 
-            //UV scroll
+            // UV scroll
             "	gl_TexCoord[0] = gl_MultiTexCoord0; \n"
             "	gl_TexCoord[0].x += uScroll; \n"
             "	gl_TexCoord[0].y += vScroll; \n"
 
-            //Fog
+            // Fog
             "	gl_FogFragCoord = gl_Position.z; \n"
             "}";
       }
 
-      HighLevelGpuProgramPtr vertexShader2 = HighLevelGpuProgramManager::getSingleton().getByName("SpriteFade_vp",
-                                                                                                  ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+      HighLevelGpuProgramPtr vertexShader2 = HighLevelGpuProgramManager::getSingleton().getByName(
+          "SpriteFade_vp", ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
       OgreAssert(!vertexShader2, "SpriteFade_vp already exist");
-      vertexShader2 = HighLevelGpuProgramManager::getSingleton().createProgram("SpriteFade_vp",
-                                                                               ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                                                                               shaderLanguage,
-                                                                               GPT_VERTEX_PROGRAM);
+      vertexShader2 = HighLevelGpuProgramManager::getSingleton().createProgram(
+          "SpriteFade_vp", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, shaderLanguage, GPT_VERTEX_PROGRAM);
       vertexShader2->setSource(vertexProg2);
 
       // Set entry point. GLSL can only have one entry point "main".
       if (!s_isGLSL) {
-
         if (shaderLanguage == "hlsl") {
           vertexShader2->setParameter("target", "vs_1_1");
           vertexShader2->setParameter("entry_point", "SpriteFade_vp");
@@ -271,7 +271,7 @@ StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNo
       vertexShader2->load();
     }
   } else {
-    //Compatible billboard method
+    // Compatible billboard method
     mpFallbackBillboardSet = mgr->createBillboardSet(getUniqueID("SBS"), 100);
     mpSceneNode->attachObject(mpFallbackBillboardSet);
     mfUFactor = mfVFactor = Ogre::Real(0.);
@@ -284,27 +284,25 @@ StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNo
 /// Destructor
 StaticBillboardSet::~StaticBillboardSet() {
   if (mRenderMethod == BB_METHOD_ACCELERATED) {
-    clear(); // Delete mesh data
+    clear();  // Delete mesh data
 
-    //Update material reference list
-    if (mPtrMaterial)
-      SBMaterialRef::removeMaterialRef(mPtrMaterial);
-    if (mPtrFadeMaterial)
-      SBMaterialRef::removeMaterialRef(mPtrFadeMaterial);
+    // Update material reference list
+    if (mPtrMaterial) SBMaterialRef::removeMaterialRef(mPtrMaterial);
+    if (mPtrFadeMaterial) SBMaterialRef::removeMaterialRef(mPtrFadeMaterial);
 
-    //Delete vertex shaders and materials if no longer in use
+    // Delete vertex shaders and materials if no longer in use
     if (--s_nSelfInstances == 0) {
-      s_mapFadedMaterial.clear();  //Delete fade materials
+      s_mapFadedMaterial.clear();  // Delete fade materials
       HighLevelGpuProgramManager::getSingleton().remove("Sprite_vp",
                                                         ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
       HighLevelGpuProgramManager::getSingleton().remove("SpriteFade_vp",
                                                         ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
     }
   } else
-    //Remove billboard set
+    // Remove billboard set
     mpSceneMgr->destroyBillboardSet(mpFallbackBillboardSet);
 
-  //Delete scene node
+  // Delete scene node
   if (mpSceneNode->getParent())
     mpSceneNode->getParentSceneNode()->removeAndDestroyChild(mpSceneNode);
   else
@@ -315,22 +313,21 @@ StaticBillboardSet::~StaticBillboardSet() {
 ///
 void StaticBillboardSet::clear() {
   if (mRenderMethod == BB_METHOD_ACCELERATED) {
-    //Delete the entity and mesh data
+    // Delete the entity and mesh data
     if (mpEntity) {
-      //Delete entity
+      // Delete entity
       mpSceneNode->detachAllObjects();
       mpEntity->_getManager()->destroyEntity(mpEntity);
       mpEntity = nullptr;
 
-      //Delete mesh
+      // Delete mesh
       MeshManager::getSingleton().remove(mPtrMesh);
       mPtrMesh.reset();
     }
 
     if (!mBillboardBuffer.empty()) {
-      //Remove any billboard data which might be left over if the user forgot to call build()
-      for (int i = mBillboardBuffer.size() - 1; i > 0; /* empty */ )
-        delete mBillboardBuffer[--i];
+      // Remove any billboard data which might be left over if the user forgot to call build()
+      for (int i = mBillboardBuffer.size() - 1; i > 0; /* empty */) delete mBillboardBuffer[--i];
       mBillboardBuffer.clear();
     }
   } else
@@ -341,29 +338,28 @@ void StaticBillboardSet::clear() {
 /// Performs final steps required for the created billboards to appear in the scene.
 void StaticBillboardSet::build() {
   if (mRenderMethod == BB_METHOD_ACCELERATED) {
-    //Delete old entity and mesh data
+    // Delete old entity and mesh data
     if (mpEntity) {
-      //Delete entity
+      // Delete entity
       mpSceneNode->detachAllObjects();
       mpEntity->_getManager()->destroyEntity(mpEntity);
       mpEntity = nullptr;
 
-      //Delete mesh
+      // Delete mesh
       MeshManager::getSingleton().remove(mPtrMesh);
       mPtrMesh.reset();
     }
 
-    //If there are no billboards to create, exit
-    if (mBillboardBuffer.empty())
-      return;
+    // If there are no billboards to create, exit
+    if (mBillboardBuffer.empty()) return;
 
-    //Create manual mesh to store billboard quads
+    // Create manual mesh to store billboard quads
     mPtrMesh = MeshManager::getSingleton().createManual(getUniqueID("SBSmesh"),
                                                         ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     Ogre::SubMesh *pSubMesh = mPtrMesh->createSubMesh();
     pSubMesh->useSharedVertices = false;
 
-    //Setup vertex format information
+    // Setup vertex format information
     pSubMesh->vertexData = new VertexData;
     pSubMesh->vertexData->vertexStart = 0;
     pSubMesh->vertexData->vertexCount = 4 * mBillboardBuffer.size();
@@ -379,13 +375,13 @@ void StaticBillboardSet::build() {
     dcl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES);
     offset += VertexElement::getTypeSize(VET_FLOAT2);
 
-    //Populate a new vertex buffer
+    // Populate a new vertex buffer
     HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton().createVertexBuffer(
         offset, pSubMesh->vertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY, false);
     float *pReal = static_cast<float *>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
 
-    float minX = (float) Math::POS_INFINITY, minY = (float) Math::POS_INFINITY, minZ = (float) Math::POS_INFINITY;
-    float maxX = (float) Math::NEG_INFINITY, maxY = (float) Math::NEG_INFINITY, maxZ = (float) Math::NEG_INFINITY;
+    float minX = (float)Math::POS_INFINITY, minY = (float)Math::POS_INFINITY, minZ = (float)Math::POS_INFINITY;
+    float maxX = (float)Math::NEG_INFINITY, maxY = (float)Math::NEG_INFINITY, maxZ = (float)Math::NEG_INFINITY;
 
     // For each billboard
     size_t billboardCount = mBillboardBuffer.size();
@@ -401,15 +397,14 @@ void StaticBillboardSet::build() {
       ////*pReal++ = bb->xScaleHalf;
       ////*pReal++ = bb->yScaleHalf;
       memcpy(pReal, &(bb->xPos), 5 * sizeof(float));
-      pReal += 5; // move to next float value
+      pReal += 5;  // move to next float value
       *pReal++ = 0.0f;
 
       // color
-      *(reinterpret_cast< uint32 * >(pReal++)) = bb->color;
+      *(reinterpret_cast<uint32 *>(pReal++)) = bb->color;
       // uv
       *pReal++ = (bb->texcoordIndexU * mfUFactor);
       *pReal++ = (bb->texcoordIndexV * mfVFactor);
-
 
       // position
       //////*pReal++ = bb->xPos;
@@ -419,15 +414,14 @@ void StaticBillboardSet::build() {
       //////*pReal++ = bb->xScaleHalf;
       //////*pReal++ = bb->yScaleHalf;
       memcpy(pReal, &(bb->xPos), 5 * sizeof(float));
-      pReal += 5; // move to next float value
+      pReal += 5;  // move to next float value
       *pReal++ = 1.0f;
       // color
-      *(reinterpret_cast< uint32 * >(pReal++)) = bb->color;
+      *(reinterpret_cast<uint32 *>(pReal++)) = bb->color;
       // uv
       *pReal++ = ((bb->texcoordIndexU + 1) * mfUFactor);
       *pReal++ = (bb->texcoordIndexV * mfVFactor);
 
-
       // position
       //////*pReal++ = bb->xPos;
       //////*pReal++ = bb->yPos;
@@ -436,15 +430,14 @@ void StaticBillboardSet::build() {
       //////*pReal++ = bb->xScaleHalf;
       //////*pReal++ = bb->yScaleHalf;
       memcpy(pReal, &(bb->xPos), 5 * sizeof(float));
-      pReal += 5; // move to next float value
+      pReal += 5;  // move to next float value
       *pReal++ = 2.0f;
       // color
-      *(reinterpret_cast< uint32 * > (pReal++)) = bb->color;
+      *(reinterpret_cast<uint32 *>(pReal++)) = bb->color;
       // uv
       *pReal++ = (bb->texcoordIndexU * mfUFactor);
       *pReal++ = ((bb->texcoordIndexV + 1) * mfVFactor);
 
-
       // position
       //////*pReal++ = bb->xPos;
       //////*pReal++ = bb->yPos;
@@ -453,27 +446,27 @@ void StaticBillboardSet::build() {
       //////*pReal++ = bb->xScaleHalf;
       //////*pReal++ = bb->yScaleHalf;
       memcpy(pReal, &(bb->xPos), 5 * sizeof(float));
-      pReal += 5; // move to next float value
+      pReal += 5;  // move to next float value
       *pReal++ = 3.0f;
       // color
-      *(reinterpret_cast< uint32 * >(pReal++)) = bb->color;
+      *(reinterpret_cast<uint32 *>(pReal++)) = bb->color;
       // uv
       *pReal++ = ((bb->texcoordIndexU + 1) * mfUFactor);
       *pReal++ = ((bb->texcoordIndexV + 1) * mfVFactor);
 
-      //Update bounding box
+      // Update bounding box
       if (bb->xPos - bb->xScaleHalf < minX) minX = bb->xPos - bb->xScaleHalf;
       if (bb->xPos + bb->xScaleHalf > maxX) maxX = bb->xPos + bb->xScaleHalf;
       if (bb->yPos - bb->yScaleHalf < minY) minY = bb->yPos - bb->yScaleHalf;
       if (bb->yPos + bb->yScaleHalf > maxY) maxY = bb->yPos + bb->yScaleHalf;
-      //if (bb->zPos - halfXScale < minZ) minZ = bb->zPos - halfXScale;
-      //if (bb->zPos + halfXScale > maxZ) maxZ = bb->zPos + halfXScale;
+      // if (bb->zPos - halfXScale < minZ) minZ = bb->zPos - halfXScale;
+      // if (bb->zPos + halfXScale > maxZ) maxZ = bb->zPos + halfXScale;
       if (bb->zPos < minZ) minZ = bb->zPos - 0.5f;
       if (bb->zPos > maxZ) maxZ = bb->zPos + 0.5f;
 
       delete bb;
     }
-    mBillboardBuffer.clear(); //Empty the mBillboardBuffer now, because all billboards have been built
+    mBillboardBuffer.clear();  // Empty the mBillboardBuffer now, because all billboards have been built
 
     vbuf->unlock();
     pSubMesh->vertexData->vertexBufferBinding->setBinding(0, vbuf);
@@ -482,15 +475,13 @@ void StaticBillboardSet::build() {
     {
       pSubMesh->indexData->indexStart = 0;
       pSubMesh->indexData->indexCount = 6 * billboardCount;
-      assert(pSubMesh->indexData->indexCount <= std::numeric_limits<Ogre::uint16>::max()
-                 && "To many indices. Use 32 bit indices");
+      assert(pSubMesh->indexData->indexCount <= std::numeric_limits<Ogre::uint16>::max() &&
+             "To many indices. Use 32 bit indices");
       Ogre::HardwareIndexBufferSharedPtr &ptrIndBuf = pSubMesh->indexData->indexBuffer;
-      ptrIndBuf = HardwareBufferManager::getSingleton().createIndexBuffer(HardwareIndexBuffer::IT_16BIT,
-                                                                          pSubMesh->indexData->indexCount,
-                                                                          HardwareBuffer::HBU_STATIC_WRITE_ONLY,
-                                                                          false);
+      ptrIndBuf = HardwareBufferManager::getSingleton().createIndexBuffer(
+          HardwareIndexBuffer::IT_16BIT, pSubMesh->indexData->indexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY, false);
 
-      Ogre::uint16 *pIBuf = static_cast < Ogre::uint16 * > (ptrIndBuf->lock(HardwareBuffer::HBL_DISCARD));
+      Ogre::uint16 *pIBuf = static_cast<Ogre::uint16 *>(ptrIndBuf->lock(HardwareBuffer::HBL_DISCARD));
       for (Ogre::uint16 i = 0; i < billboardCount; ++i) {
         Ogre::uint16 offset = i * 4;
 
@@ -502,7 +493,7 @@ void StaticBillboardSet::build() {
         *pIBuf++ = 2 + offset;
         *pIBuf++ = 3 + offset;
       }
-      ptrIndBuf->unlock(); // Unlock buffer and update GPU
+      ptrIndBuf->unlock();  // Unlock buffer and update GPU
     }
 
     // Finish up mesh
@@ -535,11 +526,10 @@ void StaticBillboardSet::build() {
 void StaticBillboardSet::setMaterial(const String &materialName, const Ogre::String &resourceGroup) {
   bool needUpdateMat =
       !mPtrMaterial || mPtrMaterial->getName() != materialName || mPtrMaterial->getGroup() != resourceGroup;
-  if (!needUpdateMat)
-    return;
+  if (!needUpdateMat) return;
 
   if (mRenderMethod == BB_METHOD_ACCELERATED) {
-    //Update material reference list
+    // Update material reference list
     if (mFadeEnabled) {
       assert(mPtrFadeMaterial);
       SBMaterialRef::removeMaterialRef(mPtrFadeMaterial);
@@ -554,9 +544,8 @@ void StaticBillboardSet::setMaterial(const String &materialName, const Ogre::Str
     } else
       SBMaterialRef::addMaterialRef(mPtrMaterial, mBBOrigin);
 
-    //Apply material to entity
-    if (mpEntity)
-      mpEntity->setMaterial(mFadeEnabled ? mPtrFadeMaterial : mPtrMaterial);
+    // Apply material to entity
+    if (mpEntity) mpEntity->setMaterial(mFadeEnabled ? mPtrFadeMaterial : mPtrMaterial);
   } else  // old GPU compatibility
   {
     mPtrMaterial =
@@ -576,7 +565,7 @@ void StaticBillboardSet::setFade(bool enabled, Real visibleDist, Real invisibleD
                     "Billboard fading cannot be enabled without a material applied first",
                     "StaticBillboardSet::setFade()");
 
-      //Update material reference list
+      // Update material reference list
       if (mFadeEnabled) {
         assert(mPtrFadeMaterial);
         SBMaterialRef::removeMaterialRef(mPtrFadeMaterial);
@@ -588,9 +577,8 @@ void StaticBillboardSet::setFade(bool enabled, Real visibleDist, Real invisibleD
       mPtrFadeMaterial = getFadeMaterial(mPtrMaterial, visibleDist, invisibleDist);
       SBMaterialRef::addMaterialRef(mPtrFadeMaterial, mBBOrigin);
 
-      //Apply material to entity
-      if (mpEntity)
-        mpEntity->setMaterial(mPtrFadeMaterial);
+      // Apply material to entity
+      if (mpEntity) mpEntity->setMaterial(mPtrFadeMaterial);
 
       mFadeEnabled = true;
       mFadeVisibleDist = visibleDist;
@@ -598,15 +586,14 @@ void StaticBillboardSet::setFade(bool enabled, Real visibleDist, Real invisibleD
     } else  // disable
     {
       if (mFadeEnabled) {
-        //Update material reference list
+        // Update material reference list
         assert(mPtrFadeMaterial);
         assert(mPtrMaterial);
         SBMaterialRef::removeMaterialRef(mPtrFadeMaterial);
         SBMaterialRef::addMaterialRef(mPtrMaterial, mBBOrigin);
 
-        //Apply material to entity
-        if (mpEntity)
-          mpEntity->setMaterial(mPtrMaterial);
+        // Apply material to entity
+        if (mpEntity) mpEntity->setMaterial(mPtrMaterial);
 
         mFadeEnabled = false;
         mFadeVisibleDist = visibleDist;
@@ -626,8 +613,8 @@ void StaticBillboardSet::setTextureStacksAndSlices(Ogre::uint16 stacks, Ogre::ui
 
 //-----------------------------------------------------------------------------
 ///
-MaterialPtr StaticBillboardSet::getFadeMaterial(const Ogre::MaterialPtr &protoMaterial,
-                                                Real visibleDist_, Real invisibleDist_) {
+MaterialPtr StaticBillboardSet::getFadeMaterial(const Ogre::MaterialPtr &protoMaterial, Real visibleDist_,
+                                                Real invisibleDist_) {
   assert(protoMaterial);
 
   Ogre::StringStream materialSignature;
@@ -639,26 +626,26 @@ MaterialPtr StaticBillboardSet::getFadeMaterial(const Ogre::MaterialPtr &protoMa
 
   FadedMaterialMap::iterator it = s_mapFadedMaterial.find(materialSignature.str());
   if (it != s_mapFadedMaterial.end())
-    return it->second; //Use the existing fade material
+    return it->second;  // Use the existing fade material
   else {
     MaterialPtr fadeMaterial = protoMaterial->clone(getUniqueID("ImpostorFade"));
 
-    //And apply the fade shader
+    // And apply the fade shader
     for (unsigned short t = 0; t < fadeMaterial->getNumTechniques(); ++t) {
       Technique *tech = fadeMaterial->getTechnique(t);
       for (unsigned short p = 0; p < tech->getNumPasses(); ++p) {
         Pass *pass = tech->getPass(p);
 
-        //Setup vertex program
+        // Setup vertex program
         pass->setVertexProgram("SpriteFade_vp");
         GpuProgramParametersSharedPtr params = pass->getVertexProgramParameters();
 
         params->setNamedAutoConstant("worldViewProj", GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
 
-        static const Ogre::String uScroll = "uScroll", vScroll = "vScroll",
-            preRotatedQuad0 = "preRotatedQuad[0]", preRotatedQuad1 = "preRotatedQuad[1]",
-            preRotatedQuad2 = "preRotatedQuad[2]", preRotatedQuad3 = "preRotatedQuad[3]",
-            camPos = "camPos", fadeGap = "fadeGap", invisibleDist = "invisibleDist";
+        static const Ogre::String uScroll = "uScroll", vScroll = "vScroll", preRotatedQuad0 = "preRotatedQuad[0]",
+                                  preRotatedQuad1 = "preRotatedQuad[1]", preRotatedQuad2 = "preRotatedQuad[2]",
+                                  preRotatedQuad3 = "preRotatedQuad[3]", camPos = "camPos", fadeGap = "fadeGap",
+                                  invisibleDist = "invisibleDist";
 
         params->setNamedAutoConstant(uScroll, GpuProgramParameters::ACT_CUSTOM);
         params->setNamedAutoConstant(vScroll, GpuProgramParameters::ACT_CUSTOM);
@@ -671,19 +658,19 @@ MaterialPtr StaticBillboardSet::getFadeMaterial(const Ogre::MaterialPtr &protoMa
         params->setNamedAutoConstant(fadeGap, GpuProgramParameters::ACT_CUSTOM);
         params->setNamedAutoConstant(invisibleDist, GpuProgramParameters::ACT_CUSTOM);
 
-        //Set fade ranges
+        // Set fade ranges
         params->setNamedConstant(invisibleDist, invisibleDist_);
         params->setNamedConstant(fadeGap, invisibleDist_ - visibleDist_);
 
         pass->setSceneBlending(SBT_TRANSPARENT_ALPHA);
-        //pass->setAlphaRejectFunction(CMPF_ALWAYS_PASS);
-        //pass->setDepthWriteEnabled(false);
+        // pass->setAlphaRejectFunction(CMPF_ALWAYS_PASS);
+        // pass->setDepthWriteEnabled(false);
 
       }  // for Pass
 
     }  // for Technique
 
-    //Add it to the list so it can be reused later
+    // Add it to the list so it can be reused later
     s_mapFadedMaterial.insert(std::pair<String, MaterialPtr>(materialSignature.str(), fadeMaterial));
 
     return fadeMaterial;
@@ -694,19 +681,17 @@ MaterialPtr StaticBillboardSet::getFadeMaterial(const Ogre::MaterialPtr &protoMa
 ///
 void StaticBillboardSet::updateAll(const Vector3 &cameraDirection) {
   // s_nSelfInstances will only be greater than 0 if one or more StaticBillboardSet's are using BB_METHOD_ACCELERATED
-  if (s_nSelfInstances == 0)
-    return;
+  if (s_nSelfInstances == 0) return;
 
-  //Set shader parameter so material will face camera
+  // Set shader parameter so material will face camera
   Vector3 forward = cameraDirection;
   Vector3 vRight = forward.crossProduct(Vector3::UNIT_Y);
   Vector3 vUp = forward.crossProduct(vRight);
   vRight.normalise();
   vUp.normalise();
 
-  //Even if camera is upside down, the billboards should remain upright
-  if (vUp.y < 0)
-    vUp *= -1;
+  // Even if camera is upside down, the billboards should remain upright
+  if (vUp.y < 0) vUp *= -1;
 
   // Precompute preRotatedQuad for both cases (BBO_CENTER, BBO_BOTTOM_CENTER)
 
@@ -715,34 +700,29 @@ void StaticBillboardSet::updateAll(const Vector3 &cameraDirection) {
   Vector3 vPoint2 = (-vRight - vUp);
   Vector3 vPoint3 = (vRight - vUp);
 
-  float preRotatedQuad_BBO_CENTER[16] = // single prerotated quad oriented towards the camera
-      {
-          (float) vPoint0.x, (float) vPoint0.y, (float) vPoint0.z, 0.0f,
-          (float) vPoint1.x, (float) vPoint1.y, (float) vPoint1.z, 0.0f,
-          (float) vPoint2.x, (float) vPoint2.y, (float) vPoint2.z, 0.0f,
-          (float) vPoint3.x, (float) vPoint3.y, (float) vPoint3.z, 0.0f
-      };
+  float preRotatedQuad_BBO_CENTER[16] =  // single prerotated quad oriented towards the camera
+      {(float)vPoint0.x, (float)vPoint0.y, (float)vPoint0.z, 0.0f,
+       (float)vPoint1.x, (float)vPoint1.y, (float)vPoint1.z, 0.0f,
+       (float)vPoint2.x, (float)vPoint2.y, (float)vPoint2.z, 0.0f,
+       (float)vPoint3.x, (float)vPoint3.y, (float)vPoint3.z, 0.0f};
 
   vPoint0 = (-vRight + vUp + vUp);
   vPoint1 = (vRight + vUp + vUp);
   vPoint2 = (-vRight);
   vPoint3 = (vRight);
-  float preRotatedQuad_BBO_BOTTOM_CENTER[16] =
-      {
-          (float) vPoint0.x, (float) vPoint0.y, (float) vPoint0.z, 0.0f,
-          (float) vPoint1.x, (float) vPoint1.y, (float) vPoint1.z, 0.0f,
-          (float) vPoint2.x, (float) vPoint2.y, (float) vPoint2.z, 0.0f,
-          (float) vPoint3.x, (float) vPoint3.y, (float) vPoint3.z, 0.0f
-      };
+  float preRotatedQuad_BBO_BOTTOM_CENTER[16] = {(float)vPoint0.x, (float)vPoint0.y, (float)vPoint0.z, 0.0f,
+                                                (float)vPoint1.x, (float)vPoint1.y, (float)vPoint1.z, 0.0f,
+                                                (float)vPoint2.x, (float)vPoint2.y, (float)vPoint2.z, 0.0f,
+                                                (float)vPoint3.x, (float)vPoint3.y, (float)vPoint3.z, 0.0f};
 
   // Shaders uniform variables
   static const Ogre::String uScroll = "uScroll", vScroll = "vScroll", preRotatedQuad0 = "preRotatedQuad[0]",
-      preRotatedQuad1 = "preRotatedQuad[1]", preRotatedQuad2 = "preRotatedQuad[2]",
-      preRotatedQuad3 = "preRotatedQuad[3]";
+                            preRotatedQuad1 = "preRotatedQuad[1]", preRotatedQuad2 = "preRotatedQuad[2]",
+                            preRotatedQuad3 = "preRotatedQuad[3]";
 
   // SVA for Ogre::Material hack
-  const GpuConstantDefinition *pGPU_ConstDef_preRotatedQuad0 = 0,
-      *pGPU_ConstDef_uScroll = 0, *pGPU_ConstDef_vScroll = 0;
+  const GpuConstantDefinition *pGPU_ConstDef_preRotatedQuad0 = 0, *pGPU_ConstDef_uScroll = 0,
+                              *pGPU_ConstDef_vScroll = 0;
 
   // For each material in use by the billboard system..
   SBMaterialRefList::iterator i1 = SBMaterialRef::getList().begin(), iend = SBMaterialRef::getList().end();
@@ -768,14 +748,14 @@ void StaticBillboardSet::updateAll(const Vector3 &cameraDirection) {
     }
 
     // Which prerotated quad use
-    const float
-        *pQuad = i1->second->getOrigin() == BBO_CENTER ? preRotatedQuad_BBO_CENTER : preRotatedQuad_BBO_BOTTOM_CENTER;
+    const float *pQuad =
+        i1->second->getOrigin() == BBO_CENTER ? preRotatedQuad_BBO_CENTER : preRotatedQuad_BBO_BOTTOM_CENTER;
 
     // Update the vertex shader parameters
     GpuProgramParametersSharedPtr params = p->getVertexProgramParameters();
-    //params->setNamedConstant(preRotatedQuad0, pQuad, 4);
-    //params->setNamedConstant(uScroll, p->getTextureUnitState(0)->getTextureUScroll());
-    //params->setNamedConstant(vScroll, p->getTextureUnitState(0)->getTextureVScroll());
+    // params->setNamedConstant(preRotatedQuad0, pQuad, 4);
+    // params->setNamedConstant(uScroll, p->getTextureUnitState(0)->getTextureUScroll());
+    // params->setNamedConstant(vScroll, p->getTextureUnitState(0)->getTextureVScroll());
 
     // SVA some hack of Ogre::Material.
     // Since material are cloned and use same vertex shader "Sprite_vp" hardware GPU indices
@@ -783,7 +763,7 @@ void StaticBillboardSet::updateAll(const Vector3 &cameraDirection) {
     // Therefore this may be unsafe code. Instead of 3 std::map lookups(map::find(const Ogre::String&)) do only 1
     {
       const GpuConstantDefinition *def = params->_findNamedConstantDefinition(preRotatedQuad0, true);
-      if (def != pGPU_ConstDef_preRotatedQuad0) // new material, reread
+      if (def != pGPU_ConstDef_preRotatedQuad0)  // new material, reread
       {
         pGPU_ConstDef_preRotatedQuad0 = def;
         pGPU_ConstDef_uScroll = params->_findNamedConstantDefinition(uScroll, true);
@@ -791,26 +771,24 @@ void StaticBillboardSet::updateAll(const Vector3 &cameraDirection) {
       }
     }
 
-    float fUScroll = (float) p->getTextureUnitState(0)->getTextureUScroll(),
-        fVScroll = (float) p->getTextureUnitState(0)->getTextureVScroll();
+    float fUScroll = (float)p->getTextureUnitState(0)->getTextureUScroll(),
+          fVScroll = (float)p->getTextureUnitState(0)->getTextureVScroll();
     params->_writeRawConstants(pGPU_ConstDef_preRotatedQuad0->physicalIndex, pQuad, 16);
     params->_writeRawConstants(pGPU_ConstDef_uScroll->physicalIndex, &fUScroll, 1);
     params->_writeRawConstants(pGPU_ConstDef_vScroll->physicalIndex, &fVScroll, 1);
 
-    ++i1; // next material in billboard system
+    ++i1;  // next material in billboard system
   }
 }
 
 //-----------------------------------------------------------------------------
 ///
 void StaticBillboardSet::setBillboardOrigin(BillboardOrigin origin) {
-  assert((origin == BBO_CENTER || origin == BBO_BOTTOM_CENTER)
-             && "Invalid origin - only BBO_CENTER and BBO_BOTTOM_CENTER is supported");
+  assert((origin == BBO_CENTER || origin == BBO_BOTTOM_CENTER) &&
+         "Invalid origin - only BBO_CENTER and BBO_BOTTOM_CENTER is supported");
   mBBOrigin = origin;
-  if (mRenderMethod != BB_METHOD_ACCELERATED)
-    mpFallbackBillboardSet->setBillboardOrigin(origin);
+  if (mRenderMethod != BB_METHOD_ACCELERATED) mpFallbackBillboardSet->setBillboardOrigin(origin);
 }
-
 
 //-------------------------------------------------------------------------------------
 
@@ -824,15 +802,15 @@ void SBMaterialRef::addMaterialRef(const MaterialPtr &matP, Ogre::BillboardOrigi
   it = selfList.find(mat);
 
   if (it != selfList.end()) {
-    //Material already exists in selfList - increment refCount
+    // Material already exists in selfList - increment refCount
     matRef = it->second;
     ++matRef->refCount;
   } else {
-    //Material does not exist in selfList - add it
+    // Material does not exist in selfList - add it
     matRef = new SBMaterialRef(mat, o);
     selfList[mat] = matRef;
-    //No need to set refCount to 1 here because the SBMaterialRef
-    //constructor sets refCount to 1.
+    // No need to set refCount to 1 here because the SBMaterialRef
+    // constructor sets refCount to 1.
   }
 }
 
@@ -842,10 +820,10 @@ void SBMaterialRef::removeMaterialRef(const MaterialPtr &matP) {
   SBMaterialRef *matRef;
   SBMaterialRefList::iterator it;
 
-  //Find material in selfList
+  // Find material in selfList
   it = selfList.find(mat);
   if (it != selfList.end()) {
-    //Decrease the reference count, and remove the item if refCount == 0
+    // Decrease the reference count, and remove the item if refCount == 0
     matRef = it->second;
     if (--matRef->refCount == 0) {
       delete matRef;

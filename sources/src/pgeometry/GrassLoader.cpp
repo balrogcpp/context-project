@@ -1,15 +1,21 @@
 /*-------------------------------------------------------------------------------------
 Copyright (c) 2006 John Judnich
 
-This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
-	1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
-	2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
-	3. This notice may not be removed or altered from any source distribution.
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable
+for any damages arising from the use of this software. Permission is granted to anyone to use this software for any
+purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following
+restrictions:
+        1. The origin of this software must not be misrepresented; you must not claim that you wrote the original
+software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but
+is not required.
+        2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original
+software.
+        3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
-#include "pcheader.h"
 #include "pgeometry/GrassLoader.h"
+
+#include "pcheader.h"
 #include "pgeometry/PagedGeometry.h"
 #include "pgeometry/PropertyMaps.h"
 #include "pgeometry/RandomTable.h"
@@ -65,38 +71,38 @@ void GrassLoader::deleteLayer(GrassLayer *layer) {
 }
 
 void GrassLoader::frameUpdate() {
-//  unsigned long currentTime = windTimer.getMilliseconds();
-//  unsigned long ellapsedTime = currentTime - lastTime;
-//  lastTime = currentTime;
-//
-//  float ellapsed = ellapsedTime / 1000.0f;
+  //  unsigned long currentTime = windTimer.getMilliseconds();
+  //  unsigned long ellapsedTime = currentTime - lastTime;
+  //  lastTime = currentTime;
+  //
+  //  float ellapsed = ellapsedTime / 1000.0f;
 
-  //Update the vertex shader parameters
-//  std::list<GrassLayer *>::iterator it;
-//  for (it = layerList.begin(); it != layerList.end(); ++it) {
-//    GrassLayer *layer = *it;
-//
-//    layer->_updateShaders();
-//
-//    GpuProgramParametersSharedPtr params = layer->material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
-//    if (layer->animate) {
-//      //Increment animation frame
-//      layer->waveCount += ellapsed * (layer->animSpeed * Math::PI);
-//      if (layer->waveCount > Math::PI * 2) layer->waveCount -= Math::PI * 2;
-//
-//      //Set vertex shader parameters
-//      params->setNamedConstant("time", layer->waveCount);
-//      params->setNamedConstant("frequency", layer->animFreq);
-//
-//      Vector3 direction = windDir * layer->animMag;
-//      params->setNamedConstant("direction", Vector4(direction.x, direction.y, direction.z, 0));
-//
-//    }
-//  }
+  // Update the vertex shader parameters
+  //  std::list<GrassLayer *>::iterator it;
+  //  for (it = layerList.begin(); it != layerList.end(); ++it) {
+  //    GrassLayer *layer = *it;
+  //
+  //    layer->_updateShaders();
+  //
+  //    GpuProgramParametersSharedPtr params =
+  //    layer->material->getTechnique(0)->getPass(0)->getVertexProgramParameters(); if (layer->animate) {
+  //      //Increment animation frame
+  //      layer->waveCount += ellapsed * (layer->animSpeed * Math::PI);
+  //      if (layer->waveCount > Math::PI * 2) layer->waveCount -= Math::PI * 2;
+  //
+  //      //Set vertex shader parameters
+  //      params->setNamedConstant("time", layer->waveCount);
+  //      params->setNamedConstant("frequency", layer->animFreq);
+  //
+  //      Vector3 direction = windDir * layer->animMag;
+  //      params->setNamedConstant("direction", Vector4(direction.x, direction.y, direction.z, 0));
+  //
+  //    }
+  //  }
 }
 
 void GrassLoader::loadPage(PageInfo &page) {
-  //Generate meshes
+  // Generate meshes
   std::list<GrassLayer *>::iterator it;
   for (it = layerList.begin(); it != layerList.end(); ++it) {
     GrassLayer *layer = *it;
@@ -107,15 +113,15 @@ void GrassLoader::loadPage(PageInfo &page) {
       continue;
     }
 
-    //Calculate how much grass needs to be added
+    // Calculate how much grass needs to be added
     Ogre::Real volume = page.bounds.width() * page.bounds.height();
-    unsigned int grassCount = (unsigned int) (layer->density * densityFactor * volume);
+    unsigned int grassCount = (unsigned int)(layer->density * densityFactor * volume);
 
-    //The vertex buffer can't be allocated until the exact number of polygons is known,
-    //so the locations of all grasses in this page must be precalculated.
+    // The vertex buffer can't be allocated until the exact number of polygons is known,
+    // so the locations of all grasses in this page must be precalculated.
 
-    //Precompute grass locations into an array of floats. A plain array is used for speed;
-    //there's no need to use a dynamic sized array since a maximum size is known.
+    // Precompute grass locations into an array of floats. A plain array is used for speed;
+    // there's no need to use a dynamic sized array since a maximum size is known.
     float *position = new float[grassCount * 4];
     if (layer->densityMap) {
       if (layer->densityMap->getFilter() == MAPFILTER_NONE)
@@ -126,30 +132,33 @@ void GrassLoader::loadPage(PageInfo &page) {
       grassCount = layer->_populateGrassList_Uniform(page, position, grassCount);
     }
 
-    //Don't build a mesh unless it contains something
+    // Don't build a mesh unless it contains something
     if (grassCount != 0) {
       Mesh *mesh = nullptr;
       switch (layer->renderTechnique) {
-        case GRASSTECH_QUAD: mesh = generateGrass_QUAD(page, layer, position, grassCount);
+        case GRASSTECH_QUAD:
+          mesh = generateGrass_QUAD(page, layer, position, grassCount);
           break;
-        case GRASSTECH_CROSSQUADS: mesh = generateGrass_CROSSQUADS(page, layer, position, grassCount);
+        case GRASSTECH_CROSSQUADS:
+          mesh = generateGrass_CROSSQUADS(page, layer, position, grassCount);
           break;
-        case GRASSTECH_SPRITE: mesh = generateGrass_SPRITE(page, layer, position, grassCount);
+        case GRASSTECH_SPRITE:
+          mesh = generateGrass_SPRITE(page, layer, position, grassCount);
           break;
       }
       assert(mesh);
 
-      //Add the mesh to PagedGeometry
+      // Add the mesh to PagedGeometry
       Entity *entity = geom->getCamera()->getSceneManager()->createEntity(getUniqueID(), mesh->getName());
       entity->setRenderQueueGroup(renderQueue);
       entity->setCastShadows(false);
       addEntity(entity, page.centerPoint, Quaternion::IDENTITY, Vector3::UNIT_SCALE);
 
-      //Store the mesh pointer
+      // Store the mesh pointer
       page.meshList.push_back(mesh);
     }
 
-    //Delete the position list
+    // Delete the position list
     delete[] position;
   }
 }
@@ -158,36 +167,34 @@ void GrassLoader::unloadPage(PageInfo &page) {
   // we unload the page in the page's destructor
 }
 
-Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page,
-                                      GrassLayer *layer,
-                                      const float *grassPositions,
+Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page, GrassLayer *layer, const float *grassPositions,
                                       unsigned int grassCount) {
-  //Calculate the number of quads to be added
+  // Calculate the number of quads to be added
   unsigned int quadCount;
   quadCount = grassCount;
 
   // check for overflows of the uint16's
   unsigned int maxUInt16 = std::numeric_limits<uint16>::max();
   if (grassCount > maxUInt16) {
-    LogManager::getSingleton().logMessage(
-        "grass count overflow: you tried to use more than " + StringConverter::toString(maxUInt16)
-            + " (thats the maximum) grass meshes for one page");
+    LogManager::getSingleton().logMessage("grass count overflow: you tried to use more than " +
+                                          StringConverter::toString(maxUInt16) +
+                                          " (thats the maximum) grass meshes for one page");
     return 0;
   }
   if (quadCount > maxUInt16) {
-    LogManager::getSingleton().logMessage(
-        "quad count overflow: you tried to use more than " + StringConverter::toString(maxUInt16)
-            + " (thats the maximum) grass meshes for one page");
+    LogManager::getSingleton().logMessage("quad count overflow: you tried to use more than " +
+                                          StringConverter::toString(maxUInt16) +
+                                          " (thats the maximum) grass meshes for one page");
     return 0;
   }
 
-  //Init manual mesh to store grass quads
-  MeshPtr
-      mesh = MeshManager::getSingleton().createManual(getUniqueID(), ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  // Init manual mesh to store grass quads
+  MeshPtr mesh =
+      MeshManager::getSingleton().createManual(getUniqueID(), ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
   SubMesh *subMesh = mesh->createSubMesh();
   subMesh->useSharedVertices = false;
 
-  //Setup vertex format information
+  // Setup vertex format information
   subMesh->vertexData = new VertexData;
   subMesh->vertexData->vertexStart = 0;
   subMesh->vertexData->vertexCount = 4 * quadCount;
@@ -203,40 +210,40 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page,
   dcl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES);
   offset += VertexElement::getTypeSize(VET_FLOAT2);
 
-  //Populate a new vertex buffer with grass
-  HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton()
-      .createVertexBuffer(offset, subMesh->vertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY, false);
+  // Populate a new vertex buffer with grass
+  HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton().createVertexBuffer(
+      offset, subMesh->vertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY, false);
   float *pReal = static_cast<float *>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
 
-  //Calculate size variance
+  // Calculate size variance
   Ogre::Real rndWidth = layer->maxWidth - layer->minWidth;
   Ogre::Real rndHeight = layer->maxHeight - layer->minHeight;
 
   Ogre::Real minY = Math::POS_INFINITY, maxY = Math::NEG_INFINITY;
-  const float *posPtr = grassPositions;    //Position array "iterator"
+  const float *posPtr = grassPositions;  // Position array "iterator"
   for (uint16 i = 0; i < grassCount; ++i) {
-    //Get the x and z positions from the position array
+    // Get the x and z positions from the position array
     float x = *posPtr++;
     float z = *posPtr++;
 
-    //Get the color at the grass position
+    // Get the color at the grass position
     uint32 color;
     if (layer->colorMap)
       color = layer->colorMap->getColorAt(x, z, layer->mapBounds);
     else
       color = 0xFFFFFFFF;
 
-    //Calculate size
-    Ogre::Real rnd = *posPtr++;    //The same rnd value is used for width and height to maintain aspect ratio
+    // Calculate size
+    Ogre::Real rnd = *posPtr++;  // The same rnd value is used for width and height to maintain aspect ratio
     Ogre::Real halfScaleX = (layer->minWidth + rndWidth * rnd) * 0.5f;
     Ogre::Real scaleY = (layer->minHeight + rndHeight * rnd);
 
-    //Calculate rotation
+    // Calculate rotation
     Ogre::Real angle = *posPtr++;
     Ogre::Real xTrans = Math::Cos(angle) * halfScaleX;
     Ogre::Real zTrans = Math::Sin(angle) * halfScaleX;
 
-    //Calculate heights and edge positions
+    // Calculate heights and edge positions
     Ogre::Real x1 = x - xTrans, z1 = z - zTrans;
     Ogre::Real x2 = x + xTrans, z2 = z + zTrans;
 
@@ -246,55 +253,55 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page,
       y2 = heightFunction(x2, z2, heightFunctionUserData);
 
       if (layer->getMaxSlope() < (Math::Abs(y1 - y2) / (halfScaleX * 2))) {
-        //Degenerate the face
+        // Degenerate the face
         x2 = x1;
         y2 = y1;
         z2 = z1;
       }
     }
 
-    //Add vertices
+    // Add vertices
     *pReal++ = float(x1 - page.centerPoint.x);
     *pReal++ = float(y1 + scaleY);
-    *pReal++ = float(z1 - page.centerPoint.z);   //pos
+    *pReal++ = float(z1 - page.centerPoint.z);  // pos
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-    *((uint32 *) pReal++) = color;                 //color
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = 0.f;
-    *pReal++ = 0.f;              //uv
+    *pReal++ = 0.f;  // uv
 
     *pReal++ = float(x2 - page.centerPoint.x);
     *pReal++ = float(y2 + scaleY);
-    *pReal++ = float(z2 - page.centerPoint.z);   //pos
+    *pReal++ = float(z2 - page.centerPoint.z);  // pos
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-    *((uint32 *) pReal++) = color;                 //color
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = 1.f;
-    *pReal++ = 0.f;              //uv
+    *pReal++ = 0.f;  // uv
 
     *pReal++ = float(x1 - page.centerPoint.x);
     *pReal++ = float(y1);
-    *pReal++ = float(z1 - page.centerPoint.z);   //pos
+    *pReal++ = float(z1 - page.centerPoint.z);  // pos
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-    *((uint32 *) pReal++) = color;                 //color
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = 0.f;
-    *pReal++ = 1.f;              //uv
+    *pReal++ = 1.f;  // uv
 
     *pReal++ = float(x2 - page.centerPoint.x);
     *pReal++ = float(y2);
-    *pReal++ = float(z2 - page.centerPoint.z);   //pos
+    *pReal++ = float(z2 - page.centerPoint.z);  // pos
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-    *((uint32 *) pReal++) = color;                 //color
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = 1.f;
-    *pReal++ = 1.f;              //uv
+    *pReal++ = 1.f;  // uv
 
-    //Update bounds
+    // Update bounds
     if (y1 < minY) minY = y1;
     if (y2 < minY) minY = y2;
     if (y1 + scaleY > maxY) maxY = y1 + scaleY;
@@ -304,13 +311,11 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page,
   vbuf->unlock();
   subMesh->vertexData->vertexBufferBinding->setBinding(0, vbuf);
 
-  //Populate index buffer
+  // Populate index buffer
   subMesh->indexData->indexStart = 0;
   subMesh->indexData->indexCount = 6 * quadCount;
-  subMesh->indexData->indexBuffer = HardwareBufferManager::getSingleton()
-      .createIndexBuffer(HardwareIndexBuffer::IT_16BIT,
-                         subMesh->indexData->indexCount,
-                         HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+  subMesh->indexData->indexBuffer = HardwareBufferManager::getSingleton().createIndexBuffer(
+      HardwareIndexBuffer::IT_16BIT, subMesh->indexData->indexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
   uint16 *pI = static_cast<uint16 *>(subMesh->indexData->indexBuffer->lock(HardwareBuffer::HBL_DISCARD));
   for (uint16 i = 0; i < quadCount; ++i) {
     uint16 offset = i * 4;
@@ -325,9 +330,9 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page,
   }
 
   subMesh->indexData->indexBuffer->unlock();
-  //subMesh->setBuildEdgesEnabled(autoEdgeBuildEnabled);
+  // subMesh->setBuildEdgesEnabled(autoEdgeBuildEnabled);
 
-  //Finish up mesh
+  // Finish up mesh
   AxisAlignedBox bounds(page.bounds.left - page.centerPoint.x, minY, page.bounds.top - page.centerPoint.z,
                         page.bounds.right - page.centerPoint.x, maxY, page.bounds.bottom - page.centerPoint.z);
   mesh->_setBounds(bounds);
@@ -339,43 +344,41 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page,
   mesh->load();
   LogManager::getSingleton().setLogDetail(LL_NORMAL);
 
-  //Apply grass material to mesh
+  // Apply grass material to mesh
   subMesh->setMaterialName(layer->material->getName());
 
-  //Return the mesh
+  // Return the mesh
   return mesh.get();
 }
 
-Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page,
-                                            GrassLayer *layer,
-                                            const float *grassPositions,
+Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page, GrassLayer *layer, const float *grassPositions,
                                             unsigned int grassCount) {
-  //Calculate the number of quads to be added
+  // Calculate the number of quads to be added
   unsigned int quadCount;
   quadCount = grassCount * 2;
 
   // check for overflows of the uint16's
   unsigned int maxUInt16 = std::numeric_limits<uint16>::max();
   if (grassCount > maxUInt16) {
-    LogManager::getSingleton().logMessage(
-        "grass count overflow: you tried to use more than " + StringConverter::toString(maxUInt16)
-            + " (thats the maximum) grass meshes for one page");
+    LogManager::getSingleton().logMessage("grass count overflow: you tried to use more than " +
+                                          StringConverter::toString(maxUInt16) +
+                                          " (thats the maximum) grass meshes for one page");
     return 0;
   }
   if (quadCount > maxUInt16) {
-    LogManager::getSingleton().logMessage(
-        "quad count overflow: you tried to use more than " + StringConverter::toString(maxUInt16)
-            + " (thats the maximum) grass meshes for one page");
+    LogManager::getSingleton().logMessage("quad count overflow: you tried to use more than " +
+                                          StringConverter::toString(maxUInt16) +
+                                          " (thats the maximum) grass meshes for one page");
     return 0;
   }
 
-  //Init manual mesh to store grass quads
-  MeshPtr
-      mesh = MeshManager::getSingleton().createManual(getUniqueID(), ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  // Init manual mesh to store grass quads
+  MeshPtr mesh =
+      MeshManager::getSingleton().createManual(getUniqueID(), ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
   SubMesh *subMesh = mesh->createSubMesh();
   subMesh->useSharedVertices = false;
 
-  //Setup vertex format information
+  // Setup vertex format information
   subMesh->vertexData = new VertexData;
   subMesh->vertexData->vertexStart = 0;
   subMesh->vertexData->vertexCount = 4 * quadCount;
@@ -391,40 +394,40 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page,
   dcl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES);
   offset += VertexElement::getTypeSize(VET_FLOAT2);
 
-  //Populate a new vertex buffer with grass
-  HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton()
-      .createVertexBuffer(offset, subMesh->vertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY, false);
+  // Populate a new vertex buffer with grass
+  HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton().createVertexBuffer(
+      offset, subMesh->vertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY, false);
   float *pReal = static_cast<float *>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
 
-  //Calculate size variance
+  // Calculate size variance
   Ogre::Real rndWidth = layer->maxWidth - layer->minWidth;
   Ogre::Real rndHeight = layer->maxHeight - layer->minHeight;
   Ogre::Real minY = Math::POS_INFINITY, maxY = Math::NEG_INFINITY;
 
-  const float *posPtr = grassPositions;    //Position array "iterator"
+  const float *posPtr = grassPositions;  // Position array "iterator"
   for (uint16 i = 0; i < grassCount; ++i) {
-    //Get the x and z positions from the position array
+    // Get the x and z positions from the position array
     Ogre::Real x = *posPtr++;
     Ogre::Real z = *posPtr++;
 
-    //Get the color at the grass position
+    // Get the color at the grass position
     uint32 color;
     if (layer->colorMap)
       color = layer->colorMap->getColorAt(x, z, layer->mapBounds);
     else
       color = 0xFFFFFFFF;
 
-    //Calculate size
-    Ogre::Real rnd = *posPtr++;    //The same rnd value is used for width and height to maintain aspect ratio
+    // Calculate size
+    Ogre::Real rnd = *posPtr++;  // The same rnd value is used for width and height to maintain aspect ratio
     Ogre::Real halfScaleX = (layer->minWidth + rndWidth * rnd) * 0.5f;
     Ogre::Real scaleY = (layer->minHeight + rndHeight * rnd);
 
-    //Calculate rotation
+    // Calculate rotation
     Ogre::Real angle = *posPtr++;
     Ogre::Real xTrans = Math::Cos(angle) * halfScaleX;
     Ogre::Real zTrans = Math::Sin(angle) * halfScaleX;
 
-    //Calculate heights and edge positions
+    // Calculate heights and edge positions
     Ogre::Real x1 = x - xTrans, z1 = z - zTrans;
     Ogre::Real x2 = x + xTrans, z2 = z + zTrans;
 
@@ -434,68 +437,68 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page,
       y2 = heightFunction(x2, z2, heightFunctionUserData);
 
       if (layer->getMaxSlope() < (Math::Abs(y1 - y2) / (halfScaleX * 2))) {
-        //Degenerate the face
+        // Degenerate the face
         x2 = x1;
         y2 = y1;
         z2 = z1;
       }
     }
 
-    //Add vertices
+    // Add vertices
     *pReal++ = float(x1 - page.centerPoint.x);
     *pReal++ = float(y1 + scaleY);
-    *pReal++ = float(z1 - page.centerPoint.z);   //pos
+    *pReal++ = float(z1 - page.centerPoint.z);  // pos
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-    *((uint32 *) pReal++) = color;                 //color
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = 0.f;
-    *pReal++ = 0.f;              //uv
+    *pReal++ = 0.f;  // uv
 
     *pReal++ = float(x2 - page.centerPoint.x);
     *pReal++ = float(y2 + scaleY);
-    *pReal++ = float(z2 - page.centerPoint.z);   //pos
+    *pReal++ = float(z2 - page.centerPoint.z);  // pos
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-    *((uint32 *) pReal++) = color;                 //color
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = 1.f;
-    *pReal++ = 0.f;              //uv
+    *pReal++ = 0.f;  // uv
 
     *pReal++ = float(x1 - page.centerPoint.x);
     *pReal++ = float(y1);
-    *pReal++ = float(z1 - page.centerPoint.z);   //pos
+    *pReal++ = float(z1 - page.centerPoint.z);  // pos
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-    *((uint32 *) pReal++) = color;                 //color
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = 0.f;
-    *pReal++ = 1.f;              //uv
+    *pReal++ = 1.f;  // uv
 
     *pReal++ = float(x2 - page.centerPoint.x);
     *pReal++ = float(y2);
-    *pReal++ = float(z2 - page.centerPoint.z);   //pos
+    *pReal++ = float(z2 - page.centerPoint.z);  // pos
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-    *((uint32 *) pReal++) = color;                 //color
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = 1.f;
-    *pReal++ = 1.f;              //uv
+    *pReal++ = 1.f;  // uv
 
-    //Update bounds
+    // Update bounds
     if (y1 < minY) minY = y1;
     if (y2 < minY) minY = y2;
     if (y1 + scaleY > maxY) maxY = y1 + scaleY;
     if (y2 + scaleY > maxY) maxY = y2 + scaleY;
 
-    //Calculate heights and edge positions
+    // Calculate heights and edge positions
     Ogre::Real x3 = x + zTrans, z3 = z - xTrans;
     Ogre::Real x4 = x - zTrans, z4 = z + xTrans;
 
     Ogre::Real y3 = 0.f, y4 = 0.f;
     if (heightFunction) {
       if (layer->getMaxSlope() < (Math::Abs(y1 - y2) / (halfScaleX * 2))) {
-        //Degenerate the face
+        // Degenerate the face
         x2 = x1;
         y2 = y1;
         z2 = z1;
@@ -505,48 +508,48 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page,
       y4 = heightFunction(x4, z4, heightFunctionUserData);
     }
 
-    //Add vertices
+    // Add vertices
     *pReal++ = float(x3 - page.centerPoint.x);
     *pReal++ = float(y3 + scaleY);
-    *pReal++ = float(z3 - page.centerPoint.z);   //pos
+    *pReal++ = float(z3 - page.centerPoint.z);  // pos
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-    *((uint32 *) pReal++) = color;                 //color
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = 0.f;
-    *pReal++ = 0.f;              //uv
+    *pReal++ = 0.f;  // uv
 
     *pReal++ = float(x4 - page.centerPoint.x);
     *pReal++ = float(y4 + scaleY);
-    *pReal++ = float(z4 - page.centerPoint.z);   //pos
+    *pReal++ = float(z4 - page.centerPoint.z);  // pos
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-    *((uint32 *) pReal++) = color;                 //color
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = 1.f;
-    *pReal++ = 0.f;              //uv
+    *pReal++ = 0.f;  // uv
 
     *pReal++ = float(x3 - page.centerPoint.x);
     *pReal++ = float(y3);
-    *pReal++ = float(z3 - page.centerPoint.z);   //pos
+    *pReal++ = float(z3 - page.centerPoint.z);  // pos
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-    *((uint32 *) pReal++) = color;                 //color
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = 0.f;
-    *pReal++ = 1.f;              //uv
+    *pReal++ = 1.f;  // uv
 
     *pReal++ = float(x4 - page.centerPoint.x);
     *pReal++ = float(y4);
-    *pReal++ = float(z4 - page.centerPoint.z);   //pos
+    *pReal++ = float(z4 - page.centerPoint.z);  // pos
     *pReal++ = 0.f;
     *pReal++ = 1.f;
     *pReal++ = 0.f;
-    *((uint32 *) pReal++) = color;                 //color
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = 1.f;
-    *pReal++ = 1.f;              //uv
+    *pReal++ = 1.f;  // uv
 
-    //Update bounds
+    // Update bounds
     if (y3 < minY) minY = y1;
     if (y4 < minY) minY = y2;
     if (y3 + scaleY > maxY) maxY = y3 + scaleY;
@@ -556,13 +559,11 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page,
   vbuf->unlock();
   subMesh->vertexData->vertexBufferBinding->setBinding(0, vbuf);
 
-  //Populate index buffer
+  // Populate index buffer
   subMesh->indexData->indexStart = 0;
   subMesh->indexData->indexCount = 6 * quadCount;
-  subMesh->indexData->indexBuffer = HardwareBufferManager::getSingleton()
-      .createIndexBuffer(HardwareIndexBuffer::IT_16BIT,
-                         subMesh->indexData->indexCount,
-                         HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+  subMesh->indexData->indexBuffer = HardwareBufferManager::getSingleton().createIndexBuffer(
+      HardwareIndexBuffer::IT_16BIT, subMesh->indexData->indexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
   uint16 *pI = static_cast<uint16 *>(subMesh->indexData->indexBuffer->lock(HardwareBuffer::HBL_DISCARD));
   for (uint16 i = 0; i < quadCount; ++i) {
     uint16 offset = i * 4;
@@ -577,10 +578,9 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page,
   }
 
   subMesh->indexData->indexBuffer->unlock();
-  //subMesh->setBuildEdgesEnabled(autoEdgeBuildEnabled);
+  // subMesh->setBuildEdgesEnabled(autoEdgeBuildEnabled);
 
-
-  //Finish up mesh
+  // Finish up mesh
   AxisAlignedBox bounds(page.bounds.left - page.centerPoint.x, minY, page.bounds.top - page.centerPoint.z,
                         page.bounds.right - page.centerPoint.x, maxY, page.bounds.bottom - page.centerPoint.z);
   mesh->_setBounds(bounds);
@@ -592,43 +592,41 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page,
   mesh->load();
   LogManager::getSingleton().setLogDetail(LL_NORMAL);
 
-  //Apply grass material to mesh
+  // Apply grass material to mesh
   subMesh->setMaterialName(layer->material->getName());
 
-  //Return the mesh
+  // Return the mesh
   return mesh.get();
 }
 
-Mesh *GrassLoader::generateGrass_SPRITE(PageInfo &page,
-                                        GrassLayer *layer,
-                                        const float *grassPositions,
+Mesh *GrassLoader::generateGrass_SPRITE(PageInfo &page, GrassLayer *layer, const float *grassPositions,
                                         unsigned int grassCount) {
-  //Calculate the number of quads to be added
+  // Calculate the number of quads to be added
   unsigned int quadCount;
   quadCount = grassCount;
 
   // check for overflows of the uint16's
   unsigned int maxUInt16 = std::numeric_limits<uint16>::max();
   if (grassCount > maxUInt16) {
-    LogManager::getSingleton().logMessage(
-        "grass count overflow: you tried to use more than " + StringConverter::toString(maxUInt16)
-            + " (thats the maximum) grass meshes for one page");
+    LogManager::getSingleton().logMessage("grass count overflow: you tried to use more than " +
+                                          StringConverter::toString(maxUInt16) +
+                                          " (thats the maximum) grass meshes for one page");
     return 0;
   }
   if (quadCount > maxUInt16) {
-    LogManager::getSingleton().logMessage(
-        "quad count overflow: you tried to use more than " + StringConverter::toString(maxUInt16)
-            + " (thats the maximum) grass meshes for one page");
+    LogManager::getSingleton().logMessage("quad count overflow: you tried to use more than " +
+                                          StringConverter::toString(maxUInt16) +
+                                          " (thats the maximum) grass meshes for one page");
     return 0;
   }
 
-  //Init manual mesh to store grass quads
-  MeshPtr
-      mesh = MeshManager::getSingleton().createManual(getUniqueID(), ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  // Init manual mesh to store grass quads
+  MeshPtr mesh =
+      MeshManager::getSingleton().createManual(getUniqueID(), ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
   SubMesh *subMesh = mesh->createSubMesh();
   subMesh->useSharedVertices = false;
 
-  //Setup vertex format information
+  // Setup vertex format information
   subMesh->vertexData = new VertexData;
   subMesh->vertexData->vertexStart = 0;
   subMesh->vertexData->vertexCount = 4 * quadCount;
@@ -644,87 +642,87 @@ Mesh *GrassLoader::generateGrass_SPRITE(PageInfo &page,
   dcl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES);
   offset += VertexElement::getTypeSize(VET_FLOAT2);
 
-  //Populate a new vertex buffer with grass
-  HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton()
-      .createVertexBuffer(offset, subMesh->vertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY, false);
+  // Populate a new vertex buffer with grass
+  HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton().createVertexBuffer(
+      offset, subMesh->vertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY, false);
   float *pReal = static_cast<float *>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
 
-  //Calculate size variance
+  // Calculate size variance
   Ogre::Real rndWidth = layer->maxWidth - layer->minWidth;
   Ogre::Real rndHeight = layer->maxHeight - layer->minHeight;
   Ogre::Real minY = Math::POS_INFINITY, maxY = Math::NEG_INFINITY;
 
-  const float *posPtr = grassPositions;    //Position array "iterator"
+  const float *posPtr = grassPositions;  // Position array "iterator"
   for (uint16 i = 0; i < grassCount; ++i) {
-    //Get the x and z positions from the position array
+    // Get the x and z positions from the position array
     float x = *posPtr++;
     float z = *posPtr++;
-    float y = heightFunction ? (float) heightFunction(x, z, heightFunctionUserData) : 0.f;
+    float y = heightFunction ? (float)heightFunction(x, z, heightFunctionUserData) : 0.f;
 
     float x1 = float(x - page.centerPoint.x);
     float z1 = float(z - page.centerPoint.z);
 
-    //Get the color at the grass position
+    // Get the color at the grass position
     uint32 color = layer->colorMap ? layer->colorMap->getColorAt(x, z, layer->mapBounds) : 0xFFFFFFFF;
 
-    //Calculate size
-    float rnd = *posPtr++;    //The same rnd value is used for width and height to maintain aspect ratio
+    // Calculate size
+    float rnd = *posPtr++;  // The same rnd value is used for width and height to maintain aspect ratio
     float halfXScale = float(layer->minWidth + rndWidth * rnd) * 0.5f;
     float scaleY = float(layer->minHeight + rndHeight * rnd);
 
-    //Randomly mirror grass textures
+    // Randomly mirror grass textures
     float uvLeft = 1.f, uvRight = 0.f;
     if (*posPtr++ > 0.5f) {
       uvLeft = 0.f;
       uvRight = 1.f;
     }
 
-    //Add vertices
+    // Add vertices
     *pReal++ = x1;
     *pReal++ = y;
-    *pReal++ = z1;                                //center position
+    *pReal++ = z1;  // center position
     *pReal++ = -halfXScale;
     *pReal++ = scaleY;
     *pReal++ = 0.f;
-    *pReal++ = 0.f; //normal (used to store relative corner positions)
-    *((uint32 *) pReal++) = color;                                               //color
+    *pReal++ = 0.f;                // normal (used to store relative corner positions)
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = uvLeft;
-    *pReal++ = 0.f;                                         //uv
+    *pReal++ = 0.f;  // uv
 
     *pReal++ = x1;
     *pReal++ = y;
-    *pReal++ = z1;                                //center position
+    *pReal++ = z1;  // center position
     *pReal++ = +halfXScale;
     *pReal++ = scaleY;
     *pReal++ = 0.f;
-    *pReal++ = 0.f; //normal (used to store relative corner positions)
-    *((uint32 *) pReal++) = color;                                               //color
+    *pReal++ = 0.f;                // normal (used to store relative corner positions)
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = uvRight;
-    *pReal++ = 0.f;                                        //uv
+    *pReal++ = 0.f;  // uv
 
     *pReal++ = x1;
     *pReal++ = y;
-    *pReal++ = z1;                                //center position
+    *pReal++ = z1;  // center position
     *pReal++ = -halfXScale;
     *pReal++ = 0.f;
     *pReal++ = 0.f;
-    *pReal++ = 0.f;    //normal (used to store relative corner positions)
-    *((uint32 *) pReal++) = color;                                               //color
+    *pReal++ = 0.f;                // normal (used to store relative corner positions)
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = uvLeft;
-    *pReal++ = 1.f;                                         //uv
+    *pReal++ = 1.f;  // uv
 
     *pReal++ = x1;
     *pReal++ = y;
-    *pReal++ = z1;                                //center position
+    *pReal++ = z1;  // center position
     *pReal++ = +halfXScale;
     *pReal++ = 0.f;
     *pReal++ = 0.f;
-    *pReal++ = 0.f;    //normal (used to store relative corner positions)
-    *((uint32 *) pReal++) = color;                                               //color
+    *pReal++ = 0.f;                // normal (used to store relative corner positions)
+    *((uint32 *)pReal++) = color;  // color
     *pReal++ = uvRight;
-    *pReal++ = 1.f;                                        //uv
+    *pReal++ = 1.f;  // uv
 
-    //Update bounds
+    // Update bounds
     if (y < minY) minY = y;
     if (y + scaleY > maxY) maxY = y + scaleY;
   }
@@ -732,13 +730,11 @@ Mesh *GrassLoader::generateGrass_SPRITE(PageInfo &page,
   vbuf->unlock();
   subMesh->vertexData->vertexBufferBinding->setBinding(0, vbuf);
 
-  //Populate index buffer
+  // Populate index buffer
   subMesh->indexData->indexStart = 0;
   subMesh->indexData->indexCount = 6 * quadCount;
-  subMesh->indexData->indexBuffer = HardwareBufferManager::getSingleton()
-      .createIndexBuffer(HardwareIndexBuffer::IT_16BIT,
-                         subMesh->indexData->indexCount,
-                         HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+  subMesh->indexData->indexBuffer = HardwareBufferManager::getSingleton().createIndexBuffer(
+      HardwareIndexBuffer::IT_16BIT, subMesh->indexData->indexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
   uint16 *pI = static_cast<uint16 *>(subMesh->indexData->indexBuffer->lock(HardwareBuffer::HBL_DISCARD));
   for (uint16 i = 0; i < quadCount; ++i) {
     uint16 offset = i * 4;
@@ -753,10 +749,9 @@ Mesh *GrassLoader::generateGrass_SPRITE(PageInfo &page,
   }
 
   subMesh->indexData->indexBuffer->unlock();
-  //subMesh->setBuildEdgesEnabled(autoEdgeBuildEnabled);
+  // subMesh->setBuildEdgesEnabled(autoEdgeBuildEnabled);
 
-
-  //Finish up mesh
+  // Finish up mesh
   AxisAlignedBox bounds(page.bounds.left - page.centerPoint.x, minY, page.bounds.top - page.centerPoint.z,
                         page.bounds.right - page.centerPoint.x, maxY, page.bounds.bottom - page.centerPoint.z);
   mesh->_setBounds(bounds);
@@ -768,10 +763,10 @@ Mesh *GrassLoader::generateGrass_SPRITE(PageInfo &page,
   mesh->load();
   LogManager::getSingleton().setLogDetail(LL_NORMAL);
 
-  //Apply grass material to mesh
+  // Apply grass material to mesh
   subMesh->setMaterialName(layer->material->getName());
 
-  //Return the mesh
+  // Return the mesh
   return mesh.get();
 }
 
@@ -805,18 +800,15 @@ GrassLayer::GrassLayer(PagedGeometry *geom, GrassLoader *ldr) {
 }
 
 GrassLayer::~GrassLayer() {
-  if (densityMap)
-    densityMap->unload();
-  if (colorMap)
-    colorMap->unload();
+  if (densityMap) densityMap->unload();
+  if (colorMap) colorMap->unload();
 }
 
 void GrassLayer::setMaterialName(const String &matName) {
   if (!material || matName != material->getName()) {
     material = Ogre::static_pointer_cast<Material>(MaterialManager::getSingleton().getByName(matName));
     if (!material)
-      OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
-                  "The specified grass material does not exist",
+      OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "The specified grass material does not exist",
                   "GrassLayer::setMaterialName()");
     shaderNeedsUpdate = true;
   }
@@ -857,9 +849,7 @@ void GrassLayer::setAnimationEnabled(bool enabled) {
   }
 }
 
-void GrassLayer::setLightingEnabled(bool enabled) {
-  lighting = enabled;
-}
+void GrassLayer::setLightingEnabled(bool enabled) { lighting = enabled; }
 
 void GrassLayer::setDensityMap(const String &mapFile, MapChannel channel) {
   if (densityMap) {
@@ -884,8 +874,7 @@ void GrassLayer::setDensityMap(TexturePtr map, MapChannel channel) {
 
 void GrassLayer::setDensityMapFilter(MapFilter filter) {
   densityMapFilter = filter;
-  if (densityMap)
-    densityMap->setFilter(densityMapFilter);
+  if (densityMap) densityMap->setFilter(densityMapFilter);
 }
 
 unsigned int GrassLayer::_populateGrassList_Uniform(PageInfo page, float *posBuff, unsigned int grassCount) {
@@ -893,15 +882,15 @@ unsigned int GrassLayer::_populateGrassList_Uniform(PageInfo page, float *posBuf
 
   parent->rTable->resetRandomIndex();
 
-  //No density map
+  // No density map
   if (!minY && !maxY) {
-    //No height range
+    // No height range
     for (unsigned int i = 0; i < grassCount; ++i) {
-      //Pick a random position
-      float x = parent->rTable->getRangeRandom((float) page.bounds.left, (float) page.bounds.right);
-      float z = parent->rTable->getRangeRandom((float) page.bounds.top, (float) page.bounds.bottom);
+      // Pick a random position
+      float x = parent->rTable->getRangeRandom((float)page.bounds.left, (float)page.bounds.right);
+      float z = parent->rTable->getRangeRandom((float)page.bounds.top, (float)page.bounds.bottom);
 
-      //Add to list in within bounds
+      // Add to list in within bounds
       if (!colorMap) {
         *posPtr++ = x;
         *posPtr++ = z;
@@ -910,35 +899,41 @@ unsigned int GrassLayer::_populateGrassList_Uniform(PageInfo page, float *posBuf
         *posPtr++ = z;
       }
       *posPtr++ = parent->rTable->getUnitRandom();
-      *posPtr++ = parent->rTable->getRangeRandom(0, (float) Math::TWO_PI);
+      *posPtr++ = parent->rTable->getRangeRandom(0, (float)Math::TWO_PI);
     }
   } else {
-    //Height range
+    // Height range
     Real min, max;
-    if (minY) min = minY; else min = Math::NEG_INFINITY;
-    if (maxY) max = maxY; else max = Math::POS_INFINITY;
+    if (minY)
+      min = minY;
+    else
+      min = Math::NEG_INFINITY;
+    if (maxY)
+      max = maxY;
+    else
+      max = Math::POS_INFINITY;
 
     for (unsigned int i = 0; i < grassCount; ++i) {
-      //Pick a random position
-      float x = parent->rTable->getRangeRandom((float) page.bounds.left, (float) page.bounds.right);
-      float z = parent->rTable->getRangeRandom((float) page.bounds.top, (float) page.bounds.bottom);
+      // Pick a random position
+      float x = parent->rTable->getRangeRandom((float)page.bounds.left, (float)page.bounds.right);
+      float z = parent->rTable->getRangeRandom((float)page.bounds.top, (float)page.bounds.bottom);
 
-      //Calculate height
-      float y = (float) parent->heightFunction(x, z, parent->heightFunctionUserData);
+      // Calculate height
+      float y = (float)parent->heightFunction(x, z, parent->heightFunctionUserData);
 
-      //Add to list if in range
+      // Add to list if in range
       if (y >= min && y <= max) {
-        //Add to list in within bounds
+        // Add to list in within bounds
         if (!colorMap) {
           *posPtr++ = x;
           *posPtr++ = z;
           *posPtr++ = parent->rTable->getUnitRandom();
-          *posPtr++ = parent->rTable->getRangeRandom(0, (float) Math::PI);
+          *posPtr++ = parent->rTable->getRangeRandom(0, (float)Math::PI);
         } else if (x >= mapBounds.left && x <= mapBounds.right && z >= mapBounds.top && z <= mapBounds.bottom) {
           *posPtr++ = x;
           *posPtr++ = z;
           *posPtr++ = parent->rTable->getUnitRandom();
-          *posPtr++ = parent->rTable->getRangeRandom(0, (float) Math::PI);
+          *posPtr++ = parent->rTable->getRangeRandom(0, (float)Math::PI);
         }
       }
     }
@@ -953,52 +948,57 @@ unsigned int GrassLayer::_populateGrassList_UnfilteredDM(PageInfo page, float *p
 
   parent->rTable->resetRandomIndex();
 
-  //Use density map
+  // Use density map
   if (!minY && !maxY) {
-    //No height range
+    // No height range
     for (unsigned int i = 0; i < grassCount; ++i) {
-      //Pick a random position
-      float x = parent->rTable->getRangeRandom((float) page.bounds.left, (float) page.bounds.right);
-      float z = parent->rTable->getRangeRandom((float) page.bounds.top, (float) page.bounds.bottom);
+      // Pick a random position
+      float x = parent->rTable->getRangeRandom((float)page.bounds.left, (float)page.bounds.right);
+      float z = parent->rTable->getRangeRandom((float)page.bounds.top, (float)page.bounds.bottom);
 
-      //Determine whether this grass will be added based on the local density.
-      //For example, if localDensity is .32, grasses will be added 32% of the time.
+      // Determine whether this grass will be added based on the local density.
+      // For example, if localDensity is .32, grasses will be added 32% of the time.
       if (parent->rTable->getUnitRandom() < densityMap->_getDensityAt_Unfiltered(x, z, mapBounds)) {
-        //Add to list
+        // Add to list
         *posPtr++ = x;
         *posPtr++ = z;
         *posPtr++ = parent->rTable->getUnitRandom();
-        *posPtr++ = parent->rTable->getRangeRandom(0, (float) Math::TWO_PI);
+        *posPtr++ = parent->rTable->getRangeRandom(0, (float)Math::TWO_PI);
       } else {
         parent->rTable->getUnitRandom();
         parent->rTable->getUnitRandom();
       }
-
     }
   } else {
-    //Height range
+    // Height range
     Real min, max;
-    if (minY) min = minY; else min = Math::NEG_INFINITY;
-    if (maxY) max = maxY; else max = Math::POS_INFINITY;
+    if (minY)
+      min = minY;
+    else
+      min = Math::NEG_INFINITY;
+    if (maxY)
+      max = maxY;
+    else
+      max = Math::POS_INFINITY;
 
     for (unsigned int i = 0; i < grassCount; ++i) {
-      //Pick a random position
-      float x = parent->rTable->getRangeRandom((float) page.bounds.left, (float) page.bounds.right);
-      float z = parent->rTable->getRangeRandom((float) page.bounds.top, (float) page.bounds.bottom);
+      // Pick a random position
+      float x = parent->rTable->getRangeRandom((float)page.bounds.left, (float)page.bounds.right);
+      float z = parent->rTable->getRangeRandom((float)page.bounds.top, (float)page.bounds.bottom);
 
-      //Determine whether this grass will be added based on the local density.
-      //For example, if localDensity is .32, grasses will be added 32% of the time.
+      // Determine whether this grass will be added based on the local density.
+      // For example, if localDensity is .32, grasses will be added 32% of the time.
       if (parent->rTable->getUnitRandom() < densityMap->_getDensityAt_Unfiltered(x, z, mapBounds)) {
-        //Calculate height
-        float y = (float) parent->heightFunction(x, z, parent->heightFunctionUserData);
+        // Calculate height
+        float y = (float)parent->heightFunction(x, z, parent->heightFunctionUserData);
 
-        //Add to list if in range
+        // Add to list if in range
         if (y >= min && y <= max) {
-          //Add to list
+          // Add to list
           *posPtr++ = x;
           *posPtr++ = z;
           *posPtr++ = parent->rTable->getUnitRandom();
-          *posPtr++ = parent->rTable->getRangeRandom(0, (float) Math::TWO_PI);
+          *posPtr++ = parent->rTable->getRangeRandom(0, (float)Math::TWO_PI);
         } else {
           parent->rTable->getUnitRandom();
           parent->rTable->getUnitRandom();
@@ -1020,20 +1020,20 @@ unsigned int GrassLayer::_populateGrassList_BilinearDM(PageInfo page, float *pos
   parent->rTable->resetRandomIndex();
 
   if (!minY && !maxY) {
-    //No height range
+    // No height range
     for (unsigned int i = 0; i < grassCount; ++i) {
-      //Pick a random position
-      float x = parent->rTable->getRangeRandom((float) page.bounds.left, (float) page.bounds.right);
-      float z = parent->rTable->getRangeRandom((float) page.bounds.top, (float) page.bounds.bottom);
+      // Pick a random position
+      float x = parent->rTable->getRangeRandom((float)page.bounds.left, (float)page.bounds.right);
+      float z = parent->rTable->getRangeRandom((float)page.bounds.top, (float)page.bounds.bottom);
 
-      //Determine whether this grass will be added based on the local density.
-      //For example, if localDensity is .32, grasses will be added 32% of the time.
+      // Determine whether this grass will be added based on the local density.
+      // For example, if localDensity is .32, grasses will be added 32% of the time.
       if (parent->rTable->getUnitRandom() < densityMap->_getDensityAt_Bilinear(x, z, mapBounds)) {
-        //Add to list
+        // Add to list
         *posPtr++ = x;
         *posPtr++ = z;
         *posPtr++ = parent->rTable->getUnitRandom();
-        *posPtr++ = parent->rTable->getRangeRandom(0, (float) Math::TWO_PI);
+        *posPtr++ = parent->rTable->getRangeRandom(0, (float)Math::TWO_PI);
       } else {
         // why???????????????????????????????????
         parent->rTable->getUnitRandom();
@@ -1041,29 +1041,35 @@ unsigned int GrassLayer::_populateGrassList_BilinearDM(PageInfo page, float *pos
       }
     }
   } else {
-    //Height range
+    // Height range
     Real min, max;
-    if (minY) min = minY; else min = Math::NEG_INFINITY;
-    if (maxY) max = maxY; else max = Math::POS_INFINITY;
+    if (minY)
+      min = minY;
+    else
+      min = Math::NEG_INFINITY;
+    if (maxY)
+      max = maxY;
+    else
+      max = Math::POS_INFINITY;
 
     for (unsigned int i = 0; i < grassCount; ++i) {
-      //Pick a random position
-      float x = parent->rTable->getRangeRandom((float) page.bounds.left, (float) page.bounds.right);
-      float z = parent->rTable->getRangeRandom((float) page.bounds.top, (float) page.bounds.bottom);
+      // Pick a random position
+      float x = parent->rTable->getRangeRandom((float)page.bounds.left, (float)page.bounds.right);
+      float z = parent->rTable->getRangeRandom((float)page.bounds.top, (float)page.bounds.bottom);
 
-      //Determine whether this grass will be added based on the local density.
-      //For example, if localDensity is .32, grasses will be added 32% of the time.
+      // Determine whether this grass will be added based on the local density.
+      // For example, if localDensity is .32, grasses will be added 32% of the time.
       if (parent->rTable->getUnitRandom() < densityMap->_getDensityAt_Bilinear(x, z, mapBounds)) {
-        //Calculate height
-        float y = (float) parent->heightFunction(x, z, parent->heightFunctionUserData);
+        // Calculate height
+        float y = (float)parent->heightFunction(x, z, parent->heightFunctionUserData);
 
-        //Add to list if in range
+        // Add to list if in range
         if (y >= min && y <= max) {
-          //Add to list
+          // Add to list
           *posPtr++ = x;
           *posPtr++ = z;
           *posPtr++ = parent->rTable->getUnitRandom();
-          *posPtr++ = parent->rTable->getRangeRandom(0, (float) Math::TWO_PI);
+          *posPtr++ = parent->rTable->getRangeRandom(0, (float)Math::TWO_PI);
         } else {
           parent->rTable->getUnitRandom();
           parent->rTable->getUnitRandom();
@@ -1103,59 +1109,54 @@ void GrassLayer::setColorMap(TexturePtr map, MapChannel channel) {
 
 void GrassLayer::setColorMapFilter(MapFilter filter) {
   colorMapFilter = filter;
-  if (colorMap)
-    colorMap->setFilter(colorMapFilter);
+  if (colorMap) colorMap->setFilter(colorMapFilter);
 }
 
 void GrassLayer::_updateShaders() {
   if (shaderNeedsUpdate) {
     shaderNeedsUpdate = false;
 
-    //Proceed only if there is no custom vertex shader and the user's computer supports vertex shaders
+    // Proceed only if there is no custom vertex shader and the user's computer supports vertex shaders
     const RenderSystemCapabilities *caps = Root::getSingleton().getRenderSystem()->getCapabilities();
     if (caps->hasCapability(RSC_VERTEX_PROGRAM) && geom->getShadersEnabled()) {
-      //Calculate fade range
-      float farViewDist = (float) geom->getDetailLevels().front()->getFarRange();
+      // Calculate fade range
+      float farViewDist = (float)geom->getDetailLevels().front()->getFarRange();
       float fadeRange = farViewDist / 1.2247449f;
-      //Note: 1.2247449 ~= sqrt(1.5), which is necessary since the far view distance is measured from the centers
-      //of pages, while the vertex shader needs to fade grass completely out (including the closest corner)
-      //before the page center is out of range.
+      // Note: 1.2247449 ~= sqrt(1.5), which is necessary since the far view distance is measured from the centers
+      // of pages, while the vertex shader needs to fade grass completely out (including the closest corner)
+      // before the page center is out of range.
 
-      //Generate a string ID that identifies the current set of vertex shader options
+      // Generate a string ID that identifies the current set of vertex shader options
       Ogre::StringStream tmpName;
       tmpName << "GrassVS_";
-      if (animate)
-        tmpName << "anim_";
-      if (blend)
-        tmpName << "blend_";
-      if (lighting)
-        tmpName << "lighting_";
+      if (animate) tmpName << "anim_";
+      if (blend) tmpName << "blend_";
+      if (lighting) tmpName << "lighting_";
       tmpName << renderTechnique << "_";
       tmpName << fadeTechnique << "_";
-      if (fadeTechnique == FADETECH_GROW || fadeTechnique == FADETECH_ALPHAGROW)
-        tmpName << maxHeight << "_";
+      if (fadeTechnique == FADETECH_GROW || fadeTechnique == FADETECH_ALPHAGROW) tmpName << maxHeight << "_";
       tmpName << farViewDist << "_";
       tmpName << "vp";
       const String vsName = tmpName.str();
 
-      //Generate a string ID that identifies the material combined with the vertex shader
+      // Generate a string ID that identifies the material combined with the vertex shader
       const String matName = material->getName() + "_" + vsName;
 
-      //Check if the desired material already exists (if not, create it)
+      // Check if the desired material already exists (if not, create it)
       MaterialPtr tmpMat = MaterialManager::getSingleton().getByName(matName);
       if (!tmpMat) {
-        //Clone the original material
+        // Clone the original material
         tmpMat = material->clone(matName);
 
-        //Disable lighting
+        // Disable lighting
         tmpMat->setLightingEnabled(false);
-        //tmpMat->setReceiveShadows(false);
+        // tmpMat->setReceiveShadows(false);
 
-        //Check if the desired shader already exists (if not, compile it)
+        // Check if the desired shader already exists (if not, compile it)
         String shaderLanguage;
         HighLevelGpuProgramPtr vertexShader =
-            Ogre::static_pointer_cast<HighLevelGpuProgram>(HighLevelGpuProgramManager::getSingleton().getByName(vsName,
-                                                                                                                ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME));
+            Ogre::static_pointer_cast<HighLevelGpuProgram>(HighLevelGpuProgramManager::getSingleton().getByName(
+                vsName, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME));
         if (!vertexShader) {
           HighLevelGpuProgramManager &mgr = HighLevelGpuProgramManager::getSingleton();
           if (mgr.isLanguageSupported("hlsl"))
@@ -1165,11 +1166,10 @@ void GrassLayer::_updateShaders() {
           else
             shaderLanguage = "cg";
 
-          //Generate the grass shader
+          // Generate the grass shader
           String vertexProgSource;
 
           if (!shaderLanguage.compare("hlsl") || !shaderLanguage.compare("cg")) {
-
             vertexProgSource =
                 "void main( \n"
                 "	float4 iPosition : POSITION, \n"
@@ -1192,12 +1192,9 @@ void GrassLayer::_updateShaders() {
                   "	uniform float4 direction,	\n";
 
             if (fadeTechnique == FADETECH_GROW || fadeTechnique == FADETECH_ALPHAGROW)
-              vertexProgSource +=
-                  "	uniform float grassHeight,	\n";
+              vertexProgSource += "	uniform float grassHeight,	\n";
 
-            if (renderTechnique == GRASSTECH_SPRITE || lighting)
-              vertexProgSource +=
-                  "   float4 iNormal : NORMAL, \n";
+            if (renderTechnique == GRASSTECH_SPRITE || lighting) vertexProgSource += "   float4 iNormal : NORMAL, \n";
 
             vertexProgSource +=
                 "	uniform float4x4 worldViewProj,	\n"
@@ -1214,24 +1211,21 @@ void GrassLayer::_updateShaders() {
                   "   float diffuseFactor = max(dot(float4(0,1,0,0), light), 0); \n"
                   "   oColor = (lightAmbient + diffuseFactor * lightDiffuse) * iColor; \n";
             } else {
-              vertexProgSource +=
-                  "   oColor.rgb = iColor.rgb;               \n";
+              vertexProgSource += "   oColor.rgb = iColor.rgb;               \n";
             }
 
             if (fadeTechnique == FADETECH_ALPHA || fadeTechnique == FADETECH_ALPHAGROW)
               vertexProgSource +=
-                  //Fade out in the distance
+                  // Fade out in the distance
                   "	oColor.a = 2.0f - (2.0f * dist / fadeRange);   \n";
             else
-              vertexProgSource +=
-                  "	oColor.a = 1.0f;   \n";
+              vertexProgSource += "	oColor.a = 1.0f;   \n";
 
-            vertexProgSource +=
-                "	float oldposx = position.x;	\n";
+            vertexProgSource += "	float oldposx = position.x;	\n";
 
             if (renderTechnique == GRASSTECH_SPRITE)
               vertexProgSource +=
-                  //Face the camera
+                  // Face the camera
                   "	float3 dirVec = (float3)position - (float3)camPos;		\n"
                   "	float3 p = normalize(cross(float4(0,1,0,0), dirVec));	\n"
                   "	position += float4(p.x * iNormal.x, iNormal.y, p.z * iNormal.x, 0);	\n";
@@ -1239,21 +1233,19 @@ void GrassLayer::_updateShaders() {
             if (animate)
               vertexProgSource +=
                   "	if (iUV.y == 0.0f){	\n"
-                  //Wave grass in breeze
+                  // Wave grass in breeze
                   "		float offset = sin(time + oldposx * frequency);	\n"
                   "		position += direction * offset;	\n"
                   "	}	\n";
 
             if (blend && animate)
-              vertexProgSource +=
-                  "	else {	\n";
+              vertexProgSource += "	else {	\n";
             else if (blend)
-              vertexProgSource +=
-                  "	if (iUV.y != 0.0f){	\n";
+              vertexProgSource += "	if (iUV.y != 0.0f){	\n";
 
             if (blend)
               vertexProgSource +=
-                  //Blend the base of nearby grass into the terrain
+                  // Blend the base of nearby grass into the terrain
                   "		oColor.a = clamp(oColor.a, 0, 1) * 4.0f * ((dist / fadeRange) - 0.1f);	\n"
                   "	}	\n";
 
@@ -1262,14 +1254,13 @@ void GrassLayer::_updateShaders() {
                   "	float offset = (2.0f * dist / fadeRange) - 1.0f; \n"
                   "	position.y -= grassHeight * clamp(offset, 0, 1); ";
 
-            vertexProgSource +=
-                "	oPosition = mul(worldViewProj, position);  \n";
+            vertexProgSource += "	oPosition = mul(worldViewProj, position);  \n";
 
             vertexProgSource +=
                 "	oUV = iUV;\n"
                 "}";
           } else {
-            //Must be glsl
+            // Must be glsl
             if (lighting) {
               vertexProgSource =
                   "uniform vec4 objSpaceLight; \n"
@@ -1285,15 +1276,14 @@ void GrassLayer::_updateShaders() {
             }
 
             if (fadeTechnique == FADETECH_GROW || fadeTechnique == FADETECH_ALPHAGROW) {
-              vertexProgSource +=
-                  "uniform float grassHeight;	\n";
+              vertexProgSource += "uniform float grassHeight;	\n";
             }
 
             vertexProgSource +=
                 "uniform mat4 worldViewProj; \n"
                 "uniform vec3 camPos; \n"
                 "uniform float fadeRange; \n"
-				"\n"
+                "\n"
                 "void main()"
                 "{ \n"
                 "    vec4 color = gl_Color; \n"
@@ -1306,22 +1296,20 @@ void GrassLayer::_updateShaders() {
                   "    float diffuseFactor = max( dot( vec3(0.0,1.0,0.0), light), 0.0); \n"
                   "    color = (lightAmbient + diffuseFactor * lightDiffuse) * gl_Color; \n";
             } else {
-              vertexProgSource +=
-                  "    color.xyz = gl_Color.xyz; \n";
+              vertexProgSource += "    color.xyz = gl_Color.xyz; \n";
             }
 
             if (fadeTechnique == FADETECH_ALPHA || fadeTechnique == FADETECH_ALPHAGROW) {
               vertexProgSource +=
-                  //Fade out in the distance
+                  // Fade out in the distance
                   "    color.w = 2.0 - (2.0 * dist / fadeRange); \n";
             } else {
-              vertexProgSource +=
-                  "    color.w = 1.0; \n";
+              vertexProgSource += "    color.w = 1.0; \n";
             }
 
             if (renderTechnique == GRASSTECH_SPRITE) {
               vertexProgSource +=
-                  //Face the camera
+                  // Face the camera
                   "    vec3 dirVec = position.xyz - camPos.xyz; \n"
                   "    vec3 p = normalize(cross(vec3(0.0,1.0,0.0), dirVec)); \n"
                   "    position += vec4(p.x * gl_Normal.x, gl_Normal.y, p.z * gl_Normal.x, 0.0); \n";
@@ -1331,7 +1319,7 @@ void GrassLayer::_updateShaders() {
               vertexProgSource +=
                   "    if (gl_MultiTexCoord0.y == 0.0) \n"
                   "    { \n"
-                  //Wave grass in breeze
+                  // Wave grass in breeze
                   "        position += direction * sin(time + gl_Vertex.x * frequency); \n"
                   "    } \n";
             }
@@ -1348,14 +1336,13 @@ void GrassLayer::_updateShaders() {
 
             if (blend) {
               vertexProgSource +=
-                  //Blend the base of nearby grass into the terrain
+                  // Blend the base of nearby grass into the terrain
                   "        color.w = clamp(color.w, 0.0, 1.0) * 4.0 * ((dist / fadeRange) - 0.1); \n"
                   "    } \n";
             }
 
             if (fadeTechnique == FADETECH_GROW || fadeTechnique == FADETECH_ALPHAGROW) {
-              vertexProgSource +=
-                  "    position.y -= grassHeight * clamp((2.0 * dist / fadeRange) - 1.0, 0.0, 1.0); \n";
+              vertexProgSource += "    position.y -= grassHeight * clamp((2.0 * dist / fadeRange) - 1.0, 0.0, 1.0); \n";
             }
 
             vertexProgSource +=
@@ -1367,9 +1354,7 @@ void GrassLayer::_updateShaders() {
           }
 
           vertexShader = HighLevelGpuProgramManager::getSingleton().createProgram(
-              vsName,
-              ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-              shaderLanguage, GPT_VERTEX_PROGRAM);
+              vsName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, shaderLanguage, GPT_VERTEX_PROGRAM);
 
           vertexShader->setSource(vertexProgSource);
 
@@ -1387,10 +1372,10 @@ void GrassLayer::_updateShaders() {
           shaderLanguage = vertexShader->getLanguage();
         }
 
-        //Now the vertex shader (vertexShader) has either been found or just generated
+        // Now the vertex shader (vertexShader) has either been found or just generated
         //(depending on whether or not it was already generated).
 
-        //Apply the shader to the material
+        // Apply the shader to the material
         Pass *pass = tmpMat->getTechnique(0)->getPass(0);
         pass->setVertexProgram(vsName);
         GpuProgramParametersSharedPtr params = pass->getVertexProgramParameters();
@@ -1417,10 +1402,10 @@ void GrassLayer::_updateShaders() {
 
         pass->getVertexProgramParameters()->setNamedConstant("fadeRange", fadeRange);
       }
-      //Now the material (tmpMat) has either been found or just created (depending on whether or not it was already
-      //created). The appropriate vertex shader should be applied and the material is ready for use.
+      // Now the material (tmpMat) has either been found or just created (depending on whether or not it was already
+      // created). The appropriate vertex shader should be applied and the material is ready for use.
 
-      //Apply the new material
+      // Apply the new material
       material = tmpMat;
     }
   }
@@ -1431,14 +1416,9 @@ void GrassPage::init(PagedGeometry *geom, const Ogre::Any &data) {
   rootNode = geom->getSceneNode();
 }
 
-GrassPage::~GrassPage() {
-  removeEntities();
-}
+GrassPage::~GrassPage() { removeEntities(); }
 
-void GrassPage::addEntity(Entity *entity,
-                          const Vector3 &position,
-                          const Quaternion &rotation,
-                          const Vector3 &scale,
+void GrassPage::addEntity(Entity *entity, const Vector3 &position, const Quaternion &rotation, const Vector3 &scale,
                           const Ogre::ColourValue &color) {
   SceneNode *node = rootNode->createChildSceneNode();
   node->setPosition(position);
@@ -1446,8 +1426,7 @@ void GrassPage::addEntity(Entity *entity,
 
   entity->setCastShadows(false);
   entity->setVisibilityFlags(0x0F0);
-  if (hasQueryFlag())
-    entity->setQueryFlags(getQueryFlag());
+  if (hasQueryFlag()) entity->setQueryFlags(getQueryFlag());
   entity->setRenderQueueGroup(entity->getRenderQueueGroup());
   node->attachObject(entity);
 }
@@ -1480,4 +1459,4 @@ void GrassPage::setVisible(bool visible) {
   }
 }
 
-} //namespace
+}  // namespace Forests

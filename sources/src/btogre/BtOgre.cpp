@@ -13,9 +13,9 @@
  * =============================================================================================
  */
 
-#include "btogre/BtOgrePG.h"
-#include "btogre/BtOgreGP.h"
 #include "btogre/BtOgreExtras.h"
+#include "btogre/BtOgreGP.h"
+#include "btogre/BtOgrePG.h"
 
 using namespace Ogre;
 
@@ -28,13 +28,12 @@ namespace BtOgre {
  */
 
 void VertexIndexToShape::addStaticVertexData(const VertexData *vertex_data) {
-  if (!vertex_data)
-    return;
+  if (!vertex_data) return;
 
   const VertexData *data = vertex_data;
 
   const unsigned int prev_size = vertex_count_;
-  vertex_count_ += (unsigned int) data->vertexCount;
+  vertex_count_ += (unsigned int)data->vertexCount;
 
   Ogre::Vector3 *tmp_vert = new Ogre::Vector3[vertex_count_];
   if (vertex_buffer_) {
@@ -47,12 +46,12 @@ void VertexIndexToShape::addStaticVertexData(const VertexData *vertex_data) {
   {
     const Ogre::VertexElement *posElem = data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
     Ogre::HardwareVertexBufferSharedPtr vbuf = data->vertexBufferBinding->getBuffer(posElem->getSource());
-    const unsigned int vSize = (unsigned int) vbuf->getVertexSize();
+    const unsigned int vSize = (unsigned int)vbuf->getVertexSize();
 
     unsigned char *vertex = static_cast<unsigned char *>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
     float *pReal;
     Ogre::Vector3 *curVertices = &vertex_buffer_[prev_size];
-    const unsigned int vertexCount = (unsigned int) data->vertexCount;
+    const unsigned int vertexCount = (unsigned int)data->vertexCount;
     for (unsigned int j = 0; j < vertexCount; ++j) {
       posElem->baseVertexPointerToElement(vertex, &pReal);
       vertex += vSize;
@@ -69,15 +68,14 @@ void VertexIndexToShape::addStaticVertexData(const VertexData *vertex_data) {
   }
 }
 //------------------------------------------------------------------------------------------------
-void VertexIndexToShape::addAnimatedVertexData(const Ogre::VertexData *vertex_data,
-                                               const Ogre::VertexData *blend_data,
+void VertexIndexToShape::addAnimatedVertexData(const Ogre::VertexData *vertex_data, const Ogre::VertexData *blend_data,
                                                const Ogre::Mesh::IndexMap *indexMap) {
   // Get the bone index element
   assert(vertex_data);
 
   const VertexData *data = blend_data;
   const unsigned int prev_size = vertex_count_;
-  vertex_count_ += (unsigned int) data->vertexCount;
+  vertex_count_ += (unsigned int)data->vertexCount;
   Ogre::Vector3 *tmp_vert = new Ogre::Vector3[vertex_count_];
   if (vertex_buffer_) {
     memcpy(tmp_vert, vertex_buffer_, sizeof(Vector3) * prev_size);
@@ -88,14 +86,14 @@ void VertexIndexToShape::addAnimatedVertexData(const Ogre::VertexData *vertex_da
   // Get the positional buffer element
   {
     const Ogre::VertexElement *posElem = data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
-    assert (posElem);
+    assert(posElem);
     Ogre::HardwareVertexBufferSharedPtr vbuf = data->vertexBufferBinding->getBuffer(posElem->getSource());
-    const unsigned int vSize = (unsigned int) vbuf->getVertexSize();
+    const unsigned int vSize = (unsigned int)vbuf->getVertexSize();
 
     unsigned char *vertex = static_cast<unsigned char *>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
     float *pReal;
     Ogre::Vector3 *curVertices = &vertex_buffer_[prev_size];
-    const unsigned int vertexCount = (unsigned int) data->vertexCount;
+    const unsigned int vertexCount = (unsigned int)data->vertexCount;
     for (unsigned int j = 0; j < vertexCount; ++j) {
       posElem->baseVertexPointerToElement(vertex, &pReal);
       vertex += vSize;
@@ -112,21 +110,20 @@ void VertexIndexToShape::addAnimatedVertexData(const Ogre::VertexData *vertex_da
   }
   {
     const Ogre::VertexElement *bneElem = vertex_data->vertexDeclaration->findElementBySemantic(Ogre::VES_BLEND_INDICES);
-    assert (bneElem);
+    assert(bneElem);
 
     Ogre::HardwareVertexBufferSharedPtr vbuf = vertex_data->vertexBufferBinding->getBuffer(bneElem->getSource());
-    const unsigned int vSize = (unsigned int) vbuf->getVertexSize();
+    const unsigned int vSize = (unsigned int)vbuf->getVertexSize();
     unsigned char *vertex = static_cast<unsigned char *>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
 
     unsigned char *pBone;
 
-    if (!bone_index_)
-      bone_index_ = new BoneIndex();
+    if (!bone_index_) bone_index_ = new BoneIndex();
     BoneIndex::iterator i;
 
     Ogre::Vector3 *curVertices = &vertex_buffer_[prev_size];
 
-    const unsigned int vertexCount = (unsigned int) vertex_data->vertexCount;
+    const unsigned int vertexCount = (unsigned int)vertex_data->vertexCount;
     for (unsigned int j = 0; j < vertexCount; ++j) {
       bneElem->baseVertexPointerToElement(vertex, &pBone);
       vertex += vSize;
@@ -151,7 +148,7 @@ void VertexIndexToShape::addAnimatedVertexData(const Ogre::VertexData *vertex_da
 //------------------------------------------------------------------------------------------------
 void VertexIndexToShape::addIndexData(IndexData *data, const unsigned int offset) {
   const unsigned int prev_size = index_count_;
-  index_count_ += (unsigned int) data->indexCount;
+  index_count_ += (unsigned int)data->indexCount;
 
   unsigned int *tmp_ind = new unsigned int[index_count_];
   if (index_buffer_) {
@@ -160,7 +157,7 @@ void VertexIndexToShape::addIndexData(IndexData *data, const unsigned int offset
   }
   index_buffer_ = tmp_ind;
 
-  const unsigned int numTris = (unsigned int) data->indexCount / 3;
+  const unsigned int numTris = (unsigned int)data->indexCount / 3;
   HardwareIndexBufferSharedPtr ibuf = data->indexBuffer;
   const bool use32bitindexes = (ibuf->getType() == HardwareIndexBuffer::IT_32BIT);
   unsigned int index_offset = prev_size;
@@ -176,13 +173,12 @@ void VertexIndexToShape::addIndexData(IndexData *data, const unsigned int offset
   } else {
     const unsigned short *pShort = static_cast<unsigned short *>(ibuf->lock(HardwareBuffer::HBL_READ_ONLY));
     for (unsigned int k = 0; k < numTris; ++k) {
-      index_buffer_[index_offset++] = offset + static_cast<unsigned int> (*pShort++);
-      index_buffer_[index_offset++] = offset + static_cast<unsigned int> (*pShort++);
-      index_buffer_[index_offset++] = offset + static_cast<unsigned int> (*pShort++);
+      index_buffer_[index_offset++] = offset + static_cast<unsigned int>(*pShort++);
+      index_buffer_[index_offset++] = offset + static_cast<unsigned int>(*pShort++);
+      index_buffer_[index_offset++] = offset + static_cast<unsigned int>(*pShort++);
     }
     ibuf->unlock();
   }
-
 }
 //------------------------------------------------------------------------------------------------
 Real VertexIndexToShape::getRadius() {
@@ -196,7 +192,6 @@ Real VertexIndexToShape::getRadius() {
 Vector3 VertexIndexToShape::getSize() {
   const unsigned int vCount = getVertexCount();
   if (bounds_ == Ogre::Vector3(-1, -1, -1) && vCount > 0) {
-
     const Ogre::Vector3 *const v = getVertices();
 
     Ogre::Vector3 vmin(v[0]);
@@ -220,27 +215,18 @@ Vector3 VertexIndexToShape::getSize() {
   return bounds_;
 }
 //------------------------------------------------------------------------------------------------
-const Ogre::Vector3 *VertexIndexToShape::getVertices() {
-  return vertex_buffer_;
-}
+const Ogre::Vector3 *VertexIndexToShape::getVertices() { return vertex_buffer_; }
 //------------------------------------------------------------------------------------------------
-unsigned int VertexIndexToShape::getVertexCount() {
-  return vertex_count_;
-}
+unsigned int VertexIndexToShape::getVertexCount() { return vertex_count_; }
 //------------------------------------------------------------------------------------------------
-const unsigned int *VertexIndexToShape::getIndices() {
-  return index_buffer_;
-}
+const unsigned int *VertexIndexToShape::getIndices() { return index_buffer_; }
 //------------------------------------------------------------------------------------------------
-unsigned int VertexIndexToShape::getIndexCount() {
-  return index_count_;
-}
+unsigned int VertexIndexToShape::getIndexCount() { return index_count_; }
 
 //------------------------------------------------------------------------------------------------
 btSphereShape *VertexIndexToShape::createSphere() {
   const Ogre::Real rad = getRadius();
-  assert((rad > 0.0) &&
-      ("Sphere radius must be greater than zero"));
+  assert((rad > 0.0) && ("Sphere radius must be greater than zero"));
   btSphereShape *shape = new btSphereShape(rad);
 
   shape->setLocalScaling(Convert::toBullet(scale_));
@@ -251,8 +237,7 @@ btSphereShape *VertexIndexToShape::createSphere() {
 btBoxShape *VertexIndexToShape::createBox() {
   const Ogre::Vector3 sz = getSize();
 
-  assert((sz.x > 0.0) && (sz.y > 0.0) && (sz.z > 0.0) &&
-      ("Size of box must be greater than zero on all axes"));
+  assert((sz.x > 0.0) && (sz.y > 0.0) && (sz.z > 0.0) && ("Size of box must be greater than zero on all axes"));
 
   btBoxShape *shape = new btBoxShape(Convert::toBullet(sz * 0.5));
 
@@ -264,8 +249,7 @@ btBoxShape *VertexIndexToShape::createBox() {
 btCylinderShape *VertexIndexToShape::createCylinder() {
   const Ogre::Vector3 sz = getSize();
 
-  assert((sz.x > 0.0) && (sz.y > 0.0) && (sz.z > 0.0) &&
-      ("Size of Cylinder must be greater than zero on all axes"));
+  assert((sz.x > 0.0) && (sz.y > 0.0) && (sz.z > 0.0) && ("Size of Cylinder must be greater than zero on all axes"));
 
   btCylinderShape *shape = new btCylinderShapeX(Convert::toBullet(sz * 0.5));
 
@@ -275,10 +259,9 @@ btCylinderShape *VertexIndexToShape::createCylinder() {
 }
 //------------------------------------------------------------------------------------------------
 btConvexHullShape *VertexIndexToShape::createConvex() {
-  assert(vertex_count_ && (index_count_ >= 6) &&
-      ("Mesh must have some vertices and at least 6 indices (2 triangles)"));
+  assert(vertex_count_ && (index_count_ >= 6) && ("Mesh must have some vertices and at least 6 indices (2 triangles)"));
 
-  btConvexHullShape *shape = new btConvexHullShape((btScalar *) &vertex_buffer_[0].x, vertex_count_, sizeof(Vector3));
+  btConvexHullShape *shape = new btConvexHullShape((btScalar *)&vertex_buffer_[0].x, vertex_count_, sizeof(Vector3));
 
   shape->setLocalScaling(Convert::toBullet(scale_));
 
@@ -286,8 +269,7 @@ btConvexHullShape *VertexIndexToShape::createConvex() {
 }
 //------------------------------------------------------------------------------------------------
 btBvhTriangleMeshShape *VertexIndexToShape::createTrimesh() {
-  assert(vertex_count_ && (index_count_ >= 6) &&
-      ("Mesh must have some vertices and at least 6 indices (2 triangles)"));
+  assert(vertex_count_ && (index_count_ >= 6) && ("Mesh must have some vertices and at least 6 indices (2 triangles)"));
 
   unsigned int numFaces = index_count_ / 3;
 
@@ -332,8 +314,7 @@ btBvhTriangleMeshShape *VertexIndexToShape::createTrimesh() {
 btCapsuleShape *VertexIndexToShape::createCapsule() {
   const Ogre::Vector3 sz = getSize();
 
-  assert((sz.x > 0.0) && (sz.y > 0.0) && (sz.z > 0.0) &&
-      ("Size of the capsule must be greater than zero on all axes"));
+  assert((sz.x > 0.0) && (sz.y > 0.0) && (sz.z > 0.0) && ("Size of the capsule must be greater than zero on all axes"));
 
   btScalar height = std::max(sz.x, std::max(sz.y, sz.z));
   btScalar radius;
@@ -360,26 +341,23 @@ VertexIndexToShape::~VertexIndexToShape() {
   delete[] index_buffer_;
 
   if (bone_index_) {
-    for (BoneIndex::iterator i = bone_index_->begin();
-         i != bone_index_->end();
-         ++i) {
+    for (BoneIndex::iterator i = bone_index_->begin(); i != bone_index_->end(); ++i) {
       delete i->second;
     }
     delete bone_index_;
   }
 }
 //------------------------------------------------------------------------------------------------
-VertexIndexToShape::VertexIndexToShape(const Matrix4 &transform) :
-    vertex_buffer_(0),
-    index_buffer_(0),
-    vertex_count_(0),
-    index_count_(0),
-    bounds_(Vector3(-1, -1, -1)),
-    bound_radius_(-1),
-    bone_index_(0),
-    transform_(transform),
-    scale_(1) {
-}
+VertexIndexToShape::VertexIndexToShape(const Matrix4 &transform)
+    : vertex_buffer_(0),
+      index_buffer_(0),
+      vertex_count_(0),
+      index_count_(0),
+      bounds_(Vector3(-1, -1, -1)),
+      bound_radius_(-1),
+      bone_index_(0),
+      transform_(transform),
+      scale_(1) {}
 
 /*
  * =============================================================================================
@@ -387,39 +365,27 @@ VertexIndexToShape::VertexIndexToShape(const Matrix4 &transform) :
  * =============================================================================================
  */
 
-StaticMeshToShapeConverter::StaticMeshToShapeConverter() :
-    VertexIndexToShape(),
-    entity_(0),
-    node_(0) {
-}
+StaticMeshToShapeConverter::StaticMeshToShapeConverter() : VertexIndexToShape(), entity_(0), node_(0) {}
 //------------------------------------------------------------------------------------------------
-StaticMeshToShapeConverter::~StaticMeshToShapeConverter() {
-}
+StaticMeshToShapeConverter::~StaticMeshToShapeConverter() {}
 //------------------------------------------------------------------------------------------------
-StaticMeshToShapeConverter::StaticMeshToShapeConverter(Entity *entity, SceneNode *parent, const Matrix4 &transform) :
-    VertexIndexToShape(transform),
-    entity_(0),
-    node_(0) {
+StaticMeshToShapeConverter::StaticMeshToShapeConverter(Entity *entity, SceneNode *parent, const Matrix4 &transform)
+    : VertexIndexToShape(transform), entity_(0), node_(0) {
   addEntity(entity, transform, parent);
 }
 //------------------------------------------------------------------------------------------------
-StaticMeshToShapeConverter::StaticMeshToShapeConverter(Entity *entity, const MeshPtr &mesh, SceneNode *parent, const Matrix4 &transform) :
-    VertexIndexToShape(transform),
-    entity_(0),
-    node_(0) {
+StaticMeshToShapeConverter::StaticMeshToShapeConverter(Entity *entity, const MeshPtr &mesh, SceneNode *parent,
+                                                       const Matrix4 &transform)
+    : VertexIndexToShape(transform), entity_(0), node_(0) {
   addEntity(entity, mesh, transform, parent);
 }
 //------------------------------------------------------------------------------------------------
-StaticMeshToShapeConverter::StaticMeshToShapeConverter(Renderable *rend, const Matrix4 &transform) :
-    VertexIndexToShape(transform),
-    entity_(0),
-    node_(0) {
+StaticMeshToShapeConverter::StaticMeshToShapeConverter(Renderable *rend, const Matrix4 &transform)
+    : VertexIndexToShape(transform), entity_(0), node_(0) {
   RenderOperation op;
   rend->getRenderOperation(op);
   VertexIndexToShape::addStaticVertexData(op.vertexData);
-  if (op.useIndexes)
-    VertexIndexToShape::addIndexData(op.indexData);
-
+  if (op.useIndexes) VertexIndexToShape::addIndexData(op.indexData);
 }
 //------------------------------------------------------------------------------------------------
 void StaticMeshToShapeConverter::addEntity(Entity *entity, const Matrix4 &transform, SceneNode *parent) {
@@ -430,7 +396,7 @@ void StaticMeshToShapeConverter::addEntity(Entity *entity, const Matrix4 &transf
 
   entity_ = entity;
   if (!parent)
-    node_ = (SceneNode *) (entity_->getParentNode());
+    node_ = (SceneNode *)(entity_->getParentNode());
   else
     node_ = parent;
 
@@ -442,20 +408,21 @@ void StaticMeshToShapeConverter::addEntity(Entity *entity, const Matrix4 &transf
   }
 
   addMesh(entity_->getMesh());
-//  for (unsigned int i = 0; i < entity_->getNumSubEntities(); ++i) {
-//    SubMesh *sub_mesh = entity_->getSubEntity(i)->getSubMesh();
-//
-//    if (!sub_mesh->useSharedVertices) {
-//      VertexIndexToShape::addIndexData(sub_mesh->indexData, vertex_count_);
-//      VertexIndexToShape::addStaticVertexData(sub_mesh->vertexData);
-//    } else {
-//      VertexIndexToShape::addIndexData(sub_mesh->indexData);
-//    }
-//
-//  }
+  //  for (unsigned int i = 0; i < entity_->getNumSubEntities(); ++i) {
+  //    SubMesh *sub_mesh = entity_->getSubEntity(i)->getSubMesh();
+  //
+  //    if (!sub_mesh->useSharedVertices) {
+  //      VertexIndexToShape::addIndexData(sub_mesh->indexData, vertex_count_);
+  //      VertexIndexToShape::addStaticVertexData(sub_mesh->vertexData);
+  //    } else {
+  //      VertexIndexToShape::addIndexData(sub_mesh->indexData);
+  //    }
+  //
+  //  }
 }
 //------------------------------------------------------------------------------------------------
-void StaticMeshToShapeConverter::addEntity(Entity *entity, const Ogre::MeshPtr &mesh, const Matrix4 &transform, SceneNode *parent) {
+void StaticMeshToShapeConverter::addEntity(Entity *entity, const Ogre::MeshPtr &mesh, const Matrix4 &transform,
+                                           SceneNode *parent) {
   // Each entity added need to Reset size and radius
   // Next time getRadius and getSize are asked, they're computed.
   bounds_ = Ogre::Vector3(-1.0);
@@ -463,7 +430,7 @@ void StaticMeshToShapeConverter::addEntity(Entity *entity, const Ogre::MeshPtr &
 
   entity_ = entity;
   if (!parent)
-    node_ = (SceneNode *) (entity_->getParentNode());
+    node_ = (SceneNode *)(entity_->getParentNode());
   else
     node_ = parent;
 
@@ -483,17 +450,17 @@ void StaticMeshToShapeConverter::addEntity(Entity *entity, const Ogre::MeshPtr &
 
     addMesh(entity_->getMesh());
   }
-//  for (unsigned int i = 0; i < entity_->getNumSubEntities(); ++i) {
-//    SubMesh *sub_mesh = entity_->getSubEntity(i)->getSubMesh();
-//
-//    if (!sub_mesh->useSharedVertices) {
-//      VertexIndexToShape::addIndexData(sub_mesh->indexData, vertex_count_);
-//      VertexIndexToShape::addStaticVertexData(sub_mesh->vertexData);
-//    } else {
-//      VertexIndexToShape::addIndexData(sub_mesh->indexData);
-//    }
-//
-//  }
+  //  for (unsigned int i = 0; i < entity_->getNumSubEntities(); ++i) {
+  //    SubMesh *sub_mesh = entity_->getSubEntity(i)->getSubMesh();
+  //
+  //    if (!sub_mesh->useSharedVertices) {
+  //      VertexIndexToShape::addIndexData(sub_mesh->indexData, vertex_count_);
+  //      VertexIndexToShape::addStaticVertexData(sub_mesh->vertexData);
+  //    } else {
+  //      VertexIndexToShape::addIndexData(sub_mesh->indexData);
+  //    }
+  //
+  //  }
 }
 //------------------------------------------------------------------------------------------------
 void StaticMeshToShapeConverter::addMesh(const MeshPtr &mesh, const Matrix4 &transform) {
@@ -507,8 +474,8 @@ void StaticMeshToShapeConverter::addMesh(const MeshPtr &mesh, const Matrix4 &tra
   transform_ = transform;
 
   if (mesh->hasSkeleton())
-    Ogre::LogManager::getSingleton().logMessage(
-        "MeshToShapeConverter::addMesh : Mesh " + mesh->getName() + " as skeleton but added to trimesh non animated");
+    Ogre::LogManager::getSingleton().logMessage("MeshToShapeConverter::addMesh : Mesh " + mesh->getName() +
+                                                " as skeleton but added to trimesh non animated");
 
   if (mesh->sharedVertexData) {
     VertexIndexToShape::addStaticVertexData(mesh->sharedVertexData);
@@ -523,7 +490,6 @@ void StaticMeshToShapeConverter::addMesh(const MeshPtr &mesh, const Matrix4 &tra
     } else {
       VertexIndexToShape::addIndexData(sub_mesh->indexData);
     }
-
   }
 }
 
@@ -533,26 +499,19 @@ void StaticMeshToShapeConverter::addMesh(const MeshPtr &mesh, const Matrix4 &tra
  * =============================================================================================
  */
 
-AnimatedMeshToShapeConverter::AnimatedMeshToShapeConverter(Entity *entity, const Matrix4 &transform) :
-    VertexIndexToShape(transform),
-    mEntity(0),
-    mNode(0),
-    mTransformedVerticesTemp(0),
-    mTransformedVerticesTempSize(0) {
+AnimatedMeshToShapeConverter::AnimatedMeshToShapeConverter(Entity *entity, const Matrix4 &transform)
+    : VertexIndexToShape(transform),
+      mEntity(0),
+      mNode(0),
+      mTransformedVerticesTemp(0),
+      mTransformedVerticesTempSize(0) {
   addEntity(entity, transform);
 }
 //------------------------------------------------------------------------------------------------
-AnimatedMeshToShapeConverter::AnimatedMeshToShapeConverter() :
-    VertexIndexToShape(),
-    mEntity(0),
-    mNode(0),
-    mTransformedVerticesTemp(0),
-    mTransformedVerticesTempSize(0) {
-}
+AnimatedMeshToShapeConverter::AnimatedMeshToShapeConverter()
+    : VertexIndexToShape(), mEntity(0), mNode(0), mTransformedVerticesTemp(0), mTransformedVerticesTempSize(0) {}
 //------------------------------------------------------------------------------------------------
-AnimatedMeshToShapeConverter::~AnimatedMeshToShapeConverter() {
-  delete[] mTransformedVerticesTemp;
-}
+AnimatedMeshToShapeConverter::~AnimatedMeshToShapeConverter() { delete[] mTransformedVerticesTemp; }
 //------------------------------------------------------------------------------------------------
 void AnimatedMeshToShapeConverter::addEntity(Entity *entity, const Matrix4 &transform) {
   // Each entity added need to Reset size and radius
@@ -561,17 +520,16 @@ void AnimatedMeshToShapeConverter::addEntity(Entity *entity, const Matrix4 &tran
   bound_radius_ = -1;
 
   mEntity = entity;
-  mNode = (SceneNode *) (mEntity->getParentNode());
+  mNode = (SceneNode *)(mEntity->getParentNode());
   transform_ = transform;
 
-  assert (entity->getMesh()->hasSkeleton());
+  assert(entity->getMesh()->hasSkeleton());
 
   mEntity->addSoftwareAnimationRequest(false);
   mEntity->_updateAnimation();
 
   if (mEntity->getMesh()->sharedVertexData) {
-    VertexIndexToShape::addAnimatedVertexData(mEntity->getMesh()->sharedVertexData,
-                                              mEntity->_getSkelAnimVertexData(),
+    VertexIndexToShape::addAnimatedVertexData(mEntity->getMesh()->sharedVertexData, mEntity->_getSkelAnimVertexData(),
                                               &mEntity->getMesh()->sharedBlendIndexToBoneIndexMap);
   }
 
@@ -587,7 +545,6 @@ void AnimatedMeshToShapeConverter::addEntity(Entity *entity, const Matrix4 &tran
     } else {
       VertexIndexToShape::addIndexData(sub_mesh->indexData);
     }
-
   }
 
   mEntity->removeSoftwareAnimationRequest(false);
@@ -603,12 +560,10 @@ void AnimatedMeshToShapeConverter::addMesh(const MeshPtr &mesh, const Matrix4 &t
   //_node = (SceneNode*)(_entity->getParentNode());
   transform_ = transform;
 
-  assert (mesh->hasSkeleton());
+  assert(mesh->hasSkeleton());
 
   if (mesh->sharedVertexData) {
-    VertexIndexToShape::addAnimatedVertexData(mesh->sharedVertexData,
-                                              0,
-                                              &mesh->sharedBlendIndexToBoneIndexMap);
+    VertexIndexToShape::addAnimatedVertexData(mesh->sharedVertexData, 0, &mesh->sharedBlendIndexToBoneIndexMap);
   }
 
   for (unsigned int i = 0; i < mesh->getNumSubMeshes(); ++i) {
@@ -617,43 +572,34 @@ void AnimatedMeshToShapeConverter::addMesh(const MeshPtr &mesh, const Matrix4 &t
     if (!sub_mesh->useSharedVertices) {
       VertexIndexToShape::addIndexData(sub_mesh->indexData, vertex_count_);
 
-      VertexIndexToShape::addAnimatedVertexData(sub_mesh->vertexData,
-                                                0,
-                                                &sub_mesh->blendIndexToBoneIndexMap);
+      VertexIndexToShape::addAnimatedVertexData(sub_mesh->vertexData, 0, &sub_mesh->blendIndexToBoneIndexMap);
     } else {
       VertexIndexToShape::addIndexData(sub_mesh->indexData);
     }
-
   }
 }
 //------------------------------------------------------------------------------------------------
-bool AnimatedMeshToShapeConverter::getBoneVertices(unsigned char bone,
-                                                   unsigned int &vertex_count,
-                                                   Ogre::Vector3 *&vertices,
-                                                   const Vector3 &bonePosition) {
+bool AnimatedMeshToShapeConverter::getBoneVertices(unsigned char bone, unsigned int &vertex_count,
+                                                   Ogre::Vector3 *&vertices, const Vector3 &bonePosition) {
   BoneIndex::iterator i = bone_index_->find(bone);
 
-  if (i == bone_index_->end())
-    return false;
+  if (i == bone_index_->end()) return false;
 
-  if (i->second->empty())
-    return false;
+  if (i->second->empty()) return false;
 
-  vertex_count = (unsigned int) i->second->size() + 1;
+  vertex_count = (unsigned int)i->second->size() + 1;
   if (vertex_count > mTransformedVerticesTempSize) {
-    if (mTransformedVerticesTemp)
-      delete[] mTransformedVerticesTemp;
+    if (mTransformedVerticesTemp) delete[] mTransformedVerticesTemp;
 
     mTransformedVerticesTemp = new Ogre::Vector3[vertex_count];
-
   }
 
   vertices = mTransformedVerticesTemp;
   vertices[0] = bonePosition;
-  //mEntity->_getParentNodeFullTransform() *
+  // mEntity->_getParentNodeFullTransform() *
   //	mEntity->getSkeleton()->getBone(bone)->_getDerivedPosition();
 
-  //mEntity->getSkeleton()->getBone(bone)->_getDerivedOrientation()
+  // mEntity->getSkeleton()->getBone(bone)->_getDerivedOrientation()
   unsigned int currBoneVertex = 1;
   Vector3Array::iterator j = i->second->begin();
   while (j != i->second->end()) {
@@ -664,14 +610,12 @@ bool AnimatedMeshToShapeConverter::getBoneVertices(unsigned char bone,
   return true;
 }
 //------------------------------------------------------------------------------------------------
-btBoxShape *AnimatedMeshToShapeConverter::createAlignedBox(unsigned char bone,
-                                                           const Vector3 &bonePosition,
+btBoxShape *AnimatedMeshToShapeConverter::createAlignedBox(unsigned char bone, const Vector3 &bonePosition,
                                                            const Quaternion &boneOrientation) {
   unsigned int vertex_count;
   Vector3 *vertices;
 
-  if (!getBoneVertices(bone, vertex_count, vertices, bonePosition))
-    return 0;
+  if (!getBoneVertices(bone, vertex_count, vertices, bonePosition)) return 0;
 
   Vector3 min_vec(vertices[0]);
   Vector3 max_vec(vertices[0]);
@@ -693,22 +637,18 @@ btBoxShape *AnimatedMeshToShapeConverter::createAlignedBox(unsigned char bone,
       min_vec.y + (maxMinusMin.y * 0.5),
       min_vec.z + (maxMinusMin.z * 0.5));*/
 
-  //box->setPosition(pos);
+  // box->setPosition(pos);
 
   return box;
 }
 //------------------------------------------------------------------------------------------------
-bool AnimatedMeshToShapeConverter::getOrientedBox(unsigned char bone,
-                                                  const Vector3 &bonePosition,
-                                                  const Quaternion &boneOrientation,
-                                                  Vector3 &box_afExtent,
-                                                  Vector3 *box_akAxis,
-                                                  Vector3 &box_kCenter) {
+bool AnimatedMeshToShapeConverter::getOrientedBox(unsigned char bone, const Vector3 &bonePosition,
+                                                  const Quaternion &boneOrientation, Vector3 &box_afExtent,
+                                                  Vector3 *box_akAxis, Vector3 &box_kCenter) {
   unsigned int vertex_count;
   Vector3 *vertices;
 
-  if (!getBoneVertices(bone, vertex_count, vertices, bonePosition))
-    return false;
+  if (!getBoneVertices(bone, vertex_count, vertices, bonePosition)) return false;
 
   box_kCenter = Vector3::ZERO;
 
@@ -756,35 +696,29 @@ bool AnimatedMeshToShapeConverter::getOrientedBox(unsigned char bone,
       fY2Max = fY2;
   }
 
-  box_afExtent.x = ((Real) 0.5) * (fY0Max - fY0Min);
-  box_afExtent.y = ((Real) 0.5) * (fY1Max - fY1Min);
-  box_afExtent.z = ((Real) 0.5) * (fY2Max - fY2Min);
+  box_afExtent.x = ((Real)0.5) * (fY0Max - fY0Min);
+  box_afExtent.y = ((Real)0.5) * (fY1Max - fY1Min);
+  box_afExtent.z = ((Real)0.5) * (fY2Max - fY2Min);
 
-  box_kCenter += (0.5 * (fY0Max + fY0Min)) * box_akAxis[0] +
-      (0.5 * (fY1Max + fY1Min)) * box_akAxis[1] +
-      (0.5 * (fY2Max + fY2Min)) * box_akAxis[2];
+  box_kCenter += (0.5 * (fY0Max + fY0Min)) * box_akAxis[0] + (0.5 * (fY1Max + fY1Min)) * box_akAxis[1] +
+                 (0.5 * (fY2Max + fY2Min)) * box_akAxis[2];
 
   box_afExtent *= 2.0;
 
   return true;
 }
 //------------------------------------------------------------------------------------------------
-btBoxShape *AnimatedMeshToShapeConverter::createOrientedBox(unsigned char bone,
-                                                            const Vector3 &bonePosition,
+btBoxShape *AnimatedMeshToShapeConverter::createOrientedBox(unsigned char bone, const Vector3 &bonePosition,
                                                             const Quaternion &boneOrientation) {
   Ogre::Vector3 box_akAxis[3];
   Ogre::Vector3 box_afExtent;
   Ogre::Vector3 box_afCenter;
 
-  if (!getOrientedBox(bone, bonePosition, boneOrientation,
-                      box_afExtent,
-                      box_akAxis,
-                      box_afCenter))
-    return 0;
+  if (!getOrientedBox(bone, bonePosition, boneOrientation, box_afExtent, box_akAxis, box_afCenter)) return 0;
 
   btBoxShape *geom = new btBoxShape(Convert::toBullet(box_afExtent));
-  //geom->setOrientation(Quaternion(box_akAxis[0],box_akAxis[1],box_akAxis[2]));
-  //geom->setPosition(box_afCenter);
+  // geom->setOrientation(Quaternion(box_akAxis[0],box_akAxis[1],box_akAxis[2]));
+  // geom->setPosition(box_afCenter);
   return geom;
 }
 
@@ -794,22 +728,19 @@ btBoxShape *AnimatedMeshToShapeConverter::createOrientedBox(unsigned char bone,
  * =============================================================================================
  */
 
-DynamicRenderable::DynamicRenderable() {
-}
+DynamicRenderable::DynamicRenderable() {}
 //------------------------------------------------------------------------------------------------
 DynamicRenderable::~DynamicRenderable() {
   delete mRenderOp.vertexData;
   delete mRenderOp.indexData;
 }
 //------------------------------------------------------------------------------------------------
-void DynamicRenderable::initialize(RenderOperation::OperationType operationType,
-                                   bool useIndices) {
+void DynamicRenderable::initialize(RenderOperation::OperationType operationType, bool useIndices) {
   // Initialize Render operation
   mRenderOp.operationType = operationType;
   mRenderOp.useIndexes = useIndices;
   mRenderOp.vertexData = new VertexData;
-  if (mRenderOp.useIndexes)
-    mRenderOp.indexData = new IndexData;
+  if (mRenderOp.useIndexes) mRenderOp.indexData = new IndexData;
 
   // Reset buffer capacities
   mVertexBufferCapacity = 0;
@@ -819,35 +750,28 @@ void DynamicRenderable::initialize(RenderOperation::OperationType operationType,
   createVertexDeclaration();
 }
 //------------------------------------------------------------------------------------------------
-void DynamicRenderable::prepareHardwareBuffers(size_t vertexCount,
-                                               size_t indexCount) {
+void DynamicRenderable::prepareHardwareBuffers(size_t vertexCount, size_t indexCount) {
   // Prepare vertex buffer
   size_t newVertCapacity = mVertexBufferCapacity;
-  if ((vertexCount > mVertexBufferCapacity) ||
-      (!mVertexBufferCapacity)) {
+  if ((vertexCount > mVertexBufferCapacity) || (!mVertexBufferCapacity)) {
     // vertexCount exceeds current capacity!
     // It is necessary to reallocate the buffer.
 
     // Check if this is the first call
-    if (!newVertCapacity)
-      newVertCapacity = 1;
+    if (!newVertCapacity) newVertCapacity = 1;
 
     // Make capacity the Next power of two
-    while (newVertCapacity < vertexCount)
-      newVertCapacity <<= 1;
-  } else if (vertexCount < mVertexBufferCapacity >> 1) {
+    while (newVertCapacity < vertexCount) newVertCapacity <<= 1;
+  } else if (vertexCount<mVertexBufferCapacity>> 1) {
     // Make capacity the previous power of two
-    while (vertexCount < newVertCapacity >> 1)
-      newVertCapacity >>= 1;
+    while (vertexCount < newVertCapacity >> 1) newVertCapacity >>= 1;
   }
   if (newVertCapacity != mVertexBufferCapacity) {
     mVertexBufferCapacity = newVertCapacity;
     // Create new vertex buffer
-    HardwareVertexBufferSharedPtr vbuf =
-        HardwareBufferManager::getSingleton().createVertexBuffer(
-            mRenderOp.vertexData->vertexDeclaration->getVertexSize(0),
-            mVertexBufferCapacity,
-            HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY); // TODO: Custom HBU_?
+    HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton().createVertexBuffer(
+        mRenderOp.vertexData->vertexDeclaration->getVertexSize(0), mVertexBufferCapacity,
+        HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);  // TODO: Custom HBU_?
 
     // Bind buffer
     mRenderOp.vertexData->vertexBufferBinding->setBinding(0, vbuf);
@@ -860,33 +784,27 @@ void DynamicRenderable::prepareHardwareBuffers(size_t vertexCount,
 
     size_t newIndexCapacity = mIndexBufferCapacity;
     // Prepare index buffer
-    if ((indexCount > newIndexCapacity) ||
-        (!newIndexCapacity)) {
+    if ((indexCount > newIndexCapacity) || (!newIndexCapacity)) {
       // indexCount exceeds current capacity!
       // It is necessary to reallocate the buffer.
 
       // Check if this is the first call
-      if (!newIndexCapacity)
-        newIndexCapacity = 1;
+      if (!newIndexCapacity) newIndexCapacity = 1;
 
       // Make capacity the Next power of two
-      while (newIndexCapacity < indexCount)
-        newIndexCapacity <<= 1;
+      while (newIndexCapacity < indexCount) newIndexCapacity <<= 1;
 
-    } else if (indexCount < newIndexCapacity >> 1) {
+    } else if (indexCount<newIndexCapacity>> 1) {
       // Make capacity the previous power of two
-      while (indexCount < newIndexCapacity >> 1)
-        newIndexCapacity >>= 1;
+      while (indexCount < newIndexCapacity >> 1) newIndexCapacity >>= 1;
     }
 
     if (newIndexCapacity != mIndexBufferCapacity) {
       mIndexBufferCapacity = newIndexCapacity;
       // Create new index buffer
-      mRenderOp.indexData->indexBuffer =
-          HardwareBufferManager::getSingleton().createIndexBuffer(
-              HardwareIndexBuffer::IT_16BIT,
-              mIndexBufferCapacity,
-              HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY); // TODO: Custom HBU_?
+      mRenderOp.indexData->indexBuffer = HardwareBufferManager::getSingleton().createIndexBuffer(
+          HardwareIndexBuffer::IT_16BIT, mIndexBufferCapacity,
+          HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);  // TODO: Custom HBU_?
     }
 
     // Update index count in the Render operation
@@ -914,10 +832,7 @@ Real DynamicRenderable::getSquaredViewDepth(const Camera *cam) const {
  * =============================================================================================
  */
 
-enum {
-  POSITION_BINDING,
-  TEXCOORD_BINDING
-};
+enum { POSITION_BINDING, TEXCOORD_BINDING };
 //------------------------------------------------------------------------------------------------
 DynamicLines::DynamicLines(OperationType opType) {
   initialize(opType, false);
@@ -925,16 +840,11 @@ DynamicLines::DynamicLines(OperationType opType) {
   mDirty = true;
 }
 //------------------------------------------------------------------------------------------------
-DynamicLines::~DynamicLines() {
-}
+DynamicLines::~DynamicLines() {}
 //------------------------------------------------------------------------------------------------
-void DynamicLines::setOperationType(OperationType opType) {
-  mRenderOp.operationType = opType;
-}
+void DynamicLines::setOperationType(OperationType opType) { mRenderOp.operationType = opType; }
 //------------------------------------------------------------------------------------------------
-RenderOperation::OperationType DynamicLines::getOperationType() const {
-  return mRenderOp.operationType;
-}
+RenderOperation::OperationType DynamicLines::getOperationType() const { return mRenderOp.operationType; }
 //------------------------------------------------------------------------------------------------
 void DynamicLines::addPoint(const Vector3 &p) {
   mPoints.push_back(p);
@@ -951,9 +861,7 @@ const Vector3 &DynamicLines::getPoint(unsigned short index) const {
   return mPoints[index];
 }
 //------------------------------------------------------------------------------------------------
-unsigned short DynamicLines::getNumPoints(void) const {
-  return (unsigned short) mPoints.size();
-}
+unsigned short DynamicLines::getNumPoints(void) const { return (unsigned short)mPoints.size(); }
 //------------------------------------------------------------------------------------------------
 void DynamicLines::setPoint(unsigned short index, const Vector3 &value) {
   assert(index < mPoints.size() && "Point index is out of bounds!!");
@@ -990,8 +898,7 @@ void DynamicLines::fillHardwareBuffers() {
   Vector3 vaabMin = mPoints[0];
   Vector3 vaabMax = mPoints[0];
 
-  HardwareVertexBufferSharedPtr vbuf =
-      mRenderOp.vertexData->vertexBufferBinding->getBuffer(0);
+  HardwareVertexBufferSharedPtr vbuf = mRenderOp.vertexData->vertexBufferBinding->getBuffer(0);
 
   Real *prPos = static_cast<Real *>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
   {
@@ -1000,19 +907,13 @@ void DynamicLines::fillHardwareBuffers() {
       *prPos++ = mPoints[i].y;
       *prPos++ = mPoints[i].z;
 
-      if (mPoints[i].x < vaabMin.x)
-        vaabMin.x = mPoints[i].x;
-      if (mPoints[i].y < vaabMin.y)
-        vaabMin.y = mPoints[i].y;
-      if (mPoints[i].z < vaabMin.z)
-        vaabMin.z = mPoints[i].z;
+      if (mPoints[i].x < vaabMin.x) vaabMin.x = mPoints[i].x;
+      if (mPoints[i].y < vaabMin.y) vaabMin.y = mPoints[i].y;
+      if (mPoints[i].z < vaabMin.z) vaabMin.z = mPoints[i].z;
 
-      if (mPoints[i].x > vaabMax.x)
-        vaabMax.x = mPoints[i].x;
-      if (mPoints[i].y > vaabMax.y)
-        vaabMax.y = mPoints[i].y;
-      if (mPoints[i].z > vaabMax.z)
-        vaabMax.z = mPoints[i].z;
+      if (mPoints[i].x > vaabMax.x) vaabMax.x = mPoints[i].x;
+      if (mPoints[i].y > vaabMax.y) vaabMax.y = mPoints[i].y;
+      if (mPoints[i].z > vaabMax.z) vaabMax.z = mPoints[i].z;
     }
   }
   vbuf->unlock();
@@ -1021,4 +922,4 @@ void DynamicLines::fillHardwareBuffers() {
 
   mDirty = false;
 }
-}
+}  // namespace BtOgre

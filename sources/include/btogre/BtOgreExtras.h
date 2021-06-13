@@ -15,43 +15,35 @@
 
 #pragma once
 
-#include <btBulletDynamicsCommon.h>
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
-#include <OgreSceneNode.h>
-#include <OgreSimpleRenderable.h>
 #include <OgreCamera.h>
 #include <OgreHardwareBufferManager.h>
-#include <OgreMaterialManager.h>
-#include <OgreTechnique.h>
-#include <OgrePass.h>
 #include <OgreLogManager.h>
+#include <OgreMaterialManager.h>
+#include <OgrePass.h>
+#include <OgreSceneNode.h>
+#include <OgreSimpleRenderable.h>
+#include <OgreTechnique.h>
+#include <btBulletDynamicsCommon.h>
 
 namespace BtOgre {
 
 using Vector3Array = std::vector<Ogre::Vector3>;
 
-//Converts from and to Bullet and Ogre stuff. Pretty self-explanatory.
+// Converts from and to Bullet and Ogre stuff. Pretty self-explanatory.
 class Convert {
  public:
   Convert() = default;
   virtual ~Convert() = default;
 
-  static btQuaternion toBullet(const Ogre::Quaternion &q) {
-    return btQuaternion(q.x, q.y, q.z, q.w);
-  }
-  static btVector3 toBullet(const Ogre::Vector3 &v) {
-    return btVector3(v.x, v.y, v.z);
-  }
+  static btQuaternion toBullet(const Ogre::Quaternion &q) { return btQuaternion(q.x, q.y, q.z, q.w); }
+  static btVector3 toBullet(const Ogre::Vector3 &v) { return btVector3(v.x, v.y, v.z); }
 
-  static Ogre::Quaternion toOgre(const btQuaternion &q) {
-    return Ogre::Quaternion(q.w(), q.x(), q.y(), q.z());
-  }
-  static Ogre::Vector3 toOgre(const btVector3 &v) {
-    return Ogre::Vector3(v.x(), v.y(), v.z());
-  }
+  static Ogre::Quaternion toOgre(const btQuaternion &q) { return Ogre::Quaternion(q.w(), q.x(), q.y(), q.z()); }
+  static Ogre::Vector3 toOgre(const btVector3 &v) { return Ogre::Vector3(v.x(), v.y(), v.z()); }
 };
 
-//From here on its debug-drawing stuff. ------------------------------------------------------------------
+// From here on its debug-drawing stuff. ------------------------------------------------------------------
 
 class DynamicRenderable : public Ogre::SimpleRenderable {
  public:
@@ -69,8 +61,7 @@ class DynamicRenderable : public Ogre::SimpleRenderable {
    @param operationType The type of Render operation to perform.
    @param useIndices Specifies whether to use indices to determine the
           vertices to use as input. */
-  void initialize(Ogre::RenderOperation::OperationType operationType,
-                  bool useIndices);
+  void initialize(Ogre::RenderOperation::OperationType operationType, bool useIndices);
 
   /// Implementation of Ogre::SimpleRenderable
   Ogre::Real getBoundingRadius() const override;
@@ -184,11 +175,7 @@ class DebugDrawer : public btIDebugDraw {
   bool mDebugOn;
 
  public:
-
-  DebugDrawer(Ogre::SceneNode *node, btDynamicsWorld *world)
-      : mNode(node),
-        mWorld(world),
-        mDebugOn(true) {
+  DebugDrawer(Ogre::SceneNode *node, btDynamicsWorld *world) : mNode(node), mWorld(world), mDebugOn(true) {
     mLineDrawer = new DynamicLines(Ogre::RenderOperation::OT_LINE_LIST);
     mNode->attachObject(mLineDrawer);
 
@@ -230,10 +217,7 @@ class DebugDrawer : public btIDebugDraw {
     mLineDrawer->addPoint(Convert::toOgre(to));
   }
 
-  void drawContactPoint(const btVector3 &PointOnB,
-                        const btVector3 &normalOnB,
-                        btScalar distance,
-                        int lifeTime,
+  void drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int lifeTime,
                         const btVector3 &color) override {
     mLineDrawer->addPoint(Convert::toOgre(PointOnB));
     mLineDrawer->addPoint(Convert::toOgre(PointOnB) + (Convert::toOgre(normalOnB) * distance * 20));
@@ -243,10 +227,9 @@ class DebugDrawer : public btIDebugDraw {
     Ogre::LogManager::getSingleton().logMessage(warningString);
   }
 
-  void draw3dText(const btVector3 &location, const char *textString) override {
-  }
+  void draw3dText(const btVector3 &location, const char *textString) override {}
 
-  //0 for off, anything else for on.
+  // 0 for off, anything else for on.
   void setDebugMode(int isOn) override {
     mDebugOn = isOn != 0;
 
@@ -255,11 +238,8 @@ class DebugDrawer : public btIDebugDraw {
     }
   }
 
-  //0 for off, anything else for on.
-  [[nodiscard]] int getDebugMode() const override {
-    return mDebugOn;
-  }
-
+  // 0 for off, anything else for on.
+  [[nodiscard]] int getDebugMode() const override { return mDebugOn; }
 };
 
-}
+}  // namespace BtOgre

@@ -1,27 +1,32 @@
 /*-------------------------------------------------------------------------------------
 Copyright (c) 2006 John Judnich
 
-This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
-	1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
-	2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
-	3. This notice may not be removed or altered from any source distribution.
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable
+for any damages arising from the use of this software. Permission is granted to anyone to use this software for any
+purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following
+restrictions:
+        1. The origin of this software must not be misrepresented; you must not claim that you wrote the original
+software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but
+is not required.
+        2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original
+software.
+        3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
 #pragma once
 
-#include <limits> // numeric_limits<>
-#include <memory>
-
-#include <OgreRoot.h>
+#include <OgreCamera.h>
+#include <OgreCommon.h>
+#include <OgreEntity.h>
+#include <OgreMesh.h>
 #include <OgrePrerequisites.h>
 #include <OgreRenderSystem.h>
-#include <OgreEntity.h>
-#include <OgreCommon.h>
-#include <OgreCamera.h>
-#include <OgreVector3.h>
+#include <OgreRoot.h>
 #include <OgreTimer.h>
-#include <OgreMesh.h>
+#include <OgreVector3.h>
+
+#include <limits>  // numeric_limits<>
+#include <memory>
 
 namespace Forests {
 
@@ -75,8 +80,7 @@ class PagedGeometry {
 
   \see setCamera(), setPageSize(), setBounds(), setInfinite(), setPageLoader()
   */
-  PagedGeometry(Ogre::Camera *cam = nullptr,
-                Ogre::Real pageSize = 100,
+  PagedGeometry(Ogre::Camera *cam = nullptr, Ogre::Real pageSize = 100,
                 Ogre::RenderQueueGroupID queue = Ogre::RENDER_QUEUE_6);
 
   virtual ~PagedGeometry();
@@ -110,9 +114,7 @@ class PagedGeometry {
   instead of storing a local copy. This is an inline function, so don't worry
   too much about performance.
   */
-  inline Ogre::Camera *getCamera() const {
-    return sceneCam;
-  }
+  inline Ogre::Camera *getCamera() const { return sceneCam; }
 
   /**
   \brief Gets the scene manager which is being used to display the pgeometry
@@ -124,9 +126,7 @@ class PagedGeometry {
   the SceneManager this function returns will always remain the same - even if the
   camera is later set to nullptr.
   */
-  inline Ogre::SceneManager *getSceneManager() const {
-    return sceneMgr;
-  }
+  inline Ogre::SceneManager *getSceneManager() const { return sceneMgr; }
 
   /**
   \brief Gets the scene node to which all PagedGeometry pgeometry is attached
@@ -148,9 +148,7 @@ class PagedGeometry {
   from the assigned camera). However, once a camera is set, the SceneNode this function
   returns will always remain the same - even if the camera is later set to nullptr.
   */
-  inline Ogre::SceneNode *getSceneNode() const {
-    return rootNode;
-  }
+  inline Ogre::SceneNode *getSceneNode() const { return rootNode; }
 
 #ifdef PAGEDGEOMETRY_ALTERNATE_COORDSYSTEM
   /**
@@ -240,9 +238,7 @@ class PagedGeometry {
 
   Ogre's documentation should contain more information about TRect members.
   */
-  inline const TBounds &getBounds() const {
-    return m_bounds;
-  }
+  inline const TBounds &getBounds() const { return m_bounds; }
 
   /**
   \brief Convert an Ogre::AxisAlignedBox to a TBounds coplanar to the plane defined by the UP axis.
@@ -268,9 +264,7 @@ class PagedGeometry {
 
   \see setPageSize() for more information about page size.
   */
-  inline Ogre::Real getPageSize() {
-    return pageSize;
-  }
+  inline Ogre::Real getPageSize() { return pageSize; }
 
   /**
   \brief Adds a detail level to the PagedGeometry object.
@@ -365,11 +359,9 @@ class PagedGeometry {
   \see The GeometryPage class documention for more information on adding custom
   page types.
   */
-  template<class PageType>
-  inline GeometryPageManager *addDetailLevel(Ogre::Real maxRange,
-                                             Ogre::Real transitionLength = 0,
-                                             const Ogre::Any &data = Ogre::Any(),
-                                             Ogre::uint32 queryFlag = 0);
+  template <class PageType>
+  inline GeometryPageManager *addDetailLevel(Ogre::Real maxRange, Ogre::Real transitionLength = 0,
+                                             const Ogre::Any &data = Ogre::Any(), Ogre::uint32 queryFlag = 0);
 
   /**
   \brief Removes all detail levels from the PagedGeometry object.
@@ -415,9 +407,7 @@ class PagedGeometry {
   This can be useful if you want to retrieve the current page loader to delete it,
   or any other task that needs to be done to the currently used page loader.
   */
-  inline PageLoader *getPageLoader() {
-    return pageLoader;
-  }
+  inline PageLoader *getPageLoader() { return pageLoader; }
 
   /**
   \brief Updates this PagedGeometry object
@@ -587,9 +577,8 @@ class PagedGeometry {
   segments for this purpose. Simply call cacheGeometry(maxTime) repeatedly until
   everything is cached (cacheGeometry() will return true when finished ).
   */
-  //todo
-  //bool cacheGeometry(unsigned long maxTime = 0);
-
+  // todo
+  // bool cacheGeometry(unsigned long maxTime = 0);
 
   /** INTERNAL FUNCTION - DO NOT USE */
   Ogre::Vector3 _convertToLocal(const Ogre::Vector3 &globalVec) const;
@@ -656,39 +645,39 @@ class PagedGeometry {
   Ogre::uint8 getRenderQueue() const { return m_nRenderQueue; }
 
  protected:
-  //Internal function - do not use
+  // Internal function - do not use
   void _addDetailLevel(GeometryPageManager *mgr, Ogre::Real maxRange, Ogre::Real transitionLength);
 
   Ogre::SceneManager *sceneMgr;
-  Ogre::SceneNode *rootNode;                //PagedGeometry's own "root" node
+  Ogre::SceneNode *rootNode;  // PagedGeometry's own "root" node
   bool shadersEnabled;
 
-  bool geometryAllowedVisible;    //If set to false, all pgeometry managed by this PagedGeometry is hidden
+  bool geometryAllowedVisible;  // If set to false, all pgeometry managed by this PagedGeometry is hidden
 
 #ifdef PAGEDGEOMETRY_ALTERNATE_COORDSYSTEM
-  Ogre::Quaternion coordinateSystemQuat;	//The orientation of rootNode
+  Ogre::Quaternion coordinateSystemQuat;  // The orientation of rootNode
 #endif
 
-  //Camera data
+  // Camera data
   Ogre::Camera *sceneCam;
   Ogre::Vector3 oldCamPos;
 
   Ogre::Camera *lastSceneCam;
   Ogre::Vector3 lastOldCamPos;
 
-  //This list keeps track of all the GeometryPageManager's added with addPageManager()
+  // This list keeps track of all the GeometryPageManager's added with addPageManager()
   std::list<GeometryPageManager *> managerList;
 
-  //The assigned PageLoader used to load entities
+  // The assigned PageLoader used to load entities
   PageLoader *pageLoader;
 
-  //The bounds and page size
+  // The bounds and page size
   TBounds m_bounds;
-  //The page size
+  // The page size
   Ogre::Real pageSize;
-  Ogre::uint8 m_nRenderQueue;   ///< The used rendering queue
+  Ogre::uint8 m_nRenderQueue;  ///< The used rendering queue
 
-  //Time-related data
+  // Time-related data
   Ogre::Timer timer;
   unsigned long lastTime;
   Ogre::String tempdir;
@@ -697,8 +686,6 @@ class PagedGeometry {
   typedef std::map<Ogre::String, float> TStr2FloatMap;
   TStr2FloatMap m_mapCustomParam;
 };
-
-
 
 //-------------------------------------------------------------------------------------
 /**
@@ -717,9 +704,8 @@ There are several virtual member functions you will need to implement in your cl
 \code
 virtual void init(SceneManager *mgr, Camera *cam) = 0;
 virtual void setRegion(Real left, Real top, Real right, Real bottom) = 0;
-virtual void addEntity(Entity *ent, const Vector3 &position, const Quaternion &rotation, const Vector3 &scale, const Ogre::ColourValue &color, void* userData = nullptr) = 0;
-virtual void build() {}
-virtual void removeEntities() = 0;
+virtual void addEntity(Entity *ent, const Vector3 &position, const Quaternion &rotation, const Vector3 &scale, const
+Ogre::ColourValue &color, void* userData = nullptr) = 0; virtual void build() {} virtual void removeEntities() = 0;
 virtual void setVisible(bool visible) = 0;
 virtual void setFade(bool enabled, Real visibleDist, Real invisibleDist) = 0;
 virtual void update() {}
@@ -789,13 +775,9 @@ class GeometryPage {
     mQueryFlag = flag;
   };
 
-  bool hasQueryFlag() {
-    return mHasQueryFlag;
-  };
+  bool hasQueryFlag() { return mHasQueryFlag; };
 
-  Ogre::uint32 getQueryFlag() {
-    return mQueryFlag;
-  };
+  Ogre::uint32 getQueryFlag() { return mQueryFlag; };
 
   /**
   \brief Prepare a pgeometry page for entities
@@ -814,7 +796,7 @@ class GeometryPage {
   \note Implementing this funtion in your GeometryPage is completely optional, since
   most of the time you don't need region information.
   */
-  virtual void setRegion(Ogre::Real left, Ogre::Real top, Ogre::Real right, Ogre::Real bottom) {};
+  virtual void setRegion(Ogre::Real left, Ogre::Real top, Ogre::Real right, Ogre::Real bottom){};
 
   /**
   \brief Add an entity to the page, at the specified position, rotation, and scale.
@@ -831,11 +813,8 @@ class GeometryPage {
   \note The entity does not have to actually appear in the scene until build()
   is called.
   */
-  virtual void addEntity(Ogre::Entity *ent,
-                         const Ogre::Vector3 &position,
-                         const Ogre::Quaternion &rotation,
-                         const Ogre::Vector3 &scale,
-                         const Ogre::ColourValue &color) = 0;
+  virtual void addEntity(Ogre::Entity *ent, const Ogre::Vector3 &position, const Ogre::Quaternion &rotation,
+                         const Ogre::Vector3 &scale, const Ogre::ColourValue &color) = 0;
 
   /**
   \brief Perform any override steps to make added entities appear in the scene.
@@ -945,10 +924,8 @@ class GeometryPage {
 
   \see getBoundingBox() for important details.
   */
-  virtual void addEntityToBoundingBox(Ogre::Entity *ent,
-                                      const Ogre::Vector3 &position,
-                                      const Ogre::Quaternion &rotation,
-                                      const Ogre::Vector3 &scale);
+  virtual void addEntityToBoundingBox(Ogre::Entity *ent, const Ogre::Vector3 &position,
+                                      const Ogre::Quaternion &rotation, const Ogre::Vector3 &scale);
 
   /**
   \brief Advanced: Reset the bounding box used by addEntityToBoundingBox()
@@ -975,28 +952,26 @@ class GeometryPage {
   GeometryPage();
 
  private:
-  //These values and functions are used by the GeometryPageManager internally.
-  Ogre::Vector3 _centerPoint = Ogre::Vector3::ZERO;        //The central point of this page (used to visibility calculation)
-  int _xIndex = 0, _zIndex = 0;            //The absolute grid position of this page
-  unsigned long _inactiveTime = 0;    //How long this page has been inactive (used to calculate expired pages)
-  bool _visible = false;        //Flag indicating if page is visible
-  bool _fadeEnable = false;    //Flag indicating if page fading is enabled
-  bool _pending = false;        //Flag indicating if page needs loading
-  bool _loaded = false;        //Flag indicating if page is loaded
-  bool _needsUnload = false;    //Flag indicating if page needs unloading before next load
-  bool _keepLoaded = false;    //Flag indicating if the page should not be unloaded
-  std::list<GeometryPage *>::iterator _iter;    //Iterator in loadedList
+  // These values and functions are used by the GeometryPageManager internally.
+  Ogre::Vector3 _centerPoint = Ogre::Vector3::ZERO;  // The central point of this page (used to visibility calculation)
+  int _xIndex = 0, _zIndex = 0;                      // The absolute grid position of this page
+  unsigned long _inactiveTime = 0;            // How long this page has been inactive (used to calculate expired pages)
+  bool _visible = false;                      // Flag indicating if page is visible
+  bool _fadeEnable = false;                   // Flag indicating if page fading is enabled
+  bool _pending = false;                      // Flag indicating if page needs loading
+  bool _loaded = false;                       // Flag indicating if page is loaded
+  bool _needsUnload = false;                  // Flag indicating if page needs unloading before next load
+  bool _keepLoaded = false;                   // Flag indicating if the page should not be unloaded
+  std::list<GeometryPage *>::iterator _iter;  // Iterator in loadedList
 
-  Ogre::AxisAlignedBox _trueBounds;    //Actual bounding box of the 3D pgeometry added to this page
-  bool _trueBoundsUndefined = true;            //Flag indicating if _trueBounds has not been defined yet
+  Ogre::AxisAlignedBox _trueBounds;  // Actual bounding box of the 3D pgeometry added to this page
+  bool _trueBoundsUndefined = true;  // Flag indicating if _trueBounds has not been defined yet
 
-  void *_userData = nullptr;    //Misc. data associated with this page by the PageLoader
+  void *_userData = nullptr;  // Misc. data associated with this page by the PageLoader
 
   bool mHasQueryFlag = false;
   Ogre::uint32 mQueryFlag = 0;
 };
-
-
 
 //-------------------------------------------------------------------------------------
 /**
@@ -1203,9 +1178,7 @@ class PageLoader {
 
   \see PagedGeometry::addDetailLevel() for information about page types.
   */
-  void addEntity(Ogre::Entity *ent,
-                 const Ogre::Vector3 &position,
-                 const Ogre::Quaternion &rotation,
+  void addEntity(Ogre::Entity *ent, const Ogre::Vector3 &position, const Ogre::Quaternion &rotation,
                  const Ogre::Vector3 &scale = Ogre::Vector3::UNIT_SCALE,
                  const Ogre::ColourValue &color = Ogre::ColourValue::White) {
     geomPage->addEntity(ent, position, rotation, scale, color);
@@ -1215,11 +1188,9 @@ class PageLoader {
  private:
   friend class GeometryPageManager;
 
-  //Do NOT modify or use this variable - it is used internally by addEntity()
+  // Do NOT modify or use this variable - it is used internally by addEntity()
   GeometryPage *geomPage;
 };
-
-
 
 //-------------------------------------------------------------------------------------
 /**
@@ -1287,9 +1258,7 @@ class GeometryPageManager {
 
   \see setNearRange() for more info about the near viewing range.
   */
-  inline Ogre::Real getNearRange() const {
-    return nearDist;
-  }
+  inline Ogre::Real getNearRange() const { return nearDist; }
 
   /**
   \brief Gets the far viewing range of this page manager.
@@ -1297,9 +1266,7 @@ class GeometryPageManager {
 
   \see setFarRange() for more info about the near viewing range.
   */
-  inline Ogre::Real getFarRange() const {
-    return farDist;
-  }
+  inline Ogre::Real getFarRange() const { return farDist; }
 
   /**
   \brief Customizes the cache behaviour (advanced).
@@ -1332,7 +1299,7 @@ class GeometryPageManager {
 
   inline void setTransition(Ogre::Real transitionLength) {
     if (transitionLength > 0) {
-      //Setup valid transition
+      // Setup valid transition
       fadeLength = transitionLength;
       fadeLengthSq = fadeLength * fadeLength;
       fadeEnabled = true;
@@ -1347,22 +1314,17 @@ class GeometryPageManager {
     farTransDistSq = farTransDist * farTransDist;
   }
 
-  inline Ogre::Real getTransition() const {
-    return fadeLength;
-  }
+  inline Ogre::Real getTransition() const { return fadeLength; }
 
   /** \brief Internal function - DO NOT USE */
   inline TPGeometryPages getLoadedPages() const { return loadedList; }
 
   /** \brief Internal function - DO NOT USE */
-  template<class PageType>
+  template <class PageType>
   void initPages(const TBounds &bounds, const Ogre::Any &data = Ogre::Any(), Ogre::uint32 queryFlag = 0);
 
   /** \brief Internal function - DO NOT USE */
-  void update(unsigned long deltaTime,
-              Ogre::Vector3 &camPos,
-              Ogre::Vector3 &camSpeed,
-              bool &enableCache,
+  void update(unsigned long deltaTime, Ogre::Vector3 &camPos, Ogre::Vector3 &camSpeed, bool &enableCache,
               GeometryPageManager *prevManager);
 
   /** \brief Internal function - DO NOT USE */
@@ -1386,90 +1348,84 @@ class GeometryPageManager {
  private:
   PagedGeometry *mainGeom;
 
-  //geomGrid is a 2D array storing all the GeometryPage instances managed by this object.
-  GeometryPage **geomGrid = nullptr;    //A dynamic 2D array of pointers (2D grid of GeometryPage's)
-  GeometryPage **scrollBuffer = nullptr; //A dynamic 1D array of pointers (temporary GeometryPage's used in scrolling geomGrid)
+  // geomGrid is a 2D array storing all the GeometryPage instances managed by this object.
+  GeometryPage **geomGrid = nullptr;  // A dynamic 2D array of pointers (2D grid of GeometryPage's)
+  GeometryPage **scrollBuffer =
+      nullptr;  // A dynamic 1D array of pointers (temporary GeometryPage's used in scrolling geomGrid)
   int geomGridX = 0;
-  int geomGridZ = 0;    //The dimensions of the dynamic array
-  TBounds gridBounds;        //Current grid bounds
+  int geomGridZ = 0;   // The dimensions of the dynamic array
+  TBounds gridBounds;  // Current grid bounds
 
-  //Fade transitions
+  // Fade transitions
   Ogre::Real fadeLength, fadeLengthSq;
   bool fadeEnabled;
 
-  //Inline function used to get pgeometry page tiles
+  // Inline function used to get pgeometry page tiles
   inline GeometryPage *_getGridPage(const int x, const int z) {
 #ifdef _DEBUG
-    if(x >= geomGridX || z >= geomGridZ )
-        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS,
-            "Grid dimension is out of bounds",
-            "GeometryPageManager::_getGridPage()");
+    if (x >= geomGridX || z >= geomGridZ)
+      OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, "Grid dimension is out of bounds",
+                  "GeometryPageManager::_getGridPage()");
 #endif
 
     return geomGrid[z * geomGridX + x];
   }
   inline void _setGridPage(const int x, const int z, GeometryPage *page) {
 #ifdef _DEBUG
-    if(x >= geomGridX || z >= geomGridZ )
-        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS,
-            "Grid dimension is out of bounds",
-            "GeometryPageManager::_setGridPage()");
+    if (x >= geomGridX || z >= geomGridZ)
+      OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, "Grid dimension is out of bounds",
+                  "GeometryPageManager::_setGridPage()");
 #endif
 
     geomGrid[z * geomGridX + x] = page;
   }
 
-  //Utility functions for loading/unloading pgeometry pages (see source for detailed descriptions)
+  // Utility functions for loading/unloading pgeometry pages (see source for detailed descriptions)
   void _loadPage(GeometryPage *page);
   void _unloadPage(GeometryPage *page);
   void _unloadPageDelayed(GeometryPage *page);
 
-  //Utility function for scrolling pages in the grid by the given amount
+  // Utility function for scrolling pages in the grid by the given amount
   void _scrollGridPages(int shiftX, int shiftZ);
 
-  //Timer counting how long it has been since the last page has been cached
+  // Timer counting how long it has been since the last page has been cached
   unsigned long cacheTimer = 0;
 
-  TPGeometryPages pendingList;    //Pages of pgeometry to be loaded
-  TPGeometryPages loadedList;    //Pages of pgeometry already loaded
+  TPGeometryPages pendingList;  // Pages of pgeometry to be loaded
+  TPGeometryPages loadedList;   // Pages of pgeometry already loaded
 
-  //Cache settings
+  // Cache settings
   unsigned long maxCacheInterval;
   unsigned long inactivePageLife;
 
-  //Near and far visibility ranges for this type of pgeometry
+  // Near and far visibility ranges for this type of pgeometry
   Ogre::Real nearDist, nearDistSq;
   Ogre::Real farDist, farDistSq;
-  Ogre::Real farTransDist, farTransDistSq;    //farTransDist = farDist + fadeLength
+  Ogre::Real farTransDist, farTransDistSq;  // farTransDist = farDist + fadeLength
 };
-
-
 
 //-------------------------------------------------------------------------------------
 
-template<class PageType>
-inline GeometryPageManager *PagedGeometry::addDetailLevel(Ogre::Real maxRange,
-                                                          Ogre::Real transitionLength,
-                                                          const Ogre::Any &data,
-                                                          Ogre::uint32 queryFlag) {
-  //Init a new page manager
+template <class PageType>
+inline GeometryPageManager *PagedGeometry::addDetailLevel(Ogre::Real maxRange, Ogre::Real transitionLength,
+                                                          const Ogre::Any &data, Ogre::uint32 queryFlag) {
+  // Init a new page manager
   GeometryPageManager *mgr = new GeometryPageManager(this);
 
-  //If vertex shaders aren't supported, don't use transitions
-  Ogre::Root *root = Ogre::Root::getSingletonPtr();    //Work-around for Linux compiler bug
-  if (!root->getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_VERTEX_PROGRAM))
-    transitionLength = 0;
+  // If vertex shaders aren't supported, don't use transitions
+  Ogre::Root *root = Ogre::Root::getSingletonPtr();  // Work-around for Linux compiler bug
+  if (!root->getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_VERTEX_PROGRAM)) transitionLength = 0;
 
-  //Add it to the list (also initializing maximum viewing distance)
+  // Add it to the list (also initializing maximum viewing distance)
   _addDetailLevel(mgr, maxRange, transitionLength);
 
-  //And initialize the paged (dependent on maximum viewing distance)
+  // And initialize the paged (dependent on maximum viewing distance)
   mgr->initPages<PageType>(getBounds(), data, queryFlag);
 
   return mgr;
 }
 
-template<class PageType>
+template <class PageType>
 inline void GeometryPageManager::initPages(const TBounds &bounds, const Ogre::Any &data, Ogre::uint32 queryFlag) {
   // Calculate grid size, if left is Real minimum, it means that bounds are infinite
   // scrollBuffer is used as a flag. If it is allocated than infinite bounds are used
@@ -1486,19 +1442,18 @@ inline void GeometryPageManager::initPages(const TBounds &bounds, const Ogre::An
     // Allocate scroll buffer (used in scrolling the grid)
     scrollBuffer = new GeometryPage *[geomGridX];
 
-    //Note: All this padding and transition preparation is performed because even in infinite
-    //mode, a local grid size must be chosen. Unfortunately, this also means that view ranges
-    //and transition lengths cannot be exceeded dynamically with set functions.
+    // Note: All this padding and transition preparation is performed because even in infinite
+    // mode, a local grid size must be chosen. Unfortunately, this also means that view ranges
+    // and transition lengths cannot be exceeded dynamically with set functions.
   } else {
-    //Bounded mode
+    // Bounded mode
     gridBounds = bounds;
     // In case the devision does not give the round number use the next largest integer
     geomGridX = std::ceil(gridBounds.width() / mainGeom->getPageSize());
   }
-  geomGridZ = geomGridX; //Note: geomGridX == geomGridZ; Need to merge.
+  geomGridZ = geomGridX;  // Note: geomGridX == geomGridZ; Need to merge.
 
-
-  //Allocate grid array
+  // Allocate grid array
   geomGrid = new GeometryPage *[geomGridX * geomGridZ];
 
   int xioffset = Ogre::Math::Floor(gridBounds.left / mainGeom->getPageSize());
@@ -1529,4 +1484,4 @@ inline void GeometryPageManager::initPages(const TBounds &bounds, const Ogre::An
     }
   }
 }
-}
+}  // namespace Forests

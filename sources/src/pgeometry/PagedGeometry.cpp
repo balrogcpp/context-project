@@ -28,8 +28,7 @@ using namespace std;
 namespace Forests {
 
 //-------------------------------------------------------------------------------------
-PagedGeometry::PagedGeometry(Camera *cam, const Real pageSize, Ogre::RenderQueueGroupID queue)
-    : m_nRenderQueue(queue) {
+PagedGeometry::PagedGeometry(Camera *cam, const Real pageSize, Ogre::RenderQueueGroupID queue) : m_nRenderQueue(queue) {
   // Setup camera, scene manager, and scene node
   if (cam) {
     sceneCam = cam;
@@ -37,8 +36,7 @@ PagedGeometry::PagedGeometry(Camera *cam, const Real pageSize, Ogre::RenderQueue
     oldCamPos = sceneCam->getDerivedPosition();
 
 #ifdef PAGEDGEOMETRY_ALTERNATE_COORDSYSTEM
-    rootNode =
-        sceneMgr->getRootSceneNode()->createChildSceneNode();  // Create PagedGeometry's root node
+    rootNode = sceneMgr->getRootSceneNode()->createChildSceneNode();  // Create PagedGeometry's root node
 #else
     rootNode = sceneMgr->getRootSceneNode();
 #endif
@@ -91,8 +89,7 @@ void PagedGeometry::setCamera(Camera *cam) {
     sceneCam = nullptr;
   } else {
     if (sceneMgr && cam->getSceneManager() != sceneMgr)
-      OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
-                  "The specified camera is from the wrong SceneManager",
+      OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "The specified camera is from the wrong SceneManager",
                   "PagedGeometry::setCamera()");
 
     if (cam == lastSceneCam) {
@@ -172,8 +169,7 @@ void PagedGeometry::setBounds(TBounds bounds) {
                 "Call removeDetailLevels() first.",
                 "PagedGeometry::setBounds()");
   if (!Math::RealEqual(bounds.width(), bounds.height(), 0.01f))
-    OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Bounds must be square",
-                "PagedGeometry::setBounds()");
+    OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Bounds must be square", "PagedGeometry::setBounds()");
   if (bounds.width() <= 0 || bounds.height() <= 0)
     OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Bounds must have positive width and height",
                 "PagedGeometry::setBounds()");
@@ -328,8 +324,7 @@ void PagedGeometry::resetPreloadedGeometry() {
   }
 }
 
-void PagedGeometry::_addDetailLevel(GeometryPageManager *mgr, Real maxRange,
-                                    Real transitionLength) {
+void PagedGeometry::_addDetailLevel(GeometryPageManager *mgr, Real maxRange, Real transitionLength) {
   // Calculate the near range
   Real minRange = 0;
   if (!managerList.empty()) {
@@ -339,8 +334,7 @@ void PagedGeometry::_addDetailLevel(GeometryPageManager *mgr, Real maxRange,
 
   // Error check
   if (maxRange <= minRange) {
-    OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
-                "Closer detail levels must be added before farther ones");
+    OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Closer detail levels must be added before farther ones");
   }
 
   // Setup the new manager
@@ -353,8 +347,7 @@ void PagedGeometry::_addDetailLevel(GeometryPageManager *mgr, Real maxRange,
 
 //-----------------------------------------------------------------------------
 ///
-void PagedGeometry::setCustomParam(const Ogre::String &entity, const Ogre::String &paramName,
-                                   float paramValue) {
+void PagedGeometry::setCustomParam(const Ogre::String &entity, const Ogre::String &paramName, float paramValue) {
   setCustomParam(entity + "." + paramName, paramValue);
 }
 
@@ -398,8 +391,8 @@ GeometryPageManager::~GeometryPageManager() {
   if (scrollBuffer) delete[] scrollBuffer;
 }
 
-void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vector3 &camSpeed,
-                                 bool &enableCache, GeometryPageManager *prevManager) {
+void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vector3 &camSpeed, bool &enableCache,
+                                 GeometryPageManager *prevManager) {
   //-- Cache new pgeometry pages --
 
   // Cache 1 page ahead of the view ranges
@@ -505,8 +498,7 @@ void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vecto
   if (speed == 0)
     cacheInterval = maxCacheInterval;
   else {
-    cacheInterval =
-        (unsigned long)((mainGeom->getPageSize() * 0.8f) / (speed * pendingList.size()));
+    cacheInterval = (unsigned long)((mainGeom->getPageSize() * 0.8f) / (speed * pendingList.size()));
     if (cacheInterval > maxCacheInterval) cacheInterval = maxCacheInterval;
   }
 
@@ -599,15 +591,13 @@ void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vecto
           enable = true;
           fadeNear = farDist;
           fadeFar = farTransDist;
-        } else if (prevManager && prevManager->fadeEnabled &&
-                   (distSq - pageLengthSq < prevManager->farTransDistSq)) {
+        } else if (prevManager && prevManager->fadeEnabled && (distSq - pageLengthSq < prevManager->farTransDistSq)) {
           // Fade out
           visible = true;
           enable = true;
-          fadeNear = prevManager->farDist +
-                     (prevManager->farTransDist - prevManager->farDist) *
-                         0.5f;  // This causes pgeometry to fade out faster than it fades in,
-                                // avoiding a state where a transition appears semitransparent
+          fadeNear = prevManager->farDist + (prevManager->farTransDist - prevManager->farDist) *
+                                                0.5f;  // This causes pgeometry to fade out faster than it fades in,
+                                                       // avoiding a state where a transition appears semitransparent
           fadeFar = prevManager->farDist;
         }
 
@@ -963,8 +953,7 @@ void GeometryPageManager::_scrollGridPages(int shiftX, int shiftZ) {
           scrollBuffer[x - initialMidpoint] = page;
         }
         // Shift right
-        for (int x = geomGridX - 1; x >= -shiftX; x--)
-          _setGridPage(x, z, _getGridPage(x + shiftX, z));
+        for (int x = geomGridX - 1; x >= -shiftX; x--) _setGridPage(x, z, _getGridPage(x + shiftX, z));
         // Rotate temporary pages around to other side of grid
         for (int x = 0; x < -shiftX; ++x) {
           scrollBuffer[x]->_centerPoint.x -= geomGridX * mainGeom->getPageSize();
@@ -1010,8 +999,7 @@ void GeometryPageManager::_scrollGridPages(int shiftX, int shiftZ) {
           scrollBuffer[z - initialMidpoint] = page;
         }
         // Shift right
-        for (int z = geomGridZ - 1; z >= -shiftZ; z--)
-          _setGridPage(x, z, _getGridPage(x, z + shiftZ));
+        for (int z = geomGridZ - 1; z >= -shiftZ; z--) _setGridPage(x, z, _getGridPage(x, z + shiftZ));
         // Rotate temporary pages around to other side of grid
         for (int z = 0; z < -shiftZ; ++z) {
           scrollBuffer[z]->_centerPoint.z -= geomGridZ * mainGeom->getPageSize();
@@ -1026,8 +1014,7 @@ void GeometryPageManager::_scrollGridPages(int shiftX, int shiftZ) {
 GeometryPage::GeometryPage() {}
 
 void GeometryPage::addEntityToBoundingBox(Ogre::Entity *ent, const Ogre::Vector3 &position,
-                                          const Ogre::Quaternion &rotation,
-                                          const Ogre::Vector3 &scale) {
+                                          const Ogre::Quaternion &rotation, const Ogre::Vector3 &scale) {
   // Update bounding box
   Ogre::Matrix4 mat(rotation);
   mat.setScale(scale);

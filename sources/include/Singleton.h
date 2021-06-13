@@ -10,7 +10,12 @@ template <typename T>
 class Singleton : public NoCopy {
  public:
   Singleton() {
-    if (instanced_) throw Exception("Only one instance of Singleton can be created!\n");
+    if (instanced_) {
+      std::string type = typeid(T).name();
+      std::string text = std::string(type) + " is Singleton class. Creation of another instance is forbidden";
+
+      throw Exception(text);
+    }
 
     instanced_ = true;
   }

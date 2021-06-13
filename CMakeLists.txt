@@ -291,8 +291,8 @@ else ()
 endif ()
 
 include_directories(demo demo/include ${CONTEXT_INCLUDE_DIRS})
-
 target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
+target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
 
 
 if (MINGW)
@@ -310,16 +310,14 @@ target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${ASSIMP_
         ${PNG_LIBRARY} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
         ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
-target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
 
 install(TARGETS demo RUNTIME DESTINATION .)
 
-file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
-
-# include_directories(lib-static ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
-# add_library(lib-static STATIC ${SOURCE_FILES} )
-# set_target_properties(lib-static PROPERTIES OUTPUT_NAME "xio-static")
-# target_precompile_headers(lib-static PUBLIC sources/include/pcheader.h)
+#file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
+#include_directories(lib-static ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
+#add_library(lib-static STATIC ${SOURCE_FILES} )
+#set_target_properties(lib-static PROPERTIES OUTPUT_NAME "xio-static")
+#target_precompile_headers(lib-static PUBLIC sources/include/pcheader.h)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
@@ -386,7 +384,6 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 
 
-#NSIS is not ready
 set(CPACK_GENERATOR "ZIP")
 
 include(CPack)

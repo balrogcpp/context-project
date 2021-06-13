@@ -1,53 +1,58 @@
 /**
-* @file OgreOggStreamBufferSound.cpp
-* @author  Ian Stangoe
-* @version v1.26
-*
-* @section LICENSE
-* 
-* This source file is part of OgreOggSound, an OpenAL wrapper library for   
-* use with the Ogre Rendering Engine.										 
-*                                                                           
-* Copyright (c) 2013 Ian Stangoe
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.  
-*
-*/
+ * @file OgreOggStreamBufferSound.cpp
+ * @author  Ian Stangoe
+ * @version v1.26
+ *
+ * @section LICENSE
+ *
+ * This source file is part of OgreOggSound, an OpenAL wrapper library for
+ * use with the Ogre Rendering Engine.
+ *
+ * Copyright (c) 2013 Ian Stangoe
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
 
 #include "oggsound/OgreOggStreamBufferSound.h"
+
 #include <string>
+
 #include "oggsound/OgreOggSound.h"
 
 namespace OgreOggSound {
 
 /*/////////////////////////////////////////////////////////////////*/
-OgreOggStreamBufferSound::OgreOggStreamBufferSound(
-    const Ogre::String &name, Ogre::SceneManager *scnMgr
+OgreOggStreamBufferSound::OgreOggStreamBufferSound(const Ogre::String &name, Ogre::SceneManager *scnMgr
 #if OGRE_VERSION_MAJOR == 2
-    , Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+                                                   ,
+                                                   Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr,
+                                                   Ogre::uint8 renderQueueId
 #endif
-) : OgreOggISound(
-    name, scnMgr
+                                                   )
+    : OgreOggISound(name, scnMgr
 #if OGRE_VERSION_MAJOR == 2
-    , id, objMemMgr, renderQueueId
+                    ,
+                    id, objMemMgr, renderQueueId
 #endif
-), mFreq(0) {
+                    ),
+      mFreq(0) {
   mStream = false;
 }
 /*/////////////////////////////////////////////////////////////////*/
@@ -102,8 +107,7 @@ void OgreOggStreamBufferSound::setFormat(ALenum format, int freq) {
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamBufferSound::insertData(char *data, size_t dataLen, bool start) {
   if (mSource == AL_NONE)
-    if (!OgreOggSoundManager::getSingleton()._requestSoundSource(this))
-      return;
+    if (!OgreOggSoundManager::getSingleton()._requestSoundSource(this)) return;
 
   ALuint buffID;
   alGenBuffers(1, &buffID);
@@ -124,26 +128,22 @@ void OgreOggStreamBufferSound::_pauseImpl() {
   mState = SS_PAUSED;
 
   // Notify listener
-  if (mSoundListener)
-    mSoundListener->soundPaused(this);
+  if (mSoundListener) mSoundListener->soundPaused(this);
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamBufferSound::_playImpl() {
   assert(mState != SS_DESTROYED);
 
-  if (isPlaying())
-    return;
+  if (isPlaying()) return;
 
   if (mSource == AL_NONE)
-    if (!OgreOggSoundManager::getSingleton()._requestSoundSource(this))
-      return;
+    if (!OgreOggSoundManager::getSingleton()._requestSoundSource(this)) return;
 
   alSourcePlay(mSource);
   mState = SS_PLAYING;
 
   // Notify listener
-  if (mSoundListener)
-    mSoundListener->soundPlayed(this);
+  if (mSoundListener) mSoundListener->soundPlayed(this);
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamBufferSound::_stopImpl() {
@@ -163,21 +163,20 @@ void OgreOggStreamBufferSound::_stopImpl() {
     mState = SS_DESTROYED;
     OgreOggSoundManager::getSingletonPtr()->_destroyTemporarySound(this);
   }
-    // Give up source immediately if specfied
+  // Give up source immediately if specfied
   else if (mGiveUpSource)
     OgreOggSoundManager::getSingleton()._releaseSoundSource(this);
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamBufferSound::_updateAudioBuffers() {
   // do nothing when not playing
-  if (!isPlaying())
-    return;
+  if (!isPlaying()) return;
 
   // dequeue processed buffers
   int processed;
   alGetSourcei(mSource, AL_BUFFERS_PROCESSED, &processed);
   while (processed--) {
-    //printf("processed %d / %d\n", processed+1, mAlBuffers.size());
+    // printf("processed %d / %d\n", processed+1, mAlBuffers.size());
     ALuint buff = mAlBuffers.front();
     mAlBuffers.pop_front();
     alSourceUnqueueBuffers(mSource, 1, &buff);
@@ -190,8 +189,7 @@ void OgreOggStreamBufferSound::_updateAudioBuffers() {
     // source is in stop state and we don't have more buffers to play ... so stop
     stop();
     // Finished callback
-    if (mSoundListener)
-      mSoundListener->soundFinished(this);
+    if (mSoundListener) mSoundListener->soundFinished(this);
   }
 }
-}
+}  // namespace OgreOggSound

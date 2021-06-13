@@ -1,55 +1,55 @@
 /**
-* @file OgreOggSoundFactory.cpp
-* @author  Ian Stangoe
-* @version v1.26
-*
-* @section LICENSE
-* 
-* This source file is part of OgreOggSound, an OpenAL wrapper library for   
-* use with the Ogre Rendering Engine.										 
-*                                                                           
-* Copyright (c) 2013 Ian Stangoe
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE. 	 
-*
-*/
+ * @file OgreOggSoundFactory.cpp
+ * @author  Ian Stangoe
+ * @version v1.26
+ *
+ * @section LICENSE
+ *
+ * This source file is part of OgreOggSound, an OpenAL wrapper library for
+ * use with the Ogre Rendering Engine.
+ *
+ * Copyright (c) 2013 Ian Stangoe
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
 
-#include "pcheader.h"
+#include "oggsound/OgreOggSoundFactory.h"
 
 #include <Ogre.h>
 
 #include "oggsound/OgreOggSound.h"
-#include "oggsound/OgreOggSoundFactory.h"
+#include "pcheader.h"
 
 using namespace Ogre;
 using namespace OgreOggSound;
 
 String OgreOggSoundFactory::FACTORY_TYPE_NAME = "OgreOggISound";
 //-----------------------------------------------------------------------
-const String &OgreOggSoundFactory::getType(void) const {
-  return FACTORY_TYPE_NAME;
-}
+const String &OgreOggSoundFactory::getType(void) const { return FACTORY_TYPE_NAME; }
 //-----------------------------------------------------------------------
 #if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0
-MovableObject* OgreOggSoundFactory::createInstanceImpl(IdType id, ObjectMemoryManager *objectMemoryManager, const NameValuePairList* params)
+MovableObject *OgreOggSoundFactory::createInstanceImpl(IdType id, ObjectMemoryManager *objectMemoryManager,
+                                                       const NameValuePairList *params)
 #elif OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR > 0
-MovableObject* OgreOggSoundFactory::createInstanceImpl(IdType id, ObjectMemoryManager *objectMemoryManager, SceneManager* manager, const NameValuePairList* params)
+MovableObject *OgreOggSoundFactory::createInstanceImpl(IdType id, ObjectMemoryManager *objectMemoryManager,
+                                                       SceneManager *manager, const NameValuePairList *params)
 #else
 MovableObject *OgreOggSoundFactory::createInstanceImpl(const String &name, const NameValuePairList *params)
 #endif
@@ -118,14 +118,10 @@ MovableObject *OgreOggSoundFactory::createInstanceImpl(const String &name, const
     }
 
 #if OGRE_VERSION_MAJOR == 2
-    return OgreOggSoundManager::getSingletonPtr()->_createSoundImpl(scnMgr, reName, id, fileName, stream, loop, preBuffer, immediate);
+    return OgreOggSoundManager::getSingletonPtr()->_createSoundImpl(scnMgr, reName, id, fileName, stream, loop,
+                                                                    preBuffer, immediate);
 #else
-    return OgreOggSoundManager::getSingletonPtr()->_createSoundImpl(scnMgr,
-                                                                    name,
-                                                                    fileName,
-                                                                    stream,
-                                                                    loop,
-                                                                    preBuffer,
+    return OgreOggSoundManager::getSingletonPtr()->_createSoundImpl(scnMgr, name, fileName, stream, loop, preBuffer,
                                                                     immediate);
 #endif
   } else
@@ -141,5 +137,5 @@ void OgreOggSoundFactory::destroyInstance(MovableObject *obj) {
     OgreOggSoundManager::getSingletonPtr()->_destroyListener();
   else if (sound)
     OgreOggSoundManager::getSingletonPtr()->_releaseSoundImpl(sound);
-//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 }

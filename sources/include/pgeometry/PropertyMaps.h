@@ -1,19 +1,24 @@
 /*-------------------------------------------------------------------------------------
 Copyright (c) 2006 John Judnich
 
-This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
-1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
-2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable
+for any damages arising from the use of this software. Permission is granted to anyone to use this software for any
+purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following
+restrictions:
+1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If
+you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not
+required.
+2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original
+software.
 3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
 #pragma once
-#include <OgrePrerequisites.h>
-#include <OgrePixelFormat.h>
 #include <OgreColourValue.h>
-#include <OgreRoot.h>
+#include <OgrePixelFormat.h>
+#include <OgrePrerequisites.h>
 #include <OgreRenderSystem.h>
+#include <OgreRoot.h>
 
 namespace Forests {
 
@@ -174,12 +179,12 @@ class ColorMap {
     static Ogre::VertexElementType format = Ogre::Root::getSingleton().getRenderSystem()->getColourVertexElementType();
     if (format == Ogre::VET_COLOUR_ARGB) {
       // 1/255 = 0,0039215686274509803921568627451
-      b = ((c) & 0xFF) * 0.0039215686f;
+      b = ((c)&0xFF) * 0.0039215686f;
       g = ((c >> 8) & 0xFF) * 0.0039215686f;
       r = ((c >> 16) & 0xFF) * 0.0039215686f;
       a = ((c >> 24) & 0xFF) * 0.0039215686f;
     } else {
-      r = ((c) & 0xFF) * 0.0039215686f;
+      r = ((c)&0xFF) * 0.0039215686f;
       g = ((c >> 8) & 0xFF) * 0.0039215686f;
       b = ((c >> 16) & 0xFF) * 0.0039215686f;
       a = ((c >> 24) & 0xFF) * 0.0039215686f;
@@ -196,17 +201,17 @@ class ColorMap {
   Ogre::String selfKey;
   Ogre::uint32 refCount;
 
-  //Directly interpolates two Ogre::uint32 colors
+  // Directly interpolates two Ogre::uint32 colors
   Ogre::uint32 _interpolateColor(Ogre::uint32 color1, Ogre::uint32 color2, Ogre::Real ratio, Ogre::Real ratioInv);
 
-  //Returns the color map value at the given location
+  // Returns the color map value at the given location
   Ogre::uint32 _getColorAt(Ogre::Real x, Ogre::Real z, const Ogre::TRect<Ogre::Real> &mapBounds);
 
-  //Returns the color map value at the given location with bilinear filtering
+  // Returns the color map value at the given location with bilinear filtering
   Ogre::uint32 _getColorAt_Bilinear(Ogre::Real x, Ogre::Real z, const Ogre::TRect<Ogre::Real> &mapBounds);
 
   MapFilter filter;
   Ogre::PixelBox *pixels;
   Ogre::TRect<Ogre::Real> mapBounds;
 };
-}
+}  // namespace Forests

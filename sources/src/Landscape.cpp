@@ -14,6 +14,8 @@
 #include <Terrain/OgreTerrainQuadTreeNode.h>
 #endif
 
+#include <pugixml.hpp>
+
 using namespace std;
 
 namespace xio {

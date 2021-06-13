@@ -1,55 +1,60 @@
 /**
-* @file OgreOggStaticWavSound.cpp
-* @author  Ian Stangoe
-* @version v1.26
-*
-* @section LICENSE
-* 
-* This source file is part of OgreOggSound, an OpenAL wrapper library for   
-* use with the Ogre Rendering Engine.										 
-*                                                                           
-* Copyright (c) 2013 Ian Stangoe
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE. 	 
-*
-*/
-
-#include "pcheader.h"
+ * @file OgreOggStaticWavSound.cpp
+ * @author  Ian Stangoe
+ * @version v1.26
+ *
+ * @section LICENSE
+ *
+ * This source file is part of OgreOggSound, an OpenAL wrapper library for
+ * use with the Ogre Rendering Engine.
+ *
+ * Copyright (c) 2013 Ian Stangoe
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
 
 #include "oggsound/OgreOggStaticWavSound.h"
+
 #include <string>
+
 #include "oggsound/OgreOggSoundManager.h"
+#include "pcheader.h"
 
 namespace OgreOggSound {
 
 /*/////////////////////////////////////////////////////////////////*/
-OgreOggStaticWavSound::OgreOggStaticWavSound(
-    const Ogre::String &name, Ogre::SceneManager *scnMgr
+OgreOggStaticWavSound::OgreOggStaticWavSound(const Ogre::String &name, Ogre::SceneManager *scnMgr
 #if OGRE_VERSION_MAJOR == 2
-    , Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+                                             ,
+                                             Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr,
+                                             Ogre::uint8 renderQueueId
 #endif
-) : OgreOggISound(
-    name, scnMgr
+                                             )
+    : OgreOggISound(name, scnMgr
 #if OGRE_VERSION_MAJOR == 2
-    , id, objMemMgr, renderQueueId
+                    ,
+                    id, objMemMgr, renderQueueId
 #endif
-), mAudioName(""), mPreviousOffset(0) {
+                    ),
+      mAudioName(""),
+      mPreviousOffset(0) {
   mStream = false;
   mFormatData.mFormat = 0;
   mBufferData.clear();
@@ -84,22 +89,21 @@ void OgreOggStaticWavSound::_openImpl(Ogre::DataStreamPtr &fileStream) {
   mAudioStream->read(mFormatData.mFormat, sizeof(WaveHeader));
 
   // Valid 'RIFF'?
-  if (mFormatData.mFormat->mRIFF[0] == 'R' && mFormatData.mFormat->mRIFF[1] == 'I'
-      && mFormatData.mFormat->mRIFF[2] == 'F' && mFormatData.mFormat->mRIFF[3] == 'F') {
+  if (mFormatData.mFormat->mRIFF[0] == 'R' && mFormatData.mFormat->mRIFF[1] == 'I' &&
+      mFormatData.mFormat->mRIFF[2] == 'F' && mFormatData.mFormat->mRIFF[3] == 'F') {
     // Valid 'WAVE'?
-    if (mFormatData.mFormat->mWAVE[0] == 'W' && mFormatData.mFormat->mWAVE[1] == 'A'
-        && mFormatData.mFormat->mWAVE[2] == 'V' && mFormatData.mFormat->mWAVE[3] == 'E') {
+    if (mFormatData.mFormat->mWAVE[0] == 'W' && mFormatData.mFormat->mWAVE[1] == 'A' &&
+        mFormatData.mFormat->mWAVE[2] == 'V' && mFormatData.mFormat->mWAVE[3] == 'E') {
       // Valid 'fmt '?
-      if (mFormatData.mFormat->mFMT[0] == 'f' && mFormatData.mFormat->mFMT[1] == 'm'
-          && mFormatData.mFormat->mFMT[2] == 't' && mFormatData.mFormat->mFMT[3] == ' ') {
+      if (mFormatData.mFormat->mFMT[0] == 'f' && mFormatData.mFormat->mFMT[1] == 'm' &&
+          mFormatData.mFormat->mFMT[2] == 't' && mFormatData.mFormat->mFMT[3] == ' ') {
         // SmFormatData.mFormat->uld be 16 unless compressed ( compressed NOT supported )
         if (mFormatData.mFormat->mHeaderSize >= 16) {
           // PCM == 1
           if (mFormatData.mFormat->mFormatTag == 0x0001 || mFormatData.mFormat->mFormatTag == 0xFFFE) {
             // Samples check..
             if ((mFormatData.mFormat->mBitsPerSample != 16) && (mFormatData.mFormat->mBitsPerSample != 8)) {
-              OGRE_EXCEPT(Ogre::Exception::ERR_INTERNAL_ERROR,
-                          "BitsPerSample NOT 8/16!",
+              OGRE_EXCEPT(Ogre::Exception::ERR_INTERNAL_ERROR, "BitsPerSample NOT 8/16!",
                           "OgreOggStaticWavSound::_openImpl()");
             }
 
@@ -140,14 +144,13 @@ void OgreOggStaticWavSound::_openImpl(Ogre::DataStreamPtr &fileStream) {
                 // Jump out
                 break;
               }
-                // Unsupported chunk...
+              // Unsupported chunk...
               else
                 mAudioStream->skip(c.length);
-            } while (mAudioStream->eof() || c.chunkID[0] != 'd' || c.chunkID[1] != 'a' || c.chunkID[2] != 't'
-                || c.chunkID[3] != 'a');
+            } while (mAudioStream->eof() || c.chunkID[0] != 'd' || c.chunkID[1] != 'a' || c.chunkID[2] != 't' ||
+                     c.chunkID[3] != 'a');
           } else {
-            OGRE_EXCEPT(Ogre::Exception::ERR_INTERNAL_ERROR,
-                        "Compressed wav NOT supported!",
+            OGRE_EXCEPT(Ogre::Exception::ERR_INTERNAL_ERROR, "Compressed wav NOT supported!",
                         "OgreOggStaticWavSound::_openImpl()");
           }
         } else {
@@ -163,21 +166,19 @@ void OgreOggStaticWavSound::_openImpl(Ogre::DataStreamPtr &fileStream) {
     OGRE_EXCEPT(Ogre::Exception::ERR_FILE_NOT_FOUND, "Not a valid RIFF file!", "OgreOggStaticWavSound::_openImpl()");
   }
 
-
   // Create OpenAL buffer
   alGetError();
   alGenBuffers(1, &(*mBuffers)[0]);
   if (alGetError() != AL_NO_ERROR) {
-    OGRE_EXCEPT(Ogre::Exception::ERR_INTERNAL_ERROR,
-                "Unable to create OpenAL buffer.",
+    OGRE_EXCEPT(Ogre::Exception::ERR_INTERNAL_ERROR, "Unable to create OpenAL buffer.",
                 "OgreOggStaticWavSound::_openImpl()");
     return;
   }
 
 #if HAVE_EFX
   // Upload to XRAM buffers if available
-  if ( OgreOggSoundManager::getSingleton().hasXRamSupport() )
-      OgreOggSoundManager::getSingleton().setXRamBuffer(1, &(*mBuffers)[0]);
+  if (OgreOggSoundManager::getSingleton().hasXRamSupport())
+    OgreOggSoundManager::getSingleton().setXRamBuffer(1, &(*mBuffers)[0]);
 #endif
 
   // Check format support
@@ -185,19 +186,16 @@ void OgreOggStaticWavSound::_openImpl(Ogre::DataStreamPtr &fileStream) {
     OGRE_EXCEPT(Ogre::Exception::ERR_INTERNAL_ERROR, "Format NOT supported.", "OgreOggStaticWavSound::_openImpl()");
 
   // Calculate length in seconds
-  mPlayTime = static_cast<float>(((mAudioEnd - mAudioOffset) * 8.f)
-      / static_cast<float>((mFormatData.mFormat->mSamplesPerSec * mFormatData.mFormat->mChannels
-          * mFormatData.mFormat->mBitsPerSample)));
+  mPlayTime =
+      static_cast<float>(((mAudioEnd - mAudioOffset) * 8.f) /
+                         static_cast<float>((mFormatData.mFormat->mSamplesPerSec * mFormatData.mFormat->mChannels *
+                                             mFormatData.mFormat->mBitsPerSample)));
 
   alGetError();
-  alBufferData((*mBuffers)[0],
-               mFormat,
-               sound_buffer,
-               static_cast<ALsizei>(bytesRead),
+  alBufferData((*mBuffers)[0], mFormat, sound_buffer, static_cast<ALsizei>(bytesRead),
                mFormatData.mFormat->mSamplesPerSec);
   if (alGetError() != AL_NO_ERROR) {
-    OGRE_EXCEPT(Ogre::Exception::ERR_INTERNAL_ERROR,
-                "Unable to load audio data into buffer!",
+    OGRE_EXCEPT(Ogre::Exception::ERR_INTERNAL_ERROR, "Unable to load audio data into buffer!",
                 "OgreOggStaticWavSound::_openImpl()");
     return;
   }
@@ -250,8 +248,7 @@ bool OgreOggStaticWavSound::_queryBufferInfo() {
         // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
         mBufferSize -= (mBufferSize % mFormatData.mFormat->mBlockAlign);
       }
-    }
-      break;
+    } break;
     case 2: {
       if (mFormatData.mFormat->mBitsPerSample == 8) {
         // 8-bit stereo
@@ -272,8 +269,7 @@ bool OgreOggStaticWavSound::_queryBufferInfo() {
         // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
         mBufferSize -= (mBufferSize % mFormatData.mFormat->mBlockAlign);
       }
-    }
-      break;
+    } break;
     case 4: {
       // 16-bit Quad surround
       mFormat = alGetEnumValue("AL_FORMAT_QUAD16");
@@ -284,8 +280,7 @@ bool OgreOggStaticWavSound::_queryBufferInfo() {
 
       // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
       mBufferSize -= (mBufferSize % mFormatData.mFormat->mBlockAlign);
-    }
-      break;
+    } break;
     case 6: {
       // 16-bit 5.1 surround
       mFormat = alGetEnumValue("AL_FORMAT_51CHN16");
@@ -296,8 +291,7 @@ bool OgreOggStaticWavSound::_queryBufferInfo() {
 
       // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
       mBufferSize -= (mBufferSize % mFormatData.mFormat->mBlockAlign);
-    }
-      break;
+    } break;
     case 7: {
       // 16-bit 7.1 surround
       mFormat = alGetEnumValue("AL_FORMAT_61CHN16");
@@ -308,8 +302,7 @@ bool OgreOggStaticWavSound::_queryBufferInfo() {
 
       // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
       mBufferSize -= (mBufferSize % mFormatData.mFormat->mBlockAlign);
-    }
-      break;
+    } break;
     case 8: {
       // 16-bit 8.1 surround
       mFormat = alGetEnumValue("AL_FORMAT_71CHN16");
@@ -320,8 +313,7 @@ bool OgreOggStaticWavSound::_queryBufferInfo() {
 
       // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
       mBufferSize -= (mBufferSize % mFormatData.mFormat->mBlockAlign);
-    }
-      break;
+    } break;
     default: {
       // Error message
       Ogre::LogManager::getSingleton().logMessage(
@@ -335,8 +327,7 @@ bool OgreOggStaticWavSound::_queryBufferInfo() {
 
       // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
       mBufferSize -= (mBufferSize % mFormatData.mFormat->mBlockAlign);
-    }
-      break;
+    } break;
   }
   return true;
 }
@@ -399,16 +390,13 @@ void OgreOggStaticWavSound::_pauseImpl() {
 void OgreOggStaticWavSound::_playImpl() {
   assert(mState != SS_DESTROYED);
 
-  if (isPlaying())
-    return;
+  if (isPlaying()) return;
 
   if (mSource == AL_NONE)
-    if (!OgreOggSoundManager::getSingleton()._requestSoundSource(this))
-      return;
+    if (!OgreOggSoundManager::getSingleton()._requestSoundSource(this)) return;
 
   // Pick up position change
-  if (mPlayPosChanged)
-    setPlayPosition(mPlayPos);
+  if (mPlayPosChanged) setPlayPosition(mPlayPos);
 
   alSourcePlay(mSource);
   mState = SS_PLAYING;
@@ -431,7 +419,7 @@ void OgreOggStaticWavSound::_stopImpl() {
     mState = SS_DESTROYED;
     OgreOggSoundManager::getSingleton()._destroyTemporarySound(this);
   }
-    // Give up source immediately if specfied
+  // Give up source immediately if specfied
   else if (mGiveUpSource)
     OgreOggSoundManager::getSingleton()._releaseSoundSource(this);
 
@@ -448,8 +436,7 @@ void OgreOggStaticWavSound::loop(bool loop) {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStaticWavSound::_updateAudioBuffers() {
-  if (!isPlaying())
-    return;
+  if (!isPlaying()) return;
 
   ALenum state;
   alGetSourcei(mSource, AL_SOURCE_STATE, &state);
@@ -458,8 +445,7 @@ void OgreOggStaticWavSound::_updateAudioBuffers() {
     stop();
 
     // Finished callback
-    if (mSoundListener)
-      mSoundListener->soundFinished(this);
+    if (mSoundListener) mSoundListener->soundFinished(this);
   } else {
     ALint bytes = 0;
 
@@ -476,4 +462,4 @@ void OgreOggStaticWavSound::_updateAudioBuffers() {
     mPreviousOffset = bytes;
   }
 }
-}
+}  // namespace OgreOggSound

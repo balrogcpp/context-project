@@ -1,54 +1,60 @@
 /**
-* @file OgreOggStreamSound.cpp
-* @author  Ian Stangoe
-* @version v1.26
-*
-* @section LICENSE
-* 
-* This source file is part of OgreOggSound, an OpenAL wrapper library for   
-* use with the Ogre Rendering Engine.										 
-*                                                                           
-* Copyright (c) 2013 Ian Stangoe
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE. 	 
-*
-*/
-
-#include "pcheader.h"
+ * @file OgreOggStreamSound.cpp
+ * @author  Ian Stangoe
+ * @version v1.26
+ *
+ * @section LICENSE
+ *
+ * This source file is part of OgreOggSound, an OpenAL wrapper library for
+ * use with the Ogre Rendering Engine.
+ *
+ * Copyright (c) 2013 Ian Stangoe
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
 
 #include "oggsound/OgreOggStreamSound.h"
+
 #include <string>
+
 #include "oggsound/OgreOggSoundManager.h"
+#include "pcheader.h"
 
 namespace OgreOggSound {
 /*/////////////////////////////////////////////////////////////////*/
-OgreOggStreamSound::OgreOggStreamSound(
-    const Ogre::String &name, Ogre::SceneManager *scnMgr
+OgreOggStreamSound::OgreOggStreamSound(const Ogre::String &name, Ogre::SceneManager *scnMgr
 #if OGRE_VERSION_MAJOR == 2
-    , Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+                                       ,
+                                       Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
 #endif
-) : OgreOggISound(
-    name, scnMgr
+                                       )
+    : OgreOggISound(name, scnMgr
 #if OGRE_VERSION_MAJOR == 2
-    , id, objMemMgr, renderQueueId
+                    ,
+                    id, objMemMgr, renderQueueId
 #endif
-), mVorbisInfo(0), mVorbisComment(0), mStreamEOF(false), mLastOffset(0.f) {
+                    ),
+      mVorbisInfo(0),
+      mVorbisComment(0),
+      mStreamEOF(false),
+      mLastOffset(0.f) {
   mStream = true;
   mBuffers.reset(new BufferList(NUM_BUFFERS, AL_NONE));
 }
@@ -92,8 +98,8 @@ void OgreOggStreamSound::_openImpl(Ogre::DataStreamPtr &fileStream) {
 
 #if HAVE_EFX
   // Upload to XRAM buffers if available
-  if ( OgreOggSoundManager::getSingleton().hasXRamSupport() )
-      OgreOggSoundManager::getSingleton().setXRamBuffer(NUM_BUFFERS, &(*mBuffers)[0]);
+  if (OgreOggSoundManager::getSingleton().hasXRamSupport())
+    OgreOggSoundManager::getSingleton().setXRamBuffer(NUM_BUFFERS, &(*mBuffers)[0]);
 #endif
 
   // In case loop point set BEFORE loaded re-check here
@@ -113,8 +119,7 @@ void OgreOggStreamSound::_release() {
   ALuint src = AL_NONE;
   setSource(src);
   for (int i = 0; i < NUM_BUFFERS; i++) {
-    if ((*mBuffers)[i] != AL_NONE)
-      alDeleteBuffers(1, &(*mBuffers)[i]);
+    if ((*mBuffers)[i] != AL_NONE) alDeleteBuffers(1, &(*mBuffers)[i]);
   }
   if (!mAudioStream) ov_clear(&mOggStream);
   mPlayPosChanged = false;
@@ -129,8 +134,7 @@ void OgreOggStreamSound::setLoopOffset(float startTime) {
   if (!mAudioStream)
     if (mLoopOffset >= mPlayTime) {
       Ogre::LogManager::getSingleton().logMessage(
-          "**** OgreOggStreamSound::setLoopOffset() ERROR - loop time invalid! ****",
-          Ogre::LML_CRITICAL);
+          "**** OgreOggStreamSound::setLoopOffset() ERROR - loop time invalid! ****", Ogre::LML_CRITICAL);
       // Invalid - cancel loop point
       mLoopOffset = 0.f;
     }
@@ -155,16 +159,14 @@ bool OgreOggStreamSound::_queryBufferInfo() {
       mBufferSize = mVorbisInfo->rate >> 1;
       // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
       mBufferSize -= (mBufferSize % 2);
-    }
-      break;
+    } break;
     case 2: {
       mFormat = AL_FORMAT_STEREO16;
       // Set BufferSize to 250ms (Frequency * 4 (16bit stereo) divided by 4 (quarter of a second))
       mBufferSize = mVorbisInfo->rate;
       // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
       mBufferSize -= (mBufferSize % 4);
-    }
-      break;
+    } break;
     case 4: {
       mFormat = alGetEnumValue("AL_FORMAT_QUAD16");
       if (!mFormat) return false;
@@ -172,8 +174,7 @@ bool OgreOggStreamSound::_queryBufferInfo() {
       mBufferSize = mVorbisInfo->rate * 2;
       // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
       mBufferSize -= (mBufferSize % 8);
-    }
-      break;
+    } break;
     case 6: {
       mFormat = alGetEnumValue("AL_FORMAT_51CHN16");
       if (!mFormat) return false;
@@ -181,8 +182,7 @@ bool OgreOggStreamSound::_queryBufferInfo() {
       mBufferSize = mVorbisInfo->rate * 3;
       // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
       mBufferSize -= (mBufferSize % 12);
-    }
-      break;
+    } break;
     case 7: {
       mFormat = alGetEnumValue("AL_FORMAT_61CHN16");
       if (!mFormat) return false;
@@ -190,8 +190,7 @@ bool OgreOggStreamSound::_queryBufferInfo() {
       mBufferSize = mVorbisInfo->rate * 4;
       // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
       mBufferSize -= (mBufferSize % 16);
-    }
-      break;
+    } break;
     case 8: {
       mFormat = alGetEnumValue("AL_FORMAT_71CHN16");
       if (!mFormat) return false;
@@ -199,8 +198,7 @@ bool OgreOggStreamSound::_queryBufferInfo() {
       mBufferSize = mVorbisInfo->rate * 5;
       // IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
       mBufferSize -= (mBufferSize % 20);
-    }
-      break;
+    } break;
     default:
       // Couldn't determine buffer format so log the error and default to mono
       Ogre::LogManager::getSingleton().logMessage("!!WARNING!! Could not determine buffer format!  Defaulting to MONO");
@@ -263,8 +261,7 @@ void OgreOggStreamSound::_updateAudioBuffers() {
       stop();
 
       // Finished callback
-      if (mSoundListener)
-        mSoundListener->soundFinished(this);
+      if (mSoundListener) mSoundListener->soundFinished(this);
 
       return;
     } else {
@@ -296,7 +293,7 @@ void OgreOggStreamSound::_updateAudioBuffers() {
     alGetBufferi(buffer, AL_FREQUENCY, &freq);
 
     // update offset (in seconds)
-    mLastOffset += ((ALuint) size / channels / (bits / 8)) / (ALfloat) freq;
+    mLastOffset += ((ALuint)size / channels / (bits / 8)) / (ALfloat)freq;
     if (mLastOffset >= mPlayTime) {
       mLastOffset = mLastOffset - mPlayTime;
 
@@ -369,8 +366,7 @@ bool OgreOggStreamSound::_stream(ALuint buffer) {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamSound::_dequeue() {
-  if (mSource == AL_NONE)
-    return;
+  if (mSource == AL_NONE) return;
 
   /** Check current state
   @remarks
@@ -382,8 +378,7 @@ void OgreOggStreamSound::_dequeue() {
   alGetSourcei(mSource, AL_SOURCE_STATE, &state);
 
   // Force mSource to change state so the call to alSourceStop() will mark buffers correctly.
-  if (state == AL_INITIAL)
-    alSourcePlay(mSource);
+  if (state == AL_INITIAL) alSourcePlay(mSource);
 
   // Stop source to allow unqueuing
   alSourceStop(mSource);
@@ -405,8 +400,7 @@ void OgreOggStreamSound::_dequeue() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamSound::_updatePlayPosition() {
-  if (mSource == AL_NONE || !mSeekable)
-    return;
+  if (mSource == AL_NONE || !mSeekable) return;
 
   bool paused = isPaused();
   bool playing = isPlaying();
@@ -422,8 +416,10 @@ void OgreOggStreamSound::_updatePlayPosition() {
   _prebuffer();
 
   // Reset state..
-  if (playing) play();
-  else if (paused) pause();
+  if (playing)
+    play();
+  else if (paused)
+    pause();
 
   // Set flag
   mStreamEOF = false;
@@ -432,12 +428,13 @@ void OgreOggStreamSound::_updatePlayPosition() {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamSound::setPlayPosition(float seconds) {
-  if (!mSeekable || seconds < 0.f)
-    return;
+  if (!mSeekable || seconds < 0.f) return;
 
   // Wrap time
   if (seconds > mPlayTime) {
-    do { seconds -= mPlayTime; } while (seconds > mPlayTime);
+    do {
+      seconds -= mPlayTime;
+    } while (seconds > mPlayTime);
   }
 
   // Set position
@@ -448,8 +445,7 @@ void OgreOggStreamSound::setPlayPosition(float seconds) {
 }
 /*/////////////////////////////////////////////////////////////////*/
 float OgreOggStreamSound::getPlayPosition() const {
-  if (!mSeekable || !mSource)
-    return -1.f;
+  if (!mSeekable || !mSource) return -1.f;
 
   float pos = 0.f;
   alGetSourcef(mSource, AL_SEC_OFFSET, &pos);
@@ -458,8 +454,7 @@ float OgreOggStreamSound::getPlayPosition() const {
   if ((mLastOffset + pos) >= mPlayTime)
     return (mLastOffset + pos) - mPlayTime;
   else
-    return
-        mLastOffset + pos;
+    return mLastOffset + pos;
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggStreamSound::_pauseImpl() {
@@ -477,13 +472,11 @@ void OgreOggStreamSound::_pauseImpl() {
 void OgreOggStreamSound::_playImpl() {
   assert(mState != SS_DESTROYED);
 
-  if (isPlaying())
-    return;
+  if (isPlaying()) return;
 
   // Grab a source if not already attached
   if (mSource == AL_NONE)
-    if (!OgreOggSoundManager::getSingleton()._requestSoundSource(this))
-      return;
+    if (!OgreOggSoundManager::getSingleton()._requestSoundSource(this)) return;
 
   alGetError();
   // Play source
@@ -521,7 +514,7 @@ void OgreOggStreamSound::_stopImpl() {
       mLastOffset = 0;
       mStreamEOF = false;
     }
-      // Non-seekable - close/reopen
+    // Non-seekable - close/reopen
     else {
       // Close
       _release();
@@ -545,4 +538,4 @@ void OgreOggStreamSound::_stopImpl() {
     if (mSoundListener) mSoundListener->soundStopped(this);
   }
 }
-}
+}  // namespace OgreOggSound

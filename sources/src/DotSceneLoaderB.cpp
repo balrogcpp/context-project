@@ -12,7 +12,6 @@
 #include "PbrShaderUtils.h"
 #include "SinbadCharacterController.h"
 #include "btogre/BtOgre.h"
-#include "pcheader.h"
 
 // LOD Generator
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR

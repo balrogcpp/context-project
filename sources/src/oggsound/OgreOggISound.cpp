@@ -72,8 +72,7 @@ long OOSStreamTell(void *datasource) {
 OgreOggISound::OgreOggISound(const Ogre::String &name, Ogre::SceneManager *scnMgr
 #if OGRE_VERSION_MAJOR == 2
                              ,
-                             Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr,
-                             Ogre::uint8 renderQueueId
+                             Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
 #endif
                              )
     :
@@ -470,8 +469,7 @@ void OgreOggISound::_recoverPlayPosition() {
   alSourcef(mSource, AL_SEC_OFFSET, mPlayPos);
   if (alGetError()) {
     Ogre::LogManager::getSingleton().logMessage(
-        "***--- OgreOggISound::_recoverPlayPosition() - Unable to set play position",
-        Ogre::LML_CRITICAL);
+        "***--- OgreOggISound::_recoverPlayPosition() - Unable to set play position", Ogre::LML_CRITICAL);
   }
 }
 /*/////////////////////////////////////////////////////////////////*/
@@ -492,8 +490,7 @@ void OgreOggISound::setPlayPosition(float seconds) {
     alSourcef(mSource, AL_SEC_OFFSET, seconds);
     if (alGetError()) {
       Ogre::LogManager::getSingleton().logMessage(
-          "***--- OgreOggISound::setPlayPosition() - Error setting play position",
-          Ogre::LML_CRITICAL);
+          "***--- OgreOggISound::setPlayPosition() - Error setting play position", Ogre::LML_CRITICAL);
     }
     // Reset flag
     mPlayPosChanged = false;
@@ -514,9 +511,8 @@ float OgreOggISound::getPlayPosition() const {
   alGetError();
   alGetSourcef(mSource, AL_SEC_OFFSET, &offset);
   if (alGetError()) {
-    Ogre::LogManager::getSingleton().logMessage(
-        "***--- OgreOggISound::setPlayPosition() - Error getting play position",
-        Ogre::LML_CRITICAL);
+    Ogre::LogManager::getSingleton().logMessage("***--- OgreOggISound::setPlayPosition() - Error getting play position",
+                                                Ogre::LML_CRITICAL);
     return -1.f;
   }
 
@@ -594,9 +590,7 @@ void OgreOggISound::update(float fTime) {
   _updateFade(fTime);
 }
 /*/////////////////////////////////////////////////////////////////*/
-const Ogre::String &OgreOggISound::getMovableType(void) const {
-  return OgreOggSoundFactory::FACTORY_TYPE_NAME;
-}
+const Ogre::String &OgreOggISound::getMovableType(void) const { return OgreOggSoundFactory::FACTORY_TYPE_NAME; }
 /*/////////////////////////////////////////////////////////////////*/
 const Ogre::AxisAlignedBox &OgreOggISound::getBoundingBox(void) const {
   static Ogre::AxisAlignedBox aab;
@@ -648,13 +642,10 @@ void OgreOggISound::_notifyMoved(void) {
   mLocalTransformDirty = true;
 }
 #else
-void OgreOggISound::_updateRenderQueue(Ogre::RenderQueue *queue, Ogre::Camera *camera,
-                                       const Ogre::Camera *lodCamera) {}
+void OgreOggISound::_updateRenderQueue(Ogre::RenderQueue *queue, Ogre::Camera *camera, const Ogre::Camera *lodCamera) {}
 #endif
 #if OGRE_VERSION_MAJOR == 1 || OGRE_VERSION_MINOR == 0
 /*/////////////////////////////////////////////////////////////////*/
-void OgreOggISound::visitRenderables(Ogre::Renderable::Visitor *visitor, bool debugRenderables) {
-  return;
-}
+void OgreOggISound::visitRenderables(Ogre::Renderable::Visitor *visitor, bool debugRenderables) { return; }
 #endif
 }  // namespace OgreOggSound

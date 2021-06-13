@@ -1,25 +1,30 @@
 /*-------------------------------------------------------------------------------------
 Copyright (c) 2006 John Judnich
 
-This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
-1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
-2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable
+for any damages arising from the use of this software. Permission is granted to anyone to use this software for any
+purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following
+restrictions:
+1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If
+you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not
+required.
+2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original
+software.
 3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
 #pragma once
+#include <OgrePrerequisites.h>
+
 #include "PagedGeometry.h"
 #include "PropertyMaps.h"
-
-#include <OgrePrerequisites.h>
 
 namespace Forests {
 
 class TreeIterator3D;
 class TreeIterator2D;
 
-/** \brief A PageLoader-derived object you can use with PagedGeometry to easily place trees on your terrain. 
+/** \brief A PageLoader-derived object you can use with PagedGeometry to easily place trees on your terrain.
 
 \note TreeLoader3D is derived from PageLoader - this implementation provides you with an easy way
 to add trees to your scene. Remember that if the included PageLoader's aren't enough, you can easily
@@ -55,11 +60,8 @@ class TreeLoader3D : public PageLoader {
 
   \warning By default, scale values may not exceed 2.0. If you need to use higher scale
   values than 2.0, use setMaximumScale() to reconfigure the maximum. */
-  void addTree(Ogre::Entity *entity,
-               const Ogre::Vector3 &position,
-               Ogre::Degree yaw = Ogre::Degree(0),
-               Ogre::Real scale = 1.0f,
-               void *userData = nullptr);
+  void addTree(Ogre::Entity *entity, const Ogre::Vector3 &position, Ogre::Degree yaw = Ogre::Degree(0),
+               Ogre::Real scale = 1.0f, void *userData = nullptr);
 
   /** \brief Deletes trees within a certain radius of the given coordinates.
   \param position The coordinate of the tree(s) to delete
@@ -69,7 +71,7 @@ class TreeLoader3D : public PageLoader {
   \note If the "type" parameter is set to an entity, only trees created with that entity
   will be deleted. */
 #ifdef PAGEDGEOMETRY_USER_DATA
-  std::vector<void*>
+  std::vector<void *>
 #else
   void
 #endif
@@ -83,9 +85,8 @@ class TreeLoader3D : public PageLoader {
 
       \note If the "type" parameter is set to an entity, only trees created with that entity
       will be found. */
-  std::vector<void*> findTrees(const Ogre::Vector3 &position, float radius, Ogre::Entity *type = nullptr);
+  std::vector<void *> findTrees(const Ogre::Vector3 &position, float radius, Ogre::Entity *type = nullptr);
 #endif
-
 
   /** \brief Deletes trees within a certain rectangular area.
   \param area The area where trees are to be deleted
@@ -94,7 +95,7 @@ class TreeLoader3D : public PageLoader {
   \note If the "type" parameter is set to an entity, only trees created with that entity
   will be deleted. */
 #ifdef PAGEDGEOMETRY_USER_DATA
-  std::vector<void*>
+  std::vector<void *>
 #else
   void
 #endif
@@ -156,8 +157,7 @@ class TreeLoader3D : public PageLoader {
   considerable pixelation. */
   void setColorMapFilter(MapFilter filter) {
     colorMapFilter = filter;
-    if (colorMap)
-      colorMap->setFilter(colorMapFilter);
+    if (colorMap) colorMap->setFilter(colorMapFilter);
   }
 
   /** \brief Sets the maximum tree scale value
@@ -216,33 +216,32 @@ class TreeLoader3D : public PageLoader {
 #endif
   };
 
-  //Information about the 2D grid of pages
+  // Information about the 2D grid of pages
   int pageGridX, pageGridZ;
   Ogre::Real pageSize;
   TBounds gridBounds, actualBounds;
 
   Ogre::Real maximumScale, minimumScale;
 
-  //Colormap
+  // Colormap
   ColorMap *colorMap;
   MapFilter colorMapFilter;
 
-  //Misc.
+  // Misc.
   PagedGeometry *geom;
 
-  //A std::map of 2D grid arrays. Each array is the same size (pageGridX x pageGridZ), and
-  //contains a std::vector list of trees. Each std::map entry corresponds to a single tree
-  //type, and every tree defined in the std::map entry's grid should be of that tree type.
+  // A std::map of 2D grid arrays. Each array is the same size (pageGridX x pageGridZ), and
+  // contains a std::vector list of trees. Each std::map entry corresponds to a single tree
+  // type, and every tree defined in the std::map entry's grid should be of that tree type.
   std::map<Ogre::Entity *, std::vector<TreeDef> *> pageGridList;
   typedef std::map<Ogre::Entity *, std::vector<TreeDef> *>::iterator PageGridListIterator;
   typedef std::pair<Ogre::Entity *, std::vector<TreeDef> *> PageGridListValue;
 
   inline std::vector<TreeDef> &_getGridPage(std::vector<TreeDef> *grid, int x, int z) {
 #ifdef _DEBUG
-    if(x >= pageGridX || z >= pageGridZ )
-        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS,
-        "Grid dimension is out of bounds",
-        "TreeLoader2D::_getGridPage()");
+    if (x >= pageGridX || z >= pageGridZ)
+      OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, "Grid dimension is out of bounds",
+                  "TreeLoader2D::_getGridPage()");
 #endif
 
     return grid[z * pageGridX + x];
@@ -250,20 +249,17 @@ class TreeLoader3D : public PageLoader {
 
   inline void _setGridPage(std::vector<TreeDef> *grid, int x, int z, const std::vector<TreeDef> &page) {
 #ifdef _DEBUG
-    if(x >= pageGridX || z >= pageGridZ )
-        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS,
-        "Grid dimension is out of bounds",
-        "TreeLoader2D::_getGridPage()");
+    if (x >= pageGridX || z >= pageGridZ)
+      OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, "Grid dimension is out of bounds",
+                  "TreeLoader2D::_getGridPage()");
 #endif
 
     grid[z * pageGridX + x] = page;
   }
 };
 
-
-
-//The TreeRef class is used by both TreeLoader2D and TreeLoader3D.
-//This #ifndef makes sure TreeRef isn't declared twice in case both treeloaders are used.
+// The TreeRef class is used by both TreeLoader2D and TreeLoader3D.
+// This #ifndef makes sure TreeRef isn't declared twice in case both treeloaders are used.
 #ifndef TreeRef_Declared
 #define TreeRef_Declared
 
@@ -286,7 +282,7 @@ class TreeRef {
 
 #ifdef PAGEDGEOMETRY_USER_DATA
   /** Returns the user-defined data associated with this tree */
-  inline void* getUserData() { return userData; }
+  inline void *getUserData() { return userData; }
 #endif
 
  private:
@@ -297,7 +293,7 @@ class TreeRef {
   Ogre::Real scale;
   Ogre::Entity *entity;
 #ifdef PAGEDGEOMETRY_USER_DATA
-  void* userData;
+  void *userData;
 #endif
 };
 
@@ -334,4 +330,4 @@ class TreeIterator3D {
   TreeRef currentTreeDat, prevTreeDat;
   bool hasMore;
 };
-}
+}  // namespace Forests

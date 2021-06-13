@@ -1,59 +1,58 @@
 /**
-* @file OgreOggSoundListener.h
-* @author  Ian Stangoe
-* @version v1.26
-*
-* @section LICENSE
-* 
-* This source file is part of OgreOggSound, an OpenAL wrapper library for   
-* use with the Ogre Rendering Engine.										 
-*                                                                           
-* Copyright (c) 2013 Ian Stangoe
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE. 
-*
-* @section DESCRIPTION
-* 
-* Listener object (The users 'ears')
-*/
+ * @file OgreOggSoundListener.h
+ * @author  Ian Stangoe
+ * @version v1.26
+ *
+ * @section LICENSE
+ *
+ * This source file is part of OgreOggSound, an OpenAL wrapper library for
+ * use with the Ogre Rendering Engine.
+ *
+ * Copyright (c) 2013 Ian Stangoe
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @section DESCRIPTION
+ *
+ * Listener object (The users 'ears')
+ */
 #pragma once
 
-#include "OgreOggSoundPrereqs.h"
-#include <OgreVector3.h>
 #include <OgreMovableObject.h>
+#include <OgreVector3.h>
+
+#include "OgreOggSoundPrereqs.h"
 
 #if OGGSOUND_THREADED
-#	ifdef POCO_THREAD
-#		include "Poco/Mutex.hpp"
-#	else 
-#		include <mutex>
-#	endif
+#ifdef POCO_THREAD
+#include "Poco/Mutex.hpp"
+#else
+#include <mutex>
+#endif
 #endif
 
 namespace OgreOggSound {
 //! Listener object (Users ears)
 /** Handles properties associated with the listener.
-*/
+ */
 class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
-
  public:
-
   /** Constructor
   @remarks
       Creates a listener object to act as the ears of the user.
@@ -64,17 +63,21 @@ class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
 #else
       Ogre::SceneManager *scnMgr = nullptr
 #endif
-  ) :
+      )
+      :
 #if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0
-      MovableObject(id, objMemMgr, renderQueueId),
+        MovableObject(id, objMemMgr, renderQueueId),
 #elif OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR > 0
-      MovableObject(id, objMemMgr, scnMgr, renderQueueId),
+        MovableObject(id, objMemMgr, scnMgr, renderQueueId),
 #endif
-      mPosition(Ogre::Vector3::ZERO), mVelocity(Ogre::Vector3::ZERO)
+        mPosition(Ogre::Vector3::ZERO),
+        mVelocity(Ogre::Vector3::ZERO)
 #if OGRE_VERSION_MAJOR == 1
-      , mLocalTransformDirty(false)
+        ,
+        mLocalTransformDirty(false)
 #endif
-      , mSceneMgr(scnMgr) {
+        ,
+        mSceneMgr(scnMgr) {
     for (int i = 0; i < 6; ++i) mOrientation[i] = 0.f;
     mName = "OgreOggListener";
 #if OGRE_VERSION_MAJOR == 2
@@ -101,7 +104,7 @@ class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
   */
   void setPosition(const Ogre::Vector3 &pos);
   /** Gets the position of the listener.
-  */
+   */
   Ogre::Vector3 getPosition() const;
   /** Sets the orientation of the listener.
   @remarks
@@ -124,7 +127,7 @@ class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
    */
   void setOrientation(const Ogre::Quaternion &q);
   /** Gets the orientation of the listener.
-  */
+   */
   Ogre::Vector3 getOrientation() const;
   /** Sets sounds velocity.
   @param
@@ -177,10 +180,10 @@ class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
   @remarks
       Overridden function from MovableObject.
    */
-  virtual void _notifyAttached(
-      Ogre::Node *node
+  virtual void _notifyAttached(Ogre::Node *node
 #if OGRE_VERSION_MAJOR == 1
-      , bool isTagPoint = false
+                               ,
+                               bool isTagPoint = false
 #endif
   );
 #if OGRE_VERSION_MAJOR == 1
@@ -203,27 +206,25 @@ class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
   void setSceneManager(Ogre::SceneManager &m) { mSceneMgr = &m; }
 #endif
  private:
-
 #if OGGSOUND_THREADED
-#	if POCO_THREAD
+#if POCO_THREAD
   static Poco::Mutex mMutex;
-#	else
+#else
   static std::mutex mMutex;
-#	endif
+#endif
 #endif
 
   /**
    * Positional variables
    */
-  Ogre::Vector3 mPosition;        // 3D position
-  Ogre::Vector3 mVelocity;        // 3D velocity
-  float mOrientation[6];            // 3D orientation
+  Ogre::Vector3 mPosition;  // 3D position
+  Ogre::Vector3 mVelocity;  // 3D velocity
+  float mOrientation[6];    // 3D orientation
 #if OGRE_VERSION_MAJOR == 2
-  Ogre::Quaternion mOrient;		// 3D orientation as Quaternion
+  Ogre::Quaternion mOrient;  // 3D orientation as Quaternion
 #else
-  bool mLocalTransformDirty;        // Dirty transforms flag
+  bool mLocalTransformDirty;  // Dirty transforms flag
 #endif
-  Ogre::SceneManager *mSceneMgr;    // Creator
-
+  Ogre::SceneManager *mSceneMgr;  // Creator
 };
-}
+}  // namespace OgreOggSound

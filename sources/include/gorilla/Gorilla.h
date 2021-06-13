@@ -38,13 +38,13 @@ extern "C" {
 #include "Input.h"
 #include "Singleton.h"
 #ifndef GORILLA_USES_EXCEPTIONS
-#  define GORILLA_USES_EXCEPTIONS 1
+#define GORILLA_USES_EXCEPTIONS 1
 #endif
 
 #if OGRE_COMP == OGRE_COMPILER_GNUC
-#   define __FUNC__ __PRETTY_FUNCTION__
+#define __FUNC__ __PRETTY_FUNCTION__
 #elif OGRE_COMP != OGRE_COMPILER_BORL
-#   define __FUNC__ "No function name info"
+#define __FUNC__ "No function name info"
 #endif
 
 namespace Gorilla {
@@ -62,9 +62,9 @@ class QuadList;
 class Caption;
 class MarkupText;
 
-template<typename T>
+template <typename T>
 struct VectorType {
-#if OGRE_VERSION <= 67077 // If the version is less than or equal to 1.6.5
+#if OGRE_VERSION <= 67077  // If the version is less than or equal to 1.6.5
   typedef std::vector<T> type;
 #else
   typedef typename Ogre::vector<T>::type type;
@@ -73,58 +73,156 @@ struct VectorType {
 
 namespace Colours {
 enum Colour {
-  NoColor = 0, // No Colour.
-  AliceBlue = 0xf0f8ff, Gainsboro = 0xdcdcdc, MistyRose = 0xffe4e1,
-  AntiqueWhite = 0xfaebd7, GhostWhite = 0xf8f8ff, Moccasin = 0xffe4b5,
-  Aqua = 0x00ffff, Gold = 0xffd700, NavajoWhite = 0xffdead,
-  Aquamarine = 0x7fffd4, Goldenrod = 0xdaa520, Navy = 0x000080,
-  Azure = 0xf0ffff, Gray = 0x808080, OldLace = 0xfdf5e6,
-  Beige = 0xf5f5dc, Green = 0x008000, Olive = 0x808000,
-  Bisque = 0xffe4c4, GreenYellow = 0xadff2f, OliveDrab = 0x6b8e23,
-  Black = 0x000000, Grey = 0x808080, Orange = 0xffa500,
-  BlanchedAlmond = 0xffebcd, Honeydew = 0xf0fff0, OrangeRed = 0xff4500,
-  Blue = 0x0000ff, HotPink = 0xff69b4, Orchid = 0xda70d6,
-  BlueViolet = 0x8a2be2, IndianRed = 0xcd5c5c, PaleGoldenrod = 0xeee8aa,
-  Brown = 0xa52a2a, Indigo = 0x4b0082, PaleGreen = 0x98fb98,
-  Burlywood = 0xdeb887, Ivory = 0xfffff0, PaleTurquoise = 0xafeeee,
-  CadetBlue = 0x5f9ea0, Khaki = 0xf0e68c, PaleVioletRed = 0xdb7093,
-  Chartreuse = 0x7fff00, Lavender = 0xe6e6fa, PapayaWhip = 0xffefd5,
-  Chocolate = 0xd2691e, LavenderBlush = 0xfff0f5, PeachPuff = 0xffdab9,
-  Coral = 0xff7f50, LawnGreen = 0x7cfc00, Peru = 0xcd853f,
-  CornflowerBlue = 0x6495ed, LemonChiffon = 0xfffacd, Pink = 0xffc0cb,
-  Cornsilk = 0xfff8dc, LightBlue = 0xadd8e6, Plum = 0xdda0dd,
-  Crimson = 0xdc143c, LightCoral = 0xf08080, PowderBlue = 0xb0e0e6,
-  Cyan = 0x00ffff, LightCyan = 0xe0ffff, Purple = 0x800080,
-  DarkBlue = 0x00008b, LightGoldenrodyellow = 0xfafad2, Red = 0xff0000,
-  DarkCyan = 0x008b8b, LightGray = 0xd3d3d3, RosyBrown = 0xbc8f8f,
-  DarkGoldenrod = 0xb8860b, LightGreen = 0x90ee90, RoyalBlue = 0x4169e1,
-  DarkGray = 0xa9a9a9, LightGrey = 0xd3d3d3, SaddleBrown = 0x8b4513,
-  DarkGreen = 0x006400, LightPink = 0xffb6c1, Salmon = 0xfa8072,
-  DarkGrey = 0xa9a9a9, LightSalmon = 0xffa07a, SandyBrown = 0xf4a460,
-  DarkKhaki = 0xbdb76b, LightSeagreen = 0x20b2aa, SeaGreen = 0x2e8b57,
-  DarkMagenta = 0x8b008b, LightSkyblue = 0x87cefa, SeaShell = 0xfff5ee,
-  DarkOlivegreen = 0x556b2f, LightSlategray = 0x778899, Sienna = 0xa0522d,
-  DarkOrange = 0xff8c00, LightSlategrey = 0x778899, Silver = 0xc0c0c0,
-  DarkOrchid = 0x9932cc, LightSteelblue = 0xb0c4de, SkyBlue = 0x87ceeb,
-  DarkRed = 0x8b0000, LightYellow = 0xffffe0, SlateBlue = 0x6a5acd,
-  DarkSalmon = 0xe9967a, Lime = 0x00ff00, SlateGray = 0x708090,
-  DarkSeagreen = 0x8fbc8f, LimeGreen = 0x32cd32, SlateGrey = 0x708090,
-  DarkSlateblue = 0x483d8b, Linen = 0xfaf0e6, Snow = 0xfffafa,
-  DarkSlategray = 0x2f4f4f, Magenta = 0xff00ff, SpringGreen = 0x00ff7f,
-  DarkSlategrey = 0x2f4f4f, Maroon = 0x800000, SteelBlue = 0x4682b4,
-  DarkTurquoise = 0x00ced1, MediumAquamarine = 0x66cdaa, Tan = 0xd2b48c,
-  DarkViolet = 0x9400d3, MediumBlue = 0x0000cd, Teal = 0x008080,
-  DeepPink = 0xff1493, MediumOrchid = 0xba55d3, Thistle = 0xd8bfd8,
-  DeepSkyblue = 0x00bfff, MediumPurple = 0x9370db, Tomato = 0xff6347,
-  DimGray = 0x696969, MediumSeaGreen = 0x3cb371, Turquoise = 0x40e0d0,
-  DimGrey = 0x696969, MediumSlateBlue = 0x7b68ee, Violet = 0xee82ee,
-  DodgerBlue = 0x1e90ff, MediumSpringGreen = 0x00fa9a, Wheat = 0xf5deb3,
-  FireBrick = 0xb22222, MediumTurquoise = 0x48d1cc, White = 0xffffff,
-  FloralWhite = 0xfffaf0, MediumBioletRed = 0xc71585, WhiteSmoke = 0xf5f5f5,
-  ForestGreen = 0x228b22, MidnightBlue = 0x191970, Yellow = 0xffff00,
-  Fuchsia = 0xff00ff, MintCream = 0xf5fffa, YellowGreen = 0x9acd32
-}; // Colour
-} // namespace Colours
+  NoColor = 0,  // No Colour.
+  AliceBlue = 0xf0f8ff,
+  Gainsboro = 0xdcdcdc,
+  MistyRose = 0xffe4e1,
+  AntiqueWhite = 0xfaebd7,
+  GhostWhite = 0xf8f8ff,
+  Moccasin = 0xffe4b5,
+  Aqua = 0x00ffff,
+  Gold = 0xffd700,
+  NavajoWhite = 0xffdead,
+  Aquamarine = 0x7fffd4,
+  Goldenrod = 0xdaa520,
+  Navy = 0x000080,
+  Azure = 0xf0ffff,
+  Gray = 0x808080,
+  OldLace = 0xfdf5e6,
+  Beige = 0xf5f5dc,
+  Green = 0x008000,
+  Olive = 0x808000,
+  Bisque = 0xffe4c4,
+  GreenYellow = 0xadff2f,
+  OliveDrab = 0x6b8e23,
+  Black = 0x000000,
+  Grey = 0x808080,
+  Orange = 0xffa500,
+  BlanchedAlmond = 0xffebcd,
+  Honeydew = 0xf0fff0,
+  OrangeRed = 0xff4500,
+  Blue = 0x0000ff,
+  HotPink = 0xff69b4,
+  Orchid = 0xda70d6,
+  BlueViolet = 0x8a2be2,
+  IndianRed = 0xcd5c5c,
+  PaleGoldenrod = 0xeee8aa,
+  Brown = 0xa52a2a,
+  Indigo = 0x4b0082,
+  PaleGreen = 0x98fb98,
+  Burlywood = 0xdeb887,
+  Ivory = 0xfffff0,
+  PaleTurquoise = 0xafeeee,
+  CadetBlue = 0x5f9ea0,
+  Khaki = 0xf0e68c,
+  PaleVioletRed = 0xdb7093,
+  Chartreuse = 0x7fff00,
+  Lavender = 0xe6e6fa,
+  PapayaWhip = 0xffefd5,
+  Chocolate = 0xd2691e,
+  LavenderBlush = 0xfff0f5,
+  PeachPuff = 0xffdab9,
+  Coral = 0xff7f50,
+  LawnGreen = 0x7cfc00,
+  Peru = 0xcd853f,
+  CornflowerBlue = 0x6495ed,
+  LemonChiffon = 0xfffacd,
+  Pink = 0xffc0cb,
+  Cornsilk = 0xfff8dc,
+  LightBlue = 0xadd8e6,
+  Plum = 0xdda0dd,
+  Crimson = 0xdc143c,
+  LightCoral = 0xf08080,
+  PowderBlue = 0xb0e0e6,
+  Cyan = 0x00ffff,
+  LightCyan = 0xe0ffff,
+  Purple = 0x800080,
+  DarkBlue = 0x00008b,
+  LightGoldenrodyellow = 0xfafad2,
+  Red = 0xff0000,
+  DarkCyan = 0x008b8b,
+  LightGray = 0xd3d3d3,
+  RosyBrown = 0xbc8f8f,
+  DarkGoldenrod = 0xb8860b,
+  LightGreen = 0x90ee90,
+  RoyalBlue = 0x4169e1,
+  DarkGray = 0xa9a9a9,
+  LightGrey = 0xd3d3d3,
+  SaddleBrown = 0x8b4513,
+  DarkGreen = 0x006400,
+  LightPink = 0xffb6c1,
+  Salmon = 0xfa8072,
+  DarkGrey = 0xa9a9a9,
+  LightSalmon = 0xffa07a,
+  SandyBrown = 0xf4a460,
+  DarkKhaki = 0xbdb76b,
+  LightSeagreen = 0x20b2aa,
+  SeaGreen = 0x2e8b57,
+  DarkMagenta = 0x8b008b,
+  LightSkyblue = 0x87cefa,
+  SeaShell = 0xfff5ee,
+  DarkOlivegreen = 0x556b2f,
+  LightSlategray = 0x778899,
+  Sienna = 0xa0522d,
+  DarkOrange = 0xff8c00,
+  LightSlategrey = 0x778899,
+  Silver = 0xc0c0c0,
+  DarkOrchid = 0x9932cc,
+  LightSteelblue = 0xb0c4de,
+  SkyBlue = 0x87ceeb,
+  DarkRed = 0x8b0000,
+  LightYellow = 0xffffe0,
+  SlateBlue = 0x6a5acd,
+  DarkSalmon = 0xe9967a,
+  Lime = 0x00ff00,
+  SlateGray = 0x708090,
+  DarkSeagreen = 0x8fbc8f,
+  LimeGreen = 0x32cd32,
+  SlateGrey = 0x708090,
+  DarkSlateblue = 0x483d8b,
+  Linen = 0xfaf0e6,
+  Snow = 0xfffafa,
+  DarkSlategray = 0x2f4f4f,
+  Magenta = 0xff00ff,
+  SpringGreen = 0x00ff7f,
+  DarkSlategrey = 0x2f4f4f,
+  Maroon = 0x800000,
+  SteelBlue = 0x4682b4,
+  DarkTurquoise = 0x00ced1,
+  MediumAquamarine = 0x66cdaa,
+  Tan = 0xd2b48c,
+  DarkViolet = 0x9400d3,
+  MediumBlue = 0x0000cd,
+  Teal = 0x008080,
+  DeepPink = 0xff1493,
+  MediumOrchid = 0xba55d3,
+  Thistle = 0xd8bfd8,
+  DeepSkyblue = 0x00bfff,
+  MediumPurple = 0x9370db,
+  Tomato = 0xff6347,
+  DimGray = 0x696969,
+  MediumSeaGreen = 0x3cb371,
+  Turquoise = 0x40e0d0,
+  DimGrey = 0x696969,
+  MediumSlateBlue = 0x7b68ee,
+  Violet = 0xee82ee,
+  DodgerBlue = 0x1e90ff,
+  MediumSpringGreen = 0x00fa9a,
+  Wheat = 0xf5deb3,
+  FireBrick = 0xb22222,
+  MediumTurquoise = 0x48d1cc,
+  White = 0xffffff,
+  FloralWhite = 0xfffaf0,
+  MediumBioletRed = 0xc71585,
+  WhiteSmoke = 0xf5f5f5,
+  ForestGreen = 0x228b22,
+  MidnightBlue = 0x191970,
+  Yellow = 0xffff00,
+  Fuchsia = 0xff00ff,
+  MintCream = 0xf5fffa,
+  YellowGreen = 0x9acd32
+};  // Colour
+}  // namespace Colours
 
 /*! function. rgb
     desc.
@@ -142,11 +240,7 @@ Ogre::ColourValue webcolour(Colours::Colour, Ogre::Real alpha = 1.0);
     desc.
         Directions for background gradients
 */
-enum Gradient {
-  Gradient_NorthSouth,
-  Gradient_WestEast,
-  Gradient_Diagonal
-};
+enum Gradient { Gradient_NorthSouth, Gradient_WestEast, Gradient_Diagonal };
 
 /*! enum. Border
     desc.
@@ -168,96 +262,65 @@ enum Gradient {
         |/                   \|
         +---------------------+
 */
-enum Border {
-  Border_North = 0,
-  Border_South = 1,
-  Border_East = 2,
-  Border_West = 3
-};
+enum Border { Border_North = 0, Border_South = 1, Border_East = 2, Border_West = 3 };
 
 /*! enum. QuadCorner
     desc.
         Names of each corner/vertex of a Quad
 */
-enum QuadCorner {
-  TopLeft = 0,
-  TopRight = 1,
-  BottomRight = 2,
-  BottomLeft = 3
-};
+enum QuadCorner { TopLeft = 0, TopRight = 1, BottomRight = 2, BottomLeft = 3 };
 
 /*! enum. TextAlignment
     desc.
         Horizontal text alignment for captions.
 */
 enum TextAlignment {
-  TextAlign_Left,   // Place the text to where left is (X = left)
-  TextAlign_Right,  // Place the text to the right of left (X = left - text_width)
-  TextAlign_Centre, // Place the text centered at left (X = left - (text_width / 2 ) )
+  TextAlign_Left,    // Place the text to where left is (X = left)
+  TextAlign_Right,   // Place the text to the right of left (X = left - text_width)
+  TextAlign_Centre,  // Place the text centered at left (X = left - (text_width / 2 ) )
 };
 
 /*! enum. VerticalAlignment
     desc.
         Vertical text alignment for captions.
 */
-enum VerticalAlignment {
-  VerticalAlign_Top,
-  VerticalAlign_Middle,
-  VerticalAlign_Bottom
-};
+enum VerticalAlignment { VerticalAlign_Top, VerticalAlign_Middle, VerticalAlign_Bottom };
 
 /*! enum. buffer<T>
     desc.
         Internal container class that is similar to std::vector
 */
-template<typename T>
+template <typename T>
 class buffer {
-
  public:
-
-  inline buffer() : mBuffer(0), mUsed(0), mCapacity(0) { // no code.
+  inline buffer() : mBuffer(0), mUsed(0), mCapacity(0) {  // no code.
   }
 
   inline ~buffer() {
-    if (mBuffer && mCapacity)
-      OGRE_FREE(mBuffer, Ogre::MEMCATEGORY_GEOMETRY);
+    if (mBuffer && mCapacity) OGRE_FREE(mBuffer, Ogre::MEMCATEGORY_GEOMETRY);
   }
 
-  inline size_t size() const {
-    return mUsed;
-  }
+  inline size_t size() const { return mUsed; }
 
-  inline size_t capacity() const {
-    return mCapacity;
-  }
+  inline size_t capacity() const { return mCapacity; }
 
-  inline T &operator[](size_t index) {
-    return *(mBuffer + index);
-  }
+  inline T &operator[](size_t index) { return *(mBuffer + index); }
 
-  inline const T &operator[](size_t index) const {
-    return *(mBuffer + index);
-  }
+  inline const T &operator[](size_t index) const { return *(mBuffer + index); }
 
-  inline T &at(size_t index) {
-    return *(mBuffer + index);
-  }
+  inline T &at(size_t index) { return *(mBuffer + index); }
 
-  inline const T &at(size_t index) const {
-    return *(mBuffer + index);
-  }
+  inline const T &at(size_t index) const { return *(mBuffer + index); }
 
-  inline void remove_all() {
-    mUsed = 0;
-  }
+  inline void remove_all() { mUsed = 0; }
 
   inline void resize(size_t new_capacity) {
-    T *new_buffer = (T *) OGRE_MALLOC(sizeof(T) * new_capacity, Ogre::MEMCATEGORY_GEOMETRY);
+    T *new_buffer = (T *)OGRE_MALLOC(sizeof(T) * new_capacity, Ogre::MEMCATEGORY_GEOMETRY);
 
     if (mUsed != 0) {
       if (mUsed < new_capacity)  // Copy all
         std::copy(mBuffer, mBuffer + mUsed, new_buffer);
-      else if (mUsed >= new_capacity) // Copy some
+      else if (mUsed >= new_capacity)  // Copy some
         std::copy(mBuffer, mBuffer + new_capacity, new_buffer);
     }
 
@@ -267,15 +330,13 @@ class buffer {
   }
 
   inline void push_back(const T &value) {
-    if (mUsed == mCapacity)
-      resize(mUsed == 0 ? 1 : mUsed * 2);
+    if (mUsed == mCapacity) resize(mUsed == 0 ? 1 : mUsed * 2);
     *(mBuffer + mUsed) = value;
     mUsed++;
   }
 
   inline void pop_back() {
-    if (mUsed != 0)
-      mUsed--;
+    if (mUsed != 0) mUsed--;
   }
 
   inline void erase(size_t index) {
@@ -283,16 +344,11 @@ class buffer {
     mUsed--;
   }
 
-  inline T *first() {
-    return mBuffer;
-  }
+  inline T *first() { return mBuffer; }
 
-  inline T *last() {
-    return mBuffer + mUsed;
-  }
+  inline T *last() { return mBuffer + mUsed; }
 
  protected:
-
   T *mBuffer;
   size_t mUsed, mCapacity;
 };
@@ -322,9 +378,7 @@ struct Kerning {
         Texture and size information about a single character loaded from a TextureAtlas.
 */
 class Glyph : public Ogre::GeneralAllocatedObject {
-
  public:
-
   Glyph()
       : uvTop(0),
         uvBottom(0),
@@ -340,22 +394,18 @@ class Glyph : public Ogre::GeneralAllocatedObject {
   ~Glyph() {}
 
   Ogre::Vector2 texCoords[4];
-  Ogre::Real uvTop, uvBottom, uvWidth, uvHeight, uvLeft, uvRight,
-      glyphWidth, glyphHeight, glyphAdvance, verticalOffset;
+  Ogre::Real uvTop, uvBottom, uvWidth, uvHeight, uvLeft, uvRight, glyphWidth, glyphHeight, glyphAdvance, verticalOffset;
   buffer<Kerning> kerning;
 
   // Get kerning value of a character to the right of another.
   // Ab -- get the kerning value of b, pass on A.
   inline const Ogre::Real getKerning(unsigned char left_of) const {
-    if (kerning.size() == 0)
-      return 0;
+    if (kerning.size() == 0) return 0;
     for (size_t i = 0; i < kerning.size(); i++) {
-      if (kerning[i].character == left_of)
-        return kerning[i].kerning;
+      if (kerning[i].character == left_of) return kerning[i].kerning;
     }
     return 0;
   }
-
 };
 
 /*! class. Sprite
@@ -363,16 +413,13 @@ class Glyph : public Ogre::GeneralAllocatedObject {
         Portions of a texture from a TextureAtlas.
 */
 class Sprite : public Ogre::GeneralAllocatedObject {
-
  public:
-
   Sprite() {}
 
   ~Sprite() {}
 
   Ogre::Real uvTop, uvLeft, uvRight, uvBottom, spriteWidth, spriteHeight;
   Ogre::Vector2 texCoords[4];
-
 };
 
 /* class. Silverback
@@ -380,9 +427,7 @@ class Sprite : public Ogre::GeneralAllocatedObject {
        Main singleton class for Gorilla
 */
 class Silverback : public Ogre::Singleton<Silverback>, public Ogre::GeneralAllocatedObject, public Ogre::FrameListener {
-
  public:
-
   /*! constructor. Silverback
       desc.
           Silverback constructor.
@@ -404,8 +449,7 @@ class Silverback : public Ogre::Singleton<Silverback>, public Ogre::GeneralAlloc
           resource group if you give that name as the second argument, otherwise it will assume
           to be "General".
   */
-  void loadAtlas(const Ogre::String &name,
-                 const Ogre::String &group = Ogre::RGN_DEFAULT);
+  void loadAtlas(const Ogre::String &name, const Ogre::String &group = Ogre::RGN_DEFAULT);
 
   /*! function. createScreen
       desc.
@@ -427,7 +471,7 @@ class Silverback : public Ogre::Singleton<Silverback>, public Ogre::GeneralAlloc
   void destroyScreen(Screen *);
 
   /*! function. createScreenRenderable
-  */
+   */
   ScreenRenderable *createScreenRenderable(const Ogre::Vector2 &maxSize, const Ogre::String &atlas);
 
   /*! function. destroyScreen
@@ -443,11 +487,9 @@ class Silverback : public Ogre::Singleton<Silverback>, public Ogre::GeneralAlloc
   bool frameStarted(const Ogre::FrameEvent &evt);
 
  protected:
-
   std::map<Ogre::String, TextureAtlas *> mAtlases;
   std::vector<Screen *> mScreens;
   std::vector<ScreenRenderable *> mScreenRenderables;
-
 };
 
 /*! class. GlyphData
@@ -455,11 +497,9 @@ class Silverback : public Ogre::Singleton<Silverback>, public Ogre::GeneralAlloc
         Collection of glyphs of the same size.
 */
 class GlyphData : public Ogre::GeneralAllocatedObject {
-
   friend class TextureAtlas;
 
  public:
-
   GlyphData();
 
   ~GlyphData();
@@ -473,20 +513,13 @@ class GlyphData : public Ogre::GeneralAllocatedObject {
   */
   inline Glyph *getGlyph(Ogre::uint character) const {
     Ogre::uint safe_character = character - mRangeBegin;
-    if (safe_character >= 0 && safe_character <= mGlyphs.size())
-      return mGlyphs[safe_character];
+    if (safe_character >= 0 && safe_character <= mGlyphs.size()) return mGlyphs[safe_character];
     return 0;
   }
 
   std::vector<Glyph *> mGlyphs;
   Ogre::uint mRangeBegin, mRangeEnd;
-  Ogre::Real mSpaceLength,
-      mLineHeight,
-      mBaseline,
-      mLineSpacing,
-      mLetterSpacing,
-      mMonoWidth;
-
+  Ogre::Real mSpaceLength, mLineHeight, mBaseline, mLineSpacing, mLetterSpacing, mMonoWidth;
 };
 
 /*! class. TextureAtlas
@@ -496,11 +529,9 @@ class GlyphData : public Ogre::GeneralAllocatedObject {
          line heights and so on. It isn't typically used by the end-user.
 */
 class TextureAtlas : public Ogre::GeneralAllocatedObject {
-
   friend class Silverback;
 
  public:
-
   Ogre::MaterialPtr createOrGet2DMasterMaterial();
 
   Ogre::MaterialPtr createOrGet3DMasterMaterial();
@@ -509,44 +540,33 @@ class TextureAtlas : public Ogre::GeneralAllocatedObject {
       desc.
           Get the texture assigned to this TextureAtlas
   */
-  inline Ogre::TexturePtr getTexture() const {
-    return mTexture;
-  }
+  inline Ogre::TexturePtr getTexture() const { return mTexture; }
 
   /*! function. getMaterial
       desc.
           Get the material assigned to this TextureAtlas
   */
-  inline Ogre::MaterialPtr get2DMaterial() const {
-    return m2DMaterial;
-  }
+  inline Ogre::MaterialPtr get2DMaterial() const { return m2DMaterial; }
 
   /*! function. getMaterial
       desc.
           Get the material assigned to this TextureAtlas
   */
-  inline Ogre::MaterialPtr get3DMaterial() const {
-    return m3DMaterial;
-  }
+  inline Ogre::MaterialPtr get3DMaterial() const { return m3DMaterial; }
   /*! function. getMaterialName
       desc.
           Get the name of the material assigned to this TextureAtlas
   */
-  inline Ogre::String get2DMaterialName() const {
-    return m2DMaterial->getName();
-  }
+  inline Ogre::String get2DMaterialName() const { return m2DMaterial->getName(); }
   /*! function. getMaterialName
       desc.
           Get the name of the material assigned to this TextureAtlas
   */
-  inline Ogre::String get3DMaterialName() const {
-    return m3DMaterial->getName();
-  }
+  inline Ogre::String get3DMaterialName() const { return m3DMaterial->getName(); }
 
   inline GlyphData *getGlyphData(Ogre::uint index) const {
     std::map<Ogre::uint, GlyphData *>::const_iterator it = mGlyphData.find(index);
-    if (it == mGlyphData.end())
-      return 0;
+    if (it == mGlyphData.end()) return 0;
     return (*it).second;
   }
 
@@ -559,8 +579,7 @@ class TextureAtlas : public Ogre::GeneralAllocatedObject {
   */
   inline Sprite *getSprite(const Ogre::String &name) const {
     std::map<Ogre::String, Sprite *>::const_iterator it = mSprites.find(name);
-    if (it == mSprites.end())
-      return 0;
+    if (it == mSprites.end()) return 0;
     return (*it).second;
   }
 
@@ -570,9 +589,7 @@ class TextureAtlas : public Ogre::GeneralAllocatedObject {
       note.
           Units are in relative coordinates (0..1)
   */
-  inline Ogre::Vector2 getWhitePixel() const {
-    return mWhitePixel;
-  }
+  inline Ogre::Vector2 getWhitePixel() const { return mWhitePixel; }
 
   /*! function. getGlyphKerning
       desc.
@@ -581,9 +598,7 @@ class TextureAtlas : public Ogre::GeneralAllocatedObject {
           Units are in relative coordinates (0..1)
 
   */
-  inline Ogre::Real getWhitePixelX() const {
-    return mWhitePixel.x;
-  }
+  inline Ogre::Real getWhitePixelX() const { return mWhitePixel.x; }
 
   /*! function. getGlyphKerning
       desc.
@@ -591,9 +606,7 @@ class TextureAtlas : public Ogre::GeneralAllocatedObject {
       note.
           Units are in relative coordinates (0..1)
   */
-  inline Ogre::Real getWhitePixelY() const {
-    return mWhitePixel.y;
-  }
+  inline Ogre::Real getWhitePixelY() const { return mWhitePixel.y; }
 
   /*! function. getTextureSize
       desc.
@@ -607,25 +620,19 @@ class TextureAtlas : public Ogre::GeneralAllocatedObject {
       desc.
           Get the reciprocal of the width of the texture.
   */
-  inline Ogre::Real getInvTextureCoordsX() const {
-    return 1.0f / Ogre::Real(mTexture->getWidth());
-  }
+  inline Ogre::Real getInvTextureCoordsX() const { return 1.0f / Ogre::Real(mTexture->getWidth()); }
 
   /*! function. getTextureSize
       desc.
           Get the reciprocal of the height of the texture.
   */
-  inline Ogre::Real getInvTextureCoordsY() const {
-    return 1.0f / Ogre::Real(mTexture->getHeight());
-  }
+  inline Ogre::Real getInvTextureCoordsY() const { return 1.0f / Ogre::Real(mTexture->getHeight()); }
 
   /*! function. getPass
       desc.
           Get the first pass of the material used by this TextureAtlas
   */
-  inline Ogre::Pass *get2DPass() const {
-    return m2DPass;
-  }
+  inline Ogre::Pass *get2DPass() const { return m2DPass; }
 
   /*! function. getGlyphMonoWidth
       desc.
@@ -661,7 +668,6 @@ class TextureAtlas : public Ogre::GeneralAllocatedObject {
   const Ogre::ColourValue &getMarkupColour(Ogre::uint colour_palette_index) const;
 
  protected:
-
   TextureAtlas(const Ogre::String &gorillaFile, const Ogre::String &group);
 
   ~TextureAtlas();
@@ -685,13 +691,10 @@ class TextureAtlas : public Ogre::GeneralAllocatedObject {
   Ogre::Vector2 mWhitePixel;
   Ogre::Vector2 mInverseTextureSize;
   Ogre::ColourValue mMarkupColour[10];
-
 };
 
 class LayerContainer {
-
  public:
-
   LayerContainer(TextureAtlas *);
 
   virtual ~LayerContainer();
@@ -794,7 +797,6 @@ class LayerContainer {
   virtual void _transform(buffer<Vertex> &vertices, size_t begin, size_t end) {}
 
  protected:
-
   /// mLayers -- Master copy of all layers of this Target.
   std::vector<Layer *> mLayers;
 
@@ -824,12 +826,10 @@ class LayerContainer {
 
   /// Atlas assigned to this LayerContainer
   TextureAtlas *mAtlas;
-
 };
 
 class Screen : public LayerContainer, public Ogre::RenderQueueListener, public Ogre::GeneralAllocatedObject {
  public:
-
   friend class Silverback;
   friend class Layer;
 
@@ -889,7 +889,6 @@ class Screen : public LayerContainer, public Ogre::RenderQueueListener, public O
   }
 #endif
  protected:
-
   /*! constructor. Screen
       desc.
           Use Silverback::createScreen
@@ -930,13 +929,10 @@ class Screen : public LayerContainer, public Ogre::RenderQueueListener, public O
   bool mIsVisible;
   bool mCanRender;
   Ogre::Matrix4 mVertexTransform;
-
 };
 
 class ScreenRenderable : public LayerContainer, public Ogre::SimpleRenderable {
-
  public:
-
   ScreenRenderable(const Ogre::Vector2 &maxSize, TextureAtlas *);
 
   ~ScreenRenderable();
@@ -958,12 +954,10 @@ class ScreenRenderable : public LayerContainer, public Ogre::SimpleRenderable {
   }
 
  protected:
-
   Ogre::SceneManager *mSceneMgr;
   Ogre::RenderSystem *mRenderSystem;
   Ogre::Viewport *mViewport;
   Ogre::Vector2 mMaxSize;
-
 };
 
 /*! class. Layer
@@ -971,11 +965,9 @@ class ScreenRenderable : public LayerContainer, public Ogre::SimpleRenderable {
         Text
 */
 class Layer : public Ogre::GeneralAllocatedObject {
-
   friend class LayerContainer;
 
  public:
-
   typedef Gorilla::VectorType<Rectangle *>::type Rectangles;
   typedef Ogre::VectorIterator<Rectangles> RectangleIterator;
   typedef Gorilla::VectorType<Polygon *>::type Polygons;
@@ -993,17 +985,14 @@ class Layer : public Ogre::GeneralAllocatedObject {
       desc.
           Is the layer being drawn on screen or not?
   */
-  inline bool isVisible() const {
-    return mVisible;
-  }
+  inline bool isVisible() const { return mVisible; }
 
   /*! function. setVisible
       desc.
           Show or hide the layer
   */
   inline void setVisible(bool isVisible) {
-    if (mVisible == isVisible)
-      return;
+    if (mVisible == isVisible) return;
     mVisible = isVisible;
     _markDirty();
   }
@@ -1013,8 +1002,7 @@ class Layer : public Ogre::GeneralAllocatedObject {
           Show the layer
   */
   inline void show() {
-    if (mVisible)
-      return;
+    if (mVisible) return;
     mVisible = true;
     _markDirty();
   }
@@ -1024,8 +1012,7 @@ class Layer : public Ogre::GeneralAllocatedObject {
           hide the layer
   */
   inline void hide() {
-    if (!mVisible)
-      return;
+    if (!mVisible) return;
     mVisible = false;
     _markDirty();
   }
@@ -1049,9 +1036,7 @@ class Layer : public Ogre::GeneralAllocatedObject {
       desc.
           Set's a modifier to the alpha component of all colours of the vertices that make up this layer
   */
-  Ogre::Real getAlphaModifier() const {
-    return mAlphaModifier;
-  }
+  Ogre::Real getAlphaModifier() const { return mAlphaModifier; }
 
   /*! function. createRectangle
       desc.
@@ -1083,9 +1068,7 @@ class Layer : public Ogre::GeneralAllocatedObject {
       desc.
           Get an iterator to all the rectangles in this layer.
   */
-  RectangleIterator getRectangles() {
-    return RectangleIterator(mRectangles.begin(), mRectangles.end());
-  }
+  RectangleIterator getRectangles() { return RectangleIterator(mRectangles.begin(), mRectangles.end()); }
 
   /*! function. createPolygon
       desc.
@@ -1109,9 +1092,7 @@ class Layer : public Ogre::GeneralAllocatedObject {
       desc.
           Get an iterator to all the polygons in this layer.
   */
-  PolygonIterator getPolygons() {
-    return PolygonIterator(mPolygons.begin(), mPolygons.end());
-  }
+  PolygonIterator getPolygons() { return PolygonIterator(mPolygons.begin(), mPolygons.end()); }
 
   /*! function. createLineList
       desc.
@@ -1135,9 +1116,7 @@ class Layer : public Ogre::GeneralAllocatedObject {
       desc.
           Get an iterator to all the line lists in this layer.
   */
-  LineListIterator getLineLists() {
-    return LineListIterator(mLineLists.begin(), mLineLists.end());
-  }
+  LineListIterator getLineLists() { return LineListIterator(mLineLists.begin(), mLineLists.end()); }
 
   /*! function. createQuadList
       desc.
@@ -1161,9 +1140,7 @@ class Layer : public Ogre::GeneralAllocatedObject {
       desc.
           Get an iterator to all the quad lists in this layer.
   */
-  QuadListIterator getQuadLists() {
-    return QuadListIterator(mQuadLists.begin(), mQuadLists.end());
-  }
+  QuadListIterator getQuadLists() { return QuadListIterator(mQuadLists.begin(), mQuadLists.end()); }
 
   /*! function. createCaption
       desc.
@@ -1187,9 +1164,7 @@ class Layer : public Ogre::GeneralAllocatedObject {
       desc.
           Get an iterator to all the quad lists in this layer.
   */
-  CaptionIterator getCaptions() {
-    return CaptionIterator(mCaptions.begin(), mCaptions.end());
-  }
+  CaptionIterator getCaptions() { return CaptionIterator(mCaptions.begin(), mCaptions.end()); }
 
   /*! function. createMarkupText
       desc.
@@ -1213,25 +1188,19 @@ class Layer : public Ogre::GeneralAllocatedObject {
       desc.
           Get an iterator to all the quad lists in this layer.
   */
-  MarkupTextIterator getMarkupTexts() {
-    return MarkupTextIterator(mMarkupTexts.begin(), mMarkupTexts.end());
-  }
+  MarkupTextIterator getMarkupTexts() { return MarkupTextIterator(mMarkupTexts.begin(), mMarkupTexts.end()); }
 
   /*! function. getIndex
       desc.
           Get render index
   */
-  Ogre::uint getIndex() const {
-    return mIndex;
-  }
+  Ogre::uint getIndex() const { return mIndex; }
 
   /*! function. _getSolidUV
       desc.
           Helper function to get a white pixel in the TextureAtlas.
   */
-  inline Ogre::Vector2 _getSolidUV() const {
-    return mParent->getAtlas()->getWhitePixel();
-  }
+  inline Ogre::Vector2 _getSolidUV() const { return mParent->getAtlas()->getWhitePixel(); }
 
   /*! function. _getSprite
       desc.
@@ -1245,41 +1214,31 @@ class Layer : public Ogre::GeneralAllocatedObject {
       desc.
           Helper function to get a Glyph from the assigned texture atlas.
   */
-  inline GlyphData *_getGlyphData(Ogre::uint id) const {
-    return mParent->getAtlas()->getGlyphData(id);
-  }
+  inline GlyphData *_getGlyphData(Ogre::uint id) const { return mParent->getAtlas()->getGlyphData(id); }
 
   /*! function. _getGlyph
       desc.
           Helper function to get the used texture size.
   */
-  inline Ogre::Vector2 _getTextureSize() const {
-    return mParent->getAtlas()->getTextureSize();
-  }
+  inline Ogre::Vector2 _getTextureSize() const { return mParent->getAtlas()->getTextureSize(); }
 
   /*! function. _getAtlas
       desc.
           Helper function to get the used TextureAtlas.
   */
-  inline TextureAtlas *_getAtlas() const {
-    return mParent->getAtlas();
-  }
+  inline TextureAtlas *_getAtlas() const { return mParent->getAtlas(); }
 
   /*! function. _getTexelX
       desc.
           Helper function to get the offset X texel coordinate.
   */
-  inline Ogre::Real _getTexelX() const {
-    return mParent->getTexelOffsetX();
-  }
+  inline Ogre::Real _getTexelX() const { return mParent->getTexelOffsetX(); }
 
   /*! function. _getTexelX
       desc.
           Helper function to get the offset Y texel coordinate.
   */
-  inline Ogre::Real _getTexelY() const {
-    return mParent->getTexelOffsetY();
-  }
+  inline Ogre::Real _getTexelY() const { return mParent->getTexelOffsetY(); }
 
   /*! function. _getMarkupColour
       desc.
@@ -1299,7 +1258,6 @@ class Layer : public Ogre::GeneralAllocatedObject {
   void _markDirty();
 
  protected:
-
   void _render(buffer<Vertex> &, bool force = false);
 
   Layer(Ogre::uint index, LayerContainer *);
@@ -1316,7 +1274,6 @@ class Layer : public Ogre::GeneralAllocatedObject {
   LayerContainer *mParent;
   bool mVisible;
   Ogre::Real mAlphaModifier;
-
 };
 
 /*! class. Rectangle
@@ -1324,11 +1281,9 @@ class Layer : public Ogre::GeneralAllocatedObject {
         Single rectangle with an optional border.
 */
 class Rectangle : public Ogre::GeneralAllocatedObject {
-
   friend class Layer;
 
  public:
-
   /*! function. intersects
       desc.
           Does a set of coordinates lie within this rectangle?
@@ -1341,9 +1296,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       desc.
           Get the position
   */
-  inline Ogre::Vector2 position() const {
-    return Ogre::Vector2(mLeft, mTop);
-  }
+  inline Ogre::Vector2 position() const { return Ogre::Vector2(mLeft, mTop); }
 
   /*! function. position
       desc.
@@ -1366,9 +1319,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       desc.
           Get left position
   */
-  inline Ogre::Real left() const {
-    return mLeft;
-  }
+  inline Ogre::Real left() const { return mLeft; }
 
   /*! function. left
       desc.
@@ -1386,9 +1337,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       desc.
           Get top position
   */
-  inline Ogre::Real top() const {
-    return mTop;
-  }
+  inline Ogre::Real top() const { return mTop; }
 
   /*! function. top
       desc.
@@ -1406,9 +1355,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       desc.
           Get the width
   */
-  inline Ogre::Real width() const {
-    return mRight - mLeft;
-  }
+  inline Ogre::Real width() const { return mRight - mLeft; }
 
   /*! function. width
       desc.
@@ -1424,9 +1371,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       desc.
           Get the height
   */
-  Ogre::Real height() const {
-    return mBottom - mTop;
-  }
+  Ogre::Real height() const { return mBottom - mTop; }
 
   /*! function. height
       desc.
@@ -1468,9 +1413,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       desc.
           Get a background colour of a specific corner.
   */
-  Ogre::ColourValue background_colour(QuadCorner index) const {
-    return mBackgroundColour[index];
-  }
+  Ogre::ColourValue background_colour(QuadCorner index) const { return mBackgroundColour[index]; }
 
   /*! function. background_colour
       desc.
@@ -1545,7 +1488,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
     } else {
       if (sprite == 0) {
 #if GORILLA_USES_EXCEPTIONS == 1
-        OGRE_EXCEPT( Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __FUNC__ );
+        OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __FUNC__);
 #else
         return;
 #endif
@@ -1581,7 +1524,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
     } else {
       if (sprite == 0) {
 #if GORILLA_USES_EXCEPTIONS == 1
-        OGRE_EXCEPT( Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __FUNC__ );
+        OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __FUNC__);
 #else
         return;
 #endif
@@ -1618,7 +1561,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       Sprite *sprite = mLayer->_getSprite(sprite_name_or_none);
       if (sprite == 0) {
 #if GORILLA_USES_EXCEPTIONS == 1
-        OGRE_EXCEPT( Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __FUNC__ );
+        OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __FUNC__);
 #else
         return;
 #endif
@@ -1648,7 +1591,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       Sprite *sprite = mLayer->_getSprite(sprite_name_or_none);
       if (sprite == 0) {
 #if GORILLA_USES_EXCEPTIONS == 1
-        OGRE_EXCEPT( Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __FUNC__ );
+        OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __FUNC__);
 #else
         return;
 #endif
@@ -1670,9 +1613,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       desc.
           Get the border colour.
   */
-  Ogre::ColourValue border_colour(Border index) const {
-    return mBorderColour[index];
-  }
+  Ogre::ColourValue border_colour(Border index) const { return mBorderColour[index]; }
 
   /*! function. border_colour
       desc.
@@ -1724,9 +1665,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       desc.
           Get the border width
   */
-  Ogre::Real border_width() const {
-    return mBorderWidth;
-  }
+  Ogre::Real border_width() const { return mBorderWidth; }
 
   /*! function. border_width
       desc.
@@ -1756,11 +1695,8 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       desc.
           Set the border width and specific colours for each part.
   */
-  void border(Ogre::Real width,
-              const Ogre::ColourValue &north,
-              const Ogre::ColourValue &east,
-              const Ogre::ColourValue &south,
-              const Ogre::ColourValue &west) {
+  void border(Ogre::Real width, const Ogre::ColourValue &north, const Ogre::ColourValue &east,
+              const Ogre::ColourValue &south, const Ogre::ColourValue &west) {
     mBorderColour[Border_North] = north;
     mBorderColour[Border_South] = south;
     mBorderColour[Border_East] = east;
@@ -1788,11 +1724,8 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       desc.
           Set the border width and specific colours for each part.
   */
-  void border(Ogre::Real width,
-              Gorilla::Colours::Colour north,
-              Gorilla::Colours::Colour east,
-              Gorilla::Colours::Colour south,
-              Gorilla::Colours::Colour west) {
+  void border(Ogre::Real width, Gorilla::Colours::Colour north, Gorilla::Colours::Colour east,
+              Gorilla::Colours::Colour south, Gorilla::Colours::Colour west) {
     mBorderColour[Border_North] = webcolour(north);
     mBorderColour[Border_South] = webcolour(south);
     mBorderColour[Border_East] = webcolour(east);
@@ -1811,13 +1744,11 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
   void _redraw();
 
  protected:
-
   Rectangle(Ogre::Real left, Ogre::Real top, Ogre::Real width, Ogre::Real height, Layer *parent);
 
   ~Rectangle() {}
 
  protected:
-
   Layer *mLayer;
   Ogre::Real mLeft, mTop, mRight, mBottom, mBorderWidth;
   Ogre::ColourValue mBackgroundColour[4];
@@ -1832,18 +1763,14 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
         A regular n-sided polygon.
 */
 class Polygon : public Ogre::GeneralAllocatedObject {
-
   friend class Layer;
 
  public:
-
   /*! function. left
       desc.
           Get left position
   */
-  Ogre::Real left() const {
-    return mLeft;
-  }
+  Ogre::Real left() const { return mLeft; }
 
   /*! function. left
       desc.
@@ -1859,9 +1786,7 @@ class Polygon : public Ogre::GeneralAllocatedObject {
       desc.
           Get left position
   */
-  Ogre::Real top() const {
-    return mTop;
-  }
+  Ogre::Real top() const { return mTop; }
 
   /*! function. left
       desc.
@@ -1877,9 +1802,7 @@ class Polygon : public Ogre::GeneralAllocatedObject {
       desc.
           Get the radius of the polygon
   */
-  Ogre::Real radius() const {
-    return mRadius;
-  }
+  Ogre::Real radius() const { return mRadius; }
 
   /*! function. radius
       desc.
@@ -1895,9 +1818,7 @@ class Polygon : public Ogre::GeneralAllocatedObject {
       desc.
           Get the number of sides the polygon has.
   */
-  size_t sides() const {
-    return mSides;
-  }
+  size_t sides() const { return mSides; }
 
   /*! function. sides
       desc.
@@ -1906,8 +1827,7 @@ class Polygon : public Ogre::GeneralAllocatedObject {
           Number of sides must be at least 2.
   */
   void sides(size_t sides) {
-    if (sides < 3)
-      sides = 3;
+    if (sides < 3) sides = 3;
     mSides = sides;
     mDirty = true;
     mLayer->_markDirty();
@@ -1917,9 +1837,7 @@ class Polygon : public Ogre::GeneralAllocatedObject {
       desc.
           Get the angle of the polygon
   */
-  Ogre::Radian angle() const {
-    return mAngle;
-  }
+  Ogre::Radian angle() const { return mAngle; }
 
   /*! function. angle
       desc.
@@ -1935,9 +1853,7 @@ class Polygon : public Ogre::GeneralAllocatedObject {
       desc.
           Get the sprite used as a background image or null pointer
   */
-  Sprite *background_image() const {
-    return mSprite;
-  }
+  Sprite *background_image() const { return mSprite; }
 
   /*! function. background_image
       desc.
@@ -1969,9 +1885,7 @@ class Polygon : public Ogre::GeneralAllocatedObject {
       desc.
           Get the background colour.
   */
-  Ogre::ColourValue background_colour() const {
-    return mBackgroundColour;
-  }
+  Ogre::ColourValue background_colour() const { return mBackgroundColour; }
 
   /*! function. background_colour
       desc.
@@ -2016,9 +1930,7 @@ class Polygon : public Ogre::GeneralAllocatedObject {
       desc.
           Get the border colour
   */
-  Ogre::ColourValue border_colour() const {
-    return mBorderColour;
-  }
+  Ogre::ColourValue border_colour() const { return mBorderColour; }
 
   /*! function. border_colour
       desc.
@@ -2048,9 +1960,7 @@ class Polygon : public Ogre::GeneralAllocatedObject {
       desc.
           Get the border width
   */
-  Ogre::Real border_width() const {
-    return mBorderWidth;
-  }
+  Ogre::Real border_width() const { return mBorderWidth; }
 
   /*! function. border_width
       desc.
@@ -2097,7 +2007,6 @@ class Polygon : public Ogre::GeneralAllocatedObject {
   void _redraw();
 
  protected:
-
   Polygon(Ogre::Real left, Ogre::Real top, Ogre::Real radius, size_t sides, Layer *parent);
 
   ~Polygon() {}
@@ -2110,15 +2019,12 @@ class Polygon : public Ogre::GeneralAllocatedObject {
   Sprite *mSprite;
   bool mDirty;
   buffer<Vertex> mVertices;
-
 };
 
 class LineList : public Ogre::GeneralAllocatedObject {
-
   friend class Layer;
 
  public:
-
   /*! function. begin
       desc.
           Cleanup lines and start again
@@ -2129,9 +2035,7 @@ class LineList : public Ogre::GeneralAllocatedObject {
       desc.
           Cleanup lines and start again
   */
-  void begin(Ogre::Real lineThickness, Gorilla::Colours::Colour colour) {
-    begin(lineThickness, webcolour(colour));
-  }
+  void begin(Ogre::Real lineThickness, Gorilla::Colours::Colour colour) { begin(lineThickness, webcolour(colour)); }
 
   /*! function. position
       desc.
@@ -2162,13 +2066,11 @@ class LineList : public Ogre::GeneralAllocatedObject {
   void _redraw();
 
  protected:
-
   LineList(Layer *parent);
 
   ~LineList() {}
 
  protected:
-
   Layer *mLayer;
   Ogre::Real mThickness;
   Ogre::ColourValue mColour;
@@ -2183,11 +2085,9 @@ class LineList : public Ogre::GeneralAllocatedObject {
         "ManualObject" like class to quickly draw rectangles, gradients, sprites and borders.
 */
 class QuadList : public Ogre::GeneralAllocatedObject {
-
   friend class Layer;
 
  public:
-
   /*! function. begin
       desc.
           Cleanup everything and start again
@@ -2198,21 +2098,14 @@ class QuadList : public Ogre::GeneralAllocatedObject {
       desc.
           Draw a rectangle sized w,h at x,y
   */
-  void rectangle(Ogre::Real x,
-                 Ogre::Real y,
-                 Ogre::Real w,
-                 Ogre::Real h,
+  void rectangle(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h,
                  const Ogre::ColourValue = Ogre::ColourValue::White);
 
   /*! function. gradient
       desc.
           Draw a gradient rectangle sized w,h at x,y
   */
-  void gradient(Ogre::Real x,
-                Ogre::Real y,
-                Ogre::Real w,
-                Ogre::Real h,
-                Gradient gradient,
+  void gradient(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, Gradient gradient,
                 const Ogre::ColourValue &colourA = Ogre::ColourValue::White,
                 const Ogre::ColourValue &colourB = Ogre::ColourValue::White);
 
@@ -2220,13 +2113,8 @@ class QuadList : public Ogre::GeneralAllocatedObject {
       desc.
           Draw a gradient rectangle sized w,h at x,y
   */
-  void gradient(Ogre::Real x,
-                Ogre::Real y,
-                Ogre::Real w,
-                Ogre::Real h,
-                Gradient gradient,
-                const Gorilla::Colours::Colour &colourA,
-                const Gorilla::Colours::Colour &colourB) {
+  void gradient(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, Gradient gradient,
+                const Gorilla::Colours::Colour &colourA, const Gorilla::Colours::Colour &colourB) {
     this->gradient(x, y, w, h, gradient, webcolour(colourA), webcolour(colourB));
   }
 
@@ -2240,22 +2128,14 @@ class QuadList : public Ogre::GeneralAllocatedObject {
       desc.
           Draw a border sized w,h at x,y of a thickness
   */
-  void border(Ogre::Real x,
-              Ogre::Real y,
-              Ogre::Real w,
-              Ogre::Real h,
-              Ogre::Real thickness,
+  void border(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, Ogre::Real thickness,
               const Ogre::ColourValue & = Ogre::ColourValue::White);
 
   /*! function. border
       desc.
           Draw a border sized w,h at x,y of a thickness
   */
-  void border(Ogre::Real x,
-              Ogre::Real y,
-              Ogre::Real w,
-              Ogre::Real h,
-              Ogre::Real thickness,
+  void border(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, Ogre::Real thickness,
               const Gorilla::Colours::Colour &colour) {
     border(x, y, w, h, thickness, webcolour(colour));
   }
@@ -2264,37 +2144,18 @@ class QuadList : public Ogre::GeneralAllocatedObject {
       desc.
           Draw a border sized w,h at x,y of a thickness
   */
-  void border(Ogre::Real x,
-              Ogre::Real y,
-              Ogre::Real w,
-              Ogre::Real h,
-              Ogre::Real thickness,
-              const Ogre::ColourValue &northColour,
-              const Ogre::ColourValue &eastColour,
-              const Ogre::ColourValue &southColour,
-              const Ogre::ColourValue &westColour);
+  void border(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, Ogre::Real thickness,
+              const Ogre::ColourValue &northColour, const Ogre::ColourValue &eastColour,
+              const Ogre::ColourValue &southColour, const Ogre::ColourValue &westColour);
 
   /*! function. border
       desc.
           Draw a border sized w,h at x,y of a thickness
   */
-  void border(Ogre::Real x,
-              Ogre::Real y,
-              Ogre::Real w,
-              Ogre::Real h,
-              Ogre::Real thickness,
-              const Gorilla::Colours::Colour &northColour,
-              const Gorilla::Colours::Colour &eastColour,
-              const Gorilla::Colours::Colour &southColour,
-              const Gorilla::Colours::Colour &westColour) {
-    border(x,
-           y,
-           w,
-           h,
-           thickness,
-           webcolour(northColour),
-           webcolour(eastColour),
-           webcolour(southColour),
+  void border(Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, Ogre::Real thickness,
+              const Gorilla::Colours::Colour &northColour, const Gorilla::Colours::Colour &eastColour,
+              const Gorilla::Colours::Colour &southColour, const Gorilla::Colours::Colour &westColour) {
+    border(x, y, w, h, thickness, webcolour(northColour), webcolour(eastColour), webcolour(southColour),
            webcolour(westColour));
   }
 
@@ -2302,32 +2163,21 @@ class QuadList : public Ogre::GeneralAllocatedObject {
       desc.
           Draw a glpyh
   */
-  void glyph(Ogre::uint glyphDataIndex,
-             Ogre::Real x,
-             Ogre::Real y,
-             unsigned char character,
+  void glyph(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, unsigned char character,
              const Ogre::ColourValue &colour);
 
   /*! function. glyph
       desc.
           Draw a glyph with a custom size.
   */
-  void glyph(Ogre::uint glyphDataIndex,
-             Ogre::Real x,
-             Ogre::Real y,
-             Ogre::Real w,
-             Ogre::Real h,
-             unsigned char character,
+  void glyph(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, unsigned char character,
              const Ogre::ColourValue &colour);
 
   /*! function. glyph
       desc.
           Draw a glpyh
   */
-  void glyph(Ogre::uint glyphDataIndex,
-             Ogre::Real x,
-             Ogre::Real y,
-             unsigned char character,
+  void glyph(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, unsigned char character,
              const Gorilla::Colours::Colour &colour) {
     glyph(glyphDataIndex, x, y, character, webcolour(colour));
   }
@@ -2336,12 +2186,7 @@ class QuadList : public Ogre::GeneralAllocatedObject {
       desc.
           Draw a glyph with a custom size.
   */
-  void glyph(Ogre::uint glyphDataIndex,
-             Ogre::Real x,
-             Ogre::Real y,
-             Ogre::Real w,
-             Ogre::Real h,
-             unsigned char character,
+  void glyph(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, Ogre::Real w, Ogre::Real h, unsigned char character,
              const Gorilla::Colours::Colour &colour) {
     glyph(glyphDataIndex, x, y, w, h, character, webcolour(colour));
   }
@@ -2355,7 +2200,6 @@ class QuadList : public Ogre::GeneralAllocatedObject {
   void _redraw();
 
  protected:
-
   QuadList(Layer *);
 
   ~QuadList() {}
@@ -2371,7 +2215,6 @@ class QuadList : public Ogre::GeneralAllocatedObject {
   buffer<Quad> mQuads;
   buffer<Vertex> mVertices;
   bool mDirty;
-
 };
 
 /* class. Caption
@@ -2379,11 +2222,9 @@ class QuadList : public Ogre::GeneralAllocatedObject {
        A single line piece of text
 */
 class Caption : public Ogre::GeneralAllocatedObject {
-
   friend class Layer;
 
  public:
-
   /*! function. font
       desc.
           Changes the font to a different Glyph index.
@@ -2395,7 +2236,7 @@ class Caption : public Ogre::GeneralAllocatedObject {
     if (mGlyphData == 0) {
       mDirty = false;
 #if GORILLA_USES_EXCEPTIONS == 1
-      OGRE_EXCEPT( Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __FUNC__ );
+      OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __FUNC__);
 #else
       return;
 #endif
@@ -2408,24 +2249,23 @@ class Caption : public Ogre::GeneralAllocatedObject {
           Does a set of coordinates lie within this caption?
   */
   inline bool intersects(const Ogre::Vector2 &coordinates) const {
-    return ((coordinates.x >= mLeft && coordinates.x <= mLeft + mWidth)
-        && (coordinates.y >= mTop && coordinates.y <= mTop + mHeight));
+    return ((coordinates.x >= mLeft && coordinates.x <= mLeft + mWidth) &&
+            (coordinates.y >= mTop && coordinates.y <= mTop + mHeight));
   }
 
   /*! function. top
       desc.
           Get where the text should be drawn vertically.
   */
-  Ogre::Real left() const {
-    return mLeft;
-  }
+  Ogre::Real left() const { return mLeft; }
 
   /*! function. top
       desc.
           Set where the text should be drawn vertically.
       note.
-           If the TextAlignment is Right Aligned, then this will be the right-side of the last character drawn (with in width limits).
-           If the TextAlignment is Centre Aligned, then this will be the center of the drawn text drawn (with in width limits).
+           If the TextAlignment is Right Aligned, then this will be the right-side of the last character drawn (with in
+     width limits). If the TextAlignment is Centre Aligned, then this will be the center of the drawn text drawn (with
+     in width limits).
   */
   void left(const Ogre::Real &left) {
     mLeft = left;
@@ -2437,9 +2277,7 @@ class Caption : public Ogre::GeneralAllocatedObject {
       desc.
           Get where the text should be drawn vertically.
   */
-  Ogre::Real top() const {
-    return mTop;
-  }
+  Ogre::Real top() const { return mTop; }
 
   /*! function. top
       desc.
@@ -2466,9 +2304,7 @@ class Caption : public Ogre::GeneralAllocatedObject {
       desc.
           Get the maximum width of the text can draw into.
   */
-  Ogre::Real width() const {
-    return mWidth;
-  }
+  Ogre::Real width() const { return mWidth; }
 
   /*! function. width
       desc.
@@ -2484,9 +2320,7 @@ class Caption : public Ogre::GeneralAllocatedObject {
       desc.
           Get the maximum height of the text can draw into.
   */
-  Ogre::Real height() const {
-    return mHeight;
-  }
+  Ogre::Real height() const { return mHeight; }
 
   /*! function. height
       desc.
@@ -2502,9 +2336,7 @@ class Caption : public Ogre::GeneralAllocatedObject {
       desc.
           Get the text indented to show.
   */
-  Ogre::String text() const {
-    return mText;
-  }
+  Ogre::String text() const { return mText; }
 
   /*! function. alignment
       desc.
@@ -2535,9 +2367,7 @@ class Caption : public Ogre::GeneralAllocatedObject {
       desc.
           Get the alignment of text.
   */
-  TextAlignment align() const {
-    return mAlignment;
-  }
+  TextAlignment align() const { return mAlignment; }
 
   /*! function. alignment
       desc.
@@ -2553,9 +2383,7 @@ class Caption : public Ogre::GeneralAllocatedObject {
       desc.
           Get the vertical alignment of text.
   */
-  VerticalAlignment vertical_align() const {
-    return mVerticalAlign;
-  }
+  VerticalAlignment vertical_align() const { return mVerticalAlign; }
 
   /*! function. vertical_align
       desc.
@@ -2575,9 +2403,7 @@ class Caption : public Ogre::GeneralAllocatedObject {
           size_t -- The index if the first clipped character, or std::string::npos if there was no clipping and
                     the text was drawn fully within the given space.
   */
-  size_t clipped_left_index() const {
-    return mClippedLeftIndex;
-  }
+  size_t clipped_left_index() const { return mClippedLeftIndex; }
 
   /*! function. clipped_right_index
       desc.
@@ -2587,17 +2413,13 @@ class Caption : public Ogre::GeneralAllocatedObject {
           size_t -- The index if the first clipped character, or std::string::npos if there was no clipping and
                     the text was drawn fully within the given space.
   */
-  size_t clipped_right_index() const {
-    return mClippedRightIndex;
-  }
+  size_t clipped_right_index() const { return mClippedRightIndex; }
 
   /*! function. colour
       desc.
           Get the text colour.
   */
-  Ogre::ColourValue colour() const {
-    return mColour;
-  }
+  Ogre::ColourValue colour() const { return mColour; }
 
   /*! function. colour
       desc.
@@ -2623,9 +2445,7 @@ class Caption : public Ogre::GeneralAllocatedObject {
       desc.
           Get the background colour
   */
-  Ogre::ColourValue background() const {
-    return mBackground;
-  }
+  Ogre::ColourValue background() const { return mBackground; }
 
   /*! function. background
       desc.
@@ -2673,9 +2493,7 @@ class Caption : public Ogre::GeneralAllocatedObject {
     mLayer->_markDirty();
   }
 
-  bool fixedWidth() const {
-    return mFixedWidth;
-  }
+  bool fixedWidth() const { return mFixedWidth; }
 
   /*! function. _redraw
       desc.
@@ -2686,7 +2504,6 @@ class Caption : public Ogre::GeneralAllocatedObject {
   void _redraw();
 
  protected:
-
   void _calculateDrawSize(Ogre::Vector2 &size);
 
   Caption(Ogre::uint glyphDataIndex, Ogre::Real left, Ogre::Real top, const Ogre::String &caption, Layer *parent);
@@ -2694,7 +2511,6 @@ class Caption : public Ogre::GeneralAllocatedObject {
   ~Caption() {}
 
  protected:
-
   bool mFixedWidth;
   Layer *mLayer;
   GlyphData *mGlyphData;
@@ -2709,7 +2525,6 @@ class Caption : public Ogre::GeneralAllocatedObject {
 
  private:
   Ogre::Real _getAdvance(Glyph *glyph, Ogre::Real kerning);
-
 };
 
 /* class. Caption
@@ -2718,29 +2533,24 @@ class Caption : public Ogre::GeneralAllocatedObject {
        switch colours, change to monospace and insert sprites directly into the text.
 */
 class MarkupText : public Ogre::GeneralAllocatedObject {
-
   friend class Layer;
 
  public:
-
-  GlyphData *getDefaultGlyphData() const {
-    return mDefaultGlyphData;
-  }
+  GlyphData *getDefaultGlyphData() const { return mDefaultGlyphData; }
 
   /*! function. top
       desc.
           Get where the text should be drawn vertically.
   */
-  Ogre::Real left() const {
-    return mLeft;
-  }
+  Ogre::Real left() const { return mLeft; }
 
   /*! function. top
       desc.
           Set where the text should be drawn vertically.
       note.
-           If the TextAlignment is Right Aligned, then this will be the right-side of the last character drawn (with in width limits).
-           If the TextAlignment is Centre Aligned, then this will be the center of the drawn text drawn (with in width limits).
+           If the TextAlignment is Right Aligned, then this will be the right-side of the last character drawn (with in
+     width limits). If the TextAlignment is Centre Aligned, then this will be the center of the drawn text drawn (with
+     in width limits).
   */
   void left(const Ogre::Real &left) {
     mLeft = left;
@@ -2753,9 +2563,7 @@ class MarkupText : public Ogre::GeneralAllocatedObject {
       desc.
           Get where the text should be drawn vertically.
   */
-  Ogre::Real top() const {
-    return mTop;
-  }
+  Ogre::Real top() const { return mTop; }
 
   /*! function. top
       desc.
@@ -2783,9 +2591,7 @@ class MarkupText : public Ogre::GeneralAllocatedObject {
       desc.
           Get the maximum width of the text can draw into.
   */
-  Ogre::Real width() const {
-    return mWidth;
-  }
+  Ogre::Real width() const { return mWidth; }
 
   /*! function. width
       desc.
@@ -2801,9 +2607,7 @@ class MarkupText : public Ogre::GeneralAllocatedObject {
       desc.
           Get the maximum height of the text can draw into.
   */
-  Ogre::Real height() const {
-    return mHeight;
-  }
+  Ogre::Real height() const { return mHeight; }
 
   /*! function. height
       desc.
@@ -2828,9 +2632,7 @@ class MarkupText : public Ogre::GeneralAllocatedObject {
       desc.
           Get the text indented to show.
   */
-  Ogre::String text() const {
-    return mText;
-  }
+  Ogre::String text() const { return mText; }
 
   /*! function. alignment
       desc.
@@ -2847,9 +2649,7 @@ class MarkupText : public Ogre::GeneralAllocatedObject {
       desc.
           Get the background colour
   */
-  Ogre::ColourValue background() const {
-    return mBackground;
-  }
+  Ogre::ColourValue background() const { return mBackground; }
 
   /*! function. background
       desc.
@@ -2885,13 +2685,11 @@ class MarkupText : public Ogre::GeneralAllocatedObject {
   void _calculateCharacters();
 
  protected:
-
   MarkupText(Ogre::uint defaultGlyphIndex, Ogre::Real left, Ogre::Real top, const Ogre::String &text, Layer *parent);
 
   ~MarkupText() {}
 
  protected:
-
   struct Character {
     Ogre::Vector2 mPosition[4];
     Ogre::Vector2 mUV[4];
@@ -2909,13 +2707,11 @@ class MarkupText : public Ogre::GeneralAllocatedObject {
   buffer<Character> mCharacters;
   buffer<Vertex> mVertices;
   size_t mClippedIndex;
-
 };
 
 class Button {
  public:
-  Button(Ogre::Real x, Ogre::Real y, const Ogre::String &text, Gorilla::Layer *layer)
-      : hovered(false) {
+  Button(Ogre::Real x, Ogre::Real y, const Ogre::String &text, Gorilla::Layer *layer) : hovered(false) {
     caption = layer->createCaption(14, x, y, text);
     caption->size(64, 25);
     caption->align(Gorilla::TextAlign_Centre);
@@ -2935,14 +2731,13 @@ class Button {
 
   bool hovered;
   Gorilla::Caption *caption;
-
 };
 
 class D3Panel {
  public:
-  D3Panel(Gorilla::Silverback *silverback, Ogre::SceneManager *sceneMgr, const Ogre::Vector2 &size, Ogre::SceneNode* parent = nullptr)
+  D3Panel(Gorilla::Silverback *silverback, Ogre::SceneManager *sceneMgr, const Ogre::Vector2 &size,
+          Ogre::SceneNode *parent = nullptr)
       : mNode(parent), mSize(size) {
-
     mScreen = silverback->createScreenRenderable(Ogre::Vector2(mSize.x, mSize.y), "dejavu");
     if (!mNode)
       mNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
@@ -2953,19 +2748,16 @@ class D3Panel {
 
     mGUILayer = mScreen->createLayer(0);
     mBackground = mGUILayer->createRectangle(0, 0, mSize.x * 100, mSize.y * 100);
-    mBackground->background_gradient(Gorilla::Gradient_NorthSouth,
-                                     Gorilla::rgb(94, 97, 255, 5),
+    mBackground->background_gradient(Gorilla::Gradient_NorthSouth, Gorilla::rgb(94, 97, 255, 5),
                                      Gorilla::rgb(94, 97, 255, 50));
     mBackground->border(2, Gorilla::rgb(255, 255, 255, 150));
 
     mMousePointerLayer = mScreen->createLayer(15);
     mMousePointer = mMousePointerLayer->createRectangle(0, 0, 10, 18);
     mMousePointer->background_image("mousepointer");
-
   }
 
   Button *check(const Ogre::Ray &ray, bool &isOver) {
-
     isOver = false;
 
     Ogre::Matrix4 transform;
@@ -2975,8 +2767,7 @@ class D3Panel {
     aabb.transform(transform);
     std::pair<bool, Ogre::Real> result = Ogre::Math::intersects(ray, aabb);
 
-    if (result.first == false)
-      return 0;
+    if (result.first == false) return 0;
 
     Ogre::Vector3 a, b, c, d;
     Ogre::Vector2 halfSize = mSize * 0.5f;
@@ -2986,13 +2777,10 @@ class D3Panel {
     d = transform * Ogre::Vector3(halfSize.x, halfSize.y, 0);
 
     result = Ogre::Math::intersects(ray, c, b, a);
-    if (result.first == false)
-      result = Ogre::Math::intersects(ray, c, d, b);
-    if (result.first == false)
-      return 0;
+    if (result.first == false) result = Ogre::Math::intersects(ray, c, d, b);
+    if (result.first == false) return 0;
 
-    if (result.second > 6.0f)
-      return 0;
+    if (result.second > 6.0f) return 0;
 
     isOver = true;
 
@@ -3010,8 +2798,7 @@ class D3Panel {
     mMousePointer->position(localPos.x, localPos.y);
 
     for (size_t i = 0; i < mButtons.size(); i++) {
-      if (mButtons[i]->isOver(mMousePointer->position()))
-        return mButtons[i];
+      if (mButtons[i]->isOver(mMousePointer->position())) return mButtons[i];
     }
 
     return 0;
@@ -3035,4 +2822,4 @@ class D3Panel {
 
   std::vector<Button *> mButtons;
 };
-}
+}  // namespace Gorilla

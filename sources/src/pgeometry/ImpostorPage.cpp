@@ -96,8 +96,8 @@ void ImpostorPage::setRegion(Ogre::Real left, Ogre::Real top, Ogre::Real right, 
 
 //-----------------------------------------------------------------------------
 ///
-void ImpostorPage::addEntity(Entity *ent, const Vector3 &position, const Quaternion &rotation,
-                             const Vector3 &scale, const Ogre::ColourValue &color) {
+void ImpostorPage::addEntity(Entity *ent, const Vector3 &position, const Quaternion &rotation, const Vector3 &scale,
+                             const Ogre::ColourValue &color) {
   // Get the impostor batch that this impostor will be added to
   ImpostorBatch *ibatch = ImpostorBatch::getBatch(this, ent);
 
@@ -264,8 +264,8 @@ void ImpostorBatch::setAngle(Ogre::Real pitchDeg, Ogre::Real yawDeg) {
 #else
   float minPitchIndexDeg = -90.0f;
   float maxPitchIndexDeg = ((180.0f * (IMPOSTOR_PITCH_ANGLES - 1)) / IMPOSTOR_PITCH_ANGLES) - 90.0f;
-  newPitchIndex = (int)(IMPOSTOR_PITCH_ANGLES *
-                        ((pitchDeg - minPitchIndexDeg) / (maxPitchIndexDeg - minPitchIndexDeg)));
+  newPitchIndex =
+      (int)(IMPOSTOR_PITCH_ANGLES * ((pitchDeg - minPitchIndexDeg) / (maxPitchIndexDeg - minPitchIndexDeg)));
   if (newPitchIndex > IMPOSTOR_PITCH_ANGLES - 1) newPitchIndex = IMPOSTOR_PITCH_ANGLES - 1;
   if (newPitchIndex < 0) newPitchIndex = 0;
 #endif
@@ -273,8 +273,7 @@ void ImpostorBatch::setAngle(Ogre::Real pitchDeg, Ogre::Real yawDeg) {
   // Calculate yaw material index
   int newYawIndex =
       yawDeg > 0 ? int(IMPOSTOR_YAW_ANGLES * (yawDeg / 360.0f) + 0.5f) % IMPOSTOR_YAW_ANGLES
-                 : int(IMPOSTOR_YAW_ANGLES + IMPOSTOR_YAW_ANGLES * (yawDeg / 360.0f) + 0.5f) %
-                       IMPOSTOR_YAW_ANGLES;
+                 : int(IMPOSTOR_YAW_ANGLES + IMPOSTOR_YAW_ANGLES * (yawDeg / 360.0f) + 0.5f) % IMPOSTOR_YAW_ANGLES;
 
   // Change materials if necessary
   if (newPitchIndex != pitchIndex || newYawIndex != yawIndex) {
@@ -290,9 +289,8 @@ void ImpostorBatch::setBillboardOrigin(BillboardOrigin origin) {
   if (bbset->getBillboardOrigin() == BBO_CENTER)
     entityBBCenter = m_pTexture->entityCenter;
   else if (bbset->getBillboardOrigin() == BBO_BOTTOM_CENTER)
-    entityBBCenter =
-        Vector3(m_pTexture->entityCenter.x, m_pTexture->entityCenter.y - m_pTexture->entityRadius,
-                m_pTexture->entityCenter.z);
+    entityBBCenter = Vector3(m_pTexture->entityCenter.x, m_pTexture->entityCenter.y - m_pTexture->entityRadius,
+                             m_pTexture->entityCenter.z);
 }
 
 String ImpostorBatch::generateEntityKey(Entity *entity) {
@@ -350,8 +348,7 @@ ImpostorTexture::ImpostorTexture(ImpostorPage *group, Entity *entity) : loader(0
   // Set up materials
   for (int o = 0; o < IMPOSTOR_YAW_ANGLES; ++o) {
     for (int i = 0; i < IMPOSTOR_PITCH_ANGLES; ++i) {
-      material[i][o] =
-          MaterialManager::getSingleton().create(getUniqueID("ImpostorMaterial"), "Impostors");
+      material[i][o] = MaterialManager::getSingleton().create(getUniqueID("ImpostorMaterial"), "Impostors");
 
       Material *m = material[i][o].get();
       Pass *p = m->getTechnique(0)->getPass(0);
@@ -396,8 +393,7 @@ ImpostorTexture::~ImpostorTexture() {
   // Delete materials
   for (int o = 0; o < IMPOSTOR_YAW_ANGLES; ++o) {
     for (int i = 0; i < IMPOSTOR_PITCH_ANGLES; ++i) {
-      if (MaterialManager::getSingletonPtr())
-        MaterialManager::getSingleton().remove(material[i][o]);
+      if (MaterialManager::getSingletonPtr()) MaterialManager::getSingleton().remove(material[i][o]);
       material[i][o].reset();
     }
   }
@@ -531,12 +527,10 @@ void ImpostorTexture::renderTextures(bool force) {
   needsRegen = force;
   if (!needsRegen) {
     try {
-      texture = TextureManager::getSingleton().load(fileName + ".dds", "Impostors", TEX_TYPE_2D,
-                                                    MIP_UNLIMITED);
+      texture = TextureManager::getSingleton().load(fileName + ".dds", "Impostors", TEX_TYPE_2D, MIP_UNLIMITED);
     } catch (Exception &) {
       try {
-        texture = TextureManager::getSingleton().load(fileName + ".png", "Impostors", TEX_TYPE_2D,
-                                                      MIP_UNLIMITED);
+        texture = TextureManager::getSingleton().load(fileName + ".png", "Impostors", TEX_TYPE_2D, MIP_UNLIMITED);
       } catch (Exception &) {
         needsRegen = true;
       }
@@ -560,13 +554,11 @@ void ImpostorTexture::renderTextures(bool force) {
 
         // Position camera
         camNode->setPosition(0, 0, 0);
-        camNode->setOrientation(Quaternion(yaw, Vector3::UNIT_Y) *
-                                Quaternion(-pitch, Vector3::UNIT_X));
+        camNode->setOrientation(Quaternion(yaw, Vector3::UNIT_Y) * Quaternion(-pitch, Vector3::UNIT_X));
         camNode->translate(Vector3(0, 0, objDist), Node::TS_LOCAL);
 
         // Render the impostor
-        renderViewport->setDimensions((float)(i)*xDivFactor, (float)(o)*yDivFactor, xDivFactor,
-                                      yDivFactor);
+        renderViewport->setDimensions((float)(i)*xDivFactor, (float)(o)*yDivFactor, xDivFactor, yDivFactor);
         renderTarget->update();
       }
     }
@@ -579,8 +571,7 @@ void ImpostorTexture::renderTextures(bool force) {
     ResourceGroupManager::getSingleton().addResourceLocation(tempdir, "FileSystem", "Impostors");
 
     // Load the render into the appropriate texture view
-    texture = TextureManager::getSingleton().load(fileName + ".png", "Impostors", TEX_TYPE_2D,
-                                                  MIP_UNLIMITED);
+    texture = TextureManager::getSingleton().load(fileName + ".png", "Impostors", TEX_TYPE_2D, MIP_UNLIMITED);
 #else
     texture = renderTexture;
 #endif
@@ -625,8 +616,7 @@ void ImpostorTexture::renderTextures(bool force) {
 
 void ImpostorTexture::removeTexture(ImpostorTexture *Texture) {
   // Search for an existing impostor texture, in case it was already deleted
-  for (std::map<String, ImpostorTexture *>::iterator iter = selfList.begin();
-       iter != selfList.end(); ++iter) {
+  for (std::map<String, ImpostorTexture *>::iterator iter = selfList.begin(); iter != selfList.end(); ++iter) {
     if (iter->second == Texture) {
       delete Texture;
       return;

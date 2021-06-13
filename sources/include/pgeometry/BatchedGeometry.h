@@ -1,18 +1,23 @@
 /*-------------------------------------------------------------------------------------
 Copyright (c) 2006 John Judnich
 
-This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
-1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
-2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable
+for any damages arising from the use of this software. Permission is granted to anyone to use this software for any
+purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following
+restrictions:
+1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If
+you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not
+required.
+2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original
+software.
 3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
 #pragma once
-#include <OgrePrerequisites.h>
-#include <OgreMovableObject.h>
-#include <OgreSceneNode.h>
 #include <OgreMaterialManager.h>
+#include <OgreMovableObject.h>
+#include <OgrePrerequisites.h>
+#include <OgreSceneNode.h>
 
 namespace Forests {
 //--------------------------------------------------------------------------
@@ -27,14 +32,9 @@ class BatchedGeometry : public Ogre::MovableObject {
     // A structure defining the desired position/orientation/scale of a batched mesh. The
     // SubMesh is not specified since that can be determined by which MeshQueue this belongs to.
     struct QueuedMesh {
-      QueuedMesh(Ogre::SubMesh *sm, const Ogre::Vector3 &pos, const Ogre::Quaternion &ori,
-                 const Ogre::Vector3 &scl, const Ogre::ColourValue &clr, void *userData_ = 0) :
-          subMesh(sm),
-          position(pos),
-          orientation(ori),
-          scale(scl),
-          color(clr),
-          userData(userData_) {
+      QueuedMesh(Ogre::SubMesh *sm, const Ogre::Vector3 &pos, const Ogre::Quaternion &ori, const Ogre::Vector3 &scl,
+                 const Ogre::ColourValue &clr, void *userData_ = 0)
+          : subMesh(sm), position(pos), orientation(ori), scale(scl), color(clr), userData(userData_) {
         // empty
       }
 
@@ -49,19 +49,18 @@ class BatchedGeometry : public Ogre::MovableObject {
     /// Queue of meshes for build batch of geometry
     typedef std::vector<QueuedMesh> TMeshQueue;
 
-
     // Function section
 
    public:
     /// Constructor
     SubBatch(BatchedGeometry *parent, Ogre::SubEntity *ent);
     /// Destructor
-	virtual ~SubBatch();
+    virtual ~SubBatch();
 
     ///
-    void addSubEntity(Ogre::SubEntity *ent, const Ogre::Vector3 &position,
-                      const Ogre::Quaternion &orientation, const Ogre::Vector3 &scale,
-                      const Ogre::ColourValue &color = Ogre::ColourValue::White, void *userData = nullptr);
+    void addSubEntity(Ogre::SubEntity *ent, const Ogre::Vector3 &position, const Ogre::Quaternion &orientation,
+                      const Ogre::Vector3 &scale, const Ogre::ColourValue &color = Ogre::ColourValue::White,
+                      void *userData = nullptr);
 
     /// Build (assemble a vertex/index buffers) geometry for rendering
     virtual void build();
@@ -79,57 +78,56 @@ class BatchedGeometry : public Ogre::MovableObject {
 
     ///
     void setMaterial(Ogre::MaterialPtr &mat) { m_ptrMaterial = mat; }
-    void setMaterialName(const Ogre::String &mat, const Ogre::String &rg =
-    Ogre::RGN_AUTODETECT) {
+    void setMaterialName(const Ogre::String &mat, const Ogre::String &rg = Ogre::RGN_AUTODETECT) {
       m_ptrMaterial = Ogre::MaterialManager::getSingleton().getByName(mat, rg);
     }
 
     /// Get material name. Be careful, resource group name missing
     const Ogre::String &getMaterialName() const { return m_ptrMaterial->getName(); }
     Ogre::Technique *getTechnique() const override {
-      return m_ptrMaterial->getBestTechnique(m_ptrMaterial->getLodIndex(
-          m_pParentGeom->m_fMinDistanceSquared * m_pParentGeom->m_fMinDistanceSquared));
+      return m_ptrMaterial->getBestTechnique(
+          m_ptrMaterial->getLodIndex(m_pParentGeom->m_fMinDistanceSquared * m_pParentGeom->m_fMinDistanceSquared));
     }
     const Ogre::MaterialPtr &getMaterial() const override { return m_ptrMaterial; }
-    void getWorldTransforms(Ogre::Matrix4 *xform) const override { *xform = m_pParentGeom->_getParentNodeFullTransform(); }
-    const Ogre::Quaternion &getWorldOrientation() const { return m_pParentGeom->m_pSceneNode->_getDerivedOrientation(); }
+    void getWorldTransforms(Ogre::Matrix4 *xform) const override {
+      *xform = m_pParentGeom->_getParentNodeFullTransform();
+    }
+    const Ogre::Quaternion &getWorldOrientation() const {
+      return m_pParentGeom->m_pSceneNode->_getDerivedOrientation();
+    }
     const Ogre::Vector3 &getWorldPosition() const { return m_pParentGeom->m_pSceneNode->_getDerivedPosition(); }
     bool castsShadows() const { return m_pParentGeom->getCastShadows(); }
 
     // internal fuctions
    private:
     /// Build vertex of QueuedMesh if it have identity orientation
-    static void _buildIdentiryOrientation(const QueuedMesh &queuedMesh,
-                                          const Ogre::Vector3 &parentGeomCenter,
-                                          const std::vector<Ogre::VertexDeclaration::VertexElementList> &vertexBufferElements,
-                                          std::vector<Ogre::uchar *> &vertexBuffers,
-                                          Ogre::VertexData *dst);
+    static void _buildIdentiryOrientation(
+        const QueuedMesh &queuedMesh, const Ogre::Vector3 &parentGeomCenter,
+        const std::vector<Ogre::VertexDeclaration::VertexElementList> &vertexBufferElements,
+        std::vector<Ogre::uchar *> &vertexBuffers, Ogre::VertexData *dst);
     /// Build vertex of QueuedMesh if it have some orientation
-    static void _buildFullTransform(const QueuedMesh &queuedMesh,
-                                    const Ogre::Vector3 &parentGeomCenter,
+    static void _buildFullTransform(const QueuedMesh &queuedMesh, const Ogre::Vector3 &parentGeomCenter,
                                     const std::vector<Ogre::VertexDeclaration::VertexElementList> &vertexBufferElements,
-                                    std::vector<Ogre::uchar *> &vertexBuffers,
-                                    Ogre::VertexData *dst);
-
+                                    std::vector<Ogre::uchar *> &vertexBuffers, Ogre::VertexData *dst);
 
     // Data section class SubBatch
 
    public:
-    Ogre::VertexData *m_pVertexData = nullptr;          ///<
-    Ogre::IndexData *m_pIndexData = nullptr;           ///<
+    Ogre::VertexData *m_pVertexData = nullptr;  ///<
+    Ogre::IndexData *m_pIndexData = nullptr;    ///<
 
    protected:
-    bool m_Built = false;                ///<
-    bool m_RequireVertexColors = false;  ///<
-    Ogre::SubMesh *m_pSubMesh = nullptr;             ///< Ogre::SubMesh for Index/Vertex buffers manipulation
-    BatchedGeometry *m_pParentGeom = nullptr;          ///<
-    Ogre::MaterialPtr m_ptrMaterial;          ///<
-    TMeshQueue m_queueMesh;            ///< The list of meshes to be added to this batch
+    bool m_Built = false;                      ///<
+    bool m_RequireVertexColors = false;        ///<
+    Ogre::SubMesh *m_pSubMesh = nullptr;       ///< Ogre::SubMesh for Index/Vertex buffers manipulation
+    BatchedGeometry *m_pParentGeom = nullptr;  ///<
+    Ogre::MaterialPtr m_ptrMaterial;           ///<
+    TMeshQueue m_queueMesh;                    ///< The list of meshes to be added to this batch
 
    private:
-    Ogre::Technique *m_pBestTechnique = nullptr;       ///< Technique recalculated every frame
+    Ogre::Technique *m_pBestTechnique = nullptr;  ///< Technique recalculated every frame
 
-  }; // end class SubBatch
+  };  // end class SubBatch
   //-----------------------------------------------------------------------
 
   /// Stores a list of GeomBatch'es, using a format string (generated with getGeometryFormatString()) as the key value
@@ -138,7 +136,6 @@ class BatchedGeometry : public Ogre::MovableObject {
   typedef Ogre::ConstMapIterator<TSubBatchMap> TConstSubBatchIterator;
 
  public:
-
   /// Constructor
   BatchedGeometry(Ogre::SceneManager *mgr, Ogre::SceneNode *rootSceneNode);
   virtual ~BatchedGeometry();
@@ -162,14 +159,14 @@ class BatchedGeometry : public Ogre::MovableObject {
  private:
   bool isVisible() const override;
   const Ogre::String &getMovableType() const override;
-  void visitRenderables(Ogre::Renderable::Visitor *visitor, bool debugRenderables) override { /* empty */ }
+  void visitRenderables(Ogre::Renderable::Visitor *visitor, bool debugRenderables) override { /* empty */
+  }
   void _notifyCurrentCamera(Ogre::Camera *cam) override;
   void _updateRenderQueue(Ogre::RenderQueue *queue) override;
 
  protected:
   static Ogre::String getFormatString(Ogre::SubEntity *ent);
   static void extractVertexDataFromShared(const Ogre::MeshPtr &mesh);
-
 
   // Data section of BatchedGeometry class
  protected:
@@ -189,4 +186,4 @@ class BatchedGeometry : public Ogre::MovableObject {
   Ogre::SceneNode *m_pSceneNode = nullptr;
   Ogre::SceneNode *m_pParentSceneNode;
 };
-}
+}  // namespace Forests

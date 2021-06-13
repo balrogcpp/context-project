@@ -1,43 +1,45 @@
 /**
-* @file OgreOggISound.h
-* @author  Ian Stangoe
-* @version 1.26
-*
-* @section LICENSE
-* 
-* This source file is part of OgreOggSound, an OpenAL wrapper library for   
-* use with the Ogre Rendering Engine.										 
-*                                                                           
-* Copyright (c) 2013 Ian Stangoe
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE. 
-*
-* @section DESCRIPTION
-* 
-* Base class for a single sound
-*/
+ * @file OgreOggISound.h
+ * @author  Ian Stangoe
+ * @version 1.26
+ *
+ * @section LICENSE
+ *
+ * This source file is part of OgreOggSound, an OpenAL wrapper library for
+ * use with the Ogre Rendering Engine.
+ *
+ * Copyright (c) 2013 Ian Stangoe
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @section DESCRIPTION
+ *
+ * Base class for a single sound
+ */
 #pragma once
 
-#include "OgreOggSoundPrereqs.h"
-#include <string>
 #include <vorbis/vorbisfile.h>
+
+#include <string>
+
 #include "OgreOggSoundCallback.h"
+#include "OgreOggSoundPrereqs.h"
 
 /**
  * Number of buffers to use for streaming
@@ -49,21 +51,21 @@ namespace OgreOggSound {
 //! CHUNK header information
 // Chunk section within a wav file ('data'/'fact'/'cue' etc..)
 typedef struct {
-  char chunkID[4];    // 'data' or 'fact'
+  char chunkID[4];  // 'data' or 'fact'
   int length;
 } ChunkHeader;
 
 //! WAVEFORMATEX header information
 /** Structure defining a WAVE sounds format.
-*/
+ */
 typedef struct {
-  char mRIFF[4];                    // 'RIFF'
+  char mRIFF[4];  // 'RIFF'
   unsigned int mLength;
-  char mWAVE[4];                    // 'WAVE'
-  char mFMT[4];                    // 'fmt '
-  unsigned int mHeaderSize;        // varies...
+  char mWAVE[4];             // 'WAVE'
+  char mFMT[4];              // 'fmt '
+  unsigned int mHeaderSize;  // varies...
   unsigned short mFormatTag;
-  unsigned short mChannels;        // 1,2 for stereo data is (l,r) pairs
+  unsigned short mChannels;  // 1,2 for stereo data is (l,r) pairs
   unsigned int mSamplesPerSec;
   unsigned int mAvgBytesPerSec;
   unsigned short mBlockAlign;
@@ -72,7 +74,7 @@ typedef struct {
 
 //! WAVEFORMATEXTENSIBLE sound information
 /** Structure defining a WAVE sounds format.
-*/
+ */
 typedef struct {
   WaveHeader *mFormat;
   unsigned short mSamples;
@@ -85,77 +87,62 @@ typedef struct {
 @remarks
     Use this to specify what to do on a sound after it has finished fading.	i.e. after fading out pause.
 */
-enum FadeControl {
-  FC_NONE = 0x00,
-  FC_PAUSE = 0x01,
-  FC_STOP = 0x02
-};
+enum FadeControl { FC_NONE = 0x00, FC_PAUSE = 0x01, FC_STOP = 0x02 };
 
 //! The current state of the sound.
 /**
 @remarks
-    This is separate from what OpenAL thinks the current state of the sound is. A separate state is maintained in order to make
-    sure the correct state is available when using multi-threaded sound streaming since the OpenAL sound is stopped and started
-    multiple times while it is still technically in a "playing" state.
+    This is separate from what OpenAL thinks the current state of the sound is. A separate state is maintained in order
+to make sure the correct state is available when using multi-threaded sound streaming since the OpenAL sound is stopped
+and started multiple times while it is still technically in a "playing" state.
 */
-enum SoundState {
-  SS_NONE,
-  SS_PLAYING,
-  SS_PAUSED,
-  SS_STOPPED,
-  SS_DESTROYED
-};
+enum SoundState { SS_NONE, SS_PLAYING, SS_PAUSED, SS_STOPPED, SS_DESTROYED };
 
-//!Structure describing an ogg stream
+//! Structure describing an ogg stream
 struct SOggFile {
-  char *dataPtr;    // Pointer to the data in memory
+  char *dataPtr;  // Pointer to the data in memory
   int dataSize;   // Size of the data
   int dataRead;   // How much data we have read so far
 };
-
 
 //! A single sound object
 /** provides functions for setting audio properties
  *	on a 3D sound as well as stop/pause/play operations.
  */
 class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
-
  public:
-
   //! Listener callback
   /** provides hooks into various sound states.
-  */
+   */
   class _OGGSOUND_EXPORT SoundListener {
    public:
-
     /** constructor
-    */
+     */
     SoundListener() {}
     /** destructor
-    */
+     */
     virtual ~SoundListener() {}
     /** Called when sound data has been loaded
-    */
+     */
     virtual void soundLoaded(OgreOggISound *sound) {}
     /** Called when sound is about to be destroyed
-    */
+     */
     virtual void soundDestroyed(OgreOggISound *sound) {}
     /** Called when sound is about to play
-    */
+     */
     virtual void soundPlayed(OgreOggISound *sound) {}
     /** Called when sound is stopped
-    */
+     */
     virtual void soundStopped(OgreOggISound *sound) {}
     /** Called when sound has finished playing in its entirety
-    */
+     */
     virtual void soundFinished(OgreOggISound *sound) {}
     /** Called when sound is paused
-    */
+     */
     virtual void soundPaused(OgreOggISound *sound) {}
     /** Called when sound loops
-    */
+     */
     virtual void soundLooping(OgreOggISound *sound) {}
-
   };
 
   /** Plays sound.
@@ -415,7 +402,7 @@ class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
   */
   void setRelativeToListener(bool relative);
   /** Gets sounds position
-  */
+   */
   inline const Ogre::Vector3 &getPosition() const { return mPosition; }
   /** Gets the sounds direction
    */
@@ -537,17 +524,16 @@ class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
   void _getSharedProperties(BufferListPtr &buffers, float &length, ALenum &format);
 
  protected:
-
   /** Superclass describing a single sound object.
   @param name
       Name of sound within manager
   @param scnMgr
       SceneManager which create this sound
    */
-  OgreOggISound(
-      const Ogre::String &name, Ogre::SceneManager *scnMgr
+  OgreOggISound(const Ogre::String &name, Ogre::SceneManager *scnMgr
 #if OGRE_VERSION_MAJOR == 2
-      , Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+                ,
+                Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
 #endif
   );
   /** Superclass destructor.
@@ -563,7 +549,7 @@ class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
       Abstract function
       Optional opening function for (Static sounds only)
    */
-  virtual void _openImpl(const Ogre::String &fName, sharedAudioBuffer *buffer = 0) {};
+  virtual void _openImpl(const Ogre::String &fName, sharedAudioBuffer *buffer = 0){};
   /** Play implementation.
   @remarks
       Abstract function
@@ -593,10 +579,10 @@ class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
   @remarks
       Overridden from MovableObject.
    */
-  virtual void _notifyAttached(
-      Ogre::Node *node
+  virtual void _notifyAttached(Ogre::Node *node
 #if OGRE_VERSION_MAJOR == 1
-      , bool isTagPoint = false
+                               ,
+                               bool isTagPoint = false
 #endif
   );
 #if OGRE_VERSION_MAJOR == 1
@@ -672,54 +658,54 @@ class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
   Ogre::DataStreamPtr mAudioStream;
   ov_callbacks mOggCallbacks;
 
-  SoundListener *mSoundListener = nullptr;    // Callback object
-  size_t mBufferSize;                // Size of audio buffer (250ms)
+  SoundListener *mSoundListener = nullptr;  // Callback object
+  size_t mBufferSize;                       // Size of audio buffer (250ms)
 
   /** Sound properties
    */
-  Ogre::String mName;                // Sound name
-  ALuint mSource = 0;                    // OpenAL Source
-  Ogre::SceneManager *mScnMan = nullptr;    // SceneManager pointer for plugin registered sounds
-  Ogre::uint8 mPriority = 0;            // Priority assigned to source
-  Ogre::Vector3 mPosition = {0, 0, 0};        // 3D position
-  Ogre::Vector3 mDirection = {0, 0, 0};        // 3D direction
-  Ogre::Vector3 mVelocity = {0, 0, 0};        // 3D velocity
-  float mGain = 1.0;                    // Current volume
-  float mMaxGain = 1.0;                    // Minimum volume
-  float mMinGain = 0.0;                    // Maximum volume
-  float mMaxDistance = 1E10;                // Maximum attenuation distance
-  float mRolloffFactor = 1.0;            // Rolloff factor for attenuation
-  float mReferenceDistance = 1.0;        // Half-volume distance for attenuation
-  float mPitch = 1.0;                    // Current pitch
-  float mOuterConeGain = 0.0;            // Outer cone volume
-  float mInnerConeAngle = 360.0;            // Inner cone angle
-  float mOuterConeAngle = 360.0;            // outer cone angle
-  float mPlayTime = 0.0;                // Time in seconds of sound file
-  SoundState mState = SS_NONE;                // Sound state
-  bool mLoop = false;                        // loop status
+  Ogre::String mName;                     // Sound name
+  ALuint mSource = 0;                     // OpenAL Source
+  Ogre::SceneManager *mScnMan = nullptr;  // SceneManager pointer for plugin registered sounds
+  Ogre::uint8 mPriority = 0;              // Priority assigned to source
+  Ogre::Vector3 mPosition = {0, 0, 0};    // 3D position
+  Ogre::Vector3 mDirection = {0, 0, 0};   // 3D direction
+  Ogre::Vector3 mVelocity = {0, 0, 0};    // 3D velocity
+  float mGain = 1.0;                      // Current volume
+  float mMaxGain = 1.0;                   // Minimum volume
+  float mMinGain = 0.0;                   // Maximum volume
+  float mMaxDistance = 1E10;              // Maximum attenuation distance
+  float mRolloffFactor = 1.0;             // Rolloff factor for attenuation
+  float mReferenceDistance = 1.0;         // Half-volume distance for attenuation
+  float mPitch = 1.0;                     // Current pitch
+  float mOuterConeGain = 0.0;             // Outer cone volume
+  float mInnerConeAngle = 360.0;          // Inner cone angle
+  float mOuterConeAngle = 360.0;          // outer cone angle
+  float mPlayTime = 0.0;                  // Time in seconds of sound file
+  SoundState mState = SS_NONE;            // Sound state
+  bool mLoop = false;                     // loop status
   bool mDisable3D = false;                // 3D status
-  bool mGiveUpSource = false;                // Flag to indicate whether sound should release its source when stopped
-  bool mStream = false;                    // Stream flag
-  bool mSourceRelative = false;            // Relative position flag
+  bool mGiveUpSource = false;             // Flag to indicate whether sound should release its source when stopped
+  bool mStream = false;                   // Stream flag
+  bool mSourceRelative = false;           // Relative position flag
 #if OGRE_VERSION_MAJOR == 1
-  bool mLocalTransformDirty = true;        // Transformation update flag
+  bool mLocalTransformDirty = true;  // Transformation update flag
 #endif
-  bool mPlayPosChanged;            // Flag indicating playback position has changed
-  bool mSeekable = true;                    // Flag indicating seeking available
-  bool mTemporary = false;                // Flag indicating sound is temporary
-  bool mInitialised = false;                // Flag indicating sound is initailised
-  Ogre::uint8 mAwaitingDestruction = 0; // Imminent destruction flag
+  bool mPlayPosChanged;                  // Flag indicating playback position has changed
+  bool mSeekable = true;                 // Flag indicating seeking available
+  bool mTemporary = false;               // Flag indicating sound is temporary
+  bool mInitialised = false;             // Flag indicating sound is initailised
+  Ogre::uint8 mAwaitingDestruction = 0;  // Imminent destruction flag
 
-  BufferListPtr mBuffers;            // Audio buffer(s)
-  ALenum mFormat;                    // OpenAL format
+  BufferListPtr mBuffers;  // Audio buffer(s)
+  ALenum mFormat;          // OpenAL format
 
-  unsigned long mAudioOffset = 0;        // offset to audio data
-  unsigned long mAudioEnd = 0;        // offset to end of audio data
-  float mLoopOffset = 0;                // offset to start of loop point
+  unsigned long mAudioOffset = 0;  // offset to audio data
+  unsigned long mAudioEnd = 0;     // offset to end of audio data
+  float mLoopOffset = 0;           // offset to start of loop point
   float mLoopStart;                // offset in seconds to start of loopable audio data
 
-  ALfloat mPlayPos = 0.0;                // Playback position in seconds
-  std::deque<float> mCuePoints;    // List of play position points
+  ALfloat mPlayPos = 0.0;        // Playback position in seconds
+  std::deque<float> mCuePoints;  // List of play position points
 
 #if OGGSOUND_THREADED
   /** Returns flag indicating an imminent destruction call
@@ -730,7 +716,7 @@ class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
       this flag will be used to assess the validation a subsequent get() call to
       prevent, as much as possible, this occurence.
   */
-  inline bool _isDestroying() const { return mAwaitingDestruction!=0; }
+  inline bool _isDestroying() const { return mAwaitingDestruction != 0; }
 
   /** Sets flag indicating an imminent destruction call
   @remarks
@@ -740,9 +726,9 @@ class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
       this flag will be used to assess the validation of a subsequent getSound() call to
       prevent, as much as possible, this occurence.
   */
-  inline void _notifyDestroying()  { mAwaitingDestruction=2; }
+  inline void _notifyDestroying() { mAwaitingDestruction = 2; }
 #endif
 
   friend class OgreOggSoundManager;
 };
-}															  
+}  // namespace OgreOggSound

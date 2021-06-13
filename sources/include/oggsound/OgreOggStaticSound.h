@@ -1,57 +1,56 @@
 /**
-* @file OgreOggStaticSound.h
-* @author  Ian Stangoe
-* @version v1.26
-*
-* @section LICENSE
-* 
-* This source file is part of OgreOggSound, an OpenAL wrapper library for   
-* use with the Ogre Rendering Engine.										 
-*                                                                           
-* Copyright (c) 2013 Ian Stangoe
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.  
-*
-* @section DESCRIPTION
-* 
-* Implements methods for creating/using a static ogg sound
-*/
+ * @file OgreOggStaticSound.h
+ * @author  Ian Stangoe
+ * @version v1.26
+ *
+ * @section LICENSE
+ *
+ * This source file is part of OgreOggSound, an OpenAL wrapper library for
+ * use with the Ogre Rendering Engine.
+ *
+ * Copyright (c) 2013 Ian Stangoe
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @section DESCRIPTION
+ *
+ * Implements methods for creating/using a static ogg sound
+ */
 
 #pragma once
 
-#include "OgreOggSoundPrereqs.h"
-#include <string>
-#include <vector>
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 
+#include <string>
+#include <vector>
+
 #include "OgreOggISound.h"
+#include "OgreOggSoundPrereqs.h"
 
 namespace OgreOggSound {
 //! A single static buffer sound (OGG)
 /** Handles playing a sound from memory.
-*/
+ */
 class _OGGSOUND_EXPORT OgreOggStaticSound : public OgreOggISound {
-
  public:
-
   /** Sets the loop status.
   @remarks
       Immediately sets the loop status if a source is associated
@@ -68,21 +67,20 @@ class _OGGSOUND_EXPORT OgreOggStaticSound : public OgreOggISound {
    */
   void setSource(ALuint &src);
   /** Returns whether sound is mono
-  */
+   */
   bool isMono();
   /** Gets the sounds file name
    */
   virtual const Ogre::String &getFileName(void) const { return mAudioName; }
 
  protected:
-
   /**
    * Constructor
    */
-  OgreOggStaticSound(
-      const Ogre::String &name, Ogre::SceneManager *scnMgr
+  OgreOggStaticSound(const Ogre::String &name, Ogre::SceneManager *scnMgr
 #if OGRE_VERSION_MAJOR == 2
-      , Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+                     ,
+                     Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
 #endif
   );
   /**
@@ -154,13 +152,13 @@ class _OGGSOUND_EXPORT OgreOggStaticSound : public OgreOggISound {
   /**
    * Ogg file variables
    */
-  OggVorbis_File mOggStream;            // OggVorbis file structure
+  OggVorbis_File mOggStream;           // OggVorbis file structure
   vorbis_info *mVorbisInfo = 0;        // Vorbis info
-  vorbis_comment *mVorbisComment = 0;        // Vorbis comments
-  Ogre::String mAudioName;            // Name of audio file stream (Used with shared buffers)
-  std::vector<char> mBufferData;        // Sound data buffer
-  ALint mPreviousOffset = 0;                // Current play position
+  vorbis_comment *mVorbisComment = 0;  // Vorbis comments
+  Ogre::String mAudioName;             // Name of audio file stream (Used with shared buffers)
+  std::vector<char> mBufferData;       // Sound data buffer
+  ALint mPreviousOffset = 0;           // Current play position
 
   friend class OgreOggSoundManager;
 };
-}
+}  // namespace OgreOggSound
