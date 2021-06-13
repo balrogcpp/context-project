@@ -518,52 +518,6 @@ externalproject_add(target-filesystem
                     )
 
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-#OpenMP is not available when crosscompile with clang-cross
-    if (WIN32)
-        set(OMP_SHARED true)
-    else ()
-        set(OMP_SHARED false)
-    endif ()
-    externalproject_add(target-omp
-            EXCLUDE_FROM_ALL true
-            PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-            GIT_REPOSITORY https://github.com/llvm-project/openmp.git
-            GIT_TAG release_90
-            GIT_SHALLOW true
-            GIT_PROGRESS false
-            CMAKE_ARGS
-            -G "${CMAKE_GENERATOR}"
-            -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-            -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-            -DENABLE_LIBOMPTARGET=false
-            -DLIBOMP_ENABLE_SHARED=${OMP_SHARED}
-            )
-
-
-    externalproject_add(target-crt
-            EXCLUDE_FROM_ALL true
-            PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-            GIT_REPOSITORY https://github.com/llvm-project/compiler-rt.git
-            GIT_TAG release_90
-            GIT_SHALLOW true
-            GIT_PROGRESS false
-            CMAKE_ARGS
-            -G "${CMAKE_GENERATOR}"
-            -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-            -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-            -DCOMPILER_RT_BUILD_SANITIZERS=false
-            -DCOMPILER_RT_BUILD_XRAY=false
-            -DCOMPILER_RT_BUILD_PROFILE=false
-            -DCOMPILER_RT_BUILD_LIBFUZZER=false
-            )
-endif ()
-
-
 externalproject_add(target-gtest
         EXCLUDE_FROM_ALL true
         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
@@ -597,6 +551,7 @@ if (NOT MSVC)
                         -G "${CMAKE_GENERATOR}"
                         )
 endif ()
+
 
 externalproject_add(assets
         EXCLUDE_FROM_ALL true
