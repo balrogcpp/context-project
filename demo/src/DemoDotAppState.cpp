@@ -5,6 +5,7 @@
 
 #include "ComponentLocator.h"
 #include "MenuAppState.h"
+#include "pcheader.h"
 
 using namespace std;
 using namespace xio;

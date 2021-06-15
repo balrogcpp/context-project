@@ -124,7 +124,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
     set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 
-    if (NOT DISABLE_WERROR)
+    string(APPEND CMAKE_CXX_FLAGS " -Wall")
+    string(APPEND CMAKE_C_FLAGS " -Wall")
+
+    if (ENABLE_WERROR)
         string(APPEND CMAKE_CXX_FLAGS " -Wall -Werror -Wno-error=switch")
         #For OGRE
         string(APPEND CMAKE_CXX_FLAGS " -Wno-error=deprecated-declarations")
@@ -274,7 +277,8 @@ endif ()
 
 
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
-        ${BULLET_INCLUDE_DIR} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
+        ${BULLET_INCLUDE_DIR} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/Overlay
+        ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
         ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
         ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 
@@ -313,11 +317,11 @@ target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${ASSIMP_
 
 install(TARGETS demo RUNTIME DESTINATION .)
 
-#file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
-#include_directories(lib-static ${CONTEXT_DEPENDENCY_INCLUDE_DIRS})
-#add_library(lib-static STATIC ${SOURCE_FILES} )
-#set_target_properties(lib-static PROPERTIES OUTPUT_NAME "xio-static")
-#target_precompile_headers(lib-static PUBLIC sources/include/pcheader.h)
+file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
+add_library(lib-static STATIC ${SOURCE_FILES})
+include_directories(lib-static ${CONTEXT_INCLUDE_DIRS})
+set_target_properties(lib-static PROPERTIES OUTPUT_NAME "xio-static")
+target_precompile_headers(lib-static PUBLIC sources/include/pcheader.h)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 

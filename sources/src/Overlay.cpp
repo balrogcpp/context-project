@@ -30,8 +30,8 @@ Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : render_window_(re
 
   // Suppress ini file creation
   ImGuiIO& io = ImGui::GetIO();
-  io.IniFilename = "";
-  io.LogFilename = "";
+  io.IniFilename = nullptr;
+  io.LogFilename = nullptr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -39,7 +39,9 @@ Overlay::~Overlay() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 void Overlay::preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) {
-  if (!evt.source->getOverlaysEnabled()) return;
+//  if (!evt.source->getOverlaysEnabled())  {
+//    return;
+//  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -55,7 +57,7 @@ void Overlay::Pause() {}
 void Overlay::Resume() {}
 
 //----------------------------------------------------------------------------------------------------------------------
-void Overlay::PrepareTexture(const std::string& name_, const std::string group_) {
+void Overlay::PrepareTexture(const std::string& name_, const std::string& group_) {
   imgui_->addFont(name_, group_);
   imgui_->show();
 }
