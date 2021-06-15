@@ -128,7 +128,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     string(APPEND CMAKE_C_FLAGS " -Wall")
 
     if (ENABLE_WERROR)
-        string(APPEND CMAKE_CXX_FLAGS " -Wall -Werror -Wno-error=switch")
+        string(APPEND CMAKE_CXX_FLAGS " -Werror -Wno-error=switch")
         #For OGRE
         string(APPEND CMAKE_CXX_FLAGS " -Wno-error=deprecated-declarations")
         #For Bullet
@@ -174,12 +174,12 @@ elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
-    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF")
-    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF")
+    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF /W3")
+    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF /W3")
 
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-        string(APPEND CMAKE_CXX_FLAGS " /O2 /Ot /fp:fast /GL")
-        string(APPEND CMAKE_C_FLAGS " /O2 /Ot /fp:fast /GL")
+        string(APPEND CMAKE_CXX_FLAGS " /O2 /Ot /Ob2 /fp:fast /GL")
+        string(APPEND CMAKE_C_FLAGS " /O2 /Ot /Ob2 /fp:fast /GL")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF /SUBSYSTEM:WINDOWS")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF")
     else ()
