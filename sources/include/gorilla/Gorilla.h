@@ -41,12 +41,6 @@ extern "C" {
 #define GORILLA_USES_EXCEPTIONS 1
 #endif
 
-#if OGRE_COMP == OGRE_COMPILER_GNUC
-#define __FUNC__ __PRETTY_FUNCTION__
-#elif OGRE_COMP != OGRE_COMPILER_BORL
-#define __FUNC__ "No function name info"
-#endif
-
 namespace Gorilla {
 
 class Silverback;
@@ -64,11 +58,7 @@ class MarkupText;
 
 template <typename T>
 struct VectorType {
-#if OGRE_VERSION <= 67077  // If the version is less than or equal to 1.6.5
   typedef std::vector<T> type;
-#else
-  typedef typename Ogre::vector<T>::type type;
-#endif
 };
 
 namespace Colours {
@@ -1488,7 +1478,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
     } else {
       if (sprite == 0) {
 #if GORILLA_USES_EXCEPTIONS == 1
-        OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __FUNC__);
+        OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __func__);
 #else
         return;
 #endif
@@ -1524,7 +1514,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
     } else {
       if (sprite == 0) {
 #if GORILLA_USES_EXCEPTIONS == 1
-        OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __FUNC__);
+        OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __func__);
 #else
         return;
 #endif
@@ -1561,7 +1551,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       Sprite *sprite = mLayer->_getSprite(sprite_name_or_none);
       if (sprite == 0) {
 #if GORILLA_USES_EXCEPTIONS == 1
-        OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __FUNC__);
+        OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __func__);
 #else
         return;
 #endif
@@ -1591,7 +1581,7 @@ class Rectangle : public Ogre::GeneralAllocatedObject {
       Sprite *sprite = mLayer->_getSprite(sprite_name_or_none);
       if (sprite == 0) {
 #if GORILLA_USES_EXCEPTIONS == 1
-        OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __FUNC__);
+        OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Sprite name not found", __func__);
 #else
         return;
 #endif
@@ -2236,7 +2226,7 @@ class Caption : public Ogre::GeneralAllocatedObject {
     if (mGlyphData == 0) {
       mDirty = false;
 #if GORILLA_USES_EXCEPTIONS == 1
-      OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __FUNC__);
+      OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __func__);
 #else
       return;
 #endif

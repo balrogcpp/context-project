@@ -92,8 +92,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
     if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
       auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
 
-      Ogre::Matrix4 posIndexToObjectSpace;
-      terrain->getPointTransform(&posIndexToObjectSpace);
+      Ogre::Matrix4 posIndexToObjectSpace = terrain->getPointTransform();
 
       vert_params->setIgnoreMissingParams(true);
       vert_params->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);

@@ -455,10 +455,10 @@ void BatchedGeometry::SubBatch::addSubEntity(SubEntity *ent, const Vector3 &posi
     m_RequireVertexColors = true;
     VertexElementType format = Root::getSingleton().getRenderSystem()->getColourVertexElementType();
     switch (format) {
-      case VET_COLOUR_ARGB:
-        std::swap(newMesh.color.r, newMesh.color.b);
-        break;
-      case VET_COLOUR_ABGR:
+      //case VET_COLOUR_ARGB:
+      //  std::swap(newMesh.color.r, newMesh.color.b);
+      //  break;
+      case VET_UBYTE4_NORM:
         break;
       default:
         OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Unknown RenderSystem color format");

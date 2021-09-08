@@ -151,15 +151,7 @@ Ogre::Vector3 OgreOggListener::getOrientation() const {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggListener::update() {
-#if OGRE_VERSION_MAJOR == 1
-  if (mLocalTransformDirty) {
-    if (mParentNode) {
-      setPosition(mParentNode->_getDerivedPosition());
-      setOrientation(mParentNode->_getDerivedOrientation());
-    }
-    mLocalTransformDirty = false;
-  }
-#else
+#if OGRE_VERSION_MAJOR == 2
   if (mParentNode) {
     Ogre::Vector3 newPos = mParentNode->_getDerivedPosition();
     if (newPos != mPosition) {
@@ -170,6 +162,14 @@ void OgreOggListener::update() {
     if (newOrient != mOrient) {
       setOrientation(newOrient);
     }
+  }
+#else
+  if (mLocalTransformDirty) {
+    if (mParentNode) {
+      setPosition(mParentNode->_getDerivedPosition());
+      setOrientation(mParentNode->_getDerivedOrientation());
+    }
+    mLocalTransformDirty = false;
   }
 #endif
 }
@@ -205,10 +205,10 @@ void OgreOggListener::_notifyAttached(Ogre::Node *node
 
   // Immediately set position/orientation when attached
   if (mParentNode) {
-#if OGRE_VERSION_MAJOR == 1
-    setPosition(mParentNode->_getDerivedPosition());
-#else
+#if OGRE_VERSION_MAJOR == 2
     setPosition(mParentNode->_getDerivedPositionUpdated());
+#else
+    setPosition(mParentNode->_getDerivedPosition());
 #endif
     setOrientation(mParentNode->_getDerivedOrientation());
   }

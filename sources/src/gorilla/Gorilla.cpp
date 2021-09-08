@@ -1563,7 +1563,7 @@ void QuadList::glyph(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, unsi
   GlyphData *glyphData = mLayer->_getGlyphData(glyphDataIndex);
   if (glyphData == 0) {
 #if GORILLA_USES_EXCEPTIONS == 1
-    OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __FUNC__);
+    OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __func__);
 #else
     return;
 #endif
@@ -1606,7 +1606,7 @@ void QuadList::glyph(Ogre::uint glyphDataIndex, Ogre::Real x, Ogre::Real y, Ogre
   GlyphData *glyphData = mLayer->_getGlyphData(glyphDataIndex);
   if (glyphData == 0) {
 #if GORILLA_USES_EXCEPTIONS == 1
-    OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __FUNC__);
+    OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __func__);
 #else
     return;
 #endif
@@ -1668,7 +1668,7 @@ Caption::Caption(Ogre::uint glyphDataIndex, Ogre::Real left, Ogre::Real top, con
   if (mGlyphData == 0) {
     mDirty = false;
 #if GORILLA_USES_EXCEPTIONS == 1
-    OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __FUNC__);
+    OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __func__);
 #else
     return;
 #endif
@@ -1877,7 +1877,7 @@ MarkupText::MarkupText(Ogre::uint defaultGlyphIndex, Ogre::Real left, Ogre::Real
     mDirty = false;
     mTextDirty = false;
 #if GORILLA_USES_EXCEPTIONS == 1
-    OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __FUNC__);
+    OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Glyph data not found", __func__);
 #else
     return;
 #endif

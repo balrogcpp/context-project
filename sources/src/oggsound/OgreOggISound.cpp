@@ -617,10 +617,10 @@ void OgreOggISound::_notifyAttached(Ogre::Node *node
 
   // Immediately set position/orientation when attached
   if (mParentNode) {
-#if OGRE_VERSION_MAJOR == 1
-    mPosition = mParentNode->_getDerivedPosition();
-#else
+#if OGRE_VERSION_MAJOR == 2
     mPosition = mParentNode->_getDerivedPositionUpdated();
+#else
+    mPosition = mParentNode->_getDerivedPosition();
 #endif
     mDirection = -mParentNode->_getDerivedOrientation().zAxis();
   }
