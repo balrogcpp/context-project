@@ -30,7 +30,7 @@ class Overlay final : public System, public Singleton<Overlay>, public Ogre::Ren
 
  private:
   std::unique_ptr<ImGuiInputListener> imgui_listener_;
-  std::unique_ptr<Ogre::ImGuiOverlay> imgui_;
+  view_ptr<Ogre::ImGuiOverlay> imgui_;
   view_ptr<Ogre::OverlaySystem> overlay_;
   view_ptr<Ogre::RenderWindow> render_window_;
 };

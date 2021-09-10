@@ -4,6 +4,8 @@
 #pragma once
 #include <OgreSceneLoader.h>
 #include <OgreVector4.h>
+#include <OgrePlugin.h>
+#include <OgreCodec.h>
 
 #include <string>
 #include <vector>
@@ -68,6 +70,7 @@ class DotSceneLoaderB final : public System, public Ogre::SceneLoader, public Si
   void Update(float time) override;
 
   void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) override;
+  void exportScene(Ogre::SceneNode *rootNode, const std::string &outFileName);
   float GetHeigh(float x, float z);
 
   static Landscape &GetTerrain();
@@ -97,6 +100,7 @@ class DotSceneLoaderB final : public System, public Ogre::SceneLoader, public Si
   void ProcessSkyPlane_(pugi::xml_node &xml_node);
   void ProcessLightRange_(pugi::xml_node &xml_node, Ogre::Light *light);
   void ProcessLightAttenuation_(pugi::xml_node &xml_node, Ogre::Light *light);
+  void WriteNode_(pugi::xml_node &parentXML, const Ogre::SceneNode *node);
 
   std::unique_ptr<ReflectionCamera> rcamera_;
   std::unique_ptr<CubeMapCamera> ccamera_;
@@ -115,4 +119,16 @@ class DotSceneLoaderB final : public System, public Ogre::SceneLoader, public Si
   static inline std::unique_ptr<VegetationSystem> forest_;
 };
 
+
+class DotScenePluginB : public Ogre::Plugin {
+  const Ogre::String &getName() const;
+
+  void install();
+  void initialise();
+  void shutdown();
+  void uninstall();
+
+ private:
+  Ogre::Codec *mCodec = nullptr;
+};
 }  // namespace xio

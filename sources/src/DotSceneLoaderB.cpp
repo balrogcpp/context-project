@@ -152,6 +152,21 @@ Ogre::ColourValue ParseColour(pugi::xml_node &xml_node) {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+static void write(pugi::xml_node &node, const Ogre::Vector3 &v) {
+  node.append_attribute("x") = Ogre::StringConverter::toString(v.x).c_str();
+  node.append_attribute("y") = Ogre::StringConverter::toString(v.y).c_str();
+  node.append_attribute("z") = Ogre::StringConverter::toString(v.z).c_str();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+static void write(pugi::xml_node &node, const Ogre::ColourValue &c) {
+  node.append_attribute("r") = Ogre::StringConverter::toString(c.r).c_str();
+  node.append_attribute("g") = Ogre::StringConverter::toString(c.g).c_str();
+  node.append_attribute("b") = Ogre::StringConverter::toString(c.b).c_str();
+  node.append_attribute("a") = Ogre::StringConverter::toString(c.a).c_str();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::DotSceneLoaderB() {
   static auto &sl = Ogre::SceneLoaderManager::getSingleton();
 
@@ -230,6 +245,112 @@ void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const string &group_name
 
   // Process the scene
   ProcessScene_(XMLRoot);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::WriteNode_(pugi::xml_node &parentXML, const Ogre::SceneNode *node) {
+  auto nodeXML = parentXML.append_child("node");
+  if (!node->getName().empty()) nodeXML.append_attribute("name") = node->getName().c_str();
+
+  auto pos = nodeXML.append_child("position");
+  write(pos, node->getPosition());
+
+  auto scale = nodeXML.append_child("scale");
+  write(scale, node->getScale());
+
+  auto rot = nodeXML.append_child("rotation");
+  rot.append_attribute("qw") = Ogre::StringConverter::toString(node->getOrientation().w).c_str();
+  rot.append_attribute("qx") = Ogre::StringConverter::toString(node->getOrientation().x).c_str();
+  rot.append_attribute("qy") = Ogre::StringConverter::toString(node->getOrientation().y).c_str();
+  rot.append_attribute("qz") = Ogre::StringConverter::toString(node->getOrientation().z).c_str();
+
+  for (auto mo : node->getAttachedObjects()) {
+    if (auto c = dynamic_cast<Ogre::Camera *>(mo)) {
+      auto camera = nodeXML.append_child("camera");
+      camera.append_attribute("name") = c->getName().c_str();
+      auto clipping = camera.append_child("clipping");
+      clipping.append_attribute("near") = Ogre::StringConverter::toString(c->getNearClipDistance()).c_str();
+      clipping.append_attribute("far") = Ogre::StringConverter::toString(c->getFarClipDistance()).c_str();
+      continue;
+    }
+
+    if (auto l = dynamic_cast<Ogre::Light *>(mo)) {
+      auto light = nodeXML.append_child("light");
+      light.append_attribute("name") = l->getName().c_str();
+      light.append_attribute("castShadows") = Ogre::StringConverter::toString(l->getCastShadows()).c_str();
+
+      if (!l->isVisible()) light.append_attribute("visible") = "false";
+
+      auto diffuse = light.append_child("colourDiffuse");
+      write(diffuse, l->getDiffuseColour());
+      auto specular = light.append_child("colourSpecular");
+      write(specular, l->getSpecularColour());
+      switch (l->getType()) {
+        case Ogre::Light::LT_POINT:
+          light.append_attribute("type") = "point";
+          break;
+        case Ogre::Light::LT_DIRECTIONAL:
+          light.append_attribute("type") = "directional";
+          break;
+        case Ogre::Light::LT_SPOTLIGHT:
+          light.append_attribute("type") = "spot";
+          break;
+      }
+
+      if (l->getType() != Ogre::Light::LT_DIRECTIONAL) {
+        auto range = light.append_child("lightRange");
+        range.append_attribute("inner") = Ogre::StringConverter::toString(l->getSpotlightInnerAngle()).c_str();
+        range.append_attribute("outer") = Ogre::StringConverter::toString(l->getSpotlightOuterAngle()).c_str();
+        range.append_attribute("falloff") = Ogre::StringConverter::toString(l->getSpotlightFalloff()).c_str();
+        auto atten = light.append_child("lightAttenuation");
+        atten.append_attribute("range") = Ogre::StringConverter::toString(l->getAttenuationRange()).c_str();
+        atten.append_attribute("constant") = Ogre::StringConverter::toString(l->getAttenuationConstant()).c_str();
+        atten.append_attribute("linear") = Ogre::StringConverter::toString(l->getAttenuationLinear()).c_str();
+        atten.append_attribute("quadratic") = Ogre::StringConverter::toString(l->getAttenuationQuadric()).c_str();
+      }
+
+      continue;
+    }
+
+    if (auto e = dynamic_cast<Ogre::Entity *>(mo)) {
+      auto entity = nodeXML.append_child("entity");
+      entity.append_attribute("name") = e->getName().c_str();
+      entity.append_attribute("meshFile") = e->getMesh()->getName().c_str();
+
+      if (!e->isVisible()) entity.append_attribute("visible") = "false";
+
+      // Heuristic: assume first submesh is representative
+      auto sub0mat = e->getSubEntity(0)->getMaterial();
+      if (sub0mat != e->getMesh()->getSubMesh(0)->getMaterial())
+        entity.append_attribute("material") = sub0mat->getName().c_str();
+      continue;
+    }
+
+    Ogre::LogManager::getSingleton().logWarning("DotSceneLoader - unsupported MovableType " + mo->getMovableType());
+  }
+
+  // recurse
+  for (auto c : node->getChildren()) WriteNode_(nodeXML, static_cast<Ogre::SceneNode *>(c));
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DotSceneLoaderB::exportScene(Ogre::SceneNode *rootNode, const string &outFileName) {
+  pugi::xml_document XMLDoc;  // character type defaults to char
+  auto comment = XMLDoc.append_child(pugi::node_comment);
+  comment.set_value(Ogre::StringUtil::format(" exporter: Plugin_DotScene %d.%d.%d ", OGRE_VERSION_MAJOR, OGRE_VERSION_MINOR,
+                                       OGRE_VERSION_PATCH)
+                        .c_str());
+  auto scene = XMLDoc.append_child("scene");
+  scene.append_attribute("formatVersion") = "1.1";
+  scene.append_attribute("sceneManager") = rootNode->getCreator()->getTypeName().c_str();
+
+  auto nodes = scene.append_child("nodes");
+
+  for (auto c : rootNode->getChildren()) WriteNode_(nodes, static_cast<Ogre::SceneNode *>(c));
+
+  // writeNode(nodes, rootNode);
+
+  XMLDoc.save_file(outFileName.c_str());
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -990,5 +1111,49 @@ void DotSceneLoaderB::ProcessUserData_(pugi::xml_node &xml_node, Ogre::UserObjec
     user_object_bindings.setUserAny(name, value);
   }
 }
+
+
+//---------------------------------------------------------------------------------------------------------------------
+struct DotSceneCodec : public Ogre::Codec {
+  string magicNumberToFileExt(const char *magicNumberPtr, size_t maxbytes) const { return ""; }
+  string getType() const override { return "scene"; }
+  void decode(const Ogre::DataStreamPtr &stream, const Ogre::Any &output) const override {
+      using namespace Ogre;
+
+    DataStreamPtr _stream(stream);
+    DotSceneLoaderB loader;
+    loader.load(_stream, ResourceGroupManager::getSingleton().getWorldResourceGroupName(),
+                any_cast<SceneNode *>(output));
+  }
+
+  void encodeToFile(const Ogre::Any &input, const Ogre::String &outFileName) const override {
+    DotSceneLoaderB loader;
+    loader.exportScene(Ogre::any_cast<Ogre::SceneNode *>(input), outFileName);
+  }
+};
+
+//---------------------------------------------------------------------------------------------------------------------
+const Ogre::String &DotScenePluginB::getName() const {
+  static Ogre::String name = "DotScene Loader";
+  return name;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DotScenePluginB::install() {}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DotScenePluginB::initialise() {
+  mCodec = new DotSceneCodec();
+  Ogre::Codec::registerCodec(mCodec);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DotScenePluginB::shutdown() {
+  Ogre::Codec::unregisterCodec(mCodec);
+  delete mCodec;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DotScenePluginB::uninstall() {}
 
 }  // namespace xio

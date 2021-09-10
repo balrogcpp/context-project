@@ -20,7 +20,7 @@ Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : render_window_(re
   overlay_ = new Ogre::OverlaySystem();
   sm->addRenderQueueListener(overlay_.get());
 
-  imgui_ = make_unique<Ogre::ImGuiOverlay>();
+  imgui_ = new Ogre::ImGuiOverlay();
   imgui_->setZOrder(300);
 
   Ogre::OverlayManager::getSingleton().addOverlay(imgui_.get());
