@@ -556,7 +556,7 @@ endif ()
 externalproject_add(assets
         EXCLUDE_FROM_ALL true
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git assets
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E rm -rf ${CONTEXT_ROOT_DIR}/assets/.git
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
         INSTALL_COMMAND ${CMAKE_COMMAND} -E true
         )
