@@ -239,7 +239,7 @@ externalproject_add(target-freetype
                     EXCLUDE_FROM_ALL true
                     DEPENDS target-png
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
+                    GIT_REPOSITORY https://github.com/freetype/freetype.git
                     GIT_TAG VER-2-10-4
                     GIT_SHALLOW true
                     GIT_PROGRESS false
