@@ -30,16 +30,6 @@ RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
     && rm -rf ${CONTEXT_HOME}/build-apple
 
 
-ENV CMAKE_VERSION=3.19.8
-ENV CMAKE_HOME=/opt/cmake-3.19.8
-ENV PATH="${CMAKE_HOME}/bin:${PATH}"
-
-RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
-    && chmod u+x /tmp/cmake-install.sh \
-    && mkdir ${CMAKE_HOME} \
-    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
-    && rm /tmp/cmake-install.sh
-
 ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 ADD ./dependencies/patch ./dependencies/patch
 ADD ./CMakeLists.txt ./CMakeLists.txt

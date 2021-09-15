@@ -13,9 +13,9 @@ RUN apt-get update \
 # Build Mingw from source, ubuntu ppa contains old versions
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
-ARG BINUTILS_VERSION=2.35.1
-ARG MINGW_VERSION=8.0.0
-ARG GCC_VERSION=10.3.0
+ARG BINUTILS_VERSION=2.37
+ARG MINGW_VERSION=9.0.0
+ARG GCC_VERSION=11.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
 
 RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev xz-utils bzip2 \
@@ -69,7 +69,6 @@ RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev l
       --disable-shared \
       --enable-static \
       --enable-threads=posix \
-      --enable-exceptions=seh \
       --enable-libgomp \
       --enable-libatomic \
       --enable-graphite \
@@ -120,18 +119,17 @@ RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev l
     && apt-get -y autoremove \
     && apt-get clean
 
-RUN update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 10300 \
+RUN update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 11200 \
         --slave ${GCC_HOME}/bin/mingw32-g++ mingw32-g++ ${GCC_HOME}/bin/x86_64-w64-mingw32-g++ \
-    && update-alternatives --install /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 10300 \
+    && update-alternatives --install /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 11200 \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
 
 
 ########################################################################################################################
-ENV CMAKE_VERSION=3.20.3
-ENV CMAKE_HOME=/opt/cmake
-ENV NINJA_VERSION=1.10.2
-ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+ARG CMAKE_VERSION=3.19.8
+ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
+ARG NINJA_VERSION=1.10.2
 
 RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp && unzip /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
     && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
@@ -139,6 +137,8 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && mkdir ${CMAKE_HOME} \
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
     && rm /tmp/cmake-install.sh
+
+ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 
 ########################################################################################################################
@@ -187,10 +187,10 @@ WORKDIR /opt
 
 
 ########################################################################################################################
-RUN wget https://dl.google.com/android/repository/commandlinetools-linux-6609375_latest.zip -O tools.zip \
+RUN wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O tools.zip \
     && unzip tools.zip \
     && rm tools.zip \
-    && cd tools/bin \
+    && cd cmdline-tools/bin \
     && export ANDROID_HOME=/opt/android-sdk \
     && yes | ./sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
     && cd ../

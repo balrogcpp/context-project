@@ -63,22 +63,22 @@ RUN update-alternatives --install /usr/local/bin/python3 python3 /usr/local/bin/
 
 
 ########################################################################################################################
-ENV CMAKE_VERSION=3.20.3
-ENV CMAKE_HOME=/opt/cmake
-ENV NINJA_VERSION=1.10.2
+ARG CMAKE_VERSION=3.19.8
+ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
+ARG NINJA_VERSION=1.10.2
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp && unzip /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
     && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
     && chmod u+x /tmp/cmake-install.sh \
-    && mkdir /opt/cmake \
+    && mkdir ${CMAKE_HOME} \
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
     && rm /tmp/cmake-install.sh
 
 
 
 ########################################################################################################################
-ARG BINUTILS_VERSION=2.35.1
+ARG BINUTILS_VERSION=2.37
 
 RUN apt-get update \
     && apt-get install -y zlib1g-dev \
@@ -120,7 +120,7 @@ RUN apt-get update \
 
 
 ########################################################################################################################
-ARG LLVM_VERSION=12.0.0
+ARG LLVM_VERSION=12.0.1
 ARG LLVM_HOME=/usr
 
 RUN cd /mnt \
