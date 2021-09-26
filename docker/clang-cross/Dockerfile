@@ -5,7 +5,7 @@ WORKDIR /mnt
 
 
 RUN apt-get update \
-    && apt-get install -y git gcc g++ python python3 zip wget ca-certificates gnupg2 make autoconf file patch \
+    && apt-get install -y git gcc g++ zip wget ca-certificates gnupg2 make autoconf file patch \
     && apt-get clean
 
 

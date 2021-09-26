@@ -5,29 +5,28 @@ ARG CONTEXT_HOME=/mnt/build
 ARG GIT_HASH=00000000
 WORKDIR ${CONTEXT_HOME}
 
-
-ADD ./sources ./sources
-ADD ./deploy ./deploy
-ADD ./cmake ./cmake
-ADD ./demo ./demo
-ADD ./doc ./doc
-ADD ./tests ./tests
-ADD ./LICENSE .
-ADD ./programs ./programs
-ADD ./assets ./assets
-ADD ./CMakeLists.txt .
-ADD ./zip-dependencies.py .
-ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
+COPY ./sources ./sources
+COPY ./deploy ./deploy
+COPY ./cmake ./cmake
+COPY ./demo ./demo
+COPY ./doc ./doc
+COPY ./tests ./tests
+COPY ./LICENSE .
+COPY ./programs ./programs
+COPY ./assets ./assets
+COPY ./CMakeLists.txt .
+COPY ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 
 
-RUN python3 zip-dependencies.py
+RUN cmake -P cmake/zip-dependencies.cmake
 
 
 RUN mkdir build-windows && cd build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target package \
     && cd .. \
-    && rm -rf build-windows
+    && rm -rf build-windows \
+    && rm -rf artifacts/_CPack_Packages
 
 
 RUN mkdir build-apple && cd build-apple \
@@ -35,10 +34,11 @@ RUN mkdir build-apple && cd build-apple \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target package \
     && cd .. \
-    && rm -rf build-apple
+    && rm -rf build-apple \
+    && rm -rf artifacts/_CPack_Packages
 
 
-ADD ./android ./android
+COPY ./android ./android
 
 RUN cd ./android \
     && ./gradlew assembleRelease \

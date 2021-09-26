@@ -11,11 +11,11 @@ RUN apt-get update \
     && apt-get clean
 
 
-ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
-ADD ./dependencies/patch ./dependencies/patch
-ADD ./CMakeLists.txt ./CMakeLists.txt
-ADD ./doc ./doc
-ADD ./cmake ./cmake
+COPY ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
+COPY ./dependencies/patch ./dependencies/patch
+COPY ./CMakeLists.txt ./CMakeLists.txt
+COPY ./doc ./doc
+COPY ./cmake ./cmake
 
 
 ENV CC=clang

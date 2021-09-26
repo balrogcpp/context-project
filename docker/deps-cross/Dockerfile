@@ -6,11 +6,11 @@ ARG GIT_HASH=00000000
 WORKDIR ${CONTEXT_HOME}
 
 
-ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
-ADD ./dependencies/patch ./dependencies/patch
-ADD ./CMakeLists.txt ./CMakeLists.txt
-ADD ./doc ./doc
-ADD ./cmake ./cmake
+COPY ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
+COPY ./dependencies/patch ./dependencies/patch
+COPY ./CMakeLists.txt ./CMakeLists.txt
+COPY ./doc ./doc
+COPY ./cmake ./cmake
 
 
 RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
@@ -30,12 +30,12 @@ RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
     && rm -rf ${CONTEXT_HOME}/build-apple
 
 
-ADD ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
-ADD ./dependencies/patch ./dependencies/patch
-ADD ./CMakeLists.txt ./CMakeLists.txt
-ADD ./doc ./doc
-ADD ./cmake ./cmake
-ADD ./android ./android
+COPY ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
+COPY ./dependencies/patch ./dependencies/patch
+COPY ./CMakeLists.txt ./CMakeLists.txt
+COPY ./doc ./doc
+COPY ./cmake ./cmake
+COPY ./android ./android
 
 RUN cd ./android \
     && ./gradlew assembleRelease \

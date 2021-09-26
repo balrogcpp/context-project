@@ -1,0 +1,27 @@
+#macro creates flat zip (without subdirectories) with files from curdir
+macro(flat_zip curdir destination)
+    file(MAKE_DIRECTORY ${CONTEXT_TEMP_DIR}/${destination})
+    file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
+    foreach (directory ${directories})
+        if (${directory} STREQUAL ".git") #omit .git directory
+            continue()
+        endif ()
+        set(filelist "")
+        if (IS_DIRECTORY ${curdir}/${directory})
+            file(GLOB_RECURSE files LIST_DIRECTORIES false ${curdir}/${directory} ${curdir}/${directory}/*)
+            file(MAKE_DIRECTORY ${CONTEXT_TEMP_DIR}/${destination}/${directory})
+            file(COPY ${files} DESTINATION ${CONTEXT_TEMP_DIR}/${destination}/${directory})
+            file(GLOB filelist RELATIVE ${CONTEXT_TEMP_DIR}/${destination}/${directory} ${CONTEXT_TEMP_DIR}/${destination}/${directory}/*)
+            execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_TEMP_DIR}/${destination}/${directory} ${CMAKE_COMMAND} -E tar cf ${CONTEXT_TEMP_DIR}/${destination}/${directory}.zip --format=zip ${filelist})
+            file(REMOVE_RECURSE ${CONTEXT_TEMP_DIR}/${destination}/${directory})
+        endif ()
+    endforeach ()
+endmacro()
+
+
+set(CONTEXT_PROGRAMS_DIR ${CMAKE_SOURCE_DIR}/programs)
+set(CONTEXT_SCENES_DIR ${CMAKE_SOURCE_DIR}/assets)
+set(CONTEXT_TMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
+file(REMOVE_RECURSE ${CONTEXT_TMP_DIR})
+flat_zip(${CONTEXT_PROGRAMS_DIR} ${CONTEXT_TMP_DIR}/programs)
+flat_zip(${CONTEXT_SCENES_DIR} ${CONTEXT_TMP_DIR}/assets)
