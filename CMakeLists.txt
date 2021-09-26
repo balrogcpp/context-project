@@ -348,6 +348,12 @@ if (NOT GIT_SHA1)
     )
 endif ()
 
+add_custom_target(pack-assets
+        COMMAND ${CMAKE_COMMAND} -P cmake/zip-dependencies.cmake
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Creating assets and programs zip package..."
+        )
+
 set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
 set(CONTEXT_ZIP_NAME ContextProjectDemo-${GIT_SHA1} CACHE PATH "")
 set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
