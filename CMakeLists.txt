@@ -399,7 +399,6 @@ include(CPack)
 
 if (NOT MSVC)
     add_custom_target(build-package
-            EXCLUDE_FROM_ALL true
             COMMAND ${CMAKE_COMMAND} --build . --target package
             COMMAND ${CMAKE_COMMAND} -E rm -rf ${CONTEXT_ARTIFACT_DIR}/_CPack_Packages
             WORKING_DIRECTORY ${CONTEXT_WORK_DIR}
