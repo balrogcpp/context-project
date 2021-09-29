@@ -554,15 +554,15 @@ endif ()
 
 
 add_custom_target(assets
-        EXCLUDE_FROM_ALL true
         COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git assets
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CONTEXT_ROOT_DIR}/assets/.git
+        COMMENT "Fetching assets..."
         )
 
 
 add_custom_target(assets_ssh
-        EXCLUDE_FROM_ALL true
         COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 git@github.com:balrogcpp/scenes.git assets
+        COMMENT "Fetching assets..."
         )
 
 
