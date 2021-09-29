@@ -553,23 +553,24 @@ if (NOT MSVC)
 endif ()
 
 
-externalproject_add(assets
+add_custom_target(assets
         EXCLUDE_FROM_ALL true
-        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git assets
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E rm -rf ${CONTEXT_ROOT_DIR}/assets/.git
-        BUILD_COMMAND ${CMAKE_COMMAND} -E true
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E true
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git assets
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CONTEXT_ROOT_DIR}/assets/.git
         )
 
 
-externalproject_add(assets_ssh
+add_custom_target(assets_ssh
         EXCLUDE_FROM_ALL true
-        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 git@github.com:balrogcpp/scenes.git assets
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
-        BUILD_COMMAND ${CMAKE_COMMAND} -E true
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E true
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 git@github.com:balrogcpp/scenes.git assets
         )
 
+
+add_custom_target(pack-assets
+        COMMAND ${CMAKE_COMMAND} -P cmake/flat_zip.cmake
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Creating assets and programs zip package..."
+        )
 
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)

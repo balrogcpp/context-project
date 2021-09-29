@@ -8,7 +8,7 @@ WORKDIR ${CONTEXT_HOME}
 COPY ./sources ./sources
 COPY ./deploy ./deploy
 COPY ./cmake ./cmake
-COPY ./demo ./demo
+COPY ./example ./example
 COPY ./doc ./doc
 COPY ./tests ./tests
 COPY ./LICENSE .
@@ -18,25 +18,22 @@ COPY ./CMakeLists.txt .
 COPY ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 
 
-RUN cmake -P cmake/zip-dependencies.cmake
+RUN cmake -P cmake/flat_zip.cmake
 
 
 RUN mkdir build-windows && cd build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target package \
+    && cmake --build . --target build-package \
     && cd .. \
-    && rm -rf build-windows \
-    && rm -rf artifacts/_CPack_Packages
+    && rm -rf build-windows
 
 
 RUN mkdir build-apple && cd build-apple \
     && eval `x86_64-apple-darwin19-osxcross-conf` \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target package \
+    && cmake --build . --target build-package \
     && cd .. \
-    && rm -rf build-apple \
-    && rm -rf artifacts/_CPack_Packages
-
+    && rm -rf build-apple
 
 COPY ./android ./android
 

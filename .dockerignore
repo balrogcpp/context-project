@@ -3,7 +3,7 @@
 !/android/
 !/assets/
 !/cmake/
-!/demo/
+!/example/
 !/dependencies/CMakeLists.txt/
 !/dependencies/patch/
 !/deploy/

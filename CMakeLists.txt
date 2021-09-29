@@ -272,12 +272,6 @@ if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
 endif ()
 
 
-add_custom_target(pack-assets
-        COMMAND ${CMAKE_COMMAND} -P cmake/zip-dependencies.cmake
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Creating assets and programs zip package..."
-        )
-
 if (ANY_NOT_FOUND)
     return()
 endif ()
@@ -289,21 +283,21 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTA
         ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
         ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 
-file(GLOB_RECURSE SOURCE_FILES demo/*.cpp demo/*.h demo/*.hpp deploy/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
+file(GLOB_RECURSE SOURCE_FILES example/*.cpp example/*.h example/*.hpp deploy/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
 
 
 if (ANDROID)
-    add_library(demo SHARED ${SOURCE_FILES})
-    set_target_properties(demo PROPERTIES OUTPUT_NAME "main")
+    add_library(example SHARED ${SOURCE_FILES})
+    set_target_properties(example PROPERTIES OUTPUT_NAME "main")
 elseif (WIN32)
-    add_executable(demo WIN32 ${SOURCE_FILES})
+    add_executable(example WIN32 ${SOURCE_FILES})
 else ()
-    add_executable(demo ${SOURCE_FILES})
+    add_executable(example ${SOURCE_FILES})
 endif ()
 
-include_directories(demo demo/include ${CONTEXT_INCLUDE_DIRS})
-target_link_directories(demo PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
-target_precompile_headers(demo PUBLIC sources/include/pcheader.h)
+include_directories(example example/include ${CONTEXT_INCLUDE_DIRS})
+target_link_directories(example PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
+target_precompile_headers(example PUBLIC sources/include/pcheader.h)
 
 
 if (MINGW)
@@ -317,12 +311,12 @@ elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 endif ()
 
-target_link_libraries(demo PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
+target_link_libraries(example PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
         ${PNG_LIBRARY} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
         ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
 
-install(TARGETS demo RUNTIME DESTINATION .)
+install(TARGETS example RUNTIME DESTINATION .)
 
 file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
 add_library(lib-static STATIC ${SOURCE_FILES})
@@ -342,7 +336,7 @@ if (NOT ANDROID)
     file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.json DESTINATION .)
 endif ()
 if (MINGW)
-    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/demo.exe.manifest DESTINATION .)
+    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/example.exe.manifest DESTINATION .)
 endif ()
 
 
@@ -366,7 +360,7 @@ set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOC
 
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION .)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/assets ${CMAKE_SOURCE_DIR}/tmp/programs DESTINATION .)
-set(EXECUTABLE_NAME demo)
+set(EXECUTABLE_NAME example)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(FILES ${CMAKE_SOURCE_DIR}/deploy/Launch.sh PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
@@ -386,6 +380,9 @@ endif ()
 
 set(CONTEXT_PACKAGE_NAME "ContextProjectDemo")
 set(CONTEXT_ARTIFACT_NAME ${CONTEXT_PACKAGE_NAME}-${CONTEXT_TOOLCHAIN}-${GIT_SHA1})
+if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
+    string(APPEND CONTEXT_ARTIFACT_NAME "-${CMAKE_BUILD_TYPE}")
+endif ()
 
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
@@ -400,4 +397,16 @@ set(CPACK_GENERATOR "ZIP")
 
 include(CPack)
 
+if (NOT MSVC)
+    add_custom_target(build-package
+            EXCLUDE_FROM_ALL true
+            COMMAND ${CMAKE_COMMAND} --build . --target package
+            COMMAND ${CMAKE_COMMAND} -E rm -rf ${CONTEXT_ARTIFACT_DIR}/_CPack_Packages
+            WORKING_DIRECTORY ${CONTEXT_WORK_DIR}
+            COMMENT "Build packages..."
+            VERBATIM
+            )
+endif()
+
+#for tests
 add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
