@@ -3,7 +3,7 @@
 
 #include "AppState.h"
 
-#include <OgreSceneLoaderManager.h>
+//#include <OgreSceneLoaderManager.h>
 
 #include "pcheader.h"
 
@@ -20,7 +20,9 @@ AppState::~AppState() {}
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::LoadFromFile(const string &file_name, const string &group) {
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  Ogre::SceneLoaderManager::getSingleton().load(file_name, group, scene->getRootSceneNode());
+  auto *root = scene->getRootSceneNode();
+  root->loadChildren(file_name);
+  //Ogre::SceneLoaderManager::getSingleton().load(file_name, group, scene->getRootSceneNode());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -17,7 +17,7 @@ class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, 
   void ChangeState(std::unique_ptr<AppState> &&app_state);
   void ChangeState();
   void SetNextState(std::unique_ptr<AppState> &&next_state);
-  void LoadFromFile(const std::string &file_name, const std::string &group);
+  void LoadFromFile(const std::string &file_name, const std::string &group = Ogre::RGN_DEFAULT);
   bool IsDirty() const;
 
   virtual void Init() = 0;

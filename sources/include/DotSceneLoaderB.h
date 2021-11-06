@@ -4,7 +4,7 @@
 #pragma once
 #include <OgreCodec.h>
 #include <OgrePlugin.h>
-#include <OgreSceneLoader.h>
+//#include <OgreSceneLoader.h>
 #include <OgreVector4.h>
 
 #include <string>
@@ -18,7 +18,7 @@
 #include "Scene.h"
 #include "Singleton.h"
 #include "System.h"
-#include "Vegetation.h"
+#include "VegetationSystem.h"
 #include "view_ptr.h"
 
 namespace pugi {
@@ -61,7 +61,7 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node);
 
 Ogre::ColourValue ParseColour(pugi::xml_node &xml_node);
 
-class DotSceneLoaderB final : public System, public Ogre::SceneLoader, public Singleton<DotSceneLoaderB> {
+class DotSceneLoaderB final : public System, public Singleton<DotSceneLoaderB> {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();
@@ -69,13 +69,13 @@ class DotSceneLoaderB final : public System, public Ogre::SceneLoader, public Si
   void Cleanup() override;
   void Update(float time) override;
 
-  void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) override;
+  void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node);
   void exportScene(Ogre::SceneNode *rootNode, const std::string &outFileName);
   float GetHeigh(float x, float z);
 
   static Landscape &GetTerrain();
   CameraMan &GetCamera() const;
-  static Vegetation &GetForest();
+  static VegetationSystem &GetForest();
 
  private:
   void ProcessScene_(pugi::xml_node &xml_root);
@@ -116,7 +116,7 @@ class DotSceneLoaderB final : public System, public Ogre::SceneLoader, public Si
   std::unique_ptr<SinbadCharacterController> sinbad_;
 
   static inline std::unique_ptr<Landscape> terrain_;
-  static inline std::unique_ptr<Vegetation> forest_;
+  static inline std::unique_ptr<VegetationSystem> forest_;
 };
 
 

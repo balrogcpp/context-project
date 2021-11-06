@@ -1,7 +1,7 @@
 // This source file is part of context-project
 // Created by Andrew Vasiliev
 
-#include "Vegetation.h"
+#include "VegetationSystem.h"
 
 #include "ComponentLocator.h"
 #include "MeshUtils.h"
@@ -191,23 +191,23 @@ static void CreateGrassMesh(float width, float height) {
 //}
 
 //----------------------------------------------------------------------------------------------------------------------
-Vegetation::Vegetation() {}
+VegetationSystem::VegetationSystem() {}
 
 //----------------------------------------------------------------------------------------------------------------------
-Vegetation::~Vegetation() {
+VegetationSystem::~VegetationSystem() {
   auto &mesh_manager = Ogre::MeshManager::getSingleton();
   if (mesh_manager.getByName("grass", Ogre::RGN_AUTODETECT)) mesh_manager.remove("grass", Ogre::RGN_AUTODETECT);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Vegetation::Update(float time) {
+void VegetationSystem::Update(float time) {
   for (auto &it : pgeometry_) it->update();
 
   for (auto &it : gpages_) it->update();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Vegetation::GenerateGrassStatic() {
+void VegetationSystem::GenerateGrassStatic() {
   // create our grass mesh, and Init a grass entity from it
   CreateGrassMesh(1.0, 1.0);
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -236,7 +236,7 @@ void Vegetation::GenerateGrassStatic() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Vegetation::GenerateRocksStatic() {
+void VegetationSystem::GenerateRocksStatic() {
   // create our grass mesh, and Init a grass entity from it
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   Ogre::Entity *rock = scene->createEntity("Rock", "rock.mesh");
@@ -273,7 +273,7 @@ void Vegetation::GenerateRocksStatic() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Vegetation::GenerateGrassPaged() {
+void VegetationSystem::GenerateGrassPaged() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 5);
   grass->addDetailLevel<GrassPage>(50, 10);  // Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
@@ -305,7 +305,7 @@ void Vegetation::GenerateGrassPaged() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Vegetation::GenerateTreesPaged() {
+void VegetationSystem::GenerateTreesPaged() {
   const float bound = 50;
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -369,7 +369,7 @@ void Vegetation::GenerateTreesPaged() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Vegetation::ProcessForest() {
+void VegetationSystem::ProcessForest() {
   GenerateGrassPaged();
   // GenerateTreesPaged();
     GenerateRocksStatic();

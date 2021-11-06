@@ -3,7 +3,7 @@
 
 #include "DotSceneLoaderB.h"
 
-#include <OgreSceneLoaderManager.h>
+//#include <OgreSceneLoaderManager.h>
 
 #include <pugixml.hpp>
 
@@ -27,7 +27,7 @@
 #endif
 
 using namespace std;
-using SC = Ogre::StringConverter;
+using sc = Ogre::StringConverter;
 
 namespace glue {
 
@@ -43,7 +43,7 @@ string GetAttrib(const pugi::xml_node &xml_node, const string &attrib, const str
 //----------------------------------------------------------------------------------------------------------------------
 float GetAttribReal(const pugi::xml_node &xml_node, const string &attrib, float defaultValue) {
   if (auto anode = xml_node.attribute(attrib.c_str())) {
-    return SC::parseReal(anode.value());
+    return sc::parseReal(anode.value());
   } else {
     return defaultValue;
   }
@@ -52,7 +52,7 @@ float GetAttribReal(const pugi::xml_node &xml_node, const string &attrib, float 
 //----------------------------------------------------------------------------------------------------------------------
 int GetAttribInt(const pugi::xml_node &xml_node, const string &attrib, int defaultValue) {
   if (auto anode = xml_node.attribute(attrib.c_str())) {
-    return SC::parseInt(anode.value());
+    return sc::parseInt(anode.value());
   } else {
     return defaultValue;
   }
@@ -69,27 +69,27 @@ bool GetAttribBool(const pugi::xml_node &xml_node, const string &attrib, bool de
 
 //----------------------------------------------------------------------------------------------------------------------
 Ogre::Vector3 ParseVector3(const pugi::xml_node &xml_node) {
-  float x = SC::parseReal(xml_node.attribute("x").value());
-  float y = SC::parseReal(xml_node.attribute("y").value());
-  float z = SC::parseReal(xml_node.attribute("z").value());
+  float x = sc::parseReal(xml_node.attribute("x").value());
+  float y = sc::parseReal(xml_node.attribute("y").value());
+  float z = sc::parseReal(xml_node.attribute("z").value());
 
   return Ogre::Vector3(x, y, z);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 Ogre::Vector3 ParsePosition(const pugi::xml_node &xml_node) {
-  float x = SC::parseReal(xml_node.attribute("x").value());
-  float y = SC::parseReal(xml_node.attribute("y").value());
-  float z = SC::parseReal(xml_node.attribute("z").value());
+  float x = sc::parseReal(xml_node.attribute("x").value());
+  float y = sc::parseReal(xml_node.attribute("y").value());
+  float z = sc::parseReal(xml_node.attribute("z").value());
 
   return Ogre::Vector3(x, y, z);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 Ogre::Vector3 ParseScale(const pugi::xml_node &xml_node) {
-  float x = SC::parseReal(xml_node.attribute("x").value());
-  float y = SC::parseReal(xml_node.attribute("y").value());
-  float z = SC::parseReal(xml_node.attribute("z").value());
+  float x = sc::parseReal(xml_node.attribute("x").value());
+  float y = sc::parseReal(xml_node.attribute("y").value());
+  float z = sc::parseReal(xml_node.attribute("z").value());
 
   return Ogre::Vector3(x, y, z);
 }
@@ -99,34 +99,34 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node) {
   Ogre::Quaternion orientation;
 
   if (xml_node.attribute("qw")) {
-    orientation.w = SC::parseReal(xml_node.attribute("qw").value());
-    orientation.x = SC::parseReal(xml_node.attribute("qx").value());
-    orientation.y = -SC::parseReal(xml_node.attribute("qz").value());
-    orientation.z = SC::parseReal(xml_node.attribute("qy").value());
+    orientation.w = sc::parseReal(xml_node.attribute("qw").value());
+    orientation.x = sc::parseReal(xml_node.attribute("qx").value());
+    orientation.y = -sc::parseReal(xml_node.attribute("qz").value());
+    orientation.z = sc::parseReal(xml_node.attribute("qy").value());
   } else if (xml_node.attribute("axisX")) {
     Ogre::Vector3 axis;
-    axis.x = SC::parseReal(xml_node.attribute("axisX").value());
-    axis.y = SC::parseReal(xml_node.attribute("axisY").value());
-    axis.z = SC::parseReal(xml_node.attribute("axisZ").value());
-    float angle = SC::parseReal(xml_node.attribute("angle").value());
+    axis.x = sc::parseReal(xml_node.attribute("axisX").value());
+    axis.y = sc::parseReal(xml_node.attribute("axisY").value());
+    axis.z = sc::parseReal(xml_node.attribute("axisZ").value());
+    float angle = sc::parseReal(xml_node.attribute("angle").value());
 
     orientation.FromAngleAxis(Ogre::Angle(angle), axis);
   } else if (xml_node.attribute("angleX")) {
     Ogre::Matrix3 rot;
-    rot.FromEulerAnglesXYZ(SC::parseAngle(xml_node.attribute("angleX").value()),
-                           SC::parseAngle(xml_node.attribute("angleY").value()),
-                           SC::parseAngle(xml_node.attribute("angleZ").value()));
+    rot.FromEulerAnglesXYZ(sc::parseAngle(xml_node.attribute("angleX").value()),
+                           sc::parseAngle(xml_node.attribute("angleY").value()),
+                           sc::parseAngle(xml_node.attribute("angleZ").value()));
     orientation.FromRotationMatrix(rot);
   } else if (xml_node.attribute("x")) {
-    orientation.x = SC::parseReal(xml_node.attribute("x").value());
-    orientation.y = SC::parseReal(xml_node.attribute("y").value());
-    orientation.z = SC::parseReal(xml_node.attribute("z").value());
-    orientation.w = SC::parseReal(xml_node.attribute("w").value());
+    orientation.x = sc::parseReal(xml_node.attribute("x").value());
+    orientation.y = sc::parseReal(xml_node.attribute("y").value());
+    orientation.z = sc::parseReal(xml_node.attribute("z").value());
+    orientation.w = sc::parseReal(xml_node.attribute("w").value());
   } else if (xml_node.attribute("w")) {
-    orientation.w = SC::parseReal(xml_node.attribute("w").value());
-    orientation.x = SC::parseReal(xml_node.attribute("x").value());
-    orientation.y = SC::parseReal(xml_node.attribute("y").value());
-    orientation.z = SC::parseReal(xml_node.attribute("z").value());
+    orientation.w = sc::parseReal(xml_node.attribute("w").value());
+    orientation.x = sc::parseReal(xml_node.attribute("x").value());
+    orientation.y = sc::parseReal(xml_node.attribute("y").value());
+    orientation.z = sc::parseReal(xml_node.attribute("z").value());
   }
 
   Ogre::Vector3 direction = orientation * Ogre::Vector3::NEGATIVE_UNIT_Z;
@@ -147,38 +147,38 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node) {
 //----------------------------------------------------------------------------------------------------------------------
 Ogre::ColourValue ParseColour(pugi::xml_node &xml_node) {
   return Ogre::ColourValue(
-      SC::parseReal(xml_node.attribute("r").value()), SC::parseReal(xml_node.attribute("g").value()),
-      SC::parseReal(xml_node.attribute("b").value()), SC::parseReal(xml_node.attribute("a").value(), 1));
+      sc::parseReal(xml_node.attribute("r").value()), sc::parseReal(xml_node.attribute("g").value()),
+      sc::parseReal(xml_node.attribute("b").value()), sc::parseReal(xml_node.attribute("a").value(), 1));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 static void write(pugi::xml_node &node, const Ogre::Vector3 &v) {
-  node.append_attribute("x") = Ogre::StringConverter::toString(v.x).c_str();
-  node.append_attribute("y") = Ogre::StringConverter::toString(v.y).c_str();
-  node.append_attribute("z") = Ogre::StringConverter::toString(v.z).c_str();
+  node.append_attribute("x") = sc::toString(v.x).c_str();
+  node.append_attribute("y") = sc::toString(v.y).c_str();
+  node.append_attribute("z") = sc::toString(v.z).c_str();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 static void write(pugi::xml_node &node, const Ogre::ColourValue &c) {
-  node.append_attribute("r") = Ogre::StringConverter::toString(c.r).c_str();
-  node.append_attribute("g") = Ogre::StringConverter::toString(c.g).c_str();
-  node.append_attribute("b") = Ogre::StringConverter::toString(c.b).c_str();
-  node.append_attribute("a") = Ogre::StringConverter::toString(c.a).c_str();
+  node.append_attribute("r") = sc::toString(c.r).c_str();
+  node.append_attribute("g") = sc::toString(c.g).c_str();
+  node.append_attribute("b") = sc::toString(c.b).c_str();
+  node.append_attribute("a") = sc::toString(c.a).c_str();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::DotSceneLoaderB() {
-  static auto &sl = Ogre::SceneLoaderManager::getSingleton();
-
-  if (sl._getSceneLoader("DotScene")) {
-    sl.unregisterSceneLoader("DotScene");
-  }
-
-  if (sl._getSceneLoader("DotSceneB")) {
-    sl.unregisterSceneLoader("DotSceneB");
-  }
-
-  sl.registerSceneLoader("DotSceneB", {".scene", ".xml"}, this);
+//  static auto &sl = Ogre::SceneLoaderManager::getSingleton();
+//
+//  if (sl._getSceneLoader("DotScene")) {
+//    sl.unregisterSceneLoader("DotScene");
+//  }
+//
+//  if (sl._getSceneLoader("DotSceneB")) {
+//    sl.unregisterSceneLoader("DotSceneB");
+//  }
+//
+//  sl.registerSceneLoader("DotSceneB", {".scene"}, this);
 
   camera_ = make_unique<CameraMan>();
 }
@@ -193,13 +193,11 @@ Landscape &DotSceneLoaderB::GetTerrain() { return *terrain_; }
 CameraMan &DotSceneLoaderB::GetCamera() const { return *camera_; }
 
 //----------------------------------------------------------------------------------------------------------------------
-Vegetation &DotSceneLoaderB::GetForest() { return *forest_; }
+VegetationSystem &DotSceneLoaderB::GetForest() { return *forest_; }
 
 //----------------------------------------------------------------------------------------------------------------------
 void DotSceneLoaderB::Update(float time) {
-  if (paused_) {
-    return;
-  }
+  if (paused_) return;
 
   if (camera_) camera_->Update(time);
   if (terrain_) terrain_->Update(time);
@@ -238,7 +236,7 @@ void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const string &group_name
   attach_node_ = root_node;
 
   if (!terrain_) terrain_ = make_unique<Landscape>();
-  if (!forest_) forest_ = make_unique<Vegetation>();
+  if (!forest_) forest_ = make_unique<VegetationSystem>();
   forest_->SetHeighFunc([](float x, float z) { return terrain_->GetHeigh(x, z); });
   assert(!scene_);
   scene_ = make_unique<Scene>();
@@ -259,25 +257,25 @@ void DotSceneLoaderB::WriteNode_(pugi::xml_node &parentXML, const Ogre::SceneNod
   write(scale, node->getScale());
 
   auto rot = nodeXML.append_child("rotation");
-  rot.append_attribute("qw") = Ogre::StringConverter::toString(node->getOrientation().w).c_str();
-  rot.append_attribute("qx") = Ogre::StringConverter::toString(node->getOrientation().x).c_str();
-  rot.append_attribute("qy") = Ogre::StringConverter::toString(node->getOrientation().y).c_str();
-  rot.append_attribute("qz") = Ogre::StringConverter::toString(node->getOrientation().z).c_str();
+  rot.append_attribute("qw") = sc::toString(node->getOrientation().w).c_str();
+  rot.append_attribute("qx") = sc::toString(node->getOrientation().x).c_str();
+  rot.append_attribute("qy") = sc::toString(node->getOrientation().y).c_str();
+  rot.append_attribute("qz") = sc::toString(node->getOrientation().z).c_str();
 
   for (auto mo : node->getAttachedObjects()) {
     if (auto c = dynamic_cast<Ogre::Camera *>(mo)) {
       auto camera = nodeXML.append_child("camera");
       camera.append_attribute("name") = c->getName().c_str();
       auto clipping = camera.append_child("clipping");
-      clipping.append_attribute("near") = Ogre::StringConverter::toString(c->getNearClipDistance()).c_str();
-      clipping.append_attribute("far") = Ogre::StringConverter::toString(c->getFarClipDistance()).c_str();
+      clipping.append_attribute("near") = sc::toString(c->getNearClipDistance()).c_str();
+      clipping.append_attribute("far") = sc::toString(c->getFarClipDistance()).c_str();
       continue;
     }
 
     if (auto l = dynamic_cast<Ogre::Light *>(mo)) {
       auto light = nodeXML.append_child("light");
       light.append_attribute("name") = l->getName().c_str();
-      light.append_attribute("castShadows") = Ogre::StringConverter::toString(l->getCastShadows()).c_str();
+      light.append_attribute("castShadows") = sc::toString(l->getCastShadows()).c_str();
 
       if (!l->isVisible()) light.append_attribute("visible") = "false";
 
@@ -299,14 +297,14 @@ void DotSceneLoaderB::WriteNode_(pugi::xml_node &parentXML, const Ogre::SceneNod
 
       if (l->getType() != Ogre::Light::LT_DIRECTIONAL) {
         auto range = light.append_child("lightRange");
-        range.append_attribute("inner") = Ogre::StringConverter::toString(l->getSpotlightInnerAngle()).c_str();
-        range.append_attribute("outer") = Ogre::StringConverter::toString(l->getSpotlightOuterAngle()).c_str();
-        range.append_attribute("falloff") = Ogre::StringConverter::toString(l->getSpotlightFalloff()).c_str();
+        range.append_attribute("inner") = sc::toString(l->getSpotlightInnerAngle()).c_str();
+        range.append_attribute("outer") = sc::toString(l->getSpotlightOuterAngle()).c_str();
+        range.append_attribute("falloff") = sc::toString(l->getSpotlightFalloff()).c_str();
         auto atten = light.append_child("lightAttenuation");
-        atten.append_attribute("range") = Ogre::StringConverter::toString(l->getAttenuationRange()).c_str();
-        atten.append_attribute("constant") = Ogre::StringConverter::toString(l->getAttenuationConstant()).c_str();
-        atten.append_attribute("linear") = Ogre::StringConverter::toString(l->getAttenuationLinear()).c_str();
-        atten.append_attribute("quadratic") = Ogre::StringConverter::toString(l->getAttenuationQuadric()).c_str();
+        atten.append_attribute("range") = sc::toString(l->getAttenuationRange()).c_str();
+        atten.append_attribute("constant") = sc::toString(l->getAttenuationConstant()).c_str();
+        atten.append_attribute("linear") = sc::toString(l->getAttenuationLinear()).c_str();
+        atten.append_attribute("quadratic") = sc::toString(l->getAttenuationQuadric()).c_str();
       }
 
       continue;
@@ -941,9 +939,9 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   float distance = GetAttribReal(xml_node, "distance", 0.0f);
   float width = GetAttribReal(xml_node, "width", 1.0f);
   float height = GetAttribReal(xml_node, "height", width);
-  int xSegments = SC::parseInt(GetAttrib(xml_node, "xSegments"), width / 5.0f);
-  int ySegments = SC::parseInt(GetAttrib(xml_node, "ySegments"), height / 5.0f);
-  int numTexCoordSets = SC::parseInt(GetAttrib(xml_node, "numTexCoordSets"), 1);
+  int xSegments = sc::parseInt(GetAttrib(xml_node, "xSegments"), width / 5.0f);
+  int ySegments = sc::parseInt(GetAttrib(xml_node, "ySegments"), height / 5.0f);
+  int numTexCoordSets = sc::parseInt(GetAttrib(xml_node, "numTexCoordSets"), 1);
   float uTile = GetAttribReal(xml_node, "uTile", width / 10.0f);
   float vTile = GetAttribReal(xml_node, "vTile", height / 10.0f);
   string material = GetAttrib(xml_node, "material", "BaseWhite");
@@ -1038,7 +1036,7 @@ void DotSceneLoaderB::ProcessFog_(pugi::xml_node &xml_node) {
   } else if (sMode == "linear") {
     mode = Ogre::FOG_LINEAR;
   } else {
-    mode = (Ogre::FogMode)SC::parseInt(sMode);
+    mode = (Ogre::FogMode)sc::parseInt(sMode);
   }
 
   if (auto element = xml_node.child("colour")) {
@@ -1139,11 +1137,11 @@ void DotSceneLoaderB::ProcessUserData_(pugi::xml_node &xml_node, Ogre::UserObjec
     Ogre::Any value;
 
     if (type == "bool") {
-      value = SC::parseBool(data);
+      value = sc::parseBool(data);
     } else if (type == "float") {
-      value = SC::parseReal(data);
+      value = sc::parseReal(data);
     } else if (type == "int") {
-      value = SC::parseInt(data);
+      value = sc::parseInt(data);
     } else {
       value = data;
     }
@@ -1160,9 +1158,11 @@ struct DotSceneCodec : public Ogre::Codec {
     using namespace Ogre;
 
     DataStreamPtr _stream(stream);
-    DotSceneLoaderB loader;
-    loader.load(_stream, ResourceGroupManager::getSingleton().getWorldResourceGroupName(),
-                any_cast<SceneNode *>(output));
+//    DotSceneLoaderB loader;
+//    loader.load(_stream, ResourceGroupManager::getSingleton().getWorldResourceGroupName(),
+//                any_cast<SceneNode *>(output));
+    GetLoader().load(_stream, ResourceGroupManager::getSingleton().getWorldResourceGroupName(),
+                                     any_cast<SceneNode *>(output));
   }
 
   void encodeToFile(const Ogre::Any &input, const Ogre::String &outFileName) const override {

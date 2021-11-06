@@ -7,6 +7,7 @@
 #include "Config.h"
 #include "Exception.h"
 #include "RtssUtils.h"
+#include "DotSceneLoaderB.h"
 #include "pcheader.h"
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
@@ -91,13 +92,13 @@ RenderSystem::~RenderSystem() {}
 void RenderSystem::InitOgrePlugins_() {
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
-#endif  // OGRE_BUILD_PLUGIN_OCTREE
+#endif
 #ifdef OGRE_BUILD_PLUGIN_PFX
   Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
-#endif  // OGRE_BUILD_PLUGIN_PFX
+#endif
 #ifdef OGRE_BUILD_PLUGIN_STBI
   Ogre::Root::getSingleton().installPlugin(new Ogre::STBIPlugin());
-#endif  // OGRE_BUILD_PLUGIN_STBI
+#endif
 #ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
   Ogre::Root::getSingleton().installPlugin(new Ogre::FreeImagePlugin());
 #endif
@@ -111,6 +112,7 @@ void RenderSystem::InitOgrePlugins_() {
 #else
   ogre_scene_ = root_->createSceneManager(Ogre::ST_GENERIC, "Default");
 #endif
+  Ogre::Root::getSingleton().installPlugin(new DotScenePluginB());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -190,7 +192,7 @@ void RenderSystem::InitRenderWindow_() {
   params["gamma"] = gamma ? true_str : false_str;
   params["FSAA"] = to_string(fsaa);
 
-  render_window_ = Ogre::Root::getSingleton().createRenderWindow("", 0, 0, false, &params);
+  render_window_ = Ogre::Root::getSingleton().createRenderWindow("", 1920, 1080, false, &params);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

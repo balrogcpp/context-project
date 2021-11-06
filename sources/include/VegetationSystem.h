@@ -16,10 +16,10 @@ class GeometryPage;
 
 namespace glue {
 
-class Vegetation final : public SubSystem {
+class VegetationSystem final : public SubSystem {
  public:
-  Vegetation();
-  virtual ~Vegetation();
+  VegetationSystem();
+  virtual ~VegetationSystem();
   void GenerateGrassStatic();
   void GenerateGrassPaged();
   void GenerateRocksStatic();

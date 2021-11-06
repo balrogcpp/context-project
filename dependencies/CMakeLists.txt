@@ -403,6 +403,7 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_PLUGIN_CG=false
                     -DOGRE_BUILD_RENDERSYSTEM_METAL=false
                     -DOGRE_BUILD_RENDERSYSTEM_GL=false
+                    -DOGRE_BUILD_RENDERSYSTEM_TINY=false
                     -DOGRE_BUILD_COMPONENT_OVERLAY=true
                     -DOGRE_BUILD_COMPONENT_BITES=false
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=true
