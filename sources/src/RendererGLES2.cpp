@@ -10,7 +10,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::InitOgreRenderSystem_GLES2_() {
@@ -21,4 +21,4 @@ void RenderSystem::InitOgreRenderSystem_GLES2_() {
 #endif
 }
 
-}  // namespace xio
+}  // namespace glue

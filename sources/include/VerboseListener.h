@@ -4,7 +4,7 @@
 #pragma once
 #include "Input.h"
 
-namespace xio {
+namespace glue {
 
 class VerboseListener final : public InputObserver {
  public:
@@ -31,4 +31,4 @@ class VerboseListener final : public InputObserver {
   bool verbose_ = true;
 };
 
-}  // namespace xio
+}  // namespace glue

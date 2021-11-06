@@ -17,7 +17,7 @@ class Viewport;
 class SceneManager;
 }  // namespace Ogre
 
-namespace xio {
+namespace glue {
 class GBufferSchemeHandler;
 
 class Compositor : public System, public Singleton<Compositor> {
@@ -48,4 +48,4 @@ class Compositor : public System, public Singleton<Compositor> {
   view_ptr<Ogre::Viewport> viewport_;
 };
 
-}  // namespace xio
+}  // namespace glue

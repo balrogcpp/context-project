@@ -8,7 +8,7 @@
 #include "pcheader.h"
 
 using namespace std;
-using namespace xio;
+using namespace glue;
 
 namespace Demo {
 DemoDotAppState::DemoDotAppState() {}

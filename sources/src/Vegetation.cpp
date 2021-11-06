@@ -1,7 +1,7 @@
 // This source file is part of context-project
 // Created by Andrew Vasiliev
 
-#include "VegetationSystem.h"
+#include "Vegetation.h"
 
 #include "ComponentLocator.h"
 #include "MeshUtils.h"
@@ -18,7 +18,7 @@ struct GrassVertex {
   float u, v;
 };
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 static void CreateGrassMesh(float width, float height) {
@@ -191,23 +191,23 @@ static void CreateGrassMesh(float width, float height) {
 //}
 
 //----------------------------------------------------------------------------------------------------------------------
-VegetationSystem::VegetationSystem() {}
+Vegetation::Vegetation() {}
 
 //----------------------------------------------------------------------------------------------------------------------
-VegetationSystem::~VegetationSystem() {
+Vegetation::~Vegetation() {
   auto &mesh_manager = Ogre::MeshManager::getSingleton();
   if (mesh_manager.getByName("grass", Ogre::RGN_AUTODETECT)) mesh_manager.remove("grass", Ogre::RGN_AUTODETECT);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void VegetationSystem::Update(float time) {
+void Vegetation::Update(float time) {
   for (auto &it : pgeometry_) it->update();
 
   for (auto &it : gpages_) it->update();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void VegetationSystem::GenerateGrassStatic() {
+void Vegetation::GenerateGrassStatic() {
   // create our grass mesh, and Init a grass entity from it
   CreateGrassMesh(1.0, 1.0);
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -236,7 +236,7 @@ void VegetationSystem::GenerateGrassStatic() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void VegetationSystem::GenerateRocksStatic() {
+void Vegetation::GenerateRocksStatic() {
   // create our grass mesh, and Init a grass entity from it
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   Ogre::Entity *rock = scene->createEntity("Rock", "rock.mesh");
@@ -273,7 +273,7 @@ void VegetationSystem::GenerateRocksStatic() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void VegetationSystem::GenerateGrassPaged() {
+void Vegetation::GenerateGrassPaged() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 5);
   grass->addDetailLevel<GrassPage>(50, 10);  // Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
@@ -305,7 +305,7 @@ void VegetationSystem::GenerateGrassPaged() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void VegetationSystem::GenerateTreesPaged() {
+void Vegetation::GenerateTreesPaged() {
   const float bound = 50;
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -369,10 +369,10 @@ void VegetationSystem::GenerateTreesPaged() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void VegetationSystem::ProcessForest() {
+void Vegetation::ProcessForest() {
   GenerateGrassPaged();
-  GenerateTreesPaged();
-  //  GenerateRocksStatic();
+  // GenerateTreesPaged();
+    GenerateRocksStatic();
 }
 
-}  // namespace xio
+}  // namespace glue

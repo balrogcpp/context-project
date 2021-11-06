@@ -6,7 +6,7 @@
 
 namespace Demo {
 
-class MenuAppState : public xio::AppState {
+class MenuAppState : public glue::AppState {
  public:
   MenuAppState() : AppState() {}
   virtual ~MenuAppState() {}

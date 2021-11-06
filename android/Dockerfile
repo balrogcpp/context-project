@@ -1,7 +1,7 @@
 FROM balrogcpp/android-ndk:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/xio-demo
+ARG CONTEXT_HOME=/mnt/glue-demo
 WORKDIR ${CONTEXT_HOME}
 
 ADD sources ./sources
@@ -20,6 +20,6 @@ ADD .git ./.git
 
 WORKDIR ${CONTEXT_HOME}/build-android
 RUN cmake -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16 -G Ninja .. && \
-    cmake --build . --target xio-deps && \
+    cmake --build . --target glue-deps && \
     cmake -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=16 -G Ninja .. && \
-    cmake --build . --target xio-demo
+    cmake --build . --target glue-demo

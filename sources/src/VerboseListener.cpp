@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 void VerboseListener::SetVerbose(bool verbose) { verbose_ = verbose; }
@@ -120,4 +120,4 @@ void VerboseListener::OnJoystickBall(int which, int ball, int xrel, int yrel) {
   }
 }
 
-}  // namespace xio
+}  // namespace glue

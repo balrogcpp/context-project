@@ -6,7 +6,7 @@
 
 #include <array>
 
-namespace xio {
+namespace glue {
 class CubeMapCamera final : public Ogre::RenderTargetListener {
  public:
   CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size);
@@ -27,4 +27,4 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   std::array<Ogre::RenderTarget *, 6> targets_{nullptr};
 };
 
-}  // namespace xio
+}  // namespace glue

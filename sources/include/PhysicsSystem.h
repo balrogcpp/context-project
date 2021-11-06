@@ -33,7 +33,7 @@ class btDiscreteDynamicsWorldMt;
 class btRigidBody;
 class btCollisionObject;
 
-namespace xio {
+namespace glue {
 struct ContactInfo {
   ContactInfo() = default;
   ContactInfo(const btCollisionObject *a, int points) : a_(a), points_(points) {}
@@ -101,4 +101,4 @@ class PhysicsSystem final : public System, public Singleton<PhysicsSystem> {
   const std::string PROXY_CONVEX = "convex";
 };
 
-}  // namespace xio
+}  // namespace glue

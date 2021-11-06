@@ -36,7 +36,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 RenderSystem::RenderSystem(int w, int h, bool f) {
@@ -66,8 +66,8 @@ RenderSystem::RenderSystem(int w, int h, bool f) {
   InitResourceLocation_();
 
   // RTSS block
-  xio::InitRtss();
-  xio::CreateRtssShaders();
+  glue::InitRtss();
+  glue::CreateRtssShaders();
 
   // Overlay
   overlay_ = make_unique<Overlay>(render_window_);
@@ -374,4 +374,4 @@ Window &RenderSystem::GetWindow() { return *window_; }
 //----------------------------------------------------------------------------------------------------------------------
 Compositor &RenderSystem::GetCompositor() { return *compositor_; }
 
-}  // namespace xio
+}  // namespace glue

@@ -12,7 +12,7 @@ namespace OgreOggSound {
 class OgreOggSoundManager;
 }
 
-namespace xio {
+namespace glue {
 class AudioSystem final : public System, public Singleton<AudioSystem> {
  public:
   AudioSystem(unsigned int max_sources, unsigned int queue_list_size);
@@ -34,4 +34,4 @@ class AudioSystem final : public System, public Singleton<AudioSystem> {
   view_ptr<OgreOggSound::OgreOggSoundManager> manager_;
 };
 
-}  // namespace xio
+}  // namespace glue

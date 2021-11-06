@@ -18,7 +18,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 Landscape::Landscape() {}
@@ -220,4 +220,4 @@ float Landscape::GetHeigh(float x, float z) {
     return 0.0f;
 }
 
-}  // namespace xio
+}  // namespace glue

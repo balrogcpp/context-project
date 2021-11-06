@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 Engine::Engine() {
@@ -113,4 +113,4 @@ void Engine::RenderOneFrame() { rs_->RenderOneFrame(); }
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Refresh() { rs_->Refresh(); }
 
-}  // namespace xio
+}  // namespace glue

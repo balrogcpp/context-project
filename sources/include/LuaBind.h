@@ -3,10 +3,10 @@
 
 #pragma once
 
-namespace xio {
+namespace glue {
 
 class LuaBind {
  public:
 };
 
-}  // namespace xio
+}  // namespace glue

@@ -8,7 +8,7 @@
 
 #include "view_ptr.h"
 
-namespace xio {
+namespace glue {
 class ReflectionCamera final : public Ogre::RenderTargetListener {
  public:
   ReflectionCamera(Ogre::Plane plane, unsigned int tex_size);
@@ -34,4 +34,4 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   view_ptr<Ogre::SceneManager> scene_;
 };
 
-}  // namespace xio
+}  // namespace glue

@@ -11,7 +11,7 @@
 
 struct AAssetManager;
 
-namespace xio {
+namespace glue {
 
 namespace AssetManager {
 
@@ -26,4 +26,4 @@ void AddLocationAndroid(AAssetManager *asset_mgr, const std::string &resource_fi
                         bool verbose = false);
 };  // namespace AssetManager
 
-}  // namespace xio
+}  // namespace glue

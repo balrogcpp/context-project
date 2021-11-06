@@ -1,5 +1,3 @@
-project(xio-deps)
-
 include(CMakeDependentOption)
 include(ExternalProject)
 find_package(Git REQUIRED)
@@ -409,7 +407,7 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_COMPONENT_BITES=false
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=true
                     -DOGRE_BUILD_COMPONENT_PAGING=false
-                    -DOGRE_BUILD_COMPONENT_MESHLODGENERATOR=false
+                    -DOGRE_BUILD_COMPONENT_MESHLODGENERATOR=true
                     -DOGRE_BUILD_COMPONENT_PROPERTY=false
                     -DOGRE_BUILD_COMPONENT_VOLUME=true
                     -DOGRE_BUILD_COMPONENT_TERRAIN=true
@@ -519,20 +517,39 @@ externalproject_add(target-filesystem
 
 
 externalproject_add(target-gtest
-        EXCLUDE_FROM_ALL true
-        PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG release-1.10.0
-        GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-        GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-        -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
-        -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DBUILD_GMOCK=false
-        ${CONTEXT_CMAKE_EXTRA_FLAGS}
-        -G "${CMAKE_GENERATOR}"
-        )
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/google/googletest.git
+                    GIT_TAG release-1.11.0
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS
+                    -G "${CMAKE_GENERATOR}"
+                    -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -DBUILD_GMOCK=false
+                    )
+
+
+externalproject_add(target-gbenchmark
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/google/benchmark.git
+                    GIT_TAG v1.6.0
+                    GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
+                    GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+                    CMAKE_ARGS
+                    -G "${CMAKE_GENERATOR}"
+                    -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${CONTEXT_CMAKE_EXTRA_FLAGS}
+                    -DBENCHMARK_ENABLE_TESTING=false
+                    )
 
 
 if (NOT MSVC)
@@ -540,15 +557,15 @@ if (NOT MSVC)
                         EXCLUDE_FROM_ALL true
                         PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                         GIT_REPOSITORY https://github.com/aras-p/glsl-optimizer.git
-                        #GIT_TAG release-1.10.0
                         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
+                        CMAKE_ARGS
+                        -G "${CMAKE_GENERATOR}"
+                        -DCMAKE_INSTALL_PREFIX=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                         -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                         -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
                         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                         ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                        -G "${CMAKE_GENERATOR}"
                         )
 endif ()
 
@@ -556,21 +573,29 @@ endif ()
 add_custom_target(assets
         COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git assets
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CONTEXT_ROOT_DIR}/assets/.git
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CONTEXT_ROOT_DIR}/tmp
+        COMMAND ${CMAKE_COMMAND} -P cmake/flat_zip.cmake
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Fetching assets..."
         )
 
 
 add_custom_target(assets_ssh
         COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 git@github.com:balrogcpp/scenes.git assets
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CONTEXT_ROOT_DIR}/tmp
+        COMMAND ${CMAKE_COMMAND} -P cmake/flat_zip.cmake
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Fetching assets..."
         )
 
 
-add_custom_target(pack-assets
+add_custom_target(build-assets
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CONTEXT_ROOT_DIR}/tmp
         COMMAND ${CMAKE_COMMAND} -P cmake/flat_zip.cmake
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Creating assets and programs zip package..."
         )
+
 
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-filesystem)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-sol)
@@ -579,4 +604,4 @@ list(APPEND CONTEXT_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-ogre)
 list(APPEND CONTEXT_DEPENDENCY_TARGETS target-bullet)
 
-add_custom_target(target-deps DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})
+add_custom_target(dependencies DEPENDS ${CONTEXT_DEPENDENCY_TARGETS})

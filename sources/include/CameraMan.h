@@ -10,7 +10,7 @@
 #include "Object.h"
 #include "view_ptr.h"
 
-namespace xio {
+namespace glue {
 class CameraMan final : public Object, public MutedInputObserver {
  public:
   enum class Style  // enumerator values for different styles of camera movement
@@ -76,4 +76,4 @@ class CameraMan final : public Object, public MutedInputObserver {
   Style GetStyle() const noexcept;
 };
 
-}  // namespace xio
+}  // namespace glue

@@ -10,10 +10,10 @@
 namespace Gorilla {
 typedef void (*OgreConsoleFunctionPtr)(Ogre::StringVector &);
 
-class OgreConsole : public xio::Singleton<OgreConsole>,
+class OgreConsole : public glue::Singleton<OgreConsole>,
                     public Ogre::FrameListener,
                     public Ogre::LogListener,
-                    public xio::InputObserver {
+                    public glue::InputObserver {
  public:
   OgreConsole();
 

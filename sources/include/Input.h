@@ -17,7 +17,7 @@ extern "C" {
 #include "Singleton.h"
 #include "view_ptr.h"
 
-namespace xio {
+namespace glue {
 class InputSequencer;
 class InputObserver;
 class WindowObserver;
@@ -109,4 +109,4 @@ class WindowObserver : public NoCopy {
   virtual void Other(uint8_t type, int code, void *data1, void *data2) {}
 };
 
-}  // namespace xio
+}  // namespace glue

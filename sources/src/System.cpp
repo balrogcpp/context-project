@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 System::System() { Engine::GetInstance().RegSystem(this); }
@@ -16,4 +16,4 @@ System::System() { Engine::GetInstance().RegSystem(this); }
 //----------------------------------------------------------------------------------------------------------------------
 System::~System() {}
 
-}  // namespace xio
+}  // namespace glue

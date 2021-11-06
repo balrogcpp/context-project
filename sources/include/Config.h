@@ -8,7 +8,7 @@
 #include "Exception.h"
 #include "Singleton.h"
 
-namespace xio {
+namespace glue {
 
 class Config : public Singleton<Config> {
  public:
@@ -49,4 +49,4 @@ class Config : public Singleton<Config> {
   nlohmann::json document_;
 };
 
-}  // namespace xio
+}  // namespace glue

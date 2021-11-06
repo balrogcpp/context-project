@@ -19,7 +19,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 Application::Application() {
@@ -42,7 +42,7 @@ Application::Application() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     DesktopIcon icon;
     icon.Init();
-    icon.Save("XioDemo");
+    icon.Save("GlueSample");
 #endif
 
     engine_ = &Engine::GetInstance();
@@ -246,4 +246,4 @@ int Application::Main(unique_ptr<AppState> &&scene_ptr) {
   return 0;
 }
 
-}  // namespace xio
+}  // namespace glue

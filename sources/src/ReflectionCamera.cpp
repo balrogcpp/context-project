@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 ReflectionCamera::ReflectionCamera(Ogre::Plane plane, unsigned int tex_size) {
@@ -87,4 +87,4 @@ void ReflectionCamera::Init_(unsigned int tex_size) {
 //----------------------------------------------------------------------------------------------------------------------
 void ReflectionCamera::SetPlane(Ogre::Plane plane) { plane_ = plane; }
 
-}  // namespace xio
+}  // namespace glue

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 StateManager::StateManager() {}
@@ -59,4 +59,4 @@ void StateManager::Pause() { cur_state_->Pause(); }
 //---------------------------------------------------------------------------------------------------------------------
 void StateManager::Resume() { cur_state_->Resume(); }
 
-}  // namespace xio
+}  // namespace glue

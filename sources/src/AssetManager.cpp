@@ -19,7 +19,7 @@ namespace fs = ghc::filesystem;
 
 using namespace std;
 
-namespace xio::AssetManager {
+namespace glue::AssetManager {
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
 //----------------------------------------------------------------------------------------------------------------------
@@ -202,4 +202,4 @@ void AddLocationRecursive(const string &path_, const string &group_, const strin
 #endif
 }
 
-}  // namespace xio::AssetManager
+}  // namespace glue::AssetManager

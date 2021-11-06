@@ -5,7 +5,7 @@
 #include "NoCopy.h"
 #include "view_ptr.h"
 
-namespace xio {
+namespace glue {
 class Config;
 
 class System : public NoCopy {
@@ -26,4 +26,4 @@ class System : public NoCopy {
   static void SetConfig(view_ptr<Config> conf) { conf_ = conf; }
 };
 
-}  // namespace xio
+}  // namespace glue

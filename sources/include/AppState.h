@@ -6,7 +6,7 @@
 #include "Input.h"
 #include "NoCopy.h"
 
-namespace xio {
+namespace glue {
 class StateManager;
 
 class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputObserver {
@@ -32,4 +32,4 @@ class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, 
   bool dirty_ = false;
 };
 
-}  // namespace xio
+}  // namespace glue

@@ -4,7 +4,7 @@
 #pragma once
 #include "Input.h"
 
-namespace xio {
+namespace glue {
 
 class ImGuiInputListener final : public InputObserver {
  public:
@@ -28,4 +28,4 @@ class ImGuiInputListener final : public InputObserver {
   void OnMouseMbUp(int x, int y) override;
 };
 
-}  // namespace xio
+}  // namespace glue

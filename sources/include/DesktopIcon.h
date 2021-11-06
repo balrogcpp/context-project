@@ -7,7 +7,7 @@
 
 #include "NoCopy.h"
 
-namespace xio {
+namespace glue {
 class DesktopIcon : public NoCopy {
  public:
   DesktopIcon();
@@ -27,4 +27,4 @@ class DesktopIcon : public NoCopy {
   const std::string skeleton_;
 };
 
-}  // namespace xio
+}  // namespace glue

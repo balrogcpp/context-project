@@ -6,7 +6,7 @@
 #include "Engine.h"
 #include "InputHandler.h"
 
-namespace xio {
+namespace glue {
 
 class RenderSystem;
 class Window;
@@ -28,4 +28,4 @@ AudioSystem& GetAudio();
 Overlay& GetOverlay();
 DotSceneLoaderB& GetLoader();
 
-}  // namespace xio
+}  // namespace glue

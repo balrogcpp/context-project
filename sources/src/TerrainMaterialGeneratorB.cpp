@@ -38,7 +38,7 @@
 using namespace std;
 using namespace Ogre;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
@@ -147,4 +147,4 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap
   }
 }
 
-}  // namespace xio
+}  // namespace glue

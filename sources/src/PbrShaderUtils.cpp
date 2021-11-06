@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Pbr::UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
@@ -230,8 +230,9 @@ void Pbr::UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active) {
 
   if (active) {
     auto cubemap = Ogre::TextureManager::getSingleton().getByName("dyncubemap", Ogre::RGN_AUTODETECT);
-
-    if (ibl_texture) ibl_texture->setTexture(cubemap);
+    if (ibl_texture) {
+      ibl_texture->setTexture(cubemap);
+    }
   } else {
     auto skybox = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
     if (!skybox) return;
@@ -245,7 +246,9 @@ void Pbr::UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active) {
 //----------------------------------------------------------------------------------------------------------------------
 void Pbr::UpdatePbrParams(const string &material) {
   auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
-  if (material_ptr) UpdatePbrParams(material_ptr);
+  if (material_ptr) {
+    UpdatePbrParams(material_ptr);
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -266,4 +269,4 @@ void Pbr::UpdatePbrShadowCaster(const string &material) {
   UpdatePbrShadowCaster(material_ptr);
 }
 
-}  // namespace xio
+}  // namespace glue

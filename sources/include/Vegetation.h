@@ -14,12 +14,12 @@ class PageLoader;
 class GeometryPage;
 }  // namespace Forests
 
-namespace xio {
+namespace glue {
 
-class VegetationSystem final : public SubSystem {
+class Vegetation final : public SubSystem {
  public:
-  VegetationSystem();
-  virtual ~VegetationSystem();
+  Vegetation();
+  virtual ~Vegetation();
   void GenerateGrassStatic();
   void GenerateGrassPaged();
   void GenerateRocksStatic();
@@ -41,4 +41,4 @@ class VegetationSystem final : public SubSystem {
   static void SetHeighFunc(const std::function<float(float, float)> &heigh_func) { heigh_func_ = heigh_func; }
 };
 
-}  // namespace xio
+}  // namespace glue

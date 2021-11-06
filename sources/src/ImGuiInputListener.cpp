@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 /// map sdl2 mouse buttons to imgui
 static int sdl2imgui(int b) {
@@ -197,4 +197,4 @@ void ImGuiInputListener::OnMouseMbUp(int x, int y) {
   }
 }
 
-}  // namespace xio
+}  // namespace glue

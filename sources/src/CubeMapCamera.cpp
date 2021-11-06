@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 CubeMapCamera::CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size) { Init_(creator, tex_size); }
@@ -88,4 +88,4 @@ void CubeMapCamera::Init_(Ogre::SceneNode *creator, unsigned int tex_size) {
   }
 }
 
-}  // namespace xio
+}  // namespace glue

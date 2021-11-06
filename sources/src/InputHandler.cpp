@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 InputHandler::InputHandler() { io_listeners.reserve(32); }
@@ -133,4 +133,4 @@ MutedInputObserver::~MutedInputObserver() {
   ref.UnregObserver(this);
 }
 
-}  // namespace xio
+}  // namespace glue

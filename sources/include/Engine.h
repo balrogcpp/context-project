@@ -13,7 +13,7 @@
 #include "Singleton.h"
 #include "view_ptr.h"
 
-namespace xio {
+namespace glue {
 
 class Engine : public LazySingleton<Engine> {
  public:
@@ -53,4 +53,4 @@ class Engine : public LazySingleton<Engine> {
   friend DotSceneLoaderB& GetLoader();
 };
 
-}  // namespace xio
+}  // namespace glue

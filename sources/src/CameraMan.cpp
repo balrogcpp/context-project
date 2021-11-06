@@ -6,7 +6,7 @@
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 #include "pcheader.h"
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 CameraMan::CameraMan() {}
@@ -331,4 +331,4 @@ void CameraMan::SetStyle(Style style) { style_ = style; }
 //----------------------------------------------------------------------------------------------------------------------
 CameraMan::Style CameraMan::GetStyle() const noexcept { return style_; }
 
-}  // namespace xio
+}  // namespace glue

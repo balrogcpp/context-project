@@ -2,10 +2,10 @@
 // Created by Andrew Vasiliev
 
 #pragma once
+#include <OgreCodec.h>
+#include <OgrePlugin.h>
 #include <OgreSceneLoader.h>
 #include <OgreVector4.h>
-#include <OgrePlugin.h>
-#include <OgreCodec.h>
 
 #include <string>
 #include <vector>
@@ -18,7 +18,7 @@
 #include "Scene.h"
 #include "Singleton.h"
 #include "System.h"
-#include "VegetationSystem.h"
+#include "Vegetation.h"
 #include "view_ptr.h"
 
 namespace pugi {
@@ -35,7 +35,7 @@ class VertexDeclaration;
 
 class SinbadCharacterController;
 
-namespace xio {
+namespace glue {
 class CameraMan;
 class Config;
 class RenderSystem;
@@ -75,7 +75,7 @@ class DotSceneLoaderB final : public System, public Ogre::SceneLoader, public Si
 
   static Landscape &GetTerrain();
   CameraMan &GetCamera() const;
-  static VegetationSystem &GetForest();
+  static Vegetation &GetForest();
 
  private:
   void ProcessScene_(pugi::xml_node &xml_root);
@@ -116,7 +116,7 @@ class DotSceneLoaderB final : public System, public Ogre::SceneLoader, public Si
   std::unique_ptr<SinbadCharacterController> sinbad_;
 
   static inline std::unique_ptr<Landscape> terrain_;
-  static inline std::unique_ptr<VegetationSystem> forest_;
+  static inline std::unique_ptr<Vegetation> forest_;
 };
 
 
@@ -131,4 +131,4 @@ class DotScenePluginB : public Ogre::Plugin {
  private:
   Ogre::Codec *mCodec = nullptr;
 };
-}  // namespace xio
+}  // namespace glue

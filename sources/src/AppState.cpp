@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 AppState::AppState() {}
@@ -38,4 +38,4 @@ void AppState::SetNextState(unique_ptr<AppState> &&next_state) { next_ = move(ne
 //----------------------------------------------------------------------------------------------------------------------
 bool AppState::IsDirty() const { return dirty_; }
 
-}  // namespace xio
+}  // namespace glue

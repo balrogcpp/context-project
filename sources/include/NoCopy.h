@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace xio {
+namespace glue {
 
 class NoCopy {
  public:
@@ -13,4 +13,4 @@ class NoCopy {
   virtual ~NoCopy() = default;
 };
 
-}  // namespace xio
+}  // namespace glue

@@ -12,7 +12,7 @@ extern "C" {
 #include <cinttypes>
 #include <string>
 
-namespace xio {
+namespace glue {
 class Window : public NoCopy {
  public:
   explicit Window(int w, int h, bool f);
@@ -45,4 +45,4 @@ class Window : public NoCopy {
   int screen_h_;
 };
 
-}  // namespace xio
+}  // namespace glue

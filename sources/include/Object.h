@@ -3,10 +3,10 @@
 
 #pragma once
 
-namespace xio {
+namespace glue {
 class Object {
  public:
   virtual void Update(float time) = 0;
 };
 
-}  // namespace xio
+}  // namespace glue

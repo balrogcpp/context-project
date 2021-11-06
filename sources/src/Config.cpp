@@ -26,7 +26,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 Config::Config(const string &file_name) {
@@ -49,4 +49,4 @@ void Config::Load(const string &file_name) {
   ifs >> document_;
 }
 
-}  // namespace xio
+}  // namespace glue

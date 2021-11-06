@@ -9,4 +9,4 @@
 
 using namespace std;
 
-namespace xio {}  // namespace xio
+namespace glue {}  // namespace glue

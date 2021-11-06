@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 int InputSequencer::HandleAppEvents(void *userdata, SDL_Event *event) {
@@ -222,4 +222,4 @@ WindowObserver::~WindowObserver() {
   ref.UnregWinObserver(this);
 }
 
-}  // namespace xio
+}  // namespace glue

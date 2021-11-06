@@ -7,7 +7,7 @@
 #include "Singleton.h"
 #include "view_ptr.h"
 
-namespace xio {
+namespace glue {
 
 class StateManager : public Singleton<StateManager> {
  public:
@@ -27,4 +27,4 @@ class StateManager : public Singleton<StateManager> {
   std::unique_ptr<AppState> cur_state_;
 };
 
-}  // namespace xio
+}  // namespace glue

@@ -7,7 +7,7 @@
 
 #include "Exception.h"
 
-namespace xio {
+namespace glue {
 
 void InitRtss();
 
@@ -35,6 +35,6 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
   Ogre::RTShader::ShaderGenerator *shader_generator_;
 };
 
-}  // namespace xio
+}  // namespace glue
 
 #endif

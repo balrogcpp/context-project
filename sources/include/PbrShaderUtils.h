@@ -13,7 +13,7 @@ namespace Ogre {
 class Camera;
 }
 
-namespace xio {
+namespace glue {
 
 class Pbr {
  public:
@@ -37,4 +37,4 @@ class Pbr {
   static void Update(float time);
 };
 
-}  // namespace xio
+}  // namespace glue

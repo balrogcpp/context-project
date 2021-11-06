@@ -16,13 +16,13 @@ namespace fs = ghc::filesystem;
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 DesktopIcon::DesktopIcon()
-    : exec_("demo"),
+    : exec_("sample"),
       version_("1.0"),
-      name_("XioDemo"),
+      name_("GlueSample"),
       skeleton_{
           "[Desktop Entry]\n"
           "Version=VERSION\n"
@@ -74,4 +74,4 @@ void DesktopIcon::Save(const string &icon_name) {
   }
 }
 
-}  // namespace xio
+}  // namespace glue

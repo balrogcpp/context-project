@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 void Window::InitGlContext_() {
@@ -161,4 +161,4 @@ void Window::SetFullscreen(bool f) {
   }
 }
 
-}  // namespace xio
+}  // namespace glue

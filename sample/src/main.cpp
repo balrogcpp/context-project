@@ -7,7 +7,7 @@
 #include "pcheader.h"
 
 using namespace std;
-using namespace xio;
+using namespace glue;
 
 #if defined WIN32
 #define WIN32_LEAN_AND_MEAN

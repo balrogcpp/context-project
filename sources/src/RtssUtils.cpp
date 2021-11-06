@@ -14,7 +14,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 void InitRtss() {
@@ -171,6 +171,6 @@ bool ShaderResolver::beforeIlluminationPassesCleared(Ogre::Technique *technique)
   }
 }
 
-}  // namespace xio
+}  // namespace glue
 
 #endif

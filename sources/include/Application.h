@@ -10,7 +10,7 @@
 #include "VerboseListener.h"
 #include "view_ptr.h"
 
-namespace xio {
+namespace glue {
 
 class Application final : public WindowObserver, public Ogre::LogListener, public Singleton<Application> {
  public:
@@ -52,4 +52,4 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   bool verbose_input_ = false;
 };
 
-}  // namespace xio
+}  // namespace glue

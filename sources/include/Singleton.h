@@ -4,7 +4,7 @@
 #pragma once
 #include "Exception.h"
 #include "NoCopy.h"
-namespace xio {
+namespace glue {
 
 template <typename T>
 class Singleton : public NoCopy {
@@ -33,4 +33,4 @@ class LazySingleton : public Singleton<T> {
   }
 };
 
-}  // namespace xio
+}  // namespace glue

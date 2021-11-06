@@ -11,7 +11,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 AudioSystem::AudioSystem(unsigned int max_sources, unsigned int queue_list_size) {
@@ -90,4 +90,4 @@ void AudioSystem::SetVolume(const string &name, float gain) {
   }
 }
 
-}  // namespace xio
+}  // namespace glue

@@ -26,7 +26,7 @@
 #include "InputHandler.h"
 #include "pcheader.h"
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 InputHandler& GetIo() {
@@ -88,4 +88,4 @@ DotSceneLoaderB& GetLoader() {
   return loader;
 }
 
-}  // namespace xio
+}  // namespace glue

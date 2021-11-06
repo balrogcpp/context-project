@@ -18,7 +18,7 @@ class Viewport;
 class RenderWindow;
 }  // namespace Ogre
 
-namespace xio {
+namespace glue {
 class RenderSystem final : public System, public Singleton<RenderSystem> {
  public:
   RenderSystem(int w, int h, bool f);
@@ -63,4 +63,4 @@ class RenderSystem final : public System, public Singleton<RenderSystem> {
   view_ptr<Ogre::RenderWindow> render_window_;
 };
 
-}  // namespace xio
+}  // namespace glue

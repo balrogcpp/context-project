@@ -9,7 +9,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 enable_language(C)
 enable_language(CXX)
 
-project(xio CXX)
+project(glue CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -73,16 +73,12 @@ else ()
     string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_CXX_COMPILER_ID}")
 endif ()
 
-
-# Define processor
+#Processor definition
 set(CONTEXT_TOOLCHAIN ${CONTEXT_TOOLCHAIN} CACHE STRING "")
 set(CONTEXT_EXTERNAL_PLATROFM ${CMAKE_SYSTEM_PROCESSOR} CACHE STRING "")
-
 processorcount(CONTEXT_PROCESSOR_COUNT)
 set(CMAKE_BUILD_PARALLEL_LEVEL ${CONTEXT_PROCESSOR_COUNT})
 set(MAKE_COMMAND make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
-
-
 string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
 
 
@@ -193,17 +189,18 @@ elseif (MSVC)
     set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 endif ()
 
-
+#Set as cached variables
 set(CONTEXT_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "")
 set(CONTEXT_SOURCE_DIR ${CONTEXT_ROOT_DIR}/sources CACHE PATH "")
 set(CONTEXT_WORK_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
 set(CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SYSTEM_PROCESSOR})
 set(CONTEXT_BIN_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
-set(CONTEXT_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/xio CACHE PATH "")
+set(CONTEXT_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/glue CACHE PATH "")
 set(CONTEXT_INCLUDE_DIR ${CONTEXT_SOURCE_DIR}/include CACHE PATH "")
 set(CONTEXT_THIRDPARTY_ROOT ${CONTEXT_ROOT_DIR}/sources CACHE PATH "")
 set(CONTEXT_THIRDPARTY_DIR ${CONTEXT_THIRDPARTY_ROOT} CACHE PATH "")
 set(CONTEXT_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts CACHE PATH "")
+make_directory(${CONTEXT_ARTIFACT_DIR})
 
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/dependencies ${CONTEXT_WORK_DIR}/dependencies)
@@ -268,7 +265,7 @@ message("")
 
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(target-deps-dummy SHARED android/app/src/main/cpp/main.cpp)
-    add_dependencies(target-deps-dummy target-deps)
+    add_dependencies(target-deps-dummy dependencies)
 endif ()
 
 
@@ -283,21 +280,22 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTA
         ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
         ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 
-file(GLOB_RECURSE SOURCE_FILES example/*.cpp example/*.h example/*.hpp deploy/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
+set(SAMPLE_DIR sample)
+file(GLOB_RECURSE SOURCE_FILES ${SAMPLE_DIR}/*.cpp ${SAMPLE_DIR}/*.h ${SAMPLE_DIR}/*.hpp deploy/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
 
 
 if (ANDROID)
-    add_library(example SHARED ${SOURCE_FILES})
-    set_target_properties(example PROPERTIES OUTPUT_NAME "main")
+    add_library(${SAMPLE_DIR} SHARED ${SOURCE_FILES})
+    set_target_properties(${SAMPLE_DIR} PROPERTIES OUTPUT_NAME "main")
 elseif (WIN32)
-    add_executable(example WIN32 ${SOURCE_FILES})
+    add_executable(${SAMPLE_DIR} WIN32 ${SOURCE_FILES})
 else ()
-    add_executable(example ${SOURCE_FILES})
+    add_executable(${SAMPLE_DIR} ${SOURCE_FILES})
 endif ()
 
-include_directories(example example/include ${CONTEXT_INCLUDE_DIRS})
-target_link_directories(example PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
-target_precompile_headers(example PUBLIC sources/include/pcheader.h)
+include_directories(${SAMPLE_DIR} ${SAMPLE_DIR}/include ${CONTEXT_INCLUDE_DIRS})
+target_link_directories(${SAMPLE_DIR} PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
+target_precompile_headers(${SAMPLE_DIR} PUBLIC sources/include/pcheader.h)
 
 
 if (MINGW)
@@ -311,18 +309,18 @@ elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 endif ()
 
-target_link_libraries(example PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
+target_link_libraries(${SAMPLE_DIR} PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
         ${PNG_LIBRARY} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
         ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
 
-install(TARGETS example RUNTIME DESTINATION .)
+install(TARGETS ${SAMPLE_DIR} RUNTIME DESTINATION .)
 
 file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
-add_library(lib-static STATIC ${SOURCE_FILES})
-include_directories(lib-static ${CONTEXT_INCLUDE_DIRS})
-set_target_properties(lib-static PROPERTIES OUTPUT_NAME "xio-static")
-target_precompile_headers(lib-static PUBLIC sources/include/pcheader.h)
+add_library(glue STATIC ${SOURCE_FILES})
+include_directories(glue ${CONTEXT_INCLUDE_DIRS})
+set_target_properties(glue PROPERTIES OUTPUT_NAME "glue-static")
+target_precompile_headers(glue PUBLIC sources/include/pcheader.h)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
@@ -336,7 +334,7 @@ if (NOT ANDROID)
     file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.json DESTINATION .)
 endif ()
 if (MINGW)
-    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/example.exe.manifest DESTINATION .)
+    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/${SAMPLE_DIR}.exe.manifest DESTINATION .)
 endif ()
 
 
@@ -360,7 +358,7 @@ set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOC
 
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION .)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/assets ${CMAKE_SOURCE_DIR}/tmp/programs DESTINATION .)
-set(EXECUTABLE_NAME example)
+set(EXECUTABLE_NAME ${SAMPLE_DIR})
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(FILES ${CMAKE_SOURCE_DIR}/deploy/Launch.sh PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
@@ -384,6 +382,7 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
     string(APPEND CONTEXT_ARTIFACT_NAME "-${CMAKE_BUILD_TYPE}")
 endif ()
 
+#Package block
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
@@ -405,7 +404,7 @@ if (NOT MSVC)
             COMMENT "Build packages..."
             VERBATIM
             )
-endif()
+endif ()
 
-#for tests
+#Tests block
 add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)

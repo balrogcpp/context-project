@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
@@ -231,4 +231,4 @@ void Compositor::Init() {
   InitOutput_();
 }
 
-}  // namespace xio
+}  // namespace glue

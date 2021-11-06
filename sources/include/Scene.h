@@ -8,7 +8,7 @@
 #include "Exception.h"
 #include "SubSystem.h"
 
-namespace xio {
+namespace glue {
 
 class Scene final : public SubSystem {
  public:
@@ -21,4 +21,4 @@ class Scene final : public SubSystem {
   std::string resource_group_;
 };
 
-}  // namespace xio
+}  // namespace glue

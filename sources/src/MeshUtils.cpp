@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 static bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
@@ -118,4 +118,4 @@ void UpdateEntityMaterial(Ogre::Entity *entity, bool cast_shadows, const string 
   }
 }
 
-}  // namespace xio
+}  // namespace glue

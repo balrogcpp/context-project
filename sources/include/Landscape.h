@@ -16,7 +16,7 @@ namespace pugi {
 class xml_node;
 }
 
-namespace xio {
+namespace glue {
 class Landscape final : public SubSystem {
  public:
   Landscape();
@@ -34,4 +34,4 @@ class Landscape final : public SubSystem {
   std::unique_ptr<Ogre::TerrainGroup> terrain_;
 };
 
-}  // namespace xio
+}  // namespace glue

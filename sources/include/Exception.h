@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-namespace xio {
+namespace glue {
 
 class Exception : public std::exception {
  public:
@@ -41,4 +41,4 @@ class Exception : public std::exception {
 // void Throw(std::string message) {
 //   throw Exception(std::move(message));
 // }
-}  // namespace xio
+}  // namespace glue

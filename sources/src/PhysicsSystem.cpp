@@ -12,7 +12,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 PhysicsSystem::PhysicsSystem(bool threaded) : threaded_(threaded) {
@@ -609,4 +609,4 @@ void PhysicsSystem::ProcessData(Ogre::UserObjectBindings &user_object_bindings, 
 }
 bool PhysicsSystem::IsThreaded() const { return threaded_; }
 
-}  // namespace xio
+}  // namespace glue

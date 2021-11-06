@@ -8,7 +8,7 @@
 #include "Singleton.h"
 #include "System.h"
 
-namespace xio {
+namespace glue {
 
 class CommandObserver {
  public:
@@ -57,4 +57,4 @@ class InputHandler final : public InputObserver, public Singleton<InputHandler> 
   bool paused_ = false;
 };
 
-}  // namespace xio
+}  // namespace glue

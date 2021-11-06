@@ -8,13 +8,13 @@ WORKDIR ${CONTEXT_HOME}
 COPY ./sources ./sources
 COPY ./deploy ./deploy
 COPY ./cmake ./cmake
-COPY ./example ./example
+COPY ./sample ./sample
 COPY ./doc ./doc
 COPY ./tests ./tests
 COPY ./LICENSE .
 COPY ./programs ./programs
 COPY ./assets ./assets
-COPY ./CMakeLists.txt .
+COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 
 

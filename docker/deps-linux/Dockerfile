@@ -23,7 +23,7 @@ ENV CXX=clang++
 
 RUN mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
      && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
-     && cmake --build . --target target-deps \
+     && cmake --build . --target dependencies \
      && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-clang-x86_64 \
      && rm -rf src tmp \
      && rm -rf ${CONTEXT_HOME}/build-linux

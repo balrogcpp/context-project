@@ -14,7 +14,7 @@
 
 using namespace std;
 
-namespace xio {
+namespace glue {
 Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) : render_window_(render_window) {
   Ogre::SceneManager* sm = Ogre::Root::getSingletonPtr()->getSceneManager("Default");
   overlay_ = new Ogre::OverlaySystem();
@@ -62,4 +62,4 @@ void Overlay::PrepareTexture(const std::string& name_, const std::string& group_
   imgui_->show();
 }
 
-}  // namespace xio
+}  // namespace glue
