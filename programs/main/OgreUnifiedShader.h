@@ -28,6 +28,7 @@
 #define texture1D tex1D
 #define texture2D tex2D
 #define texture3D tex3D
+#define texture2DArray tex2DARRAY
 #define textureCube texCUBE
 #define shadow2D tex2Dcmp
 #define texture2DProj tex2Dproj
@@ -37,6 +38,7 @@ vec4 texture2DLod(sampler2D s, vec2 v, float lod) { return tex2Dlod(s, vec4(v.x,
 #define sampler2DShadow Sampler2DShadow
 
 #define mix lerp
+#define fract frac
 
 vec2 vec2_splat(float x) { return vec2(x, x); }
 vec3 vec3_splat(float x) { return vec3(x, x, x); }
@@ -76,22 +78,6 @@ mat3 mtxFromCols(vec3 a, vec3 b, vec3 c)
 #define mat3 metal::float3x3
 #define mat4 metal::float4x4
 
-// fake semantics for attribute locations
-enum {
-    POSITION = 0,
-    BLENDWEIGHT,
-    NORMAL,
-    COLOR0,
-    COLOR = COLOR0,
-    COLOR1,
-    BLENDIDICES = 7,
-    TEXCOORD0,
-    TEXCOORD1,
-    TEXCOORD2,
-    TEXCOORD3,
-    TANGENT = 15
-};
-
 #define IN(decl, sem) decl [[ attribute(sem) ]];
 #else
 // GLSL
@@ -100,6 +86,7 @@ enum {
 #define SAMPLER1D(name, reg) sampler1D name
 #define SAMPLER2D(name, reg) sampler2D name
 #define SAMPLER3D(name, reg) sampler3D name
+#define SAMPLER2DARRAY(name, reg) sampler2DArray name
 #define SAMPLERCUBE(name, reg) samplerCube name
 
 #define saturate(x) clamp(x, 0.0, 1.0)
@@ -129,4 +116,20 @@ mat3 mtxFromCols(vec3 a, vec3 b, vec3 c)
 #define MAIN_PARAMETERS
 #define MAIN_DECLARATION void main()
 
+#endif
+
+#if defined(OGRE_METAL) || defined(OGRE_GLSLANG)
+// semantics as aliases for attribute locations
+#define POSITION    0
+#define BLENDWEIGHT 1
+#define NORMAL      2
+#define COLOR0      3
+#define COLOR1      4
+#define COLOR COLOR0
+#define BLENDIDICES 7
+#define TEXCOORD0   8
+#define TEXCOORD1   9
+#define TEXCOORD2  10
+#define TEXCOORD3  11
+#define TANGENT    15
 #endif

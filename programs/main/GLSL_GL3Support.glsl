@@ -27,10 +27,11 @@ mat4 transpose(mat4 m)
 }
 #endif
 
-#if __VERSION__ > 120
+#if __VERSION__ > 120 || defined(OGRE_GLSLANG)
 #define texture1D texture
 #define texture2D texture
 #define texture3D texture
+#define texture2DArray texture
 #define textureCube texture
 #define shadow2D texture
 #define shadow2DProj textureProj
@@ -38,8 +39,14 @@ mat4 transpose(mat4 m)
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
 
+#ifdef OGRE_GLSLANG
+#define IN(decl, loc) layout(location = loc) in decl;
+#define OUT(decl, loc) layout(location = loc) out decl;
+#else
 #define IN(decl, loc) in decl;
 #define OUT(decl, loc) out decl;
+#endif
+
 #else
 
 #ifdef OGRE_VERTEX_SHADER

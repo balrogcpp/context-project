@@ -130,30 +130,26 @@ void DemoDotAppState::Update(float time) {
 //----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Init() {
   GetWindow().Grab(true);
-  //  GetLoader().GetCamera().SetStyle(xio::CameraMan::Style::FPS);
-//  LoadFromFile("1.scene", Ogre::RGN_DEFAULT);
+    GetLoader().GetCamera().SetStyle(glue::CameraMan::Style::FPS);
+  LoadFromFile("1.scene");
 
-    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-    auto *root = scene->getRootSceneNode();
-    root->loadChildren("1.scene");
+//    Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
+//    glue::Pbr::UpdatePbrParams("Examples/Smoke");
+//    auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
+//    root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
 
-  //  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
-  //  xio::Pbr::UpdatePbrParams("Examples/Smoke");
-  //  auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
-  //  root->createChildSceneNode(Ogre::Vector3(2, 0, 0))->attachObject(ps);
-
-  //  Ogre::Entity *entity = scene->createEntity("ely_vanguardsoldier_kerwinatienza_Mesh.mesh",
-  //  "ely_vanguardsoldier_kerwinatienza_Mesh.mesh"); auto *node = root->createChildSceneNode(Ogre::Vector3(0, 0, 0));
-  //  node->scale(Ogre::Vector3(0.02));
-  //  node->attachObject(entity);
-  //  UpdateEntityMaterial(entity);
-  //  anim1 = entity->getAnimationState("run");
-  //  anim1->setLoop(true);
-  //  anim1->setEnabled(true);
-
-  //  anim2 = entity->getAnimationState("jump");
-  //  anim2->setLoop(true);
-  //  anim2->setEnabled(true);
+//    Ogre::Entity *entity = scene->createEntity("ely_vanguardsoldier_kerwinatienza_Mesh.mesh",
+//    "ely_vanguardsoldier_kerwinatienza_Mesh.mesh"); auto *node = root->createChildSceneNode(Ogre::Vector3(0, 0, 0));
+//    node->scale(Ogre::Vector3(0.02));
+//    node->attachObject(entity);
+//    UpdateEntityMaterial(entity);
+//    anim1 = entity->getAnimationState("run");
+//    anim1->setLoop(true);
+//    anim1->setEnabled(true);
+//
+//    anim2 = entity->getAnimationState("jump");
+//    anim2->setLoop(true);
+//    anim2->setEnabled(true);
 
   GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
   GetAudio().SetVolume("ambient", 0.5);

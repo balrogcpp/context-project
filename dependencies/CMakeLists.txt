@@ -401,6 +401,7 @@ externalproject_add(target-ogre
                     -DOGRE_BUILD_RENDERSYSTEM_D3D11=false
                     -DOGRE_BUILD_RENDERSYSTEM_D3D9=false
                     -DOGRE_BUILD_PLUGIN_CG=false
+                    -DOGRE_BUILD_PLUGIN_GLSLANG=false
                     -DOGRE_BUILD_RENDERSYSTEM_METAL=false
                     -DOGRE_BUILD_RENDERSYSTEM_GL=false
                     -DOGRE_BUILD_RENDERSYSTEM_TINY=false

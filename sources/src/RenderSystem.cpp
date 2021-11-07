@@ -1,14 +1,13 @@
 // This source file is part of context-project
 // Created by Andrew Vasiliev
+#include "pcheader.h"
 
 #include "RenderSystem.h"
-
 #include "AssetManager.h"
 #include "Config.h"
 #include "Exception.h"
 #include "RtssUtils.h"
 #include "DotSceneLoaderB.h"
-#include "pcheader.h"
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
@@ -32,8 +31,9 @@
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
 #include <Overlay/OgreImGuiOverlay.h>
 #endif
-
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include "Android.h"
+#endif
 
 using namespace std;
 
@@ -192,7 +192,7 @@ void RenderSystem::InitRenderWindow_() {
   params["gamma"] = gamma ? true_str : false_str;
   params["FSAA"] = to_string(fsaa);
 
-  render_window_ = Ogre::Root::getSingleton().createRenderWindow("", 1920, 1080, false, &params);
+  render_window_ = Ogre::Root::getSingleton().createRenderWindow("", 0, 0, false, &params);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -202,7 +202,7 @@ void RenderSystem::InitResourceLocation_() {
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
 
-  AssetManager::AddLocation("programs/common", internal_group);
+  AssetManager::AddLocation("programs/main", internal_group);
   AssetManager::AddLocation("programs/rtss", internal_group);
   AssetManager::AddLocation("programs/pbr", internal_group);
   AssetManager::AddLocation("programs/particles", internal_group);
@@ -220,7 +220,7 @@ void RenderSystem::InitResourceLocation_() {
   const std::string file_system = "APKFileSystem";
   const std::string zip = "APKZip";
 
-  resGroupMan.addResourceLocation("/programs/common.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/main.zip", zip, internal_group);
   resGroupMan.addResourceLocation("/programs/rtss.zip", zip, internal_group);
   resGroupMan.addResourceLocation("/programs/pbr.zip", zip, internal_group);
   resGroupMan.addResourceLocation("/programs/particles.zip", zip, internal_group);
