@@ -54,7 +54,7 @@ std::mutex OgreOggSound::OgreOggSoundManager::mResourceGroupNameMutex;
 bool OgreOggSound::OgreOggSoundManager::mShuttingDown = false;
 #endif
 
-//#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR <= 7
+//#if OGRE_VERSION_MAJOR != 2 && OGRE_VERSION_MINOR <= 7
 //	template<> OgreOggSound::OgreOggSoundManager* Ogre::Singleton<OgreOggSound::OgreOggSoundManager>::ms_Singleton =
 //0; #else 	template<> OgreOggSound::OgreOggSoundManager* Ogre::Singleton<OgreOggSound::OgreOggSoundManager>::msSingleton
 //= 0; #endif

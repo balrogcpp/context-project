@@ -196,7 +196,7 @@ void OgreOggISound::setPosition(float posx, float posy, float posz) {
   mPosition.x = posx;
   mPosition.y = posy;
   mPosition.z = posz;
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
   mLocalTransformDirty = true;
 #else
   alSource3f(mSource, AL_POSITION, mPosition.x, mPosition.y, mPosition.z);
@@ -205,7 +205,7 @@ void OgreOggISound::setPosition(float posx, float posy, float posz) {
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::setPosition(const Ogre::Vector3 &pos) {
   mPosition = pos;
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
   mLocalTransformDirty = true;
 #else
   alSource3f(mSource, AL_POSITION, mPosition.x, mPosition.y, mPosition.z);
@@ -216,7 +216,7 @@ void OgreOggISound::setDirection(float dirx, float diry, float dirz) {
   mDirection.x = dirx;
   mDirection.y = diry;
   mDirection.z = dirz;
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
   mLocalTransformDirty = true;
 #else
   alSource3f(mSource, AL_DIRECTION, mDirection.x, mDirection.y, mDirection.z);
@@ -225,7 +225,7 @@ void OgreOggISound::setDirection(float dirx, float diry, float dirz) {
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::setDirection(const Ogre::Vector3 &dir) {
   mDirection = dir;
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
   mLocalTransformDirty = true;
 #else
   alSource3f(mSource, AL_DIRECTION, mDirection.x, mDirection.y, mDirection.z);
@@ -558,7 +558,7 @@ void OgreOggISound::setRelativeToListener(bool relative) {
 }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::update(float fTime) {
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
   if (mLocalTransformDirty) {
     if (!mDisable3D && mParentNode) {
       mPosition = mParentNode->_getDerivedPosition();
@@ -602,14 +602,14 @@ float OgreOggISound::getBoundingRadius(void) const { return 0; }
 void OgreOggISound::_updateRenderQueue(Ogre::RenderQueue *queue) { return; }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::_notifyAttached(Ogre::Node *node
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
                                     ,
                                     bool isTagPoint
 #endif
 ) {
   // Call base class notify
   Ogre::MovableObject::_notifyAttached(node
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
                                        ,
                                        isTagPoint
 #endif
@@ -634,7 +634,7 @@ void OgreOggISound::_notifyAttached(Ogre::Node *node
   return;
 }
 /*/////////////////////////////////////////////////////////////////*/
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
 void OgreOggISound::_notifyMoved(void) {
   // Call base class notify
   Ogre::MovableObject::_notifyMoved();
@@ -644,7 +644,7 @@ void OgreOggISound::_notifyMoved(void) {
 #else
 void OgreOggISound::_updateRenderQueue(Ogre::RenderQueue *queue, Ogre::Camera *camera, const Ogre::Camera *lodCamera) {}
 #endif
-#if OGRE_VERSION_MAJOR == 1 || OGRE_VERSION_MINOR == 0
+#if OGRE_VERSION_MAJOR != 2 || OGRE_VERSION_MINOR == 0
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggISound::visitRenderables(Ogre::Renderable::Visitor *visitor, bool debugRenderables) { return; }
 #endif

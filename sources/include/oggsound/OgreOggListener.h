@@ -72,7 +72,7 @@ class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
 #endif
         mPosition(Ogre::Vector3::ZERO),
         mVelocity(Ogre::Vector3::ZERO)
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
         ,
         mLocalTransformDirty(false)
 #endif
@@ -169,7 +169,7 @@ class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
       Overridden function from MovableObject.
    */
   virtual void _updateRenderQueue(Ogre::RenderQueue *queue);
-#if OGRE_VERSION_MAJOR == 1 || OGRE_VERSION_MINOR == 0
+#if OGRE_VERSION_MAJOR != 2 || OGRE_VERSION_MINOR == 0
   /** Renderable callback
   @remarks
       Overridden function from MovableObject.
@@ -181,12 +181,12 @@ class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
       Overridden function from MovableObject.
    */
   virtual void _notifyAttached(Ogre::Node *node
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
                                ,
                                bool isTagPoint = false
 #endif
   );
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
   /** Moved callback
   @remarks
       Overridden function from MovableObject.
@@ -200,7 +200,7 @@ class _OGGSOUND_EXPORT OgreOggListener : public Ogre::MovableObject {
   /** Returns scenemanager which created this listener.
    */
   Ogre::SceneManager *getSceneManager() { return mSceneMgr; }
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
   /** Sets scenemanager which created this listener.
    */
   void setSceneManager(Ogre::SceneManager &m) { mSceneMgr = &m; }

@@ -182,7 +182,7 @@ const Ogre::AxisAlignedBox &OgreOggListener::getBoundingBox(void) const {
 float OgreOggListener::getBoundingRadius(void) const { return 0; }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggListener::_updateRenderQueue(Ogre::RenderQueue *queue) { return; }
-#if OGRE_VERSION_MAJOR == 1 || OGRE_VERSION_MINOR == 0
+#if OGRE_VERSION_MAJOR != 2 || OGRE_VERSION_MINOR == 0
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggListener::visitRenderables(Ogre::Renderable::Visitor *visitor, bool debugRenderables) { return; }
 #endif
@@ -190,14 +190,14 @@ void OgreOggListener::visitRenderables(Ogre::Renderable::Visitor *visitor, bool 
 const Ogre::String &OgreOggListener::getMovableType(void) const { return OgreOggSoundFactory::FACTORY_TYPE_NAME; }
 /*/////////////////////////////////////////////////////////////////*/
 void OgreOggListener::_notifyAttached(Ogre::Node *node
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
                                       ,
                                       bool isTagPoint
 #endif
 ) {
   // Call base class notify
   Ogre::MovableObject::_notifyAttached(node
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
                                        ,
                                        isTagPoint
 #endif
@@ -216,7 +216,7 @@ void OgreOggListener::_notifyAttached(Ogre::Node *node
   return;
 }
 /*/////////////////////////////////////////////////////////////////*/
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
 void OgreOggListener::_notifyMoved(void) {
   // Call base class notify
   Ogre::MovableObject::_notifyMoved();

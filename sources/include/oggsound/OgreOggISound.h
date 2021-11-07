@@ -580,12 +580,12 @@ class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
       Overridden from MovableObject.
    */
   virtual void _notifyAttached(Ogre::Node *node
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
                                ,
                                bool isTagPoint = false
 #endif
   );
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
   /** Notifys object its been moved
   @remarks
       Overridden from MovableObject.
@@ -596,7 +596,7 @@ class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
    */
   virtual void _updateRenderQueue(Ogre::RenderQueue *queue, Ogre::Camera *camera, const Ogre::Camera *lodCamera);
 #endif
-#if OGRE_VERSION_MAJOR == 1 || OGRE_VERSION_MINOR == 0
+#if OGRE_VERSION_MAJOR != 2 || OGRE_VERSION_MINOR == 0
   /** Renderable callback
   @remarks
       Overridden function from MovableObject.
@@ -687,7 +687,7 @@ class _OGGSOUND_EXPORT OgreOggISound : public Ogre::MovableObject {
   bool mGiveUpSource = false;             // Flag to indicate whether sound should release its source when stopped
   bool mStream = false;                   // Stream flag
   bool mSourceRelative = false;           // Relative position flag
-#if OGRE_VERSION_MAJOR == 1
+#if OGRE_VERSION_MAJOR != 2
   bool mLocalTransformDirty = true;  // Transformation update flag
 #endif
   bool mPlayPosChanged;                  // Flag indicating playback position has changed
