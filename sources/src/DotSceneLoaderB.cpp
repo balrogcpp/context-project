@@ -37,13 +37,13 @@ static const char* ToCString(T t) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-static float ToFloat(const string &s, float default = 0.0f) {
-  return s.empty() ? default : atof(s.c_str());
+static float ToFloat(const string &s, float defaultValue = 0.0f) {
+  return s.empty() ? defaultValue : atof(s.c_str());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-static float ToInt(const string &s, int default = 0) {
-  return s.empty() ? default : atoi(s.c_str());
+static float ToInt(const string &s, int defaultValue = 0) {
+  return s.empty() ? defaultValue : atoi(s.c_str());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -559,8 +559,8 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
             // default_scs = Ogre::PlaneOptimalShadowCameraSetup::create();
             break;
           }
-          case 4: {
-            default:
+          case 4:
+          default: {
               default_scs = Ogre::LiSPSMShadowCameraSetup::create();
               break;
           }
