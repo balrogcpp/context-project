@@ -2,14 +2,6 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <OgreCodec.h>
-#include <OgrePlugin.h>
-//#include <OgreSceneLoader.h>
-#include <OgreVector4.h>
-
-#include <string>
-#include <vector>
-
 #include "CameraMan.h"
 #include "CubeMapCamera.h"
 #include "Input.h"
@@ -20,6 +12,11 @@
 #include "System.h"
 #include "VegetationSystem.h"
 #include "view_ptr.h"
+#include <OgreCodec.h>
+#include <OgrePlugin.h>
+#include <OgreVector4.h>
+#include <string>
+#include <vector>
 
 namespace pugi {
 class xml_node;
@@ -115,10 +112,10 @@ class DotSceneLoaderB final : public System, public Singleton<DotSceneLoaderB> {
 class DotScenePluginB : public Ogre::Plugin {
   const Ogre::String &getName() const;
 
-  void install();
-  void initialise();
-  void shutdown();
-  void uninstall();
+  void install() override;
+  void initialise() override;
+  void shutdown() override;
+  void uninstall() override;
 
  private:
   Ogre::Codec *mCodec = nullptr;

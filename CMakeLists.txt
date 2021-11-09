@@ -405,6 +405,14 @@ if (NOT MSVC)
             VERBATIM
             )
 endif ()
-
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    add_custom_target(docker-compose
+            COMMAND GIT_HASH=${GIT_SHA1} docker-compose up --build
+            COMMAND docker-compose down --volumes
+            WORKING_DIRECTORY ${CONTEXT_WORK_DIR}
+            COMMENT "Build with docker..."
+            VERBATIM
+            )
+endif ()
 #Tests block
 add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)

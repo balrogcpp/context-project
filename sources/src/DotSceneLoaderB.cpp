@@ -25,26 +25,22 @@ using namespace std;
 namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
-template <typename T> 
+template <typename T>
 static string ToString(T t) {
   return t == 0 ? string() : to_string(t);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-template <typename T> 
-static const char* ToCString(T t) {
+template <typename T>
+static const char *ToCString(T t) {
   return t == 0 ? "" : to_string(t).c_str();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-static float ToFloat(const string &s, float defaultValue = 0.0f) {
-  return s.empty() ? defaultValue : atof(s.c_str());
-}
+static float ToFloat(const string &s, float defaultValue = 0.0f) { return s.empty() ? defaultValue : atof(s.c_str()); }
 
 //----------------------------------------------------------------------------------------------------------------------
-static float ToInt(const string &s, int defaultValue = 0) {
-  return s.empty() ? defaultValue : atoi(s.c_str());
-}
+static float ToInt(const string &s, int defaultValue = 0) { return s.empty() ? defaultValue : atoi(s.c_str()); }
 
 //----------------------------------------------------------------------------------------------------------------------
 string GetAttrib(const pugi::xml_node &xml_node, const string &attrib, const string &defaultValue) {
@@ -66,7 +62,7 @@ float GetAttribReal(const pugi::xml_node &xml_node, const string &attrib, float 
 
 //----------------------------------------------------------------------------------------------------------------------
 int GetAttribInt(const pugi::xml_node &xml_node, const string &attrib, int defaultValue) {
-  if (auto anode = xml_node.attribute(attrib.c_str())){
+  if (auto anode = xml_node.attribute(attrib.c_str())) {
     return ToInt(anode.value());
   } else {
     return defaultValue;
@@ -128,9 +124,9 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node) {
     orientation.FromAngleAxis(Ogre::Angle(angle), axis);
   } else if (xml_node.attribute("angleX")) {
     Ogre::Matrix3 rot;
-    rot.FromEulerAnglesXYZ(Ogre::StringConverter::parseAngle(xml_node.attribute("angleX").value()),
-                           Ogre::StringConverter::parseAngle(xml_node.attribute("angleY").value()),
-                           Ogre::StringConverter::parseAngle(xml_node.attribute("angleZ").value()));
+    rot.FromEulerAnglesXYZ(Ogre::Angle(ToFloat(xml_node.attribute("angleX").value())),
+                           Ogre::Angle(ToFloat(xml_node.attribute("angleY").value())),
+                           Ogre::Angle(ToFloat(xml_node.attribute("angleZ").value())));
     orientation.FromRotationMatrix(rot);
   } else if (xml_node.attribute("x")) {
     orientation.x = ToFloat(xml_node.attribute("x").value());
@@ -161,9 +157,8 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node) {
 
 //----------------------------------------------------------------------------------------------------------------------
 Ogre::ColourValue ParseColour(pugi::xml_node &xml_node) {
-  return Ogre::ColourValue(
-      ToFloat(xml_node.attribute("r").value()), ToFloat(xml_node.attribute("g").value()),
-      ToFloat(xml_node.attribute("b").value()), ToFloat(xml_node.attribute("a").value(), 1));
+  return Ogre::ColourValue(ToFloat(xml_node.attribute("r").value()), ToFloat(xml_node.attribute("g").value()),
+                           ToFloat(xml_node.attribute("b").value()), ToFloat(xml_node.attribute("a").value(), 1));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -182,9 +177,7 @@ static void write(pugi::xml_node &node, const Ogre::ColourValue &c) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-DotSceneLoaderB::DotSceneLoaderB() {
-  camera_ = make_unique<CameraMan>();
-}
+DotSceneLoaderB::DotSceneLoaderB() { camera_ = make_unique<CameraMan>(); }
 
 //----------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::~DotSceneLoaderB() { Cleanup(); }
@@ -561,8 +554,8 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
           }
           case 4:
           default: {
-              default_scs = Ogre::LiSPSMShadowCameraSetup::create();
-              break;
+            default_scs = Ogre::LiSPSMShadowCameraSetup::create();
+            break;
           }
         }
 
@@ -1162,11 +1155,11 @@ struct DotSceneCodec : public Ogre::Codec {
     using namespace Ogre;
 
     DataStreamPtr _stream(stream);
-//    DotSceneLoaderB loader;
-//    loader.load(_stream, ResourceGroupManager::getSingleton().getWorldResourceGroupName(),
-//                any_cast<SceneNode *>(output));
+    //    DotSceneLoaderB loader;
+    //    loader.load(_stream, ResourceGroupManager::getSingleton().getWorldResourceGroupName(),
+    //                any_cast<SceneNode *>(output));
     GetLoader().load(_stream, ResourceGroupManager::getSingleton().getWorldResourceGroupName(),
-                                     any_cast<SceneNode *>(output));
+                     any_cast<SceneNode *>(output));
   }
 
   void encodeToFile(const Ogre::Any &input, const Ogre::String &outFileName) const override {
