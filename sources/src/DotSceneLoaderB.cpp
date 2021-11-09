@@ -1,35 +1,50 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
+#include "pcheader.h"
 #include "DotSceneLoaderB.h"
-
-//#include <OgreSceneLoaderManager.h>
-
-#include <pugixml.hpp>
-
 #include "ComponentLocator.h"
 #include "MeshUtils.h"
 #include "PbrShaderUtils.h"
 #include "SinbadCharacterController.h"
 #include "btogre/BtOgre.h"
-
-// LOD Generator
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>
 #include <OgreDistanceLodStrategy.h>
 #include <OgrePixelCountLodStrategy.h>
 #endif
-// Paging
 #ifdef OGRE_BUILD_COMPONENT_PAGING
 #include <Paging/OgrePage.h>
 #include <Paging/OgrePaging.h>
 #endif
+#include <pugixml.hpp>
 
 using namespace std;
-using sc = Ogre::StringConverter;
 
 namespace glue {
+
+//----------------------------------------------------------------------------------------------------------------------
+template <typename T> 
+static string ToString(T t) {
+  return t == 0 ? string() : to_string(t);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+template <typename T> 
+static const char* ToCString(T t) {
+  return t == 0 ? "" : to_string(t).c_str();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+static float ToFloat(const string &s, float default = 0.0f) {
+  return s.empty() ? default : atof(s.c_str());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+static float ToInt(const string &s, int default = 0) {
+  return s.empty() ? default : atoi(s.c_str());
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 string GetAttrib(const pugi::xml_node &xml_node, const string &attrib, const string &defaultValue) {
@@ -43,7 +58,7 @@ string GetAttrib(const pugi::xml_node &xml_node, const string &attrib, const str
 //----------------------------------------------------------------------------------------------------------------------
 float GetAttribReal(const pugi::xml_node &xml_node, const string &attrib, float defaultValue) {
   if (auto anode = xml_node.attribute(attrib.c_str())) {
-    return sc::parseReal(anode.value());
+    return ToFloat(anode.value());
   } else {
     return defaultValue;
   }
@@ -51,8 +66,8 @@ float GetAttribReal(const pugi::xml_node &xml_node, const string &attrib, float 
 
 //----------------------------------------------------------------------------------------------------------------------
 int GetAttribInt(const pugi::xml_node &xml_node, const string &attrib, int defaultValue) {
-  if (auto anode = xml_node.attribute(attrib.c_str())) {
-    return sc::parseInt(anode.value());
+  if (auto anode = xml_node.attribute(attrib.c_str())){
+    return ToInt(anode.value());
   } else {
     return defaultValue;
   }
@@ -69,27 +84,27 @@ bool GetAttribBool(const pugi::xml_node &xml_node, const string &attrib, bool de
 
 //----------------------------------------------------------------------------------------------------------------------
 Ogre::Vector3 ParseVector3(const pugi::xml_node &xml_node) {
-  float x = sc::parseReal(xml_node.attribute("x").value());
-  float y = sc::parseReal(xml_node.attribute("y").value());
-  float z = sc::parseReal(xml_node.attribute("z").value());
+  float x = ToFloat(xml_node.attribute("x").value());
+  float y = ToFloat(xml_node.attribute("y").value());
+  float z = ToFloat(xml_node.attribute("z").value());
 
   return Ogre::Vector3(x, y, z);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 Ogre::Vector3 ParsePosition(const pugi::xml_node &xml_node) {
-  float x = sc::parseReal(xml_node.attribute("x").value());
-  float y = sc::parseReal(xml_node.attribute("y").value());
-  float z = sc::parseReal(xml_node.attribute("z").value());
+  float x = ToFloat(xml_node.attribute("x").value());
+  float y = ToFloat(xml_node.attribute("y").value());
+  float z = ToFloat(xml_node.attribute("z").value());
 
   return Ogre::Vector3(x, y, z);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 Ogre::Vector3 ParseScale(const pugi::xml_node &xml_node) {
-  float x = sc::parseReal(xml_node.attribute("x").value());
-  float y = sc::parseReal(xml_node.attribute("y").value());
-  float z = sc::parseReal(xml_node.attribute("z").value());
+  float x = ToFloat(xml_node.attribute("x").value());
+  float y = ToFloat(xml_node.attribute("y").value());
+  float z = ToFloat(xml_node.attribute("z").value());
 
   return Ogre::Vector3(x, y, z);
 }
@@ -99,34 +114,34 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node) {
   Ogre::Quaternion orientation;
 
   if (xml_node.attribute("qw")) {
-    orientation.w = sc::parseReal(xml_node.attribute("qw").value());
-    orientation.x = sc::parseReal(xml_node.attribute("qx").value());
-    orientation.y = -sc::parseReal(xml_node.attribute("qz").value());
-    orientation.z = sc::parseReal(xml_node.attribute("qy").value());
+    orientation.w = ToFloat(xml_node.attribute("qw").value());
+    orientation.x = ToFloat(xml_node.attribute("qx").value());
+    orientation.y = -ToFloat(xml_node.attribute("qz").value());
+    orientation.z = ToFloat(xml_node.attribute("qy").value());
   } else if (xml_node.attribute("axisX")) {
     Ogre::Vector3 axis;
-    axis.x = sc::parseReal(xml_node.attribute("axisX").value());
-    axis.y = sc::parseReal(xml_node.attribute("axisY").value());
-    axis.z = sc::parseReal(xml_node.attribute("axisZ").value());
-    float angle = sc::parseReal(xml_node.attribute("angle").value());
+    axis.x = ToFloat(xml_node.attribute("axisX").value());
+    axis.y = ToFloat(xml_node.attribute("axisY").value());
+    axis.z = ToFloat(xml_node.attribute("axisZ").value());
+    float angle = ToFloat(xml_node.attribute("angle").value());
 
     orientation.FromAngleAxis(Ogre::Angle(angle), axis);
   } else if (xml_node.attribute("angleX")) {
     Ogre::Matrix3 rot;
-    rot.FromEulerAnglesXYZ(sc::parseAngle(xml_node.attribute("angleX").value()),
-                           sc::parseAngle(xml_node.attribute("angleY").value()),
-                           sc::parseAngle(xml_node.attribute("angleZ").value()));
+    rot.FromEulerAnglesXYZ(Ogre::StringConverter::parseAngle(xml_node.attribute("angleX").value()),
+                           Ogre::StringConverter::parseAngle(xml_node.attribute("angleY").value()),
+                           Ogre::StringConverter::parseAngle(xml_node.attribute("angleZ").value()));
     orientation.FromRotationMatrix(rot);
   } else if (xml_node.attribute("x")) {
-    orientation.x = sc::parseReal(xml_node.attribute("x").value());
-    orientation.y = sc::parseReal(xml_node.attribute("y").value());
-    orientation.z = sc::parseReal(xml_node.attribute("z").value());
-    orientation.w = sc::parseReal(xml_node.attribute("w").value());
+    orientation.x = ToFloat(xml_node.attribute("x").value());
+    orientation.y = ToFloat(xml_node.attribute("y").value());
+    orientation.z = ToFloat(xml_node.attribute("z").value());
+    orientation.w = ToFloat(xml_node.attribute("w").value());
   } else if (xml_node.attribute("w")) {
-    orientation.w = sc::parseReal(xml_node.attribute("w").value());
-    orientation.x = sc::parseReal(xml_node.attribute("x").value());
-    orientation.y = sc::parseReal(xml_node.attribute("y").value());
-    orientation.z = sc::parseReal(xml_node.attribute("z").value());
+    orientation.w = ToFloat(xml_node.attribute("w").value());
+    orientation.x = ToFloat(xml_node.attribute("x").value());
+    orientation.y = ToFloat(xml_node.attribute("y").value());
+    orientation.z = ToFloat(xml_node.attribute("z").value());
   }
 
   Ogre::Vector3 direction = orientation * Ogre::Vector3::NEGATIVE_UNIT_Z;
@@ -147,39 +162,27 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node) {
 //----------------------------------------------------------------------------------------------------------------------
 Ogre::ColourValue ParseColour(pugi::xml_node &xml_node) {
   return Ogre::ColourValue(
-      sc::parseReal(xml_node.attribute("r").value()), sc::parseReal(xml_node.attribute("g").value()),
-      sc::parseReal(xml_node.attribute("b").value()), sc::parseReal(xml_node.attribute("a").value(), 1));
+      ToFloat(xml_node.attribute("r").value()), ToFloat(xml_node.attribute("g").value()),
+      ToFloat(xml_node.attribute("b").value()), ToFloat(xml_node.attribute("a").value(), 1));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 static void write(pugi::xml_node &node, const Ogre::Vector3 &v) {
-  node.append_attribute("x") = sc::toString(v.x).c_str();
-  node.append_attribute("y") = sc::toString(v.y).c_str();
-  node.append_attribute("z") = sc::toString(v.z).c_str();
+  node.append_attribute("x") = ToCString(v.x);
+  node.append_attribute("y") = ToCString(v.y);
+  node.append_attribute("z") = ToCString(v.z);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 static void write(pugi::xml_node &node, const Ogre::ColourValue &c) {
-  node.append_attribute("r") = sc::toString(c.r).c_str();
-  node.append_attribute("g") = sc::toString(c.g).c_str();
-  node.append_attribute("b") = sc::toString(c.b).c_str();
-  node.append_attribute("a") = sc::toString(c.a).c_str();
+  node.append_attribute("r") = ToCString(c.r);
+  node.append_attribute("g") = ToCString(c.g);
+  node.append_attribute("b") = ToCString(c.b);
+  node.append_attribute("a") = ToCString(c.a);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 DotSceneLoaderB::DotSceneLoaderB() {
-//  static auto &sl = Ogre::SceneLoaderManager::getSingleton();
-//
-//  if (sl._getSceneLoader("DotScene")) {
-//    sl.unregisterSceneLoader("DotScene");
-//  }
-//
-//  if (sl._getSceneLoader("DotSceneB")) {
-//    sl.unregisterSceneLoader("DotSceneB");
-//  }
-//
-//  sl.registerSceneLoader("DotSceneB", {".scene"}, this);
-
   camera_ = make_unique<CameraMan>();
 }
 
@@ -257,25 +260,25 @@ void DotSceneLoaderB::WriteNode_(pugi::xml_node &parentXML, const Ogre::SceneNod
   write(scale, node->getScale());
 
   auto rot = nodeXML.append_child("rotation");
-  rot.append_attribute("qw") = sc::toString(node->getOrientation().w).c_str();
-  rot.append_attribute("qx") = sc::toString(node->getOrientation().x).c_str();
-  rot.append_attribute("qy") = sc::toString(node->getOrientation().y).c_str();
-  rot.append_attribute("qz") = sc::toString(node->getOrientation().z).c_str();
+  rot.append_attribute("qw") = ToCString(node->getOrientation().w);
+  rot.append_attribute("qx") = ToCString(node->getOrientation().x);
+  rot.append_attribute("qy") = ToCString(node->getOrientation().y);
+  rot.append_attribute("qz") = ToCString(node->getOrientation().z);
 
   for (auto mo : node->getAttachedObjects()) {
     if (auto c = dynamic_cast<Ogre::Camera *>(mo)) {
       auto camera = nodeXML.append_child("camera");
       camera.append_attribute("name") = c->getName().c_str();
       auto clipping = camera.append_child("clipping");
-      clipping.append_attribute("near") = sc::toString(c->getNearClipDistance()).c_str();
-      clipping.append_attribute("far") = sc::toString(c->getFarClipDistance()).c_str();
+      clipping.append_attribute("near") = ToCString(c->getNearClipDistance());
+      clipping.append_attribute("far") = ToCString(c->getFarClipDistance());
       continue;
     }
 
     if (auto l = dynamic_cast<Ogre::Light *>(mo)) {
       auto light = nodeXML.append_child("light");
       light.append_attribute("name") = l->getName().c_str();
-      light.append_attribute("castShadows") = sc::toString(l->getCastShadows()).c_str();
+      light.append_attribute("castShadows") = ToCString(l->getCastShadows());
 
       if (!l->isVisible()) light.append_attribute("visible") = "false";
 
@@ -297,14 +300,14 @@ void DotSceneLoaderB::WriteNode_(pugi::xml_node &parentXML, const Ogre::SceneNod
 
       if (l->getType() != Ogre::Light::LT_DIRECTIONAL) {
         auto range = light.append_child("lightRange");
-        range.append_attribute("inner") = sc::toString(l->getSpotlightInnerAngle()).c_str();
-        range.append_attribute("outer") = sc::toString(l->getSpotlightOuterAngle()).c_str();
-        range.append_attribute("falloff") = sc::toString(l->getSpotlightFalloff()).c_str();
+        range.append_attribute("inner") = ToCString(l->getSpotlightInnerAngle().valueRadians());
+        range.append_attribute("outer") = ToCString(l->getSpotlightOuterAngle().valueRadians());
+        range.append_attribute("falloff") = ToCString(l->getSpotlightFalloff());
         auto atten = light.append_child("lightAttenuation");
-        atten.append_attribute("range") = sc::toString(l->getAttenuationRange()).c_str();
-        atten.append_attribute("constant") = sc::toString(l->getAttenuationConstant()).c_str();
-        atten.append_attribute("linear") = sc::toString(l->getAttenuationLinear()).c_str();
-        atten.append_attribute("quadratic") = sc::toString(l->getAttenuationQuadric()).c_str();
+        atten.append_attribute("range") = ToCString(l->getAttenuationRange());
+        atten.append_attribute("constant") = ToCString(l->getAttenuationConstant());
+        atten.append_attribute("linear") = ToCString(l->getAttenuationLinear());
+        atten.append_attribute("quadratic") = ToCString(l->getAttenuationQuadric());
       }
 
       continue;
@@ -337,7 +340,8 @@ void DotSceneLoaderB::exportScene(Ogre::SceneNode *rootNode, const string &outFi
   auto comment = XMLDoc.append_child(pugi::node_comment);
   comment.set_value(Ogre::StringUtil::format(" exporter: Plugin_DotScene %d.%d.%d ", OGRE_VERSION_MAJOR,
                                              OGRE_VERSION_MINOR, OGRE_VERSION_PATCH)
-                        .c_str());
+                        .c_str()
+                        );
   auto scene = XMLDoc.append_child("scene");
   scene.append_attribute("formatVersion") = "1.1";
   scene.append_attribute("sceneManager") = rootNode->getCreator()->getTypeName().c_str();
@@ -939,9 +943,9 @@ void DotSceneLoaderB::ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   float distance = GetAttribReal(xml_node, "distance", 0.0f);
   float width = GetAttribReal(xml_node, "width", 1.0f);
   float height = GetAttribReal(xml_node, "height", width);
-  int xSegments = sc::parseInt(GetAttrib(xml_node, "xSegments"), width / 5.0f);
-  int ySegments = sc::parseInt(GetAttrib(xml_node, "ySegments"), height / 5.0f);
-  int numTexCoordSets = sc::parseInt(GetAttrib(xml_node, "numTexCoordSets"), 1);
+  int xSegments = ToInt(GetAttrib(xml_node, "xSegments"), width / 5.0f);
+  int ySegments = ToInt(GetAttrib(xml_node, "ySegments"), height / 5.0f);
+  int numTexCoordSets = ToInt(GetAttrib(xml_node, "numTexCoordSets"), 1);
   float uTile = GetAttribReal(xml_node, "uTile", width / 10.0f);
   float vTile = GetAttribReal(xml_node, "vTile", height / 10.0f);
   string material = GetAttrib(xml_node, "material", "BaseWhite");
@@ -1036,7 +1040,7 @@ void DotSceneLoaderB::ProcessFog_(pugi::xml_node &xml_node) {
   } else if (sMode == "linear") {
     mode = Ogre::FOG_LINEAR;
   } else {
-    mode = (Ogre::FogMode)sc::parseInt(sMode);
+    mode = (Ogre::FogMode)ToInt(sMode);
   }
 
   if (auto element = xml_node.child("colour")) {
@@ -1137,11 +1141,11 @@ void DotSceneLoaderB::ProcessUserData_(pugi::xml_node &xml_node, Ogre::UserObjec
     Ogre::Any value;
 
     if (type == "bool") {
-      value = sc::parseBool(data);
+      value = (ToInt(data) != 0);
     } else if (type == "float") {
-      value = sc::parseReal(data);
+      value = ToFloat(data);
     } else if (type == "int") {
-      value = sc::parseInt(data);
+      value = ToInt(data);
     } else {
       value = data;
     }
