@@ -1,9 +1,8 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
-#include "CubeMapCamera.h"
-
 #include "pcheader.h"
+#include "CubeMapCamera.h"
 
 using namespace std;
 

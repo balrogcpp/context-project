@@ -1,11 +1,10 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
+#include "pcheader.h"
 #include "Compositor.h"
-
 #include "Config.h"
 #include "PbrShaderUtils.h"
-#include "pcheader.h"
 
 using namespace std;
 

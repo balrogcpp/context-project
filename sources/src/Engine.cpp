@@ -1,10 +1,9 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
-#include "Engine.h"
-
-#include "Config.h"
 #include "pcheader.h"
+#include "Engine.h"
+#include "Config.h"
 
 using namespace std;
 

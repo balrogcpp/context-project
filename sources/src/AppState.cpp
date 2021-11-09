@@ -1,11 +1,8 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
-#include "AppState.h"
-
-//#include <OgreSceneLoaderManager.h>
-
 #include "pcheader.h"
+#include "AppState.h"
 
 using namespace std;
 

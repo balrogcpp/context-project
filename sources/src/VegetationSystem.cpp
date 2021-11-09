@@ -1,12 +1,11 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
+#include "pcheader.h"
 #include "VegetationSystem.h"
-
 #include "ComponentLocator.h"
 #include "MeshUtils.h"
 #include "PbrShaderUtils.h"
-#include "pcheader.h"
 #include "pgeometry/PagedGeometryAll.h"
 
 using namespace Forests;

@@ -30,12 +30,9 @@
  *
  */
 
-#include "oggsound/OgreOggSoundFactory.h"
-
-#include <Ogre.h>
-
-#include "oggsound/OgreOggSound.h"
 #include "pcheader.h"
+#include "oggsound/OgreOggSoundFactory.h"
+#include "oggsound/OgreOggSound.h"
 
 using namespace Ogre;
 using namespace OgreOggSound;

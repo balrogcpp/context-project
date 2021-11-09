@@ -13,9 +13,8 @@ software.
         3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
-#include "pgeometry/GrassLoader.h"
-
 #include "pcheader.h"
+#include "pgeometry/GrassLoader.h"
 #include "pgeometry/PagedGeometry.h"
 #include "pgeometry/PropertyMaps.h"
 #include "pgeometry/RandomTable.h"

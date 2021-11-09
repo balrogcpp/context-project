@@ -1,11 +1,8 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
-#include "DesktopIcon.h"
-
-#include <regex>
-
 #include "pcheader.h"
+#include "DesktopIcon.h"
 #if HAS_FILESYSTEM
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -13,6 +10,7 @@ namespace fs = std::filesystem;
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
 #endif
+#include <regex>
 
 using namespace std;
 

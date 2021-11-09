@@ -1,10 +1,9 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
-#include "Window.h"
-
-#include "Exception.h"
 #include "pcheader.h"
+#include "Window.h"
+#include "Exception.h"
 
 using namespace std;
 

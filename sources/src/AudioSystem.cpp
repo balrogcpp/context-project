@@ -1,13 +1,10 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
+#include "pcheader.h"
 #include "AudioSystem.h"
-
-#include <string>
-
 #include "Exception.h"
 #include "oggsound/OgreOggSound.h"
-#include "pcheader.h"
 
 using namespace std;
 

@@ -1,19 +1,16 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
+#include "pcheader.h"
 #include "Landscape.h"
-
 #include "ComponentLocator.h"
 #include "TerrainMaterialGeneratorB.h"
-#include "pcheader.h"
-
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainAutoUpdateLod.h>
 #include <Terrain/OgreTerrainGroup.h>
 #include <Terrain/OgreTerrainQuadTreeNode.h>
 #endif
-
 #include <pugixml.hpp>
 
 using namespace std;

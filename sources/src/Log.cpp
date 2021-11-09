@@ -1,10 +1,8 @@
-//
-// Created by fours on 02.06.2021.
-//
-
-#include "Log.h"
+// This source file is part of "glue project"
+// Created by Andrew Vasiliev
 
 #include "pcheader.h"
+#include "Log.h"
 
 using namespace std;
 

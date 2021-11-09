@@ -1,9 +1,8 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
-#include "ReflectionCamera.h"
-
 #include "pcheader.h"
+#include "ReflectionCamera.h"
 
 using namespace std;
 

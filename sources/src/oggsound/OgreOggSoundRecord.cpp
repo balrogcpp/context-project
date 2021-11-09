@@ -30,9 +30,8 @@
  *
  */
 
-#include "oggsound/OgreOggSoundRecord.h"
-
 #include "pcheader.h"
+#include "oggsound/OgreOggSoundRecord.h"
 
 using namespace Ogre;
 

@@ -1,9 +1,8 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
-#include "StateManager.h"
-
 #include "pcheader.h"
+#include "StateManager.h"
 
 using namespace std;
 

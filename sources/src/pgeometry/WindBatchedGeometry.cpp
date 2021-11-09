@@ -17,9 +17,9 @@ software.
 // A "lightweight" version of Ogre::StaticGeometry, which gives you a little more control
 // over the batch materials, etc.
 //-------------------------------------------------------------------------------------
-#include "pgeometry/WindBatchedGeometry.h"
 
 #include "pcheader.h"
+#include "pgeometry/WindBatchedGeometry.h"
 #include "pgeometry/PagedGeometry.h"
 
 using namespace Ogre;

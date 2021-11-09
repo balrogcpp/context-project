@@ -1,14 +1,12 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
+#include "pcheader.h"
 #include "Application.h"
-
-#include <iostream>
-
 #include "ComponentLocator.h"
 #include "DesktopIcon.h"
 #include "Exception.h"
-#include "pcheader.h"
+#include <iostream>
 
 #ifdef WIN32
 extern "C" {
@@ -63,11 +61,11 @@ Application::Application() {
   } catch (Exception &e) {
     ExceptionMessage_("Exception", e.getDescription());
   } catch (Ogre::Exception &e) {
-    ExceptionMessage_("Exception (OGRE)", e.getFullDescription());
+    ExceptionMessage_("Exception", string("Ogre: ") + e.getFullDescription());
   } catch (exception &e) {
-    ExceptionMessage_("Exception (std::exception)", e.what());
+    ExceptionMessage_("Exception", string("std::exception: ") + e.what());
   } catch (...) {
-    ExceptionMessage_("Exception", "Unhandled");
+    ExceptionMessage_("Exception", "unhandled");
   }
 }
 
@@ -234,13 +232,13 @@ int Application::Main(unique_ptr<AppState> &&scene_ptr) {
     SDL_Quit();
 
   } catch (Exception &e) {
-    return ExceptionMessage_("Exception", e.getDescription());
+    ExceptionMessage_("Exception", e.getDescription());
   } catch (Ogre::Exception &e) {
-    return ExceptionMessage_("Exception (OGRE)", e.getFullDescription());
+    ExceptionMessage_("Exception", string("Ogre: ") + e.getFullDescription());
   } catch (exception &e) {
-    return ExceptionMessage_("Exception (std::exception)", e.what());
+    ExceptionMessage_("Exception", string("std::exception: ") + e.what());
   } catch (...) {
-    ExceptionMessage_("Exception", "Unhandled");
+    ExceptionMessage_("Exception", "unhandled");
   }
 
   return 0;

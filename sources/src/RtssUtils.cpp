@@ -1,14 +1,10 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
+#include "pcheader.h"
 #include "RtssUtils.h"
 
-#include <iostream>
-
-#include "pcheader.h"
-
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-
 #include <RTShaderSystem/OgreRTShaderSystem.h>
 #include <RTShaderSystem/OgreShaderGenerator.h>
 
@@ -94,11 +90,7 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
   bool verbose = false;
 
   if (!originalMaterial) {
-    if (verbose) cout << "Requested to fix material " << material_name << " but it does not exist\n";
-
     return false;
-  } else {
-    if (verbose) cout << "Fixing Material " << material_name << " !\n";
   }
 
   // Init shader generated technique for this material.

@@ -13,8 +13,9 @@ software.
 3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
+#include "pcheader.h"
 #include "pgeometry/PropertyMaps.h"
-
+#include "pgeometry/PagedGeometry.h"
 #include <OgreHardwarePixelBuffer.h>
 #include <OgrePixelFormat.h>
 #include <OgrePrerequisites.h>
@@ -24,8 +25,6 @@ software.
 #include <OgreStringConverter.h>
 #include <OgreTexture.h>
 #include <OgreTextureManager.h>
-
-#include "pgeometry/PagedGeometry.h"
 
 using namespace Ogre;
 

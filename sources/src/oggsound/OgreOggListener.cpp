@@ -30,12 +30,9 @@
  *
  */
 
-#include "oggsound/OgreOggListener.h"
-
-#include <OgreMovableObject.h>
-
-#include "oggsound/OgreOggSound.h"
 #include "pcheader.h"
+#include "oggsound/OgreOggListener.h"
+#include "oggsound/OgreOggSound.h"
 
 namespace OgreOggSound {
 #if OGGSOUND_THREADED

@@ -30,12 +30,9 @@
  *
  */
 
-#include "oggsound/OgreOggSoundManager.h"
-
-#include <string>
-
-#include "oggsound/OgreOggSound.h"
 #include "pcheader.h"
+#include "oggsound/OgreOggSoundManager.h"
+#include "oggsound/OgreOggSound.h"
 
 #if OGGSOUND_THREADED
 #ifdef POCO_THREAD

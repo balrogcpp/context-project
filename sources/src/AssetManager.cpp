@@ -1,14 +1,11 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
+#include "pcheader.h"
 #include "AssetManager.h"
-
-#include <iostream>
-
 #include "Android.h"
 #include "Exception.h"
 #include "Log.h"
-#include "pcheader.h"
 #if HAS_FILESYSTEM
 #include <filesystem>
 namespace fs = filesystem;

@@ -17,9 +17,9 @@ software.
 // WindBatchPage is an extension to PagedGeometry which displays entities as static geometry but that is affected by
 // wind.
 //-------------------------------------------------------------------------------------
-#include "pgeometry/WindBatchPage.h"
 
 #include "pcheader.h"
+#include "pgeometry/WindBatchPage.h"
 #include "pgeometry/WindBatchedGeometry.h"
 
 // to dump the shader source in a file

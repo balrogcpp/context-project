@@ -1,14 +1,12 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
+#include "pcheader.h"
 #include "PhysicsSystem.h"
-
+#include "btogre/BtOgre.h"
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
-
-#include "btogre/BtOgre.h"
-#include "pcheader.h"
 
 using namespace std;
 

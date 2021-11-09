@@ -17,9 +17,8 @@ being the original software.
 // Main source file for the PagedGeometry engine.
 //-------------------------------------------------------------------------------------
 
-#include "pgeometry/PagedGeometry.h"
-
 #include "pcheader.h"
+#include "pgeometry/PagedGeometry.h"
 #include "pgeometry/StaticBillboardSet.h"
 
 using namespace Ogre;

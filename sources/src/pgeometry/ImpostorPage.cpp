@@ -17,9 +17,9 @@ being the original software.
 // ImpostorPage.cpp
 // ImposterPage is an extension to PagedGeometry which displays entities as imposters.
 //-------------------------------------------------------------------------------------
-#include "pgeometry/ImpostorPage.h"
 
 #include "pcheader.h"
+#include "pgeometry/ImpostorPage.h"
 #include "pgeometry/StaticBillboardSet.h"
 
 using namespace Ogre;

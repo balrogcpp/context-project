@@ -17,9 +17,8 @@ software.
 // BatchPage is an extension to PagedGeometry which displays entities as static geometry.
 //-------------------------------------------------------------------------------------
 
-#include "pgeometry/BatchPage.h"
-
 #include "pcheader.h"
+#include "pgeometry/BatchPage.h"
 #include "pgeometry/BatchedGeometry.h"
 
 using namespace Ogre;

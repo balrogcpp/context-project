@@ -1,4 +1,4 @@
-﻿// This source file is part of context-project
+﻿// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
 #pragma once

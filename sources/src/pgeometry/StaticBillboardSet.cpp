@@ -19,8 +19,8 @@ software.
 // does not allow billboards to be moved or deleted individually in real-time)
 //-------------------------------------------------------------------------------------
 
+#include "pcheader.h"
 #include "pgeometry/StaticBillboardSet.h"
-
 #include <OgreBillboard.h>
 #include <OgreBillboardSet.h>
 #include <OgreCamera.h>

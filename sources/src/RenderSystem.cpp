@@ -1,14 +1,13 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
-#include "pcheader.h"
 
+#include "pcheader.h"
 #include "RenderSystem.h"
 #include "AssetManager.h"
 #include "Config.h"
 #include "Exception.h"
 #include "RtssUtils.h"
 #include "DotSceneLoaderB.h"
-
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
 #endif

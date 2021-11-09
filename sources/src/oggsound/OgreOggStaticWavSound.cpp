@@ -30,12 +30,9 @@
  *
  */
 
-#include "oggsound/OgreOggStaticWavSound.h"
-
-#include <string>
-
-#include "oggsound/OgreOggSoundManager.h"
 #include "pcheader.h"
+#include "oggsound/OgreOggStaticWavSound.h"
+#include "oggsound/OgreOggSoundManager.h"
 
 namespace OgreOggSound {
 

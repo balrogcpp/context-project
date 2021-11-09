@@ -30,10 +30,8 @@
  *
  */
 
+#include "pcheader.h"
 #include "oggsound/OgreOggStreamBufferSound.h"
-
-#include <string>
-
 #include "oggsound/OgreOggSound.h"
 
 namespace OgreOggSound {

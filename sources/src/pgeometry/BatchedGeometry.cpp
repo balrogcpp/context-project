@@ -18,9 +18,8 @@ software.
 // over the batch materials, etc.
 //-------------------------------------------------------------------------------------
 
-#include "pgeometry/BatchedGeometry.h"
-
 #include "pcheader.h"
+#include "pgeometry/BatchedGeometry.h"
 #include "pgeometry/PagedGeometry.h"
 
 using namespace Ogre;

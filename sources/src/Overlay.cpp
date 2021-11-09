@@ -1,16 +1,14 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
 #include "pcheader.h"
-
+#include "Overlay.h"
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
 #endif
-
-#include "Overlay.h"
 
 using namespace std;
 

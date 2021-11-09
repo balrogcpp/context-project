@@ -1,4 +1,4 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
 #pragma once
@@ -44,21 +44,13 @@ class AudioSystem;
 class Overlay;
 
 std::string GetAttrib(const pugi::xml_node &xml_node, const std::string &attrib, const std::string &defaultValue = "");
-
 float GetAttribReal(const pugi::xml_node &xml_node, const std::string &attrib, float defaultValue = 0);
-
 int GetAttribInt(const pugi::xml_node &xml_node, const std::string &attrib, int defaultValue = 0);
-
 bool GetAttribBool(const pugi::xml_node &xml_node, const std::string &attrib, bool defaultValue = false);
-
 Ogre::Vector3 ParseVector3(const pugi::xml_node &xml_node);
-
 Ogre::Vector3 ParsePosition(const pugi::xml_node &xml_node);
-
 Ogre::Vector3 ParseScale(const pugi::xml_node &xml_node);
-
 Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node);
-
 Ogre::ColourValue ParseColour(pugi::xml_node &xml_node);
 
 class DotSceneLoaderB final : public System, public Singleton<DotSceneLoaderB> {

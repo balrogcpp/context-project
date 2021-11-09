@@ -1,9 +1,8 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
+#include "pcheader.h"
 #include "VerboseListener.h"
-
-#include <iostream>
 
 using namespace std;
 

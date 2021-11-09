@@ -1,10 +1,10 @@
-// This source file is part of context-project
+// This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
-#include "CameraMan.h"
-
-#include "BulletDynamics/Dynamics/btRigidBody.h"
 #include "pcheader.h"
+#include "CameraMan.h"
+#include "BulletDynamics/Dynamics/btRigidBody.h"
+
 
 namespace glue {
 
