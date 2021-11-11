@@ -5,6 +5,9 @@
 
 #include "Input.h"
 #include "NoCopy.h"
+#include <OgreResourceGroupManager.h>
+#include <OgreRenderTargetListener.h>
+#include <OgreFrameListener.h>
 
 namespace glue {
 class StateManager;
