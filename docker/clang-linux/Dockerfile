@@ -78,15 +78,17 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
 
 
 ########################################################################################################################
+ARG GCC_HOME=/usr
 ARG BINUTILS_VERSION=2.37
+ARG GCC_VERSION=11.2.0
 
-RUN apt-get update \
-    && apt-get install -y zlib1g-dev \
-    && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
+RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev \
+    && wget http://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
+    && wget http://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
     && mkdir binutils-${BINUTILS_VERSION}-linux \
     && cd binutils-${BINUTILS_VERSION}-linux \
     && ../binutils-${BINUTILS_VERSION}/configure \
-      --prefix=/usr \
+      --prefix=${GCC_HOME} \
       --target=x86_64-linux-gnu \
       --disable-shared \
       --enable-static \
@@ -99,15 +101,39 @@ RUN apt-get update \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
     && cd .. \
+    && mkdir gcc-linux \
+    && cd gcc-linux \
+    && ../gcc-${GCC_VERSION}/configure \
+      --prefix=${GCC_HOME} \
+      --target=x86_64-linux-gnu \
+      --enable-languages=c,c++ \
+      --disable-multilib \
+      --enable-libgomp \
+      --enable-libatomic \
+      --enable-graphite \
+      --disable-multilib \
+      --enable-lto \
+      --disable-werror \
+    && make -j`nproc` all-gcc > /dev/null \
+    && make install-gcc > /dev/null \
+    && cd .. \
+    && cd gcc-linux \
+    && make -j`nproc` > /dev/null \
+    && make install > /dev/null \
+    && cd .. \
     && rm -rf binutils-${BINUTILS_VERSION} \
     && rm -rf binutils-${BINUTILS_VERSION}-linux \
-    && apt-get -y purge zlib1g-dev \
+    && rm -rf gcc-${GCC_VERSION} \
+    && rm -rf gcc-linux \
+    && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev \
     && apt-get -y autoremove \
     && apt-get clean
 
-RUN update-alternatives --install /usr/bin/ld ld /usr/bin/x86_64-linux-gnu-ld 10300
+RUN update-alternatives --install ${GCC_HOME}/bin/gcc gcc ${GCC_HOME}/bin/x86_64-linux-gnu-gcc 11200 \
+        --slave ${GCC_HOME}/bin/g++ g++ ${GCC_HOME}/bin/x86_64-linux-gnu-g++ \
+        && update-alternatives --install /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 11200
 
-
+ENV LD_LIBRARY_PATH="${GCC_HOME}/lib64:${LD_LIBRARY_PATH}"
 
 ########################################################################################################################
 RUN apt-get update \
@@ -120,7 +146,7 @@ RUN apt-get update \
 
 
 ########################################################################################################################
-ARG LLVM_VERSION=12.0.1
+ARG LLVM_VERSION=13.0.0
 ARG LLVM_HOME=/usr
 
 RUN cd /mnt \
@@ -128,6 +154,7 @@ RUN cd /mnt \
     && apt-get install -y libxml2 zlib1g-dev lzma-dev libxml2-dev libssl-dev \
     && git clone --depth 1 -b llvmorg-${LLVM_VERSION} https://github.com/llvm/llvm-project.git \
     && cd llvm-project \
+    && rm -rf .git \
     && mkdir build \
     && cd build \
     && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${LLVM_HOME} \
