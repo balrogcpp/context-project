@@ -34,15 +34,11 @@
  */
 
 #pragma once
-
+#include "OgreOggISound.h"
+#include "OgreOggSoundPrereqs.h"
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
-
-#include <string>
-
-#include "OgreOggISound.h"
-#include "OgreOggSoundPrereqs.h"
 
 namespace OgreOggSound {
 //! A single streaming sound (OGG)

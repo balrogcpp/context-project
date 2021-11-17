@@ -7,6 +7,8 @@
 #include <OgreResourceGroupManager.h>
 #include <OgreRenderTargetListener.h>
 #include <OgreFrameListener.h>
+#include <memory>
+#include <string>
 
 namespace glue {
 class StateManager;

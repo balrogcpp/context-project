@@ -12,11 +12,11 @@ required.
 software.
     3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
-#pragma once
-#include <OgrePrerequisites.h>
 
+#pragma once
 #include "PagedGeometry.h"
 #include "PropertyMaps.h"
+#include <OgrePrerequisites.h>
 
 namespace Forests {
 

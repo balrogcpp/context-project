@@ -11,7 +11,7 @@ class VerboseListener final : public InputObserver {
   void SetVerbose(bool verbose);
   bool IsVerbose();
 
- private:
+ protected:
   void OnKeyDown(SDL_Keycode sym) override;
   void OnKeyUp(SDL_Keycode sym) override;
   void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override;

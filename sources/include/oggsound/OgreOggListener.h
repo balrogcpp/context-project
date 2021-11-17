@@ -32,6 +32,7 @@
  *
  * Listener object (The users 'ears')
  */
+
 #pragma once
 #include "OgreOggSoundPrereqs.h"
 #include <OgreMovableObject.h>

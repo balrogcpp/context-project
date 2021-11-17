@@ -8,6 +8,8 @@
 #include "VerboseListener.h"
 #include "view_ptr.h"
 #include <OgreLog.h>
+#include <memory>
+#include <string>
 
 namespace glue {
 
@@ -17,7 +19,7 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&scene_ptr);
 
- private:
+ protected:
   void Loop_();
   void Go_();
   int ExceptionMessage_(const std::string &caption, const std::string &message);

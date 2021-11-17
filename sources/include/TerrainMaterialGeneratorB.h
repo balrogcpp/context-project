@@ -31,7 +31,7 @@ class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
     bool isVertexCompressionSupported() const override;
     void setLightmapEnabled(bool enabled) override;
 
-   private:
+   protected:
     bool lightmap_ = false;
     int8_t max_layers_ = 4;
   };

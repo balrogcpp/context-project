@@ -2,11 +2,10 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <functional>
-#include <memory>
-
 #include "SubSystem.h"
 #include "view_ptr.h"
+#include <functional>
+#include <memory>
 
 namespace Forests {
 class PagedGeometry;
@@ -27,7 +26,7 @@ class VegetationSystem final : public SubSystem {
   void ProcessForest();
   void Update(float time) override;
 
- private:
+ protected:
   inline static std::function<float(float, float)> heigh_func_;
   std::vector<std::unique_ptr<Forests::PagedGeometry>> pgeometry_;
   std::vector<std::unique_ptr<Forests::PageLoader>> ploaders_;

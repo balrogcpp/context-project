@@ -3,6 +3,9 @@
 
 #pragma once
 #include "Input.h"
+extern "C" {
+#include <SDL_keycode.h>
+}
 
 namespace glue {
 

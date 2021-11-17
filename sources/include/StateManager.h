@@ -2,10 +2,8 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-
 #include "AppState.h"
 #include "Singleton.h"
-#include "view_ptr.h"
 
 namespace glue {
 
@@ -23,7 +21,7 @@ class StateManager : public Singleton<StateManager> {
   void Pause();
   void Resume();
 
- private:
+ protected:
   std::unique_ptr<AppState> cur_state_;
 };
 

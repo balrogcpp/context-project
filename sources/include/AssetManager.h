@@ -3,6 +3,7 @@
 
 #pragma once
 #include <OgreResourceGroupManager.h>
+#include <string>
 
 struct AAssetManager;
 

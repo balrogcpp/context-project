@@ -2,14 +2,12 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <OgreAny.h>
-#include <OgreFrameListener.h>
-
-#include <map>
-#include <thread>
-
 #include "Singleton.h"
 #include "System.h"
+#include <OgreAny.h>
+#include <OgreFrameListener.h>
+#include <map>
+#include <thread>
 
 namespace BtOgre {
 class DebugDrawer;
@@ -68,7 +66,7 @@ class PhysicsSystem final : public System, public Singleton<PhysicsSystem> {
 
   bool IsThreaded() const;
 
- private:
+ protected:
   void InitThread_();
 
   std::unique_ptr<BtOgre::DebugDrawer> dbg_draw_;

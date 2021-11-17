@@ -34,10 +34,8 @@
  */
 
 #pragma once
-
-#include <fstream>
-
 #include "OgreOggSoundPrereqs.h"
+#include <fstream>
 
 namespace OgreOggSound {
 //! WAVE file format structure

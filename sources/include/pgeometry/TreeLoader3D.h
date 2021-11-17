@@ -14,10 +14,9 @@ software.
 -------------------------------------------------------------------------------------*/
 
 #pragma once
-#include <OgrePrerequisites.h>
-
 #include "PagedGeometry.h"
 #include "PropertyMaps.h"
+#include <OgrePrerequisites.h>
 
 namespace Forests {
 

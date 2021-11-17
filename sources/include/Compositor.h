@@ -4,6 +4,8 @@
 #pragma once
 #include "System.h"
 #include "Singleton.h"
+#include <memory>
+#include <string>
 
 namespace Ogre {
 class Camera;
@@ -29,7 +31,7 @@ class Compositor : public System, public Singleton<Compositor> {
   void EnableEffect(const std::string &name, bool enable = true);
   void SetUp();
 
- private:
+ protected:
   void InitGbuffer_();
   void AddCompositorEnabled_(const std::string &name);
   void AddCompositorDisabled_(const std::string &name);

@@ -2,7 +2,6 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-
 // OGRE Core objects
 #include <Ogre.h>
 // Overlay

@@ -32,12 +32,8 @@
  *
  * Factory manager for creation of sound objects
  */
+
 #pragma once
-#ifndef __OGREOGGSOUNDFactory_H__
-#define __OGREOGGSOUNDFactory_H__
-
-#include <Ogre.h>
-
 #include "OgreOggSound.h"
 
 namespace OgreOggSound {
@@ -63,5 +59,3 @@ class _OGGSOUND_EXPORT OgreOggSoundFactory : public Ogre::MovableObjectFactory {
   void destroyInstance(Ogre::MovableObject *obj) override;
 };
 }  // namespace OgreOggSound
-
-#endif

@@ -2,11 +2,15 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <Ogre.h>
-
+#include <OgreRenderTargetListener.h>
+#include <OgrePlane.h>
 #include <vector>
 
-#include "view_ptr.h"
+namespace Ogre {
+class Texture;
+class SceneManager;
+class Camera;
+}
 
 namespace glue {
 class ReflectionCamera final : public Ogre::RenderTargetListener {
@@ -23,7 +27,7 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   std::shared_ptr<Ogre::Texture> reflection_tex_;
   std::shared_ptr<Ogre::Texture> refraction_tex_;
 
- private:
+ protected:
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
   void Clear_();

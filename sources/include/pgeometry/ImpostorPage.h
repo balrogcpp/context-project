@@ -19,13 +19,11 @@ software.
 //-------------------------------------------------------------------------------------
 
 #pragma once
+#include "PagedGeometry.h"
+#include "StaticBillboardSet.h"
 #include <OgrePrerequisites.h>
 #include <OgreRenderTexture.h>
 #include <OgreTextureManager.h>
-
-#include "PagedGeometry.h"
-#include "StaticBillboardSet.h"
-
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 // linux memory fix
 #include <memory>

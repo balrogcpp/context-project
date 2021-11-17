@@ -129,7 +129,7 @@ void DemoDotAppState::Update(float time) {
 //----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::SetUp() {
   GetWindow().Grab(true);
-  GetLoader().GetCamera().SetStyle(glue::CameraMan::Style::FPS);
+//  GetLoader().GetCamera().SetStyle(glue::CameraMan::Style::FPS);
   LoadFromFile("1.scene");
 
   //    Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);

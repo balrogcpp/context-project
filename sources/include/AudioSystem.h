@@ -5,6 +5,7 @@
 #include "Singleton.h"
 #include "System.h"
 #include "view_ptr.h"
+#include <string>
 
 namespace OgreOggSound {
 class OgreOggSoundManager;
@@ -28,7 +29,7 @@ class AudioSystem final : public System, public Singleton<AudioSystem> {
   void SetVolume(const std::string &name, float gain);
   void SetListener(Ogre::SceneNode *parent);
 
- private:
+ protected:
   view_ptr<OgreOggSound::OgreOggSoundManager> manager_;
 };
 

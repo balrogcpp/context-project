@@ -3,6 +3,7 @@
 
 #pragma once
 #include <OgreMesh.h>
+#include <string>
 
 namespace Ogre {
 class VertexDeclaration;

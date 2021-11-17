@@ -34,7 +34,6 @@
  */
 
 #pragma once
-
 #include "OgreOggISound.h"
 #include "OgreOggSoundPrereqs.h"
 

@@ -34,10 +34,6 @@
  */
 
 #pragma once
-
-#include <map>
-#include <string>
-
 #include "LocklessQueue.h"
 #include "OgreOggISound.h"
 #include "OgreOggSound.h"

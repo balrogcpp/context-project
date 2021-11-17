@@ -2,11 +2,9 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-
-#include <string>
-
 #include "Exception.h"
 #include "SubSystem.h"
+#include <string>
 
 namespace glue {
 
@@ -17,7 +15,7 @@ class Scene final : public SubSystem {
 
   void Update(float time) override;
 
- private:
+ protected:
   std::string resource_group_;
 };
 

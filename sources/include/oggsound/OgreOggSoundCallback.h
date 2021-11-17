@@ -32,6 +32,7 @@
  *
  * Callbacks for detecting various states
  */
+
 #pragma once
 #ifndef _OGREOGGSOUND_CALLBACK_H_
 #define _OGREOGGSOUND_CALLBACK_H_

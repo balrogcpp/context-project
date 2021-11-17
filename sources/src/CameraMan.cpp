@@ -3,7 +3,7 @@
 
 #include "pcheader.h"
 #include "CameraMan.h"
-#include "BulletDynamics/Dynamics/btRigidBody.h"
+#include <BulletDynamics/Dynamics/btRigidBody.h>
 
 
 namespace glue {

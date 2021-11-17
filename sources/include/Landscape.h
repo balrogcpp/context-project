@@ -24,7 +24,7 @@ class Landscape final : public SubSystem {
   float GetHeigh(float x, float z);
   void Update(float time) override {}
 
- private:
+ protected:
   void GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image, const std::string &filename);
   void DefineTerrain_(long x, long y, bool flat, const std::string &filename);
   void InitBlendMaps_(Ogre::Terrain *terrain, int layer, const std::string &image);

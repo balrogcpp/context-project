@@ -16,7 +16,6 @@ software.
 #pragma once
 #include <OgreMath.h>
 #include <OgrePrerequisites.h>
-
 #include <chrono>
 #include <random>
 

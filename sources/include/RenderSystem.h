@@ -2,13 +2,14 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-
 #include "Compositor.h"
 #include "Overlay.h"
 #include "Singleton.h"
 #include "System.h"
 #include "Window.h"
 #include "view_ptr.h"
+#include <memory>
+#include <vector>
 
 namespace Ogre {
 class Root;
@@ -37,7 +38,7 @@ class RenderSystem final : public System, public Singleton<RenderSystem> {
   Window &GetWindow();
   Compositor &GetCompositor();
 
- private:
+ protected:
   void InitOgrePlugins_();
   void InitOgreRenderSystem_();
   void InitOgreRenderSystem_GL3_();

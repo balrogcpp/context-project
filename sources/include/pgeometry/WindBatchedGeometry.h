@@ -12,13 +12,13 @@ required.
 software.
 3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
+
 #pragma once
+#include "BatchedGeometry.h"
 #include <OgreMaterialManager.h>
 #include <OgreMovableObject.h>
 #include <OgrePrerequisites.h>
 #include <OgreSceneNode.h>
-
-#include "BatchedGeometry.h"
 
 namespace Forests {
 // Forward declaration

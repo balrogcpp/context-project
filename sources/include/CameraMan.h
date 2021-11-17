@@ -5,32 +5,46 @@
 #include "InputHandler.h"
 #include "Object.h"
 #include "view_ptr.h"
-#include <OgreRoot.h>
-#include <OgreSceneNode.h>
-#include "BulletDynamics/Dynamics/btRigidBody.h"
+#include <OgreVector.h>
+extern "C" {
+#include <SDL_keycode.h>
+}
+
+namespace Ogre {
+class SceneNode;
+class Camera;
+}  // namespace Ogre
+
+class btRigidBody;
 
 namespace glue {
 class CameraMan final : public Object, public MutedInputObserver {
  public:
   enum class Style  // enumerator values for different styles of camera movement
-  {
-    FREELOOK,
+  { FREELOOK,
     ORBIT,
     FPS,
-    MANUAL
-  };
+    MANUAL };
 
   CameraMan();
   virtual ~CameraMan();
 
-  //----------------------------------------------------------------------------------------------------------------------
   void ManualStop();
   void Update(float time) override;
   void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override;
   void OnKeyDown(SDL_Keycode sym) override;
   void OnKeyUp(SDL_Keycode sym) override;
 
- private:
+  void SetRigidBody(view_ptr<btRigidBody> rigid_body);
+  Ogre::SceneNode *GetCameraNode() const;
+  Ogre::Camera *GetCamera() const;
+  void AttachNode(Ogre::SceneNode *parent, Ogre::SceneNode *proxy = nullptr);
+  void AttachCamera(Ogre::SceneNode *parent, Ogre::Camera *camera, Ogre::SceneNode *proxy = nullptr);
+  void UnregCamera();
+  void SetStyle(Style style);
+  Style GetStyle() const noexcept;
+
+ protected:
   view_ptr<Ogre::SceneNode> node_;
   view_ptr<Ogre::SceneNode> camera_yaw_node_;
   view_ptr<Ogre::SceneNode> camera_pitch_node_;
@@ -56,23 +70,6 @@ class CameraMan final : public Object, public MutedInputObserver {
   Ogre::Vector3 offset_;
   Ogre::Vector3 velocity_;
   Ogre::Vector3 prev_pos_;
-
- public:
-  void SetRigidBody(view_ptr<btRigidBody> rigid_body);
-
-  Ogre::SceneNode *GetCameraNode() const;
-
-  Ogre::Camera *GetCamera() const;
-
-  void AttachNode(Ogre::SceneNode *parent, Ogre::SceneNode *proxy = nullptr);
-
-  void AttachCamera(Ogre::SceneNode *parent, Ogre::Camera *camera, Ogre::SceneNode *proxy = nullptr);
-
-  void UnregCamera();
-
-  void SetStyle(Style style);
-
-  Style GetStyle() const noexcept;
 };
 
 }  // namespace glue

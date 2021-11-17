@@ -21,7 +21,6 @@ software.
 //-------------------------------------------------------------------------------------
 
 #pragma once
-
 #include <OgreBillboard.h>
 #include <OgreBillboardSet.h>
 #include <OgreMaterial.h>

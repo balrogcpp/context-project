@@ -32,8 +32,8 @@
  *
  * Library Headers
  */
-#pragma once
 
+#pragma once
 #include "OgreOggListener.h"
 #include "OgreOggISound.h"
 #include "OgreOggStaticSound.h"

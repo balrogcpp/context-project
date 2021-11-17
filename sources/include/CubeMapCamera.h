@@ -24,7 +24,7 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
 
   std::shared_ptr<Ogre::Texture> cubemap_;
 
- private:
+ protected:
   void Clear_();
   void Init_(Ogre::SceneNode *creator, unsigned int tex_size);
 

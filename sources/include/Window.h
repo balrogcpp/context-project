@@ -2,15 +2,12 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-
 #include "NoCopy.h"
-
+#include <cinttypes>
+#include <string>
 extern "C" {
 #include <SDL2/SDL_syswm.h>
 }
-
-#include <cinttypes>
-#include <string>
 
 namespace glue {
 class Window : public NoCopy {
@@ -30,7 +27,7 @@ class Window : public NoCopy {
   void Resize(int w, int h);
   void SetFullscreen(bool f);
 
- private:
+ protected:
   void InitGlContext_();
 
   SDL_Window *window_ = nullptr;

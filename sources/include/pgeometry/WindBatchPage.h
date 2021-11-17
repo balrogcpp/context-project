@@ -15,12 +15,12 @@ software.
 
 /// \file WindBatchPage.h
 /// \brief WindBatchPage is child of BatchPage to include a wind effect.
-#pragma once
-#include <OgrePrerequisites.h>
-#include <OgreStringConverter.h>
 
+#pragma once
 #include "BatchPage.h"
 #include "WindBatchedGeometry.h"
+#include <OgrePrerequisites.h>
+#include <OgreStringConverter.h>
 
 namespace Forests {
 

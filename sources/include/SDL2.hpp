@@ -2,7 +2,6 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-
 extern "C" {
 #ifdef _MSC_VER
 #define SDL_MAIN_HANDLED

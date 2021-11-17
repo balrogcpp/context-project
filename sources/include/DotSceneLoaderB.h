@@ -14,9 +14,9 @@
 #include "view_ptr.h"
 #include <OgreCodec.h>
 #include <OgrePlugin.h>
-#include <OgreVector4.h>
+#include <OgreVector.h>
+#include <memory>
 #include <string>
-#include <vector>
 
 namespace pugi {
 class xml_node;
@@ -66,7 +66,7 @@ class DotSceneLoaderB final : public System, public Singleton<DotSceneLoaderB> {
   CameraMan &GetCamera() const;
   static VegetationSystem &GetForest();
 
- private:
+ protected:
   void ProcessScene_(pugi::xml_node &xml_root);
   void ProcessNodes_(pugi::xml_node &xml_node);
   void ProcessExternals_(pugi::xml_node &xml_node);
@@ -116,7 +116,7 @@ class DotScenePluginB : public Ogre::Plugin {
   void shutdown() override;
   void uninstall() override;
 
- private:
+ protected:
   Ogre::Codec *mCodec = nullptr;
 };
 }  // namespace glue

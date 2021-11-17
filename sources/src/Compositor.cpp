@@ -47,7 +47,7 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     }
   }
 
- private:
+ protected:
   Ogre::MaterialPtr ref_mat_;
   vector<Ogre::GpuProgramParametersSharedPtr> gpu_fp_params_;
   vector<Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;

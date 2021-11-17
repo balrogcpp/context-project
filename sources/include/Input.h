@@ -6,9 +6,9 @@
 #include "NoCopy.h"
 #include "Singleton.h"
 #include "view_ptr.h"
-#include <string>
 #include <exception>
 #include <set>
+#include <string>
 extern "C" {
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>
@@ -31,7 +31,7 @@ class InputSequencer : public LazySingleton<InputSequencer> {
   void UnregWinObserver(view_ptr<WindowObserver> p);
   void Capture();
 
- private:
+ protected:
   std::set<view_ptr<InputObserver>> io_listeners;
   std::set<view_ptr<WindowObserver>> win_listeners;
   int HandleAppEvents(void *userdata, SDL_Event *event);

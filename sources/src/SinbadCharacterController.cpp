@@ -20,7 +20,7 @@ SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::Update(Ogre::Real deltaTime) {
+void SinbadCharacterController::Update(float deltaTime) {
   updateBody(deltaTime);
   updateAnimations(deltaTime);
   updateCamera(deltaTime);
@@ -204,7 +204,7 @@ void SinbadCharacterController::setupCamera(Ogre::Camera *cam) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::updateBody(Ogre::Real deltaTime) {
+void SinbadCharacterController::updateBody(float deltaTime) {
   mGoalDirection = Ogre::Vector3::ZERO;  // we will calculate this
   float x = mBodyNode->getPosition().x;
   float z = mBodyNode->getPosition().z;
@@ -222,17 +222,17 @@ void SinbadCharacterController::updateBody(Ogre::Real deltaTime) {
     Ogre::Quaternion toGoal = mBodyNode->getOrientation().zAxis().getRotationTo(mGoalDirection);
 
     // calculate how much the character has to turn to face goal direction
-    Ogre::Real yawToGoal = toGoal.getYaw().valueDegrees();
+    float yawToGoal = toGoal.getYaw().valueDegrees();
     // this is how much the character CAN turn this frame
-    Ogre::Real yawAtSpeed = yawToGoal / Ogre::Math::Abs(yawToGoal) * deltaTime * TURN_SPEED;
+    float yawAtSpeed = yawToGoal / Ogre::Math::Abs(yawToGoal) * deltaTime * TURN_SPEED;
     // reduce "turnability" if we're in midair
     if (mBaseAnimID == ANIM_JUMP_LOOP) yawAtSpeed *= 0.2f;
 
     // turn as much as we can, but not more than we need to
     if (yawToGoal < 0)
-      yawToGoal = min<Ogre::Real>(0, max<Ogre::Real>(yawToGoal, yawAtSpeed));
+      yawToGoal = min<float>(0, max<float>(yawToGoal, yawAtSpeed));
     else if (yawToGoal > 0)
-      yawToGoal = max<Ogre::Real>(0, min<Ogre::Real>(yawToGoal, yawAtSpeed));
+      yawToGoal = max<float>(0, min<float>(yawToGoal, yawAtSpeed));
 
     mBodyNode->yaw(Ogre::Degree(yawToGoal));
 
@@ -257,9 +257,9 @@ void SinbadCharacterController::updateBody(Ogre::Real deltaTime) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::updateAnimations(Ogre::Real deltaTime) {
-  Ogre::Real baseAnimSpeed = 1;
-  Ogre::Real topAnimSpeed = 1;
+void SinbadCharacterController::updateAnimations(float deltaTime) {
+  float baseAnimSpeed = 1;
+  float topAnimSpeed = 1;
 
   mTimer += deltaTime;
 
@@ -341,18 +341,18 @@ void SinbadCharacterController::updateAnimations(Ogre::Real deltaTime) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::fadeAnimations(Ogre::Real deltaTime) {
+void SinbadCharacterController::fadeAnimations(float deltaTime) {
   for (int i = 0; i < NUM_ANIMS; i++) {
     if (mFadingIn[i]) {
       // slowly fade this animation in until it has full weight
-      Ogre::Real newWeight = mAnims[i]->getWeight() + deltaTime * ANIM_FADE_SPEED;
-      mAnims[i]->setWeight(Ogre::Math::Clamp<Ogre::Real>(newWeight, 0, 1));
+      float newWeight = mAnims[i]->getWeight() + deltaTime * ANIM_FADE_SPEED;
+      mAnims[i]->setWeight(Ogre::Math::Clamp<float>(newWeight, 0, 1));
       if (newWeight >= 1) mFadingIn[i] = false;
     } else if (mFadingOut[i]) {
       // slowly fade this animation out until it has no weight, and then disable
       // it
-      Ogre::Real newWeight = mAnims[i]->getWeight() - deltaTime * ANIM_FADE_SPEED;
-      mAnims[i]->setWeight(Ogre::Math::Clamp<Ogre::Real>(newWeight, 0, 1));
+      float newWeight = mAnims[i]->getWeight() - deltaTime * ANIM_FADE_SPEED;
+      mAnims[i]->setWeight(Ogre::Math::Clamp<float>(newWeight, 0, 1));
       if (newWeight <= 0) {
         mAnims[i]->setEnabled(false);
         mFadingOut[i] = false;
@@ -362,7 +362,7 @@ void SinbadCharacterController::fadeAnimations(Ogre::Real deltaTime) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::updateCamera(Ogre::Real deltaTime) {
+void SinbadCharacterController::updateCamera(float deltaTime) {
   // place the camera pivot roughly at the character's shoulder
   mCameraPivot->setPosition(mBodyNode->getPosition() + Ogre::Vector3::UNIT_Y * CAM_HEIGHT);
   // move the camera smoothly to the goal
@@ -373,7 +373,7 @@ void SinbadCharacterController::updateCamera(Ogre::Real deltaTime) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SinbadCharacterController::updateCameraGoal(Ogre::Real deltaYaw, Ogre::Real deltaPitch, Ogre::Real deltaZoom) {
+void SinbadCharacterController::updateCameraGoal(float deltaYaw, float deltaPitch, float deltaZoom) {
   mCameraPivot->yaw(Ogre::Degree(deltaYaw), Ogre::Node::TS_PARENT);
 
   // bound the pitch
@@ -382,8 +382,8 @@ void SinbadCharacterController::updateCameraGoal(Ogre::Real deltaYaw, Ogre::Real
     mPivotPitch += deltaPitch;
   }
 
-  Ogre::Real dist = mCameraGoal->_getDerivedPosition().distance(mCameraPivot->_getDerivedPosition());
-  Ogre::Real distChange = deltaZoom * dist;
+  float dist = mCameraGoal->_getDerivedPosition().distance(mCameraPivot->_getDerivedPosition());
+  float distChange = deltaZoom * dist;
 
   // bound the zoom
   if (!(dist + distChange < SCALE * 8 && distChange < 0) && !(dist + distChange > SCALE * 40 && distChange > 0)) {

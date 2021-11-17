@@ -3,9 +3,8 @@
 
 #pragma once
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-#include <RTShaderSystem/OgreShaderGenerator.h>
-
 #include "Exception.h"
+#include <RTShaderSystem/OgreShaderGenerator.h>
 
 namespace glue {
 
@@ -31,7 +30,7 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
 
   bool beforeIlluminationPassesCleared(Ogre::Technique *technique);
 
- private:
+ protected:
   Ogre::RTShader::ShaderGenerator *shader_generator_;
 };
 

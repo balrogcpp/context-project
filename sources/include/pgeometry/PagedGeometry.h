@@ -14,7 +14,6 @@ software.
 -------------------------------------------------------------------------------------*/
 
 #pragma once
-
 #include <OgreCamera.h>
 #include <OgreCommon.h>
 #include <OgreEntity.h>
@@ -24,7 +23,6 @@ software.
 #include <OgreRoot.h>
 #include <OgreTimer.h>
 #include <OgreVector3.h>
-
 #include <limits>  // numeric_limits<>
 #include <memory>
 

@@ -32,8 +32,8 @@
  *
  * Pre-requisites for building lib
  */
-#pragma once
 
+#pragma once
 #include <OgreDataStream.h>
 #include <OgreLogManager.h>
 #include <OgreMovableObject.h>

@@ -28,7 +28,7 @@ class Overlay final : public System, public Singleton<Overlay>, public Ogre::Ren
   void preViewportUpdate(const Ogre::RenderTargetViewportEvent &evt) override;
   void PrepareTexture(const std::string &name_, const std::string &group_ = Ogre::RGN_AUTODETECT);
 
- private:
+ protected:
   std::unique_ptr<ImGuiInputListener> imgui_listener_;
   view_ptr<Ogre::ImGuiOverlay> imgui_;
   view_ptr<Ogre::OverlaySystem> overlay_;

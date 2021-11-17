@@ -1,6 +1,21 @@
+// This source file is part of "glue project"
+// Created by Andrew Vasiliev
+
 #pragma once
 #include "InputHandler.h"
 #include "Object.h"
+#include <OgreVector.h>
+extern "C" {
+#include <SDL_keycode.h>
+}
+
+namespace Ogre {
+class SceneNode;
+class Entity;
+class Camera;
+class RibbonTrail;
+class AnimationState;
+}  // namespace Ogre
 
 #define SCALE 0.2f
 #define CHAR_HEIGHT SCALE * 5.0f  // height of character's center of mass above ground
@@ -14,7 +29,7 @@
 #define GRAVITY SCALE * 90.0f     // gravity in downward units per squared second
 
 class SinbadCharacterController : public glue::Object, public glue::MutedInputObserver {
- private:
+ protected:
   // all the animations our character has, and a null ID
   // some of these affect separate body parts and will be blended together
   enum AnimID {
@@ -38,46 +53,31 @@ class SinbadCharacterController : public glue::Object, public glue::MutedInputOb
  public:
   Ogre::SceneNode *GetBodyNode() const;
   explicit SinbadCharacterController(Ogre::Camera *cam);
-  void Update(Ogre::Real deltaTime) override;
-
+  void Update(float deltaTime) override;
   void OnKeyDown(SDL_Keycode key) override;
-
   void OnKeyUp(SDL_Keycode key) override;
-
   void OnMouseMove(int dx, int dy) override;
-
   void OnMouseWheel(int x, int y) override;
-
   void OnMouseLbDown(int x, int y) override;
-
   void OnMouseRbDown(int x, int y) override;
 
- private:
+ protected:
   void setupBody(Ogre::SceneManager *sceneMgr);
-
   void setupAnimations();
-
   void setupCamera(Ogre::Camera *cam);
-
-  void updateBody(Ogre::Real deltaTime);
-
-  void updateAnimations(Ogre::Real deltaTime);
-
-  void fadeAnimations(Ogre::Real deltaTime);
-
-  void updateCamera(Ogre::Real deltaTime);
-
-  void updateCameraGoal(Ogre::Real deltaYaw, Ogre::Real deltaPitch, Ogre::Real deltaZoom);
-
+  void updateBody(float deltaTime);
+  void updateAnimations(float deltaTime);
+  void fadeAnimations(float deltaTime);
+  void updateCamera(float deltaTime);
+  void updateCameraGoal(float deltaYaw, float deltaPitch, float deltaZoom);
   void setBaseAnimation(AnimID id, bool reset = false);
-
   void setTopAnimation(AnimID id, bool reset = false);
 
   Ogre::SceneNode *mBodyNode;
   Ogre::SceneNode *mCameraPivot;
   Ogre::SceneNode *mCameraGoal;
   Ogre::SceneNode *mCameraNode;
-  Ogre::Real mPivotPitch;
+  float mPivotPitch;
   Ogre::Entity *mBodyEnt;
   Ogre::Entity *mSword1;
   Ogre::Entity *mSword2;
@@ -90,6 +90,6 @@ class SinbadCharacterController : public glue::Object, public glue::MutedInputOb
   bool mSwordsDrawn;
   Ogre::Vector3 mKeyDirection;   // player's local intended direction based on WASD keys
   Ogre::Vector3 mGoalDirection;  // actual intended direction in world-space
-  Ogre::Real mVerticalVelocity;  // for jumping
-  Ogre::Real mTimer;             // general timer to see how long animations have been playing
+  float mVerticalVelocity;       // for jumping
+  float mTimer;                  // general timer to see how long animations have been playing
 };

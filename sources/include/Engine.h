@@ -12,6 +12,8 @@
 #include "RenderSystem.h"
 #include "Singleton.h"
 #include "view_ptr.h"
+#include <memory>
+#include <vector>
 
 namespace glue {
 
@@ -32,7 +34,7 @@ class Engine : public LazySingleton<Engine> {
   void RenderOneFrame();
   void RegSystem(view_ptr<System> system);
 
- private:
+ protected:
   std::unique_ptr<InputHandler> io_;
   std::unique_ptr<Config> config_;
   std::unique_ptr<RenderSystem> rs_;
