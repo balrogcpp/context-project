@@ -127,7 +127,7 @@ void DemoDotAppState::Update(float time) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void DemoDotAppState::Init() {
+void DemoDotAppState::SetUp() {
   GetWindow().Grab(true);
   GetLoader().GetCamera().SetStyle(glue::CameraMan::Style::FPS);
   LoadFromFile("1.scene");

@@ -105,7 +105,7 @@ static void CreateGrassMesh(float width, float height) {
 // static void CreateGrassMesh2(float width, float height) {
 //  Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
 //
-//  // Init a submesh with the grass material
+//  // SetUp a submesh with the grass material
 //  Ogre::SubMesh *sm = mesh->createSubMesh();
 //  const string grassMaterial = "GrassCustom";
 //  Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
@@ -127,7 +127,7 @@ static void CreateGrassMesh(float width, float height) {
 //  decl->addElement(0, sizeof(float) * 3, Ogre::VET_FLOAT3, Ogre::VES_NORMAL);
 //  decl->addElement(0, sizeof(float) * 6, Ogre::VET_FLOAT2, Ogre::VES_TEXTURE_COORDINATES, 0);
 //
-//  // Init a vertex buffer
+//  // SetUp a vertex buffer
 //  Ogre::HardwareVertexBufferSharedPtr vb =
 //      Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
 //          decl->getVertexSize(0), sm->vertexData->vertexCount,
@@ -164,7 +164,7 @@ static void CreateGrassMesh(float width, float height) {
 //
 //  sm->vertexData->vertexBufferBinding->setBinding(0, vb);  // bind vertex buffer to our submesh
 //
-//  // Init an index buffer
+//  // SetUp an index buffer
 //  sm->indexData->indexBuffer = Ogre::HardwareBufferManager::getSingleton().createIndexBuffer(
 //      Ogre::HardwareIndexBuffer::IT_16BIT, sm->indexData->indexCount,
 //      Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
@@ -207,11 +207,11 @@ void VegetationSystem::Update(float time) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::GenerateGrassStatic() {
-  // create our grass mesh, and Init a grass entity from it
+  // create our grass mesh, and SetUp a grass entity from it
   CreateGrassMesh(1.0, 1.0);
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   Ogre::Entity *grass = scene->createEntity("Grass", "grass");
-  // Init a static geometry field, which we will populate with grass
+  // SetUp a static geometry field, which we will populate with grass
   auto *field = scene->createStaticGeometry("FarnField");
   field->setRegionDimensions(Ogre::Vector3(50.0));
 
@@ -236,12 +236,12 @@ void VegetationSystem::GenerateGrassStatic() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::GenerateRocksStatic() {
-  // create our grass mesh, and Init a grass entity from it
+  // create our grass mesh, and SetUp a grass entity from it
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   Ogre::Entity *rock = scene->createEntity("Rock", "rock.mesh");
   UpdateMeshMaterial("rock.mesh");
 
-  // Init a static geometry field, which we will populate with grass
+  // SetUp a static geometry field, which we will populate with grass
   auto *rocks = scene->createStaticGeometry("Rocks");
   auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
 

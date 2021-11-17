@@ -2,19 +2,19 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <OgreLog.h>
 
 #include "Engine.h"
 #include "Singleton.h"
 #include "StateManager.h"
 #include "VerboseListener.h"
 #include "view_ptr.h"
+#include <OgreLog.h>
 
 namespace glue {
 
 class Application final : public WindowObserver, public Ogre::LogListener, public Singleton<Application> {
  public:
-  explicit Application();
+  Application();
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&scene_ptr);
 

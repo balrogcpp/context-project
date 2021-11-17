@@ -79,7 +79,7 @@ OgreOggISound::OgreOggISound(const Ogre::String &name, Ogre::SceneManager *scnMg
       MovableObject(id, objMemMgr, scnMgr, renderQueueId),
 #endif
       mName(name) {
-  // Init some oggVorbis callbacks
+  // SetUp some oggVorbis callbacks
   mOggCallbacks.read_func = OOSStreamRead;
   mOggCallbacks.close_func = OOSStreamClose;
   mOggCallbacks.seek_func = OOSStreamSeek;

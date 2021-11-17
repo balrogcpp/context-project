@@ -11,7 +11,7 @@ class DemoDotAppState : public glue::AppState {
    DemoDotAppState();
    virtual ~DemoDotAppState();
 
-    void Init() override;
+    void SetUp() override;
     void Cleanup() override;
     void Pause() override;
     void Resume() override;

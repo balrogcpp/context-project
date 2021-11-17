@@ -230,7 +230,7 @@ void OgreOggStreamSound::setSource(ALuint &src) {
     // Fill data buffers
     _prebuffer();
 
-    // Init source
+    // SetUp source
     _initSource();
   } else {
     // Unqueue buffers

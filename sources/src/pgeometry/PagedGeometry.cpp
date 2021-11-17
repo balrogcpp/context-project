@@ -53,7 +53,7 @@ PagedGeometry::PagedGeometry(Camera *cam, const Real pageSize, Ogre::RenderQueue
   coordinateSystemQuat = Quaternion::IDENTITY;
 #endif
 
-  // Init. timer
+  // SetUp. timer
   timer.reset();
   lastTime = 0;
 

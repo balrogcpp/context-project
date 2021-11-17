@@ -30,7 +30,7 @@ class Compositor : public System, public Singleton<Compositor> {
   void Resume() override;
   void Update(float time) override;
   void EnableEffect(const std::string &name, bool enable = true);
-  void Init();
+  void SetUp();
 
  private:
   void InitGbuffer_();

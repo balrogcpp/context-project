@@ -235,7 +235,7 @@ void OgreOggStaticSound::setSource(ALuint &src) {
     // Load audio data onto source
     _prebuffer();
 
-    // Init source properties
+    // SetUp source properties
     _initSource();
   } else {
     // Validity check

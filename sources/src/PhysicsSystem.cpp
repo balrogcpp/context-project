@@ -205,7 +205,7 @@ void PhysicsSystem::CreateTerrainHeightfieldShape(int size, float *data, const f
       new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(size / 2, 0, size / 2)));
   btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, terrainShape, btVector3(0, 0, 0));
 
-  // Init Rigid Body using 0 mass so it is static
+  // SetUp Rigid Body using 0 mass so it is static
   auto *entBody = new btRigidBody(groundRigidBodyCI);
 
   entBody->setFriction(0.8f);

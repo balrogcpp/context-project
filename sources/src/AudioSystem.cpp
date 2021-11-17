@@ -18,7 +18,7 @@ AudioSystem::AudioSystem(unsigned int max_sources, unsigned int queue_list_size)
   _putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
 #endif
 
-  // Init new factory
+  // SetUp new factory
   auto *mOgreOggSoundFactory = OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
 
   // Register

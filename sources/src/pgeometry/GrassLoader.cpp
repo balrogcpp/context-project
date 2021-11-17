@@ -187,7 +187,7 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page, GrassLayer *layer, const f
     return 0;
   }
 
-  // Init manual mesh to store grass quads
+  // SetUp manual mesh to store grass quads
   MeshPtr mesh =
       MeshManager::getSingleton().createManual(getUniqueID(), ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
   SubMesh *subMesh = mesh->createSubMesh();
@@ -371,7 +371,7 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page, GrassLayer *layer, c
     return 0;
   }
 
-  // Init manual mesh to store grass quads
+  // SetUp manual mesh to store grass quads
   MeshPtr mesh =
       MeshManager::getSingleton().createManual(getUniqueID(), ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
   SubMesh *subMesh = mesh->createSubMesh();
@@ -619,7 +619,7 @@ Mesh *GrassLoader::generateGrass_SPRITE(PageInfo &page, GrassLayer *layer, const
     return 0;
   }
 
-  // Init manual mesh to store grass quads
+  // SetUp manual mesh to store grass quads
   MeshPtr mesh =
       MeshManager::getSingleton().createManual(getUniqueID(), ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
   SubMesh *subMesh = mesh->createSubMesh();

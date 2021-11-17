@@ -23,7 +23,7 @@ class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, 
   void LoadFromFile(const std::string &file_name, const std::string &group = Ogre::RGN_DEFAULT);
   bool IsDirty() const;
 
-  virtual void Init() = 0;
+  virtual void SetUp() = 0;
   virtual void Cleanup() = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;

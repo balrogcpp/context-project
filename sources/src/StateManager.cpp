@@ -16,7 +16,7 @@ StateManager::~StateManager() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 void StateManager::InitCurState() {
-  cur_state_->Init();
+  cur_state_->SetUp();
   Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
 }
 
@@ -30,7 +30,7 @@ void StateManager::InitNextState() {
   cur_state_ = move(cur_state_->next_);
 
   if (cur_state_) {
-    cur_state_->Init();
+    cur_state_->SetUp();
     Ogre::Root::getSingleton().addFrameListener(cur_state_.get());
   }
 }

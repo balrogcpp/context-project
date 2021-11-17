@@ -211,7 +211,7 @@ ImpostorBatch::ImpostorBatch(ImpostorPage *group, Entity *entity) : m_pTexture(n
   // Render impostor texture for this entity
   m_pTexture = ImpostorTexture::getTexture(group, entity);
 
-  // Init billboard set
+  // SetUp billboard set
   PagedGeometry *pg = group->getParentPagedGeometry();
   bbset = new StaticBillboardSet(pg->getSceneManager(), pg->getSceneNode());
   bbset->setTextureStacksAndSlices(IMPOSTOR_PITCH_ANGLES, IMPOSTOR_YAW_ANGLES);
@@ -223,7 +223,7 @@ ImpostorBatch::ImpostorBatch(ImpostorPage *group, Entity *entity) : m_pTexture(n
   yawIndex = -1;
   setAngle(0.0f, 0.0f);
 
-  // Init. variables
+  // SetUp. variables
   igroup = group;
 }
 

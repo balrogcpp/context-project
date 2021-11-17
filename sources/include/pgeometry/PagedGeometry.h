@@ -1409,7 +1409,7 @@ class GeometryPageManager {
 template <class PageType>
 inline GeometryPageManager *PagedGeometry::addDetailLevel(Ogre::Real maxRange, Ogre::Real transitionLength,
                                                           const Ogre::Any &data, Ogre::uint32 queryFlag) {
-  // Init a new page manager
+  // SetUp a new page manager
   GeometryPageManager *mgr = new GeometryPageManager(this);
 
   // If vertex shaders aren't supported, don't use transitions

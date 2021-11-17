@@ -62,6 +62,6 @@ void MenuAppState::Update(float time) {
 void MenuAppState::OnKeyDown(SDL_Keycode sym) {}
 
 //----------------------------------------------------------------------------------------------------------------------
-void MenuAppState::Init() { GetWindow().Grab(false); }
+void MenuAppState::SetUp() { GetWindow().Grab(false); }
 
 }  // namespace Demo

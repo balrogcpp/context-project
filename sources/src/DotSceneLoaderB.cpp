@@ -227,7 +227,7 @@ void DotSceneLoaderB::load(Ogre::DataStreamPtr &stream, const string &group_name
     return;
   }
 
-  // figure out where to attach any nodes we Init
+  // figure out where to attach any nodes we init
   root_ = Ogre::Root::getSingletonPtr();
   attach_node_ = root_node;
 
@@ -508,7 +508,7 @@ void DotSceneLoaderB::ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *p
   string name = GetAttrib(xml_node, "name");
   const size_t MAX_TEX_COUNT = 9;
 
-  // Init the light
+  // SetUp the light
   Ogre::Light *light = ogre_scene_->createLight(name);
   parent->attachObject(light);
 
@@ -622,7 +622,7 @@ void DotSceneLoaderB::ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *
   float aspectRatio = GetAttribReal(xml_node, "aspectRatio", 0);
   string projectionType = GetAttrib(xml_node, "projectionType", "perspective");
 
-  // Init the camera
+  // SetUp the camera
   auto *camera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
   if (!camera_) camera_ = make_unique<CameraMan>();
@@ -693,7 +693,7 @@ void DotSceneLoaderB::ProcessNode_(pugi::xml_node &xml_node, Ogre::SceneNode *pa
   // Construct the node's name
   string name = GetAttrib(xml_node, "name");
 
-  // Init the scene node
+  // SetUp the scene node
   Ogre::SceneNode *node;
 
   if (name.empty()) {
@@ -875,7 +875,7 @@ void DotSceneLoaderB::ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *
   bool active_ibl = GetAttribBool(xml_node, "activeIBL", false);
   bool planar_reflection = GetAttribBool(xml_node, "planarReflection", false);
 
-  // Init the entity
+  // SetUp the entity
   Ogre::Entity *entity = ogre_scene_->createEntity(name, meshFile);
 
   try {
@@ -906,7 +906,7 @@ void DotSceneLoaderB::ProcessParticleSystem_(pugi::xml_node &xml_node, Ogre::Sce
     templateName = GetAttrib(xml_node, "file");  // compatibility with old scenes
   }
 
-  // Init the particle system
+  // SetUp the particle system
   try {
     Ogre::ParticleSystem *pParticles = ogre_scene_->createParticleSystem(name, templateName);
     Pbr::UpdatePbrParams(pParticles->getMaterialName());

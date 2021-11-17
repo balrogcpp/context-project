@@ -72,7 +72,7 @@ void OgreOggStreamBufferSound::setSource(ALuint &src) {
     // Attach new source
     mSource = src;
 
-    // Init source properties
+    // SetUp source properties
     _initSource();
   } else {
     // Validity check

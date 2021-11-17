@@ -93,7 +93,7 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
     return false;
   }
 
-  // Init shader generated technique for this material.
+  // SetUp shader generated technique for this material.
   bool techniqueCreated =
       mShaderGenerator.createShaderBasedTechnique(*originalMaterial, Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
                                                   Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
@@ -118,7 +118,7 @@ Ogre::Technique *ShaderResolver::handleSchemeNotFound(unsigned short scheme_inde
     return nullptr;
   }
 
-  // Init shader generated technique for this material.
+  // SetUp shader generated technique for this material.
   bool techniqueCreated = shader_generator_->createShaderBasedTechnique(
       *original_material, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, scheme_name);
 

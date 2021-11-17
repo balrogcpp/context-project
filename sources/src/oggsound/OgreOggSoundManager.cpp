@@ -461,7 +461,7 @@ const StringVector OgreOggSoundManager::getDeviceList() const {
 bool OgreOggSoundManager::createListener() {
   if (mListener) return true;
 
-  // Init a listener
+  // SetUp a listener
   return ((mListener = dynamic_cast<OgreOggListener *>(
 #if OGRE_VERSION_MAJOR == 2
                mSceneMgr->createMovableObject(OgreOggSoundFactory::FACTORY_TYPE_NAME,
@@ -664,7 +664,7 @@ OgreOggISound *OgreOggSoundManager::createSound(const std::string &name, const s
   } catch (Exception &e) {
     OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, e.getFullDescription(), "OgreOggSoundManager::createSound()");
   }
-  // Init Movable Sound
+  // SetUp Movable Sound
   return sound;
 }
 
@@ -2460,7 +2460,7 @@ bool OgreOggSoundManager::_registerSharedBuffer(const String &sName, ALuint &buf
 
   SharedBufferList::iterator f;
   if ((f = mSharedBuffers.find(sName)) == mSharedBuffers.end()) {
-    // Init struct
+    // SetUp struct
     sharedAudioBuffer *buf = OGRE_NEW_T(sharedAudioBuffer, Ogre::MEMCATEGORY_GENERAL);
 
     // Set buffer

@@ -39,7 +39,7 @@ Application::Application() {
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     DesktopIcon icon;
-    icon.Init();
+    icon.SetUp();
     icon.Save("GlueSample");
 #endif
 

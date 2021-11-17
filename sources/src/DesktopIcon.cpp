@@ -38,7 +38,7 @@ DesktopIcon::DesktopIcon()
 DesktopIcon::~DesktopIcon() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
-void DesktopIcon::Init() {
+void DesktopIcon::SetUp() {
   run_dir_ = fs::current_path().string();
 
   output_ = skeleton_;

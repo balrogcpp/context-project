@@ -11,7 +11,7 @@ class MenuAppState : public glue::AppState {
   MenuAppState() : AppState() {}
   virtual ~MenuAppState() {}
 
-  void Init() override;
+  void SetUp() override;
   void Cleanup() override;
   void Pause() override {}
   void Resume() override {}

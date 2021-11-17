@@ -67,7 +67,7 @@ Compositor::Compositor() {
   EnableEffect("ssao", conf_->Get<bool>("enable_ssao"));
   EnableEffect("bloom", conf_->Get<bool>("enable_bloom"));
   EnableEffect("mblur", conf_->Get<bool>("enable_mblur"));
-  Init();
+  SetUp();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ void Compositor::InitOutput_() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Compositor::Init() {
+void Compositor::SetUp() {
   InitMRT_();
 
   if (effects_["ssao"]) {
