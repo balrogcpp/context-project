@@ -3,7 +3,6 @@
 
 #pragma once
 #include <OgreMaterial.h>
-
 #include <string>
 #include <vector>
 

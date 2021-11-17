@@ -2,11 +2,10 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <nlohmann/json.hpp>
-#include <string>
-
 #include "Exception.h"
 #include "Singleton.h"
+#include <nlohmann/json.hpp>
+#include <string>
 
 namespace glue {
 
@@ -36,9 +35,15 @@ class Config : public Singleton<Config> {
 
   //----------------------------------------------------------------------------------------------------------------------
   template <typename T>
-  bool Get(const std::string &key, T &t_) {
-    if (document_.find(key.c_str()) != document_.end()) {
-      t_ = static_cast<T>(document_[key.c_str()]);
+  bool Get(const std::string &key, T &t) {
+    return Get(key.c_str(), t);
+  }
+
+  //----------------------------------------------------------------------------------------------------------------------
+  template <typename T>
+  bool Get(const char *key, T &t) {
+    if (document_.find(key) != document_.end()) {
+      t = static_cast<T>(document_[key]);
       return true;
     } else {
       return false;

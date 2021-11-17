@@ -15,7 +15,6 @@
  */
 
 #pragma once
-
 #include <Ogre.h>
 #include <btBulletDynamicsCommon.h>
 

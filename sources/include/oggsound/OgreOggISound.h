@@ -32,14 +32,12 @@
  *
  * Base class for a single sound
  */
+
 #pragma once
-
-#include <vorbis/vorbisfile.h>
-
-#include <string>
-
 #include "OgreOggSoundCallback.h"
 #include "OgreOggSoundPrereqs.h"
+#include <vorbis/vorbisfile.h>
+#include <string>
 
 /**
  * Number of buffers to use for streaming

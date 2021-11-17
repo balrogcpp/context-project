@@ -4,6 +4,7 @@
 #pragma once
 #include "Exception.h"
 #include "NoCopy.h"
+
 namespace glue {
 
 template <typename T>

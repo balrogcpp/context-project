@@ -15,11 +15,9 @@
  */
 
 #pragma once
-
+#include "BtOgreExtras.h"
 #include <OgreSceneNode.h>
 #include <btBulletDynamicsCommon.h>
-
-#include "BtOgreExtras.h"
 
 namespace BtOgre {
 

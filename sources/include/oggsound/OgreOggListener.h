@@ -33,12 +33,9 @@
  * Listener object (The users 'ears')
  */
 #pragma once
-
+#include "OgreOggSoundPrereqs.h"
 #include <OgreMovableObject.h>
 #include <OgreVector3.h>
-
-#include "OgreOggSoundPrereqs.h"
-
 #if OGGSOUND_THREADED
 #ifdef POCO_THREAD
 #include "Poco/Mutex.hpp"
