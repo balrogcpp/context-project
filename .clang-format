@@ -81,7 +81,7 @@ ForEachMacros:
   - BOOST_FOREACH
 IfMacros:
   - KJ_IF_MAYBE
-IncludeBlocks:   Regroup
+IncludeBlocks:   Preserve
 IncludeCategories:
   - Regex:           '^<ext/.*\.h>'
     Priority:        2
@@ -168,7 +168,7 @@ RawStringFormats:
 ReferenceAlignment: Pointer
 ReflowComments:  true
 ShortNamespaceLines: 1
-SortIncludes:    CaseSensitive
+SortIncludes:    false
 SortJavaStaticImport: Before
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
