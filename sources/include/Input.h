@@ -2,20 +2,17 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-
-extern "C" {
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_keycode.h>
-}
-
-#include <exception>
-#include <set>
-#include <string>
-
 #include "Exception.h"
 #include "NoCopy.h"
 #include "Singleton.h"
 #include "view_ptr.h"
+#include <string>
+#include <exception>
+#include <set>
+extern "C" {
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_keycode.h>
+}
 
 namespace glue {
 class InputSequencer;

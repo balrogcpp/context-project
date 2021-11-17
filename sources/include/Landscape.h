@@ -2,8 +2,6 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <memory>
-
 #include "SubSystem.h"
 
 namespace Ogre {
@@ -14,7 +12,7 @@ class TerrainGlobalOptions;
 
 namespace pugi {
 class xml_node;
-}
+}  // namespace pugi
 
 namespace glue {
 class Landscape final : public SubSystem {

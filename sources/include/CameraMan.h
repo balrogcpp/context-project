@@ -2,13 +2,12 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <OgreRoot.h>
-#include <OgreSceneNode.h>
-
-#include "BulletDynamics/Dynamics/btRigidBody.h"
 #include "InputHandler.h"
 #include "Object.h"
 #include "view_ptr.h"
+#include <OgreRoot.h>
+#include <OgreSceneNode.h>
+#include "BulletDynamics/Dynamics/btRigidBody.h"
 
 namespace glue {
 class CameraMan final : public Object, public MutedInputObserver {

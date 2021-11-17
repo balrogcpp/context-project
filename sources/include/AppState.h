@@ -2,7 +2,6 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-
 #include "Input.h"
 #include "NoCopy.h"
 #include <OgreResourceGroupManager.h>

@@ -2,7 +2,6 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-
 #include "Engine.h"
 #include "Singleton.h"
 #include "StateManager.h"

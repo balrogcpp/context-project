@@ -2,14 +2,8 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <OgreMaterial.h>
-#include <OgreMatrix4.h>
-
-#include <map>
-#include <string>
-
-#include "Singleton.h"
 #include "System.h"
+#include "Singleton.h"
 
 namespace Ogre {
 class Camera;
@@ -19,6 +13,9 @@ class SceneManager;
 
 namespace glue {
 class GBufferSchemeHandler;
+}
+
+namespace glue {
 
 class Compositor : public System, public Singleton<Compositor> {
  public:

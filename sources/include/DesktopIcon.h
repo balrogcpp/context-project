@@ -2,10 +2,9 @@
 // Created by Andrew Vasiliev
 
 #pragma once
+#include "NoCopy.h"
 #include <map>
 #include <string>
-
-#include "NoCopy.h"
 
 namespace glue {
 class DesktopIcon : public NoCopy {

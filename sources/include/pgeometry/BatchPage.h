@@ -18,11 +18,10 @@ software.
 //-------------------------------------------------------------------------------------
 
 #pragma once
-#include <OgrePrerequisites.h>
-#include <OgreStringConverter.h>
-
 #include "BatchedGeometry.h"
 #include "PagedGeometry.h"
+#include <OgrePrerequisites.h>
+#include <OgreStringConverter.h>
 
 namespace Forests {
 

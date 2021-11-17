@@ -2,8 +2,6 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <string>
-
 #include "Singleton.h"
 #include "System.h"
 #include "view_ptr.h"

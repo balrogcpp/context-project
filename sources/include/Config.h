@@ -5,7 +5,6 @@
 #include "Exception.h"
 #include "Singleton.h"
 #include <nlohmann/json.hpp>
-#include <string>
 
 namespace glue {
 
@@ -28,7 +27,9 @@ class Config : public Singleton<Config> {
   T Get(const std::string &key) {
     T t{};
 
-    if (document_.find(key.c_str()) != document_.end()) t = static_cast<T>(document_[key.c_str()]);
+    if (document_.find(key.c_str()) != document_.end()) {
+      t = static_cast<T>(document_[key.c_str()]);
+    }
 
     return t;
   }

@@ -108,7 +108,6 @@ class DotSceneLoaderB final : public System, public Singleton<DotSceneLoaderB> {
   static inline std::unique_ptr<VegetationSystem> forest_;
 };
 
-
 class DotScenePluginB : public Ogre::Plugin {
   const Ogre::String &getName() const;
 

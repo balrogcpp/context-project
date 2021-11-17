@@ -37,7 +37,6 @@
 #include "OgreOggSoundCallback.h"
 #include "OgreOggSoundPrereqs.h"
 #include <vorbis/vorbisfile.h>
-#include <string>
 
 /**
  * Number of buffers to use for streaming

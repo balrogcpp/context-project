@@ -2,12 +2,7 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-
-#include <Ogre.h>
-
-#include <string>
-#include <tuple>
-#include <vector>
+#include <OgreResourceGroupManager.h>
 
 struct AAssetManager;
 

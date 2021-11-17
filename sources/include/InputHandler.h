@@ -2,11 +2,10 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <vector>
-
 #include "Input.h"
 #include "Singleton.h"
 #include "System.h"
+#include <vector>
 
 namespace glue {
 

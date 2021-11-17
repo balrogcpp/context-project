@@ -14,14 +14,13 @@ software.
 -------------------------------------------------------------------------------------*/
 
 #pragma once
-
-#include "OgreMaterial.h"
-#include "OgrePixelFormat.h"
-#include "OgrePrerequisites.h"
-#include "OgreStringConverter.h"
 #include "PagedGeometry.h"
 #include "PropertyMaps.h"
 #include "RandomTable.h"
+#include <OgreMaterial.h>
+#include <OgrePixelFormat.h>
+#include <OgrePrerequisites.h>
+#include <OgreStringConverter.h>
 
 namespace Forests {
 

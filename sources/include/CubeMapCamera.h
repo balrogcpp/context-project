@@ -2,11 +2,18 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <Ogre.h>
-
+#include <OgreRenderTargetListener.h>
 #include <array>
 
+namespace Ogre {
+class SceneManager;
+class SceneNode;
+class Camera;
+class Texture;
+}  // namespace Ogre
+
 namespace glue {
+
 class CubeMapCamera final : public Ogre::RenderTargetListener {
  public:
   CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size);
