@@ -6,7 +6,7 @@
 #include "Object.h"
 #include <OgreVector.h>
 extern "C" {
-#include <SDL_keycode.h>
+#include <SDL2/SDL_keycode.h>
 }
 
 namespace Ogre {
