@@ -9,8 +9,6 @@ COPY ./sources ./sources
 COPY ./deploy ./deploy
 COPY ./cmake ./cmake
 COPY ./sample ./sample
-COPY ./doc ./doc
-COPY ./tests ./tests
 COPY ./LICENSE .
 COPY ./programs ./programs
 COPY ./assets ./assets
