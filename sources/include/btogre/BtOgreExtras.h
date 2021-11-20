@@ -14,6 +14,7 @@
  */
 
 #pragma once
+#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <OgreCamera.h>
 #include <OgreHardwareBufferManager.h>
 #include <OgreLogManager.h>
@@ -23,7 +24,6 @@
 #include <OgreSimpleRenderable.h>
 #include <OgreTechnique.h>
 #include <btBulletDynamicsCommon.h>
-#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 
 namespace BtOgre {
 

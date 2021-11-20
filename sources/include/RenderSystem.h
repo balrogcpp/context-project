@@ -20,6 +20,7 @@ class RenderWindow;
 }  // namespace Ogre
 
 namespace glue {
+
 class RenderSystem final : public System, public Singleton<RenderSystem> {
  public:
   RenderSystem(int w, int h, bool f);

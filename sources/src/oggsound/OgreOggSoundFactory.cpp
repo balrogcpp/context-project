@@ -134,5 +134,4 @@ void OgreOggSoundFactory::destroyInstance(MovableObject *obj) {
     OgreOggSoundManager::getSingletonPtr()->_destroyListener();
   else if (sound)
     OgreOggSoundManager::getSingletonPtr()->_releaseSoundImpl(sound);
-  //-----------------------------------------------------------------------
 }

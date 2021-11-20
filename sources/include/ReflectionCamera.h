@@ -2,21 +2,21 @@
 // Created by Andrew Vasiliev
 
 #pragma once
-#include <OgreRenderTargetListener.h>
+#include "view_ptr.h"
 #include <OgrePlane.h>
+#include <OgreRenderTargetListener.h>
 #include <vector>
 
 namespace Ogre {
 class Texture;
 class SceneManager;
 class Camera;
-}
+}  // namespace Ogre
 
 namespace glue {
 class ReflectionCamera final : public Ogre::RenderTargetListener {
  public:
   ReflectionCamera(Ogre::Plane plane, unsigned int tex_size);
-
   virtual ~ReflectionCamera();
 
   void SetPlane(Ogre::Plane plane);

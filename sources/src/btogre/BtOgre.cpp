@@ -13,10 +13,10 @@
  * =============================================================================================
  */
 
-#include "pcheader.h"
 #include "btogre/BtOgreExtras.h"
 #include "btogre/BtOgreGP.h"
 #include "btogre/BtOgrePG.h"
+#include "pcheader.h"
 
 using namespace Ogre;
 

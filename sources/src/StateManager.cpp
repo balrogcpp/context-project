@@ -43,7 +43,9 @@ void StateManager::SetInitialState(unique_ptr<AppState> &&next_state) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void StateManager::Update(float time) {
-  if (cur_state_) cur_state_->Update(time);
+  if (cur_state_) {
+    cur_state_->Update(time);
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

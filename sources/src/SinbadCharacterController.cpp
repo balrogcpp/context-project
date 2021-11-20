@@ -1,13 +1,14 @@
 // This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
-#include "pcheader.h"
 #include "SinbadCharacterController.h"
 #include "ComponentLocator.h"
 #include "MeshUtils.h"
+#include "pcheader.h"
 
 using namespace std;
-using namespace glue;
+
+namespace glue {
 
 Ogre::SceneNode *SinbadCharacterController::GetBodyNode() const { return mBodyNode; }
 
@@ -430,3 +431,5 @@ void SinbadCharacterController::setTopAnimation(AnimID id, bool reset) {
     if (reset) mAnims[id]->setTimePosition(0);
   }
 }
+
+}  // namespace glue

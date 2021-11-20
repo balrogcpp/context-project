@@ -15,8 +15,21 @@
  */
 
 #pragma once
-#include <Ogre.h>
+#include <OgreMatrix4.h>
+#include <OgreMesh.h>
+#include <OgrePrerequisites.h>
+#include <OgreVector.h>
 #include <btBulletDynamicsCommon.h>
+#include <map>
+
+namespace Ogre {
+class SceneManager;
+class SceneNode;
+class IndexData;
+class VertexData;
+class Renderable;
+class Entity;
+}  // namespace Ogre
 
 namespace BtOgre {
 
@@ -28,7 +41,7 @@ class VertexIndexToShape {
   VertexIndexToShape(const Ogre::Matrix4 &transform = Ogre::Matrix4::IDENTITY);
   ~VertexIndexToShape();
 
-  Ogre::Real getRadius();
+  float getRadius();
   Ogre::Vector3 getSize();
 
   btSphereShape *createSphere();
@@ -58,7 +71,7 @@ class VertexIndexToShape {
   unsigned int index_count_;
 
   Ogre::Vector3 bounds_;
-  Ogre::Real bound_radius_;
+  float bound_radius_;
 
   BoneIndex *bone_index_;
 

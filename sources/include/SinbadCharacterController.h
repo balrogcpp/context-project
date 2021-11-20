@@ -28,6 +28,8 @@ class AnimationState;
 #define JUMP_ACCEL SCALE * 30.0f  // character jump acceleration in upward units per squared second
 #define GRAVITY SCALE * 90.0f     // gravity in downward units per squared second
 
+namespace glue {
+
 class SinbadCharacterController : public glue::Object, public glue::MutedInputObserver {
  protected:
   // all the animations our character has, and a null ID
@@ -93,3 +95,5 @@ class SinbadCharacterController : public glue::Object, public glue::MutedInputOb
   float mVerticalVelocity;       // for jumping
   float mTimer;                  // general timer to see how long animations have been playing
 };
+
+}  // namespace glue
