@@ -13,12 +13,17 @@ COPY ./doc ./doc
 COPY ./cmake ./cmake
 
 
-RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
+RUN apt-get update \
+    && apt-get -y install libisl22 libmpc3 \
+    && mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
     && cmake --build . --target dependencies \
     && cd ${CONTEXT_HOME}/dependencies/external/Release/windows-clang-mingw-x86_64 \
     && rm -rf src tmp \
-    && rm -rf ${CONTEXT_HOME}/build-windows
+    && rm -rf ${CONTEXT_HOME}/build-windows \
+    && apt-get -y purge libisl22 libmpc3 \
+    && apt-get -y autoremove \
+    && apt-get clean
 
 
 RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \

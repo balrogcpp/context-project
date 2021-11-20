@@ -3,10 +3,16 @@ FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /mnt
 
-
 RUN apt-get update \
-    && apt-get install -y git gcc g++ zip wget ca-certificates gnupg2 make autoconf file patch \
+    && apt-get install -y wget ca-certificates gnupg2 apt-transport-https \
+    && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
+    && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
+    && apt-get update \
+    && apt-get -y install llvm clang lld git zip make autoconf file patch \
+    && apt-get -y purge gnupg2 apt-transport-https  \
+    && apt-get -y autoremove \
     && apt-get clean
+
 
 
 ########################################################################################################################
@@ -117,13 +123,13 @@ RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev l
     && rm -rf gcc-mingw32 \
     && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev xz-utils bzip2 \
     && apt-get -y autoremove \
-    && apt-get clean
-
-RUN update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 11200 \
+    && apt-get clean \
+    && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 11200 \
         --slave ${GCC_HOME}/bin/mingw32-g++ mingw32-g++ ${GCC_HOME}/bin/x86_64-w64-mingw32-g++ \
     && update-alternatives --install /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 11200 \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
+
 
 
 ########################################################################################################################
@@ -140,14 +146,6 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
 
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
-
-########################################################################################################################
-RUN apt-get install -y wget ca-certificates gnupg2 apt-transport-https \
-    && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
-    && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
-    && apt-get update \
-    && apt-get install -y llvm clang lld \
-    && apt-get clean
 
 
 ########################################################################################################################
@@ -166,28 +164,21 @@ RUN apt-get install -y libxml2 lzma-dev libxml2-dev libssl-dev xz-utils \
     && rm -rf `find  . -type d -name .git` \
     && apt-get -y purge lzma-dev libxml2-dev libssl-dev xz-utils \
     && apt-get -y autoremove \
-    && apt-get clean
-
-
-RUN eval `${OSXCROSS_ROOT}/target/bin/x86_64-apple-darwin19-osxcross-conf`
+    && apt-get clean \
+    && eval `${OSXCROSS_ROOT}/target/bin/x86_64-apple-darwin19-osxcross-conf`
 
 ENV OSXCROSS_HOST=x86_64-apple-darwin19
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/target/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/target/bin:${PATH}"
 
 
+
 ########################################################################################################################
+WORKDIR /opt
 ENV ANDROID_HOME=/opt/android-sdk
 
-RUN apt-get update \
-    && apt-get install -y git wget zip openjdk-8-jdk \
-    && apt-get clean
-
-WORKDIR /opt
-
-
-########################################################################################################################
-RUN wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O tools.zip \
+RUN apt-get -y install openjdk-8-jdk \
+    && wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O tools.zip \
     && unzip tools.zip \
     && rm tools.zip \
     && cd cmdline-tools/bin \

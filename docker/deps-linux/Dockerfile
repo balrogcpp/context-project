@@ -14,7 +14,6 @@ RUN apt-get update \
 COPY ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
 COPY ./dependencies/patch ./dependencies/patch
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./doc ./doc
 COPY ./cmake ./cmake
 
 
@@ -26,8 +25,6 @@ RUN mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
      && cmake --build . --target dependencies \
      && cd ${CONTEXT_HOME}/dependencies/external/Release/linux-clang-x86_64 \
      && rm -rf src tmp \
-     && rm -rf ${CONTEXT_HOME}/build-linux
-
-
-RUN cd ${CONTEXT_HOME} \
-    && rm -rf doc CMake CMakeLists.txt dependencies/CMakeLists.txt dependencies/patch
+     && rm -rf ${CONTEXT_HOME}/build-linux \
+     && cd ${CONTEXT_HOME} \
+     && rm -rf CMake CMakeLists.txt dependencies/CMakeLists.txt dependencies/patch
