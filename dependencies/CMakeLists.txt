@@ -531,11 +531,10 @@ externalproject_add(target-gtest
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DBUILD_GMOCK=false
                     )
 
 
-externalproject_add(target-gbenchmark
+externalproject_add(target-benchmark
                     EXCLUDE_FROM_ALL true
                     PREFIX ${CONTEXT_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/google/benchmark.git

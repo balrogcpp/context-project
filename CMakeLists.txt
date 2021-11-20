@@ -204,14 +204,46 @@ make_directory(${CONTEXT_ARTIFACT_DIR})
 
 
 add_subdirectory(${CONTEXT_ROOT_DIR}/dependencies ${CONTEXT_WORK_DIR}/dependencies)
-add_subdirectory(${CONTEXT_ROOT_DIR}/doc ${CONTEXT_WORK_DIR}/doc)
 
 
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
 
+# Doxygen
+find_package(Doxygen QUIET COMPONENTS dot)
+find_package(LATEX QUIET COMPONENTS PDFLATEX)
 
-# assume built-in pthreads on MacOS
+if (${DOXYGEN_FOUND})
+    add_custom_target(doxygen
+            COMMAND ${DOXYGEN_EXECUTABLE}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Generating API documentation with Doxygen..."
+            VERBATIM
+            )
+else ()
+    message("Doxygen not found. Doxygen targets are not available")
+endif ()
+if (UNIX)
+    set(DOXYGEN_MAKE_COMMAND ${MAKE_COMMAND})
+elseif (WIN32)
+    set(DOXYGEN_MAKE_COMMAND "make.bat")
+endif ()
+if (${LATEX_PDFLATEX_FOUND})
+    add_custom_target(doxygen-pdf
+            DEPENDS doxygen
+            COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ARTIFACT_DIR}/Doxygen/latex ${DOXYGEN_MAKE_COMMAND}
+            COMMAND ${CMAKE_COMMAND} -E copy ${CONTEXT_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${CONTEXT_ARTIFACT_DIR}/Doxygen
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Generating API documentation with Doxygen..."
+            VERBATIM
+            )
+else ()
+    message("Latex PDF not found. PDF generation no available")
+endif ()
+
+
+
+# Insert dependencies
 if (APPLE)
     set(CMAKE_THREAD_LIBS_INIT "-lpthread")
     set(CMAKE_HAVE_THREADS_LIBRARY 1)
@@ -238,7 +270,7 @@ find_package(Lua51 QUIET)
 find_package(assimp QUIET)
 find_package(PNG QUIET)
 find_package(freetype QUIET)
-find_library(ASSIMP_IRRXML_LIBRARY IrrXML)
+find_library(ASSIMP_IRRXML_LIBRARY IrrXML QUIET)
 
 
 macro(insert_dependency VARIABLE PACKAGE)
@@ -324,7 +356,6 @@ target_precompile_headers(glue PUBLIC sources/include/pcheader.h)
 
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
-
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
     file(INSTALL ${EXTERNAL_DLL_GLOB} DESTINATION .)
@@ -336,7 +367,6 @@ endif ()
 if (MINGW)
     file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/${SAMPLE_DIR}.exe.manifest DESTINATION .)
 endif ()
-
 
 if (NOT GIT_SHA1)
     execute_process(
@@ -414,5 +444,3 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
             VERBATIM
             )
 endif ()
-#Tests block
-add_subdirectory(${CONTEXT_ROOT_DIR}/tests ${CMAKE_CURRENT_BINARY_DIR}/tests)
