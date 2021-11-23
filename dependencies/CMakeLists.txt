@@ -29,9 +29,9 @@ externalproject_add(target-sdl
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DSDL_SHARED_ENABLED_BY_DEFAULT=false
-                    -DLIBC=true
-                    -DRENDER_METAL=false #cause linking error on macos
+                    -DSDL_SHARED_ENABLED_BY_DEFAULT=OFF
+                    -DLIBC=ON
+                    -DRENDER_METAL=OFF #cause linking error on macos
                     )
 
 
@@ -55,22 +55,22 @@ externalproject_add(target-bullet
                     -DCMAKE_DEBUG_POSTFIX=
                     -DCMAKE_MINSIZEREL_POSTFIX=
                     -DCLAMP_VELOCITIES=0
-                    -DBULLET2_MULTITHREADING=true
-                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=false
-                    -DBUILD_BULLET2_DEMOS=false
-                    -DBUILD_CPU_DEMOS=false
-                    -DBUILD_EXTRAS=false
-                    -DBUILD_ENET=false
-                    -DBUILD_CLSOCKET=false
-                    -DBUILD_OPENGL3_DEMOS=false
-                    -DUSE_GRAPHICAL_BENCHMARK=false
-                    -DBUILD_UNIT_TESTS=false
-                    -DBUILD_SHARED_LIBS=false
-                    -DUSE_SOFT_BODY_MULTI_BODY_DYNAMICS_WORLD=false
-                    -DINSTALL_LIBS=true
-                    -DUSE_MSVC_AVX=false
-                    -DUSE_MSVC_FAST_FLOATINGPOINT=true
-                    -DUSE_MSVC_RUNTIME_LIBRARY_DLL=true
+                    -DBULLET2_MULTITHREADING=ON
+                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=OFF
+                    -DBUILD_BULLET2_DEMOS=OFF
+                    -DBUILD_CPU_DEMOS=OFF
+                    -DBUILD_EXTRAS=OFF
+                    -DBUILD_ENET=OFF
+                    -DBUILD_CLSOCKET=OFF
+                    -DBUILD_OPENGL3_DEMOS=OFF
+                    -DUSE_GRAPHICAL_BENCHMARK=OFF
+                    -DBUILD_UNIT_TESTS=OFF
+                    -DBUILD_SHARED_LIBS=OFF
+                    -DUSE_SOFT_BODY_MULTI_BODY_DYNAMICS_WORLD=OFF
+                    -DINSTALL_LIBS=ON
+                    -DUSE_MSVC_AVX=OFF
+                    -DUSE_MSVC_FAST_FLOATINGPOINT=ON
+                    -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON
                     )
 
 
@@ -103,17 +103,17 @@ externalproject_add(target-openal
                     -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
                     -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DALSOFT_TESTS=false
-                    -DALSOFT_UTILS=false
-                    -DALSOFT_EXAMPLES=false
-                    -DALSOFT_CONFIG=false
-                    -DALSOFT_BACKEND_SDL2=false
-                    -DALSOFT_BACKEND_SNDIO=false
-                    -DALSOFT_BACKEND_WASAPI=false
-                    -DALSOFT_BACKEND_WINMM=false
-                    -DALSOFT_BACKEND_WAVE=false
+                    -DALSOFT_TESTS=OFF
+                    -DALSOFT_UTILS=OFF
+                    -DALSOFT_EXAMPLES=OFF
+                    -DALSOFT_CONFIG=OFF
+                    -DALSOFT_BACKEND_SDL2=OFF
+                    -DALSOFT_BACKEND_SNDIO=OFF
+                    -DALSOFT_BACKEND_WASAPI=OFF
+                    -DALSOFT_BACKEND_WINMM=OFF
+                    -DALSOFT_BACKEND_WAVE=OFF
                     -DLIBTYPE=${OPENAL_LIBTYPE}
-                    -DALSOFT_OSX_FRAMEWORK=false
+                    -DALSOFT_OSX_FRAMEWORK=OFF
                     )
 
 
@@ -170,7 +170,7 @@ externalproject_add(target-zlib
                     -DCMAKE_PREFIX_PATH=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DBUILD_SHARED_LIBS=false
+                    -DBUILD_SHARED_LIBS=OFF
                     TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                         ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll lib/libz.dylib
                     TEST_AFTER_INSTALL true
@@ -227,8 +227,8 @@ externalproject_add(target-png
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DPNG_SHARED=false
-                    -DPNG_TESTS=false
+                    -DPNG_SHARED=OFF
+                    -DPNG_TESTS=OFF
                     )
 
 
@@ -247,9 +247,9 @@ externalproject_add(target-freetype
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=true
-                    -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=true
-                    -DBUILD_SHARED_LIBS=false
+                    -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=ON
+                    -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=ON
+                    -DBUILD_SHARED_LIBS=OFF
                     )
 
 
@@ -267,11 +267,11 @@ externalproject_add(target-rapidjson
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DRAPIDJSON_BUILD_DOC=false
-                    -DRAPIDJSON_BUILD_EXAMPLES=false
-                    -DRAPIDJSON_BUILD_TESTS=false
-                    -DRAPIDJSON_BUILD_THIRDPARTY_GTEST=false
-                    -DRAPIDJSON_HAS_STDSTRING=true
+                    -DRAPIDJSON_BUILD_DOC=OFF
+                    -DRAPIDJSON_BUILD_EXAMPLES=OFF
+                    -DRAPIDJSON_BUILD_TESTS=OFF
+                    -DRAPIDJSON_BUILD_THIRDPARTY_GTEST=OFF
+                    -DRAPIDJSON_HAS_STDSTRING=ON
                     )
 
 
@@ -289,7 +289,7 @@ externalproject_add(target-json
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DJSON_BuildTests=false
+                    -DJSON_BuildTests=OFF
                     )
 
 
@@ -317,43 +317,43 @@ externalproject_add(target-assimp
                     -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DINJECT_DEBUG_POSTFIX=false
-                    -DASSIMP_BUILD_TESTS=false
-                    -DBUILD_SHARED_LIBS=false
-                    -DASSIMP_BUILD_ASSIMP_TOOLS=false
-                    -DASSIMP_BUILD_ZLIB=false
-                    -DASSIMP_NO_EXPORT=true
-                    -DASSIMP_BUILD_SAMPLES=false
-                    -DASSIMP_INSTALL_PDB=false
-                    -DASSIMP_BUILD_ASE_IMPORTER=false
-                    -DASSIMP_BUILD_OFF_IMPORTER=false
-                    -DASSIMP_BUILD_IRR_IMPORTER=false
-                    -DASSIMP_BUILD_IRRMESH_IMPORTER=false
-                    -DASSIMP_BUILD_OGRE_IMPORTER=false
-                    -DASSIMP_BUILD_AMF_IMPORTER=false
-                    -DASSIMP_BUILD_AC_IMPORTER=false
-                    -DASSIMP_BUILD_ASSBIN_IMPORTER=false
-                    -DASSIMP_BUILD_B3D_IMPORTER=false
-                    -DASSIMP_BUILD_BVH_IMPORTER=false
-                    -DASSIMP_BUILD_DXF_IMPORTER=false
-                    -DASSIMP_BUILD_CSM_IMPORTER=false
-                    -DASSIMP_BUILD_HMP_IMPORTER=false
-                    -DASSIMP_BUILD_LWO_IMPORTER=false
-                    -DASSIMP_BUILD_LWS_IMPORTER=false
-                    -DASSIMP_BUILD_MD2_IMPORTER=false
-                    -DASSIMP_BUILD_MD3_IMPORTER=false
-                    -DASSIMP_BUILD_MD5_IMPORTER=false
-                    -DASSIMP_BUILD_MDC_IMPORTER=false
-                    -DASSIMP_BUILD_MDL_IMPORTER=false
-                    -DASSIMP_BUILD_NFF_IMPORTER=false
-                    -DASSIMP_BUILD_NDO_IMPORTER=false
-                    -DASSIMP_BUILD_Q3D_IMPORTER=false
-                    -DASSIMP_BUILD_Q3BSP_IMPORTER=false
-                    -DASSIMP_BUILD_SIB_IMPORTER=false
-                    -DASSIMP_BUILD_TERRAGEN_IMPORTER=false
-                    -DASSIMP_BUILD_3MF_IMPORTER=false
-                    -DASSIMP_BUILD_MMD_IMPORTER=false
-                    -DASSIMP_BUILD_STEP_IMPORTER=false
+                    -DINJECT_DEBUG_POSTFIX=OFF
+                    -DASSIMP_BUILD_TESTS=OFF
+                    -DBUILD_SHARED_LIBS=OFF
+                    -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
+                    -DASSIMP_BUILD_ZLIB=OFF
+                    -DASSIMP_NO_EXPORT=ON
+                    -DASSIMP_BUILD_SAMPLES=OFF
+                    -DASSIMP_INSTALL_PDB=OFF
+                    -DASSIMP_BUILD_ASE_IMPORTER=OFF
+                    -DASSIMP_BUILD_OFF_IMPORTER=OFF
+                    -DASSIMP_BUILD_IRR_IMPORTER=OFF
+                    -DASSIMP_BUILD_IRRMESH_IMPORTER=OFF
+                    -DASSIMP_BUILD_OGRE_IMPORTER=OFF
+                    -DASSIMP_BUILD_AMF_IMPORTER=OFF
+                    -DASSIMP_BUILD_AC_IMPORTER=OFF
+                    -DASSIMP_BUILD_ASSBIN_IMPORTER=OFF
+                    -DASSIMP_BUILD_B3D_IMPORTER=OFF
+                    -DASSIMP_BUILD_BVH_IMPORTER=OFF
+                    -DASSIMP_BUILD_DXF_IMPORTER=OFF
+                    -DASSIMP_BUILD_CSM_IMPORTER=OFF
+                    -DASSIMP_BUILD_HMP_IMPORTER=OFF
+                    -DASSIMP_BUILD_LWO_IMPORTER=OFF
+                    -DASSIMP_BUILD_LWS_IMPORTER=OFF
+                    -DASSIMP_BUILD_MD2_IMPORTER=OFF
+                    -DASSIMP_BUILD_MD3_IMPORTER=OFF
+                    -DASSIMP_BUILD_MD5_IMPORTER=OFF
+                    -DASSIMP_BUILD_MDC_IMPORTER=OFF
+                    -DASSIMP_BUILD_MDL_IMPORTER=OFF
+                    -DASSIMP_BUILD_NFF_IMPORTER=OFF
+                    -DASSIMP_BUILD_NDO_IMPORTER=OFF
+                    -DASSIMP_BUILD_Q3D_IMPORTER=OFF
+                    -DASSIMP_BUILD_Q3BSP_IMPORTER=OFF
+                    -DASSIMP_BUILD_SIB_IMPORTER=OFF
+                    -DASSIMP_BUILD_TERRAGEN_IMPORTER=OFF
+                    -DASSIMP_BUILD_3MF_IMPORTER=OFF
+                    -DASSIMP_BUILD_MMD_IMPORTER=OFF
+                    -DASSIMP_BUILD_STEP_IMPORTER=OFF
                     )
 
 
@@ -387,52 +387,52 @@ externalproject_add(target-ogre
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
                     -DOGRE_DEPENDENCIES_DIR=${CONTEXT_EXTERNAL_INSTALL_LOCATION}
                     -DOGRE_ENABLE_PRECOMPILED_HEADERS=${OGRE_USE_PCH}
-                    -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=false
+                    -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=OFF
                     -DOGRE_ASSERT_MODE=1
                     -DOGRE_CONFIG_THREADS=3
                     -DOGRE_CONFIG_THREAD_PROVIDER=std
-                    -DOGRE_STATIC=true
-                    -DOGRE_NODELESS_POSITIONING=false
-                    -DOGRE_BUILD_COMPONENT_PYTHON=false
-                    -DOGRE_BUILD_COMPONENT_JAVA=false
+                    -DOGRE_STATIC=ON
+                    -DOGRE_NODELESS_POSITIONING=OFF
+                    -DOGRE_BUILD_COMPONENT_PYTHON=OFF
+                    -DOGRE_BUILD_COMPONENT_JAVA=OFF
                     -DOGRE_RESOURCEMANAGER_STRICT=2
-                    -DOGRE_BUILD_COMPONENT_PYTHON=false
-                    -DOGRE_BUILD_RENDERSYSTEM_D3D11=false
-                    -DOGRE_BUILD_RENDERSYSTEM_D3D9=false
-                    -DOGRE_BUILD_PLUGIN_CG=false
-                    -DOGRE_BUILD_PLUGIN_GLSLANG=false
-                    -DOGRE_BUILD_RENDERSYSTEM_METAL=false
-                    -DOGRE_BUILD_RENDERSYSTEM_GL=false
-                    -DOGRE_BUILD_RENDERSYSTEM_TINY=false
-                    -DOGRE_BUILD_COMPONENT_OVERLAY=true
-                    -DOGRE_BUILD_COMPONENT_BITES=false
-                    -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=true
-                    -DOGRE_BUILD_COMPONENT_PAGING=false
-                    -DOGRE_BUILD_COMPONENT_MESHLODGENERATOR=true
-                    -DOGRE_BUILD_COMPONENT_PROPERTY=false
-                    -DOGRE_BUILD_COMPONENT_VOLUME=true
-                    -DOGRE_BUILD_COMPONENT_TERRAIN=true
-                    -DOGRE_BUILD_PLUGIN_FREEIMAGE=false
-                    -DOGRE_BUILD_PLUGIN_EXRCODEC=false
-                    -DOGRE_BUILD_PLUGIN_ASSIMP=true
-                    -DOGRE_BUILD_PLUGIN_STBI=true
-                    -DOGRE_BUILD_PLUGIN_BSP=false
-                    -DOGRE_BUILD_PLUGIN_PCZ=false
-                    -DOGRE_BUILD_PLUGIN_PFX=true
-                    -DOGRE_BUILD_PLUGIN_OCTREE=true
-                    -DOGRE_BUILD_PLUGIN_DOT_SCENE=false
-                    -DOGRE_BUILD_COMPONENT_HLMS=false
-                    -DOGRE_BUILD_COMPONENT_RTSHADERSYSTEM=true
-                    -DOGRE_BUILD_DEPENDENCIES=false
-                    -DOGRE_BUILD_SAMPLES=false
-                    -DOGRE_INSTALL_SAMPLES_SOURCE=false
-                    -DOGRE_INSTALL_SAMPLES=false
-                    -DOGRE_BUILD_TOOLS=false
-                    -DOGRE_INSTALL_PDB=false
-                    -DOGRE_INSTALL_DOCS=false
-                    -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=false
+                    -DOGRE_BUILD_COMPONENT_PYTHON=OFF
+                    -DOGRE_BUILD_RENDERSYSTEM_D3D11=OFF
+                    -DOGRE_BUILD_RENDERSYSTEM_D3D9=OFF
+                    -DOGRE_BUILD_PLUGIN_CG=OFF
+                    -DOGRE_BUILD_PLUGIN_GLSLANG=OFF
+                    -DOGRE_BUILD_RENDERSYSTEM_METAL=OFF
+                    -DOGRE_BUILD_RENDERSYSTEM_GL=OFF
+                    -DOGRE_BUILD_RENDERSYSTEM_TINY=OFF
+                    -DOGRE_BUILD_COMPONENT_OVERLAY=ON
+                    -DOGRE_BUILD_COMPONENT_BITES=OFF
+                    -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=ON
+                    -DOGRE_BUILD_COMPONENT_PAGING=OFF
+                    -DOGRE_BUILD_COMPONENT_MESHLODGENERATOR=ON
+                    -DOGRE_BUILD_COMPONENT_PROPERTY=OFF
+                    -DOGRE_BUILD_COMPONENT_VOLUME=ON
+                    -DOGRE_BUILD_COMPONENT_TERRAIN=ON
+                    -DOGRE_BUILD_PLUGIN_FREEIMAGE=OFF
+                    -DOGRE_BUILD_PLUGIN_EXRCODEC=OFF
+                    -DOGRE_BUILD_PLUGIN_ASSIMP=ON
+                    -DOGRE_BUILD_PLUGIN_STBI=ON
+                    -DOGRE_BUILD_PLUGIN_BSP=OFF
+                    -DOGRE_BUILD_PLUGIN_PCZ=OFF
+                    -DOGRE_BUILD_PLUGIN_PFX=ON
+                    -DOGRE_BUILD_PLUGIN_OCTREE=ON
+                    -DOGRE_BUILD_PLUGIN_DOT_SCENE=OFF
+                    -DOGRE_BUILD_COMPONENT_HLMS=OFF
+                    -DOGRE_BUILD_COMPONENT_RTSHADERSYSTEM=ON
+                    -DOGRE_BUILD_DEPENDENCIES=OFF
+                    -DOGRE_BUILD_SAMPLES=OFF
+                    -DOGRE_INSTALL_SAMPLES_SOURCE=OFF
+                    -DOGRE_INSTALL_SAMPLES=OFF
+                    -DOGRE_BUILD_TOOLS=OFF
+                    -DOGRE_INSTALL_PDB=OFF
+                    -DOGRE_INSTALL_DOCS=OFF
+                    -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=OFF
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    -DOGRE_BUILD_PLATFORM_APPLE_IOS=false
+                    -DOGRE_BUILD_PLATFORM_APPLE_IOS=OFF
                     TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
                         ${CONTEXT_EXTERNAL_PREFIX_LOCATION}/src/target-ogre/RenderSystems/GLSupport/include/GLSL
                         ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
@@ -454,11 +454,11 @@ externalproject_add(target-lua
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DLUA_EXE=false
-                    -DLUA_DOC=false
-                    -DLUA_BUILD_WLUA=false
-                    -DBUILD_SHARED_LIBS=false
-                    -DLUA_USE_READLINE=false
+                    -DLUA_EXE=OFF
+                    -DLUA_DOC=OFF
+                    -DLUA_BUILD_WLUA=OFF
+                    -DBUILD_SHARED_LIBS=OFF
+                    -DLUA_USE_READLINE=OFF
                     )
 
 
@@ -512,8 +512,8 @@ externalproject_add(target-filesystem
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DGHC_FILESYSTEM_BUILD_TESTING=false
-                    -DGHC_FILESYSTEM_BUILD_EXAMPLES=false
+                    -DGHC_FILESYSTEM_BUILD_TESTING=OFF
+                    -DGHC_FILESYSTEM_BUILD_EXAMPLES=OFF
                     )
 
 
@@ -548,7 +548,7 @@ externalproject_add(target-benchmark
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${CONTEXT_CMAKE_EXTRA_FLAGS}
-                    -DBENCHMARK_ENABLE_TESTING=false
+                    -DBENCHMARK_ENABLE_TESTING=OFF
                     )
 
 
