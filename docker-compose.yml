@@ -1,22 +1,42 @@
 version: "3.3"
 services:
-  app-linux:
+  sample-linux:
     build:
       context: .
-      dockerfile: ./docker/build-linux/Dockerfile
+      dockerfile: ./sample/linux.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
-    container_name: build-linux
+    container_name: sample-linux
     volumes:
       - .:/var/artifacts
-    command: cp -R /mnt/build/artifacts /var/artifacts
-  app-cross:
+    command: mv -R /mnt/build/artifacts /var/artifacts
+  sample-windows:
     build:
       context: .
-      dockerfile: ./docker/build-cross/Dockerfile
+      dockerfile: ./sample/windows.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
-    container_name: build-cross
+    container_name: sample-windows
     volumes:
       - .:/var/artifacts
-    command: cp -R /mnt/build/artifacts /var/artifacts
+    command: mv -R /mnt/build/artifacts /var/artifacts
+  sample-apple:
+    build:
+      context: .
+      dockerfile: ./sample/apple.Dockerfile
+      args:
+        GIT_HASH: ${GIT_HASH}
+    container_name: sample-apple
+    volumes:
+      - .:/var/artifacts
+    command: mv -R /mnt/build/artifacts /var/artifacts
+  sample-android:
+    build:
+      context: .
+      dockerfile: ./sample/android.Dockerfile
+      args:
+        GIT_HASH: ${GIT_HASH}
+    container_name: sample-android
+    volumes:
+      - .:/var/artifacts
+    command: mv -R /mnt/build/artifacts /var/artifacts

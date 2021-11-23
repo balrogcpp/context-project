@@ -329,6 +329,30 @@ include_directories(glue ${CONTEXT_INCLUDE_DIRS})
 set_target_properties(glue PROPERTIES OUTPUT_NAME "glue-static")
 target_precompile_headers(glue PUBLIC sources/include/pcheader.h)
 
+# Tests
+find_package(GTest QUIET)
+if (GTest_FOUND)
+    enable_testing()
+    include(GoogleTest)
+
+    add_executable(
+            hello_test
+            tests/src/hello_test.cpp
+    )
+    target_link_libraries(
+            hello_test
+            ${GTEST_BOTH_LIBRARIES}
+    )
+
+    gtest_discover_tests(hello_test)
+    target_link_directories(hello_test PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
+else ()
+    message("Google test not found. Test targets are not available")
+endif ()
+
+
+
+# Install&package block
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
 
 if (WIN32)
@@ -425,10 +449,17 @@ if (NOT MSVC)
 endif ()
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_custom_target(docker-compose
-            COMMAND GIT_HASH=${GIT_SHA1} docker-compose up --build
+            COMMAND GIT_HASH=${GIT_SHA1} docker-compose --verbose up --build
             COMMAND docker-compose down --volumes
             WORKING_DIRECTORY ${CONTEXT_WORK_DIR}
-            COMMENT "Build with docker..."
+            COMMENT "Building sample with docker..."
+            VERBATIM
+            )
+    add_custom_target(docker-compose-dep
+            COMMAND docker-compose --verbose up -f docker-compose-dep.yml --build
+            COMMAND docker-compose down --volumes
+            WORKING_DIRECTORY ${CONTEXT_WORK_DIR}
+            COMMENT "Building thirdparty with docker..."
             VERBATIM
             )
 endif ()

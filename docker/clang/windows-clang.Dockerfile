@@ -8,15 +8,21 @@ RUN apt-get update \
     && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
-    && apt-get -y install llvm clang lld git zip make autoconf file patch \
-    && apt-get -y purge gnupg2 apt-transport-https  \
-    && apt-get -y autoremove \
-    && apt-get clean
+    && apt-get -y install --no-install-recommends llvm clang lld git zip unzip xz-utils make autoconf file patch && apt-get clean
 
+ARG CMAKE_VERSION=3.19.8
+ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
+ARG NINJA_VERSION=1.10.2
 
+RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp && unzip /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
+    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
+    && chmod u+x /tmp/cmake-install.sh \
+    && mkdir ${CMAKE_HOME} \
+    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
+    && rm /tmp/cmake-install.sh
 
-########################################################################################################################
-# Build Mingw from source, ubuntu ppa contains old versions
+ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
 ARG BINUTILS_VERSION=2.37
@@ -24,7 +30,8 @@ ARG MINGW_VERSION=9.0.0
 ARG GCC_VERSION=11.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
 
-RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev xz-utils bzip2 \
+RUN apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl22 libmpc3 \
+    && apt-get clean \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
@@ -121,70 +128,11 @@ RUN apt-get install -y zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev l
     && rm -rf mingw-w64 \
     && rm -rf gcc-${GCC_VERSION} \
     && rm -rf gcc-mingw32 \
-    && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev xz-utils bzip2 \
+    && rm -rf ${MINGW_ROOT} \
+    && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev bzip2 \
     && apt-get -y autoremove \
-    && apt-get clean \
     && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 11200 \
         --slave ${GCC_HOME}/bin/mingw32-g++ mingw32-g++ ${GCC_HOME}/bin/x86_64-w64-mingw32-g++ \
     && update-alternatives --install /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 11200 \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
-
-
-
-########################################################################################################################
-ARG CMAKE_VERSION=3.19.8
-ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
-ARG NINJA_VERSION=1.10.2
-
-RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp && unzip /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
-    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
-    && chmod u+x /tmp/cmake-install.sh \
-    && mkdir ${CMAKE_HOME} \
-    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
-    && rm /tmp/cmake-install.sh
-
-ENV PATH="${CMAKE_HOME}/bin:${PATH}"
-
-
-
-########################################################################################################################
-ARG OSXCROSS_ROOT=/opt/osxcross
-ARG OSXCROSS_HOME=/opt
-ARG MACOSX_VERSION=10.15
-
-RUN apt-get install -y libxml2 lzma-dev libxml2-dev libssl-dev xz-utils \
-    && cd ${OSXCROSS_HOME} \
-    && git clone --depth 1 https://github.com/tpoechtrager/osxcross.git \
-    && wget https://github.com/balrogcpp/MacOSXsdk/raw/master/MacOSX${MACOSX_VERSION}.sdk.tar.xz -O ${OSXCROSS_ROOT}/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \
-    && cd ${OSXCROSS_ROOT} \
-    && UNATTENDED=1 ./build.sh \
-    && rm ${OSXCROSS_ROOT}/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \
-    && rm -rf ${OSXCROSS_ROOT}/build \
-    && rm -rf `find  . -type d -name .git` \
-    && apt-get -y purge lzma-dev libxml2-dev libssl-dev xz-utils \
-    && apt-get -y autoremove \
-    && apt-get clean \
-    && eval `${OSXCROSS_ROOT}/target/bin/x86_64-apple-darwin19-osxcross-conf`
-
-ENV OSXCROSS_HOST=x86_64-apple-darwin19
-ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/target/toolchain.cmake
-ENV PATH="${OSXCROSS_ROOT}/target/bin:${PATH}"
-
-
-
-########################################################################################################################
-WORKDIR /opt
-ENV ANDROID_HOME=/opt/android-sdk
-
-RUN apt-get -y install openjdk-8-jdk \
-    && wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O tools.zip \
-    && unzip tools.zip \
-    && rm tools.zip \
-    && cd cmdline-tools/bin \
-    && export ANDROID_HOME=/opt/android-sdk \
-    && yes | ./sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
-    && cd ../
-
-ENV PATH="/opt/tools/bin:${PATH}"
-ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"

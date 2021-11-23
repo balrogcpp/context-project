@@ -1,0 +1,42 @@
+version: "3.3"
+services:
+  glue-dep-linux:
+    build:
+      context: .
+      dockerfile: ./docker/dependencies/linux-glue-dep.Dockerfile
+      args:
+        GIT_HASH: ${GIT_HASH}
+    container_name: linux-glue-dep
+    volumes:
+      - .:/var/artifacts
+    command: cp -R /mnt/build/artifacts /var/artifacts
+  glue-dep-windows:
+    build:
+      context: .
+      dockerfile: ./docker/dependencies/windows-glue-dep.Dockerfile
+      args:
+        GIT_HASH: ${GIT_HASH}
+    container_name: windows-glue-dep
+    volumes:
+      - .:/var/artifacts
+    command: cp -R /mnt/build/artifacts /var/artifacts
+  glue-dep-apple:
+    build:
+      context: .
+      dockerfile: ./docker/dependencies/apple-glue-dep.Dockerfile
+      args:
+        GIT_HASH: ${GIT_HASH}
+    container_name: apple-glue-dep
+    volumes:
+      - .:/var/artifacts
+    command: cp -R /mnt/build/artifacts /var/artifacts
+  glue-dep-android:
+    build:
+      context: .
+      dockerfile: ./docker/dependencies/android-glue-dep.Dockerfile
+      args:
+        GIT_HASH: ${GIT_HASH}
+    container_name: android-glue-dep
+    volumes:
+      - .:/var/artifacts
+    command: cp -R /mnt/build/artifacts /var/artifacts
