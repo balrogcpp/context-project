@@ -19,7 +19,6 @@ include(ProcessorCount)
 
 check_type_size("void*" PTR_SIZE BUILTIN_TYPES_ONLY)
 
-
 # Build type definition
 if (NOT ANDROID)
     if (NOT CMAKE_BUILD_TYPE)
@@ -32,7 +31,6 @@ if (NOT ANDROID)
         message(SEND_ERROR "Debug build is not working with MSVC right now")
     endif ()
 endif ()
-
 
 # Platform definition
 if (WIN32)
@@ -51,7 +49,6 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 else ()
     set(CONTEXT_TOOLCHAIN ${CMAKE_SYSTEM_NAME})
 endif ()
-
 
 # Toolchain definition
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -80,7 +77,6 @@ processorcount(CONTEXT_PROCESSOR_COUNT)
 set(CMAKE_BUILD_PARALLEL_LEVEL ${CONTEXT_PROCESSOR_COUNT})
 set(MAKE_COMMAND make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
 string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
-
 
 # Compilation flags definition
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -141,7 +137,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
     endif ()
 
-
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
@@ -149,7 +144,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
 
     string(APPEND CMAKE_CXX_FLAGS " -pthread")
     string(APPEND CMAKE_C_FLAGS " -pthread")
-
 
     if (USE_OPENMP)
         if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -168,8 +162,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
 
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-
     string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF /W3")
     string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF /W3")
 
@@ -202,9 +194,7 @@ set(CONTEXT_THIRDPARTY_DIR ${CONTEXT_THIRDPARTY_ROOT} CACHE PATH "")
 set(CONTEXT_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts CACHE PATH "")
 make_directory(${CONTEXT_ARTIFACT_DIR})
 
-
 add_subdirectory(${CONTEXT_ROOT_DIR}/dependencies ${CONTEXT_WORK_DIR}/dependencies)
-
 
 set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
 set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
@@ -241,8 +231,6 @@ else ()
     message("Latex PDF not found. PDF generation no available")
 endif ()
 
-
-
 # Insert dependencies
 if (APPLE)
     set(CMAKE_THREAD_LIBS_INIT "-lpthread")
@@ -272,7 +260,6 @@ find_package(PNG QUIET)
 find_package(freetype QUIET)
 find_library(ASSIMP_IRRXML_LIBRARY IrrXML QUIET)
 
-
 macro(insert_dependency VARIABLE PACKAGE)
     if (NOT ${VARIABLE})
         message("-- Not found ${VARIABLE}. Please build ${PACKAGE} first")
@@ -282,9 +269,6 @@ macro(insert_dependency VARIABLE PACKAGE)
     endif ()
 endmacro()
 
-
-message("")
-
 insert_dependency(OGRE_FOUND OGRE)
 insert_dependency(Bullet_FOUND Bullet)
 insert_dependency(sol2_FOUND SOL2)
@@ -293,18 +277,13 @@ insert_dependency(SDL2_FOUND SDL2)
 insert_dependency(PNG_FOUND LibPNG)
 insert_dependency(assimp_FOUND assimp)
 
-message("")
-
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(target-deps-dummy SHARED android/app/src/main/cpp/main.cpp)
     add_dependencies(target-deps-dummy dependencies)
 endif ()
-
-
 if (ANY_NOT_FOUND)
     return()
 endif ()
-
 
 list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
         ${BULLET_INCLUDE_DIR} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/Overlay
@@ -314,7 +293,6 @@ list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTA
 
 set(SAMPLE_DIR sample)
 file(GLOB_RECURSE SOURCE_FILES ${SAMPLE_DIR}/*.cpp ${SAMPLE_DIR}/*.h ${SAMPLE_DIR}/*.hpp deploy/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
-
 
 if (ANDROID)
     add_library(${SAMPLE_DIR} SHARED ${SOURCE_FILES})
@@ -328,7 +306,6 @@ endif ()
 include_directories(${SAMPLE_DIR} ${SAMPLE_DIR}/include ${CONTEXT_INCLUDE_DIRS})
 target_link_directories(${SAMPLE_DIR} PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
 target_precompile_headers(${SAMPLE_DIR} PUBLIC sources/include/pcheader.h)
-
 
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
@@ -345,9 +322,7 @@ target_link_libraries(${SAMPLE_DIR} PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic 
         ${PNG_LIBRARY} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
         ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
-
 install(TARGETS ${SAMPLE_DIR} RUNTIME DESTINATION .)
-
 file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
 add_library(glue STATIC ${SOURCE_FILES})
 include_directories(glue ${CONTEXT_INCLUDE_DIRS})
@@ -377,7 +352,6 @@ if (NOT GIT_SHA1)
     )
 endif ()
 
-
 set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
 set(CONTEXT_ZIP_NAME GlueSample-${GIT_SHA1} CACHE PATH "")
 set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
@@ -405,7 +379,6 @@ if (MSVC)
     install(FILES ${CMAKE_SOURCE_DIR}/deploy/VC_redist.x64.exe DESTINATION .)
 endif ()
 
-
 set(CONTEXT_PACKAGE_NAME "GlueSample")
 set(CONTEXT_ARTIFACT_NAME ${CONTEXT_PACKAGE_NAME}-${CONTEXT_TOOLCHAIN}-${GIT_SHA1})
 if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
@@ -421,9 +394,24 @@ set(CPACK_PACKAGE_NAME ${CONTEXT_ARTIFACT_NAME})
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
 
-
-set(CPACK_GENERATOR "ZIP")
-
+find_package(NSIS QUIET)
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "glue-sample")
+set(CPACK_PACKAGE_VENDOR "Andrew Vasiliev")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+if (NOT MSVC)
+    set(CPACK_GENERATOR "ZIP")
+elseif(${NSIS_FOUND})
+    set(CPACK_GENERATOR "ZIP" "NSIS")
+    set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "LLVM")
+    set(CPACK_NSIS_MODIFY_PATH "ON")
+    set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON")
+    set(CPACK_NSIS_COMPRESSOR "/SOLID lzma \r\n SetCompressorDictSize 32")
+    set(CPACK_CREATE_DESKTOP_LINKS ${SAMPLE_DIR})
+    set(CPACK_NSIS_IGNORE_LICENSE_PAGE ON)
+    if( CMAKE_CL_64 )
+        set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
+  endif()
+endif()
 include(CPack)
 
 if (NOT MSVC)
