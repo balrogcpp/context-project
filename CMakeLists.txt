@@ -8,15 +8,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 enable_language(C)
 enable_language(CXX)
-
 project(glue CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-
-
+include(CMakeDependentOption)
 include(CheckTypeSize)
 include(ProcessorCount)
-
 check_type_size("void*" PTR_SIZE BUILTIN_TYPES_ONLY)
 
 # Build type definition
@@ -330,8 +327,9 @@ set_target_properties(glue PROPERTIES OUTPUT_NAME "glue-static")
 target_precompile_headers(glue PUBLIC sources/include/pcheader.h)
 
 # Tests
+option(ENABLE_TESTING "" OFF)
 find_package(GTest QUIET)
-if (GTest_FOUND)
+if (GTest_FOUND AND ENABLE_TESTING)
     enable_testing()
     include(GoogleTest)
 
@@ -349,8 +347,6 @@ if (GTest_FOUND)
 else ()
     message("Google test not found. Test targets are not available")
 endif ()
-
-
 
 # Install&package block
 set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
@@ -426,7 +422,7 @@ if (NOT MSVC)
     set(CPACK_GENERATOR "ZIP")
 elseif(${NSIS_FOUND})
     set(CPACK_GENERATOR "ZIP" "NSIS")
-    set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "LLVM")
+    set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "GLUE PRJ")
     set(CPACK_NSIS_MODIFY_PATH "ON")
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON")
     set(CPACK_NSIS_COMPRESSOR "/SOLID lzma \r\n SetCompressorDictSize 32")
@@ -449,16 +445,16 @@ if (NOT MSVC)
 endif ()
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_custom_target(docker-compose
-            COMMAND GIT_HASH=${GIT_SHA1} docker-compose --verbose up --build
+            COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
             COMMAND docker-compose down --volumes
-            WORKING_DIRECTORY ${CONTEXT_WORK_DIR}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             COMMENT "Building sample with docker..."
             VERBATIM
             )
     add_custom_target(docker-compose-dep
-            COMMAND docker-compose --verbose up -f docker-compose-dep.yml --build
+            COMMAND docker-compose -f docker-compose-dep.yml up
             COMMAND docker-compose down --volumes
-            WORKING_DIRECTORY ${CONTEXT_WORK_DIR}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             COMMENT "Building thirdparty with docker..."
             VERBATIM
             )
