@@ -12,17 +12,17 @@ build:
   script:
     - mkdir artifacts
     - git clone --depth 1 https://github.com/balrogcpp/scenes.git assets && rm -rf assets/.git
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` .-f linux.Dockerfile -t balrogcpp/sample-linux
+    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f linux.Dockerfile -t balrogcpp/sample-linux
     - docker create -ti --name abc balrogcpp/sample-linux bash
     - docker cp abc:/mnt/build/artifacts/GlueSample-linux-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
     - docker rm -f abc
     - docker rmi balrogcpp/sample-linux
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` .-f windows.Dockerfile -t balrogcpp/sample-windows
+    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f windows.Dockerfile -t balrogcpp/sample-windows
     - docker create -ti --name abc balrogcpp/sample-windows bash
     - docker cp abc:/mnt/build/artifacts/GlueSample-windows-clang-mingw-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
     - docker rm -f abc
     - docker rmi balrogcpp/sample-windows
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` .-f apple.Dockerfile -t balrogcpp/sample-apple
+    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f apple.Dockerfile -t balrogcpp/sample-apple
     - docker create -ti --name abc balrogcpp/sample-apple bash
     - docker cp abc:/mnt/build/artifacts/GlueSample-apple-darwin-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
     - docker rm -f abc
