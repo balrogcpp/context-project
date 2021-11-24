@@ -12,6 +12,9 @@
 
 namespace glue {
 class StateManager;
+}
+
+namespace glue {
 
 class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputObserver {
  public:

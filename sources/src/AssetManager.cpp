@@ -1,11 +1,11 @@
 // This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
-#include "pcheader.h"
 #include "AssetManager.h"
 #include "Android.h"
 #include "Exception.h"
 #include "Log.h"
+#include "pcheader.h"
 #if HAS_FILESYSTEM
 #include <filesystem>
 namespace fs = filesystem;
@@ -20,7 +20,11 @@ namespace glue::AssetManager {
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
 //----------------------------------------------------------------------------------------------------------------------
-static string FindPath(const string &path_, int depth = 3) {
+static string FindPath(const string &path_, int depth = 2) {
+#ifdef DEBUG
+  depth = 4;
+#endif
+
   string path = path_;
 
   for (int i = 0; i < depth; i++) {
@@ -37,7 +41,7 @@ static string FindPath(const string &path_, int depth = 3) {
 
 //----------------------------------------------------------------------------------------------------------------------
 static bool CheckSymbol(char c) {
-  return (isalpha(c) || isdigit(c) || c == '.' || c == ',' || c == ';' || c == '_' || c == '-' || c == '/');
+  return isalpha(c) || isdigit(c) || c == '.' || c == ',' || c == ';' || c == '_' || c == '-' || c == '/';
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -141,7 +145,7 @@ void AddLocationRecursive(const string &path_, const string &group_, const strin
         TrimString(line);
 
         if (!StringSanityCheck(line)) {
-          throw Exception(string("Sanity check of file ") + resource_file + " is failed. Aborting.");
+          throw Exception(string("Sanity check of ") + resource_file + " is failed. Aborting.");
         }
 
         if (line[0] == '#') {

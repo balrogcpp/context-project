@@ -8,7 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 enable_language(C)
 enable_language(CXX)
-project(glue CXX)
+project(glue VERSION 0.1.0)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CMakeDependentOption)
@@ -31,60 +31,62 @@ endif ()
 
 # Platform definition
 if (WIN32)
-    set(CONTEXT_TOOLCHAIN "windows")
+    set(GLUE_TOOLCHAIN "windows")
 elseif (ANDROID)
-    set(CONTEXT_TOOLCHAIN "android")
+    set(GLUE_TOOLCHAIN "android")
 elseif (APPLE)
-    set(CONTEXT_TOOLCHAIN "apple")
+    set(GLUE_TOOLCHAIN "apple")
     if (IOS)
-        string(APPEND CONTEXT_TOOLCHAIN "-ios")
+        string(APPEND GLUE_TOOLCHAIN "-ios")
     elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        string(APPEND CONTEXT_TOOLCHAIN "-darwin")
+        string(APPEND GLUE_TOOLCHAIN "-darwin")
     endif ()
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    set(CONTEXT_TOOLCHAIN "linux")
+    set(GLUE_TOOLCHAIN "linux")
 else ()
-    set(CONTEXT_TOOLCHAIN ${CMAKE_SYSTEM_NAME})
+    set(GLUE_TOOLCHAIN ${CMAKE_SYSTEM_NAME})
 endif ()
 
 # Toolchain definition
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    string(APPEND CONTEXT_TOOLCHAIN "-gcc")
+    string(APPEND GLUE_TOOLCHAIN "-gcc")
     if (MINGW)
-        string(APPEND CONTEXT_TOOLCHAIN "-mingw")
+        string(APPEND GLUE_TOOLCHAIN "-mingw")
     endif ()
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    string(APPEND CONTEXT_TOOLCHAIN "-clang")
+    string(APPEND GLUE_TOOLCHAIN "-clang")
     if (MINGW)
-        string(APPEND CONTEXT_TOOLCHAIN "-mingw")
+        string(APPEND GLUE_TOOLCHAIN "-mingw")
     endif ()
     if (MSVC)
-        string(APPEND CONTEXT_TOOLCHAIN "-msvc")
+        string(APPEND GLUE_TOOLCHAIN "-msvc")
     endif ()
 elseif (MSVC)
-    string(APPEND CONTEXT_TOOLCHAIN "-msvc")
+    string(APPEND GLUE_TOOLCHAIN "-msvc")
 else ()
-    string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_CXX_COMPILER_ID}")
+    string(APPEND GLUE_TOOLCHAIN "-${CMAKE_CXX_COMPILER_ID}")
 endif ()
 
 #Processor definition
-set(CONTEXT_TOOLCHAIN ${CONTEXT_TOOLCHAIN} CACHE STRING "")
-set(CONTEXT_EXTERNAL_PLATROFM ${CMAKE_SYSTEM_PROCESSOR} CACHE STRING "")
-processorcount(CONTEXT_PROCESSOR_COUNT)
-set(CMAKE_BUILD_PARALLEL_LEVEL ${CONTEXT_PROCESSOR_COUNT})
-set(MAKE_COMMAND make -j${CONTEXT_PROCESSOR_COUNT} CACHE STRING "")
-string(APPEND CONTEXT_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
+set(GLUE_TOOLCHAIN ${GLUE_TOOLCHAIN} CACHE STRING "")
+set(GLUE_EXTERNAL_PLATROFM ${CMAKE_SYSTEM_PROCESSOR} CACHE STRING "")
+processorcount(GLUE_PROCESSOR_COUNT)
+set(CMAKE_BUILD_PARALLEL_LEVEL ${GLUE_PROCESSOR_COUNT})
+set(MAKE_COMMAND make -j${GLUE_PROCESSOR_COUNT} CACHE STRING "")
+string(APPEND GLUE_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
 
 # Compilation flags definition
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    string(APPEND CMAKE_CXX_FLAGS " -Wall")
+    string(APPEND CMAKE_C_FLAGS " -Wall")
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
         string(APPEND CMAKE_CXX_FLAGS " -s -Ofast -funroll-loops -DNDEBUG")
         string(APPEND CMAKE_C_FLAGS " -s -Ofast -funroll-loops -DNDEBUG")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-linker-plugin")
         if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
-            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=${CONTEXT_PROCESSOR_COUNT}")
+            string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=${GLUE_PROCESSOR_COUNT}")
+            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=${GLUE_PROCESSOR_COUNT}")
         else ()
             string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=thin")
             string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=thin")
@@ -93,17 +95,14 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
         string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     endif ()
-
     if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
         string(APPEND CMAKE_CXX_FLAGS " -msse4.1")
         string(APPEND CMAKE_C_FLAGS " -msse4.1")
     endif ()
-
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
         string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
     endif ()
-
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND MINGW)
         string(APPEND CMAKE_CXX_FLAGS " -mwindows")
         string(APPEND CMAKE_C_FLAGS " -mwindows")
@@ -113,16 +112,13 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
     set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 
-    string(APPEND CMAKE_CXX_FLAGS " -Wall")
-    string(APPEND CMAKE_C_FLAGS " -Wall")
-
-    if (ENABLE_WERROR)
+    option(GLUE_ENABLE_WERROR "" OFF)
+    if (GLUE_ENABLE_WERROR)
         string(APPEND CMAKE_CXX_FLAGS " -Werror -Wno-error=switch")
         #For OGRE
         string(APPEND CMAKE_CXX_FLAGS " -Wno-error=deprecated-declarations")
         #For Bullet
         string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-but-set-variable")
-
         if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-command-line-argument")
             string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unknown-warning-option")
@@ -142,35 +138,28 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     string(APPEND CMAKE_CXX_FLAGS " -pthread")
     string(APPEND CMAKE_C_FLAGS " -pthread")
 
-    if (USE_OPENMP)
+    option(GLUE_ENABLE_OPENMP "" OFF)
+    if (GLUE_ENABLE_OPENMP)
         if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL")
-            string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL")
-
-            string(APPEND CMAKE_CXX_FLAGS " -fopenmp")
-            string(APPEND CMAKE_C_FLAGS " -fopenmp")
-        endif ()
-
-        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL -fopenmp")
+            string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL -fopenmp")
+        elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             string(APPEND CMAKE_EXE_LINKER_FLAGS " -fopenmp -static-openmp")
             string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fopenmp -static-openmp")
         endif ()
     endif ()
-
 elseif (MSVC)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
     string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF /W3")
     string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF /W3")
-
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
         string(APPEND CMAKE_CXX_FLAGS " /O2 /Ot /Ob2 /fp:fast /GL")
         string(APPEND CMAKE_C_FLAGS " /O2 /Ot /Ob2 /fp:fast /GL")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF /SUBSYSTEM:WINDOWS")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF")
     else ()
         string(APPEND CMAKE_CXX_FLAGS " /D \"DEBUG\"")
         string(APPEND CMAKE_C_FLAGS " /D \"DEBUG\"")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " /SUBSYSTEM:WINDOWS")
     endif ()
 
     #This flags are useful for dependencies build
@@ -179,22 +168,20 @@ elseif (MSVC)
 endif ()
 
 #Set as cached variables
-set(CONTEXT_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "")
-set(CONTEXT_SOURCE_DIR ${CONTEXT_ROOT_DIR}/sources CACHE PATH "")
-set(CONTEXT_WORK_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
+set(GLUE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "")
+set(GLUE_SOURCE_DIR ${GLUE_ROOT_DIR}/sources CACHE PATH "")
+set(GLUE_WORK_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
 set(CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SYSTEM_PROCESSOR})
-set(CONTEXT_BIN_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
-set(CONTEXT_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/glue CACHE PATH "")
-set(CONTEXT_INCLUDE_DIR ${CONTEXT_SOURCE_DIR}/include CACHE PATH "")
-set(CONTEXT_THIRDPARTY_ROOT ${CONTEXT_ROOT_DIR}/sources CACHE PATH "")
-set(CONTEXT_THIRDPARTY_DIR ${CONTEXT_THIRDPARTY_ROOT} CACHE PATH "")
-set(CONTEXT_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts CACHE PATH "")
-make_directory(${CONTEXT_ARTIFACT_DIR})
-
-add_subdirectory(${CONTEXT_ROOT_DIR}/dependencies ${CONTEXT_WORK_DIR}/dependencies)
-
-set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
-set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
+set(GLUE_BIN_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
+set(GLUE_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/glue CACHE PATH "")
+set(GLUE_INCLUDE_DIR ${GLUE_SOURCE_DIR}/include CACHE PATH "")
+set(GLUE_THIRDPARTY_ROOT ${GLUE_ROOT_DIR}/sources CACHE PATH "")
+set(GLUE_THIRDPARTY_DIR ${GLUE_THIRDPARTY_ROOT} CACHE PATH "")
+set(GLUE_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts CACHE PATH "")
+make_directory(${GLUE_ARTIFACT_DIR})
+add_subdirectory(${GLUE_ROOT_DIR}/dependencies ${GLUE_WORK_DIR}/dependencies)
+set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
+set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${GLUE_EXTERNAL_INSTALL_LOCATION}")
 
 # Doxygen
 find_package(Doxygen QUIET COMPONENTS dot)
@@ -218,8 +205,8 @@ endif ()
 if (${LATEX_PDFLATEX_FOUND})
     add_custom_target(doxygen-pdf
             DEPENDS doxygen
-            COMMAND ${CMAKE_COMMAND} -E chdir ${CONTEXT_ARTIFACT_DIR}/Doxygen/latex ${DOXYGEN_MAKE_COMMAND}
-            COMMAND ${CMAKE_COMMAND} -E copy ${CONTEXT_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${CONTEXT_ARTIFACT_DIR}/Doxygen
+            COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_ARTIFACT_DIR}/Doxygen/latex ${DOXYGEN_MAKE_COMMAND}
+            COMMAND ${CMAKE_COMMAND} -E copy ${GLUE_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${GLUE_ARTIFACT_DIR}/Doxygen
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             COMMENT "Generating API documentation with Doxygen..."
             VERBATIM
@@ -282,27 +269,25 @@ if (ANY_NOT_FOUND)
     return()
 endif ()
 
-list(APPEND CONTEXT_INCLUDE_DIRS ${CONTEXT_INCLUDE_DIR} ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/include
+list(APPEND GLUE_INCLUDE_DIRS ${GLUE_INCLUDE_DIR} ${GLUE_EXTERNAL_INSTALL_LOCATION}/include
         ${BULLET_INCLUDE_DIR} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/Overlay
         ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
         ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
         ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
 
-set(SAMPLE_DIR sample)
-file(GLOB_RECURSE SOURCE_FILES ${SAMPLE_DIR}/*.cpp ${SAMPLE_DIR}/*.h ${SAMPLE_DIR}/*.hpp deploy/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
+set(SAMPLE_EXE sample)
+file(GLOB_RECURSE SOURCE_FILES ${SAMPLE_EXE}/*.cpp ${SAMPLE_EXE}/*.h ${SAMPLE_EXE}/*.hpp deploy/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
 
 if (ANDROID)
-    add_library(${SAMPLE_DIR} SHARED ${SOURCE_FILES})
-    set_target_properties(${SAMPLE_DIR} PROPERTIES OUTPUT_NAME "main")
-elseif (WIN32)
-    add_executable(${SAMPLE_DIR} WIN32 ${SOURCE_FILES})
+    add_library(${SAMPLE_EXE} SHARED ${SOURCE_FILES})
+    set_target_properties(${SAMPLE_EXE} PROPERTIES OUTPUT_NAME "main")
 else ()
-    add_executable(${SAMPLE_DIR} ${SOURCE_FILES})
+    add_executable(${SAMPLE_EXE} WIN32 ${SOURCE_FILES})
 endif ()
 
-include_directories(${SAMPLE_DIR} ${SAMPLE_DIR}/include ${CONTEXT_INCLUDE_DIRS})
-target_link_directories(${SAMPLE_DIR} PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
-target_precompile_headers(${SAMPLE_DIR} PUBLIC sources/include/pcheader.h)
+include_directories(${SAMPLE_EXE} ${SAMPLE_EXE}/include ${GLUE_INCLUDE_DIRS})
+target_link_directories(${SAMPLE_EXE} PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
+target_precompile_headers(${SAMPLE_EXE} PUBLIC sources/include/pcheader.h)
 
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
@@ -315,27 +300,26 @@ elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 endif ()
 
-target_link_libraries(${SAMPLE_DIR} PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
+target_link_libraries(${SAMPLE_EXE} PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
         ${PNG_LIBRARY} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
         ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
-install(TARGETS ${SAMPLE_DIR} RUNTIME DESTINATION .)
+install(TARGETS ${SAMPLE_EXE} RUNTIME DESTINATION .)
 file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
 add_library(glue STATIC ${SOURCE_FILES})
-include_directories(glue ${CONTEXT_INCLUDE_DIRS})
+include_directories(glue ${GLUE_INCLUDE_DIRS})
 set_target_properties(glue PROPERTIES OUTPUT_NAME "glue-static")
 target_precompile_headers(glue PUBLIC sources/include/pcheader.h)
 
 # Tests
-option(ENABLE_TESTING "" OFF)
 find_package(GTest QUIET)
-if (GTest_FOUND AND ENABLE_TESTING)
+if (GTest_FOUND)
     enable_testing()
     include(GoogleTest)
 
     add_executable(
             hello_test
-            tests/src/hello_test.cpp
+            tests/src/TestHello.cpp
     )
     target_link_libraries(
             hello_test
@@ -343,24 +327,23 @@ if (GTest_FOUND AND ENABLE_TESTING)
     )
 
     gtest_discover_tests(hello_test)
-    target_link_directories(hello_test PUBLIC ${CONTEXT_EXTERNAL_LIB_DIR} ${CONTEXT_EXTERNAL_LIB_DIR}/OGRE ${CONTEXT_LIB_DIR})
+    target_link_directories(hello_test PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
 else ()
     message("Google test not found. Test targets are not available")
 endif ()
 
 # Install&package block
-set(CONTEXT_DEPLOY_DIR ${CONTEXT_ROOT_DIR}/deploy CACHE PATH "")
+set(GLUE_DEPLOY_DIR ${GLUE_ROOT_DIR}/deploy CACHE PATH "")
 
 if (WIN32)
-    file(GLOB EXTERNAL_DLL_GLOB ${CONTEXT_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
+    file(GLOB EXTERNAL_DLL_GLOB ${GLUE_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
     file(INSTALL ${EXTERNAL_DLL_GLOB} DESTINATION .)
 endif ()
-
 if (NOT ANDROID)
     file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.json DESTINATION .)
 endif ()
 if (MINGW)
-    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/${SAMPLE_DIR}.exe.manifest DESTINATION .)
+    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/${SAMPLE_EXE}.exe.manifest DESTINATION .)
 endif ()
 
 if (NOT GIT_SHA1)
@@ -372,17 +355,14 @@ if (NOT GIT_SHA1)
     )
 endif ()
 
-set(CONTEXT_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
-set(CONTEXT_ZIP_NAME GlueSample-${GIT_SHA1} CACHE PATH "")
-set(CMAKE_INSTALL_PREFIX ${CONTEXT_INSTALL_PATH}/${CONTEXT_ZIP_NAME})
-
-set(CMAKE_PREFIX_PATH ${CONTEXT_EXTERNAL_INSTALL_LOCATION})
-set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${CONTEXT_EXTERNAL_INSTALL_LOCATION}")
-
-
+set(GLUE_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
+set(GLUE_ZIP_NAME GlueSample-${GIT_SHA1} CACHE PATH "")
+set(CMAKE_INSTALL_PREFIX ${GLUE_INSTALL_PATH}/${GLUE_ZIP_NAME})
+set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
+set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${GLUE_EXTERNAL_INSTALL_LOCATION}")
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION .)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/assets ${CMAKE_SOURCE_DIR}/tmp/programs DESTINATION .)
-set(EXECUTABLE_NAME ${SAMPLE_DIR})
+set(EXECUTABLE_NAME ${SAMPLE_EXE})
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(FILES ${CMAKE_SOURCE_DIR}/deploy/Launch.sh PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
@@ -399,21 +379,19 @@ if (MSVC)
     install(FILES ${CMAKE_SOURCE_DIR}/deploy/VC_redist.x64.exe DESTINATION .)
 endif ()
 
-set(CONTEXT_PACKAGE_NAME "GlueSample")
-set(CONTEXT_ARTIFACT_NAME ${CONTEXT_PACKAGE_NAME}-${CONTEXT_TOOLCHAIN}-${GIT_SHA1})
-if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
-    string(APPEND CONTEXT_ARTIFACT_NAME "-${CMAKE_BUILD_TYPE}")
-endif ()
-
 #Package block
+set(GLUE_PACKAGE_NAME "GlueSample")
+set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}-${GLUE_TOOLCHAIN}-${GIT_SHA1})
+if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
+    string(APPEND GLUE_ARTIFACT_NAME "-${CMAKE_BUILD_TYPE}")
+endif ()
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-set(CPACK_PACKAGE_DIRECTORY ${CONTEXT_ARTIFACT_DIR})
-set(CPACK_PACKAGE_NAME ${CONTEXT_ARTIFACT_NAME})
-set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
-set(CPACK_PACKAGE_FILE_NAME ${CONTEXT_ARTIFACT_NAME})
-
+set(CPACK_PACKAGE_DIRECTORY ${GLUE_ARTIFACT_DIR})
+set(CPACK_PACKAGE_NAME ${GLUE_ARTIFACT_NAME})
+set(CPACK_SOURCE_PACKAGE_FILE_NAME ${GLUE_ARTIFACT_NAME})
+set(CPACK_PACKAGE_FILE_NAME ${GLUE_ARTIFACT_NAME})
 find_package(NSIS QUIET)
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "glue-sample")
 set(CPACK_PACKAGE_VENDOR "Andrew Vasiliev")
@@ -422,13 +400,13 @@ if (NOT MSVC)
     set(CPACK_GENERATOR "ZIP")
 elseif(${NSIS_FOUND})
     set(CPACK_GENERATOR "ZIP" "NSIS")
-    set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "GLUE PRJ")
-    set(CPACK_NSIS_MODIFY_PATH "ON")
-    set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON")
+    set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "GLUE_PRJ")
+    set(CPACK_NSIS_MODIFY_PATH ON)
+    set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
     set(CPACK_NSIS_COMPRESSOR "/SOLID lzma \r\n SetCompressorDictSize 32")
-    set(CPACK_CREATE_DESKTOP_LINKS ${SAMPLE_DIR})
+    set(CPACK_CREATE_DESKTOP_LINKS ${SAMPLE_EXE})
     set(CPACK_NSIS_IGNORE_LICENSE_PAGE ON)
-    if( CMAKE_CL_64 )
+    if(CMAKE_CL_64)
         set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
   endif()
 endif()
@@ -437,8 +415,8 @@ include(CPack)
 if (NOT MSVC)
     add_custom_target(build-package
             COMMAND ${CMAKE_COMMAND} --build . --target package
-            COMMAND ${CMAKE_COMMAND} -E rm -rf ${CONTEXT_ARTIFACT_DIR}/_CPack_Packages
-            WORKING_DIRECTORY ${CONTEXT_WORK_DIR}
+            COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
+            WORKING_DIRECTORY ${GLUE_WORK_DIR}
             COMMENT "Build packages..."
             VERBATIM
             )
