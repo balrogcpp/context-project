@@ -12,20 +12,19 @@ project(glue VERSION 0.1.0)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CMakeDependentOption)
-include(CheckTypeSize)
 include(ProcessorCount)
-check_type_size("void*" PTR_SIZE BUILTIN_TYPES_ONLY)
 
 # Build type definition
+# Android use gradle
 if (NOT ANDROID)
     if (NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE RelWithDebInfo)
     endif ()
     if (NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-        message(SEND_ERROR "Only Release/RelWithDebInfo/Debug build are available")
+        message(SEND_ERROR "Only Release/RelWithDebInfo/Debug builds are available")
     endif ()
     if (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-        message(SEND_ERROR "Debug build is not working with MSVC right now")
+        message(SEND_ERROR "Debug build is not working with MSVC, use RelWithDebInfo instead")
     endif ()
 endif ()
 
@@ -68,8 +67,6 @@ else ()
 endif ()
 
 #Processor definition
-set(GLUE_TOOLCHAIN ${GLUE_TOOLCHAIN} CACHE STRING "")
-set(GLUE_EXTERNAL_PLATROFM ${CMAKE_SYSTEM_PROCESSOR} CACHE STRING "")
 processorcount(GLUE_PROCESSOR_COUNT)
 set(CMAKE_BUILD_PARALLEL_LEVEL ${GLUE_PROCESSOR_COUNT})
 set(MAKE_COMMAND make -j${GLUE_PROCESSOR_COUNT} CACHE STRING "")
@@ -107,11 +104,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_CXX_FLAGS " -mwindows")
         string(APPEND CMAKE_C_FLAGS " -mwindows")
     endif ()
-
-    #This flags are useful for dependencies build
-    set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
-    set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
-
+    
     option(GLUE_ENABLE_WERROR "" OFF)
     if (GLUE_ENABLE_WERROR)
         string(APPEND CMAKE_CXX_FLAGS " -Werror -Wno-error=switch")
@@ -161,27 +154,10 @@ elseif (MSVC)
         string(APPEND CMAKE_CXX_FLAGS " /D \"DEBUG\"")
         string(APPEND CMAKE_C_FLAGS " /D \"DEBUG\"")
     endif ()
-
-    #This flags are useful for dependencies build
-    set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
-    set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 endif ()
-
-#Set as cached variables
-set(GLUE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "")
-set(GLUE_SOURCE_DIR ${GLUE_ROOT_DIR}/sources CACHE PATH "")
-set(GLUE_WORK_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
-set(CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SYSTEM_PROCESSOR})
-set(GLUE_BIN_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "")
-set(GLUE_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/glue CACHE PATH "")
-set(GLUE_INCLUDE_DIR ${GLUE_SOURCE_DIR}/include CACHE PATH "")
-set(GLUE_THIRDPARTY_ROOT ${GLUE_ROOT_DIR}/sources CACHE PATH "")
-set(GLUE_THIRDPARTY_DIR ${GLUE_THIRDPARTY_ROOT} CACHE PATH "")
-set(GLUE_ARTIFACT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/artifacts CACHE PATH "")
-make_directory(${GLUE_ARTIFACT_DIR})
-add_subdirectory(${GLUE_ROOT_DIR}/dependencies ${GLUE_WORK_DIR}/dependencies)
-set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
-set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${GLUE_EXTERNAL_INSTALL_LOCATION}")
+#This flags are useful for dependencies build
+set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
+set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 
 # Doxygen
 find_package(Doxygen QUIET COMPONENTS dot)
@@ -190,7 +166,7 @@ find_package(LATEX QUIET COMPONENTS PDFLATEX)
 if (${DOXYGEN_FOUND})
     add_custom_target(doxygen
             COMMAND ${DOXYGEN_EXECUTABLE}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating API documentation with Doxygen..."
             VERBATIM
             )
@@ -207,7 +183,7 @@ if (${LATEX_PDFLATEX_FOUND})
             DEPENDS doxygen
             COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_ARTIFACT_DIR}/Doxygen/latex ${DOXYGEN_MAKE_COMMAND}
             COMMAND ${CMAKE_COMMAND} -E copy ${GLUE_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${GLUE_ARTIFACT_DIR}/Doxygen
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating API documentation with Doxygen..."
             VERBATIM
             )
@@ -216,6 +192,9 @@ else ()
 endif ()
 
 # Insert dependencies
+add_subdirectory(${CMAKE_SOURCE_DIR}/dependencies)
+set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
+set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${GLUE_EXTERNAL_INSTALL_LOCATION}")
 if (APPLE)
     set(CMAKE_THREAD_LIBS_INIT "-lpthread")
     set(CMAKE_HAVE_THREADS_LIBRARY 1)
@@ -269,6 +248,13 @@ if (ANY_NOT_FOUND)
     return()
 endif ()
 
+set(GLUE_WORK_DIR ${CMAKE_CURRENT_BINARY_DIR})
+set(CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SYSTEM_PROCESSOR})
+set(GLUE_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/glue)
+set(GLUE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/sources/include)
+set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
+make_directory(${GLUE_ARTIFACT_DIR})
+
 list(APPEND GLUE_INCLUDE_DIRS ${GLUE_INCLUDE_DIR} ${GLUE_EXTERNAL_INSTALL_LOCATION}/include
         ${BULLET_INCLUDE_DIR} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/Overlay
         ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
@@ -317,23 +303,17 @@ if (GTest_FOUND)
     enable_testing()
     include(GoogleTest)
 
-    add_executable(
-            hello_test
-            tests/src/TestHello.cpp
-    )
-    target_link_libraries(
-            hello_test
-            ${GTEST_BOTH_LIBRARIES}
-    )
+    add_executable(glue_test tests/src/TestHello.cpp)
+    target_link_libraries(glue_test ${GTEST_BOTH_LIBRARIES})
 
-    gtest_discover_tests(hello_test)
-    target_link_directories(hello_test PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
+    gtest_discover_tests(glue_test)
+    target_link_directories(glue_test PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
 else ()
     message("Google test not found. Test targets are not available")
 endif ()
 
 # Install&package block
-set(GLUE_DEPLOY_DIR ${GLUE_ROOT_DIR}/deploy CACHE PATH "")
+set(GLUE_DEPLOY_DIR ${CMAKE_SOURCE_DIR}/deploy)
 
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${GLUE_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
@@ -355,11 +335,9 @@ if (NOT GIT_SHA1)
     )
 endif ()
 
-set(GLUE_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "")
-set(GLUE_ZIP_NAME GlueSample-${GIT_SHA1} CACHE PATH "")
+set(GLUE_INSTALL_PATH ${CMAKE_SOURCE_DIR}/install)
+set(GLUE_ZIP_NAME GlueSample-${GIT_SHA1})
 set(CMAKE_INSTALL_PREFIX ${GLUE_INSTALL_PATH}/${GLUE_ZIP_NAME})
-set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
-set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${GLUE_EXTERNAL_INSTALL_LOCATION}")
 install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION .)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/assets ${CMAKE_SOURCE_DIR}/tmp/programs DESTINATION .)
 set(EXECUTABLE_NAME ${SAMPLE_EXE})
@@ -395,10 +373,10 @@ set(CPACK_PACKAGE_FILE_NAME ${GLUE_ARTIFACT_NAME})
 find_package(NSIS QUIET)
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "glue-sample")
 set(CPACK_PACKAGE_VENDOR "Andrew Vasiliev")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 if (NOT MSVC)
     set(CPACK_GENERATOR "ZIP")
-elseif(${NSIS_FOUND})
+elseif (${NSIS_FOUND})
     set(CPACK_GENERATOR "ZIP" "NSIS")
     set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "GLUE_PRJ")
     set(CPACK_NSIS_MODIFY_PATH ON)
@@ -406,10 +384,10 @@ elseif(${NSIS_FOUND})
     set(CPACK_NSIS_COMPRESSOR "/SOLID lzma \r\n SetCompressorDictSize 32")
     set(CPACK_CREATE_DESKTOP_LINKS ${SAMPLE_EXE})
     set(CPACK_NSIS_IGNORE_LICENSE_PAGE ON)
-    if(CMAKE_CL_64)
+    if (CMAKE_SIZEOF_VOID_P STREQUAL 8)
         set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
-  endif()
-endif()
+    endif ()
+endif ()
 include(CPack)
 
 if (NOT MSVC)
@@ -425,14 +403,14 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_custom_target(docker-compose
             COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
             COMMAND docker-compose down --volumes
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Building sample with docker..."
             VERBATIM
             )
     add_custom_target(docker-compose-dep
             COMMAND docker-compose -f docker-compose-dep.yml up
             COMMAND docker-compose down --volumes
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Building thirdparty with docker..."
             VERBATIM
             )

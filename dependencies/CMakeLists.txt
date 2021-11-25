@@ -549,24 +549,24 @@ if (NOT MSVC)
 endif ()
 
 add_custom_target(assets
-        COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git assets
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ROOT_DIR}/assets/.git
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ROOT_DIR}/tmp
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git assets
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/assets/.git
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/tmp
         COMMAND ${CMAKE_COMMAND} -P cmake/flat_zip.cmake
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Fetching assets..."
         )
 
 add_custom_target(assets_ssh
-        COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_ROOT_DIR} ${GIT_EXECUTABLE} clone --depth 1 git@github.com:balrogcpp/scenes.git assets
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ROOT_DIR}/tmp
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${GIT_EXECUTABLE} clone --depth 1 git@github.com:balrogcpp/scenes.git assets
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/tmp
         COMMAND ${CMAKE_COMMAND} -P cmake/flat_zip.cmake
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Fetching assets..."
         )
 
 add_custom_target(build-assets
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ROOT_DIR}/tmp
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/tmp
         COMMAND ${CMAKE_COMMAND} -P cmake/flat_zip.cmake
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Creating assets and programs zip package..."
