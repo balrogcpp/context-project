@@ -1,30 +1,22 @@
 cmake_minimum_required(VERSION 3.16.3)
 
 set(CMAKE_CXX_STANDARD 17)
-set_property(GLOBAL PROPERTY CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-#set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
-enable_language(C)
-enable_language(CXX)
 project(glue VERSION 0.1.0)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-include(CMakeDependentOption)
-include(ProcessorCount)
+include(Make)
 
 # Build type definition
 # Android use gradle
 if (NOT ANDROID)
     if (NOT CMAKE_BUILD_TYPE)
-        set(CMAKE_BUILD_TYPE RelWithDebInfo)
+        set(CMAKE_BUILD_TYPE "RelWithDebInfo")
     endif ()
     if (NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
         message(SEND_ERROR "Only Release/RelWithDebInfo/Debug builds are available")
-    endif ()
-    if (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-        message(SEND_ERROR "Debug build is not working with MSVC, use RelWithDebInfo instead")
     endif ()
 endif ()
 
@@ -65,11 +57,6 @@ elseif (MSVC)
 else ()
     string(APPEND GLUE_TOOLCHAIN "-${CMAKE_CXX_COMPILER_ID}")
 endif ()
-
-#Processor definition
-processorcount(GLUE_PROCESSOR_COUNT)
-set(CMAKE_BUILD_PARALLEL_LEVEL ${GLUE_PROCESSOR_COUNT})
-set(MAKE_COMMAND make -j${GLUE_PROCESSOR_COUNT} CACHE STRING "")
 string(APPEND GLUE_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
 
 # Compilation flags definition
@@ -82,8 +69,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-linker-plugin")
         if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=${GLUE_PROCESSOR_COUNT}")
-            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=${GLUE_PROCESSOR_COUNT}")
+            string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=${PROCESSOR_COUNT}")
+            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=${PROCESSOR_COUNT}")
         else ()
             string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=thin")
             string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=thin")
@@ -134,7 +121,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
     option(GLUE_ENABLE_OPENMP "" OFF)
     if (GLUE_ENABLE_OPENMP)
         if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL -fopenmp")
+            string(APPEND CMAKE_C_FLAGS " -D_GLIBCXX_PARALLEL -fopenmp")
             string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL -fopenmp")
         elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             string(APPEND CMAKE_EXE_LINKER_FLAGS " -fopenmp -static-openmp")
@@ -194,7 +181,6 @@ endif ()
 # Insert dependencies
 add_subdirectory(${CMAKE_SOURCE_DIR}/dependencies)
 set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
-set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${GLUE_EXTERNAL_INSTALL_LOCATION}")
 if (APPLE)
     set(CMAKE_THREAD_LIBS_INIT "-lpthread")
     set(CMAKE_HAVE_THREADS_LIBRARY 1)
@@ -248,18 +234,23 @@ if (ANY_NOT_FOUND)
     return()
 endif ()
 
-set(GLUE_WORK_DIR ${CMAKE_CURRENT_BINARY_DIR})
-set(CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SYSTEM_PROCESSOR})
 set(GLUE_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/glue)
 set(GLUE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/sources/include)
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
 make_directory(${GLUE_ARTIFACT_DIR})
 
-list(APPEND GLUE_INCLUDE_DIRS ${GLUE_INCLUDE_DIR} ${GLUE_EXTERNAL_INSTALL_LOCATION}/include
-        ${BULLET_INCLUDE_DIR} ${OGRE_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS}/Overlay
+list(APPEND GLUE_INCLUDE_DIRS 
+        ${GLUE_INCLUDE_DIR}
+        ${GLUE_EXTERNAL_INSTALL_LOCATION}/include
+        ${BULLET_INCLUDE_DIR}
+        ${OGRE_INCLUDE_DIRS}
+        ${OGRE_INCLUDE_DIRS}/Overlay
         ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
-        ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2 ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
-        ${OGRE_INCLUDE_DIRS}/Plugins/Assimp)
+        ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
+        ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2
+        ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
+        ${OGRE_INCLUDE_DIRS}/Plugins/Assimp
+        )
 
 set(SAMPLE_EXE sample)
 file(GLOB_RECURSE SOURCE_FILES ${SAMPLE_EXE}/*.cpp ${SAMPLE_EXE}/*.h ${SAMPLE_EXE}/*.hpp deploy/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
@@ -370,10 +361,10 @@ set(CPACK_PACKAGE_DIRECTORY ${GLUE_ARTIFACT_DIR})
 set(CPACK_PACKAGE_NAME ${GLUE_ARTIFACT_NAME})
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${GLUE_ARTIFACT_NAME})
 set(CPACK_PACKAGE_FILE_NAME ${GLUE_ARTIFACT_NAME})
-find_package(NSIS QUIET)
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "glue-sample")
 set(CPACK_PACKAGE_VENDOR "Andrew Vasiliev")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+find_package(NSIS QUIET)
 if (NOT MSVC)
     set(CPACK_GENERATOR "ZIP")
 elseif (${NSIS_FOUND})
@@ -394,7 +385,7 @@ if (NOT MSVC)
     add_custom_target(build-package
             COMMAND ${CMAKE_COMMAND} --build . --target package
             COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
-            WORKING_DIRECTORY ${GLUE_WORK_DIR}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Build packages..."
             VERBATIM
             )

@@ -1,5 +1,5 @@
-include(CMakeDependentOption)
 include(ExternalProject)
+include(Make)
 find_package(Git REQUIRED)
 
 set(GLUE_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${GLUE_TOOLCHAIN})
