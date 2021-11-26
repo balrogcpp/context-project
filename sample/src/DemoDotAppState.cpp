@@ -80,10 +80,10 @@ void DemoDotAppState::Update(float time) {
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
     ImGui::SetNextWindowCollapsed(true, ImGuiCond_Appearing);
-    ImGui::Begin("", nullptr, ImGuiWindowFlags_NoResize);
+    ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoResize);
 #else
     ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
-    ImGui::Begin("", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+    ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 #endif
 
     const float hdx = 1920;

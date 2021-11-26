@@ -20,13 +20,14 @@ void MenuAppState::Update(float time) {
 
   {
     static ImGuiIO &io = ImGui::GetIO();
+   
     ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always,
                             ImVec2(0.5f, 0.5f));
     ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
     ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
     ImGui::SetNextWindowFocus();
 
-    ImGui::Begin("", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+    ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 
     const float hdx = 1920;
     const float hdy = 1080;

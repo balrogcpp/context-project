@@ -142,9 +142,13 @@ elseif (MSVC)
         string(APPEND CMAKE_C_FLAGS " /D \"DEBUG\"")
     endif ()
 endif ()
-#This flags are useful for dependencies build
+# This flags are useful for dependencies build
 set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
 set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
+
+# Create artifacts directory
+set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
+make_directory(${GLUE_ARTIFACT_DIR})
 
 # Doxygen
 find_package(Doxygen QUIET COMPONENTS dot)
@@ -237,8 +241,6 @@ endif ()
 
 set(GLUE_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/glue)
 set(GLUE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/sources/include)
-set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
-make_directory(${GLUE_ARTIFACT_DIR})
 
 list(APPEND GLUE_INCLUDE_DIRS 
         ${GLUE_INCLUDE_DIR}
@@ -277,8 +279,12 @@ elseif (ANDROID)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 endif ()
-
-target_link_libraries(${SAMPLE_EXE} PUBLIC ${OGRE_LIBRARIES} Codec_AssimpStatic ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
+if (NOT (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug"))
+    set(OGRE_CODEC_ASSIMP Codec_AssimpStatic)
+else ()
+    set(OGRE_CODEC_ASSIMP Codec_AssimpStatic_d)
+endif ()
+target_link_libraries(${SAMPLE_EXE} PUBLIC ${OGRE_LIBRARIES} ${OGRE_CODEC_ASSIMP} ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
         ${PNG_LIBRARY} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
         ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
