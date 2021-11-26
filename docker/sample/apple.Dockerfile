@@ -1,4 +1,5 @@
-FROM balrogcpp/clang-apple:latest
+FROM registry.gitlab.com/balrogcpp/context-project/clang-apple
+
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt/build
 ARG GIT_HASH=00000000

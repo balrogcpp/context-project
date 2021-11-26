@@ -1,4 +1,4 @@
-FROM balrogcpp/clang-linux:latest
+FROM registry.gitlab.com/balrogcpp/context-project/clang-linux
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt/build
