@@ -1,4 +1,5 @@
-FROM balrogcpp/clang-windows:latest
+FROM registry.gitlab.com/balrogcpp/context-project/clang-windows
+
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt/build
 ARG GIT_HASH=00000000
@@ -7,7 +8,6 @@ WORKDIR ${CONTEXT_HOME}
 COPY ./thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
 COPY ./thirdparty/patch ./thirdparty/patch
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./doc ./doc
 COPY ./cmake ./cmake
 
 RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \

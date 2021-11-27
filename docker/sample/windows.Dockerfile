@@ -23,5 +23,4 @@ RUN cmake -P cmake/flat_zip.cmake \
     && mkdir build-windows && cd build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target build-package \
-    && cd .. \
-    && rm -rf build-windows
+    && rm -rf ../build-windows

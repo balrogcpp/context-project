@@ -4,8 +4,8 @@
 !/assets/
 !/cmake/
 !/sample/
-!/dependencies/CMakeLists.txt/
-!/dependencies/patch/
+!/thirdparty/CMakeLists.txt/
+!/thirdparty/patch/
 !/deploy/
 !/doc/
 !/programs/

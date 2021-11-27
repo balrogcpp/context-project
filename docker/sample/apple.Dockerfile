@@ -25,5 +25,4 @@ RUN cmake -P cmake/flat_zip.cmake \
     && eval `x86_64-apple-darwin19-osxcross-conf` \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target build-package \
-    && cd .. \
-    && rm -rf build-apple
+    && rm -rf ../build-apple

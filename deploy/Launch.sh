@@ -1,5 +1,3 @@
 #!/bin/bash
 
-LD_LIBRARY_PATH=. ./demo
-
-exit 0
+LD_LIBRARY_PATH=. ./sample

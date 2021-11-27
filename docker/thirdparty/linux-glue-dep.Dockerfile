@@ -1,4 +1,5 @@
-FROM balrogcpp/clang-linux:latest
+FROM registry.gitlab.com/balrogcpp/context-project/clang-linux
+
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt/build
 ARG GIT_HASH=00000000
@@ -8,13 +9,11 @@ COPY ./thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
 COPY ./thirdparty/patch ./thirdparty/patch
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
-ENV CC=clang
-ENV CXX=clang++
 
 RUN apt-get update \
-     && apt-get install --no-install-recommends -y gcc-9 g++-9 libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
-     && apt-get clean \
+     && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev && apt-get clean \
      && mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
+     && export CC=clang && CXX=clang++ \
      && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
      && cmake --build . --target thirdparty \
      && cd ${CONTEXT_HOME}/thirdparty/external/Release/linux-clang-x86_64 \

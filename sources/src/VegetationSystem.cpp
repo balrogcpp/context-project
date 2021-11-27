@@ -370,8 +370,8 @@ void VegetationSystem::GenerateTreesPaged() {
 //----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::ProcessForest() {
   GenerateGrassPaged();
-  // GenerateTreesPaged();
-    GenerateRocksStatic();
+  GenerateTreesPaged();
+  GenerateRocksStatic();
 }
 
 }  // namespace glue
