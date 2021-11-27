@@ -3,7 +3,7 @@ services:
   sample-linux:
     build:
       context: .
-      dockerfile: ./sample/linux.Dockerfile
+      dockerfile: ./docker/sample/linux.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: sample-linux
@@ -13,7 +13,7 @@ services:
   sample-windows:
     build:
       context: .
-      dockerfile: ./sample/windows.Dockerfile
+      dockerfile: ./docker/sample/windows.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: sample-windows
@@ -23,20 +23,10 @@ services:
   sample-apple:
     build:
       context: .
-      dockerfile: ./sample/apple.Dockerfile
+      dockerfile: ./docker/sample/apple.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: sample-apple
-    volumes:
-      - .:/var/artifacts
-    command: mv -R /mnt/build/artifacts /var/artifacts
-  sample-android:
-    build:
-      context: .
-      dockerfile: ./sample/android.Dockerfile
-      args:
-        GIT_HASH: ${GIT_HASH}
-    container_name: sample-android
     volumes:
       - .:/var/artifacts
     command: mv -R /mnt/build/artifacts /var/artifacts

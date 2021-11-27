@@ -497,7 +497,7 @@ externalproject_add(target-filesystem
                     -DGHC_FILESYSTEM_BUILD_EXAMPLES=OFF
                     )
 
-externalproject_add(target-gtest
+externalproject_add(target-googletest
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/google/googletest.git
@@ -579,4 +579,4 @@ list(APPEND GLUE_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND GLUE_DEPENDENCY_TARGETS target-ogre)
 list(APPEND GLUE_DEPENDENCY_TARGETS target-bullet)
 
-add_custom_target(dependencies DEPENDS ${GLUE_DEPENDENCY_TARGETS})
+add_custom_target(thirdparty DEPENDS ${GLUE_DEPENDENCY_TARGETS})

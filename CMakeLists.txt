@@ -142,7 +142,7 @@ elseif (MSVC)
         string(APPEND CMAKE_C_FLAGS " /D \"DEBUG\"")
     endif ()
 endif ()
-# This flags are useful for dependencies build
+# This flags are useful for thirdparty build
 set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
 set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 
@@ -183,7 +183,7 @@ else ()
 endif ()
 
 # Insert dependencies
-add_subdirectory(${CMAKE_SOURCE_DIR}/dependencies)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty)
 set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
 set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${GLUE_EXTERNAL_INSTALL_LOCATION}")
 if (APPLE)
@@ -233,7 +233,7 @@ insert_dependency(assimp_FOUND assimp)
 
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(target-deps-dummy SHARED android/app/src/main/cpp/main.cpp)
-    add_dependencies(target-deps-dummy dependencies)
+    add_dependencies(target-deps-dummy thirdparty)
 endif ()
 if (ANY_NOT_FOUND)
     return()
