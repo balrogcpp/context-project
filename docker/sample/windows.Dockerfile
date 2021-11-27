@@ -13,10 +13,10 @@ COPY ./LICENSE .
 COPY ./programs ./programs
 COPY ./assets ./assets
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./dependencies/CMakeLists.txt ./dependencies/CMakeLists.txt
+COPY ./thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
 
-RUN mkdir -p ${CONTEXT_HOME}/dependencies/external/Release \
-    && cd ${CONTEXT_HOME}/dependencies/external/Release \
+RUN mkdir -p ${CONTEXT_HOME}/thirdparty/external/Release \
+    && cd ${CONTEXT_HOME}/thirdparty/external/Release \
     && wget https://github.com/balrogcpp/glue-dep/raw/master/windows-clang-mingw-x86_64.tar.xz  -O - | tar -xJ
 
 RUN cmake -P cmake/flat_zip.cmake \
