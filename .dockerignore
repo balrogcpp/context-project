@@ -9,7 +9,7 @@
 !/deploy/
 !/doc/
 !/programs/
-!/sources/
+!/source/
 !/tests/
 !/CMakeLists.txt/
 !/README.md/
