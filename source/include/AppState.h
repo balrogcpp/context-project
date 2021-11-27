@@ -1,0 +1,41 @@
+// This source file is part of "glue project". Created by Andrew Vasiliev
+
+#pragma once
+#include "Input.h"
+#include "NoCopy.h"
+#include <OgreFrameListener.h>
+#include <OgreRenderTargetListener.h>
+#include <OgreResourceGroupManager.h>
+#include <memory>
+#include <string>
+
+namespace glue {
+class StateManager;
+}
+
+namespace glue {
+
+class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputObserver {
+ public:
+  AppState();
+  virtual ~AppState();
+
+  void ChangeState(std::unique_ptr<AppState> &&app_state);
+  void ChangeState();
+  void AppendNextState(std::unique_ptr<AppState> &&next_state);
+  void LoadFromFile(const std::string &file_name, const std::string &group = Ogre::RGN_DEFAULT);
+  bool IsDirty() const;
+
+  virtual void SetUp() = 0;
+  virtual void Cleanup() = 0;
+  virtual void Pause() = 0;
+  virtual void Resume() = 0;
+  virtual void Update(float time) = 0;
+
+ protected:
+  friend class StateManager;
+  std::unique_ptr<AppState> next_;
+  bool dirty_ = false;
+};
+
+}  // namespace glue

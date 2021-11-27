@@ -240,7 +240,7 @@ if (ANY_NOT_FOUND)
 endif ()
 
 set(GLUE_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/glue)
-set(GLUE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/sources/include)
+set(GLUE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/source/include)
 
 list(APPEND GLUE_INCLUDE_DIRS 
         ${GLUE_INCLUDE_DIR}
@@ -256,7 +256,7 @@ list(APPEND GLUE_INCLUDE_DIRS
         )
 
 set(SAMPLE_EXE sample)
-file(GLOB_RECURSE SOURCE_FILES ${SAMPLE_EXE}/*.cpp ${SAMPLE_EXE}/*.h ${SAMPLE_EXE}/*.hpp deploy/*.manifest sources/*.cpp sources/*.h sources/*.hpp)
+file(GLOB_RECURSE SOURCE_FILES ${SAMPLE_EXE}/*.cpp ${SAMPLE_EXE}/*.h ${SAMPLE_EXE}/*.hpp deploy/*.manifest source/*.cpp source/*.h source/*.hpp)
 
 if (ANDROID)
     add_library(${SAMPLE_EXE} SHARED ${SOURCE_FILES})
@@ -267,7 +267,7 @@ endif ()
 
 include_directories(${SAMPLE_EXE} ${SAMPLE_EXE}/include ${GLUE_INCLUDE_DIRS})
 target_link_directories(${SAMPLE_EXE} PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
-target_precompile_headers(${SAMPLE_EXE} PUBLIC sources/include/pcheader.h)
+target_precompile_headers(${SAMPLE_EXE} PUBLIC source/include/pch.h)
 
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
@@ -289,11 +289,11 @@ target_link_libraries(${SAMPLE_EXE} PUBLIC ${OGRE_LIBRARIES} ${OGRE_CODEC_ASSIMP
         ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
 
 install(TARGETS ${SAMPLE_EXE} RUNTIME DESTINATION .)
-file(GLOB_RECURSE SOURCE_FILES sources/*.cpp sources/*.h sources/*.hpp)
+file(GLOB_RECURSE SOURCE_FILES source/*.cpp source/*.h source/*.hpp)
 add_library(glue STATIC ${SOURCE_FILES})
 include_directories(glue ${GLUE_INCLUDE_DIRS})
 set_target_properties(glue PROPERTIES OUTPUT_NAME "glue-static")
-target_precompile_headers(glue PUBLIC sources/include/pcheader.h)
+target_precompile_headers(glue PUBLIC source/include/pch.h)
 
 # Tests
 find_package(GTest QUIET)

@@ -1,10 +1,10 @@
 // This source file is part of "glue project"
 // Created by Andrew Vasiliev
 
-#include "pcheader.h"
 #include "MenuAppState.h"
 #include "ComponentLocator.h"
 #include "DemoDotAppState.h"
+#include "pch.h"
 
 using namespace std;
 using namespace glue;

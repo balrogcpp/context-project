@@ -2,10 +2,9 @@
 // Created by Andrew Vasiliev
 
 #include "DemoDotAppState.h"
-
 #include "ComponentLocator.h"
 #include "MenuAppState.h"
-#include "pcheader.h"
+#include "pch.h"
 
 using namespace std;
 using namespace glue;
