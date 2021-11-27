@@ -23,7 +23,7 @@ build:
     - docker rm -f abc
     - docker rmi glue/sample-windows
     - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f docker/sample/apple.Dockerfile -t glue/sample-apple
-    - docker create -ti --name abc balrogcpp/sample-apple bash
+    - docker create -ti --name abc glue/sample-apple bash
     - docker cp abc:/mnt/build/artifacts/GlueSample-apple-darwin-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
     - docker rm -f abc
     - docker rmi glue/sample-apple
