@@ -29,7 +29,6 @@ class TerrainGlobalOptions;
 class VertexDeclaration;
 }  // namespace Ogre
 
-
 namespace glue {
 class CameraMan;
 class Config;

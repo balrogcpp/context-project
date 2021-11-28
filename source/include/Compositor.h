@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "System.h"
 #include "Singleton.h"
+#include "System.h"
 #include <memory>
 #include <string>
 

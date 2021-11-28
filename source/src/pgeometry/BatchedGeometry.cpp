@@ -867,3 +867,9 @@ Real BatchedGeometry::SubBatch::getSquaredViewDepth(const Camera *cam) const {
 //-----------------------------------------------------------------------------
 ///
 const Ogre::LightList &BatchedGeometry::SubBatch::getLights(void) const { return m_pParentGeom->queryLights(); }
+
+void BatchedGeometry::SubBatch::setMaterial(Ogre::MaterialPtr &mat) { m_ptrMaterial = mat; }
+
+void BatchedGeometry::SubBatch::setMaterialName(const Ogre::String &mat, const Ogre::String &rg) {
+  m_ptrMaterial = Ogre::MaterialManager::getSingleton().getByName(mat, rg);
+}

@@ -1,5 +1,4 @@
-// This source file is part of "glue project"
-// Created by Andrew Vasiliev
+// This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "DemoDotAppState.h"
 #include "ComponentLocator.h"

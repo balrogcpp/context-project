@@ -14,10 +14,12 @@ software.
 -------------------------------------------------------------------------------------*/
 
 #pragma once
-#include <OgreMaterialManager.h>
 #include <OgreMovableObject.h>
 #include <OgrePrerequisites.h>
-#include <OgreSceneNode.h>
+
+namespace Ogre {
+class SceneNode;
+}
 
 namespace Forests {
 //--------------------------------------------------------------------------
@@ -34,9 +36,7 @@ class BatchedGeometry : public Ogre::MovableObject {
     struct QueuedMesh {
       QueuedMesh(Ogre::SubMesh *sm, const Ogre::Vector3 &pos, const Ogre::Quaternion &ori, const Ogre::Vector3 &scl,
                  const Ogre::ColourValue &clr, void *userData_ = 0)
-          : subMesh(sm), position(pos), orientation(ori), scale(scl), color(clr), userData(userData_) {
-        // empty
-      }
+          : subMesh(sm), position(pos), orientation(ori), scale(scl), color(clr), userData(userData_) {}
 
       Ogre::SubMesh *subMesh;
       Ogre::Vector3 position;
@@ -77,10 +77,8 @@ class BatchedGeometry : public Ogre::MovableObject {
     const Ogre::LightList &getLights() const override;
 
     ///
-    void setMaterial(Ogre::MaterialPtr &mat) { m_ptrMaterial = mat; }
-    void setMaterialName(const Ogre::String &mat, const Ogre::String &rg = Ogre::RGN_AUTODETECT) {
-      m_ptrMaterial = Ogre::MaterialManager::getSingleton().getByName(mat, rg);
-    }
+    void setMaterial(Ogre::MaterialPtr &mat);
+    void setMaterialName(const Ogre::String &mat, const Ogre::String &rg = Ogre::RGN_AUTODETECT);
 
     /// Get material name. Be careful, resource group name missing
     const Ogre::String &getMaterialName() const { return m_ptrMaterial->getName(); }
@@ -159,8 +157,7 @@ class BatchedGeometry : public Ogre::MovableObject {
  private:
   bool isVisible() const override;
   const Ogre::String &getMovableType() const override;
-  void visitRenderables(Ogre::Renderable::Visitor *visitor, bool debugRenderables) override { /* empty */
-  }
+  void visitRenderables(Ogre::Renderable::Visitor *visitor, bool debugRenderables) override {}
   void _notifyCurrentCamera(Ogre::Camera *cam) override;
   void _updateRenderQueue(Ogre::RenderQueue *queue) override;
 

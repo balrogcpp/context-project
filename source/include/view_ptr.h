@@ -29,18 +29,16 @@ struct has_smart_pointer_ops {
   template <typename T>
   static false_test test_op_arrow(...);
   template <typename T>
-  static true_test<decltype(std::declval<T const &>().operator->())>
-  test_op_arrow(T *);
+  static true_test<decltype(std::declval<T const &>().operator->())> test_op_arrow(T *);
 
   template <typename T>
   static false_test test_get(...);
   template <typename T>
   static true_test<decltype(std::declval<T const &>().get())> test_get(T *);
 
-  static constexpr bool value =
-      !std::is_same<decltype(test_get<Ptr>(0)), false_test>::value &&
-      !std::is_same<decltype(test_op_arrow<Ptr>(0)), false_test>::value &&
-      !std::is_same<decltype(test_op_star<Ptr>(0)), false_test>::value;
+  static constexpr bool value = !std::is_same<decltype(test_get<Ptr>(0)), false_test>::value &&
+                                !std::is_same<decltype(test_op_arrow<Ptr>(0)), false_test>::value &&
+                                !std::is_same<decltype(test_op_star<Ptr>(0)), false_test>::value;
 };
 
 /// Non-class types can't be smart pointers
@@ -51,24 +49,18 @@ struct has_smart_pointer_ops<Ptr, false> : std::false_type {};
 /// types
 template <typename Ptr>
 struct smart_pointer_ops_consistent
-    : std::integral_constant<
-          bool,
-          std::is_pointer<decltype(std::declval<Ptr const &>().get())>::value &&
-              std::is_reference<
-                  decltype(*std::declval<Ptr const &>())>::value &&
-              std::is_pointer<
-                  decltype(std::declval<Ptr const &>().operator->())>::value &&
-              std::is_same<
-                  decltype(std::declval<Ptr const &>().get()),
-                  decltype(std::declval<Ptr const &>().operator->())>::value &&
-              std::is_same<decltype(*std::declval<Ptr const &>().get()),
-                           decltype(*std::declval<Ptr const &>())>::value> {};
+    : std::integral_constant<bool, std::is_pointer<decltype(std::declval<Ptr const &>().get())>::value &&
+                                       std::is_reference<decltype(*std::declval<Ptr const &>())>::value &&
+                                       std::is_pointer<decltype(std::declval<Ptr const &>().operator->())>::value &&
+                                       std::is_same<decltype(std::declval<Ptr const &>().get()),
+                                                    decltype(std::declval<Ptr const &>().operator->())>::value &&
+                                       std::is_same<decltype(*std::declval<Ptr const &>().get()),
+                                                    decltype(*std::declval<Ptr const &>())>::value> {};
 
 /// Assume Ptr is a smart pointer if it has the relevant ops and they
 /// are consistent
 template <typename Ptr, bool = has_smart_pointer_ops<Ptr>::value>
-struct is_smart_pointer
-    : std::integral_constant<bool, smart_pointer_ops_consistent<Ptr>::value> {};
+struct is_smart_pointer : std::integral_constant<bool, smart_pointer_ops_consistent<Ptr>::value> {};
 
 /// If Ptr doesn't have the relevant ops then it can't be a smart
 /// pointer
@@ -79,9 +71,7 @@ struct is_smart_pointer<Ptr, false> : std::false_type {};
 /// T*
 template <typename Ptr, typename T, bool = is_smart_pointer<Ptr>::value>
 struct is_convertible_smart_pointer
-    : std::integral_constant<
-          bool, std::is_convertible<decltype(std::declval<Ptr const &>().get()),
-                                    T *>::value> {};
+    : std::integral_constant<bool, std::is_convertible<decltype(std::declval<Ptr const &>().get()), T *>::value> {};
 
 /// If Ptr isn't a smart pointer then we don't want it
 template <typename Ptr, typename T>
@@ -105,15 +95,12 @@ class object_ptr {
   constexpr object_ptr(T *ptr_) noexcept : ptr(ptr_) {}
   /// Construct an object_ptr from a raw pointer convertible to T*, such
   /// as BaseOfT*
-  template <typename U,
-            typename = std::enable_if_t<std::is_convertible<U *, T *>::value>>
+  template <typename U, typename = std::enable_if_t<std::is_convertible<U *, T *>::value>>
   constexpr object_ptr(U *ptr_) noexcept : ptr(ptr_) {}
   /// Construct an object_ptr from a smart pointer that holds a pointer
   /// convertible to T*,
   /// such as shared_ptr<T> or unique_ptr<BaseOfT>
-  template <typename Ptr,
-            typename = std::enable_if_t<
-                detail::is_convertible_smart_pointer<Ptr, T>::value>>
+  template <typename Ptr, typename = std::enable_if_t<detail::is_convertible_smart_pointer<Ptr, T>::value>>
   constexpr object_ptr(Ptr const &other) noexcept : ptr(other.get()) {}
 
   /// Get the raw pointer value
@@ -138,37 +125,21 @@ class object_ptr {
   void reset(T *ptr_ = nullptr) noexcept { ptr = ptr_; }
 
   /// Check for equality
-  friend constexpr bool operator==(object_ptr const &lhs,
-                                   object_ptr const &rhs) noexcept {
-    return lhs.ptr == rhs.ptr;
-  }
+  friend constexpr bool operator==(object_ptr const &lhs, object_ptr const &rhs) noexcept { return lhs.ptr == rhs.ptr; }
 
   /// Check for inequality
-  friend constexpr bool operator!=(object_ptr const &lhs,
-                                   object_ptr const &rhs) noexcept {
-    return !(lhs == rhs);
-  }
+  friend constexpr bool operator!=(object_ptr const &lhs, object_ptr const &rhs) noexcept { return !(lhs == rhs); }
 
   /// a<b provides a total order
-  friend constexpr bool operator<(object_ptr const &lhs,
-                                  object_ptr const &rhs) noexcept {
+  friend constexpr bool operator<(object_ptr const &lhs, object_ptr const &rhs) noexcept {
     return std::less<void>()(lhs.ptr, rhs.ptr);
   }
   /// a>b is b<a
-  friend constexpr bool operator>(object_ptr const &lhs,
-                                  object_ptr const &rhs) noexcept {
-    return rhs < lhs;
-  }
+  friend constexpr bool operator>(object_ptr const &lhs, object_ptr const &rhs) noexcept { return rhs < lhs; }
   /// a<=b is !(b<a)
-  friend constexpr bool operator<=(object_ptr const &lhs,
-                                   object_ptr const &rhs) noexcept {
-    return !(rhs < lhs);
-  }
+  friend constexpr bool operator<=(object_ptr const &lhs, object_ptr const &rhs) noexcept { return !(rhs < lhs); }
   /// a<=b is b<=a
-  friend constexpr bool operator>=(object_ptr const &lhs,
-                                   object_ptr const &rhs) noexcept {
-    return rhs <= lhs;
-  }
+  friend constexpr bool operator>=(object_ptr const &lhs, object_ptr const &rhs) noexcept { return rhs <= lhs; }
 
  private:
   /// The stored pointer
@@ -181,25 +152,19 @@ namespace std {
 /// Allow hashing object_ptrs so they can be used as keys in unordered_map
 template <typename T>
 struct hash<jss::object_ptr<T>> {
-  constexpr size_t operator()(jss::object_ptr<T> const &p) const noexcept {
-    return hash<T *>()(p.get());
-  }
+  constexpr size_t operator()(jss::object_ptr<T> const &p) const noexcept { return hash<T *>()(p.get()); }
 };
 
 /// Do a static_cast with object_ptr
 template <typename To, typename From>
-typename std::enable_if<
-    sizeof(decltype(static_cast<To *>(std::declval<From *>()))) != 0,
-    jss::object_ptr<To>>::type
+typename std::enable_if<sizeof(decltype(static_cast<To *>(std::declval<From *>()))) != 0, jss::object_ptr<To>>::type
 static_pointer_cast(jss::object_ptr<From> p) {
   return static_cast<To *>(p.get());
 }
 
 /// Do a dynamic_cast with object_ptr
 template <typename To, typename From>
-typename std::enable_if<
-    sizeof(decltype(dynamic_cast<To *>(std::declval<From *>()))) != 0,
-    jss::object_ptr<To>>::type
+typename std::enable_if<sizeof(decltype(dynamic_cast<To *>(std::declval<From *>()))) != 0, jss::object_ptr<To>>::type
 dynamic_pointer_cast(jss::object_ptr<From> p) {
   return dynamic_cast<To *>(p.get());
 }
