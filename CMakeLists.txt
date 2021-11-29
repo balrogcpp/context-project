@@ -405,7 +405,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
             VERBATIM
             )
     add_custom_target(docker-compose-dep
-            COMMAND docker-compose -f docker-compose-dep.yml up
+            COMMAND docker-compose -f docker-compose-3rd.yml up
             COMMAND docker-compose down --volumes
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Building thirdparty with docker..."
