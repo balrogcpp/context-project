@@ -36,6 +36,7 @@ RUN apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
     && wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
+    && export CPPFLAGS='-g0 -O2' \
     && mkdir -p ${MINGW_ROOT}/include ${MINGW_ROOT}/lib/pkgconfig \
     && cd pkg-config-${PKG_CONFIG_VERSION} \
     && ./configure \
@@ -54,8 +55,6 @@ RUN apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev
       --target=x86_64-w64-mingw32 \
       --disable-shared \
       --enable-static \
-      --enable-lto \
-      --enable-plugins \
       --disable-multilib \
       --disable-nls \
       --disable-werror \
@@ -79,14 +78,11 @@ RUN apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev
       --prefix=${GCC_HOME} \
       --target=x86_64-w64-mingw32 \
       --enable-languages=c,c++ \
+      --disable-bootstrap \
       --disable-shared \
       --enable-static \
       --enable-threads=posix \
-      --enable-libgomp \
-      --enable-libatomic \
-      --enable-graphite \
       --disable-multilib \
-      --enable-lto \
       --disable-nls \
       --disable-werror \
     && make -j`nproc` all-gcc > /dev/null \
