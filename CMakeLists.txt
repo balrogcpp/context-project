@@ -153,7 +153,6 @@ make_directory(${GLUE_ARTIFACT_DIR})
 # Doxygen
 find_package(Doxygen QUIET COMPONENTS dot)
 find_package(LATEX QUIET COMPONENTS PDFLATEX)
-
 if (${DOXYGEN_FOUND})
     add_custom_target(doxygen
             COMMAND ${DOXYGEN_EXECUTABLE}
@@ -256,13 +255,13 @@ list(APPEND GLUE_INCLUDE_DIRS
         )
 
 set(SAMPLE_EXE sample)
-file(GLOB_RECURSE SOURCE_FILES ${SAMPLE_EXE}/*.cpp ${SAMPLE_EXE}/*.h ${SAMPLE_EXE}/*.hpp deploy/*.manifest source/*.cpp source/*.h source/*.hpp)
+file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${SAMPLE_EXE}/*.cpp ${SAMPLE_EXE}/*.h ${SAMPLE_EXE}/*.hpp deploy/*.manifest source/*.cpp source/*.h source/*.hpp)
 
-if (ANDROID)
-    add_library(${SAMPLE_EXE} SHARED ${SOURCE_FILES})
-    set_target_properties(${SAMPLE_EXE} PROPERTIES OUTPUT_NAME "main")
+if (NOT ANDROID)
+    add_executable(${SAMPLE_EXE} WIN32 ${SAMPLE_SOURCE_FILES})
 else ()
-    add_executable(${SAMPLE_EXE} WIN32 ${SOURCE_FILES})
+    add_library(${SAMPLE_EXE} SHARED ${SAMPLE_SOURCE_FILES})
+    set_target_properties(${SAMPLE_EXE} PROPERTIES OUTPUT_NAME "main")
 endif ()
 
 include_directories(${SAMPLE_EXE} ${SAMPLE_EXE}/include ${GLUE_INCLUDE_DIRS})
@@ -286,7 +285,8 @@ else ()
 endif ()
 target_link_libraries(${SAMPLE_EXE} PUBLIC ${OGRE_LIBRARIES} ${OGRE_CODEC_ASSIMP} ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
         ${PNG_LIBRARY} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
-        ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES})
+        ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES}
+        )
 
 install(TARGETS ${SAMPLE_EXE} RUNTIME DESTINATION .)
 file(GLOB_RECURSE SOURCE_FILES source/*.cpp source/*.h source/*.hpp)
@@ -312,7 +312,6 @@ endif ()
 
 # Install&package block
 set(GLUE_DEPLOY_DIR ${CMAKE_SOURCE_DIR}/deploy)
-
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${GLUE_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
     file(INSTALL ${EXTERNAL_DLL_GLOB} DESTINATION .)
@@ -332,7 +331,6 @@ if (NOT GIT_SHA1)
             OUTPUT_STRIP_TRAILING_WHITESPACE
     )
 endif ()
-
 
 #Packaging
 set(GLUE_PACKAGE_NAME "GlueSample")
