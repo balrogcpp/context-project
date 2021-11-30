@@ -14,9 +14,8 @@ RUN rm /etc/apt/sources.list \
     && echo 'deb http://ppa.launchpad.net/fkrull/deadsnakes/ubuntu precise main' >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FF3997E83CD969B409FB24BC5BB92C09DB82666C \
     && apt-get update \
-    && apt-get install --no-install-recommends -y gcc-9 g++-9 git zip unzip xz-utils wget ca-certificates make autoconf file patch \
-    && apt-get clean \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9300 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+    && apt-get install --no-install-recommends -y git zip unzip xz-utils wget ca-certificates make autoconf file patch \
+    && apt-get clean
 
 ARG CMAKE_VERSION=3.19.8
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
@@ -30,21 +29,17 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
     && rm /tmp/cmake-install.sh
 
+ARG LLVM_VERSION=12.0.1
 ARG BINUTILS_VERSION=2.37
 ARG GCC_HOME=/usr
 
-RUN apt-get update && apt-get install --no-install-recommends -y zlib1g-dev && apt-get clean \
+RUN apt-get update && apt-get install --no-install-recommends -y gcc-9 g++-9 zlib1g-dev libisl10 libmpc2 && apt-get clean \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9300 --slave /usr/bin/g++ g++ /usr/bin/g++-9 \
     && wget http://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && mkdir binutils-${BINUTILS_VERSION}-linux \
     && cd binutils-${BINUTILS_VERSION}-linux \
-    && export CPPFLAGS='-g0 -O2' \
-    && ../binutils-${BINUTILS_VERSION}/configure \
+    && CPPFLAGS='-g0 -O2' ../binutils-${BINUTILS_VERSION}/configure \
       --prefix=${GCC_HOME} \
-      --target=x86_64-linux-gnu \
-      --disable-shared \
-      --enable-static \
-      --enable-lto \
-      --enable-plugins \
       --disable-multilib \
       --disable-nls \
       --disable-werror \
@@ -54,16 +49,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y zlib1g-dev && a
     && cd .. \
     && rm -rf binutils-${BINUTILS_VERSION} \
     && rm -rf binutils-${BINUTILS_VERSION}-linux \
-    && apt-get -y purge zlib1g-dev \
-    && apt-get -y autoremove \
-    && update-alternatives --install /usr/bin/ld ld /usr/bin/x86_64-linux-gnu-ld 10300
-
-ARG LLVM_VERSION=12.0.1
-
-RUN apt-get update \
+    && apt-get update \
     && apt-get install --no-install-recommends -y libxml2 zlib1g-dev lzma-dev libxml2-dev libssl-dev python3.5 \
     && apt-get clean \
-    && git clone --depth 1 -b llvmorg-${LLVM_VERSION} https://github.com/llvm/llvm-project.git \
+    && git clone --depth 1 -b llvmorg-12.0.1 https://github.com/llvm/llvm-project.git \
     && cd llvm-project \
     && mkdir build \
     && cd build \
