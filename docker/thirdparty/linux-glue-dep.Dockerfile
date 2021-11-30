@@ -11,9 +11,11 @@ COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
 
 RUN apt-get update \
-     && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev && apt-get clean \
+     && apt-get install --no-install-recommends -y gcc libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
+     && apt-get clean \
      && mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
-     && export CC=clang && CXX=clang++ \
+     && export CC=clang \
+     && CXX=clang++ \
      && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
      && cmake --build . --target thirdparty \
      && cd ${CONTEXT_HOME}/thirdparty/external/Release/linux-clang-x86_64 \

@@ -8,13 +8,16 @@ RUN apt-get update \
     && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
-    && apt-get -y install --no-install-recommends llvm clang lld git zip unzip xz-utils make autoconf file patch && apt-get clean
+    && apt-get -y install --no-install-recommends llvm clang lld git zip unzip xz-utils make autoconf file patch \
+    && apt-get clean
 
 ARG CMAKE_VERSION=3.19.8
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.10.2
 
-RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp && unzip /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
+RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp \
+    && unzip /tmp/ninja-linux.zip -d /usr/local/bin \
+    && rm /tmp/ninja-linux.zip \
     && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
     && chmod u+x /tmp/cmake-install.sh \
     && mkdir ${CMAKE_HOME} \
@@ -30,7 +33,8 @@ ARG MINGW_VERSION=9.0.0
 ARG GCC_VERSION=11.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
 
-RUN apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl22 libmpc3 \
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl22 libmpc3 \
     && apt-get clean \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \

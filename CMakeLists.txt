@@ -158,7 +158,7 @@ if (${DOXYGEN_FOUND})
             COMMAND ${DOXYGEN_EXECUTABLE}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating API documentation with Doxygen..."
-            VERBATIM
+            USES_TERMINAL
             )
 else ()
     message("Doxygen not found. Doxygen targets are not available")
@@ -175,7 +175,7 @@ if (${LATEX_PDFLATEX_FOUND})
             COMMAND ${CMAKE_COMMAND} -E copy ${GLUE_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${GLUE_ARTIFACT_DIR}/Doxygen
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating API documentation with Doxygen..."
-            VERBATIM
+            USES_TERMINAL
             )
 else ()
     message("Latex PDF not found. PDF generation no available")
@@ -393,22 +393,23 @@ if (NOT MSVC)
             COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Build packages..."
-            VERBATIM
+            USES_TERMINAL
             )
 endif ()
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    add_custom_target(docker-compose
-            COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
-            COMMAND docker-compose down --volumes
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMENT "Building sample with docker..."
-            VERBATIM
-            )
-    add_custom_target(docker-compose-dep
-            COMMAND docker-compose -f docker-compose-3rd.yml up
-            COMMAND docker-compose down --volumes
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMENT "Building thirdparty with docker..."
-            VERBATIM
-            )
-endif ()
+
+# Docker-compose targets
+add_custom_target(docker-compose
+        COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
+        COMMAND docker-compose down --volumes
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Building tests with docker..."
+        USES_TERMINAL
+        )
+
+add_custom_target(docker-compose-dep
+        COMMAND docker-compose -f docker-compose-3rd.yml up
+        COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Building thirdparty libraries with docker-compose..."
+        USES_TERMINAL
+        )

@@ -20,8 +20,9 @@ RUN mkdir -p ${CONTEXT_HOME}/thirdparty/external/Release \
     && cd ${CONTEXT_HOME}/thirdparty/external/Release \
     && wget https://github.com/balrogcpp/glue-dep/raw/master/android-clang-aarch64.tar.xz  -O - | tar -xJ
 
-RUN cmake -P cmake/flat_zip.cmake \
-    && cd ./android \
+RUN cmake -P cmake/flat_zip.cmake
+
+RUN cd ./android \
     && ./gradlew assembleRelease \
     && cd ../ \
     && mv android/app/build/outputs/apk/release/app-arm64-v8a-release.apk artifacts/app-arm64-v8a-$GIT_HASH.apk \

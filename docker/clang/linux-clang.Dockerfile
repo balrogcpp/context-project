@@ -22,7 +22,9 @@ ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.10.2
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
-RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp && unzip /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
+RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp \
+    && unzip /tmp/ninja-linux.zip -d /usr/local/bin \
+    && rm /tmp/ninja-linux.zip \
     && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
     && chmod u+x /tmp/cmake-install.sh \
     && mkdir ${CMAKE_HOME} \
@@ -33,12 +35,15 @@ ARG LLVM_VERSION=12.0.1
 ARG BINUTILS_VERSION=2.37
 ARG GCC_HOME=/usr
 
-RUN apt-get update && apt-get install --no-install-recommends -y gcc-9 g++-9 zlib1g-dev libisl10 libmpc2 && apt-get clean \
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y gcc-9 g++-9 zlib1g-dev libisl10 libmpc2 \
+    && apt-get clean \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9300 --slave /usr/bin/g++ g++ /usr/bin/g++-9 \
     && wget http://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && mkdir binutils-${BINUTILS_VERSION}-linux \
     && cd binutils-${BINUTILS_VERSION}-linux \
-    && CPPFLAGS='-g0 -O2' ../binutils-${BINUTILS_VERSION}/configure \
+    && export CPPFLAGS='-g0 -O2' \
+    && ../binutils-${BINUTILS_VERSION}/configure \
       --prefix=${GCC_HOME} \
       --disable-multilib \
       --disable-nls \
@@ -46,13 +51,14 @@ RUN apt-get update && apt-get install --no-install-recommends -y gcc-9 g++-9 zli
       --with-system-zlib \
     && make -j`nproc` > /dev/null \
     && make install > /dev/null \
+    && export CPPFLAGS='' \
     && cd .. \
     && rm -rf binutils-${BINUTILS_VERSION} \
     && rm -rf binutils-${BINUTILS_VERSION}-linux \
     && apt-get update \
     && apt-get install --no-install-recommends -y libxml2 zlib1g-dev lzma-dev libxml2-dev libssl-dev python3.5 \
     && apt-get clean \
-    && git clone --depth 1 -b llvmorg-12.0.1 https://github.com/llvm/llvm-project.git \
+    && git clone --depth 1 -b llvmorg-${LLVM_VERSION} https://github.com/llvm/llvm-project.git \
     && cd llvm-project \
     && mkdir build \
     && cd build \
@@ -75,5 +81,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y gcc-9 g++-9 zli
     && cmake --build . --target install \
     && cd ../../ \
     && rm -rf llvm-project \
-    && apt-get purge -y zlib1g-dev lzma-dev libxml2-dev libssl-dev python3.5 \
-    && apt-get autoremove -y
+    && apt-get purge -y zlib1g-dev lzma-dev libxml2-dev libssl-dev python3.5 gcc-9 g++-9 \
+    && apt-get autoremove -y \
+    && apt-get install --no-install-recommends -y libgcc-9-dev libstdc++-9-dev \
+    && apt-get clean
