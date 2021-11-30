@@ -29,57 +29,6 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
     && rm /tmp/cmake-install.sh
 
-#ARG BINUTILS_VERSION=2.37
-#ARG GCC_VERSION=11.2.0
-#ARG GCC_SHORT_VERSION=11.2
-#ARG GCC_HOME=/usr
-#
-#RUN apt-get update && apt-get install --no-install-recommends -y gcc-9 g++-9 zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev libisl10 libmpc2 \
-#    && apt-get install --no-install-recommends -y gcc-9 g++-9 git zip unzip xz-utils wget ca-certificates make autoconf file patch && apt-get clean \
-#    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9300 --slave /usr/bin/g++ g++ /usr/bin/g++-9 \
-#    && apt-get clean \
-#    && wget http://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
-#    && wget http://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
-#    && export CPPFLAGS='-g0 -O2' \
-#    && mkdir binutils-${BINUTILS_VERSION}-linux \
-#    && cd binutils-${BINUTILS_VERSION}-linux \
-#    && ../binutils-${BINUTILS_VERSION}/configure \
-#      --prefix=${GCC_HOME} \
-#      --disable-multilib \
-#      --disable-nls \
-#      --disable-werror \
-#      --with-system-zlib \
-#    && make -j`nproc` > /dev/null \
-#    && make install > /dev/null \
-#    && cd .. \
-#    && mkdir gcc-linux \
-#    && cd gcc-linux \
-#    &&  ../gcc-${GCC_VERSION}/configure \
-#      --prefix=${GCC_HOME} \
-#      --enable-languages=c,c++ \
-#      --disable-multilib \
-#      --disable-nls \
-#      --disable-werror \
-#      --disable-bootstrap \
-#    && make -j`nproc` all-gcc > /dev/null \
-#    && make install-gcc > /dev/null \
-#    && cd .. \
-#    && cd gcc-linux \
-#    && make -j`nproc` > /dev/null \
-#    && make install > /dev/null \
-#    && cd .. \
-#    && rm -rf binutils-${BINUTILS_VERSION} \
-#    && rm -rf binutils-${BINUTILS_VERSION}-linux \
-#    && rm -rf gcc-${GCC_VERSION} \
-#    && rm -rf gcc-linux \
-#    && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev \
-#    && apt-get -y autoremove
-#
-#RUN update-alternatives --install /usr/local/bin/gcc gcc ${GCC_HOME}/bin/x86_64-pc-linux-gnu-gcc 11200 \
-#        --slave /usr/local/bin/g++ g++ ${GCC_HOME}/bin/x86_64-pc-linux-gnu-g++ \
-#    && export PATH="${GCC_HOME}/bin:${PATH}" \
-#    && export LD_LIBRARY_PATH="${GCC_HOME}/lib64:${LD_LIBRARY_PATH}"
-
 ARG LLVM_VERSION=12.0.1
 ARG BINUTILS_VERSION=2.37
 ARG GCC_HOME=/usr
