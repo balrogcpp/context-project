@@ -29,7 +29,7 @@ Application::Application() {
     logger->createLog(log_file, true, true, true);
     Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
 #else
-    logger->createLog(log_file_, false, false, true);
+    logger->createLog(log_file, false, false, true);
     Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_NORMAL);
 #endif
 

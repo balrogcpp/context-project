@@ -122,7 +122,7 @@ void RenderSystem::InitOgreRenderSystem() {
     InitOgreRenderSystemGLES2();
   } else {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-    InitOgreRenderSystem_GLES2_();
+    InitOgreRenderSystemGLES2();
 #else
     InitOgreRenderSystemGL3();
 #endif
@@ -357,7 +357,7 @@ void RenderSystem::RestoreFullscreenAndroid_() {
   SDL_GetDesktopDisplayMode(0, &DM);
   int screen_w = static_cast<int>(DM.w);
   int screen_h = static_cast<int>(DM.h);
-  render_window_->resize(screen_w, screen_h);
+  render_window->resize(screen_w, screen_h);
 #endif
 }
 
@@ -365,7 +365,7 @@ void RenderSystem::RestoreFullscreenAndroid_() {
 void RenderSystem::RenderOneFrame() {
   ogre_root->renderOneFrame();
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  window_->SwapBuffers();
+  window->SwapBuffers();
 #endif
 }
 

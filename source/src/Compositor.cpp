@@ -155,8 +155,8 @@ void Compositor::InitMRT() {
 
   auto *main_compositor = compositor_chain->getCompositor("MRT");
   auto *td = main_compositor->getTechnique()->getTextureDefinition("mrt");
-  td->height = viewport_->getActualHeight() * 0.75;
-  td->width = viewport_->getActualWidth() * 0.75;
+  td->height = viewport->getActualHeight() * 0.75;
+  td->width = viewport->getActualWidth() * 0.75;
 
 #endif
 

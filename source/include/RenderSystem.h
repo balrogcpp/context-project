@@ -49,14 +49,12 @@ class RenderSystem final : public System, public Singleton<RenderSystem> {
   void InitShadowSettings();
 
   std::string render_system;
-
   std::unique_ptr<Window> window;
   std::unique_ptr<Compositor> compositor;
   std::unique_ptr<Overlay> overlay;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm;
   std::vector<float> split_points;
   const size_t pssm_split_count = 3;
-
   view_ptr<Ogre::Root> ogre_root;
   view_ptr<Ogre::SceneManager> scene;
   view_ptr<Ogre::Camera> camera;

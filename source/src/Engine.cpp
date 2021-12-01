@@ -13,21 +13,21 @@ Engine::Engine() {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   config = make_unique<Config>("config.json");
 #else
-  config_ = make_unique<Config>("");
-  config_->AddMember("window_fullscreen", true);
-  config_->AddMember("compositor_use_bloom", false);
-  config_->AddMember("compositor_use_ssao", false);
-  config_->AddMember("compositor_use_motion", false);
-  config_->AddMember("target_fps", 30);
-  config_->AddMember("lock_fps", true);
-  config_->AddMember("vsync", false);
-  config_->AddMember("shadows_enable", false);
-  config_->AddMember("fsaa", 0);
-  config_->AddMember("filtration", "bilinear");
-  config_->AddMember("anisotropy_level", 8);
-  config_->AddMember("shadows_texture_resolution", 512);
-  config_->AddMember("shadows_far_distance", 400);
-  config_->AddMember("shadows_texture_format", 16);
+  config = make_unique<Config>("");
+  config->AddMember("window_fullscreen", true);
+  config->AddMember("compositor_use_bloom", false);
+  config->AddMember("compositor_use_ssao", false);
+  config->AddMember("compositor_use_motion", false);
+  config->AddMember("target_fps", 30);
+  config->AddMember("lock_fps", true);
+  config->AddMember("vsync", false);
+  config->AddMember("shadows_enable", false);
+  config->AddMember("fsaa", 0);
+  config->AddMember("filtration", "bilinear");
+  config->AddMember("anisotropy_level", 8);
+  config->AddMember("shadows_texture_resolution", 512);
+  config->AddMember("shadows_far_distance", 400);
+  config->AddMember("shadows_texture_format", 16);
 #endif
 
   System::SetConfig(config.get());
@@ -52,8 +52,8 @@ void Engine::InitSystems() {
   ps = make_unique<PhysicsSystem>(physics_threaded);
   as = make_unique<AudioSystem>(8, 8);
 #else
-  ps_ = make_unique<PhysicsSystem>(false);
-  as_ = make_unique<AudioSystem>(4, 4);
+  ps = make_unique<PhysicsSystem>(false);
+  as = make_unique<AudioSystem>(4, 4);
 #endif
 
   loader = make_unique<DotSceneLoaderB>();
