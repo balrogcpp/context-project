@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "AssetManager.h"
+#include "AssetLoader.h"
 #include "Android.h"
 #include "Exception.h"
 #include "Log.h"
@@ -15,35 +15,33 @@ namespace fs = ghc::filesystem;
 
 using namespace std;
 
-namespace glue::AssetManager {
+namespace glue {
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
-//----------------------------------------------------------------------------------------------------------------------
-static string FindPath(const string &path_, int depth = 2) {
+
+string AssetLoader::FindPath(const string &path, int depth) {
 #ifdef DEBUG
   depth = 4;
 #endif
 
-  string path = path_;
+  string result = path;
 
   for (int i = 0; i < depth; i++) {
-    if (fs::exists(path))
-      return path;
-    else if (fs::exists(path + ".zip"))
-      return path.append(".zip");
+    if (fs::exists(result))
+      return result;
+    else if (fs::exists(result + ".zip"))
+      return result.append(".zip");
     else
-      path = string("../").append(path);
+      result = string("../").append(result);
   }
 
   return string();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 static bool CheckSymbol(char c) {
   return isalpha(c) || isdigit(c) || c == '.' || c == ',' || c == ';' || c == '_' || c == '-' || c == '/';
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 static bool StringSanityCheck(const string &str) {
   if (str.empty() || str[0] == '#') {
     return true;
@@ -52,71 +50,67 @@ static bool StringSanityCheck(const string &str) {
   return any_of(str.begin(), str.end(), CheckSymbol);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 static void LeftTrim(string &s) {
   auto it = find_if(s.begin(), s.end(), [](char c) { return !isspace(c); });
   s.erase(s.begin(), it);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 static void RightTrim(string &s) {
   auto it = find_if(s.rbegin(), s.rend(), [](char c) { return !isspace(c); });
   s.erase(it.base(), s.end());
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-static void TrimString(string &s) {
+void AssetLoader::TrimString(string &s) {
   RightTrim(s);
   LeftTrim(s);
 }
 #endif
 
-//----------------------------------------------------------------------------------------------------------------------
-void LoadResources() {
+void AssetLoader::LoadResources() {
   auto &rgm = Ogre::ResourceGroupManager::getSingleton();
   rgm.initialiseResourceGroup(Ogre::RGN_INTERNAL);
   rgm.initialiseAllResourceGroups();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-void AddLocation(const string &path_, const string &group_, bool recursive) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+void AssetLoader::AddLocation(const string &path, const string &group, bool recursive) {
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
   const string file_system = "FileSystem";
   const string zip = "Zip";
 
-  string path = FindPath(path_);
+  string result = FindPath(path);
   Ogre::ResourceGroupManager &rgm = Ogre::ResourceGroupManager::getSingleton();
 
-  if (!path.empty()) {
-    if (fs::is_directory(path)) {
-      rgm.addResourceLocation(path, file_system, group_, recursive);
-    } else if (fs::path(path).extension() == ".zip") {
-      rgm.addResourceLocation(path, zip, group_, recursive);
+  if (!result.empty()) {
+    if (fs::is_directory(result)) {
+      rgm.addResourceLocation(result, file_system, group, recursive);
+    } else if (fs::path(result).extension() == ".zip") {
+      rgm.addResourceLocation(result, zip, group, recursive);
     }
   }
-
+#else
+  Assert(false, "AssetLoader::AddLocation called in another platform");
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-void AddLocationAndroid(AAssetManager *asset_mgr, const string &resource_file, const string &group_, bool verbose) {
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+void AssetLoader::AddLocationAndroid(AAssetManager *asset_mgr, const string &resource_file, const string &group,
+                                      bool verbose) {
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
 //  const string file_system = "APKFileSystem";
 //
+//  AAssetDir *dir = AAssetManager_openDir(asset_mgr, path_.c_str());
+//  const char *fileName = nullptr;
 //
-//  AAssetDir* dir = AAssetManager_openDir(asset_mgr, path_.c_str());
-//  const char* fileName = NULL;
-//
-//  while((fileName = AAssetDir_getNextFileName(dir)) != NULL) {
-//	LogMessage(string("Found directory: ")
-//+ fileName);
+//  while ((fileName = AAssetDir_getNextFileName(dir)) != nullptr) {
+//    LogMessage(string("Found directory: ") + fileName);
 //  }
+#else
+  Assert(false, "AssetLoader::AddLocationAndroid called in another platform");
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-void AddLocationRecursive(const string &path_, const string &group_, const string &resource_file, bool verbose) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+void AssetLoader::AddLocationRecursive(const string &path_, const string &group, const string &resource_file,
+                                        bool verbose) {
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
   const string file_system = "FileSystem";
   const string zip = "Zip";
 
@@ -128,7 +122,7 @@ void AddLocationRecursive(const string &path_, const string &group_, const strin
   string path = FindPath(path_);
 
   if (fs::exists(path)) {
-    resource_list.push_back({path, file_system, group_});
+    resource_list.push_back({path, file_system, group});
   }
 
   if (!resource_file.empty()) {
@@ -199,7 +193,9 @@ void AddLocationRecursive(const string &path_, const string &group_, const strin
       }
     }
   }
+#else
+  Assert(false, "AssetLoader::AddLocationRecursive called in another platform");
 #endif
 }
 
-}  // namespace glue::AssetManager
+}  // namespace glue

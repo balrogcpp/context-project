@@ -15,14 +15,14 @@ class DesktopIcon : public NoCopy {
   void Save(const std::string &icon_name);
 
  protected:
-  std::string run_dir_;
-  std::string exec_;
-  std::string icon_;
-  std::string version_;
-  std::string name_;
-  std::map<std::string, std::string> properties_;
-  std::string output_;
-  const std::string skeleton_;
+  std::string root_directory;
+  std::string executable;
+  std::string icon;
+  std::string version;
+  std::string icon_name;
+  std::map<std::string, std::string> properties;
+  std::string output;
+  const std::string skeleton;
 };
 
 }  // namespace glue

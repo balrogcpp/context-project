@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "RenderSystem.h"
-#include "AssetManager.h"
+#include "AssetLoader.h"
 #include "Config.h"
 #include "DotSceneLoaderB.h"
 #include "Exception.h"
@@ -34,115 +34,116 @@
 #endif
 
 using namespace std;
+using namespace Ogre;
 
 namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 RenderSystem::RenderSystem(int w, int h, bool f) {
-  root_ = new Ogre::Root("");
+  ogre_root = new Root("");
 
-  conf_->Get("render_system", render_system_);
+  config->Get("render_system", render_system);
 
-  InitOgreRenderSystem_();
-  InitOgrePlugins_();
+  InitOgreRenderSystem();
+  InitOgrePlugins();
 
-  root_->initialise(false);
+  ogre_root->initialise(false);
 
-  window_ = make_unique<Window>(w, h, f);
+  window = make_unique<Window>(w, h, f);
 
-  InitRenderWindow_();
+  InitRenderWindow();
   RestoreFullscreenAndroid_();
 
   // Camera block
-  camera_ = scene_->createCamera("Default");
-  auto *renderTarget = root_->getRenderTarget(render_window_->getName());
-  viewport_ = renderTarget->addViewport(camera_.get());
-  viewport_->setBackgroundColour(Ogre::ColourValue::Black);
-  camera_->setAspectRatio(static_cast<float>(viewport_->getActualWidth()) /
-                          static_cast<float>(viewport_->getActualHeight()));
-  camera_->setAutoAspectRatio(true);
+  camera = scene->createCamera("Default");
+  auto *renderTarget = ogre_root->getRenderTarget(render_window->getName());
+  viewport = renderTarget->addViewport(camera.get());
+  viewport->setBackgroundColour(ColourValue::Black);
+  camera->setAspectRatio(static_cast<float>(viewport->getActualWidth()) /
+                          static_cast<float>(viewport->getActualHeight()));
+  camera->setAutoAspectRatio(true);
 
-  InitResourceLocation_();
+  InitResourceLocation();
 
   // RTSS block
   glue::InitRtss();
   glue::CreateRtssShaders();
 
   // Overlay
-  overlay_ = make_unique<Overlay>(render_window_);
+  overlay = make_unique<Overlay>(render_window);
 
-  AssetManager::LoadResources();
+  AssetLoader::LoadResources();
 
   // Compositor block
-  compositor_ = make_unique<Compositor>();
+  compositor = make_unique<Compositor>();
 
-  overlay_->PrepareTexture("Roboto-Medium", Ogre::RGN_INTERNAL);
+  overlay->PrepareTexture("Roboto-Medium", RGN_INTERNAL);
 
-  InitTextureSettings_();
+  InitTextureSettings();
 
-  InitShadowSettings_();
+  InitShadowSettings();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 RenderSystem::~RenderSystem() {}
 
 //----------------------------------------------------------------------------------------------------------------------
-void RenderSystem::InitOgrePlugins_() {
+void RenderSystem::InitOgrePlugins() {
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
-  Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
+  Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_PFX
-  Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
+  Root::getSingleton().installPlugin(new ParticleFXPlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_STBI
-  Ogre::Root::getSingleton().installPlugin(new Ogre::STBIPlugin());
+  Root::getSingleton().installPlugin(new STBIPlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
-  Ogre::Root::getSingleton().installPlugin(new Ogre::FreeImagePlugin());
+  Root::getSingleton().installPlugin(new FreeImagePlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
 #ifdef DEBUG
-  Ogre::Root::getSingleton().installPlugin(new Ogre::AssimpPlugin());
+  Root::getSingleton().installPlugin(new AssimpPlugin());
 #endif
 #endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
-  scene_ = root_->createSceneManager("OctreeSceneManager", "Default");
+  scene = ogre_root->createSceneManager("OctreeSceneManager", "Default");
 #else
-  ogre_scene_ = root_->createSceneManager(Ogre::ST_GENERIC, "Default");
+  ogre_scene_ = root_->createSceneManager(ST_GENERIC, "Default");
 #endif
-  Ogre::Root::getSingleton().installPlugin(new DotScenePluginB());
+  Root::getSingleton().installPlugin(new DotScenePluginB());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void RenderSystem::InitOgreRenderSystem_() {
-  if (render_system_ == "gl3") {
-    InitOgreRenderSystem_GL3_();
-  } else if (render_system_ == "gles2") {
-    InitOgreRenderSystem_GLES2_();
+void RenderSystem::InitOgreRenderSystem() {
+  if (render_system == "gl3") {
+    InitOgreRenderSystemGL3();
+  } else if (render_system == "gles2") {
+    InitOgreRenderSystemGLES2();
   } else {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
     InitOgreRenderSystem_GLES2_();
 #else
-    InitOgreRenderSystem_GL3_();
+    InitOgreRenderSystemGL3();
 #endif
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void RenderSystem::InitOgreRenderSystem_GL3_() {
+void RenderSystem::InitOgreRenderSystemGL3() {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-  auto *gl3plus_render_system = new Ogre::GL3PlusRenderSystem();
+  auto *gl3plus_render_system = new GL3PlusRenderSystem();
   gl3plus_render_system->setConfigOption("Separate Shader Objects", "Yes");
 
-  Ogre::Root::getSingleton().setRenderSystem(gl3plus_render_system);
+  Root::getSingleton().setRenderSystem(gl3plus_render_system);
 #endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void RenderSystem::InitRenderWindow_() {
-  Ogre::NameValuePairList params;
+void RenderSystem::InitRenderWindow() {
+  NameValuePairList params;
 
-  SDL_SysWMinfo info = window_->GetInfo();
+  SDL_SysWMinfo info = window->GetInfo();
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
@@ -171,8 +172,8 @@ void RenderSystem::InitRenderWindow_() {
   AConfiguration* mAConfig = AConfiguration_new();
   AConfiguration_fromAssetManager(mAConfig, asset_manager);
 
-  Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(asset_manager));
-  Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKZipArchiveFactory(asset_manager));
+  ArchiveManager::getSingleton().addArchiveFactory(new APKFileSystemArchiveFactory(asset_manager));
+  ArchiveManager::getSingleton().addArchiveFactory(new APKZipArchiveFactory(asset_manager));
 #endif
 
   const char true_str[] = "true";
@@ -182,38 +183,38 @@ void RenderSystem::InitRenderWindow_() {
   bool gamma = false;
   int fsaa = 0;
 
-  conf_->Get("vsync", vsync);
-  conf_->Get("gamma", gamma);
-  conf_->Get("fsaa", fsaa);
+  config->Get("vsync", vsync);
+  config->Get("gamma", gamma);
+  config->Get("fsaa", fsaa);
 
   params["vsync"] = vsync ? true_str : false_str;
   params["gamma"] = gamma ? true_str : false_str;
   params["FSAA"] = to_string(fsaa);
 
-  render_window_ = Ogre::Root::getSingleton().createRenderWindow("", 0, 0, false, &params);
+  render_window = Root::getSingleton().createRenderWindow("", 0, 0, false, &params);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void RenderSystem::InitResourceLocation_() {
-  const string internal_group = Ogre::RGN_INTERNAL;
-  const string default_group = Ogre::RGN_DEFAULT;
+void RenderSystem::InitResourceLocation() {
+  const string internal_group = RGN_INTERNAL;
+  const string default_group = RGN_DEFAULT;
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
 
-  AssetManager::AddLocation("programs/main", internal_group);
-  AssetManager::AddLocation("programs/rtss", internal_group);
-  AssetManager::AddLocation("programs/pbr", internal_group);
-  AssetManager::AddLocation("programs/particles", internal_group);
-  AssetManager::AddLocation("programs/compositor", internal_group);
-  AssetManager::AddLocation("programs/overlay", internal_group);
-  AssetManager::AddLocation("programs/gorilla", internal_group);
+  AssetLoader::AddLocation("programs/main", internal_group);
+  AssetLoader::AddLocation("programs/rtss", internal_group);
+  AssetLoader::AddLocation("programs/pbr", internal_group);
+  AssetLoader::AddLocation("programs/particles", internal_group);
+  AssetLoader::AddLocation("programs/compositor", internal_group);
+  AssetLoader::AddLocation("programs/overlay", internal_group);
+  AssetLoader::AddLocation("programs/gorilla", internal_group);
 
-  AssetManager::AddLocationRecursive("assets", default_group, "resources.list");
+  AssetLoader::AddLocationRecursive("assets", default_group, "resources.list");
 
 #else
 
-  Ogre::ResourceGroupManager &resGroupMan = Ogre::ResourceGroupManager::getSingleton();
-  Ogre::String defResGroup = Ogre::RGN_DEFAULT;
+  ResourceGroupManager &resGroupMan = ResourceGroupManager::getSingleton();
+  String defResGroup = RGN_DEFAULT;
 
   const std::string file_system = "APKFileSystem";
   const std::string zip = "APKZip";
@@ -238,90 +239,90 @@ void RenderSystem::InitResourceLocation_() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void RenderSystem::InitShadowSettings_() {
+void RenderSystem::InitShadowSettings() {
   bool shadows_enable = true;
   float shadow_far = 400;
   int16_t tex_size = 256;
   string tex_format = "D16";
 
-  conf_->Get("shadows_enable", shadows_enable);
-  conf_->Get("shadow_far", shadow_far);
-  conf_->Get("tex_format", tex_format);
-  conf_->Get("tex_size", tex_size);
+  config->Get("shadows_enable", shadows_enable);
+  config->Get("shadow_far", shadow_far);
+  config->Get("tex_format", tex_format);
+  config->Get("tex_size", tex_size);
 
   if (!shadows_enable) {
-    scene_->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+    scene->setShadowTechnique(SHADOWTYPE_NONE);
     return;
   }
 
-  Ogre::PixelFormat texture_type = Ogre::PixelFormat::PF_DEPTH16;
+  PixelFormat texture_type = PixelFormat::PF_DEPTH16;
 
-  scene_->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-  scene_->setShadowFarDistance(shadow_far);
+  scene->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+  scene->setShadowFarDistance(shadow_far);
 
   if (tex_format == "F32") {
-    texture_type = Ogre::PixelFormat::PF_FLOAT32_R;
+    texture_type = PixelFormat::PF_FLOAT32_R;
   } else if (tex_format == "F16") {
-    texture_type = Ogre::PixelFormat::PF_FLOAT16_R;
+    texture_type = PixelFormat::PF_FLOAT16_R;
   }
   if (tex_format == "D32") {
-    texture_type = Ogre::PixelFormat::PF_DEPTH32;
+    texture_type = PixelFormat::PF_DEPTH32;
   } else if (tex_format == "D16") {
-    texture_type = Ogre::PixelFormat::PF_DEPTH16;
+    texture_type = PixelFormat::PF_DEPTH16;
   }
 
-  scene_->setShadowTextureSize(tex_size);
-  scene_->setShadowTexturePixelFormat(texture_type);
-  scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
-  scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
-  scene_->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
+  scene->setShadowTextureSize(tex_size);
+  scene->setShadowTexturePixelFormat(texture_type);
+  scene->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
+  scene->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
+  scene->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
 
-  scene_->setShadowTextureSelfShadow(true);
-  scene_->setShadowCasterRenderBackFaces(true);
-  scene_->setShadowFarDistance(shadow_far);
-  auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
-  scene_->setShadowTextureCasterMaterial(passCaterMaterial);
+  scene->setShadowTextureSelfShadow(true);
+  scene->setShadowCasterRenderBackFaces(true);
+  scene->setShadowFarDistance(shadow_far);
+  auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+  scene->setShadowTextureCasterMaterial(passCaterMaterial);
 
-  pssm_ = make_shared<Ogre::PSSMShadowCameraSetup>();
+  pssm = make_shared<PSSMShadowCameraSetup>();
   const float near_clip_distance = 0.001;
-  pssm_->calculateSplitPoints(pssm_split_count_, near_clip_distance, scene_->getShadowFarDistance());
-  split_points_ = pssm_->getSplitPoints();
+  pssm->calculateSplitPoints(pssm_split_count, near_clip_distance, scene->getShadowFarDistance());
+  split_points = pssm->getSplitPoints();
   //  pssm_->setSplitPadding(near_clip_distance);
-  pssm_->setSplitPadding(0.1);
+  pssm->setSplitPadding(0.1);
 
-  for (size_t i = 0; i < pssm_split_count_; i++) {
-    pssm_->setOptimalAdjustFactor(i, static_cast<float>(i));
+  for (size_t i = 0; i < pssm_split_count; i++) {
+    pssm->setOptimalAdjustFactor(i, static_cast<float>(i));
   }
 
-  scene_->setShadowCameraSetup(pssm_);
-  scene_->setShadowColour(Ogre::ColourValue::Black);
+  scene->setShadowCameraSetup(pssm);
+  scene->setShadowColour(ColourValue::Black);
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
+  TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
 #endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void RenderSystem::InitTextureSettings_() {
-  string filtration = conf_->Get<string>("filtration");
+void RenderSystem::InitTextureSettings() {
+  string filtration = config->Get<string>("filtration");
   unsigned int anisotropy = 4;
 
-  conf_->Get("anisotropy", anisotropy);
+  config->Get("anisotropy", anisotropy);
 
-  Ogre::TextureFilterOptions filtering = Ogre::TFO_ANISOTROPIC;
+  TextureFilterOptions filtering = TFO_ANISOTROPIC;
 
   if (filtration == "anisotropic") {
-    filtering = Ogre::TFO_ANISOTROPIC;
+    filtering = TFO_ANISOTROPIC;
   } else if (filtration == "bilinear") {
-    filtering = Ogre::TFO_BILINEAR;
+    filtering = TFO_BILINEAR;
   } else if (filtration == "trilinear") {
-    filtering = Ogre::TFO_TRILINEAR;
+    filtering = TFO_TRILINEAR;
   } else if (filtration == "none") {
-    filtering = Ogre::TFO_NONE;
+    filtering = TFO_NONE;
   }
 
-  Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
-  Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
+  MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
+  MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -338,15 +339,15 @@ void RenderSystem::Update(float time) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::Refresh() {
-  InitShadowSettings_();
-  compositor_->SetUp();
+  InitShadowSettings();
+  compositor->SetUp();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::Resize(int w, int h, bool f) {
-  window_->SetFullscreen(f);
-  window_->Resize(w, h);
-  render_window_->resize(w, h);
+  window->SetFullscreen(f);
+  window->Resize(w, h);
+  render_window->resize(w, h);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -362,16 +363,16 @@ void RenderSystem::RestoreFullscreenAndroid_() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::RenderOneFrame() {
-  root_->renderOneFrame();
+  ogre_root->renderOneFrame();
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   window_->SwapBuffers();
 #endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Window &RenderSystem::GetWindow() { return *window_; }
+Window &RenderSystem::GetWindow() { return *window; }
 
 //----------------------------------------------------------------------------------------------------------------------
-Compositor &RenderSystem::GetCompositor() { return *compositor_; }
+Compositor &RenderSystem::GetCompositor() { return *compositor; }
 
 }  // namespace glue

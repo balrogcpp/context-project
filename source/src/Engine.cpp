@@ -11,7 +11,7 @@ namespace glue {
 //----------------------------------------------------------------------------------------------------------------------
 Engine::Engine() {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  config_ = make_unique<Config>("config.json");
+  config = make_unique<Config>("config.json");
 #else
   config_ = make_unique<Config>("");
   config_->AddMember("window_fullscreen", true);
@@ -30,10 +30,10 @@ Engine::Engine() {
   config_->AddMember("shadows_texture_format", 16);
 #endif
 
-  System::SetConfig(config_.get());
-  components_.reserve(16);
+  System::SetConfig(config.get());
+  components.reserve(16);
 
-  io_ = make_unique<InputHandler>();
+  io = make_unique<InputHandler>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -41,24 +41,24 @@ Engine::~Engine() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::InitSystems() {
-  int window_width = config_->Get<int>("window_width");
-  int window_high = config_->Get<int>("window_high");
-  bool window_fullscreen = config_->Get<bool>("window_fullscreen");
-  rs_ = make_unique<RenderSystem>(window_width, window_high, window_fullscreen);
+  int window_width = config->Get<int>("window_width");
+  int window_high = config->Get<int>("window_high");
+  bool window_fullscreen = config->Get<bool>("window_fullscreen");
+  rs = make_unique<RenderSystem>(window_width, window_high, window_fullscreen);
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   bool physics_threaded = false;  // cause strange behavior sometimes
-  config_->Get("physics_threaded", physics_threaded);
-  ps_ = make_unique<PhysicsSystem>(physics_threaded);
-  as_ = make_unique<AudioSystem>(8, 8);
+  config->Get("physics_threaded", physics_threaded);
+  ps = make_unique<PhysicsSystem>(physics_threaded);
+  as = make_unique<AudioSystem>(8, 8);
 #else
   ps_ = make_unique<PhysicsSystem>(false);
   as_ = make_unique<AudioSystem>(4, 4);
 #endif
 
-  loader_ = make_unique<DotSceneLoaderB>();
+  loader = make_unique<DotSceneLoaderB>();
 
-  rs_->Refresh();
+  rs->Refresh();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -68,47 +68,47 @@ void Engine::Capture() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Engine::RegSystem(view_ptr<System> system) { components_.push_back(system); }
+void Engine::RegSystem(view_ptr<System> system) { components.push_back(system); }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Pause() {
-  for_each(components_.begin(), components_.end(), [](view_ptr<System> it) { it->Pause(); });
+  for_each(components.begin(), components.end(), [](view_ptr<System> it) { it->Pause(); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::InMenu() {
-  ps_->Pause();
-  loader_->Pause();
-  io_->Pause();
+  ps->Pause();
+  loader->Pause();
+  io->Pause();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::OffMenu() {
-  ps_->Resume();
-  loader_->Resume();
-  io_->Resume();
+  ps->Resume();
+  loader->Resume();
+  io->Resume();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Resume() {
-  for_each(components_.begin(), components_.end(), [](view_ptr<System> it) { it->Resume(); });
+  for_each(components.begin(), components.end(), [](view_ptr<System> it) { it->Resume(); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Cleanup() {
-  for_each(components_.begin(), components_.end(), [](view_ptr<System> it) { it->Cleanup(); });
+  for_each(components.begin(), components.end(), [](view_ptr<System> it) { it->Cleanup(); });
   Refresh();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Engine::Update(float time) {
-  for_each(components_.begin(), components_.end(), [time](view_ptr<System> it) { it->Update(time); });
+  for_each(components.begin(), components.end(), [time](view_ptr<System> it) { it->Update(time); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Engine::RenderOneFrame() { rs_->RenderOneFrame(); }
+void Engine::RenderOneFrame() { rs->RenderOneFrame(); }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Engine::Refresh() { rs_->Refresh(); }
+void Engine::Refresh() { rs->Refresh(); }
 
 }  // namespace glue

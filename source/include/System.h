@@ -13,16 +13,16 @@ class System : public NoCopy {
   virtual ~System();
 
   virtual void Cleanup() = 0;
-  virtual void Pause() { paused_ = true; }
-  virtual void Resume() { paused_ = false; }
+  virtual void Pause() { paused = true; }
+  virtual void Resume() { paused = false; }
   virtual void Update(float time) = 0;
 
  protected:
-  inline static view_ptr<Config> conf_;
-  bool paused_ = false;
+  inline static view_ptr<Config> config = nullptr;
+  bool paused = false;
 
  public:
-  static void SetConfig(view_ptr<Config> conf) { conf_ = conf; }
+  static void SetConfig(view_ptr<Config> conf) { config = conf; }
 };
 
 }  // namespace glue

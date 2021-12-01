@@ -199,9 +199,9 @@ VegetationSystem::~VegetationSystem() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::Update(float time) {
-  for (auto &it : pgeometry_) it->update();
+  for (auto &it : pgeometry) it->update();
 
-  for (auto &it : gpages_) it->update();
+  for (auto &it : gpages) it->update();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -230,7 +230,7 @@ void VegetationSystem::GenerateGrassStatic() {
   field->build();
   field->setCastShadows(false);
 
-  sgeometry_.push_back(field);
+  sgeometry.push_back(field);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -267,7 +267,7 @@ void VegetationSystem::GenerateRocksStatic() {
   rocks->build();
   rocks->setCastShadows(true);
 
-  sgeometry_.push_back(rocks);
+  sgeometry.push_back(rocks);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -278,11 +278,11 @@ void VegetationSystem::GenerateGrassPaged() {
   grass->setPageLoader(grassLoader);
   grassLoader->setRenderQueueGroup(Ogre::RENDER_QUEUE_MAIN);
 
-  if (heigh_func_)
-    grassLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func_(x, z)); });
+  if (heigh_func)
+    grassLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func(x, z)); });
 
-  pgeometry_.push_back(unique_ptr<PagedGeometry>(grass));
-  ploaders_.push_back(unique_ptr<PageLoader>(grassLoader));
+  pgeometry.push_back(unique_ptr<PagedGeometry>(grass));
+  ploaders.push_back(unique_ptr<PageLoader>(grassLoader));
 
   GrassLayer *layer = grassLoader->addLayer("GrassCustom");
   layer->setFadeTechnique(FADETECH_ALPHA);
@@ -316,8 +316,8 @@ void VegetationSystem::GenerateTreesPaged() {
   //    treeLoader->setHeightFunction([](float x, float z, void *) { return
   //    Ogre::Real(heigh_func_(x, z) - 0.1); });
 
-  pgeometry_.push_back(unique_ptr<PagedGeometry>(trees));
-  ploaders_.push_back(unique_ptr<PageLoader>(treeLoader));
+  pgeometry.push_back(unique_ptr<PagedGeometry>(trees));
+  ploaders.push_back(unique_ptr<PageLoader>(treeLoader));
 
   trees->setPageLoader(treeLoader);
   Ogre::Entity *fir1EntPtr = scene->createEntity("fir1", "fir05_30.mesh");
@@ -344,7 +344,7 @@ void VegetationSystem::GenerateTreesPaged() {
       z = Ogre::Math::RangeRandom(-bound, bound);
     }
 
-    y = heigh_func_(x, z);
+    y = heigh_func(x, z);
     scale = Ogre::Math::RangeRandom(0.9f, 1.1f);
     scale *= 0.2;
     Ogre::Quaternion quat;
@@ -369,7 +369,7 @@ void VegetationSystem::GenerateTreesPaged() {
 //----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::ProcessForest() {
   GenerateGrassPaged();
-  GenerateTreesPaged();
+//  GenerateTreesPaged();
   GenerateRocksStatic();
 }
 

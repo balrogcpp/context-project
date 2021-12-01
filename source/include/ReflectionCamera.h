@@ -23,18 +23,17 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   const uint32_t SUBMERGED_MASK = 0x0F0;
   const uint32_t SURFACE_MASK = 0x00F;
   const uint32_t WATER_MASK = 0xF00;
-  std::shared_ptr<Ogre::Texture> reflection_tex_;
-  std::shared_ptr<Ogre::Texture> refraction_tex_;
+  std::shared_ptr<Ogre::Texture> reflection_texture;
+  std::shared_ptr<Ogre::Texture> refraction_texture;
 
  protected:
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
-  void Clear_();
-  void Init_(unsigned int tex_size);
+  void Clear();
 
-  Ogre::Plane plane_;
-  view_ptr<Ogre::Camera> rcamera_;
-  view_ptr<Ogre::SceneManager> scene_;
+  Ogre::Plane plane;
+  view_ptr<Ogre::Camera> rcamera;
+  view_ptr<Ogre::SceneManager> scene;
 };
 
 }  // namespace glue

@@ -41,31 +41,30 @@ class CameraMan final : public Object, public MutedInputObserver {
   Style GetStyle() const noexcept;
 
  protected:
-  view_ptr<Ogre::SceneNode> node_;
-  view_ptr<Ogre::SceneNode> camera_yaw_node_;
-  view_ptr<Ogre::SceneNode> camera_pitch_node_;
-  view_ptr<Ogre::SceneNode> camera_roll_node_;
-  view_ptr<btRigidBody> rigid_;
-  Ogre::Degree dx_, dy_;
-  view_ptr<Ogre::Camera> camera_;
-  view_ptr<Ogre::SceneNode> target_;
-  Style style_ = Style::MANUAL;
-  float top_speed_ = 10;
-  float run_speed_ = 20;
-  float animation_time_ = 0.5;
-  float anim_duration_ = 0.5;  // ms
-  float const_speed_ = 5;
-  bool move_forward_ = false;
-  bool move_back_ = false;
-  bool move_left_ = false;
-  bool move_right_ = false;
-  bool move_up_ = false;
-  bool move_down_ = false;
-  bool move_fast_ = false;
-  bool stop_ = false;
-  Ogre::Vector3 offset_;
-  Ogre::Vector3 velocity_;
-  Ogre::Vector3 prev_pos_;
+  view_ptr<Ogre::SceneNode> node;
+  view_ptr<Ogre::SceneNode> yaw_node;
+  view_ptr<Ogre::SceneNode> pitch_node;
+  view_ptr<Ogre::SceneNode> roll_node;
+  view_ptr<btRigidBody> rigid;
+  view_ptr<Ogre::Camera> camera;
+  view_ptr<Ogre::SceneNode> target;
+  Style style = Style::MANUAL;
+  float top_speed = 10;
+  float run_speed = 20;
+  float animation_time = 0.5;
+  float anim_duration = 0.5;  // ms
+  float const_speed = 5;
+  bool move_forward = false;
+  bool move_back = false;
+  bool move_left = false;
+  bool move_right = false;
+  bool move_up = false;
+  bool move_down = false;
+  bool move_fast = false;
+  bool stop = false;
+  Ogre::Vector3 offset;
+  Ogre::Vector3 velocity;
+  Ogre::Vector3 prev_pos;
 };
 
 }  // namespace glue

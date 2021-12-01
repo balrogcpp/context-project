@@ -18,13 +18,13 @@ AudioSystem::AudioSystem(unsigned int max_sources, unsigned int queue_list_size)
 #endif
 
   // SetUp new factory
-  auto *mOgreOggSoundFactory = OGRE_NEW_T(OgreOggSound::OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
+  auto *mOgreOggSoundFactory = new OgreOggSound::OgreOggSoundFactory();
 
   // Register
   Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
   OgreOggSound::OgreOggSoundManager::getSingleton().init("", max_sources, queue_list_size);
-  manager_ = &OgreOggSound::OgreOggSoundManager::getSingleton();
-  manager_->setResourceGroupName(Ogre::RGN_AUTODETECT);
+  sound_manager = &OgreOggSound::OgreOggSoundManager::getSingleton();
+  sound_manager->setResourceGroupName(Ogre::RGN_AUTODETECT);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -37,30 +37,30 @@ void AudioSystem::Cleanup() {}
 void AudioSystem::Update(float time) {}
 
 //----------------------------------------------------------------------------------------------------------------------
-void AudioSystem::Pause() { manager_->pauseAllSounds(); }
+void AudioSystem::Pause() { sound_manager->pauseAllSounds(); }
 //----------------------------------------------------------------------------------------------------------------------
-void AudioSystem::Resume() { manager_->resumeAllPausedSounds(); }
+void AudioSystem::Resume() { sound_manager->resumeAllPausedSounds(); }
 
 //----------------------------------------------------------------------------------------------------------------------
 void AudioSystem::CreateSound(const string &name, const string &file, bool loop) {
-  auto *sound = manager_->createSound(name, file, true, loop, true, nullptr);
-  Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->createChildSceneNode()->attachObject(
-      sound);
+  auto *sound = sound_manager->createSound(name, file, true, loop, true, nullptr);
+  auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
+  root_node->createChildSceneNode()->attachObject(sound);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void AudioSystem::SetListener(Ogre::SceneNode *parent) {
-  auto *listener = manager_->getListener();
+  auto *listener = sound_manager->getListener();
   if (!listener) {
-    manager_->createListener();
-    listener = manager_->getListener();
+    sound_manager->createListener();
+    listener = sound_manager->getListener();
   }
   parent->attachObject(listener);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void AudioSystem::PlaySound(const string &name, bool immediate) {
-  auto *sound = manager_->getSound(name);
+  auto *sound = sound_manager->getSound(name);
   if (sound) {
     if (immediate) sound->stop();
     sound->play();
@@ -70,19 +70,19 @@ void AudioSystem::PlaySound(const string &name, bool immediate) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AudioSystem::SetMasterVolume(float volume) { manager_->setMasterVolume(volume); }
+void AudioSystem::SetMasterVolume(float volume) { sound_manager->setMasterVolume(volume); }
 
 //----------------------------------------------------------------------------------------------------------------------
 void AudioSystem::SetMaxVolume(const string &name, float volume) {
-  if (manager_->getSound(name)) {
-    manager_->getSound(name)->setMaxVolume(volume);
+  if (sound_manager->getSound(name)) {
+    sound_manager->getSound(name)->setMaxVolume(volume);
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void AudioSystem::SetVolume(const string &name, float gain) {
-  if (manager_->getSound(name)) {
-    manager_->getSound(name)->setVolume(gain);
+  if (sound_manager->getSound(name)) {
+    sound_manager->getSound(name)->setVolume(gain);
   }
 }
 

@@ -47,13 +47,13 @@ bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { lightmap_ = enabled; }
+void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { lightmap = enabled; }
 
 //----------------------------------------------------------------------------------------------------------------------
 void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrain) {
   terrain->_setMorphRequired(true);
   terrain->_setNormalMapRequired(true);
-  terrain->_setLightMapRequired(lightmap_, false);
+  terrain->_setLightMapRequired(lightmap, false);
   terrain->_setCompositeMapRequired(false);
 }
 

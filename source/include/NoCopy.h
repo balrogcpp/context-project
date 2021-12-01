@@ -4,6 +4,7 @@
 
 namespace glue {
 
+/// Deletes copy constructor
 class NoCopy {
  public:
   NoCopy() = default;

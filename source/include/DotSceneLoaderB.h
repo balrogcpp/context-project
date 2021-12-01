@@ -6,7 +6,6 @@
 #include "Input.h"
 #include "Landscape.h"
 #include "ReflectionCamera.h"
-#include "Scene.h"
 #include "Singleton.h"
 #include "System.h"
 #include "VegetationSystem.h"
@@ -68,45 +67,44 @@ class DotSceneLoaderB final : public System, public Singleton<DotSceneLoaderB> {
   static VegetationSystem &GetForest();
 
  protected:
-  void ProcessScene_(pugi::xml_node &xml_root);
-  void ProcessNodes_(pugi::xml_node &xml_node);
-  void ProcessExternals_(pugi::xml_node &xml_node);
-  void ProcessEnvironment_(pugi::xml_node &xml_node);
-  void ProcessUserData_(pugi::xml_node &xml_node, Ogre::UserObjectBindings &user_object_bindings);
-  void ProcessLight_(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
-  void ProcessCamera_(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
-  void ProcessNode_(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
-  void ProcessLookTarget_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessTrackTarget_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessEntity_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessParticleSystem_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessBillboardSet_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessPlane_(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessForest_(pugi::xml_node &xml_node);
-  void ProcessLandscape_(pugi::xml_node &xml_node);
-  void ProcessFog_(pugi::xml_node &xml_node);
-  void ProcessSkyBox_(pugi::xml_node &xml_node);
-  void ProcessSkyDome_(pugi::xml_node &xml_node);
-  void ProcessSkyPlane_(pugi::xml_node &xml_node);
-  void ProcessLightRange_(pugi::xml_node &xml_node, Ogre::Light *light);
-  void ProcessLightAttenuation_(pugi::xml_node &xml_node, Ogre::Light *light);
-  void WriteNode_(pugi::xml_node &parentXML, const Ogre::SceneNode *node);
+  void ProcessScene(pugi::xml_node &xml_root);
+  void ProcessNodes(pugi::xml_node &xml_node);
+  void ProcessExternals(pugi::xml_node &xml_node);
+  void ProcessEnvironment(pugi::xml_node &xml_node);
+  void ProcessUserData(pugi::xml_node &xml_node, Ogre::UserObjectBindings &user_object_bindings);
+  void ProcessLight(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
+  void ProcessCamera(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
+  void ProcessNode(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
+  void ProcessLookTarget(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
+  void ProcessTrackTarget(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
+  void ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
+  void ProcessParticleSystem(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
+  void ProcessBillboardSet(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
+  void ProcessPlane(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
+  void ProcessForest(pugi::xml_node &xml_node);
+  void ProcessLandscape(pugi::xml_node &xml_node);
+  void ProcessFog(pugi::xml_node &xml_node);
+  void ProcessSkyBox(pugi::xml_node &xml_node);
+  void ProcessSkyDome(pugi::xml_node &xml_node);
+  void ProcessSkyPlane(pugi::xml_node &xml_node);
+  void ProcessLightRange(pugi::xml_node &xml_node, Ogre::Light *light);
+  void ProcessLightAttenuation(pugi::xml_node &xml_node, Ogre::Light *light);
+  void WriteNode(pugi::xml_node &parentXML, const Ogre::SceneNode *node);
 
-  std::unique_ptr<ReflectionCamera> rcamera_;
-  std::unique_ptr<CubeMapCamera> ccamera_;
-  std::unique_ptr<CameraMan> camera_;
-  std::unique_ptr<Scene> scene_;
+  std::unique_ptr<ReflectionCamera> rcamera;
+  std::unique_ptr<CubeMapCamera> ccamera;
+  std::unique_ptr<CameraMan> camera_man;
 
-  view_ptr<Ogre::SceneManager> ogre_scene_;
-  view_ptr<Ogre::Root> root_;
-  view_ptr<Ogre::SceneNode> root_node_;
-  view_ptr<Ogre::SceneNode> attach_node_;
-  std::string group_name_ = Ogre::RGN_DEFAULT;
+  view_ptr<Ogre::SceneManager> ogre_scene;
+  view_ptr<Ogre::Root> root;
+  view_ptr<Ogre::SceneNode> root_node;
+  view_ptr<Ogre::SceneNode> attach_node;
+  std::string group_name = Ogre::RGN_DEFAULT;
 
-  std::unique_ptr<SinbadCharacterController> sinbad_;
+  std::unique_ptr<SinbadCharacterController> sinbad;
 
-  static inline std::unique_ptr<Landscape> terrain_;
-  static inline std::unique_ptr<VegetationSystem> forest_;
+  static inline std::unique_ptr<Landscape> terrain;
+  static inline std::unique_ptr<VegetationSystem> forest;
 };
 
 class DotScenePluginB : public Ogre::Plugin {

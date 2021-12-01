@@ -34,14 +34,14 @@ class Engine : public LazySingleton<Engine> {
   void RegSystem(view_ptr<System> system);
 
  protected:
-  std::unique_ptr<InputHandler> io_;
-  std::unique_ptr<Config> config_;
-  std::unique_ptr<RenderSystem> rs_;
-  std::unique_ptr<PhysicsSystem> ps_;
-  std::unique_ptr<AudioSystem> as_;
-  std::unique_ptr<Overlay> overlay_;
-  std::unique_ptr<DotSceneLoaderB> loader_;
-  std::vector<view_ptr<System>> components_;
+  std::unique_ptr<InputHandler> io;
+  std::unique_ptr<Config> config;
+  std::unique_ptr<RenderSystem> rs;
+  std::unique_ptr<PhysicsSystem> ps;
+  std::unique_ptr<AudioSystem> as;
+  std::unique_ptr<Overlay> overlay;
+  std::unique_ptr<DotSceneLoaderB> loader;
+  std::vector<view_ptr<System>> components;
 
   friend InputHandler& GetIo();
   friend Config& GetConf();

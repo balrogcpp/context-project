@@ -19,8 +19,6 @@ class AnimationState;
 #define SCALE 0.2f
 #define CHAR_HEIGHT SCALE * 5.0f  // height of character's center of mass above ground
 #define CAM_HEIGHT SCALE * 2.0f   // height of camera above character's center of mass
-//#define RUN_SPEED SCALE*17.0f           // character running speed in units
-// per second
 #define RUN_SPEED SCALE * 30.0f   // character running speed in units per second
 #define TURN_SPEED 500.0f         // character turning in degrees per second
 #define ANIM_FADE_SPEED 7.5f      // animation crossfade speed in % of full weight per second
@@ -29,8 +27,8 @@ class AnimationState;
 
 namespace glue {
 
-class SinbadCharacterController : public glue::Object, public glue::MutedInputObserver {
- protected:
+class SinbadCharacterController : public Object, public MutedInputObserver {
+ public:
   // all the animations our character has, and a null ID
   // some of these affect separate body parts and will be blended together
   enum AnimID {
@@ -51,7 +49,6 @@ class SinbadCharacterController : public glue::Object, public glue::MutedInputOb
     ANIM_NONE = NUM_ANIMS
   };
 
- public:
   Ogre::SceneNode *GetBodyNode() const;
   explicit SinbadCharacterController(Ogre::Camera *cam);
   void Update(float deltaTime) override;

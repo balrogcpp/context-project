@@ -26,7 +26,7 @@ Application::Application() {
     auto *logger = new Ogre::LogManager();
 
 #ifdef DEBUG
-    logger->createLog(log_file_, true, true, true);
+    logger->createLog(log_file, true, true, true);
     Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
 #else
     logger->createLog(log_file_, false, false, true);
@@ -43,33 +43,33 @@ Application::Application() {
     icon.Save("GlueSample");
 #endif
 
-    engine_ = &Engine::GetInstance();
-    engine_->InitSystems();
+    engine = &Engine::GetInstance();
+    engine->InitSystems();
 
     state_manager_ = make_unique<StateManager>();
 
-    GetConf().Get("verbose", verbose_);
-    GetConf().Get("verbose_input", verbose_input_);
+    GetConf().Get("verbose", verbose);
+    GetConf().Get("verbose_input", verbose_input);
 
-    if (verbose_) {
-      log_.reserve(10000);
+    if (verbose) {
+      log.reserve(10000);
     }
 
-    if (verbose_input_) {
+    if (verbose_input) {
       verbose_listener_ = make_unique<VerboseListener>();
     }
 
-    lock_fps_ = GetConf().Get<bool>("lock_fps");
+    lock_fps = GetConf().Get<bool>("lock_fps");
     target_fps_ = GetConf().Get<int>("target_fps");
 
   } catch (Exception &e) {
-    ExceptionMessage_("Exception", e.GetDescription());
+    ExceptionMessage("Exception", e.GetDescription());
   } catch (Ogre::Exception &e) {
-    ExceptionMessage_("Exception", string("Ogre: ") + e.getFullDescription());
+    ExceptionMessage("Exception", string("Ogre: ") + e.getFullDescription());
   } catch (exception &e) {
-    ExceptionMessage_("Exception", string("std::exception: ") + e.what());
+    ExceptionMessage("Exception", string("std::exception: ") + e.what());
   } catch (...) {
-    ExceptionMessage_("Exception", "unhandled");
+    ExceptionMessage("Exception", "unhandled");
   }
 }
 
@@ -81,7 +81,7 @@ Application::~Application() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-int Application::ExceptionMessage_(const string &caption, const string &message) {
+int Application::ExceptionMessage(const string &caption, const string &message) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   GetWindow().Grab(false);
 #endif
@@ -97,74 +97,74 @@ int Application::ExceptionMessage_(const string &caption, const string &message)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::WriteLogToFile_() {
-  if (!verbose_) {
+void Application::WriteLogToFile() {
+  if (!verbose) {
     return;
   }
 
   ofstream f;
-  f.open(log_file_);
+  f.open(log_file);
 
   if (f.is_open()) {
-    f << log_;
+    f << log;
   }
 }
 //----------------------------------------------------------------------------------------------------------------------
-void Application::PrintLogToConsole_() { cout << log_ << flush; }
+void Application::PrintLogToConsole() { cout << log << flush; }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml, bool maskDebug, const string &logName,
                                 bool &skipThisMessage) {
-  log_.append(message);
-  log_.append("\n");
+  log.append(message);
+  log.append("\n");
 
 #ifdef DEBUG
-  if (verbose_) cout << message << '\n';
+  if (verbose) cout << message << '\n';
 #endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Loop_() {
+void Application::Loop() {
   bool suspend_old = false;
 
-  while (running_ && state_manager_->IsActive()) {
+  while (running && state_manager_->IsActive()) {
     auto before_frame = chrono::system_clock::now().time_since_epoch();
     int64_t micros_before_frame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
 
-    if (cumulated_time_ > int64_t(1e+6)) {
-      current_fps_ = fps_counter_;
-      cumulated_time_ = 0;
-      fps_counter_ = 0;
+    if (cumulated_time > int64_t(1e+6)) {
+      current_fps = fps_counter;
+      cumulated_time = 0;
+      fps_counter = 0;
     }
 
-    engine_->Capture();
+    engine->Capture();
 
-    if (!suspend_) {
+    if (!suspend) {
       if (state_manager_->IsDirty()) {
-        engine_->Pause();
-        engine_->Cleanup();
+        engine->Pause();
+        engine->Cleanup();
         state_manager_->InitNextState();
-        engine_->Resume();
+        engine->Resume();
       } else if (suspend_old) {
-        engine_->Resume();
+        engine->Resume();
         suspend_old = false;
       }
 
       auto before_update = chrono::system_clock::now().time_since_epoch();
       int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
-      float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_) / 1e+6;
-      time_of_last_frame_ = micros_before_update;
+      float frame_time = static_cast<float>(micros_before_update - time_of_last_frame) / 1e+6;
+      time_of_last_frame = micros_before_update;
       state_manager_->Update(frame_time);
-      engine_->Update(frame_time);
-      engine_->RenderOneFrame();
+      engine->Update(frame_time);
+      engine->RenderOneFrame();
 
     } else {
-      engine_->Pause();
+      engine->Pause();
       suspend_old = true;
     }
 
 #ifdef DEBUG
-    if (verbose_) {
+    if (verbose) {
       cout << flush;
     }
 #endif
@@ -173,7 +173,7 @@ void Application::Loop_() {
     auto micros_after_render = chrono::duration_cast<chrono::microseconds>(duration_after_render).count();
     auto render_time = micros_after_render - micros_before_frame;
 
-    if (lock_fps_) {
+    if (lock_fps) {
       auto delay = static_cast<int64_t>((1e+6 / target_fps_) - render_time);
       if (delay > 0) {
         this_thread::sleep_for(chrono::microseconds(delay));
@@ -184,40 +184,40 @@ void Application::Loop_() {
     int64_t micros_after_loop = chrono::duration_cast<chrono::microseconds>(duration_after_loop).count();
 
     int64_t time_since_last_frame_ = micros_after_loop - micros_before_frame;
-    cumulated_time_ += time_since_last_frame_;
+    cumulated_time += time_since_last_frame_;
 
-    fps_counter_++;
+    fps_counter++;
   }
 
-  engine_->Pause();
+  engine->Pause();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Go_() {
+void Application::Go() {
   if (state_manager_->IsActive()) {
     state_manager_->InitCurState();
-    running_ = true;
+    running = true;
     auto duration_before_update = chrono::system_clock::now().time_since_epoch();
-    time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
-    Loop_();
+    time_of_last_frame = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
+    Loop();
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Application::Quit() { running_ = false; }
+void Application::Quit() { running = false; }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Pause() {
-  suspend_ = true;
+  suspend = true;
   state_manager_->Pause();
-  engine_->Pause();
+  engine->Pause();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Application::Resume() {
-  suspend_ = false;
+  suspend = false;
   state_manager_->Resume();
-  engine_->Resume();
+  engine->Resume();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -233,20 +233,20 @@ int Application::Main(unique_ptr<AppState> &&scene_ptr) {
     ios_base::sync_with_stdio(false);
 
     state_manager_->SetInitialState(move(scene_ptr));
-    Go_();
+    Go();
 
-    WriteLogToFile_();
+    WriteLogToFile();
 
     SDL_Quit();
 
   } catch (Exception &e) {
-    ExceptionMessage_("Exception", e.GetDescription());
+    ExceptionMessage("Exception", e.GetDescription());
   } catch (Ogre::Exception &e) {
-    ExceptionMessage_("Exception", string("Ogre: ") + e.getFullDescription());
+    ExceptionMessage("Exception", string("Ogre: ") + e.getFullDescription());
   } catch (exception &e) {
-    ExceptionMessage_("Exception", string("std::exception: ") + e.what());
+    ExceptionMessage("Exception", string("std::exception: ") + e.what());
   } catch (...) {
-    ExceptionMessage_("Exception", "unhandled");
+    ExceptionMessage("Exception", "unhandled");
   }
 
   return 0;

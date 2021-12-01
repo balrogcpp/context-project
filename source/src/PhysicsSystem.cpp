@@ -12,64 +12,64 @@ using namespace std;
 namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
-PhysicsSystem::PhysicsSystem(bool threaded) : threaded_(threaded) {
+PhysicsSystem::PhysicsSystem(bool threaded) : threaded(threaded) {
   auto *sheduler = btCreateDefaultTaskScheduler();
 
   if (!sheduler) throw Exception("Bullet physics no task sheduler available");
 
   btSetTaskScheduler(sheduler);
-  broadphase_ = make_unique<btDbvtBroadphase>();
-  config_ = make_unique<btDefaultCollisionConfiguration>();
-  dispatcher_ = make_unique<btCollisionDispatcherMt>(config_.get(), 40);
-  solver_ = make_unique<btSequentialImpulseConstraintSolverMt>();
+  broadphase = make_unique<btDbvtBroadphase>();
+  config = make_unique<btDefaultCollisionConfiguration>();
+  dispatcher = make_unique<btCollisionDispatcherMt>(config.get(), 40);
+  solver = make_unique<btSequentialImpulseConstraintSolverMt>();
 
   btConstraintSolverPoolMt *solverPool = new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT);
 
-  world_ = make_unique<btDiscreteDynamicsWorldMt>(dispatcher_.get(), broadphase_.get(), solverPool, solver_.get(),
-                                                  config_.get());
+  world = make_unique<btDiscreteDynamicsWorldMt>(dispatcher.get(), broadphase.get(), solverPool, solver.get(),
+                                                  config.get());
 
-  world_->setGravity(btVector3(0.0, -9.8, 0.0));
+  world->setGravity(btVector3(0.0, -9.8, 0.0));
 
-  if (debug_) {
+  if (debug) {
     auto *node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
-    dbg_draw_ = make_unique<BtOgre::DebugDrawer>(node, world_.get());
-    dbg_draw_->setDebugMode(debug_);
-    world_->setDebugDrawer(dbg_draw_.get());
+    dbg_draw = make_unique<BtOgre::DebugDrawer>(node, world.get());
+    dbg_draw->setDebugMode(debug);
+    world->setDebugDrawer(dbg_draw.get());
   }
 
-  running_ = true;
+  running = true;
 
-  InitThread_();
+  InitThread();
 
-  pause_ = false;
+  pause = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 PhysicsSystem::~PhysicsSystem() {
-  running_ = false;
+  running = false;
 
   Cleanup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsSystem::InitThread_() {
-  if (!threaded_) return;
+void PhysicsSystem::InitThread() {
+  if (!threaded) return;
 
-  time_of_last_frame_ =
+  time_of_last_frame =
       chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 
   function<void(void)> update_func_ = [&]() {
-    while (running_) {
+    while (running) {
       auto before_update = chrono::system_clock::now().time_since_epoch();
       int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
-      float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_) / 1e+6;
-      time_of_last_frame_ = micros_before_update;
+      float frame_time = static_cast<float>(micros_before_update - time_of_last_frame) / 1e+6;
+      time_of_last_frame = micros_before_update;
 
       // Actually do calculations
-      if (!pause_) {
-        world_->stepSimulation(frame_time, steps_, 1.0f / update_rate_);
+      if (!pause) {
+        world->stepSimulation(frame_time, steps, 1.0f / update_rate);
 
-        if (debug_) dbg_draw_->step();
+        if (debug) dbg_draw->step();
 
         DispatchCollisions();
       }
@@ -80,30 +80,30 @@ void PhysicsSystem::InitThread_() {
 
       auto update_time = micros_after_update - micros_before_update;
 
-      auto delay = static_cast<int64_t>((1e+6 / update_rate_) - update_time);
+      auto delay = static_cast<int64_t>((1e+6 / update_rate) - update_time);
       if (delay > 0) this_thread::sleep_for(chrono::microseconds(delay));
     }
   };
 
-  update_thread_ = make_unique<thread>(update_func_);
-  update_thread_->detach();
+  update_thread = make_unique<thread>(update_func_);
+  update_thread->detach();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsSystem::Resume() { pause_ = false; }
+void PhysicsSystem::Resume() { pause = false; }
 
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsSystem::Pause() { pause_ = true; }
+void PhysicsSystem::Pause() { pause = true; }
 
 //----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::Update(float time) {
-  if (threaded_) return;
+  if (threaded) return;
 
-  if (pause_) return;
+  if (pause) return;
 
-  world_->stepSimulation(time, steps_, 1.0f / update_rate_);
+  world->stepSimulation(time, steps, 1.0f / update_rate);
 
-  if (debug_) dbg_draw_->step();
+  if (debug) dbg_draw->step();
 
   DispatchCollisions();
 }
@@ -159,24 +159,24 @@ void PhysicsSystem::DispatchCollisions() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::Cleanup() {
-  world_->clearForces();
+  world->clearForces();
 
   // remove the rigidbodies from the dynamics world and delete them
-  for (int i = world_->getNumCollisionObjects() - 1; i >= 0; i--) {
-    btCollisionObject *obj = world_->getCollisionObjectArray()[i];
-    world_->removeCollisionObject(obj);
+  for (int i = world->getNumCollisionObjects() - 1; i >= 0; i--) {
+    btCollisionObject *obj = world->getCollisionObjectArray()[i];
+    world->removeCollisionObject(obj);
     delete obj;
   }
 
-  for (int i = world_->getNumConstraints() - 1; i >= 0; i--) {
-    btTypedConstraint *constraint = world_->getConstraint(i);
-    world_->removeConstraint(constraint);
+  for (int i = world->getNumConstraints() - 1; i >= 0; i--) {
+    btTypedConstraint *constraint = world->getConstraint(i);
+    world->removeConstraint(constraint);
     delete constraint;
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void PhysicsSystem::AddRigidBody(btRigidBody *body) { world_->addRigidBody(body); }
+void PhysicsSystem::AddRigidBody(btRigidBody *body) { world->addRigidBody(body); }
 
 //----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::CreateTerrainHeightfieldShape(int size, float *data, const float &min_height,
@@ -217,7 +217,7 @@ void PhysicsSystem::CreateTerrainHeightfieldShape(int size, float *data, const f
 
   entBody->setUserIndex(0);
   AddRigidBody(entBody);
-  world_->setForceUpdateAllAabbs(false);
+  world->setForceUpdateAllAabbs(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -604,6 +604,6 @@ void PhysicsSystem::ProcessData(Ogre::UserObjectBindings &user_object_bindings, 
     AddRigidBody(entBody);
   }
 }
-bool PhysicsSystem::IsThreaded() const { return threaded_; }
+bool PhysicsSystem::IsThreaded() const { return threaded; }
 
 }  // namespace glue

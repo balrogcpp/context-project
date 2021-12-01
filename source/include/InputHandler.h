@@ -8,14 +8,33 @@
 
 namespace glue {
 
-class CommandObserver {
- public:
-};
-
 class MutedInputObserver : public InputObserverI {
  public:
   MutedInputObserver();
   virtual ~MutedInputObserver();
+
+  // Keyboard
+  void OnKeyDown(SDL_Keycode sym) override {}
+  void OnKeyUp(SDL_Keycode sym) override {}
+
+  // Mouse
+  void OnMouseMove(int dx, int dy) override {}
+  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override {}
+  void OnMouseWheel(int x, int y) override {}
+  void OnMouseLbDown(int x, int y) override {}
+  void OnMouseLbUp(int x, int y) override {}
+  void OnMouseRbDown(int x, int y) override {}
+  void OnMouseRbUp(int x, int y) override {}
+  void OnMouseMbDown(int x, int y) override {}
+  void OnMouseMbUp(int x, int y) override {}
+  void OnTextInput(const char *text) override {}
+
+  // Joystick
+  void OnJoystickAxis(int which, int axis, int value) override {}
+  void OnJoystickBtDown(int which, int button) override {}
+  void OnJoystickBtUp(int which, int button) override {}
+  void OnJoystickHat(int which, int hat, int value) override {}
+  void OnJoystickBall(int which, int ball, int xrel, int yrel) override {}
 };
 
 class InputHandler final : public InputObserver, public Singleton<InputHandler> {

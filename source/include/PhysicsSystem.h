@@ -61,35 +61,35 @@ class PhysicsSystem final : public System, public Singleton<PhysicsSystem> {
   void CreateTerrainHeightfieldShape(int size, float *data, const float &min_height, const float &max_height,
                                      const Ogre::Vector3 &position, const float &scale);
 
-  void SetCallback(const std::function<void(int a, int b)> &callback) { callback_ = callback; }
+  void SetCallback(const std::function<void(int a, int b)> &callback) { this->callback = callback; }
 
   bool IsThreaded() const;
 
  protected:
-  void InitThread_();
+  void InitThread();
 
-  std::unique_ptr<BtOgre::DebugDrawer> dbg_draw_;
-  std::unique_ptr<btDbvtBroadphase> broadphase_;
-  std::unique_ptr<btDefaultCollisionConfiguration> config_;
-  std::unique_ptr<btCollisionDispatcherMt> dispatcher_;
-  std::unique_ptr<btSequentialImpulseConstraintSolverMt> solver_;
-  std::unique_ptr<btDiscreteDynamicsWorldMt> world_;
-  std::unique_ptr<std::thread> update_thread_;
-  std::map<const btCollisionObject *, ContactInfo> contacts_;
-  std::function<void(int a, int b)> callback_;
-  int steps_ = 4;
-  bool threaded_ = false;
-  int64_t update_rate_ = 60;
-  std::atomic<bool> pause_ = true;
-  std::atomic<bool> running_ = false;
-  bool debug_ = false;
-  int64_t time_of_last_frame_ = 0;
-  //  int64_t cumulated_time_ = 0;
+  std::unique_ptr<BtOgre::DebugDrawer> dbg_draw;
+  std::unique_ptr<btDbvtBroadphase> broadphase;
+  std::unique_ptr<btDefaultCollisionConfiguration> config;
+  std::unique_ptr<btCollisionDispatcherMt> dispatcher;
+  std::unique_ptr<btSequentialImpulseConstraintSolverMt> solver;
+  std::unique_ptr<btDiscreteDynamicsWorldMt> world;
+  std::unique_ptr<std::thread> update_thread;
+  std::map<const btCollisionObject *, ContactInfo> contacts;
+  std::function<void(int a, int b)> callback;
+  int steps = 4;
+  bool threaded = false;
+  int64_t update_rate = 60;
+  bool pause = true;
+  bool running = false;
+  bool debug = false;
+  int64_t time_of_last_frame = 0;
+  int64_t cumulated_time_ = 0;
   const std::string TYPE_STATIC = "static";
   const std::string TYPE_DYNAMIC = "dynamic";
-  //  const std::string TYPE_ACTOR = "actor";
+  const std::string TYPE_ACTOR = "actor";
   const std::string TYPE_GHOST = "ghost";
-  //  const std::string TYPE_NONE = "none";
+  const std::string TYPE_NONE = "none";
   const std::string PROXY_BOX = "box";
   const std::string PROXY_CAPSULE = "capsule";
   const std::string PROXY_SPHERE = "sphere";

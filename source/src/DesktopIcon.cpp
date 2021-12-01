@@ -17,10 +17,10 @@ namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 DesktopIcon::DesktopIcon()
-    : exec_("sample"),
-      version_("1.0"),
-      name_("GlueSample"),
-      skeleton_{
+    : executable("sample"),
+      version("1.0"),
+      icon_name("GlueSample"),
+      skeleton{
           "[Desktop Entry]\n"
           "Version=VERSION\n"
           "Name=NAME\n"
@@ -38,15 +38,15 @@ DesktopIcon::~DesktopIcon() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 void DesktopIcon::SetUp() {
-  run_dir_ = fs::current_path().string();
+  root_directory = fs::current_path().string();
 
-  output_ = skeleton_;
-  output_ = regex_replace(output_, regex("EXEC"), run_dir_ + "/" + exec_);
-  output_ = regex_replace(output_, regex("PATH"), run_dir_);
-  output_ = regex_replace(output_, regex("ICON"), icon_);
-  output_ = regex_replace(output_, regex("NAME"), name_);
-  output_ = regex_replace(output_, regex("COMMENT"), name_);
-  output_ = regex_replace(output_, regex("VERSION"), version_);
+  output = skeleton;
+  output = regex_replace(output, regex("EXEC"), root_directory + "/" + executable);
+  output = regex_replace(output, regex("PATH"), root_directory);
+  output = regex_replace(output, regex("ICON"), icon);
+  output = regex_replace(output, regex("NAME"), icon_name);
+  output = regex_replace(output, regex("COMMENT"), icon_name);
+  output = regex_replace(output, regex("VERSION"), version);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -61,13 +61,13 @@ void DesktopIcon::Save(const string &icon_name) {
     getline(in, s, '\0');
     in.close();
 
-    if (s == output_) return;
+    if (s == output) return;
   }
 
   ofstream out;
   out.open(path);
   if (out.is_open()) {
-    out << output_;
+    out << output;
   }
 }
 

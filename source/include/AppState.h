@@ -34,8 +34,8 @@ class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, 
 
  protected:
   friend class StateManager;
-  std::unique_ptr<AppState> next_;
-  bool dirty_ = false;
+  std::unique_ptr<AppState> next;
+  bool dirty = false;
 };
 
 }  // namespace glue

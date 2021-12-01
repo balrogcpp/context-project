@@ -13,12 +13,6 @@ class SubSystem : public NoCopy {
   virtual ~SubSystem() {}
 
   virtual void Update(float time) = 0;
-
- protected:
-  inline static view_ptr<Config> conf_;
-
- public:
-  static void SetConfig(view_ptr<Config> conf) { conf_ = conf; }
 };
 
 }  // namespace glue

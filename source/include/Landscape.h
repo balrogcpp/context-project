@@ -28,7 +28,7 @@ class Landscape final : public SubSystem {
   void DefineTerrain_(long x, long y, bool flat, const std::string &filename);
   void InitBlendMaps_(Ogre::Terrain *terrain, int layer, const std::string &image);
 
-  std::unique_ptr<Ogre::TerrainGroup> terrain_;
+  std::unique_ptr<Ogre::TerrainGroup> terrain;
 };
 
 }  // namespace glue

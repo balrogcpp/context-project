@@ -28,10 +28,10 @@ class Overlay final : public System, public Singleton<Overlay>, public Ogre::Ren
   void PrepareTexture(const std::string &name_, const std::string &group_ = Ogre::RGN_AUTODETECT);
 
  protected:
-  std::unique_ptr<ImGuiInputListener> imgui_listener_;
-  view_ptr<Ogre::ImGuiOverlay> imgui_;
-  view_ptr<Ogre::OverlaySystem> overlay_;
-  view_ptr<Ogre::RenderWindow> render_window_;
+  std::unique_ptr<ImGuiInputListener> imgui_listener;
+  view_ptr<Ogre::ImGuiOverlay> imgui_overlay;
+  view_ptr<Ogre::OverlaySystem> overlay_system;
+  view_ptr<Ogre::RenderWindow> render_window;
 };
 
 }  // namespace glue

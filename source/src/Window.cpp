@@ -9,26 +9,26 @@ using namespace std;
 namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
-void Window::InitGlContext_() {
+void Window::InitGlContext() {
   constexpr array<pair<int, int>, 10> ver = {make_pair(4, 5), make_pair(4, 4), make_pair(4, 3), make_pair(4, 2),
                                              make_pair(4, 1), make_pair(4, 0), make_pair(3, 3), make_pair(3, 2),
                                              make_pair(3, 1), make_pair(3, 0)};
 
-  if (!gl_context_) {
+  if (!gl_context) {
     for (const auto &it : ver) {
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, it.first);
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, it.second);
 
-      gl_context_ = SDL_GL_CreateContext(window_);
+      gl_context = SDL_GL_CreateContext(window);
 
-      if (gl_context_) {
+      if (gl_context) {
         break;
       }
     }
   }
 
-  if (!gl_context_) {
+  if (!gl_context) {
     throw Exception("Failed to Create SDL_GL_Context");
   }
 }
@@ -63,7 +63,7 @@ Window::Window(int w, int h, bool f) : w_(w), h_(h), f_(f) {
     h_ = screen_h_;
   }
 
-  window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(0), SDL_WINDOWPOS_UNDEFINED_DISPLAY(0),
+  window = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(0), SDL_WINDOWPOS_UNDEFINED_DISPLAY(0),
                              w_, h_, flags_);
 
 #else
@@ -82,16 +82,16 @@ Window::Window(int w, int h, bool f) : w_(w), h_(h), f_(f) {
   w_ = screen_w_;
   h_ = screen_h_;
 
-  window_ = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_w_, screen_h_, flags_);
-  gl_context_ = SDL_GL_CreateContext(window_);
+  window = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_w_, screen_h_, flags_);
+  gl_context = SDL_GL_CreateContext(window);
 
 #endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 Window::~Window() {
-  SDL_SetWindowFullscreen(window_, SDL_FALSE);
-  SDL_DestroyWindow(window_);
+  SDL_SetWindowFullscreen(window, SDL_FALSE);
+  SDL_DestroyWindow(window);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ string Window::GetCaption() const { return caption_; }
 //----------------------------------------------------------------------------------------------------------------------
 void Window::SetCaption(const string &caption) {
   caption_ = caption;
-  SDL_SetWindowTitle(window_, caption.c_str());
+  SDL_SetWindowTitle(window, caption.c_str());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ bool Window::IsFullscreen() const { return f_; }
 SDL_SysWMinfo Window::GetInfo() const {
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
-  SDL_GetWindowWMInfo(window_, &info);
+  SDL_GetWindowWMInfo(window, &info);
   return info;
 }
 
@@ -125,7 +125,7 @@ void Window::Grab(bool grab) {
   // This breaks input on > Android 9.0
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   SDL_ShowCursor(!grab);
-  SDL_SetWindowGrab(window_, static_cast<SDL_bool>(grab));
+  SDL_SetWindowGrab(window, static_cast<SDL_bool>(grab));
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE
   // osx workaround: mouse motion events are gone otherwise
   SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
@@ -134,14 +134,14 @@ void Window::Grab(bool grab) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void Window::SwapBuffers() const { SDL_GL_SwapWindow(window_); }
+void Window::SwapBuffers() const { SDL_GL_SwapWindow(window); }
 
 //----------------------------------------------------------------------------------------------------------------------
 void Window::Resize(int w, int h) {
   w_ = w;
   h_ = h;
-  SDL_SetWindowPosition(window_, (screen_w_ - w_) / 2, (screen_h_ - h_) / 2);
-  SDL_SetWindowSize(window_, w_, h_);
+  SDL_SetWindowPosition(window, (screen_w_ - w_) / 2, (screen_h_ - h_) / 2);
+  SDL_SetWindowSize(window, w_, h_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -150,12 +150,12 @@ void Window::SetFullscreen(bool f) {
 
   if (f) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-    SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
+    SDL_SetWindowFullscreen(window, flags_ | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
 #else
-    SDL_SetWindowFullscreen(window_, flags_ | SDL_WINDOW_FULLSCREEN);
+    SDL_SetWindowFullscreen(window, flags_ | SDL_WINDOW_FULLSCREEN);
 #endif
   } else {
-    SDL_SetWindowSize(window_, w_, h_);
+    SDL_SetWindowSize(window, w_, h_);
   }
 }
 

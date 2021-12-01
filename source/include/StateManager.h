@@ -21,7 +21,7 @@ class StateManager : public Singleton<StateManager> {
   void Resume();
 
  protected:
-  std::unique_ptr<AppState> cur_state_;
+  std::unique_ptr<AppState> cur_state;
 };
 
 }  // namespace glue

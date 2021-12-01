@@ -27,7 +27,7 @@ class VerboseListener final : public InputObserver {
   void OnJoystickHat(int which, int hat, int value) override;
   void OnJoystickBall(int which, int ball, int xrel, int yrel) override;
 
-  bool verbose_ = true;
+  bool verbose = true;
 };
 
 }  // namespace glue

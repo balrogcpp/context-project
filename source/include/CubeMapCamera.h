@@ -21,16 +21,16 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
   void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
 
-  std::shared_ptr<Ogre::Texture> cubemap_;
+  std::shared_ptr<Ogre::Texture> cubemap;
 
  protected:
-  void Clear_();
-  void Init_(Ogre::SceneNode *creator, unsigned int tex_size);
+  void Clear();
+  void Init(Ogre::SceneNode *creator, unsigned int tex_size);
 
-  Ogre::SceneManager *scene_ = nullptr;
-  Ogre::Camera *camera_ = nullptr;
-  Ogre::SceneNode *camera_node_ = nullptr;
-  std::array<Ogre::RenderTarget *, 6> targets_{nullptr};
+  Ogre::SceneManager *scene = nullptr;
+  Ogre::Camera *camera = nullptr;
+  Ogre::SceneNode *camera_node = nullptr;
+  std::array<Ogre::RenderTarget *, 6> targets;
 };
 
 }  // namespace glue

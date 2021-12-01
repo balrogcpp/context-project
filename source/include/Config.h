@@ -18,7 +18,7 @@ class Config : public Singleton<Config> {
   //----------------------------------------------------------------------------------------------------------------------
   template <typename T>
   void AddMember(const std::string &key, T &&value) {
-    document_[key] = value;
+    document[key] = value;
   }
 
   //----------------------------------------------------------------------------------------------------------------------
@@ -26,8 +26,8 @@ class Config : public Singleton<Config> {
   T Get(const std::string &key) {
     T t{};
 
-    if (document_.find(key.c_str()) != document_.end()) {
-      t = static_cast<T>(document_[key.c_str()]);
+    if (document.find(key.c_str()) != document.end()) {
+      t = static_cast<T>(document[key.c_str()]);
     }
 
     return t;
@@ -42,8 +42,8 @@ class Config : public Singleton<Config> {
   //----------------------------------------------------------------------------------------------------------------------
   template <typename T>
   bool Get(const char *key, T &t) {
-    if (document_.find(key) != document_.end()) {
-      t = static_cast<T>(document_[key]);
+    if (document.find(key) != document.end()) {
+      t = static_cast<T>(document[key]);
       return true;
     } else {
       return false;
@@ -51,7 +51,7 @@ class Config : public Singleton<Config> {
   }
 
  protected:
-  nlohmann::json document_;
+  nlohmann::json document;
 };
 
 }  // namespace glue

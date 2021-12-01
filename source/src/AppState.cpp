@@ -22,17 +22,17 @@ void AppState::LoadFromFile(const string &file_name, const string &group) {
 
 //----------------------------------------------------------------------------------------------------------------------
 void AppState::ChangeState(unique_ptr<AppState> &&app_state) {
-  next_ = move(app_state);
-  dirty_ = true;
+  next = move(app_state);
+  dirty = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::ChangeState() { dirty_ = true; }
+void AppState::ChangeState() { dirty = true; }
 
 //----------------------------------------------------------------------------------------------------------------------
-void AppState::AppendNextState(unique_ptr<AppState> &&next_state) { next_ = move(next_state); }
+void AppState::AppendNextState(unique_ptr<AppState> &&next_state) { next = move(next_state); }
 
 //----------------------------------------------------------------------------------------------------------------------
-bool AppState::IsDirty() const { return dirty_; }
+bool AppState::IsDirty() const { return dirty; }
 
 }  // namespace glue

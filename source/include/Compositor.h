@@ -31,19 +31,19 @@ class Compositor : public System, public Singleton<Compositor> {
   void SetUp();
 
  protected:
-  void InitGbuffer_();
-  void AddCompositorEnabled_(const std::string &name);
-  void AddCompositorDisabled_(const std::string &name);
-  void EnableCompositor_(const std::string &name);
-  void InitMRT_();
-  void InitOutput_();
+  void InitGbuffer();
+  void AddCompositorEnabled(const std::string &name);
+  void AddCompositorDisabled(const std::string &name);
+  void EnableCompositor(const std::string &name);
+  void InitMRT();
+  void InitOutput();
 
-  std::map<std::string, bool> effects_;
-  std::unique_ptr<GBufferSchemeHandler> gbuff_handler_;
-  view_ptr<Ogre::CompositorManager> compositor_manager_;
-  view_ptr<Ogre::SceneManager> scene_;
-  view_ptr<Ogre::Camera> camera_;
-  view_ptr<Ogre::Viewport> viewport_;
+  std::map<std::string, bool> effects;
+  std::unique_ptr<GBufferSchemeHandler> gbuff_handler;
+  view_ptr<Ogre::CompositorManager> compositor_manager;
+  view_ptr<Ogre::SceneManager> scene;
+  view_ptr<Ogre::Camera> camera;
+  view_ptr<Ogre::Viewport> viewport;
 };
 
 }  // namespace glue

@@ -24,19 +24,14 @@ class VegetationSystem final : public SubSystem {
   void GenerateTreesPaged();
   void ProcessForest();
   void Update(float time) override;
+  static void SetHeighFunc(const std::function<float(float, float)> &func) { heigh_func = func; }
 
  protected:
-  inline static std::function<float(float, float)> heigh_func_;
-  std::vector<std::unique_ptr<Forests::PagedGeometry>> pgeometry_;
-  std::vector<std::unique_ptr<Forests::PageLoader>> ploaders_;
-  std::vector<std::unique_ptr<Forests::GeometryPage>> gpages_;
-  std::vector<view_ptr<Ogre::StaticGeometry>> sgeometry_;
-  //  const Ogre::uint32 SUBMERGED_MASK = 0x0F0;
-  //  const Ogre::uint32 SURFACE_MASK = 0x00F;
-  //  const Ogre::uint32 WATER_MASK = 0xF00;
-
- public:
-  static void SetHeighFunc(const std::function<float(float, float)> &heigh_func) { heigh_func_ = heigh_func; }
+  inline static std::function<float(float, float)> heigh_func;
+  std::vector<std::unique_ptr<Forests::PagedGeometry>> pgeometry;
+  std::vector<std::unique_ptr<Forests::PageLoader>> ploaders;
+  std::vector<std::unique_ptr<Forests::GeometryPage>> gpages;
+  std::vector<view_ptr<Ogre::StaticGeometry>> sgeometry;
 };
 
 }  // namespace glue

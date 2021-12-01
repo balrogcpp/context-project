@@ -27,10 +27,10 @@ class Window : public NoCopy {
   void SetFullscreen(bool f);
 
  protected:
-  void InitGlContext_();
+  void InitGlContext();
 
-  SDL_Window *window_ = nullptr;
-  SDL_GLContext gl_context_ = nullptr;
+  SDL_Window *window = nullptr;
+  SDL_GLContext gl_context = nullptr;
 
   uint32_t flags_ = 0;
   std::string caption_;

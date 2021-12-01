@@ -7,6 +7,7 @@
 
 namespace glue {
 
+/// Exception class
 class Exception : public std::exception {
  public:
   Exception() = default;
@@ -17,7 +18,7 @@ class Exception : public std::exception {
   const char *what() const noexcept override { return description.c_str(); }
 
  protected:
-  std::string description = "Description not specified";
+  std::string description = "Not specified";
 };
 
 /// Throw exception

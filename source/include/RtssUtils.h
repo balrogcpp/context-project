@@ -30,7 +30,7 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
   bool beforeIlluminationPassesCleared(Ogre::Technique *technique);
 
  protected:
-  Ogre::RTShader::ShaderGenerator *shader_generator_;
+  Ogre::RTShader::ShaderGenerator *shader_generator;
 };
 
 }  // namespace glue

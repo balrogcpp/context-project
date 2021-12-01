@@ -25,7 +25,7 @@ void Config::Load(const string &file_name) {
     throw Exception("Error during parsing of " + file_name + " : can't open file");
   }
 
-  ifs >> document_;
+  ifs >> document;
 }
 
 }  // namespace glue
