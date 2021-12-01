@@ -6,6 +6,9 @@
 
 namespace glue {
 class Config;
+}
+
+namespace glue {
 
 class System : public NoCopy {
  public:
