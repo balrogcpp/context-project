@@ -206,7 +206,7 @@ void CameraMan::OnKeyUp(SDL_Keycode sym) {
   }
 }
 
-void CameraMan::SetRigidBody(view_ptr<btRigidBody> rigid_body) { rigid = rigid_body; }
+void CameraMan::SetRigidBody(ViewPtr<btRigidBody> rigid_body) { rigid = rigid_body; }
 
 Ogre::SceneNode *CameraMan::GetCameraNode() const {
   if (style == Style::FPS) {

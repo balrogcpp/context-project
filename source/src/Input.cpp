@@ -35,13 +35,13 @@ InputSequencer::InputSequencer() {}
 InputSequencer::~InputSequencer() {}
 
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::RegObserver(view_ptr<InputObserver> p) { io_listeners.insert(p); }
+void InputSequencer::RegObserver(ViewPtr<InputObserver> p) { io_listeners.insert(p); }
 
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::UnregObserver(view_ptr<InputObserver> p) { io_listeners.erase(p); }
+void InputSequencer::UnregObserver(ViewPtr<InputObserver> p) { io_listeners.erase(p); }
 
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::RegWinObserver(view_ptr<WindowObserver> p) {
+void InputSequencer::RegWinObserver(ViewPtr<WindowObserver> p) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   auto callback = [](void *userdata, SDL_Event *event) {
     return InputSequencer::GetInstance().HandleAppEvents(userdata, event);
@@ -54,7 +54,7 @@ void InputSequencer::RegWinObserver(view_ptr<WindowObserver> p) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::UnregWinObserver(view_ptr<WindowObserver> p) { win_listeners.erase(p); }
+void InputSequencer::UnregWinObserver(ViewPtr<WindowObserver> p) { win_listeners.erase(p); }
 
 //----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::Capture() {

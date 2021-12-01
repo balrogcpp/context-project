@@ -42,8 +42,8 @@ class InputHandler final : public InputObserver, public Singleton<InputHandler> 
   InputHandler();
   virtual ~InputHandler();
 
-  void RegObserver(view_ptr<MutedInputObserver> p);
-  void UnregObserver(view_ptr<MutedInputObserver> p);
+  void RegObserver(ViewPtr<MutedInputObserver> p);
+  void UnregObserver(ViewPtr<MutedInputObserver> p);
 
   void Pause();
   void Resume();
@@ -69,8 +69,8 @@ class InputHandler final : public InputObserver, public Singleton<InputHandler> 
   void OnMouseMbUp(int x, int y) override;
 
  protected:
-  std::vector<view_ptr<MutedInputObserver>> io_listeners;
-  // std::vector<view_ptr<CommandObserver>> cmd_listeners;
+  std::vector<ViewPtr<MutedInputObserver>> io_listeners;
+  // std::vector<ViewPtr<CommandObserver>> cmd_listeners;
   bool paused_ = false;
 };
 

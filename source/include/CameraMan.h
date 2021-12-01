@@ -3,7 +3,7 @@
 #pragma once
 #include "InputHandler.h"
 #include "Object.h"
-#include "view_ptr.h"
+#include "ViewPtr.h"
 #include <OgreVector.h>
 extern "C" {
 #include <SDL2/SDL_keycode.h>
@@ -31,7 +31,7 @@ class CameraMan final : public Object, public MutedInputObserver {
   void OnKeyDown(SDL_Keycode sym) override;
   void OnKeyUp(SDL_Keycode sym) override;
 
-  void SetRigidBody(view_ptr<btRigidBody> rigid_body);
+  void SetRigidBody(ViewPtr<btRigidBody> rigid_body);
   Ogre::SceneNode *GetCameraNode() const;
   Ogre::Camera *GetCamera() const;
   void AttachNode(Ogre::SceneNode *parent, Ogre::SceneNode *proxy = nullptr);
@@ -41,13 +41,13 @@ class CameraMan final : public Object, public MutedInputObserver {
   Style GetStyle() const noexcept;
 
  protected:
-  view_ptr<Ogre::SceneNode> node;
-  view_ptr<Ogre::SceneNode> yaw_node;
-  view_ptr<Ogre::SceneNode> pitch_node;
-  view_ptr<Ogre::SceneNode> roll_node;
-  view_ptr<btRigidBody> rigid;
-  view_ptr<Ogre::Camera> camera;
-  view_ptr<Ogre::SceneNode> target;
+  ViewPtr<Ogre::SceneNode> node;
+  ViewPtr<Ogre::SceneNode> yaw_node;
+  ViewPtr<Ogre::SceneNode> pitch_node;
+  ViewPtr<Ogre::SceneNode> roll_node;
+  ViewPtr<btRigidBody> rigid;
+  ViewPtr<Ogre::Camera> camera;
+  ViewPtr<Ogre::SceneNode> target;
   Style style = Style::MANUAL;
   float top_speed = 10;
   float run_speed = 20;

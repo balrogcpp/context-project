@@ -3,7 +3,7 @@
 #pragma once
 #include "Singleton.h"
 #include "System.h"
-#include "view_ptr.h"
+#include "ViewPtr.h"
 #include <string>
 
 namespace OgreOggSound {
@@ -29,7 +29,7 @@ class AudioSystem final : public System, public Singleton<AudioSystem> {
   void SetListener(Ogre::SceneNode *parent);
 
  protected:
-  view_ptr<OgreOggSound::OgreOggSoundManager> sound_manager;
+  ViewPtr<OgreOggSound::OgreOggSoundManager> sound_manager;
 };
 
 }  // namespace glue

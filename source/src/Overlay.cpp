@@ -12,7 +12,7 @@
 using namespace std;
 
 namespace glue {
-Overlay::Overlay(view_ptr<Ogre::RenderWindow> render_window) {
+Overlay::Overlay(ViewPtr<Ogre::RenderWindow> render_window) {
   this->render_window = render_window;
   Ogre::SceneManager* sm = Ogre::Root::getSingletonPtr()->getSceneManager("Default");
   overlay_system = new Ogre::OverlaySystem();

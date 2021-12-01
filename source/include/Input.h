@@ -4,7 +4,7 @@
 #include "Exception.h"
 #include "NoCopy.h"
 #include "Singleton.h"
-#include "view_ptr.h"
+#include "ViewPtr.h"
 #include <exception>
 #include <set>
 #include <string>
@@ -26,15 +26,15 @@ class InputSequencer : public LazySingleton<InputSequencer> {
   InputSequencer();
   virtual ~InputSequencer();
 
-  void RegObserver(view_ptr<InputObserver> p);
-  void UnregObserver(view_ptr<InputObserver> p);
-  void RegWinObserver(view_ptr<WindowObserver> p);
-  void UnregWinObserver(view_ptr<WindowObserver> p);
+  void RegObserver(ViewPtr<InputObserver> p);
+  void UnregObserver(ViewPtr<InputObserver> p);
+  void RegWinObserver(ViewPtr<WindowObserver> p);
+  void UnregWinObserver(ViewPtr<WindowObserver> p);
   void Capture();
 
  protected:
-  std::set<view_ptr<InputObserver>> io_listeners;
-  std::set<view_ptr<WindowObserver>> win_listeners;
+  std::set<ViewPtr<InputObserver>> io_listeners;
+  std::set<ViewPtr<WindowObserver>> win_listeners;
   int HandleAppEvents(void *userdata, SDL_Event *event);
 };
 

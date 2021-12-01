@@ -27,10 +27,10 @@ void InputHandler::Cleanup() {}
 void InputHandler::Update(float time) {}
 
 //----------------------------------------------------------------------------------------------------------------------
-void InputHandler::RegObserver(view_ptr<MutedInputObserver> p) { io_listeners.push_back(p); }
+void InputHandler::RegObserver(ViewPtr<MutedInputObserver> p) { io_listeners.push_back(p); }
 
 //----------------------------------------------------------------------------------------------------------------------
-void InputHandler::UnregObserver(view_ptr<MutedInputObserver> p) {
+void InputHandler::UnregObserver(ViewPtr<MutedInputObserver> p) {
   auto it = find(io_listeners.begin(), io_listeners.end(), p);
 
   if (it != io_listeners.end()) {

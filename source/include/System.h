@@ -2,7 +2,7 @@
 
 #pragma once
 #include "NoCopy.h"
-#include "view_ptr.h"
+#include "ViewPtr.h"
 
 namespace glue {
 class Config;
@@ -18,11 +18,11 @@ class System : public NoCopy {
   virtual void Update(float time) = 0;
 
  protected:
-  inline static view_ptr<Config> config = nullptr;
+  inline static ViewPtr<Config> config = nullptr;
   bool paused = false;
 
  public:
-  static void SetConfig(view_ptr<Config> conf) { config = conf; }
+  static void SetConfig(ViewPtr<Config> conf) { config = conf; }
 };
 
 }  // namespace glue

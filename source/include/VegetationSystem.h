@@ -2,7 +2,7 @@
 
 #pragma once
 #include "SubSystem.h"
-#include "view_ptr.h"
+#include "ViewPtr.h"
 #include <functional>
 #include <memory>
 
@@ -31,7 +31,7 @@ class VegetationSystem final : public SubSystem {
   std::vector<std::unique_ptr<Forests::PagedGeometry>> pgeometry;
   std::vector<std::unique_ptr<Forests::PageLoader>> ploaders;
   std::vector<std::unique_ptr<Forests::GeometryPage>> gpages;
-  std::vector<view_ptr<Ogre::StaticGeometry>> sgeometry;
+  std::vector<ViewPtr<Ogre::StaticGeometry>> sgeometry;
 };
 
 }  // namespace glue

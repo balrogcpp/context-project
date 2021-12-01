@@ -9,7 +9,7 @@
 #include "Singleton.h"
 #include "System.h"
 #include "VegetationSystem.h"
-#include "view_ptr.h"
+#include "ViewPtr.h"
 #include <OgreCodec.h>
 #include <OgrePlugin.h>
 #include <OgreVector.h>
@@ -95,10 +95,10 @@ class DotSceneLoaderB final : public System, public Singleton<DotSceneLoaderB> {
   std::unique_ptr<CubeMapCamera> ccamera;
   std::unique_ptr<CameraMan> camera_man;
 
-  view_ptr<Ogre::SceneManager> ogre_scene;
-  view_ptr<Ogre::Root> root;
-  view_ptr<Ogre::SceneNode> root_node;
-  view_ptr<Ogre::SceneNode> attach_node;
+  ViewPtr<Ogre::SceneManager> ogre_scene;
+  ViewPtr<Ogre::Root> root;
+  ViewPtr<Ogre::SceneNode> root_node;
+  ViewPtr<Ogre::SceneNode> attach_node;
   std::string group_name = Ogre::RGN_DEFAULT;
 
   std::unique_ptr<SinbadCharacterController> sinbad;

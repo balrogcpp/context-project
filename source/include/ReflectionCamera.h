@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "view_ptr.h"
+#include "ViewPtr.h"
 #include <OgrePlane.h>
 #include <OgreRenderTargetListener.h>
 #include <vector>
@@ -32,8 +32,8 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   void Clear();
 
   Ogre::Plane plane;
-  view_ptr<Ogre::Camera> rcamera;
-  view_ptr<Ogre::SceneManager> scene;
+  ViewPtr<Ogre::Camera> rcamera;
+  ViewPtr<Ogre::SceneManager> scene;
 };
 
 }  // namespace glue

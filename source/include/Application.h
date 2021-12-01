@@ -5,7 +5,7 @@
 #include "Singleton.h"
 #include "StateManager.h"
 #include "VerboseListener.h"
-#include "view_ptr.h"
+#include "ViewPtr.h"
 #include <OgreLog.h>
 #include <memory>
 #include <string>
@@ -36,7 +36,7 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
 
   std::unique_ptr<StateManager> state_manager_;
   std::unique_ptr<VerboseListener> verbose_listener_;
-  view_ptr<Engine> engine;
+  ViewPtr<Engine> engine;
 
   bool running = true;
   bool suspend = false;
