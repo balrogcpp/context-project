@@ -12,17 +12,17 @@ build:
   script:
     - mkdir Artifacts
     - git clone --depth 1 https://github.com/balrogcpp/scenes.git Assets && rm -rf Assets/.git
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f docker/sample/linux.Dockerfile -t glue/sample-linux
+    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/sample/linux.Dockerfile -t glue/sample-linux
     - docker create -ti --name abc glue/sample-linux bash
     - docker cp abc:/mnt/build/Artifacts/GlueSample-linux-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip Artifacts
     - docker rm -f abc
     - docker rmi glue/sample-linux
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f docker/sample/windows.Dockerfile -t glue/sample-windows
+    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/sample/windows.Dockerfile -t glue/sample-windows
     - docker create -ti --name abc glue/sample-windows bash
     - docker cp abc:/mnt/build/Artifacts/GlueSample-windows-clang-mingw-x86_64-$CI_COMMIT_SHORT_SHA.zip Artifacts
     - docker rm -f abc
     - docker rmi glue/sample-windows
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f docker/sample/apple.Dockerfile -t glue/sample-apple
+    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/sample/apple.Dockerfile -t glue/sample-apple
     - docker create -ti --name abc glue/sample-apple bash
     - docker cp abc:/mnt/build/Artifacts/GlueSample-apple-darwin-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip Artifacts
     - docker rm -f abc
