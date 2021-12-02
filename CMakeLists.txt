@@ -311,11 +311,15 @@ target_link_libraries(${SAMPLE_EXE} PUBLIC
         )
 
 install(TARGETS ${SAMPLE_EXE} RUNTIME DESTINATION .)
-file(GLOB_RECURSE GLUE_ENGINE_SOURCE_FILES Source/*.cpp Source/*.h Source/*.hpp)
-add_library(glue STATIC ${GLUE_ENGINE_SOURCE_FILES})
-include_directories(glue ${GLUE_INCLUDE_DIRS})
-set_target_properties(glue PROPERTIES OUTPUT_NAME "glue-static")
-target_precompile_headers(glue PUBLIC Source/Glue/include/pch.h)
+
+option(GLUE_BUILD_STATIC_LIBRARY "Build static library" OFF)
+if (GLUE_BUILD_STATIC_LIBRARY)
+    file(GLOB_RECURSE GLUE_ENGINE_SOURCE_FILES Source/*.cpp Source/*.h Source/*.hpp)
+    add_library(glue STATIC ${GLUE_ENGINE_SOURCE_FILES})
+    include_directories(glue ${GLUE_INCLUDE_DIRS})
+    set_target_properties(glue PROPERTIES OUTPUT_NAME "glue-static")
+    target_precompile_headers(glue PUBLIC Source/Glue/include/pch.h)
+endif ()
 
 # Tests
 find_package(GTest QUIET)
@@ -368,14 +372,14 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/Assets ${CMAKE_SOURCE_DIR}/tmp/Program
 set(EXECUTABLE_NAME ${SAMPLE_EXE})
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    install(FILES ${CMAKE_SOURCE_DIR}/Deploy/Launch.sh PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
+    install(FILES PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
 endif ()
 if (WIN32)
-    install(FILES ${CMAKE_SOURCE_DIR}/Deploy/Launch.bat DESTINATION .)
+    install(FILES DESTINATION .)
 endif ()
 if (MINGW)
     #MinGW can't compile .manifest files into executable
-    install(FILES ${CMAKE_SOURCE_DIR}/Deploy/${EXECUTABLE_NAME}.exe.manifest DESTINATION .)
+    install(FILES ${CMAKE_SOURCE_DIR}/Deploy/Sample.exe.manifest DESTINATION .)
 endif ()
 if (MSVC)
     # Microsoft doesn't include MSVC dll's in standart installation
