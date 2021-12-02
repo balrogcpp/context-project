@@ -15,7 +15,6 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 DesktopIcon::DesktopIcon()
     : executable("Sample"),
       version("1.0"),
@@ -33,10 +32,8 @@ DesktopIcon::DesktopIcon()
           "Terminal=false\n"
           "Type=Application\n"} {}
 
-//----------------------------------------------------------------------------------------------------------------------
 DesktopIcon::~DesktopIcon() = default;
 
-//----------------------------------------------------------------------------------------------------------------------
 void DesktopIcon::SetUp() {
   root_directory = fs::current_path().string();
 
@@ -49,7 +46,6 @@ void DesktopIcon::SetUp() {
   output = regex_replace(output, regex("VERSION"), version);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void DesktopIcon::Save(const string &icon_name) {
   string home_dir = string(getenv("HOME"));
   string path = home_dir + "/.local/share/applications/" + icon_name + ".desktop";

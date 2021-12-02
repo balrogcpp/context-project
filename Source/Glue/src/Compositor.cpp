@@ -9,7 +9,6 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   GBufferSchemeHandler() {
@@ -22,7 +21,6 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     ref_mat_->load();
   }
 
-  //----------------------------------------------------------------------------------------------------------------------
   Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const Ogre::String &schemeName,
                                         Ogre::Material *originalMaterial, unsigned short lodIndex,
                                         const Ogre::Renderable *rend) override {
@@ -35,7 +33,6 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     return gBufferTech;
   }
 
-  //----------------------------------------------------------------------------------------------------------------------
   void Update(Ogre::Matrix4 mvp_prev, float time) {
     for (auto &it : gpu_fp_params_) {
       it->setNamedConstant("uFrameTime", time);
@@ -52,7 +49,6 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
   vector<Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;
 };
 
-//----------------------------------------------------------------------------------------------------------------------
 Compositor::Compositor() {
   effects["bloom"] = false;
   effects["ssao"] = false;
@@ -69,10 +65,8 @@ Compositor::Compositor() {
   SetUp();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 Compositor::~Compositor() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void Compositor::Update(float time) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   static bool gl3 = Ogre::Root::getSingleton().getRenderSystem()->getName() != "OpenGL ES 2.x Rendering Subsystem";
@@ -84,19 +78,14 @@ void Compositor::Update(float time) {
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Compositor::EnableEffect(const std::string &name, bool enable) { effects[name] = enable; }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Compositor::Cleanup() { Pbr::Cleanup(); }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Compositor::Pause() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void Compositor::Resume() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void Compositor::InitGbuffer() {
   if (!gbuff_handler) {
     gbuff_handler = make_unique<GBufferSchemeHandler>();
@@ -110,7 +99,6 @@ void Compositor::InitGbuffer() {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Compositor::AddCompositorEnabled(const std::string &name) {
   if (compositor_manager->addCompositor(viewport.get(), name)) {
     compositor_manager->setCompositorEnabled(viewport.get(), name, true);
@@ -119,7 +107,6 @@ void Compositor::AddCompositorEnabled(const std::string &name) {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Compositor::AddCompositorDisabled(const std::string &name) {
   if (compositor_manager->addCompositor(viewport.get(), name)) {
     compositor_manager->setCompositorEnabled(viewport.get(), name, false);
@@ -128,12 +115,10 @@ void Compositor::AddCompositorDisabled(const std::string &name) {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Compositor::EnableCompositor(const std::string &name) {
   compositor_manager->setCompositorEnabled(viewport.get(), name, true);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Compositor::InitMRT() {
   if (compositor_manager->addCompositor(viewport.get(), "MRT")) {
     compositor_manager->setCompositorEnabled(viewport.get(), "MRT", false);
@@ -163,7 +148,6 @@ void Compositor::InitMRT() {
   compositor_manager->setCompositorEnabled(viewport.get(), "MRT", true);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Compositor::InitOutput() {
   string output_compositor;
   string mblur_compositor;
@@ -211,7 +195,6 @@ void Compositor::InitOutput() {
   AddCompositorEnabled("MBlur");
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Compositor::SetUp() {
   InitMRT();
 

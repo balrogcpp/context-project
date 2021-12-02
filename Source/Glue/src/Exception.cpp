@@ -8,7 +8,6 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 void Assert(bool result, std::string message) {
 #ifdef DEBUG
   if (!result) {
@@ -17,7 +16,6 @@ void Assert(bool result, std::string message) {
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Throw(std::string message) { throw Exception(std::move(message)); }
 
 }  // namespace glue

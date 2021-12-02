@@ -26,6 +26,6 @@ It is based on open source:
 - OpenAL Soft https://openal-soft.org/
 - SDL https://www.libsdl.org/
 
-![](Other/screenshots/TestScene1.jpg)
+![](Other/Screenshots/TestScene1.jpg)
 ----
-![](Other/screenshots/TestScene2.jpg)
+![](Other/Screenshots/TestScene2.jpg)

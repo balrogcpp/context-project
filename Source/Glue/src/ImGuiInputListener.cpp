@@ -23,7 +23,6 @@ static int sdl2imgui(int b) {
 /// SDL2 keycode to scancode
 static int kc2sc(int kc) { return kc & ~(1 << 30); }
 
-//----------------------------------------------------------------------------------------------------------------------
 static int keypad2kc(int sym, int mod) {
   if (sym < SDLK_KP_1 || sym > SDLK_KP_PERIOD) return sym;
   bool numlock = (mod & KMOD_NUM) != 0;
@@ -51,7 +50,6 @@ static int keypad2kc(int sym, int mod) {
   return sym;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 ImGuiInputListener::ImGuiInputListener() {
   static ImGuiIO &io = ImGui::GetIO();
 
@@ -81,10 +79,8 @@ ImGuiInputListener::ImGuiInputListener() {
   io.KeyMap[ImGuiKey_Z] = 'z';
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 ImGuiInputListener::~ImGuiInputListener() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnKeyDown(SDL_Keycode sym) {
   static auto &io = ImGui::GetIO();
   const int MODE = KMOD_NUM;
@@ -94,7 +90,6 @@ void ImGuiInputListener::OnKeyDown(SDL_Keycode sym) {
   io.KeysDown[key] = true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnKeyUp(SDL_Keycode sym) {
   static auto &io = ImGui::GetIO();
   int mod = KMOD_NUM;
@@ -104,7 +99,6 @@ void ImGuiInputListener::OnKeyUp(SDL_Keycode sym) {
   io.KeysDown[key] = false;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnTextInput(const char *text) {
   static auto &io = ImGui::GetIO();
 
@@ -113,10 +107,8 @@ void ImGuiInputListener::OnTextInput(const char *text) {
 
 // Mouse
 
-//----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnMouseMove(int dx, int dy) {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   static auto &io = ImGui::GetIO();
 
@@ -124,7 +116,6 @@ void ImGuiInputListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bo
   io.MousePos.y = static_cast<float>(y);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 template <typename T>
 static int sign(T val) {
   return (T(0) < val) - (val < T(0));
@@ -136,7 +127,6 @@ void ImGuiInputListener::OnMouseWheel(int x, int y) {
   io.MouseWheel = static_cast<float>(sign(y));
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnMouseLbDown(int x, int y) {
   static auto &io = ImGui::GetIO();
 
@@ -146,7 +136,6 @@ void ImGuiInputListener::OnMouseLbDown(int x, int y) {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnMouseLbUp(int x, int y) {
   static auto &io = ImGui::GetIO();
 
@@ -156,7 +145,6 @@ void ImGuiInputListener::OnMouseLbUp(int x, int y) {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnMouseRbDown(int x, int y) {
   static auto &io = ImGui::GetIO();
 
@@ -166,7 +154,6 @@ void ImGuiInputListener::OnMouseRbDown(int x, int y) {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnMouseRbUp(int x, int y) {
   static auto &io = ImGui::GetIO();
 
@@ -176,7 +163,6 @@ void ImGuiInputListener::OnMouseRbUp(int x, int y) {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnMouseMbDown(int x, int y) {
   static auto &io = ImGui::GetIO();
 
@@ -186,7 +172,6 @@ void ImGuiInputListener::OnMouseMbDown(int x, int y) {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void ImGuiInputListener::OnMouseMbUp(int x, int y) {
   static auto &io = ImGui::GetIO();
 

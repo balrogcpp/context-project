@@ -38,7 +38,6 @@ using namespace Ogre;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 RenderSystem::RenderSystem(int w, int h, bool f) {
   ogre_root = new Root("");
 
@@ -84,10 +83,8 @@ RenderSystem::RenderSystem(int w, int h, bool f) {
   InitShadowSettings();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 RenderSystem::~RenderSystem() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::InitOgrePlugins() {
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
@@ -114,7 +111,6 @@ void RenderSystem::InitOgrePlugins() {
   Root::getSingleton().installPlugin(new DotScenePluginB());
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::InitOgreRenderSystem() {
   if (render_system == "gl3") {
     InitOgreRenderSystemGL3();
@@ -129,7 +125,6 @@ void RenderSystem::InitOgreRenderSystem() {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::InitOgreRenderSystemGL3() {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *gl3plus_render_system = new GL3PlusRenderSystem();
@@ -139,7 +134,6 @@ void RenderSystem::InitOgreRenderSystemGL3() {
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::InitRenderWindow() {
   NameValuePairList params;
 
@@ -194,38 +188,37 @@ void RenderSystem::InitRenderWindow() {
   render_window = Root::getSingleton().createRenderWindow("", 0, 0, false, &params);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::InitResourceLocation() {
   const string internal_group = RGN_INTERNAL;
   const string default_group = RGN_DEFAULT;
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
 
-  AssetLoader::AddLocation("Programs/main", internal_group);
-  AssetLoader::AddLocation("Programs/rtss", internal_group);
-  AssetLoader::AddLocation("Programs/pbr", internal_group);
-  AssetLoader::AddLocation("Programs/particles", internal_group);
-  AssetLoader::AddLocation("Programs/compositor", internal_group);
-  AssetLoader::AddLocation("Programs/overlay", internal_group);
-  AssetLoader::AddLocation("Programs/gorilla", internal_group);
+  AssetLoader::AddLocation("Programs/Main", internal_group);
+  AssetLoader::AddLocation("Programs/RTSS", internal_group);
+  AssetLoader::AddLocation("Programs/PBR", internal_group);
+  AssetLoader::AddLocation("Programs/Particles", internal_group);
+  AssetLoader::AddLocation("Programs/Compositor", internal_group);
+  AssetLoader::AddLocation("Programs/Overlay", internal_group);
+  AssetLoader::AddLocation("Programs/Gorilla", internal_group);
 
-  AssetLoader::AddLocationRecursive("Assets", default_group, "resources.list");
+  AssetLoader::AddLocationRecursive("Assets", default_group, "Resources.list");
 
 #else
 
   ResourceGroupManager &resGroupMan = ResourceGroupManager::getSingleton();
   String defResGroup = RGN_DEFAULT;
 
-  const std::string file_system = "APKFileSystem";
-  const std::string zip = "APKZip";
+  const string file_system = "APKFileSystem";
+  const string zip = "APKZip";
 
-  resGroupMan.addResourceLocation("/programs/main.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/rtss.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/pbr.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/particles.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/compositor.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/overlay.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/gorilla.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/Main.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/RTSS.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/PBR.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/Particles.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/Compositor.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/Overlay.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/programs/Gorilla.zip", zip, internal_group);
 
   resGroupMan.addResourceLocation("/assets/material.zip", zip, default_group);
   resGroupMan.addResourceLocation("/assets/models.zip", zip, default_group);
@@ -238,7 +231,6 @@ void RenderSystem::InitResourceLocation() {
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::InitShadowSettings() {
   bool shadows_enable = true;
   float shadow_far = 400;
@@ -302,7 +294,6 @@ void RenderSystem::InitShadowSettings() {
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::InitTextureSettings() {
   string filtration = config->Get<string>("filtration");
   unsigned int anisotropy = 4;
@@ -325,32 +316,25 @@ void RenderSystem::InitTextureSettings() {
   MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::Cleanup() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::Pause() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::Resume() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::Update(float time) {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::Refresh() {
   InitShadowSettings();
   compositor->SetUp();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::Resize(int w, int h, bool f) {
   window->SetFullscreen(f);
   window->Resize(w, h);
   render_window->resize(w, h);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::RestoreFullscreenAndroid_() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   SDL_DisplayMode DM;
@@ -361,7 +345,6 @@ void RenderSystem::RestoreFullscreenAndroid_() {
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::RenderOneFrame() {
   ogre_root->renderOneFrame();
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
@@ -369,10 +352,8 @@ void RenderSystem::RenderOneFrame() {
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 Window &RenderSystem::GetWindow() { return *window; }
 
-//----------------------------------------------------------------------------------------------------------------------
 Compositor &RenderSystem::GetCompositor() { return *compositor; }
 
 }  // namespace glue

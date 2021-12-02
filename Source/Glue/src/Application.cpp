@@ -19,7 +19,6 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 Application::Application() {
   try {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
@@ -73,14 +72,12 @@ Application::Application() {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 Application::~Application() {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   Ogre::LogManager::getSingleton().getDefaultLog()->removeListener(this);
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 int Application::ExceptionMessage(const string &caption, const string &message) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   GetWindow().Grab(false);
@@ -96,7 +93,6 @@ int Application::ExceptionMessage(const string &caption, const string &message) 
   return 1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Application::WriteLogToFile() {
   if (!verbose) {
     return;
@@ -109,10 +105,8 @@ void Application::WriteLogToFile() {
     f << log;
   }
 }
-//----------------------------------------------------------------------------------------------------------------------
 void Application::PrintLogToConsole() { cout << log << flush; }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml, bool maskDebug, const string &logName,
                                 bool &skipThisMessage) {
   log.append(message);
@@ -123,7 +117,6 @@ void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Application::Loop() {
   bool suspend_old = false;
 
@@ -192,7 +185,6 @@ void Application::Loop() {
   engine->Pause();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Application::Go() {
   if (state_manager_->IsActive()) {
     state_manager_->InitCurState();
@@ -203,27 +195,22 @@ void Application::Go() {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Application::Quit() { running = false; }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Application::Pause() {
   suspend = true;
   state_manager_->Pause();
   engine->Pause();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Application::Resume() {
   suspend = false;
   state_manager_->Resume();
   engine->Resume();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Application::Event(const SDL_Event &evt) {}
 
-//----------------------------------------------------------------------------------------------------------------------
 int Application::Main(unique_ptr<AppState> &&scene_ptr) {
   try {
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC

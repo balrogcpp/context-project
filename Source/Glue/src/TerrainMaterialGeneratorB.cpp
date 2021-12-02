@@ -15,7 +15,6 @@ using namespace Ogre;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
   mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
 
@@ -24,18 +23,14 @@ TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
   setActiveProfile(mProfiles.back());
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB() = default;
 
-//----------------------------------------------------------------------------------------------------------------------
 TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent, const String &name,
                                                   const String &desc)
     : Profile(parent, name, desc) {}
 
-//----------------------------------------------------------------------------------------------------------------------
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   return true;
@@ -46,10 +41,8 @@ bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { lightmap = enabled; }
 
-//----------------------------------------------------------------------------------------------------------------------
 void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrain) {
   terrain->_setMorphRequired(true);
   terrain->_setNormalMapRequired(true);
@@ -57,7 +50,6 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrai
   terrain->_setCompositeMapRequired(false);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *terrain) {
   string material_name = "TerrainCustom";
   const int GENERATOR = 0;
@@ -105,7 +97,6 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Ogre::Terrain *terrain) {
   string material_name = "TerrainCustom";
   const int GENERATOR = 1;

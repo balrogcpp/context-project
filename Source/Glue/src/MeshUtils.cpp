@@ -8,7 +8,6 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 static bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
   bool hasTangents = false;
   bool hasUVs = false;
@@ -27,7 +26,6 @@ static bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declarat
   return !hasTangents && hasUVs;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void EnsureHasTangents(Ogre::MeshPtr mesh) {
   bool generateTangents = false;
   if (mesh->sharedVertexData) {
@@ -48,7 +46,6 @@ void EnsureHasTangents(Ogre::MeshPtr mesh) {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void UpdateMeshMaterial(Ogre::MeshPtr mesh, bool cast_shadows, const string &material_name, bool planar_reflection,
                         bool active_ibl) {
   try {
@@ -79,14 +76,12 @@ void UpdateMeshMaterial(Ogre::MeshPtr mesh, bool cast_shadows, const string &mat
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void UpdateMeshMaterial(const string &mesh_name, bool cast_shadows, const string &material_name, bool planar_reflection,
                         bool active_ibl) {
   const auto &mesh = Ogre::MeshManager::getSingleton().getByName(mesh_name);
   UpdateMeshMaterial(mesh, cast_shadows, material_name, planar_reflection, active_ibl);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void UpdateEntityMaterial(Ogre::Entity *entity, bool cast_shadows, const string &material_name, bool planar_reflection,
                           bool active_ibl) {
   try {

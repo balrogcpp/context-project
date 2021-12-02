@@ -1,0 +1,107 @@
+//MIT License
+//
+//Copyright (c) 2021 Andrew Vasiliev
+//
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+//
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+//
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program Output_fs glsl glsles
+{
+    source output.frag
+    preprocessor_defines SSAO,BLOOM,FOG
+	default_params
+	{
+		//param_named exposure float 1.0
+		param_named_auto uFogColour fog_colour
+		param_named_auto uFogParams fog_params
+        param_named_auto nearClipDistance near_clip_distance
+        param_named_auto farClipDistance far_clip_distance
+        //param_named uScale float 0.5
+        param_named uSSAOEnable float 0.0
+        //param_named uMotionBlurEnable float 0.0
+        param_named uBloomEnable float 0.0
+	}
+}
+
+material Output
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Output_fs
+			{
+			    param_named SceneSampler int 0
+			    //param_named_auto texelSize inverse_texture_size 0
+			    param_named sSceneDepthSampler int 1
+			    param_named SsaoSampler int 2
+			    param_named BloomSampler int 3
+			}
+
+			texture_unit
+            {
+                content_type compositor MRT mrt 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit
+            {
+                content_type compositor MRT mrt 1
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit SSAO
+            {
+                //content_type compositor SSAO ssao
+                //tex_address_mode clamp
+                //filtering linear linear none
+            }
+
+            texture_unit Bloom
+            {
+                //content_type compositor Bloom bloom
+                //tex_address_mode clamp
+                //filtering linear linear none
+            }
+		}
+	}
+}
+
+compositor Output
+{
+    technique
+    {
+        texture output target_width target_height PF_FLOAT16_RGB chain_scope pooled
+
+        target output
+        {
+            pass render_quad
+            {
+                material Output
+            }
+        }
+    }
+}

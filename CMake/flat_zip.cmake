@@ -19,7 +19,7 @@ macro(flat_zip curdir destination)
 endmacro()
 
 
-set(CONTEXT_TMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
+set(CONTEXT_TMP_DIR ${CMAKE_SOURCE_DIR}/Tmp)
 file(REMOVE_RECURSE ${CONTEXT_TMP_DIR})
 flat_zip(${CMAKE_SOURCE_DIR}/Programs ${CONTEXT_TMP_DIR}/Programs)
 flat_zip(${CMAKE_SOURCE_DIR}/Assets ${CONTEXT_TMP_DIR}/Assets)

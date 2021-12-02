@@ -11,7 +11,6 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 PhysicsSystem::PhysicsSystem(bool threaded) : threaded(threaded) {
   auto *sheduler = btCreateDefaultTaskScheduler();
 
@@ -44,14 +43,12 @@ PhysicsSystem::PhysicsSystem(bool threaded) : threaded(threaded) {
   pause = false;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 PhysicsSystem::~PhysicsSystem() {
   running = false;
 
   Cleanup();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::InitThread() {
   if (!threaded) return;
 
@@ -89,13 +86,10 @@ void PhysicsSystem::InitThread() {
   update_thread->detach();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::Resume() { pause = false; }
 
-//----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::Pause() { pause = true; }
 
-//----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::Update(float time) {
   if (threaded) return;
 
@@ -108,7 +102,6 @@ void PhysicsSystem::Update(float time) {
   DispatchCollisions();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::DispatchCollisions() {
   //  map<const btCollisionObject *, ContactInfo> new_contacts;
 
@@ -157,7 +150,6 @@ void PhysicsSystem::DispatchCollisions() {
   //  contacts_ = new_contacts;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::Cleanup() {
   world->clearForces();
 
@@ -175,10 +167,8 @@ void PhysicsSystem::Cleanup() {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::AddRigidBody(btRigidBody *body) { world->addRigidBody(body); }
 
-//----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::CreateTerrainHeightfieldShape(int size, float *data, const float &min_height,
                                                   const float &max_height, const Ogre::Vector3 &position,
                                                   const float &scale) {
@@ -220,7 +210,6 @@ void PhysicsSystem::CreateTerrainHeightfieldShape(int size, float *data, const f
   world->setForceUpdateAllAabbs(false);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent_node, const string &proxy_type,
                                 const string &physics_type, float mass, float mass_radius, float inertia_tensor,
                                 float velocity_min, float velocity_max, float friction) {
@@ -398,7 +387,6 @@ void PhysicsSystem::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent_no
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::ProcessData(Ogre::UserObjectBindings &user_object_bindings, Ogre::Entity *entity,
                                 Ogre::SceneNode *parent_node) {
   string proxy_type;

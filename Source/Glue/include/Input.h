@@ -15,30 +15,46 @@ extern "C" {
 
 namespace glue {
 class InputSequencer;
+class InputObserverI;
+class WindowObserverI;
 class InputObserver;
 class WindowObserver;
-}
+}  // namespace glue
 
 namespace glue {
 
+/// This Singleton class is main part of Observer implementation
+/// Keeps listeners list, capture inputs and send messages every frame
 class InputSequencer : public LazySingleton<InputSequencer> {
  public:
   InputSequencer();
   virtual ~InputSequencer();
 
-  void RegObserver(ViewPtr<InputObserver> p);
-  void UnregObserver(ViewPtr<InputObserver> p);
-  void RegWinObserver(ViewPtr<WindowObserver> p);
-  void UnregWinObserver(ViewPtr<WindowObserver> p);
+  /// Register physical input listener
+  void RegObserver(ViewPtr<InputObserverI> p);
+
+  /// Un-Register physical input listener
+  void UnregObserver(ViewPtr<InputObserverI> p);
+
+  /// Register window input listener
+  void RegWinObserver(ViewPtr<WindowObserverI> p);
+
+  /// Un-Register window input listener
+  void UnregWinObserver(ViewPtr<WindowObserverI> p);
+
+  /// Called once per frame, sent callback message to listeners
   void Capture();
 
  protected:
-  std::set<ViewPtr<InputObserver>> io_listeners;
-  std::set<ViewPtr<WindowObserver>> win_listeners;
+  /// Listeners list (physical input)
+  std::set<ViewPtr<InputObserverI>> io_listeners;
+  /// Listeners list (window input)
+  std::set<ViewPtr<WindowObserverI>> win_listeners;
+  /// Required for Android/IOS development
   int HandleAppEvents(void *userdata, SDL_Event *event);
 };
 
-/// Interface for Physical input observer (Mouse, Keyboard and Joystick)
+/// Interface for Physical input listener (Mouse, Keyboard and Joystick)
 class InputObserverI {
  public:
   /// Callback on keyboard key down
@@ -128,7 +144,7 @@ class InputObserverI {
   virtual void OnJoystickBall(int which, int ball, int xrel, int yrel) = 0;
 };
 
-//----------------------------------------------------------------------------------------------------------------------
+/// Physical input events listener
 class InputObserver : public InputObserverI, public NoCopy {
  public:
   InputObserver();
@@ -158,24 +174,31 @@ class InputObserver : public InputObserverI, public NoCopy {
   void OnJoystickBall(int which, int ball, int xrel, int yrel) override {}
 };
 
-/// Observer of Windows events
-class WindowObserver : public NoCopy {
+/// Interface for window listener
+class WindowObserverI {
+ public:
+  /// Callback called on any windows event
+  /// @param event SDL_Event structure
+  virtual void Event(const SDL_Event &event) = 0;
+  /// Callback called on Quit
+  virtual void Quit() = 0;
+  /// Callback called when Window is not in focus
+  virtual void Pause() = 0;
+  /// Callback called when Window back into focus
+  virtual void Resume() = 0;
+};
+
+/// Window events listener
+class WindowObserver : public WindowObserverI, public NoCopy {
  public:
   /// Constructor
   WindowObserver();
   virtual ~WindowObserver();
 
-  /// Callback called on any windows event
-  /// @param event SDL_Event structure
   virtual void Event(const SDL_Event &event) {}
-  /// Callback called on Quit
   virtual void Quit() {}
-  /// Callback called when Window is not in focus
   virtual void Pause() {}
-  /// Callback called when Window back into focus
   virtual void Resume() {}
-  /// Not used yet
-  virtual void Other(uint8_t type, int code, void *data1, void *data2) {}
 };
 
 }  // namespace glue

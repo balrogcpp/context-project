@@ -10,14 +10,12 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 void InitRtss() {
   if (!Ogre::RTShader::ShaderGenerator::initialize()) {
     throw Exception("RTSS failed to initialize");
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void CreateRtssShaders(const string &cache_path) {
   auto *scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *camera_ = scene_->getCamera("Default");
@@ -34,7 +32,6 @@ void CreateRtssShaders(const string &cache_path) {
   Ogre::MaterialManager::getSingleton().addListener(new ShaderResolver(shader_generator));
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void InitPssm(const vector<float> &split_points) {
   Ogre::RTShader::ShaderGenerator &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
   auto subRenderState = rtShaderGen.createSubRenderState<Ogre::RTShader::IntegratedPSSM3>();
@@ -44,7 +41,6 @@ void InitPssm(const vector<float> &split_points) {
   schemRenderState->addTemplateSubRenderState(subRenderState);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void InitInstansing() {
   auto *scene_ = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *camera_ = scene_->getCamera("Default");
@@ -71,12 +67,10 @@ void InitInstansing() {
   Ogre::MaterialManager::getSingleton().setActiveScheme(viewport_->getMaterialScheme());
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 ShaderResolver::ShaderResolver(Ogre::RTShader::ShaderGenerator *shader_generator) {
   this->shader_generator = shader_generator;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 bool ShaderResolver::FixMaterial(const string &material_name) {
   auto &mShaderGenerator = Ogre::RTShader::ShaderGenerator::getSingleton();
   auto originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name);
@@ -108,7 +102,6 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
   return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 Ogre::Technique *ShaderResolver::handleSchemeNotFound(unsigned short scheme_index, const string &scheme_name,
                                                       Ogre::Material *original_material, unsigned short lod_index,
                                                       const Ogre::Renderable *renderable) {
@@ -138,7 +131,6 @@ Ogre::Technique *ShaderResolver::handleSchemeNotFound(unsigned short scheme_inde
   return nullptr;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 bool ShaderResolver::afterIlluminationPassesCreated(Ogre::Technique *technique) {
   if (technique->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
     Ogre::Material *mat = technique->getParent();
@@ -149,7 +141,6 @@ bool ShaderResolver::afterIlluminationPassesCreated(Ogre::Technique *technique) 
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 bool ShaderResolver::beforeIlluminationPassesCleared(Ogre::Technique *technique) {
   if (technique->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
     Ogre::Material *mat = technique->getParent();

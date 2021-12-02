@@ -8,7 +8,6 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 int InputSequencer::HandleAppEvents(void *userdata, SDL_Event *event) {
   switch (event->type) {
     case SDL_APP_WILLENTERBACKGROUND:
@@ -28,20 +27,15 @@ int InputSequencer::HandleAppEvents(void *userdata, SDL_Event *event) {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 InputSequencer::InputSequencer() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 InputSequencer::~InputSequencer() {}
 
-//----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::RegObserver(ViewPtr<InputObserver> p) { io_listeners.insert(p); }
+void InputSequencer::RegObserver(ViewPtr<InputObserverI> p) { io_listeners.insert(p); }
 
-//----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::UnregObserver(ViewPtr<InputObserver> p) { io_listeners.erase(p); }
+void InputSequencer::UnregObserver(ViewPtr<InputObserverI> p) { io_listeners.erase(p); }
 
-//----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::RegWinObserver(ViewPtr<WindowObserver> p) {
+void InputSequencer::RegWinObserver(ViewPtr<WindowObserverI> p) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   auto callback = [](void *userdata, SDL_Event *event) {
     return InputSequencer::GetInstance().HandleAppEvents(userdata, event);
@@ -53,10 +47,8 @@ void InputSequencer::RegWinObserver(ViewPtr<WindowObserver> p) {
   win_listeners.insert(p);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-void InputSequencer::UnregWinObserver(ViewPtr<WindowObserver> p) { win_listeners.erase(p); }
+void InputSequencer::UnregWinObserver(ViewPtr<WindowObserverI> p) { win_listeners.erase(p); }
 
-//----------------------------------------------------------------------------------------------------------------------
 void InputSequencer::Capture() {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
@@ -197,25 +189,21 @@ void InputSequencer::Capture() {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 InputObserver::InputObserver() {
   static auto &ref = InputSequencer::GetInstance();
   ref.RegObserver(this);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 InputObserver::~InputObserver() {
   static auto &ref = InputSequencer::GetInstance();
   ref.UnregObserver(this);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 WindowObserver::WindowObserver() {
   static auto &ref = InputSequencer::GetInstance();
   ref.RegWinObserver(this);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 WindowObserver::~WindowObserver() {
   static auto &ref = InputSequencer::GetInstance();
   ref.UnregWinObserver(this);

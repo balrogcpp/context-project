@@ -7,19 +7,15 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 StateManager::StateManager() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 StateManager::~StateManager() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void StateManager::InitCurState() {
   cur_state->SetUp();
   Ogre::Root::getSingleton().addFrameListener(cur_state.get());
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void StateManager::InitNextState() {
   if (cur_state) {
     cur_state->Cleanup();
@@ -34,20 +30,17 @@ void StateManager::InitNextState() {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void StateManager::SetInitialState(unique_ptr<AppState> &&next_state) {
   cur_state = move(next_state);
   Ogre::Root::getSingleton().addFrameListener(cur_state.get());
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void StateManager::Update(float time) {
   if (cur_state) {
     cur_state->Update(time);
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 bool StateManager::IsActive() const { return static_cast<bool>(cur_state); }
 
 //---------------------------------------------------------------------------------------------------------------------

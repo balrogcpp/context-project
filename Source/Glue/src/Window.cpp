@@ -8,7 +8,6 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 void Window::InitGlContext() {
   constexpr array<pair<int, int>, 10> ver = {make_pair(4, 5), make_pair(4, 4), make_pair(4, 3), make_pair(4, 2),
                                              make_pair(4, 1), make_pair(4, 0), make_pair(3, 3), make_pair(3, 2),
@@ -33,7 +32,6 @@ void Window::InitGlContext() {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 Window::Window(int w, int h, bool f) : w_(w), h_(h), f_(f) {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
     throw Exception("Failed to init SDL2");
@@ -88,31 +86,24 @@ Window::Window(int w, int h, bool f) : w_(w), h_(h), f_(f) {
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 Window::~Window() {
   SDL_SetWindowFullscreen(window, SDL_FALSE);
   SDL_DestroyWindow(window);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 string Window::GetCaption() const { return caption_; }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Window::SetCaption(const string &caption) {
   caption_ = caption;
   SDL_SetWindowTitle(window, caption.c_str());
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 pair<int, int> Window::GetSize() const { return make_pair(w_, h_); }
 
-//----------------------------------------------------------------------------------------------------------------------
 float Window::GetRatio() const { return static_cast<float>(w_) / static_cast<float>(h_); }
 
-//----------------------------------------------------------------------------------------------------------------------
 bool Window::IsFullscreen() const { return f_; }
 
-//----------------------------------------------------------------------------------------------------------------------
 SDL_SysWMinfo Window::GetInfo() const {
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
@@ -120,7 +111,6 @@ SDL_SysWMinfo Window::GetInfo() const {
   return info;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Window::Grab(bool grab) {
   // This breaks input on > Android 9.0
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
@@ -133,10 +123,8 @@ void Window::Grab(bool grab) {
 #endif
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Window::SwapBuffers() const { SDL_GL_SwapWindow(window); }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Window::Resize(int w, int h) {
   w_ = w;
   h_ = h;
@@ -144,7 +132,6 @@ void Window::Resize(int w, int h) {
   SDL_SetWindowSize(window, w_, h_);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Window::SetFullscreen(bool f) {
   f_ = f;
 

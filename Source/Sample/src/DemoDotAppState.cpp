@@ -11,16 +11,12 @@ using namespace glue;
 namespace Demo {
 DemoDotAppState::DemoDotAppState() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 DemoDotAppState::~DemoDotAppState() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Pause() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Resume() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
     context_menu_ = true;
@@ -39,7 +35,6 @@ void DemoDotAppState::Cleanup() {}
 //   return new_string;
 // }
 
-//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::Update(float time) {
   //  anim1->addTime(time/4);
   //  anim2->addTime(time/4);
@@ -124,7 +119,6 @@ void DemoDotAppState::Update(float time) {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void DemoDotAppState::SetUp() {
   GetWindow().Grab(true);
 //  GetLoader().GetCamera().SetStyle(glue::CameraMan::Style::FPS);

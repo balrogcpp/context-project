@@ -10,7 +10,6 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 void RenderSystem::InitOgreRenderSystemGLES2() {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS

@@ -18,7 +18,6 @@ struct GrassVertex {
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 static void CreateGrassMesh(float width, float height) {
   using namespace Ogre;
 
@@ -100,7 +99,6 @@ static void CreateGrassMesh(float width, float height) {
   sm->indexData->indexBuffer->unlock();  // commit index changes
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 // static void CreateGrassMesh2(float width, float height) {
 //  Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
 //
@@ -188,23 +186,19 @@ static void CreateGrassMesh(float width, float height) {
 //  sm->indexData->indexBuffer->unlock();  // commit index changes
 //}
 
-//----------------------------------------------------------------------------------------------------------------------
 VegetationSystem::VegetationSystem() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 VegetationSystem::~VegetationSystem() {
   auto &mesh_manager = Ogre::MeshManager::getSingleton();
   if (mesh_manager.getByName("grass", Ogre::RGN_AUTODETECT)) mesh_manager.remove("grass", Ogre::RGN_AUTODETECT);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::Update(float time) {
   for (auto &it : pgeometry) it->update();
 
   for (auto &it : gpages) it->update();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::GenerateGrassStatic() {
   // create our grass mesh, and SetUp a grass entity from it
   CreateGrassMesh(1.0, 1.0);
@@ -233,7 +227,6 @@ void VegetationSystem::GenerateGrassStatic() {
   sgeometry.push_back(field);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::GenerateRocksStatic() {
   // create our grass mesh, and SetUp a grass entity from it
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -270,7 +263,6 @@ void VegetationSystem::GenerateRocksStatic() {
   sgeometry.push_back(rocks);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::GenerateGrassPaged() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 5);
   grass->addDetailLevel<GrassPage>(50, 10);  // Draw grass up to 100
@@ -302,7 +294,6 @@ void VegetationSystem::GenerateGrassPaged() {
   Pbr::UpdatePbrShadowReceiver("GrassCustom");
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::GenerateTreesPaged() {
   const float bound = 50;
 
@@ -366,7 +357,6 @@ void VegetationSystem::GenerateTreesPaged() {
   //  Pbr::UpdatePbrShadowReceiver("3D-Diggers/fir02_Batched");
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void VegetationSystem::ProcessForest() {
   GenerateGrassPaged();
 //  GenerateTreesPaged();

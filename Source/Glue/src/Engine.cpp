@@ -8,7 +8,6 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 Engine::Engine() {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   config = make_unique<Config>("config.json");
@@ -36,10 +35,8 @@ Engine::Engine() {
   io = make_unique<InputHandler>();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 Engine::~Engine() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void Engine::InitSystems() {
   int window_width = config->Get<int>("window_width");
   int window_high = config->Get<int>("window_high");
@@ -61,54 +58,44 @@ void Engine::InitSystems() {
   rs->Refresh();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Engine::Capture() {
   static auto &io = InputSequencer::GetInstance();
   io.Capture();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Engine::RegSystem(ViewPtr<System> system) { components.push_back(system); }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Engine::Pause() {
   for_each(components.begin(), components.end(), [](ViewPtr<System> it) { it->Pause(); });
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Engine::InMenu() {
   ps->Pause();
   loader->Pause();
   io->Pause();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Engine::OffMenu() {
   ps->Resume();
   loader->Resume();
   io->Resume();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Engine::Resume() {
   for_each(components.begin(), components.end(), [](ViewPtr<System> it) { it->Resume(); });
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Engine::Cleanup() {
   for_each(components.begin(), components.end(), [](ViewPtr<System> it) { it->Cleanup(); });
   Refresh();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Engine::Update(float time) {
   for_each(components.begin(), components.end(), [time](ViewPtr<System> it) { it->Update(time); });
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Engine::RenderOneFrame() { rs->RenderOneFrame(); }
 
-//----------------------------------------------------------------------------------------------------------------------
 void Engine::Refresh() { rs->Refresh(); }
 
 }  // namespace glue
