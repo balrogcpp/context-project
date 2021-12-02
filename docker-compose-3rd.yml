@@ -3,40 +3,40 @@ services:
   glue-dep-linux:
     build:
       context: .
-      dockerfile: ./docker/thirdparty/linux-glue-dep.Dockerfile
+      dockerfile: Docker/thirdparty/linux-glue-dep.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: linux-glue-dep
     volumes:
       - .:/var/artifacts
-    command: cp -R /mnt/build/artifacts /var/artifacts
+    command: cp -R /mnt/build/Artifacts /var/artifacts
   glue-dep-windows:
     build:
       context: .
-      dockerfile: ./docker/thirdparty/windows-glue-dep.Dockerfile
+      dockerfile: Docker/thirdparty/windows-glue-dep.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: windows-glue-dep
     volumes:
       - .:/var/artifacts
-    command: cp -R /mnt/build/artifacts /var/artifacts
+    command: cp -R /mnt/build/Artifacts /var/artifacts
   glue-dep-apple:
     build:
       context: .
-      dockerfile: ./docker/thirdparty/apple-glue-dep.Dockerfile
+      dockerfile: Docker/thirdparty/apple-glue-dep.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: apple-glue-dep
     volumes:
       - .:/var/artifacts
-    command: cp -R /mnt/build/artifacts /var/artifacts
-#  glue-dep-android:
-#    build:
-#      context: .
-#      dockerfile: ./docker/thirdparty/android-glue-dep.Dockerfile
-#      args:
-#        GIT_HASH: ${GIT_HASH}
-#    container_name: android-glue-dep
-#    volumes:
-#      - .:/var/artifacts
-#    command: cp -R /mnt/build/artifacts /var/artifacts
+    command: cp -R /mnt/build/Artifacts /var/artifacts
+  glue-dep-android:
+    build:
+      context: .
+      dockerfile: ./Docker/thirdparty/android-glue-dep.Dockerfile
+      args:
+        GIT_HASH: ${GIT_HASH}
+    container_name: android-glue-dep
+    volumes:
+      - .:/var/artifacts
+    command: cp -R /mnt/build/Artifacts /var/artifacts

@@ -3,40 +3,40 @@ services:
   sample-linux:
     build:
       context: .
-      dockerfile: ./docker/sample/linux.Dockerfile
+      dockerfile: Docker/sample/linux.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: sample-linux
     volumes:
       - .:/var/artifacts
-    command: cp -R /mnt/build/artifacts /var/artifacts
+    command: cp -R /mnt/build/Artifacts /var/artifacts
   sample-windows:
     build:
       context: .
-      dockerfile: ./docker/sample/windows.Dockerfile
+      dockerfile: Docker/sample/windows.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: sample-windows
     volumes:
       - .:/var/artifacts
-    command: cp -R /mnt/build/artifacts /var/artifacts
+    command: cp -R /mnt/build/Artifacts /var/artifacts
   sample-apple:
     build:
       context: .
-      dockerfile: ./docker/sample/apple.Dockerfile
+      dockerfile: Docker/sample/apple.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: sample-apple
     volumes:
       - .:/var/artifacts
-    command: cp -R /mnt/build/artifacts /var/artifacts
-#  sample-android:
-#    build:
-#      context: .
-#      dockerfile: ./docker/sample/android.Dockerfile
-#      args:
-#        GIT_HASH: ${GIT_HASH}
-#    container_name: sample-android
-#    volumes:
-#      - .:/var/artifacts
-#    command: cp -R /mnt/build/artifacts /var/artifacts
+    command: cp -R /mnt/build/Artifacts /var/artifacts
+  sample-android:
+    build:
+      context: .
+      dockerfile: ./Docker/sample/android.Dockerfile
+      args:
+        GIT_HASH: ${GIT_HASH}
+    container_name: sample-android
+    volumes:
+      - .:/var/artifacts
+    command: cp -R /mnt/build/Artifacts /var/artifacts

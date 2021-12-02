@@ -2,9 +2,9 @@ include(ExternalProject)
 include(Make)
 find_package(Git REQUIRED)
 
-set(GLUE_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${GLUE_TOOLCHAIN})
-set(GLUE_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/external/${CMAKE_BUILD_TYPE}/${GLUE_TOOLCHAIN}/sdk CACHE PATH "")
-set(GLUE_EXTERNAL_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/patch)
+set(GLUE_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/External/${CMAKE_BUILD_TYPE}/${GLUE_TOOLCHAIN})
+set(GLUE_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/External/${CMAKE_BUILD_TYPE}/${GLUE_TOOLCHAIN}/sdk CACHE PATH "")
+set(GLUE_EXTERNAL_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/Patch)
 set(GLUE_EXTERNAL_DIR ${GLUE_EXTERNAL_INSTALL_LOCATION})
 set(GLUE_EXTERNAL_INCLUDE_DIR ${GLUE_EXTERNAL_INSTALL_LOCATION}/include)
 set(GLUE_EXTERNAL_LIB_DIR ${GLUE_EXTERNAL_INSTALL_LOCATION}/lib CACHE PATH "")
@@ -549,27 +549,30 @@ if (NOT MSVC)
 endif ()
 
 add_custom_target(assets
-        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git assets
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/assets/.git
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git Assets
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Assets/.git
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/tmp
-        COMMAND ${CMAKE_COMMAND} -P cmake/flat_zip.cmake
+        COMMAND ${CMAKE_COMMAND} -P CMake/flat_zip.cmake
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Fetching assets..."
+        USES_TERMINAL
         )
 
 add_custom_target(assets_ssh
-        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${GIT_EXECUTABLE} clone --depth 1 git@github.com:balrogcpp/scenes.git assets
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${GIT_EXECUTABLE} clone --depth 1 git@github.com:balrogcpp/scenes.git Assets
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/tmp
-        COMMAND ${CMAKE_COMMAND} -P cmake/flat_zip.cmake
+        COMMAND ${CMAKE_COMMAND} -P CMake/flat_zip.cmake
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Fetching assets..."
+        USES_TERMINAL
         )
 
-add_custom_target(build-assets
+add_custom_target(assets-build
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/tmp
-        COMMAND ${CMAKE_COMMAND} -P cmake/flat_zip.cmake
+        COMMAND ${CMAKE_COMMAND} -P CMake/flat_zip.cmake
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Creating assets and programs zip package..."
+        USES_TERMINAL
         )
 
 list(APPEND GLUE_DEPENDENCY_TARGETS target-filesystem)
@@ -578,5 +581,6 @@ list(APPEND GLUE_DEPENDENCY_TARGETS target-json)
 list(APPEND GLUE_DEPENDENCY_TARGETS target-vorbis)
 list(APPEND GLUE_DEPENDENCY_TARGETS target-ogre)
 list(APPEND GLUE_DEPENDENCY_TARGETS target-bullet)
+list(APPEND GLUE_DEPENDENCY_TARGETS target-googletest)
 
 add_custom_target(thirdparty DEPENDS ${GLUE_DEPENDENCY_TARGETS})

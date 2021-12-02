@@ -1,17 +1,14 @@
 **
 
-!/android/
-!/assets/
-!/cmake/
-!/sample/
-!/thirdparty/CMakeLists.txt/
-!/thirdparty/patch/
-!/deploy/
-!/doc/
-!/programs/
-!/source/
-!/tests/
+!/Android/
+!/Assets/
+!/CMake/
+!/Source/
+!/Thirdparty/CMakeLists.txt/
+!/Thirdparty/Patch/
+!/Deploy/
+!/Programs/
+!/Tests/
 !/CMakeLists.txt/
 !/README.md/
 !/LICENSE/
-!/zip-dependencies.py/

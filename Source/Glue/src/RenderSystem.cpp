@@ -201,15 +201,15 @@ void RenderSystem::InitResourceLocation() {
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
 
-  AssetLoader::AddLocation("programs/main", internal_group);
-  AssetLoader::AddLocation("programs/rtss", internal_group);
-  AssetLoader::AddLocation("programs/pbr", internal_group);
-  AssetLoader::AddLocation("programs/particles", internal_group);
-  AssetLoader::AddLocation("programs/compositor", internal_group);
-  AssetLoader::AddLocation("programs/overlay", internal_group);
-  AssetLoader::AddLocation("programs/gorilla", internal_group);
+  AssetLoader::AddLocation("Programs/main", internal_group);
+  AssetLoader::AddLocation("Programs/rtss", internal_group);
+  AssetLoader::AddLocation("Programs/pbr", internal_group);
+  AssetLoader::AddLocation("Programs/particles", internal_group);
+  AssetLoader::AddLocation("Programs/compositor", internal_group);
+  AssetLoader::AddLocation("Programs/overlay", internal_group);
+  AssetLoader::AddLocation("Programs/gorilla", internal_group);
 
-  AssetLoader::AddLocationRecursive("assets", default_group, "resources.list");
+  AssetLoader::AddLocationRecursive("Assets", default_group, "resources.list");
 
 #else
 

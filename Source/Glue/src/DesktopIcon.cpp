@@ -17,7 +17,7 @@ namespace glue {
 
 //----------------------------------------------------------------------------------------------------------------------
 DesktopIcon::DesktopIcon()
-    : executable("sample"),
+    : executable("Sample"),
       version("1.0"),
       icon_name("GlueSample"),
       skeleton{

@@ -5,17 +5,17 @@ ARG CONTEXT_HOME=/mnt/build
 ARG GIT_HASH=00000000
 WORKDIR ${CONTEXT_HOME}
 
-COPY ./thirdparty/CMakeLists.txt ./thirdparty/CMakeLists.txt
-COPY ./thirdparty/patch ./thirdparty/patch
+COPY ./Thirdparty/CMakeLists.txt ./Thirdparty/CMakeLists.txt
+COPY ./Thirdparty/Patch ./Thirdparty/Patch
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./cmake ./cmake
-COPY ./android ./android
+COPY ./CMake ./CMake
+COPY ./Android ./Android
 
-RUN cd ./android \
+RUN cd ./Android \
     && ./gradlew assembleRelease \
-    && cd ${CONTEXT_HOME}/thirdparty/external/Release/android-clang-aarch64 \
+    && cd ${CONTEXT_HOME}/Thirdparty/External/Release/android-clang-aarch64 \
     && rm -rf src tmp ${CONTEXT_HOME}/android ${ANDROID_HOME}/emulator ${ANDROID_HOME}/tools /root/.android /root/.gradle
 
-RUN cd  ${CONTEXT_HOME}/thirdparty/external/Release \
+RUN cd  ${CONTEXT_HOME}/Thirdparty/External/Release \
     && tar cfJ android-clang-aarch64.tar.xz android-clang-aarch64 \
-    && mv android-clang-aarch64.tar.xz ${CONTEXT_HOME}/artifacts
+    && mv android-clang-aarch64.tar.xz ${CONTEXT_HOME}/Artifacts

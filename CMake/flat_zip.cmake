@@ -21,5 +21,5 @@ endmacro()
 
 set(CONTEXT_TMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
 file(REMOVE_RECURSE ${CONTEXT_TMP_DIR})
-flat_zip(${CMAKE_SOURCE_DIR}/programs ${CONTEXT_TMP_DIR}/programs)
-flat_zip(${CMAKE_SOURCE_DIR}/assets ${CONTEXT_TMP_DIR}/assets)
+flat_zip(${CMAKE_SOURCE_DIR}/Programs ${CONTEXT_TMP_DIR}/Programs)
+flat_zip(${CMAKE_SOURCE_DIR}/Assets ${CONTEXT_TMP_DIR}/Assets)

@@ -7,13 +7,10 @@ using namespace std;
 
 namespace glue {
 
-//----------------------------------------------------------------------------------------------------------------------
 CubeMapCamera::CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size) { Init(creator, tex_size); }
 
-//----------------------------------------------------------------------------------------------------------------------
 CubeMapCamera::~CubeMapCamera() { Clear(); }
 
-//----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   // point the camera in the right direction based on which face of the cubemap
   // this is
@@ -31,10 +28,8 @@ void CubeMapCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::Clear() {
   if (cubemap) {
     for (auto it : targets) {
@@ -54,7 +49,6 @@ void CubeMapCamera::Clear() {
   camera_node = nullptr;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void CubeMapCamera::Init(Ogre::SceneNode *creator, unsigned int tex_size) {
   using namespace Ogre;
   auto size = tex_size;

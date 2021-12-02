@@ -1,12 +1,11 @@
-cmake_minimum_required(VERSION 3.16.3)
+cmake_minimum_required(VERSION 3.19.8)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 project(glue VERSION 0.1.0)
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
 include(Make)
 
 # Build type definition
@@ -147,7 +146,7 @@ set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
 set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
 
 # Create artifacts directory
-set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
+set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
 make_directory(${GLUE_ARTIFACT_DIR})
 
 # Doxygen
@@ -182,7 +181,7 @@ else ()
 endif ()
 
 # Insert dependencies
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty)
+add_subdirectory(${CMAKE_SOURCE_DIR}/Thirdparty)
 set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
 set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${GLUE_EXTERNAL_INSTALL_LOCATION}")
 if (APPLE)
@@ -230,8 +229,17 @@ insert_dependency(SDL2_FOUND SDL2)
 insert_dependency(PNG_FOUND LibPNG)
 insert_dependency(assimp_FOUND assimp)
 
+# Docker-compose target
+add_custom_target(docker-compose-dep
+        COMMAND docker-compose -f docker-compose-3rd.yml up
+        COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Building thirdparty libraries with docker-compose..."
+        USES_TERMINAL
+        )
+
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
-    add_library(target-deps-dummy SHARED android/app/src/main/cpp/main.cpp)
+    add_library(target-deps-dummy SHARED Android/app/src/main/cpp/main.cpp)
     add_dependencies(target-deps-dummy thirdparty)
 endif ()
 if (ANY_NOT_FOUND)
@@ -239,7 +247,7 @@ if (ANY_NOT_FOUND)
 endif ()
 
 set(GLUE_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/glue)
-set(GLUE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/source/include)
+set(GLUE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Source/Glue/include)
 
 list(APPEND GLUE_INCLUDE_DIRS
         ${GLUE_INCLUDE_DIR}
@@ -255,7 +263,7 @@ list(APPEND GLUE_INCLUDE_DIRS
         )
 
 set(SAMPLE_EXE sample)
-file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${SAMPLE_EXE}/*.cpp ${SAMPLE_EXE}/*.h ${SAMPLE_EXE}/*.hpp deploy/*.manifest source/*.cpp source/*.h source/*.hpp)
+file(GLOB_RECURSE SAMPLE_SOURCE_FILES Source/Sample/*.cpp Source/Sample/*.h Source/Sample/*.hpp Deploy/*.manifest Source/Glue/*.cpp Source/Glue/*.h Source/Glue/*.hpp)
 
 if (NOT ANDROID)
     add_executable(${SAMPLE_EXE} WIN32 ${SAMPLE_SOURCE_FILES})
@@ -264,9 +272,10 @@ else ()
     set_target_properties(${SAMPLE_EXE} PROPERTIES OUTPUT_NAME "main")
 endif ()
 
-include_directories(${SAMPLE_EXE} ${SAMPLE_EXE}/include ${GLUE_INCLUDE_DIRS})
+include_directories(${SAMPLE_EXE} Source/Sample/include ${GLUE_INCLUDE_DIRS})
 target_link_directories(${SAMPLE_EXE} PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
-target_precompile_headers(${SAMPLE_EXE} PUBLIC source/include/pch.h)
+target_precompile_headers(${SAMPLE_EXE} PUBLIC Source/Glue/include/pch.h)
+set_target_properties(${SAMPLE_EXE} PROPERTIES OUTPUT_NAME "Sample")
 
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
@@ -283,44 +292,57 @@ if (NOT (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug"))
 else ()
     set(OGRE_CODEC_ASSIMP Codec_AssimpStatic_d)
 endif ()
-target_link_libraries(${SAMPLE_EXE} PUBLIC ${OGRE_LIBRARIES} ${OGRE_CODEC_ASSIMP} ${ASSIMP_LIBRARIES} ${ASSIMP_IRRXML_LIBRARY} ${BULLET_LIBRARIES}
-        ${PNG_LIBRARY} vorbisfile vorbis vorbisenc Ogg::ogg pugixml SDL2::SDL2-static
-        ${LUA_LIBRARIES} ${OPENAL_LIBRARY} ${SYSTEM_LIBRARIES}
+target_link_libraries(${SAMPLE_EXE} PUBLIC
+        ${OGRE_LIBRARIES}
+        ${OGRE_CODEC_ASSIMP}
+        ${ASSIMP_LIBRARIES}
+        ${ASSIMP_IRRXML_LIBRARY}
+        ${BULLET_LIBRARIES}
+        ${PNG_LIBRARY}
+        vorbisfile
+        vorbis
+        vorbisenc
+        Ogg::ogg
+        pugixml
+        SDL2::SDL2-static
+        ${LUA_LIBRARIES}
+        ${OPENAL_LIBRARY}
+        ${SYSTEM_LIBRARIES}
         )
 
 install(TARGETS ${SAMPLE_EXE} RUNTIME DESTINATION .)
-file(GLOB_RECURSE SOURCE_FILES source/*.cpp source/*.h source/*.hpp)
-add_library(glue STATIC ${SOURCE_FILES})
+file(GLOB_RECURSE GLUE_ENGINE_SOURCE_FILES Source/*.cpp Source/*.h Source/*.hpp)
+add_library(glue STATIC ${GLUE_ENGINE_SOURCE_FILES})
 include_directories(glue ${GLUE_INCLUDE_DIRS})
 set_target_properties(glue PROPERTIES OUTPUT_NAME "glue-static")
-target_precompile_headers(glue PUBLIC source/include/pch.h)
+target_precompile_headers(glue PUBLIC Source/Glue/include/pch.h)
 
 # Tests
 find_package(GTest QUIET)
-if (GTest_FOUND)
+if (GTest_FOUND AND NOT CMAKE_CROSSCOMPILING)
     enable_testing()
     include(GoogleTest)
 
-    add_executable(glue_test tests/src/TestHello.cpp)
+    add_executable(glue_test Source/Tests/src/TestHello.cpp)
     target_link_libraries(glue_test ${GTEST_BOTH_LIBRARIES})
 
     gtest_discover_tests(glue_test)
     target_link_directories(glue_test PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
 else ()
-    message("Google test not found. Test targets are not available")
+    message("Google test not found. Test targets are not available.")
 endif ()
 
 # Install&package block
-set(GLUE_DEPLOY_DIR ${CMAKE_SOURCE_DIR}/deploy)
+set(GLUE_DEPLOY_DIR ${CMAKE_SOURCE_DIR}/Deploy)
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${GLUE_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
     file(INSTALL ${EXTERNAL_DLL_GLOB} DESTINATION .)
 endif ()
 if (NOT ANDROID)
-    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/config.json DESTINATION .)
+    file(INSTALL ${CMAKE_SOURCE_DIR}/Deploy/config.json DESTINATION .)
 endif ()
 if (MINGW)
-    file(INSTALL ${CMAKE_SOURCE_DIR}/deploy/${SAMPLE_EXE}.exe.manifest DESTINATION .)
+    file(INSTALL ${CMAKE_SOURCE_DIR}/Deploy/${SAMPLE_EXE}.exe.manifest DESTINATION .)
 endif ()
 
 if (NOT GIT_SHA1)
@@ -341,23 +363,23 @@ endif ()
 if (NOT ${CMAKE_INSTALL_PREFIX})
     set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install/${GLUE_ARTIFACT_NAME})
 endif ()
-install(FILES ${CMAKE_SOURCE_DIR}/deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION .)
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/assets ${CMAKE_SOURCE_DIR}/tmp/programs DESTINATION .)
+install(FILES ${CMAKE_SOURCE_DIR}/Deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION .)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/tmp/Assets ${CMAKE_SOURCE_DIR}/tmp/Programs DESTINATION .)
 set(EXECUTABLE_NAME ${SAMPLE_EXE})
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/Launch.sh PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
+    install(FILES ${CMAKE_SOURCE_DIR}/Deploy/Launch.sh PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
 endif ()
 if (WIN32)
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/Launch.bat DESTINATION .)
+    install(FILES ${CMAKE_SOURCE_DIR}/Deploy/Launch.bat DESTINATION .)
 endif ()
 if (MINGW)
     #MinGW can't compile .manifest files into executable
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/${EXECUTABLE_NAME}.exe.manifest DESTINATION .)
+    install(FILES ${CMAKE_SOURCE_DIR}/Deploy/${EXECUTABLE_NAME}.exe.manifest DESTINATION .)
 endif ()
 if (MSVC)
     # Microsoft doesn't include MSVC dll's in standart installation
-    install(FILES ${CMAKE_SOURCE_DIR}/deploy/VC_redist.x64.exe DESTINATION .)
+    install(FILES ${CMAKE_SOURCE_DIR}/Deploy/VC_redist.x64.exe DESTINATION .)
 endif ()
 
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
@@ -403,13 +425,5 @@ add_custom_target(docker-compose
         COMMAND docker-compose down --volumes
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Building tests with docker..."
-        USES_TERMINAL
-        )
-
-add_custom_target(docker-compose-dep
-        COMMAND docker-compose -f docker-compose-3rd.yml up
-        COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building thirdparty libraries with docker-compose..."
         USES_TERMINAL
         )
