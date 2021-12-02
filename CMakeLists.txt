@@ -346,7 +346,7 @@ if (NOT ANDROID)
     file(INSTALL ${CMAKE_SOURCE_DIR}/Deploy/config.json DESTINATION .)
 endif ()
 if (MINGW)
-    file(INSTALL ${CMAKE_SOURCE_DIR}/Deploy/${SAMPLE_EXE}.exe.manifest DESTINATION .)
+    file(INSTALL ${CMAKE_SOURCE_DIR}/Deploy/Sample.exe.manifest DESTINATION .)
 endif ()
 
 if (NOT GIT_SHA1)
