@@ -548,7 +548,7 @@ if (NOT MSVC)
                         )
 endif ()
 
-add_custom_target(assets
+add_custom_target(Assets
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git Assets
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Assets/.git
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/tmp
@@ -558,7 +558,7 @@ add_custom_target(assets
         USES_TERMINAL
         )
 
-add_custom_target(assets_ssh
+add_custom_target(Assets_SSH
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${GIT_EXECUTABLE} clone --depth 1 git@github.com:balrogcpp/scenes.git Assets
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/tmp
         COMMAND ${CMAKE_COMMAND} -P CMake/flat_zip.cmake
@@ -567,7 +567,7 @@ add_custom_target(assets_ssh
         USES_TERMINAL
         )
 
-add_custom_target(assets-build
+add_custom_target(AssetsBuild
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/tmp
         COMMAND ${CMAKE_COMMAND} -P CMake/flat_zip.cmake
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -583,4 +583,4 @@ list(APPEND GLUE_DEPENDENCY_TARGETS target-ogre)
 list(APPEND GLUE_DEPENDENCY_TARGETS target-bullet)
 list(APPEND GLUE_DEPENDENCY_TARGETS target-googletest)
 
-add_custom_target(thirdparty DEPENDS ${GLUE_DEPENDENCY_TARGETS})
+add_custom_target(Thirdparty DEPENDS ${GLUE_DEPENDENCY_TARGETS})

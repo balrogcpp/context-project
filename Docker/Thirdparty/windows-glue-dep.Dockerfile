@@ -12,7 +12,7 @@ COPY ./CMake ./CMake
 
 RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -G Ninja .. \
-    && cmake --build . --target thirdparty \
+    && cmake --build . --target Thirdparty \
     && cd ${CONTEXT_HOME}/Thirdparty/External/Release/windows-clang-mingw-x86_64 \
     && rm -rf src tmp ${CONTEXT_HOME}/build-windows
 

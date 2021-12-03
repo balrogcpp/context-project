@@ -153,7 +153,7 @@ make_directory(${GLUE_ARTIFACT_DIR})
 find_package(Doxygen COMPONENTS dot QUIET)
 find_package(LATEX COMPONENTS PDFLATEX QUIET)
 if (${DOXYGEN_FOUND})
-    add_custom_target(doxygen
+    add_custom_target(Doxygen
             COMMAND ${DOXYGEN_EXECUTABLE}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating API documentation with Doxygen..."
@@ -168,8 +168,8 @@ elseif (WIN32)
     set(GLUE_DOXYGEN_MAKE_COMMAND "make.bat")
 endif ()
 if (${LATEX_PDFLATEX_FOUND})
-    add_custom_target(doxygen-pdf
-            DEPENDS doxygen
+    add_custom_target(DoxygenPdf
+            DEPENDS Doxygen
             COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_ARTIFACT_DIR}/Doxygen/latex ${GLUE_DOXYGEN_MAKE_COMMAND}
             COMMAND ${CMAKE_COMMAND} -E copy ${GLUE_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${GLUE_ARTIFACT_DIR}/Doxygen
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -230,7 +230,7 @@ insert_dependency(PNG_FOUND LibPNG)
 insert_dependency(assimp_FOUND assimp)
 
 # Docker-compose target
-add_custom_target(docker-compose-dep
+add_custom_target(DockerComposeDep
         COMMAND docker-compose -f docker-compose-3rd.yml up
         COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -239,8 +239,8 @@ add_custom_target(docker-compose-dep
         )
 
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
-    add_library(target-deps-dummy SHARED Android/app/src/main/cpp/main.cpp)
-    add_dependencies(target-deps-dummy thirdparty)
+    add_library(AndroidDummy SHARED Android/app/src/main/cpp/main.cpp)
+    add_dependencies(AndroidDummy Thirdparty)
 endif ()
 if (ANY_NOT_FOUND)
     return()
@@ -266,16 +266,16 @@ set(SAMPLE_EXE sample)
 file(GLOB_RECURSE SAMPLE_SOURCE_FILES Source/Sample/*.cpp Source/Sample/*.h Source/Sample/*.hpp Deploy/*.manifest Source/Glue/*.cpp Source/Glue/*.h Source/Glue/*.hpp)
 
 if (NOT ANDROID)
-    add_executable(${SAMPLE_EXE} WIN32 ${SAMPLE_SOURCE_FILES})
+    add_executable(Sample WIN32 ${SAMPLE_SOURCE_FILES})
 else ()
-    add_library(${SAMPLE_EXE} SHARED ${SAMPLE_SOURCE_FILES})
-    set_target_properties(${SAMPLE_EXE} PROPERTIES OUTPUT_NAME "main")
+    add_library(Sample SHARED ${SAMPLE_SOURCE_FILES})
+    set_target_properties(Sample PROPERTIES OUTPUT_NAME "main")
 endif ()
 
-include_directories(${SAMPLE_EXE} Source/Sample/include ${GLUE_INCLUDE_DIRS})
-target_link_directories(${SAMPLE_EXE} PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
-target_precompile_headers(${SAMPLE_EXE} PUBLIC Source/Glue/include/pch.h)
-set_target_properties(${SAMPLE_EXE} PROPERTIES OUTPUT_NAME "Sample")
+include_directories(Sample Source/Sample/include ${GLUE_INCLUDE_DIRS})
+target_link_directories(Sample PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
+target_precompile_headers(Sample PUBLIC Source/Glue/include/pch.h)
+set_target_properties(Sample PROPERTIES OUTPUT_NAME "Sample")
 
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
@@ -292,7 +292,7 @@ if (NOT (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug"))
 else ()
     set(OGRE_CODEC_ASSIMP Codec_AssimpStatic_d)
 endif ()
-target_link_libraries(${SAMPLE_EXE} PUBLIC
+target_link_libraries(Sample PUBLIC
         ${OGRE_LIBRARIES}
         ${OGRE_CODEC_ASSIMP}
         ${ASSIMP_LIBRARIES}
@@ -310,7 +310,7 @@ target_link_libraries(${SAMPLE_EXE} PUBLIC
         ${SYSTEM_LIBRARIES}
         )
 
-install(TARGETS ${SAMPLE_EXE} RUNTIME DESTINATION .)
+install(TARGETS Sample RUNTIME DESTINATION .)
 
 option(GLUE_BUILD_STATIC_LIBRARY "Build static library" OFF)
 if (GLUE_BUILD_STATIC_LIBRARY)
@@ -327,11 +327,11 @@ if (GTest_FOUND AND NOT CMAKE_CROSSCOMPILING)
     enable_testing()
     include(GoogleTest)
 
-    add_executable(glue_test Source/Tests/src/TestHello.cpp)
-    target_link_libraries(glue_test ${GTEST_BOTH_LIBRARIES})
+    add_executable(TestGlue Source/Tests/src/TestHello.cpp)
+    target_link_libraries(TestGlue ${GTEST_BOTH_LIBRARIES})
 
-    gtest_discover_tests(glue_test)
-    target_link_directories(glue_test PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
+    gtest_discover_tests(TestGlue)
+    target_link_directories(TestGlue PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
 else ()
     message("Google test not found. Test targets are not available.")
 endif ()
@@ -369,7 +369,7 @@ if (NOT ${CMAKE_INSTALL_PREFIX})
 endif ()
 install(FILES ${CMAKE_SOURCE_DIR}/Deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION .)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/Tmp/Assets ${CMAKE_SOURCE_DIR}/Tmp/Programs DESTINATION .)
-set(EXECUTABLE_NAME ${SAMPLE_EXE})
+set(EXECUTABLE_NAME Sample)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(FILES PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
@@ -399,7 +399,7 @@ if (${NSIS_FOUND} AND MSVC)
     set(CPACK_NSIS_MODIFY_PATH ON)
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
     set(CPACK_NSIS_COMPRESSOR "/SOLID lzma \r\n SetCompressorDictSize 32")
-    set(CPACK_CREATE_DESKTOP_LINKS ${SAMPLE_EXE})
+    set(CPACK_CREATE_DESKTOP_LINKS Sample)
     set(CPACK_NSIS_IGNORE_LICENSE_PAGE ON)
     if (CMAKE_SIZEOF_VOID_P STREQUAL 8)
         set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
@@ -418,7 +418,7 @@ if (NOT MSVC)
 endif ()
 
 # Docker-compose targets
-add_custom_target(docker-compose
+add_custom_target(DockerCompose
         COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
         COMMAND docker-compose down --volumes
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}

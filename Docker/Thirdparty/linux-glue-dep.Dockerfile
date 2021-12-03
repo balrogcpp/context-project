@@ -17,7 +17,7 @@ RUN apt-get update \
      && export CC=clang \
      && CXX=clang++ \
      && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -G Ninja .. \
-     && cmake --build . --target thirdparty \
+     && cmake --build . --target Thirdparty \
      && cd ${CONTEXT_HOME}/Thirdparty/External/Release/linux-clang-x86_64 \
      && rm -rf src tmp \
      && cd ${CONTEXT_HOME} \
