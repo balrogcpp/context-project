@@ -25,7 +25,7 @@ class AnimationState;
 #define JUMP_ACCEL SCALE * 30.0f  // character jump acceleration in upward units per squared second
 #define GRAVITY SCALE * 90.0f     // gravity in downward units per squared second
 
-namespace glue {
+namespace Glue {
 
 class SinbadCharacterController : public Object, public MutedInputObserver {
  public:

@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace glue {
+namespace Glue {
 class Object {
  public:
   virtual void Update(float time) = 0;

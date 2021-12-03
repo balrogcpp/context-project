@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 System::System() { Engine::GetInstance().RegSystem(this); }
 

@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 ReflectionCamera::ReflectionCamera(Ogre::Plane plane, unsigned int tex_size) {
   this->plane = plane;

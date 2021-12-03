@@ -4,7 +4,7 @@
 #include "CameraMan.h"
 #include <BulletDynamics/Dynamics/btRigidBody.h>
 
-namespace glue {
+namespace Glue {
 
 CameraMan::CameraMan() {}
 

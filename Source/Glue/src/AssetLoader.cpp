@@ -15,7 +15,7 @@ namespace fs = ghc::filesystem;
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
 

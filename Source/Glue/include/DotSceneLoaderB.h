@@ -28,7 +28,7 @@ class TerrainGlobalOptions;
 class VertexDeclaration;
 }  // namespace Ogre
 
-namespace glue {
+namespace Glue {
 class CameraMan;
 class Config;
 class RenderSystem;
@@ -38,7 +38,7 @@ class Overlay;
 class SinbadCharacterController;
 }  // namespace glue
 
-namespace glue {
+namespace Glue {
 
 std::string GetAttrib(const pugi::xml_node &xml_node, const std::string &attrib, const std::string &defaultValue = "");
 float GetAttribReal(const pugi::xml_node &xml_node, const std::string &attrib, float defaultValue = 0);

@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 PhysicsSystem::PhysicsSystem(bool threaded) : threaded(threaded) {
   auto *sheduler = btCreateDefaultTaskScheduler();

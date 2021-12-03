@@ -13,7 +13,7 @@ extern "C" {
 #include <SDL2/SDL_keycode.h>
 }
 
-namespace glue {
+namespace Glue {
 class InputSequencer;
 class InputObserverI;
 class WindowObserverI;
@@ -21,7 +21,7 @@ class InputObserver;
 class WindowObserver;
 }  // namespace glue
 
-namespace glue {
+namespace Glue {
 
 /// This Singleton class is main part of Observer implementation
 /// Keeps listeners list, capture inputs and send messages every frame

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 void Pbr::UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
   auto *pass = material->getTechnique(0)->getPass(0);

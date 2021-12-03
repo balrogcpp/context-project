@@ -36,7 +36,7 @@
 using namespace std;
 using namespace Ogre;
 
-namespace glue {
+namespace Glue {
 
 RenderSystem::RenderSystem(int w, int h, bool f) {
   ogre_root = new Root("");
@@ -65,8 +65,8 @@ RenderSystem::RenderSystem(int w, int h, bool f) {
   InitResourceLocation();
 
   // RTSS block
-  glue::InitRtss();
-  glue::CreateRtssShaders();
+  Glue::InitRtss();
+  Glue::CreateRtssShaders();
 
   // Overlay
   overlay = make_unique<Overlay>(render_window);

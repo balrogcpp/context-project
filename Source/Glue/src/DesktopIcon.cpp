@@ -13,7 +13,7 @@ namespace fs = ghc::filesystem;
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 DesktopIcon::DesktopIcon()
     : executable("Sample"),

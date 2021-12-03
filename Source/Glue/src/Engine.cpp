@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 Engine::Engine() {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID

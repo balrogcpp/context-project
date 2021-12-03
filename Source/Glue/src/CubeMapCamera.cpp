@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 CubeMapCamera::CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size) { Init(creator, tex_size); }
 

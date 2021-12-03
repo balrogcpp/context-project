@@ -5,7 +5,7 @@
 #include <string>
 #include <utility>
 
-namespace glue {
+namespace Glue {
 
 /// Exception class
 class Exception : public std::exception {

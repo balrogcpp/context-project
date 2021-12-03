@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 AudioSystem::AudioSystem(unsigned int max_sources, unsigned int queue_list_size) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX

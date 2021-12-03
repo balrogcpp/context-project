@@ -5,7 +5,7 @@
 #include "Engine.h"
 #include "InputHandler.h"
 
-namespace glue {
+namespace Glue {
 
 class RenderSystem;
 class Window;

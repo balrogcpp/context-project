@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 int InputSequencer::HandleAppEvents(void *userdata, SDL_Event *event) {
   switch (event->type) {

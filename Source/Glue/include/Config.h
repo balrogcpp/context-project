@@ -5,7 +5,7 @@
 #include "Singleton.h"
 #include <nlohmann/json.hpp>
 
-namespace glue {
+namespace Glue {
 
 class Config : public Singleton<Config> {
  public:

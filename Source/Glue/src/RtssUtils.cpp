@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 void InitRtss() {
   if (!Ogre::RTShader::ShaderGenerator::initialize()) {

@@ -21,7 +21,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 template <typename T>
 static string ToString(T t) {

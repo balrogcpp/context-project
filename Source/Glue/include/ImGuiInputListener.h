@@ -6,7 +6,7 @@ extern "C" {
 #include <SDL2/SDL_keycode.h>
 }
 
-namespace glue {
+namespace Glue {
 
 class ImGuiInputListener final : public InputObserver {
  public:

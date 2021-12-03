@@ -3,7 +3,7 @@
 #pragma once
 #include "Input.h"
 
-namespace glue {
+namespace Glue {
 
 class VerboseListener final : public InputObserver {
  public:

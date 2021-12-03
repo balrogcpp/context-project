@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 void VerboseListener::SetVerbose(bool verbose) { verbose = verbose; }
 

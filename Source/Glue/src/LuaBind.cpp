@@ -6,4 +6,4 @@
 
 using namespace std;
 
-namespace glue {}  // namespace glue
+namespace Glue {}  // namespace glue

@@ -9,7 +9,7 @@ class VertexDeclaration;
 class Entity;
 }  // namespace Ogre
 
-namespace glue {
+namespace Glue {
 
 void EnsureHasTangents(Ogre::MeshPtr mesh);
 

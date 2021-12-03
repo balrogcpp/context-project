@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 
-namespace glue {
+namespace Glue {
 class DesktopIcon : public NoCopy {
  public:
   DesktopIcon();

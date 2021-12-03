@@ -30,7 +30,7 @@ class btDiscreteDynamicsWorldMt;
 class btRigidBody;
 class btCollisionObject;
 
-namespace glue {
+namespace Glue {
 struct ContactInfo {
   ContactInfo() = default;
   ContactInfo(const btCollisionObject *a, int points) : a_(a), points_(points) {}

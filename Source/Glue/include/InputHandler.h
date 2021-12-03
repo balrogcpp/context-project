@@ -6,7 +6,7 @@
 #include "System.h"
 #include <vector>
 
-namespace glue {
+namespace Glue {
 
 class MutedInputObserver : public InputObserverI {
  public:

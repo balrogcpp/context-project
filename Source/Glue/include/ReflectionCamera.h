@@ -12,7 +12,7 @@ class SceneManager;
 class Camera;
 }  // namespace Ogre
 
-namespace glue {
+namespace Glue {
 class ReflectionCamera final : public Ogre::RenderTargetListener {
  public:
   ReflectionCamera(Ogre::Plane plane, unsigned int tex_size);

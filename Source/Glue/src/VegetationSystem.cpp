@@ -16,7 +16,7 @@ struct GrassVertex {
   float u, v;
 };
 
-namespace glue {
+namespace Glue {
 
 static void CreateGrassMesh(float width, float height) {
   using namespace Ogre;

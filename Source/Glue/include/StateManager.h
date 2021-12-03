@@ -4,7 +4,7 @@
 #include "AppState.h"
 #include "Singleton.h"
 
-namespace glue {
+namespace Glue {
 
 class StateManager : public Singleton<StateManager> {
  public:

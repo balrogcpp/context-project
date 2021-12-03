@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 static bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
   bool hasTangents = false;

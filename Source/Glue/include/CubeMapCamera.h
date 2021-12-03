@@ -11,7 +11,7 @@ class Camera;
 class Texture;
 }  // namespace Ogre
 
-namespace glue {
+namespace Glue {
 
 class CubeMapCamera final : public Ogre::RenderTargetListener {
  public:

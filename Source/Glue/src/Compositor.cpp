@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:

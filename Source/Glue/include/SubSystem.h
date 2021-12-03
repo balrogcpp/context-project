@@ -4,7 +4,7 @@
 #include "NoCopy.h"
 #include "ViewPtr.h"
 
-namespace glue {
+namespace Glue {
 class Config;
 
 class SubSystem : public NoCopy {

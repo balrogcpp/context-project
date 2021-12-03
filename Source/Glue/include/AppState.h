@@ -9,11 +9,11 @@
 #include <memory>
 #include <string>
 
-namespace glue {
+namespace Glue {
 class StateManager;
 }
 
-namespace glue {
+namespace Glue {
 
 class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputObserver {
  public:

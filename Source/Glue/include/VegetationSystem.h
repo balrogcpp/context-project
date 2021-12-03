@@ -12,7 +12,7 @@ class PageLoader;
 class GeometryPage;
 }  // namespace Forests
 
-namespace glue {
+namespace Glue {
 
 class VegetationSystem final : public SubSystem {
  public:

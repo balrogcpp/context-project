@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 void Assert(bool result, std::string message) {
 #ifdef DEBUG

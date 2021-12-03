@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-namespace glue {
+namespace Glue {
 
 class Application final : public WindowObserver, public Ogre::LogListener, public Singleton<Application> {
  public:

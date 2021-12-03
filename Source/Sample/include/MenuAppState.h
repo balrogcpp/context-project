@@ -5,7 +5,7 @@
 
 namespace Demo {
 
-class MenuAppState : public glue::AppState {
+class MenuAppState : public Glue::AppState {
  public:
   MenuAppState() : AppState() {}
   virtual ~MenuAppState() {}

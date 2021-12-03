@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 /// map sdl2 mouse buttons to imgui
 static int sdl2imgui(int b) {

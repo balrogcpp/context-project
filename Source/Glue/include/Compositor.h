@@ -12,11 +12,11 @@ class Viewport;
 class SceneManager;
 }  // namespace Ogre
 
-namespace glue {
+namespace Glue {
 class GBufferSchemeHandler;
 }
 
-namespace glue {
+namespace Glue {
 
 class Compositor : public System, public Singleton<Compositor> {
  public:
@@ -46,4 +46,4 @@ class Compositor : public System, public Singleton<Compositor> {
   ViewPtr<Ogre::Viewport> viewport;
 };
 
-}  // namespace glue
+}  // namespace Glue

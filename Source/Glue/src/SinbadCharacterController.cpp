@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 Ogre::SceneNode *SinbadCharacterController::GetBodyNode() const { return mBodyNode; }
 

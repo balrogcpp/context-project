@@ -4,11 +4,11 @@
 #include "NoCopy.h"
 #include "ViewPtr.h"
 
-namespace glue {
+namespace Glue {
 class Config;
 }
 
-namespace glue {
+namespace Glue {
 
 class System : public NoCopy {
  public:

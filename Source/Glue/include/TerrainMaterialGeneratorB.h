@@ -9,7 +9,7 @@ class PSSMShadowCameraSetup;
 class Terrain;
 };  // namespace Ogre
 
-namespace glue {
+namespace Glue {
 class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
  public:
   TerrainMaterialGeneratorB();

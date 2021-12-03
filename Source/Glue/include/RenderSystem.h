@@ -18,7 +18,7 @@ class Viewport;
 class RenderWindow;
 }  // namespace Ogre
 
-namespace glue {
+namespace Glue {
 
 class RenderSystem final : public System, public Singleton<RenderSystem> {
  public:

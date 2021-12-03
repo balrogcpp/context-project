@@ -10,7 +10,7 @@ namespace OgreOggSound {
 class OgreOggSoundManager;
 }
 
-namespace glue {
+namespace Glue {
 class AudioSystem final : public System, public Singleton<AudioSystem> {
  public:
   AudioSystem(unsigned int max_sources, unsigned int queue_list_size);

@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 Config::Config(const string &file_name) {
   if (!file_name.empty()) {

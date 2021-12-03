@@ -16,7 +16,7 @@ class Camera;
 
 class btRigidBody;
 
-namespace glue {
+namespace Glue {
 class CameraMan final : public Object, public MutedInputObserver {
  public:
   // enumerator values for different styles of camera movement

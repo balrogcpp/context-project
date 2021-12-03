@@ -11,7 +11,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 Overlay::Overlay(ViewPtr<Ogre::RenderWindow> render_window) {
   this->render_window = render_window;
   Ogre::SceneManager* sm = Ogre::Root::getSingletonPtr()->getSceneManager("Default");

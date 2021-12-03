@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 void LogMessage(const std::string& message, Ogre::LogMessageLevel lml, bool maskDebug) {
   Ogre::LogManager::getSingleton().logMessage(message, lml, maskDebug);
 }

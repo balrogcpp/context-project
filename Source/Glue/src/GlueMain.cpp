@@ -4,7 +4,7 @@
 #include "pch.h"
 
 using namespace std;
-using namespace glue;
+using namespace Glue;
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN

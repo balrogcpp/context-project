@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace glue {
+namespace Glue {
 
 /// Deletes copy constructor
 class NoCopy {

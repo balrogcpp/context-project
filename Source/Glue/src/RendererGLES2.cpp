@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 void RenderSystem::InitOgreRenderSystemGLES2() {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2

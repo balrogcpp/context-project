@@ -13,7 +13,7 @@
 using namespace std;
 using namespace Ogre;
 
-namespace glue {
+namespace Glue {
 
 TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
   mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));

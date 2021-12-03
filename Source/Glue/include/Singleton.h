@@ -4,7 +4,7 @@
 #include "Exception.h"
 #include "NoCopy.h"
 
-namespace glue {
+namespace Glue {
 
 /// Implement "Dynamic Singleton" pattern. Keeps flag that class was already instanced once.
 /// Throws exception when tried to create second instance

@@ -8,7 +8,7 @@ extern "C" {
 #include <SDL2/SDL_syswm.h>
 }
 
-namespace glue {
+namespace Glue {
 class Window : public NoCopy {
  public:
   explicit Window(int w, int h, bool f);

@@ -5,7 +5,7 @@
 #include "Exception.h"
 #include <RTShaderSystem/OgreShaderGenerator.h>
 
-namespace glue {
+namespace Glue {
 
 void InitRtss();
 

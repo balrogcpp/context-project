@@ -10,7 +10,7 @@ namespace Ogre {
 class Camera;
 }
 
-namespace glue {
+namespace Glue {
 
 class Pbr {
  public:

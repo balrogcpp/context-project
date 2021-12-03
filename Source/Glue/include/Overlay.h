@@ -14,7 +14,7 @@ class OverlaySystem;
 class RenderTargetViewportEvent;
 }  // namespace Ogre
 
-namespace glue {
+namespace Glue {
 class Overlay final : public System, public Singleton<Overlay>, public Ogre::RenderTargetListener {
  public:
   Overlay(ViewPtr<Ogre::RenderWindow> render_window);

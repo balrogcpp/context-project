@@ -6,7 +6,7 @@
 
 struct AAssetManager;
 
-namespace glue {
+namespace Glue {
 
 class AssetLoader final {
  public:

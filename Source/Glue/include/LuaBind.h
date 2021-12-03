@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace glue {
+namespace Glue {
 
 class LuaBind {
  public:

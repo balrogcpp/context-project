@@ -14,7 +14,7 @@
 #include <memory>
 #include <vector>
 
-namespace glue {
+namespace Glue {
 
 class Engine : public LazySingleton<Engine> {
  public:

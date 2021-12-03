@@ -17,7 +17,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 Application::Application() {
   try {

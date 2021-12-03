@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 InputHandler::InputHandler() { io_listeners.reserve(32); }
 

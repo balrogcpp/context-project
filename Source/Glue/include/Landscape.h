@@ -13,7 +13,7 @@ namespace pugi {
 class xml_node;
 }  // namespace pugi
 
-namespace glue {
+namespace Glue {
 class Landscape final : public SubSystem {
  public:
   Landscape();

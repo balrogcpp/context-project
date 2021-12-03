@@ -14,7 +14,7 @@
 
 using namespace std;
 
-namespace glue {
+namespace Glue {
 
 Landscape::Landscape() {}
 

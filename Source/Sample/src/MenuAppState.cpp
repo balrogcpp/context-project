@@ -6,7 +6,7 @@
 #include "pch.h"
 
 using namespace std;
-using namespace glue;
+using namespace Glue;
 
 namespace Demo {
 
