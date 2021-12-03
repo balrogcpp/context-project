@@ -2,7 +2,7 @@
 
 #pragma once
 #include "Singleton.h"
-#include "System.h"
+#include "Component.h"
 #include <OgreAny.h>
 #include <OgreFrameListener.h>
 #include <map>
@@ -41,7 +41,7 @@ struct ContactInfo {
   int points_;
 };
 
-class PhysicsSystem final : public System, public Singleton<PhysicsSystem> {
+class PhysicsSystem final : public Component, public Singleton<PhysicsSystem> {
  public:
   PhysicsSystem(bool threaded = false);
   virtual ~PhysicsSystem();

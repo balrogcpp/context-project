@@ -3,7 +3,7 @@
 #pragma once
 #include "ImGuiInputListener.h"
 #include "Singleton.h"
-#include "System.h"
+#include "Component.h"
 
 namespace Ogre {
 class RenderTarget;
@@ -15,7 +15,7 @@ class RenderTargetViewportEvent;
 }  // namespace Ogre
 
 namespace Glue {
-class Overlay final : public System, public Singleton<Overlay>, public Ogre::RenderTargetListener {
+class Overlay final : public Component, public Singleton<Overlay>, public Ogre::RenderTargetListener {
  public:
   Overlay(ViewPtr<Ogre::RenderWindow> render_window);
   virtual ~Overlay();

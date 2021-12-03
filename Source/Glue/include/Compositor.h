@@ -2,7 +2,7 @@
 
 #pragma once
 #include "Singleton.h"
-#include "System.h"
+#include "Component.h"
 #include <memory>
 #include <string>
 
@@ -18,7 +18,7 @@ class GBufferSchemeHandler;
 
 namespace Glue {
 
-class Compositor : public System, public Singleton<Compositor> {
+class Compositor : public Component, public Singleton<Compositor> {
  public:
   Compositor();
   virtual ~Compositor();

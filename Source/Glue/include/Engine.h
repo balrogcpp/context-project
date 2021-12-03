@@ -31,7 +31,7 @@ class Engine : public LazySingleton<Engine> {
   void Refresh();
   void Update(float time);
   void RenderOneFrame();
-  void RegSystem(ViewPtr<System> system);
+  void RegSystem(ViewPtr<Component> system);
 
  protected:
   std::unique_ptr<InputHandler> io;
@@ -41,7 +41,7 @@ class Engine : public LazySingleton<Engine> {
   std::unique_ptr<AudioSystem> as;
   std::unique_ptr<Overlay> overlay;
   std::unique_ptr<DotSceneLoaderB> loader;
-  std::vector<ViewPtr<System>> components;
+  std::vector<ViewPtr<Component>> components;
 
   friend InputHandler& GetIo();
   friend Config& GetConf();

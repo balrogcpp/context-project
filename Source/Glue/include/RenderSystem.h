@@ -4,7 +4,7 @@
 #include "Compositor.h"
 #include "Overlay.h"
 #include "Singleton.h"
-#include "System.h"
+#include "Component.h"
 #include "Window.h"
 #include "ViewPtr.h"
 #include <memory>
@@ -20,7 +20,7 @@ class RenderWindow;
 
 namespace Glue {
 
-class RenderSystem final : public System, public Singleton<RenderSystem> {
+class RenderSystem final : public Component, public Singleton<RenderSystem> {
  public:
   RenderSystem(int w, int h, bool f);
   virtual ~RenderSystem();

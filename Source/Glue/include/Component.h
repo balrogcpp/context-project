@@ -10,10 +10,10 @@ class Config;
 
 namespace Glue {
 
-class System : public NoCopy {
+class Component : public NoCopy {
  public:
-  System();
-  virtual ~System();
+  Component();
+  virtual ~Component();
 
   virtual void Cleanup() = 0;
   virtual void Pause() { paused = true; }

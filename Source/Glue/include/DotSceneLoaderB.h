@@ -7,7 +7,7 @@
 #include "Landscape.h"
 #include "ReflectionCamera.h"
 #include "Singleton.h"
-#include "System.h"
+#include "Component.h"
 #include "VegetationSystem.h"
 #include "ViewPtr.h"
 #include <OgreCodec.h>
@@ -50,7 +50,7 @@ Ogre::Vector3 ParseScale(const pugi::xml_node &xml_node);
 Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node);
 Ogre::ColourValue ParseColour(pugi::xml_node &xml_node);
 
-class DotSceneLoaderB final : public System, public Singleton<DotSceneLoaderB> {
+class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB> {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();

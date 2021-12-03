@@ -3,7 +3,7 @@
 #pragma once
 #include "Input.h"
 #include "Singleton.h"
-#include "System.h"
+#include "Component.h"
 #include <vector>
 
 namespace Glue {

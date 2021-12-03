@@ -2,7 +2,7 @@
 
 #pragma once
 #include "Singleton.h"
-#include "System.h"
+#include "Component.h"
 #include "ViewPtr.h"
 #include <string>
 
@@ -11,7 +11,7 @@ class OgreOggSoundManager;
 }
 
 namespace Glue {
-class AudioSystem final : public System, public Singleton<AudioSystem> {
+class AudioSystem final : public Component, public Singleton<AudioSystem> {
  public:
   AudioSystem(unsigned int max_sources, unsigned int queue_list_size);
   virtual ~AudioSystem();
