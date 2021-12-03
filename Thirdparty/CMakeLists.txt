@@ -1,9 +1,10 @@
 include(ExternalProject)
+include(Platform)
 include(Make)
 find_package(Git REQUIRED)
 
-set(GLUE_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/External/${CMAKE_BUILD_TYPE}/${GLUE_TOOLCHAIN})
-set(GLUE_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/External/${CMAKE_BUILD_TYPE}/${GLUE_TOOLCHAIN}/sdk CACHE PATH "")
+set(GLUE_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/External/${CMAKE_BUILD_TYPE}/${GLUE_TOOLCHAIN_FULL})
+set(GLUE_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/External/${CMAKE_BUILD_TYPE}/${GLUE_TOOLCHAIN_FULL}/sdk CACHE PATH "")
 set(GLUE_EXTERNAL_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/Patch)
 set(GLUE_EXTERNAL_DIR ${GLUE_EXTERNAL_INSTALL_LOCATION})
 set(GLUE_EXTERNAL_INCLUDE_DIR ${GLUE_EXTERNAL_INSTALL_LOCATION}/include)
@@ -13,7 +14,7 @@ if (ANDROID)
     set(GLUE_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
 
-externalproject_add(target-sdl
+externalproject_add(Target_SDL2
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
@@ -32,7 +33,7 @@ externalproject_add(target-sdl
                     -DRENDER_METAL=OFF #cause linking error on macos
                     )
 
-externalproject_add(target-bullet
+externalproject_add(Target_Bullet
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
@@ -76,11 +77,11 @@ else ()
     set(OPENAL_LIBTYPE SHARED)
 endif ()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
-    set(OPENAL_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/target-openal)
+    set(OPENAL_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_OpenAL)
     set(OPENAL_UPDATE_COMMAND ${OPENAL_CHDIR}  ${GIT_EXECUTABLE} reset --hard)
     set(OPENAL_PATCH_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_EXTERNAL_PATCH_LOCATION}/openal-1.21.1-clang-mingw.patch)
 endif()
-externalproject_add(target-openal
+externalproject_add(Target_OpenAL
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/kcat/openal-soft.git
@@ -112,9 +113,9 @@ externalproject_add(target-openal
                     -DALSOFT_OSX_FRAMEWORK=OFF
                     )
 
-externalproject_add(target-ogg
+externalproject_add(Target_Ogg
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-openal
+                    DEPENDS Target_OpenAL
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/xiph/ogg.git
                     GIT_TAG v1.3.5
@@ -129,9 +130,9 @@ externalproject_add(target-ogg
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     )
 
-externalproject_add(target-vorbis
+externalproject_add(Target_Vorbis
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-ogg
+                    DEPENDS Target_Ogg
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/xiph/vorbis.git
                     GIT_TAG v1.3.7
@@ -148,7 +149,7 @@ externalproject_add(target-vorbis
                     -DOGG_LIBRARY=${GLUE_EXTERNAL_INSTALL_LOCATION}/lib/libogg.a #for Android
                     )
 
-externalproject_add(target-zlib
+externalproject_add(Target_zlib
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/madler/zlib
@@ -169,9 +170,9 @@ externalproject_add(target-zlib
                     TEST_AFTER_INSTALL true
                     )
 
-externalproject_add(target-zzip
+externalproject_add(Target_ZZIP
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zlib
+                    DEPENDS Target_zlib
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/paroj/ZZIPlib.git
                     #GIT_TAG 4b4d9ca1134397dd6c0649fce2dfd80643e53cf6 repo is archived
@@ -186,7 +187,7 @@ externalproject_add(target-zzip
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     )
 
-externalproject_add(target-pugixml
+externalproject_add(Target_pugixml
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/zeux/pugixml.git
@@ -202,9 +203,9 @@ externalproject_add(target-pugixml
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     )
 
-externalproject_add(target-png
+externalproject_add(Target_PNG
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zlib
+                    DEPENDS Target_zlib
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/glennrp/libpng.git
                     GIT_TAG v1.6.37
@@ -221,9 +222,9 @@ externalproject_add(target-png
                     -DPNG_TESTS=OFF
                     )
 
-externalproject_add(target-freetype
+externalproject_add(Target_freetype
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-png
+                    DEPENDS Target_PNG
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/freetype/freetype.git
                     GIT_TAG VER-2-10-4
@@ -241,7 +242,7 @@ externalproject_add(target-freetype
                     -DBUILD_SHARED_LIBS=OFF
                     )
 
-externalproject_add(target-rapidjson
+externalproject_add(Target_rapidjson
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
@@ -262,7 +263,7 @@ externalproject_add(target-rapidjson
                     -DRAPIDJSON_HAS_STDSTRING=ON
                     )
 
-externalproject_add(target-json
+externalproject_add(Target_json
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/nlohmann/json.git
@@ -280,13 +281,13 @@ externalproject_add(target-json
                     )
 
 if(NOT MSVC)
-    set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/target-assimp)
+    set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_assimp)
     set(ASSIMP_UPDATE_COMMAND ${ASSIMP_CHDIR}  ${GIT_EXECUTABLE} reset --hard)
     set(ASSIMP_PATCH_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_EXTERNAL_PATCH_LOCATION}/assimp-5.0.1.patch)
 endif()
-externalproject_add(target-assimp
+externalproject_add(Target_assimp
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zlib target-rapidjson
+                    DEPENDS Target_zlib Target_rapidjson
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/assimp/assimp.git
                     GIT_TAG v5.0.1
@@ -346,14 +347,14 @@ externalproject_add(target-assimp
 if (NOT APPLE)
     set(OGRE_USE_PCH true)
 else()
-    set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/target-ogre)
+    set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_OGRE)
     set(OGRE_UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard)
     set(OGRE_PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-apple.patch)
     set(OGRE_USE_PCH false)
 endif()
-externalproject_add(target-ogre
+externalproject_add(Target_OGRE
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-zzip target-freetype target-pugixml target-assimp target-sdl
+                    DEPENDS Target_ZZIP Target_freetype Target_pugixml Target_assimp Target_SDL2
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v1.12.13
@@ -419,12 +420,12 @@ externalproject_add(target-ogre
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     -DOGRE_BUILD_PLATFORM_APPLE_IOS=OFF
                     TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
-                        ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/target-ogre/RenderSystems/GLSupport/include/GLSL
+                        ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_OGRE/RenderSystems/GLSupport/include/GLSL
                         ${GLUE_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
                     TEST_AFTER_INSTALL true
                     )
 
-externalproject_add(target-lua
+externalproject_add(Target_Lua
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/balrogcpp/lua-cmake.git
@@ -445,9 +446,9 @@ externalproject_add(target-lua
                     -DLUA_USE_READLINE=OFF
                     )
 
-externalproject_add(target-sol
+externalproject_add(Target_sol2
                     EXCLUDE_FROM_ALL true
-                    DEPENDS target-lua
+                    DEPENDS Target_Lua
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/ThePhD/sol2.git
                     GIT_TAG v3.2.3
@@ -463,23 +464,23 @@ externalproject_add(target-sol
                     )
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    externalproject_add(target-jemalloc
+    externalproject_add(Target_jemalloc
                         EXCLUDE_FROM_ALL true
                         PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                         GIT_REPOSITORY https://github.com/jemalloc/jemalloc.git
                         GIT_TAG 5.2.1
                         GIT_SHALLOW true
                         GIT_PROGRESS false
-                        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./autogen.sh
-                        BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ./configure --disable-stats --prefix ${GLUE_EXTERNAL_INSTALL_LOCATION}
-                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/target-jemalloc ${MAKE_COMMAND} install_lib_static
+                        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_jemalloc ./autogen.sh
+                        BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_jemalloc ./configure --disable-stats --prefix ${GLUE_EXTERNAL_INSTALL_LOCATION}
+                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_jemalloc ${MAKE_COMMAND} install_lib_static
                         )
 
-    list(APPEND GLUE_DEPENDENCY_TARGETS target-jemalloc)
+    list(APPEND GLUE_DEPENDENCY_TARGETS Target_jemalloc)
 endif ()
 
 #std::filesystem is not supported on some platforms with c++17 support
-externalproject_add(target-filesystem
+externalproject_add(Target_filesystem
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/gulrak/filesystem.git
@@ -497,7 +498,7 @@ externalproject_add(target-filesystem
                     -DGHC_FILESYSTEM_BUILD_EXAMPLES=OFF
                     )
 
-externalproject_add(target-googletest
+externalproject_add(Target_GoogleTest
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/google/googletest.git
@@ -514,7 +515,7 @@ externalproject_add(target-googletest
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     )
 
-externalproject_add(target-benchmark
+externalproject_add(Target_GoogleBenchmark
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/google/benchmark.git
@@ -531,28 +532,11 @@ externalproject_add(target-benchmark
                     -DBENCHMARK_ENABLE_TESTING=OFF
                     )
 
-if (NOT MSVC)
-    externalproject_add(target-glsl-optimizer
-                        EXCLUDE_FROM_ALL true
-                        PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
-                        GIT_REPOSITORY https://github.com/aras-p/glsl-optimizer.git
-                        GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
-                        GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-                        CMAKE_ARGS
-                        -G "${CMAKE_GENERATOR}"
-                        -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                        -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                        -DCMAKE_BUILD_TYPE=${EXTERNAL_BUILD_TYPE}
-                        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                        ${GLUE_CMAKE_EXTRA_FLAGS}
-                        )
-endif ()
-
 add_custom_target(Assets
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${GIT_EXECUTABLE} clone --depth 1 https://github.com/balrogcpp/scenes.git Assets
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Assets/.git
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/tmp
-        COMMAND ${CMAKE_COMMAND} -P CMake/flat_zip.cmake
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Tmp
+        COMMAND ${CMAKE_COMMAND} -P CMake/FlatZipAssets.cmake
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Fetching assets..."
         USES_TERMINAL
@@ -560,27 +544,27 @@ add_custom_target(Assets
 
 add_custom_target(Assets_SSH
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${GIT_EXECUTABLE} clone --depth 1 git@github.com:balrogcpp/scenes.git Assets
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/tmp
-        COMMAND ${CMAKE_COMMAND} -P CMake/flat_zip.cmake
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Tmp
+        COMMAND ${CMAKE_COMMAND} -P CMake/FlatZipAssets.cmake
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Fetching assets..."
         USES_TERMINAL
         )
 
 add_custom_target(AssetsBuild
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/tmp
-        COMMAND ${CMAKE_COMMAND} -P CMake/flat_zip.cmake
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Tmp
+        COMMAND ${CMAKE_COMMAND} -P CMake/FlatZipAssets.cmake
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Creating assets and programs zip package..."
         USES_TERMINAL
         )
 
-list(APPEND GLUE_DEPENDENCY_TARGETS target-filesystem)
-list(APPEND GLUE_DEPENDENCY_TARGETS target-sol)
-list(APPEND GLUE_DEPENDENCY_TARGETS target-json)
-list(APPEND GLUE_DEPENDENCY_TARGETS target-vorbis)
-list(APPEND GLUE_DEPENDENCY_TARGETS target-ogre)
-list(APPEND GLUE_DEPENDENCY_TARGETS target-bullet)
-list(APPEND GLUE_DEPENDENCY_TARGETS target-googletest)
+list(APPEND GLUE_DEPENDENCY_TARGETS Target_filesystem)
+list(APPEND GLUE_DEPENDENCY_TARGETS Target_sol2)
+list(APPEND GLUE_DEPENDENCY_TARGETS Target_json)
+list(APPEND GLUE_DEPENDENCY_TARGETS Target_Vorbis)
+list(APPEND GLUE_DEPENDENCY_TARGETS Target_OGRE)
+list(APPEND GLUE_DEPENDENCY_TARGETS Target_Bullet)
+list(APPEND GLUE_DEPENDENCY_TARGETS Target_GoogleTest)
 
 add_custom_target(Thirdparty DEPENDS ${GLUE_DEPENDENCY_TARGETS})

@@ -3,143 +3,21 @@ cmake_minimum_required(VERSION 3.19.8)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
-project(glue VERSION 0.1.0)
+project(GluePrj VERSION 0.1.0)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake")
 include(Make)
+include(Platform)
+include(CppFlags)
+include(GitHash)
 
 # Build type definition
 # Android use gradle
-if (NOT ANDROID)
-    if (NOT CMAKE_BUILD_TYPE)
-        set(CMAKE_BUILD_TYPE "RelWithDebInfo")
-    endif ()
-    if (NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-        message(SEND_ERROR "Only Release/RelWithDebInfo/Debug builds are available")
-    endif ()
+if (NOT CMAKE_BUILD_TYPE AND NOT ANDROID)
+    set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif ()
-
-# Platform definition
-if (WIN32)
-    set(GLUE_TOOLCHAIN "windows")
-elseif (ANDROID)
-    set(GLUE_TOOLCHAIN "android")
-elseif (APPLE)
-    set(GLUE_TOOLCHAIN "apple")
-    if (IOS)
-        string(APPEND GLUE_TOOLCHAIN "-ios")
-    elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        string(APPEND GLUE_TOOLCHAIN "-darwin")
-    endif ()
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    set(GLUE_TOOLCHAIN "linux")
-else ()
-    set(GLUE_TOOLCHAIN ${CMAKE_SYSTEM_NAME})
-endif ()
-
-# Toolchain definition
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    string(APPEND GLUE_TOOLCHAIN "-gcc")
-    if (MINGW)
-        string(APPEND GLUE_TOOLCHAIN "-mingw")
-    endif ()
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    string(APPEND GLUE_TOOLCHAIN "-clang")
-    if (MINGW)
-        string(APPEND GLUE_TOOLCHAIN "-mingw")
-    endif ()
-    if (MSVC)
-        string(APPEND GLUE_TOOLCHAIN "-msvc")
-    endif ()
-elseif (MSVC)
-    string(APPEND GLUE_TOOLCHAIN "-msvc")
-else ()
-    string(APPEND GLUE_TOOLCHAIN "-${CMAKE_CXX_COMPILER_ID}")
-endif ()
-string(APPEND GLUE_TOOLCHAIN "-${CMAKE_SYSTEM_PROCESSOR}")
-
-# Compilation flags definition
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    string(APPEND CMAKE_CXX_FLAGS " -Wall")
-    string(APPEND CMAKE_C_FLAGS " -Wall")
-    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-        string(APPEND CMAKE_CXX_FLAGS " -s -Ofast -funroll-loops -DNDEBUG")
-        string(APPEND CMAKE_C_FLAGS " -s -Ofast -funroll-loops -DNDEBUG")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-linker-plugin")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-linker-plugin")
-        if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=${PROCESSOR_COUNT}")
-            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=${PROCESSOR_COUNT}")
-        else ()
-            string(APPEND CMAKE_EXE_LINKER_FLAGS " -flto=thin")
-            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -flto=thin")
-        endif ()
-    elseif (${CMAKE_BUILD_TYPE} STREQUAL "Debug" OR ${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
-        string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
-        string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
-    endif ()
-    if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-        string(APPEND CMAKE_CXX_FLAGS " -msse4.1")
-        string(APPEND CMAKE_C_FLAGS " -msse4.1")
-    endif ()
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
-        string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
-    endif ()
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND MINGW)
-        string(APPEND CMAKE_CXX_FLAGS " -mwindows")
-        string(APPEND CMAKE_C_FLAGS " -mwindows")
-    endif ()
-
-    option(GLUE_ENABLE_WERROR "" OFF)
-    if (GLUE_ENABLE_WERROR)
-        string(APPEND CMAKE_CXX_FLAGS " -Werror -Wno-error=switch")
-        #For OGRE
-        string(APPEND CMAKE_CXX_FLAGS " -Wno-error=deprecated-declarations")
-        #For Bullet
-        string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-but-set-variable")
-        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-command-line-argument")
-            string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unknown-warning-option")
-        endif ()
-    endif ()
-
-    # gcc-mingw links everything as shared libraries by default
-    if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
-    endif ()
-
-    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
-    endif ()
-
-    string(APPEND CMAKE_CXX_FLAGS " -pthread")
-    string(APPEND CMAKE_C_FLAGS " -pthread")
-
-    option(GLUE_ENABLE_OPENMP "" OFF)
-    if (GLUE_ENABLE_OPENMP)
-        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            string(APPEND CMAKE_C_FLAGS " -D_GLIBCXX_PARALLEL -fopenmp")
-            string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL -fopenmp")
-        elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            string(APPEND CMAKE_EXE_LINKER_FLAGS " -fopenmp -static-openmp")
-            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fopenmp -static-openmp")
-        endif ()
-    endif ()
-elseif (MSVC)
-    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-    string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF /W3")
-    string(APPEND CMAKE_C_FLAGS " /arch:SSE2 /EHa /MP /GS- /GF /W3")
-    if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-        string(APPEND CMAKE_CXX_FLAGS " /O2 /Ot /Ob2 /fp:fast /GL")
-        string(APPEND CMAKE_C_FLAGS " /O2 /Ot /Ob2 /fp:fast /GL")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " /LTCG /OPT:ICF /OPT:REF")
-    else ()
-        string(APPEND CMAKE_CXX_FLAGS " /D \"DEBUG\"")
-        string(APPEND CMAKE_C_FLAGS " /D \"DEBUG\"")
-    endif ()
+if (NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(SEND_ERROR "Only Release/RelWithDebInfo/Debug builds are available")
 endif ()
 # This flags are useful for thirdparty build
 set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
@@ -183,7 +61,7 @@ endif ()
 # Insert dependencies
 add_subdirectory(${CMAKE_SOURCE_DIR}/Thirdparty)
 set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
-set(CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH};${GLUE_EXTERNAL_INSTALL_LOCATION}")
+list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
 if (APPLE)
     set(CMAKE_THREAD_LIBS_INIT "-lpthread")
     set(CMAKE_HAVE_THREADS_LIBRARY 1)
@@ -235,6 +113,15 @@ add_custom_target(DockerComposeDep
         COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Building thirdparty libraries with docker-compose..."
+        USES_TERMINAL
+        )
+
+# Docker-compose targets
+add_custom_target(DockerCompose
+        COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
+        COMMAND docker-compose down --volumes
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Building tests with docker..."
         USES_TERMINAL
         )
 
@@ -349,18 +236,9 @@ if (MINGW)
     file(INSTALL ${CMAKE_SOURCE_DIR}/Deploy/Sample.exe.manifest DESTINATION .)
 endif ()
 
-if (NOT GIT_SHA1)
-    execute_process(
-            COMMAND git rev-parse --short=8 HEAD
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            OUTPUT_VARIABLE GIT_SHA1
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-endif ()
-
 #Packaging
 set(GLUE_PACKAGE_NAME "GlueSample")
-set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}-${GLUE_TOOLCHAIN}-${GIT_SHA1})
+set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}-${GLUE_TOOLCHAIN_SHORT}-${GIT_SHA1})
 if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
     string(APPEND GLUE_ARTIFACT_NAME "-${CMAKE_BUILD_TYPE}")
 endif ()
@@ -393,7 +271,7 @@ set(CPACK_PACKAGE_VENDOR "Andrew Vasiliev")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_GENERATOR "ZIP")
 find_package(NSIS QUIET)
-if (${NSIS_FOUND} AND MSVC)
+if (${NSIS_FOUND} AND WIN32)
     list(APPEND CPACK_GENERATOR "NSIS")
     set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "GLUE_PRJ")
     set(CPACK_NSIS_MODIFY_PATH ON)
@@ -407,21 +285,11 @@ if (${NSIS_FOUND} AND MSVC)
 endif ()
 include(CPack)
 
-if (NOT MSVC)
-    add_custom_target(build-package
-            COMMAND ${CMAKE_COMMAND} --build . --target package
-            COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            COMMENT "Build packages..."
-            USES_TERMINAL
-            )
-endif ()
-
-# Docker-compose targets
-add_custom_target(DockerCompose
-        COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
-        COMMAND docker-compose down --volumes
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building tests with docker..."
+# Doesn't work with
+add_custom_target(BuildPackage
+        COMMAND ${CMAKE_COMMAND} --build . --target package
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Build packages..."
         USES_TERMINAL
         )

@@ -17,12 +17,12 @@ COPY ./Android ./Android
 
 RUN mkdir -p ${CONTEXT_HOME}/Thirdparty/External/Release \
     && cd ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && wget https://github.com/balrogcpp/glue-dep/raw/master/apple-darwin-clang-x86_64.tar.xz  -O - | tar -xJ
+    && wget https://github.com/balrogcpp/glue-dep/raw/master/Darwin_x86_64_Clang.tar.xz  -O - | tar -xJ
 
-RUN cmake -P CMake/flat_zip.cmake
+RUN cmake -P CMake/FlatZipAssets.cmake
 
 RUN mkdir build-apple && cd build-apple \
     && eval `x86_64-apple-darwin19-osxcross-conf` \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
-    && cmake --build . --target build-package \
+    && cmake --build . --target BuildPackage \
     && rm -rf ../build-apple

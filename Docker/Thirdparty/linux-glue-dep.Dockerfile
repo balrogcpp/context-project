@@ -15,14 +15,12 @@ RUN apt-get update \
      && apt-get clean \
      && mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
      && export CC=clang \
-     && CXX=clang++ \
+     && export CXX=clang++ \
      && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -G Ninja .. \
-     && cmake --build . --target Thirdparty \
-     && cd ${CONTEXT_HOME}/Thirdparty/External/Release/linux-clang-x86_64 \
-     && rm -rf src tmp \
-     && cd ${CONTEXT_HOME} \
-     && rm -rf build-linux cmake CMakeLists.txt Thirdparty/CMakeLists.txt Thirdparty/patch
+     && cmake --build . --target Thirdparty
 
-RUN cd  ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && tar cfJ linux-clang-x86_64.tar.xz linux-clang-x86_64 \
-    && mv linux-clang-x86_64.tar.xz ${CONTEXT_HOME}/Artifacts
+RUN cd ${CONTEXT_HOME}/Thirdparty/External/Release/Linux_x86_64_Clang \
+    && rm -rf src tmp \
+    && cd  ${CONTEXT_HOME}/Thirdparty/External/Release \
+    && tar cfJ Linux_x86_64_Clang.tar.xz Linux_x86_64_Clang \
+    && mv Linux_x86_64_Clang.tar.xz ${CONTEXT_HOME}/Artifacts

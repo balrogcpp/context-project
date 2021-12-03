@@ -17,12 +17,12 @@ COPY ./Android ./Android
 
 RUN mkdir -p ${CONTEXT_HOME}/Thirdparty/External/Release \
     && cd ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && wget https://github.com/balrogcpp/glue-dep/raw/master/android-clang-aarch64.tar.xz  -O - | tar -xJ
+    && wget https://github.com/balrogcpp/glue-dep/raw/master/Android_aarch64_Clang.tar.xz  -O - | tar -xJ
 
-RUN cmake -P CMake/flat_zip.cmake
+RUN cmake -P CMake/FlatZipAssets.cmake
 
 RUN cd Android \
     && ./gradlew assembleRelease \
     && cd ../ \
     && mv Android/app/build/outputs/apk/release/app-arm64-v8a-release.apk Artifacts/app-arm64-v8a-$GIT_HASH.apk \
-    && rm -rf Android ${CONTEXT_HOME}/Thirdparty/External ${ANDROID_HOME} /root/.android /root/.gradle
+    && rm -rf Android ${ANDROID_HOME} /root/.android /root/.gradle

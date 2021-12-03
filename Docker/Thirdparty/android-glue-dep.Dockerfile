@@ -13,9 +13,10 @@ COPY ./Android ./Android
 
 RUN cd ./Android \
     && ./gradlew assembleRelease \
-    && cd ${CONTEXT_HOME}/Thirdparty/External/Release/android-clang-aarch64 \
-    && rm -rf src tmp ${CONTEXT_HOME}/android ${ANDROID_HOME}/emulator ${ANDROID_HOME}/tools /root/.android /root/.gradle
+    && rm -rf ${CONTEXT_HOME}/android ${ANDROID_HOME}/emulator ${ANDROID_HOME}/tools /root/.android /root/.gradle
 
-RUN cd  ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && tar cfJ android-clang-aarch64.tar.xz android-clang-aarch64 \
-    && mv android-clang-aarch64.tar.xz ${CONTEXT_HOME}/Artifacts
+RUN cd ${CONTEXT_HOME}/Thirdparty/External/Release/Android_aarch64_Clang \
+    && rm -rf src tmp \
+    && cd  ${CONTEXT_HOME}/Thirdparty/External/Release \
+    && tar cfJ Android_aarch64_Clang.tar.xz Android_aarch64_Clang \
+    && mv Android_aarch64_Clang.tar.xz ${CONTEXT_HOME}/Artifacts

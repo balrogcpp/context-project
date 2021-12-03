@@ -13,10 +13,10 @@ COPY ./CMake ./CMake
 RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
     && eval `x86_64-apple-darwin19-osxcross-conf` \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -G Ninja .. \
-    && cmake --build . --target Thirdparty \
-    && cd ${CONTEXT_HOME}/Thirdparty/External/Release/apple-darwin-clang-x86_64 \
-    && rm -rf src tmp ${CONTEXT_HOME}/build-apple
+    && cmake --build . --target Thirdparty
 
-RUN cd  ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && tar cfJ apple-darwin-clang-x86_64.tar.xz apple-darwin-clang-x86_64 \
-    && mv apple-darwin-clang-x86_64.tar.xz ${CONTEXT_HOME}/Artifacts
+RUN cd ${CONTEXT_HOME}/Thirdparty/External/Release/Darwin_x86_64_Clang \
+    && rm -rf src tmp \
+    && cd  ${CONTEXT_HOME}/Thirdparty/External/Release \
+    && tar cfJ Darwin_x86_64_Clang.tar.xz Darwin_x86_64_Clang \
+    && mv Darwin_x86_64_Clang.tar.xz ${CONTEXT_HOME}/Artifacts

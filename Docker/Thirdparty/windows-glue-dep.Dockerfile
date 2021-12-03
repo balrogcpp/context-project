@@ -12,10 +12,10 @@ COPY ./CMake ./CMake
 
 RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -G Ninja .. \
-    && cmake --build . --target Thirdparty \
-    && cd ${CONTEXT_HOME}/Thirdparty/External/Release/windows-clang-mingw-x86_64 \
-    && rm -rf src tmp ${CONTEXT_HOME}/build-windows
+    && cmake --build . --target Thirdparty
 
-RUN cd  ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && tar cfJ windows-clang-mingw-x86_64.tar.xz windows-clang-mingw-x86_64 \
-    && mv windows-clang-mingw-x86_64.tar.xz ${CONTEXT_HOME}/Artifacts
+RUN cd ${CONTEXT_HOME}/Thirdparty/External/Release/Windows_x86_64_Clang_Mingw \
+    && rm -rf src tmp \
+    && cd ${CONTEXT_HOME}/Thirdparty/External/Release \
+    && tar cfJ Windows_x86_64_Clang_Mingw.tar.xz Windows_x86_64_Clang_Mingw \
+    && mv Windows_x86_64_Clang_Mingw.tar.xz ${CONTEXT_HOME}/Artifacts
