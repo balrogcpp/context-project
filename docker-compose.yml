@@ -30,13 +30,13 @@ services:
     volumes:
       - .:/var/artifacts
     command: cp -R /mnt/build/Artifacts /var/artifacts
-  sample-android:
-    build:
-      context: .
-      dockerfile: Docker/Tests/android.Dockerfile
-      args:
-        GIT_HASH: ${GIT_HASH}
-    container_name: sample-android
-    volumes:
-      - .:/var/artifacts
-    command: cp -R /mnt/build/Artifacts /var/artifacts
+#  sample-android:
+#    build:
+#      context: .
+#      dockerfile: Docker/Tests/android.Dockerfile
+#      args:
+#        GIT_HASH: ${GIT_HASH}
+#    container_name: sample-android
+#    volumes:
+#      - .:/var/artifacts
+#    command: cp -R /mnt/build/Artifacts /var/artifacts

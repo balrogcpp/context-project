@@ -29,6 +29,6 @@ build:
     - docker rmi glue/sample-apple
   artifacts:
     paths:
-      - Artifacts/GlueSample_Linux_x86_64-$CI_COMMIT_SHORT_SHA.zip
-      - Artifacts/GlueSample_Windows_x86_64-$CI_COMMIT_SHORT_SHA.zip
-      - Artifacts/GlueSample_Darwin_x86_64-$CI_COMMIT_SHORT_SHA.zip
+      - Artifacts/GlueSample_Linux_x86_64_$CI_COMMIT_SHORT_SHA.zip
+      - Artifacts/GlueSample_Windows_x86_64_$CI_COMMIT_SHORT_SHA.zip
+      - Artifacts/GlueSample_Darwin_x86_64_$CI_COMMIT_SHORT_SHA.zip
