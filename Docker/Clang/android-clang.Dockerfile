@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-WORKDIR /mnt
+WORKDIR /opt
 
 RUN apt-get update \
     && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates  \
@@ -21,7 +21,6 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && rm /tmp/cmake-install.sh
 
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
-
 ARG ANDROID_HOME=/opt/android-sdk
 
 RUN apt-get update \
