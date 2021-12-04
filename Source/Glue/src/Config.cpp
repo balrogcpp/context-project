@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "Config.h"
+#include "AssetLoader.h"
 
 using namespace std;
 
@@ -16,13 +17,13 @@ Config::Config(const string &file_name) {
 Config::~Config() {}
 
 void Config::Load(const string &file_name) {
-  ifstream ifs(file_name);
+  ifstream ifs(AssetLoader::FindPath(file_name));
 
   if (!ifs.is_open()) {
     throw Exception("Error during parsing of " + file_name + " : can't open file");
   }
 
-  ifs >> document;
+  ifs >> Document;
 }
 
 }  // namespace glue

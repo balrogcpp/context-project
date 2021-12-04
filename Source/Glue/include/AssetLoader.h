@@ -25,9 +25,10 @@ class AssetLoader final {
   static void AddLocationAndroid(AAssetManager *asset_mgr, const std::string &resource_file, const std::string &group,
                                  bool verbose = false);
 
- private:
   static std::string FindPath(const std::string &path, int depth = 2);
+
+ private:
   static void TrimString(std::string &s);
 };
 
-}  // namespace glue
+}  // namespace Glue

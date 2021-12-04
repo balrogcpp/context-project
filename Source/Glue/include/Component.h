@@ -13,10 +13,10 @@ class Component : public NoCopy {
   Component();
   virtual ~Component();
 
-  virtual void Cleanup() = 0;
   virtual void Pause() { paused = true; }
   virtual void Resume() { paused = false; }
   virtual void Update(float time) = 0;
+  virtual void Cleanup() = 0;
 
  protected:
   inline static Config* config = nullptr;
