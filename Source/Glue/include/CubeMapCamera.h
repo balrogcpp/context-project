@@ -30,7 +30,7 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   Ogre::SceneManager *scene = nullptr;
   Ogre::Camera *camera = nullptr;
   Ogre::SceneNode *camera_node = nullptr;
-  std::array<Ogre::RenderTarget *, 6> targets;
+  std::array<Ogre::RenderTarget *, 6> targets{nullptr};
 };
 
 }  // namespace glue

@@ -40,13 +40,13 @@ class CameraMan final : public Object, public MutedInputObserver {
   Style GetStyle() const noexcept;
 
  protected:
-  Ogre::SceneNode* node;
-  Ogre::SceneNode* yaw_node;
-  Ogre::SceneNode* pitch_node;
-  Ogre::SceneNode* roll_node;
-  btRigidBody* rigid;
-  Ogre::Camera* camera;
-  Ogre::SceneNode* target;
+  Ogre::SceneNode* node = nullptr;
+  Ogre::SceneNode* yaw_node = nullptr;
+  Ogre::SceneNode* pitch_node = nullptr;
+  Ogre::SceneNode* roll_node = nullptr;
+  btRigidBody* rigid = nullptr;
+  Ogre::Camera* camera = nullptr;
+  Ogre::SceneNode* target = nullptr;
   Style style = Style::MANUAL;
   float top_speed = 10;
   float run_speed = 20;

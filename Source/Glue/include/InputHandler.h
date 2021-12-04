@@ -69,8 +69,7 @@ class InputHandler final : public InputObserver, public Singleton<InputHandler> 
   void OnMouseMbUp(int x, int y) override;
 
  protected:
-  std::vector<MutedInputObserver*> io_listeners;
-  // std::vector<CommandObserver*> cmd_listeners;
+  std::vector<MutedInputObserver*> io_listeners{nullptr};
   bool paused_ = false;
 };
 

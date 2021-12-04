@@ -54,11 +54,11 @@ class RenderSystem final : public Component, public Singleton<RenderSystem> {
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm;
   std::vector<float> split_points;
   const size_t pssm_split_count = 3;
-  Ogre::Root* ogre_root;
-  Ogre::SceneManager* scene;
-  Ogre::Camera* camera;
-  Ogre::Viewport* viewport;
-  Ogre::RenderWindow* render_window;
+  Ogre::Root* ogre_root = nullptr;
+  Ogre::SceneManager* scene = nullptr;
+  Ogre::Camera* camera = nullptr;
+  Ogre::Viewport* viewport = nullptr;
+  Ogre::RenderWindow* render_window = nullptr;
 };
 
 }  // namespace glue

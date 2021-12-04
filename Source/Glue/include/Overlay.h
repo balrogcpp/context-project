@@ -29,9 +29,9 @@ class Overlay final : public Component, public Singleton<Overlay>, public Ogre::
 
  protected:
   std::unique_ptr<ImGuiInputListener> imgui_listener;
-  Ogre::ImGuiOverlay* imgui_overlay;
-  Ogre::OverlaySystem* overlay_system;
-  Ogre::RenderWindow* render_window;
+  Ogre::ImGuiOverlay* imgui_overlay = nullptr;
+  Ogre::OverlaySystem* overlay_system = nullptr;
+  Ogre::RenderWindow* render_window = nullptr;
 };
 
 }  // namespace glue

@@ -14,7 +14,7 @@ list(APPEND GLUE_INCLUDE_DIRS
         ${OGRE_INCLUDE_DIRS}/Plugins/Assimp
         )
 
-file(GLOB_RECURSE SAMPLE_SOURCE_FILES ../Glue/src/*.cpp src/*.cpp)
+file(GLOB_RECURSE SAMPLE_SOURCE_FILES ../Glue/src/*.cpp src/*.cpp ../Glue/include/*.h include/*.h)
 
 if (NOT ANDROID)
     add_executable(Sample WIN32 ${SAMPLE_SOURCE_FILES})

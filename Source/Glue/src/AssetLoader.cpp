@@ -21,7 +21,7 @@ namespace Glue {
 
 string AssetLoader::FindPath(const string &path, int depth) {
 #ifdef DEBUG
-  depth = 4;
+  depth = 6;
 #endif
 
   string result = path;

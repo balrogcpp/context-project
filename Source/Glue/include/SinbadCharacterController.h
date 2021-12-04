@@ -71,16 +71,16 @@ class SinbadCharacterController : public Object, public MutedInputObserver {
   void setBaseAnimation(AnimID id, bool reset = false);
   void setTopAnimation(AnimID id, bool reset = false);
 
-  Ogre::SceneNode *mBodyNode;
-  Ogre::SceneNode *mCameraPivot;
-  Ogre::SceneNode *mCameraGoal;
-  Ogre::SceneNode *mCameraNode;
+  Ogre::SceneNode *mBodyNode = nullptr;
+  Ogre::SceneNode *mCameraPivot = nullptr;
+  Ogre::SceneNode *mCameraGoal = nullptr;
+  Ogre::SceneNode *mCameraNode = nullptr;
   float mPivotPitch;
-  Ogre::Entity *mBodyEnt;
-  Ogre::Entity *mSword1;
-  Ogre::Entity *mSword2;
-  Ogre::RibbonTrail *mSwordTrail;
-  Ogre::AnimationState *mAnims[NUM_ANIMS];  // master animation list
+  Ogre::Entity *mBodyEnt = nullptr;
+  Ogre::Entity *mSword1 = nullptr;
+  Ogre::Entity *mSword2 = nullptr;
+  Ogre::RibbonTrail *mSwordTrail = nullptr;
+  Ogre::AnimationState *mAnims[NUM_ANIMS]{nullptr};  // master animation list
   AnimID mBaseAnimID;                       // current base (full- or lower-body) animation
   AnimID mTopAnimID;                        // current top (upper-body) animation
   bool mFadingIn[NUM_ANIMS];                // which animations are fading in

@@ -18,7 +18,7 @@ class InputObserverI;
 class WindowObserverI;
 class InputObserver;
 class WindowObserver;
-}  // namespace glue
+}  // namespace Glue
 
 namespace Glue {
 
@@ -30,25 +30,25 @@ class InputSequencer : public LazySingleton<InputSequencer> {
   virtual ~InputSequencer();
 
   /// Register physical input listener
-  void RegObserver(InputObserverI* p);
+  void RegObserver(InputObserverI *p);
 
   /// Un-Register physical input listener
-  void UnregObserver(InputObserverI* p);
+  void UnregObserver(InputObserverI *p);
 
   /// Register window input listener
-  void RegWinObserver(WindowObserverI* p);
+  void RegWinObserver(WindowObserverI *p);
 
   /// Un-Register window input listener
-  void UnregWinObserver(WindowObserverI* p);
+  void UnregWinObserver(WindowObserverI *p);
 
   /// Called once per frame, sent callback message to listeners
   void Capture();
 
  protected:
   /// Listeners list (physical input)
-  std::set<InputObserverI*> io_listeners;
+  std::set<InputObserverI *> io_listeners{nullptr};
   /// Listeners list (window input)
-  std::set<WindowObserverI*> win_listeners;
+  std::set<WindowObserverI *> win_listeners{nullptr};
   /// Required for Android/IOS development
   int HandleAppEvents(void *userdata, SDL_Event *event);
 };
@@ -200,4 +200,4 @@ class WindowObserver : public WindowObserverI, public NoCopy {
   virtual void Resume() {}
 };
 
-}  // namespace glue
+}  // namespace Glue

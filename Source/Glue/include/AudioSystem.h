@@ -28,7 +28,7 @@ class AudioSystem final : public Component, public Singleton<AudioSystem> {
   void SetListener(Ogre::SceneNode *parent);
 
  protected:
-  OgreOggSound::OgreOggSoundManager* sound_manager;
+  OgreOggSound::OgreOggSoundManager* sound_manager = nullptr;
 };
 
 }  // namespace glue

@@ -43,13 +43,10 @@ void StateManager::Update(float time) {
 
 bool StateManager::IsActive() const { return static_cast<bool>(cur_state); }
 
-//---------------------------------------------------------------------------------------------------------------------
 bool StateManager::IsDirty() const { return cur_state->IsDirty(); }
 
-//---------------------------------------------------------------------------------------------------------------------
 void StateManager::Pause() { cur_state->Pause(); }
 
-//---------------------------------------------------------------------------------------------------------------------
 void StateManager::Resume() { cur_state->Resume(); }
 
 }  // namespace glue
