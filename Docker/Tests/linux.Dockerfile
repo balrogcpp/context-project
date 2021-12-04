@@ -14,16 +14,17 @@ COPY ./Assets ./Assets
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./Thirdparty/CMakeLists.txt ./Thirdparty/CMakeLists.txt
 
-RUN mkdir -p ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && cd ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && wget https://github.com/balrogcpp/glue-dep/raw/master/Linux_x86_64_Clang.tar.xz  -O - | tar -xJ
+RUN mkdir -p ${CONTEXT_HOME}/Thirdparty/External \
+    && cd ${CONTEXT_HOME}/Thirdparty/External \
+    && wget https://github.com/balrogcpp/glue-dep/raw/master/Linux_x86_64_Clang_Release.tar.xz  -O - | tar -xJ
 
 RUN cmake -P CMake/FlatZipAssets.cmake
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
-    && apt-get clean \
-    && mkdir build-linux && cd build-linux \
+    && apt-get clean
+
+RUN mkdir build-linux && cd build-linux \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target BuildPackage \
     && rm -rf ../build-linux

@@ -14,8 +14,8 @@ RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -G Ninja .. \
     && cmake --build . --target Thirdparty
 
-RUN cd ${CONTEXT_HOME}/Thirdparty/External/Release/Windows_x86_64_Clang_Mingw \
+RUN cd ${CONTEXT_HOME}/Thirdparty/External/Windows_x86_64_Clang_Mingw_Release \
     && rm -rf src tmp \
-    && cd ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && tar cfJ Windows_x86_64_Clang_Mingw.tar.xz Windows_x86_64_Clang_Mingw \
-    && mv Windows_x86_64_Clang_Mingw.tar.xz ${CONTEXT_HOME}/Artifacts
+    && cd ${CONTEXT_HOME}/Thirdparty/External \
+    && tar cfJ Windows_x86_64_Clang_Mingw_Release.tar.xz Windows_x86_64_Clang_Mingw_Release \
+    && mv Windows_x86_64_Clang_Mingw_Release.tar.xz ${CONTEXT_HOME}/Artifacts

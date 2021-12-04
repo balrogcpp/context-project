@@ -15,9 +15,9 @@ COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./Thirdparty/CMakeLists.txt ./Thirdparty/CMakeLists.txt
 COPY ./Android ./Android
 
-RUN mkdir -p ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && cd ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && wget https://github.com/balrogcpp/glue-dep/raw/master/Android_aarch64_Clang.tar.xz  -O - | tar -xJ
+RUN mkdir -p ${CONTEXT_HOME}/Thirdparty/External \
+    && cd ${CONTEXT_HOME}/Thirdparty/External \
+    && wget https://github.com/balrogcpp/glue-dep/raw/master/Android_aarch64_Clang_Release.tar.xz  -O - | tar -xJ
 
 RUN cmake -P CMake/FlatZipAssets.cmake
 

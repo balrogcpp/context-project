@@ -19,8 +19,8 @@ RUN apt-get update \
      && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -G Ninja .. \
      && cmake --build . --target Thirdparty
 
-RUN cd ${CONTEXT_HOME}/Thirdparty/External/Release/Linux_x86_64_Clang \
+RUN cd ${CONTEXT_HOME}/Thirdparty/External/Linux_x86_64_Clang_Release \
     && rm -rf src tmp \
-    && cd  ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && tar cfJ Linux_x86_64_Clang.tar.xz Linux_x86_64_Clang \
-    && mv Linux_x86_64_Clang.tar.xz ${CONTEXT_HOME}/Artifacts
+    && cd  ${CONTEXT_HOME}/Thirdparty/External \
+    && tar cfJ Linux_x86_64_Clang_Release.tar.xz Linux_x86_64_Clang_Release \
+    && mv Linux_x86_64_Clang_Release.tar.xz ${CONTEXT_HOME}/Artifacts

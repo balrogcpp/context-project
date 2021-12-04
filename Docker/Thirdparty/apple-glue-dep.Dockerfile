@@ -15,8 +15,8 @@ RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -G Ninja .. \
     && cmake --build . --target Thirdparty
 
-RUN cd ${CONTEXT_HOME}/Thirdparty/External/Release/Darwin_x86_64_Clang \
+RUN cd ${CONTEXT_HOME}/Thirdparty/External/Darwin_x86_64_Clang_Release \
     && rm -rf src tmp \
-    && cd  ${CONTEXT_HOME}/Thirdparty/External/Release \
-    && tar cfJ Darwin_x86_64_Clang.tar.xz Darwin_x86_64_Clang \
-    && mv Darwin_x86_64_Clang.tar.xz ${CONTEXT_HOME}/Artifacts
+    && cd  ${CONTEXT_HOME}/Thirdparty/External \
+    && tar cfJ Darwin_x86_64_Clang_Release.tar.xz Darwin_x86_64_Clang_Release \
+    && mv Darwin_x86_64_Clang_Release.tar.xz ${CONTEXT_HOME}/Artifacts
