@@ -6,7 +6,7 @@
 #include "MeshUtils.h"
 #include "PbrShaderUtils.h"
 #include "SinbadCharacterController.h"
-#include "btogre/BtOgre.h"
+#include "BtOgre/BtOgre.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>

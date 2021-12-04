@@ -14,9 +14,9 @@ software.
 -------------------------------------------------------------------------------------*/
 
 #include "pch.h"
-#include "pgeometry/TreeLoader2D.h"
-#include "pgeometry/PagedGeometry.h"
-#include "pgeometry/PropertyMaps.h"
+#include "PagedGeometry/TreeLoader2D.h"
+#include "PagedGeometry/PagedGeometry.h"
+#include "PagedGeometry/PropertyMaps.h"
 
 using namespace Ogre;
 

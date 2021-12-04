@@ -19,8 +19,8 @@ being the original software.
 //-------------------------------------------------------------------------------------
 
 #include "pch.h"
-#include "pgeometry/ImpostorPage.h"
-#include "pgeometry/StaticBillboardSet.h"
+#include "PagedGeometry/ImpostorPage.h"
+#include "PagedGeometry/StaticBillboardSet.h"
 
 using namespace Ogre;
 using namespace Forests;

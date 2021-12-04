@@ -31,8 +31,8 @@
  */
 
 #include "pch.h"
-#include "oggsound/OgreOggSoundManager.h"
-#include "oggsound/OgreOggSound.h"
+#include "OgreOggSound/OgreOggSoundManager.h"
+#include "OgreOggSound/OgreOggSound.h"
 
 #if OGGSOUND_THREADED
 #ifdef POCO_THREAD

@@ -18,8 +18,8 @@ software.
 //-------------------------------------------------------------------------------------
 
 #include "pch.h"
-#include "pgeometry/BatchPage.h"
-#include "pgeometry/BatchedGeometry.h"
+#include "PagedGeometry/BatchPage.h"
+#include "PagedGeometry/BatchedGeometry.h"
 
 using namespace Ogre;
 using namespace Forests;

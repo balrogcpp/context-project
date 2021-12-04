@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "PhysicsSystem.h"
-#include "btogre/BtOgre.h"
+#include "BtOgre/BtOgre.h"
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>

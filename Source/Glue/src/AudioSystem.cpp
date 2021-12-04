@@ -3,7 +3,7 @@
 #include "pch.h"
 #include "AudioSystem.h"
 #include "Exception.h"
-#include "oggsound/OgreOggSound.h"
+#include "OgreOggSound/OgreOggSound.h"
 
 using namespace std;
 

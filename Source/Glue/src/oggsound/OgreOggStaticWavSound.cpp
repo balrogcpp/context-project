@@ -31,8 +31,8 @@
  */
 
 #include "pch.h"
-#include "oggsound/OgreOggStaticWavSound.h"
-#include "oggsound/OgreOggSoundManager.h"
+#include "OgreOggSound/OgreOggStaticWavSound.h"
+#include "OgreOggSound/OgreOggSoundManager.h"
 
 namespace OgreOggSound {
 

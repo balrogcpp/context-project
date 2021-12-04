@@ -30,7 +30,7 @@ class GrassLayer;
 
 Using a GrassLoader is simple - simply create an instance, attach it to your PagedGeometry object
 with PagedGeometry::setPageLoader(), and add your grass. Important: For best performance, it is
-recommended that you use GrassPage (included in GrassLoader.h) to display pgeometry loaded by GrassLoader.
+recommended that you use GrassPage (included in GrassLoader.h) to display PagedGeometry loaded by GrassLoader.
 This page type is designed for best performance with this grass system. BatchPage
 will work, although performance will be reduced slightly, and ImpostorPage will run extremely slow.
 

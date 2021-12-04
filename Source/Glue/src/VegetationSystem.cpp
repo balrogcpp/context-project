@@ -4,8 +4,8 @@
 #include "VegetationSystem.h"
 #include "ComponentLocator.h"
 #include "MeshUtils.h"
+#include "PagedGeometry/PagedGeometryAll.h"
 #include "PbrShaderUtils.h"
-#include "pgeometry/PagedGeometryAll.h"
 
 using namespace Forests;
 using namespace std;
@@ -195,7 +195,6 @@ VegetationSystem::~VegetationSystem() {
 
 void VegetationSystem::Update(float time) {
   for (auto &it : pgeometry) it->update();
-
   for (auto &it : gpages) it->update();
 }
 
@@ -270,8 +269,7 @@ void VegetationSystem::GenerateGrassPaged() {
   grass->setPageLoader(grassLoader);
   grassLoader->setRenderQueueGroup(Ogre::RENDER_QUEUE_MAIN);
 
-  if (heigh_func)
-    grassLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func(x, z)); });
+  if (heigh_func) grassLoader->setHeightFunction([](float x, float z, void *) { return Ogre::Real(heigh_func(x, z)); });
 
   pgeometry.push_back(unique_ptr<PagedGeometry>(grass));
   ploaders.push_back(unique_ptr<PageLoader>(grassLoader));
@@ -359,8 +357,8 @@ void VegetationSystem::GenerateTreesPaged() {
 
 void VegetationSystem::ProcessForest() {
   GenerateGrassPaged();
-//  GenerateTreesPaged();
+  //  GenerateTreesPaged();
   GenerateRocksStatic();
 }
 
-}  // namespace glue
+}  // namespace Glue

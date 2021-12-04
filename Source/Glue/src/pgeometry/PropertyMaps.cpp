@@ -14,8 +14,8 @@ software.
 -------------------------------------------------------------------------------------*/
 
 #include "pch.h"
-#include "pgeometry/PropertyMaps.h"
-#include "pgeometry/PagedGeometry.h"
+#include "PagedGeometry/PropertyMaps.h"
+#include "PagedGeometry/PagedGeometry.h"
 #include <OgreHardwarePixelBuffer.h>
 #include <OgrePixelFormat.h>
 #include <OgrePrerequisites.h>

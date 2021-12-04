@@ -18,8 +18,8 @@ being the original software.
 //-------------------------------------------------------------------------------------
 
 #include "pch.h"
-#include "pgeometry/PagedGeometry.h"
-#include "pgeometry/StaticBillboardSet.h"
+#include "PagedGeometry/PagedGeometry.h"
+#include "PagedGeometry/StaticBillboardSet.h"
 
 using namespace Ogre;
 using namespace std;
@@ -74,7 +74,7 @@ PagedGeometry::~PagedGeometry() {
   if (rootNode) sceneMgr->destroySceneNode(rootNode->getName());
 #endif
 
-  // Remove all page managers and the pgeometry associated with them
+  // Remove all page managers and the PagedGeometry associated with them
   removeDetailLevels();
 }
 
@@ -392,7 +392,7 @@ GeometryPageManager::~GeometryPageManager() {
 
 void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vector3 &camSpeed, bool &enableCache,
                                  GeometryPageManager *prevManager) {
-  //-- Cache new pgeometry pages --
+  //-- Cache new PagedGeometry pages --
 
   // Cache 1 page ahead of the view ranges
   const Real cacheDist = farTransDist + mainGeom->getPageSize();
@@ -455,7 +455,7 @@ void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vecto
         if (blk->_loaded == false) {
           // Test if the block's distance is between nearDist and farDist
           if (distSq >= nearDistSq && distSq < farTransDistSq) {
-            // If so, load the pgeometry immediately
+            // If so, load the PagedGeometry immediately
             _loadPage(blk);
             loadedList.push_back(blk);
             blk->_iter = (--loadedList.end());
@@ -466,7 +466,7 @@ void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vecto
               blk->_pending = false;
             }
           } else {
-            // Otherwise, add it to the pending pgeometry list (if not already)
+            // Otherwise, add it to the pending PagedGeometry list (if not already)
             // Pages in then pending list will be loaded later (see below)
             if (!blk->_pending) {
               pendingList.push_back(blk);
@@ -503,7 +503,7 @@ void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vecto
 
   TPGeometryPages::iterator i1, i2;
 
-  // Now load a single pgeometry page periodically, based on the cacheInterval
+  // Now load a single PagedGeometry page periodically, based on the cacheInterval
   cacheTimer += deltaTime;
   if (cacheTimer >= cacheInterval && enableCache) {
     // Find a block to be loaded from the pending list
@@ -516,7 +516,7 @@ void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vecto
       i1 = pendingList.erase(i1);
       blk->_pending = false;
 
-      // If it's within the pgeometry cache radius, load it and break out of the loop
+      // If it's within the PagedGeometry cache radius, load it and break out of the loop
       Real dx = camPos.x - blk->_centerPoint.x;
       Real dz = camPos.z - blk->_centerPoint.z;
       Real distSq = dx * dx + dz * dz;
@@ -536,9 +536,9 @@ void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vecto
     cacheTimer = 0;
   }
 
-  //-- Update existing pgeometry and impostors --
+  //-- Update existing PagedGeometry and impostors --
 
-  // Loop through each loaded pgeometry block
+  // Loop through each loaded PagedGeometry block
   i1 = loadedList.begin();
   i2 = loadedList.end();
 
@@ -547,7 +547,7 @@ void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vecto
   while (i1 != i2) {
     GeometryPage *blk = *i1;
 
-    // If the pgeometry has expired...
+    // If the PagedGeometry has expired...
     if (blk->_inactiveTime >= inactivePageLife) {
       if (!blk->_keepLoaded) {
         // Unload it
@@ -595,7 +595,7 @@ void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vecto
           visible = true;
           enable = true;
           fadeNear = prevManager->farDist + (prevManager->farTransDist - prevManager->farDist) *
-                                                0.5f;  // This causes pgeometry to fade out faster than it fades in,
+                                                0.5f;  // This causes PagedGeometry to fade out faster than it fades in,
                                                        // avoiding a state where a transition appears semitransparent
           fadeFar = prevManager->farDist;
         }
@@ -632,7 +632,7 @@ void GeometryPageManager::update(unsigned long deltaTime, Vector3 &camPos, Vecto
       ++i1;
     }
 
-    // Increment the inactivity timer for the pgeometry
+    // Increment the inactivity timer for the PagedGeometry
     blk->_inactiveTime += deltaTime;
   }
 }
@@ -785,7 +785,7 @@ void GeometryPageManager::preloadGeometry(const TBounds &area) {
 
       // If the page isn't loaded
       if (!page->_loaded) {
-        // Load the pgeometry immediately
+        // Load the PagedGeometry immediately
         _loadPage(page);
         loadedList.push_back(page);
         page->_iter = (--loadedList.end());
@@ -814,7 +814,7 @@ void GeometryPageManager::resetPreloadedGeometry() {
   }
 }
 
-// Loads the given page of pgeometry immediately
+// Loads the given page of PagedGeometry immediately
 // Note: _loadPage() does add the page to loadedList, so that will have to be done manually
 void GeometryPageManager::_loadPage(GeometryPage *page) {
   // Calculate page info
@@ -856,7 +856,7 @@ void GeometryPageManager::_loadPage(GeometryPage *page) {
   page->_fadeEnable = false;
 }
 
-// Unloads the given page of pgeometry immediately
+// Unloads the given page of PagedGeometry immediately
 // Note: _unloadPage() does not remove the page from loadedList, so that will have to be done
 // manually
 void GeometryPageManager::_unloadPage(GeometryPage *page) {
@@ -886,7 +886,7 @@ void GeometryPageManager::_unloadPage(GeometryPage *page) {
   page->_fadeEnable = false;
 }
 
-//"Virtually" unloads the given page of pgeometry. In reality it is unloaded during the next load.
+//"Virtually" unloads the given page of PagedGeometry. In reality it is unloaded during the next load.
 // Note: _unloadPageDelayed() does not remove the page from loadedList, so that will have to be done
 // manually
 void GeometryPageManager::_unloadPageDelayed(GeometryPage *page) {

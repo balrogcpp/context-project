@@ -31,7 +31,7 @@
  */
 
 #include "pch.h"
-#include "oggsound/OgreOggSoundRecord.h"
+#include "OgreOggSound/OgreOggSoundRecord.h"
 
 using namespace Ogre;
 

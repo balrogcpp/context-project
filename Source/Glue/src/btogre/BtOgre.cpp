@@ -14,9 +14,9 @@
  */
 
 #include "pch.h"
-#include "btogre/BtOgreExtras.h"
-#include "btogre/BtOgreGP.h"
-#include "btogre/BtOgrePG.h"
+#include "BtOgre/BtOgreExtras.h"
+#include "BtOgre/BtOgreGP.h"
+#include "BtOgre/BtOgrePG.h"
 
 using namespace Ogre;
 

@@ -19,8 +19,8 @@ software.
 //-------------------------------------------------------------------------------------
 
 #include "pch.h"
-#include "pgeometry/WindBatchPage.h"
-#include "pgeometry/WindBatchedGeometry.h"
+#include "PagedGeometry/WindBatchPage.h"
+#include "PagedGeometry/WindBatchedGeometry.h"
 
 // to dump the shader source in a file
 #include <fstream>

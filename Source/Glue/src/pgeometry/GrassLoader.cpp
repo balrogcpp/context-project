@@ -14,10 +14,10 @@ software.
 -------------------------------------------------------------------------------------*/
 
 #include "pch.h"
-#include "pgeometry/GrassLoader.h"
-#include "pgeometry/PagedGeometry.h"
-#include "pgeometry/PropertyMaps.h"
-#include "pgeometry/RandomTable.h"
+#include "PagedGeometry/GrassLoader.h"
+#include "PagedGeometry/PagedGeometry.h"
+#include "PagedGeometry/PropertyMaps.h"
+#include "PagedGeometry/RandomTable.h"
 
 using namespace Ogre;
 

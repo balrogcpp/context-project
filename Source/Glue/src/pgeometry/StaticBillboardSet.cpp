@@ -20,7 +20,7 @@ software.
 //-------------------------------------------------------------------------------------
 
 #include "pch.h"
-#include "pgeometry/StaticBillboardSet.h"
+#include "PagedGeometry/StaticBillboardSet.h"
 #include <OgreBillboard.h>
 #include <OgreBillboardSet.h>
 #include <OgreCamera.h>

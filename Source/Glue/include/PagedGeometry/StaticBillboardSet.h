@@ -185,11 +185,11 @@ class StaticBillboardSet {
   well with flat terrain maps, but may not be well suited for spherical worlds.
 
   The distance ranges given specify how the override alpha values should be calculated -
-  billboards at visibleDist will have alpha values of 1, and pgeometry at invisibleDist
+  billboards at visibleDist will have alpha values of 1, and PagedGeometry at invisibleDist
   will have alpha values of 0.
 
   \note invisibleDist may be greater than or less than visibleDist, depending on
-  whether the pgeometry is fading out or in to the distance.
+  whether the PagedGeometry is fading out or in to the distance.
 
   \note setFade() only works in BB_MODE_ACCELERATED mode.
   */

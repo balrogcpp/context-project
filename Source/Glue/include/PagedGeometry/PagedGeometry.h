@@ -36,15 +36,15 @@ typedef Ogre::TRect<Ogre::Real> TBounds;
 
 //-------------------------------------------------------------------------------------
 /**
-\brief A class providing highly optimized methods for rendering massive amounts of pgeometry.
+\brief A class providing highly optimized methods for rendering massive amounts of PagedGeometry.
 
 The PagedGeometry class provides highly optimized methods for rendering massive amounts
 of small meshes, covering a large area. This is especially well suited for dense
 forests, with thousands of trees, bushes, grass, rocks, etc., etc.
 
-The paged pgeometry works by loading only the pgeometry that is visible (or will soon
+The paged PagedGeometry works by loading only the PagedGeometry that is visible (or will soon
 be visible), to save memory. The PagedGeometry engine can display entities using many
-different methods (static pgeometry, impostors, etc.) What method is used depends on the
+different methods (static PagedGeometry, impostors, etc.) What method is used depends on the
 entities' distance from the camera, and how you configured these methods (see
 PagedGeometry::addDetailLevel() for more info about this).
 
@@ -54,7 +54,7 @@ file on your hard drive, from a procedural generation algorithm, or anything els
 See the documentation for the PageLoader class for more information about this.
 
 \note Always remember to call each PagedGeometry object's update() function every
-frame; otherwise the pgeometry you're trying to display will not appear correctly.
+frame; otherwise the PagedGeometry you're trying to display will not appear correctly.
 See PagedGeometry::update() for more information.
 */
 class PagedGeometry {
@@ -64,7 +64,7 @@ class PagedGeometry {
   \param cam A camera which the PagedGeometry object will use for LOD calculations.
   \param pageSize The page size (pages are square)
 
-  pageSize sets the size of a single "page" of pgeometry. If your pages are too big,
+  pageSize sets the size of a single "page" of PagedGeometry. If your pages are too big,
   you may experience "hiccuping" during the game as these regions are loaded. However,
   regions that are too small may result in lower frame rates (depending on what detail
   levels you are using).
@@ -115,7 +115,7 @@ class PagedGeometry {
   inline Ogre::Camera *getCamera() const { return sceneCam; }
 
   /**
-  \brief Gets the scene manager which is being used to display the pgeometry
+  \brief Gets the scene manager which is being used to display the PagedGeometry
   \returns A SceneManager
 
   This function simply returns the SceneManager that this PagedGeometry object
@@ -127,19 +127,19 @@ class PagedGeometry {
   inline Ogre::SceneManager *getSceneManager() const { return sceneMgr; }
 
   /**
-  \brief Gets the scene node to which all PagedGeometry pgeometry is attached
+  \brief Gets the scene node to which all PagedGeometry PagedGeometry is attached
   \returns A SceneNode
 
   \note Feel free to ignore this function - you can fully make use of PagedGeometry's features
   without it.
 
   This function returns the SceneNode which PagedGeometry uses to render all it's
-  pgeometry. Everything that PagedGeometry renders to the screen can be found under
+  PagedGeometry. Everything that PagedGeometry renders to the screen can be found under
   this scene node.
 
   You don't need to use this function at all to fully make use of PagedGeometry's
   features - it's primary use is for PagedGeometry's internal subsystems to be able
-  to create pgeometry using the proper scene node.
+  to create PagedGeometry using the proper scene node.
 
   \warning If no camera has been set yet, this will return nullptr, since PagedGeometry
   can't create the SceneNode until it know which SceneManager to use (which is determined
@@ -178,7 +178,7 @@ class PagedGeometry {
   /**
   \brief Switches to bounded mode and uses the given boundaries
 
-  By default, PagedGeometry does not place boundaries on the pgeometry that can
+  By default, PagedGeometry does not place boundaries on the PagedGeometry that can
   be added to it though the PageLoader. However, there are cases where specifying
   a strict boundary can improve performance.
 
@@ -219,13 +219,13 @@ class PagedGeometry {
   void setInfinite();
 
   /**
-  \brief Gets the current pgeometry boundary.
-  \returns The pgeometry boundary which was set in the constructor.
+  \brief Gets the current PagedGeometry boundary.
+  \returns The PagedGeometry boundary which was set in the constructor.
 
-  \see The PagedGeometry constructor for information about the pgeometry boundary.
+  \see The PagedGeometry constructor for information about the PagedGeometry boundary.
 
   This returns a TBounds value, which contains information about the boundaries
-  of the pgeometry. Since TBounds is simply a typedef for TRect<Real>, accessing
+  of the PagedGeometry. Since TBounds is simply a typedef for TRect<Real>, accessing
   the boundary information is easy, for example:
 
   \code
@@ -246,7 +246,7 @@ class PagedGeometry {
   /**
   \brief Sets the page size
 
-  This sets the size of a single "page" of pgeometry. If your pages are too big,
+  This sets the size of a single "page" of PagedGeometry. If your pages are too big,
   you may experience "hiccuping" during the game as these regions are loaded. However,
   regions that are too small may result in lower frame rates (depending on what detail
   levels you are using).
@@ -297,12 +297,12 @@ class PagedGeometry {
   You can use these page types in any configuration you want. For example:
 
   \code
-  pagedTrees->addDetailLevel<BatchPage>(100); //Use batched pgeometry from 0-100
+  pagedTrees->addDetailLevel<BatchPage>(100); //Use batched PagedGeometry from 0-100
   pagedTrees->addDetailLevel<ImpostorPage>(500); //Use impostors from 100-500
   \endcode
 
   That example would set up the PagedGeometry object called pagedTrees to use
-  batched pgeometry (StaticGeometry) from 0 to 100 units from the camera, and impostors
+  batched PagedGeometry (StaticGeometry) from 0 to 100 units from the camera, and impostors
   from 100 to 500 units from the camera.
 
   If the included page types aren't adequate, you can fairly easily add your own
@@ -315,7 +315,7 @@ class PagedGeometry {
   you addDetailLevel() call:
 
   \code
-  //Use batched pgeometry from 0-100, and transition to the next LOD for 50 units
+  //Use batched PagedGeometry from 0-100, and transition to the next LOD for 50 units
   pagedTrees->addDetailLevel<BatchPage>(100, 50);
   //Use impostors from 100-500
   pagedTrees->addDetailLevel<ImpostorPage>(500);
@@ -329,13 +329,13 @@ class PagedGeometry {
   The transition parameter can also be applied to the last detail level to cause it to fade out:
 
   \code
-  //Use batched pgeometry from 0-100, and transition to the next LOD for 50 units
+  //Use batched PagedGeometry from 0-100, and transition to the next LOD for 50 units
   pagedTrees->addDetailLevel<BatchPage>(100, 50);
   //Use impostors from 100-400, and fade out for 100 units beyond that
   pagedTrees->addDetailLevel<ImpostorPage>(400, 100);
   \endcode
 
-  In the example above, batching is used up to 100 units, where the batched pgeometry
+  In the example above, batching is used up to 100 units, where the batched PagedGeometry
   starts transitioning for 50 units into the next level of detail (impostors). The
   impostors continue up to 400 units, where they begin to fade out for 100 more units.
 
@@ -365,9 +365,9 @@ class PagedGeometry {
   \brief Removes all detail levels from the PagedGeometry object.
 
   This removes all detail levels (added with addDetailLevel) from the PagedGeometry
-  object.	This also removes all pgeometry associated with PagedGeometry from the scene.
+  object.	This also removes all PagedGeometry associated with PagedGeometry from the scene.
   Remember that you will need to re-add all the detail levels again with
-  addDetailLevel() before any of the pgeometry will be displayed.
+  addDetailLevel() before any of the PagedGeometry will be displayed.
   */
   void removeDetailLevels();
 
@@ -385,7 +385,7 @@ class PagedGeometry {
   \brief Assigns a PageLoader object for the PagedGeometry.
   \param loader A PageLoader object.
 
-  When the page manager decides it should cache a certain region of pgeometry, it calls
+  When the page manager decides it should cache a certain region of PagedGeometry, it calls
   on your PageLoader to do the job. This way you can load entities from RAM, a hard-drive,
   the internet, or even procedurally. Simply create a PageLoader class and use this function
   to link it to a PagedGeometry object.
@@ -399,8 +399,8 @@ class PagedGeometry {
   void setPageLoader(PageLoader *loader);
 
   /**
-  \brief Gets the PageLoader currently being used to load pgeometry.
-  \returns A PageLoader object which is currently being used to load pgeometry.
+  \brief Gets the PageLoader currently being used to load PagedGeometry.
+  \returns A PageLoader object which is currently being used to load PagedGeometry.
 
   This can be useful if you want to retrieve the current page loader to delete it,
   or any other task that needs to be done to the currently used page loader.
@@ -412,75 +412,75 @@ class PagedGeometry {
 
   This function must be called each frame in order for the PagedGeometry object
   to calculate LODs and perform paging. If this function is not called every frame,
-  none of the pgeometry managed by this PagedGeometry instance will appear (or if it
+  none of the PagedGeometry managed by this PagedGeometry instance will appear (or if it
   does, it will appear incorrectly)
   */
   void update();
 
   /**
-  \brief Reloads all visible pgeometry.
+  \brief Reloads all visible PagedGeometry.
 
   If your PageLoader changes it's output during runtime, you normally won't see
   the changes immediately (and in many cases, you will never see the changes).
-  This function provides a way to reload the pgeometry to force the changes to take
+  This function provides a way to reload the PagedGeometry to force the changes to take
   effect immediately.
 
-  This function will cause ALL visible pgeometry to be reloaded during the next
+  This function will cause ALL visible PagedGeometry to be reloaded during the next
   update. This can take up to several	seconds, depending on the complexity of
   the current scene, so use this function only when absolutely necessary.
   */
   void reloadGeometry();
 
   /**
-  \brief Reloads pgeometry at the given location.
-  \param point The point in 3D space where pgeometry needs to be reloaded.
+  \brief Reloads PagedGeometry at the given location.
+  \param point The point in 3D space where PagedGeometry needs to be reloaded.
 
   If your PageLoader changes it's output during runtime, you normally won't see
   the changes immediately (and in many cases, you will never see the changes).
-  This function provides a way to reload the pgeometry to force the changes to take
+  This function provides a way to reload the PagedGeometry to force the changes to take
   effect immediately.
 
-  This function will cause a certain page of visible pgeometry to be reloaded
+  This function will cause a certain page of visible PagedGeometry to be reloaded
   during the next update. Unlike reloadGeometry(), this function allows pinpoint
   reloading to take place, resulting in better performance if a small portion
-  of the pgeometry changes.
+  of the PagedGeometry changes.
 
   Since this doesn't actually reload anything immediately, you can call this
   function as many times as you need without worrying too much about performance.
   For example, if you update 150 trees in your game, simply supply this function
   with the locations of each tree. When the scene is about to be rendered, the
-  appropriate pgeometry pages will automatically be reloaded.
+  appropriate PagedGeometry pages will automatically be reloaded.
   */
   void reloadGeometryPage(const Ogre::Vector3 &point);
 
   /**
-  \brief Reloads pgeometry in the given radius area.
+  \brief Reloads PagedGeometry in the given radius area.
   \param center The center of the area to be reloaded
-  \param radius The radius from the center where pgeometry needs to be reloaded
+  \param radius The radius from the center where PagedGeometry needs to be reloaded
 
   \note This is identical to reloadGeometryPage() except it allows you to reload
   an entire area rather than a single point.
 
   If your PageLoader changes it's output during runtime, you normally won't see
   the changes immediately (and in many cases, you will never see the changes).
-  This function provides a way to reload the pgeometry to force the changes to take
+  This function provides a way to reload the PagedGeometry to force the changes to take
   effect immediately.
 
-  This function will cause a certain area of visible pgeometry to be reloaded
+  This function will cause a certain area of visible PagedGeometry to be reloaded
   during the next update. Unlike reloadGeometry(), this function allows selective
   reloading to take place, resulting in better performance if a small portion
-  of the pgeometry changes.
+  of the PagedGeometry changes.
 
   Since this doesn't actually reload anything immediately, you can call this
   function as many times as you need without worrying too much about performance.
   For example, if you update 150 trees in your game, simply supply this function
   with the locations of each tree. When the scene is about to be rendered, the
-  appropriate pgeometry pages will automatically be reloaded.
+  appropriate PagedGeometry pages will automatically be reloaded.
   */
   void reloadGeometryPages(const Ogre::Vector3 &center, Ogre::Real radius);
 
   /**
-  \brief Reloads pgeometry in the given rect area.
+  \brief Reloads PagedGeometry in the given rect area.
   \param area A rectangular area that needs reloading
 
   \note This is identical to reloadGeometryPage() except it allows you to reload
@@ -488,27 +488,27 @@ class PagedGeometry {
 
   If your PageLoader changes it's output during runtime, you normally won't see
   the changes immediately (and in many cases, you will never see the changes).
-  This function provides a way to reload the pgeometry to force the changes to take
+  This function provides a way to reload the PagedGeometry to force the changes to take
   effect immediately.
 
-  This function will cause a certain area of visible pgeometry to be reloaded
+  This function will cause a certain area of visible PagedGeometry to be reloaded
   during the next update. Unlike reloadGeometry(), this function allows selective
   reloading to take place, resulting in better performance if a small portion
-  of the pgeometry changes.
+  of the PagedGeometry changes.
 
   Since this doesn't actually reload anything immediately, you can call this
   function as many times as you need without worrying too much about performance.
   For example, if you update 150 trees in your game, simply supply this function
   with the locations of each tree. When the scene is about to be rendered, the
-  appropriate pgeometry pages will automatically be reloaded.
+  appropriate PagedGeometry pages will automatically be reloaded.
   */
   void reloadGeometryPages(const TBounds &area);
 
   /**
-  \brief Preloads a region of pgeometry (loads once and never loads again)
+  \brief Preloads a region of PagedGeometry (loads once and never loads again)
   \param area A rectangular area of the world that needs to be preloaded
 
-  You can use this function to preload entire areas of pgeometry. Doing this
+  You can use this function to preload entire areas of PagedGeometry. Doing this
   will basically turn off dynamic paging for the given region, since all the
   pages effecting it will stay loaded forever (until you delete the PagedGeometry
   object, or if using infinite mode, until you move away from the region).
@@ -516,36 +516,36 @@ class PagedGeometry {
   \note The rectangular bounds value you supply does not indicate a
   rectangular area to preload, but instead a rectangular area in which you need
   the camera to be able to freely move around without having to dynamically load
-  any pages. In other words, this function will preload all pgeometry within
+  any pages. In other words, this function will preload all PagedGeometry within
   viewing range of the given bounds area.
   */
   void preloadGeometry(const TBounds &area);
 
   /**
-  \brief Releases pgeometry preloaded with preloadGeometry() to be unloaded if necessary
+  \brief Releases PagedGeometry preloaded with preloadGeometry() to be unloaded if necessary
 
-  When you call preloadGeometry() to preload region(s) of pgeometry, it makes those
+  When you call preloadGeometry() to preload region(s) of PagedGeometry, it makes those
   regions un-unloadable; in other words, they will never be unloaded automatically
   by PagedGeometry (except for some cases in infinite mode). This way you can load
   a region of your world once and never have to load it again (optimally).
 
-  This function allows you to undo all this by allowing all the pgeometry to be
+  This function allows you to undo all this by allowing all the PagedGeometry to be
   unloaded once again when necessary. It won't unload anything, but it will
-  allow pgeometry to unload that previously was not allowed.
+  allow PagedGeometry to unload that previously was not allowed.
   */
   void resetPreloadedGeometry();
 
   /**
-  \brief Hides or unhides all pgeometry managed by this PagedGeometry instance
+  \brief Hides or unhides all PagedGeometry managed by this PagedGeometry instance
   \params visible Whether or not you want this PagedGeometry to be visible
 
   By default everything is visible. This can be used to hide an entire PagedGeometry
-  "group" of pgeometry if desired.
+  "group" of PagedGeometry if desired.
   */
   void setVisible(bool visible) { geometryAllowedVisible = visible; }
 
   /**
-  \brief Returns whether or not pgeometry managed by this PagedGeometry instance is visible
+  \brief Returns whether or not PagedGeometry managed by this PagedGeometry instance is visible
 
   By default, everything will be visible of course. This function simply returns the
   visible/invisible state as set by the setVisible() command.
@@ -559,18 +559,18 @@ class PagedGeometry {
   bool getShadersEnabled() { return shadersEnabled; }
 
   /*
-  \brief Immediately loads visible pgeometry.
+  \brief Immediately loads visible PagedGeometry.
   \param maxTime The maximum amount of time (in milliseconds) which cacheGeometry()
   is allowed to use before returning (roughly).
   \returns Whether or not everything was cached.
 
-  PagedGeometry automatically loads and caches pgeometry near the camera in real-time.
-  This function allows you to easily pre-load this pgeometry outside of your render loop.
+  PagedGeometry automatically loads and caches PagedGeometry near the camera in real-time.
+  This function allows you to easily pre-load this PagedGeometry outside of your render loop.
 
   For example, in your loading code, you might call PagedGeometry::cacheGeometry() to
   load all your trees/etc. managed by PagedGeometry instantly, rather than later on.
 
-  If it takes several seconds to cache pgeometry, you may want to update a progress bar
+  If it takes several seconds to cache PagedGeometry, you may want to update a progress bar
   more often. The maxTime parameter allows you to split up this task into smaller
   segments for this purpose. Simply call cacheGeometry(maxTime) repeatedly until
   everything is cached (cacheGeometry() will return true when finished ).
@@ -639,7 +639,7 @@ class PagedGeometry {
   */
   float getCustomParam(const Ogre::String &paramName, float defaultParamValue) const;
 
-  /// Returns the rendering queue that paged pgeometry was constructed with
+  /// Returns the rendering queue that paged PagedGeometry was constructed with
   Ogre::uint8 getRenderQueue() const { return m_nRenderQueue; }
 
  protected:
@@ -650,7 +650,7 @@ class PagedGeometry {
   Ogre::SceneNode *rootNode;  // PagedGeometry's own "root" node
   bool shadersEnabled;
 
-  bool geometryAllowedVisible;  // If set to false, all pgeometry managed by this PagedGeometry is hidden
+  bool geometryAllowedVisible;  // If set to false, all PagedGeometry managed by this PagedGeometry is hidden
 
 #ifdef PAGEDGEOMETRY_ALTERNATE_COORDSYSTEM
   Ogre::Quaternion coordinateSystemQuat;  // The orientation of rootNode
@@ -734,7 +734,7 @@ This should return the page to the state it was before addEntity() and build().
 
 \b 6. Steps 2-5 are repeated as pages are loaded/unloaded
 
-Implementing your own pgeometry page is really very simple. As long as the functions
+Implementing your own PagedGeometry page is really very simple. As long as the functions
 do their jobs right, everything will work fine. If you learn best be example, you may
 want to take a look at how the included page types are implemented also.
 
@@ -747,12 +747,12 @@ class GeometryPage {
 
  public:
   /**
-  \brief Prepare a pgeometry page for use.
+  \brief Prepare a PagedGeometry page for use.
   \param geom The PagedGeometry object that's creating this GeometryPage.
   \param data A single parameter of custom data (optional).
 
   This is called immediately after creating a new GeometryPage. It is never called more
-  than once for a single instance of your pgeometry page.
+  than once for a single instance of your PagedGeometry page.
 
   The "data" parameter is set for all pages when PagedGeometry::addDetailLevel() is
   called. This parameter is optional and can be used for whatever you like if you
@@ -778,14 +778,14 @@ class GeometryPage {
   Ogre::uint32 getQueryFlag() { return mQueryFlag; };
 
   /**
-  \brief Prepare a pgeometry page for entities
+  \brief Prepare a PagedGeometry page for entities
   \param left The minimum x-coordinate any entities will have.
   \param top The minimum z-coordinate any entities will have.
   \param right The maximum x-coordinate any entities will have.
   \param bottom The maximum z-coordinate any entities will have.
 
   This basically provides you with a region where upcoming entities will be located,
-  since many pgeometry rendering methods require this data. It's up to you how this
+  since many PagedGeometry rendering methods require this data. It's up to you how this
   data is used, if at all.
 
   setRegion() is never called when the page contains entities; only once just before
@@ -827,14 +827,14 @@ class GeometryPage {
   virtual void build() {}
 
   /**
-  \brief Remove all pgeometry/entities from the page completely.
+  \brief Remove all PagedGeometry/entities from the page completely.
 
   Make sure this completely reverses the effects of both build() and addEntity(). This
   is necessary, because after this is called, the entities will most likely be added
   again with addEntity() and build().
 
   Do not leave any remains of the entities in memory after this function is called.
-  One of the advantages of using paged pgeometry is that you can have near-infinite
+  One of the advantages of using paged PagedGeometry is that you can have near-infinite
   game worlds, which would normally exceed a computer's RAM capacity. This advantage
   would completely disappear if you did not clean up properly when the page manager
   calls this function.
@@ -844,19 +844,19 @@ class GeometryPage {
   /**
   \brief Sets fade behavior for this page.
   \param enabled Whether or not to enable fading
-  \param visibleDist The distance where pgeometry will be fully opaque (alpha 1)
-  \param invisibleDist The distance where pgeometry will be invisible (alpha 0)
+  \param visibleDist The distance where PagedGeometry will be fully opaque (alpha 1)
+  \param invisibleDist The distance where PagedGeometry will be invisible (alpha 0)
 
   This is called whenever a page needs fading enabled/disabled. The distance ranges
-  given specify how the override alpha values should be calculated - pgeometry at
-  visibleDist should have alpha values of 1, while pgeometry at invisibleDist should
+  given specify how the override alpha values should be calculated - PagedGeometry at
+  visibleDist should have alpha values of 1, while PagedGeometry at invisibleDist should
   have alpha values of 0. Important: Distances must be calculated in the xz plane
   only - the y coordinate should be disregarded when calculating distance.
 
   setFade() won't be called unless the user's computer supports vertex shaders.
 
   \note invisibleDist may be greater than or less than visibleDist, depending on
-  whether the pgeometry is fading out or in to the distance.
+  whether the PagedGeometry is fading out or in to the distance.
   */
   virtual void setFade(bool enabled, Ogre::Real visibleDist = 0, Ogre::Real invisibleDist = 0) = 0;
 
@@ -867,13 +867,13 @@ class GeometryPage {
   virtual void setVisible(bool visible) = 0;
 
   /**
-  \brief Do whatever needs to be done to keep the page pgeometry up-to-date.
+  \brief Do whatever needs to be done to keep the page PagedGeometry up-to-date.
 
   update() is called each frame for each GeometryPage instance. This function should
-  perform any operations that are needed to keep the pgeometry page up-to-date.
+  perform any operations that are needed to keep the PagedGeometry page up-to-date.
 
   \note Overriding this function is optional, however, since not all implementations
-  of pgeometry may need to be updated.
+  of PagedGeometry may need to be updated.
   */
   virtual void update() {}
 
@@ -962,7 +962,7 @@ class GeometryPage {
   bool _keepLoaded = false;                   // Flag indicating if the page should not be unloaded
   std::list<GeometryPage *>::iterator _iter;  // Iterator in loadedList
 
-  Ogre::AxisAlignedBox _trueBounds;  // Actual bounding box of the 3D pgeometry added to this page
+  Ogre::AxisAlignedBox _trueBounds;  // Actual bounding box of the 3D PagedGeometry added to this page
   bool _trueBoundsUndefined = true;  // Flag indicating if _trueBounds has not been defined yet
 
   void *_userData = nullptr;  // Misc. data associated with this page by the PageLoader
@@ -1007,7 +1007,7 @@ struct PageInfo {
   /**
   \brief The X index of the page tile.
 
-  If all the pgeometry pages were arranged in a big 2D grid, this would be the
+  If all the PagedGeometry pages were arranged in a big 2D grid, this would be the
   X index of this page in that grid.
 
   This is mathematically equivalent to Math::Floor( bounds.left / bounds.width() ),
@@ -1019,7 +1019,7 @@ struct PageInfo {
   /**
   \brief The Z index of the page tile.
 
-  If all the pgeometry pages were arranged in a big 2D grid, this would be the
+  If all the PagedGeometry pages were arranged in a big 2D grid, this would be the
   Z index of this page in that grid.
 
   This is mathematically equivalent to Math::Floor( bounds.top / bounds.height() ),
@@ -1055,10 +1055,10 @@ for more info.
 Unlike most entity managers, PagedGeometry does not allow you to simply add all your
 entities to the object, and let the engine run from that point on. Since the
 PagedGeometry engine is designed to work with extremely large game areas, preloading
-everything would take far too much memory. Instead, it pages the pgeometry. In other
-words, it loads the pgeometry only as needed.
+everything would take far too much memory. Instead, it pages the PagedGeometry. In other
+words, it loads the PagedGeometry only as needed.
 
-Whenever the engine needs a specific region of pgeometry to be loaded, it calls on your
+Whenever the engine needs a specific region of PagedGeometry to be loaded, it calls on your
 page loader class's loadPage() function. It's completely up to you how this function
 loads the entities, just as long as it gets the job done. When loadPage() is called,
 you are provided with a PageInfo variable, which specifies the boundary which must
@@ -1192,13 +1192,13 @@ class PageLoader {
 
 //-------------------------------------------------------------------------------------
 /**
-\brief Manages the rendering of pgeometry for a detail level type.
+\brief Manages the rendering of PagedGeometry for a detail level type.
 
 \warning This class is used internally by PagedGeometry, and in most cases you should
 ignore it completely. However, this does provide some advanced capabilities such as
 modifying the near and far view ranges, which may come in handy.
 
-This class manages pages of pgeometry, cacheing, deleting, etc. them as necessary.
+This class manages pages of PagedGeometry, cacheing, deleting, etc. them as necessary.
 It analyzes the motion of the camera to determine how fast pages need to be cached,
 and deletes obsolete pages which have been invisible for a certain amount of time.
 
@@ -1212,7 +1212,7 @@ functions, so be careful. Using these functions will cause unpredictable results
 */
 class GeometryPageManager {
  public:
-  /** \brief A std::list of pointers to pgeometry pages */
+  /** \brief A std::list of pointers to PagedGeometry pages */
   typedef std::list<GeometryPage *> TPGeometryPages;
 
   /** \brief Internal function - DO NOT USE */
@@ -1223,10 +1223,10 @@ class GeometryPageManager {
 
   /**
   \brief Sets the near viewing range of this page manager.
-  \param nearRange The distance where this page manager starts displaying pgeometry.
+  \param nearRange The distance where this page manager starts displaying PagedGeometry.
 
-  All pgeometry displayed by this page manager is confined within a certain radius
-  gap from the camera. This function sets the closest distance pgeometry is allowed
+  All PagedGeometry displayed by this page manager is confined within a certain radius
+  gap from the camera. This function sets the closest distance PagedGeometry is allowed
   near the camera.
   */
   inline void setNearRange(Ogre::Real nearRange) {
@@ -1236,10 +1236,10 @@ class GeometryPageManager {
 
   /**
   \brief Sets the far viewing range of this page manager.
-  \param farRange The distance where this page manager stops displaying pgeometry.
+  \param farRange The distance where this page manager stops displaying PagedGeometry.
 
-  All pgeometry displayed by this page manager is confined within a certain radius
-  gap from the camera. This function sets the farthest distance pgeometry is allowed
+  All PagedGeometry displayed by this page manager is confined within a certain radius
+  gap from the camera. This function sets the farthest distance PagedGeometry is allowed
   from the camera.
   */
   inline void setFarRange(Ogre::Real farRange) {
@@ -1358,7 +1358,7 @@ class GeometryPageManager {
   Ogre::Real fadeLength, fadeLengthSq;
   bool fadeEnabled;
 
-  // Inline function used to get pgeometry page tiles
+  // Inline function used to get PagedGeometry page tiles
   inline GeometryPage *_getGridPage(const int x, const int z) {
 #ifdef _DEBUG
     if (x >= geomGridX || z >= geomGridZ)
@@ -1378,7 +1378,7 @@ class GeometryPageManager {
     geomGrid[z * geomGridX + x] = page;
   }
 
-  // Utility functions for loading/unloading pgeometry pages (see source for detailed descriptions)
+  // Utility functions for loading/unloading PagedGeometry pages (see source for detailed descriptions)
   void _loadPage(GeometryPage *page);
   void _unloadPage(GeometryPage *page);
   void _unloadPageDelayed(GeometryPage *page);
@@ -1389,14 +1389,14 @@ class GeometryPageManager {
   // Timer counting how long it has been since the last page has been cached
   unsigned long cacheTimer = 0;
 
-  TPGeometryPages pendingList;  // Pages of pgeometry to be loaded
-  TPGeometryPages loadedList;   // Pages of pgeometry already loaded
+  TPGeometryPages pendingList;  // Pages of PagedGeometry to be loaded
+  TPGeometryPages loadedList;   // Pages of PagedGeometry already loaded
 
   // Cache settings
   unsigned long maxCacheInterval;
   unsigned long inactivePageLife;
 
-  // Near and far visibility ranges for this type of pgeometry
+  // Near and far visibility ranges for this type of PagedGeometry
   Ogre::Real nearDist, nearDistSq;
   Ogre::Real farDist, farDistSq;
   Ogre::Real farTransDist, farTransDistSq;  // farTransDist = farDist + fadeLength

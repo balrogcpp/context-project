@@ -31,8 +31,8 @@
  */
 
 #include "pch.h"
-#include "oggsound/OgreOggISound.h"
-#include "oggsound/OgreOggSound.h"
+#include "OgreOggSound/OgreOggISound.h"
+#include "OgreOggSound/OgreOggSound.h"
 
 namespace OgreOggSound {
 /*
