@@ -2,18 +2,18 @@ apply plugin: 'com.android.application'
 
 android {
     buildToolsVersion '30.0.3'
-    compileSdkVersion 30
-    ndkVersion '22.1.7171670'
+    compileSdkVersion 31
+    ndkVersion '23.1.7779620'
 
     defaultConfig {
         applicationId 'org.libsdl.app'
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode     1
         versionName    '1.0'
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_ARM_NEON=ON -G "Ninja"'
+                arguments '-DANDROID_ARM_NEON=ON -G Ninja'
             }
         }
     }
