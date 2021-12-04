@@ -2,8 +2,6 @@
 
 #pragma once
 #include "NoCopy.h"
-#include "ViewPtr.h"
-
 namespace Glue {
 class Config;
 }
@@ -21,11 +19,11 @@ class Component : public NoCopy {
   virtual void Update(float time) = 0;
 
  protected:
-  inline static ViewPtr<Config> config = nullptr;
+  inline static Config* config = nullptr;
   bool paused = false;
 
  public:
-  static void SetConfig(ViewPtr<Config> conf) { config = conf; }
+  static void SetConfig(Config* conf) { config = conf; }
 };
 
 }  // namespace glue

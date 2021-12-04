@@ -17,7 +17,7 @@ class RenderTargetViewportEvent;
 namespace Glue {
 class Overlay final : public Component, public Singleton<Overlay>, public Ogre::RenderTargetListener {
  public:
-  Overlay(ViewPtr<Ogre::RenderWindow> render_window);
+  Overlay(Ogre::RenderWindow* render_window);
   virtual ~Overlay();
 
   void Cleanup() override;
@@ -29,9 +29,9 @@ class Overlay final : public Component, public Singleton<Overlay>, public Ogre::
 
  protected:
   std::unique_ptr<ImGuiInputListener> imgui_listener;
-  ViewPtr<Ogre::ImGuiOverlay> imgui_overlay;
-  ViewPtr<Ogre::OverlaySystem> overlay_system;
-  ViewPtr<Ogre::RenderWindow> render_window;
+  Ogre::ImGuiOverlay* imgui_overlay;
+  Ogre::OverlaySystem* overlay_system;
+  Ogre::RenderWindow* render_window;
 };
 
 }  // namespace glue

@@ -92,41 +92,41 @@ void Compositor::InitGbuffer() {
     Ogre::MaterialManager::getSingleton().addListener(gbuff_handler.get(), "GBuffer");
   }
 
-  if (compositor_manager->addCompositor(viewport.get(), "GBuffer")) {
-    compositor_manager->setCompositorEnabled(viewport.get(), "GBuffer", true);
+  if (compositor_manager->addCompositor(viewport, "GBuffer")) {
+    compositor_manager->setCompositorEnabled(viewport, "GBuffer", true);
   } else {
     Ogre::LogManager::getSingleton().logMessage("Failed to add GBuffer compositor\n");
   }
 }
 
 void Compositor::AddCompositorEnabled(const std::string &name) {
-  if (compositor_manager->addCompositor(viewport.get(), name)) {
-    compositor_manager->setCompositorEnabled(viewport.get(), name, true);
+  if (compositor_manager->addCompositor(viewport, name)) {
+    compositor_manager->setCompositorEnabled(viewport, name, true);
   } else {
     throw Exception(string("Failed to add ") + name + " compositor");
   }
 }
 
 void Compositor::AddCompositorDisabled(const std::string &name) {
-  if (compositor_manager->addCompositor(viewport.get(), name)) {
-    compositor_manager->setCompositorEnabled(viewport.get(), name, false);
+  if (compositor_manager->addCompositor(viewport, name)) {
+    compositor_manager->setCompositorEnabled(viewport, name, false);
   } else {
     throw Exception(string("Failed to add ") + name + " compositor");
   }
 }
 
 void Compositor::EnableCompositor(const std::string &name) {
-  compositor_manager->setCompositorEnabled(viewport.get(), name, true);
+  compositor_manager->setCompositorEnabled(viewport, name, true);
 }
 
 void Compositor::InitMRT() {
-  if (compositor_manager->addCompositor(viewport.get(), "MRT")) {
-    compositor_manager->setCompositorEnabled(viewport.get(), "MRT", false);
+  if (compositor_manager->addCompositor(viewport, "MRT")) {
+    compositor_manager->setCompositorEnabled(viewport, "MRT", false);
   } else {
     Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add MRT compositor\n");
   }
 
-  auto *compositor_chain = compositor_manager->getCompositorChain(viewport.get());
+  auto *compositor_chain = compositor_manager->getCompositorChain(viewport);
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
 
   if (config->Get<bool>("window_fullscreen")) {
@@ -145,7 +145,7 @@ void Compositor::InitMRT() {
 
 #endif
 
-  compositor_manager->setCompositorEnabled(viewport.get(), "MRT", true);
+  compositor_manager->setCompositorEnabled(viewport, "MRT", true);
 }
 
 void Compositor::InitOutput() {

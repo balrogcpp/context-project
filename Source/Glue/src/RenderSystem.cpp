@@ -56,7 +56,7 @@ RenderSystem::RenderSystem(int w, int h, bool f) {
   // Camera block
   camera = scene->createCamera("Default");
   auto *renderTarget = ogre_root->getRenderTarget(render_window->getName());
-  viewport = renderTarget->addViewport(camera.get());
+  viewport = renderTarget->addViewport(camera);
   viewport->setBackgroundColour(ColourValue::Black);
   camera->setAspectRatio(static_cast<float>(viewport->getActualWidth()) /
                           static_cast<float>(viewport->getActualHeight()));

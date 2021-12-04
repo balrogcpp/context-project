@@ -25,7 +25,7 @@ ReflectionCamera::ReflectionCamera(Ogre::Plane plane, unsigned int tex_size) {
       tex_manager.createManual("Reflection", RGN_DEFAULT, TEX_TYPE_2D, size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
 
   Ogre::RenderTarget *rtt1 = reflection_texture->getBuffer()->getRenderTarget();
-  Ogre::Viewport *vp1 = rtt1->addViewport(rcamera.get());
+  Ogre::Viewport *vp1 = rtt1->addViewport(rcamera);
   vp1->setOverlaysEnabled(false);
   vp1->setShadowsEnabled(false);
   // toggle reflection in camera

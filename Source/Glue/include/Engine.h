@@ -10,7 +10,6 @@
 #include "PhysicsSystem.h"
 #include "RenderSystem.h"
 #include "Singleton.h"
-#include "ViewPtr.h"
 #include <memory>
 #include <vector>
 
@@ -31,7 +30,7 @@ class Engine : public LazySingleton<Engine> {
   void Refresh();
   void Update(float time);
   void RenderOneFrame();
-  void RegSystem(ViewPtr<Component> system);
+  void RegSystem(Component* system);
 
  protected:
   std::unique_ptr<InputHandler> io;
@@ -41,7 +40,7 @@ class Engine : public LazySingleton<Engine> {
   std::unique_ptr<AudioSystem> as;
   std::unique_ptr<Overlay> overlay;
   std::unique_ptr<DotSceneLoaderB> loader;
-  std::vector<ViewPtr<Component>> components;
+  std::vector<Component*> components;
 
   friend InputHandler& GetIo();
   friend Config& GetConf();

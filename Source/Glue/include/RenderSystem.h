@@ -6,7 +6,6 @@
 #include "Singleton.h"
 #include "Component.h"
 #include "Window.h"
-#include "ViewPtr.h"
 #include <memory>
 #include <vector>
 
@@ -55,11 +54,11 @@ class RenderSystem final : public Component, public Singleton<RenderSystem> {
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm;
   std::vector<float> split_points;
   const size_t pssm_split_count = 3;
-  ViewPtr<Ogre::Root> ogre_root;
-  ViewPtr<Ogre::SceneManager> scene;
-  ViewPtr<Ogre::Camera> camera;
-  ViewPtr<Ogre::Viewport> viewport;
-  ViewPtr<Ogre::RenderWindow> render_window;
+  Ogre::Root* ogre_root;
+  Ogre::SceneManager* scene;
+  Ogre::Camera* camera;
+  Ogre::Viewport* viewport;
+  Ogre::RenderWindow* render_window;
 };
 
 }  // namespace glue

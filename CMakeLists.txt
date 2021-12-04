@@ -27,6 +27,8 @@ make_directory(${GLUE_ARTIFACT_DIR})
 
 # Insert dependencies
 add_subdirectory(${CMAKE_SOURCE_DIR}/Thirdparty)
+
+
 set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
 if (APPLE)

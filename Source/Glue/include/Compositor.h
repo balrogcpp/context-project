@@ -40,10 +40,10 @@ class Compositor : public Component, public Singleton<Compositor> {
 
   std::map<std::string, bool> effects;
   std::unique_ptr<GBufferSchemeHandler> gbuff_handler;
-  ViewPtr<Ogre::CompositorManager> compositor_manager;
-  ViewPtr<Ogre::SceneManager> scene;
-  ViewPtr<Ogre::Camera> camera;
-  ViewPtr<Ogre::Viewport> viewport;
+  Ogre::CompositorManager* compositor_manager;
+  Ogre::SceneManager* scene;
+  Ogre::Camera* camera;
+  Ogre::Viewport* viewport;
 };
 
 }  // namespace Glue

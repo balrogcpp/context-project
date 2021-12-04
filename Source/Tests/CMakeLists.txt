@@ -1,0 +1,14 @@
+find_package(GTest QUIET)
+if (GTest_FOUND AND NOT CMAKE_CROSSCOMPILING)
+    enable_testing()
+    include(GoogleTest)
+
+    add_executable(TestGlue src/TestHello.cpp)
+    target_link_libraries(TestGlue ${GTEST_BOTH_LIBRARIES})
+    include_directories(TestGlue ${GTEST_INCLUDE_DIRS})
+
+    gtest_discover_tests(TestGlue)
+    target_link_directories(TestGlue PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
+else ()
+    message("Google test not found. Test targets are not available.")
+endif ()

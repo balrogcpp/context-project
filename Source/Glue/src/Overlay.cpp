@@ -12,16 +12,16 @@
 using namespace std;
 
 namespace Glue {
-Overlay::Overlay(ViewPtr<Ogre::RenderWindow> render_window) {
+Overlay::Overlay(Ogre::RenderWindow* render_window) {
   this->render_window = render_window;
   Ogre::SceneManager* sm = Ogre::Root::getSingletonPtr()->getSceneManager("Default");
   overlay_system = new Ogre::OverlaySystem();
-  sm->addRenderQueueListener(overlay_system.get());
+  sm->addRenderQueueListener(overlay_system);
 
   imgui_overlay = new Ogre::ImGuiOverlay();
   imgui_overlay->setZOrder(300);
 
-  Ogre::OverlayManager::getSingleton().addOverlay(imgui_overlay.get());
+  Ogre::OverlayManager::getSingleton().addOverlay(imgui_overlay);
   render_window->addListener(this);
 
   imgui_listener = make_unique<ImGuiInputListener>();

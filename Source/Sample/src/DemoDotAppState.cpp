@@ -1,9 +1,9 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
+#include "pch.h"
 #include "DemoDotAppState.h"
 #include "ComponentLocator.h"
 #include "MenuAppState.h"
-#include "pch.h"
 
 using namespace std;
 using namespace Glue;
@@ -121,7 +121,7 @@ void DemoDotAppState::Update(float time) {
 
 void DemoDotAppState::SetUp() {
   GetWindow().Grab(true);
-//  GetLoader().GetCamera().SetStyle(glue::CameraMan::Style::FPS);
+  //  GetLoader().GetCamera().SetStyle(glue::CameraMan::Style::FPS);
   LoadFromFile("1.scene");
 
   //    Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);

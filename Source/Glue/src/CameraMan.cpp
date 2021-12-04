@@ -206,17 +206,17 @@ void CameraMan::OnKeyUp(SDL_Keycode sym) {
   }
 }
 
-void CameraMan::SetRigidBody(ViewPtr<btRigidBody> rigid_body) { rigid = rigid_body; }
+void CameraMan::SetRigidBody(btRigidBody* rigid_body) { rigid = rigid_body; }
 
 Ogre::SceneNode *CameraMan::GetCameraNode() const {
   if (style == Style::FPS) {
-    return roll_node.get();
+    return roll_node;
   } else {
-    return node.get();
+    return node;
   }
 }
 
-Ogre::Camera *CameraMan::GetCamera() const { return camera.get(); }
+Ogre::Camera *CameraMan::GetCamera() const { return camera; }
 
 void CameraMan::AttachNode(Ogre::SceneNode *parent, Ogre::SceneNode *proxy) {
   if (style == Style::FPS) {
@@ -226,7 +226,7 @@ void CameraMan::AttachNode(Ogre::SceneNode *parent, Ogre::SceneNode *proxy) {
     }
 
     for (const auto it : parent->getChildren()) {
-      if (it == yaw_node.get()) continue;
+      if (it == yaw_node) continue;
 
       parent->removeChild(it);
       roll_node->removeChild(it);

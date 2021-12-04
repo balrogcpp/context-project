@@ -63,10 +63,10 @@ void Engine::Capture() {
   io.Capture();
 }
 
-void Engine::RegSystem(ViewPtr<Component> system) { components.push_back(system); }
+void Engine::RegSystem(Component* system) { components.push_back(system); }
 
 void Engine::Pause() {
-  for_each(components.begin(), components.end(), [](ViewPtr<Component> it) { it->Pause(); });
+  for_each(components.begin(), components.end(), [](Component* it) { it->Pause(); });
 }
 
 void Engine::InMenu() {
@@ -82,16 +82,16 @@ void Engine::OffMenu() {
 }
 
 void Engine::Resume() {
-  for_each(components.begin(), components.end(), [](ViewPtr<Component> it) { it->Resume(); });
+  for_each(components.begin(), components.end(), [](Component* it) { it->Resume(); });
 }
 
 void Engine::Cleanup() {
-  for_each(components.begin(), components.end(), [](ViewPtr<Component> it) { it->Cleanup(); });
+  for_each(components.begin(), components.end(), [](Component* it) { it->Cleanup(); });
   Refresh();
 }
 
 void Engine::Update(float time) {
-  for_each(components.begin(), components.end(), [time](ViewPtr<Component> it) { it->Update(time); });
+  for_each(components.begin(), components.end(), [time](Component* it) { it->Update(time); });
 }
 
 void Engine::RenderOneFrame() { rs->RenderOneFrame(); }

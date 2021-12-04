@@ -2,8 +2,6 @@
 
 #pragma once
 #include "NoCopy.h"
-#include "ViewPtr.h"
-
 namespace Glue {
 class Config;
 

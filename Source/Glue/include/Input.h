@@ -4,7 +4,6 @@
 #include "Exception.h"
 #include "NoCopy.h"
 #include "Singleton.h"
-#include "ViewPtr.h"
 #include <exception>
 #include <set>
 #include <string>
@@ -31,25 +30,25 @@ class InputSequencer : public LazySingleton<InputSequencer> {
   virtual ~InputSequencer();
 
   /// Register physical input listener
-  void RegObserver(ViewPtr<InputObserverI> p);
+  void RegObserver(InputObserverI* p);
 
   /// Un-Register physical input listener
-  void UnregObserver(ViewPtr<InputObserverI> p);
+  void UnregObserver(InputObserverI* p);
 
   /// Register window input listener
-  void RegWinObserver(ViewPtr<WindowObserverI> p);
+  void RegWinObserver(WindowObserverI* p);
 
   /// Un-Register window input listener
-  void UnregWinObserver(ViewPtr<WindowObserverI> p);
+  void UnregWinObserver(WindowObserverI* p);
 
   /// Called once per frame, sent callback message to listeners
   void Capture();
 
  protected:
   /// Listeners list (physical input)
-  std::set<ViewPtr<InputObserverI>> io_listeners;
+  std::set<InputObserverI*> io_listeners;
   /// Listeners list (window input)
-  std::set<ViewPtr<WindowObserverI>> win_listeners;
+  std::set<WindowObserverI*> win_listeners;
   /// Required for Android/IOS development
   int HandleAppEvents(void *userdata, SDL_Event *event);
 };
