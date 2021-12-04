@@ -80,3 +80,7 @@ elseif (MSVC)
         string(APPEND CMAKE_C_FLAGS " /D \"DEBUG\"")
     endif ()
 endif ()
+
+# This flags are useful for thirdparty build
+set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS})
+set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS})

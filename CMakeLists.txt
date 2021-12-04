@@ -20,46 +20,10 @@ include(Platform)
 include(CppFlags)
 include(GitHash)
 
-# Build type definition
-# Android use gradle
-# This flags are useful for thirdparty build
-set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "")
-set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "")
-
 # Create artifacts directory
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
 make_directory(${GLUE_ARTIFACT_DIR})
 
-# Doxygen
-find_package(Doxygen COMPONENTS dot QUIET)
-find_package(LATEX COMPONENTS PDFLATEX QUIET)
-if (${DOXYGEN_FOUND})
-    add_custom_target(Doxygen
-            COMMAND ${DOXYGEN_EXECUTABLE}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMENT "Generating API documentation with Doxygen..."
-            USES_TERMINAL
-            )
-else ()
-    message("Doxygen not found. Doxygen targets are not available")
-endif ()
-if (UNIX)
-    set(GLUE_DOXYGEN_MAKE_COMMAND ${MAKE_COMMAND})
-elseif (WIN32)
-    set(GLUE_DOXYGEN_MAKE_COMMAND "make.bat")
-endif ()
-if (${LATEX_PDFLATEX_FOUND})
-    add_custom_target(DoxygenPdf
-            DEPENDS Doxygen
-            COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_ARTIFACT_DIR}/Doxygen/latex ${GLUE_DOXYGEN_MAKE_COMMAND}
-            COMMAND ${CMAKE_COMMAND} -E copy ${GLUE_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${GLUE_ARTIFACT_DIR}/Doxygen
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMENT "Generating API documentation with Doxygen..."
-            USES_TERMINAL
-            )
-else ()
-    message("Latex PDF not found. PDF generation no available")
-endif ()
 
 # Insert dependencies
 add_subdirectory(${CMAKE_SOURCE_DIR}/Thirdparty)
@@ -136,97 +100,11 @@ if (ANY_NOT_FOUND)
     return()
 endif ()
 
-set(GLUE_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/glue)
-set(GLUE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Source/Glue/include)
+# Library and Tests
+add_subdirectory(${CMAKE_SOURCE_DIR}/Source)
 
-list(APPEND GLUE_INCLUDE_DIRS
-        ${GLUE_INCLUDE_DIR}
-        ${GLUE_EXTERNAL_INSTALL_LOCATION}/include
-        ${BULLET_INCLUDE_DIR}
-        ${OGRE_INCLUDE_DIRS}
-        ${OGRE_INCLUDE_DIRS}/Overlay
-        ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
-        ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
-        ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2
-        ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
-        ${OGRE_INCLUDE_DIRS}/Plugins/Assimp
-        )
 
-set(SAMPLE_EXE sample)
-file(GLOB_RECURSE SAMPLE_SOURCE_FILES Source/Sample/*.cpp Source/Sample/*.h Source/Sample/*.hpp Deploy/*.manifest Source/Glue/*.cpp Source/Glue/*.h Source/Glue/*.hpp)
-
-if (NOT ANDROID)
-    add_executable(Sample WIN32 ${SAMPLE_SOURCE_FILES})
-else ()
-    add_library(Sample SHARED ${SAMPLE_SOURCE_FILES})
-    set_target_properties(Sample PROPERTIES OUTPUT_NAME "main")
-endif ()
-
-include_directories(Sample Source/Sample/include ${GLUE_INCLUDE_DIRS})
-target_link_directories(Sample PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
-target_precompile_headers(Sample PUBLIC Source/Glue/include/pch.h)
-set_target_properties(Sample PROPERTIES OUTPUT_NAME "Sample")
-
-if (MINGW)
-    list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    #jemalloc fix problems with memory bloat on linux
-    list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl jemalloc.a)
-elseif (ANDROID)
-    list(APPEND SYSTEM_LIBRARIES SDL2::hidapi android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
-elseif (MSVC)
-    list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
-endif ()
-if (NOT (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug"))
-    set(OGRE_CODEC_ASSIMP Codec_AssimpStatic)
-else ()
-    set(OGRE_CODEC_ASSIMP Codec_AssimpStatic_d)
-endif ()
-target_link_libraries(Sample PUBLIC
-        ${OGRE_LIBRARIES}
-        ${OGRE_CODEC_ASSIMP}
-        ${ASSIMP_LIBRARIES}
-        ${ASSIMP_IRRXML_LIBRARY}
-        ${BULLET_LIBRARIES}
-        ${PNG_LIBRARY}
-        vorbisfile
-        vorbis
-        vorbisenc
-        Ogg::ogg
-        pugixml
-        SDL2::SDL2-static
-        ${LUA_LIBRARIES}
-        ${OPENAL_LIBRARY}
-        ${SYSTEM_LIBRARIES}
-        )
-
-install(TARGETS Sample RUNTIME DESTINATION .)
-
-option(GLUE_BUILD_STATIC_LIBRARY "Build static library" OFF)
-if (GLUE_BUILD_STATIC_LIBRARY)
-    file(GLOB_RECURSE GLUE_ENGINE_SOURCE_FILES Source/*.cpp Source/*.h Source/*.hpp)
-    add_library(glue STATIC ${GLUE_ENGINE_SOURCE_FILES})
-    include_directories(glue ${GLUE_INCLUDE_DIRS})
-    set_target_properties(glue PROPERTIES OUTPUT_NAME "glue-static")
-    target_precompile_headers(glue PUBLIC Source/Glue/include/pch.h)
-endif ()
-
-# Tests
-find_package(GTest QUIET)
-if (GTest_FOUND AND NOT CMAKE_CROSSCOMPILING)
-    enable_testing()
-    include(GoogleTest)
-
-    add_executable(TestGlue Source/Tests/src/TestHello.cpp)
-    target_link_libraries(TestGlue ${GTEST_BOTH_LIBRARIES})
-
-    gtest_discover_tests(TestGlue)
-    target_link_directories(TestGlue PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
-else ()
-    message("Google test not found. Test targets are not available.")
-endif ()
-
-# Install&package block
+#Packaging
 set(GLUE_DEPLOY_DIR ${CMAKE_SOURCE_DIR}/Deploy)
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${GLUE_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
@@ -239,7 +117,7 @@ if (MINGW)
     file(INSTALL ${CMAKE_SOURCE_DIR}/Deploy/Sample.exe.manifest DESTINATION .)
 endif ()
 
-#Packaging
+
 set(GLUE_PACKAGE_NAME "GlueSample")
 set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}_${GLUE_TOOLCHAIN_SHORT}_${GIT_SHA1})
 if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
@@ -286,9 +164,11 @@ if (${NSIS_FOUND} AND WIN32)
         set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
     endif ()
 endif ()
+
 include(CPack)
 
-# Doesn't work with
+
+# Doesn't work with MSVC
 add_custom_target(BuildPackage
         COMMAND ${CMAKE_COMMAND} --build . --target package
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
@@ -296,3 +176,35 @@ add_custom_target(BuildPackage
         COMMENT "Build packages..."
         USES_TERMINAL
         )
+
+
+# Doxygen
+find_package(Doxygen COMPONENTS dot QUIET)
+find_package(LATEX COMPONENTS PDFLATEX QUIET)
+if (${DOXYGEN_FOUND})
+    add_custom_target(Doxygen
+            COMMAND ${DOXYGEN_EXECUTABLE}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Generating API documentation with Doxygen..."
+            USES_TERMINAL
+            )
+else ()
+    message("Doxygen not found. Doxygen targets will not be available")
+endif ()
+if (UNIX)
+    set(GLUE_DOXYGEN_MAKE_COMMAND ${MAKE_COMMAND})
+elseif (WIN32)
+    set(GLUE_DOXYGEN_MAKE_COMMAND "make.bat")
+endif ()
+if (${LATEX_PDFLATEX_FOUND})
+    add_custom_target(DoxygenPdf
+            DEPENDS Doxygen
+            COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_ARTIFACT_DIR}/Doxygen/latex ${GLUE_DOXYGEN_MAKE_COMMAND}
+            COMMAND ${CMAKE_COMMAND} -E copy ${GLUE_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${GLUE_ARTIFACT_DIR}/Doxygen
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Generating API documentation with Doxygen..."
+            USES_TERMINAL
+            )
+else ()
+    message("Latex PDF not found. PDF generation no available")
+endif ()

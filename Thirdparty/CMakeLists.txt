@@ -1,6 +1,7 @@
 include(ExternalProject)
 include(Platform)
 include(Make)
+include(CppFlags)
 find_package(Git REQUIRED)
 
 set(GLUE_EXTERNAL_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/External/${GLUE_TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE})
