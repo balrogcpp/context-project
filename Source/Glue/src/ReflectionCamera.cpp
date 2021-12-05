@@ -75,4 +75,4 @@ void ReflectionCamera::Clear() {
 
 void ReflectionCamera::SetPlane(Ogre::Plane plane) { this->plane = plane; }
 
-}  // namespace glue
+}  // namespace Glue

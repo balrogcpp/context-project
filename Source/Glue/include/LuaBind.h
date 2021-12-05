@@ -8,4 +8,4 @@ class LuaBind {
  public:
 };
 
-}  // namespace glue
+}  // namespace Glue

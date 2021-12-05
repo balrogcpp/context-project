@@ -49,4 +49,4 @@ void StateManager::Pause() { cur_state->Pause(); }
 
 void StateManager::Resume() { cur_state->Resume(); }
 
-}  // namespace glue
+}  // namespace Glue

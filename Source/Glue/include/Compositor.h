@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Singleton.h"
 #include "Component.h"
+#include "Singleton.h"
 #include <memory>
 #include <string>
 
@@ -27,14 +27,14 @@ class Compositor : public Component, public Singleton<Compositor> {
   void Pause() override;
   void Resume() override;
   void Update(float time) override;
-  void EnableEffect(const std::string &name, bool enable = true);
+  void EnableEffect(const std::string& name, bool enable = true);
   void SetUp();
 
  protected:
   void InitGbuffer();
-  void AddCompositorEnabled(const std::string &name);
-  void AddCompositorDisabled(const std::string &name);
-  void EnableCompositor(const std::string &name);
+  void AddCompositorEnabled(const std::string& name);
+  void AddCompositorDisabled(const std::string& name);
+  void EnableCompositor(const std::string& name);
   void InitMRT();
   void InitOutput();
 

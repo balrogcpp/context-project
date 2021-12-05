@@ -30,4 +30,4 @@ class ImGuiInputListener final : public InputObserver {
   void OnMouseMbUp(int x, int y) override;
 };
 
-}  // namespace glue
+}  // namespace Glue

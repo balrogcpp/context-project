@@ -1,10 +1,10 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
+#include "Component.h"
 #include "Compositor.h"
 #include "Overlay.h"
 #include "Singleton.h"
-#include "Component.h"
 #include "Window.h"
 #include <memory>
 #include <vector>
@@ -34,8 +34,8 @@ class RenderSystem final : public Component, public Singleton<RenderSystem> {
   void Resize(int w, int h, bool f);
   void RestoreFullscreenAndroid_();
 
-  Window &GetWindow();
-  Compositor &GetCompositor();
+  Window& GetWindow();
+  Compositor& GetCompositor();
 
  protected:
   void InitOgrePlugins();
@@ -61,4 +61,4 @@ class RenderSystem final : public Component, public Singleton<RenderSystem> {
   Ogre::RenderWindow* render_window = nullptr;
 };
 
-}  // namespace glue
+}  // namespace Glue

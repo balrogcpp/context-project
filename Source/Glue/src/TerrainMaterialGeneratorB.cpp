@@ -113,4 +113,4 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap
   }
 }
 
-}  // namespace glue
+}  // namespace Glue

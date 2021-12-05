@@ -206,7 +206,7 @@ void CameraMan::OnKeyUp(SDL_Keycode sym) {
   }
 }
 
-void CameraMan::SetRigidBody(btRigidBody* rigid_body) { rigid = rigid_body; }
+void CameraMan::SetRigidBody(btRigidBody *rigid_body) { rigid = rigid_body; }
 
 Ogre::SceneNode *CameraMan::GetCameraNode() const {
   if (style == Style::FPS) {
@@ -298,4 +298,4 @@ void CameraMan::SetStyle(Style style) { style = style; }
 
 CameraMan::Style CameraMan::GetStyle() const noexcept { return style; }
 
-}  // namespace glue
+}  // namespace Glue

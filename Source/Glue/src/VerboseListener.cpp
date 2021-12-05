@@ -101,4 +101,4 @@ void VerboseListener::OnJoystickBall(int which, int ball, int xrel, int yrel) {
   }
 }
 
-}  // namespace glue
+}  // namespace Glue

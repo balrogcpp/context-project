@@ -13,4 +13,4 @@ class NoCopy {
   virtual ~NoCopy() = default;
 };
 
-}  // namespace glue
+}  // namespace Glue

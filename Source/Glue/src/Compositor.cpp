@@ -212,4 +212,4 @@ void Compositor::SetUp() {
   InitOutput();
 }
 
-}  // namespace glue
+}  // namespace Glue

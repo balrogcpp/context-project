@@ -181,4 +181,4 @@ void ImGuiInputListener::OnMouseMbUp(int x, int y) {
   }
 }
 
-}  // namespace glue
+}  // namespace Glue

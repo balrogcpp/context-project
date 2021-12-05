@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Singleton.h"
 #include "Component.h"
+#include "Singleton.h"
 #include <string>
 
 namespace OgreOggSound {
@@ -28,7 +28,7 @@ class AudioSystem final : public Component, public Singleton<AudioSystem> {
   void SetListener(Ogre::SceneNode *parent);
 
  protected:
-  OgreOggSound::OgreOggSoundManager* sound_manager = nullptr;
+  OgreOggSound::OgreOggSoundManager *sound_manager = nullptr;
 };
 
-}  // namespace glue
+}  // namespace Glue

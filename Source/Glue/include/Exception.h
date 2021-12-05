@@ -27,4 +27,4 @@ void Assert(bool result, std::string message);
 /// Throw exception
 void Throw(std::string message);
 
-}  // namespace glue
+}  // namespace Glue

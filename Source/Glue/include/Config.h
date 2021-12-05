@@ -50,4 +50,4 @@ class Config : public Singleton<Config> {
   nlohmann::json Document;
 };
 
-}  // namespace glue
+}  // namespace Glue

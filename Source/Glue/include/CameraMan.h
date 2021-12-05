@@ -31,10 +31,10 @@ class CameraMan final : public Object, public MutedInputObserver {
   void OnKeyUp(SDL_Keycode sym) override;
 
   void SetRigidBody(btRigidBody* rigid_body);
-  Ogre::SceneNode *GetCameraNode() const;
-  Ogre::Camera *GetCamera() const;
-  void AttachNode(Ogre::SceneNode *parent, Ogre::SceneNode *proxy = nullptr);
-  void AttachCamera(Ogre::SceneNode *parent, Ogre::Camera *camera, Ogre::SceneNode *proxy = nullptr);
+  Ogre::SceneNode* GetCameraNode() const;
+  Ogre::Camera* GetCamera() const;
+  void AttachNode(Ogre::SceneNode* parent, Ogre::SceneNode* proxy = nullptr);
+  void AttachCamera(Ogre::SceneNode* parent, Ogre::Camera* camera, Ogre::SceneNode* proxy = nullptr);
   void UnregCamera();
   void SetStyle(Style style);
   Style GetStyle() const noexcept;
@@ -66,4 +66,4 @@ class CameraMan final : public Object, public MutedInputObserver {
   Ogre::Vector3 prev_pos;
 };
 
-}  // namespace glue
+}  // namespace Glue

@@ -19,4 +19,4 @@ class MenuAppState : public Glue::AppState {
   void OnKeyDown(SDL_Keycode sym) override;
 };
 
-}
+}  // namespace Demo

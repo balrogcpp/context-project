@@ -1,9 +1,9 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
+#include "Component.h"
 #include "Input.h"
 #include "Singleton.h"
-#include "Component.h"
 #include <vector>
 
 namespace Glue {
@@ -27,7 +27,7 @@ class MutedInputObserver : public InputObserverI {
   void OnMouseRbUp(int x, int y) override {}
   void OnMouseMbDown(int x, int y) override {}
   void OnMouseMbUp(int x, int y) override {}
-  void OnTextInput(const char *text) override {}
+  void OnTextInput(const char* text) override {}
 
   // Joystick
   void OnJoystickAxis(int which, int axis, int value) override {}
@@ -55,7 +55,7 @@ class InputHandler final : public InputObserver, public Singleton<InputHandler> 
   // Keyboard
   void OnKeyDown(SDL_Keycode sym) override;
   void OnKeyUp(SDL_Keycode sym) override;
-  void OnTextInput(const char *text) override;
+  void OnTextInput(const char* text) override;
 
   // Mouse
   void OnMouseMove(int dx, int dy) override;
@@ -73,4 +73,4 @@ class InputHandler final : public InputObserver, public Singleton<InputHandler> 
   bool paused_ = false;
 };
 
-}  // namespace glue
+}  // namespace Glue

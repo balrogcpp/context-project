@@ -30,4 +30,4 @@ class VerboseListener final : public InputObserver {
   bool verbose = true;
 };
 
-}  // namespace glue
+}  // namespace Glue

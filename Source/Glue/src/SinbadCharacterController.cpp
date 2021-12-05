@@ -414,4 +414,4 @@ void SinbadCharacterController::setTopAnimation(AnimID id, bool reset) {
   }
 }
 
-}  // namespace glue
+}  // namespace Glue

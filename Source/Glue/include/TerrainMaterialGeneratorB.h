@@ -36,4 +36,4 @@ class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
   };
 };
 
-}  // namespace glue
+}  // namespace Glue

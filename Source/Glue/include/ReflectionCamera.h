@@ -26,8 +26,8 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   std::shared_ptr<Ogre::Texture> refraction_texture;
 
  protected:
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent& evt) override;
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent& evt) override;
   void Clear();
 
   Ogre::Plane plane;
@@ -35,4 +35,4 @@ class ReflectionCamera final : public Ogre::RenderTargetListener {
   Ogre::SceneManager* scene;
 };
 
-}  // namespace glue
+}  // namespace Glue

@@ -18,4 +18,4 @@ void RenderSystem::InitOgreRenderSystemGLES2() {
 #endif
 }
 
-}  // namespace glue
+}  // namespace Glue

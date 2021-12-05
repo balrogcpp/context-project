@@ -59,7 +59,7 @@ RenderSystem::RenderSystem(int w, int h, bool f) {
   viewport = renderTarget->addViewport(camera);
   viewport->setBackgroundColour(ColourValue::Black);
   camera->setAspectRatio(static_cast<float>(viewport->getActualWidth()) /
-                          static_cast<float>(viewport->getActualHeight()));
+                         static_cast<float>(viewport->getActualHeight()));
   camera->setAutoAspectRatio(true);
 
   InitResourceLocation();
@@ -356,4 +356,4 @@ Window &RenderSystem::GetWindow() { return *window; }
 
 Compositor &RenderSystem::GetCompositor() { return *compositor; }
 
-}  // namespace glue
+}  // namespace Glue

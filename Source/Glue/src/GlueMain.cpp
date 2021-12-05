@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "Application.h"
 #include "pch.h"
+#include "Application.h"
 
 using namespace std;
 using namespace Glue;
@@ -17,7 +17,7 @@ int main_(int argc, char* args[])
   // main app class object
   Application app;
   // main function
-  //return app.Main();
+  // return app.Main();
   // to be sure app will return something to system
   return 0;
 }

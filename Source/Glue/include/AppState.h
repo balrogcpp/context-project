@@ -38,4 +38,4 @@ class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, 
   bool dirty = false;
 };
 
-}  // namespace glue
+}  // namespace Glue

@@ -144,14 +144,13 @@ bool ShaderResolver::afterIlluminationPassesCreated(Ogre::Technique *technique) 
 bool ShaderResolver::beforeIlluminationPassesCleared(Ogre::Technique *technique) {
   if (technique->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
     Ogre::Material *mat = technique->getParent();
-    shader_generator->invalidateMaterialIlluminationPasses(technique->getSchemeName(), mat->getName(),
-                                                            mat->getGroup());
+    shader_generator->invalidateMaterialIlluminationPasses(technique->getSchemeName(), mat->getName(), mat->getGroup());
     return true;
   } else {
     return false;
   }
 }
 
-}  // namespace glue
+}  // namespace Glue
 
 #endif

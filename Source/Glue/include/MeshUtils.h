@@ -22,4 +22,4 @@ void UpdateMeshMaterial(const std::string &mesh_name, bool cast_shadows = true, 
 void UpdateEntityMaterial(Ogre::Entity *entity, bool cast_shadows = true, const std::string &material_name = "",
                           bool planar_reflection = false, bool active_ibl = false);
 
-}  // namespace glue
+}  // namespace Glue

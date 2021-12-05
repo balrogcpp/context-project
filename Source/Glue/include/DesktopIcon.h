@@ -25,4 +25,4 @@ class DesktopIcon : public NoCopy {
   const std::string skeleton;
 };
 
-}  // namespace glue
+}  // namespace Glue

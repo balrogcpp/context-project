@@ -26,4 +26,4 @@ void Config::Load(const string &file_name) {
   ifs >> Document;
 }
 
-}  // namespace glue
+}  // namespace Glue

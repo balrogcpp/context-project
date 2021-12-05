@@ -62,7 +62,7 @@ Window::Window(int w, int h, bool f) : w_(w), h_(h), f_(f) {
   }
 
   window = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(0), SDL_WINDOWPOS_UNDEFINED_DISPLAY(0),
-                             w_, h_, flags_);
+                            w_, h_, flags_);
 
 #else
 
@@ -146,4 +146,4 @@ void Window::SetFullscreen(bool f) {
   }
 }
 
-}  // namespace glue
+}  // namespace Glue

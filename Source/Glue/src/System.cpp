@@ -12,4 +12,4 @@ Component::Component() { Engine::GetInstance().RegSystem(this); }
 
 Component::~Component() {}
 
-}  // namespace glue
+}  // namespace Glue

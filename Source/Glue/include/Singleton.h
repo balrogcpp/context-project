@@ -46,4 +46,4 @@ class LazySingleton : public Singleton<T> {
   }
 };
 
-}  // namespace glue
+}  // namespace Glue

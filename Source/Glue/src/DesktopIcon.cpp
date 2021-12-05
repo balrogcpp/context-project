@@ -67,4 +67,4 @@ void DesktopIcon::Save(const string &icon_name) {
   }
 }
 
-}  // namespace glue
+}  // namespace Glue

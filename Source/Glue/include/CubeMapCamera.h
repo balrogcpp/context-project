@@ -33,4 +33,4 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   std::array<Ogre::RenderTarget *, 6> targets;
 };
 
-}  // namespace glue
+}  // namespace Glue

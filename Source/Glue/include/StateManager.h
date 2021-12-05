@@ -24,4 +24,4 @@ class StateManager : public Singleton<StateManager> {
   std::unique_ptr<AppState> cur_state;
 };
 
-}  // namespace glue
+}  // namespace Glue

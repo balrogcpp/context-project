@@ -92,4 +92,4 @@ class SinbadCharacterController : public Object, public MutedInputObserver {
   float mTimer;                  // general timer to see how long animations have been playing
 };
 
-}  // namespace glue
+}  // namespace Glue

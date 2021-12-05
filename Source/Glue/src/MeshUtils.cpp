@@ -111,4 +111,4 @@ void UpdateEntityMaterial(Ogre::Entity *entity, bool cast_shadows, const string 
   }
 }
 
-}  // namespace glue
+}  // namespace Glue

@@ -25,7 +25,7 @@ PhysicsSystem::PhysicsSystem(bool threaded) : threaded(threaded) {
   btConstraintSolverPoolMt *solverPool = new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT);
 
   world = make_unique<btDiscreteDynamicsWorldMt>(dispatcher.get(), broadphase.get(), solverPool, solver.get(),
-                                                  config.get());
+                                                 config.get());
 
   world->setGravity(btVector3(0.0, -9.8, 0.0));
 
@@ -594,4 +594,4 @@ void PhysicsSystem::ProcessData(Ogre::UserObjectBindings &user_object_bindings, 
 }
 bool PhysicsSystem::IsThreaded() const { return threaded; }
 
-}  // namespace glue
+}  // namespace Glue

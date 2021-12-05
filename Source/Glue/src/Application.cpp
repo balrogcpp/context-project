@@ -80,7 +80,7 @@ Application::~Application() {
 
 int Application::ExceptionMessage(const string &caption, const string &message) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  //GetWindow().Grab(false);
+  // GetWindow().Grab(false);
 #endif
 
 #ifdef _WIN32
@@ -239,4 +239,4 @@ int Application::Main(unique_ptr<AppState> &&scene_ptr) {
   return 0;
 }
 
-}  // namespace glue
+}  // namespace Glue

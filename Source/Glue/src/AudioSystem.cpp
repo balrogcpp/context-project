@@ -74,4 +74,4 @@ void AudioSystem::SetVolume(const string &name, float gain) {
   }
 }
 
-}  // namespace glue
+}  // namespace Glue

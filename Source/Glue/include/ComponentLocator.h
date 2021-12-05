@@ -27,4 +27,4 @@ AudioSystem& GetAudio();
 Overlay& GetOverlay();
 DotSceneLoaderB& GetLoader();
 
-}  // namespace glue
+}  // namespace Glue

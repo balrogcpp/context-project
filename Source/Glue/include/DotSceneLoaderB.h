@@ -2,12 +2,12 @@
 
 #pragma once
 #include "CameraMan.h"
+#include "Component.h"
 #include "CubeMapCamera.h"
 #include "Input.h"
 #include "Landscape.h"
 #include "ReflectionCamera.h"
 #include "Singleton.h"
-#include "Component.h"
 #include "VegetationSystem.h"
 #include <OgreCodec.h>
 #include <OgrePlugin.h>
@@ -35,7 +35,7 @@ class PhysicsSystem;
 class AudioSystem;
 class Overlay;
 class SinbadCharacterController;
-}  // namespace glue
+}  // namespace Glue
 
 namespace Glue {
 
@@ -94,8 +94,8 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   std::unique_ptr<CubeMapCamera> ccamera;
   std::unique_ptr<CameraMan> camera_man;
 
-  Ogre::SceneManager* ogre_scene = nullptr;
-  Ogre::Root* root = nullptr;
+  Ogre::SceneManager *ogre_scene = nullptr;
+  Ogre::Root *root = nullptr;
   Ogre::SceneNode *root_node = nullptr;
   Ogre::SceneNode *attach_node = nullptr;
   std::string group_name = Ogre::RGN_DEFAULT;
@@ -117,4 +117,4 @@ class DotScenePluginB : public Ogre::Plugin {
  protected:
   Ogre::Codec *mCodec = nullptr;
 };
-}  // namespace glue
+}  // namespace Glue

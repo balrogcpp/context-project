@@ -26,4 +26,4 @@ class Component : public NoCopy {
   static void SetConfig(Config* conf) { config = conf; }
 };
 
-}  // namespace glue
+}  // namespace Glue

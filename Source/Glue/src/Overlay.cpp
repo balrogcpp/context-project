@@ -53,4 +53,4 @@ void Overlay::PrepareTexture(const std::string& name_, const std::string& group_
   imgui_overlay->show();
 }
 
-}  // namespace glue
+}  // namespace Glue

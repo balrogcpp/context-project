@@ -30,7 +30,7 @@ class VegetationSystem final : public SubSystem {
   std::vector<std::unique_ptr<Forests::PagedGeometry>> pgeometry;
   std::vector<std::unique_ptr<Forests::PageLoader>> ploaders;
   std::vector<std::unique_ptr<Forests::GeometryPage>> gpages;
-  std::vector<Ogre::StaticGeometry*> sgeometry;
+  std::vector<Ogre::StaticGeometry *> sgeometry;
 };
 
-}  // namespace glue
+}  // namespace Glue

@@ -26,4 +26,4 @@ class Pbr {
   static void Update(float time);
 };
 
-}  // namespace glue
+}  // namespace Glue

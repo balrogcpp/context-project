@@ -9,4 +9,4 @@ namespace Glue {
 void LogMessage(const std::string& message, Ogre::LogMessageLevel lml, bool maskDebug) {
   Ogre::LogManager::getSingleton().logMessage(message, lml, maskDebug);
 }
-}  // namespace glue
+}  // namespace Glue

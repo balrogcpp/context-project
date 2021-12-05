@@ -33,6 +33,6 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
   Ogre::RTShader::ShaderGenerator *shader_generator = nullptr;
 };
 
-}  // namespace glue
+}  // namespace Glue
 
 #endif

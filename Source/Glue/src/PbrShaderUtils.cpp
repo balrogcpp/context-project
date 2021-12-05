@@ -257,4 +257,4 @@ void Pbr::UpdatePbrShadowCaster(const string &material) {
   UpdatePbrShadowCaster(material_ptr);
 }
 
-}  // namespace glue
+}  // namespace Glue

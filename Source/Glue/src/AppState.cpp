@@ -28,4 +28,4 @@ void AppState::AppendNextState(unique_ptr<AppState> &&next_state) { next = move(
 
 bool AppState::IsDirty() const { return dirty; }
 
-}  // namespace glue
+}  // namespace Glue

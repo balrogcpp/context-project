@@ -35,7 +35,7 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
 
   std::unique_ptr<StateManager> state_manager_;
   std::unique_ptr<VerboseListener> verbose_listener_;
-  Engine* engine;
+  Engine *engine;
 
   bool running = true;
   bool suspend = false;
@@ -51,4 +51,4 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   bool verbose_input = false;
 };
 
-}  // namespace glue
+}  // namespace Glue

@@ -93,7 +93,7 @@ void AssetLoader::AddLocation(const string &path, const string &group, bool recu
 }
 
 void AssetLoader::AddLocationAndroid(AAssetManager *asset_mgr, const string &resource_file, const string &group,
-                                      bool verbose) {
+                                     bool verbose) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
 //  const string file_system = "APKFileSystem";
 //
@@ -109,7 +109,7 @@ void AssetLoader::AddLocationAndroid(AAssetManager *asset_mgr, const string &res
 }
 
 void AssetLoader::AddLocationRecursive(const string &path_, const string &group, const string &resource_file,
-                                        bool verbose) {
+                                       bool verbose) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
   const string file_system = "FileSystem";
   const string zip = "Zip";
@@ -198,4 +198,4 @@ void AssetLoader::AddLocationRecursive(const string &path_, const string &group,
 #endif
 }
 
-}  // namespace glue
+}  // namespace Glue

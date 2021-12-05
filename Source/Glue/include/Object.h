@@ -8,4 +8,4 @@ class Object {
   virtual void Update(float time) = 0;
 };
 
-}  // namespace glue
+}  // namespace Glue

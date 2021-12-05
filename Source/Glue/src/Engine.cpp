@@ -59,7 +59,7 @@ void Engine::InitSystems() {
 }
 
 void Engine::Capture() {
-  static auto &io = InputSequencer::GetInstance();
+  static auto& io = InputSequencer::GetInstance();
   io.Capture();
 }
 
@@ -98,4 +98,4 @@ void Engine::RenderOneFrame() { rs->RenderOneFrame(); }
 
 void Engine::Refresh() { rs->Refresh(); }
 
-}  // namespace glue
+}  // namespace Glue

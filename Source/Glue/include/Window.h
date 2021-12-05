@@ -41,4 +41,4 @@ class Window : public NoCopy {
   int screen_h_;
 };
 
-}  // namespace glue
+}  // namespace Glue

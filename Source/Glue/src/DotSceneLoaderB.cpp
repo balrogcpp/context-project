@@ -2,11 +2,11 @@
 
 #include "pch.h"
 #include "DotSceneLoaderB.h"
+#include "BtOgre/BtOgre.h"
 #include "ComponentLocator.h"
 #include "MeshUtils.h"
 #include "PbrShaderUtils.h"
 #include "SinbadCharacterController.h"
-#include "BtOgre/BtOgre.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>
@@ -1128,4 +1128,4 @@ void DotScenePluginB::shutdown() {
 
 void DotScenePluginB::uninstall() {}
 
-}  // namespace glue
+}  // namespace Glue

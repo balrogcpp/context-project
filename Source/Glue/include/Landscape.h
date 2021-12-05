@@ -31,4 +31,4 @@ class Landscape final : public SubSystem {
   std::unique_ptr<Ogre::TerrainGroup> terrain;
 };
 
-}  // namespace glue
+}  // namespace Glue

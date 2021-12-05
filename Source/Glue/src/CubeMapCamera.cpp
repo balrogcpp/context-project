@@ -80,4 +80,4 @@ void CubeMapCamera::Init(Ogre::SceneNode *creator, unsigned int tex_size) {
   }
 }
 
-}  // namespace glue
+}  // namespace Glue

@@ -57,4 +57,4 @@ DotSceneLoaderB& GetLoader() {
   return loader;
 }
 
-}  // namespace glue
+}  // namespace Glue

@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Singleton.h"
 #include "Component.h"
+#include "Singleton.h"
 #include <OgreAny.h>
 #include <OgreFrameListener.h>
 #include <map>
@@ -98,4 +98,4 @@ class PhysicsSystem final : public Component, public Singleton<PhysicsSystem> {
   const std::string PROXY_CONVEX = "convex";
 };
 
-}  // namespace glue
+}  // namespace Glue

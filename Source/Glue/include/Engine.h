@@ -53,4 +53,4 @@ class Engine : public LazySingleton<Engine> {
   friend DotSceneLoaderB& GetLoader();
 };
 
-}  // namespace glue
+}  // namespace Glue

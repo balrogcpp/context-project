@@ -18,4 +18,4 @@ void Assert(bool result, std::string message) {
 
 void Throw(std::string message) { throw Exception(std::move(message)); }
 
-}  // namespace glue
+}  // namespace Glue
