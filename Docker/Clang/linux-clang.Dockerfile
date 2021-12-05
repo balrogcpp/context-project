@@ -66,7 +66,7 @@ RUN apt-get update \
                 -DCMAKE_SUPPRESS_REGENERATION=ON \
                 -DLLVM_TARGETS_TO_BUILD="X86" \
                 -DLLVM_ENABLE_PROJECTS="clang;lld" \
-                -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi;openmp"\
+                -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi;openmp" \
                 -DLLVM_BUILD_LLVM_DYLIB=ON \
                 -DLLVM_LINK_LLVM_DYLIB=ON \
                 -DCLANG_LINK_CLANG_DYLIB=ON \

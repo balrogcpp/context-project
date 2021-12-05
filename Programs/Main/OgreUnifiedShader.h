@@ -6,13 +6,17 @@
 // - shiny: https://ogrecave.github.io/shiny/defining-materials-shaders.html
 // - bgfx: https://github.com/bkaradzic/bgfx/blob/master/src/bgfx_shader.sh
 
-// general usage:
+/// general usage:
 // MAIN_PARAMETERS
 // IN(vec4 vertex, POSITION)
 // MAIN_DECLARATION
 // {
 //     GLSL code here
 // }
+
+/// configuration
+// use macros that will be default with Ogre 14
+// #define USE_OGRE_FROM_FUTURE
 
 // @public-api
 
@@ -24,6 +28,10 @@
 #define vec4 float4
 #define mat3 float3x3
 #define mat4 float4x4
+
+#define ivec2 int2
+#define ivec3 int3
+#define ivec4 int4
 
 #define texture1D tex1D
 #define texture2D tex2D
@@ -61,6 +69,9 @@ mat3 mtxFromCols(vec3 a, vec3 b, vec3 c)
 
 #define STATIC static
 
+#define OGRE_UNIFORMS_BEGIN
+#define OGRE_UNIFORMS_END
+
 #define MAIN_PARAMETERS void main(
 
 #ifdef OGRE_VERTEX_SHADER
@@ -83,11 +94,22 @@ mat3 mtxFromCols(vec3 a, vec3 b, vec3 c)
 // GLSL
 #include "GLSL_GL3Support.glsl"
 
-#define SAMPLER1D(name, reg) sampler1D name
-#define SAMPLER2D(name, reg) sampler2D name
-#define SAMPLER3D(name, reg) sampler3D name
-#define SAMPLER2DARRAY(name, reg) sampler2DArray name
-#define SAMPLERCUBE(name, reg) samplerCube name
+#ifndef USE_OGRE_FROM_FUTURE
+#define _UNIFORM_BINDING(b)
+#elif defined(VULKAN)
+#define _UNIFORM_BINDING(b) layout(binding = b + 2) uniform
+#elif __VERSION__ >= 420
+#define _UNIFORM_BINDING(b) layout(binding = b) uniform
+#else
+#define _UNIFORM_BINDING(b) uniform
+#endif
+
+#define SAMPLER1D(name, reg) _UNIFORM_BINDING(reg) sampler1D name
+#define SAMPLER2D(name, reg) _UNIFORM_BINDING(reg) sampler2D name
+#define SAMPLER3D(name, reg) _UNIFORM_BINDING(reg) sampler3D name
+#define SAMPLER2DARRAY(name, reg) _UNIFORM_BINDING(reg) sampler2DArray name
+#define SAMPLERCUBE(name, reg) _UNIFORM_BINDING(reg) samplerCube name
+#define SAMPLER2DSHADOW(name, reg) _UNIFORM_BINDING(reg) sampler2DShadow name
 
 #define saturate(x) clamp(x, 0.0, 1.0)
 #define mul(a, b) ((a) * (b))
@@ -118,7 +140,7 @@ mat3 mtxFromCols(vec3 a, vec3 b, vec3 c)
 
 #endif
 
-#if defined(OGRE_METAL) || defined(OGRE_GLSLANG)
+#if !defined(OGRE_HLSL) && !defined(OGRE_CG)
 // semantics as aliases for attribute locations
 #define POSITION    0
 #define BLENDWEIGHT 1
@@ -126,10 +148,16 @@ mat3 mtxFromCols(vec3 a, vec3 b, vec3 c)
 #define COLOR0      3
 #define COLOR1      4
 #define COLOR COLOR0
-#define BLENDIDICES 7
+#define BLENDINDICES 7
 #define TEXCOORD0   8
 #define TEXCOORD1   9
 #define TEXCOORD2  10
 #define TEXCOORD3  11
-#define TANGENT    15
+#define TEXCOORD4  12
+#define TEXCOORD5  13
+#define TEXCOORD6  14
+#define TEXCOORD7  15
+#define TANGENT    14
 #endif
+
+#define OGRE_UNIFORMS(params) OGRE_UNIFORMS_BEGIN params OGRE_UNIFORMS_END

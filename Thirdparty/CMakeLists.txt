@@ -389,7 +389,9 @@ externalproject_add(Target_OGRE
                     -DOGRE_BUILD_PLUGIN_CG=OFF
                     -DOGRE_BUILD_PLUGIN_GLSLANG=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_METAL=OFF
+                    -DOGRE_BUILD_RENDERSYSTEM_GL3PLUS=ON
                     -DOGRE_BUILD_RENDERSYSTEM_GL=OFF
+                    -DOGRE_BUILD_RENDERSYSTEM_VULKAN=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_TINY=OFF
                     -DOGRE_BUILD_COMPONENT_OVERLAY=ON
                     -DOGRE_BUILD_COMPONENT_BITES=OFF

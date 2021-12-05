@@ -129,7 +129,6 @@ void RenderSystem::InitOgreRenderSystemGL3() {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *gl3plus_render_system = new GL3PlusRenderSystem();
   gl3plus_render_system->setConfigOption("Separate Shader Objects", "Yes");
-
   Root::getSingleton().setRenderSystem(gl3plus_render_system);
 #endif
 }
@@ -170,8 +169,8 @@ void RenderSystem::InitRenderWindow() {
   ArchiveManager::getSingleton().addArchiveFactory(new APKZipArchiveFactory(asset_manager));
 #endif
 
-  const char true_str[] = "true";
-  const char false_str[] = "false";
+  const char true_str[] = "True";
+  const char false_str[] = "False";
 
   bool vsync = true;
   bool gamma = false;
@@ -185,7 +184,7 @@ void RenderSystem::InitRenderWindow() {
   params["gamma"] = gamma ? true_str : false_str;
   params["FSAA"] = to_string(fsaa);
 
-  OgreRenderWindowPtr = Root::getSingleton().createRenderWindow("", 0, 0, false, &params);
+  OgreRenderWindowPtr = Root::getSingleton().createRenderWindow("DefaultWindow", 1920, 1080, false, &params);
 }
 
 void RenderSystem::InitResourceLocation() {
