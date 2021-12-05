@@ -80,7 +80,7 @@ class SinbadCharacterController : public Object, public MutedInputObserver {
   Ogre::Entity *mSword1 = nullptr;
   Ogre::Entity *mSword2 = nullptr;
   Ogre::RibbonTrail *mSwordTrail = nullptr;
-  Ogre::AnimationState *mAnims[NUM_ANIMS]{nullptr};  // master animation list
+  Ogre::AnimationState *mAnims[NUM_ANIMS];  // master animation list
   AnimID mBaseAnimID;                       // current base (full- or lower-body) animation
   AnimID mTopAnimID;                        // current top (upper-body) animation
   bool mFadingIn[NUM_ANIMS];                // which animations are fading in

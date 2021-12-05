@@ -46,9 +46,9 @@ class InputSequencer : public LazySingleton<InputSequencer> {
 
  protected:
   /// Listeners list (physical input)
-  std::set<InputObserverI *> io_listeners{nullptr};
+  std::set<InputObserverI *> io_listeners;
   /// Listeners list (window input)
-  std::set<WindowObserverI *> win_listeners{nullptr};
+  std::set<WindowObserverI *> win_listeners;
   /// Required for Android/IOS development
   int HandleAppEvents(void *userdata, SDL_Event *event);
 };

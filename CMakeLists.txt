@@ -171,14 +171,15 @@ include(CPack)
 
 
 # Doesn't work with MSVC
-add_custom_target(BuildPackage
-        COMMAND ${CMAKE_COMMAND} --build . --target package
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Build packages..."
-        USES_TERMINAL
-        )
-
+if (NOT MSVC)
+    add_custom_target(BuildPackage
+            COMMAND ${CMAKE_COMMAND} --build . --target package
+            COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMENT "Build packages..."
+            USES_TERMINAL
+            )
+endif ()
 
 # Doxygen
 find_package(Doxygen COMPONENTS dot QUIET)

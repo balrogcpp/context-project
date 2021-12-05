@@ -40,7 +40,7 @@ class Engine : public LazySingleton<Engine> {
   std::unique_ptr<AudioSystem> as;
   std::unique_ptr<Overlay> overlay;
   std::unique_ptr<DotSceneLoaderB> loader;
-  std::vector<Component*> components{nullptr};
+  std::vector<Component*> components;
 
   friend InputHandler& GetIo();
   friend Config& GetConf();
