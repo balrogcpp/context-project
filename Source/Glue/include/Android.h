@@ -1,7 +1,6 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include <OgreArchiveFactory.h>
 #include <OgreFileSystem.h>
 #include <OgreZip.h>
@@ -14,4 +13,3 @@
 #include <android/native_window_jni.h>
 #include <android/sensor.h>
 #include <jni.h>
-#endif

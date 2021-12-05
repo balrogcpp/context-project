@@ -2,7 +2,6 @@
 
 #include "pch.h"
 #include "AssetLoader.h"
-#include "Android.h"
 #include "Exception.h"
 #include "Log.h"
 #if HAS_FILESYSTEM
@@ -91,7 +90,7 @@ void AssetLoader::AddLocation(const string &Path, const string &GroupName, bool 
     }
   }
 #else
-  Assert(false, "AssetLoader::AddLocation called in another platform");
+  //Assert(false, "AssetLoader::AddLocation called in another platform");
 #endif
 }
 
@@ -107,7 +106,7 @@ void AssetLoader::AddLocationAndroid(AAssetManager *AssetManager, const string &
 //    LogMessage(string("Found directory: ") + fileName);
 //  }
 #else
-  Assert(false, "AssetLoader::AddLocationAndroid called in another platform");
+  //Assert(false, "AssetLoader::AddLocationAndroid called in another platform");
 #endif
 }
 
@@ -197,7 +196,7 @@ void AssetLoader::AddLocationRecursive(const string &Path, const string &GroupNa
     }
   }
 #else
-  Assert(false, "AssetLoader::AddLocationRecursive called in another platform");
+  //Assert(false, "AssetLoader::AddLocationRecursive called in another platform");
 #endif
 }
 

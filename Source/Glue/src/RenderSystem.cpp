@@ -201,7 +201,6 @@ void RenderSystem::InitResourceLocation() {
   AssetLoader::AddLocation("Programs/Compositor", internal_group);
   AssetLoader::AddLocation("Programs/Overlay", internal_group);
   AssetLoader::AddLocation("Programs/Gorilla", internal_group);
-
   AssetLoader::AddLocationRecursive("Assets", default_group, "Resources.list");
 
 #else
@@ -212,21 +211,21 @@ void RenderSystem::InitResourceLocation() {
   const string file_system = "APKFileSystem";
   const string zip = "APKZip";
 
-  resGroupMan.addResourceLocation("/programs/Main.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/RTSS.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/PBR.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/Particles.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/Compositor.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/Overlay.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/programs/Gorilla.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/Programs/Main.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/Programs/RTSS.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/Programs/PBR.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/Programs/Particles.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/Programs/Compositor.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/Programs/Overlay.zip", zip, internal_group);
+  resGroupMan.addResourceLocation("/Programs/Gorilla.zip", zip, internal_group);
 
-  resGroupMan.addResourceLocation("/assets/material.zip", zip, default_group);
-  resGroupMan.addResourceLocation("/assets/models.zip", zip, default_group);
-  resGroupMan.addResourceLocation("/assets/music.zip", zip, default_group);
-  resGroupMan.addResourceLocation("/assets/scenes.zip", zip, default_group);
-  resGroupMan.addResourceLocation("/assets/sounds.zip", zip, default_group);
-  resGroupMan.addResourceLocation("/assets/terrain.zip", zip, default_group);
-  resGroupMan.addResourceLocation("/assets/vegetation.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/Assets/material.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/Assets/models.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/Assets/music.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/Assets/scenes.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/Assets/sounds.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/Assets/terrain.zip", zip, default_group);
+  resGroupMan.addResourceLocation("/Assets/vegetation.zip", zip, default_group);
 
 #endif
 }

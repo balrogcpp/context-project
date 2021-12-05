@@ -33,14 +33,13 @@ Application::Application() {
 #endif
 
     Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
-
 #endif
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    DesktopIcon icon;
-    icon.SetUp();
-    icon.SaveToFile("GlueSample");
-#endif
+//#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+//    DesktopIcon icon;
+//    icon.SetUp();
+//    icon.SaveToFile("GlueSample");
+//#endif
 
     EnginePtr = &Engine::GetInstance();
     EnginePtr->InitSystems();
@@ -79,9 +78,7 @@ Application::~Application() {
 }
 
 int Application::ExceptionMessage(const string &WindowCaption, const string &MessageText) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  // GetWindow().Grab(false);
-#endif
+  GetWindow().Grab(false);
 
   SDL_Log("%s", string(WindowCaption + " : " + MessageText).c_str());
   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, WindowCaption.c_str(), MessageText.c_str(), nullptr);
@@ -118,7 +115,7 @@ void Application::Loop() {
 
   while (Running && StateManagerPtr->IsActive()) {
     auto before_frame = chrono::system_clock::now().time_since_epoch();
-    int64_t micros_before_frame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
+    int64_t TimeBeforeFrame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
 
     if (CumultedTime > int64_t(1e+6)) {
       CurrentFPS = FPSCounter;
@@ -158,22 +155,20 @@ void Application::Loop() {
     }
 #endif
 
-    auto duration_after_render = chrono::system_clock::now().time_since_epoch();
-    auto micros_after_render = chrono::duration_cast<chrono::microseconds>(duration_after_render).count();
-    auto render_time = micros_after_render - micros_before_frame;
+    auto TimeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+    auto RenderTime = TimeAftetRender - TimeBeforeFrame;
 
     if (LockFPS) {
-      auto delay = static_cast<int64_t>((1e+6 / TargetFPS) - render_time);
+      auto delay = static_cast<int64_t>((1e+6 / TargetFPS) - RenderTime);
       if (delay > 0) {
         this_thread::sleep_for(chrono::microseconds(delay));
       }
     }
 
-    auto duration_after_loop = chrono::system_clock::now().time_since_epoch();
-    int64_t micros_after_loop = chrono::duration_cast<chrono::microseconds>(duration_after_loop).count();
+    int64_t TimeInEndOfLoop = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 
-    int64_t time_since_last_frame_ = micros_after_loop - micros_before_frame;
-    CumultedTime += time_since_last_frame_;
+    int64_t TimeSinceLastFrame = TimeInEndOfLoop - TimeBeforeFrame;
+    CumultedTime += TimeSinceLastFrame;
 
     FPSCounter++;
   }
