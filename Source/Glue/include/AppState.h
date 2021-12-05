@@ -20,22 +20,22 @@ class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, 
   AppState();
   virtual ~AppState();
 
-  void ChangeState(std::unique_ptr<AppState> &&app_state);
+  void ChangeState(std::unique_ptr<AppState> &&AppStatePtr);
   void ChangeState();
-  void AppendNextState(std::unique_ptr<AppState> &&next_state);
-  void LoadFromFile(const std::string &file_name, const std::string &group = Ogre::RGN_DEFAULT);
+  void AppendNextState(std::unique_ptr<AppState> &&NextStatePtr);
+  void LoadFromFile(const std::string &FileName, const std::string &GroupName = Ogre::RGN_DEFAULT);
   bool IsDirty() const;
 
   virtual void SetUp() = 0;
   virtual void Cleanup() = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;
-  virtual void Update(float time) = 0;
+  virtual void Update(float TimePassed) = 0;
 
  protected:
   friend class StateManager;
-  std::unique_ptr<AppState> next;
-  bool dirty = false;
+  std::unique_ptr<AppState> NextState;
+  bool Dirty = false;
 };
 
 }  // namespace Glue

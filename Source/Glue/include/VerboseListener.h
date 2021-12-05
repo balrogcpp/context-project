@@ -21,11 +21,11 @@ class VerboseListener final : public InputObserver {
   void OnMouseRbUp(int x, int y) override;
   void OnMouseMbDown(int x, int y) override;
   void OnMouseMbUp(int x, int y) override;
-  void OnJoystickAxis(int which, int axis, int value) override;
-  void OnJoystickBtDown(int which, int button) override;
-  void OnJoystickBtUp(int which, int button) override;
-  void OnJoystickHat(int which, int hat, int value) override;
-  void OnJoystickBall(int which, int ball, int xrel, int yrel) override;
+  void OnGamepadAxis(int which, int axis, int value) override;
+  void OnGamepadBtDown(int which, int button) override;
+  void OnGamepadBtUp(int which, int button) override;
+  void OnGamepadHat(int which, int hat, int value) override;
+  void OnGamepadBall(int which, int ball, int xrel, int yrel) override;
 
   bool verbose = true;
 };

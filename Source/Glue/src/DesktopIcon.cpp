@@ -46,7 +46,7 @@ void DesktopIcon::SetUp() {
   output = regex_replace(output, regex("VERSION"), version);
 }
 
-void DesktopIcon::Save(const string &icon_name) {
+void DesktopIcon::SaveToFile(const string &icon_name) {
   string home_dir = string(getenv("HOME"));
   string path = home_dir + "/.local/share/applications/" + icon_name + ".desktop";
 

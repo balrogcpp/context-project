@@ -9,7 +9,7 @@ using namespace std;
 
 namespace Glue {
 
-AudioSystem::AudioSystem(unsigned int max_sources, unsigned int queue_list_size) {
+AudioSystem::AudioSystem(unsigned int MaxSourceCount, unsigned int QueueListSize) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
@@ -21,56 +21,56 @@ AudioSystem::AudioSystem(unsigned int max_sources, unsigned int queue_list_size)
 
   // Register
   Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
-  OgreOggSound::OgreOggSoundManager::getSingleton().init("", max_sources, queue_list_size);
-  sound_manager = &OgreOggSound::OgreOggSoundManager::getSingleton();
-  sound_manager->setResourceGroupName(Ogre::RGN_AUTODETECT);
+  OgreOggSound::OgreOggSoundManager::getSingleton().init("", MaxSourceCount, QueueListSize);
+  SoundManagerPtr = &OgreOggSound::OgreOggSoundManager::getSingleton();
+  SoundManagerPtr->setResourceGroupName(Ogre::RGN_AUTODETECT);
 }
 
 AudioSystem::~AudioSystem() {}
 
 void AudioSystem::Cleanup() {}
 
-void AudioSystem::Update(float time) {}
+void AudioSystem::Update(float PassedTime) {}
 
-void AudioSystem::Pause() { sound_manager->pauseAllSounds(); }
-void AudioSystem::Resume() { sound_manager->resumeAllPausedSounds(); }
+void AudioSystem::Pause() { SoundManagerPtr->pauseAllSounds(); }
+void AudioSystem::Resume() { SoundManagerPtr->resumeAllPausedSounds(); }
 
-void AudioSystem::CreateSound(const string &name, const string &file, bool loop) {
-  auto *sound = sound_manager->createSound(name, file, true, loop, true, nullptr);
+void AudioSystem::CreateSound(const string &SoundName, const string &AudioFile, bool PlayInLoop) {
+  auto *sound = SoundManagerPtr->createSound(SoundName, AudioFile, true, PlayInLoop, true, nullptr);
   auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
   root_node->createChildSceneNode()->attachObject(sound);
 }
 
-void AudioSystem::SetListener(Ogre::SceneNode *parent) {
-  auto *listener = sound_manager->getListener();
+void AudioSystem::SetListener(Ogre::SceneNode *ParentPtr) {
+  auto *listener = SoundManagerPtr->getListener();
   if (!listener) {
-    sound_manager->createListener();
-    listener = sound_manager->getListener();
+    SoundManagerPtr->createListener();
+    listener = SoundManagerPtr->getListener();
   }
-  parent->attachObject(listener);
+  ParentPtr->attachObject(listener);
 }
 
-void AudioSystem::PlaySound(const string &name, bool immediate) {
-  auto *sound = sound_manager->getSound(name);
+void AudioSystem::PlaySound(const string &SoundName, bool PlayImmediatly) {
+  auto *sound = SoundManagerPtr->getSound(SoundName);
   if (sound) {
-    if (immediate) sound->stop();
+    if (PlayImmediatly) sound->stop();
     sound->play();
   } else {
-    throw Exception(string("Sound \"") + name + "\" not found. Aborting.\n");
+    throw Exception(string("Sound \"") + SoundName + "\" not found. Aborting.\n");
   }
 }
 
-void AudioSystem::SetMasterVolume(float volume) { sound_manager->setMasterVolume(volume); }
+void AudioSystem::SetMasterVolume(float Volume) { SoundManagerPtr->setMasterVolume(Volume); }
 
-void AudioSystem::SetMaxVolume(const string &name, float volume) {
-  if (sound_manager->getSound(name)) {
-    sound_manager->getSound(name)->setMaxVolume(volume);
+void AudioSystem::SetMaxVolume(const string &SoundName, float MaxVolume) {
+  if (SoundManagerPtr->getSound(SoundName)) {
+    SoundManagerPtr->getSound(SoundName)->setMaxVolume(MaxVolume);
   }
 }
 
-void AudioSystem::SetVolume(const string &name, float gain) {
-  if (sound_manager->getSound(name)) {
-    sound_manager->getSound(name)->setVolume(gain);
+void AudioSystem::SetVolume(const string &SoundName, float Volume) {
+  if (SoundManagerPtr->getSound(SoundName)) {
+    SoundManagerPtr->getSound(SoundName)->setVolume(Volume);
   }
 }
 

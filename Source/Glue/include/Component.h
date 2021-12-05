@@ -13,17 +13,16 @@ class Component : public NoCopy {
   Component();
   virtual ~Component();
 
-  virtual void Pause() { paused = true; }
-  virtual void Resume() { paused = false; }
+  virtual void Pause() { Paused = true; }
+  virtual void Resume() { Paused = false; }
   virtual void Update(float time) = 0;
   virtual void Cleanup() = 0;
 
- protected:
-  inline static Config* config = nullptr;
-  bool paused = false;
+  static void SetConfig(Config* conf) { ConfPtr = conf; }
 
- public:
-  static void SetConfig(Config* conf) { config = conf; }
+ protected:
+  inline static Config* ConfPtr = nullptr;
+  bool Paused = false;
 };
 
 }  // namespace Glue

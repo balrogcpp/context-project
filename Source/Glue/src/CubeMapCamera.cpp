@@ -7,28 +7,28 @@ using namespace std;
 
 namespace Glue {
 
-CubeMapCamera::CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size) { Init(creator, tex_size); }
+CubeMapCamera::CubeMapCamera(Ogre::SceneNode *ParentNode, unsigned int TextureSize) { Init(ParentNode, TextureSize); }
 
 CubeMapCamera::~CubeMapCamera() { Clear(); }
 
-void CubeMapCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {
+void CubeMapCamera::preRenderTargetUpdate(const Ogre::RenderTargetEvent &Event) {
   // point the camera in the right direction based on which face of the cubemap
   // this is
-  camera_node->setOrientation(Ogre::Quaternion::IDENTITY);
-  if (evt.source == targets[0]) {
-    camera_node->yaw(Ogre::Degree(-90));
-  } else if (evt.source == targets[1]) {
-    camera_node->yaw(Ogre::Degree(90));
-  } else if (evt.source == targets[2]) {
-    camera_node->pitch(Ogre::Degree(90));
-  } else if (evt.source == targets[3]) {
-    camera_node->pitch(Ogre::Degree(-90));
-  } else if (evt.source == targets[5]) {
-    camera_node->yaw(Ogre::Degree(180));
+  OgreCameraNode->setOrientation(Ogre::Quaternion::IDENTITY);
+  if (Event.source == targets[0]) {
+    OgreCameraNode->yaw(Ogre::Degree(-90));
+  } else if (Event.source == targets[1]) {
+    OgreCameraNode->yaw(Ogre::Degree(90));
+  } else if (Event.source == targets[2]) {
+    OgreCameraNode->pitch(Ogre::Degree(90));
+  } else if (Event.source == targets[3]) {
+    OgreCameraNode->pitch(Ogre::Degree(-90));
+  } else if (Event.source == targets[5]) {
+    OgreCameraNode->yaw(Ogre::Degree(180));
   }
 }
 
-void CubeMapCamera::postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) {}
+void CubeMapCamera::postRenderTargetUpdate(const Ogre::RenderTargetEvent &Event) {}
 
 void CubeMapCamera::Clear() {
   if (cubemap) {
@@ -41,12 +41,12 @@ void CubeMapCamera::Clear() {
     Ogre::TextureManager::getSingleton().remove(cubemap);
   }
 
-  if (camera) {
-    scene->destroyCamera(camera);
-    camera = nullptr;
+  if (OgreCamera) {
+    OgreSceneManager->destroyCamera(OgreCamera);
+    OgreCamera = nullptr;
   }
 
-  camera_node = nullptr;
+  OgreCameraNode = nullptr;
 }
 
 void CubeMapCamera::Init(Ogre::SceneNode *creator, unsigned int tex_size) {
@@ -54,18 +54,18 @@ void CubeMapCamera::Init(Ogre::SceneNode *creator, unsigned int tex_size) {
   auto size = tex_size;
   auto &tex_manager = Ogre::TextureManager::getSingleton();
 
-  scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  auto *main_camera = scene->getCamera("Default");
-  camera = scene->createCamera("CubeMapCamera");
-  camera->setProjectionType(Ogre::PT_PERSPECTIVE);
-  camera->setFOVy(Ogre::Degree(90.0));
-  camera->setAspectRatio(1.0);
-  camera->setLodBias(0.1);
-  camera->setNearClipDistance(main_camera->getNearClipDistance());
-  camera->setFarClipDistance(main_camera->getFarClipDistance());
-  camera_node = creator->createChildSceneNode();
-  camera_node->setFixedYawAxis(false);
-  camera_node->attachObject(camera);
+  OgreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
+  auto *main_camera = OgreSceneManager->getCamera("Default");
+  OgreCamera = OgreSceneManager->createCamera("CubeMapCamera");
+  OgreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
+  OgreCamera->setFOVy(Ogre::Degree(90.0));
+  OgreCamera->setAspectRatio(1.0);
+  OgreCamera->setLodBias(0.1);
+  OgreCamera->setNearClipDistance(main_camera->getNearClipDistance());
+  OgreCamera->setFarClipDistance(main_camera->getFarClipDistance());
+  OgreCameraNode = creator->createChildSceneNode();
+  OgreCameraNode->setFixedYawAxis(false);
+  OgreCameraNode->attachObject(OgreCamera);
   cubemap =
       tex_manager.createManual("dyncubemap", RGN_DEFAULT, TEX_TYPE_CUBE_MAP, size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
 
@@ -73,7 +73,7 @@ void CubeMapCamera::Init(Ogre::SceneNode *creator, unsigned int tex_size) {
   // direction)
   for (int i = 0; i < 6; i++) {
     targets[i] = cubemap->getBuffer(i)->getRenderTarget();
-    Ogre::Viewport *vp = targets[i]->addViewport(camera);
+    Ogre::Viewport *vp = targets[i]->addViewport(OgreCamera);
     vp->setShadowsEnabled(false);
     vp->setOverlaysEnabled(false);
     targets[i]->addListener(this);

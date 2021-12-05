@@ -17,20 +17,20 @@ void InitInstansing();
 
 class ShaderResolver final : public Ogre::MaterialManager::Listener {
  public:
-  ShaderResolver(Ogre::RTShader::ShaderGenerator *shader_generator);
+  ShaderResolver(Ogre::RTShader::ShaderGenerator *ShaderGeneratorPtr);
 
   static bool FixMaterial(const std::string &material_name);
 
-  Ogre::Technique *handleSchemeNotFound(unsigned short scheme_index, const std::string &scheme_name,
-                                        Ogre::Material *original_material, unsigned short lod_index,
-                                        const Ogre::Renderable *renderable);
+  Ogre::Technique *handleSchemeNotFound(unsigned short SchemeIndex, const std::string &SchemeName,
+                                        Ogre::Material *OriginalMaterialPtr, unsigned short LodIndex,
+                                        const Ogre::Renderable *OgreRenderable);
 
-  bool afterIlluminationPassesCreated(Ogre::Technique *technique);
+  bool afterIlluminationPassesCreated(Ogre::Technique *OgreTechnique);
 
-  bool beforeIlluminationPassesCleared(Ogre::Technique *technique);
+  bool beforeIlluminationPassesCleared(Ogre::Technique *OgreTechnique);
 
  protected:
-  Ogre::RTShader::ShaderGenerator *shader_generator = nullptr;
+  Ogre::RTShader::ShaderGenerator *ShaderGeneratorPtr = nullptr;
 };
 
 }  // namespace Glue

@@ -8,19 +8,19 @@ using namespace std;
 
 namespace Glue {
 
-Config::Config(const string &file_name) {
-  if (!file_name.empty()) {
-    Load(file_name);
+Config::Config(const string &FileName) {
+  if (!FileName.empty()) {
+    Load(FileName);
   }
 }
 
 Config::~Config() {}
 
-void Config::Load(const string &file_name) {
-  ifstream ifs(AssetLoader::FindPath(file_name));
+void Config::Load(const string &FileName) {
+  ifstream ifs(AssetLoader::FindPath(FileName));
 
   if (!ifs.is_open()) {
-    throw Exception("Error during parsing of " + file_name + " : can't open file");
+    throw Exception("Error during parsing of " + FileName + " : can't open file");
   }
 
   ifs >> Document;

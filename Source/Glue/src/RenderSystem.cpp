@@ -39,14 +39,14 @@ using namespace Ogre;
 namespace Glue {
 
 RenderSystem::RenderSystem(int w, int h, bool f) {
-  ogre_root = new Root("");
+  OgreRoot = new Root("");
 
-  config->Get("render_system", render_system);
+  ConfPtr->Get("render_system", RenderSystemName);
 
   InitOgreRenderSystem();
   InitOgrePlugins();
 
-  ogre_root->initialise(false);
+  OgreRoot->initialise(false);
 
   window = make_unique<Window>(w, h, f);
 
@@ -54,13 +54,13 @@ RenderSystem::RenderSystem(int w, int h, bool f) {
   RestoreFullscreenAndroid_();
 
   // Camera block
-  camera = scene->createCamera("Default");
-  auto *renderTarget = ogre_root->getRenderTarget(render_window->getName());
-  viewport = renderTarget->addViewport(camera);
-  viewport->setBackgroundColour(ColourValue::Black);
-  camera->setAspectRatio(static_cast<float>(viewport->getActualWidth()) /
-                         static_cast<float>(viewport->getActualHeight()));
-  camera->setAutoAspectRatio(true);
+  OgreCamera = OgreSceneManager->createCamera("Default");
+  auto *renderTarget = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
+  OgreViewport = renderTarget->addViewport(OgreCamera);
+  OgreViewport->setBackgroundColour(ColourValue::Black);
+  OgreCamera->setAspectRatio(static_cast<float>(OgreViewport->getActualWidth()) /
+                         static_cast<float>(OgreViewport->getActualHeight()));
+  OgreCamera->setAutoAspectRatio(true);
 
   InitResourceLocation();
 
@@ -69,14 +69,14 @@ RenderSystem::RenderSystem(int w, int h, bool f) {
   Glue::CreateRtssShaders();
 
   // Overlay
-  overlay = make_unique<Overlay>(render_window);
+  OverlayPtr = make_unique<Overlay>(OgreRenderWindowPtr);
 
   AssetLoader::LoadResources();
 
   // Compositor block
   compositor = make_unique<Compositor>();
 
-  overlay->PrepareTexture("Roboto-Medium", RGN_INTERNAL);
+  OverlayPtr->PrepareTexture("Roboto-Medium", RGN_INTERNAL);
 
   InitTextureSettings();
 
@@ -104,17 +104,17 @@ void RenderSystem::InitOgrePlugins() {
 #endif
 #endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
-  scene = ogre_root->createSceneManager("OctreeSceneManager", "Default");
+  OgreSceneManager = OgreRoot->createSceneManager("OctreeSceneManager", "Default");
 #else
-  ogre_scene_ = root_->createSceneManager(ST_GENERIC, "Default");
+  OgreSceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
 #endif
   Root::getSingleton().installPlugin(new DotScenePluginB());
 }
 
 void RenderSystem::InitOgreRenderSystem() {
-  if (render_system == "gl3") {
+  if (RenderSystemName == "gl3") {
     InitOgreRenderSystemGL3();
-  } else if (render_system == "gles2") {
+  } else if (RenderSystemName == "gles2") {
     InitOgreRenderSystemGLES2();
   } else {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
@@ -137,7 +137,7 @@ void RenderSystem::InitOgreRenderSystemGL3() {
 void RenderSystem::InitRenderWindow() {
   NameValuePairList params;
 
-  SDL_SysWMinfo info = window->GetInfo();
+  SDL_SysWMinfo info = window->GetSDLInfo();
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
@@ -177,15 +177,15 @@ void RenderSystem::InitRenderWindow() {
   bool gamma = false;
   int fsaa = 0;
 
-  config->Get("vsync", vsync);
-  config->Get("gamma", gamma);
-  config->Get("fsaa", fsaa);
+  ConfPtr->Get("vsync", vsync);
+  ConfPtr->Get("gamma", gamma);
+  ConfPtr->Get("fsaa", fsaa);
 
   params["vsync"] = vsync ? true_str : false_str;
   params["gamma"] = gamma ? true_str : false_str;
   params["FSAA"] = to_string(fsaa);
 
-  render_window = Root::getSingleton().createRenderWindow("", 0, 0, false, &params);
+  OgreRenderWindowPtr = Root::getSingleton().createRenderWindow("", 0, 0, false, &params);
 }
 
 void RenderSystem::InitResourceLocation() {
@@ -237,20 +237,20 @@ void RenderSystem::InitShadowSettings() {
   int16_t tex_size = 256;
   string tex_format = "D16";
 
-  config->Get("shadows_enable", shadows_enable);
-  config->Get("shadow_far", shadow_far);
-  config->Get("tex_format", tex_format);
-  config->Get("tex_size", tex_size);
+  ConfPtr->Get("shadows_enable", shadows_enable);
+  ConfPtr->Get("shadow_far", shadow_far);
+  ConfPtr->Get("tex_format", tex_format);
+  ConfPtr->Get("tex_size", tex_size);
 
   if (!shadows_enable) {
-    scene->setShadowTechnique(SHADOWTYPE_NONE);
+    OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
     return;
   }
 
   PixelFormat texture_type = PixelFormat::PF_DEPTH16;
 
-  scene->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-  scene->setShadowFarDistance(shadow_far);
+  OgreSceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+  OgreSceneManager->setShadowFarDistance(shadow_far);
 
   if (tex_format == "F32") {
     texture_type = PixelFormat::PF_FLOAT32_R;
@@ -263,31 +263,31 @@ void RenderSystem::InitShadowSettings() {
     texture_type = PixelFormat::PF_DEPTH16;
   }
 
-  scene->setShadowTextureSize(tex_size);
-  scene->setShadowTexturePixelFormat(texture_type);
-  scene->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
-  scene->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
-  scene->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
+  OgreSceneManager->setShadowTextureSize(tex_size);
+  OgreSceneManager->setShadowTexturePixelFormat(texture_type);
+  OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
+  OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
+  OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
 
-  scene->setShadowTextureSelfShadow(true);
-  scene->setShadowCasterRenderBackFaces(true);
-  scene->setShadowFarDistance(shadow_far);
+  OgreSceneManager->setShadowTextureSelfShadow(true);
+  OgreSceneManager->setShadowCasterRenderBackFaces(true);
+  OgreSceneManager->setShadowFarDistance(shadow_far);
   auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
-  scene->setShadowTextureCasterMaterial(passCaterMaterial);
+  OgreSceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
 
-  pssm = make_shared<PSSMShadowCameraSetup>();
+  PSSMSetupPtr = make_shared<PSSMShadowCameraSetup>();
   const float near_clip_distance = 0.001;
-  pssm->calculateSplitPoints(pssm_split_count, near_clip_distance, scene->getShadowFarDistance());
-  split_points = pssm->getSplitPoints();
+  PSSMSetupPtr->calculateSplitPoints(PSSMSplitCount, near_clip_distance, OgreSceneManager->getShadowFarDistance());
+  PSSMSplitPointList = PSSMSetupPtr->getSplitPoints();
   //  pssm_->setSplitPadding(near_clip_distance);
-  pssm->setSplitPadding(0.1);
+  PSSMSetupPtr->setSplitPadding(0.1);
 
-  for (size_t i = 0; i < pssm_split_count; i++) {
-    pssm->setOptimalAdjustFactor(i, static_cast<float>(i));
+  for (size_t i = 0; i < PSSMSplitCount; i++) {
+    PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(i));
   }
 
-  scene->setShadowCameraSetup(pssm);
-  scene->setShadowColour(ColourValue::Black);
+  OgreSceneManager->setShadowCameraSetup(PSSMSetupPtr);
+  OgreSceneManager->setShadowColour(ColourValue::Black);
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
@@ -295,10 +295,10 @@ void RenderSystem::InitShadowSettings() {
 }
 
 void RenderSystem::InitTextureSettings() {
-  string filtration = config->Get<string>("filtration");
+  string filtration = ConfPtr->Get<string>("filtration");
   unsigned int anisotropy = 4;
 
-  config->Get("anisotropy", anisotropy);
+  ConfPtr->Get("anisotropy", anisotropy);
 
   TextureFilterOptions filtering = TFO_ANISOTROPIC;
 
@@ -332,7 +332,7 @@ void RenderSystem::Refresh() {
 void RenderSystem::Resize(int w, int h, bool f) {
   window->SetFullscreen(f);
   window->Resize(w, h);
-  render_window->resize(w, h);
+  OgreRenderWindowPtr->resize(w, h);
 }
 
 void RenderSystem::RestoreFullscreenAndroid_() {
@@ -341,12 +341,12 @@ void RenderSystem::RestoreFullscreenAndroid_() {
   SDL_GetDesktopDisplayMode(0, &DM);
   int screen_w = static_cast<int>(DM.w);
   int screen_h = static_cast<int>(DM.h);
-  render_window->resize(screen_w, screen_h);
+  OgreRenderWindowPtr->resize(screen_w, screen_h);
 #endif
 }
 
 void RenderSystem::RenderOneFrame() {
-  ogre_root->renderOneFrame();
+  OgreRoot->renderOneFrame();
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   window->SwapBuffers();
 #endif

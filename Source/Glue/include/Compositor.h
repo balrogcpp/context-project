@@ -38,12 +38,12 @@ class Compositor : public Component, public Singleton<Compositor> {
   void InitMRT();
   void InitOutput();
 
-  std::map<std::string, bool> effects;
-  std::unique_ptr<GBufferSchemeHandler> gbuff_handler;
-  Ogre::CompositorManager* compositor_manager = nullptr;
-  Ogre::SceneManager* scene = nullptr;
-  Ogre::Camera* camera = nullptr;
-  Ogre::Viewport* viewport = nullptr;
+  std::map<std::string, bool> EffectsList;
+  std::unique_ptr<GBufferSchemeHandler> GBufferHandler;
+  Ogre::CompositorManager* OgreCompositorManager = nullptr;
+  Ogre::SceneManager* OgreSceneManager = nullptr;
+  Ogre::Camera* OgreCamera = nullptr;
+  Ogre::Viewport* OgreViewport = nullptr;
 };
 
 }  // namespace Glue

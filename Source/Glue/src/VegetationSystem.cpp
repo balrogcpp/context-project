@@ -211,7 +211,7 @@ void VegetationSystem::GenerateGrassStatic() {
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 1000000; i++) {
     Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
-    pos.y += GetLoader().GetHeigh(pos.x, pos.z);
+    pos.y += GetLoader().GetHeight(pos.x, pos.z);
 
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(1, Ogre::Math::RangeRandom(0.85, 1.15), 1);
@@ -240,7 +240,7 @@ void VegetationSystem::GenerateRocksStatic() {
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 250; i++) {
     Ogre::Vector3 pos(Ogre::Math::RangeRandom(-bounds, bounds), 0, Ogre::Math::RangeRandom(-bounds, bounds));
-    pos.y += GetLoader().GetHeigh(pos.x, pos.z) - 0.1;
+    pos.y += GetLoader().GetHeight(pos.x, pos.z) - 0.1;
     Ogre::Quaternion ori(Ogre::Degree(Ogre::Math::RangeRandom(0, 359)), Ogre::Vector3::UNIT_Y);
     Ogre::Vector3 scale(2.0, 2.0 * Ogre::Math::RangeRandom(0.85, 1.15), 2.0);
 

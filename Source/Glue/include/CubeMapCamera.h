@@ -15,11 +15,11 @@ namespace Glue {
 
 class CubeMapCamera final : public Ogre::RenderTargetListener {
  public:
-  CubeMapCamera(Ogre::SceneNode *creator, unsigned int tex_size);
+  CubeMapCamera(Ogre::SceneNode *ParentNode, unsigned int TextureSize);
   virtual ~CubeMapCamera();
 
-  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
-  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &evt) override;
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent &Event) override;
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent &Event) override;
 
   std::shared_ptr<Ogre::Texture> cubemap;
 
@@ -27,9 +27,9 @@ class CubeMapCamera final : public Ogre::RenderTargetListener {
   void Clear();
   void Init(Ogre::SceneNode *creator, unsigned int tex_size);
 
-  Ogre::SceneManager *scene = nullptr;
-  Ogre::Camera *camera = nullptr;
-  Ogre::SceneNode *camera_node = nullptr;
+  Ogre::SceneManager *OgreSceneManager = nullptr;
+  Ogre::Camera *OgreCamera = nullptr;
+  Ogre::SceneNode *OgreCameraNode = nullptr;
   std::array<Ogre::RenderTarget *, 6> targets;
 };
 

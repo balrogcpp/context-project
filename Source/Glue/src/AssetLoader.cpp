@@ -17,16 +17,16 @@ using namespace std;
 
 namespace Glue {
 
+string AssetLoader::FindPath(const string &Path, int Depth) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
 
-string AssetLoader::FindPath(const string &path, int depth) {
 #ifdef DEBUG
-  depth = 6;
+  Depth = 6;
 #endif
 
-  string result = path;
+  string result = Path;
 
-  for (int i = 0; i < depth; i++) {
+  for (int i = 0; i < Depth; i++) {
     if (fs::exists(result))
       return result;
     else if (fs::exists(result + ".zip"))
@@ -36,6 +36,10 @@ string AssetLoader::FindPath(const string &path, int depth) {
   }
 
   return string();
+
+#else
+  return Path;
+#endif
 }
 
 static bool CheckSymbol(char c) {
@@ -60,11 +64,10 @@ static void RightTrim(string &s) {
   s.erase(it.base(), s.end());
 }
 
-void AssetLoader::TrimString(string &s) {
+static void TrimString(string &s) {
   RightTrim(s);
   LeftTrim(s);
 }
-#endif
 
 void AssetLoader::LoadResources() {
   auto &rgm = Ogre::ResourceGroupManager::getSingleton();
@@ -72,19 +75,19 @@ void AssetLoader::LoadResources() {
   rgm.initialiseAllResourceGroups();
 }
 
-void AssetLoader::AddLocation(const string &path, const string &group, bool recursive) {
+void AssetLoader::AddLocation(const string &Path, const string &GroupName, bool Recursive) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
   const string file_system = "FileSystem";
   const string zip = "Zip";
 
-  string result = FindPath(path);
+  string result = FindPath(Path);
   Ogre::ResourceGroupManager &rgm = Ogre::ResourceGroupManager::getSingleton();
 
   if (!result.empty()) {
     if (fs::is_directory(result)) {
-      rgm.addResourceLocation(result, file_system, group, recursive);
+      rgm.addResourceLocation(result, file_system, GroupName, Recursive);
     } else if (fs::path(result).extension() == ".zip") {
-      rgm.addResourceLocation(result, zip, group, recursive);
+      rgm.addResourceLocation(result, zip, GroupName, Recursive);
     }
   }
 #else
@@ -92,12 +95,12 @@ void AssetLoader::AddLocation(const string &path, const string &group, bool recu
 #endif
 }
 
-void AssetLoader::AddLocationAndroid(AAssetManager *asset_mgr, const string &resource_file, const string &group,
-                                     bool verbose) {
+void AssetLoader::AddLocationAndroid(AAssetManager *AssetManager, const string &ResourceFile, const string &GroupName,
+                                     bool Verbose) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
 //  const string file_system = "APKFileSystem";
 //
-//  AAssetDir *dir = AAssetManager_openDir(asset_mgr, path_.c_str());
+//  AAssetDir *dir = AAssetManager_openDir(AssetManager, path_.c_str());
 //  const char *fileName = nullptr;
 //
 //  while ((fileName = AAssetDir_getNextFileName(dir)) != nullptr) {
@@ -108,8 +111,8 @@ void AssetLoader::AddLocationAndroid(AAssetManager *asset_mgr, const string &res
 #endif
 }
 
-void AssetLoader::AddLocationRecursive(const string &path_, const string &group, const string &resource_file,
-                                       bool verbose) {
+void AssetLoader::AddLocationRecursive(const string &Path, const string &GroupName, const string &ResourceFile,
+                                       bool Verbose) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
   const string file_system = "FileSystem";
   const string zip = "Zip";
@@ -119,15 +122,15 @@ void AssetLoader::AddLocationRecursive(const string &path_, const string &group,
   vector<tuple<string, string, string>> resource_list;
   auto &orm = Ogre::ResourceGroupManager::getSingleton();
 
-  string path = FindPath(path_);
+  string path = FindPath(Path);
 
   if (fs::exists(path)) {
-    resource_list.push_back({path, file_system, group});
+    resource_list.push_back({path, file_system, GroupName});
   }
 
-  if (!resource_file.empty()) {
+  if (!ResourceFile.empty()) {
     fstream list_file;
-    list_file.open(resource_file);
+    list_file.open(ResourceFile);
 
     string line;
     string type;
@@ -138,7 +141,7 @@ void AssetLoader::AddLocationRecursive(const string &path_, const string &group,
         TrimString(line);
 
         if (!StringSanityCheck(line)) {
-          throw Exception(string("Sanity check of ") + resource_file + " is failed. Aborting.");
+          throw Exception(string("Sanity check of ") + ResourceFile + " is failed. Aborting.");
         }
 
         if (line[0] == '#') {
@@ -170,7 +173,7 @@ void AssetLoader::AddLocationRecursive(const string &path_, const string &group,
       const auto file_name = jt->path().filename().string();
 
       if (jt->is_directory()) {
-        if (verbose) {
+        if (Verbose) {
           LogMessage(string("Found directory: ") + full_path);
         }
 
@@ -179,7 +182,7 @@ void AssetLoader::AddLocationRecursive(const string &path_, const string &group,
         orm.addResourceLocation(full_path, file_system, get<2>(it));
 
       } else if (jt->is_regular_file()) {
-        if (verbose) {
+        if (Verbose) {
           LogMessage(string("Found file: ") + full_path);
         }
         if (fs::path(full_path).extension() == ".zip") {

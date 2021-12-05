@@ -15,17 +15,17 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
  public:
   Application();
   virtual ~Application();
-  int Main(std::unique_ptr<AppState> &&scene_ptr);
+  int Main(std::unique_ptr<AppState> &&AppStatePtr);
 
  private:
   void Loop();
   void Go();
-  int ExceptionMessage(const std::string &caption, const std::string &message);
+  int ExceptionMessage(const std::string &WindowCaption, const std::string &MessageText);
 
-  void Event(const SDL_Event &evt) override;
-  void Quit() override;
-  void Pause() override;
-  void Resume() override;
+  void OnEvent(const SDL_Event &Event) override;
+  void OnQuit() override;
+  void OnPause() override;
+  void OnResume() override;
 
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, bool maskDebug, const std::string &logName,
                      bool &skipThisMessage) override;
@@ -33,22 +33,24 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   void WriteLogToFile();
   void PrintLogToConsole();
 
-  std::unique_ptr<StateManager> state_manager_;
-  std::unique_ptr<VerboseListener> verbose_listener_;
-  Engine *engine;
+  std::unique_ptr<StateManager> StateManagerPtr;
+  std::unique_ptr<VerboseListener> VerboseListenerPtr;
+  Engine *EnginePtr = nullptr;
 
-  bool running = true;
-  bool suspend = false;
-  int64_t time_of_last_frame = 0;
-  int64_t cumulated_time = 0;
-  int64_t fps_counter = 0;
-  int64_t current_fps = 0;
-  int64_t target_fps_ = 60;
-  bool lock_fps = true;
-  std::string log;
-  std::string log_file = "Launch.log";
-  bool verbose = false;
-  bool verbose_input = false;
+  bool Running = true;
+  bool Suspend = false;
+  int64_t TimeAsLastFrame = 0;
+  int64_t CumultedTime = 0;
+  int64_t FPSCounter = 0;
+  int64_t CurrentFPS = 0;
+  int64_t TargetFPS = 60;
+  bool LockFPS = true;
+  std::string LogBuffer;
+  std::string LogFileName = "Launch.log";
+  bool Verbose = false;
+
+  /// Print all input in cout (pressed key on keyboard, mouse move, gamepad etc.)
+  bool VerboseInput = false;
 };
 
 }  // namespace Glue

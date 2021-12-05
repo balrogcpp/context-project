@@ -8,14 +8,14 @@ using namespace std;
 
 namespace Glue {
 
-void Assert(bool result, std::string message) {
+void Assert(bool Result, std::string Message) {
 #ifdef DEBUG
-  if (!result) {
-    throw Exception(std::move(message));
+  if (!Result) {
+    throw Exception(std::move(Message));
   }
 #endif
 }
 
-void Throw(std::string message) { throw Exception(std::move(message)); }
+void Throw(std::string Message) { throw Exception(std::move(Message)); }
 
 }  // namespace Glue

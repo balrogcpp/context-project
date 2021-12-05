@@ -41,9 +41,9 @@
 
 #if OGGSOUND_THREADED
 #ifdef POCO_THREAD
+#include "Poco/Mutex.hpp"
 #include "Poco/ScopedLock.hpp"
 #include "Poco/Thread.hpp"
-#include "Poco/Mutex.hpp"
 #else
 #include <chrono>
 #include <functional>

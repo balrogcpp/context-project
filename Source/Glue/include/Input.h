@@ -14,8 +14,8 @@ extern "C" {
 
 namespace Glue {
 class InputSequencer;
-class InputObserverI;
-class WindowObserverI;
+class IInputObserver;
+class IWindowObserver;
 class InputObserver;
 class WindowObserver;
 }  // namespace Glue
@@ -30,31 +30,31 @@ class InputSequencer : public LazySingleton<InputSequencer> {
   virtual ~InputSequencer();
 
   /// Register physical input listener
-  void RegObserver(InputObserverI *p);
+  void RegObserver(IInputObserver *p);
 
   /// Un-Register physical input listener
-  void UnregObserver(InputObserverI *p);
+  void UnregObserver(IInputObserver *p);
 
-  /// Register window input listener
-  void RegWinObserver(WindowObserverI *p);
+  /// Register SDLWindowPtr input listener
+  void RegWinObserver(IWindowObserver *p);
 
-  /// Un-Register window input listener
-  void UnregWinObserver(WindowObserverI *p);
+  /// Un-Register SDLWindowPtr input listener
+  void UnregWinObserver(IWindowObserver *p);
 
   /// Called once per frame, sent callback message to listeners
   void Capture();
 
  protected:
   /// Listeners list (physical input)
-  std::set<InputObserverI *> io_listeners;
-  /// Listeners list (window input)
-  std::set<WindowObserverI *> win_listeners;
+  std::set<IInputObserver *> io_listeners;
+  /// Listeners list (SDLWindowPtr input)
+  std::set<IWindowObserver *> win_listeners;
   /// Required for Android/IOS development
   int HandleAppEvents(void *userdata, SDL_Event *event);
 };
 
-/// Interface for Physical input listener (Mouse, Keyboard and Joystick)
-class InputObserverI {
+/// Interface for Physical input listener (Mouse, Keyboard and Gamepad)
+class IInputObserver {
  public:
   /// Callback on keyboard key down
   virtual void OnKeyDown(SDL_Keycode sym) = 0;
@@ -119,32 +119,32 @@ class InputObserverI {
   /// @param which joystick number
   /// @param axis which axis
   /// @param value
-  virtual void OnJoystickAxis(int which, int axis, int value) = 0;
+  virtual void OnGamepadAxis(int which, int axis, int value) = 0;
 
   /// Callback on joystick button Down
   /// @param which joystick number
   /// @param button button number
-  virtual void OnJoystickBtDown(int which, int button) = 0;
+  virtual void OnGamepadBtDown(int which, int button) = 0;
 
   /// Callback on joystick button Up
   /// @param which joystick number
   /// @param button button number
-  virtual void OnJoystickBtUp(int which, int button) = 0;
+  virtual void OnGamepadBtUp(int which, int button) = 0;
   /// Callback on joystick Hat
   /// @param which joystick number
   /// @param ball hat number
   /// @param value hat value
-  virtual void OnJoystickHat(int which, int hat, int value) = 0;
+  virtual void OnGamepadHat(int which, int hat, int value) = 0;
   /// Callback on joystick Ball
   /// @param which joystick number
   /// @param ball ball number
   /// @param xrel ball x value
   /// @param yrel ball y value
-  virtual void OnJoystickBall(int which, int ball, int xrel, int yrel) = 0;
+  virtual void OnGamepadBall(int which, int ball, int xrel, int yrel) = 0;
 };
 
 /// Physical input events listener
-class InputObserver : public InputObserverI, public NoCopy {
+class InputObserver : public IInputObserver, public NoCopy {
  public:
   InputObserver();
   virtual ~InputObserver();
@@ -165,39 +165,39 @@ class InputObserver : public InputObserverI, public NoCopy {
   void OnMouseMbUp(int x, int y) override {}
   void OnTextInput(const char *text) override {}
 
-  // Joystick
-  void OnJoystickAxis(int which, int axis, int value) override {}
-  void OnJoystickBtDown(int which, int button) override {}
-  void OnJoystickBtUp(int which, int button) override {}
-  void OnJoystickHat(int which, int hat, int value) override {}
-  void OnJoystickBall(int which, int ball, int xrel, int yrel) override {}
+  // Gamepad
+  void OnGamepadAxis(int which, int axis, int value) override {}
+  void OnGamepadBtDown(int which, int button) override {}
+  void OnGamepadBtUp(int which, int button) override {}
+  void OnGamepadHat(int which, int hat, int value) override {}
+  void OnGamepadBall(int which, int ball, int xrel, int yrel) override {}
 };
 
-/// Interface for window listener
-class WindowObserverI {
+/// Interface for SDLWindowPtr listener
+class IWindowObserver {
  public:
   /// Callback called on any windows event
   /// @param event SDL_Event structure
-  virtual void Event(const SDL_Event &event) = 0;
+  virtual void OnEvent(const SDL_Event &event) = 0;
   /// Callback called on Quit
-  virtual void Quit() = 0;
+  virtual void OnQuit() = 0;
   /// Callback called when Window is not in focus
-  virtual void Pause() = 0;
+  virtual void OnPause() = 0;
   /// Callback called when Window back into focus
-  virtual void Resume() = 0;
+  virtual void OnResume() = 0;
 };
 
 /// Window events listener
-class WindowObserver : public WindowObserverI, public NoCopy {
+class WindowObserver : public IWindowObserver, public NoCopy {
  public:
   /// Constructor
   WindowObserver();
   virtual ~WindowObserver();
 
-  virtual void Event(const SDL_Event &event) {}
-  virtual void Quit() {}
-  virtual void Pause() {}
-  virtual void Resume() {}
+  virtual void OnEvent(const SDL_Event &event) {}
+  virtual void OnQuit() {}
+  virtual void OnPause() {}
+  virtual void OnResume() {}
 };
 
 }  // namespace Glue

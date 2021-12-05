@@ -22,7 +22,7 @@ void CameraMan::ManualStop() {
   }
 }
 
-void CameraMan::Update(float time) {
+void CameraMan::Update(float PassedTime) {
   if (style == Style::FREELOOK) {
     top_speed = move_fast ? run_speed : const_speed;
 
@@ -38,9 +38,9 @@ void CameraMan::Update(float time) {
 
     if (accel.squaredLength() != 0) {
       accel.normalise();
-      velocity += accel * top_speed * time;
+      velocity += accel * top_speed * PassedTime;
     } else {
-      velocity -= velocity * time;
+      velocity -= velocity * PassedTime;
     }
 
     if (velocity.squaredLength() > top_speed * top_speed) {
@@ -48,7 +48,7 @@ void CameraMan::Update(float time) {
       velocity *= top_speed;
     }
 
-    if (velocity != Ogre::Vector3::ZERO) node->translate(velocity * time);
+    if (velocity != Ogre::Vector3::ZERO) node->translate(velocity * PassedTime);
     if (target) {
       Ogre::Vector3 move = target->getPosition() - prev_pos;
       prev_pos = target->getPosition();
@@ -87,9 +87,9 @@ void CameraMan::Update(float time) {
 
     float speed = rigid->getLinearVelocity().length();
     if (speed > (run_speed + run_speed) / 2.0f) {
-      animation_time += time;
+      animation_time += PassedTime;
     } else {
-      animation_time -= time;
+      animation_time -= PassedTime;
     }
 
     if (animation_time > anim_duration) {
@@ -206,7 +206,7 @@ void CameraMan::OnKeyUp(SDL_Keycode sym) {
   }
 }
 
-void CameraMan::SetRigidBody(btRigidBody *rigid_body) { rigid = rigid_body; }
+void CameraMan::SetRigidBody(btRigidBody *RigidBodyPtr) { rigid = RigidBodyPtr; }
 
 Ogre::SceneNode *CameraMan::GetCameraNode() const {
   if (style == Style::FPS) {
@@ -218,47 +218,47 @@ Ogre::SceneNode *CameraMan::GetCameraNode() const {
 
 Ogre::Camera *CameraMan::GetCamera() const { return camera; }
 
-void CameraMan::AttachNode(Ogre::SceneNode *parent, Ogre::SceneNode *proxy) {
+void CameraMan::AttachNode(Ogre::SceneNode *ParentPtr, Ogre::SceneNode *ProxyPtr) {
   if (style == Style::FPS) {
-    for (const auto it : parent->getAttachedObjects()) {
-      parent->detachObject(it);
+    for (const auto it : ParentPtr->getAttachedObjects()) {
+      ParentPtr->detachObject(it);
       roll_node->attachObject(it);
     }
 
-    for (const auto it : parent->getChildren()) {
+    for (const auto it : ParentPtr->getChildren()) {
       if (it == yaw_node) continue;
 
-      parent->removeChild(it);
+      ParentPtr->removeChild(it);
       roll_node->removeChild(it);
       roll_node->addChild(it);
     }
   } else if (style == Style::MANUAL) {
-    if (!proxy || parent == proxy) return;
+    if (!ProxyPtr || ParentPtr == ProxyPtr) return;
 
-    for (const auto it : parent->getAttachedObjects()) {
+    for (const auto it : ParentPtr->getAttachedObjects()) {
       if (dynamic_cast<Ogre::Camera *>(it)) continue;
 
-      parent->detachObject(it);
-      proxy->attachObject(it);
+      ParentPtr->detachObject(it);
+      ProxyPtr->attachObject(it);
     }
 
-    for (const auto it : parent->getChildren()) {
-      parent->removeChild(it);
-      proxy->removeChild(it);
-      proxy->addChild(it);
+    for (const auto it : ParentPtr->getChildren()) {
+      ParentPtr->removeChild(it);
+      ProxyPtr->removeChild(it);
+      ProxyPtr->addChild(it);
     }
   }
 }
 
-void CameraMan::AttachCamera(Ogre::SceneNode *parent, Ogre::Camera *camera, Ogre::SceneNode *proxy) {
-  node = parent;
-  this->camera = camera;
+void CameraMan::AttachCamera(Ogre::SceneNode *ParentPtr, Ogre::Camera *CameraPtr, Ogre::SceneNode *ProxyPtr) {
+  node = ParentPtr;
+  this->camera = CameraPtr;
 
   if (style == Style::FPS) {
     node->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
 
     // SetUp the camera's yaw node as a child of camera's top node.
-    yaw_node = parent->createChildSceneNode("CameraYaw");
+    yaw_node = ParentPtr->createChildSceneNode("CameraYaw");
 
     // SetUp the camera's pitch node as a child of camera's yaw node.
     pitch_node = yaw_node->createChildSceneNode("CameraPitch");
@@ -266,9 +266,9 @@ void CameraMan::AttachCamera(Ogre::SceneNode *parent, Ogre::Camera *camera, Ogre
     // SetUp the camera's roll node as a child of camera's pitch node
     // and attach the camera to it.
     roll_node = pitch_node->createChildSceneNode("CameraRoll");
-    roll_node->attachObject(camera);
+    roll_node->attachObject(CameraPtr);
   } else {
-    node->attachObject(camera);
+    node->attachObject(CameraPtr);
   }
 
   if (style == Style::FREELOOK) {

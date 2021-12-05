@@ -17,13 +17,10 @@ namespace Glue {
 
 TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
   mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
-
-  // TODO - check hardware capabilities & use fallbacks if required (more
-  // profiles needed)
   setActiveProfile(mProfiles.back());
 }
 
-TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB() = default;
+TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB() {}
 
 TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent, const String &name,
                                                   const String &desc)
@@ -35,42 +32,42 @@ bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   return true;
 #else
-  static bool glsles =
-      bool{Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"};
-  return glsles;
+  static bool Result = (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem");
+  return Result;
 #endif
 }
 
-void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { lightmap = enabled; }
+void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { EnableLightmap = enabled; }
 
-void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *terrain) {
-  terrain->_setMorphRequired(true);
-  terrain->_setNormalMapRequired(true);
-  terrain->_setLightMapRequired(lightmap, false);
-  terrain->_setCompositeMapRequired(false);
+void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *OgreTerrainPtr) {
+  if (!OgreTerrainPtr) return;
+  OgreTerrainPtr->_setMorphRequired(true);
+  OgreTerrainPtr->_setNormalMapRequired(true);
+  OgreTerrainPtr->_setLightMapRequired(EnableLightmap, false);
+  OgreTerrainPtr->_setCompositeMapRequired(false);
 }
 
-Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *terrain) {
+Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *OgreTerrainPtr) {
   string material_name = "TerrainCustom";
-  const int GENERATOR = 0;
+  const string GENERATOR = "_0";
 
   if (isVertexCompressionSupported()) {
     auto material = Ogre::MaterialManager::getSingleton().getByName(material_name);
     if (material->getTechnique(0)->getPass(0)->hasVertexProgram()) {
       auto vert_params = material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
 
-      Ogre::Matrix4 posIndexToObjectSpace = terrain->getPointTransform();
+      Ogre::Matrix4 posIndexToObjectSpace = OgreTerrainPtr->getPointTransform();
 
       vert_params->setIgnoreMissingParams(true);
       vert_params->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
 
-      Ogre::Real baseUVScale = 1.0f / (terrain->getSize() - 1);
+      Ogre::Real baseUVScale = 1.0f / (OgreTerrainPtr->getSize() - 1);
       vert_params->setNamedConstant("baseUVScale", baseUVScale);
     }
   }
 
-  auto normalmap = terrain->getTerrainNormalMap();
-  string new_name = material_name + to_string(GENERATOR);
+  auto normalmap = OgreTerrainPtr->getTerrainNormalMap();
+  string new_name = material_name + GENERATOR;
 
   Pbr::UpdatePbrParams(material_name);
   Pbr::UpdatePbrShadowReceiver(material_name);

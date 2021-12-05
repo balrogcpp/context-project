@@ -12,41 +12,41 @@ StateManager::StateManager() {}
 StateManager::~StateManager() {}
 
 void StateManager::InitCurState() {
-  cur_state->SetUp();
-  Ogre::Root::getSingleton().addFrameListener(cur_state.get());
+  CurrentState->SetUp();
+  Ogre::Root::getSingleton().addFrameListener(CurrentState.get());
 }
 
 void StateManager::InitNextState() {
-  if (cur_state) {
-    cur_state->Cleanup();
-    Ogre::Root::getSingleton().removeFrameListener(cur_state.get());
+  if (CurrentState) {
+    CurrentState->Cleanup();
+    Ogre::Root::getSingleton().removeFrameListener(CurrentState.get());
   }
 
-  cur_state = move(cur_state->next);
+  CurrentState = move(CurrentState->NextState);
 
-  if (cur_state) {
-    cur_state->SetUp();
-    Ogre::Root::getSingleton().addFrameListener(cur_state.get());
-  }
-}
-
-void StateManager::SetInitialState(unique_ptr<AppState> &&next_state) {
-  cur_state = move(next_state);
-  Ogre::Root::getSingleton().addFrameListener(cur_state.get());
-}
-
-void StateManager::Update(float time) {
-  if (cur_state) {
-    cur_state->Update(time);
+  if (CurrentState) {
+    CurrentState->SetUp();
+    Ogre::Root::getSingleton().addFrameListener(CurrentState.get());
   }
 }
 
-bool StateManager::IsActive() const { return static_cast<bool>(cur_state); }
+void StateManager::SetInitialState(unique_ptr<AppState> &&InitialState) {
+  CurrentState = move(InitialState);
+  Ogre::Root::getSingleton().addFrameListener(CurrentState.get());
+}
 
-bool StateManager::IsDirty() const { return cur_state->IsDirty(); }
+void StateManager::Update(float PassedTime) {
+  if (CurrentState) {
+    CurrentState->Update(PassedTime);
+  }
+}
 
-void StateManager::Pause() { cur_state->Pause(); }
+bool StateManager::IsActive() const { return static_cast<bool>(CurrentState); }
 
-void StateManager::Resume() { cur_state->Resume(); }
+bool StateManager::IsDirty() const { return CurrentState->IsDirty(); }
+
+void StateManager::Pause() { CurrentState->Pause(); }
+
+void StateManager::Resume() { CurrentState->Resume(); }
 
 }  // namespace Glue

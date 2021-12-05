@@ -12,23 +12,23 @@ class OgreOggSoundManager;
 namespace Glue {
 class AudioSystem final : public Component, public Singleton<AudioSystem> {
  public:
-  AudioSystem(unsigned int max_sources, unsigned int queue_list_size);
+  AudioSystem(unsigned int MaxSourceCount = 16, unsigned int QueueListSize = 4);
   virtual ~AudioSystem();
 
   void Cleanup() override;
   void Pause() override;
   void Resume() override;
-  void Update(float time) override;
+  void Update(float PassedTime) override;
 
-  void CreateSound(const std::string &name, const std::string &file, bool loop = false);
-  void PlaySound(const std::string &name, bool immediate = true);
-  void SetMasterVolume(float volume);
-  void SetMaxVolume(const std::string &name, float volume);
-  void SetVolume(const std::string &name, float gain);
-  void SetListener(Ogre::SceneNode *parent);
+  void CreateSound(const std::string &SoundName, const std::string &AudioFile, bool PlayInLoop = false);
+  void PlaySound(const std::string &SoundName, bool PlayImmediatly = true);
+  void SetMasterVolume(float MasterVolume);
+  void SetMaxVolume(const std::string &SoundName, float MaxVolume);
+  void SetVolume(const std::string &SoundName, float Volume);
+  void SetListener(Ogre::SceneNode *ParentPtr);
 
  protected:
-  OgreOggSound::OgreOggSoundManager *sound_manager = nullptr;
+  OgreOggSound::OgreOggSoundManager *SoundManagerPtr = nullptr;
 };
 
 }  // namespace Glue

@@ -25,16 +25,16 @@ class CameraMan final : public Object, public MutedInputObserver {
   virtual ~CameraMan();
 
   void ManualStop();
-  void Update(float time) override;
+  void Update(float PassedTime) override;
   void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override;
   void OnKeyDown(SDL_Keycode sym) override;
   void OnKeyUp(SDL_Keycode sym) override;
 
-  void SetRigidBody(btRigidBody* rigid_body);
+  void SetRigidBody(btRigidBody* RigidBodyPtr);
   Ogre::SceneNode* GetCameraNode() const;
   Ogre::Camera* GetCamera() const;
-  void AttachNode(Ogre::SceneNode* parent, Ogre::SceneNode* proxy = nullptr);
-  void AttachCamera(Ogre::SceneNode* parent, Ogre::Camera* camera, Ogre::SceneNode* proxy = nullptr);
+  void AttachNode(Ogre::SceneNode* ParentPtr, Ogre::SceneNode* ProxyPtr = nullptr);
+  void AttachCamera(Ogre::SceneNode* ParentPtr, Ogre::Camera* CameraPtr, Ogre::SceneNode* ProxyPtr = nullptr);
   void UnregCamera();
   void SetStyle(Style style);
   Style GetStyle() const noexcept;

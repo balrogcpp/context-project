@@ -10,7 +10,7 @@ class Terrain;
 };  // namespace Ogre
 
 namespace Glue {
-class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
+class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
  public:
   TerrainMaterialGeneratorB();
   virtual ~TerrainMaterialGeneratorB();
@@ -20,19 +20,18 @@ class TerrainMaterialGeneratorB : public Ogre::TerrainMaterialGenerator {
     SM2Profile(Ogre::TerrainMaterialGenerator *parent, const Ogre::String &name, const Ogre::String &desc);
     virtual ~SM2Profile();
 
-    Ogre::MaterialPtr generate(const Ogre::Terrain *terrain) override;
+    Ogre::MaterialPtr generate(const Ogre::Terrain *OgreTerrainPtr) override;
     Ogre::MaterialPtr generateForCompositeMap(const Ogre::Terrain *terrain) override;
-
-    inline Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const override { return max_layers; }
+    inline Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const override { return TerrainMaxLayers; }
     inline void updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
     inline void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
-    void requestOptions(Ogre::Terrain *terrain) override;
+    void requestOptions(Ogre::Terrain *OgreTerrainPtr) override;
     bool isVertexCompressionSupported() const override;
     void setLightmapEnabled(bool enabled) override;
 
-   protected:
-    bool lightmap = false;
-    int8_t max_layers = 4;
+   private:
+    bool EnableLightmap = false;
+    int8_t TerrainMaxLayers = 4;
   };
 };
 

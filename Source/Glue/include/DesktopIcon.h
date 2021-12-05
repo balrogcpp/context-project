@@ -12,7 +12,7 @@ class DesktopIcon : public NoCopy {
   virtual ~DesktopIcon();
 
   void SetUp();
-  void Save(const std::string &icon_name);
+  void SaveToFile(const std::string &icon_name);
 
  protected:
   std::string root_directory;

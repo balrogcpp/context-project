@@ -11,20 +11,21 @@ namespace Glue {
 class Exception : public std::exception {
  public:
   Exception() = default;
-  explicit Exception(std::string description) : description(std::move(description)){};
+  explicit Exception(std::string Description) : Description(std::move(Description)){};
+  explicit Exception(const char *Description) : Description(Description){};
   ~Exception() noexcept override = default;
 
-  std::string GetDescription() const noexcept { return description; }
-  const char *what() const noexcept override { return description.c_str(); }
+  std::string GetDescription() const noexcept { return Description; }
+  const char *what() const noexcept override { return Description.c_str(); }
 
  protected:
-  std::string description = "Not specified";
+  std::string Description = "Not specified";
 };
 
 /// Throw exception
-void Assert(bool result, std::string message);
+void Assert(bool Result, std::string Message);
 
 /// Throw exception
-void Throw(std::string message);
+void Throw(std::string Message);
 
 }  // namespace Glue

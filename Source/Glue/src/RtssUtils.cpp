@@ -67,8 +67,8 @@ void InitInstansing() {
   Ogre::MaterialManager::getSingleton().setActiveScheme(viewport_->getMaterialScheme());
 }
 
-ShaderResolver::ShaderResolver(Ogre::RTShader::ShaderGenerator *shader_generator) {
-  this->shader_generator = shader_generator;
+ShaderResolver::ShaderResolver(Ogre::RTShader::ShaderGenerator *ShaderGeneratorPtr) {
+  this->ShaderGeneratorPtr = ShaderGeneratorPtr;
 }
 
 bool ShaderResolver::FixMaterial(const string &material_name) {
@@ -102,49 +102,49 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
   return true;
 }
 
-Ogre::Technique *ShaderResolver::handleSchemeNotFound(unsigned short scheme_index, const string &scheme_name,
-                                                      Ogre::Material *original_material, unsigned short lod_index,
-                                                      const Ogre::Renderable *renderable) {
-  if (scheme_name != Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
+Ogre::Technique *ShaderResolver::handleSchemeNotFound(unsigned short SchemeIndex, const string &SchemeName,
+                                                      Ogre::Material *OriginalMaterialPtr, unsigned short LodIndex,
+                                                      const Ogre::Renderable *OgreRenderable) {
+  if (SchemeName != Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
     return nullptr;
   }
 
   // SetUp shader generated technique for this material.
-  bool techniqueCreated = shader_generator->createShaderBasedTechnique(
-      *original_material, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, scheme_name);
+  bool techniqueCreated = ShaderGeneratorPtr->createShaderBasedTechnique(
+      *OriginalMaterialPtr, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, SchemeName);
 
   // Case technique registration succeeded.
   if (techniqueCreated) {
     // Force creating the shaders for the generated technique.
-    shader_generator->validateMaterial(scheme_name, original_material->getName(), original_material->getGroup());
+    ShaderGeneratorPtr->validateMaterial(SchemeName, OriginalMaterialPtr->getName(), OriginalMaterialPtr->getGroup());
 
     // Grab the generated technique.
-    for (const auto &it : original_material->getTechniques()) {
-      if (it->getSchemeName() == scheme_name) {
+    for (const auto &it : OriginalMaterialPtr->getTechniques()) {
+      if (it->getSchemeName() == SchemeName) {
         return it;
       }
     }
   } else {
-    original_material->getTechnique(0)->setSchemeName(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+    OriginalMaterialPtr->getTechnique(0)->setSchemeName(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
   }
 
   return nullptr;
 }
 
-bool ShaderResolver::afterIlluminationPassesCreated(Ogre::Technique *technique) {
-  if (technique->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
-    Ogre::Material *mat = technique->getParent();
-    shader_generator->validateMaterialIlluminationPasses(technique->getSchemeName(), mat->getName(), mat->getGroup());
+bool ShaderResolver::afterIlluminationPassesCreated(Ogre::Technique *OgreTechnique) {
+  if (OgreTechnique->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
+    Ogre::Material *mat = OgreTechnique->getParent();
+    ShaderGeneratorPtr->validateMaterialIlluminationPasses(OgreTechnique->getSchemeName(), mat->getName(), mat->getGroup());
     return true;
   } else {
     return false;
   }
 }
 
-bool ShaderResolver::beforeIlluminationPassesCleared(Ogre::Technique *technique) {
-  if (technique->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
-    Ogre::Material *mat = technique->getParent();
-    shader_generator->invalidateMaterialIlluminationPasses(technique->getSchemeName(), mat->getName(), mat->getGroup());
+bool ShaderResolver::beforeIlluminationPassesCleared(Ogre::Technique *OgreTechnique) {
+  if (OgreTechnique->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
+    Ogre::Material *mat = OgreTechnique->getParent();
+    ShaderGeneratorPtr->invalidateMaterialIlluminationPasses(OgreTechnique->getSchemeName(), mat->getName(), mat->getGroup());
     return true;
   } else {
     return false;

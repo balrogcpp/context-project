@@ -11,21 +11,21 @@ AppState::AppState() {}
 
 AppState::~AppState() {}
 
-void AppState::LoadFromFile(const string &file_name, const string &group) {
+void AppState::LoadFromFile(const string &FileName, const string &GroupName) {
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *root = scene->getRootSceneNode();
-  root->loadChildren(file_name);
+  root->loadChildren(FileName);
 }
 
-void AppState::ChangeState(unique_ptr<AppState> &&app_state) {
-  next = move(app_state);
-  dirty = true;
+void AppState::ChangeState(unique_ptr<AppState> &&AppStatePtr) {
+  NextState = move(AppStatePtr);
+  Dirty = true;
 }
 
-void AppState::ChangeState() { dirty = true; }
+void AppState::ChangeState() { Dirty = true; }
 
-void AppState::AppendNextState(unique_ptr<AppState> &&next_state) { next = move(next_state); }
+void AppState::AppendNextState(unique_ptr<AppState> &&NextStatePtr) { NextState = move(NextStatePtr); }
 
-bool AppState::IsDirty() const { return dirty; }
+bool AppState::IsDirty() const { return Dirty; }
 
 }  // namespace Glue

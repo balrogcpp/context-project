@@ -13,18 +13,18 @@ class Singleton : public NoCopy {
  public:
   /// Constructor
   Singleton() {
-    if (instanced_) {
+    if (Instanced) {
       std::string Type = typeid(T).name();
-      std::string text = Type + " is DynamicSingleton class. Creation of another instance is forbidden";
-      Throw(text);
+      std::string Message = Type + " is DynamicSingleton class. Creation of another instance is forbidden";
+      Throw(Message);
     }
 
-    instanced_ = true;
+    Instanced = true;
   }
 
  protected:
   /// Is this flag is up -- any call of "new" will throw exception
-  inline static bool instanced_ = false;
+  inline static bool Instanced = false;
 };
 
 /// Implements "Lazy DynamicSingleton" pattern. Creates instance only when called GetInstance

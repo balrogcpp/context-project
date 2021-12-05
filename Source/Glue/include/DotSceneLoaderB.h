@@ -16,7 +16,7 @@
 #include <string>
 
 namespace pugi {
-class xml_node;
+class XmlNode;
 }
 
 namespace Ogre {
@@ -39,15 +39,15 @@ class SinbadCharacterController;
 
 namespace Glue {
 
-std::string GetAttrib(const pugi::xml_node &xml_node, const std::string &attrib, const std::string &defaultValue = "");
-float GetAttribReal(const pugi::xml_node &xml_node, const std::string &attrib, float defaultValue = 0);
-int GetAttribInt(const pugi::xml_node &xml_node, const std::string &attrib, int defaultValue = 0);
-bool GetAttribBool(const pugi::xml_node &xml_node, const std::string &attrib, bool defaultValue = false);
-Ogre::Vector3 ParseVector3(const pugi::xml_node &xml_node);
-Ogre::Vector3 ParsePosition(const pugi::xml_node &xml_node);
-Ogre::Vector3 ParseScale(const pugi::xml_node &xml_node);
-Ogre::Quaternion ParseRotation(const pugi::xml_node &xml_node);
-Ogre::ColourValue ParseColour(pugi::xml_node &xml_node);
+std::string GetAttrib(const pugi::xml_node &XmlNode, const std::string &attrib, const std::string &defaultValue = "");
+float GetAttribReal(const pugi::xml_node &XmlNode, const std::string &attrib, float defaultValue = 0);
+int GetAttribInt(const pugi::xml_node &XmlNode, const std::string &attrib, int defaultValue = 0);
+bool GetAttribBool(const pugi::xml_node &XmlNode, const std::string &attrib, bool defaultValue = false);
+Ogre::Vector3 ParseVector3(const pugi::xml_node &XmlNode);
+Ogre::Vector3 ParsePosition(const pugi::xml_node &XmlNode);
+Ogre::Vector3 ParseScale(const pugi::xml_node &XmlNode);
+Ogre::Quaternion ParseRotation(const pugi::xml_node &XmlNode);
+Ogre::ColourValue ParseColour(pugi::xml_node &XmlNode);
 
 class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB> {
  public:
@@ -55,39 +55,39 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   virtual ~DotSceneLoaderB();
 
   void Cleanup() override;
-  void Update(float time) override;
+  void Update(float PassedTime) override;
 
-  void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node);
-  void exportScene(Ogre::SceneNode *rootNode, const std::string &outFileName);
-  float GetHeigh(float x, float z);
+  void Load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node);
+  void ExportScene(Ogre::SceneNode *rootNode, const std::string &outFileName);
+  float GetHeight(float x, float z);
 
   static Landscape &GetTerrain();
   CameraMan &GetCamera() const;
   static VegetationSystem &GetForest();
 
  protected:
-  void ProcessScene(pugi::xml_node &xml_root);
-  void ProcessNodes(pugi::xml_node &xml_node);
-  void ProcessExternals(pugi::xml_node &xml_node);
-  void ProcessEnvironment(pugi::xml_node &xml_node);
-  void ProcessUserData(pugi::xml_node &xml_node, Ogre::UserObjectBindings &user_object_bindings);
-  void ProcessLight(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
-  void ProcessCamera(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
-  void ProcessNode(pugi::xml_node &xml_node, Ogre::SceneNode *parent = nullptr);
-  void ProcessLookTarget(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessTrackTarget(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessEntity(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessParticleSystem(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessBillboardSet(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessPlane(pugi::xml_node &xml_node, Ogre::SceneNode *parent);
-  void ProcessForest(pugi::xml_node &xml_node);
-  void ProcessLandscape(pugi::xml_node &xml_node);
-  void ProcessFog(pugi::xml_node &xml_node);
-  void ProcessSkyBox(pugi::xml_node &xml_node);
-  void ProcessSkyDome(pugi::xml_node &xml_node);
-  void ProcessSkyPlane(pugi::xml_node &xml_node);
-  void ProcessLightRange(pugi::xml_node &xml_node, Ogre::Light *light);
-  void ProcessLightAttenuation(pugi::xml_node &xml_node, Ogre::Light *light);
+  void ProcessScene(pugi::xml_node &XmlRoot);
+  void ProcessNodes(pugi::xml_node &XmlNode);
+  void ProcessExternals(pugi::xml_node &XmlNode);
+  void ProcessEnvironment(pugi::xml_node &XmlNode);
+  void ProcessUserData(pugi::xml_node &XmlNode, Ogre::UserObjectBindings &user_object_bindings);
+  void ProcessLight(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode = nullptr);
+  void ProcessCamera(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode = nullptr);
+  void ProcessNode(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode = nullptr);
+  void ProcessLookTarget(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
+  void ProcessTrackTarget(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
+  void ProcessEntity(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
+  void ProcessParticleSystem(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
+  void ProcessBillboardSet(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
+  void ProcessPlane(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
+  void ProcessForest(pugi::xml_node &XmlNode);
+  void ProcessLandscape(pugi::xml_node &XmlNode);
+  void ProcessFog(pugi::xml_node &XmlNode);
+  void ProcessSkyBox(pugi::xml_node &XmlNode);
+  void ProcessSkyDome(pugi::xml_node &XmlNode);
+  void ProcessSkyPlane(pugi::xml_node &XmlNode);
+  void ProcessLightRange(pugi::xml_node &XmlNode, Ogre::Light *light);
+  void ProcessLightAttenuation(pugi::xml_node &XmlNode, Ogre::Light *light);
   void WriteNode(pugi::xml_node &parentXML, const Ogre::SceneNode *node);
 
   std::unique_ptr<ReflectionCamera> rcamera;

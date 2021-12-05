@@ -8,7 +8,7 @@
 
 namespace Glue {
 
-class MutedInputObserver : public InputObserverI {
+class MutedInputObserver : public IInputObserver {
  public:
   MutedInputObserver();
   virtual ~MutedInputObserver();
@@ -29,12 +29,12 @@ class MutedInputObserver : public InputObserverI {
   void OnMouseMbUp(int x, int y) override {}
   void OnTextInput(const char* text) override {}
 
-  // Joystick
-  void OnJoystickAxis(int which, int axis, int value) override {}
-  void OnJoystickBtDown(int which, int button) override {}
-  void OnJoystickBtUp(int which, int button) override {}
-  void OnJoystickHat(int which, int hat, int value) override {}
-  void OnJoystickBall(int which, int ball, int xrel, int yrel) override {}
+  // Gamepad
+  void OnGamepadAxis(int which, int axis, int value) override {}
+  void OnGamepadBtDown(int which, int button) override {}
+  void OnGamepadBtUp(int which, int button) override {}
+  void OnGamepadHat(int which, int hat, int value) override {}
+  void OnGamepadBall(int which, int ball, int xrel, int yrel) override {}
 };
 
 class InputHandler final : public InputObserver, public Singleton<InputHandler> {

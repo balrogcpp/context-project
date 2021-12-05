@@ -55,9 +55,9 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 #if HAVE_EFX
-#include "efx.hpp"
-#include "efx-util.hpp"
 #include "efx-creative.hpp"
+#include "efx-util.hpp"
+#include "efx.hpp"
 #include "xram.hpp"
 #endif
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC
@@ -83,9 +83,9 @@
 #define _OGGSOUND_EXPORT
 #endif
 #else  // Other Compilers
+#include "xram.hpp"
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
-#include "xram.hpp"
 #define _OGGSOUND_EXPORT
 #endif
 

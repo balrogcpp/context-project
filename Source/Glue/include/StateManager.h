@@ -13,15 +13,15 @@ class StateManager : public Singleton<StateManager> {
 
   void InitCurState();
   void InitNextState();
-  void SetInitialState(std::unique_ptr<AppState> &&next_state);
-  void Update(float time);
+  void SetInitialState(std::unique_ptr<AppState> &&InitialState);
+  void Update(float PassedTime);
   bool IsActive() const;
   bool IsDirty() const;
   void Pause();
   void Resume();
 
  protected:
-  std::unique_ptr<AppState> cur_state;
+  std::unique_ptr<AppState> CurrentState;
 };
 
 }  // namespace Glue

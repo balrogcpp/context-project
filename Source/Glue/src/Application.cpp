@@ -25,10 +25,10 @@ Application::Application() {
     auto *logger = new Ogre::LogManager();
 
 #ifdef DEBUG
-    logger->createLog(log_file, true, true, true);
+    logger->createLog(LogFileName, true, true, true);
     Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
 #else
-    logger->createLog(log_file, false, false, true);
+    logger->createLog(LogFileName, false, false, true);
     Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_NORMAL);
 #endif
 
@@ -39,27 +39,27 @@ Application::Application() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     DesktopIcon icon;
     icon.SetUp();
-    icon.Save("GlueSample");
+    icon.SaveToFile("GlueSample");
 #endif
 
-    engine = &Engine::GetInstance();
-    engine->InitSystems();
+    EnginePtr = &Engine::GetInstance();
+    EnginePtr->InitSystems();
 
-    state_manager_ = make_unique<StateManager>();
+    StateManagerPtr = make_unique<StateManager>();
 
-    GetConf().Get("verbose", verbose);
-    GetConf().Get("verbose_input", verbose_input);
+    GetConf().Get("verbose", Verbose);
+    GetConf().Get("verbose_input", VerboseInput);
 
-    if (verbose) {
-      log.reserve(10000);
+    if (Verbose) {
+      LogBuffer.reserve(10000);
     }
 
-    if (verbose_input) {
-      verbose_listener_ = make_unique<VerboseListener>();
+    if (VerboseInput) {
+      VerboseListenerPtr = make_unique<VerboseListener>();
     }
 
-    lock_fps = GetConf().Get<bool>("lock_fps");
-    target_fps_ = GetConf().Get<int>("target_fps");
+    LockFPS = GetConf().Get<bool>("lock_fps");
+    TargetFPS = GetConf().Get<int>("target_fps");
 
   } catch (Exception &e) {
     ExceptionMessage("Exception", e.GetDescription());
@@ -78,86 +78,82 @@ Application::~Application() {
 #endif
 }
 
-int Application::ExceptionMessage(const string &caption, const string &message) {
+int Application::ExceptionMessage(const string &WindowCaption, const string &MessageText) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   // GetWindow().Grab(false);
 #endif
 
-#ifdef _WIN32
-  MessageBox(nullptr, message.c_str(), caption.c_str(), MB_ICONERROR);
-#else
-  SDL_Log("%s", string(caption + " : " + message).c_str());
-  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption.c_str(), message.c_str(), nullptr);
-#endif
+  SDL_Log("%s", string(WindowCaption + " : " + MessageText).c_str());
+  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, WindowCaption.c_str(), MessageText.c_str(), nullptr);
 
   return 1;
 }
 
 void Application::WriteLogToFile() {
-  if (!verbose) {
+  if (!Verbose) {
     return;
   }
 
   ofstream f;
-  f.open(log_file);
+  f.open(LogFileName);
 
   if (f.is_open()) {
-    f << log;
+    f << LogBuffer;
   }
 }
-void Application::PrintLogToConsole() { cout << log << flush; }
+void Application::PrintLogToConsole() { cout << LogBuffer << flush; }
 
 void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml, bool maskDebug, const string &logName,
                                 bool &skipThisMessage) {
-  log.append(message);
-  log.append("\n");
+  LogBuffer.append(message);
+  LogBuffer.append("\n");
 
 #ifdef DEBUG
-  if (verbose) cout << message << '\n';
+  if (Verbose) cout << message << '\n';
 #endif
 }
 
 void Application::Loop() {
   bool suspend_old = false;
 
-  while (running && state_manager_->IsActive()) {
+  while (Running && StateManagerPtr->IsActive()) {
     auto before_frame = chrono::system_clock::now().time_since_epoch();
     int64_t micros_before_frame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
 
-    if (cumulated_time > int64_t(1e+6)) {
-      current_fps = fps_counter;
-      cumulated_time = 0;
-      fps_counter = 0;
+    if (CumultedTime > int64_t(1e+6)) {
+      CurrentFPS = FPSCounter;
+      CumultedTime = 0;
+      FPSCounter = 0;
     }
 
-    engine->Capture();
+    EnginePtr->Capture();
 
-    if (!suspend) {
-      if (state_manager_->IsDirty()) {
-        engine->Pause();
-        engine->Cleanup();
-        state_manager_->InitNextState();
-        engine->Resume();
+    if (!Suspend) {
+      if (StateManagerPtr->IsDirty()) {
+        EnginePtr->Pause();
+        EnginePtr->Cleanup();
+        StateManagerPtr->InitNextState();
+        EnginePtr->Resume();
       } else if (suspend_old) {
-        engine->Resume();
+        EnginePtr->Resume();
         suspend_old = false;
       }
 
       auto before_update = chrono::system_clock::now().time_since_epoch();
-      int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
-      float frame_time = static_cast<float>(micros_before_update - time_of_last_frame) / 1e+6;
-      time_of_last_frame = micros_before_update;
-      state_manager_->Update(frame_time);
-      engine->Update(frame_time);
-      engine->RenderOneFrame();
+      int64_t TimeBeforeUpdate = chrono::duration_cast<chrono::microseconds>(before_update).count();
+      float frame_time = static_cast<float>(TimeBeforeUpdate - TimeAsLastFrame) / 1e+6;
+      TimeAsLastFrame = TimeBeforeUpdate;
+      StateManagerPtr->Update(frame_time);
+      EnginePtr->Update(frame_time);
+      EnginePtr->RenderOneFrame();
 
     } else {
-      engine->Pause();
+      EnginePtr->Pause();
       suspend_old = true;
     }
 
 #ifdef DEBUG
-    if (verbose) {
+    if (Verbose) {
       cout << flush;
     }
 #endif
@@ -166,8 +162,8 @@ void Application::Loop() {
     auto micros_after_render = chrono::duration_cast<chrono::microseconds>(duration_after_render).count();
     auto render_time = micros_after_render - micros_before_frame;
 
-    if (lock_fps) {
-      auto delay = static_cast<int64_t>((1e+6 / target_fps_) - render_time);
+    if (LockFPS) {
+      auto delay = static_cast<int64_t>((1e+6 / TargetFPS) - render_time);
       if (delay > 0) {
         this_thread::sleep_for(chrono::microseconds(delay));
       }
@@ -177,41 +173,41 @@ void Application::Loop() {
     int64_t micros_after_loop = chrono::duration_cast<chrono::microseconds>(duration_after_loop).count();
 
     int64_t time_since_last_frame_ = micros_after_loop - micros_before_frame;
-    cumulated_time += time_since_last_frame_;
+    CumultedTime += time_since_last_frame_;
 
-    fps_counter++;
+    FPSCounter++;
   }
 
-  engine->Pause();
+  EnginePtr->Pause();
 }
 
 void Application::Go() {
-  if (state_manager_->IsActive()) {
-    state_manager_->InitCurState();
-    running = true;
+  if (StateManagerPtr->IsActive()) {
+    StateManagerPtr->InitCurState();
+    Running = true;
     auto duration_before_update = chrono::system_clock::now().time_since_epoch();
-    time_of_last_frame = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
+    TimeAsLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
     Loop();
   }
 }
 
-void Application::Quit() { running = false; }
+void Application::OnQuit() { Running = false; }
 
-void Application::Pause() {
-  suspend = true;
-  state_manager_->Pause();
-  engine->Pause();
+void Application::OnPause() {
+  Suspend = true;
+  StateManagerPtr->Pause();
+  EnginePtr->Pause();
 }
 
-void Application::Resume() {
-  suspend = false;
-  state_manager_->Resume();
-  engine->Resume();
+void Application::OnResume() {
+  Suspend = false;
+  StateManagerPtr->Resume();
+  EnginePtr->Resume();
 }
 
-void Application::Event(const SDL_Event &evt) {}
+void Application::OnEvent(const SDL_Event &Event) {}
 
-int Application::Main(unique_ptr<AppState> &&scene_ptr) {
+int Application::Main(unique_ptr<AppState> &&AppStatePtr) {
   try {
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC
     SDL_SetMainReady();
@@ -219,7 +215,7 @@ int Application::Main(unique_ptr<AppState> &&scene_ptr) {
 
     ios_base::sync_with_stdio(false);
 
-    state_manager_->SetInitialState(move(scene_ptr));
+    StateManagerPtr->SetInitialState(move(AppStatePtr));
     Go();
 
     WriteLogToFile();

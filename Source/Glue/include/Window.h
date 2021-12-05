@@ -14,31 +14,29 @@ class Window : public NoCopy {
   explicit Window(int w, int h, bool f);
   virtual ~Window();
 
- public:
   std::string GetCaption() const;
   void SetCaption(const std::string &caption);
   float GetRatio() const;
   std::pair<int, int> GetSize() const;
   bool IsFullscreen() const;
-  SDL_SysWMinfo GetInfo() const;
+  SDL_SysWMinfo GetSDLInfo() const;
   void Grab(bool grab);
   void SwapBuffers() const;
-  void Resize(int w, int h);
+  void Resize(int Width, int Height);
   void SetFullscreen(bool f);
 
  protected:
-  void InitGlContext();
+  void InitGLContext();
 
-  SDL_Window *window = nullptr;
-  SDL_GLContext gl_context = nullptr;
-
-  uint32_t flags_ = 0;
+  SDL_Window *SDLWindowPtr = nullptr;
+  SDL_GLContext SDLGLContextPtr = nullptr;
+  uint32_t SDLWindowFlags = 0;
   std::string caption_;
-  int w_ = 1024;
-  int h_ = 768;
-  bool f_ = false;
-  int screen_w_;
-  int screen_h_;
+  int WindowWidth = 1024;
+  int WindowHeight = 768;
+  bool FullScreen = false;
+  int ScreenWidth = 0;
+  int ScreenHeight = 0;
 };
 
 }  // namespace Glue

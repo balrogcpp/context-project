@@ -37,7 +37,7 @@ class RenderSystem final : public Component, public Singleton<RenderSystem> {
   Window& GetWindow();
   Compositor& GetCompositor();
 
- protected:
+ private:
   void InitOgrePlugins();
   void InitOgreRenderSystem();
   void InitOgreRenderSystemGL3();
@@ -47,18 +47,18 @@ class RenderSystem final : public Component, public Singleton<RenderSystem> {
   void InitTextureSettings();
   void InitShadowSettings();
 
-  std::string render_system;
+  std::string RenderSystemName;
   std::unique_ptr<Window> window;
   std::unique_ptr<Compositor> compositor;
-  std::unique_ptr<Overlay> overlay;
-  std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssm;
-  std::vector<float> split_points;
-  const size_t pssm_split_count = 3;
-  Ogre::Root* ogre_root = nullptr;
-  Ogre::SceneManager* scene = nullptr;
-  Ogre::Camera* camera = nullptr;
-  Ogre::Viewport* viewport = nullptr;
-  Ogre::RenderWindow* render_window = nullptr;
+  std::unique_ptr<Overlay> OverlayPtr;
+  std::shared_ptr<Ogre::PSSMShadowCameraSetup> PSSMSetupPtr;
+  std::vector<float> PSSMSplitPointList;
+  const size_t PSSMSplitCount = 3;
+  Ogre::Root* OgreRoot = nullptr;
+  Ogre::SceneManager* OgreSceneManager = nullptr;
+  Ogre::Camera* OgreCamera = nullptr;
+  Ogre::Viewport* OgreViewport = nullptr;
+  Ogre::RenderWindow* OgreRenderWindowPtr = nullptr;
 };
 
 }  // namespace Glue
