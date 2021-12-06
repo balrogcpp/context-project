@@ -4,8 +4,8 @@
 !/Assets/
 !/CMake/
 !/Source/
-!/Thirdparty/CMakeLists.txt/
-!/Thirdparty/Patch/
+!/ThirdParty/CMakeLists.txt/
+!/ThirdParty/Patch/
 !/Deploy/
 !/Programs/
 !/Tests/

@@ -3,7 +3,7 @@ services:
   glue-dep-linux:
     build:
       context: .
-      dockerfile: Docker/Thirdparty/linux-glue-dep.Dockerfile
+      dockerfile: Docker/ThirdParty/linux-glue-dep.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: linux-glue-dep
@@ -13,7 +13,7 @@ services:
   glue-dep-windows:
     build:
       context: .
-      dockerfile: Docker/Thirdparty/windows-glue-dep.Dockerfile
+      dockerfile: Docker/ThirdParty/windows-glue-dep.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: windows-glue-dep
@@ -23,7 +23,7 @@ services:
   glue-dep-apple:
     build:
       context: .
-      dockerfile: Docker/Thirdparty/apple-glue-dep.Dockerfile
+      dockerfile: Docker/ThirdParty/apple-glue-dep.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: apple-glue-dep
@@ -33,7 +33,7 @@ services:
   glue-dep-android:
     build:
       context: .
-      dockerfile: Docker/Thirdparty/android-glue-dep.Dockerfile
+      dockerfile: Docker/ThirdParty/android-glue-dep.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
     container_name: android-glue-dep

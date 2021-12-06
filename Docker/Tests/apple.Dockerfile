@@ -12,11 +12,11 @@ COPY ./LICENSE .
 COPY ./Programs ./Programs
 COPY ./Assets ./Assets
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./Thirdparty/CMakeLists.txt ./Thirdparty/CMakeLists.txt
+COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
 COPY ./Android ./Android
 
-RUN mkdir -p ${CONTEXT_HOME}/Thirdparty/External \
-    && cd ${CONTEXT_HOME}/Thirdparty/External \
+RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
+    && cd ${CONTEXT_HOME}/ThirdParty/External \
     && wget https://github.com/balrogcpp/glue-dep/raw/master/Darwin_x86_64_Clang_Release.tar.xz  -O - | tar -xJ
 
 RUN cmake -P CMake/FlatZipAssets.cmake

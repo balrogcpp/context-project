@@ -12,7 +12,7 @@ COPY ./LICENSE .
 COPY ./Programs ./Programs
 COPY ./Assets ./Assets
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./Thirdparty/CMakeLists.txt ./Thirdparty/CMakeLists.txt
+COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
 
 RUN mkdir -p ${CONTEXT_HOME}/Thirdparty/External \
     && cd ${CONTEXT_HOME}/Thirdparty/External \

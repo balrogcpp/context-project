@@ -26,7 +26,7 @@ make_directory(${GLUE_ARTIFACT_DIR})
 
 
 # Insert dependencies
-add_subdirectory(${CMAKE_SOURCE_DIR}/Thirdparty)
+add_subdirectory(${CMAKE_SOURCE_DIR}/ThirdParty)
 
 
 set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
@@ -96,7 +96,7 @@ add_custom_target(DockerCompose
 
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(AndroidDummy SHARED Android/app/src/main/cpp/main.cpp)
-    add_dependencies(AndroidDummy Thirdparty)
+    add_dependencies(AndroidDummy ThirdParty)
 endif ()
 if (ANY_NOT_FOUND)
     return()
