@@ -2,7 +2,7 @@
 
 #pragma once
 #include "Component.h"
-#include "Singleton.h"
+#include "LazySingleton.h"
 #include <memory>
 #include <string>
 
@@ -18,7 +18,7 @@ class GBufferSchemeHandler;
 
 namespace Glue {
 
-class Compositor : public Component, public Singleton<Compositor> {
+class Compositor : public Component, public DynamicSingleton<Compositor> {
  public:
   Compositor();
   virtual ~Compositor();

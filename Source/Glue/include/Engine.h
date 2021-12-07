@@ -4,12 +4,12 @@
 #include "AppState.h"
 #include "AudioSystem.h"
 #include "DotSceneLoaderB.h"
+#include "LazySingleton.h"
 #include "Engine.h"
 #include "InputHandler.h"
 #include "Overlay.h"
 #include "PhysicsSystem.h"
 #include "RenderSystem.h"
-#include "Singleton.h"
 #include <memory>
 #include <vector>
 
@@ -40,7 +40,7 @@ class Engine : public LazySingleton<Engine> {
   std::unique_ptr<AudioSystem> as;
   std::unique_ptr<Overlay> overlay;
   std::unique_ptr<DotSceneLoaderB> loader;
-  std::vector<Component*> components;
+  std::vector<Component*> ComponentList;
 
   friend InputHandler& GetIo();
   friend Config& GetConf();

@@ -11,7 +11,6 @@ class DesktopIcon : public NoCopy {
   DesktopIcon();
   virtual ~DesktopIcon();
 
-  void SetUp();
   void SaveToFile(const std::string &icon_name);
 
  protected:
@@ -22,7 +21,7 @@ class DesktopIcon : public NoCopy {
   std::string icon_name;
   std::map<std::string, std::string> properties;
   std::string output;
-  const std::string skeleton;
+  std::string skeleton;
 };
 
 }  // namespace Glue

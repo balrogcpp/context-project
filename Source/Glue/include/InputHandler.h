@@ -2,8 +2,8 @@
 
 #pragma once
 #include "Component.h"
+#include "LazySingleton.h"
 #include "Input.h"
-#include "Singleton.h"
 #include <vector>
 
 namespace Glue {
@@ -37,7 +37,7 @@ class MutedInputObserver : public IInputObserver {
   void OnGamepadBall(int which, int ball, int xrel, int yrel) override {}
 };
 
-class InputHandler final : public InputObserver, public Singleton<InputHandler> {
+class InputHandler final : public InputObserver, public DynamicSingleton<InputHandler> {
  public:
   InputHandler();
   virtual ~InputHandler();

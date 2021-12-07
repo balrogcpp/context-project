@@ -17,10 +17,11 @@ Config::Config(const string &FileName) {
 Config::~Config() {}
 
 void Config::Load(const string &FileName) {
+  Assert(FileName.empty(), "Provided conf file name is empty");
   ifstream ifs(AssetLoader::FindPath(FileName));
 
   if (!ifs.is_open()) {
-    throw Exception("Error during parsing of " + FileName + " : can't open file");
+    Throw("Error during parsing of " + FileName + " : can't open file");
   }
 
   ifs >> Document;

@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
+#include "LazySingleton.h"
 #include "Engine.h"
-#include "Singleton.h"
 #include "StateManager.h"
 #include "VerboseListener.h"
 #include <OgreLog.h>
@@ -11,7 +11,7 @@
 
 namespace Glue {
 
-class Application final : public WindowObserver, public Ogre::LogListener, public Singleton<Application> {
+class Application final : public WindowObserver, public Ogre::LogListener, public DynamicSingleton<Application> {
  public:
   Application();
   virtual ~Application();

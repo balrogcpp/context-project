@@ -4,10 +4,10 @@
 #include "CameraMan.h"
 #include "Component.h"
 #include "CubeMapCamera.h"
+#include "LazySingleton.h"
 #include "Input.h"
 #include "Landscape.h"
 #include "ReflectionCamera.h"
-#include "Singleton.h"
 #include "VegetationSystem.h"
 #include <OgreCodec.h>
 #include <OgrePlugin.h>
@@ -49,7 +49,7 @@ Ogre::Vector3 ParseScale(const pugi::xml_node &XmlNode);
 Ogre::Quaternion ParseRotation(const pugi::xml_node &XmlNode);
 Ogre::ColourValue ParseColour(pugi::xml_node &XmlNode);
 
-class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB> {
+class DotSceneLoaderB final : public Component, public DynamicSingleton<DotSceneLoaderB> {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();

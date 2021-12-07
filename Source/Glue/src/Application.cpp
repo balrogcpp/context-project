@@ -35,11 +35,10 @@ Application::Application() {
     Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
 #endif
 
-//#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-//    DesktopIcon icon;
-//    icon.SetUp();
-//    icon.SaveToFile("GlueSample");
-//#endif
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+    DesktopIcon icon;
+    icon.SaveToFile("GlueSample");
+#endif
 
     EnginePtr = &Engine::GetInstance();
     EnginePtr->InitSystems();

@@ -2,7 +2,7 @@
 
 #pragma once
 #include "Component.h"
-#include "Singleton.h"
+#include "LazySingleton.h"
 #include <string>
 
 namespace OgreOggSound {
@@ -10,7 +10,7 @@ class OgreOggSoundManager;
 }
 
 namespace Glue {
-class AudioSystem final : public Component, public Singleton<AudioSystem> {
+class AudioSystem final : public Component, public DynamicSingleton<AudioSystem> {
  public:
   AudioSystem(unsigned int MaxSourceCount = 16, unsigned int QueueListSize = 4);
   virtual ~AudioSystem();

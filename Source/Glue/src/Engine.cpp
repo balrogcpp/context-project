@@ -30,7 +30,7 @@ Engine::Engine() {
 #endif
 
   Component::SetConfig(config.get());
-  components.reserve(16);
+  ComponentList.reserve(16);
 
   io = make_unique<InputHandler>();
 }
@@ -44,9 +44,7 @@ void Engine::InitSystems() {
   rs = make_unique<RenderSystem>(window_width, window_high, window_fullscreen);
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  bool physics_threaded = false;  // cause strange behavior sometimes
-  config->Get("physics_threaded", physics_threaded);
-  ps = make_unique<PhysicsSystem>(physics_threaded);
+  ps = make_unique<PhysicsSystem>();
   as = make_unique<AudioSystem>(8, 8);
 #else
   ps = make_unique<PhysicsSystem>(false);
@@ -63,10 +61,10 @@ void Engine::Capture() {
   io.Capture();
 }
 
-void Engine::RegSystem(Component* system) { components.push_back(system); }
+void Engine::RegSystem(Component* system) { ComponentList.push_back(system); }
 
 void Engine::Pause() {
-  for_each(components.begin(), components.end(), [](Component* it) { it->Pause(); });
+  for_each(ComponentList.begin(), ComponentList.end(), [](Component* it) { it->Pause(); });
 }
 
 void Engine::InMenu() {
@@ -82,16 +80,16 @@ void Engine::OffMenu() {
 }
 
 void Engine::Resume() {
-  for_each(components.begin(), components.end(), [](Component* it) { it->Resume(); });
+  for_each(ComponentList.begin(), ComponentList.end(), [](Component* it) { it->Resume(); });
 }
 
 void Engine::Cleanup() {
-  for_each(components.begin(), components.end(), [](Component* it) { it->Cleanup(); });
+  for_each(ComponentList.begin(), ComponentList.end(), [](Component* it) { it->Cleanup(); });
   Refresh();
 }
 
 void Engine::Update(float time) {
-  for_each(components.begin(), components.end(), [time](Component* it) { it->Update(time); });
+  for_each(ComponentList.begin(), ComponentList.end(), [time](Component* it) { it->Update(time); });
 }
 
 void Engine::RenderOneFrame() { rs->RenderOneFrame(); }

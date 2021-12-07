@@ -3,8 +3,8 @@
 #pragma once
 #include "Component.h"
 #include "Compositor.h"
+#include "LazySingleton.h"
 #include "Overlay.h"
-#include "Singleton.h"
 #include "Window.h"
 #include <memory>
 #include <vector>
@@ -19,7 +19,7 @@ class RenderWindow;
 
 namespace Glue {
 
-class RenderSystem final : public Component, public Singleton<RenderSystem> {
+class RenderSystem final : public Component, public DynamicSingleton<RenderSystem> {
  public:
   RenderSystem(int w, int h, bool f);
   virtual ~RenderSystem();

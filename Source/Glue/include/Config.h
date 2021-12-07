@@ -1,13 +1,13 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
+#include "LazySingleton.h"
 #include "Exception.h"
-#include "Singleton.h"
 #include <nlohmann/json.hpp>
 
 namespace Glue {
 
-class Config : public Singleton<Config> {
+class Config : public DynamicSingleton<Config> {
  public:
   explicit Config(const std::string &FileName);
 
