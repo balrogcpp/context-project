@@ -5,8 +5,8 @@ ARG CONTEXT_HOME=/mnt/build
 ARG GIT_HASH=00000000
 WORKDIR ${CONTEXT_HOME}
 
-COPY ./Thirdparty/CMakeLists.txt ./Thirdparty/CMakeLists.txt
-COPY ./Thirdparty/Patch ./Thirdparty/Patch
+COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
+COPY ./ThirdParty/Patch ./ThirdParty/Patch
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./CMake ./CMake
 
@@ -17,10 +17,10 @@ RUN apt-get update \
      && export CC=clang \
      && export CXX=clang++ \
      && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -G Ninja .. \
-     && cmake --build . --target Thirdparty
+     && cmake --build . --target ThirdParty
 
-RUN cd ${CONTEXT_HOME}/Thirdparty/External/Linux_x86_64_Clang_Release \
+RUN cd ${CONTEXT_HOME}/ThirdParty/External/Linux_x86_64_Clang_Release \
     && rm -rf src tmp \
-    && cd  ${CONTEXT_HOME}/Thirdparty/External \
+    && cd  ${CONTEXT_HOME}/ThirdParty/External \
     && tar cfJ Linux_x86_64_Clang_Release.tar.xz Linux_x86_64_Clang_Release \
     && mv Linux_x86_64_Clang_Release.tar.xz ${CONTEXT_HOME}/Artifacts
