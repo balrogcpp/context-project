@@ -15,7 +15,7 @@
 
 namespace Glue {
 
-class Engine : public LazySingleton<Engine> {
+class Engine final : public LazySingleton<Engine> {
  public:
   Engine();
   virtual ~Engine();
@@ -32,7 +32,7 @@ class Engine : public LazySingleton<Engine> {
   void RenderOneFrame();
   void RegSystem(Component* system);
 
- protected:
+ private:
   std::unique_ptr<InputHandler> io;
   std::unique_ptr<Config> config;
   std::unique_ptr<RenderSystem> rs;

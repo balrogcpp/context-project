@@ -77,7 +77,7 @@ Application::~Application() {
 }
 
 int Application::ExceptionMessage(const string &WindowCaption, const string &MessageText) {
-  GetWindow().Grab(false);
+  //GetWindow().Grab(false);
 
   SDL_Log("%s", string(WindowCaption + " : " + MessageText).c_str());
   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, WindowCaption.c_str(), MessageText.c_str(), nullptr);

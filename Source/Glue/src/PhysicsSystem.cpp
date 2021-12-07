@@ -6,6 +6,7 @@
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
+#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 
 using namespace std;
 
@@ -37,9 +38,6 @@ PhysicsSystem::PhysicsSystem(bool threaded) : threaded(threaded) {
   }
 
   running = true;
-
-  InitThread();
-
   pause = false;
 }
 
@@ -47,43 +45,6 @@ PhysicsSystem::~PhysicsSystem() {
   running = false;
 
   Cleanup();
-}
-
-void PhysicsSystem::InitThread() {
-  if (!threaded) return;
-
-  time_of_last_frame =
-      chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-
-  function<void(void)> update_func_ = [&]() {
-    while (running) {
-      auto before_update = chrono::system_clock::now().time_since_epoch();
-      int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
-      float frame_time = static_cast<float>(micros_before_update - time_of_last_frame) / 1e+6;
-      time_of_last_frame = micros_before_update;
-
-      // Actually do calculations
-      if (!pause) {
-        world->stepSimulation(frame_time, steps, 1.0f / update_rate);
-
-        if (debug) dbg_draw->step();
-
-        DispatchCollisions();
-      }
-      // Actually do calculations
-
-      auto after_update = chrono::system_clock::now().time_since_epoch();
-      int64_t micros_after_update = chrono::duration_cast<chrono::microseconds>(after_update).count();
-
-      auto update_time = micros_after_update - micros_before_update;
-
-      auto delay = static_cast<int64_t>((1e+6 / update_rate) - update_time);
-      if (delay > 0) this_thread::sleep_for(chrono::microseconds(delay));
-    }
-  };
-
-  update_thread = make_unique<thread>(update_func_);
-  update_thread->detach();
 }
 
 void PhysicsSystem::Resume() { pause = false; }
@@ -97,57 +58,7 @@ void PhysicsSystem::Update(float time) {
 
   world->stepSimulation(time, steps, 1.0f / update_rate);
 
-  if (debug) dbg_draw->step();
-
-  DispatchCollisions();
-}
-
-void PhysicsSystem::DispatchCollisions() {
-  //  map<const btCollisionObject *, ContactInfo> new_contacts;
-
-  /* Browse all collision pairs */
-
-  //  for (size_t i = 0; i < world_->getDispatcher()->getNumManifolds(); i++) {
-  //    btPersistentManifold *manifold = world_->getDispatcher()->getManifoldByIndexInternal(i);
-  //    auto *obA = manifold->getBody0();
-  //    auto *obB = manifold->getBody1();
-
-  /* Check all contacts points */
-  //    for (size_t j = 0; j < manifold->getNumContacts(); j++) {
-  //      btManifoldPoint &pt = manifold->getContactPoint(j);
-  //      if (pt.getDistance() < 1E-6) {
-  //        const btVector3 &ptA = pt.getPositionWorldOnA();
-  //        const btVector3 &ptB = pt.getPositionWorldOnB();
-  //        const btVector3 &normalOnB = pt.m_normalWorldOnB;
-  //        if (new_contacts.find(obA) == new_contacts.end())
-  //          new_contacts[obA] = {obB, manifold->getNumContacts()};
-  //      }
-  //    }
-  //  }
-
-  /* Check for added contacts ... */
-  //  for (const auto &it : new_contacts) {
-  //    bool detected = false;
-  //    if (contacts_.find(it.first) == contacts_.end()) {
-  //      detected = true;
-  //    } else {
-  //      contacts_.erase(it.first);
-  //            if (new_contacts[it.first].points_ == contacts_[it.first].points_)
-  //            {
-  //              contacts_.erase(it.first);
-  //            } else {
-  //              detected = true;
-  //            }
-  //    }
-
-  //    if (detected && callback_) callback_(it.first->getUserIndex(), it.first->getUserIndex());
-  //  }
-
-  /* ... and removed contacts */
-  //  for (const auto &it : contacts_) {
-  //  }
-  //  contacts_.clear();
-  //  contacts_ = new_contacts;
+  //if (debug) dbg_draw->update();
 }
 
 void PhysicsSystem::Cleanup() {
@@ -222,7 +133,7 @@ void PhysicsSystem::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent_no
       converter = make_unique<BtOgre::StaticMeshToShapeConverter>(
           entity->getManualLodLevel(entity->getNumManualLodLevels() - 1));
     else
-      converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity, parent_node);
+      converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
 
     if (proxy_type == PROXY_CAPSULE) {
       auto *entShape = converter->createCapsule();
@@ -416,14 +327,14 @@ void PhysicsSystem::ProcessData(Ogre::UserObjectBindings &user_object_bindings, 
   if (physics_type == TYPE_STATIC) {
     unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
 
-    if (proxy_type.find(".mesh") != string::npos) {
-      Ogre::MeshManager::getSingleton().load(proxy_type, Ogre::RGN_AUTODETECT);
-      auto mesh = Ogre::MeshManager::getSingleton().getByName(proxy_type);
-      converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity, mesh);
-      proxy_type = PROXY_TRIMESH;
-    } else {
+//    if (proxy_type.find(".mesh") != string::npos) {
+//      Ogre::MeshManager::getSingleton().load(proxy_type, Ogre::RGN_AUTODETECT);
+//      auto mesh = Ogre::MeshManager::getSingleton().getByName(proxy_type);
+//      converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity, mesh);
+//      proxy_type = PROXY_TRIMESH;
+//    } else {
       converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
-    }
+//    }
 
     if (proxy_type == PROXY_CAPSULE) {
       auto *entShape = converter->createCapsule();
@@ -464,20 +375,20 @@ void PhysicsSystem::ProcessData(Ogre::UserObjectBindings &user_object_bindings, 
     unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
     btVector3 inertia;
 
-    if (proxy_type.find(".mesh") != string::npos) {
-      Ogre::MeshManager::getSingleton().load(proxy_type, Ogre::RGN_AUTODETECT);
-      auto mesh = Ogre::MeshManager::getSingleton().getByName(proxy_type);
-      converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity, mesh);
-      proxy_type = PROXY_TRIMESH;
-    } else {
-      if (entity->getMesh()->getNumLodLevels() > 0) {
-        auto lod = entity->getMesh()->getLodLevel(entity->getMesh()->getNumLodLevels() - 1).manualMesh;
-        Ogre::MeshManager::getSingleton().load("Cube.mesh", Ogre::RGN_DEFAULT);
-        converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity, lod);
-      } else {
+//    if (proxy_type.find(".mesh") != string::npos) {
+//      Ogre::MeshManager::getSingleton().load(proxy_type, Ogre::RGN_AUTODETECT);
+//      auto mesh = Ogre::MeshManager::getSingleton().getByName(proxy_type);
+//      converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity, mesh);
+//      proxy_type = PROXY_TRIMESH;
+//    } else {
+//      if (entity->getMesh()->getNumLodLevels() > 0) {
+//        auto lod = entity->getMesh()->getLodLevel(entity->getMesh()->getNumLodLevels() - 1).manualMesh;
+//        Ogre::MeshManager::getSingleton().load("Cube.mesh", Ogre::RGN_DEFAULT);
+//        converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity, lod);
+//      } else {
         converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
-      }
-    }
+//      }
+//    }
     if (proxy_type == PROXY_CAPSULE) {
       auto *entShape = converter->createCapsule();
       entShape->calculateLocalInertia(mass, inertia);
@@ -592,6 +503,5 @@ void PhysicsSystem::ProcessData(Ogre::UserObjectBindings &user_object_bindings, 
     AddRigidBody(entBody);
   }
 }
-bool PhysicsSystem::IsThreaded() const { return threaded; }
 
 }  // namespace Glue

@@ -51,7 +51,6 @@ class PhysicsSystem final : public Component, public DynamicSingleton<PhysicsSys
   void Resume() override;
   void Pause() override;
 
-  void DispatchCollisions();
   void AddRigidBody(btRigidBody *body);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);
   void ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent_node = nullptr, const std::string &proxy_type = "box",
@@ -61,13 +60,7 @@ class PhysicsSystem final : public Component, public DynamicSingleton<PhysicsSys
   void CreateTerrainHeightfieldShape(int size, float *data, const float &min_height, const float &max_height,
                                      const Ogre::Vector3 &position, const float &scale);
 
-  void SetCallback(const std::function<void(int a, int b)> &callback) { this->callback = callback; }
-
-  bool IsThreaded() const;
-
- protected:
-  void InitThread();
-
+ private:
   std::unique_ptr<BtOgre::DebugDrawer> dbg_draw;
   std::unique_ptr<btDbvtBroadphase> broadphase;
   std::unique_ptr<btDefaultCollisionConfiguration> config;
@@ -82,7 +75,7 @@ class PhysicsSystem final : public Component, public DynamicSingleton<PhysicsSys
   int64_t update_rate = 60;
   bool pause = true;
   bool running = false;
-  bool debug = false;
+  bool debug = true;
   int64_t time_of_last_frame = 0;
   int64_t cumulated_time_ = 0;
   const std::string TYPE_STATIC = "static";

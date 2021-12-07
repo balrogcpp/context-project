@@ -17,4 +17,4 @@ class LazySingleton : public DynamicSingleton<T> {
   }
 };
 
-}
+}  // namespace Glue

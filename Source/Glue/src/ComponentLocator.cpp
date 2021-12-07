@@ -8,53 +8,53 @@
 namespace Glue {
 
 InputHandler& GetIo() {
-  static auto& io = *Engine::GetInstance().io;
-  return io;
+  static auto& InputComponentPtr = *Engine::GetInstance().io;
+  return InputComponentPtr;
 }
 
 Config& GetConf() {
-  static auto& config = *Engine::GetInstance().config;
-  return config;
+  static auto& ConfigPtr = *Engine::GetInstance().config;
+  return ConfigPtr;
 }
 
 Engine& GetEngine() {
-  static auto& engine = Engine::GetInstance();
-  return engine;
+  static auto& EnginePtr = Engine::GetInstance();
+  return EnginePtr;
 }
 
 RenderSystem& GetRS() {
-  static auto& renderer = *Engine::GetInstance().rs;
-  return renderer;
+  static auto& RenderComponentPtr = *Engine::GetInstance().rs;
+  return RenderComponentPtr;
 }
 
 Window& GetWindow() {
-  static auto& window = GetRS().GetWindow();
-  return window;
+  static auto& WindowPtr = GetRS().GetWindow();
+  return WindowPtr;
 }
 
 Compositor& GetCompositor() {
-  static auto& compositor = GetRS().GetCompositor();
-  return compositor;
+  static auto& CompositorComponentPtr = GetRS().GetCompositor();
+  return CompositorComponentPtr;
 }
 
 PhysicsSystem& GetPhysics() {
-  static auto& physics = *Engine::GetInstance().ps;
-  return physics;
+  static auto& PhysicsComponentPtr = *Engine::GetInstance().ps;
+  return PhysicsComponentPtr;
 }
 
 AudioSystem& GetAudio() {
-  static auto& audio = *Engine::GetInstance().as;
-  return audio;
+  static auto& AudioComponentPtr = *Engine::GetInstance().as;
+  return AudioComponentPtr;
 }
 
 Overlay& GetOverlay() {
-  static auto& overlay = *Engine::GetInstance().overlay;
-  return overlay;
+  static auto& OverlayComponentPtr = *Engine::GetInstance().overlay;
+  return OverlayComponentPtr;
 }
 
 DotSceneLoaderB& GetLoader() {
-  static auto& loader = *Engine::GetInstance().loader;
-  return loader;
+  static auto& LoaderPtr = *Engine::GetInstance().loader;
+  return LoaderPtr;
 }
 
 }  // namespace Glue
