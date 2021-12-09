@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "Overlay.h"
+#include "Components/Overlay.h"
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlay.h>

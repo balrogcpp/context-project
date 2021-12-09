@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Input.h"
+#include "PhysicalInput/Input.h"
 extern "C" {
 #include <SDL2/SDL_keycode.h>
 }

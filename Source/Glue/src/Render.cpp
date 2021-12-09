@@ -1,12 +1,12 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "RenderSystem.h"
+#include "Render.h"
 #include "AssetLoader.h"
+#include "Components/DotSceneLoaderB.h"
 #include "Config.h"
-#include "DotSceneLoaderB.h"
 #include "Exception.h"
-#include "RtssUtils.h"
+#include "RTSSUtils.h"
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
 #endif
@@ -38,7 +38,7 @@ using namespace Ogre;
 
 namespace Glue {
 
-RenderSystem::RenderSystem(int w, int h, bool f) {
+Render::Render(int w, int h, bool f) {
   OgreRoot = new Root("");
 
   ConfPtr->Get("render_system", RenderSystemName);
@@ -83,9 +83,9 @@ RenderSystem::RenderSystem(int w, int h, bool f) {
   InitShadowSettings();
 }
 
-RenderSystem::~RenderSystem() {}
+Render::~Render() {}
 
-void RenderSystem::InitOgrePlugins() {
+void Render::InitOgrePlugins() {
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
 #endif
@@ -111,7 +111,7 @@ void RenderSystem::InitOgrePlugins() {
   Root::getSingleton().installPlugin(new DotScenePluginB());
 }
 
-void RenderSystem::InitOgreRenderSystem() {
+void Render::InitOgreRenderSystem() {
   if (RenderSystemName == "gl3") {
     InitOgreRenderSystemGL3();
   } else if (RenderSystemName == "gles2") {
@@ -125,7 +125,7 @@ void RenderSystem::InitOgreRenderSystem() {
   }
 }
 
-void RenderSystem::InitOgreRenderSystemGL3() {
+void Render::InitOgreRenderSystemGL3() {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   auto *gl3plus_render_system = new GL3PlusRenderSystem();
   gl3plus_render_system->setConfigOption("Separate Shader Objects", "Yes");
@@ -133,7 +133,7 @@ void RenderSystem::InitOgreRenderSystemGL3() {
 #endif
 }
 
-void RenderSystem::InitRenderWindow() {
+void Render::InitRenderWindow() {
   NameValuePairList params;
 
   SDL_SysWMinfo info = window->GetSDLInfo();
@@ -187,7 +187,7 @@ void RenderSystem::InitRenderWindow() {
   OgreRenderWindowPtr = Root::getSingleton().createRenderWindow("DefaultWindow", 1920, 1080, false, &params);
 }
 
-void RenderSystem::InitResourceLocation() {
+void Render::InitResourceLocation() {
   const string internal_group = RGN_INTERNAL;
   const string default_group = RGN_DEFAULT;
 
@@ -229,7 +229,7 @@ void RenderSystem::InitResourceLocation() {
 #endif
 }
 
-void RenderSystem::InitShadowSettings() {
+void Render::InitShadowSettings() {
   bool shadows_enable = true;
   float shadow_far = 400;
   int16_t tex_size = 256;
@@ -292,7 +292,7 @@ void RenderSystem::InitShadowSettings() {
 #endif
 }
 
-void RenderSystem::InitTextureSettings() {
+void Render::InitTextureSettings() {
   string filtration = ConfPtr->Get<string>("filtration");
   unsigned int anisotropy = 4;
 
@@ -314,26 +314,26 @@ void RenderSystem::InitTextureSettings() {
   MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 
-void RenderSystem::Cleanup() {}
+void Render::Cleanup() {}
 
-void RenderSystem::Pause() {}
+void Render::Pause() {}
 
-void RenderSystem::Resume() {}
+void Render::Resume() {}
 
-void RenderSystem::Update(float time) {}
+void Render::Update(float time) {}
 
-void RenderSystem::Refresh() {
+void Render::Refresh() {
   InitShadowSettings();
   compositor->SetUp();
 }
 
-void RenderSystem::Resize(int w, int h, bool f) {
+void Render::Resize(int w, int h, bool f) {
   window->SetFullscreen(f);
   window->Resize(w, h);
   OgreRenderWindowPtr->resize(w, h);
 }
 
-void RenderSystem::RestoreFullscreenAndroid_() {
+void Render::RestoreFullscreenAndroid_() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   SDL_DisplayMode DM;
   SDL_GetDesktopDisplayMode(0, &DM);
@@ -343,15 +343,15 @@ void RenderSystem::RestoreFullscreenAndroid_() {
 #endif
 }
 
-void RenderSystem::RenderOneFrame() {
+void Render::RenderOneFrame() {
   OgreRoot->renderOneFrame();
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   window->SwapBuffers();
 #endif
 }
 
-Window &RenderSystem::GetWindow() { return *window; }
+Window &Render::GetWindow() { return *window; }
 
-Compositor &RenderSystem::GetCompositor() { return *compositor; }
+Compositor &Render::GetCompositor() { return *compositor; }
 
 }  // namespace Glue

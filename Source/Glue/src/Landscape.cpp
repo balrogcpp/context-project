@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "Landscape.h"
-#include "ComponentLocator.h"
+#include "Components/Landscape.h"
+#include "Components/ComponentLocator.h"
 #include "TerrainMaterialGeneratorB.h"
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <Terrain/OgreTerrain.h>

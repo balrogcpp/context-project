@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "Application.h"
-#include "ComponentLocator.h"
+#include "Components/ComponentLocator.h"
 #include "DesktopIcon.h"
 #include "Exception.h"
 #include <fstream>
@@ -43,7 +43,7 @@ Application::Application() {
     EnginePtr = &Engine::GetInstance();
     EnginePtr->InitSystems();
 
-    StateManagerPtr = make_unique<StateManager>();
+    StateManagerPtr = make_unique<AppStateManager>();
 
     GetConf().Get("verbose", Verbose);
     GetConf().Get("verbose_input", VerboseInput);
@@ -77,8 +77,9 @@ Application::~Application() {
 }
 
 int Application::ExceptionMessage(const string &WindowCaption, const string &MessageText) {
-  //GetWindow().Grab(false);
-
+#ifdef DEBUG
+  GetWindow().Grab(false);
+#endif
   SDL_Log("%s", string(WindowCaption + " : " + MessageText).c_str());
   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, WindowCaption.c_str(), MessageText.c_str(), nullptr);
 

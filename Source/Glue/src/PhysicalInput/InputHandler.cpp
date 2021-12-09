@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "InputHandler.h"
-#include "ComponentLocator.h"
+#include "PhysicalInput/InputHandler.h"
+#include "Components/ComponentLocator.h"
 
 using namespace std;
 
@@ -33,12 +33,12 @@ void InputHandler::UnregObserver(MutedInputObserver *p) {
 
 void InputHandler::OnKeyDown(SDL_Keycode sym) {
   if (!paused_) {
-    for_each(io_listeners.begin(), io_listeners.end(), [=](auto it) { it->OnKeyDown(sym); });
+    for (auto &it : io_listeners) it->OnKeyDown(sym);
   }
 }
 
 void InputHandler::OnKeyUp(SDL_Keycode sym) {
-  for_each(io_listeners.begin(), io_listeners.end(), [=](auto it) { it->OnKeyUp(sym); });
+  for (auto &it : io_listeners) it->OnKeyUp(sym);
 }
 
 void InputHandler::OnTextInput(const char *text) {}
@@ -47,56 +47,55 @@ void InputHandler::OnTextInput(const char *text) {}
 
 void InputHandler::OnMouseMove(int dx, int dy) {
   if (!paused_) {
-    for_each(io_listeners.begin(), io_listeners.end(), [=](auto it) { it->OnMouseMove(dx, dy); });
+    for (auto &it : io_listeners) it->OnMouseMove(dx, dy);
   }
 }
 
 void InputHandler::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   if (!paused_) {
-    for_each(io_listeners.begin(), io_listeners.end(),
-             [=](auto it) { it->OnMouseMove(x, y, dx, dy, left, right, middle); });
+    for (auto &it : io_listeners) it->OnMouseMove(x, y, dx, dy, left, right, middle);
   }
 }
 
 void InputHandler::OnMouseWheel(int x, int y) {
   if (!paused_) {
-    for_each(io_listeners.begin(), io_listeners.end(), [=](auto it) { it->OnMouseWheel(x, y); });
+    for (auto &it : io_listeners) it->OnMouseWheel(x, y);
   }
 }
 
 void InputHandler::OnMouseLbDown(int x, int y) {
   if (!paused_) {
-    for_each(io_listeners.begin(), io_listeners.end(), [=](auto it) { it->OnMouseLbDown(x, y); });
+    for (auto &it : io_listeners) it->OnMouseLbDown(x, y);
   }
 }
 
 void InputHandler::OnMouseLbUp(int x, int y) {
   if (!paused_) {
-    for_each(io_listeners.begin(), io_listeners.end(), [=](auto it) { it->OnMouseLbUp(x, y); });
+    for (auto &it : io_listeners) it->OnMouseLbUp(x, y);
   }
 }
 
 void InputHandler::OnMouseRbDown(int x, int y) {
   if (!paused_) {
-    for_each(io_listeners.begin(), io_listeners.end(), [=](auto it) { it->OnMouseRbDown(x, y); });
+    for (auto &it : io_listeners) it->OnMouseRbDown(x, y);
   }
 }
 
 void InputHandler::OnMouseRbUp(int x, int y) {
   if (!paused_) {
-    for_each(io_listeners.begin(), io_listeners.end(), [=](auto it) { it->OnMouseRbUp(x, y); });
+    for (auto &it : io_listeners) it->OnMouseRbUp(x, y);
   }
 }
 
 void InputHandler::OnMouseMbDown(int x, int y) {
   if (!paused_) {
-    for_each(io_listeners.begin(), io_listeners.end(), [=](auto it) { it->OnMouseMbDown(x, y); });
+    for (auto &it : io_listeners) it->OnMouseMbDown(x, y);
   }
 }
 
 void InputHandler::OnMouseMbUp(int x, int y) {
   if (!paused_) {
-    for_each(io_listeners.begin(), io_listeners.end(), [=](auto it) { it->OnMouseMbUp(x, y); });
+    for (auto &it : io_listeners) it->OnMouseMbUp(x, y);
   }
 }
 

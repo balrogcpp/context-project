@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "TerrainMaterialGeneratorB.h"
-#include "PbrShaderUtils.h"
+#include "PBRUtils.h"
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainAutoUpdateLod.h>
@@ -69,12 +69,12 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
   auto normalmap = OgreTerrainPtr->getTerrainNormalMap();
   string new_name = material_name + GENERATOR;
 
-  Pbr::UpdatePbrParams(material_name);
-  Pbr::UpdatePbrShadowReceiver(material_name);
+  PBR::UpdatePbrParams(material_name);
+  PBR::UpdatePbrShadowReceiver(material_name);
 
   if (Ogre::MaterialManager::getSingleton().resourceExists(new_name)) {
-    Pbr::UpdatePbrParams(new_name);
-    Pbr::UpdatePbrShadowReceiver(new_name);
+    PBR::UpdatePbrParams(new_name);
+    PBR::UpdatePbrShadowReceiver(new_name);
 
     return Ogre::MaterialManager::getSingleton().getByName(new_name);
   } else {
@@ -87,8 +87,8 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
       texture_state->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
     }
 
-    Pbr::UpdatePbrParams(new_name);
-    Pbr::UpdatePbrShadowReceiver(new_name);
+    PBR::UpdatePbrParams(new_name);
+    PBR::UpdatePbrShadowReceiver(new_name);
 
     return new_material;
   }
@@ -98,7 +98,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap
   string material_name = "TerrainCustom";
   const int GENERATOR = 1;
 
-  Pbr::UpdatePbrParams(material_name);
+  PBR::UpdatePbrParams(material_name);
 
   string new_name = material_name + to_string(GENERATOR);
 

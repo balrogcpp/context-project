@@ -1,11 +1,11 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "VegetationSystem.h"
-#include "ComponentLocator.h"
+#include "Components/Vegetation.h"
+#include "Components/ComponentLocator.h"
 #include "MeshUtils.h"
+#include "PBRUtils.h"
 #include "PagedGeometry/PagedGeometryAll.h"
-#include "PbrShaderUtils.h"
 
 using namespace Forests;
 using namespace std;
@@ -32,8 +32,8 @@ static void CreateGrassMesh(float width, float height) {
   sm->vertexData->vertexCount = 12;
   sm->indexData->indexCount = 18;
 
-  Pbr::UpdatePbrParams("GrassCustom");
-  Pbr::UpdatePbrShadowReceiver("GrassCustom");
+  PBR::UpdatePbrParams("GrassCustom");
+  PBR::UpdatePbrShadowReceiver("GrassCustom");
 
   // specify a vertex format declaration for our mesh: 3 floats for position, 3
   // floats for normal, 2 floats for UV
@@ -186,19 +186,19 @@ static void CreateGrassMesh(float width, float height) {
 //  sm->indexData->indexBuffer->unlock();  // commit index changes
 //}
 
-VegetationSystem::VegetationSystem() {}
+Vegetation::Vegetation() {}
 
-VegetationSystem::~VegetationSystem() {
+Vegetation::~Vegetation() {
   auto &mesh_manager = Ogre::MeshManager::getSingleton();
   if (mesh_manager.getByName("grass", Ogre::RGN_AUTODETECT)) mesh_manager.remove("grass", Ogre::RGN_AUTODETECT);
 }
 
-void VegetationSystem::Update(float time) {
-  for (auto &it : pgeometry) it->update();
-  for (auto &it : gpages) it->update();
+void Vegetation::Update(float time) {
+//  for (auto &it : pgeometry) it->update();
+//  for (auto &it : gpages) it->update();
 }
 
-void VegetationSystem::GenerateGrassStatic() {
+void Vegetation::GenerateGrassStatic() {
   // create our grass mesh, and SetUp a grass entity from it
   CreateGrassMesh(1.0, 1.0);
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -226,7 +226,7 @@ void VegetationSystem::GenerateGrassStatic() {
   sgeometry.push_back(field);
 }
 
-void VegetationSystem::GenerateRocksStatic() {
+void Vegetation::GenerateRocksStatic() {
   // create our grass mesh, and SetUp a grass entity from it
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   Ogre::Entity *rock = scene->createEntity("Rock", "rock.mesh");
@@ -262,7 +262,7 @@ void VegetationSystem::GenerateRocksStatic() {
   sgeometry.push_back(rocks);
 }
 
-void VegetationSystem::GenerateGrassPaged() {
+void Vegetation::GenerateGrassPaged() {
   auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 5);
   grass->addDetailLevel<GrassPage>(50, 10);  // Draw grass up to 100
   auto *grassLoader = new GrassLoader(grass);
@@ -288,11 +288,11 @@ void VegetationSystem::GenerateGrassPaged() {
 
   Update(0);
 
-  Pbr::UpdatePbrParams("GrassCustom");
-  Pbr::UpdatePbrShadowReceiver("GrassCustom");
+  PBR::UpdatePbrParams("GrassCustom");
+  PBR::UpdatePbrShadowReceiver("GrassCustom");
 }
 
-void VegetationSystem::GenerateTreesPaged() {
+void Vegetation::GenerateTreesPaged() {
   const float bound = 50;
 
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -349,13 +349,13 @@ void VegetationSystem::GenerateTreesPaged() {
 
   Update(0);
 
-  Pbr::UpdatePbrParams("3D-Diggers/fir01_Batched");
-  Pbr::UpdatePbrParams("3D-Diggers/fir02_Batched");
+  PBR::UpdatePbrParams("3D-Diggers/fir01_Batched");
+  PBR::UpdatePbrParams("3D-Diggers/fir02_Batched");
   //  Pbr::UpdatePbrShadowReceiver("3D-Diggers/fir01_Batched");
   //  Pbr::UpdatePbrShadowReceiver("3D-Diggers/fir02_Batched");
 }
 
-void VegetationSystem::ProcessForest() {
+void Vegetation::ProcessForest() {
   GenerateGrassPaged();
   //  GenerateTreesPaged();
   GenerateRocksStatic();

@@ -41,11 +41,11 @@ void Engine::InitSystems() {
   int window_width = config->Get<int>("window_width");
   int window_high = config->Get<int>("window_high");
   bool window_fullscreen = config->Get<bool>("window_fullscreen");
-  rs = make_unique<RenderSystem>(window_width, window_high, window_fullscreen);
+  rs = make_unique<Render>(window_width, window_high, window_fullscreen);
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   ps = make_unique<PhysicsSystem>();
-  as = make_unique<AudioSystem>(8, 8);
+  as = make_unique<Audio>(8, 8);
 #else
   ps = make_unique<PhysicsSystem>(false);
   as = make_unique<AudioSystem>(4, 4);
@@ -64,7 +64,7 @@ void Engine::Capture() {
 void Engine::RegSystem(Component* system) { ComponentList.push_back(system); }
 
 void Engine::Pause() {
-  for_each(ComponentList.begin(), ComponentList.end(), [](Component* it) { it->Pause(); });
+  for (auto& it : ComponentList) it->Pause();
 }
 
 void Engine::InMenu() {
@@ -80,16 +80,16 @@ void Engine::OffMenu() {
 }
 
 void Engine::Resume() {
-  for_each(ComponentList.begin(), ComponentList.end(), [](Component* it) { it->Resume(); });
+  for (auto& it : ComponentList) it->Resume();
 }
 
 void Engine::Cleanup() {
-  for_each(ComponentList.begin(), ComponentList.end(), [](Component* it) { it->Cleanup(); });
+  for (auto& it : ComponentList) it->Cleanup();
   Refresh();
 }
 
-void Engine::Update(float time) {
-  for_each(ComponentList.begin(), ComponentList.end(), [time](Component* it) { it->Update(time); });
+void Engine::Update(float PassedTime) {
+  for (auto& it : ComponentList) it->Update(PassedTime);
 }
 
 void Engine::RenderOneFrame() { rs->RenderOneFrame(); }

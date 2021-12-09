@@ -2,13 +2,13 @@
 
 #pragma once
 #include "CameraMan.h"
-#include "Component.h"
+#include "Components/Component.h"
 #include "CubeMapCamera.h"
-#include "LazySingleton.h"
-#include "Input.h"
 #include "Landscape.h"
+#include "LazySingleton.h"
+#include "PhysicalInput/Input.h"
 #include "ReflectionCamera.h"
-#include "VegetationSystem.h"
+#include "Vegetation.h"
 #include <OgreCodec.h>
 #include <OgrePlugin.h>
 #include <OgreVector.h>
@@ -30,9 +30,9 @@ class VertexDeclaration;
 namespace Glue {
 class CameraMan;
 class Config;
-class RenderSystem;
+class Render;
 class PhysicsSystem;
-class AudioSystem;
+class Audio;
 class Overlay;
 class SinbadCharacterController;
 }  // namespace Glue
@@ -63,7 +63,7 @@ class DotSceneLoaderB final : public Component, public DynamicSingleton<DotScene
 
   static Landscape &GetTerrain();
   CameraMan &GetCamera() const;
-  static VegetationSystem &GetForest();
+  static Vegetation &GetForest();
 
  protected:
   void ProcessScene(pugi::xml_node &XmlRoot);
@@ -103,7 +103,7 @@ class DotSceneLoaderB final : public Component, public DynamicSingleton<DotScene
   std::unique_ptr<SinbadCharacterController> sinbad;
 
   static inline std::unique_ptr<Landscape> terrain;
-  static inline std::unique_ptr<VegetationSystem> forest;
+  static inline std::unique_ptr<Vegetation> forest;
 };
 
 class DotScenePluginB : public Ogre::Plugin {

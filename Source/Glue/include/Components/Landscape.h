@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "SubSystem.h"
+#include "Components/Component.h"
 
 namespace Ogre {
 class Terrain;
@@ -14,7 +14,7 @@ class xml_node;
 }  // namespace pugi
 
 namespace Glue {
-class Landscape final : public SubSystem {
+class Landscape final : public Component {
  public:
   Landscape();
   virtual ~Landscape();

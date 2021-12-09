@@ -1,11 +1,11 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "DotSceneLoaderB.h"
+#include "Components/DotSceneLoaderB.h"
 #include "BtOgre/BtOgre.h"
-#include "ComponentLocator.h"
+#include "Components/ComponentLocator.h"
 #include "MeshUtils.h"
-#include "PbrShaderUtils.h"
+#include "PBRUtils.h"
 #include "SinbadCharacterController.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
@@ -168,7 +168,7 @@ Landscape &DotSceneLoaderB::GetTerrain() { return *terrain; }
 
 CameraMan &DotSceneLoaderB::GetCamera() const { return *camera_man; }
 
-VegetationSystem &DotSceneLoaderB::GetForest() { return *forest; }
+Vegetation &DotSceneLoaderB::GetForest() { return *forest; }
 
 void DotSceneLoaderB::Update(float PassedTime) {
   if (Paused) return;
@@ -207,7 +207,7 @@ void DotSceneLoaderB::Load(Ogre::DataStreamPtr &stream, const string &group_name
   attach_node = root_node;
 
   if (!terrain) terrain = make_unique<Landscape>();
-  if (!forest) forest = make_unique<VegetationSystem>();
+  if (!forest) forest = make_unique<Vegetation>();
   forest->SetHeighFunc([](float x, float z) { return terrain->GetHeigh(x, z); });
 
   // Process the scene
@@ -860,7 +860,7 @@ void DotSceneLoaderB::ProcessParticleSystem(pugi::xml_node &XmlNode, Ogre::Scene
   // SetUp the particle system
   try {
     Ogre::ParticleSystem *pParticles = ogre_scene->createParticleSystem(name, templateName);
-    Pbr::UpdatePbrParams(pParticles->getMaterialName());
+    PBR::UpdatePbrParams(pParticles->getMaterialName());
 
     const Ogre::uint32 WATER_MASK = 0xF00;
     pParticles->setVisibilityFlags(WATER_MASK);
@@ -919,8 +919,8 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, Ogre::SceneNode *Par
   if (!material.empty()) {
     entity->setMaterialName(material);
     Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
-    Pbr::UpdatePbrParams(material);
-    if (material_ptr->getReceiveShadows()) Pbr::UpdatePbrShadowReceiver(material);
+    PBR::UpdatePbrParams(material);
+    if (material_ptr->getReceiveShadows()) PBR::UpdatePbrShadowReceiver(material);
   }
 
   if (reflection) {

@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "SinbadCharacterController.h"
-#include "ComponentLocator.h"
+#include "Components/ComponentLocator.h"
 #include "MeshUtils.h"
 
 using namespace std;

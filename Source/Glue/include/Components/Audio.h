@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Component.h"
+#include "Components/Component.h"
 #include "LazySingleton.h"
 #include <string>
 
@@ -10,10 +10,10 @@ class OgreOggSoundManager;
 }
 
 namespace Glue {
-class AudioSystem final : public Component, public DynamicSingleton<AudioSystem> {
+class Audio final : public Component, public DynamicSingleton<Audio> {
  public:
-  AudioSystem(unsigned int MaxSourceCount = 16, unsigned int QueueListSize = 4);
-  virtual ~AudioSystem();
+  Audio(unsigned int MaxSourceCount = 16, unsigned int QueueListSize = 4);
+  virtual ~Audio();
 
   void Cleanup() override;
   void Pause() override;

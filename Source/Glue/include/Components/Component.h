@@ -15,10 +15,11 @@ class Component : public NoCopy {
 
   virtual void Pause() { Paused = true; }
   virtual void Resume() { Paused = false; }
-  virtual void Update(float time) = 0;
-  virtual void Cleanup() = 0;
+  virtual void Update(float PassedTime) {}
+  virtual void Cleanup() {}
 
-  static void SetConfig(Config* conf) { ConfPtr = conf; }
+  bool IsPaused() { return Paused; }
+  static void SetConfig(Config* Conf) { ConfPtr = Conf; }
 
  protected:
   inline static Config* ConfPtr = nullptr;

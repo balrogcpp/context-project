@@ -3,15 +3,15 @@
 #pragma once
 #include "Config.h"
 #include "Engine.h"
-#include "InputHandler.h"
+#include "PhysicalInput/InputHandler.h"
 
 namespace Glue {
 
-class RenderSystem;
+class Render;
 class Window;
 class Compositor;
 class PhysicsSystem;
-class AudioSystem;
+class Audio;
 class Overlay;
 class DotSceneLoaderB;
 class InputSequencer;
@@ -19,11 +19,11 @@ class InputSequencer;
 InputHandler& GetIo();
 Config& GetConf();
 Engine& GetEngine();
-RenderSystem& GetRS();
+Render& GetRS();
 Window& GetWindow();
 Compositor& GetCompositor();
 PhysicsSystem& GetPhysics();
-AudioSystem& GetAudio();
+Audio& GetAudio();
 Overlay& GetOverlay();
 DotSceneLoaderB& GetLoader();
 

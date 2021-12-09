@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "DemoDotAppState.h"
-#include "ComponentLocator.h"
+#include "Components/ComponentLocator.h"
 #include "MenuAppState.h"
 
 using namespace std;

@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Input.h"
+#include "PhysicalInput/Input.h"
 #include "NoCopy.h"
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
@@ -10,7 +10,7 @@
 #include <string>
 
 namespace Glue {
-class StateManager;
+class AppStateManager;
 }
 
 namespace Glue {
@@ -33,7 +33,7 @@ class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, 
   virtual void Update(float TimePassed) = 0;
 
  protected:
-  friend class StateManager;
+  friend class AppStateManager;
   std::unique_ptr<AppState> NextState;
   bool Dirty = false;
 };

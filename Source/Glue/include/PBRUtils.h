@@ -12,7 +12,7 @@ class Camera;
 
 namespace Glue {
 
-class Pbr {
+class PBR {
  public:
   static void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material);
   static void UpdatePbrParams(const Ogre::MaterialPtr &material);

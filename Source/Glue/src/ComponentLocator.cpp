@@ -1,9 +1,9 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "ComponentLocator.h"
+#include "Components/ComponentLocator.h"
 #include "Engine.h"
-#include "InputHandler.h"
+#include "PhysicalInput/InputHandler.h"
 
 namespace Glue {
 
@@ -22,7 +22,7 @@ Engine& GetEngine() {
   return EnginePtr;
 }
 
-RenderSystem& GetRS() {
+Render& GetRS() {
   static auto& RenderComponentPtr = *Engine::GetInstance().rs;
   return RenderComponentPtr;
 }
@@ -42,7 +42,7 @@ PhysicsSystem& GetPhysics() {
   return PhysicsComponentPtr;
 }
 
-AudioSystem& GetAudio() {
+Audio& GetAudio() {
   static auto& AudioComponentPtr = *Engine::GetInstance().as;
   return AudioComponentPtr;
 }

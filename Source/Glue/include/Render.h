@@ -1,10 +1,10 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Component.h"
+#include "Components/Component.h"
+#include "Components/Overlay.h"
 #include "Compositor.h"
 #include "LazySingleton.h"
-#include "Overlay.h"
 #include "Window.h"
 #include <memory>
 #include <vector>
@@ -19,10 +19,10 @@ class RenderWindow;
 
 namespace Glue {
 
-class RenderSystem final : public Component, public DynamicSingleton<RenderSystem> {
+class Render final : public Component, public DynamicSingleton<Render> {
  public:
-  RenderSystem(int w, int h, bool f);
-  virtual ~RenderSystem();
+  Render(int w, int h, bool f);
+  virtual ~Render();
 
   void Cleanup() override;
   void Pause() override;

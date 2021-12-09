@@ -3,7 +3,7 @@
 #include "pch.h"
 #include "Compositor.h"
 #include "Config.h"
-#include "PbrShaderUtils.h"
+#include "PBRUtils.h"
 
 using namespace std;
 
@@ -74,7 +74,7 @@ void Compositor::Update(float time) {
   static bool mblur = EffectsList["mblur"];
 
   if (gl3 && mblur) {
-    Pbr::Update(time);
+    PBR::Update(time);
   }
 
 #endif
@@ -82,7 +82,7 @@ void Compositor::Update(float time) {
 
 void Compositor::EnableEffect(const std::string &name, bool enable) { EffectsList[name] = enable; }
 
-void Compositor::Cleanup() { Pbr::Cleanup(); }
+void Compositor::Cleanup() { PBR::Cleanup(); }
 
 void Compositor::Pause() {}
 

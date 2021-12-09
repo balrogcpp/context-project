@@ -13,7 +13,7 @@ class Config : public DynamicSingleton<Config> {
 
   virtual ~Config();
 
-  void Load(const std::string &FileName);
+  void Reload(const std::string &FileName);
 
   template <typename T>
   void AddMember(const std::string &Key, T &&Value) {

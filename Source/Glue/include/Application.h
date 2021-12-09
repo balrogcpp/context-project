@@ -1,10 +1,10 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "LazySingleton.h"
+#include "AppStateManager.h"
 #include "Engine.h"
-#include "StateManager.h"
-#include "VerboseListener.h"
+#include "LazySingleton.h"
+#include "PhysicalInput/VerboseListener.h"
 #include <OgreLog.h>
 #include <memory>
 #include <string>
@@ -33,7 +33,7 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   void WriteLogToFile();
   void PrintLogToConsole();
 
-  std::unique_ptr<StateManager> StateManagerPtr;
+  std::unique_ptr<AppStateManager> StateManagerPtr;
   std::unique_ptr<VerboseListener> VerboseListenerPtr;
   Engine *EnginePtr = nullptr;
 

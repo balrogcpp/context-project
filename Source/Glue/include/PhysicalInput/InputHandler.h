@@ -1,9 +1,9 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Component.h"
-#include "LazySingleton.h"
+#include "Components/Component.h"
 #include "Input.h"
+#include "LazySingleton.h"
 #include <vector>
 
 namespace Glue {

@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "SubSystem.h"
+#include "Components/Component.h"
 #include <functional>
 #include <memory>
 
@@ -13,10 +13,10 @@ class GeometryPage;
 
 namespace Glue {
 
-class VegetationSystem final : public SubSystem {
+class Vegetation final : public Component {
  public:
-  VegetationSystem();
-  virtual ~VegetationSystem();
+  Vegetation();
+  virtual ~Vegetation();
   void GenerateGrassStatic();
   void GenerateGrassPaged();
   void GenerateRocksStatic();

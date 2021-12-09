@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "Input.h"
+#include "PhysicalInput/Input.h"
 #include <algorithm>
 
 using namespace std;
@@ -12,13 +12,13 @@ int InputSequencer::HandleAppEvents(void *userdata, SDL_Event *event) {
   switch (event->type) {
     case SDL_APP_WILLENTERBACKGROUND:
     case SDL_APP_DIDENTERBACKGROUND: {
-      for_each(win_listeners.begin(), win_listeners.end(), [](auto it) { it->OnPause(); });
+      for (auto &it : win_listeners) it->OnPause();
       return 0;
     }
 
     case SDL_APP_WILLENTERFOREGROUND:
     case SDL_APP_DIDENTERFOREGROUND: {
-      for_each(win_listeners.begin(), win_listeners.end(), [](auto it) { it->OnResume(); });
+      for (auto &it : win_listeners) it->OnResume();
       return 0;
     }
 
@@ -54,12 +54,12 @@ void InputSequencer::Capture() {
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
       case SDL_KEYUP: {
-        for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it) { it->OnKeyUp(event.key.keysym.sym); });
+        for (auto &it : io_listeners) it->OnKeyUp(event.key.keysym.sym);
         break;
       }
 
       case SDL_KEYDOWN: {
-        for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it) { it->OnKeyDown(event.key.keysym.sym); });
+        for (auto &it : io_listeners) it->OnKeyDown(event.key.keysym.sym);
         break;
       }
 
@@ -77,18 +77,15 @@ void InputSequencer::Capture() {
       case SDL_MOUSEBUTTONDOWN: {
         switch (event.button.button) {
           case SDL_BUTTON_LEFT: {
-            for_each(io_listeners.begin(), io_listeners.end(),
-                     [&event](auto it) { it->OnMouseLbDown(event.button.x, event.button.y); });
+            for (auto &it : io_listeners) it->OnMouseLbDown(event.button.x, event.button.y);
             break;
           }
           case SDL_BUTTON_RIGHT: {
-            for_each(io_listeners.begin(), io_listeners.end(),
-                     [&event](auto it) { it->OnMouseRbDown(event.button.x, event.button.y); });
+            for (auto &it : io_listeners) it->OnMouseRbDown(event.button.x, event.button.y);
             break;
           }
           case SDL_BUTTON_MIDDLE: {
-            for_each(io_listeners.begin(), io_listeners.end(),
-                     [&event](auto it) { it->OnMouseMbDown(event.button.x, event.button.y); });
+            for (auto &it : io_listeners) it->OnMouseMbDown(event.button.x, event.button.y);
             break;
           }
         }
@@ -98,18 +95,15 @@ void InputSequencer::Capture() {
       case SDL_MOUSEBUTTONUP: {
         switch (event.button.button) {
           case SDL_BUTTON_LEFT: {
-            for_each(io_listeners.begin(), io_listeners.end(),
-                     [&event](auto it) { it->OnMouseLbUp(event.button.x, event.button.y); });
+            for (auto &it : io_listeners) it->OnMouseLbUp(event.button.x, event.button.y);
             break;
           }
           case SDL_BUTTON_RIGHT: {
-            for_each(io_listeners.begin(), io_listeners.end(),
-                     [&event](auto it) { it->OnMouseRbUp(event.button.x, event.button.y); });
+            for (auto &it : io_listeners) it->OnMouseRbUp(event.button.x, event.button.y);
             break;
           }
           case SDL_BUTTON_MIDDLE: {
-            for_each(io_listeners.begin(), io_listeners.end(),
-                     [&event](auto it) { it->OnMouseMbUp(event.button.x, event.button.y); });
+            for (auto &it : io_listeners) it->OnMouseMbUp(event.button.x, event.button.y);
             break;
           }
         }
@@ -117,50 +111,43 @@ void InputSequencer::Capture() {
       }
 
       case SDL_MOUSEWHEEL: {
-        for_each(io_listeners.begin(), io_listeners.end(),
-                 [&event](auto it) { it->OnMouseWheel(event.wheel.x, event.wheel.y); });
+        for (auto &it : io_listeners) it->OnMouseWheel(event.wheel.x, event.wheel.y);
         break;
       }
 
       case SDL_JOYAXISMOTION: {
-        for_each(io_listeners.begin(), io_listeners.end(),
-                 [&event](auto it) { it->OnGamepadAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value); });
+        for (auto &it : io_listeners) it->OnGamepadAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
         break;
       }
 
       case SDL_JOYBALLMOTION: {
-        for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it) {
+        for (auto &it : io_listeners)
           it->OnGamepadBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
-        });
         break;
       }
 
       case SDL_JOYHATMOTION: {
-        for_each(io_listeners.begin(), io_listeners.end(),
-                 [&event](auto it) { it->OnGamepadHat(event.jhat.which, event.jhat.hat, event.jhat.value); });
+        for (auto &it : io_listeners) it->OnGamepadHat(event.jhat.which, event.jhat.hat, event.jhat.value);
         break;
       }
 
       case SDL_JOYBUTTONDOWN: {
-        for_each(io_listeners.begin(), io_listeners.end(),
-                 [&event](auto it) { it->OnGamepadBtDown(event.jbutton.which, event.jbutton.button); });
+        for (auto &it : io_listeners) it->OnGamepadBtDown(event.jbutton.which, event.jbutton.button);
         break;
       }
 
       case SDL_JOYBUTTONUP: {
-        for_each(io_listeners.begin(), io_listeners.end(),
-                 [&event](auto it) { it->OnGamepadBtUp(event.jbutton.which, event.jbutton.button); });
+        for (auto &it : io_listeners) it->OnGamepadBtUp(event.jbutton.which, event.jbutton.button);
         break;
       }
 
       case SDL_QUIT: {
-        for_each(win_listeners.begin(), win_listeners.end(), [](auto it) { it->OnQuit(); });
+        for (auto &it : win_listeners) it->OnQuit();
         break;
       }
-
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
       case SDL_TEXTINPUT: {
-        for_each(io_listeners.begin(), io_listeners.end(), [&event](auto it) { it->OnTextInput(event.text.text); });
+        for (auto &it : io_listeners) it->OnTextInput(event.text.text);
         break;
       }
 
@@ -168,12 +155,12 @@ void InputSequencer::Capture() {
         switch (event.window.event) {
           case SDL_WINDOWEVENT_MINIMIZED:
           case SDL_WINDOWEVENT_FOCUS_LOST: {
-            for_each(win_listeners.begin(), win_listeners.end(), [](auto it) { it->OnPause(); });
+            for (auto &it : win_listeners) it->OnPause();
             break;
           }
 
           case SDL_WINDOWEVENT_FOCUS_GAINED: {
-            for_each(win_listeners.begin(), win_listeners.end(), [](auto it) { it->OnResume(); });
+            for (auto &it : win_listeners) it->OnResume();
             break;
           }
         }
@@ -183,7 +170,7 @@ void InputSequencer::Capture() {
 #endif
 
       default: {
-        for_each(win_listeners.begin(), win_listeners.end(), [&event](auto it) { it->OnEvent(event); });
+        for (auto &it : win_listeners) it->OnEvent(event);
       }
     }
   }

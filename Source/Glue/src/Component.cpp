@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "Component.h"
+#include "Components/Component.h"
 #include "Engine.h"
 
 using namespace std;

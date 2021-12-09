@@ -9,15 +9,14 @@ using namespace std;
 namespace Glue {
 
 Config::Config(const string &FileName) {
-  if (!FileName.empty()) {
-    Load(FileName);
-  }
+    Reload(FileName);
 }
 
 Config::~Config() {}
 
-void Config::Load(const string &FileName) {
+void Config::Reload(const string &FileName) {
   Assert(!FileName.empty(), "Provided conf file name is empty");
+  if(Document.size()) Document.clear();
   ifstream ifs(AssetLoader::FindPath(FileName));
 
   if (!ifs.is_open()) {

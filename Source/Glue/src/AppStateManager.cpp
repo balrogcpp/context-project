@@ -1,22 +1,22 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "StateManager.h"
+#include "AppStateManager.h"
 
 using namespace std;
 
 namespace Glue {
 
-StateManager::StateManager() {}
+AppStateManager::AppStateManager() {}
 
-StateManager::~StateManager() {}
+AppStateManager::~AppStateManager() {}
 
-void StateManager::InitCurState() {
+void AppStateManager::InitCurState() {
   CurrentState->SetUp();
   Ogre::Root::getSingleton().addFrameListener(CurrentState.get());
 }
 
-void StateManager::InitNextState() {
+void AppStateManager::InitNextState() {
   if (CurrentState) {
     CurrentState->Cleanup();
     Ogre::Root::getSingleton().removeFrameListener(CurrentState.get());
@@ -30,23 +30,23 @@ void StateManager::InitNextState() {
   }
 }
 
-void StateManager::SetInitialState(unique_ptr<AppState> &&InitialState) {
+void AppStateManager::SetInitialState(unique_ptr<AppState> &&InitialState) {
   CurrentState = move(InitialState);
   Ogre::Root::getSingleton().addFrameListener(CurrentState.get());
 }
 
-void StateManager::Update(float PassedTime) {
+void AppStateManager::Update(float PassedTime) {
   if (CurrentState) {
     CurrentState->Update(PassedTime);
   }
 }
 
-bool StateManager::IsActive() const { return static_cast<bool>(CurrentState); }
+bool AppStateManager::IsActive() const { return static_cast<bool>(CurrentState); }
 
-bool StateManager::IsDirty() const { return CurrentState->IsDirty(); }
+bool AppStateManager::IsDirty() const { return CurrentState->IsDirty(); }
 
-void StateManager::Pause() { CurrentState->Pause(); }
+void AppStateManager::Pause() { CurrentState->Pause(); }
 
-void StateManager::Resume() { CurrentState->Resume(); }
+void AppStateManager::Resume() { CurrentState->Resume(); }
 
 }  // namespace Glue

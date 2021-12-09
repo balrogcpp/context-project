@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "MeshUtils.h"
-#include "PbrShaderUtils.h"
+#include "PBRUtils.h"
 
 using namespace std;
 
@@ -61,13 +61,13 @@ void UpdateMeshMaterial(Ogre::MeshPtr mesh, bool cast_shadows, const string &mat
       material = submesh->getMaterial();
 
       if (material) {
-        Pbr::UpdatePbrParams(material);
+        PBR::UpdatePbrParams(material);
 
-        if (cast_shadows) Pbr::UpdatePbrShadowCaster(material);
+        if (cast_shadows) PBR::UpdatePbrShadowCaster(material);
 
-        if (material->getReceiveShadows()) Pbr::UpdatePbrShadowReceiver(material);
+        if (material->getReceiveShadows()) PBR::UpdatePbrShadowReceiver(material);
 
-        Pbr::UpdatePbrIbl(material, active_ibl);
+        PBR::UpdatePbrIbl(material, active_ibl);
       }
     }
   } catch (Ogre::Exception &e) {
@@ -94,13 +94,13 @@ void UpdateEntityMaterial(Ogre::Entity *entity, bool cast_shadows, const string 
       material = Ogre::MaterialManager::getSingleton().getByName(material_name);
 
       if (material) {
-        Pbr::UpdatePbrParams(material);
+        PBR::UpdatePbrParams(material);
 
-        if (cast_shadows) Pbr::UpdatePbrShadowCaster(material);
+        if (cast_shadows) PBR::UpdatePbrShadowCaster(material);
 
-        if (material->getReceiveShadows()) Pbr::UpdatePbrShadowReceiver(material);
+        if (material->getReceiveShadows()) PBR::UpdatePbrShadowReceiver(material);
 
-        Pbr::UpdatePbrIbl(material, active_ibl);
+        PBR::UpdatePbrIbl(material, active_ibl);
       }
     }
 
