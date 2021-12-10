@@ -277,7 +277,6 @@ externalproject_add(Target_json
                     -DJSON_BuildTests=OFF
                     )
 
-set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_assimp)
 externalproject_add(Target_assimp
                     EXCLUDE_FROM_ALL true
                     DEPENDS Target_zlib Target_rapidjson
@@ -286,8 +285,6 @@ externalproject_add(Target_assimp
                     GIT_TAG v5.0.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
-                    UPDATE_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} reset --hard
-                    PATCH_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_EXTERNAL_PATCH_LOCATION}/assimp-5.0.1.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
