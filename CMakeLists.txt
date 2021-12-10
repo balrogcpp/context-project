@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.19.8)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 project(PrjGlue VERSION 0.1.0)
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -24,10 +23,8 @@ include(GitHash)
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
 make_directory(${GLUE_ARTIFACT_DIR})
 
-
 # Insert dependencies
 add_subdirectory(${CMAKE_SOURCE_DIR}/ThirdParty)
-
 
 set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
@@ -61,10 +58,10 @@ find_library(ASSIMP_IRRXML_LIBRARY IrrXML QUIET)
 
 macro(insert_dependency VARIABLE PACKAGE)
     if (NOT ${VARIABLE})
-        message("-- Not found ${VARIABLE}. Please build ${PACKAGE} first")
+        message(STATUS "Not found ${VARIABLE}. Please build ${PACKAGE} first")
         set(ANY_NOT_FOUND true)
     else ()
-        message("-- Found ${PACKAGE}")
+        message(STATUS "Found ${PACKAGE}")
     endif ()
 endmacro()
 
@@ -104,7 +101,6 @@ endif ()
 
 # Library and Tests
 add_subdirectory(${CMAKE_SOURCE_DIR}/Source)
-
 
 #Packaging
 set(GLUE_DEPLOY_DIR ${CMAKE_SOURCE_DIR}/Deploy)
@@ -168,7 +164,6 @@ if (${NSIS_FOUND} AND WIN32)
 endif ()
 
 include(CPack)
-
 
 # Doesn't work with MSVC
 if (NOT MSVC)

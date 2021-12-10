@@ -22,9 +22,6 @@ class AssetLoader final {
                                    const std::string &ResourceFile = "", bool Verbose = false);
 
   ///
-  static void AddLocationAndroid(AAssetManager *AssetManager, const std::string &ResourceFile,
-                                 const std::string &GroupName = Ogre::RGN_DEFAULT, bool Verbose = false);
-
   static std::string FindPath(const std::string &Path, int Depth = 2);
 };
 

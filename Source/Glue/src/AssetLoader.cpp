@@ -94,22 +94,6 @@ void AssetLoader::AddLocation(const string &Path, const string &GroupName, bool 
 #endif
 }
 
-void AssetLoader::AddLocationAndroid(AAssetManager *AssetManager, const string &ResourceFile, const string &GroupName,
-                                     bool Verbose) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
-//  const string file_system = "APKFileSystem";
-//
-//  AAssetDir *dir = AAssetManager_openDir(AssetManager, path_.c_str());
-//  const char *fileName = nullptr;
-//
-//  while ((fileName = AAssetDir_getNextFileName(dir)) != nullptr) {
-//    LogMessage(string("Found directory: ") + fileName);
-//  }
-#else
-  //Assert(false, "AssetLoader::AddLocationAndroid called in another platform");
-#endif
-}
-
 void AssetLoader::AddLocationRecursive(const string &Path, const string &GroupName, const string &ResourceFile,
                                        bool Verbose) {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS

@@ -192,40 +192,30 @@ void Render::InitResourceLocation() {
   const string default_group = RGN_DEFAULT;
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  AssetLoader::AddLocation("Programs/Main", RGN_INTERNAL);
+  AssetLoader::AddLocation("Programs/RTSS", RGN_INTERNAL);
+  AssetLoader::AddLocation("Programs/PBR", RGN_INTERNAL);
+  AssetLoader::AddLocation("Programs/Particles", RGN_INTERNAL);
+  AssetLoader::AddLocation("Programs/Compositor", RGN_INTERNAL);
+  AssetLoader::AddLocation("Programs/Overlay", RGN_INTERNAL);
+  AssetLoader::AddLocation("Programs/filament", RGN_INTERNAL);
 
-  AssetLoader::AddLocation("Programs/Main", internal_group);
-  AssetLoader::AddLocation("Programs/RTSS", internal_group);
-  AssetLoader::AddLocation("Programs/PBR", internal_group);
-  AssetLoader::AddLocation("Programs/Particles", internal_group);
-  AssetLoader::AddLocation("Programs/Compositor", internal_group);
-  AssetLoader::AddLocation("Programs/Overlay", internal_group);
-  AssetLoader::AddLocation("Programs/Gorilla", internal_group);
-  AssetLoader::AddLocationRecursive("Assets", default_group, "Resources.list");
-
+  AssetLoader::AddLocationRecursive("Assets", RGN_DEFAULT, "Resources.list");
 #else
-
   ResourceGroupManager &resGroupMan = ResourceGroupManager::getSingleton();
-  String defResGroup = RGN_DEFAULT;
 
-  const string file_system = "APKFileSystem";
-  const string zip = "APKZip";
+  resGroupMan.addResourceLocation("/Programs/Main.zip", "Zip", RGN_INTERNAL);
+  resGroupMan.addResourceLocation("/Programs/RTSS.zip", "Zip", RGN_INTERNAL);
+  resGroupMan.addResourceLocation("/Programs/PBR.zip", "Zip", RGN_INTERNAL);
+  resGroupMan.addResourceLocation("/Programs/Particles.zip", "Zip", RGN_INTERNAL);
+  resGroupMan.addResourceLocation("/Programs/Compositor.zip", "Zip", RGN_INTERNAL);
+  resGroupMan.addResourceLocation("/Programs/Overlay.zip", "Zip", RGN_INTERNAL);
+  //resGroupMan.addResourceLocation("/Programs/filament.zip", "Zip", RGN_INTERNAL);
 
-  resGroupMan.addResourceLocation("/Programs/Main.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/Programs/RTSS.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/Programs/PBR.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/Programs/Particles.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/Programs/Compositor.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/Programs/Overlay.zip", zip, internal_group);
-  resGroupMan.addResourceLocation("/Programs/Gorilla.zip", zip, internal_group);
-
-  resGroupMan.addResourceLocation("/Assets/material.zip", zip, default_group);
-  resGroupMan.addResourceLocation("/Assets/models.zip", zip, default_group);
-  resGroupMan.addResourceLocation("/Assets/music.zip", zip, default_group);
-  resGroupMan.addResourceLocation("/Assets/scenes.zip", zip, default_group);
-  resGroupMan.addResourceLocation("/Assets/sounds.zip", zip, default_group);
-  resGroupMan.addResourceLocation("/Assets/terrain.zip", zip, default_group);
-  resGroupMan.addResourceLocation("/Assets/vegetation.zip", zip, default_group);
-
+  resGroupMan.addResourceLocation("/Assets/Materials.zip", "Zip", RGN_DEFAULT);
+  resGroupMan.addResourceLocation("/Assets/Models.zip", "Zip", RGN_DEFAULT);
+  resGroupMan.addResourceLocation("/Assets/Scenes.zip", "Zip", RGN_DEFAULT);
+  resGroupMan.addResourceLocation("/Assets/Sounds.zip", "Zip", RGN_DEFAULT);
 #endif
 }
 
