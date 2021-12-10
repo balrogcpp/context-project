@@ -50,14 +50,6 @@ fragment_program PBR_IBL_fs glsl glsles
     }
 }
 
-sampler PBRSampler
-{
-    filtering anisotropic
-    max_anisotropy 8
-    //tex_address_mode wrap
-}
-
-
 abstract material Basic
 {
     transparency_casts_shadows off
