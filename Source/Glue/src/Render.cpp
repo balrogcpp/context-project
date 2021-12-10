@@ -198,7 +198,7 @@ void Render::InitResourceLocation() {
   AssetLoader::AddLocation("Programs/Particles", RGN_INTERNAL);
   AssetLoader::AddLocation("Programs/Compositor", RGN_INTERNAL);
   AssetLoader::AddLocation("Programs/Overlay", RGN_INTERNAL);
-  AssetLoader::AddLocation("Programs/filament", RGN_INTERNAL);
+  //AssetLoader::AddLocation("Programs/filament", RGN_INTERNAL);
 
   AssetLoader::AddLocationRecursive("Assets", RGN_DEFAULT, "Resources.list");
 #else
