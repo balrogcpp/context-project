@@ -77,11 +77,7 @@ if (IOS OR ANDROID)
 else ()
     set(OPENAL_LIBTYPE SHARED)
 endif ()
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
-    set(OPENAL_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_OpenAL)
-    set(OPENAL_UPDATE_COMMAND ${OPENAL_CHDIR}  ${GIT_EXECUTABLE} reset --hard)
-    set(OPENAL_PATCH_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_EXTERNAL_PATCH_LOCATION}/openal-1.21.1-clang-mingw.patch)
-endif()
+set(OPENAL_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_OpenAL)
 externalproject_add(Target_OpenAL
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
@@ -89,8 +85,8 @@ externalproject_add(Target_OpenAL
                     GIT_TAG 1.21.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
-                    UPDATE_COMMAND ${OPENAL_UPDATE_COMMAND}
-                    PATCH_COMMAND ${OPENAL_PATCH_COMMAND}
+                    UPDATE_COMMAND ${OPENAL_CHDIR}  ${GIT_EXECUTABLE} reset --hard
+                    PATCH_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_EXTERNAL_PATCH_LOCATION}/openal-1.21.1-clang-mingw.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
@@ -281,11 +277,7 @@ externalproject_add(Target_json
                     -DJSON_BuildTests=OFF
                     )
 
-if(NOT MSVC)
-    set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_assimp)
-    set(ASSIMP_UPDATE_COMMAND ${ASSIMP_CHDIR}  ${GIT_EXECUTABLE} reset --hard)
-    set(ASSIMP_PATCH_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_EXTERNAL_PATCH_LOCATION}/assimp-5.0.1.patch)
-endif()
+set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_assimp)
 externalproject_add(Target_assimp
                     EXCLUDE_FROM_ALL true
                     DEPENDS Target_zlib Target_rapidjson
@@ -294,8 +286,8 @@ externalproject_add(Target_assimp
                     GIT_TAG v5.0.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
-                    UPDATE_COMMAND ${ASSIMP_UPDATE_COMMAND}
-                    PATCH_COMMAND ${ASSIMP_PATCH_COMMAND}
+                    UPDATE_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} reset --hard
+                    PATCH_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_EXTERNAL_PATCH_LOCATION}/assimp-5.0.1.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
@@ -348,11 +340,9 @@ externalproject_add(Target_assimp
 if (NOT APPLE)
     set(OGRE_USE_PCH true)
 else()
-    set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_OGRE)
-    set(OGRE_UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard)
-    set(OGRE_PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-apple.patch)
     set(OGRE_USE_PCH false)
 endif()
+set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_OGRE)
 externalproject_add(Target_OGRE
                     EXCLUDE_FROM_ALL true
                     DEPENDS Target_ZZIP Target_freetype Target_pugixml Target_assimp Target_SDL2
@@ -361,8 +351,8 @@ externalproject_add(Target_OGRE
                     GIT_TAG v1.12.13
                     GIT_SHALLOW true
                     GIT_PROGRESS false
-                    UPDATE_COMMAND ${OGRE_UPDATE_COMMAND}
-                    PATCH_COMMAND ${OGRE_PATCH_COMMAND}
+                    UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard
+                    PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-apple.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
