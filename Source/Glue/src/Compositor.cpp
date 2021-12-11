@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "Compositor.h"
+#include "Components/Compositor.h"
 #include "Config.h"
 #include "PBRUtils.h"
 

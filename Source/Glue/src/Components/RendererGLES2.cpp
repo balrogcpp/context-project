@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "Render.h"
+/// \file Compilation failes with both GL3 and GLES2 headers included
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
 #include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 #endif

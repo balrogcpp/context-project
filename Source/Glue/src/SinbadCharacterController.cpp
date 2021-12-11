@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "SinbadCharacterController.h"
+#include "Objects/SinbadCharacterController.h"
 #include "Components/ComponentLocator.h"
 #include "MeshUtils.h"
 

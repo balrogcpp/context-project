@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "Physics.h"
+#include "Components/Physics.h"
 #include "BtOgre/BtOgre.h"
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>

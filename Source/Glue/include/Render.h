@@ -2,8 +2,8 @@
 
 #pragma once
 #include "Components/Component.h"
+#include "Components/Compositor.h"
 #include "Components/Overlay.h"
-#include "Compositor.h"
 #include "LazySingleton.h"
 #include "Window.h"
 #include <memory>

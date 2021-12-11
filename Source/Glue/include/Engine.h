@@ -5,9 +5,9 @@
 #include "Components/Audio.h"
 #include "Components/DotSceneLoaderB.h"
 #include "Components/Overlay.h"
+#include "Components/Physics.h"
 #include "Engine.h"
 #include "LazySingleton.h"
-#include "Physics.h"
 #include "Render.h"
 #include <memory>
 #include <vector>

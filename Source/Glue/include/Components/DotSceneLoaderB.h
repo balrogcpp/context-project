@@ -1,11 +1,11 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "CameraMan.h"
 #include "Components/Component.h"
 #include "CubeMapCamera.h"
 #include "Landscape.h"
 #include "LazySingleton.h"
+#include "Objects/CameraMan.h"
 #include "PhysicalInput/InputSequencer.h"
 #include "ReflectionCamera.h"
 #include "Vegetation.h"

@@ -5,8 +5,8 @@
 #include "BtOgre/BtOgre.h"
 #include "Components/ComponentLocator.h"
 #include "MeshUtils.h"
+#include "Objects/SinbadCharacterController.h"
 #include "PBRUtils.h"
-#include "SinbadCharacterController.h"
 #include "XmlParser.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>

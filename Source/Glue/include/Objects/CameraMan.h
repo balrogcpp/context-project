@@ -1,8 +1,8 @@
 ﻿// This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
+#include "Objects/Object.h"
 #include "PhysicalInput/InputObserver.h"
-#include "Object.h"
 #include <OgreVector.h>
 extern "C" {
 #include <SDL2/SDL_keycode.h>
