@@ -31,8 +31,6 @@ Engine::Engine() {
 
   Component::SetConfig(config.get());
   ComponentList.reserve(16);
-
-  //io = make_unique<InputHandler>();
 }
 
 Engine::~Engine() {}
@@ -70,13 +68,11 @@ void Engine::Pause() {
 void Engine::InMenu() {
   ps->Pause();
   loader->Pause();
-  //io->Pause();
 }
 
 void Engine::OffMenu() {
   ps->Resume();
   loader->Resume();
-  //io->Resume();
 }
 
 void Engine::Resume() {

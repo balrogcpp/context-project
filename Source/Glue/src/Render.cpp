@@ -184,13 +184,10 @@ void Render::InitRenderWindow() {
   params["gamma"] = gamma ? true_str : false_str;
   params["FSAA"] = to_string(fsaa);
 
-  OgreRenderWindowPtr = Root::getSingleton().createRenderWindow("DefaultWindow", 1920, 1080, false, &params);
+  OgreRenderWindowPtr = Root::getSingleton().createRenderWindow("DefaultWindow", 0, 0, false, &params);
 }
 
 void Render::InitResourceLocation() {
-  const string internal_group = RGN_INTERNAL;
-  const string default_group = RGN_DEFAULT;
-
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   AssetLoader::AddLocation("Programs/Main", RGN_INTERNAL);
   AssetLoader::AddLocation("Programs/RTSS", RGN_INTERNAL);
