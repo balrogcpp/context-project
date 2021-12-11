@@ -3,14 +3,8 @@
 #include "pch.h"
 #include "Components/ComponentLocator.h"
 #include "Engine.h"
-#include "PhysicalInput/InputHandler.h"
 
 namespace Glue {
-
-InputHandler& GetIo() {
-  static auto& InputComponentPtr = *Engine::GetInstance().io;
-  return InputComponentPtr;
-}
 
 Config& GetConf() {
   static auto& ConfigPtr = *Engine::GetInstance().config;

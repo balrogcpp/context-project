@@ -3,7 +3,6 @@
 #pragma once
 #include "Config.h"
 #include "Engine.h"
-#include "PhysicalInput/InputHandler.h"
 
 namespace Glue {
 
@@ -16,7 +15,6 @@ class Overlay;
 class DotSceneLoaderB;
 class InputSequencer;
 
-InputHandler& GetIo();
 Config& GetConf();
 Engine& GetEngine();
 Render& GetRS();

@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "PhysicalInput/InputHandler.h"
+#include "PhysicalInput/InputObserver.h"
 #include "Object.h"
 #include <OgreVector.h>
 extern "C" {
