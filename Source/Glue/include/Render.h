@@ -19,7 +19,7 @@ class RenderWindow;
 
 namespace Glue {
 
-class Render final : public Component, public DynamicSingleton<Render> {
+class Render final : public Component, public Singleton<Render> {
  public:
   Render(int w, int h, bool f);
   virtual ~Render();

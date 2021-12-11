@@ -16,7 +16,8 @@ class Camera;
 class btRigidBody;
 
 namespace Glue {
-class CameraMan final : public Object, public MutedInputObserver {
+
+class CameraMan final : public Object, public InputObserver {
  public:
   // enumerator values for different styles of camera movement
   enum Style { FREELOOK, ORBIT, FPS, MANUAL };

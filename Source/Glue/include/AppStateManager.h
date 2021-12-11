@@ -6,7 +6,7 @@
 
 namespace Glue {
 
-class AppStateManager : public DynamicSingleton<AppStateManager> {
+class AppStateManager : public Singleton<AppStateManager> {
  public:
   AppStateManager();
   virtual ~AppStateManager();

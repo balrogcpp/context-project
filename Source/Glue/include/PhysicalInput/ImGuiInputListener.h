@@ -1,13 +1,13 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "PhysicalInput/Input.h"
+#include "PhysicalInput/InputObserver.h"
 extern "C" {
 #include <SDL2/SDL_keycode.h>
 }
 
 namespace Glue {
-
+/// \class to control ImGui interface overlay
 class ImGuiInputListener final : public InputObserver {
  public:
   ImGuiInputListener();

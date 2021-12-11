@@ -6,7 +6,7 @@
 #include "CubeMapCamera.h"
 #include "Landscape.h"
 #include "LazySingleton.h"
-#include "PhysicalInput/Input.h"
+#include "PhysicalInput/InputSequencer.h"
 #include "ReflectionCamera.h"
 #include "Vegetation.h"
 #include <OgreCodec.h>
@@ -31,7 +31,7 @@ namespace Glue {
 class CameraMan;
 class Config;
 class Render;
-class PhysicsSystem;
+class Physics;
 class Audio;
 class Overlay;
 class SinbadCharacterController;
@@ -39,7 +39,7 @@ class SinbadCharacterController;
 
 namespace Glue {
 
-class DotSceneLoaderB final : public Component, public DynamicSingleton<DotSceneLoaderB> {
+class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB> {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();

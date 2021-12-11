@@ -4,6 +4,7 @@
 #include "AppStateManager.h"
 #include "Engine.h"
 #include "LazySingleton.h"
+#include "PhysicalInput/WindowObserver.h"
 #include "PhysicalInput/VerboseListener.h"
 #include <OgreLog.h>
 #include <memory>
@@ -11,7 +12,7 @@
 
 namespace Glue {
 
-class Application final : public WindowObserver, public Ogre::LogListener, public DynamicSingleton<Application> {
+class Application final : public WindowObserver, public Ogre::LogListener, public Singleton<Application> {
  public:
   Application();
   virtual ~Application();

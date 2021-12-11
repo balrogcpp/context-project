@@ -27,7 +27,7 @@ class AnimationState;
 
 namespace Glue {
 
-class SinbadCharacterController : public Object, public MutedInputObserver {
+class SinbadCharacterController : public Object, public InputObserver {
  public:
   // all the animations our character has, and a null ID
   // some of these affect separate body parts and will be blended together

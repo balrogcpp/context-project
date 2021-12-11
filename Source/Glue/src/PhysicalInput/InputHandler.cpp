@@ -2,7 +2,6 @@
 
 #include "pch.h"
 #include "PhysicalInput/InputHandler.h"
-#include "Components/ComponentLocator.h"
 
 using namespace std;
 
@@ -20,9 +19,9 @@ void InputHandler::Cleanup() {}
 
 void InputHandler::Update(float time) {}
 
-void InputHandler::RegObserver(MutedInputObserver *p) { io_listeners.push_back(p); }
+void InputHandler::RegObserver(InputObserver *p) { io_listeners.push_back(p); }
 
-void InputHandler::UnregObserver(MutedInputObserver *p) {
+void InputHandler::UnregObserver(InputObserver *p) {
   auto it = find(io_listeners.begin(), io_listeners.end(), p);
 
   if (it != io_listeners.end()) {
@@ -97,16 +96,6 @@ void InputHandler::OnMouseMbUp(int x, int y) {
   if (!paused_) {
     for (auto &it : io_listeners) it->OnMouseMbUp(x, y);
   }
-}
-
-MutedInputObserver::MutedInputObserver() {
-  static auto &ref = GetIo();
-  ref.RegObserver(this);
-}
-
-MutedInputObserver::~MutedInputObserver() {
-  static auto &ref = GetIo();
-  ref.UnregObserver(this);
 }
 
 }  // namespace Glue

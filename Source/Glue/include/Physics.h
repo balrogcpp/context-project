@@ -41,10 +41,10 @@ struct ContactInfo {
   int points_;
 };
 
-class PhysicsSystem final : public Component, public DynamicSingleton<PhysicsSystem> {
+class Physics final : public Component, public Singleton<Physics> {
  public:
-  PhysicsSystem(bool threaded = false);
-  virtual ~PhysicsSystem();
+  Physics(bool threaded = false);
+  virtual ~Physics();
 
   void Cleanup() override;
   void Update(float time) override;

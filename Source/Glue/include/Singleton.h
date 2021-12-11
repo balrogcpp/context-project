@@ -9,10 +9,10 @@ namespace Glue {
 /// Implement "Dynamic Singleton" pattern. Keeps flag that class was already instanced once.
 /// Throws exception when tried to create second instance
 template <typename T>
-class DynamicSingleton : public NoCopy {
+class Singleton : public NoCopy {
  public:
   /// Constructor
-  DynamicSingleton() {
+  Singleton() {
     if (Instanced) {
       std::string Type = typeid(T).name();
       std::string Message = Type + " is DynamicSingleton class. Creation of another instance is forbidden";

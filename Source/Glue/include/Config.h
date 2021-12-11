@@ -7,7 +7,7 @@
 
 namespace Glue {
 
-class Config : public DynamicSingleton<Config> {
+class Config : public Singleton<Config> {
  public:
   explicit Config(const std::string &FileName);
 

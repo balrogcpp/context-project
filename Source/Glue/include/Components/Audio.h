@@ -11,7 +11,7 @@ class Root;
 }
 
 namespace Glue {
-class Audio final : public Component, public DynamicSingleton<Audio> {
+class Audio final : public Component, public Singleton<Audio> {
  public:
   Audio(unsigned int MaxSourceCount = 16, unsigned int QueueListSize = 4);
   virtual ~Audio();

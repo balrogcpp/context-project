@@ -1,18 +1,18 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "PhysicsSystem.h"
+#include "Physics.h"
 #include "BtOgre/BtOgre.h"
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
+#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
-#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 
 using namespace std;
 
 namespace Glue {
 
-PhysicsSystem::PhysicsSystem(bool threaded) : threaded(threaded) {
+Physics::Physics(bool threaded) : threaded(threaded) {
   auto *sheduler = btCreateDefaultTaskScheduler();
 
   if (!sheduler) throw Exception("Bullet physics no task sheduler available");
@@ -41,17 +41,17 @@ PhysicsSystem::PhysicsSystem(bool threaded) : threaded(threaded) {
   pause = false;
 }
 
-PhysicsSystem::~PhysicsSystem() {
+Physics::~Physics() {
   running = false;
 
   Cleanup();
 }
 
-void PhysicsSystem::Resume() { pause = false; }
+void Physics::Resume() { pause = false; }
 
-void PhysicsSystem::Pause() { pause = true; }
+void Physics::Pause() { pause = true; }
 
-void PhysicsSystem::Update(float time) {
+void Physics::Update(float time) {
   if (threaded) return;
 
   if (pause) return;
@@ -61,7 +61,7 @@ void PhysicsSystem::Update(float time) {
   //if (debug) dbg_draw->update();
 }
 
-void PhysicsSystem::Cleanup() {
+void Physics::Cleanup() {
   world->clearForces();
 
   // remove the rigidbodies from the dynamics world and delete them
@@ -78,9 +78,9 @@ void PhysicsSystem::Cleanup() {
   }
 }
 
-void PhysicsSystem::AddRigidBody(btRigidBody *body) { world->addRigidBody(body); }
+void Physics::AddRigidBody(btRigidBody *body) { world->addRigidBody(body); }
 
-void PhysicsSystem::CreateTerrainHeightfieldShape(int size, float *data, const float &min_height,
+void Physics::CreateTerrainHeightfieldShape(int size, float *data, const float &min_height,
                                                   const float &max_height, const Ogre::Vector3 &position,
                                                   const float &scale) {
   // Convert height data in a format suitable for the physics engine
@@ -121,7 +121,7 @@ void PhysicsSystem::CreateTerrainHeightfieldShape(int size, float *data, const f
   world->setForceUpdateAllAabbs(false);
 }
 
-void PhysicsSystem::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent_node, const string &proxy_type,
+void Physics::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent_node, const string &proxy_type,
                                 const string &physics_type, float mass, float mass_radius, float inertia_tensor,
                                 float velocity_min, float velocity_max, float friction) {
   btRigidBody *entBody = nullptr;
@@ -298,7 +298,7 @@ void PhysicsSystem::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent_no
   }
 }
 
-void PhysicsSystem::ProcessData(Ogre::UserObjectBindings &user_object_bindings, Ogre::Entity *entity,
+void Physics::ProcessData(Ogre::UserObjectBindings &user_object_bindings, Ogre::Entity *entity,
                                 Ogre::SceneNode *parent_node) {
   string proxy_type;
   if (user_object_bindings.getUserAny("proxy").has_value())

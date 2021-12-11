@@ -415,6 +415,57 @@ externalproject_add(Target_OGRE
                     TEST_AFTER_INSTALL true
                     )
 
+externalproject_add(Target_FreeGLUT
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/dcnieho/FreeGLUT.git
+                    GIT_TAG FG_3_2_1
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS
+                    -G "${CMAKE_GENERATOR}"
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
+                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    ${GLUE_CMAKE_EXTRA_FLAGS}
+                    -DFREEGLUT_BUILD_SHARED_LIBS=OFF
+                    -DFREEGLUT_BUILD_STATIC_LIBS=ON
+                    -DFREEGLUT_GLES=OFF
+                    -DINSTALL_PDB=OFF
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    )
+
+externalproject_add(Target_OGRE2
+                    EXCLUDE_FROM_ALL true
+                    DEPENDS Target_ZZIP Target_freetype
+                    PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/OGRECave/ogre-next.git
+                    GIT_TAG v2-2
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS
+                    -G "${CMAKE_GENERATOR}"
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
+                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
+                    -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
+                    ${GLUE_CMAKE_EXTRA_FLAGS}
+                    -DOGRE_STATIC=ON
+                    -DOGRE_CONFIG_ENABLE_STBI=OFF
+                    -DOGRE_BUILD_SAMPLES2=OFF
+                    -DOGRE_INSTALL_DOCS=OFF
+                    -DOGRE_BUILD_TOOLS=OFF
+                    -DOGRE_CONFIG_THREADS=0
+                    -DOGRE_USE_BOOST=OFF
+                    -DOGRE_CONFIG_THREAD_PROVIDER=std
+                    -DCMAKE_SKIP_INSTALL_RPATH=ON
+                    -DCMAKE_CXX_STANDARD=11
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    )
+
 externalproject_add(Target_Lua
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}

@@ -37,7 +37,7 @@ Compositor& GetCompositor() {
   return CompositorComponentPtr;
 }
 
-PhysicsSystem& GetPhysics() {
+Physics& GetPhysics() {
   static auto& PhysicsComponentPtr = *Engine::GetInstance().ps;
   return PhysicsComponentPtr;
 }

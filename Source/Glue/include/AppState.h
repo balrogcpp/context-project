@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "PhysicalInput/Input.h"
 #include "NoCopy.h"
+#include "PhysicalInput/InputObserver.h"
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 #include <OgreResourceGroupManager.h>

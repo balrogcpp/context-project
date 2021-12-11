@@ -10,7 +10,7 @@ namespace Glue {
 class Render;
 class Window;
 class Compositor;
-class PhysicsSystem;
+class Physics;
 class Audio;
 class Overlay;
 class DotSceneLoaderB;
@@ -22,7 +22,7 @@ Engine& GetEngine();
 Render& GetRS();
 Window& GetWindow();
 Compositor& GetCompositor();
-PhysicsSystem& GetPhysics();
+Physics& GetPhysics();
 Audio& GetAudio();
 Overlay& GetOverlay();
 DotSceneLoaderB& GetLoader();

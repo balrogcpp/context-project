@@ -8,7 +8,7 @@
 #include "Engine.h"
 #include "LazySingleton.h"
 #include "PhysicalInput/InputHandler.h"
-#include "PhysicsSystem.h"
+#include "Physics.h"
 #include "Render.h"
 #include <memory>
 #include <vector>
@@ -36,7 +36,7 @@ class Engine final : public LazySingleton<Engine> {
   std::unique_ptr<InputHandler> io;
   std::unique_ptr<Config> config;
   std::unique_ptr<Render> rs;
-  std::unique_ptr<PhysicsSystem> ps;
+  std::unique_ptr<Physics> ps;
   std::unique_ptr<Audio> as;
   std::unique_ptr<Overlay> overlay;
   std::unique_ptr<DotSceneLoaderB> loader;
@@ -47,7 +47,7 @@ class Engine final : public LazySingleton<Engine> {
   friend Render& GetRS();
   friend Window& GetWindow();
   friend Compositor& GetCompositor();
-  friend PhysicsSystem& GetPhysics();
+  friend Physics& GetPhysics();
   friend Audio& GetAudio();
   friend Overlay& GetOverlay();
   friend DotSceneLoaderB& GetLoader();

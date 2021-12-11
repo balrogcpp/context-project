@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Input.h"
+#include "InputObserver.h"
 
 namespace Glue {
 
@@ -10,7 +10,7 @@ class VerboseListener final : public InputObserver {
   void SetVerbose(bool verbose);
   bool IsVerbose();
 
- protected:
+ private:
   void OnKeyDown(SDL_Keycode sym) override;
   void OnKeyUp(SDL_Keycode sym) override;
   void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) override;

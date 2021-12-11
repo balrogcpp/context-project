@@ -18,7 +18,7 @@ class GBufferSchemeHandler;
 
 namespace Glue {
 
-class Compositor : public Component, public DynamicSingleton<Compositor> {
+class Compositor : public Component, public Singleton<Compositor> {
  public:
   Compositor();
   virtual ~Compositor();

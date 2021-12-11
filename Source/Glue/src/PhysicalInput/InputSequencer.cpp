@@ -1,7 +1,9 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "PhysicalInput/Input.h"
+#include "PhysicalInput/InputSequencer.h"
+#include "PhysicalInput/InputObserver.h"
+#include "PhysicalInput/WindowObserver.h"
 #include <algorithm>
 
 using namespace std;
@@ -31,11 +33,11 @@ InputSequencer::InputSequencer() {}
 
 InputSequencer::~InputSequencer() {}
 
-void InputSequencer::RegObserver(IInputObserver *p) { io_listeners.insert(p); }
+void InputSequencer::RegObserver(InputObserver *p) { io_listeners.insert(p); }
 
-void InputSequencer::UnregObserver(IInputObserver *p) { io_listeners.erase(p); }
+void InputSequencer::UnregObserver(InputObserver *p) { io_listeners.erase(p); }
 
-void InputSequencer::RegWinObserver(IWindowObserver *p) {
+void InputSequencer::RegWinObserver(WindowObserver *p) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   auto callback = [](void *userdata, SDL_Event *event) {
     return InputSequencer::GetInstance().HandleAppEvents(userdata, event);
@@ -47,7 +49,7 @@ void InputSequencer::RegWinObserver(IWindowObserver *p) {
   win_listeners.insert(p);
 }
 
-void InputSequencer::UnregWinObserver(IWindowObserver *p) { win_listeners.erase(p); }
+void InputSequencer::UnregWinObserver(WindowObserver *p) { win_listeners.erase(p); }
 
 void InputSequencer::Capture() {
   SDL_Event event;
@@ -174,26 +176,6 @@ void InputSequencer::Capture() {
       }
     }
   }
-}
-
-InputObserver::InputObserver() {
-  static auto &ref = InputSequencer::GetInstance();
-  ref.RegObserver(this);
-}
-
-InputObserver::~InputObserver() {
-  static auto &ref = InputSequencer::GetInstance();
-  ref.UnregObserver(this);
-}
-
-WindowObserver::WindowObserver() {
-  static auto &ref = InputSequencer::GetInstance();
-  ref.RegWinObserver(this);
-}
-
-WindowObserver::~WindowObserver() {
-  static auto &ref = InputSequencer::GetInstance();
-  ref.UnregWinObserver(this);
 }
 
 }  // namespace Glue

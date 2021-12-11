@@ -44,7 +44,7 @@ void Engine::InitSystems() {
   rs = make_unique<Render>(window_width, window_high, window_fullscreen);
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  ps = make_unique<PhysicsSystem>();
+  ps = make_unique<Physics>();
   as = make_unique<Audio>(8, 8);
 #else
   ps = make_unique<PhysicsSystem>(false);
