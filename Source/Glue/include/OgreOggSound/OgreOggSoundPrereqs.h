@@ -83,15 +83,15 @@
 #		include <efx-presets.h>
 #	endif
 
-#	if OGRE_COMPILER == OGRE_COMPILER_MSVC
-#		ifdef OGGSOUND_EXPORT
-#			define _OGGSOUND_EXPORT __declspec(dllexport)
-#		else
-#			define _OGGSOUND_EXPORT __declspec(dllimport)
-#		endif
-#	else
+//#	if OGRE_COMPILER == OGRE_COMPILER_MSVC
+//#		ifdef OGGSOUND_EXPORT
+//#			define _OGGSOUND_EXPORT __declspec(dllexport)
+//#		else
+//#			define _OGGSOUND_EXPORT __declspec(dllimport)
+//#		endif
+//#	else
 #		define _OGGSOUND_EXPORT
-#	endif
+//#	endif
 
 #elif OGRE_COMPILER == OGRE_COMPILER_GNUC || OGRE_COMPILER == OGRE_COMPILER_CLANG
 #   if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
