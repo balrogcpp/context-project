@@ -16,7 +16,7 @@
 #include <string>
 
 namespace pugi {
-class XmlNode;
+class xml_node;
 }
 
 namespace Ogre {
@@ -39,16 +39,6 @@ class SinbadCharacterController;
 
 namespace Glue {
 
-std::string GetAttrib(const pugi::xml_node &XmlNode, const std::string &attrib, const std::string &defaultValue = "");
-float GetAttribReal(const pugi::xml_node &XmlNode, const std::string &attrib, float defaultValue = 0);
-int GetAttribInt(const pugi::xml_node &XmlNode, const std::string &attrib, int defaultValue = 0);
-bool GetAttribBool(const pugi::xml_node &XmlNode, const std::string &attrib, bool defaultValue = false);
-Ogre::Vector3 ParseVector3(const pugi::xml_node &XmlNode);
-Ogre::Vector3 ParsePosition(const pugi::xml_node &XmlNode);
-Ogre::Vector3 ParseScale(const pugi::xml_node &XmlNode);
-Ogre::Quaternion ParseRotation(const pugi::xml_node &XmlNode);
-Ogre::ColourValue ParseColour(pugi::xml_node &XmlNode);
-
 class DotSceneLoaderB final : public Component, public DynamicSingleton<DotSceneLoaderB> {
  public:
   DotSceneLoaderB();
@@ -60,10 +50,7 @@ class DotSceneLoaderB final : public Component, public DynamicSingleton<DotScene
   void Load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node);
   void ExportScene(Ogre::SceneNode *rootNode, const std::string &outFileName);
   float GetHeight(float x, float z);
-
-  static Landscape &GetTerrain();
   CameraMan &GetCamera() const;
-  static Vegetation &GetForest();
 
  protected:
   void ProcessScene(pugi::xml_node &XmlRoot);
@@ -99,11 +86,9 @@ class DotSceneLoaderB final : public Component, public DynamicSingleton<DotScene
   Ogre::SceneNode *root_node = nullptr;
   Ogre::SceneNode *attach_node = nullptr;
   std::string group_name = Ogre::RGN_DEFAULT;
-
   std::unique_ptr<SinbadCharacterController> sinbad;
-
-  static inline std::unique_ptr<Landscape> terrain;
-  static inline std::unique_ptr<Vegetation> forest;
+  //static inline std::unique_ptr<Landscape> terrain;
+  //static inline std::unique_ptr<Vegetation> forest;
 };
 
 class DotScenePluginB : public Ogre::Plugin {

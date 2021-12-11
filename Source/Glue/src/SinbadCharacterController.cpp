@@ -197,7 +197,8 @@ void SinbadCharacterController::updateBody(float deltaTime) {
   mGoalDirection = Ogre::Vector3::ZERO;  // we will calculate this
   float x = mBodyNode->getPosition().x;
   float z = mBodyNode->getPosition().z;
-  float y = GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
+  //float y = GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
+  float y = CHAR_HEIGHT;
   mBodyNode->setPosition(x, y, z);
 
   if (mKeyDirection != Ogre::Vector3::ZERO && mBaseAnimID != ANIM_DANCE) {
@@ -235,13 +236,20 @@ void SinbadCharacterController::updateBody(float deltaTime) {
     mVerticalVelocity -= GRAVITY * deltaTime;
 
     Ogre::Vector3 pos = mBodyNode->getPosition();
-    if (pos.y <= GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT) {
+    if (pos.y <= 0 + CHAR_HEIGHT) {
       // if we've hit the ground, change to landing state
-      pos.y = GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
+      pos.y = 0 + CHAR_HEIGHT;
       mBodyNode->setPosition(pos);
       setBaseAnimation(ANIM_JUMP_END, true);
       mTimer = 0;
     }
+//    if (pos.y <= GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT) {
+//      // if we've hit the ground, change to landing state
+//      pos.y = GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
+//      mBodyNode->setPosition(pos);
+//      setBaseAnimation(ANIM_JUMP_END, true);
+//      mTimer = 0;
+//    }
   }
 }
 

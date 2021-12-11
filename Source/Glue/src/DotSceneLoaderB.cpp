@@ -7,6 +7,7 @@
 #include "MeshUtils.h"
 #include "PBRUtils.h"
 #include "SinbadCharacterController.h"
+#include "XmlParser.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>
@@ -23,137 +24,13 @@ using namespace std;
 
 namespace Glue {
 
-template <typename T>
-static string ToString(T t) {
-  return t == 0 ? string() : to_string(t);
-}
-
-template <typename T>
-static const char *ToCString(T t) {
-  return t == 0 ? "" : to_string(t).c_str();
-}
-
-static float ToFloat(const string &s, float defaultValue = 0.0f) { return s.empty() ? defaultValue : atof(s.c_str()); }
-
-static float ToInt(const string &s, int defaultValue = 0) { return s.empty() ? defaultValue : atoi(s.c_str()); }
-
-string GetAttrib(const pugi::xml_node &XmlNode, const string &attrib, const string &defaultValue) {
-  if (auto anode = XmlNode.attribute(attrib.c_str())) {
-    return anode.value();
-  } else {
-    return defaultValue;
-  }
-}
-
-float GetAttribReal(const pugi::xml_node &XmlNode, const string &attrib, float defaultValue) {
-  if (auto anode = XmlNode.attribute(attrib.c_str())) {
-    return ToFloat(anode.value());
-  } else {
-    return defaultValue;
-  }
-}
-
-int GetAttribInt(const pugi::xml_node &XmlNode, const string &attrib, int defaultValue) {
-  if (auto anode = XmlNode.attribute(attrib.c_str())) {
-    return ToInt(anode.value());
-  } else {
-    return defaultValue;
-  }
-}
-
-bool GetAttribBool(const pugi::xml_node &XmlNode, const string &attrib, bool defaultValue) {
-  if (auto anode = XmlNode.attribute(attrib.c_str())) {
-    return anode.as_bool();
-  } else {
-    return defaultValue;
-  }
-}
-
-Ogre::Vector3 ParseVector3(const pugi::xml_node &XmlNode) {
-  float x = ToFloat(XmlNode.attribute("x").value());
-  float y = ToFloat(XmlNode.attribute("y").value());
-  float z = ToFloat(XmlNode.attribute("z").value());
-
-  return Ogre::Vector3(x, y, z);
-}
-
-Ogre::Vector3 ParsePosition(const pugi::xml_node &XmlNode) {
-  float x = ToFloat(XmlNode.attribute("x").value());
-  float y = ToFloat(XmlNode.attribute("y").value());
-  float z = ToFloat(XmlNode.attribute("z").value());
-
-  return Ogre::Vector3(x, y, z);
-}
-
-Ogre::Vector3 ParseScale(const pugi::xml_node &XmlNode) {
-  float x = ToFloat(XmlNode.attribute("x").value());
-  float y = ToFloat(XmlNode.attribute("y").value());
-  float z = ToFloat(XmlNode.attribute("z").value());
-
-  return Ogre::Vector3(x, y, z);
-}
-
-Ogre::Quaternion ParseRotation(const pugi::xml_node &XmlNode) {
-  Ogre::Quaternion orientation;
-
-  if (XmlNode.attribute("qw")) {
-    orientation.w = ToFloat(XmlNode.attribute("qw").value());
-    orientation.x = ToFloat(XmlNode.attribute("qx").value());
-    orientation.y = -ToFloat(XmlNode.attribute("qz").value());
-    orientation.z = ToFloat(XmlNode.attribute("qy").value());
-  } else if (XmlNode.attribute("axisX")) {
-    Ogre::Vector3 axis;
-    axis.x = ToFloat(XmlNode.attribute("axisX").value());
-    axis.y = ToFloat(XmlNode.attribute("axisY").value());
-    axis.z = ToFloat(XmlNode.attribute("axisZ").value());
-    float angle = ToFloat(XmlNode.attribute("angle").value());
-
-    orientation.FromAngleAxis(Ogre::Angle(angle), axis);
-  } else if (XmlNode.attribute("angleX")) {
-    Ogre::Matrix3 rot;
-    rot.FromEulerAnglesXYZ(Ogre::Angle(ToFloat(XmlNode.attribute("angleX").value())),
-                           Ogre::Angle(ToFloat(XmlNode.attribute("angleY").value())),
-                           Ogre::Angle(ToFloat(XmlNode.attribute("angleZ").value())));
-    orientation.FromRotationMatrix(rot);
-  } else if (XmlNode.attribute("x")) {
-    orientation.x = ToFloat(XmlNode.attribute("x").value());
-    orientation.y = ToFloat(XmlNode.attribute("y").value());
-    orientation.z = ToFloat(XmlNode.attribute("z").value());
-    orientation.w = ToFloat(XmlNode.attribute("w").value());
-  } else if (XmlNode.attribute("w")) {
-    orientation.w = ToFloat(XmlNode.attribute("w").value());
-    orientation.x = ToFloat(XmlNode.attribute("x").value());
-    orientation.y = ToFloat(XmlNode.attribute("y").value());
-    orientation.z = ToFloat(XmlNode.attribute("z").value());
-  }
-
-  Ogre::Vector3 direction = orientation * Ogre::Vector3::NEGATIVE_UNIT_Z;
-  float x = direction.x;
-  float y = direction.y;
-  float z = direction.z;
-  direction = Ogre::Vector3(x, z, -y).normalisedCopy();
-
-  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  auto *node = scene->getRootSceneNode()->createChildSceneNode("tmp");
-  node->setDirection(direction);
-  orientation = node->getOrientation();
-  scene->destroySceneNode(node);
-
-  return orientation;
-}
-
-Ogre::ColourValue ParseColour(pugi::xml_node &XmlNode) {
-  return Ogre::ColourValue(ToFloat(XmlNode.attribute("r").value()), ToFloat(XmlNode.attribute("g").value()),
-                           ToFloat(XmlNode.attribute("b").value()), ToFloat(XmlNode.attribute("a").value(), 1));
-}
-
-static void write(pugi::xml_node &node, const Ogre::Vector3 &v) {
+static void Write(pugi::xml_node &node, const Ogre::Vector3 &v) {
   node.append_attribute("x") = ToCString(v.x);
   node.append_attribute("y") = ToCString(v.y);
   node.append_attribute("z") = ToCString(v.z);
 }
 
-static void write(pugi::xml_node &node, const Ogre::ColourValue &c) {
+static void Write(pugi::xml_node &node, const Ogre::ColourValue &c) {
   node.append_attribute("r") = ToCString(c.r);
   node.append_attribute("g") = ToCString(c.g);
   node.append_attribute("b") = ToCString(c.b);
@@ -164,18 +41,14 @@ DotSceneLoaderB::DotSceneLoaderB() { camera_man = make_unique<CameraMan>(); }
 
 DotSceneLoaderB::~DotSceneLoaderB() { Cleanup(); }
 
-Landscape &DotSceneLoaderB::GetTerrain() { return *terrain; }
-
 CameraMan &DotSceneLoaderB::GetCamera() const { return *camera_man; }
-
-Vegetation &DotSceneLoaderB::GetForest() { return *forest; }
 
 void DotSceneLoaderB::Update(float PassedTime) {
   if (Paused) return;
   if (camera_man) camera_man->Update(PassedTime);
-  if (terrain) terrain->Update(PassedTime);
-  if (forest) forest->Update(PassedTime);
-  if (sinbad && terrain) sinbad->Update(PassedTime);
+  //  if (terrain) terrain->Update(PassedTime);
+  //  if (forest) forest->Update(PassedTime);
+  if (sinbad) sinbad->Update(PassedTime);
 }
 
 void DotSceneLoaderB::Load(Ogre::DataStreamPtr &stream, const string &group_name, Ogre::SceneNode *root_node) {
@@ -206,9 +79,9 @@ void DotSceneLoaderB::Load(Ogre::DataStreamPtr &stream, const string &group_name
   root = Ogre::Root::getSingletonPtr();
   attach_node = root_node;
 
-  if (!terrain) terrain = make_unique<Landscape>();
-  if (!forest) forest = make_unique<Vegetation>();
-  forest->SetHeighFunc([](float x, float z) { return terrain->GetHeigh(x, z); });
+  //if (!terrain) terrain = make_unique<Landscape>();
+  //if (!forest) forest = make_unique<Vegetation>();
+  //forest->SetHeighFunc([](float x, float z) { return terrain->GetHeigh(x, z); });
 
   // Process the scene
   ProcessScene(XMLRoot);
@@ -219,10 +92,10 @@ void DotSceneLoaderB::WriteNode(pugi::xml_node &parentXML, const Ogre::SceneNode
   if (!node->getName().empty()) nodeXML.append_attribute("name") = node->getName().c_str();
 
   auto pos = nodeXML.append_child("position");
-  write(pos, node->getPosition());
+  Write(pos, node->getPosition());
 
   auto scale = nodeXML.append_child("scale");
-  write(scale, node->getScale());
+  Write(scale, node->getScale());
 
   auto rot = nodeXML.append_child("rotation");
   rot.append_attribute("qw") = ToCString(node->getOrientation().w);
@@ -248,9 +121,9 @@ void DotSceneLoaderB::WriteNode(pugi::xml_node &parentXML, const Ogre::SceneNode
       if (!l->isVisible()) light.append_attribute("visible") = "false";
 
       auto diffuse = light.append_child("colourDiffuse");
-      write(diffuse, l->getDiffuseColour());
+      Write(diffuse, l->getDiffuseColour());
       auto specular = light.append_child("colourSpecular");
-      write(specular, l->getSpecularColour());
+      Write(specular, l->getSpecularColour());
       switch (l->getType()) {
         case Ogre::Light::LT_POINT:
           light.append_attribute("type") = "point";
@@ -317,8 +190,8 @@ void DotSceneLoaderB::ExportScene(Ogre::SceneNode *rootNode, const string &outFi
 }
 
 void DotSceneLoaderB::Cleanup() {
-  terrain.reset();
-  forest.reset();
+  //terrain.reset();
+  // forest.reset();
   sinbad.reset();
   //  Pbr::Cleanup();
   if (ogre_scene) ogre_scene->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
@@ -327,7 +200,8 @@ void DotSceneLoaderB::Cleanup() {
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(group_name);
 }
 
-float DotSceneLoaderB::GetHeight(float x, float z) { return terrain ? terrain->GetHeigh(x, z) : 0; }
+//float DotSceneLoaderB::GetHeight(float x, float z) { return terrain ? terrain->GetHeigh(x, z) : 0; }
+float DotSceneLoaderB::GetHeight(float x, float z) { return 0; }
 
 void DotSceneLoaderB::ProcessScene(pugi::xml_node &XmlRoot) {
   // Process the scene parameters
@@ -954,10 +828,12 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, Ogre::SceneNode *Par
   entity->setVisibilityFlags(WATER_MASK);
 }
 
-void DotSceneLoaderB::ProcessForest(pugi::xml_node &XmlNode) { forest->ProcessForest(); }
+void DotSceneLoaderB::ProcessForest(pugi::xml_node &XmlNode) {
+//  forest->ProcessForest();
+}
 
 void DotSceneLoaderB::ProcessLandscape(pugi::xml_node &XmlNode) {
-  if (terrain) terrain->ProcessTerrainGroup(XmlNode);
+  //if (terrain) terrain->ProcessTerrainGroup(XmlNode);
 }
 
 void DotSceneLoaderB::ProcessFog(pugi::xml_node &XmlNode) {

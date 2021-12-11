@@ -4,6 +4,7 @@
 #include "Components/Landscape.h"
 #include "Components/ComponentLocator.h"
 #include "TerrainMaterialGeneratorB.h"
+#include "XmlParser.h"
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainAutoUpdateLod.h>
