@@ -2,6 +2,7 @@
 
 #pragma once
 #include "NoCopy.h"
+
 namespace Glue {
 class Config;
 }

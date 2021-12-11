@@ -194,8 +194,8 @@ Vegetation::~Vegetation() {
 }
 
 void Vegetation::Update(float time) {
-//  for (auto &it : pgeometry) it->update();
-//  for (auto &it : gpages) it->update();
+  //  for (auto &it : pgeometry) it->update();
+  //  for (auto &it : gpages) it->update();
 }
 
 void Vegetation::GenerateGrassStatic() {
@@ -357,7 +357,7 @@ void Vegetation::GenerateTreesPaged() {
 
 void Vegetation::ProcessForest() {
   GenerateGrassPaged();
-  //  GenerateTreesPaged();
+  GenerateTreesPaged();
   GenerateRocksStatic();
 }
 
