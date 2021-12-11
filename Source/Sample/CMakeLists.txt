@@ -22,7 +22,7 @@ else ()
     add_library(Sample SHARED ${SAMPLE_SOURCE_FILES})
 endif ()
 
-include_directories(Sample include ../Glue/include ${GLUE_INCLUDE_DIRS})
+include_directories(Sample include ../Glue/include ../Glue/include/OgreOggSound ${GLUE_INCLUDE_DIRS})
 target_link_directories(Sample PUBLIC ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE ${GLUE_LIB_DIR})
 target_precompile_headers(Sample PUBLIC ../Glue/include/pch.h)
 if (NOT ANDROID)

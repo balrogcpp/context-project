@@ -7,6 +7,7 @@
 
 namespace OgreOggSound {
 class OgreOggSoundManager;
+class Root;
 }
 
 namespace Glue {
@@ -28,6 +29,7 @@ class Audio final : public Component, public DynamicSingleton<Audio> {
   void SetListener(Ogre::SceneNode *ParentPtr);
 
  protected:
+  std::unique_ptr<OgreOggSound::Root> AudioRootPtr;
   OgreOggSound::OgreOggSoundManager *SoundManagerPtr = nullptr;
 };
 

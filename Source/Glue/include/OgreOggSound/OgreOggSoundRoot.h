@@ -24,20 +24,30 @@
 * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE. 	 
+* THE SOFTWARE. 
 *
-* DESCRIPTION: Library Headers
 */
 
-#pragma once
+#ifndef __OGREOGGSOUNDPlugin_H__
+#define __OGREOGGSOUNDPlugin_H__
 
-#include "OgreOggListener.h"
-#include "OgreOggISound.h"
-#include "OgreOggStaticSound.h"
-#include "OgreOggStaticWavSound.h"
-#include "OgreOggStreamSound.h"
-#include "OgreOggStreamWavSound.h"
-#include "OgreOggStreamBufferSound.h"
-#include "OgreOggSoundRecord.h"
+#include "OgreOggSound.h"
 #include "OgreOggSoundFactory.h"
-#include "OgreOggSoundManager.h"
+
+namespace OgreOggSound
+{
+	class Root
+	{
+	public:
+		Root();
+
+		void initialise();
+		void shutdown();
+
+	protected:
+		OgreOggSoundFactory* mOgreOggSoundFactory;
+		OgreOggSoundManager* mOgreOggSoundManager;
+	};
+}
+
+#endif

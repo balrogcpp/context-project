@@ -1,7 +1,7 @@
 /**
 * @author  Ian Stangoe
 *
-* LICENSE:
+* LICENSE
 * 
 * This source file is part of OgreOggSound, an OpenAL wrapper library for   
 * use with the Ogre Rendering Engine.										 
@@ -26,18 +26,46 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE. 	 
 *
-* DESCRIPTION: Library Headers
 */
 
-#pragma once
+#include "OgreOggSoundRoot.h"
 
-#include "OgreOggListener.h"
-#include "OgreOggISound.h"
-#include "OgreOggStaticSound.h"
-#include "OgreOggStaticWavSound.h"
-#include "OgreOggStreamSound.h"
-#include "OgreOggStreamWavSound.h"
-#include "OgreOggStreamBufferSound.h"
-#include "OgreOggSoundRecord.h"
-#include "OgreOggSoundFactory.h"
-#include "OgreOggSoundManager.h"
+namespace OgreOggSound
+{
+	//---------------------------------------------------------------------
+	Root::Root() :
+	 mOgreOggSoundFactory(0)
+	,mOgreOggSoundManager(0)
+	{
+
+	}
+	//---------------------------------------------------------------------
+	void Root::initialise()
+	{
+		if ( mOgreOggSoundManager ) return;
+
+		// Create new factory
+		mOgreOggSoundFactory = OGRE_NEW_T(OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL)();
+
+		// Register
+		Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
+
+		//initialise OgreOggSoundManager here
+		mOgreOggSoundManager = OGRE_NEW_T(OgreOggSoundManager, Ogre::MEMCATEGORY_GENERAL)();
+	}
+	//---------------------------------------------------------------------
+	void Root::shutdown()
+	{
+		if ( !mOgreOggSoundManager ) return;
+
+		// shutdown OgreOggSoundManager here
+		OGRE_DELETE_T(mOgreOggSoundManager, OgreOggSoundManager, Ogre::MEMCATEGORY_GENERAL);
+		mOgreOggSoundManager = 0;
+
+		// unregister
+		Ogre::Root::getSingleton().removeMovableObjectFactory(mOgreOggSoundFactory);
+
+		OGRE_DELETE_T(mOgreOggSoundFactory, OgreOggSoundFactory, Ogre::MEMCATEGORY_GENERAL);
+		mOgreOggSoundFactory = 0;
+	}
+}

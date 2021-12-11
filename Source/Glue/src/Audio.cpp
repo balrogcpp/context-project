@@ -4,29 +4,33 @@
 #include "Components/Audio.h"
 #include "Exception.h"
 #include "OgreOggSound/OgreOggSound.h"
+#include "OgreOggSound/OgreOggSoundRoot.h"
 
 using namespace std;
 
 namespace Glue {
 
 Audio::Audio(unsigned int MaxSourceCount, unsigned int QueueListSize) {
+#ifndef DEBUG
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   _putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
 #endif
+#endif
 
   // SetUp new factory
-  auto *mOgreOggSoundFactory = new OgreOggSound::OgreOggSoundFactory();
+  AudioRootPtr = make_unique<OgreOggSound::Root>();
+  AudioRootPtr->initialise();
+  //  auto *mOgreOggSoundFactory = new OgreOggSound::OgreOggSoundFactory();
+  //  Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
 
-  // Register
-  Ogre::Root::getSingleton().addMovableObjectFactory(mOgreOggSoundFactory, true);
   OgreOggSound::OgreOggSoundManager::getSingleton().init("", MaxSourceCount, QueueListSize);
   SoundManagerPtr = &OgreOggSound::OgreOggSoundManager::getSingleton();
   SoundManagerPtr->setResourceGroupName(Ogre::RGN_AUTODETECT);
 }
 
-Audio::~Audio() {}
+Audio::~Audio() { AudioRootPtr->shutdown(); }
 
 void Audio::Cleanup() {}
 
