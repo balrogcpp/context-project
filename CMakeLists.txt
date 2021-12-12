@@ -22,7 +22,6 @@ include(GitHash)
 # Create artifacts directory
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
 make_directory(${GLUE_ARTIFACT_DIR})
-make_directory(${GLUE_ARTIFACT_DIR}/ThirdParty)
 
 # Insert dependencies
 add_subdirectory(${CMAKE_SOURCE_DIR}/ThirdParty)
