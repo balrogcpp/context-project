@@ -55,7 +55,6 @@ find_package(Lua51 QUIET)
 find_package(assimp QUIET)
 find_package(PNG QUIET)
 find_package(freetype QUIET)
-find_library(ASSIMP_IRRXML_LIBRARY IrrXML QUIET)
 
 macro(insert_dependency VARIABLE PACKAGE)
     if (NOT ${VARIABLE})
