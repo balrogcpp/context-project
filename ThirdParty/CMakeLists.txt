@@ -14,6 +14,14 @@ set(GLUE_EXTERNAL_BIN_DIR ${GLUE_EXTERNAL_INSTALL_LOCATION}/bin)
 if (ANDROID)
     set(GLUE_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    string(APPEND CMAKE_EXTRA_CXX_FLAGS " -Wno-error=unused-command-line-argument")
+    string(APPEND CMAKE_EXTRA_C_FLAGS " -Wno-error=unused-command-line-argument")
+    string(APPEND CMAKE_EXTRA_CXX_FLAGS " -Wno-error=unknown-warning-option")
+    string(APPEND CMAKE_EXTRA_C_FLAGS " -Wno-error=unknown-warning-option")
+    string(APPEND CMAKE_EXTRA_CXX_FLAGS " -Wno-error=unknown-pragmas")
+    string(APPEND CMAKE_EXTRA_C_FLAGS " -Wno-error=unknown-pragmas")
+endif ()
 
 externalproject_add(Target_SDL2
                     EXCLUDE_FROM_ALL true
@@ -243,8 +251,8 @@ externalproject_add(Target_rapidjson
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
-                    GIT_TAG v1.1.0
-                    GIT_SHALLOW true
+                    GIT_TAG fd3dc29a5c2852df569e1ea81dbde2c412ac5051
+                    GIT_SHALLOW false
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
@@ -282,7 +290,7 @@ externalproject_add(Target_assimp
                     DEPENDS Target_zlib Target_rapidjson
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/assimp/assimp.git
-                    GIT_TAG v5.0.1
+                    GIT_TAG v5.1.3
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -295,6 +303,7 @@ externalproject_add(Target_assimp
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DINJECT_DEBUG_POSTFIX=OFF
+                    -DASSIMP_INJECT_DEBUG_POSTFIX=OFF
                     -DASSIMP_BUILD_TESTS=OFF
                     -DBUILD_SHARED_LIBS=OFF
                     -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
@@ -330,7 +339,6 @@ externalproject_add(Target_assimp
                     -DASSIMP_BUILD_TERRAGEN_IMPORTER=OFF
                     -DASSIMP_BUILD_3MF_IMPORTER=OFF
                     -DASSIMP_BUILD_MMD_IMPORTER=OFF
-                    -DASSIMP_BUILD_STEP_IMPORTER=OFF
                     )
 
 # PCH on Apple cause objective-c compilation error
@@ -377,6 +385,7 @@ externalproject_add(Target_OGRE
                     -DOGRE_BUILD_PLUGIN_GLSLANG=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_METAL=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_GL3PLUS=ON
+                    -DOGRE_BUILD_RENDERSYSTEM_GLES2=ON
                     -DOGRE_BUILD_RENDERSYSTEM_GL=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_VULKAN=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_TINY=OFF

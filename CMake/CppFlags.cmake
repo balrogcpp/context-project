@@ -30,19 +30,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_C_FLAGS " -mwindows")
     endif ()
 
-    option(GLUE_ENABLE_WERROR "" OFF)
-    if (GLUE_ENABLE_WERROR)
-        string(APPEND CMAKE_CXX_FLAGS " -Werror -Wno-error=switch")
-        #For OGRE
-        string(APPEND CMAKE_CXX_FLAGS " -Wno-error=deprecated-declarations")
-        #For Bullet
-        string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-but-set-variable")
-        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unused-command-line-argument")
-            string(APPEND CMAKE_CXX_FLAGS " -Wno-error=unknown-warning-option")
-        endif ()
-    endif ()
-
     # gcc-mingw links everything as shared libraries by default
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
@@ -82,5 +69,5 @@ elseif (MSVC)
 endif ()
 
 # This flags are useful for thirdparty build
-set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS})
 set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS})
