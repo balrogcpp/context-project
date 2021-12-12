@@ -50,15 +50,15 @@ endif ()
 target_link_libraries(Sample PUBLIC
         ${OGRE_LIBRARIES}
         ${OGRE_CODEC_ASSIMP}
-        ${ASSIMP_LIBRARIES}
         ${ASSIMP_IRRXML_LIBRARY}
+        pugixml
+        ${ASSIMP_LIBRARIES}
         ${BULLET_LIBRARIES}
         ${PNG_LIBRARY}
         vorbisfile
         vorbis
         vorbisenc
         Ogg::ogg
-        pugixml
         SDL2::SDL2-static
         ${LUA_LIBRARIES}
         ${OPENAL_LIBRARY}

@@ -18,6 +18,8 @@ include(Make)
 include(Platform)
 include(CppFlags)
 include(GitHash)
+include(InsertDependency)
+include(AppleThread)
 
 # Create artifacts directory
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
@@ -26,15 +28,40 @@ make_directory(${GLUE_ARTIFACT_DIR})
 # Insert dependencies
 add_subdirectory(${CMAKE_SOURCE_DIR}/ThirdParty)
 
+# Doxygen
+find_package(Doxygen COMPONENTS dot QUIET)
+find_package(LATEX COMPONENTS PDFLATEX QUIET)
+if (${DOXYGEN_FOUND})
+    add_custom_target(Doxygen
+            COMMAND ${DOXYGEN_EXECUTABLE}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Generating API documentation with Doxygen..."
+            USES_TERMINAL
+            )
+else ()
+    message("Doxygen not found. Doxygen targets will not be available")
+endif ()
+if (UNIX)
+    set(GLUE_DOXYGEN_MAKE_COMMAND ${MAKE_COMMAND})
+elseif (WIN32)
+    set(GLUE_DOXYGEN_MAKE_COMMAND "make.bat")
+endif ()
+if (${LATEX_PDFLATEX_FOUND})
+    add_custom_target(DoxygenPdf
+            DEPENDS Doxygen
+            COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_ARTIFACT_DIR}/Doxygen/latex ${GLUE_DOXYGEN_MAKE_COMMAND}
+            COMMAND ${CMAKE_COMMAND} -E copy ${GLUE_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${GLUE_ARTIFACT_DIR}/Doxygen
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Generating API documentation with Doxygen..."
+            USES_TERMINAL
+            )
+else ()
+    message("Latex PDF not found. PDF generation no available")
+endif ()
+
+
 set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
-if (APPLE)
-    set(CMAKE_THREAD_LIBS_INIT "-lpthread")
-    set(CMAKE_HAVE_THREADS_LIBRARY 1)
-    set(CMAKE_USE_WIN32_THREADS_INIT 0)
-    set(CMAKE_USE_PTHREADS_INIT 1)
-    set(THREADS_PREFER_PTHREAD_FLAG ON)
-endif ()
 if (NOT ANDROID AND NOT IOS)
     find_package(OpenGL REQUIRED)
 else ()
@@ -54,15 +81,7 @@ find_package(Lua51 QUIET)
 find_package(assimp QUIET)
 find_package(PNG QUIET)
 find_package(freetype QUIET)
-
-macro(insert_dependency VARIABLE PACKAGE)
-    if (NOT ${VARIABLE})
-        message(STATUS "Not found ${VARIABLE}. Please build ${PACKAGE} first")
-        set(ANY_NOT_FOUND true)
-    else ()
-        message(STATUS "Found ${PACKAGE}")
-    endif ()
-endmacro()
+#find_library(ASSIMP_IRRXML_LIBRARY IrrXML QUIET)
 
 insert_dependency(OGRE_FOUND OGRE)
 insert_dependency(Bullet_FOUND Bullet)
@@ -72,7 +91,12 @@ insert_dependency(SDL2_FOUND SDL2)
 insert_dependency(PNG_FOUND LibPNG)
 insert_dependency(assimp_FOUND assimp)
 
-# Docker-compose target
+if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
+    add_library(AndroidDummy SHARED Android/app/src/main/cpp/main.cpp)
+    add_dependencies(AndroidDummy ThirdParty)
+endif ()
+
+# Docker-compose targets
 add_custom_target(DockerComposeDep
         COMMAND docker-compose -f docker-compose-3rd.yml up
         COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
@@ -81,25 +105,13 @@ add_custom_target(DockerComposeDep
         USES_TERMINAL
         )
 
-# Docker-compose targets
-add_custom_target(DockerCompose
-        COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
-        COMMAND docker-compose down --volumes
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building tests with docker..."
-        USES_TERMINAL
-        )
-
-if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
-    add_library(AndroidDummy SHARED Android/app/src/main/cpp/main.cpp)
-    add_dependencies(AndroidDummy ThirdParty)
-endif ()
 if (ANY_NOT_FOUND)
     return()
 endif ()
 
 # Library and Tests
 add_subdirectory(${CMAKE_SOURCE_DIR}/Source)
+
 
 #Packaging
 set(GLUE_DEPLOY_DIR ${CMAKE_SOURCE_DIR}/Deploy)
@@ -175,33 +187,11 @@ if (NOT MSVC)
             )
 endif ()
 
-# Doxygen
-find_package(Doxygen COMPONENTS dot QUIET)
-find_package(LATEX COMPONENTS PDFLATEX QUIET)
-if (${DOXYGEN_FOUND})
-    add_custom_target(Doxygen
-            COMMAND ${DOXYGEN_EXECUTABLE}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMENT "Generating API documentation with Doxygen..."
-            USES_TERMINAL
-            )
-else ()
-    message("Doxygen not found. Doxygen targets will not be available")
-endif ()
-if (UNIX)
-    set(GLUE_DOXYGEN_MAKE_COMMAND ${MAKE_COMMAND})
-elseif (WIN32)
-    set(GLUE_DOXYGEN_MAKE_COMMAND "make.bat")
-endif ()
-if (${LATEX_PDFLATEX_FOUND})
-    add_custom_target(DoxygenPdf
-            DEPENDS Doxygen
-            COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_ARTIFACT_DIR}/Doxygen/latex ${GLUE_DOXYGEN_MAKE_COMMAND}
-            COMMAND ${CMAKE_COMMAND} -E copy ${GLUE_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${GLUE_ARTIFACT_DIR}/Doxygen
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMENT "Generating API documentation with Doxygen..."
-            USES_TERMINAL
-            )
-else ()
-    message("Latex PDF not found. PDF generation no available")
-endif ()
+# Build with docker-compose
+add_custom_target(DockerCompose
+        COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
+        COMMAND docker-compose down --volumes
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Building tests with docker..."
+        USES_TERMINAL
+        )

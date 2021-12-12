@@ -1,0 +1,8 @@
+macro(insert_dependency VARIABLE PACKAGE)
+    if (NOT ${VARIABLE})
+        message(STATUS "Not found ${VARIABLE}. Please build ${PACKAGE} first")
+        set(ANY_NOT_FOUND true)
+    else ()
+        message(STATUS "Found ${PACKAGE}")
+    endif ()
+endmacro()
