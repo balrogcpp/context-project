@@ -9,7 +9,7 @@ services:
     container_name: linux-glue-dep
     volumes:
       - .:/var/artifacts
-    command: cp -R /mnt/build/Artifacts/ThirdParty /var/artifacts
+    command: cp -R /mnt/build/Artifacts /var/artifacts
   glue-dep-windows:
     build:
       context: .
@@ -19,7 +19,7 @@ services:
     container_name: windows-glue-dep
     volumes:
       - .:/var/artifacts
-    command: cp -R /mnt/build/Artifacts/ThirdParty /var/artifacts
+    command: cp -R /mnt/build/Artifacts /var/artifacts
   glue-dep-apple:
     build:
       context: .
@@ -29,7 +29,7 @@ services:
     container_name: apple-glue-dep
     volumes:
       - .:/var/artifacts
-    command: cp -R /mnt/build/Artifacts/ThirdParty /var/artifacts
+    command: cp -R /mnt/build/Artifacts /var/artifacts
   glue-dep-android:
     build:
       context: .
@@ -39,4 +39,4 @@ services:
     container_name: android-glue-dep
     volumes:
       - .:/var/artifacts
-    command: cp -R /mnt/build/Artifacts/ThirdParty /var/artifacts
+    command: cp -R /mnt/build/Artifacts /var/artifacts
