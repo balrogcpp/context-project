@@ -304,6 +304,7 @@ externalproject_add(Target_assimp
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DINJECT_DEBUG_POSTFIX=OFF
                     -DASSIMP_INJECT_DEBUG_POSTFIX=OFF
+                    -DASSIMP_IGNORE_GIT_HASH=ON
                     -DASSIMP_BUILD_TESTS=OFF
                     -DBUILD_SHARED_LIBS=OFF
                     -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
