@@ -62,6 +62,9 @@
 #ifndef HAVE_EFX
 #	define HAVE_EFX 2
 #endif
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#	define HAVE_EFX 0
+#endif
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 

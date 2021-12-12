@@ -41,13 +41,8 @@ void Engine::InitSystems() {
   bool window_fullscreen = config->Get<bool>("window_fullscreen");
   rs = make_unique<Render>(window_width, window_high, window_fullscreen);
 
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   ps = make_unique<Physics>();
   as = make_unique<Audio>(8, 8);
-#else
-  ps = make_unique<PhysicsSystem>(false);
-  as = make_unique<AudioSystem>(4, 4);
-#endif
 
   loader = make_unique<DotSceneLoaderB>();
 
