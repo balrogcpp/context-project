@@ -35,11 +35,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQ
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
     endif ()
 
-    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static-libstdc++ -static-libgcc")
-    endif ()
-
     string(APPEND CMAKE_CXX_FLAGS " -pthread")
     string(APPEND CMAKE_C_FLAGS " -pthread")
 
