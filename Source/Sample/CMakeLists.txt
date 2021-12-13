@@ -1,5 +1,8 @@
 include(CppFlags)
 
+if (MSVC)
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " /FORCE:MULTIPLE")
+endif ()
 set(GLUE_LIB_DIR ${CMAKEBINARY_DIR}/glue)
 
 list(APPEND GLUE_INCLUDE_DIRS
@@ -46,11 +49,13 @@ if (NOT (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug"))
 else ()
     set(OGRE_CODEC_ASSIMP Codec_AssimpStatic_d)
 endif ()
+if (${ASSIMP_IRRXML_LIBRARY})
+    list(APPEND ${OGRE_CODEC_ASSIMP})
+endif ()
 
 target_link_libraries(Sample PUBLIC
         ${OGRE_LIBRARIES}
         ${OGRE_CODEC_ASSIMP}
-        ${ASSIMP_IRRXML_LIBRARY}
         pugixml
         ${ASSIMP_LIBRARIES}
         ${BULLET_LIBRARIES}

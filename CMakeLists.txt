@@ -81,7 +81,7 @@ find_package(Lua51 QUIET)
 find_package(assimp QUIET)
 find_package(PNG QUIET)
 find_package(freetype QUIET)
-#find_library(ASSIMP_IRRXML_LIBRARY IrrXML QUIET)
+find_library(ASSIMP_IRRXML_LIBRARY IrrXML QUIET)
 
 insert_dependency(OGRE_FOUND OGRE)
 insert_dependency(Bullet_FOUND Bullet)
@@ -102,6 +102,14 @@ add_custom_target(DockerComposeDep
         COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Building thirdparty libraries with docker-compose..."
+        USES_TERMINAL
+        )
+
+add_custom_target(DockerCompose
+        COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
+        COMMAND docker-compose down --volumes
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Building tests with docker..."
         USES_TERMINAL
         )
 
@@ -186,12 +194,3 @@ if (NOT MSVC)
             USES_TERMINAL
             )
 endif ()
-
-# Build with docker-compose
-add_custom_target(DockerCompose
-        COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
-        COMMAND docker-compose down --volumes
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building tests with docker..."
-        USES_TERMINAL
-        )
