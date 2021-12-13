@@ -7,6 +7,7 @@ WORKDIR ${CONTEXT_HOME}
 
 COPY ./Source ./Source
 COPY ./Deploy ./Deploy
+COPY ./Doc ./Doc
 COPY ./CMake ./CMake
 COPY ./LICENSE .
 COPY ./Programs ./Programs
