@@ -13,7 +13,7 @@ else ()
     add_library(Sample SHARED ${SAMPLE_SOURCE_FILES})
 endif ()
 
-include_directories(Sample include ../Glue/include ../Glue/include/OgreOggSound ../Glue/include/PagedGeometry ${GLUE_INCLUDE_DIRS})
+include_directories(Sample include ../Glue/include ../Glue/include/OgreOggSound ../Glue/include/PagedGeometry ../include ${GLUE_INCLUDE_DIRS})
 target_link_directories(Sample PUBLIC ${GLUE_LINK_DIRS})
 target_precompile_headers(Sample PUBLIC ../Glue/include/pch.h)
 if (NOT ANDROID)
