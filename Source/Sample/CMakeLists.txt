@@ -1,8 +1,9 @@
 include(CppFlags)
 
-if (MSVC)
-    string(APPEND CMAKE_EXE_LINKER_FLAGS " /FORCE:MULTIPLE")
-endif ()
+#if (MSVC)
+#    string(APPEND CMAKE_EXE_LINKER_FLAGS " /FORCE:MULTIPLE")
+#endif ()
+
 set(GLUE_LIB_DIR ${CMAKEBINARY_DIR}/glue)
 
 list(APPEND GLUE_INCLUDE_DIRS
@@ -44,13 +45,15 @@ elseif (ANDROID)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 endif ()
+
 if (NOT (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug"))
     set(OGRE_CODEC_ASSIMP Codec_AssimpStatic)
 else ()
     set(OGRE_CODEC_ASSIMP Codec_AssimpStatic_d)
 endif ()
-if (${ASSIMP_IRRXML_LIBRARY})
-    list(APPEND ${OGRE_CODEC_ASSIMP})
+
+if (ASSIMP_IRRXML_LIBRARY)
+    list(APPEND ASSIMP_LIBRARIES ${ASSIMP_IRRXML_LIBRARY})
 endif ()
 
 target_link_libraries(Sample PUBLIC
