@@ -9,6 +9,7 @@ COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
 COPY ./ThirdParty/Patch ./ThirdParty/Patch
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./CMake ./CMake
+COPY ./Doc ./Doc
 
 RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -G Ninja .. \

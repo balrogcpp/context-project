@@ -289,7 +289,7 @@ externalproject_add(Target_json
 set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_assimp)
 externalproject_add(Target_assimp
                     EXCLUDE_FROM_ALL true
-                    DEPENDS Target_zlib Target_rapidjson
+                    DEPENDS Target_zlib
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/assimp/assimp.git
                     GIT_TAG v5.0.1
@@ -343,11 +343,11 @@ externalproject_add(Target_assimp
                     -DASSIMP_BUILD_OFF_IMPORTER=OFF
                     -DASSIMP_BUILD_OBJ_IMPORTER=ON
                     -DASSIMP_BUILD_OGRE_IMPORTER=OFF
-                    -DASSIMP_BUILD_OPENGEX_IMPORTER=OFF
-                    -DASSIMP_BUILD_PLY_IMPORTER=OFF
+                    -DASSIMP_BUILD_OPENGEX_IMPORTER=ON
+                    -DASSIMP_BUILD_PLY_IMPORTER=ON
                     -DASSIMP_BUILD_MS3D_IMPORTER=OFF
                     -DASSIMP_BUILD_COB_IMPORTER=OFF
-                    -DASSIMP_BUILD_BLEND_IMPORTER=OFF
+                    -DASSIMP_BUILD_BLEND_IMPORTER=ON
                     -DASSIMP_BUILD_IFC_IMPORTER=OFF
                     -DASSIMP_BUILD_XGL_IMPORTER=OFF
                     -DASSIMP_BUILD_XGL_IMPORTER=OFF
@@ -361,7 +361,7 @@ externalproject_add(Target_assimp
                     -DASSIMP_BUILD_TERRAGEN_IMPORTER=OFF
                     -DASSIMP_BUILD_3D_IMPORTER=OFF
                     -DASSIMP_BUILD_X_IMPORTER=OFF
-                    -DASSIMP_BUILD_X3D_IMPORTER=OFF
+                    -DASSIMP_BUILD_X3D_IMPORTER=ON
                     -DASSIMP_BUILD_GLTF_IMPORTER=ON
                     -DASSIMP_BUILD_3MF_IMPORTER=OFF
                     -DASSIMP_BUILD_MMD_IMPORTER=OFF

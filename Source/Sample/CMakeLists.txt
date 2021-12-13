@@ -2,6 +2,11 @@ include(CppFlags)
 
 include(GlueBuildVariables)
 
+# In assimp version is >5.1.3 pugixml is insourced and cause linking error
+#if (MSVC AND NOT ASSIMP_IRRXML_LIBRARY)
+#    string(APPEND CMAKE_EXE_LINKER_FLAGS " /FORCE:MULTIPLE")
+#endif ()
+
 if (NOT ANDROID)
     add_executable(Sample WIN32 ${SAMPLE_SOURCE_FILES})
 else ()

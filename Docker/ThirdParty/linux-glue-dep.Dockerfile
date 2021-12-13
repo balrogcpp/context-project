@@ -9,6 +9,7 @@ COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
 COPY ./ThirdParty/Patch ./ThirdParty/Patch
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./CMake ./CMake
+COPY ./Doc ./Doc
 
 RUN apt-get update \
      && apt-get install --no-install-recommends -y gcc libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
