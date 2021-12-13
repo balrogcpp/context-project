@@ -308,6 +308,7 @@ externalproject_add(Target_assimp
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DINJECT_DEBUG_POSTFIX=OFF
                     -DASSIMP_INJECT_DEBUG_POSTFIX=OFF
+                    -DIGNORE_GIT_HASH=ON
                     -DASSIMP_IGNORE_GIT_HASH=ON
                     -DASSIMP_BUILD_TESTS=OFF
                     -DBUILD_SHARED_LIBS=OFF
@@ -316,19 +317,20 @@ externalproject_add(Target_assimp
                     -DASSIMP_NO_EXPORT=ON
                     -DASSIMP_BUILD_SAMPLES=OFF
                     -DASSIMP_INSTALL_PDB=OFF
-                    -DASSIMP_BUILD_ASE_IMPORTER=OFF
-                    -DASSIMP_BUILD_OFF_IMPORTER=OFF
-                    -DASSIMP_BUILD_IRR_IMPORTER=OFF
-                    -DASSIMP_BUILD_IRRMESH_IMPORTER=OFF
-                    -DASSIMP_BUILD_OGRE_IMPORTER=OFF
                     -DASSIMP_BUILD_AMF_IMPORTER=OFF
+                    -DASSIMP_BUILD_3DS_IMPORTER=ON
                     -DASSIMP_BUILD_AC_IMPORTER=OFF
+                    -DASSIMP_BUILD_ASE_IMPORTER=OFF
                     -DASSIMP_BUILD_ASSBIN_IMPORTER=OFF
+                    -DASSIMP_BUILD_ASSXML_IMPORTER=OFF
                     -DASSIMP_BUILD_B3D_IMPORTER=OFF
                     -DASSIMP_BUILD_BVH_IMPORTER=OFF
+                    -DASSIMP_BUILD_COLLADA_IMPORTER=ON
                     -DASSIMP_BUILD_DXF_IMPORTER=OFF
                     -DASSIMP_BUILD_CSM_IMPORTER=OFF
                     -DASSIMP_BUILD_HMP_IMPORTER=OFF
+                    -DASSIMP_BUILD_IRRMESH_IMPORTER=OFF
+                    -DASSIMP_BUILD_IRR_IMPORTER=OFF
                     -DASSIMP_BUILD_LWO_IMPORTER=OFF
                     -DASSIMP_BUILD_LWS_IMPORTER=OFF
                     -DASSIMP_BUILD_MD2_IMPORTER=OFF
@@ -338,12 +340,32 @@ externalproject_add(Target_assimp
                     -DASSIMP_BUILD_MDL_IMPORTER=OFF
                     -DASSIMP_BUILD_NFF_IMPORTER=OFF
                     -DASSIMP_BUILD_NDO_IMPORTER=OFF
+                    -DASSIMP_BUILD_OFF_IMPORTER=OFF
+                    -DASSIMP_BUILD_OBJ_IMPORTER=ON
+                    -DASSIMP_BUILD_OGRE_IMPORTER=OFF
+                    -DASSIMP_BUILD_OPENGEX_IMPORTER=OFF
+                    -DASSIMP_BUILD_PLY_IMPORTER=OFF
+                    -DASSIMP_BUILD_MS3D_IMPORTER=OFF
+                    -DASSIMP_BUILD_COB_IMPORTER=OFF
+                    -DASSIMP_BUILD_BLEND_IMPORTER=OFF
+                    -DASSIMP_BUILD_IFC_IMPORTER=OFF
+                    -DASSIMP_BUILD_XGL_IMPORTER=OFF
+                    -DASSIMP_BUILD_XGL_IMPORTER=OFF
+                    -DASSIMP_BUILD_FBX_IMPORTER=ON
                     -DASSIMP_BUILD_Q3D_IMPORTER=OFF
                     -DASSIMP_BUILD_Q3BSP_IMPORTER=OFF
+                    -DASSIMP_BUILD_RAW_IMPORTER=ON
                     -DASSIMP_BUILD_SIB_IMPORTER=OFF
+                    -DASSIMP_BUILD_SMD_IMPORTER=OFF
+                    -DASSIMP_BUILD_STL_IMPORTER=ON
                     -DASSIMP_BUILD_TERRAGEN_IMPORTER=OFF
+                    -DASSIMP_BUILD_3D_IMPORTER=OFF
+                    -DASSIMP_BUILD_X_IMPORTER=OFF
+                    -DASSIMP_BUILD_X3D_IMPORTER=OFF
+                    -DASSIMP_BUILD_GLTF_IMPORTER=ON
                     -DASSIMP_BUILD_3MF_IMPORTER=OFF
                     -DASSIMP_BUILD_MMD_IMPORTER=OFF
+                    -DASSIMP_BUILD_STEP_IMPORTER=OFF
                     )
 
 # PCH on Apple cause objective-c compilation error
