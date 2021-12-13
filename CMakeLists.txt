@@ -24,6 +24,11 @@ include(AppleThread)
 # Create artifacts directory
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
 make_directory(${GLUE_ARTIFACT_DIR})
+#make_directory(${GLUE_ARTIFACT_DIR}/Binary)
+#make_directory(${GLUE_ARTIFACT_DIR}/Binary/Dependencies)
+#make_directory(${GLUE_ARTIFACT_DIR}/Binary/Tests)
+#make_directory(${GLUE_ARTIFACT_DIR}/Binary/Demo)
+#make_directory(${GLUE_ARTIFACT_DIR}/Doxygen)
 
 # Insert dependencies
 add_subdirectory(${CMAKE_SOURCE_DIR}/ThirdParty)
