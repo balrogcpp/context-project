@@ -269,23 +269,6 @@ externalproject_add(Target_rapidjson
                     -DRAPIDJSON_HAS_STDSTRING=ON
                     )
 
-externalproject_add(Target_json
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/nlohmann/json.git
-                    GIT_TAG v3.9.1
-                    GIT_SHALLOW true
-                    GIT_PROGRESS false
-                    CMAKE_ARGS
-                    -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    ${GLUE_CMAKE_EXTRA_FLAGS}
-                    -DJSON_BuildTests=OFF
-                    )
-
 set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_assimp)
 externalproject_add(Target_assimp
                     EXCLUDE_FROM_ALL true
@@ -541,6 +524,7 @@ externalproject_add(Target_sol2
                     )
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(JEMALLOC_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_jemalloc)
     externalproject_add(Target_jemalloc
                         EXCLUDE_FROM_ALL true
                         PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
@@ -548,12 +532,10 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
                         GIT_TAG 5.2.1
                         GIT_SHALLOW true
                         GIT_PROGRESS false
-                        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_jemalloc ./autogen.sh
-                        BUILD_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_jemalloc ./configure --disable-stats --prefix ${GLUE_EXTERNAL_INSTALL_LOCATION}
-                        INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_jemalloc ${MAKE_COMMAND} install_lib_static
+                        CONFIGURE_COMMAND ${JEMALLOC_CHDIR} ./autogen.sh
+                        BUILD_COMMAND ${JEMALLOC_CHDIR} ./configure --disable-stats --prefix ${GLUE_EXTERNAL_INSTALL_LOCATION}
+                        INSTALL_COMMAND ${JEMALLOC_CHDIR} ${MAKE_COMMAND} install_lib_static
                         )
-
-    list(APPEND GLUE_DEPENDENCY_TARGETS Target_jemalloc)
 endif ()
 
 #std::filesystem is not supported on some platforms with c++17 support
@@ -607,4 +589,35 @@ externalproject_add(Target_GoogleBenchmark
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DBENCHMARK_ENABLE_TESTING=OFF
+                    )
+
+externalproject_add(Target_json
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/nlohmann/json.git
+                    GIT_TAG v3.9.1
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS
+                    -G "${CMAKE_GENERATOR}"
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${GLUE_CMAKE_EXTRA_FLAGS}
+                    -DJSON_BuildTests=OFF
+                    )
+
+set(INIH_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_inih)
+set(INIH_INCLUDE_DIR ${GLUE_EXTERNAL_PREFIX_LOCATION}/sdk/include/inih)
+externalproject_add(Target_inih
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/jtilly/inih.git
+                    GIT_TAG 1185eac0f0977654f9ac804055702e110bb4da91
+                    GIT_SHALLOW false
+                    GIT_PROGRESS false
+                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+                    BUILD_COMMAND ${CMAKE_COMMAND} -E make_directory ${INIH_INCLUDE_DIR}
+                    INSTALL_COMMAND ${INIH_CHDIR} ${CMAKE_COMMAND} -E copy INIReader.h ${INIH_INCLUDE_DIR}
                     )
