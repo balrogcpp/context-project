@@ -608,6 +608,26 @@ externalproject_add(Target_json
                     -DJSON_BuildTests=OFF
                     )
 
+externalproject_add(Target_yaml-cpp
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+                    GIT_TAG yaml-cpp-0.7.0
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS
+                    -G "${CMAKE_GENERATOR}"
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${GLUE_CMAKE_EXTRA_FLAGS}
+                    -DCMAKE_DEBUG_POSTFIX=
+                    -DYAML_CPP_BUILD_TOOLS=OFF
+                    -DYAML_BUILD_SHARED_LIBS=OFF
+                    -DYAML_CPP_BUILD_TESTS=OFF
+                    )
+
 set(INIH_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_inih)
 set(INIH_INCLUDE_DIR ${GLUE_EXTERNAL_PREFIX_LOCATION}/sdk/include/inih)
 externalproject_add(Target_inih
