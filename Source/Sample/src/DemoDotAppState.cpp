@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "DemoDotAppState.h"
 #include "Components/ComponentLocator.h"
+#include "Components/DotSceneLoaderB.h"
 #include "MenuAppState.h"
 
 using namespace std;
@@ -21,7 +22,7 @@ void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
     context_menu_ = true;
     GetEngine().InMenu();
-    GetRS().GetWindow().Grab(false);
+    GetEngine().Grab(false);
   }
 }
 
@@ -82,8 +83,8 @@ void DemoDotAppState::Update(float time) {
     const float hdx = 1920;
     const float hdy = 1080;
     const float hddiag = sqrt(hdx * hdx + hdy * hdy);
-    float x = GetWindow().GetSize().first;
-    float y = GetWindow().GetSize().second;
+    float x = GetEngine().GetSize().first;
+    float y = GetEngine().GetSize().second;
     static float diag = sqrt(x * x + y * y);
     float scale = 0.5 * diag / hddiag;
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
@@ -95,7 +96,7 @@ void DemoDotAppState::Update(float time) {
     ImGui::NewLine();
 
     if (ImGui::Button("         RESUME          ")) {
-      GetWindow().Grab(true);
+      GetEngine().Grab(true);
       GetEngine().OffMenu();
       context_menu_ = false;
     }
@@ -120,7 +121,7 @@ void DemoDotAppState::Update(float time) {
 }
 
 void DemoDotAppState::SetUp() {
-  GetWindow().Grab(true);
+  GetEngine().Grab(true);
   GetLoader().GetCamera().SetStyle(CameraMan::Style::FPS);
   LoadFromFile("1.scene");
 
@@ -142,9 +143,9 @@ void DemoDotAppState::SetUp() {
   //    anim2->setLoop(true);
   //    anim2->setEnabled(true);
 
-  GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
-  GetAudio().SetVolume("ambient", 0.5);
-  GetAudio().PlaySound("ambient");
+//  GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
+//  GetAudio().SetVolume("ambient", 0.5);
+//  GetAudio().PlaySound("ambient");
 }
 
 }  // namespace Demo

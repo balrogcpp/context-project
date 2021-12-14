@@ -7,7 +7,7 @@
 namespace Glue {
 
 Config& GetConf() {
-  static auto& ConfigPtr = *Engine::GetInstance().config;
+  static auto& ConfigPtr = *Engine::GetInstance().ConfPtr;
   return ConfigPtr;
 }
 
@@ -16,20 +16,15 @@ Engine& GetEngine() {
   return EnginePtr;
 }
 
-Render& GetRS() {
-  static auto& RenderComponentPtr = *Engine::GetInstance().rs;
-  return RenderComponentPtr;
-}
+//Render& GetRS() {
+//  static auto& RenderComponentPtr = *Engine::GetInstance().RS;
+//  return RenderComponentPtr;
+//}
 
-Window& GetWindow() {
-  static auto& WindowPtr = GetRS().GetWindow();
-  return WindowPtr;
-}
-
-Compositor& GetCompositor() {
-  static auto& CompositorComponentPtr = GetRS().GetCompositor();
-  return CompositorComponentPtr;
-}
+//Window& GetWindow() {
+//  static auto& WindowPtr = GetRS().GetWindow();
+//  return WindowPtr;
+//}
 
 Physics& GetPhysics() {
   static auto& PhysicsComponentPtr = *Engine::GetInstance().ps;
@@ -39,11 +34,6 @@ Physics& GetPhysics() {
 Audio& GetAudio() {
   static auto& AudioComponentPtr = *Engine::GetInstance().as;
   return AudioComponentPtr;
-}
-
-Overlay& GetOverlay() {
-  static auto& OverlayComponentPtr = *Engine::GetInstance().overlay;
-  return OverlayComponentPtr;
 }
 
 DotSceneLoaderB& GetLoader() {

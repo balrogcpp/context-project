@@ -15,14 +15,6 @@ set(GLUE_EXTERNAL_BIN_DIR ${GLUE_EXTERNAL_INSTALL_LOCATION}/bin)
 if (ANDROID)
     set(GLUE_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    string(APPEND CMAKE_EXTRA_CXX_FLAGS " -Wno-error=unused-command-line-argument")
-    string(APPEND CMAKE_EXTRA_C_FLAGS " -Wno-error=unused-command-line-argument")
-    string(APPEND CMAKE_EXTRA_CXX_FLAGS " -Wno-error=unknown-warning-option")
-    string(APPEND CMAKE_EXTRA_C_FLAGS " -Wno-error=unknown-warning-option")
-    string(APPEND CMAKE_EXTRA_CXX_FLAGS " -Wno-error=unknown-pragmas")
-    string(APPEND CMAKE_EXTRA_C_FLAGS " -Wno-error=unknown-pragmas")
-endif ()
 
 externalproject_add(Target_SDL2
                     EXCLUDE_FROM_ALL true

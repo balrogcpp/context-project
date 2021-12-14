@@ -17,12 +17,9 @@ class InputSequencer;
 
 Config& GetConf();
 Engine& GetEngine();
-Render& GetRS();
-Window& GetWindow();
-Compositor& GetCompositor();
+//Render& GetRS();
 Physics& GetPhysics();
 Audio& GetAudio();
-Overlay& GetOverlay();
 DotSceneLoaderB& GetLoader();
 
 }  // namespace Glue

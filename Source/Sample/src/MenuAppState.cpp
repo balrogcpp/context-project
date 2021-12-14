@@ -18,8 +18,7 @@ void MenuAppState::Update(float time) {
   {
     static ImGuiIO &io = ImGui::GetIO();
 
-    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always,
-                            ImVec2(0.5f, 0.5f));
+    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
     ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
     ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
     ImGui::SetNextWindowFocus();
@@ -29,8 +28,8 @@ void MenuAppState::Update(float time) {
     const float hdx = 1920;
     const float hdy = 1080;
     const float hddiag = sqrt(hdx * hdx + hdy * hdy);
-    float x = GetWindow().GetSize().first;
-    float y = GetWindow().GetSize().second;
+    float x = GetEngine().GetSize().first;
+    float y = GetEngine().GetSize().second;
     static float diag = sqrt(x * x + y * y);
     float scale = 0.5f * diag / hddiag;
     ImGui::SetWindowFontScale(scale);
@@ -55,6 +54,6 @@ void MenuAppState::Update(float time) {
 
 void MenuAppState::OnKeyDown(SDL_Keycode sym) {}
 
-void MenuAppState::SetUp() { GetWindow().Grab(false); }
+void MenuAppState::SetUp() { GetEngine().Grab(false); }
 
 }  // namespace Demo

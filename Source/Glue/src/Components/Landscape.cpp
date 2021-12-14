@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "Components/Landscape.h"
 #include "Components/ComponentLocator.h"
+#include "Components/Physics.h"
 #include "TerrainMaterialGeneratorB.h"
 #include "XmlParser.h"
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN

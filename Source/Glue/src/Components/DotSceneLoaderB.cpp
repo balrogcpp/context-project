@@ -4,6 +4,8 @@
 #include "Components/DotSceneLoaderB.h"
 #include "BtOgre/BtOgre.h"
 #include "Components/ComponentLocator.h"
+#include "Components/Audio.h"
+#include "Components/Physics.h"
 #include "MeshUtils.h"
 #include "Objects/SinbadCharacterController.h"
 #include "PBRUtils.h"

@@ -3,6 +3,8 @@
 #include "pch.h"
 #include "Components/Vegetation.h"
 #include "Components/ComponentLocator.h"
+#include "Components/DotSceneLoaderB.h"
+#include "Components/Physics.h"
 #include "MeshUtils.h"
 #include "PBRUtils.h"
 #include "PagedGeometry/PagedGeometryAll.h"
