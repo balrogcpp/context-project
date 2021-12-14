@@ -22,6 +22,10 @@ RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
 
 RUN cmake -P CMake/FlatZipAssets.cmake
 
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends upx-ucl \
+    && apt-get clean
+
 RUN mkdir build-apple && cd build-apple \
     && eval `x86_64-apple-darwin19-osxcross-conf` \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \

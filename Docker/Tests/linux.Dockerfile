@@ -25,6 +25,13 @@ RUN apt-get update \
     && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev \
     && apt-get clean
 
+ARG UPX_VERSION=3.96
+RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
+    && cd upx-${UPX_VERSION}-amd64_linux \
+    && cp upx /usr/local/bin \
+    && cd .. \
+    && rm -rf upx-${UPX_VERSION}-amd64_linux
+
 RUN mkdir build-linux && cd build-linux \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target BuildPackage \

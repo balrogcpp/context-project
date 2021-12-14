@@ -21,6 +21,10 @@ RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
 
 RUN cmake -P CMake/FlatZipAssets.cmake
 
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends upx-ucl nsis \
+    && apt-get clean
+
 RUN mkdir build-windows && cd build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target BuildPackage \

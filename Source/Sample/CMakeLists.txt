@@ -22,7 +22,11 @@ else ()
     set_target_properties(Sample PROPERTIES OUTPUT_NAME "main")
 endif ()
 
-
 target_link_libraries(Sample PUBLIC ${GLUE_LINK_LIBRARIES})
 
 install(TARGETS Sample RUNTIME DESTINATION .)
+
+set(TARGET_NAME Sample)
+if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    include(ReallySmallPostBuild)
+endif ()
