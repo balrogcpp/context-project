@@ -17,8 +17,6 @@ using namespace std;
 namespace Glue {
 
 string AssetLoader::FindPath(const string &Path, int Depth) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
-
 #ifdef DEBUG
   Depth = 6;
 #endif
@@ -35,10 +33,6 @@ string AssetLoader::FindPath(const string &Path, int Depth) {
   }
 
   return string();
-
-#else
-  return Path;
-#endif
 }
 
 static bool CheckSymbol(char c) {
@@ -75,7 +69,6 @@ void AssetLoader::LoadResources() {
 }
 
 void AssetLoader::AddLocation(const string &Path, const string &GroupName, bool Recursive) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
   const string file_system = "FileSystem";
   const string zip = "Zip";
 
@@ -89,14 +82,10 @@ void AssetLoader::AddLocation(const string &Path, const string &GroupName, bool 
       rgm.addResourceLocation(result, zip, GroupName, Recursive);
     }
   }
-#else
-  //Assert(false, "AssetLoader::AddLocation called in another platform");
-#endif
 }
 
 void AssetLoader::AddLocationRecursive(const string &Path, const string &GroupName, const string &ResourceFile,
                                        bool Verbose) {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
   const string file_system = "FileSystem";
   const string zip = "Zip";
 
@@ -179,9 +168,6 @@ void AssetLoader::AddLocationRecursive(const string &Path, const string &GroupNa
       }
     }
   }
-#else
-  //Assert(false, "AssetLoader::AddLocationRecursive called in another platform");
-#endif
 }
 
 }  // namespace Glue

@@ -27,6 +27,6 @@ target_link_libraries(Sample PUBLIC ${GLUE_LINK_LIBRARIES})
 install(TARGETS Sample RUNTIME DESTINATION .)
 
 set(TARGET_NAME Sample)
-if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+if (${CMAKE_BUILD_TYPE} STREQUAL "Release" AND NOT ANDROID)
     include(ReallySmallPostBuild)
 endif ()

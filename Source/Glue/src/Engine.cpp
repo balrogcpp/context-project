@@ -47,21 +47,21 @@ Engine::Engine() {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   ConfPtr = make_unique<Config>("config.json");
 #else
-  config = make_unique<Config>("");
-  config->AddMember("window_fullscreen", true);
-  config->AddMember("compositor_use_bloom", false);
-  config->AddMember("compositor_use_ssao", false);
-  config->AddMember("compositor_use_motion", false);
-  config->AddMember("target_fps", 30);
-  config->AddMember("lock_fps", true);
-  config->AddMember("vsync", false);
-  config->AddMember("shadows_enable", false);
-  config->AddMember("fsaa", 0);
-  config->AddMember("filtration", "bilinear");
-  config->AddMember("anisotropy_level", 8);
-  config->AddMember("shadows_texture_resolution", 512);
-  config->AddMember("shadows_far_distance", 400);
-  config->AddMember("shadows_texture_format", 16);
+  ConfPtr = make_unique<Config>("");
+  ConfPtr->AddMember("window_fullscreen", true);
+  ConfPtr->AddMember("compositor_use_bloom", false);
+  ConfPtr->AddMember("compositor_use_ssao", false);
+  ConfPtr->AddMember("compositor_use_motion", false);
+  ConfPtr->AddMember("target_fps", 30);
+  ConfPtr->AddMember("lock_fps", true);
+  ConfPtr->AddMember("vsync", false);
+  ConfPtr->AddMember("shadows_enable", false);
+  ConfPtr->AddMember("fsaa", 0);
+  ConfPtr->AddMember("filtration", "bilinear");
+  ConfPtr->AddMember("anisotropy_level", 8);
+  ConfPtr->AddMember("shadows_texture_resolution", 512);
+  ConfPtr->AddMember("shadows_far_distance", 400);
+  ConfPtr->AddMember("shadows_texture_format", 16);
 #endif
 
   Component::SetConfig(ConfPtr.get());

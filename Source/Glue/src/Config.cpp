@@ -9,7 +9,8 @@ using namespace std;
 namespace Glue {
 
 Config::Config(const string &FileName) {
-    Reload(FileName);
+  if (FileName.empty()) return;
+  Reload(FileName);
 }
 
 Config::~Config() {}
