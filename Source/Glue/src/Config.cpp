@@ -21,7 +21,7 @@ void Config::Reload(const string &FileName) {
   ifstream ifs(AssetLoader::FindPath(FileName));
 
   if (!ifs.is_open()) {
-    Throw("Error during parsing of " + FileName + " : can't open file");
+    Throw("Can't open file " + FileName);
   }
 
   ifs >> Document;

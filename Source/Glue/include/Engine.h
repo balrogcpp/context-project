@@ -1,14 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "AppState.h"
-//#include "Components/Audio.h"
-//#include "Components/DotSceneLoaderB.h"
-//#include "Components/Overlay.h"
-//#include "Components/Physics.h"
 #include "Engine.h"
 #include "LazySingleton.h"
-//#include "Render.h"
 #include <memory>
 #include <vector>
 

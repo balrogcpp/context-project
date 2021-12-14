@@ -38,6 +38,9 @@ extern "C" {
 #include <SDL2/SDL_syswm.h>
 }
 
+/// MinGW has macro CreateWindow that shadows function
+#undef CreateWindow
+
 using namespace std;
 using namespace Ogre;
 
@@ -88,7 +91,6 @@ void Engine::InitSystems() {
 
   OgreRoot->initialise(false);
 
-  // WindowPtr = make_unique<Window>(w, h, f);
   CreateWindow();
 
   InitRenderWindow();
@@ -109,15 +111,6 @@ void Engine::InitSystems() {
   Glue::InitRtss();
   Glue::CreateRtssShaders();
 
-  //  // Overlay
-  //  OverlayPtr = make_unique<Overlay>(OgreRenderWindowPtr);
-  //  AssetLoader::LoadResources();
-  //
-  //  // Compositor block
-  //  CompositorPtr = make_unique<Compositor>();
-  //
-  //  OverlayPtr->PrepareTexture("Roboto-Medium", RGN_INTERNAL);
-
   InitTextureSettings();
 
   InitShadowSettings();
@@ -136,8 +129,6 @@ void Engine::InitSystems() {
   as = make_unique<Audio>(8, 8);
 
   loader = make_unique<DotSceneLoaderB>();
-
-  // RS->Refresh();
 
   CompositorUPtr->SetUp();
 }
