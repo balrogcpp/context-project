@@ -10,10 +10,6 @@
 #include <string>
 
 namespace Glue {
-class AppStateManager;
-}
-
-namespace Glue {
 
 class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputObserver {
  public:

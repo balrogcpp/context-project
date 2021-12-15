@@ -3,3 +3,21 @@ set(GLUE_TOOLCHAIN_FULL "${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}_${CMAKE_
 if (MINGW)
     string(APPEND GLUE_TOOLCHAIN_FULL "_Mingw")
 endif ()
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(LINUX 1)
+endif ()
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set(MACOS 1)
+endif ()
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(WINDOWS 1)
+endif ()
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(DESKTOP 1)
+elseif (ANDROID OR IOS)
+    set(MOBILE 1)
+endif ()

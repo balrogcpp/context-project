@@ -12,6 +12,7 @@
 #include "PhysicalInput/InputSequencer.h"
 #include "Config.h"
 #include "RTSSUtils.h"
+#include "Platform.h"
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
 #endif
@@ -38,8 +39,10 @@ extern "C" {
 #include <SDL2/SDL_syswm.h>
 }
 
-/// MinGW has macro CreateWindow that shadows function
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+/// WinAPI has macro CreateWindow that shadows function
 #undef CreateWindow
+#endif
 
 using namespace std;
 using namespace Ogre;

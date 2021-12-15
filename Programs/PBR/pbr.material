@@ -20,6 +20,16 @@ vertex_program PBR_vs glsl glsles
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {
         shared_params_ref PBR_Shared_vert
+        param_named_auto uMVPMatrix worldviewproj_matrix
+        param_named_auto uModelMatrix world_matrix
+        param_named_auto uCameraPosition camera_position
+
+        param_named uShadowTextureCount int 4
+        param_named_auto uTexWorldViewProjMatrixArray TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY 4
+
+        param_named uFadeRange float 50.0
+        param_named uWindRange float 50.0
+        param_named uTime float 1.0
     }
 }
 
@@ -29,6 +39,43 @@ fragment_program PbrBasic_fs glsl glsles
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {
         shared_params_ref PBR_Shared_frag
+
+        param_named_auto uAlphaRejection SURFACE_ALPHA_REJECTION_VALUE
+        param_named_auto uSurfaceAmbientColour SURFACE_AMBIENT_COLOUR
+        param_named_auto uSurfaceDiffuseColour SURFACE_DIFFUSE_COLOUR
+        param_named_auto uSurfaceSpecularColour SURFACE_SPECULAR_COLOUR
+        param_named_auto uSurfaceShininessColour SURFACE_SHININESS
+        param_named_auto uSurfaceEmissiveColour SURFACE_EMISSIVE_COLOUR
+        param_named_auto uAmbientLightColour AMBIENT_LIGHT_COLOUR
+        param_named_auto uLightCount LIGHT_COUNT
+        param_named_auto uLightPositionArray LIGHT_POSITION_ARRAY 8
+        param_named_auto uLightDirectionArray LIGHT_DIRECTION_ARRAY 8
+        param_named_auto uLightDiffuseScaledColourArray LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY 8
+        param_named_auto uLightAttenuationArray LIGHT_ATTENUATION_ARRAY 8
+        param_named_auto uLightSpotParamsArray SPOTLIGHT_PARAMS_ARRAY 8
+        param_named_auto uFogColour FOG_COLOUR
+        param_named_auto uFogParams FOG_PARAMS
+        param_named_auto uCameraPosition CAMERA_POSITION
+        param_named_auto cNearClipDistance NEAR_CLIP_DISTANCE
+        param_named_auto cFarClipDistance FAR_CLIP_DISTANCE
+        param_named_auto uFrameTime FRAME_TIME
+
+        param_named_auto uShadowColour SHADOW_COLOUR
+        param_named_auto uLightCastsShadowsArray LIGHT_CASTS_SHADOWS_ARRAY 8
+        param_named uShadowFilterSize float 4.0
+        param_named uShadowFilterIterations int 16
+        param_named pssmSplitPoints float4 6.7367 18.4907 400 400
+
+        param_named shadowMap0 int 1
+        param_named shadowMap1 int 2
+        param_named shadowMap2 int 3
+        param_named shadowMap3 int 4
+        param_named_auto shadowTexel0 INVERSE_TEXTURE_SIZE 1
+        param_named_auto shadowTexel1 INVERSE_TEXTURE_SIZE 2
+        param_named_auto shadowTexel2 INVERSE_TEXTURE_SIZE 3
+        param_named_auto shadowTexel3 INVERSE_TEXTURE_SIZE 4
+
+        param_named uLOD float 0.0
     }
 }
 
@@ -38,6 +85,43 @@ fragment_program PBR_fs glsl glsles
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {
         shared_params_ref PBR_Shared_frag
+
+        param_named_auto uAlphaRejection SURFACE_ALPHA_REJECTION_VALUE
+        param_named_auto uSurfaceAmbientColour SURFACE_AMBIENT_COLOUR
+        param_named_auto uSurfaceDiffuseColour SURFACE_DIFFUSE_COLOUR
+        param_named_auto uSurfaceSpecularColour SURFACE_SPECULAR_COLOUR
+        param_named_auto uSurfaceShininessColour SURFACE_SHININESS
+        param_named_auto uSurfaceEmissiveColour SURFACE_EMISSIVE_COLOUR
+        param_named_auto uAmbientLightColour AMBIENT_LIGHT_COLOUR
+        param_named_auto uLightCount LIGHT_COUNT
+        param_named_auto uLightPositionArray LIGHT_POSITION_ARRAY 8
+        param_named_auto uLightDirectionArray LIGHT_DIRECTION_ARRAY 8
+        param_named_auto uLightDiffuseScaledColourArray LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY 8
+        param_named_auto uLightAttenuationArray LIGHT_ATTENUATION_ARRAY 8
+        param_named_auto uLightSpotParamsArray SPOTLIGHT_PARAMS_ARRAY 8
+        param_named_auto uFogColour FOG_COLOUR
+        param_named_auto uFogParams FOG_PARAMS
+        param_named_auto uCameraPosition CAMERA_POSITION
+        param_named_auto cNearClipDistance NEAR_CLIP_DISTANCE
+        param_named_auto cFarClipDistance FAR_CLIP_DISTANCE
+        param_named_auto uFrameTime FRAME_TIME
+
+        param_named_auto uShadowColour SHADOW_COLOUR
+        param_named_auto uLightCastsShadowsArray LIGHT_CASTS_SHADOWS_ARRAY 8
+        param_named uShadowFilterSize float 4.0
+        param_named uShadowFilterIterations int 16
+        param_named pssmSplitPoints float4 6.7367 18.4907 400 400
+
+        param_named shadowMap0 int 4
+        param_named shadowMap1 int 5
+        param_named shadowMap2 int 6
+        param_named shadowMap3 int 7
+        param_named_auto shadowTexel0 INVERSE_TEXTURE_SIZE 4
+        param_named_auto shadowTexel1 INVERSE_TEXTURE_SIZE 5
+        param_named_auto shadowTexel2 INVERSE_TEXTURE_SIZE 6
+        param_named_auto shadowTexel3 INVERSE_TEXTURE_SIZE 7
+
+        param_named uLOD float 0.0
     }
 }
 
@@ -47,6 +131,43 @@ fragment_program PBR_IBL_fs glsl glsles
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {
         shared_params_ref PBR_Shared_frag
+
+        param_named_auto uAlphaRejection SURFACE_ALPHA_REJECTION_VALUE
+        param_named_auto uSurfaceAmbientColour SURFACE_AMBIENT_COLOUR
+        param_named_auto uSurfaceDiffuseColour SURFACE_DIFFUSE_COLOUR
+        param_named_auto uSurfaceSpecularColour SURFACE_SPECULAR_COLOUR
+        param_named_auto uSurfaceShininessColour SURFACE_SHININESS
+        param_named_auto uSurfaceEmissiveColour SURFACE_EMISSIVE_COLOUR
+        param_named_auto uAmbientLightColour AMBIENT_LIGHT_COLOUR
+        param_named_auto uLightCount LIGHT_COUNT
+        param_named_auto uLightPositionArray LIGHT_POSITION_ARRAY 8
+        param_named_auto uLightDirectionArray LIGHT_DIRECTION_ARRAY 8
+        param_named_auto uLightDiffuseScaledColourArray LIGHT_DIFFUSE_COLOUR_POWER_SCALED_ARRAY 8
+        param_named_auto uLightAttenuationArray LIGHT_ATTENUATION_ARRAY 8
+        param_named_auto uLightSpotParamsArray SPOTLIGHT_PARAMS_ARRAY 8
+        param_named_auto uFogColour FOG_COLOUR
+        param_named_auto uFogParams FOG_PARAMS
+        param_named_auto uCameraPosition CAMERA_POSITION
+        param_named_auto cNearClipDistance NEAR_CLIP_DISTANCE
+        param_named_auto cFarClipDistance FAR_CLIP_DISTANCE
+        param_named_auto uFrameTime FRAME_TIME
+
+        param_named_auto uShadowColour SHADOW_COLOUR
+        param_named_auto uLightCastsShadowsArray LIGHT_CASTS_SHADOWS_ARRAY 8
+        param_named uShadowFilterSize float 4.0
+        param_named uShadowFilterIterations int 16
+        param_named pssmSplitPoints float4 6.7367 18.4907 400 400
+
+        param_named shadowMap0 int 9
+        param_named shadowMap1 int 10
+        param_named shadowMap2 int 11
+        param_named shadowMap3 int 12
+        param_named_auto shadowTexel0 INVERSE_TEXTURE_SIZE 9
+        param_named_auto shadowTexel1 INVERSE_TEXTURE_SIZE 10
+        param_named_auto shadowTexel2 INVERSE_TEXTURE_SIZE 11
+        param_named_auto shadowTexel3 INVERSE_TEXTURE_SIZE 12
+
+        param_named uLOD float 0
     }
 }
 
@@ -69,6 +190,35 @@ abstract material Basic
             texture_unit Albedo
             {
                 texture $Albedo
+            }
+
+            texture_unit shadowMap0
+            {
+                content_type shadow
+                tex_address_mode border
+                filtering bilinear
+                tex_border_colour 1 1 1 1
+            }
+            texture_unit shadowMap1
+            {
+                content_type shadow
+                tex_address_mode border
+                filtering bilinear
+                tex_border_colour 1 1 1 1
+            }
+            texture_unit shadowMap2
+            {
+                content_type shadow
+                tex_address_mode border
+                filtering bilinear
+                tex_border_colour 1 1 1 1
+            }
+            texture_unit shadowMap3
+            {
+                content_type shadow
+                tex_address_mode border
+                filtering bilinear
+                tex_border_colour 1 1 1 1
             }
 
             vertex_program_ref PBR_vs {}
@@ -115,6 +265,35 @@ abstract material PBR
             texture_unit Emissive
             {
                 texture $Emissive
+            }
+
+            texture_unit shadowMap0
+            {
+                content_type shadow
+                tex_address_mode border
+                filtering bilinear
+                tex_border_colour 1 1 1 1
+            }
+            texture_unit shadowMap1
+            {
+                content_type shadow
+                tex_address_mode border
+                filtering bilinear
+                tex_border_colour 1 1 1 1
+            }
+            texture_unit shadowMap2
+            {
+                content_type shadow
+                tex_address_mode border
+                filtering bilinear
+                tex_border_colour 1 1 1 1
+            }
+            texture_unit shadowMap3
+            {
+                content_type shadow
+                tex_address_mode border
+                filtering bilinear
+                tex_border_colour 1 1 1 1
             }
 
             vertex_program_ref PBR_vs {}
