@@ -286,18 +286,18 @@ void Engine::InitResourceLocation() {
 #else
   ResourceGroupManager& resGroupMan = ResourceGroupManager::getSingleton();
 
-  resGroupMan.addResourceLocation("/Programs/Main.zip", "Zip", RGN_INTERNAL);
-  resGroupMan.addResourceLocation("/Programs/RTSS.zip", "Zip", RGN_INTERNAL);
-  resGroupMan.addResourceLocation("/Programs/PBR.zip", "Zip", RGN_INTERNAL);
-  resGroupMan.addResourceLocation("/Programs/Particles.zip", "Zip", RGN_INTERNAL);
-  resGroupMan.addResourceLocation("/Programs/Compositor.zip", "Zip", RGN_INTERNAL);
-  resGroupMan.addResourceLocation("/Programs/Overlay.zip", "Zip", RGN_INTERNAL);
-  // resGroupMan.addResourceLocation("/Programs/filament.zip", "Zip", RGN_INTERNAL);
+  resGroupMan.addResourceLocation("/Programs/Main.zip", "APKZip", RGN_INTERNAL);
+  resGroupMan.addResourceLocation("/Programs/RTSS.zip", "APKZip", RGN_INTERNAL);
+  resGroupMan.addResourceLocation("/Programs/PBR.zip", "APKZip", RGN_INTERNAL);
+  resGroupMan.addResourceLocation("/Programs/Particles.zip", "APKZip", RGN_INTERNAL);
+  resGroupMan.addResourceLocation("/Programs/Compositor.zip", "APKZip", RGN_INTERNAL);
+  resGroupMan.addResourceLocation("/Programs/Overlay.zip", "APKZip", RGN_INTERNAL);
+  // resGroupMan.addResourceLocation("/Programs/filament.zip", "APKZip", RGN_INTERNAL);
 
-  resGroupMan.addResourceLocation("/Assets/Materials.zip", "Zip", RGN_DEFAULT);
-  resGroupMan.addResourceLocation("/Assets/Models.zip", "Zip", RGN_DEFAULT);
-  resGroupMan.addResourceLocation("/Assets/Scenes.zip", "Zip", RGN_DEFAULT);
-  resGroupMan.addResourceLocation("/Assets/Sounds.zip", "Zip", RGN_DEFAULT);
+  resGroupMan.addResourceLocation("/Assets/Materials.zip", "APKZip", RGN_DEFAULT);
+  resGroupMan.addResourceLocation("/Assets/Models.zip", "APKZip", RGN_DEFAULT);
+  resGroupMan.addResourceLocation("/Assets/Scenes.zip", "APKZip", RGN_DEFAULT);
+  resGroupMan.addResourceLocation("/Assets/Sounds.zip", "APKZip", RGN_DEFAULT);
 #endif
 }
 
