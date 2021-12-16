@@ -31,7 +31,7 @@ class Compositor : public Component, public Singleton<Compositor> {
   void SetUp();
 
  protected:
-  void InitGbuffer();
+  void InitGBuffer();
   void AddCompositorEnabled(const std::string& name);
   void AddCompositorDisabled(const std::string& name);
   void EnableCompositor(const std::string& name);

@@ -12,7 +12,7 @@ class Component;
 class Compositor;
 class Overlay;
 class Physics;
-class Audio;
+class Sound;
 class DotSceneLoaderB;
 class Config;
 }
@@ -85,14 +85,14 @@ class Engine final : public LazySingleton<Engine> {
   std::unique_ptr<Compositor> CompositorUPtr;
   std::unique_ptr<Overlay> OverlayPtr;
   std::unique_ptr<Physics> ps;
-  std::unique_ptr<Audio> as;
+  std::unique_ptr<Sound> as;
   std::unique_ptr<DotSceneLoaderB> loader;
   std::vector<Component*> ComponentList;
 
   friend Config& GetConf();
 //  friend Render& GetRS();
   friend Physics& GetPhysics();
-  friend Audio& GetAudio();
+  friend Sound& GetAudio();
   friend DotSceneLoaderB& GetLoader();
 
 };

@@ -14,10 +14,10 @@ class xml_node;
 }  // namespace pugi
 
 namespace Glue {
-class Landscape final : public Component {
+class Terrain final : public Component {
  public:
-  Landscape();
-  virtual ~Landscape();
+  Terrain();
+  virtual ~Terrain();
 
   void ProcessTerrainGroup(pugi::xml_node &xml_node);
   float GetHeigh(float x, float z);

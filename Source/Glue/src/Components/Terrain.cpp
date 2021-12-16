@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "Components/Landscape.h"
+#include "Components/Terrain.h"
 #include "Components/ComponentLocator.h"
 #include "Components/Physics.h"
 #include "TerrainMaterialGeneratorB.h"
@@ -18,16 +18,16 @@ using namespace std;
 
 namespace Glue {
 
-Landscape::Landscape() {}
+Terrain::Terrain() {}
 
-Landscape::~Landscape() {
+Terrain::~Terrain() {
   if (terrain) {
     terrain->removeAllTerrains();
     terrain.reset();
   }
 }
 
-void Landscape::GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image,
+void Terrain::GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image,
                                  const string &filename = "terrain.dds") {
   ogre_image.load(filename, Ogre::RGN_AUTODETECT);
 
@@ -36,7 +36,7 @@ void Landscape::GetTerrainImage_(bool flipX, bool flipY, Ogre::Image &ogre_image
   if (flipY) ogre_image.flipAroundX();
 }
 
-void Landscape::DefineTerrain_(long x, long y, bool flat, const string &filename = "terrain.dds") {
+void Terrain::DefineTerrain_(long x, long y, bool flat, const string &filename = "terrain.dds") {
   // if a file is available, use it
   // if not, generate file from import
 
@@ -59,7 +59,7 @@ void Landscape::DefineTerrain_(long x, long y, bool flat, const string &filename
   }
 }
 
-void Landscape::InitBlendMaps_(Ogre::Terrain *terrain, int layer, const string &image = "terrain_blendmap.dds") {
+void Terrain::InitBlendMaps_(Ogre::Terrain *terrain, int layer, const string &image = "terrain_blendmap.dds") {
   Ogre::TerrainLayerBlendMap *blendMap = terrain->getLayerBlendMap(layer);
   auto *pBlend1 = blendMap->getBlendPointer();
 
@@ -94,7 +94,7 @@ void Landscape::InitBlendMaps_(Ogre::Terrain *terrain, int layer, const string &
   }
 }
 
-void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
+void Terrain::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   float worldSize = GetAttribReal(xml_node, "worldSize");
   int mapSize = GetAttribInt(xml_node, "mapSize");
   int minBatchSize = Ogre::StringConverter::parseInt(xml_node.attribute("minBatchSize").value());
@@ -204,7 +204,7 @@ void Landscape::ProcessTerrainGroup(pugi::xml_node &xml_node) {
   }
 }
 
-float Landscape::GetHeigh(float x, float z) {
+float Terrain::GetHeigh(float x, float z) {
   if (terrain)
     return terrain->getHeightAtWorldPosition(x, 1000, z);
   else

@@ -16,22 +16,12 @@ Engine& GetEngine() {
   return EnginePtr;
 }
 
-//Render& GetRS() {
-//  static auto& RenderComponentPtr = *Engine::GetInstance().RS;
-//  return RenderComponentPtr;
-//}
-
-//Window& GetWindow() {
-//  static auto& WindowPtr = GetRS().GetWindow();
-//  return WindowPtr;
-//}
-
 Physics& GetPhysics() {
   static auto& PhysicsComponentPtr = *Engine::GetInstance().ps;
   return PhysicsComponentPtr;
 }
 
-Audio& GetAudio() {
+Sound& GetAudio() {
   static auto& AudioComponentPtr = *Engine::GetInstance().as;
   return AudioComponentPtr;
 }

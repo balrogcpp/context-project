@@ -31,6 +31,10 @@
 #define DESKTOP
 #endif
 
+#if defined(APPLE) || defined(LINUX)
+#define UNIX
+#endif
+
 #if defined(__MINGW32__)
 #define MINGW
 #endif

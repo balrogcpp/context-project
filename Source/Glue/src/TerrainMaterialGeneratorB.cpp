@@ -70,11 +70,9 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
   string new_name = material_name + GENERATOR;
 
   PBR::UpdatePbrParams(material_name);
-  PBR::UpdatePbrShadowReceiver(material_name);
 
   if (Ogre::MaterialManager::getSingleton().resourceExists(new_name)) {
     PBR::UpdatePbrParams(new_name);
-    PBR::UpdatePbrShadowReceiver(new_name);
 
     return Ogre::MaterialManager::getSingleton().getByName(new_name);
   } else {
@@ -88,7 +86,6 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
     }
 
     PBR::UpdatePbrParams(new_name);
-    PBR::UpdatePbrShadowReceiver(new_name);
 
     return new_material;
   }

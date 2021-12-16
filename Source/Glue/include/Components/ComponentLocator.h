@@ -5,21 +5,20 @@
 #include "Engine.h"
 
 namespace Glue {
-
-class Render;
-class Window;
 class Compositor;
 class Physics;
-class Audio;
+class Sound;
 class Overlay;
 class DotSceneLoaderB;
 class InputSequencer;
+}  // namespace Glue
+
+namespace Glue {
 
 Config& GetConf();
 Engine& GetEngine();
-//Render& GetRS();
 Physics& GetPhysics();
-Audio& GetAudio();
+Sound& GetAudio();
 DotSceneLoaderB& GetLoader();
 
 }  // namespace Glue

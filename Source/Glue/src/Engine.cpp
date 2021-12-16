@@ -3,16 +3,16 @@
 #include "pch.h"
 #include "Engine.h"
 #include "AssetLoader.h"
-#include "Components/Audio.h"
 #include "Components/Component.h"
 #include "Components/Compositor.h"
+#include "Components/DotSceneLoaderB.h"
 #include "Components/Overlay.h"
 #include "Components/Physics.h"
-#include "Components/DotSceneLoaderB.h"
-#include "PhysicalInput/InputSequencer.h"
+#include "Components/Sound.h"
 #include "Config.h"
-#include "RTSSUtils.h"
+#include "PhysicalInput/InputSequencer.h"
 #include "Platform.h"
+#include "RTSSUtils.h"
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
 #endif
@@ -129,7 +129,7 @@ void Engine::InitSystems() {
   OverlayPtr->PrepareTexture("Roboto-Medium", Ogre::RGN_INTERNAL);
 
   ps = make_unique<Physics>();
-  as = make_unique<Audio>(8, 8);
+  as = make_unique<Sound>(8, 8);
 
   loader = make_unique<DotSceneLoaderB>();
 

@@ -35,7 +35,6 @@ static void CreateGrassMesh(float width, float height) {
   sm->indexData->indexCount = 18;
 
   PBR::UpdatePbrParams("GrassCustom");
-  PBR::UpdatePbrShadowReceiver("GrassCustom");
 
   // specify a vertex format declaration for our mesh: 3 floats for position, 3
   // floats for normal, 2 floats for UV
@@ -101,92 +100,86 @@ static void CreateGrassMesh(float width, float height) {
   sm->indexData->indexBuffer->unlock();  // commit index changes
 }
 
-// static void CreateGrassMesh2(float width, float height) {
-//  Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
-//
-//  // SetUp a submesh with the grass material
-//  Ogre::SubMesh *sm = mesh->createSubMesh();
-//  const string grassMaterial = "GrassCustom";
-//  Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
-//
-//  Pbr::UpdatePbrParams(tmp);
-//  Pbr::UpdatePbrShadowReceiver(tmp);
-//
-//  sm->setMaterialName(grassMaterial);
-//  sm->useSharedVertices = false;
-//  sm->vertexData = new Ogre::VertexData();
-//  sm->vertexData->vertexStart = 0;
-//  sm->vertexData->vertexCount = 8;
-//  sm->indexData->indexCount = 12;
-//
-//  // specify a vertex format declaration for our mesh: 3 floats for position, 3
-//  // floats for normal, 2 floats for UV
-//  Ogre::VertexDeclaration *decl = sm->vertexData->vertexDeclaration;
-//  decl->addElement(0, 0, Ogre::VET_FLOAT3, Ogre::VES_POSITION);
-//  decl->addElement(0, sizeof(float) * 3, Ogre::VET_FLOAT3, Ogre::VES_NORMAL);
-//  decl->addElement(0, sizeof(float) * 6, Ogre::VET_FLOAT2, Ogre::VES_TEXTURE_COORDINATES, 0);
-//
-//  // SetUp a vertex buffer
-//  Ogre::HardwareVertexBufferSharedPtr vb =
-//      Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
-//          decl->getVertexSize(0), sm->vertexData->vertexCount,
-//          Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
-//
-//  auto *verts =
-//      (GrassVertex *)vb->lock(Ogre::HardwareBuffer::HBL_DISCARD);  // start filling in vertex data
-//
-//  for (int i = 0; i < 2; i++)  // each grass mesh consists of 3 planes
-//  {
-//    // planes intersect along the Y axis with 60 degrees between them
-//    float x = Ogre::Math::Cos(Ogre::Degree(i * 60)) * width / 2;
-//    float z = Ogre::Math::Sin(Ogre::Degree(i * 60)) * width / 2;
-//
-//    for (int j = 0; j < 4; j++)  // each plane has 4 vertices
-//    {
-//      GrassVertex &vert = verts[i * 4 + j];
-//
-//      vert.x = j < 2 ? -x : x;
-//      vert.y = j % 2 ? 0 : height;
-//      vert.z = j < 2 ? -z : z;
-//
-//      // all normals point straight up
-//      vert.nx = 0;
-//      vert.ny = 1;
-//      vert.nz = 0;
-//
-//      vert.u = j < 2 ? 0 : 1;
-//      vert.v = j % 2;
-//    }
-//  }
-//
-//  vb->unlock();  // commit vertex changes
-//
-//  sm->vertexData->vertexBufferBinding->setBinding(0, vb);  // bind vertex buffer to our submesh
-//
-//  // SetUp an index buffer
-//  sm->indexData->indexBuffer = Ogre::HardwareBufferManager::getSingleton().createIndexBuffer(
-//      Ogre::HardwareIndexBuffer::IT_16BIT, sm->indexData->indexCount,
-//      Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
-//
-//  // start filling in index data
-//  Ogre::uint16 *indices =
-//      (Ogre::uint16 *)sm->indexData->indexBuffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
-//
-//  for (unsigned int i = 0; i < 2; i++)  // each grass mesh consists of 3 planes
-//  {
-//    unsigned int off = i * 4;  // each plane consists of 2 triangles
-//
-//    *indices++ = 0 + off;
-//    *indices++ = 3 + off;
-//    *indices++ = 1 + off;
-//
-//    *indices++ = 0 + off;
-//    *indices++ = 2 + off;
-//    *indices++ = 3 + off;
-//  }
-//
-//  sm->indexData->indexBuffer->unlock();  // commit index changes
-//}
+static void CreateGrassMesh2(float width, float height) {
+  Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("grass", "General");
+
+  // SetUp a submesh with the grass material
+  Ogre::SubMesh *sm = mesh->createSubMesh();
+  const string grassMaterial = "GrassCustom";
+  Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingleton().getByName(grassMaterial);
+
+  PBR::UpdatePbrParams(tmp);
+
+  sm->setMaterialName(grassMaterial);
+  sm->useSharedVertices = false;
+  sm->vertexData = new Ogre::VertexData();
+  sm->vertexData->vertexStart = 0;
+  sm->vertexData->vertexCount = 8;
+  sm->indexData->indexCount = 12;
+
+  // specify a vertex format declaration for our mesh: 3 floats for position, 3
+  // floats for normal, 2 floats for UV
+  Ogre::VertexDeclaration *decl = sm->vertexData->vertexDeclaration;
+  decl->addElement(0, 0, Ogre::VET_FLOAT3, Ogre::VES_POSITION);
+  decl->addElement(0, sizeof(float) * 3, Ogre::VET_FLOAT3, Ogre::VES_NORMAL);
+  decl->addElement(0, sizeof(float) * 6, Ogre::VET_FLOAT2, Ogre::VES_TEXTURE_COORDINATES, 0);
+
+  // SetUp a vertex buffer
+  Ogre::HardwareVertexBufferSharedPtr vb = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
+      decl->getVertexSize(0), sm->vertexData->vertexCount, Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+
+  auto *verts = (GrassVertex *)vb->lock(Ogre::HardwareBuffer::HBL_DISCARD);  // start filling in vertex data
+
+  for (int i = 0; i < 2; i++)  // each grass mesh consists of 3 planes
+  {
+    // planes intersect along the Y axis with 60 degrees between them
+    float x = Ogre::Math::Cos(Ogre::Degree(i * 60)) * width / 2;
+    float z = Ogre::Math::Sin(Ogre::Degree(i * 60)) * width / 2;
+
+    for (int j = 0; j < 4; j++)  // each plane has 4 vertices
+    {
+      GrassVertex &vert = verts[i * 4 + j];
+
+      vert.x = j < 2 ? -x : x;
+      vert.y = j % 2 ? 0 : height;
+      vert.z = j < 2 ? -z : z;
+
+      // all normals point straight up
+      vert.nx = 0;
+      vert.ny = 1;
+      vert.nz = 0;
+
+      vert.u = j < 2 ? 0 : 1;
+      vert.v = j % 2;
+    }
+  }
+
+  vb->unlock();  // commit vertex changes
+
+  sm->vertexData->vertexBufferBinding->setBinding(0, vb);  // bind vertex buffer to our submesh
+
+  // SetUp an index buffer
+  sm->indexData->indexBuffer = Ogre::HardwareBufferManager::getSingleton().createIndexBuffer(
+      Ogre::HardwareIndexBuffer::IT_16BIT, sm->indexData->indexCount, Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+
+  // start filling in index data
+  Ogre::uint16 *indices = (Ogre::uint16 *)sm->indexData->indexBuffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
+
+  for (unsigned int i = 0; i < 2; i++)  // each grass mesh consists of 3 planes
+  {
+    unsigned int off = i * 4;  // each plane consists of 2 triangles
+
+    *indices++ = 0 + off;
+    *indices++ = 3 + off;
+    *indices++ = 1 + off;
+
+    *indices++ = 0 + off;
+    *indices++ = 2 + off;
+    *indices++ = 3 + off;
+  }
+
+  sm->indexData->indexBuffer->unlock();  // commit index changes
+}
 
 Vegetation::Vegetation() {}
 
@@ -291,7 +284,6 @@ void Vegetation::GenerateGrassPaged() {
   Update(0);
 
   PBR::UpdatePbrParams("GrassCustom");
-  PBR::UpdatePbrShadowReceiver("GrassCustom");
 }
 
 void Vegetation::GenerateTreesPaged() {
@@ -353,8 +345,6 @@ void Vegetation::GenerateTreesPaged() {
 
   PBR::UpdatePbrParams("3D-Diggers/fir01_Batched");
   PBR::UpdatePbrParams("3D-Diggers/fir02_Batched");
-  //  Pbr::UpdatePbrShadowReceiver("3D-Diggers/fir01_Batched");
-  //  Pbr::UpdatePbrShadowReceiver("3D-Diggers/fir02_Batched");
 }
 
 void Vegetation::ProcessForest() {

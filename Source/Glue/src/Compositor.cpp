@@ -6,6 +6,7 @@
 #include "PBRUtils.h"
 
 using namespace std;
+using namespace Ogre;
 
 namespace Glue {
 
@@ -45,8 +46,8 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 
  protected:
   Ogre::MaterialPtr ref_mat_;
-  vector<Ogre::GpuProgramParametersSharedPtr> gpu_fp_params_;
-  vector<Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;
+  std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_fp_params_;
+  std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;
 };
 
 Compositor::Compositor() {
@@ -88,7 +89,7 @@ void Compositor::Pause() {}
 
 void Compositor::Resume() {}
 
-void Compositor::InitGbuffer() {
+void Compositor::InitGBuffer() {
   if (!GBufferHandler) {
     GBufferHandler = make_unique<GBufferSchemeHandler>();
     Ogre::MaterialManager::getSingleton().addListener(GBufferHandler.get(), "GBuffer");

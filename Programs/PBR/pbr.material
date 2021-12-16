@@ -196,28 +196,24 @@ abstract material Basic
             {
                 content_type shadow
                 tex_address_mode border
-                filtering bilinear
                 tex_border_colour 1 1 1 1
             }
             texture_unit shadowMap1
             {
                 content_type shadow
                 tex_address_mode border
-                filtering bilinear
                 tex_border_colour 1 1 1 1
             }
             texture_unit shadowMap2
             {
                 content_type shadow
                 tex_address_mode border
-                filtering bilinear
                 tex_border_colour 1 1 1 1
             }
             texture_unit shadowMap3
             {
                 content_type shadow
                 tex_address_mode border
-                filtering bilinear
                 tex_border_colour 1 1 1 1
             }
 
@@ -271,28 +267,24 @@ abstract material PBR
             {
                 content_type shadow
                 tex_address_mode border
-                filtering bilinear
                 tex_border_colour 1 1 1 1
             }
             texture_unit shadowMap1
             {
                 content_type shadow
                 tex_address_mode border
-                filtering bilinear
                 tex_border_colour 1 1 1 1
             }
             texture_unit shadowMap2
             {
                 content_type shadow
                 tex_address_mode border
-                filtering bilinear
                 tex_border_colour 1 1 1 1
             }
             texture_unit shadowMap3
             {
                 content_type shadow
                 tex_address_mode border
-                filtering bilinear
                 tex_border_colour 1 1 1 1
             }
 
@@ -339,6 +331,32 @@ abstract material PBR_IBL : PBR
                 tex_address_mode clamp
                 texture $IBL_LUT
                 filtering bilinear
+            }
+
+
+            texture_unit shadowMap0
+            {
+                content_type shadow
+                tex_address_mode border
+                tex_border_colour 1 1 1 1
+            }
+            texture_unit shadowMap1
+            {
+                content_type shadow
+                tex_address_mode border
+                tex_border_colour 1 1 1 1
+            }
+            texture_unit shadowMap2
+            {
+                content_type shadow
+                tex_address_mode border
+                tex_border_colour 1 1 1 1
+            }
+            texture_unit shadowMap3
+            {
+                content_type shadow
+                tex_address_mode border
+                tex_border_colour 1 1 1 1
             }
 
             vertex_program_ref PBR_vs {}

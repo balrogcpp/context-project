@@ -23,12 +23,9 @@ include(AppleThread)
 
 # Create artifacts directory
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
+set(GLUE_TMP_DIR ${CMAKE_SOURCE_DIR}/Tmp)
 make_directory(${GLUE_ARTIFACT_DIR})
-#make_directory(${GLUE_ARTIFACT_DIR}/Binary)
-#make_directory(${GLUE_ARTIFACT_DIR}/Binary/Dependencies)
-#make_directory(${GLUE_ARTIFACT_DIR}/Binary/Tests)
-#make_directory(${GLUE_ARTIFACT_DIR}/Binary/Demo)
-#make_directory(${GLUE_ARTIFACT_DIR}/Doxygen)
+make_directory(${GLUE_TMP_DIR})
 
 # Insert dependencies
 add_subdirectory(${CMAKE_SOURCE_DIR}/ThirdParty)
@@ -118,7 +115,7 @@ if (NOT ${CMAKE_INSTALL_PREFIX})
     set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/Install/${GLUE_ARTIFACT_NAME})
 endif ()
 install(FILES ${CMAKE_SOURCE_DIR}/Deploy/config.json ${EXTERNAL_DLL_GLOB} DESTINATION .)
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/Tmp/Assets ${CMAKE_SOURCE_DIR}/Tmp/Programs DESTINATION .)
+install(DIRECTORY ${GLUE_TMP_DIR}/Assets ${GLUE_TMP_DIR}/Programs DESTINATION .)
 set(EXECUTABLE_NAME Sample)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -163,6 +160,16 @@ if (NOT MSVC)
             COMMAND ${CMAKE_COMMAND} --build . --target package
             COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMENT "Build packages..."
+            USES_TERMINAL
+            )
+endif ()
+
+if (LINUX)
+    add_custom_target(BuildAndroid
+            DEPENDS AssetsBuild
+            COMMAND ./gradlew assembleRelease
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
             COMMENT "Build packages..."
             USES_TERMINAL
             )

@@ -3,11 +3,11 @@
 #pragma once
 #include "Components/Component.h"
 #include "CubeMapCamera.h"
-#include "Landscape.h"
 #include "LazySingleton.h"
 #include "Objects/CameraMan.h"
 #include "PhysicalInput/InputSequencer.h"
 #include "ReflectionCamera.h"
+#include "Terrain.h"
 #include "Vegetation.h"
 #include <OgreCodec.h>
 #include <OgrePlugin.h>
@@ -32,7 +32,7 @@ class CameraMan;
 class Config;
 class Render;
 class Physics;
-class Audio;
+class Sound;
 class Overlay;
 class SinbadCharacterController;
 }  // namespace Glue
@@ -81,14 +81,12 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   std::unique_ptr<CubeMapCamera> ccamera;
   std::unique_ptr<CameraMan> camera_man;
 
-  Ogre::SceneManager *ogre_scene = nullptr;
+  Ogre::SceneManager *Scene = nullptr;
   Ogre::Root *root = nullptr;
   Ogre::SceneNode *root_node = nullptr;
   Ogre::SceneNode *attach_node = nullptr;
   std::string group_name = Ogre::RGN_DEFAULT;
   std::unique_ptr<SinbadCharacterController> sinbad;
-  //static inline std::unique_ptr<Landscape> terrain;
-  //static inline std::unique_ptr<Vegetation> forest;
 };
 
 class DotScenePluginB : public Ogre::Plugin {
