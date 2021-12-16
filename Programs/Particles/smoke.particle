@@ -1,9 +1,9 @@
 // Example particle systems
-import Basic from pbr.material
-import Paged from pbr.material
-import PbrFx from pbr.material
+import PBR_Basic from PBR.material
+import Paged from PBR.material
+import PBR_Fx from PBR.material
 
-material Examples/Smoke : PbrFx
+material Examples/Smoke : PBR_Fx
 {
 	technique
 	{

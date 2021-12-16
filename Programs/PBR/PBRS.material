@@ -143,7 +143,7 @@ fragment_program PBRS_Reflective_fs glsl glsles
 
     default_params
     {
-        shared_params_ref PBRSShared_frag
+        shared_params_ref PBRS_Shared_frag
     }
 }
 
@@ -181,7 +181,7 @@ vertex_program PBRS_Terrain_vs_gl glsl
 	source pbr.vert
     preprocessor_defines HAS_UV,MAX_LIGHTS=8
     default_params {
-        shared_params_ref PBRSShared_vert
+        shared_params_ref PBRS_Shared_vert
     }
 }
 
@@ -190,7 +190,7 @@ vertex_program PBRS_Terrain_vs_es glsles
 	source pbr.vert
     preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8
     default_params {
-        shared_params_ref PBRSShared_vert
+        shared_params_ref PBRS_Shared_vert
     }
 }
 
@@ -207,7 +207,7 @@ fragment_program PBRS_Terrain_fs_gl glsl
 
     default_params
     {
-        shared_params_ref PBRSShared_frag
+        shared_params_ref PBRS_Shared_frag
         param_named uTerrainTexScale float 50.0
     }
 }
@@ -219,7 +219,7 @@ fragment_program PBRS_Terrain_fs_es glsles
 
     default_params
     {
-        shared_params_ref PBRSShared_frag
+        shared_params_ref PBRS_Shared_frag
         param_named uTerrainTexScale float 50.0
     }
 }
@@ -272,7 +272,7 @@ vertex_program PBRS_Paged_vs glsl glsles
 	source pbr.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8
     default_params {
-        shared_params_ref PBRSShared_vert
+        shared_params_ref PBRS_Shared_vert
     }
 }
 
@@ -315,7 +315,7 @@ vertex_program PBRS_Grass_vs glsl glsles
 	source pbr.vert
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8
     default_params {
-        shared_params_ref PBRSShared_vert
+        shared_params_ref PBRS_Shared_vert
     }
 }
 
@@ -389,7 +389,7 @@ vertex_program PBRS_Fx_vs glsl glsles
 	source pbr.vert
     preprocessor_defines HAS_UV,HAS_COLOURS,MAX_LIGHTS=1
     default_params {
-        shared_params_ref PBRSShared_vert
+        shared_params_ref PBRS_Shared_vert
     }
 }
 
