@@ -161,6 +161,9 @@ uniform float uFrameTime;
 #include "srgb.glsl"
 #include "fog.glsl"
 
+//Noise Function
+#include "noise.glsl"
+
 //Shadows block
 #ifdef SHADOWRECEIVER
 #include "receiver.glsl"

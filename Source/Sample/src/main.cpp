@@ -19,7 +19,7 @@ int main(int argc, char* args[])
   // main app class object
   Application app;
   // main function
-  return app.Main(make_unique<Demo::MenuAppState>());
+  return app.Main(make_unique<Demo::DemoDotAppState>());
   // to be sure app will return something to system
   return 0;
 }

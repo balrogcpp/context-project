@@ -216,7 +216,7 @@ fragment_program PBR_Reflective_fs glsl glsles
     }
 }
 
-abstract material Plane : PBR
+abstract material PBR_Plane : PBR
 {
     receive_shadows on
     transparency_casts_shadows off
@@ -300,7 +300,7 @@ fragment_program PBR_Terrain_fs unified
 }
 
 
-abstract material Terrain : PBR
+abstract material PBR_Terrain : PBR
 {
     technique
     {
@@ -351,7 +351,7 @@ fragment_program PBR_Paged_fs glsl glsles
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_ALPHA,MAX_LIGHTS=8
 }
 
-abstract material Paged : PBR_Basic
+abstract material PBR_Paged : PBR_Basic
 {
     receive_shadows off
     transparency_casts_shadows on
@@ -394,7 +394,7 @@ fragment_program PBR_Grass_fs glsl glsles
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
-abstract material Grass : PBR_Basic
+abstract material PBR_Grass : PBR_Basic
 {
     receive_shadows on
     transparency_casts_shadows off
@@ -425,7 +425,7 @@ abstract material Grass : PBR_Basic
     }
 }
 
-abstract material Plant : PBR_Basic
+abstract material PBR_Plant : PBR_Basic
 {
     receive_shadows on
     transparency_casts_shadows on
