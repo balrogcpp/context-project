@@ -4,7 +4,9 @@
 #define HEADER_FRAG
 
 #ifndef GL_ES
+
 //GLSL
+
 #define USE_TEX_LOD
 #if VERSION != 120
 #define varying in
@@ -27,7 +29,7 @@ out vec4 gl_FragColor;
 
 #else
 
-//GLSLES
+//GLSLES 2.0
 
 #extension GL_OES_standard_derivatives : enable
 #ifdef USE_TEX_LOD

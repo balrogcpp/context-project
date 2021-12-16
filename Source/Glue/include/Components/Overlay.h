@@ -15,6 +15,7 @@ class RenderTargetViewportEvent;
 }  // namespace Ogre
 
 namespace Glue {
+
 class Overlay final : public Component, public Singleton<Overlay>, public Ogre::RenderTargetListener {
  public:
   Overlay(Ogre::RenderWindow* render_window);

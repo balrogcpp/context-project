@@ -12,16 +12,23 @@ class Camera;
 
 namespace Glue {
 
-class PBR {
+class PBR final {
  public:
   static void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material);
-  static void UpdatePbrParams(const Ogre::MaterialPtr &material);
-  static void UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active = false);
-  static void UpdatePbrParams(const std::string &material);
-  static void UpdatePbrIbl(const std::string &material, bool realtime);
   static void UpdatePbrShadowCaster(const std::string &material);
+
+  static void UpdatePbrParams(const Ogre::MaterialPtr &material);
+  static void UpdatePbrParams(const std::string &material);
+
+  static void UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active = false);
+  static void UpdatePbrIbl(const std::string &material, bool realtime);
+
   static void Cleanup();
   static void Update(float time);
+
+ private:
+  inline static std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_fp_params_(16);
+  inline static std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;
 };
 
 }  // namespace Glue

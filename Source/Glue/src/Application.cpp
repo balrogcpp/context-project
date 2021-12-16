@@ -8,7 +8,10 @@
 #include <fstream>
 #include <iostream>
 
-#ifdef WIN32
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 extern "C" {
 __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
@@ -77,13 +80,12 @@ Application::~Application() {
 }
 
 int Application::ExceptionMessage(const string &WindowCaption, const string &MessageText) {
-//#ifdef DEBUG
-  //GetWindow().Grab(false);
-//#endif
-
+#ifdef _WIN32
+  MessageBox(nullptr, MessageText.c_str(), WindowCaption.c_str(), MB_ICONERROR);
+#else
   SDL_Log("%s", string(WindowCaption + " : " + MessageText).c_str());
   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, WindowCaption.c_str(), MessageText.c_str(), nullptr);
-
+#endif
   return 1;
 }
 
@@ -156,7 +158,8 @@ void Application::Loop() {
     }
 #endif
 
-    auto TimeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+    auto TimeAftetRender =
+        chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
     auto RenderTime = TimeAftetRender - TimeBeforeFrame;
 
     if (LockFPS) {
@@ -166,7 +169,8 @@ void Application::Loop() {
       }
     }
 
-    int64_t TimeInEndOfLoop = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+    int64_t TimeInEndOfLoop =
+        chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 
     int64_t TimeSinceLastFrame = TimeInEndOfLoop - TimeBeforeFrame;
     CumultedTime += TimeSinceLastFrame;

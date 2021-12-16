@@ -1,16 +1,9 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-sampler ShadowSampler
-{
-    content_type shadow
-    tex_address_mode border
-    tex_border_colour 1 1 1 1
-}
-
-abstract material PBR_Basic
+abstract material PBRS_Basic
 {
     transparency_casts_shadows off
-    receive_shadows on
+    receive_shadows off
 
     set $Albedo white.dds
 
@@ -28,30 +21,9 @@ abstract material PBR_Basic
                 texture $Albedo
             }
 
-            texture_unit shadowMap0
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-            texture_unit shadowMap1
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-            texture_unit shadowMap2
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-            texture_unit shadowMap3
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
+            vertex_program_ref PBRS_vs {}
 
-            vertex_program_ref PBR_vs {}
-
-            fragment_program_ref PBR_Basic_fs
+            fragment_program_ref PBRS_Basic_fs
             {
                 param_named uAlbedoSampler int 0
             }
@@ -59,10 +31,10 @@ abstract material PBR_Basic
     }
 }
 
-abstract material PBR
+abstract material PBRS
 {
     transparency_casts_shadows off
-    receive_shadows on
+    receive_shadows off
 
     set $Albedo white.dds
     set $Normal normal.dds
@@ -95,30 +67,9 @@ abstract material PBR
                 texture $Emissive
             }
 
-            texture_unit shadowMap0
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-            texture_unit shadowMap1
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-            texture_unit shadowMap2
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-            texture_unit shadowMap3
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
+            vertex_program_ref PBRS_vs {}
 
-            vertex_program_ref PBR_vs {}
-
-            fragment_program_ref PBR_fs
+            fragment_program_ref PBRS_fs
             {
                 param_named uAlbedoSampler      int 0
                 param_named uNormalSampler      int 1
@@ -129,10 +80,10 @@ abstract material PBR
     }
 }
 
-abstract material PBR_IBL : PBR
+abstract material PBRS_IBL : PBRS
 {
     transparency_casts_shadows off
-    receive_shadows on
+    receive_shadows off
 
     set $IBL_Diffuse diffuse.dds
     set $IBL_Specular specular.dds
@@ -161,30 +112,9 @@ abstract material PBR_IBL : PBR
                 filtering bilinear
             }
             
-            texture_unit shadowMap0
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-            texture_unit shadowMap1
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-            texture_unit shadowMap2
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
-            texture_unit shadowMap3
-            {
-                content_type shadow
-                sampler_ref ShadowSampler            
-            }
+            vertex_program_ref PBRS_vs {}
 
-            vertex_program_ref PBR_vs {}
-
-            fragment_program_ref PBR_IBL_fs
+            fragment_program_ref PBRS_IBL_fs
             {
                 param_named uAlbedoSampler      int 0
                 param_named uNormalSampler      int 1
@@ -200,26 +130,26 @@ abstract material PBR_IBL : PBR
     }
 }
 
-vertex_program PBR_Reflective_vs glsl glsles
+vertex_program PBRS_Reflective_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_REFLECTION,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_REFLECTION,MAX_LIGHTS=8
 }
 
-fragment_program PBR_Reflective_fs glsl glsles
+fragment_program PBRS_Reflective_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_EMISSIVEMAP,HAS_ORM,HAS_REFLECTION,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_EMISSIVEMAP,HAS_ORM,HAS_REFLECTION,MAX_LIGHTS=8
 
     default_params
     {
-        shared_params_ref PBRShared_frag
+        shared_params_ref PBRSShared_frag
     }
 }
 
-abstract material Plane : PBR
+abstract material Plane : PBRS
 {
-    receive_shadows on
+    receive_shadows off
     transparency_casts_shadows off
 
     technique
@@ -232,9 +162,9 @@ abstract material Plane : PBR
                 filtering bilinear
             }
 
-            vertex_program_ref PBR_Reflective_vs {}
+            vertex_program_ref PBRS_Reflective_vs {}
 
-            fragment_program_ref PBR_Reflective_fs
+            fragment_program_ref PBRS_Reflective_fs
             {
                 param_named uAlbedoSampler      int 0
                 param_named uNormalSampler      int 1
@@ -246,62 +176,62 @@ abstract material Plane : PBR
     }
 }
 
-vertex_program PBR_Terrain_vs_gl glsl
+vertex_program PBRS_Terrain_vs_gl glsl
 {
 	source pbr.vert
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8
     default_params {
-        shared_params_ref PBRShared_vert
+        shared_params_ref PBRSShared_vert
     }
 }
 
-vertex_program PBR_Terrain_vs_es glsles
+vertex_program PBRS_Terrain_vs_es glsles
 {
 	source pbr.vert
     preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8
     default_params {
-        shared_params_ref PBRShared_vert
+        shared_params_ref PBRSShared_vert
     }
 }
 
-vertex_program PBR_Terrain_vs unified
+vertex_program PBRS_Terrain_vs unified
 {
-    delegate PBR_Terrain_vs_gl
-    delegate PBR_Terrain_vs_es
+    delegate PBRS_Terrain_vs_gl
+    delegate PBRS_Terrain_vs_es
 }
 
-fragment_program PBR_Terrain_fs_gl glsl
-{
-	source pbr.frag
-    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-
-    default_params
-    {
-        shared_params_ref PBRShared_frag
-        param_named uTerrainTexScale float 50.0
-    }
-}
-
-fragment_program PBR_Terrain_fs_es glsles
+fragment_program PBRS_Terrain_fs_gl glsl
 {
 	source pbr.frag
     preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8
 
     default_params
     {
-        shared_params_ref PBRShared_frag
+        shared_params_ref PBRSShared_frag
         param_named uTerrainTexScale float 50.0
     }
 }
 
-fragment_program PBR_Terrain_fs unified
+fragment_program PBRS_Terrain_fs_es glsles
 {
-    delegate PBR_Terrain_fs_gl
-    delegate PBR_Terrain_fs_es
+	source pbr.frag
+    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8
+
+    default_params
+    {
+        shared_params_ref PBRSShared_frag
+        param_named uTerrainTexScale float 50.0
+    }
+}
+
+fragment_program PBRS_Terrain_fs unified
+{
+    delegate PBRS_Terrain_fs_gl
+    delegate PBRS_Terrain_fs_es
 }
 
 
-abstract material Terrain : PBR
+abstract material Terrain : PBRS
 {
     technique
     {
@@ -319,12 +249,12 @@ abstract material Terrain : PBR
                 filtering bilinear
             }*/
 
-            vertex_program_ref PBR_Terrain_vs
+            vertex_program_ref PBRS_Terrain_vs
             {
                 param_named_auto uModelMatrix world_matrix
             }
 
-            fragment_program_ref PBR_Terrain_fs
+            fragment_program_ref PBRS_Terrain_fs
             {
                 param_named uAlbedoSampler       int 0
                 param_named uNormalSampler       int 1
@@ -337,22 +267,22 @@ abstract material Terrain : PBR
     }
 }
 
-vertex_program PBR_Paged_vs glsl glsles
+vertex_program PBRS_Paged_vs glsl glsles
 {
 	source pbr.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8
     default_params {
-        shared_params_ref PBRShared_vert
+        shared_params_ref PBRSShared_vert
     }
 }
 
-fragment_program PBR_Paged_fs glsl glsles
+fragment_program PBRS_Paged_fs glsl glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_ALPHA,MAX_LIGHTS=8
 }
 
-abstract material Paged : PBR_Basic
+abstract material Paged : PBRS_Basic
 {
     receive_shadows off
     transparency_casts_shadows on
@@ -370,9 +300,9 @@ abstract material Paged : PBR_Basic
                 texture $Albedo
             }
 
-            vertex_program_ref PBR_Paged_vs {}
+            vertex_program_ref PBRS_Paged_vs {}
 
-            fragment_program_ref PBR_Paged_fs
+            fragment_program_ref PBRS_Paged_fs
             {
                 param_named uAlbedoSampler int 0
             }
@@ -380,24 +310,24 @@ abstract material Paged : PBR_Basic
     }
 }
 
-vertex_program PBR_Grass_vs glsl glsles
+vertex_program PBRS_Grass_vs glsl glsles
 {
 	source pbr.vert
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8
     default_params {
-        shared_params_ref PBRShared_vert
+        shared_params_ref PBRSShared_vert
     }
 }
 
-fragment_program PBR_Grass_fs glsl glsles
+fragment_program PBRS_Grass_fs glsl glsles
 {
 	source pbr.frag
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=8
 }
 
-abstract material Grass : PBR_Basic
+abstract material Grass : PBRS_Basic
 {
-    receive_shadows on
+    receive_shadows off
     transparency_casts_shadows off
 
     set $Albedo white.dds
@@ -416,9 +346,9 @@ abstract material Grass : PBR_Basic
                 tex_address_mode clamp
             }
 
-            vertex_program_ref PBR_Grass_vs {}
+            vertex_program_ref PBRS_Grass_vs {}
 
-            fragment_program_ref PBR_Grass_fs
+            fragment_program_ref PBRS_Grass_fs
             {
                 param_named uAlbedoSampler int 0
             }
@@ -426,9 +356,9 @@ abstract material Grass : PBR_Basic
     }
 }
 
-abstract material Plant : PBR_Basic
+abstract material Plant : PBRS_Basic
 {
-    receive_shadows on
+    receive_shadows off
     transparency_casts_shadows on
 
     set $Albedo white.dds
@@ -444,9 +374,9 @@ abstract material Plant : PBR_Basic
                 texture $Albedo
             }
 
-            vertex_program_ref PBR_Grass_vs {}
+            vertex_program_ref PBRS_Grass_vs {}
 
-            fragment_program_ref PBR_Grass_fs
+            fragment_program_ref PBRS_Grass_fs
             {
                 param_named uAlbedoSampler int 0
             }
@@ -454,22 +384,22 @@ abstract material Plant : PBR_Basic
     }
 }
 
-vertex_program PBR_Fx_vs glsl glsles
+vertex_program PBRS_Fx_vs glsl glsles
 {
 	source pbr.vert
     preprocessor_defines HAS_UV,HAS_COLOURS,MAX_LIGHTS=1
     default_params {
-        shared_params_ref PBRShared_vert
+        shared_params_ref PBRSShared_vert
     }
 }
 
-fragment_program PBR_Fx_fs glsl glsles
+fragment_program PBRS_Fx_fs glsl glsles
 {
 	source pbr.frag
     preprocessor_defines HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=1
 }
 
-abstract material PBR_Fx : PBR_Basic
+abstract material PBRS_Fx : PBRS_Basic
 {
     receive_shadows off
     transparency_casts_shadows off
@@ -492,9 +422,9 @@ abstract material PBR_Fx : PBR_Basic
                 tex_address_mode clamp
             }
 
-            vertex_program_ref PBR_Fx_vs {}
+            vertex_program_ref PBRS_Fx_vs {}
 
-            fragment_program_ref PBR_Fx_fs
+            fragment_program_ref PBRS_Fx_fs
             {
                 param_named uAlbedoSampler int 0
             }

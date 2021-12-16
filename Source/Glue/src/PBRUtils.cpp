@@ -5,10 +5,11 @@
 #include "Components/ComponentLocator.h"
 
 using namespace std;
+using namespace Ogre;
 
 namespace Glue {
 
-void PBR::UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
+void PBR::UpdatePbrShadowCaster(const MaterialPtr &material) {
   auto *pass = material->getTechnique(0)->getPass(0);
   int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
   bool transparency_casts_shadows = material->getTransparencyCastsShadows();
@@ -16,9 +17,9 @@ void PBR::UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
   string material_name = material->getName();
 
   if (num_textures > 0 && alpha_rejection > 0 && transparency_casts_shadows) {
-    auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
+    auto caster_material = MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
     string caster_name = "PSSM/shadow_caster_alpha/" + material_name;
-    Ogre::MaterialPtr new_caster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
+    MaterialPtr new_caster = MaterialManager::getSingleton().getByName(caster_name);
 
     if (!new_caster) {
       new_caster = caster_material->clone(caster_name);
@@ -31,7 +32,7 @@ void PBR::UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
         auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
 
         if (texPtr3) {
-          texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+          texPtr3->setContentType(TextureUnitState::CONTENT_NAMED);
           texPtr3->setTextureName(texture_name);
         }
       }
@@ -43,51 +44,16 @@ void PBR::UpdatePbrShadowCaster(const Ogre::MaterialPtr &material) {
     new_pass->setAlphaRejectValue(alpha_rejection);
 
     material->getTechnique(0)->setShadowCasterMaterial(new_caster);
-
   }
-//  else {
-//    string caster_name = "PSSM/shadow_caster/" + material_name;
-//    Ogre::MaterialPtr new_caster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
-//
-//    if (!new_caster) {
-//      auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
-//
-//      new_caster = caster_material->clone(caster_name);
-//
-//      auto *new_pass = new_caster->getTechnique(0)->getPass(0);
-//      new_pass->setCullingMode(pass->getCullingMode());
-//      new_pass->setManualCullingMode(pass->getManualCullingMode());
-//    }
-//
-//    material->getTechnique(0)->setShadowCasterMaterial(new_caster);
-//  }
 }
 
-static std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_fp_params_;
-static std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;
-
-void PBR::Cleanup() {
-  gpu_fp_params_.clear();
-  gpu_fp_params_.shrink_to_fit();
-  gpu_vp_params_.clear();
-  gpu_vp_params_.shrink_to_fit();
+void PBR::UpdatePbrShadowCaster(const string &material) {
+  auto material_ptr = MaterialManager::getSingleton().getByName(material);
+  UpdatePbrShadowCaster(material_ptr);
 }
 
-void PBR::Update(float time) {
-  static Ogre::Camera *camera_ = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
-  static Ogre::Matrix4 mvp_;
-  static Ogre::Matrix4 mvp_prev_;
-
-  mvp_prev_ = mvp_;
-  mvp_ = camera_->getProjectionMatrixWithRSDepth() * camera_->getViewMatrix();
-
-//  for (auto &it : gpu_fp_params_) it->setNamedConstant("uFrameTime", time);
-
-  for (auto &it : gpu_vp_params_) it->setNamedConstant("cWorldViewProjPrev", mvp_prev_);
-}  // namespace Glue
-
-void PBR::UpdatePbrParams(const Ogre::MaterialPtr &material) {
-  using GPU = Ogre::GpuProgramParameters::AutoConstantType;
+void PBR::UpdatePbrParams(const MaterialPtr &material) {
+  using GPU = GpuProgramParameters::AutoConstantType;
   const int MAX_SHADOWS = OGRE_MAX_SIMULTANEOUS_SHADOW_TEXTURES;
   const int MAX_LIGHTS = OGRE_MAX_SIMULTANEOUS_LIGHTS;
 
@@ -102,16 +68,23 @@ void PBR::UpdatePbrParams(const Ogre::MaterialPtr &material) {
   }
 }
 
-void PBR::UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active) {
+void PBR::UpdatePbrParams(const string &material) {
+  auto material_ptr = MaterialManager::getSingleton().getByName(material);
+  if (material_ptr) {
+    UpdatePbrParams(material_ptr);
+  }
+}
+
+void PBR::UpdatePbrIbl(const MaterialPtr &material, bool active) {
   auto ibl_texture = material->getTechnique(0)->getPass(0)->getTextureUnitState("IBL_Specular");
 
   if (active) {
-    auto cubemap = Ogre::TextureManager::getSingleton().getByName("dyncubemap", Ogre::RGN_AUTODETECT);
+    auto cubemap = TextureManager::getSingleton().getByName("dyncubemap", RGN_AUTODETECT);
     if (ibl_texture) {
       ibl_texture->setTexture(cubemap);
     }
   } else {
-    auto skybox = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
+    auto skybox = MaterialManager::getSingleton().getByName("SkyBox");
     if (!skybox) return;
     auto cubemap = skybox->getTechnique(0)->getPass(0)->getTextureUnitState("CubeMap");
     if (!cubemap) return;
@@ -120,21 +93,27 @@ void PBR::UpdatePbrIbl(const Ogre::MaterialPtr &material, bool active) {
   }
 }
 
-void PBR::UpdatePbrParams(const string &material) {
-  auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
-  if (material_ptr) {
-    UpdatePbrParams(material_ptr);
-  }
-}
-
 void PBR::UpdatePbrIbl(const string &material, bool realtime) {
-  auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+  auto material_ptr = MaterialManager::getSingleton().getByName(material);
   UpdatePbrIbl(material_ptr, realtime);
 }
 
-void PBR::UpdatePbrShadowCaster(const string &material) {
-  auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
-  UpdatePbrShadowCaster(material_ptr);
+void PBR::Cleanup() {
+  gpu_fp_params_.clear();
+  gpu_fp_params_.shrink_to_fit();
+  gpu_vp_params_.clear();
+  gpu_vp_params_.shrink_to_fit();
+}
+
+void PBR::Update(float time) {
+  static Camera *CameraPtr = Root::getSingleton().getSceneManager("Default")->getCamera("Default");
+  static Matrix4 MVP;
+  static Matrix4 MVPprev;
+
+  MVPprev = MVP;
+  MVP = CameraPtr->getProjectionMatrixWithRSDepth() * CameraPtr->getViewMatrix();
+
+  for (auto &it : gpu_vp_params_) it->setNamedConstant("cWorldViewProjPrev", MVPprev);
 }
 
 }  // namespace Glue

@@ -4,6 +4,9 @@
 #define HEADER_VERT
 
 #ifndef GL_ES
+
+// GLSL
+
 #if VERSION != 120
 #define attribute in
 #define varying out
@@ -11,7 +14,11 @@
 #define in attribute
 #define out varying
 #endif
+
 #else
+
+// GLSLES 2.0
+
 #extension GL_OES_standard_derivatives : enable
 #define textureCubeLod textureLodEXT
 precision highp float;
