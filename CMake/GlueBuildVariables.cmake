@@ -13,8 +13,6 @@ set(GLUE_INCLUDE_DIRS
 
 set(GLUE_LINK_DIRS ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE)
 
-file(GLOB_RECURSE SAMPLE_SOURCE_FILES ../Glue/src/*.cpp src/*.cpp ../Glue/include/*.h include/*.h ../Glue/include/*.hpp include/*.hpp)
-
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
