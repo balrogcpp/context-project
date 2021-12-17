@@ -1,11 +1,5 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-sampler ShadowSampler
-{
-    tex_address_mode border
-    tex_border_colour 1 1 1 1
-}
-
 abstract material PBR_Basic
 {
     transparency_casts_shadows off

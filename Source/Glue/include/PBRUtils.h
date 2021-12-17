@@ -14,8 +14,8 @@ namespace Glue {
 
 class PBR final {
  public:
-  static void UpdatePbrShadowCaster(const Ogre::MaterialPtr &material);
-  static void UpdatePbrShadowCaster(const std::string &material);
+  static void FixTransparentShadowCaster(const Ogre::MaterialPtr &material);
+  static void FixTransparentShadowCaster(const std::string &material);
 
   static void UpdatePbrParams(const Ogre::MaterialPtr &material);
   static void UpdatePbrParams(const std::string &material);
@@ -27,8 +27,8 @@ class PBR final {
   static void Update(float time);
 
  private:
-  inline static std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_fp_params_;
-  inline static std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;
+  inline static std::vector<Ogre::GpuProgramParametersPtr> gpu_fp_params_;
+  inline static std::vector<Ogre::GpuProgramParametersPtr> gpu_vp_params_;
 };
 
 }  // namespace Glue

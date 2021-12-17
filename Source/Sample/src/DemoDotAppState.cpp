@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "DemoDotAppState.h"
 #include "Components/ComponentLocator.h"
+#include "Components/Sound.h"
 #include "Components/DotSceneLoaderB.h"
 #include "MenuAppState.h"
 
@@ -142,10 +143,10 @@ void DemoDotAppState::SetUp() {
   //    anim2 = entity->getAnimationState("jump");
   //    anim2->setLoop(true);
   //    anim2->setEnabled(true);
-
-//  GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
-//  GetAudio().SetVolume("ambient", 0.5);
-//  GetAudio().PlaySound("ambient");
+  
+  GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
+  GetAudio().SetVolume("ambient", 0.5);
+  GetAudio().PlaySound("ambient");
 }
 
 }  // namespace Demo

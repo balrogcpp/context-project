@@ -63,9 +63,9 @@ void UpdateMeshMaterial(Ogre::MeshPtr mesh, bool cast_shadows, const string &mat
       if (material) {
         PBR::UpdatePbrParams(material);
 
-        if (cast_shadows) PBR::UpdatePbrShadowCaster(material);
+        //if (cast_shadows) PBR::FixTransparentShadowCaster(material);
 
-        PBR::UpdatePbrIbl(material, active_ibl);
+        //PBR::UpdatePbrIbl(material, active_ibl);
       }
     }
   } catch (Ogre::Exception &e) {
@@ -94,9 +94,9 @@ void UpdateEntityMaterial(Ogre::Entity *entity, bool cast_shadows, const string 
       if (material) {
         PBR::UpdatePbrParams(material);
 
-        if (cast_shadows) PBR::UpdatePbrShadowCaster(material);
+        //if (cast_shadows) PBR::FixTransparentShadowCaster(material);
 
-        PBR::UpdatePbrIbl(material, active_ibl);
+        //PBR::UpdatePbrIbl(material, active_ibl);
       }
     }
 
