@@ -15,15 +15,18 @@ set(GLUE_LINK_DIRS ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE)
 
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    #jemalloc fix problems with memory bloat on linux
-    list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl jemalloc.a)
+elseif (LINUX)
+    list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl)
 elseif (ANDROID)
     list(APPEND SYSTEM_LIBRARIES SDL2::hidapi android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 endif ()
 
+#jemalloc can fix problems with memory bloat on linux
+if (LINUX)
+    list(APPEND SYSTEM_LIBRARIES jemalloc.a)
+endif ()
 if (NOT (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug"))
     set(OGRE_CODEC_ASSIMP Codec_AssimpStatic)
 else ()

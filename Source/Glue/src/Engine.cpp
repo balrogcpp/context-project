@@ -84,7 +84,6 @@ void Engine::InitSystems() {
   int window_high = ConfPtr->Get<int>("window_high");
   bool window_fullscreen = ConfPtr->Get<bool>("window_fullscreen");
 
-  // RS = make_unique<Render>(window_width, window_high, window_fullscreen);
   OgreRoot = new Ogre::Root("");
 
   ConfPtr->Get("render_system", RenderSystemName);
@@ -359,7 +358,7 @@ void Engine::InitShadowSettings() {
   OgreSceneManager->setShadowCameraSetup(PSSMSetupPtr);
   OgreSceneManager->setShadowColour(ColourValue::Black);
 
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+#ifdef DESKTOP
   TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
 #endif
 }

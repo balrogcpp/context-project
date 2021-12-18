@@ -153,4 +153,4 @@ bool ShaderResolver::beforeIlluminationPassesCleared(Ogre::Technique *OgreTechni
 
 }  // namespace Glue
 
-#endif
+#endif // OGRE_BUILD_COMPONENT_RTSHADERSYSTEM

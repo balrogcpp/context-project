@@ -42,7 +42,7 @@ RUN apt-get update \
     && wget http://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && mkdir binutils-${BINUTILS_VERSION}-linux \
     && cd binutils-${BINUTILS_VERSION}-linux \
-    && export CPPFLAGS='-g0 -O2' \
+    && export CPPFLAGS='-g0 -O3' \
     && ../binutils-${BINUTILS_VERSION}/configure \
       --prefix=${GCC_HOME} \
       --disable-multilib \
