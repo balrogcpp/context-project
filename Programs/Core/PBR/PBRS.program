@@ -28,11 +28,10 @@ vertex_program PBRS_vs glsl glsles
         param_named_auto uMVPMatrix worldviewproj_matrix
         param_named_auto uModelMatrix world_matrix
         param_named_auto uCameraPosition camera_position
-        // param_named_auto uTexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
+        param_named_auto uTime time
 
         param_named uFadeRange float 50.0
         param_named uWindRange float 50.0
-        param_named uTime float 1.0
     }
 }
 

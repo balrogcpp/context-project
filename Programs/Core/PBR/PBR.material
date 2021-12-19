@@ -373,21 +373,6 @@ abstract material PBR_Paged : PBR_Basic
     }
 }
 
-vertex_program PBR_Grass_vs glsl glsles
-{
-	source pbr.vert
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {
-        shared_params_ref PBR_Shared_vert
-    }
-}
-
-fragment_program PBR_Grass_fs glsl glsles
-{
-	source pbr.frag
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-}
-
 abstract material PBR_Grass : PBR_Basic
 {
     receive_shadows on

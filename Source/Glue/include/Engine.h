@@ -14,7 +14,7 @@ class Overlay;
 class Physics;
 class Sound;
 class DotSceneLoaderB;
-class Config;
+class Conf;
 }
 
 namespace Glue {
@@ -80,8 +80,7 @@ class Engine final : public LazySingleton<Engine> {
 
 
 
-  std::unique_ptr<Config> ConfPtr;
-//  std::unique_ptr<Render> RS;
+  std::unique_ptr<Conf> ConfPtr;
   std::unique_ptr<Compositor> CompositorUPtr;
   std::unique_ptr<Overlay> OverlayPtr;
   std::unique_ptr<Physics> ps;
@@ -89,7 +88,7 @@ class Engine final : public LazySingleton<Engine> {
   std::unique_ptr<DotSceneLoaderB> loader;
   std::vector<Component*> ComponentList;
 
-  friend Config& GetConf();
+  friend Conf& GetConf();
 //  friend Render& GetRS();
   friend Physics& GetPhysics();
   friend Sound& GetAudio();
