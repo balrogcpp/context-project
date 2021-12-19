@@ -97,34 +97,34 @@ void GrassLoader::deleteLayer(GrassLayer *layer)
 
 void GrassLoader::frameUpdate()
 {
-	unsigned long currentTime = windTimer.getMilliseconds();
-	unsigned long ellapsedTime = currentTime - lastTime;
-	lastTime = currentTime;
-
-	float ellapsed = ellapsedTime / 1000.0f;
-
-	//Update the vertex shader parameters
-	std::list<GrassLayer*>::iterator it;
-	for (it = layerList.begin(); it != layerList.end(); ++it){
-		GrassLayer *layer = *it;
-
-		layer->_updateShaders();
-
-		GpuProgramParametersSharedPtr params = layer->material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
-		if (layer->animate){
-			//Increment animation frame
-			layer->waveCount += ellapsed * (layer->animSpeed * Math::PI);
-			if (layer->waveCount > Math::PI*2) layer->waveCount -= Math::PI*2;
-
-			//Set vertex shader parameters
-			params->setNamedConstant("time", layer->waveCount);
-			params->setNamedConstant("frequency", layer->animFreq);
-
-			Vector3 direction = windDir * layer->animMag;
-			params->setNamedConstant("direction", Vector4(direction.x, direction.y, direction.z, 0));
-
-		}
-	}
+//	unsigned long currentTime = windTimer.getMilliseconds();
+//	unsigned long ellapsedTime = currentTime - lastTime;
+//	lastTime = currentTime;
+//
+//	float ellapsed = ellapsedTime / 1000.0f;
+//
+//	//Update the vertex shader parameters
+//	std::list<GrassLayer*>::iterator it;
+//	for (it = layerList.begin(); it != layerList.end(); ++it){
+//		GrassLayer *layer = *it;
+//
+//		layer->_updateShaders();
+//
+//		GpuProgramParametersSharedPtr params = layer->material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+//		if (layer->animate){
+//			//Increment animation frame
+//			layer->waveCount += ellapsed * (layer->animSpeed * Math::PI);
+//			if (layer->waveCount > Math::PI*2) layer->waveCount -= Math::PI*2;
+//
+//			//Set vertex shader parameters
+//			params->setNamedConstant("time", layer->waveCount);
+//			params->setNamedConstant("frequency", layer->animFreq);
+//
+//			Vector3 direction = windDir * layer->animMag;
+//			params->setNamedConstant("direction", Vector4(direction.x, direction.y, direction.z, 0));
+//
+//		}
+//	}
 }
 
 void GrassLoader::loadPage(PageInfo &page)
@@ -225,14 +225,16 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page, GrassLayer *layer, const f
 	subMesh->vertexData->vertexStart = 0;
 	subMesh->vertexData->vertexCount = 4 * quadCount;
 
-	VertexDeclaration* dcl = subMesh->vertexData->vertexDeclaration;
-	size_t offset = 0;
-	dcl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
-	offset += VertexElement::getTypeSize(VET_FLOAT3);
-	dcl->addElement(0, offset, VET_UBYTE4_NORM, VES_DIFFUSE);
-	offset += VertexElement::getTypeSize(VET_UBYTE4_NORM);
-	dcl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES);
-	offset += VertexElement::getTypeSize(VET_FLOAT2);
+        VertexDeclaration *dcl = subMesh->vertexData->vertexDeclaration;
+        size_t offset = 0;
+        dcl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
+        offset += VertexElement::getTypeSize(VET_FLOAT3);
+        dcl->addElement(0, offset, VET_FLOAT3, VES_NORMAL);
+        offset += VertexElement::getTypeSize(VET_FLOAT3);
+        dcl->addElement(0, offset, VET_COLOUR, VES_DIFFUSE);
+        offset += VertexElement::getTypeSize(VET_COLOUR);
+        dcl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES);
+        offset += VertexElement::getTypeSize(VET_FLOAT2);
 
 	//Populate a new vertex buffer with grass
 	HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton()
@@ -291,24 +293,41 @@ Mesh *GrassLoader::generateGrass_QUAD(PageInfo &page, GrassLayer *layer, const f
       *pReal++ = float(y1 + scaleY);
       *pReal++ = float(z1 - page.centerPoint.z);   //pos
 
+      *pReal++ = 0.f;
+      *pReal++ = 1.f;
+      *pReal++ = 0.f; // normal
+
       *((uint32*)pReal++) = color;                 //color
       *pReal++ = 0.f; *pReal++ = 0.f;              //uv
 
       *pReal++ = float(x2 - page.centerPoint.x);
       *pReal++ = float(y2 + scaleY);
       *pReal++ = float(z2 - page.centerPoint.z);   //pos
+      *pReal++ = 0.f;
+      *pReal++ = 1.f;
+      *pReal++ = 0.f; // normal
       *((uint32*)pReal++) = color;                 //color
       *pReal++ = 1.f; *pReal++ = 0.f;              //uv
 
       *pReal++ = float(x1 - page.centerPoint.x);
       *pReal++ = float(y1);
       *pReal++ = float(z1 - page.centerPoint.z);   //pos
+
+      *pReal++ = 0.f;
+      *pReal++ = 1.f;
+      *pReal++ = 0.f; // normal
+
       *((uint32*)pReal++) = color;                 //color
       *pReal++ = 0.f; *pReal++ = 1.f;              //uv
 
       *pReal++ = float(x2 - page.centerPoint.x);
       *pReal++ = float(y2);
       *pReal++ = float(z2 - page.centerPoint.z);   //pos
+
+      *pReal++ = 0.f;
+      *pReal++ = 1.f;
+      *pReal++ = 0.f; // normal
+
       *((uint32*)pReal++) = color;                 //color
       *pReal++ = 1.f; *pReal++ = 1.f;              //uv
 
@@ -392,14 +411,16 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page, GrassLayer *layer, c
 	subMesh->vertexData->vertexStart = 0;
 	subMesh->vertexData->vertexCount = 4 * quadCount;
 
-	VertexDeclaration* dcl = subMesh->vertexData->vertexDeclaration;
-	size_t offset = 0;
-	dcl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
-	offset += VertexElement::getTypeSize(VET_FLOAT3);
-	dcl->addElement(0, offset, VET_UBYTE4_NORM, VES_DIFFUSE);
-	offset += VertexElement::getTypeSize(VET_UBYTE4_NORM);
-	dcl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES);
-	offset += VertexElement::getTypeSize(VET_FLOAT2);
+        VertexDeclaration *dcl = subMesh->vertexData->vertexDeclaration;
+        size_t offset = 0;
+        dcl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
+        offset += VertexElement::getTypeSize(VET_FLOAT3);
+        dcl->addElement(0, offset, VET_FLOAT3, VES_NORMAL);
+        offset += VertexElement::getTypeSize(VET_FLOAT3);
+        dcl->addElement(0, offset, VET_COLOUR, VES_DIFFUSE);
+        offset += VertexElement::getTypeSize(VET_COLOUR);
+        dcl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES);
+        offset += VertexElement::getTypeSize(VET_FLOAT2);
 
 	//Populate a new vertex buffer with grass
 	HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton()
@@ -458,25 +479,45 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page, GrassLayer *layer, c
 		*pReal++ = float(x1 - page.centerPoint.x);
       *pReal++ = float(y1 + scaleY);
       *pReal++ = float(z1 - page.centerPoint.z);   //pos
-		*((uint32*)pReal++) = color;                 //color
+
+          *pReal++ = 0.f;
+          *pReal++ = 1.f;
+          *pReal++ = 0.f; // normal
+
+          *((uint32*)pReal++) = color;                 //color
 		*pReal++ = 0.f; *pReal++ = 0.f;              //uv
 
 		*pReal++ = float(x2 - page.centerPoint.x);
       *pReal++ = float(y2 + scaleY);
       *pReal++ = float(z2 - page.centerPoint.z);   //pos
-		*((uint32*)pReal++) = color;                 //color
+
+          *pReal++ = 0.f;
+          *pReal++ = 1.f;
+          *pReal++ = 0.f; // normal
+
+          *((uint32*)pReal++) = color;                 //color
 		*pReal++ = 1.f; *pReal++ = 0.f;              //uv
 
 		*pReal++ = float(x1 - page.centerPoint.x);
       *pReal++ = float(y1);
       *pReal++ = float(z1 - page.centerPoint.z);   //pos
-		*((uint32*)pReal++) = color;                 //color
+
+          *pReal++ = 0.f;
+          *pReal++ = 1.f;
+          *pReal++ = 0.f; // normal
+
+          *((uint32*)pReal++) = color;                 //color
 		*pReal++ = 0.f; *pReal++ = 1.f;              //uv
 
 		*pReal++ = float(x2 - page.centerPoint.x);
       *pReal++ = float(y2);
       *pReal++ = float(z2 - page.centerPoint.z);   //pos
-		*((uint32*)pReal++) = color;                 //color
+
+          *pReal++ = 0.f;
+          *pReal++ = 1.f;
+          *pReal++ = 0.f; // normal
+
+          *((uint32*)pReal++) = color;                 //color
 		*pReal++ = 1.f; *pReal++ = 1.f;              //uv
 
 		//Update bounds
@@ -508,25 +549,45 @@ Mesh *GrassLoader::generateGrass_CROSSQUADS(PageInfo &page, GrassLayer *layer, c
 		*pReal++ = float(x3 - page.centerPoint.x);
       *pReal++ = float(y3 + scaleY);
       *pReal++ = float(z3 - page.centerPoint.z);   //pos
-		*((uint32*)pReal++) = color;                 //color
+
+          *pReal++ = 0.f;
+          *pReal++ = 1.f;
+          *pReal++ = 0.f; // normal
+
+          *((uint32*)pReal++) = color;                 //color
 		*pReal++ = 0.f; *pReal++ = 0.f;              //uv
 
 		*pReal++ = float(x4 - page.centerPoint.x);
       *pReal++ = float(y4 + scaleY);
       *pReal++ = float(z4 - page.centerPoint.z);   //pos
-		*((uint32*)pReal++) = color;                 //color
+
+          *pReal++ = 0.f;
+          *pReal++ = 1.f;
+          *pReal++ = 0.f; // normal
+
+          *((uint32*)pReal++) = color;                 //color
 		*pReal++ = 1.f; *pReal++ = 0.f;              //uv
 
 		*pReal++ = float(x3 - page.centerPoint.x);
       *pReal++ = float(y3); 
       *pReal++ = float(z3 - page.centerPoint.z);   //pos
-		*((uint32*)pReal++) = color;                 //color
+
+          *pReal++ = 0.f;
+          *pReal++ = 1.f;
+          *pReal++ = 0.f; // normal
+
+          *((uint32*)pReal++) = color;                 //color
 		*pReal++ = 0.f; *pReal++ = 1.f;              //uv
 
 		*pReal++ = float(x4 - page.centerPoint.x);
       *pReal++ = float(y4);
       *pReal++ = float(z4 - page.centerPoint.z);   //pos
-		*((uint32*)pReal++) = color;                 //color
+
+          *pReal++ = 0.f;
+          *pReal++ = 1.f;
+          *pReal++ = 0.f; // normal
+
+          *((uint32*)pReal++) = color;                 //color
 		*pReal++ = 1.f; *pReal++ = 1.f;              //uv
 
 		//Update bounds
