@@ -93,6 +93,8 @@ PagedGeometry::~PagedGeometry()
 
 	//Remove all page managers and the geometry associated with them
 	removeDetailLevels();
+        // Prevent memory leak
+        delete pageLoader;
 }
 
 void PagedGeometry::setTempDir(Ogre::String dir)
