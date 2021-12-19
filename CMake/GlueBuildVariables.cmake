@@ -24,9 +24,9 @@ elseif (MSVC)
 endif ()
 
 #jemalloc can fix problems with memory bloat on linux
-if (LINUX)
-    list(APPEND SYSTEM_LIBRARIES jemalloc.a)
-endif ()
+#if (LINUX)
+#    list(APPEND SYSTEM_LIBRARIES jemalloc.a)
+#endif ()
 if (NOT (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug"))
     set(OGRE_CODEC_ASSIMP Codec_AssimpStatic)
 else ()
