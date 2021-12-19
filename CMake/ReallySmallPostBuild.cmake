@@ -1,5 +1,6 @@
 find_package(SelfPackers)
 
+# Stripping not work very well when crosscompile
 #if (CMAKE_STRIP)
 #    add_custom_command(
 #            TARGET ${TARGET_NAME}

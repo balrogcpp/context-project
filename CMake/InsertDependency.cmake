@@ -11,7 +11,7 @@ endmacro()
 
 macro(insert_dependency_static PACKAGE)
     set(_OLD_FIND_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".a" ".a.*" ".so" ".sl" ".dylib" ".dll.a")
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".a" ".so" ".sl" ".dylib" ".dll.a")
     insert_dependency(${PACKAGE})
     set(CMAKE_FIND_LIBRARY_SUFFIXES ${_OLD_FIND_SUFFIXES})
     unset(_OLD_FIND_SUFFIXES)

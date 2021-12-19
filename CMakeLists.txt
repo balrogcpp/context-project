@@ -19,7 +19,7 @@ include(Platform)
 include(CppFlags)
 include(GitHash)
 include(InsertDependency)
-include(AppleThread)
+include(AppleThreadFix)
 
 # Create artifacts directory
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
