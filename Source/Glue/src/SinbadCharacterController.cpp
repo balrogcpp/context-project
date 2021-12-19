@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "Objects/SinbadCharacterController.h"
+#include "Components/DotSceneLoaderB.h"
 #include "Components/ComponentLocator.h"
 #include "MeshUtils.h"
 
@@ -197,8 +198,7 @@ void SinbadCharacterController::updateBody(float deltaTime) {
   mGoalDirection = Ogre::Vector3::ZERO;  // we will calculate this
   float x = mBodyNode->getPosition().x;
   float z = mBodyNode->getPosition().z;
-  //float y = GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
-  float y = CHAR_HEIGHT;
+  float y = GetLoader().GetHeight(x, z) + CHAR_HEIGHT;
   mBodyNode->setPosition(x, y, z);
 
   if (mKeyDirection != Ogre::Vector3::ZERO && mBaseAnimID != ANIM_DANCE) {

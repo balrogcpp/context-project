@@ -2,10 +2,10 @@
 
 #include "pch.h"
 #include "Engine.h"
-#include "AssetLoader.h"
 #include "Components/ComponentsAll.h"
 #include "Conf.h"
 #include "Input/InputSequencer.h"
+#include "Log.h"
 #include "Platform.h"
 #include "RTSSUtils.h"
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
@@ -29,6 +29,16 @@
 #endif
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include "Android.h"
+#endif
+#if defined(LINUX) || defined(WINDOWS)
+#define HAS_FILESYSTEM
+#endif
+#ifdef HAS_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
 #endif
 extern "C" {
 #include <SDL2/SDL_syswm.h>
@@ -95,7 +105,7 @@ void Engine::InitSystems() {
 
   // Camera block
   OgreCamera = OgreSceneManager->createCamera("Default");
-  auto* renderTarget = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
+  auto *renderTarget = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
   OgreViewport = renderTarget->addViewport(OgreCamera);
   OgreViewport->setBackgroundColour(ColourValue::Black);
   OgreCamera->setAspectRatio(static_cast<float>(OgreViewport->getActualWidth()) / static_cast<float>(OgreViewport->getActualHeight()));
@@ -114,7 +124,9 @@ void Engine::InitSystems() {
   // Overlay
   OverlayPtr = make_unique<Overlay>(OgreRenderWindowPtr);
 
-  AssetLoader::LoadResources();
+  auto &RGM = Ogre::ResourceGroupManager::getSingleton();
+  RGM.initialiseResourceGroup(Ogre::RGN_INTERNAL);
+  RGM.initialiseAllResourceGroups();
 
   // Compositor block
   CompositorUPtr = make_unique<Compositor>();
@@ -131,14 +143,14 @@ void Engine::InitSystems() {
 }
 
 void Engine::Capture() {
-  static auto& io = InputSequencer::GetInstance();
+  static auto &io = InputSequencer::GetInstance();
   io.Capture();
 }
 
-void Engine::RegSystem(Component* system) { ComponentList.push_back(system); }
+void Engine::RegSystem(Component *system) { ComponentList.push_back(system); }
 
 void Engine::Pause() {
-  for (auto& it : ComponentList) it->Pause();
+  for (auto &it : ComponentList) it->Pause();
 }
 
 void Engine::InMenu() {
@@ -152,16 +164,16 @@ void Engine::OffMenu() {
 }
 
 void Engine::Resume() {
-  for (auto& it : ComponentList) it->Resume();
+  for (auto &it : ComponentList) it->Resume();
 }
 
 void Engine::Cleanup() {
-  for (auto& it : ComponentList) it->Cleanup();
+  for (auto &it : ComponentList) it->Cleanup();
   Refresh();
 }
 
 void Engine::Update(float PassedTime) {
-  for (auto& it : ComponentList) it->Update(PassedTime);
+  for (auto &it : ComponentList) it->Update(PassedTime);
 }
 
 void Engine::RenderOneFrame() {
@@ -177,23 +189,29 @@ void Engine::Refresh() {
 }
 
 void Engine::InitOgrePlugins() {
+
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
 #endif
+
 #ifdef OGRE_BUILD_PLUGIN_PFX
   Root::getSingleton().installPlugin(new ParticleFXPlugin());
 #endif
+
 #ifdef OGRE_BUILD_PLUGIN_STBI
   Root::getSingleton().installPlugin(new STBIPlugin());
 #endif
+
+#ifdef DEBUG
 #ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
   Root::getSingleton().installPlugin(new FreeImagePlugin());
 #endif
+
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
-#ifdef DEBUG
   Root::getSingleton().installPlugin(new AssimpPlugin());
 #endif
 #endif
+
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   OgreSceneManager = OgreRoot->createSceneManager("OctreeSceneManager", "Default");
 #else
@@ -224,7 +242,7 @@ void Engine::InitRenderWindow() {
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+  JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
 
   jclass class_activity = env->FindClass("android/app/Activity");
   jclass class_resources = env->FindClass("android/content/res/Resources");
@@ -239,8 +257,8 @@ void Engine::InitRenderWindow() {
   params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
   params["preserveContext"] = "true";
 
-  AAssetManager* asset_manager = AAssetManager_fromJava(env, raw_asset_manager);
-  AConfiguration* mAConfig = AConfiguration_new();
+  AAssetManager *asset_manager = AAssetManager_fromJava(env, raw_asset_manager);
+  AConfiguration *mAConfig = AConfiguration_new();
   AConfiguration_fromAssetManager(mAConfig, asset_manager);
 
   ArchiveManager::getSingleton().addArchiveFactory(new APKFileSystemArchiveFactory(asset_manager));
@@ -265,12 +283,149 @@ void Engine::InitRenderWindow() {
   OgreRenderWindowPtr = Root::getSingleton().createRenderWindow("MainWindow", 0, 0, false, &params);
 }
 
+string FindPath(const string &Path, int Depth = 2) {
+#ifdef DEBUG
+  Depth = 6;
+#endif
+
+  string result = Path;
+
+  for (int i = 0; i < Depth; i++) {
+    if (fs::exists(result))
+      return result;
+    else if (fs::exists(result + ".zip"))
+      return result.append(".zip");
+    else
+      result = string("../").append(result);
+  }
+
+  return string();
+}
+
+static inline bool CheckSymbol(char c) { return isalpha(c) || isdigit(c) || c == '.' || c == ',' || c == ';' || c == '_' || c == '-' || c == '/'; }
+
+static inline bool StringSanityCheck(const string &str) {
+  if (str.empty() || str[0] == '#') {
+    return true;
+  }
+
+  return any_of(str.begin(), str.end(), CheckSymbol);
+}
+
+static inline void LeftTrim(string &s) {
+  auto it = find_if(s.begin(), s.end(), [](char c) { return !isspace(c); });
+  s.erase(s.begin(), it);
+}
+
+static inline void RightTrim(string &s) {
+  auto it = find_if(s.rbegin(), s.rend(), [](char c) { return !isspace(c); });
+  s.erase(it.base(), s.end());
+}
+
+static inline void TrimString(string &s) {
+  RightTrim(s);
+  LeftTrim(s);
+}
+
+static void LoadResources() {
+  auto &rgm = Ogre::ResourceGroupManager::getSingleton();
+  rgm.initialiseResourceGroup(Ogre::RGN_INTERNAL);
+  rgm.initialiseAllResourceGroups();
+}
+
+static void AddLocation(const std::string &Path, const std::string &GroupName = Ogre::RGN_DEFAULT, const std::string &ResourceFile = "",
+                        bool Verbose = false) {
+  const string file_system = "FileSystem";
+  const string zip = "Zip";
+
+  std::vector<string> file_list;
+  std::vector<string> dir_list;
+  std::vector<tuple<string, string, string>> resource_list;
+  auto &RGM = Ogre::ResourceGroupManager::getSingleton();
+
+  string path = FindPath(Path);
+
+  if (fs::exists(path)) {
+    if (fs::is_directory(path))
+      resource_list.push_back({path, file_system, GroupName});
+    else if (fs::is_regular_file(path) && fs::path(path).extension() == ".zip")
+      RGM.addResourceLocation(path, zip, GroupName);
+  }
+
+  if (!ResourceFile.empty()) {
+    fstream list_file;
+    list_file.open(ResourceFile);
+
+    string line;
+    string type;
+    string group;
+
+    if (list_file.is_open()) {
+      while (getline(list_file, line)) {
+        TrimString(line);
+
+        if (!StringSanityCheck(line)) {
+          throw Exception(string("Sanity check of ") + ResourceFile + " is failed. Aborting.");
+        }
+
+        if (line[0] == '#') {
+          continue;
+        }
+
+        stringstream ss(line);
+        getline(ss, path, ',');
+        getline(ss, type, ',');
+        getline(ss, group, ';');
+        resource_list.push_back({path, type, group});
+      }
+    }
+  }
+
+  const std::vector<string> extensions_list = {".glsl",       ".glslt",    ".hlsl", ".hlslt",   ".gles", ".cg",  ".vert", ".frag", ".material",
+                                               ".compositor", ".particle", ".fx",   ".program", ".dds",  ".bmp", ".png",  ".tga",  ".jpg",
+                                               ".jpeg",       ".mesh",     ".xml",  ".scene",   ".json", ".wav", ".ogg",  ".mp3",  ".flac"};
+
+  for (const auto &it : resource_list) {
+    RGM.addResourceLocation(get<0>(it), get<1>(it), get<2>(it));
+    dir_list.push_back(get<0>(it));
+
+    auto jt = fs::recursive_directory_iterator(get<0>(it));
+
+    for (; jt != fs::recursive_directory_iterator(); ++jt) {
+      const auto full_path = jt->path().string();
+      const auto file_name = jt->path().filename().string();
+
+      if (jt->is_directory()) {
+        if (Verbose) {
+          LogMessage(string("Found directory: ") + full_path);
+        }
+
+        dir_list.push_back(file_name);
+
+        RGM.addResourceLocation(full_path, file_system, get<2>(it));
+
+      } else if (jt->is_regular_file()) {
+        if (Verbose) {
+          LogMessage(string("Found file: ") + full_path);
+        }
+        if (fs::path(full_path).extension() == ".zip") {
+          if (find(extensions_list.begin(), extensions_list.end(), fs::path(file_name).extension()) != extensions_list.end()) {
+            file_list.push_back(file_name);
+          }
+
+          RGM.addResourceLocation(full_path, zip, get<2>(it));
+        }
+      }
+    }
+  }
+}
+
 void Engine::InitResourceLocation() {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  AssetLoader::AddLocationRecursive("Programs", RGN_INTERNAL);
-  AssetLoader::AddLocationRecursive("Assets", RGN_DEFAULT);
+  AddLocation("Programs", RGN_INTERNAL);
+  AddLocation("Assets", RGN_DEFAULT);
 #else
-  ResourceGroupManager& RGM = ResourceGroupManager::getSingleton();
+  auto &RGM = ResourceGroupManager::getSingleton();
   RGM.addResourceLocation("/Programs/Core.zip", "APKZip", RGN_INTERNAL);
   RGM.addResourceLocation("/Programs/Other.zip", "APKZip", RGN_INTERNAL);
   RGM.addResourceLocation("/Assets.zip", "APKZip", RGN_DEFAULT);
@@ -439,7 +594,7 @@ void Engine::SetWindowed() {
   SDL_SetWindowSize(SDLWindowPtr, WindowWidth, WindowHeight);
 }
 
-void Engine::SetWindowCaption(const char* Caption) { SDL_SetWindowTitle(SDLWindowPtr, Caption); }
+void Engine::SetWindowCaption(const char *Caption) { SDL_SetWindowTitle(SDLWindowPtr, Caption); }
 
 void Engine::WindowRestoreFullscreenAndroid() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID

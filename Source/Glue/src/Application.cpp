@@ -51,6 +51,7 @@ Application::Application() {
     GetConf().Get("verbose", Verbose);
     GetConf().Get("verbose_input", VerboseInput);
 
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
     if (Verbose) {
       LogBuffer.reserve(10000);
     }
@@ -58,6 +59,7 @@ Application::Application() {
     if (VerboseInput) {
       VerboseListenerPtr = make_unique<VerboseListener>();
     }
+#endif
 
     LockFPS = GetConf().Get<bool>("lock_fps");
     TargetFPS = GetConf().Get<int>("target_fps");
@@ -130,10 +132,8 @@ void Application::Loop() {
 
     if (!Suspend) {
       if (StateManagerPtr->IsDirty()) {
-        EnginePtr->Pause();
         EnginePtr->Cleanup();
         StateManagerPtr->InitNextState();
-        EnginePtr->Resume();
       } else if (suspend_old) {
         EnginePtr->Resume();
         suspend_old = false;
@@ -204,8 +204,6 @@ void Application::OnResume() {
   StateManagerPtr->Resume();
   EnginePtr->Resume();
 }
-
-void Application::OnEvent(const SDL_Event &Event) {}
 
 int Application::Main(unique_ptr<AppState> &&AppStatePtr) {
   try {

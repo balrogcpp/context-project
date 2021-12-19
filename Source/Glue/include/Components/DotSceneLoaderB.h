@@ -5,10 +5,8 @@
 #include "CubeMapCamera.h"
 #include "LazySingleton.h"
 #include "Objects/CameraMan.h"
-#include "PhysicalInput/InputSequencer.h"
+#include "Input/InputSequencer.h"
 #include "ReflectionCamera.h"
-#include "Terrain.h"
-#include "Vegetation.h"
 #include <OgreCodec.h>
 #include <OgrePlugin.h>
 #include <OgreVector.h>
@@ -27,10 +25,15 @@ class TerrainGlobalOptions;
 class VertexDeclaration;
 }  // namespace Ogre
 
+namespace Forests {
+class PagedGeometry;
+class PageLoader;
+class GeometryPage;
+}  // namespace Forests
+
 namespace Glue {
 class CameraMan;
-class Config;
-class Render;
+class Conf;
 class Physics;
 class Sound;
 class Overlay;
@@ -68,7 +71,7 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   void ProcessBillboardSet(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
   void ProcessPlane(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
   void ProcessForest(pugi::xml_node &XmlNode);
-  void ProcessLandscape(pugi::xml_node &XmlNode);
+  void ProcessTerrain(pugi::xml_node &XmlNode);
   void ProcessFog(pugi::xml_node &XmlNode);
   void ProcessSkyBox(pugi::xml_node &XmlNode);
   void ProcessSkyDome(pugi::xml_node &XmlNode);
@@ -77,16 +80,15 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   void ProcessLightAttenuation(pugi::xml_node &XmlNode, Ogre::Light *light);
   void WriteNode(pugi::xml_node &parentXML, const Ogre::SceneNode *node);
 
-  std::unique_ptr<ReflectionCamera> rcamera;
-  std::unique_ptr<CubeMapCamera> ccamera;
-  std::unique_ptr<CameraMan> camera_man;
+  std::unique_ptr<CameraMan> CameraManPtr;
+  std::unique_ptr<Ogre::TerrainGroup> OgreTerrainPtr;
+  std::vector<std::unique_ptr<Forests::PagedGeometry>> PGeometryList;
 
-  Ogre::SceneManager *Scene = nullptr;
-  Ogre::Root *root = nullptr;
-  Ogre::SceneNode *root_node = nullptr;
-  Ogre::SceneNode *attach_node = nullptr;
-  std::string group_name = Ogre::RGN_DEFAULT;
-  std::unique_ptr<SinbadCharacterController> sinbad;
+  Ogre::SceneManager *OgreScene = nullptr;
+  Ogre::Root *OgreRoot = nullptr;
+  Ogre::SceneNode *AttachNode = nullptr;
+  std::string GroupName = Ogre::RGN_DEFAULT;
+  std::unique_ptr<SinbadCharacterController> Sinbad;
 };
 
 class DotScenePluginB : public Ogre::Plugin {
@@ -100,4 +102,5 @@ class DotScenePluginB : public Ogre::Plugin {
  protected:
   Ogre::Codec *mCodec = nullptr;
 };
+
 }  // namespace Glue

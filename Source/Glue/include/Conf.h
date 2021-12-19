@@ -7,13 +7,26 @@
 
 namespace Glue {
 
-class Config : public Singleton<Config> {
+class Conf : public Singleton<Conf> {
  public:
-  explicit Config(const std::string &FileName);
+  explicit Conf(const std::string &FileName) {
+    if (FileName.empty()) return;
+    Reload(FileName);
+  }
 
-  virtual ~Config();
+  virtual ~Conf() {}
 
-  void Reload(const std::string &FileName);
+  void Reload(const std::string &FileName) {
+    assert(!FileName.empty() && "Provided conf file name is empty");
+    if(Document.size()) Document.clear();
+    std::ifstream ifs(FileName);
+
+    if (!ifs.is_open()) {
+      Throw(FileName + " does not exists");
+    }
+
+    ifs >> Document;
+  }
 
   template <typename T>
   void AddMember(const std::string &Key, T &&Value) {

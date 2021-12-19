@@ -17,6 +17,8 @@ class Entity;
 class SceneNode;
 }  // namespace Ogre
 
+
+// Forward declaration
 struct btDbvtBroadphase;
 class btAxisSweep3;
 class btDefaultCollisionConfiguration;
@@ -31,10 +33,10 @@ class btRigidBody;
 class btCollisionObject;
 
 namespace Glue {
+
 struct ContactInfo {
   ContactInfo() = default;
   ContactInfo(const btCollisionObject *a, int points) : a_(a), points_(points) {}
-
   ContactInfo &operator=(const ContactInfo &that) = default;
 
   const btCollisionObject *a_;

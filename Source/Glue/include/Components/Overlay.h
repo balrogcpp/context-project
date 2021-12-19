@@ -3,7 +3,7 @@
 #pragma once
 #include "Components/Component.h"
 #include "LazySingleton.h"
-#include "PhysicalInput/ImGuiInputListener.h"
+#include "Input/ImGuiInputListener.h"
 
 namespace Ogre {
 class RenderTarget;

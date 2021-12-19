@@ -1,6 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
+#include <OgreComponents.h>
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 #include "Exception.h"
 #include <RTShaderSystem/OgreShaderGenerator.h>

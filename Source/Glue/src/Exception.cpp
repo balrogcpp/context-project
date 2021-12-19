@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "Exception.h"
-#include "Config.h"
+#include "Conf.h"
 #include "Engine.h"
 
 using namespace std;

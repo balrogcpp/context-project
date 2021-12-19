@@ -1,21 +1,21 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "PhysicalInput/WindowObserver.h"
-#include "PhysicalInput/InputSequencer.h"
+#include "Input/InputObserver.h"
+#include "Input/InputSequencer.h"
 
 using namespace std;
 
 namespace Glue {
 
-WindowObserver::WindowObserver() {
+InputObserver::InputObserver() {
   static auto &ref = InputSequencer::GetInstance();
-  ref.RegWinObserver(this);
+  ref.RegObserver(this);
 }
 
-WindowObserver::~WindowObserver() {
+InputObserver::~InputObserver() {
   static auto &ref = InputSequencer::GetInstance();
-  ref.UnregWinObserver(this);
+  ref.UnregObserver(this);
 }
 
 }  // namespace Glue

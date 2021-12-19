@@ -1,10 +1,10 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "NoCopy.h"
+#include "Singleton.h"
 
 namespace Glue {
-class Config;
+class Conf;
 }
 
 namespace Glue {
@@ -20,10 +20,10 @@ class Component : public NoCopy {
   virtual void Cleanup() {}
 
   bool IsPaused() { return Paused; }
-  static void SetConfig(Config* Conf) { ConfPtr = Conf; }
+  static void SetConfig(Conf* Conf) { ConfPtr = Conf; }
 
  protected:
-  inline static Config* ConfPtr = nullptr;
+  inline static Conf* ConfPtr = nullptr;
   bool Paused = false;
 };
 

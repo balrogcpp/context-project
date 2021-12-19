@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Config.h"
+#include "Conf.h"
 #include "Engine.h"
 
 namespace Glue {
@@ -15,7 +15,7 @@ class InputSequencer;
 
 namespace Glue {
 
-Config& GetConf();
+Conf& GetConf();
 Engine& GetEngine();
 Physics& GetPhysics();
 Sound& GetAudio();

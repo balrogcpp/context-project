@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "PhysicalInput/VerboseListener.h"
+#include "Input/VerboseListener.h"
 #include <cstdio>
 
 using namespace std;

@@ -2,7 +2,7 @@
 
 #pragma once
 #include "NoCopy.h"
-#include "PhysicalInput/InputObserver.h"
+#include "Input/InputObserver.h"
 #include <OgreFrameListener.h>
 #include <OgreRenderTargetListener.h>
 #include <OgreResourceGroupManager.h>

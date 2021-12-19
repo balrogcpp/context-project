@@ -4,8 +4,8 @@
 #include "AppStateManager.h"
 #include "Engine.h"
 #include "LazySingleton.h"
-#include "PhysicalInput/WindowObserver.h"
-#include "PhysicalInput/VerboseListener.h"
+#include "Input/WindowObserver.h"
+#include "Input/VerboseListener.h"
 #include <OgreLog.h>
 #include <memory>
 #include <string>
@@ -23,7 +23,6 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   void Go();
   int ExceptionMessage(const std::string &WindowCaption, const std::string &MessageText);
 
-  void OnEvent(const SDL_Event &Event) override;
   void OnQuit() override;
   void OnPause() override;
   void OnResume() override;

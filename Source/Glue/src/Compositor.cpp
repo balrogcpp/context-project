@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "Components/Compositor.h"
-#include "Config.h"
+#include "Conf.h"
 #include "PBRUtils.h"
 
 using namespace std;

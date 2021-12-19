@@ -6,9 +6,9 @@
 
 namespace Glue {
 
-Config& GetConf() {
-  static auto& ConfigPtr = *Engine::GetInstance().ConfPtr;
-  return ConfigPtr;
+Conf& GetConf() {
+  static auto& ConfPtr = *Engine::GetInstance().ConfPtr;
+  return ConfPtr;
 }
 
 Engine& GetEngine() {

@@ -79,8 +79,6 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
     originalMaterial = Ogre::MaterialManager::getSingleton().getByName(material_name, Ogre::RGN_INTERNAL);
   }
 
-  bool verbose = false;
-
   if (!originalMaterial) {
     return false;
   }

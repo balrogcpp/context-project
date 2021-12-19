@@ -2,7 +2,7 @@
 
 #pragma once
 #include "Objects/Object.h"
-#include "PhysicalInput/InputObserver.h"
+#include "Input/InputObserver.h"
 #include <OgreVector.h>
 extern "C" {
 #include <SDL2/SDL_keycode.h>

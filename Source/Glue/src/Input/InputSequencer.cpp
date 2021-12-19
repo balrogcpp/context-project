@@ -1,9 +1,9 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "PhysicalInput/InputSequencer.h"
-#include "PhysicalInput/InputObserver.h"
-#include "PhysicalInput/WindowObserver.h"
+#include "Input/InputSequencer.h"
+#include "Input/InputObserver.h"
+#include "Input/WindowObserver.h"
 #include <algorithm>
 
 using namespace std;

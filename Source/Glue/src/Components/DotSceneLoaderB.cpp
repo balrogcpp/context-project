@@ -4,11 +4,11 @@
 #include "Components/DotSceneLoaderB.h"
 #include "BtOgre/BtOgre.h"
 #include "Components/ComponentLocator.h"
-#include "Components/Physics.h"
-#include "Components/Sound.h"
+#include "Components/ComponentsAll.h"
 #include "MeshUtils.h"
 #include "Objects/SinbadCharacterController.h"
 #include "PBRUtils.h"
+#include "PagedGeometry/PagedGeometryAll.h"
 #include "XmlParser.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
@@ -16,13 +16,22 @@
 #include <OgreDistanceLodStrategy.h>
 #include <OgrePixelCountLodStrategy.h>
 #endif
+#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+#include "Components/TerrainMaterialGeneratorB.h"
+#include <Terrain/OgreTerrain.h>
+#include <Terrain/OgreTerrainAutoUpdateLod.h>
+#include <Terrain/OgreTerrainGroup.h>
+#include <Terrain/OgreTerrainQuadTreeNode.h>
+#endif
 #ifdef OGRE_BUILD_COMPONENT_PAGING
 #include <Paging/OgrePage.h>
 #include <Paging/OgrePaging.h>
 #endif
+
 #include <pugixml.hpp>
 
 using namespace std;
+using namespace Forests;
 
 namespace Glue {
 
@@ -39,21 +48,23 @@ static void Write(pugi::xml_node &node, const Ogre::ColourValue &c) {
   node.append_attribute("a") = ToCString(c.a);
 }
 
-DotSceneLoaderB::DotSceneLoaderB() { camera_man = make_unique<CameraMan>(); }
+DotSceneLoaderB::DotSceneLoaderB() { CameraManPtr = make_unique<CameraMan>(); }
 
-DotSceneLoaderB::~DotSceneLoaderB() { Cleanup(); }
+DotSceneLoaderB::~DotSceneLoaderB() {}
 
-CameraMan &DotSceneLoaderB::GetCamera() const { return *camera_man; }
+CameraMan &DotSceneLoaderB::GetCamera() const { return *CameraManPtr; }
 
 void DotSceneLoaderB::Update(float PassedTime) {
   if (Paused) return;
-  if (camera_man) camera_man->Update(PassedTime);
-  if (sinbad) sinbad->Update(PassedTime);
+
+  if (CameraManPtr) CameraManPtr->Update(PassedTime);
+  if (Sinbad) Sinbad->Update(PassedTime);
+  for (auto &it : PGeometryList) it->update();
 }
 
 void DotSceneLoaderB::Load(Ogre::DataStreamPtr &stream, const string &group_name, Ogre::SceneNode *root_node) {
-  this->group_name = group_name;
-  Scene = root_node->getCreator();
+  this->GroupName = group_name;
+  OgreScene = root_node->getCreator();
 
   pugi::xml_document XMLDoc;  // character type defaults to char
 
@@ -76,8 +87,8 @@ void DotSceneLoaderB::Load(Ogre::DataStreamPtr &stream, const string &group_name
   }
 
   // figure out where to attach any nodes we init
-  root = Ogre::Root::getSingletonPtr();
-  attach_node = root_node;
+  OgreRoot = Ogre::Root::getSingletonPtr();
+  AttachNode = root_node;
 
   // Process the scene
   ProcessScene(XMLRoot);
@@ -156,8 +167,7 @@ void DotSceneLoaderB::WriteNode(pugi::xml_node &parentXML, const Ogre::SceneNode
 
       // Heuristic: assume first submesh is representative
       auto sub0mat = e->getSubEntity(0)->getMaterial();
-      if (sub0mat != e->getMesh()->getSubMesh(0)->getMaterial())
-        entity.append_attribute("material") = sub0mat->getName().c_str();
+      if (sub0mat != e->getMesh()->getSubMesh(0)->getMaterial()) entity.append_attribute("material") = sub0mat->getName().c_str();
       continue;
     }
 
@@ -171,9 +181,8 @@ void DotSceneLoaderB::WriteNode(pugi::xml_node &parentXML, const Ogre::SceneNode
 void DotSceneLoaderB::ExportScene(Ogre::SceneNode *rootNode, const string &outFileName) {
   pugi::xml_document XMLDoc;  // character type defaults to char
   auto comment = XMLDoc.append_child(pugi::node_comment);
-  comment.set_value(Ogre::StringUtil::format(" exporter: Plugin_DotScene %d.%d.%d ", OGRE_VERSION_MAJOR,
-                                             OGRE_VERSION_MINOR, OGRE_VERSION_PATCH)
-                        .c_str());
+  comment.set_value(
+      Ogre::StringUtil::format(" exporter: Plugin_DotScene %d.%d.%d ", OGRE_VERSION_MAJOR, OGRE_VERSION_MINOR, OGRE_VERSION_PATCH).c_str());
   auto scene = XMLDoc.append_child("scene");
   scene.append_attribute("formatVersion") = "1.1";
   scene.append_attribute("sceneManager") = rootNode->getCreator()->getTypeName().c_str();
@@ -186,15 +195,21 @@ void DotSceneLoaderB::ExportScene(Ogre::SceneNode *rootNode, const string &outFi
 }
 
 void DotSceneLoaderB::Cleanup() {
-  sinbad.reset();
-  PBR::Cleanup();
-  if (Scene) Scene->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  if (Scene) Scene->clearScene();
-  if (camera_man) camera_man->SetStyle(CameraMan::Style::MANUAL);
-  Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(group_name);
+  Sinbad.reset();
+  PGeometryList.clear();
+  if (OgreTerrainPtr) OgreTerrainPtr->removeAllTerrains();
+  OgreScene->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+  OgreScene->clearScene();
+  CameraManPtr->SetStyle(CameraMan::Style::MANUAL);
+  Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(GroupName);
 }
 
-float DotSceneLoaderB::GetHeight(float x, float z) { return 0; }
+float DotSceneLoaderB::GetHeight(float x, float z) {
+  if (OgreTerrainPtr)
+    return OgreTerrainPtr->getHeightAtWorldPosition(x, 1000, z);
+  else
+    return 0.0f;
+}
 
 void DotSceneLoaderB::ProcessScene(pugi::xml_node &XmlRoot) {
   // Process the scene parameters
@@ -219,7 +234,7 @@ void DotSceneLoaderB::ProcessScene(pugi::xml_node &XmlRoot) {
   }
 
   if (auto element = XmlRoot.child("terrainGroup")) {
-    ProcessLandscape(element);
+    ProcessTerrain(element);
   }
 
   if (auto element = XmlRoot.child("nodes")) {
@@ -235,7 +250,7 @@ void DotSceneLoaderB::ProcessScene(pugi::xml_node &XmlRoot) {
   }
 
   if (auto element = XmlRoot.child("userData")) {
-    ProcessUserData(element, attach_node->getUserObjectBindings());
+    ProcessUserData(element, AttachNode->getUserObjectBindings());
   }
 }
 
@@ -247,20 +262,20 @@ void DotSceneLoaderB::ProcessNodes(pugi::xml_node &XmlNode) {
 
   // Process position
   if (auto element = XmlNode.child("position")) {
-    attach_node->setPosition(ParsePosition(element));
-    attach_node->setInitialState();
+    AttachNode->setPosition(ParsePosition(element));
+    AttachNode->setInitialState();
   }
 
   // Process rotation
   if (auto element = XmlNode.child("rotation")) {
-    attach_node->setOrientation(ParseRotation(element));
-    attach_node->setInitialState();
+    AttachNode->setOrientation(ParseRotation(element));
+    AttachNode->setInitialState();
   }
 
   // Process scale
   if (auto element = XmlNode.child("scale")) {
-    attach_node->setScale(ParseScale(element));
-    attach_node->setInitialState();
+    AttachNode->setScale(ParseScale(element));
+    AttachNode->setInitialState();
   }
 }
 
@@ -294,11 +309,11 @@ void DotSceneLoaderB::ProcessEnvironment(pugi::xml_node &XmlNode) {
 
   // Process colourAmbient
   if (auto element = XmlNode.child("colourAmbient")) {
-    Scene->setAmbientLight(ParseColour(element));
+    OgreScene->setAmbientLight(ParseColour(element));
   }
 
   if (auto element = XmlNode.child("shadowColor")) {
-    Scene->setShadowColour(ParseColour(element));
+    OgreScene->setShadowColour(ParseColour(element));
   }
 
   // Process colourBackground
@@ -334,7 +349,7 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &XmlNode, Ogre::SceneNode *Par
   const size_t MAX_TEX_COUNT = 9;
 
   // SetUp the light
-  Ogre::Light *light = Scene->createLight(name);
+  Ogre::Light *light = OgreScene->createLight(name);
   ParentNode->attachObject(light);
 
   string sValue = GetAttrib(XmlNode, "type");
@@ -353,9 +368,9 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &XmlNode, Ogre::SceneNode *Par
   light->setCastShadows(GetAttribBool(XmlNode, "castShadows", false));
 
   if (Ogre::Root::getSingleton().getSceneManager("Default")->getShadowTechnique() != Ogre::SHADOWTYPE_NONE) {
-    auto texture_config = Scene->getShadowTextureConfigList()[0];
+    auto texture_config = OgreScene->getShadowTextureConfigList()[0];
 
-    if (Scene->getShadowTextureConfigList().size() < MAX_TEX_COUNT) {
+    if (OgreScene->getShadowTextureConfigList().size() < MAX_TEX_COUNT) {
       if (light->getType() == Ogre::Light::LT_POINT) {
         light->setCastShadows(false);
       } else if (light->getType() == Ogre::Light::LT_SPOTLIGHT && light->getCastShadows()) {
@@ -385,21 +400,21 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &XmlNode, Ogre::SceneNode *Par
         }
 
         light->setCustomShadowCameraSetup(default_scs);
-        size_t tex_count = Scene->getShadowTextureConfigList().size() + 1;
-        Scene->setShadowTextureCount(tex_count);
+        size_t tex_count = OgreScene->getShadowTextureConfigList().size() + 1;
+        OgreScene->setShadowTextureCount(tex_count);
 
         size_t index = tex_count - 1;
         texture_config.height *= pow(2.0, -floor(index / 3.0));
         texture_config.width *= pow(2.0, -floor(index / 3.0));
-        Scene->setShadowTextureConfig(index, texture_config);
+        OgreScene->setShadowTextureConfig(index, texture_config);
       } else if (light->getType() == Ogre::Light::LT_DIRECTIONAL && light->getCastShadows()) {
-        size_t per_light = Scene->getShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL);
-        size_t tex_count = Scene->getShadowTextureConfigList().size() + per_light - 1;
-        Scene->setShadowTextureCount(tex_count);
+        size_t per_light = OgreScene->getShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL);
+        size_t tex_count = OgreScene->getShadowTextureConfigList().size() + per_light - 1;
+        OgreScene->setShadowTextureCount(tex_count);
 
         for (size_t i = 1; i <= per_light; i++) {
           size_t index = tex_count - i;
-          Scene->setShadowTextureConfig(index, texture_config);
+          OgreScene->setShadowTextureConfig(index, texture_config);
         }
       }
     }
@@ -447,11 +462,11 @@ void DotSceneLoaderB::ProcessCamera(pugi::xml_node &XmlNode, Ogre::SceneNode *Pa
   // SetUp the camera
   auto *camera = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
 
-  if (!camera_man) camera_man = make_unique<CameraMan>();
+  if (!CameraManPtr) CameraManPtr = make_unique<CameraMan>();
 
-  camera_man->AttachCamera(ParentNode, camera);
+  CameraManPtr->AttachCamera(ParentNode, camera);
 
-  if (camera_man->GetStyle() == CameraMan::Style::FPS) {
+  if (CameraManPtr->GetStyle() == CameraMan::Style::FPS) {
     auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
     auto *actor = scene->createEntity("Actor", "Icosphere.mesh");
     actor->setCastShadows(false);
@@ -474,11 +489,11 @@ void DotSceneLoaderB::ProcessCamera(pugi::xml_node &XmlNode, Ogre::SceneNode *Pa
     entBody->setFriction(1.0);
     entBody->setUserIndex(1);
     GetPhysics().AddRigidBody(entBody);
-    camera_man->SetRigidBody(entBody);
-    camera_man->AttachNode(ParentNode);
+    CameraManPtr->SetRigidBody(entBody);
+    CameraManPtr->AttachNode(ParentNode);
   } else {
-    sinbad = make_unique<SinbadCharacterController>(Scene->getCamera("Default"));
-    camera_man->AttachNode(ParentNode, sinbad->GetBodyNode());
+    Sinbad = make_unique<SinbadCharacterController>(OgreScene->getCamera("Default"));
+    CameraManPtr->AttachNode(ParentNode, Sinbad->GetBodyNode());
   }
 
   // Set the field-of-view
@@ -521,14 +536,14 @@ void DotSceneLoaderB::ProcessNode(pugi::xml_node &XmlNode, Ogre::SceneNode *Pare
     if (ParentNode) {
       node = ParentNode->createChildSceneNode();
     } else {
-      node = attach_node->createChildSceneNode();
+      node = AttachNode->createChildSceneNode();
     }
   } else {
     // Provide the name
     if (ParentNode) {
       node = ParentNode->createChildSceneNode(name);
     } else {
-      node = attach_node->createChildSceneNode(name);
+      node = AttachNode->createChildSceneNode(name);
     }
   }
 
@@ -645,7 +660,7 @@ void DotSceneLoaderB::ProcessLookTarget(pugi::xml_node &XmlNode, Ogre::SceneNode
   // Setup the look target
   try {
     if (!nodeName.empty()) {
-      Ogre::SceneNode *pLookNode = Scene->getSceneNode(nodeName);
+      Ogre::SceneNode *pLookNode = OgreScene->getSceneNode(nodeName);
       position = pLookNode->_getDerivedPosition();
     }
 
@@ -675,7 +690,7 @@ void DotSceneLoaderB::ProcessTrackTarget(pugi::xml_node &XmlNode, Ogre::SceneNod
 
   // Setup the track target
   try {
-    Ogre::SceneNode *pTrackNode = Scene->getSceneNode(nodeName);
+    Ogre::SceneNode *pTrackNode = OgreScene->getSceneNode(nodeName);
     ParentNode->setAutoTracking(true, pTrackNode, localDirection, offset);
   } catch (Ogre::Exception &e) {
     Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error processing a track target!");
@@ -693,7 +708,7 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &XmlNode, Ogre::SceneNode *Pa
   bool planar_reflection = GetAttribBool(XmlNode, "planarReflection", false);
 
   // SetUp the entity
-  Ogre::Entity *entity = Scene->createEntity(name, meshFile);
+  Ogre::Entity *entity = OgreScene->createEntity(name, meshFile);
 
   try {
     ParentNode->attachObject(entity);
@@ -724,7 +739,7 @@ void DotSceneLoaderB::ProcessParticleSystem(pugi::xml_node &XmlNode, Ogre::Scene
 
   // SetUp the particle system
   try {
-    Ogre::ParticleSystem *pParticles = Scene->createParticleSystem(name, templateName);
+    Ogre::ParticleSystem *pParticles = OgreScene->createParticleSystem(name, templateName);
     PBR::UpdatePbrParams(pParticles->getMaterialName());
 
     const Ogre::uint32 WATER_MASK = 0xF00;
@@ -773,10 +788,10 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, Ogre::SceneNode *Par
 
   if (plane_mesh) mesh_mgr.remove(plane_mesh);
 
-  Ogre::MeshPtr res = mesh_mgr.createPlane(mesh_name, group_name, plane, width, height, xSegments, ySegments,
-                                           hasNormals, numTexCoordSets, uTile, vTile, up);
+  Ogre::MeshPtr res =
+      mesh_mgr.createPlane(mesh_name, GroupName, plane, width, height, xSegments, ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
   res->buildTangentVectors();
-  Ogre::Entity *entity = Scene->createEntity(name, mesh_name);
+  Ogre::Entity *entity = OgreScene->createEntity(name, mesh_name);
   entity->setCastShadows(true);
 
   if (material.empty()) return;
@@ -787,22 +802,22 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, Ogre::SceneNode *Par
     PBR::UpdatePbrParams(material);
   }
 
-  if (reflection) {
-    rcamera.reset();
-    rcamera = make_unique<ReflectionCamera>(plane, 512);
-
-    rcamera->SetPlane(plane);
-
-    Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
-
-    auto material_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("ReflectionMap");
-
-    if (material_unit) {
-      material_unit->setTexture(rcamera->reflection_texture);
-      material_unit->setTextureAddressingMode(Ogre::TAM_CLAMP);
-      material_unit->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
-    }
-  }
+//  if (reflection) {
+//    rcamera.reset();
+//    rcamera = make_unique<ReflectionCamera>(plane, 512);
+//
+//    rcamera->SetPlane(plane);
+//
+//    Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+//
+//    auto material_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("ReflectionMap");
+//
+//    if (material_unit) {
+//      material_unit->setTexture(rcamera->reflection_texture);
+//      material_unit->setTextureAddressingMode(Ogre::TAM_CLAMP);
+//      material_unit->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
+//    }
+//  }
 
   ParentNode->attachObject(entity);
 
@@ -819,11 +834,170 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, Ogre::SceneNode *Par
 }
 
 void DotSceneLoaderB::ProcessForest(pugi::xml_node &XmlNode) {
-  //  forest->ProcessForest();
+  auto *grass = new PagedGeometry(Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 5);
+  grass->addDetailLevel<GrassPage>(50, 10);  // Draw grass up to 100
+  auto *grassLoader = new GrassLoader(grass);
+  grass->setPageLoader(grassLoader);
+  grassLoader->setHeightFunction([](float x, float z, void *) { return GetLoader().GetHeight(x, z); });
+
+  PGeometryList.push_back(unique_ptr<PagedGeometry>(grass));
+
+  GrassLayer *layer = grassLoader->addLayer("GrassCustom");
+  layer->setFadeTechnique(FADETECH_ALPHA);
+  layer->setRenderTechnique(GRASSTECH_CROSSQUADS);
+  layer->setMaximumSize(2.0f, 2.0f);
+  layer->setAnimationEnabled(true);
+  layer->setSwayDistribution(10.0f);
+  layer->setSwayLength(1.0f);
+  layer->setSwaySpeed(0.5f);
+  layer->setDensity(1.0f);
+  layer->setMapBounds(TBounds(-200, -200, 200, 200));
 }
 
-void DotSceneLoaderB::ProcessLandscape(pugi::xml_node &XmlNode) {
-  // if (terrain) terrain->ProcessTerrainGroup(XmlNode);
+static void GetTerrainImage(bool flipX, bool flipY, Ogre::Image &ogre_image, const string &filename = "terrain.dds") {
+  ogre_image.load(filename, Ogre::RGN_AUTODETECT);
+
+  if (flipX) ogre_image.flipAroundY();
+
+  if (flipY) ogre_image.flipAroundX();
+}
+
+static void DefineTerrain(Ogre::TerrainGroup *OgreTerrainPtr, long x, long y, bool flat, const string &filename = "terrain.dds") {
+  // if a file is available, use it
+  // if not, generate file from import
+
+  // Usually in a real project you'll know whether the compact terrain data is
+  // available or not; I'm doing it this way to save distribution size
+
+  if (flat) {
+    OgreTerrainPtr->defineTerrain(x, y, 0.0f);
+    return;
+  }
+
+  Ogre::Image image;
+  GetTerrainImage(x % 2 != 0, y % 2 != 0, image, filename);
+
+  string cached = OgreTerrainPtr->generateFilename(x, y);
+  if (Ogre::ResourceGroupManager::getSingleton().resourceExists(OgreTerrainPtr->getResourceGroup(), cached)) {
+    OgreTerrainPtr->defineTerrain(x, y);
+  } else {
+    OgreTerrainPtr->defineTerrain(x, y, &image);
+  }
+}
+
+static void InitBlendMaps(Ogre::Terrain *terrain, int layer, const string &image = "terrain_blendmap.dds") {
+  Ogre::TerrainLayerBlendMap *blendMap = terrain->getLayerBlendMap(layer);
+  auto *pBlend1 = blendMap->getBlendPointer();
+
+  Ogre::Image img;
+  img.load(image, Ogre::RGN_AUTODETECT);
+
+  int bmSize = terrain->getLayerBlendMapSize();
+
+  for (int y = 0; y < bmSize; ++y) {
+    for (int x = 0; x < bmSize; ++x) {
+      float tx = static_cast<float>(x) / static_cast<float>(bmSize);
+      float ty = static_cast<float>(y) / static_cast<float>(bmSize);
+      int ix = static_cast<int>(img.getWidth() * tx);
+      int iy = static_cast<int>(img.getWidth() * ty);
+
+      Ogre::ColourValue cv = Ogre::ColourValue::Black;
+      cv = img.getColourAt(ix, iy, 0);
+      //            Ogre::Real val = cv[0]*opacity[bi];
+      float val = cv[0];
+      *pBlend1++ = val;
+    }
+  }
+
+  blendMap->dirty();
+  blendMap->update();
+
+  // set up a colour map
+  if (terrain->getGlobalColourMapEnabled()) {
+    Ogre::Image colourMap;
+    colourMap.load("testcolourmap.dds", Ogre::RGN_AUTODETECT);
+    terrain->getGlobalColourMap()->loadImage(colourMap);
+  }
+}
+
+void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
+  float worldSize = GetAttribReal(XmlNode, "worldSize");
+  int mapSize = GetAttribInt(XmlNode, "mapSize");
+  int minBatchSize = Ogre::StringConverter::parseInt(XmlNode.attribute("minBatchSize").value());
+  int maxBatchSize = Ogre::StringConverter::parseInt(XmlNode.attribute("maxBatchSize").value());
+  int inputScale = Ogre::StringConverter::parseInt(XmlNode.attribute("inputScale").value());
+  int tuningMaxPixelError = GetAttribInt(XmlNode, "tuningMaxPixelError", 8);
+  auto *terrain_global_options = Ogre::TerrainGlobalOptions::getSingletonPtr();
+
+  if (!terrain_global_options) terrain_global_options = new Ogre::TerrainGlobalOptions();
+
+  OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
+  terrain_global_options->setUseVertexCompressionWhenAvailable(true);
+  terrain_global_options->setCastsDynamicShadows(true);
+  terrain_global_options->setCompositeMapDistance(200);
+  terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
+  terrain_global_options->setUseRayBoxDistanceCalculation(true);
+  terrain_global_options->setDefaultMaterialGenerator(make_shared<TerrainMaterialGeneratorB>());
+
+  auto *scene_manager = Ogre::Root::getSingleton().getSceneManager("Default");
+  OgreTerrainPtr = make_unique<Ogre::TerrainGroup>(scene_manager, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
+  OgreTerrainPtr->setFilenameConvention("terrain", "bin");
+  OgreTerrainPtr->setOrigin(Ogre::Vector3::ZERO);
+  OgreTerrainPtr->setResourceGroup(Ogre::RGN_DEFAULT);
+
+  Ogre::Terrain::ImportData &defaultimp = OgreTerrainPtr->getDefaultImportSettings();
+
+  defaultimp.terrainSize = mapSize;
+  defaultimp.worldSize = worldSize;
+  defaultimp.inputScale = inputScale;
+  defaultimp.minBatchSize = minBatchSize;
+  defaultimp.maxBatchSize = maxBatchSize;
+
+  for (auto &pPageElement : XmlNode.children("terrain")) {
+    int pageX = Ogre::StringConverter::parseInt(pPageElement.attribute("x").value());
+    int pageY = Ogre::StringConverter::parseInt(pPageElement.attribute("y").value());
+
+    string heighmap = pPageElement.attribute("heightmap").value();
+    DefineTerrain(OgreTerrainPtr.get(), pageX, pageY, false, heighmap);
+    OgreTerrainPtr->loadTerrain(pageX, pageY, true);
+    OgreTerrainPtr->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
+
+    int layers_count = 0;
+    //    for (const auto &pLayerElement : pPageElement.children("layer")) layers_count++;
+    for (auto pLayerElement = pPageElement.children("layer").begin(); pLayerElement != pPageElement.children("layer").end(); pLayerElement++) {
+      layers_count++;
+    }
+
+    defaultimp.layerList.resize(layers_count);
+
+    int layer_counter = 0;
+    for (auto pLayerElement : pPageElement.children("layer")) {
+      defaultimp.layerList[layer_counter].worldSize = Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
+      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
+      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
+
+      layer_counter++;
+    }
+
+    layer_counter = 0;
+    for (auto pLayerElement : pPageElement.children("layer")) {
+      layer_counter++;
+      if (layer_counter != layers_count) {
+        InitBlendMaps(OgreTerrainPtr->getTerrain(pageX, pageY), layer_counter, pLayerElement.attribute("blendmap").value());
+      }
+    }
+  }
+
+  OgreTerrainPtr->freeTemporaryResources();
+
+  auto terrainIterator = OgreTerrainPtr->getTerrainIterator();
+
+  while (terrainIterator.hasMoreElements()) {
+    auto *terrain = terrainIterator.getNext()->instance;
+
+    GetPhysics().CreateTerrainHeightfieldShape(terrain->getSize(), terrain->getHeightData(), terrain->getMinHeight(), terrain->getMaxHeight(),
+                                               terrain->getPosition(), terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1)));
+  }
 }
 
 void DotSceneLoaderB::ProcessFog(pugi::xml_node &XmlNode) {
@@ -853,7 +1027,7 @@ void DotSceneLoaderB::ProcessFog(pugi::xml_node &XmlNode) {
   }
 
   // Setup the fog
-  Scene->setFog(mode, colour, expDensity, linearStart, linearEnd);
+  OgreScene->setFog(mode, colour, expDensity, linearStart, linearEnd);
 }
 
 void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &XmlNode) {
@@ -886,7 +1060,7 @@ void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &XmlNode) {
   }
 
   // Setup the sky box
-  Scene->setSkyBox(true, material, distance, drawFirst, rotation, group_name);
+  OgreScene->setSkyBox(true, material, distance, drawFirst, rotation, GroupName);
 }
 
 void DotSceneLoaderB::ProcessSkyDome(pugi::xml_node &XmlNode) {
@@ -910,7 +1084,7 @@ void DotSceneLoaderB::ProcessSkyDome(pugi::xml_node &XmlNode) {
   }
 
   // Setup the sky dome
-  Scene->setSkyDome(true, material, curvature, tiling, distance, drawFirst, rotation, 16, 16, -1, group_name);
+  OgreScene->setSkyDome(true, material, curvature, tiling, distance, drawFirst, rotation, 16, 16, -1, GroupName);
 }
 
 void DotSceneLoaderB::ProcessSkyPlane(pugi::xml_node &XmlNode) {
@@ -929,7 +1103,7 @@ void DotSceneLoaderB::ProcessSkyPlane(pugi::xml_node &XmlNode) {
   Ogre::Plane plane;
   plane.normal = Ogre::Vector3(planeX, planeY, planeZ);
   plane.d = planeD;
-  Scene->setSkyPlane(true, plane, material, scale, tiling, drawFirst, bow, 1, 1, group_name);
+  OgreScene->setSkyPlane(true, plane, material, scale, tiling, drawFirst, bow, 1, 1, GroupName);
 }
 
 void DotSceneLoaderB::ProcessUserData(pugi::xml_node &XmlNode, Ogre::UserObjectBindings &user_object_bindings) {
@@ -959,16 +1133,13 @@ struct DotSceneCodec : public Ogre::Codec {
   string magicNumberToFileExt(const char *magicNumberPtr, size_t maxbytes) const { return ""; }
   string getType() const override { return "scene"; }
   void decode(const Ogre::DataStreamPtr &stream, const Ogre::Any &output) const override {
-    using namespace Ogre;
-
-    DataStreamPtr _stream(stream);
-    GetLoader().Load(_stream, ResourceGroupManager::getSingleton().getWorldResourceGroupName(),
-                     any_cast<SceneNode *>(output));
+    Ogre::DataStreamPtr _stream(stream);
+    GetLoader().Load(_stream, Ogre::ResourceGroupManager::getSingleton().getWorldResourceGroupName(), Ogre::any_cast<Ogre::SceneNode *>(output));
   }
 
   void encodeToFile(const Ogre::Any &input, const Ogre::String &outFileName) const override {
-    DotSceneLoaderB loader;
-    loader.ExportScene(Ogre::any_cast<Ogre::SceneNode *>(input), outFileName);
+    DotSceneLoaderB Loader;
+    Loader.ExportScene(Ogre::any_cast<Ogre::SceneNode *>(input), outFileName);
   }
 };
 
