@@ -198,8 +198,8 @@ void DotSceneLoaderB::Cleanup() {
   Sinbad.reset();
   PGeometryList.clear();
   if (OgreTerrainPtr) OgreTerrainPtr->removeAllTerrains();
-  OgreScene->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  OgreScene->clearScene();
+  if (OgreScene) OgreScene->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+  if (OgreScene) OgreScene->clearScene();
   CameraManPtr->SetStyle(CameraMan::Style::MANUAL);
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(GroupName);
 }
@@ -802,22 +802,22 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, Ogre::SceneNode *Par
     PBR::UpdatePbrParams(material);
   }
 
-//  if (reflection) {
-//    rcamera.reset();
-//    rcamera = make_unique<ReflectionCamera>(plane, 512);
-//
-//    rcamera->SetPlane(plane);
-//
-//    Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
-//
-//    auto material_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("ReflectionMap");
-//
-//    if (material_unit) {
-//      material_unit->setTexture(rcamera->reflection_texture);
-//      material_unit->setTextureAddressingMode(Ogre::TAM_CLAMP);
-//      material_unit->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
-//    }
-//  }
+  //  if (reflection) {
+  //    rcamera.reset();
+  //    rcamera = make_unique<ReflectionCamera>(plane, 512);
+  //
+  //    rcamera->SetPlane(plane);
+  //
+  //    Ogre::MaterialPtr material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
+  //
+  //    auto material_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("ReflectionMap");
+  //
+  //    if (material_unit) {
+  //      material_unit->setTexture(rcamera->reflection_texture);
+  //      material_unit->setTextureAddressingMode(Ogre::TAM_CLAMP);
+  //      material_unit->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_POINT);
+  //    }
+  //  }
 
   ParentNode->attachObject(entity);
 
