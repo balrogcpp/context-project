@@ -28,6 +28,8 @@
 *
 */
 
+#include "pch.h"
+
 #include "OgreOggISound.h"
 #include "OgreOggSound.h"
 #include <OgreMovableObject.h>

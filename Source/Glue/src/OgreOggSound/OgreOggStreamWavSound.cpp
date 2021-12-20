@@ -28,6 +28,8 @@
 *
 */
 
+#include "pch.h"
+
 #include "OgreOggStreamWavSound.h"
 #include <string>
 #include <iostream>

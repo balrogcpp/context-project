@@ -13,6 +13,8 @@ Permission is granted to anyone to use this software for any purpose, including 
 //over the batch materials, etc.
 //-------------------------------------------------------------------------------------
 
+#include "pch.h"
+
 #include <OgreRoot.h>
 #include <OgreRenderSystem.h>
 #include <OgreCamera.h>

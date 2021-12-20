@@ -8,6 +8,8 @@ Permission is granted to anyone to use this software for any purpose, including 
 3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------------*/
 
+#include "pch.h"
+
 #include <OgreRoot.h>
 #include <OgreException.h>
 #include <OgreVector3.h>

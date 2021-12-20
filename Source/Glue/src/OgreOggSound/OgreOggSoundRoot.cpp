@@ -28,6 +28,8 @@
 *
 */
 
+#include "pch.h"
+
 #include "OgreOggSoundRoot.h"
 
 namespace OgreOggSound
