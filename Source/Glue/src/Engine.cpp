@@ -56,23 +56,9 @@ namespace Glue {
 
 Engine::Engine() {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  ConfPtr = make_unique<Conf>("config.json");
+  ConfPtr = make_unique<Conf>("config.ini");
 #else
-  ConfPtr = make_unique<Config>("");
-  ConfPtr->AddMember("window_fullscreen", true);
-  ConfPtr->AddMember("compositor_use_bloom", false);
-  ConfPtr->AddMember("compositor_use_ssao", false);
-  ConfPtr->AddMember("compositor_use_motion", false);
-  ConfPtr->AddMember("target_fps", 30);
-  ConfPtr->AddMember("lock_fps", true);
-  ConfPtr->AddMember("vsync", false);
-  ConfPtr->AddMember("shadows_enable", false);
-  ConfPtr->AddMember("fsaa", 0);
-  ConfPtr->AddMember("filtration", "bilinear");
-  ConfPtr->AddMember("anisotropy_level", 8);
-  ConfPtr->AddMember("shadows_texture_resolution", 512);
-  ConfPtr->AddMember("shadows_far_distance", 400);
-  ConfPtr->AddMember("shadows_texture_format", 16);
+  ConfPtr = make_unique<Conf>("");
 #endif
 
   Component::SetConfig(ConfPtr.get());
@@ -85,13 +71,13 @@ Engine::~Engine() {
 }
 
 void Engine::InitSystems() {
-  int window_width = ConfPtr->Get<int>("window_width");
-  int window_high = ConfPtr->Get<int>("window_high");
-  bool window_fullscreen = ConfPtr->Get<bool>("window_fullscreen");
+  int window_width = ConfPtr->GetInt("window_width");
+  int window_high = ConfPtr->GetInt("window_high");
+  bool window_fullscreen = ConfPtr->GetBool("window_fullscreen");
 
   OgreRoot = new Ogre::Root("");
 
-  ConfPtr->Get("render_system", RenderSystemName);
+  RenderSystemName = ConfPtr->Get("render_system", RenderSystemName);
 
   InitDefaultRenderSystem();
   InitOgrePlugins();
@@ -101,6 +87,7 @@ void Engine::InitSystems() {
   CreateWindow();
 
   InitRenderWindow();
+  ResizeWindow(window_width, window_high);
   WindowRestoreFullscreenAndroid();
 
   // Camera block
@@ -272,9 +259,9 @@ void Engine::InitRenderWindow() {
   bool gamma = false;
   int fsaa = 0;
 
-  ConfPtr->Get("vsync", vsync);
-  ConfPtr->Get("gamma", gamma);
-  ConfPtr->Get("fsaa", fsaa);
+  vsync = ConfPtr->GetBool("vsync", vsync);
+  gamma = ConfPtr->GetBool("gamma", gamma);
+  fsaa = ConfPtr->GetInt("fsaa", fsaa);
 
   params["vsync"] = vsync ? TrueStr : FalseStr;
   params["gamma"] = gamma ? TrueStr : FalseStr;
@@ -438,10 +425,10 @@ void Engine::InitShadowSettings() {
   int16_t tex_size = 256;
   string tex_format = "D16";
 
-  ConfPtr->Get("shadows_enable", shadows_enable);
-  ConfPtr->Get("shadow_far", shadow_far);
-  ConfPtr->Get("tex_format", tex_format);
-  ConfPtr->Get("tex_size", tex_size);
+  shadows_enable = ConfPtr->GetBool("shadows_enable", shadows_enable);
+  shadow_far = ConfPtr->GetInt("shadow_far", shadow_far);
+  tex_format = ConfPtr->GetString("tex_format", tex_format);
+  tex_size = ConfPtr->GetInt("tex_size", tex_size);
 
   if (!shadows_enable) {
     OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
@@ -496,10 +483,10 @@ void Engine::InitShadowSettings() {
 }
 
 void Engine::InitTextureSettings() {
-  string filtration = ConfPtr->Get<string>("filtration");
-  unsigned int anisotropy = 4;
+  string filtration = ConfPtr->GetString("filtration");
+  int anisotropy = 4;
 
-  ConfPtr->Get("anisotropy", anisotropy);
+  anisotropy = ConfPtr->GetInt("anisotropy", anisotropy);
 
   TextureFilterOptions filtering = TFO_ANISOTROPIC;
 

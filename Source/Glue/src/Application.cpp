@@ -48,8 +48,8 @@ Application::Application() {
 
     StateManagerPtr = make_unique<AppStateManager>();
 
-    GetConf().Get("verbose", Verbose);
-    GetConf().Get("verbose_input", VerboseInput);
+    Verbose = GetConf().GetBool("verbose", Verbose);
+    VerboseInput = GetConf().GetBool("verbose_input", VerboseInput);
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
     if (Verbose) {
@@ -61,8 +61,8 @@ Application::Application() {
     }
 #endif
 
-    LockFPS = GetConf().Get<bool>("lock_fps");
-    TargetFPS = GetConf().Get<int>("target_fps");
+    LockFPS = GetConf().GetBool("lock_fps");
+    TargetFPS = GetConf().GetInt("target_fps");
 
   } catch (Exception &e) {
     ExceptionMessage("Exception", e.GetDescription());

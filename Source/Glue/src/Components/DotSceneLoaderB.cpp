@@ -376,7 +376,7 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &XmlNode, Ogre::SceneNode *Par
       } else if (light->getType() == Ogre::Light::LT_SPOTLIGHT && light->getCastShadows()) {
         int camera_type = 4;
 
-        ConfPtr->Get("camera_type", camera_type);
+        ConfPtr->GetInt("camera_type", camera_type);
         static Ogre::ShadowCameraSetupPtr default_scs;
 
         switch (camera_type) {

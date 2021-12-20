@@ -52,7 +52,7 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 
 Compositor::Compositor() {
   EffectsList["bloom"] = false;
-  EffectsList["ssao"] = false;
+  EffectsList["ssao"] = true;
   EffectsList["mblur"] = false;
 
   OgreCompositorManager = Ogre::CompositorManager::getSingletonPtr();
@@ -60,18 +60,17 @@ Compositor::Compositor() {
   OgreCamera = OgreSceneManager->getCamera("Default");
   OgreViewport = OgreCamera->getViewport();
 
-  EnableEffect("ssao", ConfPtr->Get<bool>("enable_ssao"));
-  EnableEffect("bloom", ConfPtr->Get<bool>("enable_bloom"));
-  EnableEffect("mblur", ConfPtr->Get<bool>("enable_mblur"));
+  EnableEffect("ssao", ConfPtr->GetBool("enable_ssao"));
+  EnableEffect("bloom", ConfPtr->GetBool("enable_bloom"));
+  EnableEffect("mblur", ConfPtr->GetBool("enable_mblur"));
   SetUp();
 }
 
 Compositor::~Compositor() {}
 
 void Compositor::Update(float time) {
-  static bool mblur = EffectsList["mblur"];
-
-  if (mblur) PBR::Update(time);
+//  static bool mblur = EffectsList["mblur"];
+//  if (mblur) PBR::Update(time);
 }
 
 void Compositor::EnableEffect(const std::string &name, bool enable) { EffectsList[name] = enable; }
@@ -125,11 +124,11 @@ void Compositor::InitMRT() {
   auto *CompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
 
-  if (ConfPtr->Get<bool>("window_fullscreen")) {
+  if (ConfPtr->GetBool("window_fullscreen")) {
     auto *MRTCompositor = CompositorChain->getCompositor("MRT");
     auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
-    MRTTextureDefinition->width = ConfPtr->Get<int>("window_width");
-    MRTTextureDefinition->height = ConfPtr->Get<int>("window_high");
+    MRTTextureDefinition->width = ConfPtr->GetInt("window_width");
+    MRTTextureDefinition->height = ConfPtr->GetInt("window_high");
   }
 
 #else

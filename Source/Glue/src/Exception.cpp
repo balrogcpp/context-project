@@ -2,7 +2,6 @@
 
 #include "pch.h"
 #include "Exception.h"
-#include "Conf.h"
 #include "Engine.h"
 
 using namespace std;
