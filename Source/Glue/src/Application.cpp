@@ -44,7 +44,7 @@ Application::Application() {
 #endif
 
     EnginePtr = &Engine::GetInstance();
-    EnginePtr->InitSystems();
+    EnginePtr->InitComponents();
 
     StateManagerPtr = make_unique<AppStateManager>();
 

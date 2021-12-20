@@ -10,11 +10,13 @@ namespace Glue {
 
 void InitRtss();
 
-void CreateRtssShaders(const std::string &cache_path = "");
+void CreateRTSSRuntime(std::string CachePath = "");
 
-void InitPssm(const std::vector<float> &split_points);
+void CleanRTSSRuntime();
 
-void InitInstansing();
+void InitRTSSPSSM(const std::vector<float> &SplitPoints);
+
+void InitRTSSInstansing();
 
 class ShaderResolver final : public Ogre::MaterialManager::Listener {
  public:
@@ -30,7 +32,7 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
 
   bool beforeIlluminationPassesCleared(Ogre::Technique *OgreTechnique);
 
- protected:
+ private:
   Ogre::RTShader::ShaderGenerator *ShaderGeneratorPtr = nullptr;
 };
 

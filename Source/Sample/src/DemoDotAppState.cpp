@@ -23,7 +23,7 @@ void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
     context_menu_ = true;
     GetEngine().InMenu();
-    GetEngine().Grab(false);
+    GetEngine().GrabMouse(false);
   }
 }
 
@@ -84,8 +84,8 @@ void DemoDotAppState::Update(float time) {
     const float hdx = 1920;
     const float hdy = 1080;
     const float hddiag = sqrt(hdx * hdx + hdy * hdy);
-    float x = GetEngine().GetSize().first;
-    float y = GetEngine().GetSize().second;
+    float x = GetEngine().GetWindowSize().first;
+    float y = GetEngine().GetWindowSize().second;
     static float diag = sqrt(x * x + y * y);
     float scale = 0.5 * diag / hddiag;
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
@@ -97,7 +97,7 @@ void DemoDotAppState::Update(float time) {
     ImGui::NewLine();
 
     if (ImGui::Button("         RESUME          ")) {
-      GetEngine().Grab(true);
+      GetEngine().GrabMouse(true);
       GetEngine().OffMenu();
       context_menu_ = false;
     }
@@ -122,7 +122,7 @@ void DemoDotAppState::Update(float time) {
 }
 
 void DemoDotAppState::SetUp() {
-  GetEngine().Grab(true);
+  GetEngine().GrabMouse(true);
   GetLoader().GetCamera().SetStyle(CameraMan::Style::FPS);
   LoadFromFile("1.scene");
 

@@ -23,30 +23,28 @@ class Engine final : public LazySingleton<Engine> {
  public:
   Engine();
   virtual ~Engine();
+  void InitComponents();
 
-  void InitSystems();
   void Capture();
   void Pause();
   void InMenu();
   void OffMenu();
   void Resume();
   void Cleanup();
-  void Refresh();
   void Update(float PassedTime);
   void RenderOneFrame();
-  void RegSystem(Component* system);
+  void RegComponent(Component* ComponentPtr);
+  void UnRegComponent(Component* ComponentPtr);
 
   void CreateWindow();
   void SetFullscreen();
   void SetWindowed();
   void ResizeWindow(int Width, int Height);
   void SetWindowCaption(const char *Caption);
-  /// Android helper
-  void WindowRestoreFullscreenAndroid();
-
-  std::pair<int, int> GetSize() const;
-  void Grab(bool grab);
-  Ogre::RenderWindow* OgreRenderWindowPtr = nullptr;
+  std::pair<int, int> GetWindowSize() const;
+  void GrabMouse(bool grab);
+  void GrabMouse();
+  void FreeMouse();
 
  private:
   void InitOgrePlugins();
@@ -57,9 +55,11 @@ class Engine final : public LazySingleton<Engine> {
   void InitResourceLocation();
   void InitTextureSettings();
   void InitShadowSettings();
-
+  /// Android helper
+  void WindowRestoreFullscreenAndroid();
 
   std::string RenderSystemName;
+  Ogre::RenderWindow* OgreRenderWindowPtr = nullptr;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> PSSMSetupPtr;
   std::vector<float> PSSMSplitPointList;
   const size_t PSSMSplitCount = 3;
@@ -67,7 +67,6 @@ class Engine final : public LazySingleton<Engine> {
   Ogre::SceneManager* OgreSceneManager = nullptr;
   Ogre::Camera* OgreCamera = nullptr;
   Ogre::Viewport* OgreViewport = nullptr;
-
   SDL_Window *SDLWindowPtr = nullptr;
   SDL_GLContext SDLGLContextPtr = nullptr;
   uint32_t SDLWindowFlags = 0;
@@ -78,22 +77,19 @@ class Engine final : public LazySingleton<Engine> {
   int ScreenWidth = 0;
   int ScreenHeight = 0;
 
-
-
+  /// Components
   std::unique_ptr<Conf> ConfPtr;
   std::unique_ptr<Compositor> CompositorUPtr;
   std::unique_ptr<Overlay> OverlayPtr;
-  std::unique_ptr<Physics> ps;
-  std::unique_ptr<Sound> as;
-  std::unique_ptr<DotSceneLoaderB> loader;
+  std::unique_ptr<Physics> PhysicsPtr;
+  std::unique_ptr<Sound> SoundPtr;
+  std::unique_ptr<DotSceneLoaderB> LoaderPtr;
   std::vector<Component*> ComponentList;
 
   friend Conf& GetConf();
-//  friend Render& GetRS();
   friend Physics& GetPhysics();
   friend Sound& GetAudio();
   friend DotSceneLoaderB& GetLoader();
-
 };
 
 }  // namespace Glue

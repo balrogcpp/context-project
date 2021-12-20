@@ -18,6 +18,7 @@
 #endif
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include "Components/TerrainMaterialGeneratorB.h"
+#include <Terrain/OgreTerrainMaterialGeneratorA.h>
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainAutoUpdateLod.h>
 #include <Terrain/OgreTerrainGroup.h>
@@ -928,19 +929,15 @@ void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
   int inputScale = Ogre::StringConverter::parseInt(XmlNode.attribute("inputScale").value());
   int tuningMaxPixelError = GetAttribInt(XmlNode, "tuningMaxPixelError", 8);
   auto *terrain_global_options = Ogre::TerrainGlobalOptions::getSingletonPtr();
-
   if (!terrain_global_options) terrain_global_options = new Ogre::TerrainGlobalOptions();
-
-  OgreAssert(terrain_global_options, "Ogre::TerrainGlobalOptions not available");
   terrain_global_options->setUseVertexCompressionWhenAvailable(true);
-  terrain_global_options->setCastsDynamicShadows(true);
+  terrain_global_options->setCastsDynamicShadows(false);
   terrain_global_options->setCompositeMapDistance(200);
   terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
   terrain_global_options->setUseRayBoxDistanceCalculation(true);
   terrain_global_options->setDefaultMaterialGenerator(make_shared<TerrainMaterialGeneratorB>());
 
-  auto *scene_manager = Ogre::Root::getSingleton().getSceneManager("Default");
-  OgreTerrainPtr = make_unique<Ogre::TerrainGroup>(scene_manager, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
+  OgreTerrainPtr = make_unique<Ogre::TerrainGroup>(OgreScene, Ogre::Terrain::ALIGN_X_Z, mapSize, worldSize);
   OgreTerrainPtr->setFilenameConvention("terrain", "bin");
   OgreTerrainPtr->setOrigin(Ogre::Vector3::ZERO);
   OgreTerrainPtr->setResourceGroup(Ogre::RGN_DEFAULT);
@@ -963,14 +960,11 @@ void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
     OgreTerrainPtr->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
 
     int layers_count = 0;
-    //    for (const auto &pLayerElement : pPageElement.children("layer")) layers_count++;
-    for (auto pLayerElement = pPageElement.children("layer").begin(); pLayerElement != pPageElement.children("layer").end(); pLayerElement++) {
-      layers_count++;
-    }
+    for (const auto &pLayerElement : pPageElement.children("layer")) layers_count++;
 
     defaultimp.layerList.resize(layers_count);
 
-    int layer_counter = 0;
+    size_t layer_counter = 0;
     for (auto pLayerElement : pPageElement.children("layer")) {
       defaultimp.layerList[layer_counter].worldSize = Ogre::StringConverter::parseInt(pLayerElement.attribute("scale").value());
       defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());

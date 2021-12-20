@@ -17,17 +17,17 @@ Engine& GetEngine() {
 }
 
 Physics& GetPhysics() {
-  static auto& PhysicsComponentPtr = *Engine::GetInstance().ps;
+  static auto& PhysicsComponentPtr = *Engine::GetInstance().PhysicsPtr;
   return PhysicsComponentPtr;
 }
 
 Sound& GetAudio() {
-  static auto& AudioComponentPtr = *Engine::GetInstance().as;
+  static auto& AudioComponentPtr = *Engine::GetInstance().SoundPtr;
   return AudioComponentPtr;
 }
 
 DotSceneLoaderB& GetLoader() {
-  static auto& LoaderPtr = *Engine::GetInstance().loader;
+  static auto& LoaderPtr = *Engine::GetInstance().LoaderPtr;
   return LoaderPtr;
 }
 

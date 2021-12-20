@@ -8,7 +8,7 @@ using namespace std;
 
 namespace Glue {
 
-Component::Component() { Engine::GetInstance().RegSystem(this); }
+Component::Component() { Engine::GetInstance().RegComponent(this); }
 
 Component::~Component() {}
 

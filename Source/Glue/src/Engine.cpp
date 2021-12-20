@@ -24,22 +24,13 @@
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
 #include <Plugins/Assimp/OgreAssimpLoader.h>
 #endif
-#ifdef OGRE_BUILD_COMPONENT_OVERLAY
-#include <Overlay/OgreImGuiOverlay.h>
-#endif
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include "Android.h"
 #endif
-#if defined(LINUX) || defined(WINDOWS)
-#define HAS_FILESYSTEM
+#ifndef MOBILE
+#include <ghc/fs_std_fwd.hpp>
 #endif
-#ifdef HAS_FILESYSTEM
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
-#include <ghc/filesystem.hpp>
-namespace fs = ghc::filesystem;
-#endif
+#include <algorithm>
 extern "C" {
 #include <SDL2/SDL_syswm.h>
 }
@@ -55,7 +46,7 @@ using namespace Ogre;
 namespace Glue {
 
 Engine::Engine() {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+#ifndef MOBILE
   ConfPtr = make_unique<Conf>("config.ini");
 #else
   ConfPtr = make_unique<Conf>("");
@@ -65,32 +56,30 @@ Engine::Engine() {
   ComponentList.reserve(16);
 }
 
-Engine::~Engine() {
-  SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE);
-  // SDL_DestroyWindow(SDLWindowPtr);
-}
+Engine::~Engine() { SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE); }
 
-void Engine::InitSystems() {
+void Engine::InitComponents() {
   int window_width = ConfPtr->GetInt("window_width");
   int window_high = ConfPtr->GetInt("window_high");
   bool window_fullscreen = ConfPtr->GetBool("window_fullscreen");
 
-  OgreRoot = new Ogre::Root("");
+  OgreRoot = new Root();
 
   RenderSystemName = ConfPtr->Get("render_system", RenderSystemName);
 
+  // init OGRE
   InitDefaultRenderSystem();
   InitOgrePlugins();
-
   OgreRoot->initialise(false);
-
   CreateWindow();
-
   InitRenderWindow();
   ResizeWindow(window_width, window_high);
-  WindowRestoreFullscreenAndroid();
 
-  // Camera block
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  WindowRestoreFullscreenAndroid();
+#endif
+
+  // create camera
   OgreCamera = OgreSceneManager->createCamera("Default");
   auto *renderTarget = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
   OgreViewport = renderTarget->addViewport(OgreCamera);
@@ -101,31 +90,24 @@ void Engine::InitSystems() {
   InitResourceLocation();
 
   // RTSS block
-  Glue::InitRtss();
-  Glue::CreateRtssShaders();
+  InitRtss();
+  CreateRTSSRuntime();
 
   InitTextureSettings();
-
   InitShadowSettings();
 
   // Overlay
   OverlayPtr = make_unique<Overlay>(OgreRenderWindowPtr);
-
-  auto &RGM = Ogre::ResourceGroupManager::getSingleton();
-  RGM.initialiseResourceGroup(Ogre::RGN_INTERNAL);
+  auto &RGM = ResourceGroupManager::getSingleton();
+  RGM.initialiseResourceGroup(RGN_INTERNAL);
   RGM.initialiseAllResourceGroups();
 
   // Compositor block
   CompositorUPtr = make_unique<Compositor>();
-
-  OverlayPtr->PrepareTexture("Roboto-Medium", Ogre::RGN_INTERNAL);
-
-  ps = make_unique<Physics>();
-
-  as = make_unique<Sound>(8, 8);
-
-  loader = make_unique<DotSceneLoaderB>();
-
+  OverlayPtr->PrepareTexture("Roboto-Medium", RGN_INTERNAL);
+  PhysicsPtr = make_unique<Physics>();
+  SoundPtr = make_unique<Sound>(8, 8);
+  LoaderPtr = make_unique<DotSceneLoaderB>();
   CompositorUPtr->SetUp();
 }
 
@@ -134,20 +116,22 @@ void Engine::Capture() {
   io.Capture();
 }
 
-void Engine::RegSystem(Component *system) { ComponentList.push_back(system); }
+void Engine::RegComponent(Component *ComponentPtr) { ComponentList.push_back(ComponentPtr); }
+
+void Engine::UnRegComponent(Component *ComponentPtr) {}
 
 void Engine::Pause() {
   for (auto &it : ComponentList) it->Pause();
 }
 
 void Engine::InMenu() {
-  ps->Pause();
-  loader->Pause();
+  PhysicsPtr->Pause();
+  LoaderPtr->Pause();
 }
 
 void Engine::OffMenu() {
-  ps->Resume();
-  loader->Resume();
+  PhysicsPtr->Resume();
+  LoaderPtr->Resume();
 }
 
 void Engine::Resume() {
@@ -156,7 +140,9 @@ void Engine::Resume() {
 
 void Engine::Cleanup() {
   for (auto &it : ComponentList) it->Cleanup();
-  Refresh();
+  CleanRTSSRuntime();
+  InitShadowSettings();
+  CompositorUPtr->SetUp();
 }
 
 void Engine::Update(float PassedTime) {
@@ -170,13 +156,7 @@ void Engine::RenderOneFrame() {
 #endif
 }
 
-void Engine::Refresh() {
-  InitShadowSettings();
-  CompositorUPtr->SetUp();
-}
-
 void Engine::InitOgrePlugins() {
-
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
 #endif
@@ -270,6 +250,8 @@ void Engine::InitRenderWindow() {
   OgreRenderWindowPtr = Root::getSingleton().createRenderWindow("MainWindow", 0, 0, false, &params);
 }
 
+#ifndef MOBILE
+
 string FindPath(const string &Path, int Depth = 2) {
 #ifdef DEBUG
   Depth = 6;
@@ -315,12 +297,12 @@ static inline void TrimString(string &s) {
 }
 
 static void LoadResources() {
-  auto &rgm = Ogre::ResourceGroupManager::getSingleton();
-  rgm.initialiseResourceGroup(Ogre::RGN_INTERNAL);
+  auto &rgm = ResourceGroupManager::getSingleton();
+  rgm.initialiseResourceGroup(RGN_INTERNAL);
   rgm.initialiseAllResourceGroups();
 }
 
-static void AddLocation(const std::string &Path, const std::string &GroupName = Ogre::RGN_DEFAULT, const std::string &ResourceFile = "",
+static void AddLocation(const std::string &Path, const std::string &GroupName = RGN_DEFAULT, const std::string &ResourceFile = "",
                         bool Verbose = false) {
   const string file_system = "FileSystem";
   const string zip = "Zip";
@@ -328,7 +310,7 @@ static void AddLocation(const std::string &Path, const std::string &GroupName = 
   std::vector<string> file_list;
   std::vector<string> dir_list;
   std::vector<tuple<string, string, string>> resource_list;
-  auto &RGM = Ogre::ResourceGroupManager::getSingleton();
+  auto &RGM = ResourceGroupManager::getSingleton();
 
   string path = FindPath(Path);
 
@@ -407,8 +389,10 @@ static void AddLocation(const std::string &Path, const std::string &GroupName = 
   }
 }
 
+#endif  // !MOBILE
+
 void Engine::InitResourceLocation() {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+#ifndef MOBILE
   AddLocation("Programs", RGN_INTERNAL);
   AddLocation("Assets", RGN_DEFAULT);
 #else
@@ -584,18 +568,16 @@ void Engine::SetWindowed() {
 void Engine::SetWindowCaption(const char *Caption) { SDL_SetWindowTitle(SDLWindowPtr, Caption); }
 
 void Engine::WindowRestoreFullscreenAndroid() {
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   SDL_DisplayMode DM;
   SDL_GetDesktopDisplayMode(0, &DM);
   int screen_w = static_cast<int>(DM.w);
   int screen_h = static_cast<int>(DM.h);
   OgreRenderWindowPtr->resize(screen_w, screen_h);
-#endif
 }
 
-std::pair<int, int> Engine::GetSize() const { return make_pair(WindowWidth, WindowHeight); }
+std::pair<int, int> Engine::GetWindowSize() const { return make_pair(WindowWidth, WindowHeight); }
 
-void Engine::Grab(bool grab) {
+void Engine::GrabMouse(bool grab) {
   // This breaks input on > Android 9.0
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   SDL_ShowCursor(!grab);
@@ -606,5 +588,9 @@ void Engine::Grab(bool grab) {
 #endif
 #endif
 }
+
+void Engine::GrabMouse() { GrabMouse(true); }
+
+void Engine::FreeMouse() { GrabMouse(false); }
 
 }  // namespace Glue

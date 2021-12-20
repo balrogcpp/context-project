@@ -28,8 +28,8 @@ void MenuAppState::Update(float time) {
     const float hdx = 1920;
     const float hdy = 1080;
     const float hddiag = sqrt(hdx * hdx + hdy * hdy);
-    float x = GetEngine().GetSize().first;
-    float y = GetEngine().GetSize().second;
+    float x = GetEngine().GetWindowSize().first;
+    float y = GetEngine().GetWindowSize().second;
     static float diag = sqrt(x * x + y * y);
     float scale = 0.5f * diag / hddiag;
     ImGui::SetWindowFontScale(scale);
@@ -54,6 +54,6 @@ void MenuAppState::Update(float time) {
 
 void MenuAppState::OnKeyDown(SDL_Keycode sym) {}
 
-void MenuAppState::SetUp() { GetEngine().Grab(false); }
+void MenuAppState::SetUp() { GetEngine().GrabMouse(false); }
 
 }  // namespace Demo
