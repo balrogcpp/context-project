@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "pch.h"
-#include "RTSSUtils.h"
+#include "RTSS.h"
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 #include <RTShaderSystem/OgreRTShaderSystem.h>
 #include <RTShaderSystem/OgreShaderGenerator.h>
@@ -34,8 +34,10 @@ void CreateRTSSRuntime(string CachePath) {
 }
 
 void CleanRTSSRuntime() {
-  MaterialManager::getSingleton().removeListener(ResolverPtr.get());
-  ResolverPtr.reset();
+  if (ResolverPtr) {
+    MaterialManager::getSingleton().removeListener(ResolverPtr.get());
+    ResolverPtr.reset();
+  }
 }
 
 void InitRTSSPSSM(const std::vector<float> &SplitPoints) {

@@ -7,7 +7,7 @@
 #include "Input/InputSequencer.h"
 #include "Log.h"
 #include "Platform.h"
-#include "RTSSUtils.h"
+#include "RTSS.h"
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
 #endif
@@ -138,13 +138,17 @@ void Engine::Resume() {
 
 void Engine::Cleanup() {
   for (auto &it : ComponentList) it->Cleanup();
-  CleanRTSSRuntime();
   InitShadowSettings();
   CompositorUPtr->SetUp();
 }
 
 void Engine::Update(float PassedTime) {
   for (auto &it : ComponentList) it->Update(PassedTime);
+}
+
+void Engine::RenderFirstFrame() {
+  RenderOneFrame();
+  CleanRTSSRuntime();
 }
 
 void Engine::RenderOneFrame() {
@@ -195,7 +199,6 @@ void Engine::InitDefaultRenderSystem() {
 
 void Engine::InitRenderWindow() {
   NameValuePairList params;
-
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(SDLWindowPtr, &info);

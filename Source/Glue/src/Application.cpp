@@ -5,6 +5,7 @@
 #include "Components/ComponentLocator.h"
 #include "DesktopIcon.h"
 #include "Exception.h"
+#include "RTSS.h"
 #include <fstream>
 #include <iostream>
 
@@ -61,8 +62,8 @@ Application::Application() {
     }
 #endif
 
-    LockFPS = GetConf().GetBool("lock_fps");
-    TargetFPS = GetConf().GetInt("target_fps");
+    LockFPS = GetConf().GetBool("lock_fps", LockFPS);
+    TargetFPS = GetConf().GetInt("target_fps", TargetFPS);
 
   } catch (Exception &e) {
     ExceptionMessage("Exception", e.GetDescription());
@@ -116,7 +117,12 @@ void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml
 }
 
 void Application::Loop() {
-  bool suspend_old = false;
+  bool WasSuspend = false;
+
+  if (Running && StateManagerPtr->IsActive()) {
+    StateManagerPtr->Update(0);
+    EnginePtr->RenderFirstFrame();
+  }
 
   while (Running && StateManagerPtr->IsActive()) {
     auto before_frame = chrono::system_clock::now().time_since_epoch();
@@ -134,9 +140,9 @@ void Application::Loop() {
       if (StateManagerPtr->IsDirty()) {
         EnginePtr->Cleanup();
         StateManagerPtr->InitNextState();
-      } else if (suspend_old) {
+      } else if (WasSuspend) {
         EnginePtr->Resume();
-        suspend_old = false;
+        WasSuspend = false;
       }
 
       auto before_update = chrono::system_clock::now().time_since_epoch();
@@ -149,7 +155,7 @@ void Application::Loop() {
 
     } else {
       EnginePtr->Pause();
-      suspend_old = true;
+      WasSuspend = true;
     }
 
 #ifdef DEBUG

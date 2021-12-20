@@ -33,6 +33,7 @@ class Engine final : public LazySingleton<Engine> {
   void Cleanup();
   void Update(float PassedTime);
   void RenderOneFrame();
+  void RenderFirstFrame();
   void RegComponent(Component* ComponentPtr);
   void UnRegComponent(Component* ComponentPtr);
 
