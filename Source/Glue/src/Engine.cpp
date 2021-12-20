@@ -27,9 +27,7 @@
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include "Android.h"
 #endif
-#ifndef MOBILE
-#include <ghc/fs_std_fwd.hpp>
-#endif
+#include "Filesystem.h"
 #include <algorithm>
 extern "C" {
 #include <SDL2/SDL_syswm.h>
