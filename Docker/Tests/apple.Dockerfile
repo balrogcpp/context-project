@@ -18,10 +18,6 @@ COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
 
 RUN cmake -P CMake/FlatZipAssets.cmake
 
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends upx-ucl \
-    && apt-get clean
-
 RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
     && tar Jxfp ${CONTEXT_HOME}/Binaries/Dependencies/Darwin_x86_64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/ThirdParty/External
 

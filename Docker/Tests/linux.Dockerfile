@@ -22,12 +22,6 @@ RUN apt-get update \
 
 ARG UPX_VERSION=3.96
 
-RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
-    && cd upx-${UPX_VERSION}-amd64_linux \
-    && cp upx /usr/local/bin \
-    && cd .. \
-    && rm -rf upx-${UPX_VERSION}-amd64_linux
-
 RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
     && tar Jxfp ${CONTEXT_HOME}/Binaries/Dependencies/Linux_x86_64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/ThirdParty/External
 
