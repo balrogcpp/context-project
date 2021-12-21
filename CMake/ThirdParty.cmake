@@ -220,7 +220,7 @@ externalproject_add(Target_PNG
                     -DPNG_TESTS=OFF
                     )
 
-externalproject_add(Target_freetype
+externalproject_add(Target_FreeType
                     EXCLUDE_FROM_ALL true
                     DEPENDS Target_PNG
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
@@ -352,7 +352,7 @@ endif()
 set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_PREFIX_LOCATION}/src/Target_OGRE)
 externalproject_add(Target_OGRE
                     EXCLUDE_FROM_ALL true
-                    DEPENDS Target_ZZIP Target_freetype Target_pugixml Target_assimp Target_SDL2
+                    DEPENDS Target_ZZIP Target_FreeType Target_pugixml Target_assimp Target_SDL2
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v1.12.13
@@ -407,7 +407,7 @@ externalproject_add(Target_OGRE
                     -DOGRE_BUILD_PLUGIN_PCZ=OFF
                     -DOGRE_BUILD_PLUGIN_PFX=ON
                     -DOGRE_BUILD_PLUGIN_OCTREE=ON
-                    -DOGRE_BUILD_PLUGIN_DOT_SCENE=OFF
+                    -DOGRE_BUILD_PLUGIN_DOT_SCENE=ON
                     -DOGRE_BUILD_COMPONENT_HLMS=OFF
                     -DOGRE_BUILD_COMPONENT_RTSHADERSYSTEM=ON
                     -DOGRE_BUILD_DEPENDENCIES=OFF
@@ -449,7 +449,7 @@ externalproject_add(Target_FreeGLUT
 
 externalproject_add(Target_OGRE2
                     EXCLUDE_FROM_ALL true
-                    DEPENDS Target_ZZIP Target_freetype
+                    DEPENDS Target_ZZIP Target_FreeType
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre-next.git
                     GIT_TAG v2-2
@@ -498,7 +498,7 @@ externalproject_add(Target_Lua
                     -DLUA_USE_READLINE=OFF
                     )
 
-externalproject_add(Target_sol2
+externalproject_add(Target_sol
                     EXCLUDE_FROM_ALL true
                     DEPENDS Target_Lua
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}

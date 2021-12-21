@@ -12,19 +12,18 @@ COPY ./CMake ./CMake
 COPY ./LICENSE .
 COPY ./Programs ./Programs
 COPY ./Assets ./Assets
+COPY ./Binaries ./Binaries
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
-COPY ./Android ./Android
-
-RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
-    && cd ${CONTEXT_HOME}/ThirdParty/External \
-    && wget https://github.com/balrogcpp/glue-dep/raw/master/Darwin_x86_64_Clang_Release.tar.xz  -O - | tar -xJ
 
 RUN cmake -P CMake/FlatZipAssets.cmake
 
 RUN apt-get update \
     && apt-get -y install --no-install-recommends upx-ucl \
     && apt-get clean
+
+RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
+    && tar Jxfp ${CONTEXT_HOME}/Binaries/Dependencies/Darwin_x86_64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/ThirdParty/External
 
 RUN mkdir build-apple && cd build-apple \
     && eval `x86_64-apple-darwin19-osxcross-conf` \

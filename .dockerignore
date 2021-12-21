@@ -2,6 +2,7 @@
 
 !/Android/
 !/Assets/
+!/Binaries/
 !/CMake/
 !/Source/
 !/ThirdParty/CMakeLists.txt/

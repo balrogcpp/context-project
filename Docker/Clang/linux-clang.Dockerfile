@@ -85,3 +85,11 @@ RUN apt-get update \
     && apt-get autoremove -y \
     && apt-get install --no-install-recommends -y libgcc-9-dev libstdc++-9-dev \
     && apt-get clean
+
+ARG UPX_VERSION=3.96
+
+RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
+    && cd upx-${UPX_VERSION}-amd64_linux \
+    && cp upx /usr/local/bin \
+    && cd .. \
+    && rm -rf upx-${UPX_VERSION}-amd64_linux

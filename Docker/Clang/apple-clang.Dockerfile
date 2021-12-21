@@ -8,7 +8,7 @@ RUN apt-get update \
     && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
-    && apt-get -y install --no-install-recommends llvm clang lld git zip unzip xz-utils make autoconf file patch \
+    && apt-get -y install --no-install-recommends llvm clang lld git zip unzip xz-utils make autoconf file patch upx-ucl \
     && apt-get clean
 
 ARG CMAKE_VERSION=3.19.8

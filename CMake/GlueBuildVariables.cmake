@@ -9,6 +9,7 @@ set(GLUE_INCLUDE_DIRS
         ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2
         ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
         ${OGRE_INCLUDE_DIRS}/Plugins/Assimp
+        ${OGRE_INCLUDE_DIRS}/Plugins/DotScene
         )
 
 set(GLUE_LINK_DIRS ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE)
@@ -39,6 +40,7 @@ endif ()
 
 set(GLUE_LINK_LIBRARIES
         ${OGRE_LIBRARIES}
+        ${OGRE_DOT_SCENE}
         ${OGRE_CODEC_ASSIMP}
         pugixml
         ${ASSIMP_LIBRARIES}

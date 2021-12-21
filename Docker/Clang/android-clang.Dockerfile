@@ -35,3 +35,12 @@ RUN apt-get update \
 
 ENV PATH="/opt/tools/bin:${PATH}"
 ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
+
+ARG GRADLE_VERSION=7.3.2
+
+RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip \
+    && unzip gradle-${GRADLE_VERSION}-bin.zip \
+    && rm gradle-${GRADLE_VERSION}-bin.zip \
+    && ./gradle-${GRADLE_VERSION}/bin/gradle
+
+ENV PATH="${PATH}:/opt/gradle-${GRADLE_VERSION}/bin"

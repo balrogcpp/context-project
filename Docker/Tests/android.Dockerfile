@@ -12,15 +12,15 @@ COPY ./CMake ./CMake
 COPY ./LICENSE .
 COPY ./Programs ./Programs
 COPY ./Assets ./Assets
+COPY ./Binaries ./Binaries
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
 COPY ./Android ./Android
 
-RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
-    && cd ${CONTEXT_HOME}/ThirdParty/External \
-    && wget https://github.com/balrogcpp/glue-dep/raw/master/Android_aarch64_Clang_Release.tar.xz  -O - | tar -xJ
-
 RUN cmake -P CMake/FlatZipAssets.cmake
+
+RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
+    && tar Jxfp ${CONTEXT_HOME}/Binaries/Dependencies/Android_aarch64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/ThirdParty/External
 
 RUN cd Android \
     && ./gradlew assembleRelease \
