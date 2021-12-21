@@ -18,15 +18,15 @@ class GBufferSchemeHandler;
 
 namespace Glue {
 
-class Compositor : public Component, public Singleton<Compositor> {
+class Compositor : public Component<Compositor> {
  public:
   Compositor();
   virtual ~Compositor();
 
-  void Cleanup() override;
-  void Pause() override;
-  void Resume() override;
-  void Update(float time) override;
+  void OnClean() override;
+  void OnPause() override;
+  void OnResume() override;
+  void OnUpdate(float time) override;
   void EnableEffect(const std::string& name, bool enable = true);
   void SetUp();
 

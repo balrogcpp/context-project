@@ -9,15 +9,12 @@ class Conf;
 
 namespace Glue {
 
-class Component : public NoCopy {
+class ComponentI {
  public:
-  Component();
-  virtual ~Component();
-
-  virtual void Pause() { Paused = true; }
-  virtual void Resume() { Paused = false; }
-  virtual void Update(float PassedTime) {}
-  virtual void Cleanup() {}
+  virtual void OnPause() { Paused = true; }
+  virtual void OnResume() { Paused = false; }
+  virtual void OnUpdate(float PassedTime) {}
+  virtual void OnClean() {}
 
   bool IsPaused() { return Paused; }
   static void SetConfig(Conf* Conf) { ConfPtr = Conf; }
@@ -26,5 +23,8 @@ class Component : public NoCopy {
   inline static Conf* ConfPtr = nullptr;
   bool Paused = false;
 };
+
+template <typename T>
+class Component : public ComponentI, public Singleton<T> {};
 
 }  // namespace Glue

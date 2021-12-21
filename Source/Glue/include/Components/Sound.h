@@ -12,15 +12,15 @@ class Root;
 
 namespace Glue {
 
-class Sound final : public Component, public Singleton<Sound> {
+class Sound final : public Component<Sound> {
  public:
   Sound(unsigned int MaxSourceCount = 16, unsigned int QueueListSize = 4);
   virtual ~Sound();
 
-  void Cleanup() override;
-  void Pause() override;
-  void Resume() override;
-  void Update(float PassedTime) override;
+  void OnClean() override;
+  void OnPause() override;
+  void OnResume() override;
+  void OnUpdate(float PassedTime) override;
 
   void CreateSound(const std::string &SoundName, const std::string &AudioFile, bool PlayInLoop = false);
   void PlaySound(const std::string &SoundName, bool PlayImmediately = true);

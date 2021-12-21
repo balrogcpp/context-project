@@ -22,9 +22,8 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     ref_mat_->load();
   }
 
-  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const Ogre::String &schemeName,
-                                        Ogre::Material *originalMaterial, unsigned short lodIndex,
-                                        const Ogre::Renderable *rend) override {
+  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const Ogre::String &schemeName, Ogre::Material *originalMaterial,
+                                        unsigned short lodIndex, const Ogre::Renderable *rend) override {
     Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
 
     gBufferTech->setSchemeName(schemeName);
@@ -69,18 +68,18 @@ Compositor::Compositor() {
 
 Compositor::~Compositor() {}
 
-void Compositor::Update(float time) {
-//  static bool mblur = EffectsList["mblur"];
-//  if (mblur) PBR::Update(time);
+void Compositor::OnUpdate(float time) {
+  //  static bool mblur = EffectsList["mblur"];
+  //  if (mblur) PBR::Update(time);
 }
 
 void Compositor::EnableEffect(const std::string &name, bool enable) { EffectsList[name] = enable; }
 
-void Compositor::Cleanup() { PBR::Cleanup(); }
+void Compositor::OnClean() {}
 
-void Compositor::Pause() {}
+void Compositor::OnPause() {}
 
-void Compositor::Resume() {}
+void Compositor::OnResume() {}
 
 void Compositor::InitGBuffer() {
   if (!GBufferHandler) {
@@ -111,9 +110,7 @@ void Compositor::AddCompositorDisabled(const std::string &name) {
   }
 }
 
-void Compositor::EnableCompositor(const std::string &name) {
-  OgreCompositorManager->setCompositorEnabled(OgreViewport, name, true);
-}
+void Compositor::EnableCompositor(const std::string &name) { OgreCompositorManager->setCompositorEnabled(OgreViewport, name, true); }
 
 void Compositor::InitMRT() {
   if (OgreCompositorManager->addCompositor(OgreViewport, "MRT")) {

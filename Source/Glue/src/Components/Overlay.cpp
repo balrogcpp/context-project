@@ -42,13 +42,13 @@ void Overlay::preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) {
   //  }
 }
 
-void Overlay::Update(float time) {}
+void Overlay::OnUpdate(float time) {}
 
-void Overlay::Cleanup() {}
+void Overlay::OnClean() {}
 
-void Overlay::Pause() {}
+void Overlay::OnPause() {}
 
-void Overlay::Resume() {}
+void Overlay::OnResume() {}
 
 void Overlay::PrepareFontTexture(const std::string& FontName, const std::string& ResourceGroup) {
   imgui_overlay->addFont(FontName, ResourceGroup);

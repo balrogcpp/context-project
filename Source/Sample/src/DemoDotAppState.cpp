@@ -3,8 +3,8 @@
 #include "pch.h"
 #include "DemoDotAppState.h"
 #include "Components/ComponentLocator.h"
-#include "Components/Sound.h"
-#include "Components/DotSceneLoaderB.h"
+#include "Components/ComponentsAll.h"
+#include "Objects/CameraMan.h"
 #include "MenuAppState.h"
 
 using namespace std;
@@ -123,7 +123,7 @@ void DemoDotAppState::Update(float time) {
 
 void DemoDotAppState::SetUp() {
   GetEngine().GrabMouse(true);
-  GetLoader().GetCamera().SetStyle(CameraMan::Style::FPS);
+  GetScene().GetCamera().SetStyle(CameraMan::Style::FPS);
   LoadFromFile("1.scene");
 
   //    Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);

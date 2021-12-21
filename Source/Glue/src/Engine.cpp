@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "Platform.h"
 #include "RTSS.h"
+#include "Components/DotSceneLoaderB.h"
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
 #endif
@@ -23,6 +24,9 @@
 #endif
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
 #include <Plugins/Assimp/OgreAssimpLoader.h>
+#endif
+#ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
+#include <Plugins/DotScene/OgreDotSceneLoader.h>
 #endif
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include "Android.h"
@@ -52,7 +56,7 @@ Engine::Engine() {
 Engine::~Engine() { SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE); }
 
 void Engine::InitComponents() {
-  Component::SetConfig(ConfPtr.get());
+  ComponentI::SetConfig(ConfPtr.get());
 
   WindowWidth = ConfPtr->GetInt("window_width", WindowWidth);
   WindowHeight = ConfPtr->GetInt("window_high", WindowHeight);
@@ -85,17 +89,28 @@ void Engine::InitComponents() {
 
   // Overlay
   OverlayPtr = make_unique<Overlay>(OgreRenderWindowPtr);
+  RegComponent(OverlayPtr.get());
   auto &RGM = ResourceGroupManager::getSingleton();
   RGM.initialiseResourceGroup(RGN_INTERNAL);
   RGM.initialiseAllResourceGroups();
 
   // Compositor
   CompositorUPtr = make_unique<Compositor>();
+  RegComponent(CompositorUPtr.get());
   OverlayPtr->PrepareFontTexture("Roboto-Medium", RGN_INTERNAL);
-  PhysicsPtr = make_unique<Physics>();
-  SoundPtr = make_unique<Sound>(8, 8);
-  LoaderPtr = make_unique<DotSceneLoaderB>();
   CompositorUPtr->SetUp();
+
+  // Physics
+  PhysicsPtr = make_unique<Physics>();
+  RegComponent(PhysicsPtr.get());
+
+  // Sound
+  SoundPtr = make_unique<Sound>(8, 8);
+  RegComponent(SoundPtr.get());
+
+  // DotSceneLoaderB
+  ScenePtr = make_unique<Scene>();
+  RegComponent(ScenePtr.get());
 }
 
 void Engine::InitDefaultRenderSystem() {
@@ -120,6 +135,7 @@ void Engine::InitOgrePlugins() {
 #endif
 
 #ifdef DEBUG
+
 #ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
   Root::getSingleton().installPlugin(new FreeImagePlugin());
 #endif
@@ -127,14 +143,21 @@ void Engine::InitOgrePlugins() {
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
   Root::getSingleton().installPlugin(new AssimpPlugin());
 #endif
-#endif
+
+#endif // DEBUG
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   OgreSceneManager = OgreRoot->createSceneManager("OctreeSceneManager", "Default");
 #else
   OgreSceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
 #endif
+
   Root::getSingleton().installPlugin(new DotScenePluginB());
+
+//#ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
+//  Root::getSingleton().installPlugin(new DotScenePlugin());
+//#endif
+
 }
 
 void Engine::InitSDLSubsystems() {
@@ -340,38 +363,38 @@ void Engine::Capture() {
   io.Capture();
 }
 
-void Engine::RegComponent(Component *ComponentPtr) { ComponentList.push_back(ComponentPtr); }
+void Engine::RegComponent(ComponentI *ComponentPtr) { ComponentList.push_back(ComponentPtr); }
 
-void Engine::UnRegComponent(Component *ComponentPtr) {
+void Engine::UnRegComponent(ComponentI *ComponentPtr) {
   // TODO: implement this
 }
 
 void Engine::Pause() {
-  for (auto &it : ComponentList) it->Pause();
+  for (auto &it : ComponentList) it->OnPause();
 }
 
 void Engine::InMenu() {
-  PhysicsPtr->Pause();
-  LoaderPtr->Pause();
+  PhysicsPtr->OnPause();
+  ScenePtr->OnPause();
 }
 
 void Engine::OffMenu() {
-  PhysicsPtr->Resume();
-  LoaderPtr->Resume();
+  PhysicsPtr->OnResume();
+  ScenePtr->OnResume();
 }
 
 void Engine::Resume() {
-  for (auto &it : ComponentList) it->Resume();
+  for (auto &it : ComponentList) it->OnResume();
 }
 
 void Engine::Cleanup() {
-  for (auto &it : ComponentList) it->Cleanup();
+  for (auto &it : ComponentList) it->OnClean();
   InitShadowSettings();
   CompositorUPtr->SetUp();
 }
 
 void Engine::Update(float PassedTime) {
-  for (auto &it : ComponentList) it->Update(PassedTime);
+  for (auto &it : ComponentList) it->OnUpdate(PassedTime);
 }
 
 void Engine::RenderFirstFrame() {

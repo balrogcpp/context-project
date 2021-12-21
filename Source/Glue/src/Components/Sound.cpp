@@ -30,13 +30,13 @@ Sound::Sound(unsigned int MaxSourceCount, unsigned int QueueListSize) {
 
 Sound::~Sound() { AudioRootPtr->shutdown(); }
 
-void Sound::Cleanup() {}
+void Sound::OnClean() {}
 
-void Sound::Update(float PassedTime) {}
+void Sound::OnUpdate(float PassedTime) {}
 
-void Sound::Pause() { SoundManagerPtr->pauseAllSounds(); }
+void Sound::OnPause() { SoundManagerPtr->pauseAllSounds(); }
 
-void Sound::Resume() { SoundManagerPtr->resumeAllPausedSounds(); }
+void Sound::OnResume() { SoundManagerPtr->resumeAllPausedSounds(); }
 
 void Sound::CreateSound(const string &SoundName, const string &AudioFile, bool PlayInLoop) {
   auto *sound = SoundManagerPtr->createSound(SoundName, AudioFile, true, PlayInLoop, true, nullptr);

@@ -8,12 +8,12 @@
 
 /// Components
 namespace Glue {
-class Component;
+class ComponentI;
 class Compositor;
 class Overlay;
 class Physics;
 class Sound;
-class DotSceneLoaderB;
+class Scene;
 class Conf;
 }  // namespace Glue
 
@@ -34,8 +34,8 @@ class Engine final : public LazySingleton<Engine> {
   void Update(float PassedTime);
   void RenderOneFrame();
   void RenderFirstFrame();
-  void RegComponent(Component* ComponentPtr);
-  void UnRegComponent(Component* ComponentPtr);
+  void RegComponent(ComponentI* ComponentPtr);
+  void UnRegComponent(ComponentI* ComponentPtr);
 
   void InitSDLSubsystems();
   void CreateSDLWindow();
@@ -66,7 +66,7 @@ class Engine final : public LazySingleton<Engine> {
   Ogre::RenderTarget* OgreRenderTarget = nullptr;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> PSSMSetupPtr;
   std::vector<float> PSSMSplitPointList;
-  const size_t PSSMSplitCount = 3;
+  size_t PSSMSplitCount = 3;
   Ogre::Root* OgreRoot = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;
   Ogre::Camera* OgreCamera = nullptr;
@@ -91,13 +91,13 @@ class Engine final : public LazySingleton<Engine> {
   std::unique_ptr<Overlay> OverlayPtr;
   std::unique_ptr<Physics> PhysicsPtr;
   std::unique_ptr<Sound> SoundPtr;
-  std::unique_ptr<DotSceneLoaderB> LoaderPtr;
-  std::vector<Component*> ComponentList;
+  std::unique_ptr<Scene> ScenePtr;
+  std::vector<ComponentI*> ComponentList;
 
   friend Conf& GetConf();
   friend Physics& GetPhysics();
   friend Sound& GetAudio();
-  friend DotSceneLoaderB& GetLoader();
+  friend Scene& GetScene();
 };
 
 }  // namespace Glue

@@ -5,9 +5,7 @@
 #include "PBRUtils.h"
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <Terrain/OgreTerrain.h>
-#include <Terrain/OgreTerrainAutoUpdateLod.h>
 #include <Terrain/OgreTerrainMaterialGenerator.h>
-#include <Terrain/OgreTerrainQuadTreeNode.h>
 #endif
 
 using namespace std;
@@ -22,8 +20,7 @@ TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
 
 TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB() {}
 
-TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent, const String &name,
-                                                  const String &desc)
+TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *parent, const String &name, const String &desc)
     : Profile(parent, name, desc) {}
 
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}

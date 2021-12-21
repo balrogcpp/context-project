@@ -43,15 +43,15 @@ struct ContactInfo {
   int points_;
 };
 
-class Physics final : public Component, public Singleton<Physics> {
+class Physics final : public Component<Physics> {
  public:
   Physics(bool threaded = false);
   virtual ~Physics();
 
-  void Cleanup() override;
-  void Update(float time) override;
-  void Resume() override;
-  void Pause() override;
+  void OnClean() override;
+  void OnUpdate(float time) override;
+  void OnResume() override;
+  void OnPause() override;
 
   void AddRigidBody(btRigidBody *body);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);

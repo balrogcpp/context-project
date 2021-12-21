@@ -3,12 +3,13 @@
 #pragma once
 #include "Components/Component.h"
 #include "CubeMapCamera.h"
+#include "Input/InputSequencer.h"
 #include "LazySingleton.h"
 #include "Objects/CameraMan.h"
-#include "Input/InputSequencer.h"
 #include "ReflectionCamera.h"
 #include <OgreCodec.h>
 #include <OgrePlugin.h>
+#include <OgreSceneLoader.h>
 #include <OgreVector.h>
 #include <memory>
 #include <string>
@@ -18,6 +19,7 @@ class xml_node;
 }
 
 namespace Ogre {
+class Camera;
 class SceneManager;
 class SceneNode;
 class TerrainGroup;
@@ -25,11 +27,11 @@ class TerrainGlobalOptions;
 class VertexDeclaration;
 }  // namespace Ogre
 
-namespace Forests {
-class PagedGeometry;
-class PageLoader;
-class GeometryPage;
-}  // namespace Forests
+//namespace Forests {
+//class PagedGeometry;
+//class PageLoader;
+//class GeometryPage;
+//}  // namespace Forests
 
 namespace Glue {
 class CameraMan;
@@ -42,18 +44,14 @@ class SinbadCharacterController;
 
 namespace Glue {
 
-class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB> {
+class DotSceneLoaderB final : public Ogre::SceneLoader {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();
 
-  void Cleanup() override;
-  void Update(float PassedTime) override;
-
+  void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) override;
   void Load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node);
   void ExportScene(Ogre::SceneNode *rootNode, const std::string &outFileName);
-  float GetHeight(float x, float z);
-  CameraMan &GetCamera() const;
 
  protected:
   void ProcessScene(pugi::xml_node &XmlRoot);
@@ -80,15 +78,11 @@ class DotSceneLoaderB final : public Component, public Singleton<DotSceneLoaderB
   void ProcessLightAttenuation(pugi::xml_node &XmlNode, Ogre::Light *light);
   void WriteNode(pugi::xml_node &parentXML, const Ogre::SceneNode *node);
 
-  std::unique_ptr<CameraMan> CameraManPtr;
-  std::unique_ptr<Ogre::TerrainGroup> OgreTerrainPtr;
-  std::vector<std::unique_ptr<Forests::PagedGeometry>> PGeometryList;
-
+  Ogre::Camera *OgreCameraPtr = nullptr;
   Ogre::SceneManager *OgreScene = nullptr;
   Ogre::Root *OgreRoot = nullptr;
   Ogre::SceneNode *AttachNode = nullptr;
   std::string GroupName = Ogre::RGN_DEFAULT;
-  std::unique_ptr<SinbadCharacterController> Sinbad;
 };
 
 class DotScenePluginB : public Ogre::Plugin {

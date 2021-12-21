@@ -16,15 +16,15 @@ class RenderTargetViewportEvent;
 
 namespace Glue {
 
-class Overlay final : public Component, public Singleton<Overlay>, public Ogre::RenderTargetListener {
+class Overlay final : public Component<Overlay>, public Ogre::RenderTargetListener {
  public:
   Overlay(Ogre::RenderWindow* OgreRenderWindowPtr);
   virtual ~Overlay();
 
-  void Cleanup() override;
-  void Pause() override;
-  void Resume() override;
-  void Update(float time) override;
+  void OnClean() override;
+  void OnPause() override;
+  void OnResume() override;
+  void OnUpdate(float time) override;
   void preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) override;
   void PrepareFontTexture(const std::string& FontName, const std::string& ResourceGroup = Ogre::RGN_AUTODETECT);
 

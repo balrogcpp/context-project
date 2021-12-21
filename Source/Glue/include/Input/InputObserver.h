@@ -89,11 +89,13 @@ class InputObserver {
   /// @param which joystick number
   /// @param button button number
   virtual void OnGamepadBtUp(int which, int button) {}
+
   /// Callback on joystick Hat
   /// @param which joystick number
   /// @param ball hat number
   /// @param value hat value
   virtual void OnGamepadHat(int which, int hat, int value) {}
+
   /// Callback on joystick Ball
   /// @param which joystick number
   /// @param ball ball number

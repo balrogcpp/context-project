@@ -26,8 +26,8 @@ Sound& GetAudio() {
   return AudioComponentPtr;
 }
 
-DotSceneLoaderB& GetLoader() {
-  static auto& LoaderPtr = *Engine::GetInstance().LoaderPtr;
+Scene& GetScene() {
+  static auto& LoaderPtr = *Engine::GetInstance().ScenePtr;
   return LoaderPtr;
 }
 

@@ -43,15 +43,14 @@ Physics::Physics(bool threaded) : threaded(threaded) {
 
 Physics::~Physics() {
   running = false;
-
-  Cleanup();
+  OnClean();
 }
 
-void Physics::Resume() { pause = false; }
+void Physics::OnResume() { pause = false; }
 
-void Physics::Pause() { pause = true; }
+void Physics::OnPause() { pause = true; }
 
-void Physics::Update(float time) {
+void Physics::OnUpdate(float time) {
   if (threaded) return;
 
   if (pause) return;
@@ -61,7 +60,7 @@ void Physics::Update(float time) {
   //if (debug) dbg_draw->update();
 }
 
-void Physics::Cleanup() {
+void Physics::OnClean() {
   world->clearForces();
 
   // remove the rigidbodies from the dynamics world and delete them

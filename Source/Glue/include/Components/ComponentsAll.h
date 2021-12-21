@@ -2,7 +2,7 @@
 
 #pragma once
 #include "Compositor.h"
-#include "DotSceneLoaderB.h"
+#include "Scene.h"
 #include "Overlay.h"
 #include "Physics.h"
 #include "Sound.h"

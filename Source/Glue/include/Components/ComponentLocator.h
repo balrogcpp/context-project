@@ -19,6 +19,6 @@ Conf& GetConf();
 Engine& GetEngine();
 Physics& GetPhysics();
 Sound& GetAudio();
-DotSceneLoaderB& GetLoader();
+Scene& GetScene();
 
 }  // namespace Glue
