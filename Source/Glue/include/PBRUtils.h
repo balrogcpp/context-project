@@ -26,7 +26,7 @@ class PBR final {
   static void Cleanup();
   static void Update(float time);
 
- private:
+ protected:
   inline static std::vector<Ogre::GpuProgramParametersPtr> gpu_fp_params_;
   inline static std::vector<Ogre::GpuProgramParametersPtr> gpu_vp_params_;
 };

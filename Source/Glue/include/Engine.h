@@ -15,7 +15,7 @@ class Physics;
 class Sound;
 class DotSceneLoaderB;
 class Conf;
-}
+}  // namespace Glue
 
 namespace Glue {
 
@@ -37,22 +37,24 @@ class Engine final : public LazySingleton<Engine> {
   void RegComponent(Component* ComponentPtr);
   void UnRegComponent(Component* ComponentPtr);
 
-  void CreateWindow();
+  void InitSDLSubsystems();
+  void CreateSDLWindow();
+  void SetFullscreen(bool Fullscreen);
   void SetFullscreen();
   void SetWindowed();
   void ResizeWindow(int Width, int Height);
-  void SetWindowCaption(const char *Caption);
+  void SetWindowCaption(const char* Caption);
   std::pair<int, int> GetWindowSize() const;
   void GrabMouse(bool grab);
   void GrabMouse();
   void FreeMouse();
 
- private:
+ protected:
   void InitOgrePlugins();
   void InitDefaultRenderSystem();
   void InitOgreRenderSystemGL3();
   void InitOgreRenderSystemGLES2();
-  void InitRenderWindow();
+  void CreateOgreRenderWindow();
   void InitResourceLocation();
   void InitTextureSettings();
   void InitShadowSettings();
@@ -61,6 +63,7 @@ class Engine final : public LazySingleton<Engine> {
 
   std::string RenderSystemName;
   Ogre::RenderWindow* OgreRenderWindowPtr = nullptr;
+  Ogre::RenderTarget* OgreRenderTarget = nullptr;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> PSSMSetupPtr;
   std::vector<float> PSSMSplitPointList;
   const size_t PSSMSplitCount = 3;
@@ -68,15 +71,19 @@ class Engine final : public LazySingleton<Engine> {
   Ogre::SceneManager* OgreSceneManager = nullptr;
   Ogre::Camera* OgreCamera = nullptr;
   Ogre::Viewport* OgreViewport = nullptr;
-  SDL_Window *SDLWindowPtr = nullptr;
+  SDL_Window* SDLWindowPtr = nullptr;
   SDL_GLContext SDLGLContextPtr = nullptr;
   uint32_t SDLWindowFlags = 0;
-  std::string caption_;
+  uint32_t WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED;
+  std::string WindowCaption;
   int WindowWidth = 1024;
   int WindowHeight = 768;
-  bool FullScreen = false;
+  bool WindowFullScreen = false;
   int ScreenWidth = 0;
   int ScreenHeight = 0;
+  bool WindowsVsync = true;
+  bool WindowGammaCorrection = false;
+  int FSAA = 0;
 
   /// Components
   std::unique_ptr<Conf> ConfPtr;

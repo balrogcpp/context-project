@@ -27,4 +27,7 @@ void Assert(bool Result, std::string Message);
 /// Throw exception
 void Throw(std::string Message);
 
+/// Creates pop-up window with exception description
+int ErrorWindow(const std::string &WindowCaption, const std::string &MessageText);
+
 }  // namespace Glue

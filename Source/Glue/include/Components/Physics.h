@@ -62,7 +62,7 @@ class Physics final : public Component, public Singleton<Physics> {
   void CreateTerrainHeightfieldShape(int size, float *data, const float &min_height, const float &max_height,
                                      const Ogre::Vector3 &position, const float &scale);
 
- private:
+ protected:
   std::unique_ptr<BtOgre::DebugDrawer> dbg_draw;
   std::unique_ptr<btDbvtBroadphase> broadphase;
   std::unique_ptr<btDefaultCollisionConfiguration> config;

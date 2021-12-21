@@ -12,19 +12,21 @@
 using namespace std;
 
 namespace Glue {
-Overlay::Overlay(Ogre::RenderWindow* render_window) {
-  this->render_window = render_window;
-  Ogre::SceneManager* sm = Ogre::Root::getSingletonPtr()->getSceneManager("Default");
-  overlay_system = new Ogre::OverlaySystem();
-  sm->addRenderQueueListener(overlay_system);
+
+Overlay::Overlay(Ogre::RenderWindow* OgreRenderWindowPtr) {
+
+  this->OgreRenderWindow = OgreRenderWindowPtr;
+  Ogre::SceneManager* OgreScene = Ogre::Root::getSingletonPtr()->getSceneManager("Default");
+  OgreOverlay = new Ogre::OverlaySystem();
+  OgreScene->addRenderQueueListener(OgreOverlay);
 
   imgui_overlay = new Ogre::ImGuiOverlay();
   imgui_overlay->setZOrder(300);
 
   Ogre::OverlayManager::getSingleton().addOverlay(imgui_overlay);
-  render_window->addListener(this);
+  OgreRenderWindowPtr->addListener(this);
 
-  imgui_listener = make_unique<ImGuiInputListener>();
+  ImGuiListener = make_unique<ImGuiInputListener>();
 
   // Suppress ini file creation
   ImGuiIO& io = ImGui::GetIO();
@@ -48,8 +50,8 @@ void Overlay::Pause() {}
 
 void Overlay::Resume() {}
 
-void Overlay::PrepareTexture(const std::string& name_, const std::string& group_) {
-  imgui_overlay->addFont(name_, group_);
+void Overlay::PrepareFontTexture(const std::string& FontName, const std::string& ResourceGroup) {
+  imgui_overlay->addFont(FontName, ResourceGroup);
   imgui_overlay->show();
 }
 

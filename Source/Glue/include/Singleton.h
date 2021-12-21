@@ -14,15 +14,19 @@ class Singleton : public NoCopy {
   /// Constructor
   Singleton() {
     if (Instanced) {
-      std::string Type = typeid(T).name();
-      std::string Message = Type + " is DynamicSingleton class. Creation of another instance is forbidden";
+      std::string Message = std::string(typeid(T).name()) + " is DynamicSingleton class. Creation of another instance is forbidden";
       Throw(Message);
     }
 
     Instanced = true;
+    SingletonPtr = static_cast<T*>(this);
   }
 
+  static T* GetInstancePtr() { return SingletonPtr; }
+
  protected:
+  /// Pointer to singleton instance
+  inline static T* SingletonPtr = nullptr;
   /// Is this flag is up -- any call of "new" will throw exception
   inline static bool Instanced = false;
 };

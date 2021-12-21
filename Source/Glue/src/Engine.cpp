@@ -33,11 +33,6 @@ extern "C" {
 #include <SDL2/SDL_syswm.h>
 }
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-/// WinAPI has macro CreateWindow that shadows function
-#undef CreateWindow
-#endif
-
 using namespace std;
 using namespace Ogre;
 
@@ -47,50 +42,44 @@ Engine::Engine() {
 #ifndef MOBILE
   ConfPtr = make_unique<Conf>("config.ini");
 #else
+  // TODO: fill defauls for Android
   ConfPtr = make_unique<Conf>("");
 #endif
 
-  Component::SetConfig(ConfPtr.get());
   ComponentList.reserve(16);
 }
 
 Engine::~Engine() { SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE); }
 
 void Engine::InitComponents() {
-  int window_width = ConfPtr->GetInt("window_width");
-  int window_high = ConfPtr->GetInt("window_high");
-  bool window_fullscreen = ConfPtr->GetBool("window_fullscreen");
+  Component::SetConfig(ConfPtr.get());
+
+  WindowWidth = ConfPtr->GetInt("window_width", WindowWidth);
+  WindowHeight = ConfPtr->GetInt("window_high", WindowHeight);
+  WindowFullScreen = ConfPtr->GetBool("window_fullscreen", WindowFullScreen);
+  RenderSystemName = ConfPtr->Get("render_system", RenderSystemName);
 
   OgreRoot = new Root();
 
-  RenderSystemName = ConfPtr->Get("render_system", RenderSystemName);
-
-  // init OGRE
+  // init Ogre
+  InitSDLSubsystems();
   InitDefaultRenderSystem();
   InitOgrePlugins();
   OgreRoot->initialise(false);
-  CreateWindow();
-  InitRenderWindow();
-  ResizeWindow(window_width, window_high);
+  CreateSDLWindow();
+  CreateOgreRenderWindow();
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#ifdef ANDROID
   WindowRestoreFullscreenAndroid();
 #endif
 
-  // create camera
-  OgreCamera = OgreSceneManager->createCamera("Default");
-  auto *renderTarget = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
-  OgreViewport = renderTarget->addViewport(OgreCamera);
-  OgreViewport->setBackgroundColour(ColourValue::Black);
-  OgreCamera->setAspectRatio(static_cast<float>(OgreViewport->getActualWidth()) / static_cast<float>(OgreViewport->getActualHeight()));
-  OgreCamera->setAutoAspectRatio(true);
-
   InitResourceLocation();
 
-  // RTSS block
+  // RTSS
   InitRtss();
   CreateRTSSRuntime();
 
+  // Materials
   InitTextureSettings();
   InitShadowSettings();
 
@@ -100,13 +89,250 @@ void Engine::InitComponents() {
   RGM.initialiseResourceGroup(RGN_INTERNAL);
   RGM.initialiseAllResourceGroups();
 
-  // Compositor block
+  // Compositor
   CompositorUPtr = make_unique<Compositor>();
-  OverlayPtr->PrepareTexture("Roboto-Medium", RGN_INTERNAL);
+  OverlayPtr->PrepareFontTexture("Roboto-Medium", RGN_INTERNAL);
   PhysicsPtr = make_unique<Physics>();
   SoundPtr = make_unique<Sound>(8, 8);
   LoaderPtr = make_unique<DotSceneLoaderB>();
   CompositorUPtr->SetUp();
+}
+
+void Engine::InitDefaultRenderSystem() {
+#ifdef MOBILE
+  InitOgreRenderSystemGLES2();
+#else
+  InitOgreRenderSystemGL3();
+#endif
+}
+
+void Engine::InitOgrePlugins() {
+#ifdef OGRE_BUILD_PLUGIN_OCTREE
+  Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
+#endif
+
+#ifdef OGRE_BUILD_PLUGIN_PFX
+  Root::getSingleton().installPlugin(new ParticleFXPlugin());
+#endif
+
+#ifdef OGRE_BUILD_PLUGIN_STBI
+  Root::getSingleton().installPlugin(new STBIPlugin());
+#endif
+
+#ifdef DEBUG
+#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
+  Root::getSingleton().installPlugin(new FreeImagePlugin());
+#endif
+
+#ifdef OGRE_BUILD_PLUGIN_ASSIMP
+  Root::getSingleton().installPlugin(new AssimpPlugin());
+#endif
+#endif
+
+#ifdef OGRE_BUILD_PLUGIN_OCTREE
+  OgreSceneManager = OgreRoot->createSceneManager("OctreeSceneManager", "Default");
+#else
+  OgreSceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
+#endif
+  Root::getSingleton().installPlugin(new DotScenePluginB());
+}
+
+void Engine::InitSDLSubsystems() {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
+    throw Exception("Failed to init SDL2");
+  }
+
+  for (int i = 0; i < SDL_NumJoysticks(); ++i) {
+    if (SDL_IsGameController(i)) {
+      SDL_GameControllerOpen(i);
+    }
+  }
+
+  SDL_DisplayMode DM;
+  SDL_GetDesktopDisplayMode(0, &DM);
+  ScreenWidth = static_cast<int>(DM.w);
+  ScreenHeight = static_cast<int>(DM.h);
+}
+
+void Engine::CreateSDLWindow() {
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+
+  if (WindowWidth == ScreenWidth && WindowHeight == ScreenHeight) {
+    SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
+  }
+
+  if (WindowFullScreen) {
+    SDLWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
+    WindowWidth = ScreenWidth;
+    WindowHeight = ScreenHeight;
+  }
+
+  WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED_DISPLAY(0);
+  SDLWindowPtr = SDL_CreateWindow(WindowCaption.c_str(), WindowPositionFlag, WindowPositionFlag, WindowWidth, WindowHeight, SDLWindowFlags);
+
+#else
+
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+
+  SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
+  SDLWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+  SDLWindowFlags |= SDL_WINDOW_OPENGL;
+
+  WindowWidth = ScreenWidth;
+  WindowHeight = ScreenHeight;
+
+  SDLWindowPtr = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ScreenWidth, ScreenHeight, SDLWindowFlags);
+  SDLGLContextPtr = SDL_GL_CreateContext(SDLWindowPtr);
+
+#endif
+}
+
+void Engine::CreateOgreRenderWindow() {
+  NameValuePairList params;
+  SDL_SysWMinfo info;
+  SDL_VERSION(&info.version);
+  SDL_GetWindowWMInfo(SDLWindowPtr, &info);
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
+#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
+#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
+#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
+
+  jclass class_activity = env->FindClass("android/app/Activity");
+  jclass class_resources = env->FindClass("android/content/res/Resources");
+  jmethodID method_get_resources = env->GetMethodID(class_activity, "getResources", "()Landroid/content/res/Resources;");
+  jmethodID method_get_assets = env->GetMethodID(class_resources, "getAssets", "()Landroid/content/res/AssetManager;");
+  jobject raw_activity = (jobject)SDL_AndroidGetActivity();
+  jobject raw_resources = env->CallObjectMethod(raw_activity, method_get_resources);
+  jobject raw_asset_manager = env->CallObjectMethod(raw_resources, method_get_assets);
+
+  params["currentGLContext"] = "true";
+  params["externalGLControl"] = "true";
+  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
+  params["preserveContext"] = "true";
+
+  AAssetManager *asset_manager = AAssetManager_fromJava(env, raw_asset_manager);
+  AConfiguration *mAConfig = AConfiguration_new();
+  AConfiguration_fromAssetManager(mAConfig, asset_manager);
+
+  ArchiveManager::getSingleton().addArchiveFactory(new APKFileSystemArchiveFactory(asset_manager));
+  ArchiveManager::getSingleton().addArchiveFactory(new APKZipArchiveFactory(asset_manager));
+#endif
+
+  const char TrueStr[] = "true";
+  const char FalseStr[] = "false";
+
+  WindowsVsync = ConfPtr->GetBool("vsync", WindowsVsync);
+  WindowGammaCorrection = ConfPtr->GetBool("gamma", WindowGammaCorrection);
+  FSAA = ConfPtr->GetInt("fsaa", FSAA);
+
+  params["vsync"] = WindowsVsync ? TrueStr : FalseStr;
+  params["gamma"] = WindowGammaCorrection ? TrueStr : FalseStr;
+  params["FSAA"] = to_string(FSAA);
+
+  OgreRenderWindowPtr = OgreRoot->createRenderWindow(WindowCaption, WindowWidth, WindowHeight, WindowFullScreen, &params);
+  OgreRenderTarget = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
+
+  OgreCamera = OgreSceneManager->createCamera("Default");
+  OgreViewport = OgreRenderTarget->addViewport(OgreCamera);
+  OgreViewport->setBackgroundColour(ColourValue::Black);
+  OgreCamera->setAspectRatio(static_cast<float>(OgreViewport->getActualWidth()) / static_cast<float>(OgreViewport->getActualHeight()));
+  OgreCamera->setAutoAspectRatio(true);
+}
+
+void Engine::InitShadowSettings() {
+  bool shadows_enable = true;
+  float shadow_far = 400;
+  int16_t tex_size = 256;
+  string tex_format = "D16";
+
+  shadows_enable = ConfPtr->GetBool("shadows_enable", shadows_enable);
+  shadow_far = ConfPtr->GetInt("shadow_far", shadow_far);
+  tex_format = ConfPtr->GetString("tex_format", tex_format);
+  tex_size = ConfPtr->GetInt("tex_size", tex_size);
+
+  if (!shadows_enable) {
+    OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
+    return;
+  }
+
+  PixelFormat texture_type = PixelFormat::PF_DEPTH16;
+
+  OgreSceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+  OgreSceneManager->setShadowFarDistance(shadow_far);
+
+  if (tex_format == "F32") {
+    texture_type = PixelFormat::PF_FLOAT32_R;
+  } else if (tex_format == "F16") {
+    texture_type = PixelFormat::PF_FLOAT16_R;
+  }
+  if (tex_format == "D32") {
+    texture_type = PixelFormat::PF_DEPTH32;
+  } else if (tex_format == "D16") {
+    texture_type = PixelFormat::PF_DEPTH16;
+  }
+
+  OgreSceneManager->setShadowTextureSize(tex_size);
+  OgreSceneManager->setShadowTexturePixelFormat(texture_type);
+  OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
+  OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
+  OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
+
+  OgreSceneManager->setShadowTextureSelfShadow(true);
+  OgreSceneManager->setShadowCasterRenderBackFaces(true);
+  OgreSceneManager->setShadowFarDistance(shadow_far);
+  auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+  OgreSceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
+
+  PSSMSetupPtr = make_shared<PSSMShadowCameraSetup>();
+  const float near_clip_distance = 0.001;
+  PSSMSetupPtr->calculateSplitPoints(PSSMSplitCount, near_clip_distance, OgreSceneManager->getShadowFarDistance());
+  PSSMSplitPointList = PSSMSetupPtr->getSplitPoints();
+  //  pssm_->setSplitPadding(near_clip_distance);
+  PSSMSetupPtr->setSplitPadding(0.1);
+
+  for (size_t i = 0; i < PSSMSplitCount; i++) {
+    PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(i));
+  }
+
+  OgreSceneManager->setShadowCameraSetup(PSSMSetupPtr);
+  OgreSceneManager->setShadowColour(ColourValue::Black);
+
+#ifdef DESKTOP
+  TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
+#endif
+}
+
+void Engine::InitTextureSettings() {
+  string filtration = ConfPtr->GetString("filtration");
+  int anisotropy = 4;
+
+  anisotropy = ConfPtr->GetInt("anisotropy", anisotropy);
+
+  TextureFilterOptions filtering = TFO_ANISOTROPIC;
+
+  if (filtration == "anisotropic") {
+    filtering = TFO_ANISOTROPIC;
+  } else if (filtration == "bilinear") {
+    filtering = TFO_BILINEAR;
+  } else if (filtration == "trilinear") {
+    filtering = TFO_TRILINEAR;
+  } else if (filtration == "none") {
+    filtering = TFO_NONE;
+  }
+
+  MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
+  MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 }
 
 void Engine::Capture() {
@@ -116,7 +342,9 @@ void Engine::Capture() {
 
 void Engine::RegComponent(Component *ComponentPtr) { ComponentList.push_back(ComponentPtr); }
 
-void Engine::UnRegComponent(Component *ComponentPtr) {}
+void Engine::UnRegComponent(Component *ComponentPtr) {
+  // TODO: implement this
+}
 
 void Engine::Pause() {
   for (auto &it : ComponentList) it->Pause();
@@ -153,103 +381,70 @@ void Engine::RenderFirstFrame() {
 
 void Engine::RenderOneFrame() {
   OgreRoot->renderOneFrame();
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#if defined(WINDOWS) || defined(ANDROID)
   SDL_GL_SwapWindow(SDLWindowPtr);
 #endif
 }
 
-void Engine::InitOgrePlugins() {
-#ifdef OGRE_BUILD_PLUGIN_OCTREE
-  Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
-#endif
+void Engine::ResizeWindow(int Width, int Height) {
+  WindowWidth = Width;
+  WindowHeight = Height;
+  SDL_SetWindowPosition(SDLWindowPtr, (ScreenWidth - WindowWidth) / 2, (ScreenHeight - WindowHeight) / 2);
+  SDL_SetWindowSize(SDLWindowPtr, WindowWidth, WindowHeight);
+  OgreRenderWindowPtr->resize(Width, Height);
+}
 
-#ifdef OGRE_BUILD_PLUGIN_PFX
-  Root::getSingleton().installPlugin(new ParticleFXPlugin());
-#endif
+void Engine::SetFullscreen(bool Fullscreen) {
+  if (Fullscreen)
+    SetFullscreen();
+  else
+    SetWindowed();
+}
 
-#ifdef OGRE_BUILD_PLUGIN_STBI
-  Root::getSingleton().installPlugin(new STBIPlugin());
-#endif
-
-#ifdef DEBUG
-#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
-  Root::getSingleton().installPlugin(new FreeImagePlugin());
-#endif
-
-#ifdef OGRE_BUILD_PLUGIN_ASSIMP
-  Root::getSingleton().installPlugin(new AssimpPlugin());
-#endif
-#endif
-
-#ifdef OGRE_BUILD_PLUGIN_OCTREE
-  OgreSceneManager = OgreRoot->createSceneManager("OctreeSceneManager", "Default");
+void Engine::SetFullscreen() {
+  WindowFullScreen = true;
+  OgreRenderWindowPtr->setFullscreen(WindowFullScreen, WindowWidth, WindowHeight);
+#ifdef DESKTOP
+  SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
 #else
-  OgreSceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
-#endif
-  Root::getSingleton().installPlugin(new DotScenePluginB());
-}
-
-void Engine::InitDefaultRenderSystem() {
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-  InitOgreRenderSystemGLES2();
-#else
-  InitOgreRenderSystemGL3();
+  SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags | SDL_WINDOW_FULLSCREEN);
 #endif
 }
 
-void Engine::InitRenderWindow() {
-  NameValuePairList params;
-  SDL_SysWMinfo info;
-  SDL_VERSION(&info.version);
-  SDL_GetWindowWMInfo(SDLWindowPtr, &info);
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
-#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
-#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
-
-  jclass class_activity = env->FindClass("android/app/Activity");
-  jclass class_resources = env->FindClass("android/content/res/Resources");
-  jmethodID method_get_resources = env->GetMethodID(class_activity, "getResources", "()Landroid/content/res/Resources;");
-  jmethodID method_get_assets = env->GetMethodID(class_resources, "getAssets", "()Landroid/content/res/AssetManager;");
-  jobject raw_activity = (jobject)SDL_AndroidGetActivity();
-  jobject raw_resources = env->CallObjectMethod(raw_activity, method_get_resources);
-  jobject raw_asset_manager = env->CallObjectMethod(raw_resources, method_get_assets);
-
-  params["currentGLContext"] = "true";
-  params["externalGLControl"] = "true";
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
-  params["preserveContext"] = "true";
-
-  AAssetManager *asset_manager = AAssetManager_fromJava(env, raw_asset_manager);
-  AConfiguration *mAConfig = AConfiguration_new();
-  AConfiguration_fromAssetManager(mAConfig, asset_manager);
-
-  ArchiveManager::getSingleton().addArchiveFactory(new APKFileSystemArchiveFactory(asset_manager));
-  ArchiveManager::getSingleton().addArchiveFactory(new APKZipArchiveFactory(asset_manager));
-#endif
-
-  const char TrueStr[] = "True";
-  const char FalseStr[] = "False";
-
-  bool vsync = true;
-  bool gamma = false;
-  int fsaa = 0;
-
-  vsync = ConfPtr->GetBool("vsync", vsync);
-  gamma = ConfPtr->GetBool("gamma", gamma);
-  fsaa = ConfPtr->GetInt("fsaa", fsaa);
-
-  params["vsync"] = vsync ? TrueStr : FalseStr;
-  params["gamma"] = gamma ? TrueStr : FalseStr;
-  params["FSAA"] = to_string(fsaa);
-
-  OgreRenderWindowPtr = Root::getSingleton().createRenderWindow("MainWindow", 0, 0, false, &params);
+void Engine::SetWindowed() {
+  WindowFullScreen = false;
+  OgreRenderWindowPtr->setFullscreen(WindowFullScreen, WindowWidth, WindowHeight);
+  SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags);
+  SDL_SetWindowSize(SDLWindowPtr, WindowWidth, WindowHeight);
 }
+
+void Engine::SetWindowCaption(const char *Caption) { SDL_SetWindowTitle(SDLWindowPtr, Caption); }
+
+void Engine::WindowRestoreFullscreenAndroid() {
+  SDL_DisplayMode DM;
+  SDL_GetDesktopDisplayMode(0, &DM);
+  int screen_w = static_cast<int>(DM.w);
+  int screen_h = static_cast<int>(DM.h);
+  OgreRenderWindowPtr->resize(screen_w, screen_h);
+}
+
+std::pair<int, int> Engine::GetWindowSize() const { return make_pair(WindowWidth, WindowHeight); }
+
+void Engine::GrabMouse(bool grab) {
+  // This breaks input on > Android 9.0
+#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  SDL_ShowCursor(!grab);
+  SDL_SetWindowGrab(SDLWindowPtr, static_cast<SDL_bool>(grab));
+#if OGRE_PLATFORM != OGRE_PLATFORM_APPLE
+  // osx workaround: mouse motion events are gone otherwise
+  SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
+#endif
+#endif
+}
+
+void Engine::GrabMouse() { GrabMouse(true); }
+
+void Engine::FreeMouse() { GrabMouse(false); }
 
 #ifndef MOBILE
 
@@ -367,7 +562,7 @@ static void AddLocation(const std::string &Path, const std::string &GroupName = 
 
       if (jt->is_directory()) {
         if (Verbose) {
-          LogMessage(string("Found directory: ") + full_path);
+          Log::Message(string("Found directory: ") + full_path);
         }
 
         dir_list.push_back(file_name);
@@ -376,7 +571,7 @@ static void AddLocation(const std::string &Path, const std::string &GroupName = 
 
       } else if (jt->is_regular_file()) {
         if (Verbose) {
-          LogMessage(string("Found file: ") + full_path);
+          Log::Message(string("Found file: ") + full_path);
         }
         if (fs::path(full_path).extension() == ".zip") {
           if (find(extensions_list.begin(), extensions_list.end(), fs::path(file_name).extension()) != extensions_list.end()) {
@@ -403,195 +598,5 @@ void Engine::InitResourceLocation() {
   RGM.addResourceLocation("/Assets.zip", "APKZip", RGN_DEFAULT);
 #endif
 }
-
-void Engine::InitShadowSettings() {
-  bool shadows_enable = true;
-  float shadow_far = 400;
-  int16_t tex_size = 256;
-  string tex_format = "D16";
-
-  shadows_enable = ConfPtr->GetBool("shadows_enable", shadows_enable);
-  shadow_far = ConfPtr->GetInt("shadow_far", shadow_far);
-  tex_format = ConfPtr->GetString("tex_format", tex_format);
-  tex_size = ConfPtr->GetInt("tex_size", tex_size);
-
-  if (!shadows_enable) {
-    OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
-    return;
-  }
-
-  PixelFormat texture_type = PixelFormat::PF_DEPTH16;
-
-  OgreSceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-  OgreSceneManager->setShadowFarDistance(shadow_far);
-
-  if (tex_format == "F32") {
-    texture_type = PixelFormat::PF_FLOAT32_R;
-  } else if (tex_format == "F16") {
-    texture_type = PixelFormat::PF_FLOAT16_R;
-  }
-  if (tex_format == "D32") {
-    texture_type = PixelFormat::PF_DEPTH32;
-  } else if (tex_format == "D16") {
-    texture_type = PixelFormat::PF_DEPTH16;
-  }
-
-  OgreSceneManager->setShadowTextureSize(tex_size);
-  OgreSceneManager->setShadowTexturePixelFormat(texture_type);
-  OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
-  OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
-  OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
-
-  OgreSceneManager->setShadowTextureSelfShadow(true);
-  OgreSceneManager->setShadowCasterRenderBackFaces(true);
-  OgreSceneManager->setShadowFarDistance(shadow_far);
-  auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
-  OgreSceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
-
-  PSSMSetupPtr = make_shared<PSSMShadowCameraSetup>();
-  const float near_clip_distance = 0.001;
-  PSSMSetupPtr->calculateSplitPoints(PSSMSplitCount, near_clip_distance, OgreSceneManager->getShadowFarDistance());
-  PSSMSplitPointList = PSSMSetupPtr->getSplitPoints();
-  //  pssm_->setSplitPadding(near_clip_distance);
-  PSSMSetupPtr->setSplitPadding(0.1);
-
-  for (size_t i = 0; i < PSSMSplitCount; i++) {
-    PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(i));
-  }
-
-  OgreSceneManager->setShadowCameraSetup(PSSMSetupPtr);
-  OgreSceneManager->setShadowColour(ColourValue::Black);
-
-#ifdef DESKTOP
-  TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
-#endif
-}
-
-void Engine::InitTextureSettings() {
-  string filtration = ConfPtr->GetString("filtration");
-  int anisotropy = 4;
-
-  anisotropy = ConfPtr->GetInt("anisotropy", anisotropy);
-
-  TextureFilterOptions filtering = TFO_ANISOTROPIC;
-
-  if (filtration == "anisotropic") {
-    filtering = TFO_ANISOTROPIC;
-  } else if (filtration == "bilinear") {
-    filtering = TFO_BILINEAR;
-  } else if (filtration == "trilinear") {
-    filtering = TFO_TRILINEAR;
-  } else if (filtration == "none") {
-    filtering = TFO_NONE;
-  }
-
-  MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
-  MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
-}
-
-void Engine::ResizeWindow(int Width, int Height) {
-  WindowWidth = Width;
-  WindowHeight = Height;
-  SDL_SetWindowPosition(SDLWindowPtr, (ScreenWidth - WindowWidth) / 2, (ScreenHeight - WindowHeight) / 2);
-  SDL_SetWindowSize(SDLWindowPtr, WindowWidth, WindowHeight);
-  OgreRenderWindowPtr->resize(Width, Height);
-}
-
-void Engine::CreateWindow() {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
-    throw Exception("Failed to init SDL2");
-  }
-
-  for (int i = 0; i < SDL_NumJoysticks(); ++i) {
-    if (SDL_IsGameController(i)) {
-      SDL_GameControllerOpen(i);
-    }
-  }
-
-  SDL_DisplayMode DM;
-  SDL_GetDesktopDisplayMode(0, &DM);
-  ScreenWidth = static_cast<int>(DM.w);
-  ScreenHeight = static_cast<int>(DM.h);
-
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-
-  if (WindowWidth == ScreenWidth && WindowHeight == ScreenHeight) {
-    SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
-  }
-
-  if (FullScreen) {
-    SDLWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
-    WindowWidth = ScreenWidth;
-    WindowHeight = ScreenHeight;
-  }
-
-  SDLWindowPtr = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(0), SDL_WINDOWPOS_UNDEFINED_DISPLAY(0), WindowWidth, WindowHeight,
-                                  SDLWindowFlags);
-
-#else
-
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-
-  SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
-  SDLWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-  SDLWindowFlags |= SDL_WINDOW_OPENGL;
-
-  WindowWidth = ScreenWidth;
-  WindowHeight = ScreenHeight;
-
-  SDLWindowPtr = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ScreenWidth, ScreenHeight, SDLWindowFlags);
-  SDLGLContextPtr = SDL_GL_CreateContext(SDLWindowPtr);
-
-#endif
-}
-
-void Engine::SetFullscreen() {
-  FullScreen = true;
-
-#ifdef DESKTOP
-  SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
-#else
-  SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags | SDL_WINDOW_FULLSCREEN);
-#endif
-}
-
-void Engine::SetWindowed() {
-  FullScreen = false;
-  SDL_SetWindowSize(SDLWindowPtr, WindowWidth, WindowHeight);
-}
-
-void Engine::SetWindowCaption(const char *Caption) { SDL_SetWindowTitle(SDLWindowPtr, Caption); }
-
-void Engine::WindowRestoreFullscreenAndroid() {
-  SDL_DisplayMode DM;
-  SDL_GetDesktopDisplayMode(0, &DM);
-  int screen_w = static_cast<int>(DM.w);
-  int screen_h = static_cast<int>(DM.h);
-  OgreRenderWindowPtr->resize(screen_w, screen_h);
-}
-
-std::pair<int, int> Engine::GetWindowSize() const { return make_pair(WindowWidth, WindowHeight); }
-
-void Engine::GrabMouse(bool grab) {
-  // This breaks input on > Android 9.0
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  SDL_ShowCursor(!grab);
-  SDL_SetWindowGrab(SDLWindowPtr, static_cast<SDL_bool>(grab));
-#if OGRE_PLATFORM != OGRE_PLATFORM_APPLE
-  // osx workaround: mouse motion events are gone otherwise
-  SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
-#endif
-#endif
-}
-
-void Engine::GrabMouse() { GrabMouse(true); }
-
-void Engine::FreeMouse() { GrabMouse(false); }
 
 }  // namespace Glue

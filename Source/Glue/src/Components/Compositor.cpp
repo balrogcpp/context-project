@@ -63,6 +63,7 @@ Compositor::Compositor() {
   EnableEffect("ssao", ConfPtr->GetBool("enable_ssao"));
   EnableEffect("bloom", ConfPtr->GetBool("enable_bloom"));
   EnableEffect("mblur", ConfPtr->GetBool("enable_mblur"));
+
   SetUp();
 }
 

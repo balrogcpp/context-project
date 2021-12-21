@@ -6,13 +6,9 @@
 #include "DesktopIcon.h"
 #include "Exception.h"
 #include "RTSS.h"
-#include <fstream>
 #include <iostream>
 
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 extern "C" {
 __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
@@ -25,20 +21,9 @@ namespace Glue {
 
 Application::Application() {
   try {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-    auto *logger = new Ogre::LogManager();
-
-#ifdef DEBUG
-    logger->createLog(LogFileName, true, true, true);
-    Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
-#else
-    logger->createLog(LogFileName, false, false, true);
-    Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_NORMAL);
+#ifdef DESKTOP
+    LogPtr = make_unique<Log>("Runtime.txt");
 #endif
-
-    Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
-#endif
-
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     DesktopIcon icon;
     icon.SaveToFile("GlueSample");
@@ -52,69 +37,25 @@ Application::Application() {
     Verbose = GetConf().GetBool("verbose", Verbose);
     VerboseInput = GetConf().GetBool("verbose_input", VerboseInput);
 
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-    if (Verbose) {
-      LogBuffer.reserve(10000);
-    }
-
     if (VerboseInput) {
       VerboseListenerPtr = make_unique<VerboseListener>();
     }
-#endif
 
     LockFPS = GetConf().GetBool("lock_fps", LockFPS);
     TargetFPS = GetConf().GetInt("target_fps", TargetFPS);
 
   } catch (Exception &e) {
-    ExceptionMessage("Exception", e.GetDescription());
+    ErrorWindow("Exception", e.GetDescription());
   } catch (Ogre::Exception &e) {
-    ExceptionMessage("Exception", string("Ogre: ") + e.getFullDescription());
+    ErrorWindow("Exception", string("Ogre: ") + e.getFullDescription());
   } catch (exception &e) {
-    ExceptionMessage("Exception", string("std::exception: ") + e.what());
+    ErrorWindow("Exception", string("std::exception: ") + e.what());
   } catch (...) {
-    ExceptionMessage("Exception", "unhandled");
+    ErrorWindow("Exception", "unhandled");
   }
 }
 
-Application::~Application() {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  Ogre::LogManager::getSingleton().getDefaultLog()->removeListener(this);
-#endif
-}
-
-int Application::ExceptionMessage(const string &WindowCaption, const string &MessageText) {
-#ifdef _WIN32
-  MessageBox(nullptr, MessageText.c_str(), WindowCaption.c_str(), MB_ICONERROR);
-#else
-  SDL_Log("%s", string(WindowCaption + " : " + MessageText).c_str());
-  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, WindowCaption.c_str(), MessageText.c_str(), nullptr);
-#endif
-  return 1;
-}
-
-void Application::WriteLogToFile() {
-  if (!Verbose) {
-    return;
-  }
-
-  ofstream f;
-  f.open(LogFileName);
-
-  if (f.is_open()) {
-    f << LogBuffer;
-  }
-}
-void Application::PrintLogToConsole() { cout << LogBuffer << flush; }
-
-void Application::messageLogged(const string &message, Ogre::LogMessageLevel lml, bool maskDebug, const string &logName,
-                                bool &skipThisMessage) {
-  LogBuffer.append(message);
-  LogBuffer.append("\n");
-
-#ifdef DEBUG
-  if (Verbose) cout << message << '\n';
-#endif
-}
+Application::~Application() {}
 
 void Application::Loop() {
   bool WasSuspend = false;
@@ -164,8 +105,7 @@ void Application::Loop() {
     }
 #endif
 
-    auto TimeAftetRender =
-        chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+    auto TimeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
     auto RenderTime = TimeAftetRender - TimeBeforeFrame;
 
     if (LockFPS) {
@@ -175,8 +115,7 @@ void Application::Loop() {
       }
     }
 
-    int64_t TimeInEndOfLoop =
-        chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+    int64_t TimeInEndOfLoop = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 
     int64_t TimeSinceLastFrame = TimeInEndOfLoop - TimeBeforeFrame;
     CumultedTime += TimeSinceLastFrame;
@@ -222,18 +161,18 @@ int Application::Main(unique_ptr<AppState> &&AppStatePtr) {
     StateManagerPtr->SetInitialState(move(AppStatePtr));
     Go();
 
-    WriteLogToFile();
+    LogPtr->WriteLogToFile();
 
     SDL_Quit();
 
   } catch (Exception &e) {
-    ExceptionMessage("Exception", e.GetDescription());
+    ErrorWindow("Exception", e.GetDescription());
   } catch (Ogre::Exception &e) {
-    ExceptionMessage("Exception", string("Ogre: ") + e.getFullDescription());
+    ErrorWindow("Exception", string("Ogre: ") + e.getFullDescription());
   } catch (exception &e) {
-    ExceptionMessage("Exception", string("std::exception: ") + e.what());
+    ErrorWindow("Exception", string("std::exception: ") + e.what());
   } catch (...) {
-    ExceptionMessage("Exception", "unhandled");
+    ErrorWindow("Exception", "unhandled");
   }
 
   return 0;

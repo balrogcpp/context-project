@@ -18,7 +18,7 @@ namespace Glue {
 
 class Overlay final : public Component, public Singleton<Overlay>, public Ogre::RenderTargetListener {
  public:
-  Overlay(Ogre::RenderWindow* render_window);
+  Overlay(Ogre::RenderWindow* OgreRenderWindowPtr);
   virtual ~Overlay();
 
   void Cleanup() override;
@@ -26,13 +26,13 @@ class Overlay final : public Component, public Singleton<Overlay>, public Ogre::
   void Resume() override;
   void Update(float time) override;
   void preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) override;
-  void PrepareTexture(const std::string& name_, const std::string& group_ = Ogre::RGN_AUTODETECT);
+  void PrepareFontTexture(const std::string& FontName, const std::string& ResourceGroup = Ogre::RGN_AUTODETECT);
 
  protected:
-  std::unique_ptr<ImGuiInputListener> imgui_listener;
+  std::unique_ptr<ImGuiInputListener> ImGuiListener;
   Ogre::ImGuiOverlay* imgui_overlay = nullptr;
-  Ogre::OverlaySystem* overlay_system = nullptr;
-  Ogre::RenderWindow* render_window = nullptr;
+  Ogre::OverlaySystem* OgreOverlay = nullptr;
+  Ogre::RenderWindow* OgreRenderWindow = nullptr;
 };
 
 }  // namespace Glue

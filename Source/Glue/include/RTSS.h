@@ -32,7 +32,7 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
 
   bool beforeIlluminationPassesCleared(Ogre::Technique *OgreTechnique);
 
- private:
+ protected:
   Ogre::RTShader::ShaderGenerator *ShaderGeneratorPtr = nullptr;
 };
 

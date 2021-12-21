@@ -6,35 +6,29 @@
 #include "LazySingleton.h"
 #include "Input/WindowObserver.h"
 #include "Input/VerboseListener.h"
-#include <OgreLog.h>
+#include "Log.h"
 #include <memory>
 #include <string>
 
 namespace Glue {
 
-class Application final : public WindowObserver, public Ogre::LogListener, public Singleton<Application> {
+class Application final : public WindowObserver, public Singleton<Application> {
  public:
   Application();
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&AppStatePtr);
 
- private:
+ protected:
   void Loop();
   void Go();
-  int ExceptionMessage(const std::string &WindowCaption, const std::string &MessageText);
 
   void OnQuit() override;
   void OnPause() override;
   void OnResume() override;
 
-  void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, bool maskDebug, const std::string &logName,
-                     bool &skipThisMessage) override;
-
-  void WriteLogToFile();
-  void PrintLogToConsole();
-
   std::unique_ptr<AppStateManager> StateManagerPtr;
   std::unique_ptr<VerboseListener> VerboseListenerPtr;
+  std::unique_ptr<Log> LogPtr;
   Engine *EnginePtr = nullptr;
 
   bool Running = true;
@@ -45,8 +39,6 @@ class Application final : public WindowObserver, public Ogre::LogListener, publi
   int64_t CurrentFPS = 0;
   int64_t TargetFPS = 60;
   bool LockFPS = true;
-  std::string LogBuffer;
-  std::string LogFileName = "Launch.log";
   bool Verbose = false;
 
   /// Print all input in cout (pressed key on keyboard, mouse move, gamepad etc.)
