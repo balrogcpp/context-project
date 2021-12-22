@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Engine.h"
 #include "LazySingleton.h"
+#include "Components/Component.h"
 #include <memory>
 #include <vector>
 
@@ -15,6 +15,15 @@ class Physics;
 class Sound;
 class Scene;
 class Conf;
+}  // namespace Glue
+
+namespace Glue {
+
+template <typename T>
+T* GetComponent() {
+  return static_cast<T*>(Component<T>::GetInstancePtr());
+}
+
 }  // namespace Glue
 
 namespace Glue {
@@ -94,7 +103,7 @@ class Engine final : public LazySingleton<Engine> {
   std::unique_ptr<Scene> ScenePtr;
   std::vector<ComponentI*> ComponentList;
 
-  friend Conf& GetConf();
+  friend Engine& GetEngine();
   friend Physics& GetPhysics();
   friend Sound& GetAudio();
   friend Scene& GetScene();

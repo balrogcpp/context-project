@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "Application.h"
 #include "Components/ComponentLocator.h"
+#include "Conf.h"
 #include "DesktopIcon.h"
 #include "Exception.h"
 #include "RTSS.h"
@@ -24,25 +25,21 @@ Application::Application() {
 #ifdef DESKTOP
     LogPtr = make_unique<Log>("Runtime.txt");
 #endif
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    DesktopIcon icon;
-    icon.SaveToFile("GlueSample");
-#endif
 
     EnginePtr = &Engine::GetInstance();
     EnginePtr->InitComponents();
 
     StateManagerPtr = make_unique<AppStateManager>();
 
-    Verbose = GetConf().GetBool("verbose", Verbose);
-    VerboseInput = GetConf().GetBool("verbose_input", VerboseInput);
+    //Verbose = GetConf().GetBool("verbose", Verbose);
+    //VerboseInput = GetConf().GetBool("verbose_input", VerboseInput);
 
     if (VerboseInput) {
       VerboseListenerPtr = make_unique<VerboseListener>();
     }
 
-    LockFPS = GetConf().GetBool("lock_fps", LockFPS);
-    TargetFPS = GetConf().GetInt("target_fps", TargetFPS);
+    //LockFPS = GetConf().GetBool("lock_fps", LockFPS);
+    //TargetFPS = GetConf().GetInt("target_fps", TargetFPS);
 
   } catch (Exception &e) {
     ErrorWindow("Exception", e.GetDescription());

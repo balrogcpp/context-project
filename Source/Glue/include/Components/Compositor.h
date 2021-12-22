@@ -2,7 +2,6 @@
 
 #pragma once
 #include "Components/Component.h"
-#include "LazySingleton.h"
 #include <memory>
 #include <string>
 

@@ -353,8 +353,6 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &XmlNode, SceneNode *ParentNod
       } else if (light->getType() == Light::LT_SPOTLIGHT && light->getCastShadows()) {
         int camera_type = 4;
 
-        // ConfPtr->GetInt("camera_type", camera_type);
-        camera_type = 4;
         static ShadowCameraSetupPtr default_scs;
 
         switch (camera_type) {
