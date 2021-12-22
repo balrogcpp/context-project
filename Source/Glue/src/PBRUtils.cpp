@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "PBRUtils.h"
-#include "Components/ComponentLocator.h"
+#include "Engine.h"
 
 using namespace std;
 using namespace Ogre;

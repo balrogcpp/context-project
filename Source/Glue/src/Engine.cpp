@@ -622,4 +622,15 @@ void Engine::InitResourceLocation() {
 #endif
 }
 
+Engine& GetEngine() {
+  static auto& EnginePtr = Engine::GetInstance();
+  return EnginePtr;
+}
+
+Physics& GetPhysics() { return *GetComponent<Physics>(); }
+
+Sound& GetAudio() { return *GetComponent<Sound>(); }
+
+Scene& GetScene() { return *GetComponent<Scene>(); }
+
 }  // namespace Glue

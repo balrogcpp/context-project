@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "DemoDotAppState.h"
-#include "Components/ComponentLocator.h"
+#include "Engine.h"
 #include "Components/ComponentsAll.h"
 #include "Objects/CameraMan.h"
 #include "MenuAppState.h"

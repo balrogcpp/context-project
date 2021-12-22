@@ -15,6 +15,7 @@ class Physics;
 class Sound;
 class Scene;
 class Conf;
+class Engine;
 }  // namespace Glue
 
 namespace Glue {
@@ -27,6 +28,11 @@ T* GetComponent() {
 }  // namespace Glue
 
 namespace Glue {
+
+Engine& GetEngine();
+Physics& GetPhysics();
+Sound& GetAudio();
+Scene& GetScene();
 
 class Engine final : public LazySingleton<Engine> {
  public:

@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "Application.h"
-#include "Components/ComponentLocator.h"
+#include "Engine.h"
 #include "Conf.h"
 #include "DesktopIcon.h"
 #include "Exception.h"

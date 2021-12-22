@@ -3,7 +3,7 @@
 #include "pch.h"
 #include "Components/DotSceneLoaderB.h"
 #include "BtOgre/BtOgre.h"
-#include "Components/ComponentLocator.h"
+#include "Engine.h"
 #include "Components/ComponentsAll.h"
 #include "MeshUtils.h"
 #include "Objects/SinbadCharacterController.h"
