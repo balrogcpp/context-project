@@ -3,7 +3,7 @@
 #include "pch.h"
 #include "Components/Compositor.h"
 #include "Conf.h"
-#include "PBRUtils.h"
+#include "PBR.h"
 
 using namespace std;
 using namespace Ogre;

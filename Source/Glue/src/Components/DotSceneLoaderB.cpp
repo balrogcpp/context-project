@@ -3,11 +3,10 @@
 #include "pch.h"
 #include "Components/DotSceneLoaderB.h"
 #include "BtOgre/BtOgre.h"
-#include "Engine.h"
 #include "Components/ComponentsAll.h"
-#include "MeshUtils.h"
+#include "Engine.h"
 #include "Objects/SinbadCharacterController.h"
-#include "PBRUtils.h"
+#include "PBR.h"
 #include "PagedGeometry/PagedGeometryAll.h"
 #include "XmlParser.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
@@ -691,7 +690,8 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &XmlNode, SceneNode *ParentNo
 
   try {
     ParentNode->attachObject(entity);
-    UpdateEntityMaterial(entity, cast_shadows, material_name, planar_reflection, active_ibl);
+
+//    UpdateEntityMaterial(entity, cast_shadows, material_name, planar_reflection, active_ibl);
 
     // Process userDataReference
     if (auto element = XmlNode.child("userData")) {
@@ -719,7 +719,7 @@ void DotSceneLoaderB::ProcessParticleSystem(pugi::xml_node &XmlNode, SceneNode *
   // SetUp the particle system
   try {
     ParticleSystem *pParticles = OgreScene->createParticleSystem(name, templateName);
-    PBR::UpdatePbrParams(pParticles->getMaterialName());
+//    PBR::UpdatePbrParams(pParticles->getMaterialName());
 
     const uint32 WATER_MASK = 0xF00;
     pParticles->setVisibilityFlags(WATER_MASK);
@@ -775,11 +775,11 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
 
   if (material.empty()) return;
 
-  if (!material.empty()) {
-    entity->setMaterialName(material);
-    MaterialPtr material_ptr = MaterialManager::getSingleton().getByName(material);
-    PBR::UpdatePbrParams(material);
-  }
+//  if (!material.empty()) {
+//    entity->setMaterialName(material);
+//    MaterialPtr material_ptr = MaterialManager::getSingleton().getByName(material);
+//    PBR::UpdatePbrParams(material);
+//  }
 
   //  if (reflection) {
   //    rcamera.reset();

@@ -2,9 +2,8 @@
 
 #include "pch.h"
 #include "Objects/SinbadCharacterController.h"
-#include "Engine.h"
 #include "Components/ComponentsAll.h"
-#include "MeshUtils.h"
+#include "Engine.h"
 
 using namespace std;
 
@@ -12,8 +11,7 @@ namespace Glue {
 
 Ogre::SceneNode *SinbadCharacterController::GetBodyNode() const { return mBodyNode; }
 
-SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam)
-    : mBaseAnimID(ANIM_NONE), mTopAnimID(ANIM_NONE) {
+SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam) : mBaseAnimID(ANIM_NONE), mTopAnimID(ANIM_NONE) {
   setupBody(cam->getSceneManager());
   setupCamera(cam);
   setupAnimations();
@@ -128,8 +126,8 @@ void SinbadCharacterController::setupBody(Ogre::SceneManager *sceneMgr) {
   mBodyEnt->attachObjectToBone("Sheath.L", mSword1);
   mBodyEnt->attachObjectToBone("Sheath.R", mSword2);
 
-  UpdateMeshMaterial("Sinbad.mesh");
-  UpdateMeshMaterial("Sword.mesh");
+  //  UpdateMeshMaterial("Sinbad.mesh");
+  //  UpdateMeshMaterial("Sword.mesh");
 
   // create a couple of ribbon trails for the swords, just for fun
   Ogre::NameValuePairList params;
@@ -156,9 +154,8 @@ void SinbadCharacterController::setupAnimations() {
   // this is very important due to the nature of the exported animations
   mBodyEnt->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
 
-  Ogre::String animNames[NUM_ANIMS] = {"IdleBase",     "IdleTop",    "RunBase",       "RunTop",          "HandsClosed",
-                                       "HandsRelaxed", "DrawSwords", "SliceVertical", "SliceHorizontal", "Dance",
-                                       "JumpStart",    "JumpLoop",   "JumpEnd"};
+  Ogre::String animNames[NUM_ANIMS] = {"IdleBase",      "IdleTop",         "RunBase", "RunTop",    "HandsClosed", "HandsRelaxed", "DrawSwords",
+                                       "SliceVertical", "SliceHorizontal", "Dance",   "JumpStart", "JumpLoop",    "JumpEnd"};
 
   // populate our animation list
   for (int i = 0; i < NUM_ANIMS; i++) {
@@ -243,13 +240,13 @@ void SinbadCharacterController::updateBody(float deltaTime) {
       setBaseAnimation(ANIM_JUMP_END, true);
       mTimer = 0;
     }
-//    if (pos.y <= GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT) {
-//      // if we've hit the ground, change to landing state
-//      pos.y = GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
-//      mBodyNode->setPosition(pos);
-//      setBaseAnimation(ANIM_JUMP_END, true);
-//      mTimer = 0;
-//    }
+    //    if (pos.y <= GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT) {
+    //      // if we've hit the ground, change to landing state
+    //      pos.y = GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
+    //      mBodyNode->setPosition(pos);
+    //      setBaseAnimation(ANIM_JUMP_END, true);
+    //      mTimer = 0;
+    //    }
   }
 }
 
