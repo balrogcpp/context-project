@@ -138,6 +138,7 @@ include(CPack)
 # Doesn't work with MSVC
 if (NOT MSVC)
     add_custom_target(BuildPackage
+            DEPENDS AssetsBuild
             COMMAND ${CMAKE_COMMAND} --build . --target package
             COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

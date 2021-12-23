@@ -10,10 +10,7 @@ class Camera;
 
 namespace Glue {
 
-class PBR final {
- public:
-  static void FixTransparentShadowCaster(const Ogre::MaterialPtr &material);
-  static void FixTransparentShadowCaster(const std::string &material);
-};
+static void FixTransparentShadowCaster(const Ogre::MaterialPtr &material);
+static void FixTransparentShadowCaster(const std::string &material);
 
 }  // namespace Glue

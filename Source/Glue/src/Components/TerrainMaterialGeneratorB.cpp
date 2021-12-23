@@ -26,18 +26,18 @@ TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *pare
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
 bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const {
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  //#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  //  return true;
+  //#else
+  //  static bool Result = (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem");
+  //  return Result;
+  //#endif
   return true;
-#else
-  static bool Result = (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem");
-  return Result;
-#endif
 }
 
 void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { EnableLightmap = enabled; }
 
 void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Ogre::Terrain *OgreTerrainPtr) {
-  if (!OgreTerrainPtr) return;
   OgreTerrainPtr->_setMorphRequired(true);
   OgreTerrainPtr->_setNormalMapRequired(true);
   OgreTerrainPtr->_setLightMapRequired(EnableLightmap, false);
@@ -66,11 +66,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
   auto normalmap = OgreTerrainPtr->getTerrainNormalMap();
   string new_name = material_name + GENERATOR;
 
-//  PBR::UpdatePbrParams(material_name);
-
   if (Ogre::MaterialManager::getSingleton().resourceExists(new_name)) {
-//    PBR::UpdatePbrParams(new_name);
-
     return Ogre::MaterialManager::getSingleton().getByName(new_name);
   } else {
     auto new_material = Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(new_name);
@@ -82,8 +78,6 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
       texture_state->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
     }
 
-//    PBR::UpdatePbrParams(new_name);
-
     return new_material;
   }
 }
@@ -91,8 +85,6 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Ogre::Terrain *terrain) {
   string material_name = "TerrainCustom";
   const int GENERATOR = 1;
-
-//  PBR::UpdatePbrParams(material_name);
 
   string new_name = material_name + to_string(GENERATOR);
 

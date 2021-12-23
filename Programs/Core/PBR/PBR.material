@@ -242,7 +242,7 @@ abstract material PBR_Plane : PBR
 vertex_program PBR_Terrain_vs_gl glsl
 {
 	source PBR.vert
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {
         shared_params_ref PBR_Shared_vert
     }

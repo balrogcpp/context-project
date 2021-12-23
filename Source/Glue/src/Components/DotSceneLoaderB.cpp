@@ -906,6 +906,7 @@ void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
   int maxBatchSize = StringConverter::parseInt(XmlNode.attribute("maxBatchSize").value());
   int inputScale = StringConverter::parseInt(XmlNode.attribute("inputScale").value());
   int tuningMaxPixelError = GetAttribInt(XmlNode, "tuningMaxPixelError", 8);
+
   auto *terrain_global_options = TerrainGlobalOptions::getSingletonPtr();
   if (!terrain_global_options) terrain_global_options = new TerrainGlobalOptions();
   terrain_global_options->setUseVertexCompressionWhenAvailable(true);
