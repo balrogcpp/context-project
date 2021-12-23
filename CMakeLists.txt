@@ -60,7 +60,8 @@ if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_dependencies(AndroidDummy ThirdParty)
 endif ()
 
-# Docker-compose targets
+# Docker-compose targets (how to make then crossplatform ?)
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 add_custom_target(DockerComposeDep
         COMMAND docker-compose -f docker-compose-3rd.yml up
         COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
@@ -76,6 +77,7 @@ add_custom_target(DockerCompose
         COMMENT "Building tests with docker..."
         USES_TERMINAL
         )
+endif ()
 
 if (ANY_NOT_FOUND)
     return()
