@@ -33,7 +33,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC ${GLUE_LINK_LIBRARIES})
 
 install(TARGETS ${TARGET_NAME} RUNTIME DESTINATION .)
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "Release" AND NOT ANDROID)
+if (${CMAKE_BUILD_TYPE} STREQUAL "Release" AND DESKTOP)
     include(ReallySmallPostBuild)
 endif ()
 
@@ -42,13 +42,13 @@ set(GLUE_DEPLOY_DIR ${CMAKE_SOURCE_DIR}/Deploy)
 
 if (WIN32)
     file(GLOB EXTERNAL_DLL_GLOB ${GLUE_EXTERNAL_INSTALL_LOCATION}/bin/*.dll)
-    file(INSTALL ${EXTERNAL_DLL_GLOB} DESTINATION .)
+    file(COPY ${EXTERNAL_DLL_GLOB} DESTINATION .)
 endif ()
-if (NOT ANDROID)
-    file(INSTALL ${CMAKE_BINARY_DIR}/config.ini DESTINATION .)
+if (DESKTOP)
+    file(COPY ${GLUE_DEPLOY_DIR}/config.ini DESTINATION .)
 endif ()
 if (MINGW)
-    file(INSTALL ${CMAKE_BINARY_DIR}/Sample.exe.manifest DESTINATION .)
+    file(COPY ${GLUE_DEPLOY_DIR}/Sample.exe.manifest DESTINATION .)
 endif ()
 
 set(GLUE_PACKAGE_NAME "GlueSample")

@@ -1,3 +1,5 @@
+include(Platform)
+
 set(GLUE_INCLUDE_DIRS
         ${GLUE_EXTERNAL_INSTALL_LOCATION}/include
         ${OPENAL_INCLUDE_DIR}
