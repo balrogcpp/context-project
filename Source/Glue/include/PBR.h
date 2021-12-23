@@ -10,7 +10,7 @@ class Camera;
 
 namespace Glue {
 
-static void FixTransparentShadowCaster(const Ogre::MaterialPtr &material);
-static void FixTransparentShadowCaster(const std::string &material);
+void FixTransparentShadowCaster(const Ogre::MaterialPtr &material);
+void FixTransparentShadowCaster(const std::string &material);
 
 }  // namespace Glue
