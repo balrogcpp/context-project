@@ -20,7 +20,7 @@ shared_params PBRS_Shared_vert
 
 vertex_program PBRS_vs glsl glsles
 {
-	source pbr.vert
+	source PBR.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8
     default_params {
         shared_params_ref PBRS_Shared_vert
@@ -37,7 +37,7 @@ vertex_program PBRS_vs glsl glsles
 
 abstract fragment_program PBRS_BaseI_fs glsl glsles
 {
-	source pbr.frag
+	source PBR.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,MAX_LIGHTS=8
     default_params {
         shared_params_ref PBRS_Shared_frag

@@ -195,13 +195,13 @@ abstract material PBR_IBL : PBR
 
 vertex_program PBR_Reflective_vs glsl glsles
 {
-	source pbr.vert
+	source PBR.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_REFLECTION,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 fragment_program PBR_Reflective_fs glsl glsles
 {
-	source pbr.frag
+	source PBR.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_EMISSIVEMAP,HAS_ORM,HAS_REFLECTION,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 
     default_params
@@ -241,7 +241,7 @@ abstract material PBR_Plane : PBR
 
 vertex_program PBR_Terrain_vs_gl glsl
 {
-	source pbr.vert
+	source PBR.vert
     preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {
         shared_params_ref PBR_Shared_vert
@@ -250,7 +250,7 @@ vertex_program PBR_Terrain_vs_gl glsl
 
 vertex_program PBR_Terrain_vs_es glsles
 {
-	source pbr.vert
+	source PBR.vert
     preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8
     default_params {
         shared_params_ref PBR_Shared_vert
@@ -265,7 +265,7 @@ vertex_program PBR_Terrain_vs unified
 
 fragment_program PBR_Terrain_fs_gl glsl
 {
-	source pbr.frag
+	source PBR.frag
     preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 
     default_params
@@ -277,7 +277,7 @@ fragment_program PBR_Terrain_fs_gl glsl
 
 fragment_program PBR_Terrain_fs_es glsles
 {
-	source pbr.frag
+	source PBR.frag
     preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8
 
     default_params
@@ -332,7 +332,7 @@ abstract material PBR_Terrain : PBR
 
 vertex_program PBR_Paged_vs glsl glsles
 {
-	source pbr.vert
+	source PBR.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8
     default_params {
         shared_params_ref PBR_Shared_vert
@@ -341,7 +341,7 @@ vertex_program PBR_Paged_vs glsl glsles
 
 fragment_program PBR_Paged_fs glsl glsles
 {
-	source pbr.frag
+	source PBR.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_ALPHA,MAX_LIGHTS=8
 }
 
@@ -434,7 +434,7 @@ abstract material PBR_Plant : PBR_Basic
 
 vertex_program PBR_Fx_vs glsl glsles
 {
-	source pbr.vert
+	source PBR.vert
     preprocessor_defines HAS_UV,HAS_COLOURS,MAX_LIGHTS=1
     default_params {
         shared_params_ref PBR_Shared_vert
@@ -443,7 +443,7 @@ vertex_program PBR_Fx_vs glsl glsles
 
 fragment_program PBR_Fx_fs glsl glsles
 {
-	source pbr.frag
+	source PBR.frag
     preprocessor_defines HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=1
 }
 

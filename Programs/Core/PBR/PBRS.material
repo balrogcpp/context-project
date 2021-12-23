@@ -132,13 +132,13 @@ abstract material PBRS_IBL : PBRS
 
 vertex_program PBRS_Reflective_vs glsl glsles
 {
-	source pbr.vert
+	source PBR.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_REFLECTION,MAX_LIGHTS=8
 }
 
 fragment_program PBRS_Reflective_fs glsl glsles
 {
-	source pbr.frag
+	source PBR.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_EMISSIVEMAP,HAS_ORM,HAS_REFLECTION,MAX_LIGHTS=8
 
     default_params
@@ -178,7 +178,7 @@ abstract material PBRS_Plane : PBRS
 
 vertex_program PBRS_Terrain_vs_gl glsl
 {
-	source pbr.vert
+	source PBR.vert
     preprocessor_defines HAS_UV,MAX_LIGHTS=8
     default_params {
         shared_params_ref PBRS_Shared_vert
@@ -187,7 +187,7 @@ vertex_program PBRS_Terrain_vs_gl glsl
 
 vertex_program PBRS_Terrain_vs_es glsles
 {
-	source pbr.vert
+	source PBR.vert
     preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8
     default_params {
         shared_params_ref PBRS_Shared_vert
@@ -202,7 +202,7 @@ vertex_program PBRS_Terrain_vs unified
 
 fragment_program PBRS_Terrain_fs_gl glsl
 {
-	source pbr.frag
+	source PBR.frag
     preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8
 
     default_params
@@ -214,7 +214,7 @@ fragment_program PBRS_Terrain_fs_gl glsl
 
 fragment_program PBRS_Terrain_fs_es glsles
 {
-	source pbr.frag
+	source PBR.frag
     preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8
 
     default_params
@@ -269,7 +269,7 @@ abstract material PBRS_Terrain : PBRS
 
 vertex_program PBRS_Paged_vs glsl glsles
 {
-	source pbr.vert
+	source PBR.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8
     default_params {
         shared_params_ref PBRS_Shared_vert
@@ -278,7 +278,7 @@ vertex_program PBRS_Paged_vs glsl glsles
 
 fragment_program PBRS_Paged_fs glsl glsles
 {
-	source pbr.frag
+	source PBR.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_ALPHA,MAX_LIGHTS=8
 }
 
@@ -312,7 +312,7 @@ abstract material PBRS_Paged : PBRS_Basic
 
 vertex_program PBRS_Grass_vs glsl glsles
 {
-	source pbr.vert
+	source PBR.vert
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8
     default_params {
         shared_params_ref PBRS_Shared_vert
@@ -321,7 +321,7 @@ vertex_program PBRS_Grass_vs glsl glsles
 
 fragment_program PBRS_Grass_fs glsl glsles
 {
-	source pbr.frag
+	source PBR.frag
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=8
 }
 
@@ -386,7 +386,7 @@ abstract material PBRS_Plant : PBRS_Basic
 
 vertex_program PBRS_Fx_vs glsl glsles
 {
-	source pbr.vert
+	source PBR.vert
     preprocessor_defines HAS_UV,HAS_COLOURS,MAX_LIGHTS=1
     default_params {
         shared_params_ref PBRS_Shared_vert
@@ -395,7 +395,7 @@ vertex_program PBRS_Fx_vs glsl glsles
 
 fragment_program PBRS_Fx_fs glsl glsles
 {
-	source pbr.frag
+	source PBR.frag
     preprocessor_defines HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=1
 }
 
