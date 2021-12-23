@@ -6,8 +6,8 @@
 #include <memory>
 #include <vector>
 
-/// Components
 namespace Glue {
+
 class ComponentI;
 class Compositor;
 class Overlay;
@@ -16,18 +16,18 @@ class Sound;
 class Scene;
 class Conf;
 class Engine;
-}  // namespace Glue
 
-namespace Glue {
-
+/// Template helper function
 template <typename T>
 T* GetComponent() {
   return Component<T>::GetInstancePtr();
 }
 
-}  // namespace Glue
-
-namespace Glue {
+/// Global component getters
+Engine& GetEngine();
+Physics& GetPhysics();
+Sound& GetAudio();
+Scene& GetScene();
 
 class Engine final : public LazySingleton<Engine> {
  public:
