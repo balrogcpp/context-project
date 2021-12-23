@@ -10,7 +10,7 @@ using namespace std;
 namespace Glue {
 
 Log::Log(std::string LogFileName) {
-#ifndef MOBILE
+#ifdef DESKTOP
   auto *logger = new Ogre::LogManager();
 
 #ifdef DEBUG
@@ -23,15 +23,11 @@ Log::Log(std::string LogFileName) {
 
   Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
 
-  if (Verbose) {
-    LogBuffer.reserve(10000);
-  }
-
 #endif
 }
 
 Log::~Log() {
-#ifndef MOBILE
+#ifdef DESKTOP
   Ogre::LogManager::getSingleton().getDefaultLog()->removeListener(this);
 #endif
 }

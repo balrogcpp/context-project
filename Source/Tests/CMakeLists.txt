@@ -3,7 +3,7 @@ if (GTest_FOUND AND NOT CMAKE_CROSSCOMPILING)
     enable_testing()
     include(GoogleTest)
 
-    add_executable(TestGlue src/TestHello.cpp)
+    add_executable(TestGlue EXCLUDE_FROM_ALL src/TestHello.cpp)
     target_link_libraries(TestGlue ${GTEST_BOTH_LIBRARIES})
     include_directories(TestGlue ${GTEST_INCLUDE_DIRS})
 
