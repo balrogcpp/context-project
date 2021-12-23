@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "LazySingleton.h"
 #include "Components/Component.h"
+#include "LazySingleton.h"
 #include <memory>
 #include <vector>
 
@@ -22,17 +22,12 @@ namespace Glue {
 
 template <typename T>
 T* GetComponent() {
-  return static_cast<T*>(Component<T>::GetInstancePtr());
+  return Component<T>::GetInstancePtr();
 }
 
 }  // namespace Glue
 
 namespace Glue {
-
-Engine& GetEngine();
-Physics& GetPhysics();
-Sound& GetAudio();
-Scene& GetScene();
 
 class Engine final : public LazySingleton<Engine> {
  public:
@@ -52,8 +47,6 @@ class Engine final : public LazySingleton<Engine> {
   void RegComponent(ComponentI* ComponentPtr);
   void UnRegComponent(ComponentI* ComponentPtr);
 
-  void InitSDLSubsystems();
-  void CreateSDLWindow();
   void SetFullscreen(bool Fullscreen);
   void SetFullscreen();
   void SetWindowed();
@@ -65,10 +58,18 @@ class Engine final : public LazySingleton<Engine> {
   void FreeMouse();
 
  protected:
-  void InitOgrePlugins();
+  void ReadConfFile();
+  void InitSound();
+  void InitOverlay();
+  void InitCompositor();
+  void InitPhysics();
+  void InitScene();
+  void InitSDLSubsystems();
   void InitDefaultRenderSystem();
   void InitOgreRenderSystemGL3();
   void InitOgreRenderSystemGLES2();
+  void InitOgrePlugins();
+  void CreateSDLWindow();
   void CreateOgreRenderWindow();
   void InitResourceLocation();
   void InitTextureSettings();
@@ -109,6 +110,7 @@ class Engine final : public LazySingleton<Engine> {
   std::unique_ptr<Scene> ScenePtr;
   std::vector<ComponentI*> ComponentList;
 
+  /// Global access to base components
   friend Engine& GetEngine();
   friend Physics& GetPhysics();
   friend Sound& GetAudio();
