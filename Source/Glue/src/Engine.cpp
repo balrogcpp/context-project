@@ -3,12 +3,12 @@
 #include "pch.h"
 #include "Engine.h"
 #include "Components/ComponentsAll.h"
+#include "Components/DotSceneLoaderB.h"
 #include "Conf.h"
 #include "Input/InputSequencer.h"
 #include "Log.h"
 #include "Platform.h"
 #include "RTSS.h"
-#include "Components/DotSceneLoaderB.h"
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
 #endif
@@ -42,20 +42,12 @@ using namespace Ogre;
 
 namespace Glue {
 
-Engine::Engine() {
-#ifndef MOBILE
-  ConfPtr = make_unique<Conf>("config.ini");
-#else
-  // TODO: fill defauls for Android
-  ConfPtr = make_unique<Conf>("");
-#endif
-
-  ComponentList.reserve(16);
-}
+Engine::Engine() {}
 
 Engine::~Engine() { SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE); }
 
 void Engine::InitComponents() {
+  ReadConfFile();
   ComponentI::SetConfig(ConfPtr.get());
 
   WindowWidth = ConfPtr->GetInt("window_width", WindowWidth);
@@ -87,37 +79,35 @@ void Engine::InitComponents() {
   InitTextureSettings();
   InitShadowSettings();
 
-  // Overlay
-  OverlayPtr = make_unique<Overlay>(OgreRenderWindowPtr);
-  RegComponent(OverlayPtr.get());
-  auto &RGM = ResourceGroupManager::getSingleton();
-  RGM.initialiseResourceGroup(RGN_INTERNAL);
-  RGM.initialiseAllResourceGroups();
+  InitOverlay();
+  InitCompositor();
+  InitPhysics();
+  InitSound();
+  InitScene();
+}
 
-  // Compositor
-  CompositorUPtr = make_unique<Compositor>();
-  RegComponent(CompositorUPtr.get());
-  OverlayPtr->PrepareFontTexture("Roboto-Medium", RGN_INTERNAL);
-  CompositorUPtr->SetUp();
+void Engine::InitSDLSubsystems() {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
+    throw Exception("Failed to init SDL2");
+  }
 
-  // Physics
-  PhysicsPtr = make_unique<Physics>();
-  RegComponent(PhysicsPtr.get());
+  for (int i = 0; i < SDL_NumJoysticks(); ++i) {
+    if (SDL_IsGameController(i)) {
+      SDL_GameControllerOpen(i);
+    }
+  }
 
-  // Sound
-  SoundPtr = make_unique<Sound>(8, 8);
-  RegComponent(SoundPtr.get());
-
-  // DotSceneLoaderB
-  ScenePtr = make_unique<Scene>();
-  RegComponent(ScenePtr.get());
+  SDL_DisplayMode DM;
+  SDL_GetDesktopDisplayMode(0, &DM);
+  ScreenWidth = static_cast<int>(DM.w);
+  ScreenHeight = static_cast<int>(DM.h);
 }
 
 void Engine::InitDefaultRenderSystem() {
-#ifdef MOBILE
-  InitOgreRenderSystemGLES2();
-#else
+#ifdef DESKTOP
   InitOgreRenderSystemGL3();
+#else
+  InitOgreRenderSystemGLES2();
 #endif
 }
 
@@ -144,7 +134,7 @@ void Engine::InitOgrePlugins() {
   Root::getSingleton().installPlugin(new AssimpPlugin());
 #endif
 
-#endif // DEBUG
+#endif  // DEBUG
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   OgreSceneManager = OgreRoot->createSceneManager("OctreeSceneManager", "Default");
@@ -154,27 +144,9 @@ void Engine::InitOgrePlugins() {
 
   Root::getSingleton().installPlugin(new DotScenePluginB());
 
-//#ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
-//  Root::getSingleton().installPlugin(new DotScenePlugin());
-//#endif
-
-}
-
-void Engine::InitSDLSubsystems() {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
-    throw Exception("Failed to init SDL2");
-  }
-
-  for (int i = 0; i < SDL_NumJoysticks(); ++i) {
-    if (SDL_IsGameController(i)) {
-      SDL_GameControllerOpen(i);
-    }
-  }
-
-  SDL_DisplayMode DM;
-  SDL_GetDesktopDisplayMode(0, &DM);
-  ScreenWidth = static_cast<int>(DM.w);
-  ScreenHeight = static_cast<int>(DM.h);
+  //#ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
+  //  Root::getSingleton().installPlugin(new DotScenePlugin());
+  //#endif
 }
 
 void Engine::CreateSDLWindow() {
@@ -361,6 +333,45 @@ void Engine::InitTextureSettings() {
 void Engine::Capture() {
   static auto &io = InputSequencer::GetInstance();
   io.Capture();
+}
+
+void Engine::ReadConfFile() {
+#ifndef MOBILE
+  ConfPtr = make_unique<Conf>("config.ini");
+#else
+  // TODO: fill defauls for Android
+  ConfPtr = make_unique<Conf>("");
+#endif
+}
+
+void Engine::InitSound() {
+  SoundPtr = make_unique<Sound>();
+  RegComponent(SoundPtr.get());
+}
+
+void Engine::InitOverlay() {
+  OverlayPtr = make_unique<Overlay>(OgreRenderWindowPtr);
+  RegComponent(OverlayPtr.get());
+  auto &RGM = ResourceGroupManager::getSingleton();
+  RGM.initialiseResourceGroup(RGN_INTERNAL);
+  RGM.initialiseAllResourceGroups();
+}
+
+void Engine::InitCompositor() {
+  CompositorUPtr = make_unique<Compositor>();
+  RegComponent(CompositorUPtr.get());
+  OverlayPtr->PrepareFontTexture("Roboto-Medium", RGN_INTERNAL);
+  CompositorUPtr->SetUp();
+}
+
+void Engine::InitPhysics() {
+  PhysicsPtr = make_unique<Physics>();
+  RegComponent(PhysicsPtr.get());
+}
+
+void Engine::InitScene() {
+  ScenePtr = make_unique<Scene>();
+  RegComponent(ScenePtr.get());
 }
 
 void Engine::RegComponent(ComponentI *ComponentPtr) { ComponentList.push_back(ComponentPtr); }
@@ -622,15 +633,15 @@ void Engine::InitResourceLocation() {
 #endif
 }
 
-Engine& GetEngine() {
-  static auto& EnginePtr = Engine::GetInstance();
+Engine &GetEngine() {
+  static auto &EnginePtr = Engine::GetInstance();
   return EnginePtr;
 }
 
-Physics& GetPhysics() { return *GetComponent<Physics>(); }
+Physics &GetPhysics() { return *GetComponent<Physics>(); }
 
-Sound& GetAudio() { return *GetComponent<Sound>(); }
+Sound &GetAudio() { return *GetComponent<Sound>(); }
 
-Scene& GetScene() { return *GetComponent<Scene>(); }
+Scene &GetScene() { return *GetComponent<Scene>(); }
 
 }  // namespace Glue
