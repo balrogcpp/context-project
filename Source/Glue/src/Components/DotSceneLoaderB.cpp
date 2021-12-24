@@ -53,8 +53,6 @@ DotSceneLoaderB::DotSceneLoaderB() {}
 
 DotSceneLoaderB::~DotSceneLoaderB() {}
 
-void DotSceneLoaderB::load(DataStreamPtr &stream, const string &group_name, SceneNode *root_node) { Load(stream, group_name, root_node); }
-
 void DotSceneLoaderB::Load(DataStreamPtr &stream, const string &group_name, SceneNode *root_node) {
   this->GroupName = group_name;
   OgreScene = root_node->getCreator();

@@ -11,8 +11,6 @@ RUN rm /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E1DD270288B4E6030699E45FA1715D88E1DF1F24 \
     && echo 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu precise main' >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
-    && echo 'deb http://ppa.launchpad.net/fkrull/deadsnakes/ubuntu precise main' >> /etc/apt/sources.list \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FF3997E83CD969B409FB24BC5BB92C09DB82666C \
     && apt-get update \
     && apt-get install --no-install-recommends -y git zip unzip xz-utils wget ca-certificates make autoconf file patch \
     && apt-get clean
@@ -56,6 +54,8 @@ RUN apt-get update \
     && rm -rf binutils-${BINUTILS_VERSION} \
     && rm -rf binutils-${BINUTILS_VERSION}-linux \
     && apt-get update \
+    && echo 'deb http://ppa.launchpad.net/fkrull/deadsnakes/ubuntu precise main' >> /etc/apt/sources.list \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FF3997E83CD969B409FB24BC5BB92C09DB82666C \
     && apt-get install --no-install-recommends -y libxml2 zlib1g-dev lzma-dev libxml2-dev libssl-dev python3.5 \
     && apt-get clean \
     && git clone --depth 1 -b llvmorg-${LLVM_VERSION} https://github.com/llvm/llvm-project.git \

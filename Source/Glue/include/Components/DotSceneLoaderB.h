@@ -9,7 +9,6 @@
 #include "ReflectionCamera.h"
 #include <OgreCodec.h>
 #include <OgrePlugin.h>
-#include <OgreSceneLoader.h>
 #include <OgreVector.h>
 #include <memory>
 #include <string>
@@ -27,12 +26,6 @@ class TerrainGlobalOptions;
 class VertexDeclaration;
 }  // namespace Ogre
 
-//namespace Forests {
-//class PagedGeometry;
-//class PageLoader;
-//class GeometryPage;
-//}  // namespace Forests
-
 namespace Glue {
 class CameraMan;
 class Conf;
@@ -44,12 +37,11 @@ class SinbadCharacterController;
 
 namespace Glue {
 
-class DotSceneLoaderB final : public Ogre::SceneLoader {
+class DotSceneLoaderB final {
  public:
   DotSceneLoaderB();
   virtual ~DotSceneLoaderB();
 
-  void load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node) override;
   void Load(Ogre::DataStreamPtr &stream, const std::string &group_name, Ogre::SceneNode *root_node);
   void ExportScene(Ogre::SceneNode *rootNode, const std::string &outFileName);
 

@@ -355,11 +355,11 @@ externalproject_add(Target_OGRE
                     DEPENDS Target_ZZIP Target_FreeType Target_pugixml Target_assimp Target_SDL2
                     PREFIX ${GLUE_EXTERNAL_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v1.12.13
+                    GIT_TAG v13.2.4
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard
-                    PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_EXTERNAL_PATCH_LOCATION}/ogre-1.12.11-apple.patch
+                    PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_EXTERNAL_PATCH_LOCATION}/ogre-13.2.4.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
