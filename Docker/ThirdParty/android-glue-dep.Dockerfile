@@ -10,7 +10,6 @@ COPY ./ThirdParty/Patch ./ThirdParty/Patch
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./CMake ./CMake
 COPY ./Android ./Android
-COPY ./Doc ./Doc
 
 RUN cd ./Android \
     && ./gradlew assembleRelease \

@@ -9,7 +9,6 @@ COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
 COPY ./ThirdParty/Patch ./ThirdParty/Patch
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./CMake ./CMake
-COPY ./Doc ./Doc
 
 RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
     && eval `x86_64-apple-darwin19-osxcross-conf` \

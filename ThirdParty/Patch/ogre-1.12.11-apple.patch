@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index da52af86..e8af47a3 100644
+index d5740ce..e66e743 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -271,12 +271,12 @@ elseif(EMSCRIPTEN)
@@ -21,3 +21,17 @@ index da52af86..e8af47a3 100644
  
    # Make sure that the GLES2 render system is disabled for non-iOS Apple builds
    set(OGRE_BUILD_RENDERSYSTEM_GLES2 FALSE CACHE BOOL "" FORCE)
+diff --git a/OgreMain/CMakeLists.txt b/OgreMain/CMakeLists.txt
+index 3189619..660f348 100644
+--- a/OgreMain/CMakeLists.txt
++++ b/OgreMain/CMakeLists.txt
+@@ -250,7 +250,9 @@ endif ()
+ target_link_libraries(OgreMain PUBLIC ${PLATFORM_LIBS} PRIVATE ${LIBRARIES} ${CMAKE_DL_LIBS})
+ 
+ # specify a precompiled header to use
++if (!APPLE)
+ add_native_precompiled_header(OgreMain "${CMAKE_CURRENT_SOURCE_DIR}/src/OgreStableHeaders.h")
++endif ()
+ 
+ # install OgreMain
+ ogre_config_lib(OgreMain TRUE)

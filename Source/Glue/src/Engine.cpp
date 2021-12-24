@@ -104,11 +104,15 @@ void Engine::InitSDLSubsystems() {
 }
 
 void Engine::InitDefaultRenderSystem() {
-//#ifdef DESKTOP
-//  InitOgreRenderSystemGL3();
-//#else
+#ifdef DESKTOP
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
   InitOgreRenderSystemGLES2();
-//#endif
+#else
+  InitOgreRenderSystemGL3();
+#endif
+#else
+  InitOgreRenderSystemGLES2();
+#endif
 }
 
 void Engine::InitOgrePlugins() {

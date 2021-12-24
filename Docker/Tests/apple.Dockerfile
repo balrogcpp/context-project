@@ -7,7 +7,6 @@ WORKDIR ${CONTEXT_HOME}
 
 COPY ./Source ./Source
 COPY ./Deploy ./Deploy
-COPY ./Doc ./Doc
 COPY ./CMake ./CMake
 COPY ./LICENSE .
 COPY ./Programs ./Programs
@@ -15,8 +14,6 @@ COPY ./Assets ./Assets
 COPY ./Binaries ./Binaries
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
-
-RUN cmake -P CMake/FlatZipAssets.cmake
 
 RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
     && tar Jxfp ${CONTEXT_HOME}/Binaries/Dependencies/Darwin_x86_64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/ThirdParty/External

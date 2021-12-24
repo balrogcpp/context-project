@@ -66,8 +66,12 @@ class Engine final : public LazySingleton<Engine> {
   void InitScene();
   void InitSDLSubsystems();
   void InitDefaultRenderSystem();
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   void InitOgreRenderSystemGL3();
+#endif
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
   void InitOgreRenderSystemGLES2();
+#endif
   void InitOgrePlugins();
   void CreateSDLWindow();
   void CreateOgreRenderWindow();

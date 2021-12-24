@@ -7,7 +7,6 @@ WORKDIR ${CONTEXT_HOME}
 
 COPY ./Source ./Source
 COPY ./Deploy ./Deploy
-COPY ./Doc ./Doc
 COPY ./CMake ./CMake
 COPY ./LICENSE .
 COPY ./Programs ./Programs
@@ -17,10 +16,10 @@ COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
 COPY ./Android ./Android
 
-RUN cmake -P CMake/FlatZipAssets.cmake
-
 RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
     && tar Jxfp ${CONTEXT_HOME}/Binaries/Dependencies/Android_aarch64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/ThirdParty/External
+
+RUN cmake -P CMake/FlatZipAssets.cmake
 
 RUN cd Android \
     && ./gradlew assembleRelease \

@@ -1,30 +1,3 @@
-diff --git a/CMake/Packages/FindOpenGLES2.cmake b/CMake/Packages/FindOpenGLES2.cmake
-index 1ad144d4..c7c0bf4f 100644
---- a/CMake/Packages/FindOpenGLES2.cmake
-+++ b/CMake/Packages/FindOpenGLES2.cmake
-@@ -23,8 +23,6 @@
- #  EGL_INCLUDE_DIR  - the EGL include directory
- #  EGL_LIBRARIES    - Link these to use EGL
- 
--include(FindPkgMacros)
--
- IF(APPLE)
-   create_search_paths(/Developer/Platforms)
-   findpkg_framework(OpenGLES2)
-@@ -83,11 +81,8 @@ IF(OPENGLES2_gl_LIBRARY)
-     SET( OPENGLES2_FOUND TRUE )
- ENDIF(OPENGLES2_gl_LIBRARY)
- 
--IF(OPENGL_egl_LIBRARY)
--  SET( EGL_LIBRARIES ${OPENGL_egl_LIBRARY})
--  SET( EGL_FOUND TRUE )
--ELSEIF(EGL_egl_LIBRARY)
--  SET( EGL_LIBRARIES ${EGL_egl_LIBRARY})
-+IF(EGL_egl_LIBRARY)
-+  SET( EGL_LIBRARIES ${EGL_egl_LIBRARY} ${EGL_LIBRARIES})
-   SET( EGL_FOUND TRUE)
- ENDIF()
- 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 4e065572..b0066563 100644
 --- a/CMakeLists.txt
@@ -48,26 +21,20 @@ index 4e065572..b0066563 100644
  
    # Make sure that the GLES2 render system is disabled for non-iOS Apple builds
    set(OGRE_BUILD_RENDERSYSTEM_GLES2 FALSE CACHE BOOL "" FORCE)
-diff --git a/RenderSystems/GLES2/CMakeLists.txt b/RenderSystems/GLES2/CMakeLists.txt
-index 22370631..96b0cf86 100644
---- a/RenderSystems/GLES2/CMakeLists.txt
-+++ b/RenderSystems/GLES2/CMakeLists.txt
-@@ -52,13 +52,14 @@ if (APPLE)
-   file(GLOB PLATFORM_SOURCES "src/EAGL/*.mm")
+diff --git a/OgreMain/CMakeLists.txt b/OgreMain/CMakeLists.txt
+index 44a17787..d9add2ba 100644
+--- a/OgreMain/CMakeLists.txt
++++ b/OgreMain/CMakeLists.txt
+@@ -243,7 +243,9 @@ endif ()
+ target_link_libraries(OgreMain PUBLIC ${PLATFORM_LIBS} PRIVATE ${LIBRARIES} ${CMAKE_DL_LIBS})
  
-   include_directories(src/EAGL include/EAGL)
-+  link_directories(${OPENGLES2_LIBRARY_PATH})
-   set(PLATFORM_HEADER_INSTALL "APPLE")
- endif ()
+ # specify a precompiled header to use
++if (!APPLE)
+ add_native_precompiled_header(OgreMain "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/src/OgreStableHeaders.h>")
++endif ()
  
- include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/GLSLES/include)
- 
- add_library(RenderSystem_GLES2 ${OGRE_LIB_TYPE} ${HEADER_FILES} ${GLESW_HEADERS} ${KHR_HEADERS} ${PLATFORM_HEADERS} ${SOURCE_FILES} ${PLATFORM_SOURCES} ${GLSLES_FILES})
--target_link_libraries(RenderSystem_GLES2 PUBLIC OgreMain ${CMAKE_DL_LIBS} PRIVATE OgreGLSupport)
-+target_link_libraries(RenderSystem_GLES2 PUBLIC OgreMain ${OPENGLES2_LIBRARIES} ${CMAKE_DL_LIBS} PRIVATE OgreGLSupport)
- target_include_directories(RenderSystem_GLES2 PUBLIC 
-     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-     $<INSTALL_INTERFACE:include/OGRE/RenderSystems/GLES2>)
+ # install OgreMain
+ ogre_config_lib(OgreMain TRUE)
 diff --git a/RenderSystems/GLSupport/CMakeLists.txt b/RenderSystems/GLSupport/CMakeLists.txt
 index bae087ae..d4193175 100644
 --- a/RenderSystems/GLSupport/CMakeLists.txt
@@ -81,3 +48,16 @@ index bae087ae..d4193175 100644
    endif()
    list(APPEND NATIVE_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/src/X11/")
  endif ()
+diff --git a/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp b/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
+index 6d11662e..fb16ef0c 100644
+--- a/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
++++ b/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
+@@ -215,7 +215,7 @@ namespace Ogre {
+ #if OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
+         int* gamma_attribs = NULL;
+ #else
+-        int gamma_attribs[] = {EGL_GL_COLORSPACE_KHR, EGL_GL_COLORSPACE_SRGB_KHR, EGL_NONE};
++        int gamma_attribs[] = {EGL_NONE};
+ #endif
+         mHwGamma = mHwGamma && mGLSupport->checkExtension("EGL_KHR_gl_colorspace");
+ 
