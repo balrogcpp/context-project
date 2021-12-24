@@ -257,10 +257,19 @@ vertex_program PBR_Terrain_vs_es glsles
     }
 }
 
-vertex_program PBR_Terrain_vs unified
+vertex_program PBR_Terrain_vs_old unified
 {
     delegate PBR_Terrain_vs_gl
     delegate PBR_Terrain_vs_es
+}
+
+vertex_program PBR_Terrain_vs glsl glsles
+{
+	source PBR.vert
+    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    default_params {
+        shared_params_ref PBR_Shared_vert
+    }
 }
 
 fragment_program PBR_Terrain_fs_gl glsl
@@ -287,12 +296,23 @@ fragment_program PBR_Terrain_fs_es glsles
     }
 }
 
-fragment_program PBR_Terrain_fs unified
+fragment_program PBR_Terrain_fs_old unified
 {
     delegate PBR_Terrain_fs_gl
     delegate PBR_Terrain_fs_es
 }
 
+fragment_program PBR_Terrain_fs glsl glsles
+{
+	source PBR.frag
+    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+
+    default_params
+    {
+        shared_params_ref PBR_Shared_frag
+        param_named uTerrainTexScale float 50.0
+    }
+}
 
 abstract material PBR_Terrain : PBR
 {

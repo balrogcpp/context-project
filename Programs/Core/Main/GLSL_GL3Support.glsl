@@ -39,11 +39,15 @@ mat4 transpose(mat4 m)
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
 
-#ifdef OGRE_GLSLANG
+#if defined(OGRE_GLSLANG) || (__VERSION__ > 150 && defined(OGRE_VERTEX_SHADER)) || __VERSION__ >= 410
 #define IN(decl, loc) layout(location = loc) in decl;
-#define OUT(decl, loc) layout(location = loc) out decl;
 #else
 #define IN(decl, loc) in decl;
+#endif
+
+#if defined(OGRE_GLSLANG) || (__VERSION__ > 150 && defined(OGRE_FRAGMENT_SHADER)) || __VERSION__ >= 410
+#define OUT(decl, loc) layout(location = loc) out decl;
+#else
 #define OUT(decl, loc) out decl;
 #endif
 
@@ -56,5 +60,27 @@ mat4 transpose(mat4 m)
 #define IN(decl, loc) varying decl;
 #define OUT(decl, loc) out decl;
 #endif
+
+#endif
+
+#if defined(OGRE_FRAGMENT_SHADER) && (defined(OGRE_GLSLANG) || (__VERSION__ > 130))
+#define gl_FragColor FragColor
+OUT(vec4 FragColor, 0)
+#endif
+
+#ifdef VULKAN
+
+#ifdef OGRE_VERTEX_SHADER
+#define OGRE_UNIFORMS_BEGIN layout(binding = 0, row_major) uniform OgreUniforms {
+#else
+#define OGRE_UNIFORMS_BEGIN layout(binding = 1, row_major) uniform OgreUniforms {
+#endif
+
+#define OGRE_UNIFORMS_END };
+
+#else
+
+#define OGRE_UNIFORMS_BEGIN
+#define OGRE_UNIFORMS_END
 
 #endif
