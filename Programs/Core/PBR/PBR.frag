@@ -590,18 +590,18 @@ void main()
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     vec3 reflection = -normalize(reflect(v, n));
-    total_colour += GetIBLContribution(diffuseColor, specularColor, roughness, NdotV, n, reflection);
+    total_colour += uSurfaceAmbientColour * GetIBLContribution(diffuseColor, specularColor, roughness, NdotV, n, reflection);
 #else
-    total_colour += (uAmbientLightColour * color);
+    total_colour += uSurfaceAmbientColour * uAmbientLightColour * color;
 #endif
 
 // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
-    total_colour *= (uSurfaceAmbientColour * occlusion);
+    total_colour *= occlusion;
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += (uSurfaceEmissiveColour * SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord, uLOD).rgb));
+    total_colour += uSurfaceEmissiveColour * SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord, uLOD).rgb);
 #endif
 
 #ifdef HAS_REFLECTION
