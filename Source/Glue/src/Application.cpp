@@ -158,8 +158,6 @@ int Application::Main(unique_ptr<AppState> &&AppStatePtr) {
     StateManagerPtr->SetInitialState(move(AppStatePtr));
     Go();
 
-    LogPtr->WriteLogToFile();
-
     SDL_Quit();
 
   } catch (Exception &e) {

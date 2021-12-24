@@ -1,5 +1,22 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
+compositor no_MRT
+{
+    technique
+    {
+        texture mrt target_width target_height PF_FLOAT16_RGBA chain_scope pooled
+
+        target mrt
+        {
+            input none
+
+            pass clear {}
+
+            pass render_scene {}
+        }
+    }
+}
+
 compositor MRT
 {
     technique

@@ -39,7 +39,7 @@ class Application final : public WindowObserver, public Singleton<Application> {
   int64_t CurrentFPS = 0;
   int64_t TargetFPS = 60;
   bool LockFPS = true;
-  bool Verbose = false;
+  bool Verbose = true;
 
   /// Print all input in cout (pressed key on keyboard, mouse move, gamepad etc.)
   bool VerboseInput = false;

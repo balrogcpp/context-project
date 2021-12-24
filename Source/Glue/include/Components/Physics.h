@@ -6,6 +6,7 @@
 #include <OgreFrameListener.h>
 #include <map>
 #include <thread>
+#include <functional>
 
 namespace BtOgre {
 class DebugDrawer;

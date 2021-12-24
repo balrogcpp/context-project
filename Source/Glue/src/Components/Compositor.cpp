@@ -68,10 +68,7 @@ Compositor::Compositor() {
 
 Compositor::~Compositor() {}
 
-void Compositor::OnUpdate(float time) {
-  //  static bool mblur = EffectsList["mblur"];
-  //  if (mblur) PBR::Update(time);
-}
+void Compositor::OnUpdate(float time) {}
 
 void Compositor::EnableEffect(const std::string &name, bool enable) { EffectsList[name] = enable; }
 
@@ -116,11 +113,12 @@ void Compositor::InitMRT() {
   if (OgreCompositorManager->addCompositor(OgreViewport, "MRT")) {
     OgreCompositorManager->setCompositorEnabled(OgreViewport, "MRT", false);
   } else {
-    Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add MRT compositor\n");
+    Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add MRT compositor");
   }
 
   auto *CompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+
+#ifdef DESKTOP
 
   if (ConfPtr->GetBool("window_fullscreen")) {
     auto *MRTCompositor = CompositorChain->getCompositor("MRT");
