@@ -36,8 +36,8 @@ uniform mat4 cWorldViewProjPrev;
 in vec3 colour;
 #endif //HAS_COLOURS
 uniform mat4 uModelMatrix;
-uniform vec3 uCameraPosition;
 #ifdef PAGED_GEOMETRY
+uniform vec3 uCameraPosition;
 #define HAS_UV
 uniform float uFadeRange;
 uniform float uWindRange;

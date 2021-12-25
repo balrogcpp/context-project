@@ -14,7 +14,7 @@ abstract material PBR_Basic
             specular 1 1 1 1
             diffuse 1 1 1
             ambient 1 1 1
-            emissive 1 1 1
+            emissive 0 0 0
 
             texture_unit Albedo
             {
@@ -69,7 +69,7 @@ abstract material PBR
             diffuse 1 1 1
             specular 1 1 1 1
             ambient 1 1 1
-            emissive 1 1 1
+            emissive 0 0 0
 
             texture_unit Albedo
             {
@@ -239,30 +239,6 @@ abstract material PBR_Plane : PBR
     }
 }
 
-vertex_program PBR_Terrain_vs_gl glsl
-{
-	source PBR.vert
-    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {
-        shared_params_ref PBR_Shared_vert
-    }
-}
-
-vertex_program PBR_Terrain_vs_es glsles
-{
-	source PBR.vert
-    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8
-    default_params {
-        shared_params_ref PBR_Shared_vert
-    }
-}
-
-vertex_program PBR_Terrain_vs_old unified
-{
-    delegate PBR_Terrain_vs_gl
-    delegate PBR_Terrain_vs_es
-}
-
 vertex_program PBR_Terrain_vs glsl glsles
 {
 	source PBR.vert
@@ -282,24 +258,6 @@ fragment_program PBR_Terrain_fs_gl glsl
         shared_params_ref PBR_Shared_frag
         param_named uTerrainTexScale float 50.0
     }
-}
-
-fragment_program PBR_Terrain_fs_es glsles
-{
-	source PBR.frag
-    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8
-
-    default_params
-    {
-        shared_params_ref PBR_Shared_frag
-        param_named uTerrainTexScale float 50.0
-    }
-}
-
-fragment_program PBR_Terrain_fs_old unified
-{
-    delegate PBR_Terrain_fs_gl
-    delegate PBR_Terrain_fs_es
 }
 
 fragment_program PBR_Terrain_fs glsl glsles

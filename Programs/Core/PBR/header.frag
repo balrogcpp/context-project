@@ -3,6 +3,14 @@
 #ifndef HEADER_FRAG
 #define HEADER_FRAG
 
+#ifndef MAX_LIGHTS
+#define MAX_LIGHTS 8
+#endif
+
+#ifndef MAX_SHADOW_TEXTURES
+#define MAX_SHADOW_TEXTURES 4
+#endif
+
 #ifndef GL_ES
 
 //GLSL
@@ -18,7 +26,8 @@
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
-out vec4 gl_FragColor;
+out vec4 FragColor[2];
+//out vec4 gl_FragColor;
 #else
 #define in varying
 #define out varying

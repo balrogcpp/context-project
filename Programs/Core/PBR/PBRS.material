@@ -14,7 +14,7 @@ abstract material PBRS_Basic
             specular 1 1 1 1
             diffuse 1 1 1
             ambient 1 1 1
-            emissive 1 1 1
+            emissive 0 0 0
 
             texture_unit Albedo
             {
@@ -48,7 +48,7 @@ abstract material PBRS
             diffuse 1 1 1
             specular 1 1 1 1
             ambient 1 1 1
-            emissive 1 1 1
+            emissive 0 0 0
 
             texture_unit Albedo
             {
@@ -134,12 +134,14 @@ vertex_program PBRS_Reflective_vs glsl glsles
 {
 	source PBR.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_REFLECTION,MAX_LIGHTS=8
+
 }
 
 fragment_program PBRS_Reflective_fs glsl glsles
 {
 	source PBR.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_EMISSIVEMAP,HAS_ORM,HAS_REFLECTION,MAX_LIGHTS=8
+
 
     default_params
     {
@@ -179,7 +181,8 @@ abstract material PBRS_Plane : PBRS
 vertex_program PBRS_Terrain_vs_gl glsl
 {
 	source PBR.vert
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8
+    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8
+
     default_params {
         shared_params_ref PBRS_Shared_vert
     }
@@ -194,16 +197,27 @@ vertex_program PBRS_Terrain_vs_es glsles
     }
 }
 
-vertex_program PBRS_Terrain_vs unified
+vertex_program PBRS_Terrain_vs_old unified
 {
     delegate PBRS_Terrain_vs_gl
     delegate PBRS_Terrain_vs_es
+}
+
+vertex_program PBRS_Terrain_vs glsl glsles
+{
+	source PBR.vert
+    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8
+
+    default_params {
+        shared_params_ref PBRS_Shared_vert
+    }
 }
 
 fragment_program PBRS_Terrain_fs_gl glsl
 {
 	source PBR.frag
     preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8
+
 
     default_params
     {
@@ -224,12 +238,24 @@ fragment_program PBRS_Terrain_fs_es glsles
     }
 }
 
-fragment_program PBRS_Terrain_fs unified
+fragment_program PBRS_Terrain_fs_old unified
 {
     delegate PBRS_Terrain_fs_gl
     delegate PBRS_Terrain_fs_es
 }
 
+fragment_program PBRS_Terrain_fs glsl glsles
+{
+	source PBR.frag
+    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8
+
+
+    default_params
+    {
+        shared_params_ref PBRS_Shared_frag
+        param_named uTerrainTexScale float 50.0
+    }
+}
 
 abstract material PBRS_Terrain : PBRS
 {
@@ -308,21 +334,6 @@ abstract material PBRS_Paged : PBRS_Basic
             }
         }
     }
-}
-
-vertex_program PBRS_Grass_vs glsl glsles
-{
-	source PBR.vert
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8
-    default_params {
-        shared_params_ref PBRS_Shared_vert
-    }
-}
-
-fragment_program PBRS_Grass_fs glsl glsles
-{
-	source PBR.frag
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=8
 }
 
 abstract material PBRS_Grass : PBRS_Basic

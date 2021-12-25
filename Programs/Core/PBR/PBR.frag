@@ -26,52 +26,23 @@
 #include "header.frag"
 
 #ifdef SHADOWCASTER_ALPHA
-in vec2 vUV0;
 uniform sampler2D uAlbedoSampler;
 uniform float uAlphaRejection;
+in vec2 vUV0;
 #endif
 
 
 #ifndef SHADOWCASTER
-in vec2 vUV0;
-in float vDepth;
-in float vAlpha;
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D uAlbedoSampler;
 #endif
-uniform float uLOD;
-uniform float uAlphaRejection;
-uniform vec3 uSurfaceAmbientColour;
-uniform vec3 uSurfaceDiffuseColour;
-uniform float uSurfaceSpecularColour;
-uniform float uSurfaceShininessColour;
-uniform vec3 uSurfaceEmissiveColour;
-uniform vec3 uAmbientLightColour;
-uniform float uLightCount;
-uniform vec3 uLightPositionArray[MAX_LIGHTS];
-uniform vec3 uLightDirectionArray[MAX_LIGHTS];
-uniform vec3 uLightDiffuseScaledColourArray[MAX_LIGHTS];
-uniform vec4 uLightAttenuationArray[MAX_LIGHTS];
-uniform vec3 uLightSpotParamsArray[MAX_LIGHTS];
-#ifdef SHADOWRECEIVER
-uniform float uLightCastsShadowsArray[MAX_LIGHTS];
-#endif
-uniform vec3 uFogColour;
-uniform vec4 uFogParams;
-uniform vec3 uCameraPosition;
 #ifdef USE_IBL
 uniform samplerCube uDiffuseEnvSampler;
 uniform samplerCube uSpecularEnvSampler;
 uniform sampler2D ubrdfLUT;
 #endif
-#ifdef TERRAIN
-uniform sampler2D uGlobalNormalSampler;
-//uniform sampler2D uGlobalShadowSampler;
-uniform float uTerrainTexScale;
-#endif
 #ifdef HAS_NORMALMAP
 uniform sampler2D uNormalSampler;
-uniform float uNormalScale;
 #endif
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D uEmissiveSampler;
@@ -88,52 +59,118 @@ uniform sampler2D uOcclusionSampler;
 #ifdef HAS_ORM
 uniform sampler2D uORMSampler;
 #endif
-#ifdef HAS_PARALLAXMAP
-uniform float uOffsetScale;
+#ifdef TERRAIN
+uniform sampler2D uGlobalNormalSampler;
+//uniform sampler2D uGlobalShadowSampler;
 #endif
-
-
+#ifdef HAS_REFLECTION
+uniform sampler2D uReflectionMap;
+#endif
 #ifdef SHADOWRECEIVER
-
 uniform sampler2D shadowMap0;
-uniform float shadowTexel0;
 #if MAX_SHADOW_TEXTURES > 1
 uniform sampler2D shadowMap1;
-uniform float shadowTexel1;
 #endif
 #if MAX_SHADOW_TEXTURES > 2
 uniform sampler2D shadowMap2;
-uniform float shadowTexel2;
 #endif
 #if MAX_SHADOW_TEXTURES > 3
 uniform sampler2D shadowMap3;
-uniform float shadowTexel3;
 #endif
 #if MAX_SHADOW_TEXTURES > 4
 uniform sampler2D shadowMap4;
-uniform float shadowTexel4;
 #endif
 #if MAX_SHADOW_TEXTURES > 5
 uniform sampler2D shadowMap5;
-uniform float shadowTexel5;
 #endif
 #if MAX_SHADOW_TEXTURES > 6
 uniform sampler2D shadowMap6;
-uniform float shadowTexel6;
 #endif
 #if MAX_SHADOW_TEXTURES > 7
 uniform sampler2D shadowMap7;
-uniform float shadowTexel7;
+#endif
+#endif // SHADOWRECEIVER
+
+uniform vec4 uLightPositionArray[MAX_LIGHTS];
+uniform vec4 uLightDirectionArray[MAX_LIGHTS];
+uniform vec4 uLightDiffuseScaledColourArray[MAX_LIGHTS];
+uniform vec4 uLightAttenuationArray[MAX_LIGHTS];
+uniform vec4 uLightSpotParamsArray[MAX_LIGHTS];
+#ifdef SHADOWRECEIVER
+uniform float uLightCastsShadowsArray[MAX_LIGHTS];
 #endif
 
+uniform float uLightCount;
+#ifndef USE_IBL
+uniform vec3 uAmbientLightColour;
+#endif
+uniform vec3 uSurfaceAmbientColour;
+uniform vec3 uSurfaceDiffuseColour;
+
+uniform float uSurfaceSpecularColour;
+uniform float uSurfaceShininessColour;
+
+uniform vec3 uSurfaceEmissiveColour;
+#ifdef HAS_ALPHA
+uniform float uAlphaRejection;
+#endif
+#ifdef GL_ES
+uniform vec3 uFogColour;
+uniform vec4 uFogParams;
+#endif
+uniform float cNearClipDistance;
+uniform float cFarClipDistance;
+uniform float uFrameTime;
+uniform float uLOD;
+uniform vec3 uCameraPosition;
+#ifdef TERRAIN
+uniform float uTerrainTexScale;
+#endif
+#ifdef HAS_NORMALMAP
+uniform float uNormalScale;
+#endif
+#ifdef HAS_PARALLAXMAP
+uniform float uOffsetScale;
+#endif
+#ifdef SHADOWRECEIVER
+uniform float shadowTexel0;
+#if MAX_SHADOW_TEXTURES > 1
+uniform float shadowTexel1;
+#endif
+#if MAX_SHADOW_TEXTURES > 2
+uniform float shadowTexel2;
+#endif
+#if MAX_SHADOW_TEXTURES > 3
+uniform float shadowTexel3;
+#endif
+#if MAX_SHADOW_TEXTURES > 4
+uniform float shadowTexel4;
+#endif
+#if MAX_SHADOW_TEXTURES > 5
+uniform float shadowTexel5;
+#endif
+#if MAX_SHADOW_TEXTURES > 6
+uniform float shadowTexel6;
+#endif
+#if MAX_SHADOW_TEXTURES > 7
+uniform float shadowTexel7;
+#endif
 uniform vec4 pssmSplitPoints;
 uniform vec3 uShadowColour;
 uniform float uShadowDepthOffset;
 uniform float uShadowFilterSize;
 uniform int uShadowFilterIterations;
+#endif // SHADOWRECEIVER
 
+
+
+
+#ifdef SHADOWRECEIVER
 in vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
+in vec2 vUV0;
+in float vDepth;
+in float vAlpha;
 in vec3 vPosition;
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
@@ -148,13 +185,8 @@ in vec3 vNormal;
 #endif
 #endif
 #ifdef HAS_REFLECTION
-uniform sampler2D uReflectionMap;
 in vec4 projectionCoord;
 #endif
-
-uniform float cNearClipDistance;
-uniform float cFarClipDistance;
-uniform float uFrameTime;
 
 
 //SRGB corretion
@@ -401,7 +433,7 @@ vec2 ParallaxMapping(vec2 uv, vec3 viewDir)
 #include "ibl.glsl"
 #endif
 
-#endif //!SHADOWCASTER
+#endif // !SHADOWCASTER
 
 
 void main()
@@ -435,12 +467,12 @@ void main()
 #ifdef HAS_ALPHA
 #ifdef PAGED_GEOMETRY
     alpha *= vAlpha;
-#endif //PAGED_GEOMETRY
+#endif // PAGED_GEOMETRY
 
     if (alpha < uAlphaRejection) {
         discard;
     }
-#endif
+#endif // HAS_ALPHA
 
 
 #ifdef HAS_ORM
@@ -491,11 +523,11 @@ void main()
     vec3 total_colour = vec3(0.0);
 
     for (int i = 0; i < int(uLightCount); i++) {
-        vec3 l = -normalize(uLightDirectionArray[i]);// Vector from surface point to light
+        vec3 l = -normalize(uLightDirectionArray[i].xyz);// Vector from surface point to light
         vec3 h = normalize(l+v);// Half vector between both l and v
         float NdotL = clamp(dot(n, l), 0.001, 1.0);
 
-        vec3 vLightView = uLightPositionArray[i] - vPosition;
+        vec3 vLightView = uLightPositionArray[i].xyz - vPosition;
         float fLightD = length(vLightView);
         vLightView = normalize(vLightView);
 
@@ -512,7 +544,7 @@ void main()
 
             fAtten = float(fLightD < range) / (attenuation_const + attenuation_linear * fLightD + attenuation_quad * fLightD * fLightD);
 
-            vec3 vSpotParams = uLightSpotParamsArray[i];
+            vec3 vSpotParams = uLightSpotParamsArray[i].xyz;
             float outer_radius = vSpotParams.z;
 
             if (outer_radius > 0.0) {
@@ -581,9 +613,9 @@ void main()
 
         }
 
-        total_colour += uShadowColour * color + shadow * tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
+        total_colour += uShadowColour * color + shadow * tmp * uLightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib);
 #else
-    total_colour += tmp * uLightDiffuseScaledColourArray[i] * (diffuseContrib + specContrib);
+    total_colour += tmp * uLightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib);
 #endif
     }
 
@@ -601,7 +633,9 @@ void main()
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += uSurfaceEmissiveColour * SRGBtoLINEAR(texture2D(uEmissiveSampler, tex_coord, uLOD).rgb);
+    total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour + texture2D(uEmissiveSampler, tex_coord, uLOD).rgb);
+#else
+    total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour);
 #endif
 
 #ifdef HAS_REFLECTION

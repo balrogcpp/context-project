@@ -12,9 +12,6 @@ shared_params PBR_Shared_frag
 
 shared_params PBR_Shared_vert
 {
-    shared_param_named uFadeRange float 50.0
-    shared_param_named uWindRange float 50.0
-    shared_param_named uTimeScale float 1.0
     shared_param_named uShadowTextureCount int 4
 }
 
@@ -27,12 +24,8 @@ abstract vertex_program PBR_I_vs glsl glsles
 
         param_named_auto uMVPMatrix worldviewproj_matrix
         param_named_auto uModelMatrix world_matrix
-        param_named_auto uCameraPosition camera_position
         param_named_auto uTexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
-        param_named_auto uTime time
 
-        param_named uFadeRange float 50.0
-        param_named uWindRange float 50.0
     }
 }
 
@@ -47,29 +40,29 @@ abstract fragment_program PBR_BaseI_fs glsl glsles
 	source PBR.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {
-        shared_params_ref PBR_Shared_frag
-
-        param_named_auto uAlphaRejection surface_alpha_rejection_value
-        param_named_auto uSurfaceAmbientColour surface_ambient_colour
-        param_named_auto uSurfaceDiffuseColour surface_diffuse_colour
-        param_named_auto uSurfaceSpecularColour surface_specular_colour
-        param_named_auto uSurfaceShininessColour surface_shininess
-        param_named_auto uSurfaceEmissiveColour surface_emissive_colour
-        param_named_auto uAmbientLightColour ambient_light_colour
-        param_named_auto uLightCount light_count
         param_named_auto uLightPositionArray light_position_array 8
         param_named_auto uLightDirectionArray light_direction_array 8
         param_named_auto uLightDiffuseScaledColourArray light_diffuse_colour_power_scaled_array 8
         param_named_auto uLightAttenuationArray light_attenuation_array 8
         param_named_auto uLightSpotParamsArray spotlight_params_array 8
-        param_named_auto uFogColour fog_colour
-        param_named_auto uFogParams fog_params
+        param_named_auto uLightCastsShadowsArray light_casts_shadows_array 8
+
+        param_named_auto uLightCount light_count
+        param_named_auto uAmbientLightColour ambient_light_colour
+        param_named_auto uSurfaceAmbientColour surface_ambient_colour
+        param_named_auto uSurfaceDiffuseColour surface_diffuse_colour
+        param_named_auto uSurfaceSpecularColour surface_specular_colour
+        param_named_auto uSurfaceShininessColour surface_shininess
+        param_named_auto uSurfaceEmissiveColour surface_emissive_colour
+        //param_named_auto uFogColour fog_colour
+        //param_named_auto uFogParams fog_params
         param_named_auto uCameraPosition camera_position
         param_named_auto cNearClipDistance near_clip_distance
         param_named_auto cFarClipDistance far_clip_distance
         param_named_auto uFrameTime frame_time
         param_named_auto uShadowColour shadow_colour
-        param_named_auto uLightCastsShadowsArray light_casts_shadows_array 8
+
+        shared_params_ref PBR_Shared_frag
     }
 }
 
@@ -132,13 +125,20 @@ fragment_program PBR_IBL_fs glsl glsles : PBR_IBLI_fs
 vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
 {
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {}
+    default_params {
+        param_named_auto uTime time
+        param_named uFadeRange float 50.0
+        param_named uWindRange float 50.0
+        param_named_auto uCameraPosition camera_position
+        //param_named uTimeScale float 1.0
+    }
 }
 
 fragment_program PBR_Grass_fs glsl glsles : PBR_I_fs
 {
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {
+            param_named_auto uAlphaRejection surface_alpha_rejection_value
             param_named shadowMap0 int 1
             param_named shadowMap1 int 2
             param_named shadowMap2 int 3
