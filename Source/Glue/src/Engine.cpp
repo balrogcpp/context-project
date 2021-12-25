@@ -105,10 +105,10 @@ void Engine::InitSDLSubsystems() {
 
 void Engine::InitDefaultRenderSystem() {
 #ifdef DESKTOP
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-  InitOgreRenderSystemGLES2();
-#else
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   InitOgreRenderSystemGL3();
+#else
+  InitOgreRenderSystemGLES2();
 #endif
 #else
   InitOgreRenderSystemGLES2();
