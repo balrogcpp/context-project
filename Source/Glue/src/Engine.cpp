@@ -536,10 +536,15 @@ static void LoadResources() {
   rgm.initialiseAllResourceGroups();
 }
 
-static void AddLocation(const std::string &Path, const std::string &GroupName = RGN_DEFAULT, const std::string &ResourceFile = "",
-                        bool Verbose = false) {
-  const string file_system = "FileSystem";
-  const string zip = "Zip";
+static inline bool IsHidden(const fs::path &p)
+{
+  fs::path::string_type name = p.filename();
+  return name != ".." && name != "." && name[0] == '.';
+}
+
+static void AddLocation(const std::string &Path, const std::string &GroupName = RGN_DEFAULT, const std::string &ResourceFile = "") {
+  const string FILE_SYSTEM = "FileSystem";
+  const string ZIP = "Zip";
 
   std::vector<string> file_list;
   std::vector<string> dir_list;
@@ -550,9 +555,9 @@ static void AddLocation(const std::string &Path, const std::string &GroupName = 
 
   if (fs::exists(path)) {
     if (fs::is_directory(path))
-      resource_list.push_back({path, file_system, GroupName});
+      resource_list.push_back({path, FILE_SYSTEM, GroupName});
     else if (fs::is_regular_file(path) && fs::path(path).extension() == ".zip")
-      RGM.addResourceLocation(path, zip, GroupName);
+      RGM.addResourceLocation(path, ZIP, GroupName);
   }
 
   if (!ResourceFile.empty()) {
@@ -592,31 +597,33 @@ static void AddLocation(const std::string &Path, const std::string &GroupName = 
     RGM.addResourceLocation(get<0>(it), get<1>(it), get<2>(it));
     dir_list.push_back(get<0>(it));
 
-    auto jt = fs::recursive_directory_iterator(get<0>(it));
-
-    for (; jt != fs::recursive_directory_iterator(); ++jt) {
+//    auto jt = fs::recursive_directory_iterator(get<0>(it));
+//    auto end = fs::recursive_directory_iterator();
+//    for (; jt != end; ++jt) {
+    for (fs::recursive_directory_iterator end, jt(get<0>(it)); jt != end; ++jt) {
       const auto full_path = jt->path().string();
       const auto file_name = jt->path().filename().string();
 
       if (jt->is_directory()) {
-        if (Verbose) {
-          Log::Message(string("Found directory: ") + full_path);
+        //Hidden directory, don't recurse into it
+        if(IsHidden(jt->path()))
+        {
+          jt.disable_recursion_pending();
+          continue;
         }
 
         dir_list.push_back(file_name);
 
-        RGM.addResourceLocation(full_path, file_system, get<2>(it));
-
+        RGM.addResourceLocation(full_path, FILE_SYSTEM, get<2>(it));
       } else if (jt->is_regular_file()) {
-        if (Verbose) {
-          Log::Message(string("Found file: ") + full_path);
-        }
+        if(IsHidden(jt->path())) continue;
+
         if (fs::path(full_path).extension() == ".zip") {
           if (find(extensions_list.begin(), extensions_list.end(), fs::path(file_name).extension()) != extensions_list.end()) {
             file_list.push_back(file_name);
           }
 
-          RGM.addResourceLocation(full_path, zip, get<2>(it));
+          RGM.addResourceLocation(full_path, ZIP, get<2>(it));
         }
       }
     }
