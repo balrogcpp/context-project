@@ -59,7 +59,7 @@ RUN apt-get update \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FF3997E83CD969B409FB24BC5BB92C09DB82666C \
     && apt-get install --no-install-recommends -y libxml2 zlib1g-dev lzma-dev libxml2-dev libssl-dev python3.5 \
     && apt-get clean \
-    && head -n -1 /etc/apt/sources.list > temp.txt ; mv temp.txt /etc/apt/sources.list \
+    && head -n -1 /etc/apt/sources.list > temp.txt && mv temp.txt /etc/apt/sources.list \
     && git clone --depth 1 -b llvmorg-${LLVM_VERSION} https://github.com/llvm/llvm-project.git \
     && cd llvm-project \
     && mkdir build \
