@@ -1,3 +1,3 @@
 add_subdirectory(Glue)
-add_subdirectory(Sample)
+add_subdirectory(Examples)
 add_subdirectory(Tests)
