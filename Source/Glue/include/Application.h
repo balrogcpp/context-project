@@ -31,7 +31,7 @@ class Application final : public WindowObserver, public Singleton<Application> {
   std::unique_ptr<Log> LogPtr;
   Engine *EnginePtr = nullptr;
 
-  bool Running = true;
+  bool Running = false;
   bool Suspend = false;
   int64_t TimeAsLastFrame = 0;
   int64_t CumultedTime = 0;

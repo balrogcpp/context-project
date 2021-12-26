@@ -57,7 +57,7 @@ void Scene::AddCamera(Camera *OgreCameraPtr) {}
 
 void Scene::AddSinbad(Camera *OgreCameraPtr) { Sinbad = make_unique<SinbadCharacterController>(OgreCameraPtr); }
 
-void Scene::AddForest(PagedGeometry *PGPtr) { PGeometryList.push_back(unique_ptr<PagedGeometry>(PGPtr)); }
+void Scene::AddForests(PagedGeometry *PGPtr) { PagedGeometryList.push_back(unique_ptr<PagedGeometry>(PGPtr)); }
 
 void Scene::AddTerrain(TerrainGroup *TGP) { OgreTerrainList.reset(TGP); }
 
@@ -65,13 +65,16 @@ void Scene::OnUpdate(float PassedTime) {
   if (Paused) return;
   if (CameraManPtr) CameraManPtr->Update(PassedTime);
   if (Sinbad) Sinbad->Update(PassedTime);
-  for (auto &it : PGeometryList) it->update();
+  for (auto &it : PagedGeometryList) it->update();
 }
 
 void Scene::OnClean() {
   Sinbad.reset();
-  PGeometryList.clear();
+  PagedGeometryList.clear();
   if (OgreTerrainList) OgreTerrainList->removeAllTerrains();
+  OgreTerrainList.reset();
+  auto *TGO = Ogre::TerrainGlobalOptions::getSingletonPtr();
+  if (TGO) delete TGO;
   if (OgreScene) OgreScene->setShadowTechnique(SHADOWTYPE_NONE);
   if (OgreScene) OgreScene->clearScene();
   if (CameraManPtr) CameraManPtr->SetStyle(CameraMan::Style::MANUAL);

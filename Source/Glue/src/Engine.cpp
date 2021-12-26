@@ -597,15 +597,11 @@ static void AddLocation(const std::string &Path, const std::string &GroupName = 
     RGM.addResourceLocation(get<0>(it), get<1>(it), get<2>(it));
     dir_list.push_back(get<0>(it));
 
-//    auto jt = fs::recursive_directory_iterator(get<0>(it));
-//    auto end = fs::recursive_directory_iterator();
-//    for (; jt != end; ++jt) {
     for (fs::recursive_directory_iterator end, jt(get<0>(it)); jt != end; ++jt) {
       const auto full_path = jt->path().string();
       const auto file_name = jt->path().filename().string();
 
       if (jt->is_directory()) {
-        //Hidden directory, don't recurse into it
         if(IsHidden(jt->path()))
         {
           jt.disable_recursion_pending();

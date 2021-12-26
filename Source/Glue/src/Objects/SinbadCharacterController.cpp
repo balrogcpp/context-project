@@ -240,13 +240,13 @@ void SinbadCharacterController::updateBody(float deltaTime) {
       setBaseAnimation(ANIM_JUMP_END, true);
       mTimer = 0;
     }
-    //    if (pos.y <= GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT) {
-    //      // if we've hit the ground, change to landing state
-    //      pos.y = GetLoader().GetTerrain().GetHeigh(x, z) + CHAR_HEIGHT;
-    //      mBodyNode->setPosition(pos);
-    //      setBaseAnimation(ANIM_JUMP_END, true);
-    //      mTimer = 0;
-    //    }
+    if (pos.y <= GetScene().GetHeight(x, z) + CHAR_HEIGHT) {
+      // if we've hit the ground, change to landing state
+      pos.y = GetScene().GetHeight(x, z) + CHAR_HEIGHT;
+      mBodyNode->setPosition(pos);
+      setBaseAnimation(ANIM_JUMP_END, true);
+      mTimer = 0;
+    }
   }
 }
 

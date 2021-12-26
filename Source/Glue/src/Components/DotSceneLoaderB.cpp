@@ -36,19 +36,6 @@ using namespace Ogre;
 
 namespace Glue {
 
-static void Write(pugi::xml_node &node, const Vector3 &v) {
-  node.append_attribute("x") = ToCString(v.x);
-  node.append_attribute("y") = ToCString(v.y);
-  node.append_attribute("z") = ToCString(v.z);
-}
-
-static void Write(pugi::xml_node &node, const ColourValue &c) {
-  node.append_attribute("r") = ToCString(c.r);
-  node.append_attribute("g") = ToCString(c.g);
-  node.append_attribute("b") = ToCString(c.b);
-  node.append_attribute("a") = ToCString(c.a);
-}
-
 DotSceneLoaderB::DotSceneLoaderB() {}
 
 DotSceneLoaderB::~DotSceneLoaderB() {}
@@ -80,9 +67,22 @@ void DotSceneLoaderB::Load(DataStreamPtr &stream, const string &group_name, Scen
   // figure out where to attach any nodes we init
   OgreRoot = Root::getSingletonPtr();
   AttachNode = root_node;
-
+  RootNode = root_node;
   // Process the scene
   ProcessScene(XMLRoot);
+}
+
+static void Write(pugi::xml_node &node, const Vector3 &v) {
+  node.append_attribute("x") = ToCString(v.x);
+  node.append_attribute("y") = ToCString(v.y);
+  node.append_attribute("z") = ToCString(v.z);
+}
+
+static void Write(pugi::xml_node &node, const ColourValue &c) {
+  node.append_attribute("r") = ToCString(c.r);
+  node.append_attribute("g") = ToCString(c.g);
+  node.append_attribute("b") = ToCString(c.b);
+  node.append_attribute("a") = ToCString(c.a);
 }
 
 void DotSceneLoaderB::WriteNode(pugi::xml_node &parentXML, const SceneNode *node) {
@@ -220,7 +220,7 @@ void DotSceneLoaderB::ProcessScene(pugi::xml_node &XmlRoot) {
   }
 
   if (auto element = XmlRoot.child("forest")) {
-    ProcessForest(element);
+    ProcessForests(element);
   }
 
   if (auto element = XmlRoot.child("userData")) {
@@ -810,9 +810,9 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
   entity->setVisibilityFlags(WATER_MASK);
 }
 
-void DotSceneLoaderB::ProcessForest(pugi::xml_node &XmlNode) {
-  auto *grass = new PagedGeometry(Root::getSingleton().getSceneManager("Default")->getCamera("Default"), 5);
-  grass->addDetailLevel<GrassPage>(50, 10);  // Draw grass up to 100
+void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
+  auto *grass = new PagedGeometry(OgreCameraPtr, 5);
+  grass->addDetailLevel<GrassPage>(50, 10);
   auto *grassLoader = new GrassLoader(grass);
   grass->setPageLoader(grassLoader);
   grassLoader->setHeightFunction([](float x, float z, void *) { return GetScene().GetHeight(x, z); });
@@ -828,7 +828,92 @@ void DotSceneLoaderB::ProcessForest(pugi::xml_node &XmlNode) {
   layer->setDensity(1.0f);
   layer->setMapBounds(TBounds(-200, -200, 200, 200));
 
-  GetScene().AddForest(grass);
+  GetScene().AddForests(grass);
+
+
+
+
+  const float bound = 100;
+  float x = 0, y = 0, z = 0, yaw, scale = 1.0;
+  auto *trees = new PagedGeometry(OgreCameraPtr, 50);
+//  trees->addDetailLevel<Forests::WindBatchPage>(100, 20);
+  trees->addDetailLevel<Forests::BatchPage>(100, 60);
+//  trees->addDetailLevel<Forests::ImpostorPage>(200, 60);
+  auto *treeLoader = new TreeLoader3D(trees, TBounds(-100, -100, 100, 100));
+  FixTransparentShadowCaster("3D-Diggers/fir01");
+  FixTransparentShadowCaster("3D-Diggers/fir02");
+
+  trees->setPageLoader(treeLoader);
+  Entity *fir1EntPtr = OgreScene->createEntity("fir1", "fir05_30.mesh");
+  fir1EntPtr->setCastShadows(false);
+
+  for (int i = 0; i < 10; i++) {
+    yaw = Math::RangeRandom(0, 360);
+    if (Math::RangeRandom(0, 1) <= 0.8f) {
+      x = Math::RangeRandom(-bound, bound);
+      z = Math::RangeRandom(-bound, bound);
+      if (x < -bound)
+        x = -bound;
+      else if (x > bound)
+        x = bound;
+      if (z < -bound)
+        z = -bound;
+      else if (z > bound)
+        z = bound;
+    } else {
+      x = Math::RangeRandom(-bound, bound);
+      z = Math::RangeRandom(-bound, bound);
+    }
+
+    y = GetScene().GetHeight(x, z);
+    scale = Math::RangeRandom(0.9f, 1.1f);
+    scale *= 0.2;
+    Quaternion quat;
+    quat.FromAngleAxis(Degree(yaw), Vector3::UNIT_Y);
+
+//    auto *node = RootNode->createChildSceneNode(Vector3(x, y, z), quat);
+//    node->scale(Vector3(scale));
+//    GetPhysics().ProcessData(fir1EntPtr, node, "capsule");
+//    OgreScene->destroySceneNode(node);
+
+    treeLoader->addTree(fir1EntPtr, Vector3(x, y, z), Degree(yaw), scale);
+  }
+
+  GetScene().AddForests(trees);
+
+  ProcessStaticGeometry(XmlNode);
+}
+
+void DotSceneLoaderB::ProcessStaticGeometry(pugi::xml_node &XmlNode) {
+  // create our grass mesh, and Init a grass entity from it
+  Entity *rock = OgreScene->createEntity("Rock", "rock.mesh");
+
+  // Init a static geometry field, which we will populate with grass
+  auto *rocks = OgreScene->createStaticGeometry("Rocks");
+
+  const float bounds = 100.0f;
+  // add grass uniformly throughout the field, with some random variations
+  for (int i = 0; i < 250; i++) {
+    Vector3 pos(Math::RangeRandom(-bounds, bounds), 0,
+                      Math::RangeRandom(-bounds, bounds));
+    pos.y += GetScene().GetHeight(pos.x, pos.z) - 0.1;
+    Quaternion ori(Degree(Math::RangeRandom(0, 359)), Vector3::UNIT_Y);
+    Vector3 scale(2.0, 2.0 * Math::RangeRandom(0.85, 1.15), 2.0);
+
+    auto *node = RootNode->createChildSceneNode(pos, ori);
+    node->scale(scale);
+    GetPhysics().ProcessData(rock, node);
+    OgreScene->destroySceneNode(node);
+
+    rocks->addEntity(rock, pos, ori, scale);
+  }
+
+  rocks->setRegionDimensions(Vector3(25.0));
+
+  //  rocks->setVisibilityFlags(SUBMERGED_MASK);
+  //  rocks->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
+  rocks->build();
+  rocks->setCastShadows(true);
 }
 
 static void GetTerrainImage(bool flipX, bool flipY, Image &ogre_image, const string &filename = "terrain.dds") {
@@ -905,14 +990,14 @@ void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
   int inputScale = StringConverter::parseInt(XmlNode.attribute("inputScale").value());
   int tuningMaxPixelError = GetAttribInt(XmlNode, "tuningMaxPixelError", 8);
 
-  auto *terrain_global_options = TerrainGlobalOptions::getSingletonPtr();
-  if (!terrain_global_options) terrain_global_options = new TerrainGlobalOptions();
-  terrain_global_options->setUseVertexCompressionWhenAvailable(true);
-  terrain_global_options->setCastsDynamicShadows(false);
-  terrain_global_options->setCompositeMapDistance(200);
-  terrain_global_options->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
-  terrain_global_options->setUseRayBoxDistanceCalculation(true);
-  terrain_global_options->setDefaultMaterialGenerator(make_shared<TerrainMaterialGeneratorB>());
+  auto *TGO = TerrainGlobalOptions::getSingletonPtr();
+  if (!TGO) TGO = new TerrainGlobalOptions();
+  TGO->setUseVertexCompressionWhenAvailable(true);
+  TGO->setCastsDynamicShadows(false);
+  TGO->setCompositeMapDistance(200);
+  TGO->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
+  TGO->setUseRayBoxDistanceCalculation(true);
+  TGO->setDefaultMaterialGenerator(make_shared<TerrainMaterialGeneratorB>());
 
   TerrainGroup *OgreTerrainPtr = new TerrainGroup(OgreScene, Terrain::ALIGN_X_Z, mapSize, worldSize);
   OgreTerrainPtr->setFilenameConvention("terrain", "bin");
@@ -936,27 +1021,26 @@ void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
     OgreTerrainPtr->loadTerrain(pageX, pageY, true);
     OgreTerrainPtr->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
 
-    int layers_count = 0;
-    for (const auto &pLayerElement : pPageElement.children("layer")) layers_count++;
+//    int layers_count = 0;
+//    for (const auto &pLayerElement : pPageElement.children("layer")) layers_count++;
 
-    defaultimp.layerList.resize(layers_count);
+//    defaultimp.layerList.resize(layers_count);
 
-    size_t layer_counter = 0;
-    for (auto pLayerElement : pPageElement.children("layer")) {
-      defaultimp.layerList[layer_counter].worldSize = StringConverter::parseInt(pLayerElement.attribute("scale").value());
-      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
-      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
+//    size_t layer_counter = 0;
+//    for (auto pLayerElement : pPageElement.children("layer")) {
+//      defaultimp.layerList[layer_counter].worldSize = StringConverter::parseInt(pLayerElement.attribute("scale").value());
+//      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
+//      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
+//      layer_counter++;
+//    }
 
-      layer_counter++;
-    }
-
-    layer_counter = 0;
-    for (auto pLayerElement : pPageElement.children("layer")) {
-      layer_counter++;
-      if (layer_counter != layers_count) {
-        InitBlendMaps(OgreTerrainPtr->getTerrain(pageX, pageY), layer_counter, pLayerElement.attribute("blendmap").value());
-      }
-    }
+//    layer_counter = 0;
+//    for (auto pLayerElement : pPageElement.children("layer")) {
+//      layer_counter++;
+//      if (layer_counter != layers_count) {
+//        InitBlendMaps(OgreTerrainPtr->getTerrain(pageX, pageY), layer_counter, pLayerElement.attribute("blendmap").value());
+//      }
+//    }
   }
 
   OgreTerrainPtr->freeTemporaryResources();

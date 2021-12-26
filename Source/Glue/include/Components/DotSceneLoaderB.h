@@ -60,7 +60,8 @@ class DotSceneLoaderB final {
   void ProcessParticleSystem(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
   void ProcessBillboardSet(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
   void ProcessPlane(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
-  void ProcessForest(pugi::xml_node &XmlNode);
+  void ProcessForests(pugi::xml_node &XmlNode);
+  void ProcessStaticGeometry(pugi::xml_node &XmlNode);
   void ProcessTerrain(pugi::xml_node &XmlNode);
   void ProcessFog(pugi::xml_node &XmlNode);
   void ProcessSkyBox(pugi::xml_node &XmlNode);
@@ -73,6 +74,7 @@ class DotSceneLoaderB final {
   Ogre::Camera *OgreCameraPtr = nullptr;
   Ogre::SceneManager *OgreScene = nullptr;
   Ogre::Root *OgreRoot = nullptr;
+  Ogre::SceneNode *RootNode = nullptr;
   Ogre::SceneNode *AttachNode = nullptr;
   std::string GroupName = Ogre::RGN_DEFAULT;
 };

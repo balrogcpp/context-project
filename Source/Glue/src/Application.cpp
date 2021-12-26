@@ -120,6 +120,7 @@ void Application::Loop() {
     FPSCounter++;
   }
 
+  EnginePtr->Cleanup();
   EnginePtr->Pause();
 }
 

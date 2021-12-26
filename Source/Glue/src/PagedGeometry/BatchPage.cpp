@@ -154,7 +154,7 @@ void BatchPage::build()
 		m_vecUnfadedMaterials.push_back(subBatch->getMaterial());
 	}
 
-	_updateShaders();
+	//_updateShaders();
 }
 
 
@@ -196,7 +196,7 @@ void BatchPage::setFade(bool enabled, Real visibleDist, Real invisibleDist)
 
 		m_fVisibleDist    = visibleDist;
 		m_fInvisibleDist  = invisibleDist;
-		_updateShaders();
+		//_updateShaders();
 	}
 }
 

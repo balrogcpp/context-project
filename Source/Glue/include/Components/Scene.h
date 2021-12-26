@@ -41,13 +41,13 @@ class Scene final : public Component<Scene> {
   float GetHeight(float x, float z);
   void AddCamera(Ogre::Camera *OgreCameraPtr);
   void AddSinbad(Ogre::Camera *OgreCameraPtr);
-  void AddForest(Forests::PagedGeometry *PGPtr);
+  void AddForests(Forests::PagedGeometry *PGPtr);
   void AddTerrain(Ogre::TerrainGroup* TGP);
 
  protected:
   std::unique_ptr<CameraMan> CameraManPtr;
   std::unique_ptr<Ogre::TerrainGroup> OgreTerrainList;
-  std::vector<std::unique_ptr<Forests::PagedGeometry>> PGeometryList;
+  std::vector<std::unique_ptr<Forests::PagedGeometry>> PagedGeometryList;
   std::unique_ptr<SinbadCharacterController> Sinbad;
 
   Ogre::SceneManager *OgreScene = nullptr;
