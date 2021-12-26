@@ -35,7 +35,7 @@ uniform mat4 uMVPMatrix;
 uniform mat4 cWorldViewProjPrev;
 #ifdef HAS_COLOURS
 in vec3 colour;
-#endif / /HAS_COLOURS
+#endif // HAS_COLOURS
 uniform mat4 uModelMatrix;
 #ifdef PAGED_GEOMETRY
 uniform vec3 uCameraPosition;

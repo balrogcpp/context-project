@@ -20,7 +20,8 @@ class Engine;
 /// Template helper function
 template <typename T>
 T* GetComponent() {
-  return Component<T>::GetInstancePtr();
+  static T* ptr = Component<T>::GetInstancePtr();
+  return ptr;
 }
 
 /// Global component getters

@@ -505,14 +505,14 @@ string FindPath(const string &Path, int Depth = 2) {
   return string();
 }
 
-static inline bool CheckSymbol(char c) { return isalpha(c) || isdigit(c) || c == '.' || c == ',' || c == ';' || c == '_' || c == '-' || c == '/'; }
+static inline bool IsAllowed(char c) { return isalpha(c) || isdigit(c) || c == '.' || c == ',' || c == ';' || c == '_' || c == '-' || c == '/'; }
 
 static inline bool StringSanityCheck(const string &str) {
   if (str.empty() || str[0] == '#') {
     return true;
   }
 
-  return any_of(str.begin(), str.end(), CheckSymbol);
+  return any_of(str.begin(), str.end(), IsAllowed);
 }
 
 static inline void LeftTrim(string &s) {
@@ -536,10 +536,9 @@ static void LoadResources() {
   rgm.initialiseAllResourceGroups();
 }
 
-static inline bool IsHidden(const fs::path &p)
-{
-  fs::path::string_type name = p.filename();
-  return name != ".." && name != "." && name[0] == '.';
+static inline bool IsHidden(const fs::path &p) {
+  string name = p.filename().string();
+  return name.compare("..") && name.compare(".") && name[0] == '.';
 }
 
 static void AddLocation(const std::string &Path, const std::string &GroupName = RGN_DEFAULT, const std::string &ResourceFile = "") {
@@ -602,8 +601,7 @@ static void AddLocation(const std::string &Path, const std::string &GroupName = 
       const auto file_name = jt->path().filename().string();
 
       if (jt->is_directory()) {
-        if(IsHidden(jt->path()))
-        {
+        if (IsHidden(jt->path())) {
           jt.disable_recursion_pending();
           continue;
         }
@@ -612,7 +610,7 @@ static void AddLocation(const std::string &Path, const std::string &GroupName = 
 
         RGM.addResourceLocation(full_path, FILE_SYSTEM, get<2>(it));
       } else if (jt->is_regular_file()) {
-        if(IsHidden(jt->path())) continue;
+        if (IsHidden(jt->path())) continue;
 
         if (fs::path(full_path).extension() == ".zip") {
           if (find(extensions_list.begin(), extensions_list.end(), fs::path(file_name).extension()) != extensions_list.end()) {
