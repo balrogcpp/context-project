@@ -102,7 +102,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
       texture_state->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
     }
 
-    if(isVertexCompressionSupported()) FixTerrainShadowCaster(new_material, OgreTerrainPtr);
+    //if(isVertexCompressionSupported()) FixTerrainShadowCaster(new_material, OgreTerrainPtr);
 
     return new_material;
   }

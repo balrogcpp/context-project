@@ -1,0 +1,49 @@
+import PBRS_Basic from PBRS.material
+
+vertex_program PBR_Fx_vs glsl glsles
+{
+	source PBR.vert
+    preprocessor_defines HAS_UV,HAS_COLOURS,MAX_LIGHTS=0
+    default_params {
+        shared_params_ref PBR_Shared_vert
+    }
+}
+
+fragment_program PBR_Fx_fs glsl glsles
+{
+	source PBR.frag
+    preprocessor_defines HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=0
+}
+
+abstract material PBR_Fx : PBRS_Basic
+{
+    receive_shadows off
+    transparency_casts_shadows off
+
+    set $Albedo white.dds
+
+    technique
+    {
+        pass
+        {
+            lighting off
+            alpha_rejection greater_equal 128
+            cull_hardware none
+            scene_blend add
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+                filtering bilinear
+                tex_address_mode clamp
+            }
+
+            vertex_program_ref PBR_Fx_vs {}
+
+            fragment_program_ref PBR_Fx_fs
+            {
+                param_named uAlbedoSampler int 0
+            }
+        }
+    }
+}

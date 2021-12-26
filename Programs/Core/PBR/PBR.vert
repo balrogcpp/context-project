@@ -29,54 +29,55 @@ uniform float baseUVScale;
 #endif
 
 uniform mat4 uMVPMatrix;
-uniform mat4 cWorldViewProjPrev;
 
 #ifndef SHADOWCASTER
+
+uniform mat4 cWorldViewProjPrev;
 #ifdef HAS_COLOURS
 in vec3 colour;
-#endif //HAS_COLOURS
+#endif / /HAS_COLOURS
 uniform mat4 uModelMatrix;
 #ifdef PAGED_GEOMETRY
 uniform vec3 uCameraPosition;
 #define HAS_UV
 uniform float uFadeRange;
 uniform float uWindRange;
-#endif //PAGED_GEOMETRY
+#endif // PAGED_GEOMETRY
 uniform float uTime;
 out vec2 vUV0;
 out float vDepth;
 out float vAlpha;
 #ifdef HAS_NORMALS
 in vec3 normal;
-#endif //HAS_NORMALS
+#endif // HAS_NORMALS
 #ifdef HAS_TANGENTS
 in vec4 tangent;
-#endif //HAS_TANGENTS
+#endif // HAS_TANGENTS
 #ifdef SHADOWRECEIVER
 uniform int uShadowTextureCount;
 uniform mat4 uTexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 out vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
-#endif //SHADOWRECEIVER
+#endif // SHADOWRECEIVER
 out vec3 vPosition;
 out vec4 vScreenPosition;
 out vec4 vPrevScreenPosition;
 #ifdef HAS_COLOURS
 out vec3 vColor;
-#endif //HAS_COLOURS
+#endif // HAS_COLOURS
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
 out mat3 vTBN;
-#else //!HAS_TANGENTS
+#else // !HAS_TANGENTS
 out vec3 vNormal;
-#endif //HAS_TANGENTS
-#endif //HAS_NORMALS
+#endif // HAS_TANGENTS
+#endif // HAS_NORMALS
 #ifdef HAS_REFLECTION
 out vec4 projectionCoord;
-#endif //HAS_REFLECTION
+#endif // HAS_REFLECTION
 
-#else //SHADOWCASTER
+#else // SHADOWCASTER
 out vec2 vUV0;
-#endif
+#endif // !SHADOWCASTER
 
 #ifdef HAS_REFLECTION
 vec4 GetProjectionCoord(vec4 position) {
@@ -90,35 +91,7 @@ vec4 GetProjectionCoord(vec4 position) {
 #endif
 
 #ifdef PAGED_GEOMETRY
-float hash(float n) {
-  return fract(sin(n) * 43758.5453);
-}
-
-float noise(vec2 x) {
-  vec2 p = floor(x);
-  vec2 f = fract(x);
-  f = f * f * (3.0 - 2.0 * f);
-  float n = p.x + p.y * 57.0;
-  float res = mix(mix( hash(n + 0.0), hash(n + 1.0),f.x), mix(hash(n + 57.0), hash(n + 58.0), f.x), f.y);
-  return res;
-}
-
-float fbm(vec2 p) {
-  float f = 0.0;
-  f += 0.50000 * noise(p); p = p * 2.02;
-//  f += 0.25000 * noise(p); p = p * 2.03;
-//  f += 0.12500 * noise(p); p = p * 2.01;
-//  f += 0.06250 * noise(p); p = p * 2.04;
-//  f += 0.03125 * noise(p);
-  return f / 0.984375;
-}
-
-vec4 ApplyWaveAnimation(vec4 position, float time, float frequency, vec4 direction) {
-  float offset = sin(uTime + position.x * frequency);
-  float n = fbm(position.xy * time * 0.2) * 4.0 - 2.0;
-//  return position + offset * direction + n * 0.01;
-  return position + n * direction;
-}
+#include "noise.glsl"
 #endif
 
 void main()
@@ -138,6 +111,7 @@ void main()
 #endif
 
 #ifndef SHADOWCASTER
+
 #ifdef HAS_COLOURS
   vColor = colour.rgb;
 #endif
@@ -163,8 +137,7 @@ void main()
 #else // HAS_TANGENTS != 1
   vNormal = normalize(vec3(uModelMatrix * vec4(normal.xyz, 0.0)));
 #endif
-#else
-#endif
+#endif // !SHADOWCASTER
 
   gl_Position = uMVPMatrix * new_position;
 

@@ -21,4 +21,8 @@ MAIN_DECLARATION
     float fogf = saturate((fogParams.z - abs(oFogCoord)) * fogParams.w);
     gl_FragColor.rgb = mix(fogColour.rgb, gl_FragColor.rgb, fogf);
 #endif
+//    gl_FragData[0] = color;
+//    #ifdef USE_FOG
+//    gl_FragData[1] = vec4((oFogCoord - 0.001) / (1000.0 - 0.001), 0.0, 0.0, 1.0);
+//    #endif
 }

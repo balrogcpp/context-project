@@ -120,32 +120,3 @@ fragment_program PBR_IBL_fs glsl glsles : PBR_IBLI_fs
         param_named_auto shadowTexel3 inverse_texture_size 12
     }
 }
-
-
-vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
-{
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {
-        param_named_auto uTime time
-        param_named uFadeRange float 50.0
-        param_named uWindRange float 50.0
-        param_named_auto uCameraPosition camera_position
-        //param_named uTimeScale float 1.0
-    }
-}
-
-fragment_program PBR_Grass_fs glsl glsles : PBR_I_fs
-{
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {
-            param_named_auto uAlphaRejection surface_alpha_rejection_value
-            param_named shadowMap0 int 1
-            param_named shadowMap1 int 2
-            param_named shadowMap2 int 3
-            param_named shadowMap3 int 4
-            param_named_auto shadowTexel0 inverse_texture_size 1
-            param_named_auto shadowTexel1 inverse_texture_size 2
-            param_named_auto shadowTexel2 inverse_texture_size 3
-            param_named_auto shadowTexel3 inverse_texture_size 4
-    }
-}

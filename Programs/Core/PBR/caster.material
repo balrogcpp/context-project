@@ -72,3 +72,38 @@ material PSSM/shadow_caster
 		}
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PSSM/shadow_caster_terrain_vs glsl glsles
+{
+	source PBR.vert
+	preprocessor_defines SHADOWCASTER,VERTEX_COMPRESSION,HAS_UV
+
+	default_params
+	{
+		param_named_auto uMVPMatrix worldviewproj_matrix
+	}
+}
+
+fragment_program PSSM/shadow_caster_terrain_fs glsl glsles
+{
+	source PBR.frag
+	preprocessor_defines SHADOWCASTER
+
+	default_params
+	{
+	}
+}
+
+material PSSM/shadow_caster_terrain
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref PSSM/shadow_caster_terrain_vs {}
+
+			fragment_program_ref PSSM/shadow_caster_terrain_fs {}
+		}
+	}
+}
