@@ -78,9 +78,10 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 #    && rm -rf gcc-linux \
 #    && apt-get -y purge gcc-9 g++-9 zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev \
 #    && apt-get -y autoremove \
-#    && update-alternatives --install /usr/bin/gcc gcc ${GCC_HOME}/bin/x86_64-linux-gnu-gcc 11200 \
-#        --slave /usr/local/bin/g++ g++ ${GCC_HOME}/bin/x86_64-linux-gnu-g++ \
-#        --slave /usr/local/bin/ar ar ${GCC_HOME}/bin/x86_64-linux-gnu-ar \
+#    && update-alternatives --install /usr/bin/gcc gcc ${GCC_HOME}/bin/x86_64-linux-gnu-gcc 10300 \
+#        --slave /usr/bin/g++ g++ ${GCC_HOME}/bin/x86_64-linux-gnu-g++ \
+#        --slave /usr/bin/ar ar ${GCC_HOME}/bin/x86_64-linux-gnu-ar \
+#        --slave /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld \
 #    && export PATH="${GCC_HOME}/bin:${PATH}" \
 #    && export LD_LIBRARY_PATH="${GCC_HOME}/lib64:${LD_LIBRARY_PATH}"
 #
@@ -89,7 +90,7 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 ARG LLVM_VERSION=12.0.1
 ARG BINUTILS_VERSION=2.37
-ARG GCC_HOME=/usr
+ARG BINUTILS_HOME=/usr
 ARG PYTHON3_VERSION=3.9.9
 ARG PYTHON3_SHORT_VERSION=3.9
 ARG PYTHON3_HOME=/opt/python-${PYTHON3_SHORT_VERSION}
@@ -103,7 +104,7 @@ RUN apt-get update \
     && cd binutils-${BINUTILS_VERSION}-linux \
     && export CPPFLAGS='-g0' \
     && ../binutils-${BINUTILS_VERSION}/configure \
-      --prefix=${GCC_HOME} \
+      --prefix=${BINUTILS_HOME} \
       --disable-multilib \
       --disable-nls \
       --disable-werror \
@@ -128,7 +129,7 @@ RUN apt-get update \
                              libgdbm-dev libbz2-dev libexpat1-dev liblzma-dev libffi-dev \
     && apt-get autoremove -y \
     && update-alternatives --install /usr/local/bin/python3 python3 ${PYTHON3_HOME}/bin/python${PYTHON3_SHORT_VERSION} 3990 \
-    && apt-get install -y libxml2 zlib1g-dev lzma-dev libxml2-dev libssl-dev \
+    && apt-get install --no-install-recommends -y zlib1g-dev lzma-dev libxml2-dev libssl-dev \
     && apt-get clean \
     && git clone --depth 1 -b llvmorg-${LLVM_VERSION} https://github.com/llvm/llvm-project.git \
     && cd llvm-project \
@@ -153,9 +154,11 @@ RUN apt-get update \
     && cmake --build . --target install \
     && cd ../../ \
     && rm -rf llvm-project \
-    && apt-get purge -y gcc g++ zlib1g-dev lzma-dev libxml2-dev libssl-dev \
+    && apt-get purge -y gcc-9 g++-9 zlib1g-dev lzma-dev libxml2-dev libssl-dev \
     && apt-get autoremove -y \
-    && rm -rf ${PYTHON3_HOME} /usr/local/bin/python3
+    && rm -rf ${PYTHON3_HOME} \
+    && apt-get install --no-install-recommends -y libgcc-9-dev libstdc++-9-dev \
+    && apt-get clean
 
 ARG UPX_VERSION=3.96
 
