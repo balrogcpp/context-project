@@ -31,10 +31,8 @@
 #include "Android.h"
 #endif
 #include "Filesystem.h"
+#include "SDL2.hpp"
 #include <algorithm>
-extern "C" {
-#include <SDL2/SDL_syswm.h>
-}
 
 using namespace std;
 using namespace Ogre;

@@ -7,6 +7,7 @@
 #include "Engine.h"
 #include "Exception.h"
 #include "RTSS.h"
+#include "SDL2.hpp"
 #include <iostream>
 
 #ifdef _WIN32
