@@ -2,7 +2,6 @@
 
 #include "pch.h"
 #include "Engine.h"
-#include "Components/ComponentsAll.h"
 #include "Components/DotSceneLoaderB.h"
 #include "Conf.h"
 #include "Input/InputSequencer.h"
@@ -42,12 +41,20 @@ using namespace Ogre;
 
 namespace Glue {
 
-Engine::Engine() {}
+Engine::Engine() {
+  ReadConfFile();
+
+#ifdef DESKTOP
+  LogPtr = make_unique<Log>("Runtime.txt");
+  bool Verbose = ConfPtr->GetBool("verbose", false);
+  LogPtr->WriteLogToConsole(Verbose);
+  LogPtr->WriteLogToFile(Verbose);
+#endif
+}
 
 Engine::~Engine() { SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE); }
 
 void Engine::InitComponents() {
-  ReadConfFile();
   ComponentI::SetConfig(ConfPtr.get());
 
   WindowWidth = ConfPtr->GetInt("window_width", WindowWidth);
@@ -256,8 +263,8 @@ void Engine::InitShadowSettings() {
   string tex_format = "D16";
 
   shadows_enable = ConfPtr->GetBool("shadows_enable", shadows_enable);
-  shadow_far = ConfPtr->GetInt("shadow_far", shadow_far);
-  tex_format = ConfPtr->GetString("tex_format", tex_format);
+//  shadow_far = ConfPtr->GetInt("shadow_far", shadow_far);
+//  tex_format = ConfPtr->GetString("tex_format", tex_format);
   tex_size = ConfPtr->GetInt("tex_size", tex_size);
 
   if (!shadows_enable) {
@@ -287,8 +294,8 @@ void Engine::InitShadowSettings() {
   OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
   OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
 
-  OgreSceneManager->setShadowTextureSelfShadow(true);
-  OgreSceneManager->setShadowCasterRenderBackFaces(true);
+//  OgreSceneManager->setShadowTextureSelfShadow(true);
+//  OgreSceneManager->setShadowCasterRenderBackFaces(true);
   OgreSceneManager->setShadowFarDistance(shadow_far);
   auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
   OgreSceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
@@ -297,11 +304,11 @@ void Engine::InitShadowSettings() {
   const float near_clip_distance = 0.001;
   PSSMSetupPtr->calculateSplitPoints(PSSMSplitCount, near_clip_distance, OgreSceneManager->getShadowFarDistance());
   PSSMSplitPointList = PSSMSetupPtr->getSplitPoints();
-  //  pssm_->setSplitPadding(near_clip_distance);
-  PSSMSetupPtr->setSplitPadding(0.1);
+//  PSSMSetupPtr->setSplitPadding(near_clip_distance);
+//  PSSMSetupPtr->setSplitPadding(0.1);
 
   for (size_t i = 0; i < PSSMSplitCount; i++) {
-    PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(i));
+    PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(0.5*i));
   }
 
   OgreSceneManager->setShadowCameraSetup(PSSMSetupPtr);
@@ -343,7 +350,6 @@ void Engine::ReadConfFile() {
 #ifndef MOBILE
   ConfPtr = make_unique<Conf>("config.ini");
 #else
-  // TODO: fill defauls for Android
   ConfPtr = make_unique<Conf>("");
 #endif
 }
@@ -643,10 +649,10 @@ Engine &GetEngine() {
   return EnginePtr;
 }
 
-Physics &GetPhysics() { return *GetComponent<Physics>(); }
+Physics &GetPhysics() { return *GetComponentPtr<Physics>(); }
 
-Sound &GetAudio() { return *GetComponent<Sound>(); }
+Sound &GetAudio() { return *GetComponentPtr<Sound>(); }
 
-Scene &GetScene() { return *GetComponent<Scene>(); }
+Scene &GetScene() { return *GetComponentPtr<Scene>(); }
 
 }  // namespace Glue

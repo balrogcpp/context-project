@@ -6,7 +6,6 @@
 #include "LazySingleton.h"
 #include "Input/WindowObserver.h"
 #include "Input/VerboseListener.h"
-#include "Log.h"
 #include <memory>
 #include <string>
 
@@ -28,7 +27,6 @@ class Application final : public WindowObserver, public Singleton<Application> {
 
   std::unique_ptr<AppStateManager> StateManagerPtr;
   std::unique_ptr<VerboseListener> VerboseListenerPtr;
-  std::unique_ptr<Log> LogPtr;
   Engine *EnginePtr = nullptr;
 
   bool Running = false;
@@ -39,7 +37,7 @@ class Application final : public WindowObserver, public Singleton<Application> {
   int64_t CurrentFPS = 0;
   int64_t TargetFPS = 60;
   bool LockFPS = true;
-  bool Verbose = true;
+  bool Verbose = false;
 
   /// Print all input in cout (pressed key on keyboard, mouse move, gamepad etc.)
   bool VerboseInput = false;

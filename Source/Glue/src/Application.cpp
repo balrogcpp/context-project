@@ -22,24 +22,21 @@ namespace Glue {
 
 Application::Application() {
   try {
-#ifdef DESKTOP
-    LogPtr = make_unique<Log>("Runtime.txt");
-#endif
-
     EnginePtr = &Engine::GetInstance();
     EnginePtr->InitComponents();
 
     StateManagerPtr = make_unique<AppStateManager>();
+    auto &ConfPtr = *Conf::GetInstancePtr();
 
-    //Verbose = GetConf().GetBool("verbose", Verbose);
-    //VerboseInput = GetConf().GetBool("verbose_input", VerboseInput);
+    Verbose = ConfPtr.GetBool("verbose", Verbose);
+    VerboseInput = ConfPtr.GetBool("verbose_input", VerboseInput);
 
     if (VerboseInput) {
       VerboseListenerPtr = make_unique<VerboseListener>();
     }
 
-    //LockFPS = GetConf().GetBool("lock_fps", LockFPS);
-    //TargetFPS = GetConf().GetInt("target_fps", TargetFPS);
+    LockFPS = ConfPtr.GetBool("lock_fps", LockFPS);
+    TargetFPS = ConfPtr.GetInt("target_fps", TargetFPS);
 
   } catch (Exception &e) {
     ErrorWindow("Exception", e.GetDescription());

@@ -3,9 +3,8 @@
 #include "pch.h"
 #include "DemoDotAppState.h"
 #include "Engine.h"
-#include "Components/ComponentsAll.h"
-#include "Objects/CameraMan.h"
 #include "MenuAppState.h"
+#include "Objects/CameraMan.h"
 
 using namespace std;
 using namespace Glue;
@@ -29,14 +28,6 @@ void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
 
 void DemoDotAppState::Cleanup() {}
 
-// static string ButtonText(const std::string &text, int length) {
-//   string new_string = string((length - text.size())/2, ' ');
-//   new_string.append(text);
-//   new_string.append(string((length - text.size())/2, ' '));
-//
-//   return new_string;
-// }
-
 void DemoDotAppState::Update(float time) {
   //  anim1->addTime(time/4);
   //  anim2->addTime(time/4);
@@ -54,8 +45,7 @@ void DemoDotAppState::Update(float time) {
 
     ImGui::SetWindowFontScale(0.25);
 
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
-                ImGui::GetIO().Framerate);
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
@@ -67,8 +57,7 @@ void DemoDotAppState::Update(float time) {
     }
 #endif
 
-    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always,
-                            ImVec2(0.5f, 0.5f));
+    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
     ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
     ImGui::SetNextWindowBgAlpha(0.5);
     ImGui::SetNextWindowFocus();
@@ -123,7 +112,7 @@ void DemoDotAppState::Update(float time) {
 
 void DemoDotAppState::SetUp() {
   GetEngine().GrabMouse(true);
-//  GetScene().GetCamera().SetStyle(CameraMan::Style::FPS);
+  //  GetScene().GetCamera().SetStyle(CameraMan::Style::FPS);
   LoadFromFile("1.scene");
 
   //    Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
@@ -143,10 +132,10 @@ void DemoDotAppState::SetUp() {
   //    anim2 = entity->getAnimationState("jump");
   //    anim2->setLoop(true);
   //    anim2->setEnabled(true);
-  
-//  GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
-//  GetAudio().SetVolume("ambient", 0.5);
-//  GetAudio().PlaySound("ambient");
+
+  //  GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
+  //  GetAudio().SetVolume("ambient", 0.5);
+  //  GetAudio().PlaySound("ambient");
 }
 
 }  // namespace Demo

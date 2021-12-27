@@ -25,9 +25,7 @@ TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator *pare
 
 TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
-bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const {
-  return true;
-}
+bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const { return true; }
 
 void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { EnableLightmap = enabled; }
 
@@ -88,9 +86,10 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
 
   auto normalmap = OgreTerrainPtr->getTerrainNormalMap();
   string new_name = material_name + GENERATOR;
+  bool EnableCastShadows = TerrainGlobalOptions::getSingleton().getCastsDynamicShadows();
 
   if (Ogre::MaterialManager::getSingleton().resourceExists(new_name)) {
-    // if(isVertexCompressionSupported()) FixTerrainShadowCaster(new_name, OgreTerrainPtr);
+    // if (isVertexCompressionSupported() && EnableCastShadows) FixTerrainShadowCaster(new_name, OgreTerrainPtr);
     return Ogre::MaterialManager::getSingleton().getByName(new_name);
   } else {
     auto new_material = Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(new_name);
@@ -102,7 +101,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
       texture_state->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
     }
 
-    //if(isVertexCompressionSupported()) FixTerrainShadowCaster(new_material, OgreTerrainPtr);
+    // if(isVertexCompressionSupported() && EnableCastShadows) FixTerrainShadowCaster(new_material, OgreTerrainPtr);
 
     return new_material;
   }

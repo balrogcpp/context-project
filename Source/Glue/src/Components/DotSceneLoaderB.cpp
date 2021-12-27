@@ -3,7 +3,6 @@
 #include "pch.h"
 #include "Components/DotSceneLoaderB.h"
 #include "BtOgre/BtOgre.h"
-#include "Components/ComponentsAll.h"
 #include "Engine.h"
 #include "Objects/SinbadCharacterController.h"
 #include "PBR.h"
@@ -172,8 +171,7 @@ void DotSceneLoaderB::WriteNode(pugi::xml_node &parentXML, const SceneNode *node
 void DotSceneLoaderB::ExportScene(SceneNode *rootNode, const string &outFileName) {
   pugi::xml_document XMLDoc;  // character type defaults to char
   auto comment = XMLDoc.append_child(pugi::node_comment);
-  comment.set_value(
-      StringUtil::format(" exporter: Plugin_DotScene %d.%d.%d ", OGRE_VERSION_MAJOR, OGRE_VERSION_MINOR, OGRE_VERSION_PATCH).c_str());
+  comment.set_value(StringUtil::format(" exporter: Plugin_DotScene %d.%d.%d ", OGRE_VERSION_MAJOR, OGRE_VERSION_MINOR, OGRE_VERSION_PATCH).c_str());
   auto scene = XMLDoc.append_child("scene");
   scene.append_attribute("formatVersion") = "1.1";
   scene.append_attribute("sceneManager") = rootNode->getCreator()->getTypeName().c_str();
@@ -435,39 +433,39 @@ void DotSceneLoaderB::ProcessCamera(pugi::xml_node &XmlNode, SceneNode *ParentNo
   ParentNode->attachObject(OgreCameraPtr);
   // SetUp the camera
 
-//  if (!CameraManPtr) CameraManPtr = make_unique<CameraMan>();
+  //  if (!CameraManPtr) CameraManPtr = make_unique<CameraMan>();
 
-//  CameraManPtr->AttachCamera(ParentNode, camera);
+  //  CameraManPtr->AttachCamera(ParentNode, camera);
 
-//  if (CameraManPtr->GetStyle() == CameraMan::Style::FPS) {
-//    auto *scene = Root::getSingleton().getSceneManager("Default");
-//    auto *actor = scene->createEntity("Actor", "Icosphere.mesh");
-//    actor->setCastShadows(false);
-//    actor->setVisible(false);
-//    ParentNode->attachObject(actor);
-//    unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
-//    btVector3 inertia;
-//    btRigidBody *entBody;
-//    converter = make_unique<BtOgre::StaticMeshToShapeConverter>(actor);
-//    auto *entShape = converter->createCapsule();
-//    GetAudio().SetListener(camera->getParentSceneNode());
-//    float mass = 100.0f;
-//    entShape->calculateLocalInertia(mass, inertia);
-//    auto *bodyState = new BtOgre::RigidBodyState(ParentNode);
-//    entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-//    entBody->setAngularFactor(0);
-//    entBody->activate(true);
-//    entBody->forceActivationState(DISABLE_DEACTIVATION);
-//    entBody->setActivationState(DISABLE_DEACTIVATION);
-//    entBody->setFriction(1.0);
-//    entBody->setUserIndex(1);
-//    GetPhysics().AddRigidBody(entBody);
-//    CameraManPtr->SetRigidBody(entBody);
-//    CameraManPtr->AttachNode(ParentNode);
-//  } else {
-//    Sinbad = make_unique<SinbadCharacterController>(OgreScene->getCamera("Default"));
-//    CameraManPtr->AttachNode(ParentNode, Sinbad->GetBodyNode());
-//  }
+  //  if (CameraManPtr->GetStyle() == CameraMan::Style::FPS) {
+  //    auto *scene = Root::getSingleton().getSceneManager("Default");
+  //    auto *actor = scene->createEntity("Actor", "Icosphere.mesh");
+  //    actor->setCastShadows(false);
+  //    actor->setVisible(false);
+  //    ParentNode->attachObject(actor);
+  //    unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
+  //    btVector3 inertia;
+  //    btRigidBody *entBody;
+  //    converter = make_unique<BtOgre::StaticMeshToShapeConverter>(actor);
+  //    auto *entShape = converter->createCapsule();
+  //    GetAudio().SetListener(camera->getParentSceneNode());
+  //    float mass = 100.0f;
+  //    entShape->calculateLocalInertia(mass, inertia);
+  //    auto *bodyState = new BtOgre::RigidBodyState(ParentNode);
+  //    entBody = new btRigidBody(mass, bodyState, entShape, inertia);
+  //    entBody->setAngularFactor(0);
+  //    entBody->activate(true);
+  //    entBody->forceActivationState(DISABLE_DEACTIVATION);
+  //    entBody->setActivationState(DISABLE_DEACTIVATION);
+  //    entBody->setFriction(1.0);
+  //    entBody->setUserIndex(1);
+  //    GetPhysics().AddRigidBody(entBody);
+  //    CameraManPtr->SetRigidBody(entBody);
+  //    CameraManPtr->AttachNode(ParentNode);
+  //  } else {
+  //    Sinbad = make_unique<SinbadCharacterController>(OgreScene->getCamera("Default"));
+  //    CameraManPtr->AttachNode(ParentNode, Sinbad->GetBodyNode());
+  //  }
 
   // Set the field-of-view
   OgreCameraPtr->setFOVy(Radian(fov));
@@ -689,7 +687,7 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &XmlNode, SceneNode *ParentNo
   try {
     ParentNode->attachObject(entity);
 
-//    UpdateEntityMaterial(entity, cast_shadows, material_name, planar_reflection, active_ibl);
+    //    UpdateEntityMaterial(entity, cast_shadows, material_name, planar_reflection, active_ibl);
 
     // Process userDataReference
     if (auto element = XmlNode.child("userData")) {
@@ -717,7 +715,7 @@ void DotSceneLoaderB::ProcessParticleSystem(pugi::xml_node &XmlNode, SceneNode *
   // SetUp the particle system
   try {
     ParticleSystem *pParticles = OgreScene->createParticleSystem(name, templateName);
-//    PBR::UpdatePbrParams(pParticles->getMaterialName());
+    //    PBR::UpdatePbrParams(pParticles->getMaterialName());
 
     const uint32 WATER_MASK = 0xF00;
     pParticles->setVisibilityFlags(WATER_MASK);
@@ -759,25 +757,25 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
 
   string mesh_name = name + "_mesh";
 
-  auto &mesh_mgr = MeshManager::getSingleton();
+  auto &OMM = MeshManager::getSingleton();
 
-  MeshPtr plane_mesh = mesh_mgr.getByName(mesh_name);
+  MeshPtr plane_mesh = OMM.getByName(mesh_name);
 
-  if (plane_mesh) mesh_mgr.remove(plane_mesh);
+  if (plane_mesh) OMM.remove(plane_mesh);
 
-  MeshPtr res =
-      mesh_mgr.createPlane(mesh_name, GroupName, plane, width, height, xSegments, ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
+  MeshPtr res = OMM.createPlane(mesh_name, GroupName, plane, width, height, xSegments, ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
   res->buildTangentVectors();
   Entity *entity = OgreScene->createEntity(name, mesh_name);
   entity->setCastShadows(true);
+  entity->setMaterialName(material);
 
-  if (material.empty()) return;
+  //  if (material.empty()) return;
 
-//  if (!material.empty()) {
-//    entity->setMaterialName(material);
-//    MaterialPtr material_ptr = MaterialManager::getSingleton().getByName(material);
-//    PBR::UpdatePbrParams(material);
-//  }
+  //  if (!material.empty()) {
+  //    entity->setMaterialName(material);
+  //    MaterialPtr material_ptr = MaterialManager::getSingleton().getByName(material);
+  //    PBR::UpdatePbrParams(material);
+  //  }
 
   //  if (reflection) {
   //    rcamera.reset();
@@ -830,22 +828,19 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
 
   GetScene().AddForests(grass);
 
-
-
-
   const float bound = 100;
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;
   auto *trees = new PagedGeometry(OgreCameraPtr, 50);
-//  trees->addDetailLevel<Forests::WindBatchPage>(100, 20);
+  //  trees->addDetailLevel<Forests::WindBatchPage>(100, 20);
   trees->addDetailLevel<Forests::BatchPage>(100, 60);
-//  trees->addDetailLevel<Forests::ImpostorPage>(200, 60);
+  //  trees->addDetailLevel<Forests::ImpostorPage>(200, 60);
   auto *treeLoader = new TreeLoader3D(trees, TBounds(-100, -100, 100, 100));
   FixTransparentShadowCaster("3D-Diggers/fir01");
   FixTransparentShadowCaster("3D-Diggers/fir02");
 
   trees->setPageLoader(treeLoader);
   Entity *fir1EntPtr = OgreScene->createEntity("fir1", "fir05_30.mesh");
-  fir1EntPtr->setCastShadows(false);
+//  fir1EntPtr->setCastShadows(false);
 
   for (int i = 0; i < 10; i++) {
     yaw = Math::RangeRandom(0, 360);
@@ -871,17 +866,17 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
     Quaternion quat;
     quat.FromAngleAxis(Degree(yaw), Vector3::UNIT_Y);
 
-//    auto *node = RootNode->createChildSceneNode(Vector3(x, y, z), quat);
-//    node->scale(Vector3(scale));
-//    GetPhysics().ProcessData(fir1EntPtr, node, "capsule");
-//    OgreScene->destroySceneNode(node);
+    //    auto *node = RootNode->createChildSceneNode(Vector3(x, y, z), quat);
+    //    node->scale(Vector3(scale));
+    //    GetPhysics().ProcessData(fir1EntPtr, node, "capsule");
+    //    OgreScene->destroySceneNode(node);
 
     treeLoader->addTree(fir1EntPtr, Vector3(x, y, z), Degree(yaw), scale);
   }
 
   GetScene().AddForests(trees);
 
-  ProcessStaticGeometry(XmlNode);
+  // ProcessStaticGeometry(XmlNode);
 }
 
 void DotSceneLoaderB::ProcessStaticGeometry(pugi::xml_node &XmlNode) {
@@ -894,8 +889,7 @@ void DotSceneLoaderB::ProcessStaticGeometry(pugi::xml_node &XmlNode) {
   const float bounds = 100.0f;
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 250; i++) {
-    Vector3 pos(Math::RangeRandom(-bounds, bounds), 0,
-                      Math::RangeRandom(-bounds, bounds));
+    Vector3 pos(Math::RangeRandom(-bounds, bounds), 0, Math::RangeRandom(-bounds, bounds));
     pos.y += GetScene().GetHeight(pos.x, pos.z) - 0.1;
     Quaternion ori(Degree(Math::RangeRandom(0, 359)), Vector3::UNIT_Y);
     Vector3 scale(2.0, 2.0 * Math::RangeRandom(0.85, 1.15), 2.0);
@@ -916,77 +910,9 @@ void DotSceneLoaderB::ProcessStaticGeometry(pugi::xml_node &XmlNode) {
   rocks->setCastShadows(true);
 }
 
-static void GetTerrainImage(bool flipX, bool flipY, Image &ogre_image, const string &filename = "terrain.dds") {
-  ogre_image.load(filename, RGN_AUTODETECT);
-
-  if (flipX) ogre_image.flipAroundY();
-
-  if (flipY) ogre_image.flipAroundX();
-}
-
-static void DefineTerrain(TerrainGroup *terrain, long x, long y, bool flat, const string &filename = "terrain.dds") {
-  // if a file is available, use it
-  // if not, generate file from import
-
-  // Usually in a real project you'll know whether the compact terrain data is
-  // available or not; I'm doing it this way to save distribution size
-
-  if (flat) {
-    terrain->defineTerrain(x, y, 0.0f);
-    return;
-  }
-
-  Image image;
-  GetTerrainImage(x % 2 != 0, y % 2 != 0, image, filename);
-
-  string cached = terrain->generateFilename(x, y);
-  if (ResourceGroupManager::getSingleton().resourceExists(terrain->getResourceGroup(), cached)) {
-    terrain->defineTerrain(x, y);
-  } else {
-    terrain->defineTerrain(x, y, &image);
-  }
-}
-
-static void InitBlendMaps(Terrain *terrain, int layer, const string &image = "terrain_blendmap.dds") {
-  TerrainLayerBlendMap *blendMap = terrain->getLayerBlendMap(layer);
-  auto *pBlend1 = blendMap->getBlendPointer();
-
-  Image img;
-  img.load(image, RGN_AUTODETECT);
-
-  int bmSize = terrain->getLayerBlendMapSize();
-
-  for (int y = 0; y < bmSize; ++y) {
-    for (int x = 0; x < bmSize; ++x) {
-      float tx = static_cast<float>(x) / static_cast<float>(bmSize);
-      float ty = static_cast<float>(y) / static_cast<float>(bmSize);
-      int ix = static_cast<int>(img.getWidth() * tx);
-      int iy = static_cast<int>(img.getWidth() * ty);
-
-      ColourValue cv = ColourValue::Black;
-      cv = img.getColourAt(ix, iy, 0);
-      //            Real val = cv[0]*opacity[bi];
-      float val = cv[0];
-      *pBlend1++ = val;
-    }
-  }
-
-  blendMap->dirty();
-  blendMap->update();
-
-  // set up a colour map
-  if (terrain->getGlobalColourMapEnabled()) {
-    Image colourMap;
-    colourMap.load("testcolourmap.dds", RGN_AUTODETECT);
-    terrain->getGlobalColourMap()->loadImage(colourMap);
-  }
-}
-
 void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
   float worldSize = GetAttribReal(XmlNode, "worldSize");
   int mapSize = GetAttribInt(XmlNode, "mapSize");
-  int minBatchSize = StringConverter::parseInt(XmlNode.attribute("minBatchSize").value());
-  int maxBatchSize = StringConverter::parseInt(XmlNode.attribute("maxBatchSize").value());
   int inputScale = StringConverter::parseInt(XmlNode.attribute("inputScale").value());
   int tuningMaxPixelError = GetAttribInt(XmlNode, "tuningMaxPixelError", 8);
 
@@ -994,54 +920,32 @@ void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
   if (!TGO) TGO = new TerrainGlobalOptions();
   TGO->setUseVertexCompressionWhenAvailable(true);
   TGO->setCastsDynamicShadows(false);
-  TGO->setCompositeMapDistance(200);
+  TGO->setCompositeMapDistance(100);
   TGO->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
-  TGO->setUseRayBoxDistanceCalculation(true);
+  TGO->setUseRayBoxDistanceCalculation(false);
   TGO->setDefaultMaterialGenerator(make_shared<TerrainMaterialGeneratorB>());
 
   TerrainGroup *OgreTerrainPtr = new TerrainGroup(OgreScene, Terrain::ALIGN_X_Z, mapSize, worldSize);
-  OgreTerrainPtr->setFilenameConvention("terrain", "bin");
   OgreTerrainPtr->setOrigin(Vector3::ZERO);
-  OgreTerrainPtr->setResourceGroup(RGN_DEFAULT);
+  OgreTerrainPtr->setResourceGroup(GroupName);
 
   Terrain::ImportData &defaultimp = OgreTerrainPtr->getDefaultImportSettings();
-
-  defaultimp.terrainSize = mapSize;
-  defaultimp.worldSize = worldSize;
   defaultimp.inputScale = inputScale;
-  defaultimp.minBatchSize = minBatchSize;
-  defaultimp.maxBatchSize = maxBatchSize;
 
   for (auto &pPageElement : XmlNode.children("terrain")) {
     int pageX = StringConverter::parseInt(pPageElement.attribute("x").value());
     int pageY = StringConverter::parseInt(pPageElement.attribute("y").value());
-
-    string heighmap = pPageElement.attribute("heightmap").value();
-    DefineTerrain(OgreTerrainPtr, pageX, pageY, false, heighmap);
-    OgreTerrainPtr->loadTerrain(pageX, pageY, true);
-    OgreTerrainPtr->getTerrain(pageX, pageY)->setGlobalColourMapEnabled(false);
-
-//    int layers_count = 0;
-//    for (const auto &pLayerElement : pPageElement.children("layer")) layers_count++;
-
-//    defaultimp.layerList.resize(layers_count);
-
-//    size_t layer_counter = 0;
-//    for (auto pLayerElement : pPageElement.children("layer")) {
-//      defaultimp.layerList[layer_counter].worldSize = StringConverter::parseInt(pLayerElement.attribute("scale").value());
-//      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("diffuse").value());
-//      defaultimp.layerList[layer_counter].textureNames.push_back(pLayerElement.attribute("normal").value());
-//      layer_counter++;
-//    }
-
-//    layer_counter = 0;
-//    for (auto pLayerElement : pPageElement.children("layer")) {
-//      layer_counter++;
-//      if (layer_counter != layers_count) {
-//        InitBlendMaps(OgreTerrainPtr->getTerrain(pageX, pageY), layer_counter, pLayerElement.attribute("blendmap").value());
-//      }
-//    }
+    string cached = pPageElement.attribute("heightmap").value();
+    Image image;
+    if (ResourceGroupManager::getSingleton().resourceExists(GroupName, cached)) {
+      image.load(cached, GroupName);
+      OgreTerrainPtr->defineTerrain(pageX, pageY, &image);
+    } else {
+      OgreTerrainPtr->defineTerrain(pageX, pageY, 0.0f);
+    }
   }
+
+  OgreTerrainPtr->loadAllTerrains(true);
 
   OgreTerrainPtr->freeTemporaryResources();
 

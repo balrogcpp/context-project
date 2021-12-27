@@ -1,27 +1,28 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Components/Component.h"
+#include "Components/ComponentsAll.h"
 #include "LazySingleton.h"
+#include "Log.h"
 #include <memory>
 #include <vector>
 
 namespace Glue {
 
-class ComponentI;
-class Compositor;
-class Overlay;
-class Physics;
-class Sound;
-class Scene;
-class Conf;
+/// Forward declaration
 class Engine;
 
 /// Template helper function
 template <typename T>
-T* GetComponent() {
+T* GetComponentPtr() {
   static T* ptr = Component<T>::GetInstancePtr();
   return ptr;
+}
+
+template <typename T>
+T& GetComponent() {
+  static T& ref = *Component<T>::GetInstancePtr();
+  return ref;
 }
 
 /// Global component getters
@@ -114,6 +115,7 @@ class Engine final : public LazySingleton<Engine> {
   std::unique_ptr<Sound> SoundPtr;
   std::unique_ptr<Scene> ScenePtr;
   std::vector<ComponentI*> ComponentList;
+  std::unique_ptr<Log> LogPtr;
 
   /// Global access to base components
   friend Engine& GetEngine();

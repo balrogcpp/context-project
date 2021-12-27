@@ -2,7 +2,6 @@
 
 #include "pch.h"
 #include "Objects/SinbadCharacterController.h"
-#include "Components/ComponentsAll.h"
 #include "Engine.h"
 
 using namespace std;
@@ -125,9 +124,6 @@ void SinbadCharacterController::setupBody(Ogre::SceneManager *sceneMgr) {
   mSword2 = sceneMgr->createEntity("SinbadSword2", "Sword.mesh");
   mBodyEnt->attachObjectToBone("Sheath.L", mSword1);
   mBodyEnt->attachObjectToBone("Sheath.R", mSword2);
-
-  //  UpdateMeshMaterial("Sinbad.mesh");
-  //  UpdateMeshMaterial("Sword.mesh");
 
   // create a couple of ribbon trails for the swords, just for fun
   Ogre::NameValuePairList params;

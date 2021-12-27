@@ -9,7 +9,7 @@ namespace Glue {
 
 class Log : public Ogre::LogListener, public Singleton<Log> {
  public:
-  explicit Log(std::string LogFileName);
+  explicit Log(std::string LogFileName = "Runtime.log");
   virtual ~Log();
 
   void messageLogged(const std::string &message, Ogre::LogMessageLevel lml, bool maskDebug, const std::string &logName,
@@ -20,11 +20,10 @@ class Log : public Ogre::LogListener, public Singleton<Log> {
   static void Message(const Ogre::String &message, Ogre::LogMessageLevel lml = Ogre::LML_NORMAL, bool maskDebug = false);
 
  protected:
-  std::string LogBuffer;
-  std::string LogFileName = "Launch.log";
-  bool EnableWriteToFile = true;
-  bool EnableWriteToConsole = true;
-  std::ofstream f;
+  std::ofstream FileStream;
+  std::string LogFileName = "Runtime.log";
+  bool EnableWriteToFile = false;
+  bool EnableWriteToConsole = false;
 };
 
 }  // namespace Glue

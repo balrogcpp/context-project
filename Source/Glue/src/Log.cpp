@@ -10,17 +10,21 @@ using namespace std;
 
 namespace Glue {
 
+#ifdef DESKTOP
+
+#endif
+
 Log::Log(std::string LogFileName) {
 #ifdef DESKTOP
+  this->LogFileName = LogFileName;
   auto *logger = new Ogre::LogManager();
-  f.open(LogFileName);
-  if (!f.is_open()) EnableWriteToFile = false;
+  FileStream.open(LogFileName);
+  if (!FileStream.is_open()) EnableWriteToFile = false;
 
   logger->createLog(LogFileName, false, false, true);
   Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
 
   Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
-
 #endif
 }
 
@@ -36,7 +40,7 @@ void Log::WriteLogToFile(bool enable) { EnableWriteToFile = enable; }
 
 void Log::messageLogged(const string &message, Ogre::LogMessageLevel lml, bool maskDebug, const string &logName, bool &skipThisMessage) {
 #ifdef DESKTOP
-  if (EnableWriteToFile && f.is_open()) f << message << '\n';
+  if (EnableWriteToFile && FileStream.is_open()) FileStream << message << '\n';
   if (EnableWriteToConsole) cout << message << '\n';
 #endif
 }

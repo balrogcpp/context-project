@@ -76,7 +76,7 @@ class DotSceneLoaderB final {
   Ogre::Root *OgreRoot = nullptr;
   Ogre::SceneNode *RootNode = nullptr;
   Ogre::SceneNode *AttachNode = nullptr;
-  std::string GroupName = Ogre::RGN_DEFAULT;
+  std::string GroupName = Ogre::RGN_AUTODETECT;
 };
 
 class DotScenePluginB : public Ogre::Plugin {

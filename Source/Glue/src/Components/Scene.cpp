@@ -3,7 +3,6 @@
 #include "pch.h"
 #include "Components/Scene.h"
 #include "BtOgre/BtOgre.h"
-#include "Components/ComponentsAll.h"
 #include "Engine.h"
 #include "Objects/CameraMan.h"
 #include "Objects/SinbadCharacterController.h"
