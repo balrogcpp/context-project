@@ -4,9 +4,9 @@
 #include "Components/Component.h"
 #include <OgreAny.h>
 #include <OgreFrameListener.h>
+#include <functional>
 #include <map>
 #include <thread>
-#include <functional>
 
 namespace BtOgre {
 class DebugDrawer;
@@ -16,7 +16,6 @@ namespace Ogre {
 class Entity;
 class SceneNode;
 }  // namespace Ogre
-
 
 // Forward declaration
 struct btDbvtBroadphase;
@@ -34,20 +33,25 @@ class btCollisionObject;
 
 namespace Glue {
 
-struct ContactInfo {
-  ContactInfo() = default;
-  ContactInfo(const btCollisionObject *a, int points) : a_(a), points_(points) {}
-  ContactInfo &operator=(const ContactInfo &that) = default;
-
-  const btCollisionObject *a_;
-  int points_;
-};
-
 class Physics final : public Component<Physics> {
+  ///
+  struct ContactInfo {
+    ContactInfo() = default;
+    ContactInfo(const btCollisionObject *a, int points) : a_(a), points_(points) {}
+    ContactInfo &operator=(const ContactInfo &that) = default;
+
+    const btCollisionObject *a_;
+    int points_;
+  };
+
  public:
+  /// Constructors
   Physics(bool threaded = false);
   virtual ~Physics();
 
+  /// Create thread
+  void InitThread();
+  void DispatchCollisions();
   void OnClean() override;
   void OnUpdate(float time) override;
   void OnResume() override;
@@ -56,30 +60,28 @@ class Physics final : public Component<Physics> {
   void AddRigidBody(btRigidBody *body);
   void ProcessData(Ogre::UserObjectBindings &user_data, Ogre::Entity *entity, Ogre::SceneNode *parent_node);
   void ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent_node = nullptr, const std::string &proxy_type = "box",
-                   const std::string &physics_type = "static", float mass = 0.0, float mass_radius = 0.0,
-                   float inertia_tensor = 0.0, float velocity_min = 0.0, float velocity_max = 0.0,
-                   float friction = 1.0);
-  void CreateTerrainHeightfieldShape(int size, float *data, const float &min_height, const float &max_height,
-                                     const Ogre::Vector3 &position, const float &scale);
+                   const std::string &physics_type = "static", float mass = 0.0, float mass_radius = 0.0, float inertia_tensor = 0.0,
+                   float velocity_min = 0.0, float velocity_max = 0.0, float friction = 1.0);
+  void CreateTerrainHeightfieldShape(int size, float *data, const float &min_height, const float &max_height, const Ogre::Vector3 &position,
+                                     const float &scale);
 
  protected:
-  std::unique_ptr<BtOgre::DebugDrawer> dbg_draw;
-  std::unique_ptr<btDbvtBroadphase> broadphase;
-  std::unique_ptr<btDefaultCollisionConfiguration> config;
-  std::unique_ptr<btCollisionDispatcherMt> dispatcher;
-  std::unique_ptr<btSequentialImpulseConstraintSolverMt> solver;
-  std::unique_ptr<btDiscreteDynamicsWorldMt> world;
-  std::unique_ptr<std::thread> update_thread;
-  std::map<const btCollisionObject *, ContactInfo> contacts;
-  std::function<void(int a, int b)> callback;
-  int steps = 4;
-  bool threaded = false;
-  int64_t update_rate = 60;
-  bool pause = true;
-  bool running = false;
-  bool debug = true;
-  int64_t time_of_last_frame = 0;
-  int64_t cumulated_time_ = 0;
+  std::unique_ptr<BtOgre::DebugDrawer> DbgDraw;
+  std::unique_ptr<btDbvtBroadphase> BtBroadphase;
+  std::unique_ptr<btDefaultCollisionConfiguration> BtConfig;
+  std::unique_ptr<btCollisionDispatcherMt> BtDispatcher;
+  std::unique_ptr<btSequentialImpulseConstraintSolverMt> BtSolver;
+  std::unique_ptr<btDiscreteDynamicsWorldMt> BtWorld;
+  std::unique_ptr<std::thread> UpdateThread;
+  std::map<const btCollisionObject *, ContactInfo> ContactList;
+  std::function<void(int a, int b)> ContactCalback;
+  int SubSteps = 4;
+  bool Running = false;
+  std::atomic<bool> MTPaused = false;
+  std::atomic<bool> MTRunning = false;
+  bool Threaded = false;
+  int64_t UpdateRate = 60;
+  bool DebugWraw = false;
   const std::string TYPE_STATIC = "static";
   const std::string TYPE_DYNAMIC = "dynamic";
   const std::string TYPE_ACTOR = "actor";
