@@ -55,8 +55,8 @@ abstract fragment_program PBR_BaseI_fs glsl glsles
         param_named_auto uSurfaceSpecularColour surface_specular_colour
         param_named_auto uSurfaceShininessColour surface_shininess
         param_named_auto uSurfaceEmissiveColour surface_emissive_colour
-        //param_named_auto uFogColour fog_colour
-        //param_named_auto uFogParams fog_params
+        param_named_auto uFogColour fog_colour
+        param_named_auto uFogParams fog_params
         param_named_auto uCameraPosition camera_position
         param_named_auto cNearClipDistance near_clip_distance
         param_named_auto cFarClipDistance far_clip_distance
@@ -72,13 +72,6 @@ abstract fragment_program PBR_I_fs glsl glsles : PBR_BaseI_fs
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params {}
 }
-
-abstract fragment_program PBR_IBLI_fs glsl glsles : PBR_BaseI_fs
-{
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {}
-}
-
 
 fragment_program PBR_Basic_fs glsl glsles : PBR_BaseI_fs
 {
@@ -105,19 +98,5 @@ fragment_program PBR_fs glsl glsles : PBR_I_fs
         param_named_auto shadowTexel1 inverse_texture_size 5
         param_named_auto shadowTexel2 inverse_texture_size 6
         param_named_auto shadowTexel3 inverse_texture_size 7
-    }
-}
-
-fragment_program PBR_IBL_fs glsl glsles : PBR_IBLI_fs
-{
-    default_params {
-        param_named shadowMap0 int 9
-        param_named shadowMap1 int 10
-        param_named shadowMap2 int 11
-        param_named shadowMap3 int 12
-        param_named_auto shadowTexel0 inverse_texture_size 9
-        param_named_auto shadowTexel1 inverse_texture_size 10
-        param_named_auto shadowTexel2 inverse_texture_size 11
-        param_named_auto shadowTexel3 inverse_texture_size 12
     }
 }

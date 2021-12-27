@@ -1,6 +1,6 @@
 import PBRS_Basic from PBRS.material
 
-vertex_program PBR_Fx_vs glsl glsles
+vertex_program PBR_FX_vs glsl glsles
 {
 	source PBR.vert
     preprocessor_defines HAS_UV,HAS_COLOURS,MAX_LIGHTS=0
@@ -9,13 +9,13 @@ vertex_program PBR_Fx_vs glsl glsles
     }
 }
 
-fragment_program PBR_Fx_fs glsl glsles
+fragment_program PBR_FX_fs glsl glsles
 {
 	source PBR.frag
     preprocessor_defines HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=0
 }
 
-abstract material PBR_Fx : PBRS_Basic
+abstract material PBR_FX : PBRS_Basic
 {
     receive_shadows off
     transparency_casts_shadows off
@@ -38,9 +38,9 @@ abstract material PBR_Fx : PBRS_Basic
                 tex_address_mode clamp
             }
 
-            vertex_program_ref PBR_Fx_vs {}
+            vertex_program_ref PBR_FX_vs {}
 
-            fragment_program_ref PBR_Fx_fs
+            fragment_program_ref PBR_FX_fs
             {
                 param_named uAlbedoSampler int 0
             }

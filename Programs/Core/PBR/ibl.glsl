@@ -26,6 +26,7 @@ vec3 GetIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)
 
   return diffuse + specular;
 }
+
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.

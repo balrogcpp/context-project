@@ -21,13 +21,11 @@ abstract vertex_program PBRS_I_vs glsl glsles
 
         param_named_auto uMVPMatrix worldviewproj_matrix
         param_named_auto uModelMatrix world_matrix
-
     }
 }
 
 vertex_program PBRS_vs glsl glsles : PBRS_I_vs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8
     default_params {}
 }
 
@@ -51,8 +49,8 @@ abstract fragment_program PBRS_BaseI_fs glsl glsles
         param_named_auto uSurfaceSpecularColour surface_specular_colour
         param_named_auto uSurfaceShininessColour surface_shininess
         param_named_auto uSurfaceEmissiveColour surface_emissive_colour
-        //param_named_auto uFogColour fog_colour
-        //param_named_auto uFogParams fog_params
+        param_named_auto uFogColour fog_colour
+        param_named_auto uFogParams fog_params
         param_named_auto uCameraPosition camera_position
         param_named_auto cNearClipDistance near_clip_distance
         param_named_auto cFarClipDistance far_clip_distance
@@ -66,30 +64,13 @@ abstract fragment_program PBRS_I_fs glsl glsles : PBRS_BaseI_fs
     default_params {}
 }
 
-abstract fragment_program PBRS_IBLI_fs glsl glsles : PBRS_BaseI_fs
-{
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL,MAX_LIGHTS=8
-    default_params {}
-}
-
 
 fragment_program PBRS_Basic_fs glsl glsles : PBRS_BaseI_fs
 {
-    default_params {
-
-    }
+    default_params {}
 }
 
 fragment_program PBRS_fs glsl glsles : PBRS_I_fs
 {
-    default_params {
-7
-    }
-}
-
-fragment_program PBRS_IBL_fs glsl glsles : PBRS_IBLI_fs
-{
-    default_params {
-
-    }
+    default_params {}
 }

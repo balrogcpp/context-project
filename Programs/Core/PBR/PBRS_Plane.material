@@ -1,0 +1,47 @@
+import PBRS from PBRS.material
+
+vertex_program PBRS_Reflective_vs glsl glsles
+{
+	source PBR.vert
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_REFLECTION,MAX_LIGHTS=8
+}
+
+fragment_program PBRS_Reflective_fs glsl glsles
+{
+	source PBR.frag
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_EMISSIVEMAP,HAS_ORM,HAS_REFLECTION,MAX_LIGHTS=8
+
+    default_params
+    {
+        shared_params_ref PBRS_Shared_frag
+    }
+}
+
+abstract material PBRS_Plane : PBRS
+{
+    receive_shadows off
+    transparency_casts_shadows off
+
+    technique
+    {
+        pass
+        {
+            texture_unit ReflectionMap
+            {
+                texture black.dds
+                filtering bilinear
+            }
+
+            vertex_program_ref PBRS_Reflective_vs {}
+
+            fragment_program_ref PBRS_Reflective_fs
+            {
+                param_named uAlbedoSampler      int 0
+                param_named uNormalSampler      int 1
+                param_named uORMSampler         int 2
+                param_named uEmissiveSampler    int 3
+                param_named uReflectionMap      int 4
+            }
+        }
+    }
+}

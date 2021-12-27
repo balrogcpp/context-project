@@ -1,3 +1,4 @@
+import PBR_Basic from PBR.material
 import PBRS_Basic from PBRS.material
 import PBRS_I_vs from PBRS.program
 import PBRS_I_fs from PBRS.program
@@ -41,6 +42,62 @@ abstract material PBRS_Paged : PBRS_Basic
             vertex_program_ref PBRS_Paged_vs {}
 
             fragment_program_ref PBRS_Paged_fs
+            {
+                param_named uAlbedoSampler int 0
+            }
+        }
+    }
+}
+
+abstract material PBR_Plant : PBR_Basic
+{
+    receive_shadows on
+    transparency_casts_shadows off
+
+    set $Albedo white.dds
+
+    technique
+    {
+        pass
+        {
+            alpha_rejection greater_equal 128
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+
+            vertex_program_ref PBR_Grass_vs {}
+
+            fragment_program_ref PBR_Grass_fs
+            {
+                param_named uAlbedoSampler int 0
+            }
+        }
+    }
+}
+
+abstract material PBRS_Plant : PBRS_Basic
+{
+    receive_shadows off
+    transparency_casts_shadows on
+
+    set $Albedo white.dds
+
+    technique
+    {
+        pass
+        {
+            alpha_rejection greater_equal 128
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+
+            vertex_program_ref PBRS_Grass_vs {}
+
+            fragment_program_ref PBRS_Grass_fs
             {
                 param_named uAlbedoSampler int 0
             }

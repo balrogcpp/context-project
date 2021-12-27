@@ -59,31 +59,3 @@ abstract material PBR_Grass : PBR_Basic
         }
     }
 }
-
-abstract material PBR_Plant : PBR_Basic
-{
-    receive_shadows on
-    transparency_casts_shadows off
-
-    set $Albedo white.dds
-
-    technique
-    {
-        pass
-        {
-            alpha_rejection greater_equal 128
-
-            texture_unit Albedo
-            {
-                texture $Albedo
-            }
-
-            vertex_program_ref PBR_Grass_vs {}
-
-            fragment_program_ref PBR_Grass_fs
-            {
-                param_named uAlbedoSampler int 0
-            }
-        }
-    }
-}

@@ -36,13 +36,11 @@ in vec2 vUV0;
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D uAlbedoSampler;
 #endif
-#ifdef USE_IBL
-uniform samplerCube uDiffuseEnvSampler;
-uniform samplerCube uSpecularEnvSampler;
-uniform sampler2D ubrdfLUT;
-#endif
 #ifdef HAS_NORMALMAP
 uniform sampler2D uNormalSampler;
+#endif
+#ifdef HAS_ORM
+uniform sampler2D uORMSampler;
 #endif
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D uEmissiveSampler;
@@ -56,8 +54,10 @@ uniform sampler2D uRoughnessSampler;
 #ifdef HAS_OCCLUSIONMAP
 uniform sampler2D uOcclusionSampler;
 #endif
-#ifdef HAS_ORM
-uniform sampler2D uORMSampler;
+#ifdef USE_IBL
+uniform samplerCube uDiffuseEnvSampler;
+uniform samplerCube uSpecularEnvSampler;
+uniform sampler2D ubrdfLUT;
 #endif
 #ifdef TERRAIN
 uniform sampler2D uGlobalNormalSampler;
@@ -377,23 +377,21 @@ vec4 GetAlbedo(vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//void GetORM(vec2 uv, out float occlusion, out float metallic, out float roughness) {
-//#ifdef HAS_ORM
-//    vec3 OMR = texture2D(uORMSampler, uv, uLOD).rgb;
-//
-//    metallic = uSurfaceShininessColour;
-//
-//    const float c_MinRoughness = 0.04;
-//    roughness = uSurfaceSpecularColour;
-//
-//    metallic *= OMR.b;
-//    roughness *= OMR.g;
-//    metallic = clamp(metallic, 0.0, 1.0);
-//    roughness = clamp(roughness, c_MinRoughness, 1.0);
-//
-//    occlusion = OMR.r;
-//#endif
-//}
+vec3 GetORM(vec2 uv) {
+    vec3 ORM = vec3(1.0, uSurfaceSpecularColour, uSurfaceShininessColour);
+
+#ifdef HAS_ORM
+    vec3 texel = texture2D(uORMSampler, uv, uLOD).rgb;
+    ORM.r = texel.r;
+    ORM.g *= texel.g;
+    ORM.b *= texel.b;
+#endif
+
+//    ORM.g = clamp(ORM.g, 0.0, 1.0);
+//    ORM.b = clamp(ORM.b, 0.04, 1.0);
+
+    return ORM;
+}
 
 #ifdef HAS_REFLECTION
 //----------------------------------------------------------------------------------------------------------------------
@@ -474,31 +472,10 @@ void main()
     }
 #endif // HAS_ALPHA
 
-
-#ifdef HAS_ORM
-
-    vec3 ORM = texture2D(uORMSampler, tex_coord, uLOD).rgb;
-
-    float metallic = uSurfaceShininessColour;
-
-    const float c_MinRoughness = 0.04;
-    float roughness = uSurfaceSpecularColour;
-
+    vec3 ORM = GetORM(tex_coord);
     float occlusion = ORM.r;
-    roughness *= ORM.g;
-    metallic *= ORM.b;
-
-    metallic = clamp(metallic, 0.0, 1.0);
-    roughness = clamp(roughness, c_MinRoughness, 1.0);
-
-#else
-
-    float metallic = GetMetallic(tex_coord);
-    float roughness = GetRoughness(tex_coord);
-    float occlusion = GetOcclusion(tex_coord);
-
-#endif
-
+    float roughness = ORM.g;
+    float metallic = ORM.b;
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
@@ -627,6 +604,10 @@ void main()
     total_colour += uSurfaceAmbientColour * uAmbientLightColour * color;
 #endif
 
+#ifdef HAS_REFLECTION
+    total_colour = ApplyReflection(total_colour, n, v, metallic);
+#endif //HAS_REFLECTION
+
 // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
     total_colour *= occlusion;
@@ -637,10 +618,6 @@ void main()
 #else
     total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour);
 #endif
-
-#ifdef HAS_REFLECTION
-    total_colour = ApplyReflection(total_colour, n, v, metallic);
-#endif //HAS_REFLECTION
 
 #ifndef GL_ES
     gl_FragData[0] = vec4(total_colour, alpha);
