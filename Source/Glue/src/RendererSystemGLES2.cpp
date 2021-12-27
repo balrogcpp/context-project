@@ -1,6 +1,6 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "pch.h"
+#include "PCHeader.h"
 #include "Engine.h"
 /// \file Compilation failes with both GL3 and GLES2 headers included
 
@@ -12,10 +12,7 @@ using namespace std;
 
 namespace Glue {
 
-void Engine::InitOgreRenderSystemGLES2() {
-  Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem());
-}
-
+void Engine::InitOgreRenderSystemGLES2() { Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem()); }
 
 }  // namespace Glue
 

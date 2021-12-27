@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 /// \file Compilation failes with both GL3 and GLES2 headers included
 
-#include "pch.h"
+#include "PCHeader.h"
 #include "Engine.h"
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS

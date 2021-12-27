@@ -1,6 +1,6 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "pch.h"
+#include "PCHeader.h"
 #include "Input/InputSequencer.h"
 #include "Input/InputObserver.h"
 #include "Input/WindowObserver.h"
@@ -39,9 +39,7 @@ void InputSequencer::UnregObserver(InputObserver *p) { io_listeners.erase(p); }
 
 void InputSequencer::RegWinObserver(WindowObserver *p) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  auto callback = [](void *userdata, SDL_Event *event) {
-    return InputSequencer::GetInstance().HandleAppEvents(userdata, event);
-  };
+  auto callback = [](void *userdata, SDL_Event *event) { return InputSequencer::GetInstance().HandleAppEvents(userdata, event); };
 
   SDL_SetEventFilter(callback, nullptr);
 #endif
@@ -68,8 +66,7 @@ void InputSequencer::Capture() {
       case SDL_MOUSEMOTION: {
         for (auto it : io_listeners) {
           it->OnMouseMove(event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel,
-                          (event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0,
-                          (event.motion.state & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0,
+                          (event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0, (event.motion.state & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0,
                           (event.motion.state & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
           it->OnMouseMove(event.motion.xrel, event.motion.yrel);
         }
@@ -123,8 +120,7 @@ void InputSequencer::Capture() {
       }
 
       case SDL_JOYBALLMOTION: {
-        for (auto &it : io_listeners)
-          it->OnGamepadBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
+        for (auto &it : io_listeners) it->OnGamepadBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
         break;
       }
 

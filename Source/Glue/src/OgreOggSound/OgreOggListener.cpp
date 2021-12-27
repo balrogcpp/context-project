@@ -28,7 +28,7 @@
 *
 */
 
-#include "pch.h"
+#include "PCHeader.h"
 
 #include "OgreOggListener.h"
 #include "OgreOggSound.h"

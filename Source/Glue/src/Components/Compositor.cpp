@@ -1,9 +1,9 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "pch.h"
+#include "PCHeader.h"
 #include "Components/Compositor.h"
 #include "Conf.h"
-#include "PBR.h"
+#include "ShaderHelpers.h"
 
 using namespace std;
 using namespace Ogre;

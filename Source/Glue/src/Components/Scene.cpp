@@ -1,14 +1,13 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "pch.h"
+#include "PCHeader.h"
 #include "Components/Scene.h"
 #include "BtOgre/BtOgre.h"
 #include "Engine.h"
 #include "Objects/CameraMan.h"
 #include "Objects/SinbadCharacterController.h"
-#include "PBR.h"
 #include "PagedGeometry/PagedGeometryAll.h"
-#include "XmlParser.h"
+#include "ShaderHelpers.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>

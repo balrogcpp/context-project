@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "pch.h"
 #include "Objects/SinbadCharacterController.h"
 #include "Engine.h"
+#include "PCHeader.h"
 
 using namespace std;
 

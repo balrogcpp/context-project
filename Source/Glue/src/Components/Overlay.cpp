@@ -1,6 +1,6 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "pch.h"
+#include "PCHeader.h"
 #include "Components/Overlay.h"
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
 #include <Overlay/OgreImGuiOverlay.h>
@@ -14,7 +14,6 @@ using namespace std;
 namespace Glue {
 
 Overlay::Overlay(Ogre::RenderWindow* OgreRenderWindowPtr) {
-
   this->OgreRenderWindow = OgreRenderWindowPtr;
   Ogre::SceneManager* OgreScene = Ogre::Root::getSingletonPtr()->getSceneManager("Default");
   OgreOverlay = new Ogre::OverlaySystem();

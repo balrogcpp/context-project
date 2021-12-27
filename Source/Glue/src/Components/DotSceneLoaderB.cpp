@@ -1,13 +1,13 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "pch.h"
+#include "PCHeader.h"
 #include "Components/DotSceneLoaderB.h"
 #include "BtOgre/BtOgre.h"
+#include "Components/XmlParser.h"
 #include "Engine.h"
 #include "Objects/SinbadCharacterController.h"
-#include "PBR.h"
 #include "PagedGeometry/PagedGeometryAll.h"
-#include "XmlParser.h"
+#include "ShaderHelpers.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>
@@ -873,7 +873,6 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
     //    OgreScene->destroySceneNode(node);
 
     treeLoader->addTree(fir1EntPtr, Vector3(x, y, z), Degree(yaw), scale);
-
   }
 
   trees->update();

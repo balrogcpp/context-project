@@ -4,12 +4,12 @@
 //#include "Components/Component.h"
 //#include "Engine.h"
 //
-//using namespace std;
+// using namespace std;
 //
-//namespace Glue {
+// namespace Glue {
 //
-//Component::Component() { Engine::GetInstance().RegComponent(this); }
+// Component::Component() { Engine::GetInstance().RegComponent(this); }
 //
-//Component::~Component() {}
+// Component::~Component() {}
 //
 //}  // namespace Glue

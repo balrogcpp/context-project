@@ -1,6 +1,6 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "pch.h"
+#include "PCHeader.h"
 #include "CubeMapCamera.h"
 
 using namespace std;
@@ -66,8 +66,7 @@ void CubeMapCamera::Init(Ogre::SceneNode *creator, unsigned int tex_size) {
   OgreCameraNode = creator->createChildSceneNode();
   OgreCameraNode->setFixedYawAxis(false);
   OgreCameraNode->attachObject(OgreCamera);
-  cubemap =
-      tex_manager.createManual("dyncubemap", RGN_DEFAULT, TEX_TYPE_CUBE_MAP, size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
+  cubemap = tex_manager.createManual("dyncubemap", RGN_DEFAULT, TEX_TYPE_CUBE_MAP, size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
 
   // assign our camera to all 6 render targets of the texture (1 for each
   // direction)

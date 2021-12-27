@@ -1,6 +1,6 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "pch.h"
+#include "PCHeader.h"
 #include "ReflectionCamera.h"
 
 using namespace std;
@@ -21,8 +21,7 @@ ReflectionCamera::ReflectionCamera(Ogre::Plane plane, unsigned int tex_size) {
   rcamera = camera;
   rcamera->setAutoAspectRatio(false);
 
-  reflection_texture =
-      tex_manager.createManual("Reflection", RGN_DEFAULT, TEX_TYPE_2D, size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
+  reflection_texture = tex_manager.createManual("Reflection", RGN_DEFAULT, TEX_TYPE_2D, size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
 
   Ogre::RenderTarget *rtt1 = reflection_texture->getBuffer()->getRenderTarget();
   Ogre::Viewport *vp1 = rtt1->addViewport(rcamera);
@@ -32,8 +31,7 @@ ReflectionCamera::ReflectionCamera(Ogre::Plane plane, unsigned int tex_size) {
   rtt1->addListener(this);
   vp1->setVisibilityMask(SURFACE_MASK);
 
-  refraction_texture =
-      tex_manager.createManual("Refraction", RGN_DEFAULT, TEX_TYPE_2D, size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
+  refraction_texture = tex_manager.createManual("Refraction", RGN_DEFAULT, TEX_TYPE_2D, size, size, 0, PF_R8G8B8, TU_RENDERTARGET);
 
   Ogre::RenderTarget *rtt2 = refraction_texture->getBuffer()->getRenderTarget();
   Ogre::Viewport *vp2 = rtt2->addViewport(camera);

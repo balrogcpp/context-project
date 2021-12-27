@@ -22,7 +22,7 @@ endif ()
 
 include_directories(${TARGET_NAME} include ../Glue/include ../Glue/include/OgreOggSound ../Glue/include/PagedGeometry ../include ${GLUE_INCLUDE_DIRS})
 target_link_directories(${TARGET_NAME} PUBLIC ${GLUE_LINK_DIRS})
-target_precompile_headers(${TARGET_NAME} PUBLIC ../Glue/include/pch.h)
+target_precompile_headers(${TARGET_NAME} PUBLIC ../Glue/include/PCHeader.h)
 if (NOT ANDROID)
     set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME "${TARGET_NAME}")
 else ()

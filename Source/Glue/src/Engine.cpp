@@ -1,6 +1,6 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "pch.h"
+#include "PCHeader.h"
 #include "Engine.h"
 #include "Components/DotSceneLoaderB.h"
 #include "Conf.h"
@@ -263,8 +263,8 @@ void Engine::InitShadowSettings() {
   string tex_format = "D16";
 
   shadows_enable = ConfPtr->GetBool("shadows_enable", shadows_enable);
-//  shadow_far = ConfPtr->GetInt("shadow_far", shadow_far);
-//  tex_format = ConfPtr->GetString("tex_format", tex_format);
+  //  shadow_far = ConfPtr->GetInt("shadow_far", shadow_far);
+  //  tex_format = ConfPtr->GetString("tex_format", tex_format);
   tex_size = ConfPtr->GetInt("tex_size", tex_size);
 
   if (!shadows_enable) {
@@ -294,8 +294,8 @@ void Engine::InitShadowSettings() {
   OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
   OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
 
-//  OgreSceneManager->setShadowTextureSelfShadow(true);
-//  OgreSceneManager->setShadowCasterRenderBackFaces(true);
+  //  OgreSceneManager->setShadowTextureSelfShadow(true);
+  //  OgreSceneManager->setShadowCasterRenderBackFaces(true);
   OgreSceneManager->setShadowFarDistance(shadow_far);
   auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
   OgreSceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
@@ -304,11 +304,11 @@ void Engine::InitShadowSettings() {
   const float near_clip_distance = 0.001;
   PSSMSetupPtr->calculateSplitPoints(PSSMSplitCount, near_clip_distance, OgreSceneManager->getShadowFarDistance());
   PSSMSplitPointList = PSSMSetupPtr->getSplitPoints();
-//  PSSMSetupPtr->setSplitPadding(near_clip_distance);
-//  PSSMSetupPtr->setSplitPadding(0.1);
+  //  PSSMSetupPtr->setSplitPadding(near_clip_distance);
+  //  PSSMSetupPtr->setSplitPadding(0.1);
 
   for (size_t i = 0; i < PSSMSplitCount; i++) {
-    PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(0.5*i));
+    PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
   }
 
   OgreSceneManager->setShadowCameraSetup(PSSMSetupPtr);

@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "pch.h"
-#include "XmlParser.h"
+#include "PCHeader.h"
+#include "Components/XmlParser.h"
 #include <pugixml.hpp>
 
 using namespace std;
@@ -82,8 +82,7 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &XmlNode) {
     orientation.FromAngleAxis(Ogre::Angle(angle), axis);
   } else if (XmlNode.attribute("angleX")) {
     Ogre::Matrix3 rot;
-    rot.FromEulerAnglesXYZ(Ogre::Angle(ToFloat(XmlNode.attribute("angleX").value())),
-                           Ogre::Angle(ToFloat(XmlNode.attribute("angleY").value())),
+    rot.FromEulerAnglesXYZ(Ogre::Angle(ToFloat(XmlNode.attribute("angleX").value())), Ogre::Angle(ToFloat(XmlNode.attribute("angleY").value())),
                            Ogre::Angle(ToFloat(XmlNode.attribute("angleZ").value())));
     orientation.FromRotationMatrix(rot);
   } else if (XmlNode.attribute("x")) {
@@ -114,8 +113,8 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &XmlNode) {
 }
 
 Ogre::ColourValue ParseColour(pugi::xml_node &XmlNode) {
-  return Ogre::ColourValue(ToFloat(XmlNode.attribute("r").value()), ToFloat(XmlNode.attribute("g").value()),
-                           ToFloat(XmlNode.attribute("b").value()), ToFloat(XmlNode.attribute("a").value(), 1));
+  return Ogre::ColourValue(ToFloat(XmlNode.attribute("r").value()), ToFloat(XmlNode.attribute("g").value()), ToFloat(XmlNode.attribute("b").value()),
+                           ToFloat(XmlNode.attribute("a").value(), 1));
 }
 
 }  // namespace Glue

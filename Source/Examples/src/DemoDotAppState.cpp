@@ -1,10 +1,10 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
-#include "pch.h"
 #include "DemoDotAppState.h"
 #include "Engine.h"
 #include "MenuAppState.h"
 #include "Objects/CameraMan.h"
+#include "PCHeader.h"
 
 using namespace std;
 using namespace Glue;
