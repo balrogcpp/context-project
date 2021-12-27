@@ -831,16 +831,17 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   const float bound = 100;
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;
   auto *trees = new PagedGeometry(OgreCameraPtr, 50);
+
   //  trees->addDetailLevel<Forests::WindBatchPage>(100, 20);
   trees->addDetailLevel<Forests::BatchPage>(100, 60);
   //  trees->addDetailLevel<Forests::ImpostorPage>(200, 60);
+
   auto *treeLoader = new TreeLoader3D(trees, TBounds(-100, -100, 100, 100));
   FixTransparentShadowCaster("3D-Diggers/fir01");
   FixTransparentShadowCaster("3D-Diggers/fir02");
 
   trees->setPageLoader(treeLoader);
   Entity *fir1EntPtr = OgreScene->createEntity("fir1", "fir05_30.mesh");
-//  fir1EntPtr->setCastShadows(false);
 
   for (int i = 0; i < 10; i++) {
     yaw = Math::RangeRandom(0, 360);
@@ -872,8 +873,11 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
     //    OgreScene->destroySceneNode(node);
 
     treeLoader->addTree(fir1EntPtr, Vector3(x, y, z), Degree(yaw), scale);
+
   }
 
+  trees->update();
+  trees->setCastsShadows(false);
   GetScene().AddForests(trees);
 
   // ProcessStaticGeometry(XmlNode);

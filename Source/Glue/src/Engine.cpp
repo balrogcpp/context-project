@@ -45,7 +45,7 @@ Engine::Engine() {
   ReadConfFile();
 
 #ifdef DESKTOP
-  LogPtr = make_unique<Log>("Runtime.txt");
+  LogPtr = make_unique<Log>();
   bool Verbose = ConfPtr->GetBool("verbose", false);
   LogPtr->WriteLogToConsole(Verbose);
   LogPtr->WriteLogToFile(Verbose);

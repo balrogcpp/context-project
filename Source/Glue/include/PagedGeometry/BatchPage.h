@@ -52,7 +52,9 @@ namespace Forests
       BatchPage();
       ~BatchPage();
 
-      /// Replace pure virtual GeometryPage::init
+     virtual void setCastsShadows(bool enable) { m_pBatchGeom->setCastShadows(enable); }
+
+     /// Replace pure virtual GeometryPage::init
       void init(PagedGeometry *geom, const Ogre::Any &data);
 
       void addEntity(Ogre::Entity *ent, const Ogre::Vector3 &position, const Ogre::Quaternion &rotation,

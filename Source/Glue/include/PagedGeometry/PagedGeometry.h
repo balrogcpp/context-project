@@ -99,7 +99,9 @@ public:
 
 	~PagedGeometry();
 
-	/**
+        void setCastsShadows(bool enable);
+
+         /**
 	\brief Sets the camera to use when calculating levels of detail.
 	\param cam The camera to assign to this PagedGeometry object.
 
@@ -918,6 +920,8 @@ public:
 	*/
 	virtual void setVisible(bool visible) = 0;
 
+        virtual void setCastsShadows(bool enable) {}
+
 	/**
 	\brief Do whatever needs to be done to keep the page geometry up-to-date.
 
@@ -1278,6 +1282,11 @@ public:
 
 	/** \brief Internal function - DO NOT USE */
 	~GeometryPageManager();
+
+        void setCastsShadows(bool enable) {
+          for (auto it : pendingList) it->setCastsShadows(enable);
+          for (auto it : loadedList) it->setCastsShadows(enable);
+        }
 
 	/**
 	\brief Sets the near viewing range of this page manager.

@@ -16,12 +16,12 @@ namespace Glue {
 
 Log::Log(std::string LogFileName) {
 #ifdef DESKTOP
-  this->LogFileName = LogFileName;
+  FileName = LogFileName;
   auto *logger = new Ogre::LogManager();
-  FileStream.open(LogFileName);
+  FileStream.open(FileName);
   if (!FileStream.is_open()) EnableWriteToFile = false;
 
-  logger->createLog(LogFileName, false, false, true);
+  logger->createLog(FileName, false, false, true);
   Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
 
   Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);

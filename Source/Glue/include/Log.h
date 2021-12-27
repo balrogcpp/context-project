@@ -21,7 +21,7 @@ class Log : public Ogre::LogListener, public Singleton<Log> {
 
  protected:
   std::ofstream FileStream;
-  std::string LogFileName = "Runtime.log";
+  std::string FileName = "Runtime.log";
   bool EnableWriteToFile = false;
   bool EnableWriteToConsole = false;
 };
