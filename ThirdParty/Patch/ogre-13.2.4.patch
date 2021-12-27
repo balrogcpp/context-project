@@ -21,6 +21,18 @@ index 4e065572..b0066563 100644
  
    # Make sure that the GLES2 render system is disabled for non-iOS Apple builds
    set(OGRE_BUILD_RENDERSYSTEM_GLES2 FALSE CACHE BOOL "" FORCE)
+diff --git a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
+index d8b07def..f7e1358a 100644
+--- a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
++++ b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
+@@ -67,6 +67,7 @@ namespace Ogre
+         , mVertexDataRecord(0)
+         , mLocalNode(0)
+     {
++        setCastShadows(TerrainGlobalOptions::getSingleton().getCastsDynamicShadows());
+         if (terrain->getMaxBatchSize() < size)
+         {
+             uint16 childSize = (uint16)(((size - 1) * 0.5f) + 1);
 diff --git a/OgreMain/CMakeLists.txt b/OgreMain/CMakeLists.txt
 index 44a17787..d9add2ba 100644
 --- a/OgreMain/CMakeLists.txt
