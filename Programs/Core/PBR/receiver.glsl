@@ -65,9 +65,6 @@ float CalcDepthShadow(sampler2D shadowMap, vec4 lightSpace, const float offset, 
   float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
   //float penumbra = Penumbra(shadowMap, gradientNoise, lightSpace.xy, current_depth, iterations);
 
-//  float depth = texture2D(shadowMap, lightSpace.xy).x - offset;
-//  return (depth > current_depth) ? 1.0 : 0.0;
-
   for (int i = 0; i < iterations; i++)
   {
     lightSpace.xy += VogelDiskSample(i, iterations, gradientNoise) * filter_size;
@@ -77,16 +74,6 @@ float CalcDepthShadow(sampler2D shadowMap, vec4 lightSpace, const float offset, 
   }
 
   return shadow;
-
-
-//  vec2 moments = texture2D(shadowMap, lightSpace.xy).xy;
-//  float variance = moments.y - (moments.x * moments.x);
-//  variance = max(variance, 0.00002);
-//
-//  float d = current_depth - moments.x;
-//  float pMax = variance / (variance + d * d);
-//  return smoothstep(0.1f, 1.0f, pMax);
-
 }
 
 
