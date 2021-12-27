@@ -1,15 +1,16 @@
 import PBR from PBR.material
 
-vertex_program PBR_Terrain_vs glsl glsles
+abstract vertex_program PBR_Terrain_I_vs glsl glsles
 {
 	source PBR.vert
-    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    default_params
+    {
         shared_params_ref PBR_Shared_vert
     }
 }
 
-fragment_program PBR_Terrain_fs glsl glsles
+abstract fragment_program PBR_Terrain_I_fs glsl glsles
 {
 	source PBR.frag
     preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
@@ -19,6 +20,24 @@ fragment_program PBR_Terrain_fs glsl glsles
         shared_params_ref PBR_Shared_frag
         param_named uTerrainTexScale float 20.0
     }
+}
+
+vertex_program PBR_Terrain_nvc_vs glsl glsles : PBR_Terrain_I_vs {}
+
+fragment_program PBR_Terrain_nvc_fs glsl glsles : PBR_Terrain_I_fs {}
+
+vertex_program PBR_Terrain_vs glsl glsles
+{
+	source PBR.vert
+    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    default_params {}
+}
+
+fragment_program PBR_Terrain_fs glsl glsles
+{
+	source PBR.frag
+    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    default_params {}
 }
 
 abstract material PBR_Terrain : PBR
@@ -45,6 +64,43 @@ abstract material PBR_Terrain : PBR
             }
 
             fragment_program_ref PBR_Terrain_fs
+            {
+                param_named uAlbedoSampler       int 0
+                param_named uNormalSampler       int 1
+                param_named uORMSampler          int 2
+                param_named uEmissiveSampler     int 3
+                param_named uGlobalNormalSampler int 4
+                //param_named uGlobalShadowSampler int 5
+            }
+        }
+    }
+}
+
+// no vertex compression
+abstract material PBR_Terrain_nvc : PBR
+{
+    technique
+    {
+        pass
+        {
+            texture_unit GlobalNormal
+            {
+                texture normal.dds
+                filtering bilinear
+            }
+
+            /*texture_unit GlobalShadow
+            {
+                texture white.dds
+                filtering bilinear
+            }*/
+
+            vertex_program_ref PBR_Terrain_nvc_vs
+            {
+                param_named_auto uModelMatrix world_matrix
+            }
+
+            fragment_program_ref PBR_Terrain_nvc_fs
             {
                 param_named uAlbedoSampler       int 0
                 param_named uNormalSampler       int 1

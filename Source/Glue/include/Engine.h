@@ -96,7 +96,7 @@ class Engine final : public LazySingleton<Engine> {
   SDL_Window* SDLWindowPtr = nullptr;
   SDL_GLContext SDLGLContextPtr = nullptr;
   uint32_t SDLWindowFlags = 0;
-  uint32_t WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED;
+  int WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED;
   std::string WindowCaption;
   int WindowWidth = 1024;
   int WindowHeight = 768;

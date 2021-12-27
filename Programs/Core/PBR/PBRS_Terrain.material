@@ -4,7 +4,8 @@ vertex_program PBRS_Terrain_vs glsl glsles
 {
 	source PBR.vert
     preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8
-    default_params {
+    default_params
+    {
         shared_params_ref PBRS_Shared_vert
     }
 }

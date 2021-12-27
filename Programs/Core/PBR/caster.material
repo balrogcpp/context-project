@@ -55,9 +55,7 @@ fragment_program PSSM/shadow_caster_fs glsl glsles
 	source PBR.frag
 	preprocessor_defines SHADOWCASTER
 
-	default_params
-	{
-	}
+	default_params {}
 }
 
 material PSSM/shadow_caster
@@ -90,9 +88,7 @@ fragment_program PSSM/shadow_caster_terrain_fs glsl glsles
 	source PBR.frag
 	preprocessor_defines SHADOWCASTER
 
-	default_params
-	{
-	}
+	default_params {}
 }
 
 material PSSM/shadow_caster_terrain

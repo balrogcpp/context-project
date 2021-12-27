@@ -20,7 +20,8 @@ abstract vertex_program PBR_I_vs glsl glsles
 {
 	source PBR.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {
+    default_params
+    {
         shared_params_ref PBR_Shared_vert
 
         param_named_auto uMVPMatrix worldviewproj_matrix
@@ -40,7 +41,8 @@ abstract fragment_program PBR_BaseI_fs glsl glsles
 {
 	source PBR.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {
+    default_params
+    {
         param_named_auto uLightPositionArray light_position_array 8
         param_named_auto uLightDirectionArray light_direction_array 8
         param_named_auto uLightDiffuseScaledColourArray light_diffuse_colour_power_scaled_array 8
@@ -75,7 +77,8 @@ abstract fragment_program PBR_I_fs glsl glsles : PBR_BaseI_fs
 
 fragment_program PBR_Basic_fs glsl glsles : PBR_BaseI_fs
 {
-    default_params {
+    default_params
+    {
         param_named shadowMap0 int 1
         param_named shadowMap1 int 2
         param_named shadowMap2 int 3
@@ -89,7 +92,8 @@ fragment_program PBR_Basic_fs glsl glsles : PBR_BaseI_fs
 
 fragment_program PBR_fs glsl glsles : PBR_I_fs
 {
-    default_params {
+    default_params
+    {
         param_named shadowMap0 int 4
         param_named shadowMap1 int 5
         param_named shadowMap2 int 6

@@ -5,7 +5,8 @@ import PBR_I_fs from PBR.program
 vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
 {
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {
+    default_params
+    {
         param_named_auto uTime time
         param_named uFadeRange float 50.0
         param_named uWindRange float 50.0
@@ -16,7 +17,8 @@ vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
 fragment_program PBR_Grass_fs glsl glsles : PBR_I_fs
 {
     preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {
+    default_params
+    {
             param_named_auto uAlphaRejection surface_alpha_rejection_value
             param_named shadowMap0 int 1
             param_named shadowMap1 int 2

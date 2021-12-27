@@ -16,7 +16,8 @@ abstract vertex_program PBRS_I_vs glsl glsles
 {
 	source PBR.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8
-    default_params {
+    default_params
+    {
         shared_params_ref PBRS_Shared_vert
 
         param_named_auto uMVPMatrix worldviewproj_matrix
@@ -33,7 +34,8 @@ abstract fragment_program PBRS_BaseI_fs glsl glsles
 {
 	source PBR.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,MAX_LIGHTS=8
-    default_params {
+    default_params
+    {
         shared_params_ref PBRS_Shared_frag
 
         param_named_auto uLightPositionArray light_position_array 8

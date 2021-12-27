@@ -6,7 +6,8 @@ vertex_program PBR_Paged_vs glsl glsles : PBR_I_vs
 {
 	source PBR.vert
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {
+    default_params
+    {
         shared_params_ref PBR_Shared_vert
     }
 }
@@ -15,7 +16,8 @@ fragment_program PBR_Paged_fs glsl glsles : PBR_I_fs
 {
 	source PBR.frag
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {
+    default_params
+    {
         param_named shadowMap0 int 1
         param_named shadowMap1 int 2
         param_named shadowMap2 int 3

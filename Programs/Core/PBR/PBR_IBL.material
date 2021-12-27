@@ -13,7 +13,8 @@ abstract fragment_program PBR_IBLI_fs glsl glsles : PBR_BaseI_fs
 
 fragment_program PBR_IBL_fs glsl glsles : PBR_IBLI_fs
 {
-    default_params {
+    default_params
+    {
         param_named shadowMap0 int 7
         param_named shadowMap1 int 8
         param_named shadowMap2 int 9
