@@ -2,14 +2,10 @@
 
 #pragma once
 #include "Components/Component.h"
+#include <OgrePrerequisites.h>
 
 namespace Ogre {
-class Camera;
-class SceneManager;
-class SceneNode;
 class TerrainGroup;
-class TerrainGlobalOptions;
-class VertexDeclaration;
 }  // namespace Ogre
 
 namespace Forests {
@@ -39,9 +35,12 @@ class Scene final : public Component<Scene> {
 
   CameraMan &GetCamera() const;
   float GetHeight(float x, float z);
+  void AddEntity(Ogre::Entity *EntityPtr);
+  void AddMaterial(Ogre::MaterialPtr material);
+  void AddMaterial(const std::string &MaterialName);
   void AddCamera(Ogre::Camera *OgreCameraPtr);
   void AddSinbad(Ogre::Camera *OgreCameraPtr);
-  void AddForests(Forests::PagedGeometry *PGPtr);
+  void AddForests(Forests::PagedGeometry *PGPtr, const std::string &MaterialName = "");
   void AddTerrain(Ogre::TerrainGroup* TGP);
 
  protected:
@@ -49,6 +48,8 @@ class Scene final : public Component<Scene> {
   std::unique_ptr<Ogre::TerrainGroup> OgreTerrainList;
   std::vector<std::unique_ptr<Forests::PagedGeometry>> PagedGeometryList;
   std::unique_ptr<SinbadCharacterController> Sinbad;
+  std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_fp_params_;
+  std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;
 
   Ogre::SceneManager *OgreScene = nullptr;
   Ogre::Root *OgreRoot = nullptr;

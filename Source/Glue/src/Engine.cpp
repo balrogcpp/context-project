@@ -53,14 +53,12 @@ Engine::Engine() {
 Engine::~Engine() { SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE); }
 
 void Engine::InitComponents() {
-  ComponentI::SetConfig(ConfPtr.get());
-
   WindowWidth = ConfPtr->GetInt("window_width", WindowWidth);
   WindowHeight = ConfPtr->GetInt("window_high", WindowHeight);
   WindowFullScreen = ConfPtr->GetBool("window_fullscreen", WindowFullScreen);
   RenderSystemName = ConfPtr->Get("render_system", RenderSystemName);
 
-  OgreRoot = new Root();
+  OgreRoot = new Root("", "", "");
 
   // init Ogre
   InitSDLSubsystems();

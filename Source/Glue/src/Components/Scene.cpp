@@ -51,11 +51,35 @@ float Scene::GetHeight(float x, float z) {
     return 0.0f;
 }
 
+void Scene::AddEntity(Ogre::Entity *EntityPtr) { FixEntityMaterial(EntityPtr); }
+
+void Scene::AddMaterial(Ogre::MaterialPtr material) {
+  using GPU = GpuProgramParameters::AutoConstantType;
+
+  for (int i = 0; i < material->getNumTechniques(); i++) {
+    if (!material->getTechnique(i)->getPass(0)->hasVertexProgram() || !material->getTechnique(i)->getPass(0)->hasFragmentProgram()) {
+      return;
+    }
+
+    gpu_vp_params_.push_back(material->getTechnique(i)->getPass(0)->getVertexProgramParameters());
+    gpu_fp_params_.push_back(material->getTechnique(i)->getPass(0)->getFragmentProgramParameters());
+  }
+}
+
+void Scene::AddMaterial(const std::string &MaterialName) {
+  //FixTransparentShadowCaster(MaterialName);
+  auto MaterialPtr = MaterialManager::getSingleton().getByName(MaterialName);
+  if (MaterialPtr) AddMaterial(MaterialPtr);
+}
+
 void Scene::AddCamera(Camera *OgreCameraPtr) {}
 
 void Scene::AddSinbad(Camera *OgreCameraPtr) { Sinbad = make_unique<SinbadCharacterController>(OgreCameraPtr); }
 
-void Scene::AddForests(PagedGeometry *PGPtr) { PagedGeometryList.push_back(unique_ptr<PagedGeometry>(PGPtr)); }
+void Scene::AddForests(PagedGeometry *PGPtr, const std::string &MaterialName) {
+  PagedGeometryList.push_back(unique_ptr<PagedGeometry>(PGPtr));
+  if (!MaterialName.empty()) AddMaterial(MaterialName);
+}
 
 void Scene::AddTerrain(TerrainGroup *TGP) { OgreTerrainList.reset(TGP); }
 
@@ -64,6 +88,15 @@ void Scene::OnUpdate(float PassedTime) {
   if (CameraManPtr) CameraManPtr->Update(PassedTime);
   if (Sinbad) Sinbad->Update(PassedTime);
   for (auto &it : PagedGeometryList) it->update();
+
+  static Camera *CameraPtr = Root::getSingleton().getSceneManager("Default")->getCamera("Default");
+  static Matrix4 MVP;
+  static Matrix4 MVPprev;
+
+  MVPprev = MVP;
+  MVP = CameraPtr->getProjectionMatrixWithRSDepth() * CameraPtr->getViewMatrix();
+
+  for (auto &it : gpu_vp_params_) it->setNamedConstant("cWorldViewProjPrev", MVPprev);
 }
 
 void Scene::OnClean() {
@@ -77,6 +110,10 @@ void Scene::OnClean() {
   if (OgreScene) OgreScene->clearScene();
   if (CameraManPtr) CameraManPtr->SetStyle(CameraMan::Style::MANUAL);
   ResourceGroupManager::getSingleton().unloadResourceGroup(GroupName);
+  gpu_fp_params_.clear();
+  gpu_fp_params_.shrink_to_fit();
+  gpu_vp_params_.clear();
+  gpu_vp_params_.shrink_to_fit();
 }
 
 }  // namespace Glue

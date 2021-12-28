@@ -22,7 +22,11 @@ class Singleton : public NoCopy {
     SingletonPtr = static_cast<T*>(this);
   }
 
+  ///
   static T* GetInstancePtr() { return SingletonPtr; }
+
+  ///
+  static T& GetInstance() { return *SingletonPtr; }
 
  protected:
   /// Pointer to singleton instance

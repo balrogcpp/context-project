@@ -2,6 +2,7 @@
 
 #include "PCHeader.h"
 #include "Components/TerrainMaterialGeneratorB.h"
+#include "Engine.h"
 #include "ShaderHelpers.h"
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <Terrain/OgreTerrain.h>
@@ -102,7 +103,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
     }
 
     // if(isVertexCompressionSupported() && EnableCastShadows) FixTerrainShadowCaster(new_material, OgreTerrainPtr);
-
+    GetScene().AddMaterial(new_material);
     return new_material;
   }
 }

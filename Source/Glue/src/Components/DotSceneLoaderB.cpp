@@ -687,7 +687,7 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &XmlNode, SceneNode *ParentNo
   try {
     ParentNode->attachObject(entity);
 
-    //    UpdateEntityMaterial(entity, cast_shadows, material_name, planar_reflection, active_ibl);
+    GetScene().AddEntity(entity);
 
     // Process userDataReference
     if (auto element = XmlNode.child("userData")) {
@@ -826,7 +826,7 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   layer->setDensity(1.0f);
   layer->setMapBounds(TBounds(-200, -200, 200, 200));
 
-  GetScene().AddForests(grass);
+  GetScene().AddForests(grass, "GrassCustom");
 
   const float bound = 100;
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;
@@ -878,6 +878,10 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   trees->update();
   trees->setCastsShadows(false);
   GetScene().AddForests(trees);
+//  FixTransparentShadowCaster("3D-Diggers/fir01");
+//  FixTransparentShadowCaster("3D-Diggers/fir02");
+  GetScene().AddMaterial("3D-Diggers/fir01_Batched");
+  GetScene().AddMaterial("3D-Diggers/fir02_Batched");
 
   // ProcessStaticGeometry(XmlNode);
 }

@@ -20,12 +20,12 @@ void FixTransparentShadowCaster(const std::string &material);
 void EnsureHasTangents(Ogre::MeshPtr mesh);
 
 ///
-void FixMeshMaterial(Ogre::MeshPtr mesh, const std::string &MaterialName);
+void FixMeshMaterial(Ogre::MeshPtr mesh, const std::string &MaterialName = "");
 
 ///
-void FixMeshMaterial(const std::string &MeshName, const std::string &MaterialName);
+void FixMeshMaterial(const std::string &MeshName, const std::string &MaterialName = "");
 
 ///
-void FixEntityMaterial(Ogre::Entity *entity, const std::string &MaterialName);
+void FixEntityMaterial(Ogre::Entity *entity, const std::string &MaterialName = "");
 
 }  // namespace Glue

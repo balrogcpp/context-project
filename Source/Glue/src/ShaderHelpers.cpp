@@ -91,11 +91,14 @@ void FixTransparentShadowCaster(const string &material) {
   FixTransparentShadowCaster(material_ptr);
 }
 
-static void FixMaterial(const MaterialPtr &material) { FixTransparentShadowCaster(material); }
+static void FixMaterial(const MaterialPtr &material) {
+  FixTransparentShadowCaster(material);
+  GetScene().AddMaterial(material);
+}
 
 void FixMeshMaterial(MeshPtr mesh, const string &MaterialName) {
   try {
-    EnsureHasTangents(mesh);
+    //EnsureHasTangents(mesh);
 
     for (auto &submesh : mesh->getSubMeshes()) {
       MaterialPtr material;

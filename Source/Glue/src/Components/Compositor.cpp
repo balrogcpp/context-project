@@ -59,9 +59,9 @@ Compositor::Compositor() {
   OgreCamera = OgreSceneManager->getCamera("Default");
   OgreViewport = OgreCamera->getViewport();
 
-  EnableEffect("ssao", ConfPtr->GetBool("enable_ssao"));
-  EnableEffect("bloom", ConfPtr->GetBool("enable_bloom"));
-  EnableEffect("mblur", ConfPtr->GetBool("enable_mblur"));
+  EnableEffect("ssao", Conf::GetInstance().GetBool("enable_ssao"));
+  EnableEffect("bloom", Conf::GetInstance().GetBool("enable_bloom"));
+  EnableEffect("mblur", Conf::GetInstance().GetBool("enable_mblur"));
 
   SetUp();
 }
@@ -120,11 +120,11 @@ void Compositor::InitMRT() {
 
 #ifdef DESKTOP
 
-  if (ConfPtr->GetBool("window_fullscreen")) {
+  if (Conf::GetInstance().GetBool("window_fullscreen")) {
     auto *MRTCompositor = CompositorChain->getCompositor("MRT");
     auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
-    MRTTextureDefinition->width = ConfPtr->GetInt("window_width");
-    MRTTextureDefinition->height = ConfPtr->GetInt("window_high");
+    MRTTextureDefinition->width = Conf::GetInstance().GetInt("window_width");
+    MRTTextureDefinition->height = Conf::GetInstance().GetInt("window_high");
   }
 
 #else

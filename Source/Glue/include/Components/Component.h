@@ -17,10 +17,8 @@ class ComponentI {
   virtual void OnClean() {}
 
   bool IsPaused() { return Paused; }
-  static void SetConfig(Conf* Conf) { ConfPtr = Conf; }
 
  protected:
-  inline static Conf* ConfPtr = nullptr;
   bool Paused = false;
 };
 
