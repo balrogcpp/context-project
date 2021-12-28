@@ -10,10 +10,6 @@ using namespace std;
 
 namespace Glue {
 
-#ifdef DESKTOP
-
-#endif
-
 Log::Log(std::string LogFileName) {
 #ifdef DESKTOP
   FileName = LogFileName;

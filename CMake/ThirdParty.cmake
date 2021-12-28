@@ -39,7 +39,7 @@ externalproject_add(Target_Bullet
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
-                    GIT_TAG 3.17
+                    GIT_TAG 3.21
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
