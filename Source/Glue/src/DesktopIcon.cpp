@@ -2,13 +2,7 @@
 
 #include "PCHeader.h"
 #include "DesktopIcon.h"
-#if HAS_FILESYSTEM
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
-#include <ghc/filesystem.hpp>
-namespace fs = ghc::filesystem;
-#endif
+#include "Filesystem.h"
 #include <regex>
 
 using namespace std;

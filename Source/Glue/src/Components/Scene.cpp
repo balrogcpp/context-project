@@ -67,7 +67,6 @@ void Scene::AddMaterial(Ogre::MaterialPtr material) {
 }
 
 void Scene::AddMaterial(const std::string &MaterialName) {
-  //FixTransparentShadowCaster(MaterialName);
   auto MaterialPtr = MaterialManager::getSingleton().getByName(MaterialName);
   if (MaterialPtr) AddMaterial(MaterialPtr);
 }
