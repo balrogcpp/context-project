@@ -2,12 +2,11 @@
 
 #include "PCHeader.h"
 #include "Engine.h"
+#include "AssetHelpers.h"
 #include "Components/DotSceneLoaderB.h"
 #include "Conf.h"
 #include "Input/InputSequencer.h"
 #include "Log.h"
-#include "AssetHelpers.h"
-#include "Platform.h"
 #include "RTSS.h"
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
@@ -31,9 +30,7 @@
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include "Android.h"
 #endif
-#include "Filesystem.h"
 #include "SDL2.hpp"
-#include <algorithm>
 
 using namespace std;
 using namespace Ogre;
