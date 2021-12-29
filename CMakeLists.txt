@@ -50,7 +50,6 @@ endif ()
 insert_dependency(Threads)
 insert_dependency_static(OGRE)
 insert_dependency_static(Bullet)
-#insert_dependency_static(sol2)
 insert_dependency_static(ZLIB)
 insert_dependency(Lua51)
 insert_dependency(OpenAL)
@@ -66,7 +65,7 @@ if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_dependencies(AndroidDummy ThirdParty)
 endif ()
 
-# Docker-compose targets (how to make then crossplatform ?)
+# Docker-compose targets (not crossplatform )
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 add_custom_target(DockerComposeDep
         COMMAND docker-compose -f docker-compose-3rd.yml up

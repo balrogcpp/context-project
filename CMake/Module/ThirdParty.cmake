@@ -343,6 +343,26 @@ externalproject_add(Target_assimp
                     -DASSIMP_BUILD_STEP_IMPORTER=OFF
                     )
 
+set(GLSLOPT_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_glsl-optimizer)
+externalproject_add(Target_glsl-optimizer
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${GLUE_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/aras-p/glsl-optimizer.git
+                    GIT_TAG d78c3d2f249aa870368ad320905bc954c47704f6
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    UPDATE_COMMAND ${GLSLOPT_CHDIR} ${GIT_EXECUTABLE} reset --hard
+                    PATCH_COMMAND ${GLSLOPT_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/glsl-optimizer.patch
+                    CMAKE_ARGS
+                    -G "${CMAKE_GENERATOR}"
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
+                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    ${GLUE_CMAKE_EXTRA_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    )
+
 set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_OGRE)
 externalproject_add(Target_OGRE
                     EXCLUDE_FROM_ALL true
@@ -364,6 +384,7 @@ externalproject_add(Target_OGRE
                     -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DOGRE_DEPENDENCIES_DIR=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DOGRE_ENABLE_PRECOMPILED_HEADERS=ON
                     -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=OFF
                     -DOGRE_ASSERT_MODE=1
                     -DOGRE_CONFIG_THREADS=3
@@ -382,6 +403,8 @@ externalproject_add(Target_OGRE
                     -DOGRE_BUILD_RENDERSYSTEM_GL3PLUS=ON
                     -DOGRE_BUILD_RENDERSYSTEM_GLES2=ON
                     -DOGRE_BUILD_RENDERSYSTEM_GL=OFF
+                    -DOGRE_CONFIG_ENABLE_GL_STATE_CACHE_SUPPORT=ON
+                    -DOGRE_CONFIG_ENABLE_GLES2_GLSL_OPTIMISER=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_VULKAN=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_TINY=OFF
                     -DOGRE_BUILD_COMPONENT_OVERLAY=ON
@@ -437,23 +460,6 @@ externalproject_add(Target_FreeGLUT
                     -DFREEGLUT_BUILD_STATIC_LIBS=ON
                     -DFREEGLUT_GLES=OFF
                     -DINSTALL_PDB=OFF
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-                    )
-
-externalproject_add(Target_glsl-optimizer
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${GLUE_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/aras-p/glsl-optimizer.git
-                    GIT_TAG d78c3d2f249aa870368ad320905bc954c47704f6
-                    GIT_SHALLOW true
-                    GIT_PROGRESS false
-                    CMAKE_ARGS
-                    -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     )
 
