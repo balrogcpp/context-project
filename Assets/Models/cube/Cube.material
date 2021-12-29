@@ -1,0 +1,11 @@
+import PBR from PBR.material
+import PBR_IBL from PBR.material
+
+material Cube : PBR
+{
+    set $Albedo bog_albedo.dds
+    set $Normal bog_normal.dds
+    set $Metallic bog_metallic.dds
+    set $Roughness bog_roughness.dds
+    set $AO bog_ao.dds
+}

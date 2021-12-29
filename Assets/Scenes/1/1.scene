@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scene author="balrog" formatVersion="1.1">
+    <nodes>
+        <node name="Sun">
+            <position x="0" y="0" z="0"/>
+            <direction x="40.659888" y="-60.704975" z="-100.950829"/>
+            <light name="Sun" powerScale="5" type="directional" castShadows="true">
+                <colourDiffuse b="1.0" g="1" r="1"/>
+                <colourSpecular b="1.0" g="1.0" r="1.0"/>
+            </light>
+        </node>
+        <node name="Camera">
+            <position x="0" y="1.8" z="0"/>
+            <rotation qw="0.780483" qx="0.483536" qy="0.336872" qz="-0.208704"/>
+            <scale x="1.000000" y="1.000000" z="1.000000"/>
+            <camera fov="1" name="Default" projectionType="perspective">
+                <clipping far="1000.0" near="0.001"/>
+            </camera>
+            <!--            <node name="Point">-->
+            <!--                <position x="0.000000" y="2.00000" z="1.000000"/>&ndash;&gt;-->
+            <!--                <rotation qw="0.164831" qx="-0.107176" qy="-0.825201" qz="0.529516"/>-->
+            <!--                <scale x="1.000000" y="1.000000" z="1.000000"/>-->
+            <!--                <light name="Point" powerScale="20.0" type="spot" castShadows="true">-->
+            <!--                    <colourDiffuse b="1.0" g="1.0" r="1.0"/>-->
+            <!--                    <colourSpecular b="1.0" g="1.0" r="1.0"/>-->
+            <!--                    <lightRange falloff="1.0" inner="0.0" outer="1.5"/>-->
+            <!--                    <lightAttenuation constant="0.0" linear="0.5" quadratic="0.0" range="20"/>-->
+            <!--                </light>-->
+            <!--            </node>-->
+        </node>
+        <node name="Helmet">
+            <position x="0" y="3.0" z="2"/>
+            <!--            <rotation qw="1.000000" qx="0.000000" qy="0.000000" qz="0.000000"/>-->
+            <scale x="1" y="1" z="1"/>
+            <entity meshFile="DamagedHelmet.mesh" name="DamagedHelmet">
+                <userData>
+                    <property data="1000.0" name="mass" type="float"/>
+                    <property data="1.0" name="mass_radius" type="float"/>
+                    <property data="dynamic" name="physics_type" type="str"/>
+                    <property data="capsule" name="proxy" type="str"/>
+                    <property data="False" name="actor" type="bool"/>
+                    <property data="False" name="ghost" type="bool"/>
+                    <property data="0.0" name="velocity_min" type="float"/>
+                    <property data="0.0" name="velocity_max" type="float"/>
+                    <property data="False" name="lock_trans_x" type="bool"/>
+                    <property data="False" name="lock_trans_y" type="bool"/>
+                    <property data="False" name="lock_trans_z" type="bool"/>
+                    <property data="False" name="lock_rot_x" type="bool"/>
+                    <property data="False" name="lock_rot_y" type="bool"/>
+                    <property data="False" name="lock_rot_z" type="bool"/>
+                    <property data="False" name="anisotropic_friction" type="bool"/>
+                    <property data="1.0" name="friction_x" type="float"/>
+                    <property data="1.0" name="friction_y" type="float"/>
+                    <property data="1.0" name="friction_z" type="float"/>
+                    <property data="0.03999999910593033" name="damping_trans" type="float"/>
+                    <property data="0.10000000149011612" name="damping_rot" type="float"/>
+                    <property data="0.4000000059604645" name="inertia_tensor" type="float"/>
+                </userData>
+            </entity>
+        </node>
+        <node name="Plane">
+            <plane material="ReflectivePlane" width="200" reflection="false" distance="-10.0"/>
+        </node>
+    </nodes>
+    <forest>
+    </forest>
+    <environment>
+        <colourBackground b="0.05087608844041824" g="0.05087608844041824" r="0.05087608844041824"/>
+        <colourAmbient r="0.5" g="0.5" b="0.5"/>
+        <shadowColor b="0.5" g="0.0" r="0.0"/>
+        <fog mode="exp" density="0.01">
+            <colour r="0.384765625" g="0.427734375" b="0.39453125"/>
+        </fog>
+        <!--                <skyBox cubemap="BlueSky512.dds"/>-->
+        <skyBox cubemap="OutputCube.dds"/>
+    </environment>
+    <terrainGroup worldSize="200" mapSize="257" inputScale="10" tuningMaxPixelError="8">
+        <terrain x="0" y="0" heightmap="terrain.png"/>
+    </terrainGroup>
+</scene>

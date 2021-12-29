@@ -1,0 +1,23 @@
+import PBR_Plane from PBR_Plane.material
+import PBR from PBR.material
+import PBR_Basic from PBR.material
+
+material ReflectivePlane : PBR_Basic
+{
+    /*set $Albedo bog_albedo.dds
+    set $Normal bog_normal.dds
+    set $Metallic bog_metallic.dds
+    set $Roughness bog_roughness.dds
+    set $AO bog_ao.dds*/
+}
+
+material ReflectivePlane2 : PBR_Plane
+{
+    set $Albedo bog_albedo.dds
+    set $Normal bog_normal.dds
+    set $ORM bog_orm.dds
+
+    //set $Albedo green.dds
+    //set $Normal bog_normal.dds
+    set $ORM Titanium-Scuffed_roughness.dds
+}

@@ -1,0 +1,15 @@
+import PBR_Terrain from PBR_Terrain.material
+import PBRS_Terrain from PBRS_Terrain.material
+import PBR from PBR.material
+
+material TerrainCustom : PBR_Terrain
+{
+    /*set $Albedo bog_albedo.dds
+    set $Normal bog_normal.dds
+    set $ORM bog_orm.dds*/
+    technique {
+        pass {
+            diffuse 0.13 0.49 0.25 1.00
+        }
+    }
+}

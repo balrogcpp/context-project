@@ -1,0 +1,210 @@
+import PBR_Basic from PBR.material
+import PBR from PBR.material
+import PBRS_Basic from PBRS.material
+
+material Sinbad/Body : PBRS_Basic
+{
+	technique
+	{
+		pass
+		{
+			texture_unit Albedo
+			{
+				texture sinbad_body.dds
+			}
+		}
+	}
+}
+
+material Sinbad/Gold : PBRS_Basic
+{
+	technique
+	{
+		pass
+		{
+			texture_unit Albedo
+			{
+				texture sinbad_clothes.dds
+			}
+		}
+	}
+}
+
+material Sinbad/Sheaths : PBRS_Basic
+{
+	technique
+	{
+		pass
+		{
+			texture_unit Albedo
+			{
+				texture sinbad_sword.dds
+			}
+		}
+	}
+}
+
+material Sinbad/Clothes : PBRS_Basic
+{
+	technique
+	{
+		pass
+		{
+			texture_unit Albedo
+			{
+				texture sinbad_clothes.dds
+			}
+		}
+	}
+}
+
+material Sinbad/Teeth : PBRS_Basic
+{
+	technique
+	{
+		pass
+		{
+			texture_unit Albedo
+			{
+				texture sinbad_body.dds
+			}
+		}
+	}
+}
+
+material Sinbad/Eyes : PBRS_Basic
+{
+	technique
+	{
+		pass
+		{
+			texture_unit Albedo
+			{
+				texture sinbad_body.dds
+			}
+		}
+	}
+}
+
+material Sinbad/Spikes : PBRS_Basic
+{
+	technique
+	{
+		pass
+		{
+			texture_unit Albedo
+			{
+				texture sinbad_clothes.dds
+			}
+		}
+	}
+}
+
+material Sinbad/Blade : PBRS_Basic
+{
+	technique
+	{
+		pass
+		{
+		    
+			texture_unit Albedo
+			{
+				texture sinbad_sword.dds
+			}
+		}
+	}
+}
+
+material Sinbad/Ruby : PBRS_Basic
+{
+	technique
+	{
+		pass
+		{
+    
+			texture_unit Albedo
+			{
+				texture sinbad_sword.dds
+			}
+		}
+	}
+}
+
+material Sinbad/Hilt : PBRS_Basic
+{
+	technique
+	{
+		pass
+		{
+		    
+			texture_unit Albedo
+			{
+				texture sinbad_sword.dds
+			}
+		}
+	}
+}
+
+material Sinbad/Handle : PBRS_Basic
+{
+	technique
+	{
+		pass
+		{
+		    
+			texture_unit Albedo
+			{
+				texture sinbad_sword.dds
+			}
+		}
+	}
+}
+
+material Examples/LightRibbonTrail
+{
+    receive_shadows off
+    transparency_casts_shadows off
+
+	technique
+	{
+		pass
+		{
+			lighting off
+			scene_blend add
+			depth_write off
+			diffuse vertexcolour
+
+			texture_unit
+			{
+				texture ribbonband.dds 1d
+				tex_address_mode clamp
+				filtering none
+			}
+
+			rtshader_system {}
+		}
+	}
+}
+
+material Examples/LightRibbonTrail2 : PBRS_Basic
+{
+	technique
+	{
+		pass
+		{
+			//lighting off
+			//scene_blend add
+			depth_write off
+			//diffuse vertexcolour
+
+			texture_unit
+			{
+				texture ribbonband.dds
+				tex_address_mode clamp
+				filtering none
+			}
+
+			//rtshader_system {}
+		}
+	}
+}
