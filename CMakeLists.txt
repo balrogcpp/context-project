@@ -65,6 +65,8 @@ if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_dependencies(AndroidDummy ThirdParty)
 endif ()
 
+set(CMAKE_FOLDER Package)
+
 # Docker-compose targets (not crossplatform )
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 add_custom_target(DockerComposeDep
@@ -106,7 +108,15 @@ if (NOT MSVC)
             )
 endif ()
 
-if (LINUX)
+if (WIN32)
+    add_custom_target(BuildAndroid
+            DEPENDS AssetsBuild
+            COMMAND gradlew.bat assembleRelease
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
+            COMMENT "Build packages..."
+            USES_TERMINAL
+            )
+elseif (UNIX)
     add_custom_target(BuildAndroid
             DEPENDS AssetsBuild
             COMMAND ./gradlew assembleRelease
