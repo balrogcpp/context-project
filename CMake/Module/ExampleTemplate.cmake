@@ -3,8 +3,10 @@ include(GlueBuildVariables)
 
 set(GLUE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source)
 file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${GLUE_SOURCE_DIR}/Glue/src/*.cpp src/*.cpp ${GLUE_SOURCE_DIR}/Glue/include/*.h include/*.h ${GLUE_SOURCE_DIR}/Glue/include/*.hpp include/*.hpp)
-if (WIN32)
+if (MINGW)
     list(APPEND SAMPLE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Deploy/manifest.rc)
+elseif (MSVC)
+    list(APPEND SAMPLE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Deploy/app.manifest)
 endif ()
 
 if (NOT ANDROID)

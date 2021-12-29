@@ -1,3 +1,4 @@
+set(CMAKE_FOLDER Docs)
 find_package(Doxygen COMPONENTS dot QUIET)
 find_package(LATEX COMPONENTS PDFLATEX QUIET)
 if (${DOXYGEN_FOUND})

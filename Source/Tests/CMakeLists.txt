@@ -1,3 +1,4 @@
+set(CMAKE_FOLDER Tests)
 find_package(GTest QUIET)
 if (GTest_FOUND AND NOT CMAKE_CROSSCOMPILING)
     enable_testing()
