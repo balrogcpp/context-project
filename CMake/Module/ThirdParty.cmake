@@ -440,6 +440,23 @@ externalproject_add(Target_FreeGLUT
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     )
 
+externalproject_add(Target_glsl-optimizer
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${GLUE_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/aras-p/glsl-optimizer.git
+                    GIT_TAG d78c3d2f249aa870368ad320905bc954c47704f6
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS
+                    -G "${CMAKE_GENERATOR}"
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
+                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    ${GLUE_CMAKE_EXTRA_FLAGS}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    )
+
 externalproject_add(Target_OGRE2
                     EXCLUDE_FROM_ALL true
                     DEPENDS Target_ZZIP Target_FreeType
