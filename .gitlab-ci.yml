@@ -10,6 +10,7 @@ variables:
 build:
   stage: build
   script:
+    - mkdir Artifacts
     - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/Tests/linux.Dockerfile -t glue/sample-linux
     - docker create -ti --name abc glue/sample-linux bash
     - docker cp abc:/mnt/build/Artifacts/GlueSample_Linux_x86_64_$CI_COMMIT_SHORT_SHA.zip Artifacts

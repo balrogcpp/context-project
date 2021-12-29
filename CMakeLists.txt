@@ -69,21 +69,21 @@ set(CMAKE_FOLDER Package)
 
 # Docker-compose targets (not crossplatform )
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-add_custom_target(DockerComposeDep
-        COMMAND docker-compose -f docker-compose-3rd.yml up
-        COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building thirdparty libraries with docker-compose..."
-        USES_TERMINAL
-        )
+    add_custom_target(DockerComposeDep
+            COMMAND docker-compose -f docker-compose-3rd.yml up
+            COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Building thirdparty libraries with docker-compose..."
+            USES_TERMINAL
+            )
 
-add_custom_target(DockerCompose
-        COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
-        COMMAND docker-compose down --volumes
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building tests with docker..."
-        USES_TERMINAL
-        )
+    add_custom_target(DockerCompose
+            COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
+            COMMAND docker-compose down --volumes
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Building tests with docker..."
+            USES_TERMINAL
+            )
 endif ()
 
 if (ANY_NOT_FOUND)
@@ -108,18 +108,18 @@ if (NOT MSVC)
             )
 endif ()
 
-if (WIN32)
+if (UNIX)
     add_custom_target(BuildAndroid
             DEPENDS AssetsBuild
-            COMMAND gradlew.bat assembleRelease
+            COMMAND ./gradlew assembleRelease
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
             COMMENT "Build packages..."
             USES_TERMINAL
             )
-elseif (UNIX)
+elseif (WIN32)
     add_custom_target(BuildAndroid
             DEPENDS AssetsBuild
-            COMMAND ./gradlew assembleRelease
+            COMMAND gradlew.bat assembleRelease
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
             COMMENT "Build packages..."
             USES_TERMINAL
