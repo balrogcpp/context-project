@@ -52,8 +52,8 @@ set(GLUE_LINK_LIBRARIES
         vorbis
         vorbisenc
         Ogg::ogg
-        SDL2::SDL2-static
         ${LUA_LIBRARIES}
         ${OPENAL_LIBRARY}
+        SDL2::SDL2-static
         ${SYSTEM_LIBRARIES}
         )

@@ -118,23 +118,23 @@ void Compositor::InitMRT() {
 
   auto *CompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
 
-#ifdef DESKTOP
-
-  if (Conf::GetInstance().GetBool("window_fullscreen")) {
-    auto *MRTCompositor = CompositorChain->getCompositor("MRT");
-    auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
-    MRTTextureDefinition->width = Conf::GetInstance().GetInt("window_width");
-    MRTTextureDefinition->height = Conf::GetInstance().GetInt("window_high");
-  }
-
-#else
+//#ifdef DESKTOP
+//
+//  if (Conf::GetInstance().GetBool("window_fullscreen")) {
+//    auto *MRTCompositor = CompositorChain->getCompositor("MRT");
+//    auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
+//    MRTTextureDefinition->width = Conf::GetInstance().GetInt("window_width");
+//    MRTTextureDefinition->height = Conf::GetInstance().GetInt("window_high");
+//  }
+//
+//#else
 
   auto *MRTCompositor = CompositorChain->getCompositor("MRT");
   auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
   MRTTextureDefinition->height = OgreViewport->getActualHeight();
   MRTTextureDefinition->width = OgreViewport->getActualWidth();
 
-#endif
+//#endif
 
   OgreCompositorManager->setCompositorEnabled(OgreViewport, "MRT", true);
 }

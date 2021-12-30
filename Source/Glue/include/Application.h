@@ -26,7 +26,9 @@ class Application final : public WindowObserver, public Singleton<Application> {
   void OnResume() override;
 
   std::unique_ptr<AppStateManager> StateManagerPtr;
+#ifdef DESKTOP
   std::unique_ptr<VerboseListener> VerboseListenerPtr;
+#endif
   Engine *EnginePtr = nullptr;
 
   bool Running = false;

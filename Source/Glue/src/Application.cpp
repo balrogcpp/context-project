@@ -32,9 +32,11 @@ Application::Application() {
     Verbose = ConfPtr.GetBool("verbose", Verbose);
     VerboseInput = ConfPtr.GetBool("verbose_input", VerboseInput);
 
+#ifdef DESKTOP
     if (VerboseInput) {
       VerboseListenerPtr = make_unique<VerboseListener>();
     }
+#endif
 
     LockFPS = ConfPtr.GetBool("lock_fps", LockFPS);
     TargetFPS = ConfPtr.GetInt("target_fps", TargetFPS);

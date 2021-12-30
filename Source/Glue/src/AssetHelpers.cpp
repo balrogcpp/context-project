@@ -150,6 +150,6 @@ void AddLocation(const std::string &Path, const std::string &GroupName, const st
   }
 }
 
-#endif  // !MOBILE
+#endif  // DESKTOP
 
 }

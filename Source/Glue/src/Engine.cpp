@@ -58,11 +58,12 @@ void Engine::InitComponents() {
 
   OgreRoot = new Root("", "", "");
 
-  // init Ogre
-  InitSDLSubsystems();
   InitDefaultRenderSystem();
   InitOgrePlugins();
+
   OgreRoot->initialise(false);
+
+  InitSDLSubsystems();
   CreateSDLWindow();
   CreateOgreRenderWindow();
 
@@ -131,11 +132,11 @@ void Engine::InitOgrePlugins() {
 
 #ifdef DEBUG
 
-#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
+#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE && defined(DESKTOP)
   Root::getSingleton().installPlugin(new FreeImagePlugin());
 #endif
 
-#ifdef OGRE_BUILD_PLUGIN_ASSIMP
+#if defined(OGRE_BUILD_PLUGIN_ASSIMP) && defined(DESKTOP)
   Root::getSingleton().installPlugin(new AssimpPlugin());
 #endif
 
@@ -155,7 +156,7 @@ void Engine::InitOgrePlugins() {
 }
 
 void Engine::CreateSDLWindow() {
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+#ifdef DESKTOP
 
   if (WindowWidth == ScreenWidth && WindowHeight == ScreenHeight) {
     SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
@@ -171,7 +172,7 @@ void Engine::CreateSDLWindow() {
   WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED_DISPLAY(0);
   SDLWindowPtr = SDL_CreateWindow(WindowCaption.c_str(), WindowPositionFlag, WindowPositionFlag, WindowWidth, WindowHeight, SDLWindowFlags);
 
-#else
+#elif defined(ANDROID)
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
@@ -344,7 +345,7 @@ void Engine::ReadConfFile() {
 #ifndef MOBILE
   ConfPtr = make_unique<Conf>("config.ini");
 #else
-  ConfPtr = make_unique<Conf>("");
+  //ConfPtr = make_unique<Conf>("");
 #endif
 }
 
@@ -485,10 +486,10 @@ void Engine::GrabMouse() { GrabMouse(true); }
 void Engine::FreeMouse() { GrabMouse(false); }
 
 void Engine::InitResourceLocation() {
-#ifndef MOBILE
+#ifdef DESKTOP
   AddLocation("Programs", RGN_INTERNAL);
   AddLocation("Assets", RGN_DEFAULT);
-#else
+#elif defined(ANDROID)
   auto &RGM = ResourceGroupManager::getSingleton();
   RGM.addResourceLocation("/Programs/Core.zip", "APKZip", RGN_INTERNAL);
   RGM.addResourceLocation("/Programs/Other.zip", "APKZip", RGN_INTERNAL);

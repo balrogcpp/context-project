@@ -1,9 +1,9 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
+#include "PCHeader.h"
 #include "Application.h"
 #include "DemoDotAppState.h"
 #include "MenuAppState.h"
-#include "PCHeader.h"
 
 using namespace std;
 using namespace Glue;

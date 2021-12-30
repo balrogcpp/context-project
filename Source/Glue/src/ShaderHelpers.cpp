@@ -111,8 +111,8 @@ void FixMeshMaterial(MeshPtr mesh, const string &MaterialName) {
       if (material) FixMaterial(material);
     }
   } catch (Ogre::Exception &e) {
-    Log::Message("[DotSceneLoader] Error loading an entity!");
-    Log::Message(e.getFullDescription());
+    //Log::Message("[DotSceneLoader] Error loading an entity!");
+    //Log::Message(e.getFullDescription());
   }
 }
 
