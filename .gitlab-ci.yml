@@ -26,7 +26,7 @@ build:
     - docker cp abc:/mnt/build/Artifacts/GlueSample_Darwin_x86_64_$CI_COMMIT_SHORT_SHA.zip Artifacts
     - docker rm -f abc
     - docker rmi glue/sample-apple
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/Tests/apple.Dockerfile -t glue/sample-android
+    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/Tests/android.Dockerfile -t glue/sample-android
     - docker create -ti --name abc glue/sample-android bash
     - docker cp abc:/mnt/build/Artifacts/app-arm64-v8a-release.apk Artifacts
     - docker rm -f abc
