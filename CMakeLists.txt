@@ -65,28 +65,28 @@ if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_dependencies(AndroidDummy ThirdParty)
 endif ()
 
-set (CMAKE_FOLDER Docker)
+set(CMAKE_FOLDER Docker)
 
 # Docker-compose targets (not crossplatform )
 if (UNIX)
-add_custom_target(DockerComposeDep
-        COMMAND docker-compose -f docker-compose-3rd.yml up
-        COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building thirdparty libraries with docker-compose..."
-        USES_TERMINAL
-        )
+    add_custom_target(DockerComposeDep
+            COMMAND docker-compose -f docker-compose-3rd.yml up
+            COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Building thirdparty libraries with docker-compose..."
+            USES_TERMINAL
+            )
 
-add_custom_target(DockerCompose
-        COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
-        COMMAND docker-compose down --volumes
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building tests with docker..."
-        USES_TERMINAL
-        )
+    add_custom_target(DockerCompose
+            COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
+            COMMAND docker-compose down --volumes
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Building tests with docker..."
+            USES_TERMINAL
+            )
 endif ()
 
-set (CMAKE_FOLDER "")
+set(CMAKE_FOLDER "")
 
 if (ANY_NOT_FOUND)
     return()
