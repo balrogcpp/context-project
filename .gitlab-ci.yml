@@ -36,4 +36,4 @@ build:
       - Artifacts/GlueSample_Linux_x86_64_$CI_COMMIT_SHORT_SHA.zip
       - Artifacts/GlueSample_Windows_x86_64_$CI_COMMIT_SHORT_SHA.zip
       - Artifacts/GlueSample_Darwin_x86_64_$CI_COMMIT_SHORT_SHA.zip
-      - Artifacts/app-arm64-v8a-release.apk
+      - Artifacts/GlueSample_Android_x86_64_$CI_COMMIT_SHORT_SHA.apk

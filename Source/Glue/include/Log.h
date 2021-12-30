@@ -28,6 +28,6 @@ class Log : public Ogre::LogListener, public Singleton<Log> {
   bool EnableWriteToConsole = false;
 };
 
-#endif DESKTOP
+#endif // DESKTOP
 
 }  // namespace Glue
