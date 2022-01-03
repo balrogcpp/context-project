@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #include "PCHeader.h"
-#include "Exception.h"
 #include "AssetHelpers.h"
+#include "Exception.h"
 #include "Filesystem.h"
 
 using namespace std;
@@ -67,7 +67,67 @@ static inline bool IsHidden(const fs::path &p) {
   return name.compare("..") && name.compare(".") && name[0] == '.';
 }
 
-void AddLocation(const std::string &Path, const std::string &GroupName, const std::string &ResourceFile) {
+template <typename T, typename C>
+bool IsIn(const T &t, const C &list) {
+  return find(begin(list), end(list), t) != end(list);
+}
+
+const static std::vector<std::string> EXTENTION_LIST = {
+    ".glsl", ".glslt", ".hlsl", ".hlslt", ".gles", ".cg",   ".vert", ".frag",  ".material", ".compositor", ".particle", ".fx",  ".program", ".dds",
+    ".bmp",  ".png",   ".tga",  ".jpg",   ".jpeg", ".mesh", ".xml",  ".scene", ".json",     ".wav",        ".ogg",      ".mp3", ".flac"};
+
+static inline bool IsInExtList(string ext) { return IsIn(ext, EXTENTION_LIST); }
+
+void AddLocation(const std::string &Path, const std::string &GroupName) {
+  const string FILE_SYSTEM = "FileSystem";
+  const string ZIP = "Zip";
+
+  std::vector<string> file_list;
+  std::vector<string> dir_list;
+  std::vector<tuple<string, string, string>> resource_list;
+  auto &RGM = ResourceGroupManager::getSingleton();
+
+  string path = FindPath(Path);
+
+  if (fs::exists(path)) {
+    if (fs::is_directory(path))
+      resource_list.push_back({path, FILE_SYSTEM, GroupName});
+    else if (fs::is_regular_file(path) && fs::path(path).extension() == ".zip")
+      RGM.addResourceLocation(path, ZIP, GroupName);
+  }
+
+  for (const auto &it : resource_list) {
+    RGM.addResourceLocation(get<0>(it), get<1>(it), get<2>(it));
+    dir_list.push_back(get<0>(it));
+
+    for (fs::recursive_directory_iterator end, jt(get<0>(it)); jt != end; ++jt) {
+      const string full_path = jt->path().string();
+      const string file_name = jt->path().filename().string();
+      const string extention = jt->path().filename().extension().string();
+
+      if (jt->is_directory()) {
+        if (IsHidden(jt->path())) {
+          jt.disable_recursion_pending();
+          continue;
+        }
+
+        dir_list.push_back(file_name);
+
+        RGM.addResourceLocation(full_path, FILE_SYSTEM, get<2>(it));
+      } else if (jt->is_regular_file()) {
+        if (IsHidden(jt->path())) continue;
+
+        if (extention == ".zip") {
+          RGM.addResourceLocation(full_path, ZIP, get<2>(it));
+        } else if (IsInExtList(extention)) {
+          file_list.push_back(file_name);
+        }
+      }
+    }
+  }
+}
+
+void AddResourceFile(const std::string &Path, const std::string &GroupName, const std::string &ResourceFile) {
   const string FILE_SYSTEM = "FileSystem";
   const string ZIP = "Zip";
 
@@ -114,17 +174,14 @@ void AddLocation(const std::string &Path, const std::string &GroupName, const st
     }
   }
 
-  const std::vector<string> extensions_list = {".glsl",       ".glslt",    ".hlsl", ".hlslt",   ".gles", ".cg",  ".vert", ".frag", ".material",
-                                               ".compositor", ".particle", ".fx",   ".program", ".dds",  ".bmp", ".png",  ".tga",  ".jpg",
-                                               ".jpeg",       ".mesh",     ".xml",  ".scene",   ".json", ".wav", ".ogg",  ".mp3",  ".flac"};
-
   for (const auto &it : resource_list) {
     RGM.addResourceLocation(get<0>(it), get<1>(it), get<2>(it));
     dir_list.push_back(get<0>(it));
 
     for (fs::recursive_directory_iterator end, jt(get<0>(it)); jt != end; ++jt) {
-      const auto full_path = jt->path().string();
-      const auto file_name = jt->path().filename().string();
+      const string full_path = jt->path().string();
+      const string file_name = jt->path().filename().string();
+      const string extention = jt->path().filename().extension().string();
 
       if (jt->is_directory()) {
         if (IsHidden(jt->path())) {
@@ -138,12 +195,10 @@ void AddLocation(const std::string &Path, const std::string &GroupName, const st
       } else if (jt->is_regular_file()) {
         if (IsHidden(jt->path())) continue;
 
-        if (fs::path(full_path).extension() == ".zip") {
-          if (find(extensions_list.begin(), extensions_list.end(), fs::path(file_name).extension()) != extensions_list.end()) {
-            file_list.push_back(file_name);
-          }
-
+        if (extention == ".zip") {
           RGM.addResourceLocation(full_path, ZIP, get<2>(it));
+        } else if (IsInExtList(extention)) {
+          file_list.push_back(file_name);
         }
       }
     }
@@ -152,4 +207,4 @@ void AddLocation(const std::string &Path, const std::string &GroupName, const st
 
 #endif  // DESKTOP
 
-}
+}  // namespace Glue

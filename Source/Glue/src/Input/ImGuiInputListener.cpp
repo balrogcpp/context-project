@@ -2,6 +2,7 @@
 
 #include "PCHeader.h"
 #include "Input/ImGuiInputListener.h"
+#include "Input/InputSequencer.h"
 #include <imgui.h>
 
 using namespace std;
@@ -51,6 +52,8 @@ static int keypad2kc(int sym, int mod) {
 }
 
 ImGuiInputListener::ImGuiInputListener() {
+  InputSequencer::GetInstance().RegObserver(this);
+
   static ImGuiIO &io = ImGui::GetIO();
 
   // Keyboard mapping. ImGui will use those indices to peek into the
@@ -79,7 +82,7 @@ ImGuiInputListener::ImGuiInputListener() {
   io.KeyMap[ImGuiKey_Z] = 'z';
 }
 
-ImGuiInputListener::~ImGuiInputListener() {}
+ImGuiInputListener::~ImGuiInputListener() { InputSequencer::GetInstance().UnregObserver(this); }
 
 void ImGuiInputListener::OnKeyDown(SDL_Keycode sym) {
   static auto &io = ImGui::GetIO();

@@ -73,7 +73,10 @@ void Scene::AddMaterial(const std::string &MaterialName) {
 
 void Scene::AddCamera(Camera *OgreCameraPtr) {}
 
-void Scene::AddSinbad(Camera *OgreCameraPtr) { Sinbad = make_unique<SinbadCharacterController>(OgreCameraPtr); }
+void Scene::AddSinbad(Camera *OgreCameraPtr) {
+  Sinbad = make_unique<SinbadCharacterController>(OgreCameraPtr);
+  Sinbad->RegMyself();
+}
 
 void Scene::AddForests(PagedGeometry *PGPtr, const std::string &MaterialName) {
   PagedGeometryList.push_back(unique_ptr<PagedGeometry>(PGPtr));
@@ -99,6 +102,7 @@ void Scene::OnUpdate(float PassedTime) {
 }
 
 void Scene::OnClean() {
+  Sinbad->UnRegMyself();
   Sinbad.reset();
   PagedGeometryList.clear();
   if (OgreTerrainList) OgreTerrainList->removeAllTerrains();

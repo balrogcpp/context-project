@@ -8,12 +8,16 @@ using namespace std;
 
 namespace Glue {
 
-InputObserver::InputObserver() {
+InputObserver::InputObserver() {}
+
+InputObserver::~InputObserver() {}
+
+void InputObserver::RegMyself() {
   static auto &ref = InputSequencer::GetInstance();
   ref.RegObserver(this);
 }
 
-InputObserver::~InputObserver() {
+void InputObserver::UnRegMyself() {
   static auto &ref = InputSequencer::GetInstance();
   ref.UnregObserver(this);
 }

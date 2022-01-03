@@ -5,8 +5,11 @@
 
 namespace Glue {
 
-class VerboseListener final : public InputObserver {
+class VerboseListener : public InputObserver {
  public:
+  VerboseListener();
+  virtual ~VerboseListener();
+
   void SetVerbose(bool verbose);
   bool IsVerbose();
 
@@ -27,7 +30,7 @@ class VerboseListener final : public InputObserver {
   void OnGamepadHat(int which, int hat, int value) override;
   void OnGamepadBall(int which, int ball, int xrel, int yrel) override;
 
-  bool verbose = true;
+  bool verbose = false;
 };
 
 }  // namespace Glue

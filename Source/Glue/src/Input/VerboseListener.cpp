@@ -8,6 +8,10 @@ using namespace std;
 
 namespace Glue {
 
+VerboseListener::VerboseListener() { RegMyself(); }
+
+VerboseListener::~VerboseListener() { UnRegMyself(); }
+
 void VerboseListener::SetVerbose(bool verbose) { verbose = verbose; }
 
 bool VerboseListener::IsVerbose() { return verbose; }

@@ -7,9 +7,13 @@ using namespace std;
 
 namespace Glue {
 
-AppState::AppState() {}
+AppState::AppState() {
+  RegMyself();
+}
 
-AppState::~AppState() {}
+AppState::~AppState() {
+  UnRegMyself();
+}
 
 void AppState::LoadFromFile(const string &FileName, const string &GroupName) {
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
