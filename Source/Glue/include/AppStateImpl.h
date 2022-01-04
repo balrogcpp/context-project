@@ -5,7 +5,7 @@
 
 namespace Glue {
 
-class AppStateImpl : public AppState {
+class AppStateImpl final : public AppState {
  public:
   void SetUp() override;
   void Cleanup() override;

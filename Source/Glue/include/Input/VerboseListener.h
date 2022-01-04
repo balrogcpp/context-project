@@ -5,7 +5,7 @@
 
 namespace Glue {
 
-class VerboseListener : public InputObserver {
+class VerboseListener final : public InputObserver {
  public:
   VerboseListener();
   virtual ~VerboseListener();

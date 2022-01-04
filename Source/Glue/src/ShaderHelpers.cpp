@@ -28,15 +28,15 @@ static bool HasNoTangentsAndCanGenerate(VertexDeclaration *vertex_declaration) {
   return !hasTangents && hasUVs;
 }
 
-void EnsureHasTangents(MeshPtr mesh) {
+void EnsureHasTangents(MeshPtr MeshSPtr) {
   bool generateTangents = false;
-  if (mesh->sharedVertexData) {
-    VertexDeclaration *vertexDecl = mesh->sharedVertexData->vertexDeclaration;
+  if (MeshSPtr->sharedVertexData) {
+    VertexDeclaration *vertexDecl = MeshSPtr->sharedVertexData->vertexDeclaration;
     generateTangents |= HasNoTangentsAndCanGenerate(vertexDecl);
   }
 
-  for (unsigned i = 0; i < mesh->getNumSubMeshes(); ++i) {
-    SubMesh *subMesh = mesh->getSubMesh(i);
+  for (unsigned i = 0; i < MeshSPtr->getNumSubMeshes(); ++i) {
+    SubMesh *subMesh = MeshSPtr->getSubMesh(i);
     if (subMesh->vertexData) {
       VertexDeclaration *vertexDecl = subMesh->vertexData->vertexDeclaration;
       generateTangents |= HasNoTangentsAndCanGenerate(vertexDecl);
@@ -44,7 +44,7 @@ void EnsureHasTangents(MeshPtr mesh) {
   }
 
   if (generateTangents) {
-    mesh->buildTangentVectors();
+    MeshSPtr->buildTangentVectors();
   }
 }
 
@@ -96,11 +96,11 @@ static void FixMaterial(const MaterialPtr &material) {
   GetScene().AddMaterial(material);
 }
 
-void FixMeshMaterial(MeshPtr mesh, const string &MaterialName) {
+void FixMeshMaterial(MeshPtr MeshSPtr, const string &MaterialName) {
   try {
-    //EnsureHasTangents(mesh);
+    //EnsureHasTangents(MeshSPtr);
 
-    for (auto &submesh : mesh->getSubMeshes()) {
+    for (auto &submesh : MeshSPtr->getSubMeshes()) {
       MaterialPtr material;
 
       if (!MaterialName.empty()) {
@@ -117,21 +117,21 @@ void FixMeshMaterial(MeshPtr mesh, const string &MaterialName) {
 }
 
 void FixMeshMaterial(const string &MeshName, const string &MaterialName) {
-  const auto &mesh = MeshManager::getSingleton().getByName(MeshName);
-  FixMeshMaterial(mesh, MaterialName);
+  const auto &MeshSPtr = MeshManager::getSingleton().getByName(MeshName);
+  FixMeshMaterial(MeshSPtr, MaterialName);
 }
 
-void FixEntityMaterial(Entity *entity, const string &MaterialName) {
+void FixEntityMaterial(Entity *EntityPtr, const string &MaterialName) {
   try {
     if (!MaterialName.empty()) {
       auto material = MaterialManager::getSingleton().getByName(MaterialName);
       if (material) {
         FixMaterial(material);
-        entity->setMaterial(material);
+        EntityPtr->setMaterial(material);
       }
     }
 
-    FixMeshMaterial(entity->getMesh(), MaterialName);
+    FixMeshMaterial(EntityPtr->getMesh(), MaterialName);
   } catch (Ogre::Exception &e) {
     LogManager::getSingleton().logMessage(e.getFullDescription());
     LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");

@@ -21,3 +21,11 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" 
 elseif (ANDROID OR IOS)
     set(MOBILE 1)
 endif ()
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(DEBUG 1)
+elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(RELEASE 1)
+elseif (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    set(RELWITHDEBINFO 1)
+endif ()

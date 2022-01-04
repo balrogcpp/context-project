@@ -1,17 +1,31 @@
 include(Platform)
 
+set(OGRE_INCLUDE_DIR ${OGRE_INCLUDE_DIRS})
+
+list(APPEND OGRE_INCLUDE_DIRS ${OGRE_INCLUDE_DIR}/Overlay)
+list(APPEND OGRE_INCLUDE_DIRS ${OGRE_INCLUDE_DIR}/RenderSystems/GL3Plus)
+list(APPEND OGRE_INCLUDE_DIRS ${OGRE_INCLUDE_DIR}/RenderSystems/GLES2)
+list(APPEND OGRE_INCLUDE_DIRS ${OGRE_INCLUDE_DIR}/RenderSystems/GLES2/GLSLES)
+list(APPEND OGRE_INCLUDE_DIRS ${OGRE_INCLUDE_DIR}/Plugins/Assimp)
+list(APPEND OGRE_INCLUDE_DIRS ${OGRE_INCLUDE_DIR}/Plugins/DotScene)
+
+if (NOT (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug"))
+    list(APPEND OGRE_LIBRARIES Plugin_DotSceneStatic)
+    list(APPEND OGRE_LIBRARIES Codec_AssimpStatic)
+else ()
+    set(APPEND OGRE_LIBRARIES Plugin_DotSceneStatic_d)
+    set(APPEND OGRE_LIBRARIES Codec_AssimpStatic_d)
+endif ()
+
+if (ASSIMP_IRRXML_LIBRARY)
+    list(APPEND ASSIMP_LIBRARIES ${ASSIMP_IRRXML_LIBRARY})
+endif ()
+
 set(GLUE_INCLUDE_DIRS
         ${GLUE_EXTERNAL_INSTALL_LOCATION}/include
         ${OPENAL_INCLUDE_DIR}
         ${BULLET_INCLUDE_DIR}
         ${OGRE_INCLUDE_DIRS}
-        ${OGRE_INCLUDE_DIRS}/Overlay
-        ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
-        ${OGRE_INCLUDE_DIRS}/RenderSystems/GL3Plus
-        ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2
-        ${OGRE_INCLUDE_DIRS}/RenderSystems/GLES2/GLSLES
-        ${OGRE_INCLUDE_DIRS}/Plugins/Assimp
-        ${OGRE_INCLUDE_DIRS}/Plugins/DotScene
         )
 
 set(GLUE_LINK_DIRS ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE)
@@ -30,20 +44,9 @@ endif ()
 #if (LINUX)
 #    list(APPEND SYSTEM_LIBRARIES jemalloc.a)
 #endif ()
-if (NOT (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug"))
-    set(OGRE_CODEC_ASSIMP Codec_AssimpStatic)
-else ()
-    set(OGRE_CODEC_ASSIMP Codec_AssimpStatic_d)
-endif ()
-
-if (ASSIMP_IRRXML_LIBRARY)
-    list(APPEND ASSIMP_LIBRARIES ${ASSIMP_IRRXML_LIBRARY})
-endif ()
 
 set(GLUE_LINK_LIBRARIES
         ${OGRE_LIBRARIES}
-        ${OGRE_DOT_SCENE}
-        ${OGRE_CODEC_ASSIMP}
         pugixml
         ${ASSIMP_LIBRARIES}
         ${BULLET_LIBRARIES}

@@ -5,7 +5,7 @@
 
 namespace Demo {
 
-class DemoDotAppState : public Glue::AppState {
+class DemoDotAppState final : public Glue::AppState {
  public:
   DemoDotAppState();
   virtual ~DemoDotAppState();
@@ -23,4 +23,5 @@ class DemoDotAppState : public Glue::AppState {
   //  Ogre::AnimationState *anim2 = nullptr;
   bool context_menu_ = false;
 };
+
 }  // namespace Demo

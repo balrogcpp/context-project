@@ -4,10 +4,6 @@
 #include "Singleton.h"
 
 namespace Glue {
-class Conf;
-}
-
-namespace Glue {
 
 class ComponentI {
  public:
