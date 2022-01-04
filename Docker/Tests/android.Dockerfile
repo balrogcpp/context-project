@@ -25,4 +25,4 @@ RUN cd Android \
     && ./gradlew assembleRelease \
     && cd ../ \
     && mv Android/app/build/outputs/apk/release/app-arm64-v8a-release.apk Artifacts/GlueSample_Android_x86_64_$GIT_HASH.apk \
-    && rm -rf Android ${ANDROID_HOME} /root/.android /root/.gradle
+    && rm -rf Android ${ANDROID_HOME} /root/.android

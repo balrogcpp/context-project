@@ -98,7 +98,7 @@ static void FixMaterial(const MaterialPtr &material) {
 
 void FixMeshMaterial(MeshPtr MeshSPtr, const string &MaterialName) {
   try {
-    //EnsureHasTangents(MeshSPtr);
+    // EnsureHasTangents(MeshSPtr);
 
     for (auto &submesh : MeshSPtr->getSubMeshes()) {
       MaterialPtr material;
@@ -111,8 +111,8 @@ void FixMeshMaterial(MeshPtr MeshSPtr, const string &MaterialName) {
       if (material) FixMaterial(material);
     }
   } catch (Ogre::Exception &e) {
-    //Log::Message("[DotSceneLoader] Error loading an entity!");
-    //Log::Message(e.getFullDescription());
+    LogManager::getSingleton().logMessage(e.getFullDescription());
+    LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
   }
 }
 
