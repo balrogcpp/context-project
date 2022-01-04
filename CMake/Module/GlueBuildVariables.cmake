@@ -45,15 +45,15 @@ endif ()
 #    list(APPEND SYSTEM_LIBRARIES jemalloc.a)
 #endif ()
 
+set(VORBIS_LIBRARIES "vorbisfile;vorbis;vorbisenc")
+
 set(GLUE_LINK_LIBRARIES
         ${OGRE_LIBRARIES}
         pugixml
         ${ASSIMP_LIBRARIES}
         ${BULLET_LIBRARIES}
         ${PNG_LIBRARY}
-        vorbisfile
-        vorbis
-        vorbisenc
+        ${VORBIS_LIBRARIES}
         Ogg::ogg
         ${LUA_LIBRARIES}
         ${OPENAL_LIBRARY}

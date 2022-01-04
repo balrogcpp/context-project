@@ -15,6 +15,8 @@ using namespace std;
 namespace Glue {
 
 int ErrorWindow(const string &WindowCaption, const string &MessageText) {
+  GetEngine().GrabMouse(false);
+
   SDL_Log("%s", string(WindowCaption + " : " + MessageText).c_str());
 
 #ifdef _WIN32

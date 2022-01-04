@@ -472,6 +472,7 @@ std::pair<int, int> Engine::GetWindowSize() const { return make_pair(WindowWidth
 void Engine::GrabMouse(bool grab) {
   // This breaks input on > Android 9.0
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+  if (!SDLWindowPtr) return;
   SDL_ShowCursor(!grab);
   SDL_SetWindowGrab(SDLWindowPtr, static_cast<SDL_bool>(grab));
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE
