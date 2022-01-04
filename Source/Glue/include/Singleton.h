@@ -14,7 +14,7 @@ class Singleton : public NoCopy {
   /// Constructor
   Singleton() {
     if (Instanced) {
-      std::string Message = std::string(typeid(T).name()) + " is DynamicSingleton class. Creation of another instance is forbidden";
+      std::string Message = std::string(typeid(T).name()) + " is a Singleton class. Creation of another instance is forbidden";
       Throw(Message);
     }
 
@@ -27,6 +27,9 @@ class Singleton : public NoCopy {
 
   ///
   static T& GetInstance() { return *SingletonPtr; }
+
+  ///
+  static bool IsInstanced() { return Instanced; }
 
  protected:
   /// Pointer to singleton instance

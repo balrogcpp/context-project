@@ -2,7 +2,8 @@
 
 #pragma once
 #include "Components/ComponentsAll.h"
-#include "LazySingleton.h"
+#include "Input/InputSequencer.h"
+#include "Singleton.h"
 #include "Log.h"
 #include <memory>
 #include <vector>
@@ -31,7 +32,7 @@ Physics& GetPhysics();
 Sound& GetAudio();
 Scene& GetScene();
 
-class Engine final : public LazySingleton<Engine> {
+class Engine final : public Singleton<Engine> {
  public:
   Engine();
   virtual ~Engine();

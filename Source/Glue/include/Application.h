@@ -3,7 +3,7 @@
 #pragma once
 #include "AppStateManager.h"
 #include "Engine.h"
-#include "LazySingleton.h"
+#include "Singleton.h"
 #include "Input/WindowObserver.h"
 #include "Input/VerboseListener.h"
 #include <memory>
@@ -29,7 +29,7 @@ class Application final : public WindowObserver, public Singleton<Application> {
 #ifdef DESKTOP
   std::unique_ptr<VerboseListener> VerboseListenerPtr;
 #endif
-  Engine *EnginePtr = nullptr;
+  std::unique_ptr<Engine> EnginePtr;
 
   bool Running = false;
   bool Suspend = false;

@@ -2,11 +2,10 @@
 
 #pragma once
 #include "AppState.h"
-#include "LazySingleton.h"
 
 namespace Glue {
 
-class AppStateManager : public Singleton<AppStateManager> {
+class AppStateManager {
  public:
   AppStateManager();
   virtual ~AppStateManager();

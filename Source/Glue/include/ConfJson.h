@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "LazySingleton.h"
+#include "Singleton.h"
 #include "Exception.h"
 #include <nlohmann/json.hpp>
 

@@ -23,7 +23,9 @@ namespace Glue {
 
 Application::Application() {
   try {
-    EnginePtr = &Engine::GetInstance();
+    InputSequencer::GetInstance().RegWinObserver(this);
+
+    EnginePtr = make_unique<Engine>();
     EnginePtr->InitComponents();
 
     StateManagerPtr = make_unique<AppStateManager>();
@@ -52,7 +54,9 @@ Application::Application() {
   }
 }
 
-Application::~Application() {}
+Application::~Application() {
+  InputSequencer::GetInstance().UnregWinObserver(this);
+}
 
 void Application::Loop() {
   bool WasSuspend = false;
@@ -156,8 +160,10 @@ int Application::Main(unique_ptr<AppState> &&AppStatePtr) {
 
     ios_base::sync_with_stdio(false);
 
-    StateManagerPtr->SetInitialState(move(AppStatePtr));
-    Go();
+    if (StateManagerPtr && AppStatePtr) {
+      StateManagerPtr->SetInitialState(move(AppStatePtr));
+      Go();
+    }
 
     SDL_Quit();
 

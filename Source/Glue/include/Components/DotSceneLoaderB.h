@@ -4,7 +4,7 @@
 #include "Components/Component.h"
 #include "CubeMapCamera.h"
 #include "Input/InputSequencer.h"
-#include "LazySingleton.h"
+#include "Singleton.h"
 #include "Objects/CameraMan.h"
 #include "ReflectionCamera.h"
 #include <OgreCodec.h>
