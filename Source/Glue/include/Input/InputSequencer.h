@@ -22,7 +22,7 @@ namespace Glue {
 
 /// This Singleton class is main part of Observer implementation
 /// Keeps listeners list, capture inputs and send messages every frame
-class InputSequencer : public LazySingleton<InputSequencer> {
+class InputSequencer final : public LazySingleton<InputSequencer> {
  public:
   InputSequencer();
   virtual ~InputSequencer();

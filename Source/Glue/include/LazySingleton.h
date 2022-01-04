@@ -1,13 +1,13 @@
 // This source file is part of "glue project". Created by Andrew Vasiliev
 
 #pragma once
-#include "Singleton.h"
+#include "BaseSingleton.h"
 
 namespace Glue {
 
 /// Implements "Lazy DynamicSingleton" pattern. Creates instance only when called GetInstance
 template <typename T>
-class LazySingleton : public Singleton<T> {
+class LazySingleton : public BaseSingleton<T> {
  public:
   /// Create and return instance of class
   /// \return ref to instance
