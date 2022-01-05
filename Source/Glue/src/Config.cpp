@@ -22,7 +22,7 @@ void Config::Reload(const std::string &FileName) {
   if (FileName.empty()) return;
   std::ifstream ifs(FileName);
   if (!ifs.is_open()) {
-    Throw(FileName + " does not exists");
+    Throw(FileName + " not found");
   }
 
   Document.reset();
