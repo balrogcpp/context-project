@@ -345,7 +345,7 @@ void Engine::ReadConfFile() {
 #ifndef MOBILE
   ConfPtr = make_unique<Config>("Config.ini");
 #else
-  //ConfPtr = make_unique<Conf>("");
+  //ConfPtr = make_unique<Config>("");
 #endif
 }
 

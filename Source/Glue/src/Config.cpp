@@ -53,17 +53,17 @@ bool Config::GetBool(std::string name, bool default_value) const { return Docume
 
 #else
 
-std::string Conf::Get(std::string name, std::string default_value) const { return default_value; }
+std::string Config::Get(std::string name, std::string default_value) const { return default_value; }
 
-std::string Conf::GetString(std::string name, std::string default_value) const { return default_value; }
+std::string Config::GetString(std::string name, std::string default_value) const { return default_value; }
 
-long Conf::GetInt(std::string name, long default_value) const { return default_value; }
+long Config::GetInt(std::string name, long default_value) const { return default_value; }
 
-double Conf::GetReal(std::string name, double default_value) const { return default_value; }
+double Config::GetReal(std::string name, double default_value) const { return default_value; }
 
-float Conf::GetFloat(std::string name, float default_value) const { return default_value; }
+float Config::GetFloat(std::string name, float default_value) const { return default_value; }
 
-bool Conf::GetBool(std::string name, bool default_value) const { return default_value; }
+bool Config::GetBool(std::string name, bool default_value) const { return default_value; }
 
 #endif
 
