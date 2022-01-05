@@ -109,7 +109,7 @@ class Engine final : public Singleton<Engine> {
   int FSAA = 0;
 
   /// Components
-  std::unique_ptr<Conf> ConfPtr;
+  std::unique_ptr<Config> ConfPtr;
   std::unique_ptr<Compositor> CompositorUPtr;
   std::unique_ptr<Overlay> OverlayPtr;
   std::unique_ptr<Physics> PhysicsPtr;

@@ -13,12 +13,6 @@ class Singleton : public BaseSingleton<T> {
  public:
   /// Constructor
   Singleton() {
-    if (Instanced) {
-      std::string Message = std::string(typeid(T).name()) + " is a Singleton class. Creation of another instance is forbidden";
-      Throw(Message);
-    }
-
-    Instanced = true;
     SingletonPtr = static_cast<T*>(this);
   }
 
@@ -28,14 +22,9 @@ class Singleton : public BaseSingleton<T> {
   ///
   static T& GetInstance() { return *SingletonPtr; }
 
-  ///
-  static bool IsInstanced() { return Instanced; }
-
  protected:
   /// Pointer to singleton instance
   inline static T* SingletonPtr = nullptr;
-  /// Is this flag is up -- any call of "new" will throw exception
-  inline static bool Instanced = false;
 };
 
 }  // namespace Glue

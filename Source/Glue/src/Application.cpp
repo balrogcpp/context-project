@@ -2,7 +2,7 @@
 
 #include "PCHeader.h"
 #include "Application.h"
-#include "Conf.h"
+#include "Config.h"
 #include "DesktopIcon.h"
 #include "Engine.h"
 #include "Exception.h"
@@ -29,7 +29,7 @@ Application::Application() {
     EnginePtr->InitComponents();
 
     StateManagerPtr = make_unique<AppStateManager>();
-    auto &ConfPtr = *Conf::GetInstancePtr();
+    auto &ConfPtr = *Config::GetInstancePtr();
 
     Verbose = ConfPtr.GetBool("verbose", Verbose);
     VerboseInput = ConfPtr.GetBool("verbose_input", VerboseInput);

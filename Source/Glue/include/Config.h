@@ -8,10 +8,10 @@ class INIReader;
 
 namespace Glue {
 
-class Conf : public Singleton<Conf> {
+class Config : public Singleton<Config> {
  public:
-  explicit Conf(const std::string &FileName);
-  virtual ~Conf();
+  explicit Config(const std::string &FileName = "Config.ini");
+  virtual ~Config();
 
   void Reload(const std::string &FileName);
 
@@ -22,9 +22,13 @@ class Conf : public Singleton<Conf> {
   float GetFloat(std::string name, float default_value = 0.0f) const;
   bool GetBool(std::string name, bool default_value = false) const;
 
+  const std::string &GetDefaultSection() const;
+  void SetDefaultSection(const std::string &defaultSection);
+
  protected:
   std::unique_ptr<INIReader> Document;
-  const std::string DefaultSection = "DEFAULT";
+  std::string ConfFileName;
+  std::string DefaultSection = "DEFAULT";
 };
 
 }  // namespace Glue

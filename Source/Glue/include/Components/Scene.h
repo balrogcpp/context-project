@@ -16,7 +16,7 @@ class GeometryPage;
 
 namespace Glue {
 class CameraMan;
-class Conf;
+class Config;
 class Physics;
 class Sound;
 class Overlay;

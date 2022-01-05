@@ -2,7 +2,7 @@
 
 #include "PCHeader.h"
 #include "Components/Compositor.h"
-#include "Conf.h"
+#include "Config.h"
 #include "ShaderHelpers.h"
 
 using namespace std;
@@ -59,9 +59,9 @@ Compositor::Compositor() {
   OgreCamera = OgreSceneManager->getCamera("Default");
   OgreViewport = OgreCamera->getViewport();
 
-  EnableEffect("ssao", Conf::GetInstance().GetBool("enable_ssao"));
-  EnableEffect("bloom", Conf::GetInstance().GetBool("enable_bloom"));
-  EnableEffect("mblur", Conf::GetInstance().GetBool("enable_mblur"));
+  EnableEffect("ssao", Config::GetInstance().GetBool("enable_ssao"));
+  EnableEffect("bloom", Config::GetInstance().GetBool("enable_bloom"));
+  EnableEffect("mblur", Config::GetInstance().GetBool("enable_mblur"));
 
   SetUp();
 }

@@ -21,6 +21,9 @@ class BaseSingleton : public NoCopy {
     Instanced = true;
   }
 
+  ///
+  static bool IsInstanced() { return Instanced; }
+
  protected:
   /// Is this flag is up -- any call of "new" will throw exception
   inline static bool Instanced = false;

@@ -4,7 +4,7 @@
 #include "Engine.h"
 #include "AssetHelpers.h"
 #include "Components/DotSceneLoaderB.h"
-#include "Conf.h"
+#include "Config.h"
 #include "Input/InputSequencer.h"
 #include "Log.h"
 #include "RTSS.h"
@@ -343,7 +343,7 @@ void Engine::Capture() {
 
 void Engine::ReadConfFile() {
 #ifndef MOBILE
-  ConfPtr = make_unique<Conf>("config.ini");
+  ConfPtr = make_unique<Config>("config.ini");
 #else
   //ConfPtr = make_unique<Conf>("");
 #endif
