@@ -42,7 +42,7 @@ Engine::Engine() {
 
 #ifdef DESKTOP
   LogPtr = make_unique<Log>();
-  bool Verbose = ConfPtr->GetBool("verbose", false);
+  bool Verbose = ConfigPtr->GetBool("verbose", false);
   LogPtr->WriteLogToConsole(Verbose);
   LogPtr->WriteLogToFile(Verbose);
 #endif
@@ -51,10 +51,10 @@ Engine::Engine() {
 Engine::~Engine() { SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE); }
 
 void Engine::InitComponents() {
-  WindowWidth = ConfPtr->GetInt("window_width", WindowWidth);
-  WindowHeight = ConfPtr->GetInt("window_high", WindowHeight);
-  WindowFullScreen = ConfPtr->GetBool("window_fullscreen", WindowFullScreen);
-  RenderSystemName = ConfPtr->Get("render_system", RenderSystemName);
+  WindowWidth = ConfigPtr->GetInt("window_width", WindowWidth);
+  WindowHeight = ConfigPtr->GetInt("window_high", WindowHeight);
+  WindowFullScreen = ConfigPtr->GetBool("window_fullscreen", WindowFullScreen);
+  RenderSystemName = ConfigPtr->Get("render_system", RenderSystemName);
 
   OgreRoot = new Root("", "", "");
 
@@ -233,9 +233,9 @@ void Engine::CreateOgreRenderWindow() {
   const char TrueStr[] = "true";
   const char FalseStr[] = "false";
 
-  WindowsVsync = ConfPtr->GetBool("vsync", WindowsVsync);
-  WindowGammaCorrection = ConfPtr->GetBool("gamma", WindowGammaCorrection);
-  FSAA = ConfPtr->GetInt("fsaa", FSAA);
+  WindowsVsync = ConfigPtr->GetBool("vsync", WindowsVsync);
+  WindowGammaCorrection = ConfigPtr->GetBool("gamma", WindowGammaCorrection);
+  FSAA = ConfigPtr->GetInt("fsaa", FSAA);
 
   params["vsync"] = WindowsVsync ? TrueStr : FalseStr;
   params["gamma"] = WindowGammaCorrection ? TrueStr : FalseStr;
@@ -257,10 +257,10 @@ void Engine::InitShadowSettings() {
   int16_t tex_size = 256;
   string tex_format = "D16";
 
-  shadows_enable = ConfPtr->GetBool("shadows_enable", shadows_enable);
-  //  shadow_far = ConfPtr->GetInt("shadow_far", shadow_far);
-  //  tex_format = ConfPtr->GetString("tex_format", tex_format);
-  tex_size = ConfPtr->GetInt("tex_size", tex_size);
+  shadows_enable = ConfigPtr->GetBool("shadows_enable", shadows_enable);
+  //  shadow_far = ConfigPtr->GetInt("shadow_far", shadow_far);
+  //  tex_format = ConfigPtr->GetString("tex_format", tex_format);
+  tex_size = ConfigPtr->GetInt("tex_size", tex_size);
 
   if (!shadows_enable) {
     OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
@@ -315,10 +315,10 @@ void Engine::InitShadowSettings() {
 }
 
 void Engine::InitTextureSettings() {
-  string filtration = ConfPtr->GetString("filtration");
+  string filtration = ConfigPtr->GetString("filtration");
   int anisotropy = 4;
 
-  anisotropy = ConfPtr->GetInt("anisotropy", anisotropy);
+  anisotropy = ConfigPtr->GetInt("anisotropy", anisotropy);
 
   TextureFilterOptions filtering = TFO_ANISOTROPIC;
 
@@ -343,9 +343,9 @@ void Engine::Capture() {
 
 void Engine::ReadConfFile() {
 #ifndef MOBILE
-  ConfPtr = make_unique<Config>("Config.ini");
+  ConfigPtr = make_unique<Config>("Config.ini");
 #else
-  //ConfPtr = make_unique<Config>("");
+  //ConfigPtr = make_unique<Config>("");
 #endif
 }
 
