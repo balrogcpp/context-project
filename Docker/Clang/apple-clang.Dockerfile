@@ -27,24 +27,21 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 ARG OSXCROSS_ROOT=/opt/osxcross
-ARG OSXCROSS_HOME=/opt
 ARG MACOSX_VERSION=10.15
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y libxml2 lzma-dev libxml2-dev libssl-dev python \
     && apt-get clean \
-    && cd ${OSXCROSS_HOME} \
     && git clone --depth 1 https://github.com/tpoechtrager/osxcross.git \
-    && wget https://github.com/balrogcpp/MacOSXsdk/raw/master/MacOSX${MACOSX_VERSION}.sdk.tar.xz -O ${OSXCROSS_ROOT}/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \
-    && cd ${OSXCROSS_ROOT} \
-    && UNATTENDED=1 ./build.sh \
-    && rm ${OSXCROSS_ROOT}/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \
-    && rm -rf ${OSXCROSS_ROOT}/build \
-    && rm -rf `find  . -type d -name .git` \
+    && wget https://github.com/balrogcpp/MacOSXsdk/raw/master/MacOSX${MACOSX_VERSION}.sdk.tar.xz -O ./osxcross/tarballs/MacOSX${MACOSX_VERSION}.sdk.tar.xz \
+    && cd osxcross \
+    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} ./build.sh \
+    && cd .. \
+    && rm -rf osxcross \
     && apt-get -y purge lzma-dev libxml2-dev libssl-dev python \
     && apt-get -y autoremove
 
 ENV OSXCROSS_HOST=x86_64-apple-darwin19
-ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/target/toolchain.cmake
-ENV PATH="${OSXCROSS_ROOT}/target/bin:${PATH}"
-ENV eval `${OSXCROSS_ROOT}/target/bin/x86_64-apple-darwin19-osxcross-conf`
+ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
+ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
+ENV eval `${OSXCROSS_ROOT}/bin/x86_64-apple-darwin19-osxcross-conf`
