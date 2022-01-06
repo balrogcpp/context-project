@@ -2,11 +2,11 @@
 
 #include "PCHeader.h"
 #include "Application.h"
-#include "DemoDotAppState.h"
-#include "MenuAppState.h"
 
 using namespace std;
 using namespace Glue;
+
+extern AppStateUPtr MainAppState();
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -19,7 +19,7 @@ int main(int argc, char* args[])
   // main app class object
   Application app;
   // main function
-  return app.Main(make_unique<Demo::MenuAppState>());
+  return app.Main(MainAppState());
   // to be sure app will return something to system
   return 0;
 }

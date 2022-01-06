@@ -11,6 +11,9 @@
 
 namespace Glue {
 
+class AppState;
+using AppStateUPtr = std::unique_ptr<AppState>;
+
 class AppState : public Ogre::RenderTargetListener, public Ogre::FrameListener, public InputObserver {
  public:
   AppState();
