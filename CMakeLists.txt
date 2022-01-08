@@ -57,10 +57,10 @@ insert_dependency_static(SDL2)
 insert_dependency_static(PNG)
 insert_dependency_static(Freetype)
 insert_dependency_static(assimp)
-find_library(ASSIMP_IRRXML_LIBRARY IrrXML QUIET)
+set(OGRE_STATIC 1)
 insert_dependency_static(OGRE)
 # Fixture for broken OGRE_LIBRARY
-include(OgreFixture)
+#include(OgreFixture)
 
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(AndroidDummy SHARED Android/app/src/main/cpp/main.cpp)
@@ -110,7 +110,6 @@ if (NOT MSVC)
             COMMENT "Build packages..."
             USES_TERMINAL
             )
-
 endif ()
 
 if (UNIX)
