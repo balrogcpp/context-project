@@ -15,24 +15,63 @@ extern "C" {
 __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #endif
 
 using namespace std;
 
+#ifdef DESKTOP
+static inline std::string GetCurrentDirectory(const string &args) {
+#ifdef UNIX
+  // Get the last position of '/'
+  std::string aux(args);
+
+  // get '/' or '\\' depending on unix/mac or windows.
+#if defined(_WIN32) || defined(WIN32)
+  int pos = aux.rfind('\\');
+#else
+  int pos = aux.rfind('/');
+#endif
+
+  // Get the path and the name
+  std::string path = aux.substr(0, pos + 1);
+  std::string name = aux.substr(pos + 1);
+
+  return path;
+#elif WINDOWS
+  char buffer[MAX_PATH];
+  GetModuleFileNameA(NULL, buffer, MAX_PATH);
+  std::string::size_type pos = std::string(buffer).find_last_of("\\/");
+
+  return std::string(buffer).substr(0, pos);
+#endif
+
+  return std::string();
+}
+#endif
+
 namespace Glue {
 
-Application::Application() {
+Application::Application(int argc, char *args[]) {
   try {
     InputSequencer::GetInstance().RegWinObserver(this);
+
+#ifdef DESKTOP
+    string BinaryDir = GetCurrentDirectory(args[0]);
+    ConfigPtr = make_unique<Config>(BinaryDir + "Config.ini");
+#else
+    ConfigPtr = make_unique<Config>("");
+#endif
 
     EnginePtr = make_unique<Engine>();
     EnginePtr->InitComponents();
 
     StateManagerPtr = make_unique<AppStateManager>();
-    auto &ConfPtr = *Config::GetInstancePtr();
 
-    Verbose = ConfPtr.GetBool("verbose", Verbose);
-    VerboseInput = ConfPtr.GetBool("verbose_input", VerboseInput);
+    Verbose = ConfigPtr->GetBool("verbose", Verbose);
+    VerboseInput = ConfigPtr->GetBool("verbose_input", VerboseInput);
 
 #ifdef DESKTOP
     if (VerboseInput) {
@@ -40,8 +79,8 @@ Application::Application() {
     }
 #endif
 
-    LockFPS = ConfPtr.GetBool("lock_fps", LockFPS);
-    TargetFPS = ConfPtr.GetInt("target_fps", TargetFPS);
+    LockFPS = ConfigPtr->GetBool("lock_fps", LockFPS);
+    TargetFPS = ConfigPtr->GetInt("target_fps", TargetFPS);
 
   } catch (Exception &e) {
     ErrorWindow("Exception", e.GetDescription());
@@ -54,9 +93,7 @@ Application::Application() {
   }
 }
 
-Application::~Application() {
-  InputSequencer::GetInstance().UnregWinObserver(this);
-}
+Application::~Application() { InputSequencer::GetInstance().UnregWinObserver(this); }
 
 void Application::Loop() {
   bool WasSuspend = false;

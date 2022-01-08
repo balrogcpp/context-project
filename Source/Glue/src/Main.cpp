@@ -17,7 +17,7 @@ int main(int argc, char* args[])
 #endif
 {
   // main app class object
-  Application app;
+  Application app(argc, args);
   // main function
   return app.Main(MainAppState());
   // to be sure app will return something to system

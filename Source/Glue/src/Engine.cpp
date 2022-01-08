@@ -342,11 +342,7 @@ void Engine::Capture() {
 }
 
 void Engine::ReadConfFile() {
-#ifndef MOBILE
-  ConfigPtr = make_unique<Config>("Config.ini");
-#else
-  //ConfigPtr = make_unique<Config>("");
-#endif
+  ConfigPtr = Config::GetInstancePtr();
 }
 
 void Engine::InitSound() {

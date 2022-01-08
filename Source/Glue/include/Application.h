@@ -13,7 +13,7 @@ namespace Glue {
 
 class Application final : public WindowObserver, public Singleton<Application> {
  public:
-  Application();
+  explicit Application(int argc, char* args[]);
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&AppStatePtr);
 
@@ -30,6 +30,7 @@ class Application final : public WindowObserver, public Singleton<Application> {
   std::unique_ptr<VerboseListener> VerboseListenerPtr;
 #endif
   std::unique_ptr<Engine> EnginePtr;
+  std::unique_ptr<Config> ConfigPtr;
 
   bool Running = false;
   bool Suspend = false;
