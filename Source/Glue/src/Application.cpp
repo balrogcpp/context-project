@@ -39,13 +39,15 @@ static inline std::string GetCurrentDirectory(const string &args = "./") {
   std::string path = aux.substr(0, pos + 1);
   std::string name = aux.substr(pos + 1);
 
-  return path;
+  return path.append("/");
 #elif defined(WINDOWS)
   char buffer[MAX_PATH];
   GetModuleFileNameA(NULL, buffer, MAX_PATH);
   std::string::size_type pos = std::string(buffer).find_last_of("\\/");
 
-  return std::string(buffer).substr(0, pos);
+  std::string path = std::string(buffer).substr(0, pos);
+
+  return path.append("\\");
 #endif
 
   return std::string();
@@ -60,11 +62,14 @@ Application::Application(int argc, char *args[]) {
 
 #ifdef DESKTOP
     string BinaryDir;
-    if (args)
+    if (args) {
       BinaryDir = GetCurrentDirectory(args[0]);
-    else
+    }
+    else {
       BinaryDir = GetCurrentDirectory();
-    ConfigPtr = make_unique<Config>(BinaryDir + "/Config.ini");
+    }
+
+    ConfigPtr = make_unique<Config>(BinaryDir + "Config.ini");
 #else
     ConfigPtr = make_unique<Config>("");
 #endif
