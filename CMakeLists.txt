@@ -59,8 +59,6 @@ insert_dependency_static(Freetype)
 insert_dependency_static(assimp)
 set(OGRE_STATIC 1)
 insert_dependency_static(OGRE)
-# Fixture for broken OGRE_LIBRARY
-#include(OgreFixture)
 
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(AndroidDummy SHARED Android/app/src/main/cpp/main.cpp)
