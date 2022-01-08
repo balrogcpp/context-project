@@ -7,7 +7,7 @@ set(GLUE_INCLUDE_DIRS
         ${OGRE_INCLUDE_DIRS}
         )
 
-set(GLUE_LINK_DIRS ${GLUE_EXTERNAL_LIB_DIR} ${GLUE_EXTERNAL_LIB_DIR}/OGRE)
+set(GLUE_LINK_DIRS ${GLUE_EXTERNAL_INSTALL_LOCATION}/lib ${GLUE_EXTERNAL_INSTALL_LOCATION}/lib/OGRE)
 
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
