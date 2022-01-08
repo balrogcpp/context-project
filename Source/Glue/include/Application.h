@@ -13,7 +13,7 @@ namespace Glue {
 
 class Application final : public WindowObserver, public Singleton<Application> {
  public:
-  explicit Application(int argc, char* args[]);
+  explicit Application(int argc = 0, char* args[] = nullptr);
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&AppStatePtr);
 

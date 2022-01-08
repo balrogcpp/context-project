@@ -23,7 +23,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 #ifdef DESKTOP
-static inline std::string GetCurrentDirectory(const string &args) {
+static inline std::string GetCurrentDirectory(const string &args = "./") {
 #ifdef UNIX
   // Get the last position of '/'
   std::string aux(args);
@@ -59,8 +59,12 @@ Application::Application(int argc, char *args[]) {
     InputSequencer::GetInstance().RegWinObserver(this);
 
 #ifdef DESKTOP
-    string BinaryDir = GetCurrentDirectory(args[0]);
-    ConfigPtr = make_unique<Config>(BinaryDir + "Config.ini");
+    string BinaryDir;
+    if (args)
+      BinaryDir = GetCurrentDirectory(args[0]);
+    else
+      BinaryDir = GetCurrentDirectory();
+    ConfigPtr = make_unique<Config>(BinaryDir + "/Config.ini");
 #else
     ConfigPtr = make_unique<Config>("");
 #endif

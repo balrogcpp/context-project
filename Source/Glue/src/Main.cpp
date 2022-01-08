@@ -17,7 +17,11 @@ int main(int argc, char* args[])
 #endif
 {
   // main app class object
+#ifndef WIN32
   Application app(argc, args);
+#else
+  Application app;
+#endif
   // main function
   return app.Main(MainAppState());
   // to be sure app will return something to system
