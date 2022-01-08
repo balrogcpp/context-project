@@ -40,7 +40,7 @@ static inline std::string GetCurrentDirectory(const string &args) {
   std::string name = aux.substr(pos + 1);
 
   return path;
-#elif WINDOWS
+#elif defined(WINDOWS)
   char buffer[MAX_PATH];
   GetModuleFileNameA(NULL, buffer, MAX_PATH);
   std::string::size_type pos = std::string(buffer).find_last_of("\\/");
