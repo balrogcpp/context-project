@@ -23,17 +23,14 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 #ifdef DESKTOP
-static inline std::string GetCurrentDirectory(const string &args = "./") {
+static inline std::string GetCurrentDirectory(const std::string &args) {
 #ifdef UNIX
-  // Get the last position of '/'
+  if(args.empty()) return "";
+
   std::string aux(args);
 
-  // get '/' or '\\' depending on unix/mac or windows.
-#if defined(_WIN32) || defined(WIN32)
-  int pos = aux.rfind('\\');
-#else
+  // Get the last position of '/'
   int pos = aux.rfind('/');
-#endif
 
   // Get the path and the name
   std::string path = aux.substr(0, pos + 1);
@@ -50,7 +47,7 @@ static inline std::string GetCurrentDirectory(const string &args = "./") {
   return path.append("\\");
 #endif
 
-  return std::string();
+  return "";
 }
 #endif
 
@@ -64,9 +61,8 @@ Application::Application(int argc, char *args[]) {
     string BinaryDir;
     if (args) {
       BinaryDir = GetCurrentDirectory(args[0]);
-    }
-    else {
-      BinaryDir = GetCurrentDirectory();
+    } else {
+      BinaryDir = GetCurrentDirectory("");
     }
 
     ConfigPtr = make_unique<Config>(BinaryDir + "Config.ini");
