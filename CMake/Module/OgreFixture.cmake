@@ -1,3 +1,4 @@
+# This source file is part of "glue project". Created by Andrey Vasiliev
 # Fixture for broken OGRE_LIBRARY
 if(OGRE_STATIC)
     string(APPEND OGRE_POSTFIX "Static")

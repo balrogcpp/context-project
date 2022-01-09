@@ -1,3 +1,5 @@
+# This source file is part of "glue project". Created by Andrey Vasiliev
+
 find_package(SelfPackers)
 
 # Stripping not work very well when crosscompile

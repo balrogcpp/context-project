@@ -1,5 +1,5 @@
-# which compilers to use for C and C++
-# cross compilers to use for C, C++ and Fortran
+# This source file is part of "glue project". Created by Andrey Vasiliev
+
 string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-ld=lld")
 string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-ld=lld")
 

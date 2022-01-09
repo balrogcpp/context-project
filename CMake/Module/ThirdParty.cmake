@@ -1,3 +1,5 @@
+# This source file is part of "glue project". Created by Andrey Vasiliev
+
 include(Platform)
 include(Make)
 include(CppFlags)

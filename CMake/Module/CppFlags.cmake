@@ -1,3 +1,5 @@
+# This source file is part of "glue project". Created by Andrey Vasiliev
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     string(APPEND CMAKE_CXX_FLAGS " -Wall")
     string(APPEND CMAKE_C_FLAGS " -Wall")

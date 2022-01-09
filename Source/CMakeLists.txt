@@ -1,6 +1,7 @@
+# This source file is part of "glue project". Created by Andrey Vasiliev
+
 include(InsertDependency)
 include(AppleThreadFix)
-
 
 if (NOT MOBILE)
     insert_dependency(OpenGL)

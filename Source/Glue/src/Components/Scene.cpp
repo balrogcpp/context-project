@@ -1,4 +1,4 @@
-// This source file is part of "glue project". Created by Andrew Vasiliev
+// This source file is part of "glue project". Created by Andrey Vasiliev
 
 #include "PCHeader.h"
 #include "Components/Scene.h"

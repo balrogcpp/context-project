@@ -1,3 +1,5 @@
+# This source file is part of "glue project". Created by Andrey Vasiliev
+
 #option(GLUE_BUILD_STATIC_LIBRARY "Build static library" OFF)
 #if (GLUE_BUILD_STATIC_LIBRARY)
 #    file(GLOB_RECURSE GLUE_ENGINE_SOURCE_FILES Source/*.cpp Source/*.h Source/*.hpp)

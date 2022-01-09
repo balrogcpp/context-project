@@ -1,3 +1,5 @@
+# This source file is part of "glue project". Created by Andrey Vasiliev
+
 set(CMAKE_FOLDER Tests)
 find_package(GTest QUIET)
 if (GTest_FOUND AND NOT CMAKE_CROSSCOMPILING)

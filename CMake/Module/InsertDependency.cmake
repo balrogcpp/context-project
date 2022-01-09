@@ -1,3 +1,5 @@
+# This source file is part of "glue project". Created by Andrey Vasiliev
+
 macro(insert_dependency PACKAGE)
     find_package(${PACKAGE} QUIET)
 

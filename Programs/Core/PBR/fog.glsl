@@ -1,4 +1,4 @@
-// This source file is part of "glue project". Created by Andrew Vasiliev
+// This source file is part of "glue project". Created by Andrey Vasiliev
 
 #ifndef GL_ES
 

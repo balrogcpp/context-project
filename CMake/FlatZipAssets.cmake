@@ -1,3 +1,5 @@
+# This source file is part of "glue project". Created by Andrey Vasiliev
+
 macro(FlatZipSubdirectories curdir destination)
     make_directory(${destination})
     file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
