@@ -24,8 +24,6 @@ include(Make)
 include(Platform)
 include(CppFlags)
 include(GitHash)
-include(InsertDependency)
-include(AppleThreadFix)
 
 # Create artifacts directory
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
@@ -41,24 +39,6 @@ include(Doxygen)
 
 set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
-
-if (NOT MOBILE)
-    insert_dependency(OpenGL)
-else ()
-    insert_dependency(OpenGLES2)
-endif ()
-insert_dependency(Threads)
-insert_dependency_static(Bullet)
-insert_dependency_static(ZLIB)
-insert_dependency(Lua51)
-insert_dependency(OpenAL)
-insert_dependency_static(Ogg)
-insert_dependency_static(SDL2)
-insert_dependency_static(PNG)
-insert_dependency_static(Freetype)
-insert_dependency_static(assimp)
-set(OGRE_STATIC 1)
-insert_dependency_static(OGRE)
 
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(AndroidDummy SHARED Android/app/src/main/cpp/main.cpp)
@@ -88,12 +68,7 @@ endif ()
 
 set(CMAKE_FOLDER "")
 
-if (ANY_NOT_FOUND)
-    return()
-endif ()
-
 add_subdirectory(${CMAKE_SOURCE_DIR}/Source)
-
 
 #Packaging
 include(Packaging)

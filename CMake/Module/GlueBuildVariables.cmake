@@ -14,7 +14,7 @@ if (MINGW)
 elseif (LINUX)
     list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl)
 elseif (ANDROID)
-    list(APPEND SYSTEM_LIBRARIES SDL2::hidapi android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
+    list(APPEND SYSTEM_LIBRARIES android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 endif ()
@@ -26,15 +26,21 @@ endif ()
 
 set(VORBIS_LIBRARIES "vorbisfile;vorbis;vorbisenc")
 
+if (SDL2_FOUND)
+    set(SDL2_LIBRARIES SDL2::SDL2-static)
+    if (ANDROID)
+        list(APPEND SDL2_LIBRARIES SDL2::hidapi)
+    endif ()
+endif ()
+
 set(GLUE_LINK_LIBRARIES
         ${OGRE_LIBRARIES}
-        pugixml
         ${BULLET_LIBRARIES}
         ${PNG_LIBRARY}
         ${VORBIS_LIBRARIES}
-        Ogg::ogg
+        ${OGG_LIBRARIES}
         ${LUA_LIBRARIES}
         ${OPENAL_LIBRARY}
-        SDL2::SDL2-static
+        ${SDL2_LIBRARIES}
         ${SYSTEM_LIBRARIES}
         )
