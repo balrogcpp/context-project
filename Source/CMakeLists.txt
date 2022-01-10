@@ -21,6 +21,11 @@ insert_dependency_static(assimp)
 set(OGRE_STATIC 1)
 insert_dependency_static(OGRE)
 
+if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
+    add_library(AndroidDummy SHARED ${CMAKE_SOURCE_DIR}/Android/app/src/main/cpp/main.cpp)
+    add_dependencies(AndroidDummy ThirdParty)
+endif ()
+
 if (ANY_NOT_FOUND)
     return()
 endif ()
