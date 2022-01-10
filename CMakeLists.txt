@@ -42,7 +42,7 @@ include(Doxygen)
 set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
 
-if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
+if (ANDROID OR IOS)
     add_library(AndroidDummy SHARED Android/app/src/main/cpp/main.cpp)
     add_dependencies(AndroidDummy ThirdParty)
 endif ()

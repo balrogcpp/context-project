@@ -28,13 +28,6 @@ endif ()
 
 set(VORBIS_LIBRARIES "vorbisfile;vorbis;vorbisenc")
 
-if (SDL2_FOUND)
-    set(SDL2_LIBRARIES SDL2::SDL2-static)
-    if (ANDROID)
-        list(APPEND SDL2_LIBRARIES SDL2::hidapi)
-    endif ()
-endif ()
-
 set(GLUE_LINK_LIBRARIES
         ${OGRE_LIBRARIES}
         ${BULLET_LIBRARIES}
@@ -43,6 +36,5 @@ set(GLUE_LINK_LIBRARIES
         ${OGG_LIBRARIES}
         ${LUA_LIBRARIES}
         ${OPENAL_LIBRARY}
-        ${SDL2_LIBRARIES}
         ${SYSTEM_LIBRARIES}
         )

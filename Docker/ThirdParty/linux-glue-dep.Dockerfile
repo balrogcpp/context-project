@@ -9,6 +9,7 @@ RUN apt-get update \
     && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev \
     && apt-get clean
 
+COPY ./Source ./Source
 COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
 COPY ./ThirdParty/Patch ./ThirdParty/Patch
 COPY ./CMakeLists.txt ./CMakeLists.txt

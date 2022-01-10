@@ -32,7 +32,6 @@ externalproject_add(Target_SDL2
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
-                    -DSDL_SHARED_ENABLED_BY_DEFAULT=OFF
                     -DLIBC=ON
                     -DRENDER_METAL=OFF #cause linking error on macos
                     )
@@ -165,9 +164,6 @@ externalproject_add(Target_zlib
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DBUILD_SHARED_LIBS=OFF
-                    TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll lib/libz.dylib
-                    TEST_AFTER_INSTALL true
                     )
 
 externalproject_add(Target_ZZIP
@@ -410,7 +406,8 @@ externalproject_add(Target_OGRE
                     -DOGRE_BUILD_RENDERSYSTEM_VULKAN=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_TINY=OFF
                     -DOGRE_BUILD_COMPONENT_OVERLAY=ON
-                    -DOGRE_BUILD_COMPONENT_BITES=OFF
+                    -DOGRE_BUILD_COMPONENT_BITES=ON
+                    -DOGRE_BITES_STATIC_PLUGINS=ON
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=ON
                     -DOGRE_BUILD_COMPONENT_PAGING=ON
                     -DOGRE_BUILD_COMPONENT_MESHLODGENERATOR=ON

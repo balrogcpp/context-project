@@ -5,6 +5,7 @@ ARG CONTEXT_HOME=/mnt/build
 ARG GIT_HASH=00000000
 WORKDIR ${CONTEXT_HOME}
 
+COPY ./Source ./Source
 COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
 COPY ./ThirdParty/Patch ./ThirdParty/Patch
 COPY ./CMakeLists.txt ./CMakeLists.txt
