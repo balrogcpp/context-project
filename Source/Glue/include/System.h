@@ -7,5 +7,9 @@ namespace Glue {
 
 std::string GetCurrentDirectoryB(const std::string &args);
 std::string GetUserDirectory();
+std::string PathAppend(const std::string &Path, const std::string &Append);
+std::string TrunkPath(std::string &Path);
+bool DirectoryExists(const std::string &Path);
+void CreateDirectory(const std::string &Path);
 
 }

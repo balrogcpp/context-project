@@ -2,6 +2,7 @@
 
 #include "PCHeader.h"
 #include "System.h"
+#include "Filesystem.h"
 
 #if defined(WINDOWS)
 #define WIN32_LEAN_AND_MEAN
@@ -12,6 +13,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #endif
+
+using namespace std;
 
 namespace Glue {
 
@@ -53,6 +56,36 @@ std::string GetUserDirectory() {
 #endif
 
   return "";
+}
+
+std::string TrunkPath(std::string &Path) {
+#if defined(UNIX)
+  return Path.append("/");
+#elif defined(WINDOWS)
+  return Path.append("\\");
+#endif
+}
+
+std::string PathAppend(const std::string &Path, const std::string &Append) {
+  std::string Result = Path;
+
+#if defined(UNIX)
+  Result.append("/");
+  Result.append(Append);
+  return Result;
+#elif defined(WINDOWS)
+  Result.append("\\");
+  Result.append(Append);
+  return Result;
+#endif
+
+  return "";
+}
+
+bool DirectoryExists(const std::string &Path) { return fs::exists(Path); }
+
+void CreateDirectory(const std::string &Path) {
+  if (!fs::exists(Path)) fs::create_directory(Path);
 }
 
 }  // namespace Glue

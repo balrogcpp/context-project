@@ -6,9 +6,9 @@
 #include "DesktopIcon.h"
 #include "Engine.h"
 #include "Exception.h"
-#include "System.h"
 #include "RTSS.h"
 #include "SDL2.hpp"
+#include "System.h"
 #include <iostream>
 
 #ifdef _WIN32
@@ -23,10 +23,6 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 using namespace std;
 
-#ifdef DESKTOP
-
-#endif
-
 namespace Glue {
 
 Application::Application(int argc, char *args[]) {
@@ -35,14 +31,21 @@ Application::Application(int argc, char *args[]) {
 
 #ifdef DESKTOP
     string BinaryDir;
-    if (args) {
+
+     if (args) {
       BinaryDir = GetCurrentDirectoryB(args[0]);
     } else {
       BinaryDir = GetCurrentDirectoryB("");
     }
 
-    LogPtr = make_unique<Log>(BinaryDir + "Runtime.log");
-    ConfigPtr = make_unique<Config>(BinaryDir + "Config.ini");
+    if (BinaryDir.empty()) {
+      BinaryDir = GetUserDirectory();
+      if (!BinaryDir.empty()) BinaryDir = PathAppend(BinaryDir, ".Glue");
+      if (!DirectoryExists(BinaryDir)) CreateDirectory(BinaryDir);
+    }
+
+    LogPtr = make_unique<Log>(PathAppend(BinaryDir, "Runtime.log"));
+    ConfigPtr = make_unique<Config>(PathAppend(BinaryDir, "Config.ini"));
 
     bool Verbose = ConfigPtr->GetBool("verbose", false);
     LogPtr->WriteLogToConsole(Verbose);
