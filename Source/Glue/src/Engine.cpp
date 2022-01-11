@@ -39,13 +39,6 @@ namespace Glue {
 
 Engine::Engine() {
   ReadConfFile();
-
-#ifdef DESKTOP
-  LogPtr = make_unique<Log>();
-  bool Verbose = ConfigPtr->GetBool("verbose", false);
-  LogPtr->WriteLogToConsole(Verbose);
-  LogPtr->WriteLogToFile(Verbose);
-#endif
 }
 
 Engine::~Engine() { SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE); }

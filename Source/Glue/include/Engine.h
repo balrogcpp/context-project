@@ -116,9 +116,6 @@ class Engine final : public Singleton<Engine> {
   std::unique_ptr<Sound> SoundPtr;
   std::unique_ptr<Scene> ScenePtr;
   std::vector<ComponentI*> ComponentList;
-#ifdef DESKTOP
-  std::unique_ptr<Log> LogPtr;
-#endif
 
   /// Global access to base components
   friend Engine& GetEngine();

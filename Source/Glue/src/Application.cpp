@@ -6,6 +6,7 @@
 #include "DesktopIcon.h"
 #include "Engine.h"
 #include "Exception.h"
+#include "System.h"
 #include "RTSS.h"
 #include "SDL2.hpp"
 #include <iostream>
@@ -23,32 +24,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 #ifdef DESKTOP
-static inline std::string GetCurrentDirectory(const std::string &args) {
-#ifdef UNIX
-  if(args.empty()) return "";
 
-  std::string aux(args);
-
-  // Get the last position of '/'
-  int pos = aux.rfind('/');
-
-  // Get the path and the name
-  std::string path = aux.substr(0, pos + 1);
-  std::string name = aux.substr(pos + 1);
-
-  return path.append("/");
-#elif defined(WINDOWS)
-  char buffer[MAX_PATH];
-  GetModuleFileNameA(NULL, buffer, MAX_PATH);
-  std::string::size_type pos = std::string(buffer).find_last_of("\\/");
-
-  std::string path = std::string(buffer).substr(0, pos);
-
-  return path.append("\\");
-#endif
-
-  return "";
-}
 #endif
 
 namespace Glue {
@@ -60,12 +36,18 @@ Application::Application(int argc, char *args[]) {
 #ifdef DESKTOP
     string BinaryDir;
     if (args) {
-      BinaryDir = GetCurrentDirectory(args[0]);
+      BinaryDir = GetCurrentDirectoryB(args[0]);
     } else {
-      BinaryDir = GetCurrentDirectory("");
+      BinaryDir = GetCurrentDirectoryB("");
     }
 
+    LogPtr = make_unique<Log>(BinaryDir + "Runtime.log");
     ConfigPtr = make_unique<Config>(BinaryDir + "Config.ini");
+
+    bool Verbose = ConfigPtr->GetBool("verbose", false);
+    LogPtr->WriteLogToConsole(Verbose);
+    LogPtr->WriteLogToFile(Verbose);
+
 #else
     ConfigPtr = make_unique<Config>("");
 #endif

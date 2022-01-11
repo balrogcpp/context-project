@@ -10,6 +10,7 @@ using namespace std;
 
 namespace Glue {
 
+#ifdef DESKTOP
 const static string FILE_CONTENT =
     "[DEFAULT]\n"
     "verbose=true\n"
@@ -29,6 +30,7 @@ const static string FILE_CONTENT =
     "anisotropy_level=0\n"
     "tex_size=1024\n"
     "shadow_far=400\n";
+#endif
 
 Config::Config(const string &FileName) {
   Reload(FileName);
@@ -43,7 +45,7 @@ void Config::Reload(const string &FileName) {
 
   ifstream ifs(FileName);
   if (!ifs.is_open()) {
-    //File does not exists, create it
+    // File does not exists, create it
     ofstream ofs(FileName);
     if (ofs.is_open()) {
       ofs << FILE_CONTENT;

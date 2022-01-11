@@ -20,7 +20,6 @@ Log::Log(std::string LogFileName) {
 
   logger->createLog(FileName, false, false, true);
   Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_BOREME);
-
   Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
 }
 

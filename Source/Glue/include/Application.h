@@ -31,6 +31,9 @@ class Application final : public WindowObserver, public Singleton<Application> {
 #endif
   std::unique_ptr<Engine> EnginePtr;
   std::unique_ptr<Config> ConfigPtr;
+#ifdef DESKTOP
+  std::unique_ptr<Log> LogPtr;
+#endif
 
   bool Running = false;
   bool Suspend = false;
