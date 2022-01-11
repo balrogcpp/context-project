@@ -5,7 +5,7 @@
 
 #if defined(WINDOWS)
 #define WIN32_LEAN_AND_MEAN
-#include <shlobj_core.h>
+#include <shlobj.h>
 #include <windows.h>
 #elif defined(UNIX)
 #include <pwd.h>
