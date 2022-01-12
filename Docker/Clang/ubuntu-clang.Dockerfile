@@ -37,5 +37,5 @@ RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_
     && rm -rf upx-${UPX_VERSION}-amd64_linux
 
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends gcc g++ \
+    && apt-get -y install --no-install-recommends libgcc-7-dev libstdc++-7-dev \
     && apt-get clean

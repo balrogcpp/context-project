@@ -54,5 +54,5 @@ RUN apt-get update \
 ENV OSXCROSS_HOST=x86_64-apple-darwin20.4
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
-ENV X64_EVAL=${OSXCROSS_ROOT}/bin/x86_64-apple-darwin20.4-osxcross-conf
+ENV X86_64_EVAL=${OSXCROSS_ROOT}/bin/x86_64-apple-darwin20.4-osxcross-conf
 ENV ARM64_EVAL=${OSXCROSS_ROOT}/bin/arm64-apple-darwin20.4-osxcross-conf

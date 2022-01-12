@@ -11,21 +11,13 @@ build:
   stage: build
   script:
     - mkdir Artifacts
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/Tests/linux.Dockerfile -t glue/sample-linux
-    - docker create -ti --name abc glue/sample-linux bash
+    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/Tests/unicross.Dockerfile -t glue/sample-unicross
+    - docker create -ti --name abc glue/sample-unicross bash
     - docker cp abc:/mnt/build/Artifacts/GlueSample_Linux_x86_64_$CI_COMMIT_SHORT_SHA.zip Artifacts
-    - docker rm -f abc
-    - docker rmi glue/sample-linux
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/Tests/windows.Dockerfile -t glue/sample-windows
-    - docker create -ti --name abc glue/sample-windows bash
     - docker cp abc:/mnt/build/Artifacts/GlueSample_Windows_x86_64_$CI_COMMIT_SHORT_SHA.zip Artifacts
-    - docker rm -f abc
-    - docker rmi glue/sample-windows
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/Tests/apple.Dockerfile -t glue/sample-apple
-    - docker create -ti --name abc glue/sample-apple bash
     - docker cp abc:/mnt/build/Artifacts/GlueSample_Darwin_x86_64_$CI_COMMIT_SHORT_SHA.zip Artifacts
     - docker rm -f abc
-    - docker rmi glue/sample-apple
+    - docker rmi glue/sample-unicross
     - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/Tests/android.Dockerfile -t glue/sample-android
     - docker create -ti --name abc glue/sample-android bash
     - docker cp abc:/mnt/build/Artifacts/GlueSample_Android_x86_64_$CI_COMMIT_SHORT_SHA.apk Artifacts

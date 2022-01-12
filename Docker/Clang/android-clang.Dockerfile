@@ -21,6 +21,7 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && rm /tmp/cmake-install.sh
 
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+
 ARG ANDROID_HOME=/opt/android-sdk
 
 RUN apt-get update \
