@@ -51,6 +51,7 @@ externalproject_add(Target_Bullet
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
                     -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
+                    -DDCMAKE_CXX_FLAGS_RELEASE=
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DCMAKE_RELWITHDEBINFO_POSTFIX=
                     -DCMAKE_DEBUG_POSTFIX=
@@ -277,6 +278,7 @@ externalproject_add(Target_assimp
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
                     -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
+                    -DDCMAKE_CXX_FLAGS_RELEASE=
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DINJECT_DEBUG_POSTFIX=OFF
@@ -380,6 +382,7 @@ externalproject_add(Target_OGRE
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
                     -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
+                    -DCMAKE_CXX_FLAGS_RELEASE=
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DOGRE_DEPENDENCIES_DIR=${GLUE_EXTERNAL_INSTALL_LOCATION}
                     -DOGRE_ENABLE_PRECOMPILED_HEADERS=ON
