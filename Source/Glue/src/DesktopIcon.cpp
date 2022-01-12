@@ -1,6 +1,9 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 #include "PCHeader.h"
+
+#ifdef DESKTOP
+
 #include "DesktopIcon.h"
 #include "Filesystem.h"
 #include <regex>
@@ -58,3 +61,5 @@ void DesktopIcon::SaveToFile(const string &icon_name) {
 }
 
 }  // namespace Glue
+
+#endif

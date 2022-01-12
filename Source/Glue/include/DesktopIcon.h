@@ -1,6 +1,11 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 #pragma once
+
+#include "Platform.h"
+
+#ifdef DESKTOP
+
 #include "NoCopy.h"
 #include <map>
 #include <string>
@@ -25,3 +30,5 @@ class DesktopIcon : public NoCopy {
 };
 
 }  // namespace Glue
+
+#endif
