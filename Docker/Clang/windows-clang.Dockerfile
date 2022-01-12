@@ -8,7 +8,7 @@ RUN apt-get update \
     && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
-    && apt-get -y install --no-install-recommends llvm clang lld git zip unzip xz-utils make autoconf file patch upx-ucl nsis \
+    && apt-get -y install --no-install-recommends llvm clang lld git zip unzip xz-utils make autoconf file patch upx-ucl \
     && apt-get clean
 
 ARG CMAKE_VERSION=3.19.8
@@ -25,6 +25,10 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && rm /tmp/cmake-install.sh
 
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends nsis \
+    && apt-get clean
 
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
