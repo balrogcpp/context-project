@@ -165,7 +165,7 @@ externalproject_add(Target_zlib
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DBUILD_SHARED_LIBS=OFF
                     TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    ${CMAKE_COMMAND} -E remove -f lib/libzlib.dll.a bin/libzlib.dll bin/zlib.dll
+                    ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll lib/libz.dylib
                     TEST_AFTER_INSTALL true
                     )
 
