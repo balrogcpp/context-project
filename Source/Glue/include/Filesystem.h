@@ -2,14 +2,18 @@
 
 #pragma once
 #include "Platform.h"
-
-#if defined(LINUX) || defined(WINDOWS)
-#define HAS_FILESYSTEM
+#ifdef __APPLE__
+#include <Availability.h>  // for deployment target to support pre-catalina targets without std::fs
 #endif
-#ifdef HAS_FILESYSTEM
+
+#ifdef DESKTOP
+
+#if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || (defined(__cplusplus) && __cplusplus >= 201703L) || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
 #include <filesystem>
 namespace fs = std::filesystem;
 #else
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
 #endif
+
+#endif // DESKTOP
