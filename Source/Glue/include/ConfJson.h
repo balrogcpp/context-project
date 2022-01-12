@@ -1,8 +1,9 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 #pragma once
-#include "Singleton.h"
 #include "Exception.h"
+#include "Singleton.h"
+#include <fstream>
 #include <nlohmann/json.hpp>
 
 namespace Glue {
