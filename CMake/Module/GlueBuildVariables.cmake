@@ -38,5 +38,3 @@ set(GLUE_LINK_LIBRARIES
         ${OPENAL_LIBRARY}
         ${SYSTEM_LIBRARIES}
         )
-
-message(${GLUE_LINK_LIBRARIES})
