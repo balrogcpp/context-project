@@ -2,9 +2,6 @@
 
 #pragma once
 #include "Platform.h"
-#ifdef __APPLE__
-#include <Availability.h>  // for deployment target to support pre-catalina targets without std::fs
-#endif
 
 #ifdef DESKTOP
 
