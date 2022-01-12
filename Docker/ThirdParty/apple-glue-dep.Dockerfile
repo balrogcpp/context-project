@@ -12,7 +12,7 @@ COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./CMake ./CMake
 
 RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
-    && eval `x86_64-apple-darwin19-osxcross-conf` \
+    && eval `x86_64-apple-darwin20.4-osxcross-conf` \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -G Ninja .. \
     && cmake --build . --target ThirdParty
 

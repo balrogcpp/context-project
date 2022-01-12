@@ -1,17 +1,19 @@
-FROM ubuntu:20.04
+FROM ubuntu:18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /mnt
 
 RUN apt-get update \
     && apt-get install -y wget ca-certificates gnupg2 apt-transport-https \
-    && echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list \
+    && echo 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main' >> /etc/apt/sources.list \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
+    && echo 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu bionic main' >> /etc/apt/sources.list \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
     && apt-get update \
-    && apt-get -y install --no-install-recommends llvm clang lld git zip unzip xz-utils make autoconf file patch upx-ucl \
+    && apt-get -y install --no-install-recommends llvm clang lld libomp-14-dev git zip unzip xz-utils make autoconf file patch \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.19.8
+ARG CMAKE_VERSION=3.22.1
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.10.2
 
@@ -25,6 +27,14 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && rm /tmp/cmake-install.sh
 
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+
+ARG UPX_VERSION=3.96
+
+RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
+    && cd upx-${UPX_VERSION}-amd64_linux \
+    && cp upx /usr/local/bin \
+    && cd .. \
+    && rm -rf upx-${UPX_VERSION}-amd64_linux
 
 ARG OSXCROSS_ROOT=/opt/osxcross
 ARG MACOSX_VERSION=11.3
