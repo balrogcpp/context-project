@@ -22,7 +22,7 @@ externalproject_add(Target_SDL2
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-                    GIT_TAG release-2.0.14
+                    GIT_TAG release-2.0.16
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
