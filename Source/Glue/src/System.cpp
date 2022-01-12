@@ -1,6 +1,9 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 #include "PCHeader.h"
+
+#ifdef DESKTOP
+
 #include "System.h"
 #include "Filesystem.h"
 
@@ -89,3 +92,5 @@ void CreateDirectory(const std::string &Path) {
 }
 
 }  // namespace Glue
+
+#endif

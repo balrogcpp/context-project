@@ -1,6 +1,11 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 #pragma once
+
+#include "Platform.h"
+
+#ifdef DESKTOP
+
 #include <string>
 
 namespace Glue {
@@ -13,3 +18,5 @@ bool DirectoryExists(const std::string &Path);
 void CreateDirectory(const std::string &Path);
 
 }
+
+#endif
