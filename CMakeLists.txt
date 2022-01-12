@@ -24,7 +24,6 @@ list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Module)
 
 include(Make)
 include(Platform)
-include(CppFlags)
 include(GitHash)
 
 # Create artifacts directory

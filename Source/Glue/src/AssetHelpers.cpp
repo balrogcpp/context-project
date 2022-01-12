@@ -91,7 +91,7 @@ void AddLocation(const std::string &Path, const std::string &GroupName) {
 
   if (fs::exists(path)) {
     if (fs::is_directory(path))
-      resource_list.push_back({path, FILE_SYSTEM, GroupName});
+      resource_list.push_back(make_tuple(path, FILE_SYSTEM, GroupName));
     else if (fs::is_regular_file(path) && fs::path(path).extension() == ".zip")
       RGM.addResourceLocation(path, ZIP, GroupName);
   }
@@ -140,7 +140,7 @@ void AddResourceFile(const std::string &Path, const std::string &GroupName, cons
 
   if (fs::exists(path)) {
     if (fs::is_directory(path))
-      resource_list.push_back({path, FILE_SYSTEM, GroupName});
+      resource_list.push_back(make_tuple(path, FILE_SYSTEM, GroupName));
     else if (fs::is_regular_file(path) && fs::path(path).extension() == ".zip")
       RGM.addResourceLocation(path, ZIP, GroupName);
   }
@@ -169,7 +169,7 @@ void AddResourceFile(const std::string &Path, const std::string &GroupName, cons
         getline(ss, path, ',');
         getline(ss, type, ',');
         getline(ss, group, ';');
-        resource_list.push_back({path, type, group});
+        resource_list.push_back(make_tuple(path, type, group));
       }
     }
   }

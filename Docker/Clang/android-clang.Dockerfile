@@ -4,7 +4,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /opt
 
 RUN apt-get update \
-    && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates upx-ucl \
+    && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates \
     && apt-get clean
 
 ARG CMAKE_VERSION=3.19.8
