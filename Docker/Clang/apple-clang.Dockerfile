@@ -27,7 +27,7 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 ARG OSXCROSS_ROOT=/opt/osxcross
-ARG MACOSX_VERSION=10.15
+ARG MACOSX_VERSION=11.3
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y libxml2 lzma-dev libxml2-dev libssl-dev python \
@@ -41,7 +41,8 @@ RUN apt-get update \
     && apt-get -y purge lzma-dev libxml2-dev libssl-dev python \
     && apt-get -y autoremove
 
-ENV OSXCROSS_HOST=x86_64-apple-darwin19
+ENV OSXCROSS_HOST=x86_64-apple-darwin20.4
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
-ENV eval `${OSXCROSS_ROOT}/bin/x86_64-apple-darwin19-osxcross-conf`
+ENV X64_EVAL=${OSXCROSS_ROOT}/bin/x86_64-apple-darwin20.4-osxcross-conf
+ENV ARM64_EVAL=${OSXCROSS_ROOT}/bin/arm64-apple-darwin20.4-osxcross-conf

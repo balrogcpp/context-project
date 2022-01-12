@@ -19,7 +19,7 @@ RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
     && tar Jxfp ${CONTEXT_HOME}/Binaries/Dependencies/Darwin_x86_64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/ThirdParty/External
 
 RUN mkdir build-apple && cd build-apple \
-    && eval `x86_64-apple-darwin19-osxcross-conf` \
+    && eval `x86_64-apple-darwin20.4-osxcross-conf` \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target BuildPackage \
     && rm -rf ../build-apple
