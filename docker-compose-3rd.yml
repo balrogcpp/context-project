@@ -1,32 +1,12 @@
 version: "3.3"
 services:
-  glue-dep-linux:
+  glue-dep-unicross:
     build:
       context: .
-      dockerfile: Docker/ThirdParty/linux-glue-dep.Dockerfile
+      dockerfile: Docker/ThirdParty/unicross.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
-    container_name: linux-glue-dep
-    volumes:
-      - .:/var/artifacts
-    command: cp -R /mnt/build/Artifacts /var/artifacts
-  glue-dep-windows:
-    build:
-      context: .
-      dockerfile: Docker/ThirdParty/windows-glue-dep.Dockerfile
-      args:
-        GIT_HASH: ${GIT_HASH}
-    container_name: windows-glue-dep
-    volumes:
-      - .:/var/artifacts
-    command: cp -R /mnt/build/Artifacts /var/artifacts
-  glue-dep-apple:
-    build:
-      context: .
-      dockerfile: Docker/ThirdParty/apple-glue-dep.Dockerfile
-      args:
-        GIT_HASH: ${GIT_HASH}
-    container_name: apple-glue-dep
+    container_name: unicross-3rd
     volumes:
       - .:/var/artifacts
     command: cp -R /mnt/build/Artifacts /var/artifacts
