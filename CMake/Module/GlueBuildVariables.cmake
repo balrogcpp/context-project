@@ -12,7 +12,7 @@ set(GLUE_INCLUDE_DIRS
 set(GLUE_LINK_DIRS ${GLUE_EXTERNAL_INSTALL_LOCATION}/lib ${GLUE_EXTERNAL_INSTALL_LOCATION}/lib/OGRE)
 
 if (MINGW)
-    list(APPEND SYSTEM_LIBRARIES zlibstatic imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
+    list(APPEND SYSTEM_LIBRARIES imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (LINUX)
     list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl)
 elseif (ANDROID)
@@ -38,3 +38,5 @@ set(GLUE_LINK_LIBRARIES
         ${OPENAL_LIBRARY}
         ${SYSTEM_LIBRARIES}
         )
+
+message(${GLUE_LINK_LIBRARIES})
