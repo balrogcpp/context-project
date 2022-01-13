@@ -12,10 +12,8 @@ add_custom_target(BuildAssets
         )
 
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_Lua)
-list(APPEND GLUE_DEPENDENCY_TARGETS Target_sol)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_Vorbis)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_OGRE)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_Bullet)
-list(APPEND GLUE_DEPENDENCY_TARGETS Target_GoogleTest)
 
 add_custom_target(ThirdParty DEPENDS ${GLUE_DEPENDENCY_TARGETS})
