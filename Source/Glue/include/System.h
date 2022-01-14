@@ -10,6 +10,7 @@
 
 namespace Glue {
 
+void SetCurrentDirectory(const std::string &Path);
 std::string GetCurrentDirectoryB(const std::string &args);
 std::string GetUserDirectory();
 std::string PathAppend(const std::string &Path, const std::string &Append);

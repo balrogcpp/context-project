@@ -4,6 +4,7 @@
 #include "AssetHelpers.h"
 #include "Exception.h"
 #include "Filesystem.h"
+#include "System.h"
 
 using namespace std;
 using namespace Ogre;
@@ -18,6 +19,8 @@ static inline string FindPath(string Path, int Depth = 2) {
 #endif
 
   string result = Path;
+
+  fs::current_path(GetCurrentDirectoryB(""));
 
   for (int i = 0; i < Depth; i++) {
     if (fs::exists(result))

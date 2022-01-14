@@ -13,7 +13,7 @@ if (CMAKE_STRIP AND NOT CMAKE_CROSSCOMPILING)
     )
 endif ()
 
-if (SELF_PACKER_FOR_EXECUTABLE AND NOT APPLE)
+if (SELF_PACKER_FOR_EXECUTABLE)
     add_custom_command(
             TARGET ${TARGET_NAME}
             POST_BUILD

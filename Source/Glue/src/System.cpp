@@ -4,8 +4,8 @@
 
 #ifdef DESKTOP
 
-#include "System.h"
 #include "Filesystem.h"
+#include "System.h"
 
 #if defined(WINDOWS)
 #define WIN32_LEAN_AND_MEAN
@@ -21,7 +21,15 @@ using namespace std;
 
 namespace Glue {
 
+static std::string CurrentBinDirectory;
+
+void SetCurrentDirectory(const std::string &Path) {
+  CurrentBinDirectory = Path;
+}
+
 std::string GetCurrentDirectoryB(const std::string &args) {
+  if (!CurrentBinDirectory.empty()) return CurrentBinDirectory;
+
 #if defined(UNIX)
   if (args.empty()) return "";
 
@@ -34,7 +42,9 @@ std::string GetCurrentDirectoryB(const std::string &args) {
   std::string path = aux.substr(0, pos + 1);
   std::string name = aux.substr(pos + 1);
 
-  return path.append("/");
+  CurrentBinDirectory = path.append("/");
+
+  return CurrentBinDirectory;
 #elif defined(WINDOWS)
   char buffer[MAX_PATH];
   GetModuleFileNameA(NULL, buffer, MAX_PATH);
@@ -42,7 +52,9 @@ std::string GetCurrentDirectoryB(const std::string &args) {
 
   std::string path = std::string(buffer).substr(0, pos);
 
-  return path.append("\\");
+  CurrentBinDirectory = path.append("\\");
+
+  return CurrentBinDirectory;
 #endif
 
   return "";
