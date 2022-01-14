@@ -28,11 +28,11 @@
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
 out vec4 FragData[2];
-out vec4 FragColor;
+//out vec4 FragColor;
 #else
 #define in varying
 #define out varying
-#define FragData gl_FlagData
+#define FragData gl_FragData
 #define FragColor gl_FragColor
 #endif
 #ifdef USE_TEX_LOD
@@ -67,7 +67,7 @@ out vec4 FragColor;
 #else
 #define in varying
 #define out varying
-#define FragData gl_FlagData
+#define FragData gl_FragData
 #define FragColor gl_FragColor
 #endif
 #endif
