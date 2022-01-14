@@ -1,13 +1,15 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 #ifndef GL_ES
-#define VERSION 120
-#version VERSION
+#version 330 core
+#define VERSION 330
 #else
+#version 100
 #define VERSION 100
-#version VERSION
 #endif
+
 #include "header.frag"
+
 #include "srgb.glsl"
 #include "fog.glsl"
 
@@ -25,10 +27,10 @@ void main()
     vec3 color = SRGBtoLINEAR(textureCube(cubemap, TexCoords).rgb);
 
 #ifndef GL_ES
-    gl_FragData[0] = vec4(color, 1.0);
-    gl_FragData[1] = vec4(1.0, 0.0, 0.0, 1.0);
+    FragData[0] = vec4(color, 1.0);
+    FragData[1] = vec4(1.0, 0.0, 0.0, 1.0);
 #else
     color = ApplyFog(color, uFogParams, uFogColour, vDepth);
-    gl_FragColor = vec4(LINEARtoSRGB(color, 1.0), 1.0);
+    FragColor = vec4(LINEARtoSRGB(color, 1.0), 1.0);
 #endif
 }
