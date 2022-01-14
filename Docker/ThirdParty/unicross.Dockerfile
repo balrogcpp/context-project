@@ -38,7 +38,7 @@ RUN cd ${CONTEXT_HOME}/ThirdParty/External/Windows_x86_64_Clang_Mingw_Release \
     && mv Windows_x86_64_Clang_Mingw_Release.tar.xz ${CONTEXT_HOME}/Artifacts
 
 RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
-    && eval `x86_64-apple-darwin20.4-osxcross-conf` \
+    && eval $X86_64_EVAL \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -G Ninja .. \
     && cmake --build . --target ThirdParty
 

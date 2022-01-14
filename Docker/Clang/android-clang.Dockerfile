@@ -1,7 +1,6 @@
 FROM ubuntu:18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-WORKDIR /opt
 
 RUN apt-get update \
     && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates \
@@ -23,6 +22,8 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 ARG ANDROID_HOME=/opt/android-sdk
+
+WORKDIR /opt
 
 RUN apt-get update \
     && apt-get -y install --no-install-recommends openjdk-8-jdk \

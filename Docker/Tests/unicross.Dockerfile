@@ -40,7 +40,7 @@ RUN mkdir build-windows && cd build-windows \
     && rm -rf ../build-windows
 
 RUN mkdir build-apple && cd build-apple \
-    && eval `x86_64-apple-darwin20.4-osxcross-conf` \
+    && eval $X86_64_EVAL \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
     && cmake --build . --target BuildPackage \
     && rm -rf ../build-apple

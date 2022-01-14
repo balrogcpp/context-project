@@ -1,19 +1,12 @@
 FROM ubuntu:18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-WORKDIR /mnt
 
 RUN apt-get update \
-    && apt-get install -y wget ca-certificates gnupg2 apt-transport-https \
-    && echo 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main' >> /etc/apt/sources.list \
-    && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
-    && echo 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu bionic main' >> /etc/apt/sources.list \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
-    && apt-get update \
-    && apt-get -y install --no-install-recommends llvm clang lld libomp-14-dev git zip unzip xz-utils make autoconf file patch \
+    && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.22.1
+ARG CMAKE_VERSION=3.19.8
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.10.2
 
@@ -27,6 +20,18 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && rm /tmp/cmake-install.sh
 
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+
+RUN apt-get update \
+    && apt-get install -y wget ca-certificates gnupg2 apt-transport-https \
+    && echo 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main' >> /etc/apt/sources.list \
+    && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
+    && echo 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu bionic main' >> /etc/apt/sources.list \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
+    && apt-get update \
+    && apt-get -y install --no-install-recommends llvm clang lld libomp-14-dev make autoconf file patch \
+    && apt-get clean
+
+WORKDIR /mnt
 
 ARG UPX_VERSION=3.96
 
@@ -169,5 +174,5 @@ RUN apt-get update \
 ENV OSXCROSS_HOST=x86_64-apple-darwin20.4
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
-ENV X86_64_EVAL=${OSXCROSS_ROOT}/bin/x86_64-apple-darwin20.4-osxcross-conf
-ENV ARM64_EVAL=${OSXCROSS_ROOT}/bin/arm64-apple-darwin20.4-osxcross-conf
+ENV X86_64_EVAL=`x86_64-apple-darwin20.4-osxcross-conf`
+ENV ARM64_EVAL=`arm64-apple-darwin20.4-osxcross-conf`
