@@ -633,6 +633,6 @@ void main()
         discard;
     }
 #endif //SHADOWCASTER_ALPHA
-    gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
+    FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
 #endif //SHADOWCASTER
 }
