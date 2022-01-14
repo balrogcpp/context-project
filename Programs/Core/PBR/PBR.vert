@@ -4,12 +4,13 @@
 // Copyright (c) 2016-2017 Mohamad Moneimne and Contributors
 
 #ifndef GL_ES
-#define VERSION 120
-#version VERSION
+#version 330 core
+#define VERSION 330
 #else
+#version 100
 #define VERSION 100
-#version VERSION
 #endif
+
 #include "header.vert"
 
 #ifdef SHADOWCASTER_ALPHA

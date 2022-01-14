@@ -17,12 +17,13 @@
 //     https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf
 
 #ifndef GL_ES
-#define VERSION 120
-#version VERSION
+#version 330 core
+#define VERSION 330
 #else
+#version 100
 #define VERSION 100
-#version VERSION
 #endif
+
 #include "header.frag"
 
 #ifdef SHADOWCASTER_ALPHA
@@ -459,7 +460,7 @@ void main()
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w) * 0.5 + 0.5;
     vec2 velocity = (0.0166667 / uFrameTime) * vec2(a - b);
 
-    gl_FragData[1] = vec4(clippedDistance, velocity, 1.0);
+    FragData[1] = vec4(clippedDistance, velocity, 1.0);
 #endif
 
 #ifdef HAS_ALPHA
@@ -620,10 +621,10 @@ void main()
 #endif
 
 #ifndef GL_ES
-    gl_FragData[0] = vec4(total_colour, alpha);
+    FragData[0] = vec4(total_colour, alpha);
 #else
     total_colour = ApplyFog(total_colour, uFogParams, uFogColour, vDepth);
-    gl_FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), alpha);
+    FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), alpha);
 #endif
 
 #else //SHADOWCASTER
