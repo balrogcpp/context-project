@@ -30,6 +30,14 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
 
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
+ARG UPX_VERSION=3.96
+
+RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
+    && cd upx-${UPX_VERSION}-amd64_linux \
+    && cp upx /usr/local/bin \
+    && cd .. \
+    && rm -rf upx-${UPX_VERSION}-amd64_linux
+
 #ARG BINUTILS_VERSION=2.37
 #ARG GCC_VERSION=10.3.0
 #ARG GCC_SHORT_VERSION=11.2
@@ -159,11 +167,3 @@ RUN apt-get update \
     && rm -rf ${PYTHON3_HOME} \
     && apt-get install --no-install-recommends -y libgcc-9-dev libstdc++-9-dev \
     && apt-get clean
-
-ARG UPX_VERSION=3.96
-
-RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
-    && cd upx-${UPX_VERSION}-amd64_linux \
-    && cp upx /usr/local/bin \
-    && cd .. \
-    && rm -rf upx-${UPX_VERSION}-amd64_linux
