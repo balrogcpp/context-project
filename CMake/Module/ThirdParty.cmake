@@ -18,6 +18,7 @@ if (ANDROID)
     set(GLUE_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
 
+set(SDL2_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_SDL2)
 externalproject_add(Target_SDL2
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
@@ -25,6 +26,8 @@ externalproject_add(Target_SDL2
                     GIT_TAG release-2.0.14
                     GIT_SHALLOW true
                     GIT_PROGRESS false
+                    UPDATE_COMMAND ${SDL2_CHDIR} ${GIT_EXECUTABLE} reset --hard
+                    PATCH_COMMAND ${SDL2_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/sdl2-2.0.20.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
@@ -33,7 +36,12 @@ externalproject_add(Target_SDL2
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DLIBC=ON
+                    -DSDL_LIBC=ON
                     -DRENDER_METAL=OFF #cause linking error on macos
+                    -DSDL_RENDER_METAL=OFF #cause linking error on macos
+                    -DHIDAPI=OFF
+                    -DSDL_HIDAPI=OFF
+                    -DSDL_HIDAPI_JOYSTICK=OFF
                     )
 
 externalproject_add(Target_Bullet
