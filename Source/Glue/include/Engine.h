@@ -75,6 +75,9 @@ class Engine final : public Singleton<Engine> {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
   void InitOgreRenderSystemGLES2();
 #endif
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL
+  void InitOgreRenderSystemGL();
+#endif
   void InitOgrePlugins();
   void CreateSDLWindow();
   void CreateOgreRenderWindow();
