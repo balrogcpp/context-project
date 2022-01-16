@@ -13,10 +13,10 @@ services:
   glue-dep-android:
     build:
       context: .
-      dockerfile: Docker/ThirdParty/android-glue-dep.Dockerfile
+      dockerfile: Docker/ThirdParty/android.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
-    container_name: android-glue-dep
+    container_name: android-3rd
     volumes:
       - .:/var/artifacts
     command: cp -R /mnt/build/Artifacts /var/artifacts
