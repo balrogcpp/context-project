@@ -7,6 +7,9 @@ namespace Glue {
 
 class ComponentI {
  public:
+  ComponentI();
+  virtual ~ComponentI();
+
   virtual void OnPause() { Paused = true; }
   virtual void OnResume() { Paused = false; }
   virtual void OnUpdate(float PassedTime) {}

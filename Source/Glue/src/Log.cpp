@@ -23,9 +23,7 @@ Log::Log(std::string LogFileName) {
   Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
 }
 
-Log::~Log() {
-  Ogre::LogManager::getSingleton().getDefaultLog()->removeListener(this);
-}
+Log::~Log() { Ogre::LogManager::getSingleton().getDefaultLog()->removeListener(this); }
 
 void Log::WriteLogToConsole(bool enable) { EnableWriteToConsole = enable; }
 
@@ -41,6 +39,6 @@ void Log::Message(const Ogre::String &message, Ogre::LogMessageLevel lml, bool m
   OgreLogManager.logMessage(message, lml, maskDebug);
 }
 
-#endif // DESKTOP
+#endif  // DESKTOP
 
 }  // namespace Glue

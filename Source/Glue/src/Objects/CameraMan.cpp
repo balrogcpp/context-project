@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
-#include "Objects/CameraMan.h"
 #include "PCHeader.h"
+#include "Objects/CameraMan.h"
 #include <BulletDynamics/Dynamics/btRigidBody.h>
 
 namespace Glue {

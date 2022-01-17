@@ -1,26 +1,26 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
-#pragma once
+#include "PCHeader.h"
 #include "AppStateImpl.h"
 
 namespace Glue {
 
 void AppStateImpl::SetUp() {
-  // TODO fill this
+  // Add your code
 }
 
 void AppStateImpl::Cleanup() {
-  // TODO fill this
+  // Add your code
 }
 void AppStateImpl::Pause() {
-  // TODO fill this
+  // Add your code
 }
 
 void AppStateImpl::Resume() {
-  // TODO fill this
+  // Add your code
 }
 void AppStateImpl::Update(float TimePassed) {
-  // TODO fill this
+  // Add your code
 }
 
 }  // namespace Glue

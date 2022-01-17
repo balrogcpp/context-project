@@ -1,25 +1,26 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
+#include "PCHeader.h"
 #include "Components/ComponentImpl.h"
 
 namespace Glue {
 
 void ComponentImpl::OnPause() {
   Paused = true;
-  // TODO fill this
+  // Add your code
 }
 
 void ComponentImpl::OnResume() {
   Paused = false;
-  // TODO fill this
+  // Add your code
 }
 
 void ComponentImpl::OnUpdate(float TimePassed) {
-  // TODO fill this
+  // Add your code
 }
 
 void ComponentImpl::OnClean() {
-  // TODO fill this
+  // Add your code
 }
 
 }  // namespace Glue
