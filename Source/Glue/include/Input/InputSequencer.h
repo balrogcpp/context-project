@@ -31,7 +31,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   void RegObserver(InputObserver *p);
 
   /// Un-Register physical input listener
-  void UnregObserver(InputObserver *p);
+  void UnRegObserver(InputObserver *p);
 
   /// Register SDLWindowPtr input listener
   void RegWinObserver(WindowObserver *p);

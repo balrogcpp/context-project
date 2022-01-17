@@ -35,7 +35,7 @@ InputSequencer::~InputSequencer() {}
 
 void InputSequencer::RegObserver(InputObserver *p) { io_listeners.insert(p); }
 
-void InputSequencer::UnregObserver(InputObserver *p) { io_listeners.erase(p); }
+void InputSequencer::UnRegObserver(InputObserver *p) { io_listeners.erase(p); }
 
 void InputSequencer::RegWinObserver(WindowObserver *p) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID

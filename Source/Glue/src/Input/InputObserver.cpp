@@ -12,14 +12,4 @@ InputObserver::InputObserver() {}
 
 InputObserver::~InputObserver() {}
 
-void InputObserver::RegMyself() {
-  static auto &ref = InputSequencer::GetInstance();
-  ref.RegObserver(this);
-}
-
-void InputObserver::UnRegMyself() {
-  static auto &ref = InputSequencer::GetInstance();
-  ref.UnregObserver(this);
-}
-
 }  // namespace Glue

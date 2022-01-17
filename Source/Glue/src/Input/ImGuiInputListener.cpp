@@ -82,7 +82,7 @@ ImGuiInputListener::ImGuiInputListener() {
   io.KeyMap[ImGuiKey_Z] = 'z';
 }
 
-ImGuiInputListener::~ImGuiInputListener() { InputSequencer::GetInstance().UnregObserver(this); }
+ImGuiInputListener::~ImGuiInputListener() { InputSequencer::GetInstance().UnRegObserver(this); }
 
 void ImGuiInputListener::OnKeyDown(SDL_Keycode sym) {
   static auto &io = ImGui::GetIO();

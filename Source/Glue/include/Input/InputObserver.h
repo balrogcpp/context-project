@@ -15,11 +15,6 @@ class InputObserver {
   InputObserver();
   virtual ~InputObserver();
 
-  /// Register Observer
-  void RegMyself();
-  /// UnRegister Observer
-  void UnRegMyself();
-
   /// Callback on keyboard key down
   virtual void OnKeyDown(SDL_Keycode sym) {}
   /// Callback on keyboard key up

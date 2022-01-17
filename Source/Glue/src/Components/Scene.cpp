@@ -75,7 +75,7 @@ void Scene::AddCamera(Camera *OgreCameraPtr) {}
 
 void Scene::AddSinbad(Camera *OgreCameraPtr) {
   Sinbad = make_unique<SinbadCharacterController>(OgreCameraPtr);
-  Sinbad->RegMyself();
+  InputSequencer::GetInstance().RegObserver(Sinbad.get());
 }
 
 void Scene::AddForests(PagedGeometry *PGPtr, const std::string &MaterialName) {
@@ -102,7 +102,7 @@ void Scene::OnUpdate(float PassedTime) {
 }
 
 void Scene::OnClean() {
-  Sinbad->UnRegMyself();
+  InputSequencer::GetInstance().UnRegObserver(Sinbad.get());
   Sinbad.reset();
   PagedGeometryList.clear();
   if (OgreTerrainList) OgreTerrainList->removeAllTerrains();

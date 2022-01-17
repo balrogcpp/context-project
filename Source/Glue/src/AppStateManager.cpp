@@ -2,6 +2,7 @@
 
 #include "PCHeader.h"
 #include "AppStateManager.h"
+#include "Input/InputSequencer.h"
 
 using namespace std;
 
@@ -13,12 +14,14 @@ AppStateManager::~AppStateManager() {}
 
 void AppStateManager::InitCurState() {
   CurrentState->SetUp();
+  InputSequencer::GetInstance().RegObserver(CurrentState.get());
   Ogre::Root::getSingleton().addFrameListener(CurrentState.get());
 }
 
 void AppStateManager::InitNextState() {
   if (CurrentState) {
     CurrentState->Cleanup();
+    InputSequencer::GetInstance().UnRegObserver(CurrentState.get());
     Ogre::Root::getSingleton().removeFrameListener(CurrentState.get());
   }
 
@@ -26,12 +29,14 @@ void AppStateManager::InitNextState() {
 
   if (CurrentState) {
     CurrentState->SetUp();
+    InputSequencer::GetInstance().RegObserver(CurrentState.get());
     Ogre::Root::getSingleton().addFrameListener(CurrentState.get());
   }
 }
 
 void AppStateManager::SetInitialState(unique_ptr<AppState> &&InitialState) {
   CurrentState = move(InitialState);
+  InputSequencer::GetInstance().RegObserver(CurrentState.get());
   Ogre::Root::getSingleton().addFrameListener(CurrentState.get());
 }
 

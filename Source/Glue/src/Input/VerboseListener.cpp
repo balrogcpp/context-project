@@ -2,15 +2,16 @@
 
 #include "PCHeader.h"
 #include "Input/VerboseListener.h"
+#include "Input/InputSequencer.h"
 #include <cstdio>
 
 using namespace std;
 
 namespace Glue {
 
-VerboseListener::VerboseListener() { RegMyself(); }
+VerboseListener::VerboseListener() { InputSequencer::GetInstance().RegObserver(this); }
 
-VerboseListener::~VerboseListener() { UnRegMyself(); }
+VerboseListener::~VerboseListener() { InputSequencer::GetInstance().UnRegObserver(this); }
 
 void VerboseListener::SetVerbose(bool verbose) { verbose = verbose; }
 

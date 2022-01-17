@@ -1,6 +1,9 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 #include "PCHeader.h"
+
+#ifdef DESKTOP
+
 #include "AssetHelpers.h"
 #include "Exception.h"
 #include "Filesystem.h"
@@ -10,8 +13,6 @@ using namespace std;
 using namespace Ogre;
 
 namespace Glue {
-
-#ifdef DESKTOP
 
 static inline string FindPath(string Path, int Depth = 2) {
 #ifdef DEBUG
@@ -208,6 +209,6 @@ void AddResourceFile(const std::string &Path, const std::string &GroupName, cons
   }
 }
 
-#endif  // DESKTOP
-
 }  // namespace Glue
+
+#endif  // DESKTOP
