@@ -100,10 +100,12 @@ void Engine::InitSDLSubsystems() {
 
 void Engine::InitDefaultRenderSystem() {
 #ifdef DESKTOP
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+#if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
   InitOgreRenderSystemGL3();
-#else
+#elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
   InitOgreRenderSystemGLES2();
+#elif defined(OGRE_BUILD_RENDERSYSTEM_GL)
+  InitOgreRenderSystemGL();
 #endif
 #else
   InitOgreRenderSystemGLES2();
@@ -150,7 +152,6 @@ void Engine::InitOgrePlugins() {
 
 void Engine::CreateSDLWindow() {
 #ifdef DESKTOP
-
   if (WindowWidth == ScreenWidth && WindowHeight == ScreenHeight) {
     SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
   }
@@ -164,9 +165,7 @@ void Engine::CreateSDLWindow() {
 
   WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED_DISPLAY(0);
   SDLWindowPtr = SDL_CreateWindow(WindowCaption.c_str(), WindowPositionFlag, WindowPositionFlag, WindowWidth, WindowHeight, SDLWindowFlags);
-
 #elif defined(ANDROID)
-
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -183,7 +182,6 @@ void Engine::CreateSDLWindow() {
 
   SDLWindowPtr = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ScreenWidth, ScreenHeight, SDLWindowFlags);
   SDLGLContextPtr = SDL_GL_CreateContext(SDLWindowPtr);
-
 #endif
 }
 
