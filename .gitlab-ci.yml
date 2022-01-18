@@ -10,13 +10,11 @@ variables:
 build:
   stage: build
   script:
-    - mkdir Artifacts
-    - GIT_HASH=${GIT_SHA1} docker-compose up
+    - GIT_HASH=$CI_COMMIT_SHORT_SHA docker-compose up
     - docker-compose down --volumes
-    - cp -R Artifacts/* .
   artifacts:
     paths:
-      - GlueSample_Linux_x86_64_$CI_COMMIT_SHORT_SHA.zip
-      - GlueSample_Windows_x86_64_$CI_COMMIT_SHORT_SHA.zip
-      - GlueSample_Darwin_x86_64_$CI_COMMIT_SHORT_SHA.zip
-      - GlueSample_Android_x86_64_$CI_COMMIT_SHORT_SHA.apk
+      - Artifacts/GlueSample_Linux_x86_64_$CI_COMMIT_SHORT_SHA.zip
+      - Artifacts/GlueSample_Windows_x86_64_$CI_COMMIT_SHORT_SHA.zip
+      - Artifacts/GlueSample_Darwin_x86_64_$CI_COMMIT_SHORT_SHA.zip
+      - Artifacts/GlueSample_Android_x86_64_$CI_COMMIT_SHORT_SHA.apk
