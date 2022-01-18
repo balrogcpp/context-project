@@ -15,8 +15,8 @@ before_script:
 build:
   stage: build
   script:
-    - docker-compose -f docker-compose-3rd.yml up
-    - docker-compose -f docker-compose-3rd.yml down --volumes
+    - GIT_HASH=${GIT_SHA1} docker-compose up
+    - docker-compose down --volumes
   artifacts:
     paths:
       - Artifacts/GlueSample_Linux_x86_64_$CI_COMMIT_SHORT_SHA.zip
