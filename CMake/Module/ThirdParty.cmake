@@ -23,7 +23,7 @@ externalproject_add(Target_SDL2
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-                    GIT_TAG release-2.0.14
+                    GIT_TAG release-2.0.16
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${SDL2_CHDIR} ${GIT_EXECUTABLE} reset --hard
@@ -35,6 +35,7 @@ externalproject_add(Target_SDL2
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
+                    -DSDL_SHARED_ENABLED_BY_DEFAULT=ON # ON Required for nevest OGRE
                     -DLIBC=ON
                     -DSDL_LIBC=ON
                     -DRENDER_METAL=OFF #cause linking error on macos
@@ -77,8 +78,6 @@ externalproject_add(Target_Bullet
                     -DBUILD_SHARED_LIBS=OFF
                     -DUSE_SOFT_BODY_MULTI_BODY_DYNAMICS_WORLD=OFF
                     -DINSTALL_LIBS=ON
-                    -DUSE_MSVC_AVX=OFF
-                    -DUSE_MSVC_FAST_FLOATINGPOINT=ON
                     -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON
                     )
 
