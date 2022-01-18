@@ -17,7 +17,7 @@
 
 //#define USE_TEX_LOD
 
-#if VERSION != 120
+#if VERSION == 330 || VERSION == 400 || VERSION == 400 || VERSION == 410 || VERSION == 420 || VERSION == 430 || VERSION == 440 || VERSION == 450 || VERSION == 460
 #define varying in
 #define texture1D texture
 #define texture2D texture
@@ -52,7 +52,7 @@ precision highp float;
 precision lowp int;
 precision lowp sampler2D;
 precision lowp samplerCube;
-#if VERSION != 100
+#if VERSION == 300 || VERSION == 310 || VERSION == 320
 #define varying in
 #define texture1D texture
 #define texture2D texture
