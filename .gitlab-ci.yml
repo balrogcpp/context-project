@@ -12,31 +12,31 @@ build:
   script:
     - mkdir Artifacts
     - echo "LINUX START"
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/Tests/linux-test.Dockerfile -t glue/sample-unicross
-    - docker create -ti --name abc glue/sample-unicross bash
+    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/Tests/linux-test.Dockerfile -t glue/test-linux
+    - docker create -ti --name abc glue/test-linux bash
     - docker cp abc:/mnt/build/Artifacts/GlueSample_Linux_x86_64_$CI_COMMIT_SHORT_SHA.zip Artifacts
     - docker rm -f abc
-    - docker rmi glue/sample-unicross
+    - docker rmi glue/test-linux
     - echo "LINUX END"
     - echo "WIN32 START"
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f windows-test.Dockerfile -t glue/sample-unicross
-    - docker create -ti --name abc glue/sample-unicross bash
+    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f windows-test.Dockerfile -t glue/test-windows
+    - docker create -ti --name abc glue/test-windows bash
     - docker cp abc:/mnt/build/Artifacts/GlueSample_Windows_x86_64_$CI_COMMIT_SHORT_SHA.zip Artifacts
     - docker rm -f abc
-    - docker rmi glue/sample-unicross
+    - docker rmi glue/test-windows
     - echo "WIN32 END"
     - echo "DARWIN START"
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f darwin-test.Dockerfile -t glue/sample-unicross
-    - docker create -ti --name abc glue/sample-unicross bash
+    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f darwin-test.Dockerfile -t glue/test-apple
+    - docker create -ti --name abc glue/test-apple bash
     - docker cp abc:/mnt/build/Artifacts/GlueSample_Darwin_x86_64_$CI_COMMIT_SHORT_SHA.zip Artifacts
     - docker rm -f abc
-    - docker rmi glue/sample-unicross
+    - docker rmi glue/test-apple
     - echo "DARWIN END"
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/Tests/android.Dockerfile -t glue/sample-android
-    - docker create -ti --name abc glue/sample-android bash
+    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD` . -f Docker/Tests/android.Dockerfile -t glue/test-android
+    - docker create -ti --name abc glue/test-android bash
     - docker cp abc:/mnt/build/Artifacts/GlueSample_Android_x86_64_$CI_COMMIT_SHORT_SHA.apk Artifacts
     - docker rm -f abc
-    - docker rmi glue/sample-android
+    - docker rmi glue/test-android
   artifacts:
     paths:
       - Artifacts/GlueSample_Linux_x86_64_$CI_COMMIT_SHORT_SHA.zip
