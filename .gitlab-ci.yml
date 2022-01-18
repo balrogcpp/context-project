@@ -12,7 +12,6 @@ build:
   script:
     - mkdir Artifacts
     - GIT_HASH=${GIT_SHA1} docker-compose up
-    - docker-compose down --volumes
   artifacts:
     paths:
       - Artifacts/GlueSample_Linux_x86_64_$CI_COMMIT_SHORT_SHA.zip
