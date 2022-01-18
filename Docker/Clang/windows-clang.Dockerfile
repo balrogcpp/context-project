@@ -41,10 +41,6 @@ RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_
     && cd .. \
     && rm -rf upx-${UPX_VERSION}-amd64_linux
 
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends libgcc-7-dev libstdc++-7-dev \
-    && apt-get clean
-
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
 ARG BINUTILS_VERSION=2.37
@@ -155,24 +151,3 @@ RUN apt-get update \
     && update-alternatives --install /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 11200 \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
-
-ARG OSXCROSS_ROOT=/opt/osxcross
-ARG MACOS_SDK_VERSION=11.3
-
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y libxml2 lzma-dev libxml2-dev libssl-dev python \
-    && apt-get clean \
-    && git clone --depth 1 https://github.com/tpoechtrager/osxcross.git \
-    && wget https://github.com/balrogcpp/MacOSXsdk/raw/master/MacOSX${MACOS_SDK_VERSION}.sdk.tar.xz -O ./osxcross/tarballs/MacOSX${MACOS_SDK_VERSION}.sdk.tar.xz \
-    && cd osxcross \
-    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} ./build.sh \
-    && cd .. \
-    && rm -rf osxcross \
-    && apt-get -y purge lzma-dev libxml2-dev libssl-dev python \
-    && apt-get -y autoremove
-
-ENV OSXCROSS_HOST=x86_64-apple-darwin20.4
-ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
-ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
-ENV X86_64_EVAL=`x86_64-apple-darwin20.4-osxcross-conf`
-ENV ARM64_EVAL=`arm64-apple-darwin20.4-osxcross-conf`
