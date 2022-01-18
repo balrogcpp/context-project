@@ -10,33 +10,33 @@ services:
     volumes:
       - .:/var/artifacts
     command: cp -R /mnt/build/Artifacts /var/artifacts
-  sample-windows:
-    build:
-      context: .
-      dockerfile: Docker/Tests/windows-test.Dockerfile
-      args:
-        GIT_HASH: ${GIT_HASH}
-    container_name: test-windows
-    volumes:
-      - .:/var/artifacts
-    command: cp -R /mnt/build/Artifacts /var/artifacts
-  sample-apple:
-    build:
-      context: .
-      dockerfile: Docker/Tests/darwin-test.Dockerfile
-      args:
-        GIT_HASH: ${GIT_HASH}
-    container_name: test-apple
-    volumes:
-      - .:/var/artifacts
-    command: cp -R /mnt/build/Artifacts /var/artifacts
-  sample-android:
-    build:
-      context: .
-      dockerfile: Docker/Tests/android-test.Dockerfile
-      args:
-        GIT_HASH: ${GIT_HASH}
-    container_name: test-android
-    volumes:
-      - .:/var/artifacts
-    command: cp -R /mnt/build/Artifacts /var/artifacts
+#  sample-windows:
+#    build:
+#      context: .
+#      dockerfile: Docker/Tests/windows-test.Dockerfile
+#      args:
+#        GIT_HASH: ${GIT_HASH}
+#    container_name: test-windows
+#    volumes:
+#      - .:/var/artifacts
+#    command: cp -R /mnt/build/Artifacts /var/artifacts
+#  sample-apple:
+#    build:
+#      context: .
+#      dockerfile: Docker/Tests/darwin-test.Dockerfile
+#      args:
+#        GIT_HASH: ${GIT_HASH}
+#    container_name: test-apple
+#    volumes:
+#      - .:/var/artifacts
+#    command: cp -R /mnt/build/Artifacts /var/artifacts
+#  sample-android:
+#    build:
+#      context: .
+#      dockerfile: Docker/Tests/android-test.Dockerfile
+#      args:
+#        GIT_HASH: ${GIT_HASH}
+#    container_name: test-android
+#    volumes:
+#      - .:/var/artifacts
+#    command: cp -R /mnt/build/Artifacts /var/artifacts
