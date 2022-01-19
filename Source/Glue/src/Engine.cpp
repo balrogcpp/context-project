@@ -127,7 +127,7 @@ void Engine::InitOgrePlugins() {
 
 #ifdef DEBUG
 
-#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE && defined(DESKTOP)
+#if defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && defined(DESKTOP)
   Root::getSingleton().installPlugin(new FreeImagePlugin());
 #endif
 
@@ -151,7 +151,7 @@ void Engine::InitOgrePlugins() {
 }
 
 void Engine::CreateSDLWindow() {
-#ifdef DESKTOP
+#if defined(DESKTOP)
   if (WindowWidth == ScreenWidth && WindowHeight == ScreenHeight) {
     SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
   }
@@ -462,10 +462,7 @@ void Engine::GrabMouse(bool grab) {
   if (!SDLWindowPtr) return;
   SDL_ShowCursor(!grab);
   SDL_SetWindowGrab(SDLWindowPtr, static_cast<SDL_bool>(grab));
-#if OGRE_PLATFORM != OGRE_PLATFORM_APPLE
-  // osx workaround: mouse motion events are gone otherwise
   SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
-#endif
 #endif
 }
 
