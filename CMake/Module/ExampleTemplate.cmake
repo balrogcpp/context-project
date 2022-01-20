@@ -30,7 +30,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC ${GLUE_LINK_LIBRARIES})
 
 install(TARGETS ${TARGET_NAME} RUNTIME DESTINATION .)
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "Release" AND DESKTOP AND NOT APPLE)
+if (${CMAKE_BUILD_TYPE} STREQUAL "Release" AND DESKTOP)
     include(ReallySmallPostBuild)
 endif ()
 
