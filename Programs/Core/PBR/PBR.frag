@@ -453,16 +453,6 @@ void main()
     vec3 color = albedo.rgb;
     float alpha = albedo.a;
 
-#ifndef GL_ES
-    float clippedDistance = (vDepth - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
-
-    vec2 a = (vScreenPosition.xz / vScreenPosition.w) * 0.5 + 0.5;
-    vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w) * 0.5 + 0.5;
-    vec2 velocity = (0.0166667 / uFrameTime) * vec2(a - b);
-
-    FragData[1] = vec4(clippedDistance, velocity, 1.0);
-#endif
-
 #ifdef HAS_ALPHA
 #ifdef PAGED_GEOMETRY
     alpha *= vAlpha;
@@ -625,6 +615,15 @@ void main()
 #else
     total_colour = ApplyFog(total_colour, uFogParams, uFogColour, vDepth);
     FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), alpha);
+#endif
+#ifndef GL_ES
+    float clippedDistance = (vDepth - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
+
+    vec2 a = (vScreenPosition.xz / vScreenPosition.w) * 0.5 + 0.5;
+    vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w) * 0.5 + 0.5;
+    vec2 velocity = (0.0166667 / uFrameTime) * vec2(a - b);
+
+    FragData[1] = vec4(clippedDistance, velocity, 1.0);
 #endif
 
 #else //SHADOWCASTER

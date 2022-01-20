@@ -937,7 +937,11 @@ void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
   OgreTerrainPtr->setResourceGroup(GroupName);
 
   Terrain::ImportData &defaultimp = OgreTerrainPtr->getDefaultImportSettings();
+//  defaultimp.terrainSize = mapSize;
+//  defaultimp.worldSize = worldSize;
   defaultimp.inputScale = inputScale;
+//  defaultimp.minBatchSize = 17;
+//  defaultimp.maxBatchSize = 65;
 
   for (auto &pPageElement : XmlNode.children("terrain")) {
     int pageX = StringConverter::parseInt(pPageElement.attribute("x").value());
