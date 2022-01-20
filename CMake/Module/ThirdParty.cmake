@@ -35,11 +35,11 @@ externalproject_add(Target_SDL2
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
-                    -DSDL_SHARED_ENABLED_BY_DEFAULT=OFF # ON Required for nevest OGRE
+                    -DSDL_SHARED_ENABLED_BY_DEFAULT=OFF
                     -DLIBC=ON
                     -DSDL_LIBC=ON
-                    -DRENDER_METAL=OFF #cause linking error on macos
-                    -DSDL_RENDER_METAL=OFF #cause linking error on macos
+                    -DRENDER_METAL=OFF
+                    -DSDL_RENDER_METAL=OFF
                     -DHIDAPI=OFF
                     -DSDL_HIDAPI=OFF
                     -DSDL_HIDAPI_JOYSTICK=OFF

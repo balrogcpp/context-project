@@ -113,7 +113,7 @@ void Compositor::InitMRT() {
   if (OgreCompositorManager->addCompositor(OgreViewport, "MRT")) {
     OgreCompositorManager->setCompositorEnabled(OgreViewport, "MRT", false);
   } else {
-    Ogre::LogManager::getSingleton().logMessage("Context core:: Failed to add MRT compositor");
+    Throw("Failed to add MRT compositor");
   }
 
   auto *CompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
