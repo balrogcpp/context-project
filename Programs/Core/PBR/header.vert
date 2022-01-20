@@ -5,8 +5,6 @@
 
 #ifndef GL_ES
 
-// GLSL
-
 #if VERSION == 330 || VERSION == 400 || VERSION == 410 || VERSION == 420 || VERSION == 430 || VERSION == 440 || VERSION == 450 || VERSION == 460
 #define attribute in
 #define varying out
@@ -16,8 +14,6 @@
 #endif
 
 #else
-
-// GLSLES 2.0
 
 #extension GL_OES_standard_derivatives : enable
 #define textureCubeLod textureLodEXT
@@ -31,6 +27,7 @@ precision lowp samplerCube;
 #define in attribute
 #define out varying
 #endif
-#endif
+
+#endif // GLSL_ES
 
 #endif //HEADER_VERT
