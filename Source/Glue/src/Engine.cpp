@@ -487,10 +487,10 @@ Engine &GetEngine() {
   return EnginePtr;
 }
 
-Physics &GetPhysics() { return *GetComponentPtr<Physics>(); }
+Physics &GetPhysics() { return GetComponent<Physics>(); }
 
-Sound &GetAudio() { return *GetComponentPtr<Sound>(); }
+Sound &GetAudio() { return GetComponent<Sound>(); }
 
-Scene &GetScene() { return *GetComponentPtr<Scene>(); }
+Scene &GetScene() { return GetComponent<Scene>(); }
 
 }  // namespace Glue
