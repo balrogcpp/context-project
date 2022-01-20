@@ -29,10 +29,14 @@ static inline string FindPath(string Path, int Depth = 2) {
     else if (fs::exists(result + ".zip"))
       return result.append(".zip");
     else
+#ifndef WINDOWS
       result = string("../").append(result);
+#else
+      result = string("..\\").append(result);
+#endif
   }
 
-  return string();
+  return "";
 }
 
 static inline bool IsAllowed(char c) { return isalpha(c) || isdigit(c) || c == '.' || c == ',' || c == ';' || c == '_' || c == '-' || c == '/'; }
