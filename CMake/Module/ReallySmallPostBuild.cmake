@@ -2,8 +2,8 @@
 
 find_package(SelfPackers)
 
-# Stripping not work very well when crosscompile
-#if (CMAKE_STRIP AND NOT CMAKE_CROSSCOMPILING)
+# Stripping don't work on macosm replaced with -g0 -s compiler flags
+#if (CMAKE_STRIP AND NOT APPLE)
 #    add_custom_command(
 #            TARGET ${TARGET_NAME}
 #            POST_BUILD
