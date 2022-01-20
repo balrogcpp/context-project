@@ -23,6 +23,7 @@ precision lowp sampler2D;
 precision lowp samplerCube;
 #if VERSION == 300 || VERSION == 310 || VERSION == 320
 #define attribute in
+#define varying out
 #else
 #define in attribute
 #define out varying
