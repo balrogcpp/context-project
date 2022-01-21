@@ -1,13 +1,12 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 #ifndef GL_ES
-#version 330 core
-#define VERSION 330
+#version 120
+#define VERSION 120
 #else
 #version 100
 #define VERSION 100
 #endif
-
 #include "header.frag"
 
 #include "srgb.glsl"
@@ -26,7 +25,7 @@ void main()
 {
     vec3 color = SRGBtoLINEAR(textureCube(cubemap, TexCoords).rgb);
 
-#ifndef GL_ES
+#ifndef NO_MRT
     FragData[0] = vec4(color, 1.0);
     FragData[1] = vec4(1.0, 0.0, 0.0, 1.0);
 #else

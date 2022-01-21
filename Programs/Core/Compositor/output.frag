@@ -17,7 +17,11 @@ uniform sampler2D SceneSampler;
 #include "srgb.glsl"
 #include "fog.glsl"
 
+#ifndef MOTION_BLUR
 uniform sampler2D sSceneDepthSampler;
+#else
+uniform sampler2D SpeedSampler;
+#endif
 
 #ifdef SSAO
 uniform sampler2D SsaoSampler;
@@ -68,14 +72,16 @@ if (uBloomEnable > 0.0) {
 #endif
 
 #ifdef FOG
+  {
   float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
-  float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
+  float fragmentWorldDepth = clampedDepth * farClipDistance;
   scene = ApplyFog(scene, uFogParams, uFogColour, fragmentWorldDepth);
+  }
 #endif
 
 #ifdef MOTION_BLUR
   if (uMotionBlurEnable > 0.0) {
-  vec2 velocity = uScale * texture2D(sSceneDepthSampler, oUv0).gb;
+  vec2 velocity = uScale * texture2D(SpeedSampler, oUv0).rg;
   float speed = length(velocity / texelSize);
   int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
 

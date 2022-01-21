@@ -612,17 +612,18 @@ void main()
 
 #ifndef NO_MRT
     FragData[0] = vec4(total_colour, alpha);
+
     float clippedDistance = (vDepth - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w) * 0.5 + 0.5;
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w) * 0.5 + 0.5;
     vec2 velocity = (0.0166667 / uFrameTime) * vec2(a - b);
 
-    FragData[1] = vec4(clippedDistance, velocity, 1.0);
+    FragData[1].r = clippedDistance;
+    FragData[2].rg = velocity;
 #else
     total_colour = ApplyFog(total_colour, uFogParams, uFogColour, vDepth);
     FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), alpha);
-
 #endif
 
 #else //SHADOWCASTER

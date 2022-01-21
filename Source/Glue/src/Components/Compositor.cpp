@@ -157,10 +157,15 @@ void Compositor::InitOutput() {
   }
 
   if (EffectsList["mblur"]) {
+    auto material = material_manager.getByName(MotionBlurCompositor);
+    auto *pass = material->getTechnique(0)->getPass(0);
+    auto fs_params = pass->getFragmentProgramParameters();
+
     fs_params->setNamedConstant("uMotionBlurEnable", 1.0f);
   }
 
   EnableCompositor(OutputCompositor);
+  AddCompositorEnabled("MBlur");
 }
 
 void Compositor::SetUp() {

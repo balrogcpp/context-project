@@ -25,8 +25,11 @@
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
-out vec4 FragData[2];
-//out vec4 FragColor;
+#ifndef NO_MRT
+out vec4 FragData[3];
+#else
+out vec4 FragColor;
+#endif
 #else 
 #define in varying
 #define out varying
@@ -58,8 +61,11 @@ precision lowp samplerCube;
 #define textureCube texture
 #define texture2DLod textureLod
 #define textureCubeLod textureLod
-//out vec4 FragData[2];
+#ifndef NO_MRT
+out vec4 FragData[3];
+#else
 out vec4 FragColor;
+#endif
 #else
 #define in varying
 #define out varying
