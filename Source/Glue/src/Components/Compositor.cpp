@@ -169,6 +169,7 @@ void Compositor::InitOutput() {
 
 void Compositor::SetUp() {
   if (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem") return;
+//  if (!any_of(EffectsList.begin(), EffectsList.end(), [](const auto &it) { return it.second == true; })) return;
 
   InitMRT();
 
