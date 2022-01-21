@@ -1,8 +1,8 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 #ifndef GL_ES
-#version 120
-#define VERSION 120
+#version 330 core
+#define VERSION 330
 #else
 #version 100
 #define VERSION 100
