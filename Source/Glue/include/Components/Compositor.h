@@ -9,6 +9,7 @@ namespace Ogre {
 class Camera;
 class Viewport;
 class SceneManager;
+class CompositorChain;
 }  // namespace Ogre
 
 namespace Glue {
@@ -37,9 +38,11 @@ class Compositor : public Component<Compositor> {
   void InitMRT();
   void InitOutput();
 
+  bool AnyEffectEnabled = false;
   std::map<std::string, bool> EffectsList;
   std::unique_ptr<GBufferSchemeHandler> GBufferHandler;
   Ogre::CompositorManager* OgreCompositorManager = nullptr;
+  Ogre::CompositorChain *OgreCompositorChain = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;
   Ogre::Camera* OgreCamera = nullptr;
   Ogre::Viewport* OgreViewport = nullptr;

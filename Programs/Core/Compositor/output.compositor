@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program Output_fs glsl glsles
+abstract fragment_program OutputI_fs glsl glsles
 {
     source output.frag
     preprocessor_defines SSAO,BLOOM,FOG
@@ -19,7 +19,18 @@ fragment_program Output_fs glsl glsles
 	}
 }
 
-material Output
+fragment_program Output_fs glsl glsles : OutputI_fs {}
+
+fragment_program OutputFinal_fs glsl glsles : OutputI_fs
+{
+    preprocessor_defines SSAO,BLOOM,FOG,SRGB
+	default_params
+	{
+		param_named exposure float 1.0
+	}
+}
+
+abstract material OutputI
 {
 	technique
 	{
@@ -33,9 +44,7 @@ material Output
 			fragment_program_ref Output_fs
 			{
 			    param_named SceneSampler int 0
-			    //param_named_auto texelSize inverse_texture_size 0
 			    param_named sSceneDepthSampler int 1
-			    //param_named SpeedSampler int 2
 			    param_named SsaoSampler int 2
 			    param_named BloomSampler int 3
 			}
@@ -54,27 +63,23 @@ material Output
                 filtering linear linear none
             }
 
-            /*texture_unit
-            {
-                content_type compositor MRT mrt 2
-                tex_address_mode clamp
-                filtering linear linear none
-            }*/
+            texture_unit SSAO {}
 
-            texture_unit SSAO
-            {
-                //content_type compositor SSAO ssao
-                //tex_address_mode clamp
-                //filtering linear linear none
-            }
-
-            texture_unit Bloom
-            {
-                //content_type compositor Bloom bloom
-                //tex_address_mode clamp
-                //filtering linear linear none
-            }
+            texture_unit Bloom {}
 		}
+	}
+}
+
+material Output : OutputI {}
+
+material OutputFinal : OutputI
+{
+	technique
+	{
+		pass
+		{
+			fragment_program_ref OutputFinal_fs {}
+        }
 	}
 }
 
@@ -89,6 +94,20 @@ compositor Output
             pass render_quad
             {
                 material Output
+            }
+        }
+    }
+}
+
+compositor OutputFinal
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material OutputFinal
             }
         }
     }

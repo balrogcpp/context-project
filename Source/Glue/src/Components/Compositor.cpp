@@ -58,6 +58,7 @@ Compositor::Compositor() {
   OgreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
   OgreCamera = OgreSceneManager->getCamera("Default");
   OgreViewport = OgreCamera->getViewport();
+  OgreCompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
 
   EnableEffect("ssao", Config::GetInstance().GetBool("enable_ssao"));
   EnableEffect("bloom", Config::GetInstance().GetBool("enable_bloom"));
@@ -116,22 +117,24 @@ void Compositor::InitMRT() {
     Throw("Failed to add MRT compositor");
   }
 
-  auto *CompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
-
-  //#ifdef DESKTOP
-  //  if (Config::GetInstance().GetBool("window_fullscreen")) {
-  //    auto *MRTCompositor = CompositorChain->getCompositor("MRT");
-  //    auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
-  //    MRTTextureDefinition->width = Config::GetInstance().GetInt("window_width");
-  //    MRTTextureDefinition->height = Config::GetInstance().GetInt("window_high");
-  //  }
-  //#endif
+//  if (Config::GetInstance().GetBool("window_fullscreen")) {
+//    auto *MRTCompositor = OgreCompositorChain->getCompositor("MRT");
+//    auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
+//    MRTTextureDefinition->width = Config::GetInstance().GetInt("window_width");
+//    MRTTextureDefinition->height = Config::GetInstance().GetInt("window_high");
+//  }
 
   OgreCompositorManager->setCompositorEnabled(OgreViewport, "MRT", true);
 }
 
 void Compositor::InitOutput() {
-  const string OutputCompositor = "Output";
+  string OutputCompositor;
+
+  if (EffectsList["mblur"])
+    OutputCompositor = "Output";
+  else
+    OutputCompositor = "OutputFinal";
+
   const string MotionBlurCompositor = "MBlur";
 
   auto &material_manager = Ogre::MaterialManager::getSingleton();
@@ -164,12 +167,17 @@ void Compositor::InitOutput() {
   }
 
   EnableCompositor(OutputCompositor);
-  AddCompositorEnabled("MBlur");
+  if (EffectsList["mblur"]) AddCompositorEnabled("MBlur");
 }
 
 void Compositor::SetUp() {
   if (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem") return;
-//  if (!any_of(EffectsList.begin(), EffectsList.end(), [](const auto &it) { return it.second == true; })) return;
+  for (const auto &it : EffectsList) {
+    if (it.second) {
+      AnyEffectEnabled = true;
+      break;
+    }
+  }
 
   InitMRT();
 
