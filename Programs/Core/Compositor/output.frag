@@ -1,19 +1,22 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 #ifndef GL_ES
+#version 120
 #define VERSION 120
-#version VERSION
 #else
+#version 100
 #define VERSION 100
-#version VERSION
 #endif
 #include "header.frag"
+
+in vec2 oUv0;
+uniform sampler2D SceneSampler;
+
+#ifndef NO_MRT
 
 #include "srgb.glsl"
 #include "fog.glsl"
 
-in vec2 oUv0;
-uniform sampler2D SceneSampler;
 uniform sampler2D sSceneDepthSampler;
 
 #ifdef SSAO
@@ -44,13 +47,13 @@ uniform float uScale;
 uniform float uMotionBlurEnable;
 #endif
 
+#endif // !NO_MRT
+
 void main()
 {
   vec3 scene = texture2D(SceneSampler, oUv0).rgb;
 
-
-#ifndef GL_ES
-
+#ifndef NO_MRT
 
 #ifdef SSAO
 if (uSSAOEnable > 0.0) {
@@ -92,9 +95,7 @@ if (uBloomEnable > 0.0) {
 #endif
 #endif
 
-
-#endif //!GL_ES
-
+#endif //!NO_MRT
 
   gl_FragColor = vec4(scene.rgb, 1.0);
 }

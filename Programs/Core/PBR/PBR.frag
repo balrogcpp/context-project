@@ -115,7 +115,7 @@ uniform vec3 uSurfaceEmissiveColour;
 #ifdef HAS_ALPHA
 uniform float uAlphaRejection;
 #endif
-#ifdef GL_ES
+#ifdef NO_MRT
 uniform vec3 uFogColour;
 uniform vec4 uFogParams;
 #endif
@@ -610,13 +610,8 @@ void main()
     total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour);
 #endif
 
-#ifndef GL_ES
+#ifndef NO_MRT
     FragData[0] = vec4(total_colour, alpha);
-#else
-    total_colour = ApplyFog(total_colour, uFogParams, uFogColour, vDepth);
-    FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), alpha);
-#endif
-#ifndef GL_ES
     float clippedDistance = (vDepth - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w) * 0.5 + 0.5;
@@ -624,6 +619,10 @@ void main()
     vec2 velocity = (0.0166667 / uFrameTime) * vec2(a - b);
 
     FragData[1] = vec4(clippedDistance, velocity, 1.0);
+#else
+    total_colour = ApplyFog(total_colour, uFogParams, uFogColour, vDepth);
+    FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), alpha);
+
 #endif
 
 #else //SHADOWCASTER
