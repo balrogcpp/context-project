@@ -23,5 +23,5 @@ void main()
 
   const float scale = 0.01;
 
-  gl_FragColor = vec4(scale * bloom, 1.0);
+  FragColor = vec4(scale * bloom, 1.0);
 }

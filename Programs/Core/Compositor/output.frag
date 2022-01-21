@@ -97,5 +97,5 @@ if (uBloomEnable > 0.0) {
 
 #endif //!NO_MRT
 
-  gl_FragColor = vec4(scene.rgb, 1.0);
+  FragColor = vec4(scene.rgb, 1.0);
 }

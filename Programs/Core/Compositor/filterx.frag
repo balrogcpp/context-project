@@ -59,5 +59,5 @@ void main()
   final_color += Iteration(offset3, weight3);
   final_color += Iteration(offset4, weight4);
 
-  gl_FragColor = vec4(final_color, 1.0);
+  FragColor = vec4(final_color, 1.0);
 }

@@ -37,7 +37,7 @@ void main()
   float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
 
   if (fragmentWorldDepth <= 0.0) {
-    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     return;
   }
 
@@ -109,5 +109,5 @@ void main()
 //  accessibility = mix(accessibility, 1.0, fog_value);
 
   // amplify and saturate if necessary
-  gl_FragColor = vec4(vec3(accessibility), 1.0);
+  FragColor = vec4(vec3(accessibility), 1.0);
 }
