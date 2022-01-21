@@ -1,6 +1,6 @@
 # This source file is part of "glue project". Created by Andrey Vasiliev
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND NOT MSVC)
     string(APPEND CMAKE_CXX_FLAGS " -Wall")
     string(APPEND CMAKE_C_FLAGS " -Wall")
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")

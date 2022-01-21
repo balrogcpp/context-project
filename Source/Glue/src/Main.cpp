@@ -8,7 +8,7 @@ using namespace Glue;
 
 extern AppStateUPtr MainAppState();
 
-#ifdef WIN32
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
@@ -17,7 +17,7 @@ int main(int argc, char* args[])
 #endif
 {
   // main app class object
-#ifndef WIN32
+#ifndef _WIN32
   Application app(argc, args);
 #else
   Application app;

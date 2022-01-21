@@ -17,7 +17,7 @@
 #ifdef OGRE_BUILD_PLUGIN_STBI
 #include <Plugins/STBICodec/OgreSTBICodec.h>
 #endif
-#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
+#if defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI)
 #include <Plugins/FreeImageCodec/OgreFreeImageCodec.h>
 #include <Plugins/FreeImageCodec/OgreFreeImageCodecExports.h>
 #endif
@@ -37,9 +37,7 @@ using namespace Ogre;
 
 namespace Glue {
 
-Engine::Engine() {
-  ReadConfFile();
-}
+Engine::Engine() { ReadConfFile(); }
 
 Engine::~Engine() { SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE); }
 
@@ -99,6 +97,8 @@ void Engine::InitSDLSubsystems() {
 }
 
 void Engine::InitDefaultRenderSystem() {
+#ifdef OGRE_STATIC_LIB
+
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
   InitOgreRenderSystemGL3();
@@ -110,9 +110,13 @@ void Engine::InitDefaultRenderSystem() {
 #else
   InitOgreRenderSystemGLES2();
 #endif
+
+#endif // OGRE_STATIC_LIB
 }
 
 void Engine::InitOgrePlugins() {
+#ifdef OGRE_STATIC_LIB
+
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
 #endif
@@ -127,7 +131,7 @@ void Engine::InitOgrePlugins() {
 
 #ifdef DEBUG
 
-#if defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && defined(DESKTOP)
+#if defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI) && defined(DESKTOP)
   Root::getSingleton().installPlugin(new FreeImagePlugin());
 #endif
 
@@ -143,11 +147,13 @@ void Engine::InitOgrePlugins() {
   OgreSceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
 #endif
 
+#ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
   Root::getSingleton().installPlugin(new DotScenePluginB());
+#else
+  Root::getSingleton().installPlugin(new DotScenePluginB());
+#endif
 
-  //#ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
-  //  Root::getSingleton().installPlugin(new DotScenePlugin());
-  //#endif
+ #endif // OGRE_STATIC_LIB
 }
 
 void Engine::CreateSDLWindow() {
@@ -332,9 +338,7 @@ void Engine::Capture() {
   io.Capture();
 }
 
-void Engine::ReadConfFile() {
-  ConfigPtr = Config::GetInstancePtr();
-}
+void Engine::ReadConfFile() { ConfigPtr = Config::GetInstancePtr(); }
 
 void Engine::InitSound() {
   SoundPtr = make_unique<Sound>();

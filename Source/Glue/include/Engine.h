@@ -87,6 +87,7 @@ class Engine final : public Singleton<Engine> {
   /// Android helper
   void WindowRestoreFullscreenAndroid();
 
+  std::vector<Ogre::Plugin*> PluginList;
   std::string RenderSystemName;
   Ogre::RenderWindow* OgreRenderWindowPtr = nullptr;
   Ogre::RenderTarget* OgreRenderTarget = nullptr;

@@ -51,7 +51,7 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
 
 Compositor::Compositor() {
   EffectsList["bloom"] = false;
-  EffectsList["ssao"] = true;
+  EffectsList["ssao"] = false;
   EffectsList["mblur"] = false;
 
   OgreCompositorManager = Ogre::CompositorManager::getSingletonPtr();
@@ -119,37 +119,29 @@ void Compositor::InitMRT() {
   auto *CompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
 
 //#ifdef DESKTOP
-//
 //  if (Config::GetInstance().GetBool("window_fullscreen")) {
 //    auto *MRTCompositor = CompositorChain->getCompositor("MRT");
 //    auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
 //    MRTTextureDefinition->width = Config::GetInstance().GetInt("window_width");
 //    MRTTextureDefinition->height = Config::GetInstance().GetInt("window_high");
 //  }
-//
-//#else
-
-  auto *MRTCompositor = CompositorChain->getCompositor("MRT");
-  auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
-  MRTTextureDefinition->height = OgreViewport->getActualHeight();
-  MRTTextureDefinition->width = OgreViewport->getActualWidth();
-
 //#endif
 
   OgreCompositorManager->setCompositorEnabled(OgreViewport, "MRT", true);
 }
 
 void Compositor::InitOutput() {
-  string OutputCompositor = "Output";
-  string MotionBlurCompositor = "MBlur";
+  const string OutputCompositor = "Output";
+  const string MotionBlurCompositor = "MBlur";
+
+  auto &material_manager = Ogre::MaterialManager::getSingleton();
+  auto material = material_manager.getByName(OutputCompositor);
+  auto *pass = material->getTechnique(0)->getPass(0);
+  auto fs_params = pass->getFragmentProgramParameters();
 
   AddCompositorDisabled(OutputCompositor);
 
   if (EffectsList["ssao"]) {
-    auto &material_manager = Ogre::MaterialManager::getSingleton();
-    auto material = material_manager.getByName(OutputCompositor);
-    auto *pass = material->getTechnique(0)->getPass(0);
-    auto fs_params = pass->getFragmentProgramParameters();
 
     auto texture = pass->getTextureUnitState("SSAO");
     texture->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
@@ -158,29 +150,17 @@ void Compositor::InitOutput() {
   }
 
   if (EffectsList["bloom"]) {
-    auto &material_manager = Ogre::MaterialManager::getSingleton();
-    auto material = material_manager.getByName(OutputCompositor);
-    auto *pass = material->getTechnique(0)->getPass(0);
-    auto fs_params = pass->getFragmentProgramParameters();
-
     auto texture = pass->getTextureUnitState("Bloom");
     texture->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
     texture->setCompositorReference("Bloom", "bloom");
     fs_params->setNamedConstant("uBloomEnable", 1.0f);
   }
 
-  EnableCompositor(OutputCompositor);
-
-  auto &material_manager = Ogre::MaterialManager::getSingleton();
-  auto material = material_manager.getByName(MotionBlurCompositor);
-  auto *pass = material->getTechnique(0)->getPass(0);
-  auto fs_params = pass->getFragmentProgramParameters();
-
   if (EffectsList["mblur"]) {
     fs_params->setNamedConstant("uMotionBlurEnable", 1.0f);
   }
 
-  AddCompositorEnabled("MBlur");
+  EnableCompositor(OutputCompositor);
 }
 
 void Compositor::SetUp() {
