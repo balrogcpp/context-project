@@ -118,14 +118,14 @@ void Compositor::InitMRT() {
 
   auto *CompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
 
-//#ifdef DESKTOP
-//  if (Config::GetInstance().GetBool("window_fullscreen")) {
-//    auto *MRTCompositor = CompositorChain->getCompositor("MRT");
-//    auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
-//    MRTTextureDefinition->width = Config::GetInstance().GetInt("window_width");
-//    MRTTextureDefinition->height = Config::GetInstance().GetInt("window_high");
-//  }
-//#endif
+  //#ifdef DESKTOP
+  //  if (Config::GetInstance().GetBool("window_fullscreen")) {
+  //    auto *MRTCompositor = CompositorChain->getCompositor("MRT");
+  //    auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
+  //    MRTTextureDefinition->width = Config::GetInstance().GetInt("window_width");
+  //    MRTTextureDefinition->height = Config::GetInstance().GetInt("window_high");
+  //  }
+  //#endif
 
   OgreCompositorManager->setCompositorEnabled(OgreViewport, "MRT", true);
 }
@@ -142,7 +142,6 @@ void Compositor::InitOutput() {
   AddCompositorDisabled(OutputCompositor);
 
   if (EffectsList["ssao"]) {
-
     auto texture = pass->getTextureUnitState("SSAO");
     texture->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
     texture->setCompositorReference("SSAO", "ssao");
@@ -169,6 +168,8 @@ void Compositor::InitOutput() {
 }
 
 void Compositor::SetUp() {
+  if (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem") return;
+
   InitMRT();
 
   if (EffectsList["ssao"]) {

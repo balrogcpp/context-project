@@ -39,6 +39,8 @@ out vec4 FragColor;
 
 #else // GLSLES
 
+#define NO_MRT
+
 #extension GL_OES_standard_derivatives : enable
 
 #ifdef USE_TEX_LOD

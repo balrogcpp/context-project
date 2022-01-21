@@ -10,6 +10,7 @@ class ComponentI {
   ComponentI();
   virtual ~ComponentI();
 
+  virtual void OnSetUp() {}
   virtual void OnPause() { Paused = true; }
   virtual void OnResume() { Paused = false; }
   virtual void OnUpdate(float PassedTime) {}

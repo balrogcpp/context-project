@@ -102,10 +102,10 @@ void Engine::InitDefaultRenderSystem() {
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
   InitOgreRenderSystemGL3();
-#elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
-  InitOgreRenderSystemGLES2();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GL)
   InitOgreRenderSystemGL();
+#elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
+  InitOgreRenderSystemGLES2();
 #endif
 #else
   InitOgreRenderSystemGLES2();
