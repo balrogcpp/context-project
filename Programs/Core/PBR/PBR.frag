@@ -609,13 +609,11 @@ void main()
 #ifndef NO_MRT
     FragData[0] = vec4(total_colour, alpha);
 
-    float clippedDistance = (vDepth - cNearClipDistance) / (cFarClipDistance - cNearClipDistance);
+    FragData[1].r = (vDepth / cFarClipDistance);
 
-    vec2 a = (vScreenPosition.xz / vScreenPosition.w) * 0.5 + 0.5;
-    vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w) * 0.5 + 0.5;
-    vec2 velocity = (0.0166667 / uFrameTime) * vec2(a - b);
-
-    FragData[1].r = clippedDistance;
+    vec2 a = (vScreenPosition.xz / vScreenPosition.w);
+    vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
+    vec2 velocity = (0.0166667 / uFrameTime) * 0.5 * vec2(a - b);
     FragData[2].rg = velocity;
 #else
     total_colour = ApplyFog(total_colour, uFogParams, uFogColour, vDepth);
