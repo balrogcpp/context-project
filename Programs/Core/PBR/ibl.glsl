@@ -9,13 +9,12 @@
 //----------------------------------------------------------------------------------------------------------------------
 vec3 GetIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)
 {
-  float lod = (pbrInputs.perceptualRoughness * 9.0);
   // retrieve a scale and bias to F0. See [1], Figure 3
   vec3 brdf = SRGBtoLINEAR(texture2D(ubrdfLUT, vec2(pbrInputs.NdotV, 1.0 - pbrInputs.perceptualRoughness))).rgb;
   vec3 diffuseLight = SRGBtoLINEAR(textureCube(uDiffuseEnvSampler, n)).rgb;
 
 #ifdef USE_TEX_LOD
-  vec3 specularLight = SRGBtoLINEAR(textureCubeLod(uSpecularEnvSampler, reflection, lod)).rgb;
+  vec3 specularLight = SRGBtoLINEAR(textureCubeLod(uSpecularEnvSampler, reflection, pbrInputs.perceptualRoughness * 9.0)).rgb;
 #else
   vec3 specularLight = SRGBtoLINEAR(textureCube(uSpecularEnvSampler, reflection)).rgb;
 #endif
@@ -37,8 +36,7 @@ vec3 GetIBLContribution(vec3 diffuseColor, vec3 specularColor, float perceptualR
   vec3 diffuseLight = SRGBtoLINEAR(textureCube(uDiffuseEnvSampler, n)).rgb;
 
 #ifdef USE_TEX_LOD
-  float lod = (perceptualRoughness * 9.0);
-  vec3 specularLight = SRGBtoLINEAR(textureCubeLod(uSpecularEnvSampler, reflection, lod)).rgb;
+  vec3 specularLight = SRGBtoLINEAR(textureCubeLod(uSpecularEnvSampler, reflection, perceptualRoughness * 9.0)).rgb;
 #else
   vec3 specularLight = SRGBtoLINEAR(textureCube(uSpecularEnvSampler, reflection)).rgb;
 #endif
