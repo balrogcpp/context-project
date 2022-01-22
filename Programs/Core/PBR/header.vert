@@ -17,10 +17,12 @@
 
 #extension GL_OES_standard_derivatives : enable
 #define textureCubeLod textureLodEXT
+
 precision highp float;
 precision lowp int;
 precision lowp sampler2D;
 precision lowp samplerCube;
+
 #if VERSION == 300 || VERSION == 310 || VERSION == 320
 #define attribute in
 #define varying out

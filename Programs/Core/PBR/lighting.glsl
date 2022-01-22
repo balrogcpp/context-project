@@ -3,7 +3,7 @@
 #ifndef PBR_GLSL
 #define PBR_GLSL
 
-const float M_PI = 3.141592653589793;
+#define M_PI 3.141592653589793
 
 // Encapsulate the various inputs used by the various functions in the shading equation
 // We store values in this struct to simplify the integration of alternative implementations

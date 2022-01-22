@@ -8,7 +8,7 @@ fragment_program MBlur_fs glsl glsles
 	default_params
 	{
 		param_named exposure float 1.0
-        param_named uScale float 0.25
+        param_named uScale float 0.5
         param_named uMotionBlurEnable float 0.0
 	}
 }
@@ -38,13 +38,6 @@ material MBlur
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
-            /*texture_unit
-            {
-                content_type compositor MRT mrt 1
-                tex_address_mode clamp
-                filtering linear linear none
-            }*/
 
             texture_unit
             {

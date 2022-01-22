@@ -37,7 +37,7 @@ compositor Bloom
 {
     technique
     {
-        texture bloom target_width_scaled 0.25 target_height_scaled 0.25 PF_FLOAT16_RGB chain_scope pooled
+        texture bloom target_width_scaled 0.25 target_height_scaled 0.25 PF_FLOAT16_RGB
 
         target bloom
         {

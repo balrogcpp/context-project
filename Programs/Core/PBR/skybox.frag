@@ -7,6 +7,7 @@
 #version 100
 #define VERSION 100
 #endif
+
 #include "header.frag"
 
 #include "srgb.glsl"
@@ -17,9 +18,7 @@ uniform vec3 uFogColour;
 uniform vec4 uFogParams;
 
 in float vDepth;
-
 in vec3 TexCoords; // direction vector representing a 3D texture coordinate
-
 
 void main()
 {

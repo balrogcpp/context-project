@@ -1,3 +1,5 @@
+#version 300 es
+#define VERSION 300
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 // The MIT License
@@ -16,13 +18,13 @@
 // [4] "An Inexpensive BRDF Model for Physically based Rendering" by Christophe Schlick
 //     https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf
 
-#ifndef GL_ES
-#version 330 core
-#define VERSION 330
-#else
-#version 100
-#define VERSION 100
-#endif
+//#ifndef GL_ES
+//#version 330 core
+//#define VERSION 330
+//#else
+//#version 100
+//#define VERSION 100
+//#endif
 
 #include "header.frag"
 

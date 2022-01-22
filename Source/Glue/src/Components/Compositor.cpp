@@ -172,6 +172,7 @@ void Compositor::InitOutput() {
 
 void Compositor::SetUp() {
   if (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem") return;
+
   for (const auto &it : EffectsList) {
     if (it.second) {
       AnyEffectEnabled = true;

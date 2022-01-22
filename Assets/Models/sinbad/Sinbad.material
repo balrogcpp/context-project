@@ -4,175 +4,72 @@ import PBRS_Basic from PBRS.material
 
 material Sinbad/Body : PBRS_Basic
 {
-	technique
-	{
-		pass
-		{
-			texture_unit Albedo
-			{
-				texture sinbad_body.dds
-			}
-		}
-	}
+    set $Albedo sinbad_body.dds
 }
 
 material Sinbad/Gold : PBRS_Basic
 {
-	technique
-	{
-		pass
-		{
-			texture_unit Albedo
-			{
-				texture sinbad_clothes.dds
-			}
-		}
-	}
+    set $Albedo sinbad_clothes.dds
 }
 
 material Sinbad/Sheaths : PBRS_Basic
 {
-	technique
-	{
-		pass
-		{
-			texture_unit Albedo
-			{
-				texture sinbad_sword.dds
-			}
-		}
-	}
+    set $Albedo sinbad_sword.dds
 }
 
 material Sinbad/Clothes : PBRS_Basic
 {
-	technique
-	{
-		pass
-		{
-			texture_unit Albedo
-			{
-				texture sinbad_clothes.dds
-			}
-		}
-	}
+    set $Albedo sinbad_clothes.dds
 }
 
 material Sinbad/Teeth : PBRS_Basic
 {
-	technique
-	{
-		pass
-		{
-			texture_unit Albedo
-			{
-				texture sinbad_body.dds
-			}
-		}
-	}
+    set $Albedo sinbad_body.dds
 }
 
 material Sinbad/Eyes : PBRS_Basic
 {
-	technique
-	{
-		pass
-		{
-			texture_unit Albedo
-			{
-				texture sinbad_body.dds
-			}
-		}
-	}
+    set $Albedo sinbad_body.dds
 }
 
 material Sinbad/Spikes : PBRS_Basic
 {
-	technique
-	{
-		pass
-		{
-			texture_unit Albedo
-			{
-				texture sinbad_clothes.dds
-			}
-		}
-	}
+    set $Albedo sinbad_clothes.dds
 }
 
 material Sinbad/Blade : PBRS_Basic
 {
-	technique
-	{
-		pass
-		{
-		    
-			texture_unit Albedo
-			{
-				texture sinbad_sword.dds
-			}
-		}
-	}
+    set $Albedo sinbad_sword.dds
 }
 
 material Sinbad/Ruby : PBRS_Basic
 {
-	technique
-	{
-		pass
-		{
-    
-			texture_unit Albedo
-			{
-				texture sinbad_sword.dds
-			}
-		}
-	}
+    set $Albedo sinbad_sword.dds
 }
 
 material Sinbad/Hilt : PBRS_Basic
 {
-	technique
-	{
-		pass
-		{
-		    
-			texture_unit Albedo
-			{
-				texture sinbad_sword.dds
-			}
-		}
-	}
+    set $Albedo sinbad_sword.dds
 }
 
 material Sinbad/Handle : PBRS_Basic
 {
-	technique
-	{
-		pass
-		{
-		    
-			texture_unit Albedo
-			{
-				texture sinbad_sword.dds
-			}
-		}
-	}
+    set $Albedo sinbad_sword.dds
 }
 
-material Examples/LightRibbonTrail
+material Examples/LightRibbonTrail : PBRS_Basic
 {
-    receive_shadows off
-    transparency_casts_shadows off
+    //receive_shadows off
+    //transparency_casts_shadows off
 
 	technique
 	{
 		pass
 		{
-			lighting off
-			scene_blend add
-			depth_write off
-			diffuse vertexcolour
+			//lighting off
+			//scene_blend add
+			//depth_write off
+			//diffuse vertexcolour
 
 			texture_unit
 			{
@@ -181,7 +78,7 @@ material Examples/LightRibbonTrail
 				filtering none
 			}
 
-			rtshader_system {}
+			//rtshader_system {}
 		}
 	}
 }
@@ -194,7 +91,7 @@ material Examples/LightRibbonTrail2 : PBRS_Basic
 		{
 			//lighting off
 			//scene_blend add
-			depth_write off
+			//depth_write off
 			//diffuse vertexcolour
 
 			texture_unit

@@ -7,6 +7,7 @@
 #version 100
 #define VERSION 100
 #endif
+
 #include "header.frag"
 
 in vec2 oUv0;

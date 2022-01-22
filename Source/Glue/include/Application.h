@@ -41,7 +41,11 @@ class Application final : public WindowObserver, public Singleton<Application> {
   int64_t CumultedTime = 0;
   int64_t FPSCounter = 0;
   int64_t CurrentFPS = 0;
+#ifdef DESKTOP
   int64_t TargetFPS = 60;
+#else
+  int64_t TargetFPS = 30;
+#endif
   bool LockFPS = true;
   bool Verbose = false;
 

@@ -13,7 +13,7 @@ namespace Glue {
 #ifdef DESKTOP
 const static string FILE_CONTENT =
     "[DEFAULT]\n"
-    "verbose=true\n"
+    "verbose=false\n"
     "verbose_input=false\n"
     "window_width=1024\n"
     "window_high=768\n"

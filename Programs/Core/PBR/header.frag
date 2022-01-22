@@ -40,13 +40,11 @@ out vec4 FragColor;
 #else // GLSLES
 
 #define NO_MRT
-
+//#ifdef USE_TEX_LOD
+//#extension GL_ARB_shader_texture_lod : require
+//#endif
 #extension GL_OES_standard_derivatives : enable
-
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : require
 #define textureCubeLod textureLodEXT
-#endif
 
 precision highp float;
 precision lowp int;
