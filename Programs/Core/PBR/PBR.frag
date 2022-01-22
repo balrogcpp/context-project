@@ -340,14 +340,13 @@ float GetMetallic(vec2 uv) {
 
 //----------------------------------------------------------------------------------------------------------------------
 float GetRoughness(vec2 uv) {
-    const float c_MinRoughness = 0.04;
     float roughness = uSurfaceSpecularColour;
 
 #ifdef HAS_ROUGHNESSMAP
     roughness *= texture2D(uRoughnessSampler, uv, uLOD).r;
 #endif
 
-    return clamp(roughness, c_MinRoughness, 1.0);
+    return clamp(roughness, 0.04, 1.0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

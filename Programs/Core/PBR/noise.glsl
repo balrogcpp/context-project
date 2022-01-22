@@ -15,7 +15,7 @@ vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
 {
     const float GoldenAngle = 2.4;
 
-    float r = sqrt(float(sampleIndex) + 0.5) / sqrt(float(samplesCount));
+    float r = sqrt((float(sampleIndex) + 0.5) / float(samplesCount));
     float theta = float(sampleIndex) * GoldenAngle + phi;
     float sine = sin(theta);
     float cosine = cos(theta);
@@ -38,18 +38,19 @@ float noise(vec2 x) {
 }
 
 float fbm(vec2 p) {
-    float f = 0.0;
-    f += 0.50000 * noise(p); p = p * 2.02;
+    //float f = 0.0;
+    //f += 0.50000 * noise(p); p = p * 2.02;
     //  f += 0.25000 * noise(p); p = p * 2.03;
     //  f += 0.12500 * noise(p); p = p * 2.01;
     //  f += 0.06250 * noise(p); p = p * 2.04;
     //  f += 0.03125 * noise(p);
-    return f / 0.984375;
+    //return f / 0.984375;
+    return noise(p);
 }
 
 vec4 ApplyWaveAnimation(vec4 position, float time, float frequency, vec4 direction) {
-    float offset = sin(time + position.x * frequency);
-    float n = fbm(position.xy * time * 0.2) * 4.0 - 2.0;
+    //float offset = sin(time + position.x * frequency);
+    float n = fbm(position.xy * time * 0.2) * 2.0 - 2.0;
     //  return position + offset * direction + n * 0.01;
     return position + n * direction;
 }

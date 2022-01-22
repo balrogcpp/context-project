@@ -5,12 +5,12 @@
 
 #define MANUAL_SRGB
 
-#ifndef GL_ES
-#define SRGB_FAST_APPROXIMATION
-#define SRGB_HDR
-#else
+// #ifndef GL_ES
+// #define SRGB_FAST_APPROXIMATION
+// #define SRGB_HDR
+// #else
 #define SRGB_SQRT
-#endif
+// #endif
 
 //----------------------------------------------------------------------------------------------------------------------
 vec4 SRGBtoLINEAR(vec4 srgbIn)
