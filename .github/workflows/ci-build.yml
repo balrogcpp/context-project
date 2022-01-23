@@ -1,0 +1,9 @@
+name: GitHub Actions Demo
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: docker/compose:latest
+    steps:
+      - run : mkdir Artifacts
+      - run : GIT_HASH=$CI_COMMIT_SHORT_SHA docker-compose up
+      - run : docker-compose down --volumes
