@@ -52,7 +52,7 @@ add_custom_target(DockerComposeDep
         )
 
 add_custom_target(DockerCompose
-        COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
+        COMMAND ${CMAKE_COMMAND} -E env GIT_HASH=${GIT_SHA1} docker-compose up
         COMMAND docker-compose down --volumes
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Building tests with docker..."
@@ -75,6 +75,7 @@ add_custom_target(BuildPackage
         USES_TERMINAL
         )
 
+# env variable ANDROID_SDK_ROOT must be set manually
 if (UNIX)
     add_custom_target(BuildAndroid
             DEPENDS BuildAssets
