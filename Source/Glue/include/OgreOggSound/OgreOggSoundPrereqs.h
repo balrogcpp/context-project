@@ -59,12 +59,9 @@
  * 1 - Enable EFX support with Creative OpenAL SDK 1.1
  * 2 - Enable EFX support with OpenAL Soft SDK
  */
-//#ifndef HAVE_EFX
-//#	define HAVE_EFX 2
-//#endif
-//#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-//#	define HAVE_EFX 0
-//#endif
+#ifndef HAVE_EFX
+#	define HAVE_EFX 0
+#endif
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 
