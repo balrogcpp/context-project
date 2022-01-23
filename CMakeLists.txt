@@ -81,20 +81,11 @@ if (NOT RELEASE)
 else ()
     set(GRADLE_TARGET assembleRelease)
 endif ()
-if (UNIX)
-    add_custom_target(BuildAndroid
-            DEPENDS BuildAssets
-            COMMAND ./gradlew ${GRADLE_TARGET}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
-            COMMENT "Build packages..."
-            USES_TERMINAL
-            )
-elseif (WIN32)
-    add_custom_target(BuildAndroid
-            DEPENDS BuildAssets
-            COMMAND gradlew.bat ${GRADLE_TARGET}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
-            COMMENT "Build packages..."
-            USES_TERMINAL
-            )
-endif ()
+
+add_custom_target(BuildAndroid
+        DEPENDS BuildAssets
+        COMMAND ./gradlew ${GRADLE_TARGET}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
+        COMMENT "Build packages..."
+        USES_TERMINAL
+        )
