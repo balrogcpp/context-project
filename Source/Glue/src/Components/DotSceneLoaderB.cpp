@@ -927,7 +927,7 @@ void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
   TGO->setUseVertexCompressionWhenAvailable(true);
   TGO->setCastsDynamicShadows(false);
   TGO->setCompositeMapDistance(100);
-  TGO->setMaxPixelError(static_cast<float>(tuningMaxPixelError));
+  TGO->setMaxPixelError(8.0);
   TGO->setUseRayBoxDistanceCalculation(false);
   TGO->setDefaultMaterialGenerator(make_shared<TerrainMaterialGeneratorB>());
 
@@ -939,8 +939,8 @@ void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
   //  defaultimp.terrainSize = mapSize;
   //  defaultimp.worldSize = worldSize;
   defaultimp.inputScale = inputScale;
-  //  defaultimp.minBatchSize = 17;
-  //  defaultimp.maxBatchSize = 65;
+  defaultimp.minBatchSize = 17;
+  defaultimp.maxBatchSize = 33;
 
   for (auto &pPageElement : XmlNode.children("terrain")) {
     int pageX = StringConverter::parseInt(pPageElement.attribute("x").value());
