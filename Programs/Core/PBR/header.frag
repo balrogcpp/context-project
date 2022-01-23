@@ -44,6 +44,7 @@ out vec4 FragColor;
 //#extension GL_ARB_shader_texture_lod : require
 //#endif
 #extension GL_OES_standard_derivatives : enable
+#extension GL_EXT_shader_texture_lod: enable
 #define textureCubeLod textureLodEXT
 
 precision highp float;

@@ -20,6 +20,12 @@ void FixTransparentShadowCaster(const std::string &material);
 void EnsureHasTangents(Ogre::MeshPtr MeshSPtr);
 
 ///
+void FixMaterial(const Ogre::MaterialPtr &material);
+
+///
+void FixMaterial(const std::string &material);
+
+///
 void FixMeshMaterial(Ogre::MeshPtr MeshSPtr, const std::string &MaterialName = "");
 
 ///

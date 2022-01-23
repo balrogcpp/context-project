@@ -91,14 +91,19 @@ void FixTransparentShadowCaster(const string &material) {
   FixTransparentShadowCaster(material_ptr);
 }
 
-static void FixMaterial(const MaterialPtr &material) {
+void FixMaterial(const MaterialPtr &material) {
   FixTransparentShadowCaster(material);
   GetScene().AddMaterial(material);
 }
 
+void FixMaterial(const string &material) {
+  auto MaterialSPtr = Ogre::MaterialManager::getSingleton().getByName(material);
+  if (MaterialSPtr) FixMaterial(MaterialSPtr);
+}
+
 void FixMeshMaterial(MeshPtr MeshSPtr, const string &MaterialName) {
   try {
-    // EnsureHasTangents(MeshSPtr);
+    EnsureHasTangents(MeshSPtr);
 
     for (auto &submesh : MeshSPtr->getSubMeshes()) {
       MaterialPtr material;

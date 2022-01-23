@@ -1,34 +1,58 @@
 import PBRS from PBRS.material
+import PBRS_vs from PBRS.program
+import PBRS_BaseI_fs from PBRS.program
 
-vertex_program PBRS_Reflective_vs glsl glsles
+vertex_program PBRS_Reflective_vs glsl glsles : PBRS_vs
 {
-	source PBR.vert
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_REFLECTION,MAX_LIGHTS=8
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,HAS_REFLECTION
 }
 
-fragment_program PBRS_Reflective_fs glsl glsles
+abstract fragment_program PBRS_ReflectiveI_fs glsl glsles : PBRS_BaseI_fs
 {
-	source PBR.frag
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_NORMALMAP,HAS_EMISSIVEMAP,HAS_ORM,HAS_REFLECTION,MAX_LIGHTS=8
-
-    default_params
-    {
-        shared_params_ref PBRS_Shared_frag
-    }
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,MAX_LIGHTS=8,HAS_REFLECTION
 }
 
-abstract material PBRS_Plane : PBRS
+fragment_program PBRS_Reflective_fs glsl glsles : PBRS_ReflectiveI_fs {}
+
+abstract material PBRS_Plane
 {
-    receive_shadows off
     transparency_casts_shadows off
+    receive_shadows on
+
+    set $Albedo white.dds
+    set $Normal normal.dds
+    set $ORM white.dds
+    set $Emissive black.dds
 
     technique
     {
         pass
         {
+            diffuse 1 1 1
+            specular 1 1 1 1
+            ambient 1 1 1
+            emissive 0 0 0
+            alpha_rejection greater_equal 127
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+            texture_unit Normal
+            {
+                texture $Normal
+            }
+            texture_unit ORM
+            {
+                texture $ORM
+            }
+            texture_unit Emissive
+            {
+                texture $Emissive
+            }
             texture_unit ReflectionMap
             {
-                texture black.dds
+                texture violet.dds
                 filtering bilinear
             }
 

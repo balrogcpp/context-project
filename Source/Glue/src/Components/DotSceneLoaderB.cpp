@@ -8,6 +8,8 @@
 #include "Objects/SinbadCharacterController.h"
 #include "PagedGeometry/PagedGeometryAll.h"
 #include "ShaderHelpers.h"
+#include "ReflectionCamera.h"
+#include "CubeMapCamera.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>
@@ -743,13 +745,16 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
   int xSegments = ToInt(GetAttrib(XmlNode, "xSegments"), width / 5.0f);
   int ySegments = ToInt(GetAttrib(XmlNode, "ySegments"), height / 5.0f);
   int numTexCoordSets = ToInt(GetAttrib(XmlNode, "numTexCoordSets"), 1);
-  float uTile = GetAttribReal(XmlNode, "uTile", width / 10.0f);
-  float vTile = GetAttribReal(XmlNode, "vTile", height / 10.0f);
+  float uTile = GetAttribReal(XmlNode, "uTile", width / 5.0f);
+  float vTile = GetAttribReal(XmlNode, "vTile", height / 5.0f);
   string material = GetAttrib(XmlNode, "material", "BaseWhite");
   bool hasNormals = GetAttribBool(XmlNode, "hasNormals", true);
   Vector3 normal = ParseVector3(XmlNode.child("normal"));
   Vector3 up = ParseVector3(XmlNode.child("upVector"));
-  bool reflection = GetAttribBool(XmlNode, "reflection", false);
+  bool Reflective = GetAttribBool(XmlNode, "reflection", false);
+
+  MaterialPtr MaterialSPtr = MaterialManager::getSingleton().getByName(material);
+  if (!MaterialSPtr) return;
 
   normal = {0, 1, 0};
   up = {0, 0, 1};
@@ -758,43 +763,36 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
   string mesh_name = name + "_mesh";
 
   auto &OMM = MeshManager::getSingleton();
-
   MeshPtr plane_mesh = OMM.getByName(mesh_name);
-
   if (plane_mesh) OMM.remove(plane_mesh);
 
   MeshPtr res = OMM.createPlane(mesh_name, GroupName, plane, width, height, xSegments, ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
   res->buildTangentVectors();
   Entity *entity = OgreScene->createEntity(name, mesh_name);
-  entity->setCastShadows(true);
+//  entity->setCastShadows(true);
+
   entity->setMaterialName(material);
 
-  //  if (material.empty()) return;
+  if (Reflective) {
+    static unique_ptr<ReflectionCamera> rcamera;
 
-  //  if (!material.empty()) {
-  //    entity->setMaterialName(material);
-  //    MaterialPtr material_ptr = MaterialManager::getSingleton().getByName(material);
-  //    PBR::UpdatePbrParams(material);
-  //  }
+    rcamera.reset();
+    rcamera = make_unique<ReflectionCamera>(plane, 512);
 
-  //  if (reflection) {
-  //    rcamera.reset();
-  //    rcamera = make_unique<ReflectionCamera>(plane, 512);
-  //
-  //    rcamera->SetPlane(plane);
-  //
-  //    MaterialPtr material_ptr = MaterialManager::getSingleton().getByName(material);
-  //
-  //    auto material_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState("ReflectionMap");
-  //
-  //    if (material_unit) {
-  //      material_unit->setTexture(rcamera->reflection_texture);
-  //      material_unit->setTextureAddressingMode(TAM_CLAMP);
-  //      material_unit->setTextureFiltering(FO_LINEAR, FO_LINEAR, FO_POINT);
-  //    }
-  //  }
+    rcamera->SetPlane(plane);
+
+
+    auto material_unit = MaterialSPtr->getTechnique(0)->getPass(0)->getTextureUnitState("ReflectionMap");
+
+    if (material_unit) {
+      material_unit->setTexture(rcamera->reflection_texture);
+      material_unit->setTextureAddressingMode(TAM_CLAMP);
+      material_unit->setTextureFiltering(FO_LINEAR, FO_LINEAR, FO_POINT);
+    }
+  }
 
   ParentNode->attachObject(entity);
+  FixMaterial(MaterialSPtr);
 
   unique_ptr<BtOgre::StaticMeshToShapeConverter> converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
 
@@ -804,8 +802,8 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
   entBody->setFriction(1);
   GetPhysics().AddRigidBody(entBody);
 
-  const uint32 WATER_MASK = 0xF00;
-  entity->setVisibilityFlags(WATER_MASK);
+//  const uint32 WATER_MASK = 0xF00;
+//  entity->setVisibilityFlags(WATER_MASK);
 }
 
 void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
@@ -878,17 +876,18 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   trees->update();
   trees->setCastsShadows(false);
   GetScene().AddForests(trees);
-//  FixTransparentShadowCaster("3D-Diggers/fir01");
-//  FixTransparentShadowCaster("3D-Diggers/fir02");
+  //  FixTransparentShadowCaster("3D-Diggers/fir01");
+  //  FixTransparentShadowCaster("3D-Diggers/fir02");
   GetScene().AddMaterial("3D-Diggers/fir01_Batched");
   GetScene().AddMaterial("3D-Diggers/fir02_Batched");
 
-  // ProcessStaticGeometry(XmlNode);
+  ProcessStaticGeometry(XmlNode);
 }
 
 void DotSceneLoaderB::ProcessStaticGeometry(pugi::xml_node &XmlNode) {
   // create our grass mesh, and Init a grass entity from it
   Entity *rock = OgreScene->createEntity("Rock", "rock.mesh");
+  FixEntityMaterial(rock);
 
   // Init a static geometry field, which we will populate with grass
   auto *rocks = OgreScene->createStaticGeometry("Rocks");
@@ -937,11 +936,11 @@ void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
   OgreTerrainPtr->setResourceGroup(GroupName);
 
   Terrain::ImportData &defaultimp = OgreTerrainPtr->getDefaultImportSettings();
-//  defaultimp.terrainSize = mapSize;
-//  defaultimp.worldSize = worldSize;
+  //  defaultimp.terrainSize = mapSize;
+  //  defaultimp.worldSize = worldSize;
   defaultimp.inputScale = inputScale;
-//  defaultimp.minBatchSize = 17;
-//  defaultimp.maxBatchSize = 65;
+  //  defaultimp.minBatchSize = 17;
+  //  defaultimp.maxBatchSize = 65;
 
   for (auto &pPageElement : XmlNode.children("terrain")) {
     int pageX = StringConverter::parseInt(pPageElement.attribute("x").value());
