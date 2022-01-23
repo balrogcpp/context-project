@@ -477,11 +477,14 @@ void Engine::FreeMouse() { GrabMouse(false); }
 
 void Engine::InitResourceLocation() {
 #ifdef DESKTOP
-  AddLocation("Programs", RGN_INTERNAL);
+  AddLocation("Programs/Core", RGN_INTERNAL);
+  AddLocation("Programs/GLSL", RGN_INTERNAL);
+  AddLocation("Programs/Other", RGN_INTERNAL);
   AddLocation("Assets", RGN_DEFAULT);
 #elif defined(ANDROID)
   auto &RGM = ResourceGroupManager::getSingleton();
   RGM.addResourceLocation("/Programs/Core.zip", "APKZip", RGN_INTERNAL);
+  RGM.addResourceLocation("/Programs/GLSLES.zip", "APKZip", RGN_INTERNAL);
   RGM.addResourceLocation("/Programs/Other.zip", "APKZip", RGN_INTERNAL);
   RGM.addResourceLocation("/Assets.zip", "APKZip", RGN_DEFAULT);
 #endif

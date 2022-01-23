@@ -1,11 +1,13 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
+#ifndef VERSION
 #ifndef GL_ES
 #version 330 core
 #define VERSION 330
 #else
 #version 100
 #define VERSION 100
+#endif
 #endif
 
 #include "header.frag"

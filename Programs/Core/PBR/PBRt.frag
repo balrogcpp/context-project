@@ -16,12 +16,14 @@
 // [4] "An Inexpensive BRDF Model for Physically based Rendering" by Christophe Schlick
 //     https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf
 
+#ifndef VERSION
 #ifndef GL_ES
 #version 330 core
 #define VERSION 330
 #else
 #version 100
 #define VERSION 100
+#endif
 #endif
 
 #include "header.frag"
@@ -31,7 +33,6 @@ uniform sampler2D uAlbedoSampler;
 uniform float uAlphaRejection;
 in vec2 vUV0;
 #endif
-
 
 #ifndef SHADOWCASTER
 #ifdef HAS_BASECOLORMAP
@@ -163,9 +164,6 @@ uniform float uShadowFilterSize;
 uniform int uShadowFilterIterations;
 #endif // SHADOWRECEIVER
 
-
-
-
 #ifdef SHADOWRECEIVER
 in vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
@@ -188,7 +186,6 @@ in vec3 vNormal;
 #ifdef HAS_REFLECTION
 in vec4 projectionCoord;
 #endif
-
 
 //SRGB corretion
 #include "srgb.glsl"

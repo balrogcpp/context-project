@@ -1,14 +1,14 @@
-#version 300 es
-#define VERSION 300
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
-//#ifndef GL_ES
-//#version 330 core
-//#define VERSION 330
-//#else
-//#version 100
-//#define VERSION 100
-//#endif
+#ifndef VERSION
+#ifndef GL_ES
+#version 330 core
+#define VERSION 330
+#else
+#version 100
+#define VERSION 100
+#endif
+#endif
 
 #include "header.vert"
 
