@@ -76,10 +76,15 @@ add_custom_target(BuildPackage
         )
 
 # env variable ANDROID_SDK_ROOT must be set manually
+if (NOT RELEASE)
+    set(GRADLE_TARGET assembleDebug)
+else ()
+    set(GRADLE_TARGET assembleRelease)
+endif ()
 if (UNIX)
     add_custom_target(BuildAndroid
             DEPENDS BuildAssets
-            COMMAND ./gradlew assembleRelease
+            COMMAND ./gradlew ${GRADLE_TARGET}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
             COMMENT "Build packages..."
             USES_TERMINAL
@@ -87,7 +92,7 @@ if (UNIX)
 elseif (WIN32)
     add_custom_target(BuildAndroid
             DEPENDS BuildAssets
-            COMMAND gradlew.bat assembleRelease
+            COMMAND gradlew.bat ${GRADLE_TARGET}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
             COMMENT "Build packages..."
             USES_TERMINAL
