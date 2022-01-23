@@ -41,26 +41,23 @@ include(Doxygen)
 set(CMAKE_PREFIX_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_EXTERNAL_INSTALL_LOCATION})
 
-set(CMAKE_FOLDER Docker)
+set(CMAKE_FOLDER DockerCompose)
 
-# Docker-compose targets (not crossplatform )
-if (UNIX)
-    add_custom_target(DockerComposeDep
-            COMMAND docker-compose -f docker-compose-3rd.yml up
-            COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMENT "Building thirdparty libraries with docker-compose..."
-            USES_TERMINAL
-            )
+add_custom_target(DockerComposeDep
+        COMMAND docker-compose -f docker-compose-3rd.yml up
+        COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Building thirdparty libraries with docker-compose..."
+        USES_TERMINAL
+        )
 
-    add_custom_target(DockerCompose
-            COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
-            COMMAND docker-compose down --volumes
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMENT "Building tests with docker..."
-            USES_TERMINAL
-            )
-endif ()
+add_custom_target(DockerCompose
+        COMMAND GIT_HASH=${GIT_SHA1} docker-compose up
+        COMMAND docker-compose down --volumes
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Building tests with docker..."
+        USES_TERMINAL
+        )
 
 set(CMAKE_FOLDER "")
 
@@ -69,17 +66,14 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/Source)
 #Packaging
 include(Packaging)
 
-# Doesn't work with MSVC
-if (NOT MSVC)
-    add_custom_target(BuildPackage
-            DEPENDS BuildAssets
-            COMMAND ${CMAKE_COMMAND} --build . --target package
-            COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            COMMENT "Build packages..."
-            USES_TERMINAL
-            )
-endif ()
+add_custom_target(BuildPackage
+        DEPENDS BuildAssets
+        COMMAND ${CMAKE_COMMAND} --build . --target package --config ${CMAKE_BUILD_TYPE}
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Build packages..."
+        USES_TERMINAL
+        )
 
 if (UNIX)
     add_custom_target(BuildAndroid
