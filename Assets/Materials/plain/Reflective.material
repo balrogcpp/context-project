@@ -13,8 +13,8 @@ material ReflectivePlane2 : PBR_Basic
 
 material ReflectivePlane : PBR_Basic
 {
-    set $Albedo bog_albedo.dds
-    set $Normal bog_normal.dds
+    //set $Albedo bog_albedo.dds
+    //set $Normal bog_normal.dds
     //set $ORM noise.dds
 
     //set $Albedo green.dds

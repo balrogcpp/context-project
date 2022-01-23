@@ -13,7 +13,7 @@
             <position x="0" y="1.8" z="0"/>
             <rotation qw="0.780483" qx="0.483536" qy="0.336872" qz="-0.208704"/>
             <scale x="1.000000" y="1.000000" z="1.000000"/>
-            <camera fov="1" name="Default" projectionType="perspective">
+            <camera fov="1.5" name="Default" projectionType="perspective">
                 <clipping far="1000.0" near="0.001"/>
             </camera>
             <!--            <node name="Point">-->
@@ -59,7 +59,7 @@
             </entity>
         </node>
         <node name="Plane">
-            <plane material="ReflectivePlane" width="200" reflection="false" distance="-10.0"/>
+            <plane name="Plane" material="ReflectivePlane" width="200" reflection="true" distance="-10.0"/>
         </node>
     </nodes>
     <forest>
@@ -74,7 +74,7 @@
         <!--                <skyBox cubemap="BlueSky512.dds"/>-->
         <skyBox cubemap="OutputCube.dds"/>
     </environment>
-    <terrainGroup worldSize="200" mapSize="257" inputScale="10" tuningMaxPixelError="8">
+    <terrainGroup worldSize="200" mapSize="257" inputScale="10">
         <terrain x="0" y="0" heightmap="terrain.png"/>
     </terrainGroup>
 </scene>
