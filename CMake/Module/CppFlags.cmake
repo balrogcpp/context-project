@@ -1,5 +1,8 @@
 # This source file is part of "glue project". Created by Andrey Vasiliev
 
+option(GLUE_ENABLE_AVX "Enable AVS instructions set" OFF)
+option(GLUE_ENABLE_AVX2 "Enable AVS2 instructions set" OFF)
+
 if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND NOT MSVC)
     string(APPEND CMAKE_CXX_FLAGS " -Wall")
     string(APPEND CMAKE_C_FLAGS " -Wall")
@@ -31,6 +34,13 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STRE
         string(APPEND CMAKE_CXX_FLAGS " -mwindows")
         string(APPEND CMAKE_C_FLAGS " -mwindows")
     endif ()
+    if (GLUE_ENABLE_AVX2)
+        string(APPEND CMAKE_CXX_FLAGS " -mavx2")
+        string(APPEND CMAKE_C_FLAGS " -mavx2")
+    elseif (GLUE_ENABLE_AVX)
+        string(APPEND CMAKE_CXX_FLAGS " -mavx")
+        string(APPEND CMAKE_C_FLAGS " -mavx")
+    endif ()
 
     # gcc-mingw links everything as shared libraries by default
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -54,6 +64,13 @@ elseif (MSVC)
     if (CMAKE_SIZEOF_VOID_P LESS 8)
         string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2")
         string(APPEND CMAKE_C_FLAGS " /arch:SSE2")
+    endif ()
+    if (GLUE_ENABLE_AVX2)
+        string(APPEND CMAKE_CXX_FLAGS " /arch:AVX2")
+        string(APPEND CMAKE_C_FLAGS " /arch:AVX2")
+    elseif (GLUE_ENABLE_AVX)
+        string(APPEND CMAKE_CXX_FLAGS " /arch:AV")
+        string(APPEND CMAKE_C_FLAGS " /arch:AVX")
     endif ()
     string(APPEND CMAKE_CXX_FLAGS " /EHa /MP /GS- /GF")
     string(APPEND CMAKE_C_FLAGS " /EHa /MP /GS- /GF")

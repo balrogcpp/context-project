@@ -25,6 +25,7 @@ list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Module)
 include(Make)
 include(Platform)
 include(GitHash)
+include(CMakeDependentOption)
 
 # Create artifacts directory
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
