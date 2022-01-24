@@ -2,6 +2,11 @@
 
 include(Platform)
 
+if (MSVC)
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " /FORCE:MULTIPLE")
+    string(APPEND CMAKE_SHARED_LINKER_FLAGS " /FORCE:MULTIPLE")
+endif()
+
 set(GLUE_INCLUDE_DIRS
         ${GLUE_EXTERNAL_INSTALL_LOCATION}/include
         ${OPENAL_INCLUDE_DIR}
@@ -20,13 +25,6 @@ elseif (ANDROID)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 endif ()
-
-#jemalloc can fix problems with memory bloat on linux
-#if (LINUX)
-#    list(APPEND SYSTEM_LIBRARIES jemalloc.a)
-#endif ()
-
-set(VORBIS_LIBRARIES "vorbisfile;vorbis;vorbisenc")
 
 set(GLUE_LINK_LIBRARIES
         ${OGRE_LIBRARIES}
