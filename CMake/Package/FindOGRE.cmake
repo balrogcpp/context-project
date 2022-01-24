@@ -5,7 +5,7 @@ find_path(OGRE_INCLUDE_DIRS NAMES OgreRoot.h PATH_SUFFIXES "OGRE")
 if (OGRE_STATIC)
     string(APPEND OGRE_POSTFIX "Static")
 endif ()
-if (WIN32 AND DEBUG)
+if (WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     string(APPEND OGRE_POSTFIX "_d")
 endif ()
 
