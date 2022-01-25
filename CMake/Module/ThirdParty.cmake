@@ -94,7 +94,7 @@ externalproject_add(Target_OpenAL
                     GIT_TAG 1.21.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
-                    UPDATE_COMMAND ${OPENAL_CHDIR}  ${GIT_EXECUTABLE} reset --hard
+                    UPDATE_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} reset --hard
                     PATCH_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/openal-1.21.1.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
@@ -268,7 +268,8 @@ externalproject_add(Target_rapidjson
                     -DRAPIDJSON_BUILD_THIRDPARTY_GTEST=OFF
                     -DRAPIDJSON_HAS_STDSTRING=ON
                     )
-                    
+
+set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_assimp)
 externalproject_add(Target_assimp
                     EXCLUDE_FROM_ALL true
                     DEPENDS Target_zlib
@@ -277,6 +278,8 @@ externalproject_add(Target_assimp
                     GIT_TAG v5.1.6
                     GIT_SHALLOW true
                     GIT_PROGRESS false
+                    UPDATE_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} reset --hard
+                    PATCH_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/assimp-5.1.6.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
