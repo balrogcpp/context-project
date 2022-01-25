@@ -31,6 +31,6 @@ void main()
     FragData[1].r = 1.0;
 #else
     color = ApplyFog(color, uFogParams, uFogColour, vDepth);
-    FragColor = vec4(LINEARtoSRGB(color, 1.0), 1.0);
+    FragColor.rgb = LINEARtoSRGB(color, 1.0);
 #endif
 }

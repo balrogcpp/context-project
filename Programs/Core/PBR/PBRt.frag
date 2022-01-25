@@ -319,66 +319,54 @@ vec3 GetNormal(vec2 uv)
 
 //----------------------------------------------------------------------------------------------------------------------
 vec4 GetAlbedo(vec2 uv) {
-    vec4 albedo = vec4(1.0);
-
-    albedo = texture2D(uAlbedoSampler, uv, uLOD);
-
-    #ifdef HAS_COLOURS
-    albedo.rgb *= (uSurfaceDiffuseColour * vColor);
-    #else
-    albedo.rgb *= (uSurfaceDiffuseColour);
-    #endif
-
+#ifdef HAS_COLOURS
+    vec4 albedo = vec4(uSurfaceDiffuseColour * vColor, 1.0);
+#else
+    vec4 albedo = vec4(uSurfaceDiffuseColour, 1.0);
+#endif
+#ifdef HAS_BASECOLORMAP
+    albedo *= texture2D(uAlbedoSampler, uv, uLOD);
+#endif
     return SRGBtoLINEAR(albedo);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 float GetMetallic(vec2 uv) {
     float metallic = uSurfaceShininessColour;
-
 #ifdef HAS_METALLICMAP
     metallic *= texture2D(uMetallicSampler, uv, uLOD).r;
 #endif
-
     return clamp(metallic, 0.0, 1.0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 float GetRoughness(vec2 uv) {
     float roughness = uSurfaceSpecularColour;
-
 #ifdef HAS_ROUGHNESSMAP
     roughness *= texture2D(uRoughnessSampler, uv, uLOD).r;
 #endif
-
     return clamp(roughness, F0, 1.0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 float GetOcclusion(vec2 uv) {
-    float occlusion = 1.0;
-
 #ifdef HAS_OCCLUSIONMAP
-     occlusion *= texture2D(uOcclusionSampler, uv, uLOD).r;
+     return texture2D(uOcclusionSampler, uv, uLOD).r;
 #endif
-
-    return occlusion;
+    return 1.0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 GetORM(vec2 uv) {
     vec3 ORM = vec3(1.0, uSurfaceSpecularColour, uSurfaceShininessColour);
-
 #ifdef HAS_ORM
     vec3 texel = texture2D(uORMSampler, uv, uLOD).rgb;
     ORM.r = texel.r;
     ORM.g *= texel.g;
     ORM.b *= texel.b;
 #endif
-
 //    ORM.g = clamp(ORM.g, 0.0, 1.0);
 //    ORM.b = clamp(ORM.b, F0, 1.0);
-
     return ORM;
 }
 
@@ -437,11 +425,8 @@ void main()
 #ifdef HAS_ALPHA
 #ifdef PAGED_GEOMETRY
     alpha *= vAlpha;
-#endif // PAGED_GEOMETRY
-
-    if (alpha < uAlphaRejection) {
-        discard;
-    }
+#endif
+    if (alpha < uAlphaRejection) discard;
 #endif // HAS_ALPHA
 
     vec3 ORM = GetORM(tex_coord);
@@ -597,15 +582,13 @@ void main()
     FragData[2].rg = velocity;
 #else
     total_colour = ApplyFog(total_colour, uFogParams, uFogColour, vDepth);
-    FragColor = vec4(LINEARtoSRGB(total_colour, 1.0), alpha);
+    FragColor = LINEARtoSRGB(vec4(total_colour, alpha), 1.0);
 #endif
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
-    if (texture2D(uAlbedoSampler, vUV0.xy).a < uAlphaRejection) {
-        discard;
-    }
+    if (texture2D(uAlbedoSampler, vUV0.xy).a < uAlphaRejection) discard;
 #endif //SHADOWCASTER_ALPHA
-    //FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0);
+    //FragColor.r = gl_FragCoord.z;
 #endif //SHADOWCASTER
 }
