@@ -95,7 +95,7 @@ externalproject_add(Target_OpenAL
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${OPENAL_CHDIR}  ${GIT_EXECUTABLE} reset --hard
-                    PATCH_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/openal-1.21.1-clang-mingw.patch
+                    PATCH_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/openal-1.21.1.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
@@ -346,26 +346,6 @@ externalproject_add(Target_assimp
                     -DASSIMP_BUILD_3MF_IMPORTER=OFF
                     -DASSIMP_BUILD_MMD_IMPORTER=OFF
                     -DASSIMP_BUILD_STEP_IMPORTER=OFF
-                    )
-
-set(GLSLOPT_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_glsl-optimizer)
-externalproject_add(Target_glsl-optimizer
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${GLUE_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/aras-p/glsl-optimizer.git
-                    GIT_TAG d78c3d2f249aa870368ad320905bc954c47704f6
-                    GIT_SHALLOW true
-                    GIT_PROGRESS false
-                    UPDATE_COMMAND ${GLSLOPT_CHDIR} ${GIT_EXECUTABLE} reset --hard
-                    PATCH_COMMAND ${GLSLOPT_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/glsl-optimizer.patch
-                    CMAKE_ARGS
-                    -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    ${GLUE_CMAKE_EXTRA_FLAGS}
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     )
 
 set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_OGRE)
@@ -640,18 +620,4 @@ externalproject_add(Target_yaml-cpp
                     -DYAML_CPP_BUILD_TOOLS=OFF
                     -DYAML_BUILD_SHARED_LIBS=OFF
                     -DYAML_CPP_BUILD_TESTS=OFF
-                    )
-
-set(INIH_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_inih)
-set(INIH_INCLUDE_DIR ${GLUE_PREFIX_LOCATION}/sdk/include/inih)
-externalproject_add(Target_inih
-                    EXCLUDE_FROM_ALL true
-                    PREFIX ${GLUE_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/jtilly/inih.git
-                    GIT_TAG 1185eac0f0977654f9ac804055702e110bb4da91
-                    GIT_SHALLOW false
-                    GIT_PROGRESS false
-                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
-                    BUILD_COMMAND ${CMAKE_COMMAND} -E make_directory ${INIH_INCLUDE_DIR}
-                    INSTALL_COMMAND ${INIH_CHDIR} ${CMAKE_COMMAND} -E copy INIReader.h ${INIH_INCLUDE_DIR}
                     )
