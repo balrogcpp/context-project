@@ -84,12 +84,10 @@ out vec2 vUV0;
 
 #ifdef HAS_REFLECTION
 vec4 GetProjectionCoord(vec4 position) {
-  const mat4 scalemat = mat4(0.5, 0.0, 0.0, 0.0,
+  return mat4(0.5, 0.0, 0.0, 0.0,
                             0.0, 0.5, 0.0, 0.0,
                             0.0, 0.0, 0.5, 0.0,
-                            0.5, 0.5, 0.5, 1.0);
-
-  return scalemat * position;
+                            0.5, 0.5, 0.5, 1.0) * position;
 }
 #endif
 
@@ -149,7 +147,6 @@ void main()
 
   vDepth = gl_Position.z;
 
-
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
   for (int i = 0; i < uShadowTextureCount; i++) {
@@ -160,7 +157,6 @@ void main()
 #ifdef HAS_REFLECTION
   projectionCoord = GetProjectionCoord(gl_Position);
 #endif
-
 
 #else //SHADOWCASTER
   gl_Position = uMVPMatrix * new_position;

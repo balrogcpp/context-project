@@ -4,6 +4,7 @@
 #define PBR_GLSL
 
 #define M_PI 3.141592653589793
+#define F0 0.04
 
 // Encapsulate the various inputs used by the various functions in the shading equation
 // We store values in this struct to simplify the integration of alternative implementations

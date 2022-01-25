@@ -101,17 +101,14 @@ uniform vec4 uLightSpotParamsArray[MAX_LIGHTS];
 #ifdef SHADOWRECEIVER
 uniform float uLightCastsShadowsArray[MAX_LIGHTS];
 #endif
-
 uniform float uLightCount;
 #ifndef USE_IBL
 uniform vec3 uAmbientLightColour;
 #endif
 uniform vec3 uSurfaceAmbientColour;
 uniform vec3 uSurfaceDiffuseColour;
-
 uniform float uSurfaceSpecularColour;
 uniform float uSurfaceShininessColour;
-
 uniform vec3 uSurfaceEmissiveColour;
 #ifdef HAS_ALPHA
 uniform float uAlphaRejection;
@@ -194,6 +191,12 @@ in vec4 projectionCoord;
 //Noise Function
 #include "noise.glsl"
 
+#include "lighting.glsl"
+
+#ifdef USE_IBL
+#include "ibl.glsl"
+#endif
+
 //Shadows block
 #ifdef SHADOWRECEIVER
 #include "receiver.glsl"
@@ -235,31 +238,20 @@ float GetShadow(const int counter) {
     return 1.0;
 }
 
-
-
 //----------------------------------------------------------------------------------------------------------------------
 float CalcPSSMDepthShadow(vec4 pssmSplitPoints, vec4 lightSpacePos0, vec4 lightSpacePos1, vec4 lightSpacePos2, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2)
 {
     // calculate shadow
     if (vDepth <= pssmSplitPoints.x)
-    {
         return CalcDepthShadow(shadowMap0, lightSpacePos0, uShadowDepthOffset, shadowTexel0*uShadowFilterSize, uShadowFilterIterations);
-    }
     else if (vDepth <= pssmSplitPoints.y)
-    {
         return CalcDepthShadow(shadowMap1, lightSpacePos1, uShadowDepthOffset, shadowTexel1*uShadowFilterSize, uShadowFilterIterations);
-    }
     else if (vDepth <= pssmSplitPoints.z)
-    {
         return CalcDepthShadow(shadowMap2, lightSpacePos2, uShadowDepthOffset, shadowTexel2*uShadowFilterSize, uShadowFilterIterations);
-    }
 
     return 1.0;
 }
-
-
 #endif
-
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
@@ -324,6 +316,22 @@ vec3 GetNormal(vec2 uv)
 
     return n;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+vec4 GetAlbedo(vec2 uv) {
+    vec4 albedo = vec4(1.0);
+
+    albedo = texture2D(uAlbedoSampler, uv, uLOD);
+
+    #ifdef HAS_COLOURS
+    albedo.rgb *= (uSurfaceDiffuseColour * vColor);
+    #else
+    albedo.rgb *= (uSurfaceDiffuseColour);
+    #endif
+
+    return SRGBtoLINEAR(albedo);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 float GetMetallic(vec2 uv) {
     float metallic = uSurfaceShininessColour;
@@ -343,11 +351,10 @@ float GetRoughness(vec2 uv) {
     roughness *= texture2D(uRoughnessSampler, uv, uLOD).r;
 #endif
 
-    return clamp(roughness, 0.04, 1.0);
+    return clamp(roughness, F0, 1.0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
 float GetOcclusion(vec2 uv) {
     float occlusion = 1.0;
 
@@ -356,21 +363,6 @@ float GetOcclusion(vec2 uv) {
 #endif
 
     return occlusion;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-vec4 GetAlbedo(vec2 uv) {
-    vec4 albedo = vec4(1.0);
-
-    albedo = texture2D(uAlbedoSampler, uv, uLOD);
-
-#ifdef HAS_COLOURS
-    albedo.rgb *= (uSurfaceDiffuseColour * vColor);
-#else
-    albedo.rgb *= (uSurfaceDiffuseColour);
-#endif
-
-    return SRGBtoLINEAR(albedo);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -385,7 +377,7 @@ vec3 GetORM(vec2 uv) {
 #endif
 
 //    ORM.g = clamp(ORM.g, 0.0, 1.0);
-//    ORM.b = clamp(ORM.b, 0.04, 1.0);
+//    ORM.b = clamp(ORM.b, F0, 1.0);
 
     return ORM;
 }
@@ -422,14 +414,7 @@ vec2 ParallaxMapping(vec2 uv, vec3 viewDir)
 }
 #endif
 
-#include "lighting.glsl"
-
-#ifdef USE_IBL
-#include "ibl.glsl"
-#endif
-
 #endif // !SHADOWCASTER
-
 
 void main()
 {
@@ -466,10 +451,9 @@ void main()
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
-    const vec3 f0 = vec3(0.04);
-    vec3 diffuseColor = color * (vec3(1.0) - f0);
+    vec3 diffuseColor = color * vec3(1.0 - F0);
     diffuseColor *= (1.0 - metallic);
-    vec3 specularColor = mix(f0, color, metallic);
+    vec3 specularColor = mix(vec3(F0), color, metallic);
 
     // Compute reflectance.
     float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
@@ -549,7 +533,6 @@ void main()
         float D = MicrofacetDistribution(pbrInputs);
         vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
         float tmp = NdotL * fSpotT * fAtten;
-
 
 #ifdef SHADOWRECEIVER
         float shadow = 1.0;
