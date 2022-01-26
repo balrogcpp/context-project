@@ -1,7 +1,7 @@
 # This source file is part of "glue project". Created by Andrey Vasiliev
 
-option(GLUE_ENABLE_AVX "Enable AVS instructions set" OFF)
-option(GLUE_ENABLE_AVX2 "Enable AVS2 instructions set" OFF)
+option(GLUE_USE_AVX "Use AVX instructions set" OFF)
+option(GLUE_USE_AVX2 "Use AVX2 instructions set" OFF)
 
 if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND NOT MSVC)
     string(APPEND CMAKE_CXX_FLAGS " -Wall")

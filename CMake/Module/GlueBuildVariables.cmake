@@ -8,13 +8,13 @@ if (MSVC)
 endif()
 
 set(GLUE_INCLUDE_DIRS
-        ${GLUE_EXTERNAL_INSTALL_LOCATION}/include
+        ${GLUE_THIRDPARTY_ROOT}/include
         ${OPENAL_INCLUDE_DIR}
         ${BULLET_INCLUDE_DIR}
         ${OGRE_INCLUDE_DIRS}
         )
 
-set(GLUE_LINK_DIRS ${GLUE_EXTERNAL_INSTALL_LOCATION}/lib ${GLUE_EXTERNAL_INSTALL_LOCATION}/lib/OGRE)
+set(GLUE_LINK_DIRS ${GLUE_THIRDPARTY_ROOT}/lib ${GLUE_THIRDPARTY_ROOT}/lib/OGRE)
 
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)

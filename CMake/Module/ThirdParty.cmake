@@ -8,12 +8,12 @@ include(ExternalProject)
 find_package(Git REQUIRED)
 
 set(GLUE_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/External/${GLUE_TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE})
-set(GLUE_EXTERNAL_INSTALL_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/External/${GLUE_TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE}/sdk CACHE PATH "")
+set(GLUE_THIRDPARTY_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/External/${GLUE_TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE}/sdk CACHE PATH "")
 set(GLUE_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/Patch)
-set(GLUE_EXTERNAL_DIR ${GLUE_EXTERNAL_INSTALL_LOCATION})
-set(GLUE_EXTERNAL_INCLUDE_DIR ${GLUE_EXTERNAL_INSTALL_LOCATION}/include)
-set(GLUE_EXTERNAL_LIB_DIR ${GLUE_EXTERNAL_INSTALL_LOCATION}/lib)
-set(GLUE_EXTERNAL_BIN_DIR ${GLUE_EXTERNAL_INSTALL_LOCATION}/bin)
+set(GLUE_EXTERNAL_DIR ${GLUE_THIRDPARTY_ROOT})
+set(GLUE_EXTERNAL_INCLUDE_DIR ${GLUE_THIRDPARTY_ROOT}/include)
+set(GLUE_EXTERNAL_LIB_DIR ${GLUE_THIRDPARTY_ROOT}/lib)
+set(GLUE_EXTERNAL_BIN_DIR ${GLUE_THIRDPARTY_ROOT}/bin)
 if (ANDROID)
     set(GLUE_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
@@ -30,8 +30,8 @@ externalproject_add(Target_SDL2
                     PATCH_COMMAND ${SDL2_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/sdl2-2.0.20.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
@@ -54,8 +54,8 @@ externalproject_add(Target_Bullet
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
@@ -98,9 +98,9 @@ externalproject_add(Target_OpenAL
                     PATCH_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/openal-1.21.1.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
@@ -129,8 +129,8 @@ externalproject_add(Target_Ogg
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
@@ -146,13 +146,13 @@ externalproject_add(Target_Vorbis
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
-                    -DOGG_INCLUDE_DIR=${GLUE_EXTERNAL_INSTALL_LOCATION}/include #for Android
-                    -DOGG_LIBRARY=${GLUE_EXTERNAL_INSTALL_LOCATION}/lib/libogg.a #for Android
+                    -DOGG_INCLUDE_DIR=${GLUE_THIRDPARTY_ROOT}/include #for Android
+                    -DOGG_LIBRARY=${GLUE_THIRDPARTY_ROOT}/lib/libogg.a #for Android
                     )
 
 externalproject_add(Target_zlib
@@ -164,14 +164,14 @@ externalproject_add(Target_zlib
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DBUILD_SHARED_LIBS=OFF
-                    TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_THIRDPARTY_ROOT}
                     ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll lib/libz.dylib
                     TEST_AFTER_INSTALL true
                     )
@@ -186,8 +186,8 @@ externalproject_add(Target_ZZIP
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
@@ -202,8 +202,8 @@ externalproject_add(Target_pugixml
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
@@ -219,8 +219,8 @@ externalproject_add(Target_PNG
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
@@ -238,8 +238,8 @@ externalproject_add(Target_FreeType
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
@@ -257,8 +257,8 @@ externalproject_add(Target_rapidjson
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
@@ -282,8 +282,8 @@ externalproject_add(Target_assimp
                     PATCH_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/assimp-5.1.6.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
                     -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
@@ -364,14 +364,14 @@ externalproject_add(Target_OGRE
                     PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/ogre-13.2.4.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
                     -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
-                    -DOGRE_DEPENDENCIES_DIR=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DOGRE_DEPENDENCIES_DIR=${GLUE_THIRDPARTY_ROOT}
                     -DOGRE_ENABLE_PRECOMPILED_HEADERS=ON
                     -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=OFF
                     -DOGRE_ASSERT_MODE=1
@@ -427,7 +427,7 @@ externalproject_add(Target_OGRE
                     -DOGRE_BUILD_PLATFORM_APPLE_IOS=OFF
                     TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
                     ${GLUE_PREFIX_LOCATION}/src/Target_OGRE/RenderSystems/GLSupport/include/GLSL
-                    ${GLUE_EXTERNAL_INSTALL_LOCATION}/include/OGRE/RenderSystems/GLES2
+                    ${GLUE_THIRDPARTY_ROOT}/include/OGRE/RenderSystems/GLES2
                     TEST_AFTER_INSTALL true
                     )
 
@@ -440,9 +440,9 @@ externalproject_add(Target_FreeGLUT
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DFREEGLUT_BUILD_SHARED_LIBS=OFF
@@ -462,9 +462,9 @@ externalproject_add(Target_OGRE2
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_C_FLAGS=${CMAKE_EXTRA_C_FLAGS}
                     -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
@@ -491,8 +491,8 @@ externalproject_add(Target_Lua
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
@@ -513,8 +513,8 @@ externalproject_add(Target_sol
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
@@ -530,7 +530,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
                         GIT_SHALLOW true
                         GIT_PROGRESS false
                         CONFIGURE_COMMAND ${JEMALLOC_CHDIR} ./autogen.sh
-                        BUILD_COMMAND ${JEMALLOC_CHDIR} ./configure --disable-stats --prefix ${GLUE_EXTERNAL_INSTALL_LOCATION}
+                        BUILD_COMMAND ${JEMALLOC_CHDIR} ./configure --disable-stats --prefix ${GLUE_THIRDPARTY_ROOT}
                         INSTALL_COMMAND ${JEMALLOC_CHDIR} ${MAKE_COMMAND} install_lib_static
                         )
 endif ()
@@ -545,8 +545,8 @@ externalproject_add(Target_filesystem
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
@@ -563,8 +563,8 @@ externalproject_add(Target_GoogleTest
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     -Dgtest_force_shared_crt=ON
@@ -580,8 +580,8 @@ externalproject_add(Target_GoogleBenchmark
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
@@ -597,8 +597,8 @@ externalproject_add(Target_json
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
@@ -614,8 +614,8 @@ externalproject_add(Target_yaml-cpp
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
-                    -DCMAKE_INSTALL_PREFIX=${GLUE_EXTERNAL_INSTALL_LOCATION}
-                    -DCMAKE_PREFIX_PATH=${GLUE_EXTERNAL_INSTALL_LOCATION}
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
