@@ -8,6 +8,7 @@ macro(insert_dependency PACKAGE)
         set(ANY_NOT_FOUND true)
     else ()
         message(STATUS "Found ${PACKAGE}")
+        mark_as_advanced(${PACKAGE}_DIR)
     endif ()
 endmacro()
 
