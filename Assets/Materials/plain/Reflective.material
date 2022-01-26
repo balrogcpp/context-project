@@ -11,7 +11,7 @@ material ReflectivePlane2 : PBR_Basic
     set $AO bog_ao.dds*/
 }
 
-material ReflectivePlane : PBR_Basic
+material ReflectivePlane
 {
     //set $Albedo bog_albedo.dds
     //set $Normal bog_normal.dds
@@ -20,4 +20,13 @@ material ReflectivePlane : PBR_Basic
     //set $Albedo green.dds
     //set $Normal bog_normal.dds
     //set $ORM Titanium-Scuffed_roughness.dds
+   technique
+   {
+       pass
+       {
+           rtshader_system
+           {
+           }
+       }
+   }
 }

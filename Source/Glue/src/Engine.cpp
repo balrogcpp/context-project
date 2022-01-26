@@ -67,6 +67,7 @@ void Engine::InitComponents() {
   // RTSS
   InitRtss();
   CreateRTSSRuntime();
+//  InitRTSSInstansing();
 
   // Materials
   InitTextureSettings();
@@ -306,6 +307,10 @@ void Engine::InitShadowSettings() {
 
   OgreSceneManager->setShadowCameraSetup(PSSMSetupPtr);
   OgreSceneManager->setShadowColour(ColourValue::Black);
+
+#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
+  InitRTSSPSSM(PSSMSplitPointList);
+#endif
 
 #ifdef DESKTOP
   TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
