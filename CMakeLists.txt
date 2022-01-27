@@ -65,7 +65,7 @@ set(CMAKE_FOLDER "")
 add_subdirectory(${CMAKE_SOURCE_DIR}/Source)
 
 #Packaging
-include(Packaging)
+include(Package)
 
 add_custom_target(BuildPackage
         DEPENDS BuildAssets

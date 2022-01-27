@@ -2,7 +2,7 @@
 
 include(Platform)
 include(Make)
-include(CppFlags)
+include(GlueCppFlags)
 include(ExternalProject)
 
 find_package(Git REQUIRED)

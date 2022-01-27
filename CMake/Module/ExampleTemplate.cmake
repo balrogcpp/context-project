@@ -1,6 +1,6 @@
 # This source file is part of "glue project". Created by Andrey Vasiliev
 
-include(CppFlags)
+include(GlueCppFlags)
 include(GlueBuildVariables)
 
 set(GLUE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source)
