@@ -47,7 +47,7 @@ http://www.gnu.org/copyleft/lesser.txt.
 #define HYDRAX_VERSION_MINOR 5
 #define HYDRAX_VERSION_PATCH 4
 
-#define HYDRAX_RESOURCE_GROUP "Hydrax"
+#define HYDRAX_RESOURCE_GROUP Ogre::ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME
 
 #define HYDRAX_IMAGE_CHECK_PIXELS 0 // See Image.cpp, 1 = Check pixels / 0 = No check pixels
                                     // Use it for debug mode only
