@@ -17,7 +17,7 @@ else ()
     add_library(${TARGET_NAME} SHARED ${SAMPLE_SOURCE_FILES})
 endif ()
 
-include_directories(${TARGET_NAME} include ${GLUE_SOURCE_DIR}/Glue/include ${GLUE_SOURCE_DIR}/Glue/include/OgreOggSound ${GLUE_SOURCE_DIR}/Glue/include/PagedGeometry ${GLUE_SOURCE_DIR}/include ${GLUE_INCLUDE_DIRS})
+include_directories(${TARGET_NAME} include ${GLUE_SOURCE_DIR}/Glue/include ${GLUE_SOURCE_DIR}/Glue/include/OgreOggSound ${GLUE_SOURCE_DIR}/Glue/include/PagedGeometry ${GLUE_SOURCE_DIR}/Glue/include/Hydrax ${GLUE_SOURCE_DIR}/include ${GLUE_INCLUDE_DIRS})
 target_link_directories(${TARGET_NAME} PUBLIC ${GLUE_LINK_DIRS})
 target_precompile_headers(${TARGET_NAME} PUBLIC ${GLUE_SOURCE_DIR}/Glue/include/PCHeader.h)
 if (NOT ANDROID)
