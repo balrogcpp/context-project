@@ -10,6 +10,7 @@ using namespace std;
 using namespace Glue;
 
 namespace Demo {
+
 DemoDotAppState::DemoDotAppState() {}
 
 DemoDotAppState::~DemoDotAppState() {}

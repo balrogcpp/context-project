@@ -1,7 +1,7 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 #include "PCHeader.h"
-#include "GUI/ToggleButton.h"
+#include "ToggleButton.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui/imgui_internal.h"
 
