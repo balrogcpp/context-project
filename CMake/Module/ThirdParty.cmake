@@ -45,6 +45,24 @@ externalproject_add(Target_SDL2
                     -DSDL_HIDAPI_JOYSTICK=OFF
                     )
 
+externalproject_add(Target_OIS
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${GLUE_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/wgois/OIS.git
+                    GIT_TAG v1.5.1
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CMAKE_ARGS
+                    -G "${CMAKE_GENERATOR}"
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${GLUE_CMAKE_EXTRA_FLAGS}
+                    -DOIS_BUILD_SHARED_LIBS=OFF
+                    -DOIS_BUILD_DEMOS=OFF
+                    )
+
 externalproject_add(Target_Bullet
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}

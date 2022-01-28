@@ -7,7 +7,13 @@ if (MSVC)
     string(APPEND CMAKE_SHARED_LINKER_FLAGS " /FORCE:MULTIPLE")
 endif()
 
+set(GLUE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source)
+
 set(GLUE_INCLUDE_DIRS
+        ${GLUE_SOURCE_DIR}/include
+        ${GLUE_SOURCE_DIR}/Glue/include
+        ${GLUE_SOURCE_DIR}/Glue/include/OgreOggSound
+        ${GLUE_SOURCE_DIR}/Glue/include/PagedGeometry
         ${GLUE_THIRDPARTY_ROOT}/include
         ${OPENAL_INCLUDE_DIR}
         ${BULLET_INCLUDE_DIR}
