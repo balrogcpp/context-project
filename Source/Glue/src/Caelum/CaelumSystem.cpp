@@ -9,6 +9,7 @@
 #include "Astronomy.h"
 #include "CaelumPlugin.h"
 #include "FlatCloudLayer.h"
+#include <functional>
 
 using namespace Ogre;
 
@@ -342,12 +343,12 @@ namespace Caelum
         // Detach old
         if (getAutoAttachViewportsToComponents() && oldptr) {
             std::for_each (mAttachedViewports.begin(), mAttachedViewports.end(),
-                    std::bind1st (std::mem_fun (&PrecipitationController::destroyViewportInstance), oldptr));
+                    std::bind (std::mem_fn (&PrecipitationController::destroyViewportInstance), oldptr, std::placeholders::_1));
         }
         // Attach new.
         if (getAutoAttachViewportsToComponents() && newptr) {
             std::for_each (mAttachedViewports.begin(), mAttachedViewports.end(),
-                    std::bind1st (std::mem_fun (&PrecipitationController::createViewportInstance), newptr));
+                    std::bind(std::mem_fn(&PrecipitationController::createViewportInstance), newptr, std::placeholders::_1));
         }
         mPrecipitationController.reset(newptr);
     }
@@ -357,9 +358,9 @@ namespace Caelum
         if (getAutoAttachViewportsToComponents() && getDepthComposer ()) {
             std::for_each (
                     mAttachedViewports.begin(), mAttachedViewports.end(),
-                    std::bind1st (
-                            std::mem_fun (&DepthComposer::createViewportInstance),
-                            getDepthComposer ()));
+                    std::bind (
+                            std::mem_fn (&DepthComposer::createViewportInstance),
+                        getDepthComposer(), std::placeholders::_1));
         }
     }
 
