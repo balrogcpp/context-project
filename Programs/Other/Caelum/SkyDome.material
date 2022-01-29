@@ -1,0 +1,103 @@
+// This file is part of the Caelum project.
+// It is subject to the license terms in the LICENSE file found in the top-level directory
+// of this distribution.
+
+fragment_program CaelumSkyDomeFP cg
+{
+	source CaelumSkyDome.cg
+	entry_point SkyDomeFP
+	compile_arguments -DHAZE
+	profiles ps_2_0 arbfp1
+
+	default_params
+	{
+		// Caelum sky properties
+		param_named offset float 0
+		param_named hazeColour float4 0 0 0 0
+	}
+}
+
+fragment_program CaelumSkyDomeFP_NoHaze cg
+{
+	source CaelumSkyDome.cg
+	entry_point SkyDomeFP
+	profiles ps_2_0 arbfp1
+
+	default_params
+	{
+		// Caelum sky properties
+		param_named offset float 0
+	}
+}
+
+vertex_program CaelumSkyDomeVP cg
+{
+	source CaelumSkyDome.cg
+	entry_point SkyDomeVP
+	profiles vs_2_0 arbvp1
+	
+	default_params
+	{
+		param_named_auto worldViewProj worldviewproj_matrix
+		param_named sunDirection float3 1 0 0
+	}
+}
+
+material CaelumSkyDomeMaterial
+{
+	receive_shadows off
+	
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_check off
+			depth_write off
+			scene_blend alpha_blend
+			fog_override true none
+			
+			vertex_program_ref CaelumSkyDomeVP
+			{
+			}
+			
+			fragment_program_ref CaelumSkyDomeFP
+			{
+			}
+
+			texture_unit
+			{
+				texture EarthClearSky2.png 0
+				tex_address_mode clamp
+				tex_coord_set 0
+			}
+
+			texture_unit
+			{
+				texture AtmosphereDepth.png 1d
+				tex_address_mode clamp
+				tex_coord_set 1
+			}
+		}
+	}
+
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_check off
+			depth_write off
+			scene_blend alpha_blend
+			fog_override true
+			
+			texture_unit
+			{
+				texture EarthClearSky2.png 0
+				tex_address_mode clamp
+				tex_coord_set 0
+			}
+		}
+	}
+}
+
