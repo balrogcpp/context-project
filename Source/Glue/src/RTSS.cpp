@@ -1,8 +1,9 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
 #include "PCHeader.h"
-#include "RTSS.h"
+
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
+#include "RTSS.h"
 #include <RTShaderSystem/OgreRTShaderSystem.h>
 #include <RTShaderSystem/OgreShaderGenerator.h>
 
