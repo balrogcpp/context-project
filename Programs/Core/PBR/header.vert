@@ -13,7 +13,9 @@
 #define out varying
 #endif
 
-#else
+#else // GL_ES
+
+#define NO_MRT
 
 #extension GL_OES_standard_derivatives : enable
 #define textureCubeLod textureLodEXT
