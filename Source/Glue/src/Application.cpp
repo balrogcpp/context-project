@@ -26,7 +26,6 @@ using namespace std;
 namespace Glue {
 
 Application::Application(int argc, char *args[]) {
-  try {
     InputSequencer::GetInstance().RegWinObserver(this);
 
 #ifdef DESKTOP
@@ -55,6 +54,7 @@ Application::Application(int argc, char *args[]) {
     ConfigPtr = make_unique<Config>("");
 #endif
 
+
     EnginePtr = make_unique<Engine>();
     EnginePtr->InitComponents();
 
@@ -71,16 +71,6 @@ Application::Application(int argc, char *args[]) {
 
     LockFPS = ConfigPtr->GetBool("lock_fps", LockFPS);
     TargetFPS = ConfigPtr->GetInt("target_fps", TargetFPS);
-
-  } catch (Exception &e) {
-    ErrorWindow("Exception", e.GetDescription());
-  } catch (Ogre::Exception &e) {
-    ErrorWindow("Exception", string("Ogre: ") + e.getFullDescription());
-  } catch (exception &e) {
-    ErrorWindow("Exception", string("std::exception: ") + e.what());
-  } catch (...) {
-    ErrorWindow("Exception", "unhandled");
-  }
 }
 
 Application::~Application() { InputSequencer::GetInstance().UnregWinObserver(this); }
@@ -180,7 +170,6 @@ void Application::OnResume() {
 }
 
 int Application::Main(unique_ptr<AppState> &&AppStatePtr) {
-  try {
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC
     SDL_SetMainReady();
 #endif
@@ -193,16 +182,6 @@ int Application::Main(unique_ptr<AppState> &&AppStatePtr) {
     }
 
     SDL_Quit();
-
-  } catch (Exception &e) {
-    ErrorWindow("Exception", e.GetDescription());
-  } catch (Ogre::Exception &e) {
-    ErrorWindow("Exception", string("Ogre: ") + e.getFullDescription());
-  } catch (exception &e) {
-    ErrorWindow("Exception", string("std::exception: ") + e.what());
-  } catch (...) {
-    ErrorWindow("Exception", "unhandled");
-  }
 
   return 0;
 }
