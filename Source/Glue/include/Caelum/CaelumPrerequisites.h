@@ -17,7 +17,7 @@
 	#ifdef CAELUM_LIB
 		#define CAELUM_EXPORT __declspec (dllexport)
 	#else
-                #define CAELUM_EXPORT
+        #define CAELUM_EXPORT
 	#endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 	#define CAELUM_EXPORT __attribute__ ((visibility("default")))
@@ -75,7 +75,7 @@ namespace Caelum
     using Ogre::String;
 
     /// Resource group name for caelum resources.
-    static const String RESOURCE_GROUP_NAME = "Caelum";
+    static const String RESOURCE_GROUP_NAME = Ogre::RGN_INTERNAL;
 
     // Render group for caelum stuff
     // It's best to have them all together

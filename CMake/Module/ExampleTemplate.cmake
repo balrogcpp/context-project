@@ -4,12 +4,17 @@ include(GlueCppFlags)
 include(GlueBuildVariables)
 
 set(GLUE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source)
-file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${GLUE_SOURCE_DIR}/Glue/src/*.cpp src/*.cpp ${GLUE_SOURCE_DIR}/Glue/include/*.h include/*.h ${GLUE_SOURCE_DIR}/Glue/include/*.hpp include/*.hpp)
+file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${GLUE_SOURCE_DIR}/Glue/*.cpp ${GLUE_SOURCE_DIR}/Glue/*.h ${GLUE_SOURCE_DIR}/Glue/*.hpp src/*.cpp include/*.h include/*.hpp)
+file(GLOB_RECURSE SHADER_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Programs/*)
 if (MINGW)
     list(APPEND SAMPLE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Source/manifest.rc)
 elseif (MSVC)
     list(APPEND SAMPLE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Source/app.manifest)
 endif ()
+
+source_group(TREE ${GLUE_SOURCE_DIR} PREFIX "Source" FILES ${SAMPLE_SOURCE_FILES})
+source_group(TREE ${CMAKE_SOURCE_DIR}/Programs PREFIX "Shaders" FILES ${SHADER_SOURCE_FILES})
+list(APPEND SAMPLE_SOURCE_FILES ${SHADER_SOURCE_FILES})
 
 if (NOT ANDROID)
     add_executable(${TARGET_NAME} WIN32 ${SAMPLE_SOURCE_FILES})
