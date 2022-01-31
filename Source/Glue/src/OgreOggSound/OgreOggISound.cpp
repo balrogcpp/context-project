@@ -75,18 +75,19 @@ namespace OgreOggSound
 
 	/*/////////////////////////////////////////////////////////////////*/
 	OgreOggISound::OgreOggISound(
-		const Ogre::String& name, Ogre::SceneManager* scnMgr
+		const Ogre::String& name
 		#if OGRE_VERSION_MAJOR == 2
-		, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+		, Ogre::SceneManager* scnMgr, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
 		#endif
 	) : 
 	#if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR > 0
 	MovableObject(id, objMemMgr, scnMgr, renderQueueId),
 	mPosition(0,0,0),
 	mDirection(0,0,0),
+	#else
+	MovableObject(name),
 	#endif
-	 mName(name)
-	,mSource(0) 
+	mSource(0) 
 	,mLoop(false) 
 	,mState(SS_NONE) 
 	,mReferenceDistance(1.0f) 
@@ -112,7 +113,6 @@ namespace OgreOggSound
 	,mPlayPosChanged(false)  
 	,mPlayPos(0.f) 
 	,mPriority(0)
-	,mScnMgr(scnMgr)
 	,mAudioOffset(0)
 	,mAudioEnd(0)
 	,mLoopOffset(0)
@@ -550,40 +550,35 @@ namespace OgreOggSound
 		alSourcef(mSource, AL_SEC_OFFSET, mPlayPos);
 		if (alGetError())
 		{
-			Ogre::LogManager::getSingleton().logError("OgreOggISound::_recoverPlayPosition() - Unable to set play position");
+			OGRE_LOG_ERROR("OgreOggISound::_recoverPlayPosition() - Unable to set play position");
 		}
 	}
 	/*/////////////////////////////////////////////////////////////////*/
 	void OgreOggISound::setPlayPosition(float seconds)
 	{
+		if (mSource == AL_NONE)
+		{
+			// Mark it so it can be applied when sound receives a source
+			mPlayPosChanged = true;
+			mPlayPos = seconds;
+			return;
+		}
+
+		// Reset flag
+		mPlayPosChanged = false;
+
 		// Invalid time - exit
 		if ( !mSeekable || mPlayTime<=0.f || seconds<0.f ) 
 			return;
 
 		// Wrap time
-		if ( seconds > mPlayTime ) 
-		{
-			do		{ seconds-=mPlayTime; }
-			while	( seconds>mPlayTime );
-		}
+		seconds = std::fmod(seconds, mPlayTime);
 
-		// Set offset if source available
-		if ( mSource!=AL_NONE )
+		alGetError();
+		alSourcef(mSource, AL_SEC_OFFSET, seconds);
+		if (alGetError())
 		{
-			alGetError();
-			alSourcef(mSource, AL_SEC_OFFSET, seconds);
-			if (alGetError())
-			{
-				Ogre::LogManager::getSingleton().logError("OgreOggISound::setPlayPosition() - Error setting play position");
-			}
-			// Reset flag
-			mPlayPosChanged = false;
-		}
-		// Mark it so it can be applied when sound receives a source
-		else
-		{
-			mPlayPosChanged = true;
-			mPlayPos = seconds;
+			OGRE_LOG_ERROR("OgreOggISound::setPlayPosition() - Error setting play position");
 		}
 	}
 	/*/////////////////////////////////////////////////////////////////*/
@@ -599,7 +594,7 @@ namespace OgreOggSound
 		alGetSourcef(mSource, AL_SEC_OFFSET, &offset);
 		if (alGetError())
 		{
-			Ogre::LogManager::getSingleton().logError("OgreOggISound::setPlayPosition() - Error getting play position");
+			OGRE_LOG_ERROR("OgreOggISound::setPlayPosition() - Error getting play position");
 			return -1.f;
 		}
 			
@@ -730,8 +725,11 @@ namespace OgreOggSound
 			#endif
 		);
 
+		#if OGRE_VERSION_MAJOR != 2
 		// Immediately set position/orientation when attached
 		mLocalTransformDirty = true;
+		#endif
+		
 		update(0);
 
 		return;

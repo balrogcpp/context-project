@@ -40,14 +40,14 @@ namespace OgreOggSound
 
 	/*/////////////////////////////////////////////////////////////////*/
 	OgreOggStreamBufferSound::OgreOggStreamBufferSound(
-		const Ogre::String& name, Ogre::SceneManager* scnMgr
+		const Ogre::String& name
 		#if OGRE_VERSION_MAJOR == 2
-		, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+		, Ogre::SceneManager* scnMgr, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
 		#endif
 	) : OgreOggISound(
-		name, scnMgr
+		name
 		#if OGRE_VERSION_MAJOR == 2
-		, id, objMemMgr, renderQueueId
+		, scnMgr, id, objMemMgr, renderQueueId
 		#endif
 	)
 		,mFreq(0)
@@ -65,12 +65,11 @@ namespace OgreOggSound
 	/*/////////////////////////////////////////////////////////////////*/
 	void OgreOggStreamBufferSound::_release()
 	{
-		ALuint src=AL_NONE;
-		setSource(src);
+		setSource(AL_NONE);
 		mPlayPos = 0.f;
 	}
 	/*/////////////////////////////////////////////////////////////////*/
-	void OgreOggStreamBufferSound::setSource(ALuint& src)
+	void OgreOggStreamBufferSound::setSource(ALuint src)
 	{
 		if (src!=AL_NONE)
 		{

@@ -40,14 +40,14 @@ namespace OgreOggSound
 
 	/*/////////////////////////////////////////////////////////////////*/
 	OgreOggStreamWavSound::OgreOggStreamWavSound(
-		const Ogre::String& name, Ogre::SceneManager* scnMgr
+		const Ogre::String& name
 		#if OGRE_VERSION_MAJOR == 2
-		, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+		, Ogre::SceneManager* scnMgr, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
 		#endif
 	) : OgreOggISound(
-		name, scnMgr
+		name
 		#if OGRE_VERSION_MAJOR == 2
-		, id, objMemMgr, renderQueueId
+		, scnMgr, id, objMemMgr, renderQueueId
 		#endif
 	)
 	, mLoopOffsetBytes(0)
@@ -220,7 +220,7 @@ namespace OgreOggSound
 			}
 			else			
 			{
-				Ogre::LogManager::getSingleton().logError("OgreOggStreamWavSound::_openImpl() - Loop time invalid!");
+				OGRE_LOG_ERROR("OgreOggStreamWavSound::_openImpl() - Loop time invalid!");
 				mLoopOffset=0.f;
 			}
 		}
@@ -366,8 +366,7 @@ namespace OgreOggSound
 	{
 		if ( mSource!=AL_NONE )
 		{
-			ALuint src=AL_NONE;
-			setSource(src);
+			setSource(AL_NONE);
 		}
 		for (int i=0; i<NUM_BUFFERS; i++)
 		{													
@@ -392,7 +391,7 @@ namespace OgreOggSound
 		}
 	}
 	/*/////////////////////////////////////////////////////////////////*/
-	void OgreOggStreamWavSound::setSource(ALuint& src)
+	void OgreOggStreamWavSound::setSource(ALuint src)
 	{
 		if (src!=AL_NONE)
 		{
@@ -507,7 +506,7 @@ namespace OgreOggSound
 			// Check valid loop point
 			if ( mLoopOffset>=mPlayTime ) 
 			{
-				Ogre::LogManager::getSingleton().logError("OgreOggStreamWavSound::setLoopOffset() - Loop time invalid!");
+				OGRE_LOG_ERROR("OgreOggStreamWavSound::setLoopOffset() - Loop time invalid!");
 				return;
 			}
 
@@ -648,7 +647,7 @@ namespace OgreOggSound
 			// Any problems?
 			if ( alGetError() ) 
 			{
-				Ogre::LogManager::getSingleton().logError("OgreOggStreamWavSound::_dequeue() - Unable to unqueue buffers");
+				OGRE_LOG_ERROR("OgreOggStreamWavSound::_dequeue() - Unable to unqueue buffers");
 			}
 		}
 	}
@@ -682,7 +681,7 @@ namespace OgreOggSound
 		alSourcePlay(mSource);
 		if ( alGetError() )
 		{
-			Ogre::LogManager::getSingleton().logError("OgreOggStreamWavSound::_playImpl() - Unable to play sound");
+			OGRE_LOG_ERROR("OgreOggStreamWavSound::_playImpl() - Unable to play sound");
 			return;
 		}
 

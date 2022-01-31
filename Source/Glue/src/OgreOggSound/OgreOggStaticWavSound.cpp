@@ -40,14 +40,14 @@ namespace OgreOggSound
 
 	/*/////////////////////////////////////////////////////////////////*/
 	OgreOggStaticWavSound::OgreOggStaticWavSound(
-		const Ogre::String& name, Ogre::SceneManager* scnMgr
+		const Ogre::String& name
 		#if OGRE_VERSION_MAJOR == 2
-		, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+		, Ogre::SceneManager* scnMgr, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
 		#endif
 	) : OgreOggISound(
-			name, scnMgr
+			name
 			#if OGRE_VERSION_MAJOR == 2
-			, id, objMemMgr, renderQueueId
+			, scnMgr, id, objMemMgr, renderQueueId
 			#endif
 		)
 		,mAudioName("")
@@ -389,8 +389,7 @@ namespace OgreOggSound
 	/*/////////////////////////////////////////////////////////////////*/
 	void OgreOggStaticWavSound::_release()
 	{
-		ALuint src=AL_NONE;
-		setSource(src);
+		setSource(AL_NONE);
 		OgreOggSoundManager::getSingleton()._releaseSharedBuffer(mAudioName, (*mBuffers)[0]);
 		mPlayPosChanged = false;
 		mPlayPos = 0.f;
@@ -404,7 +403,7 @@ namespace OgreOggSound
 		alSourcei(mSource, AL_BUFFER, (*mBuffers)[0]);
 	}					
 	/*/////////////////////////////////////////////////////////////////*/
-	void OgreOggStaticWavSound::setSource(ALuint& src)
+	void OgreOggStaticWavSound::setSource(ALuint src)
 	{
 		if (src != AL_NONE)
 		{
@@ -505,7 +504,7 @@ namespace OgreOggSound
 			alSourcei(mSource, AL_LOOPING, loop);
 
 			if ( alGetError() != AL_NO_ERROR )
-				Ogre::LogManager::getSingleton().logError("OgreOggStaticWavSound::loop() - Unable to set looping status!");
+				OGRE_LOG_ERROR("OgreOggStaticWavSound::loop() - Unable to set looping status!");
 		}
 		else
 			Ogre::LogManager::getSingleton().logMessage("OgreOggStaticWavSound::loop() - No source attached to sound!");

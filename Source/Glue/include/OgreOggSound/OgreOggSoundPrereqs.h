@@ -64,65 +64,36 @@
 #endif
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-
 #	pragma warning( disable : 4244 )
-
-#	include <al.h>
-#	include <alc.h>
-#	if HAVE_ALEXT == 1
-#		include <alext.h>
-#	endif
-
-#	if HAVE_EFX == 1
-#		include <efx.h>
-#		include <efx-util.h>
-#		include <efx-creative.h>
-#		include <xram.h>
-#	elif HAVE_EFX == 2
-#		include <efx.h>
-#		include <efx-presets.h>
-#	endif
-
-//#	if OGRE_COMPILER == OGRE_COMPILER_MSVC
-//#		ifdef OGGSOUND_EXPORT
-//#			define _OGGSOUND_EXPORT __declspec(dllexport)
-//#		else
-//#			define _OGGSOUND_EXPORT __declspec(dllimport)
-//#		endif
-//#	else
+#	if OGRE_COMPILER == OGRE_COMPILER_MSVC
+#		ifdef OGGSOUND_EXPORT
+#			define _OGGSOUND_EXPORT __declspec(dllexport)
+#		else
+#			define _OGGSOUND_EXPORT
+#		endif
+#	else
 #		define _OGGSOUND_EXPORT
-//#	endif
-
-#elif OGRE_COMPILER == OGRE_COMPILER_GNUC || OGRE_COMPILER == OGRE_COMPILER_CLANG
-#   if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-#		include <al.h>
-#		include <alc.h>
-#		if HAVE_ALEXT == 1
-#			include <AL/alext.h>
-#		endif
-#   else
-#		include <AL/al.h>
-#		include <AL/alc.h>
-#		if HAVE_ALEXT == 1
-#			include <AL/alext.h>
-#		endif
-#		if HAVE_EFX == 2
-#			include <AL/efx.h>
-#			include <AL/efx-presets.h>
-#		endif
 #	endif
+#elif OGRE_COMPILER == OGRE_COMPILER_GNUC || OGRE_COMPILER == OGRE_COMPILER_CLANG
 #	if defined(OGGSOUND_EXPORT) && OGRE_COMP_VER >= 400
 #		define _OGGSOUND_EXPORT __attribute__ ((visibility("default")))
 #	else
 #		define _OGGSOUND_EXPORT
 #	endif
 #else // Other Compilers
-#	include <OpenAL/al.h>
-#	include <OpenAL/alc.h>
-#	include "xram.h"
 #	define _OGGSOUND_EXPORT
 #endif
-	
+
+#include <al.h>
+#include <alc.h>
+#if HAVE_ALEXT == 1
+#	include <alext.h>
+#endif
+#if HAVE_EFX == 2
+#	include <efx.h>
+#	include <efx-presets.h>
+#endif
+
 namespace OgreOggSound
 {
 	typedef std::vector<ALuint> BufferList; // A list of the IDs of all OpenAL buffers being used by a sound. This is a vector so that it can be passed around as an array to the various OpenAL functions.

@@ -54,9 +54,10 @@ namespace OgreOggSound
 		static Ogre::String FACTORY_TYPE_NAME;
 
 		const Ogre::String& getType(void) const;
-                #if OGRE_VERSION_MAJOR != 2
-                void destroyInstance(Ogre::MovableObject *obj) override;
-                #endif
+		
+		//#if OGRE_VERSION_MAJOR == 2
+		void destroyInstance( Ogre::MovableObject* obj);
+		//#endif
 	};
 }
 

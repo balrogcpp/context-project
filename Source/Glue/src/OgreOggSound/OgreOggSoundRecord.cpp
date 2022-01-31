@@ -31,6 +31,7 @@
 #include "PCHeader.h"
 
 #include "OgreOggSoundRecord.h"
+#include "OgreOggSound.h"
 
 namespace OgreOggSound
 {
@@ -155,11 +156,11 @@ namespace OgreOggSound
 				return true;
 			}
 
-			Ogre::LogManager::getSingleton().logError("OgreOggSoundRecord::initCaptureDevice() - Unable to open recording file: " + mOutputFile);
+			OGRE_LOG_ERROR("OgreOggSoundRecord::initCaptureDevice() - Unable to open recording file: " + mOutputFile);
 			return false;
 		}
 
-		Ogre::LogManager::getSingleton().logError("OgreOggSoundRecord::initCaptureDevice() - Unable to open recording device: " + mDeviceName);
+		OGRE_LOG_ERROR("OgreOggSoundRecord::initCaptureDevice() - Unable to open recording device: " + mDeviceName);
 
 		return false;
 	}
