@@ -50,7 +50,7 @@
  * 1 - using OpenAL Soft (alext.h available)
  */
 #ifndef HAVE_ALEXT
-#	define HAVE_ALEXT 1
+#	define HAVE_ALEXT 0
 #endif
 
 /**
