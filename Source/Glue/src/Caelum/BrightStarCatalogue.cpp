@@ -5,11 +5,13 @@
 #include "PCHeader.h"
 #include "PointStarfield.h"
 
+#ifdef _MSC_VER
 // disable: "conversion from 'double' to 'float', possible loss of data
 #   pragma warning (disable : 4244)
 
 // disable: "truncation from 'double' to 'float'
 #   pragma warning (disable : 4305)
+#endif
 
 // Data from http://heasarc.gsfc.nasa.gov/W3Browse/star-catalog/bsc5p.html
 // Converted using the following MSVS regexps:
