@@ -3,6 +3,9 @@
 #include "PCHeader.h"
 #include "Components/Physics.h"
 #include "BtOgre/BtOgre.h"
+#define SIMD_FORCE_INLINE
+#define ATTRIBUTE_ALIGNED16(a) a
+typedef float btScalar;
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
