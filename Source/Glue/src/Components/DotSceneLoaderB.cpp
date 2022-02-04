@@ -2,7 +2,6 @@
 
 #include "PCHeader.h"
 #include "Components/DotSceneLoaderB.h"
-#include "BtOgre/BtOgre.h"
 #include "Components/XmlParser.h"
 #include "Engine.h"
 #include "Objects/SinbadCharacterController.h"
@@ -692,12 +691,12 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &XmlNode, SceneNode *ParentNo
     GetScene().AddEntity(entity);
 
     // Process userDataReference
-//    if (auto element = XmlNode.child("userData")) {
-//      ProcessUserData(element, entity->getUserObjectBindings());
-//      GetPhysics().ProcessData(entity->getUserObjectBindings(), entity, ParentNode);
-//    } else {
+    if (auto element = XmlNode.child("userData")) {
+      ProcessUserData(element, entity->getUserObjectBindings());
+      GetPhysics().ProcessData(entity, ParentNode, entity->getUserObjectBindings());
+    } else {
       GetPhysics().ProcessData(entity, ParentNode);
-//    }
+    }
   } catch (Ogre::Exception &e) {
     LogManager::getSingleton().logMessage(e.getFullDescription());
     LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
@@ -769,8 +768,8 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
   MeshPtr res = OMM.createPlane(mesh_name, GroupName, plane, width, height, xSegments, ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
   res->buildTangentVectors();
   Entity *entity = OgreScene->createEntity(name, mesh_name);
-//  entity->setCastShadows(true);
-
+  entity->setCastShadows(false);
+  entity->setVisibilityFlags(0xF00);
   entity->setMaterialName(material);
 
   if (Reflective) {
@@ -794,16 +793,11 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
   ParentNode->attachObject(entity);
   FixMaterial(MaterialSPtr);
 
-//  unique_ptr<BtOgre::StaticMeshToShapeConverter> converter = make_unique<BtOgre::StaticMeshToShapeConverter>(entity);
-//
-//  auto *entShape = converter->createTrimesh();
+//  auto *entShape = BtOgre::createBoxCollider(entity);
 //  auto *bodyState = new BtOgre::RigidBodyState(ParentNode);
 //  auto *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
 //  entBody->setFriction(1);
 //  GetPhysics().AddRigidBody(entBody);
-
-//  const uint32 WATER_MASK = 0xF00;
-//  entity->setVisibilityFlags(WATER_MASK);
 }
 
 void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
