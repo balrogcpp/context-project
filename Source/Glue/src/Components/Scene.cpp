@@ -2,7 +2,6 @@
 
 #include "PCHeader.h"
 #include "Components/Scene.h"
-#include "BtOgre/BtOgre.h"
 #include "Engine.h"
 #include "Objects/CameraMan.h"
 #include "Objects/SinbadCharacterController.h"

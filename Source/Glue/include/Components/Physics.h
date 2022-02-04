@@ -2,6 +2,7 @@
 
 #pragma once
 #include "Components/Component.h"
+#include "BtOgre/BtOgre.h"
 #include <OgreAny.h>
 #include <OgreFrameListener.h>
 #include <functional>
