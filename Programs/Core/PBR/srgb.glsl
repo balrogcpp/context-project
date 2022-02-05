@@ -5,12 +5,9 @@
 
 #define MANUAL_SRGB
 
-// #ifndef GL_ES
-// #define SRGB_FAST_APPROXIMATION
-// #define SRGB_HDR
-// #else
+#define SRGB_FAST_APPROXIMATION
+#define SRGB_HDR
 #define SRGB_SQRT
-// #endif
 
 //----------------------------------------------------------------------------------------------------------------------
 vec4 SRGBtoLINEAR(vec4 srgbIn)
@@ -59,7 +56,6 @@ vec4 LINEARtoSRGB(vec4 srgbIn, float exposure)
 #ifdef SRGB_HDR
   srgbIn.rgb = vec3(1.0) - exp(-srgbIn.rgb * exposure);
 #endif
-
 #ifdef SRGB_SQRT
   return vec4(sqrt(srgbIn.rgb), srgbIn.a);
 #else
@@ -77,7 +73,6 @@ vec3 LINEARtoSRGB(vec3 srgbIn, float exposure)
 #ifdef SRGB_HDR
   srgbIn.rgb = vec3(1.0) - exp(-srgbIn.rgb * exposure);
 #endif
-
 #ifdef SRGB_SQRT
   return sqrt(srgbIn);
 #else

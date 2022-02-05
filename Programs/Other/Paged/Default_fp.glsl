@@ -1,5 +1,7 @@
 #include <OgreUnifiedShader.h>
 
+#include "srgb.glsl"
+
 uniform SAMPLER2D(texMap, 0);
 
 uniform vec4 fogColour;
@@ -11,18 +13,15 @@ IN(vec4 oColour, COLOR)
 IN(float oFogCoord, FOG)
 MAIN_DECLARATION
 {
-    gl_FragColor = texture2D(texMap, oUV.xy);
+    vec4 color = texture2D(texMap, oUV.xy);
 #ifdef ALPHA_TEST
-    if(gl_FragColor.a < 0.5 || oColour.a < 0.5)
+    if(color.a < 0.5 || oColour.a < 0.5)
         discard;
 #endif
-    gl_FragColor *= saturate(oColour);
+    color *= saturate(oColour);
+    color = SRGBtoLINEAR(color);
+    gl_FragData[0] = color;
 #ifdef USE_FOG
-    float fogf = saturate((fogParams.z - abs(oFogCoord)) * fogParams.w);
-    gl_FragColor.rgb = mix(fogColour.rgb, gl_FragColor.rgb, fogf);
+    gl_FragData[1].r = oFogCoord / 1000.0;
 #endif
-//    gl_FragData[0] = color;
-//    #ifdef USE_FOG
-//    gl_FragData[1] = vec4((oFogCoord - 0.001) / (1000.0 - 0.001), 0.0, 0.0, 1.0);
-//    #endif
 }

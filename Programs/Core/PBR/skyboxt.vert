@@ -23,7 +23,7 @@ out float vDepth;
 out vec3 TexCoords; // direction vector representing a 3D texture coordinate
 
 void main() {
-    TexCoords = uv0.xyz;
+    TexCoords = position.xyz;
     gl_Position = worldViewProj * position;
 #ifdef NO_MRT
     vDepth = gl_Position.z;

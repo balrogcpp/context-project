@@ -113,8 +113,8 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &XmlNode) {
 }
 
 Ogre::ColourValue ParseColour(pugi::xml_node &XmlNode) {
-  return Ogre::ColourValue(ToFloat(XmlNode.attribute("r").value()), ToFloat(XmlNode.attribute("g").value()), ToFloat(XmlNode.attribute("b").value()),
-                           ToFloat(XmlNode.attribute("a").value(), 1));
+  return Ogre::ColourValue(ToFloat(XmlNode.attribute("r").value()) / 255.0, ToFloat(XmlNode.attribute("g").value()) / 255.0, ToFloat(XmlNode.attribute("b").value()) / 255.0,
+                           ToFloat(XmlNode.attribute("a").value(), 255.0) / 255.0);
 }
 
 }  // namespace Glue

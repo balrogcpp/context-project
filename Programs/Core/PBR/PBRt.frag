@@ -110,9 +110,6 @@ uniform vec3 uSurfaceDiffuseColour;
 uniform float uSurfaceSpecularColour;
 uniform float uSurfaceShininessColour;
 uniform vec3 uSurfaceEmissiveColour;
-#ifdef HAS_ALPHA
-uniform float uAlphaRejection;
-#endif
 #ifdef NO_MRT
 uniform vec3 uFogColour;
 uniform vec4 uFogParams;
@@ -426,7 +423,7 @@ void main()
 #ifdef PAGED_GEOMETRY
     alpha *= vAlpha;
 #endif
-    if (alpha < uAlphaRejection) discard;
+    if (alpha < 0.5) discard;
 #endif // HAS_ALPHA
 
     vec3 ORM = GetORM(tex_coord);
@@ -587,7 +584,7 @@ void main()
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
-    if (texture2D(uAlbedoSampler, vUV0.xy).a < uAlphaRejection) discard;
+    if (texture2D(uAlbedoSampler, vUV0.xy).a < 0.5) discard;
 #endif //SHADOWCASTER_ALPHA
     //FragColor.r = gl_FragCoord.z;
 #endif //SHADOWCASTER

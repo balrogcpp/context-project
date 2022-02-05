@@ -4,7 +4,8 @@
 #define iSteps 16
 #define jSteps 8
 
-vec2 rsi(vec3 r0, vec3 rd, float sr) {
+vec2 rsi(vec3 r0, vec3 rd, float sr)
+{
     // ray-sphere intersection that assumes
     // the sphere is centered at the origin.
     // No intersection when result.x > result.y
@@ -19,7 +20,8 @@ vec2 rsi(vec3 r0, vec3 rd, float sr) {
     );
 }
 
-vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAtmos, vec3 kRlh, float kMie, float shRlh, float shMie, float g) {
+vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAtmos, vec3 kRlh, float kMie, float shRlh, float shMie, float g)
+{
     // Normalize the sun and view directions.
     pSun = normalize(pSun);
     r = normalize(r);

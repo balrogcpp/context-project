@@ -32,7 +32,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 #define IMPOSTOR_YAW_ANGLES 8
 
 //The number of angle increments around the pitch axis to render impostor "snapshots" of trees
-#define IMPOSTOR_PITCH_ANGLES 8
+#define IMPOSTOR_PITCH_ANGLES 4
 
 //When IMPOSTOR_RENDER_ABOVE_ONLY is defined, impostor images will only be rendered from angles around and
 //above entities. If this is disabled, bottom views of the entities will be rendered to the impostor atlas

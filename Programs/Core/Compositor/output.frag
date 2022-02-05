@@ -61,15 +61,15 @@ void main()
 #ifndef NO_MRT
 
 #ifdef SSAO
-if (uSSAOEnable > 0.0) {
-  scene.rgb *= texture2D(SsaoSampler, oUv0).r;
-}
+  if (uSSAOEnable > 0.0) {
+    scene.rgb *= texture2D(SsaoSampler, oUv0).r;
+  }
 #endif
 
 #ifdef BLOOM
-if (uBloomEnable > 0.0) {
-  scene.rgb += texture2D(BloomSampler, oUv0).rgb;
-}
+  if (uBloomEnable > 0.0) {
+    scene.rgb += texture2D(BloomSampler, oUv0).rgb;
+  }
 #endif
 
 #ifdef FOG

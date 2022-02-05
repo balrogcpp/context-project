@@ -26,9 +26,7 @@ abstract vertex_program PBRS_I_vs glsl glsles
 }
 
 vertex_program PBRS_vs glsl glsles : PBRS_I_vs
-{
-    default_params {}
-}
+{}
 
 abstract fragment_program PBRS_BaseI_fs glsl glsles
 {
@@ -62,16 +60,11 @@ abstract fragment_program PBRS_BaseI_fs glsl glsles
 abstract fragment_program PBRS_I_fs glsl glsles : PBRS_BaseI_fs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,MAX_LIGHTS=8
-    default_params {}
 }
 
 
 fragment_program PBRS_Basic_fs glsl glsles : PBRS_BaseI_fs
-{
-    default_params {}
-}
+{}
 
 fragment_program PBRS_fs glsl glsles : PBRS_I_fs
-{
-    default_params {}
-}
+{}

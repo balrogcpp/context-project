@@ -768,7 +768,7 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
   MeshPtr res = OMM.createPlane(mesh_name, GroupName, plane, width, height, xSegments, ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
   res->buildTangentVectors();
   Entity *entity = OgreScene->createEntity(name, mesh_name);
-  entity->setCastShadows(false);
+//  entity->setCastShadows(false);
   entity->setVisibilityFlags(0xF00);
   entity->setMaterialName(material);
 
@@ -825,8 +825,8 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   auto *trees = new PagedGeometry(OgreCameraPtr, 50);
 
   //  trees->addDetailLevel<Forests::WindBatchPage>(100, 20);
-  trees->addDetailLevel<Forests::BatchPage>(100, 60);
-  //  trees->addDetailLevel<Forests::ImpostorPage>(200, 60);
+  trees->addDetailLevel<Forests::BatchPage>(100, 10);
+  trees->addDetailLevel<Forests::ImpostorPage>(200, 10);
 
   auto *treeLoader = new TreeLoader3D(trees, TBounds(-100, -100, 100, 100));
   FixTransparentShadowCaster("3D-Diggers/fir01");

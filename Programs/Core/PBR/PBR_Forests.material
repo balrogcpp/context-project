@@ -5,13 +5,59 @@ import PBR_I_fs from PBR.program
 vertex_program PBR_Paged_vs glsl glsles : PBR_I_vs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {}
 }
 
 fragment_program PBR_Paged_fs glsl glsles : PBR_I_fs
 {
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params {}
+}
+
+vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
+{
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    default_params
+    {
+        param_named_auto uTime time
+        param_named uFadeRange float 50.0
+        param_named uWindRange float 50.0
+        param_named_auto uCameraPosition camera_position
+    }
+}
+
+fragment_program PBR_Grass_fs glsl glsles : PBR_I_fs
+{
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+}
+
+abstract material PBR_Grass : PBR_Basic
+{
+    receive_shadows on
+    transparency_casts_shadows off
+
+    set $Albedo white.dds
+
+    technique
+    {
+        pass
+        {
+            alpha_rejection greater_equal 128
+            cull_hardware none
+            //scene_blend alpha_blend
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+                tex_address_mode clamp
+            }
+
+            vertex_program_ref PBR_Grass_vs {}
+
+            fragment_program_ref PBR_Grass_fs
+            {
+                param_named uAlbedoSampler int 0
+            }
+        }
+    }
 }
 
 abstract material PBR_Paged : PBR_Basic

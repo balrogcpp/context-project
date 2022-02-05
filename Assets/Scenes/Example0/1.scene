@@ -5,8 +5,6 @@
             <position x="0" y="0" z="0"/>
             <direction x="40.659888" y="-60.704975" z="-100.950829"/>
             <light name="Sun" powerScale="5" type="directional" castShadows="true">
-                <colourDiffuse b="1.0" g="1" r="1"/>
-                <colourSpecular b="1.0" g="1.0" r="1.0"/>
             </light>
         </node>
         <node name="Camera">
@@ -65,11 +63,10 @@
     <forest>
     </forest>
     <environment>
-        <colourBackground b="0.05087608844041824" g="0.05087608844041824" r="0.05087608844041824"/>
-        <colourAmbient r="0.5" g="0.5" b="0.5"/>
-        <shadowColor b="0.5" g="0.0" r="0.0"/>
+        <colourAmbient r="127" g="127" b="127"/>
+        <shadowColor b="127" g="0.0" r="0.0"/>
         <fog mode="exp" density="0.01">
-            <colour r="0.384765625" g="0.427734375" b="0.39453125"/>
+            <colour r="155" g="171" b="187"/>
         </fog>
         <!--                <skyBox cubemap="BlueSky512.dds"/>-->
         <skyBox cubemap="OutputCube.dds"/>

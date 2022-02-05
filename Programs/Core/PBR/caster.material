@@ -18,7 +18,6 @@ fragment_program PSSM/shadow_caster_alpha_fs glsl glsles
 
 	default_params
 	{
-        param_named_auto uAlphaRejection surface_alpha_rejection_value
 	    param_named uAlbedoSampler int 0
 	}
 }
@@ -54,8 +53,6 @@ fragment_program PSSM/shadow_caster_fs glsl glsles
 {
 	source PBR.frag
 	preprocessor_defines SHADOWCASTER
-
-	default_params {}
 }
 
 material PSSM/shadow_caster
@@ -87,8 +84,6 @@ fragment_program PSSM/shadow_caster_terrain_fs glsl glsles
 {
 	source PBR.frag
 	preprocessor_defines SHADOWCASTER
-
-	default_params {}
 }
 
 material PSSM/shadow_caster_terrain

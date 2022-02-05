@@ -23,12 +23,15 @@ vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi)
     return vec2(r * cosine, r * sine);
 }
 
-
-float hash(float n) {
+//----------------------------------------------------------------------------------------------------------------------
+float hash(float n)
+{
     return fract(sin(n) * 43758.5453);
 }
 
-float noise(vec2 x) {
+//----------------------------------------------------------------------------------------------------------------------
+float noise(vec2 x)
+{
     vec2 p = floor(x);
     vec2 f = fract(x);
     f = f * f * (3.0 - 2.0 * f);
@@ -37,7 +40,9 @@ float noise(vec2 x) {
     return res;
 }
 
-float fbm(vec2 p) {
+//----------------------------------------------------------------------------------------------------------------------
+float fbm(vec2 p)
+{
     //float f = 0.0;
     //f += 0.50000 * noise(p); p = p * 2.02;
     //  f += 0.25000 * noise(p); p = p * 2.03;
@@ -48,10 +53,10 @@ float fbm(vec2 p) {
     return noise(p);
 }
 
-vec4 ApplyWaveAnimation(vec4 position, float time, float frequency, vec4 direction) {
-    //float offset = sin(time + position.x * frequency);
+//----------------------------------------------------------------------------------------------------------------------
+vec4 ApplyWaveAnimation(vec4 position, float time, float frequency, vec4 direction)
+{
     float n = fbm(position.xy * time * 0.2) * 2.0 - 2.0;
-    //  return position + offset * direction + n * 0.01;
     return position + n * direction;
 }
 
