@@ -825,8 +825,8 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   auto *trees = new PagedGeometry(OgreCameraPtr, 50);
 
   //  trees->addDetailLevel<Forests::WindBatchPage>(100, 20);
-  trees->addDetailLevel<Forests::BatchPage>(100, 10);
-  trees->addDetailLevel<Forests::ImpostorPage>(200, 10);
+  trees->addDetailLevel<Forests::BatchPage>(100, 0);
+  trees->addDetailLevel<Forests::ImpostorPage>(200, 0);
 
   auto *treeLoader = new TreeLoader3D(trees, TBounds(-100, -100, 100, 100));
   FixTransparentShadowCaster("3D-Diggers/fir01");

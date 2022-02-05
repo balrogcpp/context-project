@@ -47,7 +47,7 @@ void main()
 
 #ifndef NO_MRT
     FragData[0].rgb = color;
-    FragData[1].r = 0.1;
+    FragData[1].r = 0.2;
 #else
     color = ApplyFog(color, uFogParams, uFogColour, vDepth);
     FragColor.rgb = LINEARtoSRGB(color, 1.0);
