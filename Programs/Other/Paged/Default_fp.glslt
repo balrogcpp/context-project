@@ -15,12 +15,18 @@
 #include <OgreUnifiedShader.h>
 
 #include "srgb.glsl"
+#ifndef NO_MRT
+#include "fog.glsl"
+#endif
 
 uniform SAMPLER2D(texMap, 0);
 
+#ifndef NO_MRT
 uniform float cFarClipDistance;
+#else
 uniform vec4 fogColour;
 uniform vec4 fogParams;
+#endif
 
 MAIN_PARAMETERS
 IN(vec4 oUV, TEXCOORD0)
@@ -37,11 +43,11 @@ MAIN_DECLARATION
     color = SRGBtoLINEAR(color);
 #ifndef NO_MRT
     FragData[0] = color;
-#ifdef USE_FOG
-    FragData[1].r = oFogCoord / cFarClipDistance;
-    //FragData[2].rg = vec2(0.0);
-#endif
+    FragData[1].r = (oFogCoord / cFarClipDistance);
 #else // NO_MRT
-    FragColor = color;
+#ifdef USE_FOG
+    color = ApplyFog(color, fogParams, fogColour.rgb, oFogCoord);
+#endif
+    FragColor = LINEARtoSRGB(color);
 #endif
 }
