@@ -60,7 +60,7 @@ compositor SSAO
 {
     technique
     {
-        texture ssao target_width target_height PF_FLOAT16_R
+        texture ssao target_width target_height PF_FLOAT16_R chain_scope
 
         target ssao
         {
