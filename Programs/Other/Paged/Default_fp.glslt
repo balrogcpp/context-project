@@ -1,0 +1,47 @@
+// This source file is part of "glue project". Created by Andrey Vasiliev
+
+#ifndef VERSION
+#ifndef GL_ES
+#version 330 core
+#define VERSION 330
+#else
+#version 100
+#define VERSION 100
+#endif
+#endif
+
+#include "header.frag"
+
+#include <OgreUnifiedShader.h>
+
+#include "srgb.glsl"
+
+uniform SAMPLER2D(texMap, 0);
+
+uniform float cFarClipDistance;
+uniform vec4 fogColour;
+uniform vec4 fogParams;
+
+MAIN_PARAMETERS
+IN(vec4 oUV, TEXCOORD0)
+IN(vec4 oColour, COLOR)
+IN(float oFogCoord, FOG)
+MAIN_DECLARATION
+{
+    vec4 color = texture2D(texMap, oUV.xy);
+#ifdef ALPHA_TEST
+    if(color.a < 0.5 || oColour.a < 0.5)
+        discard;
+#endif
+    //color *= saturate(oColour);
+    color = SRGBtoLINEAR(color);
+#ifndef NO_MRT
+    FragData[0] = color;
+#ifdef USE_FOG
+    FragData[1].r = oFogCoord / cFarClipDistance;
+    //FragData[2].rg = vec2(0.0);
+#endif
+#else // NO_MRT
+    FragColor = color;
+#endif
+}
