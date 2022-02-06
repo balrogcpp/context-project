@@ -777,9 +777,7 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
 
     rcamera.reset();
     rcamera = make_unique<ReflectionCamera>(plane, 512);
-
     rcamera->SetPlane(plane);
-
 
     auto material_unit = MaterialSPtr->getTechnique(0)->getPass(0)->getTextureUnitState("ReflectionMap");
 
@@ -801,6 +799,8 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
 }
 
 void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
+  const float bound = 95;
+
   auto *grass = new PagedGeometry(OgreCameraPtr, 5);
   grass->addDetailLevel<GrassPage>(50, 10);
   auto *grassLoader = new GrassLoader(grass);
@@ -816,11 +816,10 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   layer->setSwayLength(1.0f);
   layer->setSwaySpeed(0.5f);
   layer->setDensity(1.0f);
-  layer->setMapBounds(TBounds(-200, -200, 200, 200));
+  layer->setMapBounds(TBounds(-bound, -bound, bound, bound));
 
   GetScene().AddForests(grass, "GrassCustom");
 
-  const float bound = 100;
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;
   auto *trees = new PagedGeometry(OgreCameraPtr, 50);
 
@@ -828,7 +827,7 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   trees->addDetailLevel<Forests::BatchPage>(100, 0);
   trees->addDetailLevel<Forests::ImpostorPage>(200, 0);
 
-  auto *treeLoader = new TreeLoader3D(trees, TBounds(-100, -100, 100, 100));
+  auto *treeLoader = new TreeLoader3D(trees, TBounds(-bound, -bound, bound, bound));
   FixTransparentShadowCaster("3D-Diggers/fir01");
   FixTransparentShadowCaster("3D-Diggers/fir02");
 

@@ -1283,7 +1283,10 @@ public:
 	/** \brief Internal function - DO NOT USE */
 	~GeometryPageManager();
 
-        void setCastsShadows(bool enable) { for (auto it : loadedList) it->setCastsShadows(enable); }
+        void setCastsShadows(bool enable) {
+          for (auto it : loadedList) it->setCastsShadows(enable);
+          for (auto it : pendingList) it->setCastsShadows(enable);
+        }
 
 	/**
 	\brief Sets the near viewing range of this page manager.
