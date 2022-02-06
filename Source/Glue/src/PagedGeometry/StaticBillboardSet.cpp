@@ -108,12 +108,12 @@ StaticBillboardSet::~StaticBillboardSet()
          SBMaterialRef::removeMaterialRef(mPtrFadeMaterial);
 
       //Delete vertex shaders and materials if no longer in use
-      if (--s_nSelfInstances == 0)
-      {
-         s_mapFadedMaterial.clear();  //Delete fade materials
-         HighLevelGpuProgramManager::getSingleton().remove("Sprite_vp");
-         HighLevelGpuProgramManager::getSingleton().remove("SpriteFade_vp");
-      }
+//      if (--s_nSelfInstances == 0)
+//      {
+//         s_mapFadedMaterial.clear();  //Delete fade materials
+//         HighLevelGpuProgramManager::getSingleton().remove("Sprite_vp");
+//         HighLevelGpuProgramManager::getSingleton().remove("SpriteFade_vp");
+//      }
    }
    else
       //Remove billboard set

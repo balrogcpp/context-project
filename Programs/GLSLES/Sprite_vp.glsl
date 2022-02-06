@@ -1,4 +1,4 @@
-#version 330 core
-#define VERSION 330
+#version 300 es
+#define VERSION 300
 
 #include "Sprite_vp.glslt"
