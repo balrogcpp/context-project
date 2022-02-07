@@ -1,0 +1,34 @@
+import PBR_Paged from PBR_Forests.material
+import PBRS_Paged from PBRS_Forests.material
+
+material leaf08png : PBRS_Paged
+{
+	technique
+	{
+		pass 
+		{
+		    alpha_rejection greater_equal 127
+			texture_unit Albedo
+			{
+				texture Leaf08.png
+			}
+		}
+
+	}
+}
+
+material wood03png : PBRS_Paged
+{
+	technique
+	{
+		pass 
+		{
+		    alpha_rejection greater_equal 127
+			texture_unit Albedo
+			{
+				texture Wood03.png
+			}
+		}
+
+	}
+}

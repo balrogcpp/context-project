@@ -824,18 +824,21 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   auto *trees = new PagedGeometry(OgreCameraPtr, 50);
 
   //  trees->addDetailLevel<Forests::WindBatchPage>(100, 20);
-  trees->addDetailLevel<Forests::BatchPage>(100, 0);
-  trees->addDetailLevel<Forests::ImpostorPage>(200, 0);
+  trees->addDetailLevel<Forests::BatchPage>(150, 0);
+  trees->addDetailLevel<Forests::ImpostorPage>(400, 0);
 
   auto *treeLoader = new TreeLoader3D(trees, TBounds(-bound, -bound, bound, bound));
   FixTransparentShadowCaster("3D-Diggers/fir01");
-  FixTransparentShadowCaster("3D-Diggers/fir02");
+//  FixTransparentShadowCaster("leaf08png");
 
   trees->setPageLoader(treeLoader);
-  Entity *fir1EntPtr = OgreScene->createEntity("fir1", "fir05_30.mesh");
+//  Entity *fir2EntPtr = OgreScene->createEntity("fir1", "Tree.mesh");
+  Entity *fir1EntPtr = OgreScene->createEntity("fir2", "fir05_30.mesh");
 
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 50; i++) {
     yaw = Math::RangeRandom(0, 360);
+    Quaternion quat;
+
     if (Math::RangeRandom(0, 1) <= 0.8f) {
       x = Math::RangeRandom(-bound, bound);
       z = Math::RangeRandom(-bound, bound);
@@ -853,17 +856,35 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
     }
 
     y = GetScene().GetHeight(x, z);
+
     scale = Math::RangeRandom(0.9f, 1.1f);
-    scale *= 0.2;
-    Quaternion quat;
     quat.FromAngleAxis(Degree(yaw), Vector3::UNIT_Y);
 
-    //    auto *node = RootNode->createChildSceneNode(Vector3(x, y, z), quat);
-    //    node->scale(Vector3(scale));
-    //    GetPhysics().ProcessData(fir1EntPtr, node, "capsule");
-    //    OgreScene->destroySceneNode(node);
+    treeLoader->addTree(fir1EntPtr, Vector3(x, y, z), Degree(yaw), scale * 0.2);
 
-    treeLoader->addTree(fir1EntPtr, Vector3(x, y, z), Degree(yaw), scale);
+
+//    if (Math::RangeRandom(0, 1) <= 0.8f) {
+//      x = Math::RangeRandom(-bound, bound);
+//      z = Math::RangeRandom(-bound, bound);
+//      if (x < -bound)
+//        x = -bound;
+//      else if (x > bound)
+//        x = bound;
+//      if (z < -bound)
+//        z = -bound;
+//      else if (z > bound)
+//        z = bound;
+//    } else {
+//      x = Math::RangeRandom(-bound, bound);
+//      z = Math::RangeRandom(-bound, bound);
+//    }
+//
+//    y = GetScene().GetHeight(x, z);
+//
+//    scale = Math::RangeRandom(0.9f, 1.1f);
+//    quat.FromAngleAxis(Degree(yaw), Vector3::UNIT_Y);
+//
+//    treeLoader->addTree(fir2EntPtr, Vector3(x, y, z), Degree(yaw), scale * 0.75);
   }
 
   trees->update();
@@ -873,6 +894,8 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   //  FixTransparentShadowCaster("3D-Diggers/fir02");
   GetScene().AddMaterial("3D-Diggers/fir01_Batched");
   GetScene().AddMaterial("3D-Diggers/fir02_Batched");
+//  GetScene().AddMaterial("leaf08png_Batched");
+//  GetScene().AddMaterial("wood03png_Batched");
 
   ProcessStaticGeometry(XmlNode);
 }
@@ -885,7 +908,7 @@ void DotSceneLoaderB::ProcessStaticGeometry(pugi::xml_node &XmlNode) {
   // Init a static geometry field, which we will populate with grass
   auto *rocks = OgreScene->createStaticGeometry("Rocks");
 
-  const float bounds = 100.0f;
+  const float bounds = 95.0f;
   // add grass uniformly throughout the field, with some random variations
   for (int i = 0; i < 250; i++) {
     Vector3 pos(Math::RangeRandom(-bounds, bounds), 0, Math::RangeRandom(-bounds, bounds));
