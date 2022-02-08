@@ -1,4 +1,4 @@
 #version 300 es
 #define VERSION 300
 
-#include "PBRt.frag"
+#include "PBR_fp.glsl"

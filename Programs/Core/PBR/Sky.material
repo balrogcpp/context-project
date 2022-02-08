@@ -2,7 +2,7 @@
 
 vertex_program SkyBoxCustomVp glsl glsles
 {
-	source skybox.vert
+	source Sky_vp.glsl
     default_params
     {
         param_named_auto worldViewProj worldviewproj_matrix
@@ -11,7 +11,7 @@ vertex_program SkyBoxCustomVp glsl glsles
 
 fragment_program SkyBoxCustomFp glsl glsles
 {
-	source skybox.frag
+	source Sky_fp.glsl
     default_params
     {
         param_named_auto uFogColour fog_colour
