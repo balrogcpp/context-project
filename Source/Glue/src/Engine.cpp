@@ -65,7 +65,7 @@ void Engine::InitComponents() {
   InitResourceLocation();
 
   // RTSS
-  InitRtss();
+  InitRTSS();
   CreateRTSSRuntime();
 //  InitRTSSInstansing();
 

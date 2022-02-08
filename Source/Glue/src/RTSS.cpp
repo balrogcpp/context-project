@@ -12,7 +12,7 @@ using namespace Ogre;
 
 namespace Glue {
 
-void InitRtss() {
+void InitRTSS() {
   if (!RTShader::ShaderGenerator::initialize()) {
     throw Exception("RTSS failed to initialize");
   }

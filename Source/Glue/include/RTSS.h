@@ -8,7 +8,7 @@
 
 namespace Glue {
 
-void InitRtss();
+void InitRTSS();
 
 void CreateRTSSRuntime(std::string CachePath = "");
 
