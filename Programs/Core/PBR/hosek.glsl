@@ -3,6 +3,8 @@
 #ifndef KNOSEK_GLSL
 #define KNOSEK_GLSL
 
+#ifdef GPU_HOSEK
+
 const float kHosekCoeffsX[] = float[](
 -1.171419,
 -0.242975,
@@ -298,7 +300,7 @@ vec3 mean_spectral_radiance(int albedo, int turbidity, float sun_zenith)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float F(float theta, float gamma, in float[9] coeffs)
+float HW(float theta, float gamma, in float[9] coeffs)
 {
     float A = coeffs[0];
     float B = coeffs[1];
@@ -324,7 +326,7 @@ vec3 spectral_radiance(float theta, float gamma, int albedo, int turbidity, floa
     for (int i = 0; i < 3; ++i) {
         float coeffs[9];
         get_coeffs(i, albedo, turbidity, sun_zenith, coeffs);
-        XYZ[i] = F(theta, gamma, coeffs);
+        XYZ[i] = HW(theta, gamma, coeffs);
     }
     return XYZ;
 }
@@ -377,5 +379,7 @@ vec3 XYZ_to_RGB(vec3 XYZ)
     -0.49861076,  0.04155506, 1.05697151
     ) * XYZ;
 }
+
+#endif // GPU_HOSEK
 
 #endif // KNOSEK_GLSL
