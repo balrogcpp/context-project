@@ -14,7 +14,9 @@ fragment_program SkyBoxCustomFp glsl glsles
 	source Sky_fp.glsl
     default_params
     {
-        param_named_auto uFogColour fog_colour
+        param_named_auto uSunDirection light_direction 0
+        param_named_auto uTime time
+        param_named_auto uFogParams fog_params
         param_named_auto uFogParams fog_params
         param_named cubemap int 0
     }

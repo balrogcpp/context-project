@@ -823,7 +823,7 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   float x = 0, y = 0, z = 0, yaw, scale = 1.0;
   auto *trees = new PagedGeometry(OgreCameraPtr, 50);
 
-  //  trees->addDetailLevel<Forests::WindBatchPage>(100, 20);
+  trees->addDetailLevel<Forests::WindBatchPage>(75, 0);
   trees->addDetailLevel<Forests::BatchPage>(150, 0);
   trees->addDetailLevel<Forests::ImpostorPage>(400, 0);
 

@@ -3,7 +3,7 @@
     <nodes>
         <node name="Sun">
             <position x="0" y="0" z="0"/>
-            <direction x="40.659888" y="-60.704975" z="-100.950829"/>
+            <direction x="40.659888" y="-60.704975" z="-30.950829"/>
             <light name="Sun" powerScale="5" type="directional" castShadows="true">
             </light>
         </node>
