@@ -25,9 +25,6 @@ uniform vec3 uFogColour;
 uniform vec4 uFogParams;
 uniform samplerCube cubemap;
 
-#ifdef NO_MRT
-in float vDepth;
-#endif
 in vec3 vPosition; // direction vector representing a 3D texture coordinate
 in vec3 TexCoords; // direction vector representing a 3D texture coordinate
 

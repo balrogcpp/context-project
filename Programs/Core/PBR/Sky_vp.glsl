@@ -17,9 +17,6 @@ uniform mat4 worldViewProj;
 in vec4 position;
 in vec3 uv0;
 
-#ifdef NO_MRT
-out float vDepth;
-#endif
 out vec3 vPosition;
 out vec3 TexCoords; // direction vector representing a 3D texture coordinate
 
@@ -27,7 +24,4 @@ void main() {
     TexCoords = uv0;
     vPosition = position.xyz;
     gl_Position = worldViewProj * position;
-#ifdef NO_MRT
-    vDepth = gl_Position.z;
-#endif
 }

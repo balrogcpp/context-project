@@ -1,4 +1,4 @@
 #version 330 core
 #define VERSION 330
 
-#include "skyboxt.frag"
+#include "Sky_fp.glsl"

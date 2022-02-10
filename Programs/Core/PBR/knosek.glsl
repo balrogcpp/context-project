@@ -352,21 +352,21 @@ vec3 sample_sky(float theta, float gamma, float sun_zenith, float sun_azimuth)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma)
-//{
-//    vec3 A = params[0];
-//    vec3 B = params[1];
-//    vec3 C = params[2];
-//    vec3 D = params[3];
-//    vec3 E = params[4];
-//    vec3 F = params[5];
-//    vec3 G = params[6];
-//    vec3 H = params[7];
-//    vec3 I = params[8];
-//    vec3 Z = params[9];
-//    vec3 chi = (1 + cos_gamma * cos_gamma) / pow(1 + H * H - 2 * cos_gamma * H, vec3(1.5));
-//    return (1 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * (cos_gamma * cos_gamma) + G * chi + I * sqrt(cos_theta));
-//}
+vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma, vec3 params[10])
+{
+    vec3 A = params[0];
+    vec3 B = params[1];
+    vec3 C = params[2];
+    vec3 D = params[3];
+    vec3 E = params[4];
+    vec3 F = params[5];
+    vec3 G = params[6];
+    vec3 H = params[7];
+    vec3 I = params[8];
+    vec3 Z = params[9];
+    vec3 chi = (1.0 + cos_gamma * cos_gamma) / pow(1.0 + H * H - 2.0 * cos_gamma * H, vec3(1.5));
+    return (1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * (cos_gamma * cos_gamma) + G * chi + I * sqrt(cos_theta));
+}
 
 // CIE-XYZ to linear RGB
 vec3 XYZ_to_RGB(vec3 XYZ)
