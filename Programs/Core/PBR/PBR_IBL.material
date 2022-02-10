@@ -30,8 +30,7 @@ abstract fragment_program PBRS_IBLI_fs glsl glsles : PBRS_BaseI_fs
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL,MAX_LIGHTS=8
 }
 
-fragment_program PBRS_IBL_fs glsl glsles : PBRS_IBLI_fs
-{}
+fragment_program PBRS_IBL_fs glsl glsles : PBRS_IBLI_fs {}
 
 sampler PBRLUTSampler
 {

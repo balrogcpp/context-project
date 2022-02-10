@@ -5,12 +5,9 @@ shared_params PBRS_Shared_frag
     shared_param_named uNormalScale float 1.0
     shared_param_named uOffsetScale float 0.001
     shared_param_named uLOD float 0.0
-    shared_param_named pssmSplitPoints float4 6.7367 18.4907 400.0 400.0
 }
 
-shared_params PBRS_Shared_vert
-{
-}
+shared_params PBRS_Shared_vert {}
 
 abstract vertex_program PBRS_I_vs glsl glsles
 {
@@ -25,8 +22,7 @@ abstract vertex_program PBRS_I_vs glsl glsles
     }
 }
 
-vertex_program PBRS_vs glsl glsles : PBRS_I_vs
-{}
+vertex_program PBRS_vs glsl glsles : PBRS_I_vs {}
 
 abstract fragment_program PBRS_BaseI_fs glsl glsles
 {
@@ -63,8 +59,6 @@ abstract fragment_program PBRS_I_fs glsl glsles : PBRS_BaseI_fs
 }
 
 
-fragment_program PBRS_Basic_fs glsl glsles : PBRS_BaseI_fs
-{}
+fragment_program PBRS_Basic_fs glsl glsles : PBRS_BaseI_fs {}
 
-fragment_program PBRS_fs glsl glsles : PBRS_I_fs
-{}
+fragment_program PBRS_fs glsl glsles : PBRS_I_fs {}
