@@ -829,11 +829,16 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
 
   auto *treeLoader = new TreeLoader3D(trees, TBounds(-bound, -bound, bound, bound));
   FixTransparentShadowCaster("3D-Diggers/fir01");
-//  FixTransparentShadowCaster("leaf08png");
+  FixTransparentShadowCaster("leaf08png");
 
   trees->setPageLoader(treeLoader);
-//  Entity *fir2EntPtr = OgreScene->createEntity("fir1", "Tree.mesh");
+  Entity *fir2EntPtr = OgreScene->createEntity("fir1", "Tree.mesh");
   Entity *fir1EntPtr = OgreScene->createEntity("fir2", "fir05_30.mesh");
+
+  trees->setCustomParam(fir1EntPtr->getName(), "windFactorX", 30);
+  trees->setCustomParam(fir1EntPtr->getName(), "windFactorY", 0.01);
+  trees->setCustomParam(fir2EntPtr->getName(), "windFactorX", 15);
+  trees->setCustomParam(fir2EntPtr->getName(), "windFactorY", 0.01);
 
   for (int i = 0; i < 50; i++) {
     yaw = Math::RangeRandom(0, 360);
@@ -890,12 +895,11 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   trees->update();
   trees->setCastsShadows(false);
   GetScene().AddForests(trees);
-  //  FixTransparentShadowCaster("3D-Diggers/fir01");
-  //  FixTransparentShadowCaster("3D-Diggers/fir02");
+
   GetScene().AddMaterial("3D-Diggers/fir01_Batched");
   GetScene().AddMaterial("3D-Diggers/fir02_Batched");
-//  GetScene().AddMaterial("leaf08png_Batched");
-//  GetScene().AddMaterial("wood03png_Batched");
+  GetScene().AddMaterial("leaf08png_Batched");
+  GetScene().AddMaterial("wood03png_Batched");
 
   ProcessStaticGeometry(XmlNode);
 }
@@ -1020,7 +1024,7 @@ void DotSceneLoaderB::ProcessFog(pugi::xml_node &XmlNode) {
 void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &XmlNode) {
   // Process attributes
   string material = GetAttrib(XmlNode, "material", "SkyBox");
-  string cubemap = GetAttrib(XmlNode, "cubemap", "OutputCube.dds");
+  string cubemap = GetAttrib(XmlNode, "cubemap", "");
   float distance = GetAttribReal(XmlNode, "distance", 500);
   bool drawFirst = GetAttribBool(XmlNode, "drawFirst", true);
   bool active = GetAttribBool(XmlNode, "active", true);

@@ -13,7 +13,7 @@
 #include "header.frag"
 
 #include "srgb.glsl"
-#include "knosek.glsl"
+#include "hosek.glsl"
 #include "atmos.glsl"
 #ifdef NO_MRT
 #include "fog.glsl"
@@ -25,9 +25,8 @@ uniform vec3 uFogColour;
 uniform vec4 uFogParams;
 uniform samplerCube cubemap;
 
-in vec3 vPosition; // direction vector representing a 3D texture coordinate
-in vec3 TexCoords; // direction vector representing a 3D texture coordinate
-
+in vec3 vPosition;
+in vec3 TexCoords;
 
 void main()
 {
@@ -60,7 +59,7 @@ void main()
 //    float density = smoothstep(1.0 - cirrus, 1.0, fbm(pos.xyz / pos.y * 2.0 + uTime * 0.05)) * 0.3;
 //    color = mix(color, vec3(1.0), density * max(pos.y, 0.0));
 
-    #ifndef NO_MRT
+#ifndef NO_MRT
     FragData[0].rgb = color;
     FragData[1].r = 0.05;
 #else

@@ -163,7 +163,9 @@ in vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif
 in vec2 vUV0;
 in float vDepth;
+#ifdef FADE
 in float vAlpha;
+#endif
 in vec3 vPosition;
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
@@ -420,7 +422,7 @@ void main()
     float alpha = albedo.a;
 
 #ifdef HAS_ALPHA
-#ifdef PAGED_GEOMETRY
+#ifdef FADE
     alpha *= vAlpha;
 #endif
     if (alpha < 0.5) discard;

@@ -23,6 +23,10 @@
 in vec3 position;
 #ifdef HAS_UV
 in vec2 uv0;
+#ifdef TREES
+in vec4 uv1;
+in vec4 uv2;
+#endif
 #endif
 #else
 in vec2 vertex;
@@ -42,14 +46,18 @@ in vec3 colour;
 uniform mat4 uModelMatrix;
 #ifdef PAGED_GEOMETRY
 uniform vec3 uCameraPosition;
+uniform float uTime;
 #define HAS_UV
 uniform float uFadeRange;
+#ifdef GRASS
 uniform float uWindRange;
+#endif
 #endif // PAGED_GEOMETRY
-uniform float uTime;
 out vec2 vUV0;
 out float vDepth;
+#ifdef FADE
 out float vAlpha;
+#endif
 #ifdef HAS_NORMALS
 in vec3 normal;
 #endif // HAS_NORMALS
@@ -85,13 +93,13 @@ out vec2 vUV0;
 #ifdef HAS_REFLECTION
 vec4 GetProjectionCoord(vec4 position) {
   return mat4(0.5, 0.0, 0.0, 0.0,
-                            0.0, 0.5, 0.0, 0.0,
-                            0.0, 0.0, 0.5, 0.0,
-                            0.5, 0.5, 0.5, 1.0) * position;
+              0.0, 0.5, 0.0, 0.0,
+              0.0, 0.0, 0.5, 0.0,
+              0.5, 0.5, 0.5, 1.0) * position;
 }
 #endif
 
-#ifdef PAGED_GEOMETRY
+#ifdef GRASS
 #include "noise.glsl"
 #endif
 
@@ -122,11 +130,27 @@ void main()
 
 #ifdef PAGED_GEOMETRY
   float dist = distance(uCameraPosition.xyz, vPosition.xyz);
-  vAlpha = (dist < uFadeRange) ? 1.0 : 0.0;
 
+#ifdef FADE
+  vAlpha = (dist < uFadeRange) ? 1.0 : 0.0;
+#endif
+#ifdef GRASS
   if (uv0.y < 0.9 && dist < uWindRange) {
     new_position = ApplyWaveAnimation(new_position, uTime, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
   }
+#endif
+#ifdef TREES
+  vec4 params = uv1;
+  vec4 originPos = uv2;
+
+  float radiusCoeff = params.x;
+  float heightCoeff = params.y;
+  float factorX = params.z;
+  float factorY = params.w;
+
+  new_position.y += sin(uTime + originPos.z + new_position.y + new_position.x) * radiusCoeff * radiusCoeff * factorY;
+  new_position.x += sin(uTime + originPos.z ) * heightCoeff * heightCoeff * factorX;
+#endif
 #endif
 
 #ifdef HAS_NORMALS

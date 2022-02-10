@@ -4,24 +4,22 @@ import PBRS_I_fs from PBRS.program
 
 vertex_program PBRS_Paged_vs glsl glsles : PBRS_I_vs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8
+    preprocessor_defines PAGED_GEOMETRY,TREES,HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8
     default_params
     {
         param_named_auto uTime time
-        param_named uFadeRange float 50.0
-        param_named uWindRange float 50.0
         param_named_auto uCameraPosition camera_position
     }
 }
 
 fragment_program PBRS_Paged_fs glsl glsles : PBRS_I_fs
 {
-    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_ALPHA,MAX_LIGHTS=8
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_ALPHA,MAX_LIGHTS=8
 }
 
 vertex_program PBRS_Grass_vs glsl glsles : PBRS_I_vs
 {
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8
+    preprocessor_defines PAGED_GEOMETRY,GRASS,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8
     default_params
     {
         param_named_auto uTime time
@@ -33,7 +31,7 @@ vertex_program PBRS_Grass_vs glsl glsles : PBRS_I_vs
 
 fragment_program PBRS_Grass_fs glsl glsles : PBRS_I_fs
 {
-    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA
+    preprocessor_defines PAGED_GEOMETRY,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA
 }
 
 abstract material PBRS_Grass : PBRS_Basic
