@@ -9,6 +9,12 @@ class Sky final : public Component<Sky> {
  public:
   Sky();
   virtual ~Sky();
+
+  void OnSetUp() override;
+  void OnPause() override;
+  void OnResume() override;
+  void OnUpdate(float PassedTime);
+  void OnClean() override;
 };
 
 }  // namespace Glue

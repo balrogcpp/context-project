@@ -34,6 +34,8 @@ class Scene final : public Component<Scene> {
   void OnUpdate(float PassedTime) override;
 
   CameraMan &GetCamera() const;
+  Ogre::Vector3 GetSunPosition();
+
   float GetHeight(float x, float z);
   void AddEntity(Ogre::Entity *EntityPtr);
   void AddMaterial(Ogre::MaterialPtr material);
@@ -42,6 +44,7 @@ class Scene final : public Component<Scene> {
   void AddSinbad(Ogre::Camera *OgreCameraPtr);
   void AddForests(Forests::PagedGeometry *PGPtr, const std::string &MaterialName = "");
   void AddTerrain(Ogre::TerrainGroup* TGP);
+  void AddSkyBox();
 
  protected:
   std::unique_ptr<CameraMan> CameraManPtr;

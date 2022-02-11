@@ -222,6 +222,18 @@ void DotSceneLoaderB::ProcessScene(pugi::xml_node &XmlRoot) {
     ProcessForests(element);
   }
 
+  if (auto element = XmlRoot.child("skyBox")) {
+    ProcessSkyBox(element);
+  }
+
+  if (auto element = XmlRoot.child("skyDome")) {
+    ProcessSkyDome(element);
+  }
+
+  if (auto element = XmlRoot.child("skyPlane")) {
+    ProcessSkyPlane(element);
+  }
+
   if (auto element = XmlRoot.child("userData")) {
     ProcessUserData(element, AttachNode->getUserObjectBindings());
   }
@@ -1029,10 +1041,6 @@ void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &XmlNode) {
   bool drawFirst = GetAttribBool(XmlNode, "drawFirst", true);
   bool active = GetAttribBool(XmlNode, "active", true);
 
-  if (!active) {
-    return;
-  }
-
   // Process rotation
   Quaternion rotation = Quaternion::IDENTITY;
 
@@ -1052,6 +1060,7 @@ void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &XmlNode) {
 
   // Setup the sky box
   OgreScene->setSkyBox(true, material, distance, drawFirst, rotation, GroupName);
+  GetScene().AddSkyBox();
 }
 
 void DotSceneLoaderB::ProcessSkyDome(pugi::xml_node &XmlNode) {
@@ -1062,10 +1071,6 @@ void DotSceneLoaderB::ProcessSkyDome(pugi::xml_node &XmlNode) {
   float distance = GetAttribReal(XmlNode, "distance", 500);
   bool drawFirst = GetAttribBool(XmlNode, "drawFirst", true);
   bool active = GetAttribBool(XmlNode, "active", false);
-
-  if (!active) {
-    return;
-  }
 
   // Process rotation
   Quaternion rotation = Quaternion::IDENTITY;

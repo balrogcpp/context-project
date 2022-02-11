@@ -2,6 +2,7 @@
 
 #include "PCHeader.h"
 #include "Components/Scene.h"
+#include "Components/Sky.h"
 #include "Engine.h"
 #include "Objects/CameraMan.h"
 #include "Objects/SinbadCharacterController.h"
@@ -43,6 +44,14 @@ Scene::~Scene() {}
 
 CameraMan &Scene::GetCamera() const { return *CameraManPtr; }
 
+Ogre::Vector3 Scene::GetSunPosition() {
+  auto *SunPtr = OgreScene->getLight("Sun");
+  if (SunPtr)
+    return Vector3(SunPtr->getDerivedDirection());
+  else
+    return Vector3();
+}
+
 float Scene::GetHeight(float x, float z) {
   if (OgreTerrainList)
     return OgreTerrainList->getHeightAtWorldPosition(x, 1000, z);
@@ -83,6 +92,8 @@ void Scene::AddForests(PagedGeometry *PGPtr, const std::string &MaterialName) {
 }
 
 void Scene::AddTerrain(TerrainGroup *TGP) { OgreTerrainList.reset(TGP); }
+
+void Scene::AddSkyBox() { GetComponent<Sky>().OnSetUp(); }
 
 void Scene::OnUpdate(float PassedTime) {
   if (Paused) return;

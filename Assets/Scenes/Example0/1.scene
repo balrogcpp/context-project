@@ -3,7 +3,7 @@
     <nodes>
         <node name="Sun">
             <position x="0" y="0" z="0"/>
-            <direction x="40.659888" y="-60.704975" z="-30.950829"/>
+            <direction x="40.659888" y="-20.704975" z="-30.950829"/>
             <light name="Sun" powerScale="5" type="directional" castShadows="true">
             </light>
         </node>
@@ -68,10 +68,9 @@
         <fog mode="exp" density="0.01">
             <colour r="155" g="171" b="187"/>
         </fog>
-        <!--                <skyBox cubemap="BlueSky512.dds"/>-->
-        <skyBox cubemap="OutputCube.dds"/>
     </environment>
-    <terrainGroup worldSize="200" mapSize="257" inputScale="10">
+  <skyBox cubemap="OutputCube.dds"/>
+  <terrainGroup worldSize="200" mapSize="257" inputScale="10">
         <terrain x="0" y="0" heightmap="terrain.png"/>
     </terrainGroup>
 </scene>

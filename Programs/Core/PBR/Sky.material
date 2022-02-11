@@ -19,16 +19,16 @@ fragment_program SkyBoxCustomFp glsl glsles
         param_named_auto uFogParams fog_params
         param_named_auto uFogColour fog_colour
         param_named cubemap int 0
-        param_named A float3 -1.08135 -1.07058 -1.1092
-        param_named B float3 -1.08135 -1.07058 -1.1092
-        param_named C float3 -1.08135 -1.07058 -1.1092
-        param_named D float3 -1.08135 -1.07058 -1.1092
-        param_named E float3 -1.08135 -1.07058 -1.1092
-        param_named F float3 -1.08135 -1.07058 -1.1092
-        param_named G float3 -1.08135 -1.07058 -1.1092
-        param_named H float3 -1.08135 -1.07058 -1.1092
-        param_named I float3 -1.08135 -1.07058 -1.1092
-        param_named Z float3 -0.0780569, -0.111313, -0.158342
+        param_named A float3 -1.07923 -1.08575 -1.10911
+        param_named B float3 -1.07923 -1.08575 -1.10911
+        param_named C float3 -1.07923 -1.08575 -1.10911
+        param_named D float3 -1.07923 -1.08575 -1.10911
+        param_named E float3 -1.07923 -1.08575 -1.10911
+        param_named F float3 -1.07923 -1.08575 -1.10911
+        param_named G float3 -1.07923 -1.08575 -1.10911
+        param_named H float3 -1.07923 -1.08575 -1.10911
+        param_named I float3 -1.07923 -1.08575 -1.10911
+        param_named Z float3 -0.155323 -0.18679 -0.211017
     }
 }
 

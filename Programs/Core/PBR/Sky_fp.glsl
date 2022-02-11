@@ -13,17 +13,19 @@
 #include "header.frag"
 
 #include "srgb.glsl"
-#include "hosek.glsl"
-#include "atmos.glsl"
+//#include "hosek.glsl"
+//#include "atmos.glsl"
 #ifdef NO_MRT
 #include "fog.glsl"
 #endif
 
 uniform vec3 uSunDirection;
-uniform float uTime;
+//uniform float uTime;
+#ifdef NO_MRT
 uniform vec3 uFogColour;
 uniform vec4 uFogParams;
-uniform samplerCube cubemap;
+#endif
+//uniform samplerCube cubemap;
 uniform vec3 A;
 uniform vec3 B;
 uniform vec3 C;

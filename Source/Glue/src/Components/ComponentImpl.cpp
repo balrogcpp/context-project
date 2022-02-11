@@ -5,6 +5,14 @@
 
 namespace Glue {
 
+ComponentImpl::ComponentImpl() {
+  // Add your code
+}
+
+ComponentImpl::~ComponentImpl() {
+  // Add your code
+}
+
 void ComponentImpl::OnPause() {
   Paused = true;
   // Add your code

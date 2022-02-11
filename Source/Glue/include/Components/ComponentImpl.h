@@ -7,6 +7,9 @@ namespace Glue {
 
 class ComponentImpl : public Component<ComponentImpl> {
  public:
+  ComponentImpl();
+  virtual ~ComponentImpl();
+
   void OnPause() override;
   void OnResume() override;
   void OnUpdate(float PassedTime);
