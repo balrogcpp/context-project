@@ -134,9 +134,9 @@ void DemoDotAppState::SetUp() {
   //    anim2->setLoop(true);
   //    anim2->setEnabled(true);
 
-  //  GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
-  //  GetAudio().SetVolume("ambient", 0.5);
-  //  GetAudio().PlaySound("ambient");
+    GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
+    GetAudio().SetVolume("ambient", 0.5);
+    GetAudio().PlaySound("ambient");
 }
 
 }  // namespace Demo

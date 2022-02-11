@@ -40,9 +40,7 @@
  * 0 - No multithreading
  * 1 - OGRE-native multithreading
  */
-#ifndef OGGSOUND_THREADED
-	#define OGGSOUND_THREADED 1
-#endif
+#define OGGSOUND_THREADED 1
 
 /**
  * HAVE_ALEXT: Specifies whether OpenAL Soft enhancements are supported
@@ -54,22 +52,20 @@
 #endif
 
 /**
- * HAVE_EFX: Specifies whether EFX enhancements are supported
+ * OGGSOUND_HAVE_EFX: Specifies whether EFX enhancements are supported
  * 0 - EFX not supported
  * 1 - Enable EFX support with Creative OpenAL SDK 1.1
  * 2 - Enable EFX support with OpenAL Soft SDK
  */
-#ifndef HAVE_EFX
-#	define HAVE_EFX 0
-#endif
+#define OGGSOUND_HAVE_EFX 0
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#	pragma warning( disable : 4244 )
 #	if OGRE_COMPILER == OGRE_COMPILER_MSVC
-#		pragma warning(disable : 4244)
 #		ifdef OGGSOUND_EXPORT
 #			define _OGGSOUND_EXPORT __declspec(dllexport)
 #		else
-#			define _OGGSOUND_EXPORT
+#			define _OGGSOUND_EXPORT __declspec(dllimport)
 #		endif
 #	else
 #		define _OGGSOUND_EXPORT
@@ -89,7 +85,7 @@
 #if HAVE_ALEXT == 1
 #	include <alext.h>
 #endif
-#if HAVE_EFX == 2
+#if OGGSOUND_HAVE_EFX == 2
 #	include <efx.h>
 #	include <efx-presets.h>
 #endif
