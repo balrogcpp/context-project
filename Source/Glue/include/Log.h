@@ -7,8 +7,6 @@
 
 namespace Glue {
 
-#ifdef DESKTOP
-
 class Log : public Ogre::LogListener, public Singleton<Log> {
  public:
   explicit Log(std::string LogFileName = "Runtime.log");
@@ -27,7 +25,5 @@ class Log : public Ogre::LogListener, public Singleton<Log> {
   bool EnableWriteToFile = false;
   bool EnableWriteToConsole = false;
 };
-
-#endif // DESKTOP
 
 }  // namespace Glue

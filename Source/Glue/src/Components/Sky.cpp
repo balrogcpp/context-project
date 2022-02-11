@@ -6,6 +6,7 @@
 #include "Log.h"
 #include "Components/Scene.h"
 #include "Engine.h"
+#include "Caelum.h"
 #include <iostream>
 extern "C" {
 #define _USE_MATH_DEFINES
