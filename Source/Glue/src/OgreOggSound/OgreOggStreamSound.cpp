@@ -39,14 +39,14 @@ namespace OgreOggSound
 {
 	/*/////////////////////////////////////////////////////////////////*/
 	OgreOggStreamSound::OgreOggStreamSound(
-		const Ogre::String& name
+		const Ogre::String& name, Ogre::SceneManager* scnMgr
 		#if OGRE_VERSION_MAJOR == 2
-		, Ogre::SceneManager* scnMgr, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+		, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
 		#endif
 	) : OgreOggISound(
-		name
+		name, scnMgr
 		#if OGRE_VERSION_MAJOR == 2
-		, scnMgr, id, objMemMgr, renderQueueId
+		, id, objMemMgr, renderQueueId
 		#endif
 	)
 	,mVorbisInfo(0)
@@ -133,7 +133,7 @@ namespace OgreOggSound
 			if ((*mBuffers)[i]!=AL_NONE)
 				alDeleteBuffers(1, &(*mBuffers)[i]);
 		}
-		if ( !mAudioStream && mVorbisInfo ) ov_clear(&mOggStream);
+		if ( !mAudioStream ) ov_clear(&mOggStream);
 		mPlayPosChanged = false;
 		mPlayPos = 0.f;
 	}

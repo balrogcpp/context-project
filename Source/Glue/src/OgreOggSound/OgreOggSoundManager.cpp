@@ -242,22 +242,60 @@ namespace OgreOggSound
 
 		int majorVersion;
 		int minorVersion;
-
+#if OGRE_PLATFORM != OGRE_PLATFORM_WIN32
+		ALCdevice* device = alcOpenDevice(NULL);
+#endif
 		// Version Info
-        alcGetIntegerv(NULL, ALC_MINOR_VERSION, sizeof(minorVersion), &minorVersion);
-        ALCenum error = alcGetError(NULL);
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+        ALenum error = 0;
+		alcGetError(NULL);
+	    alcGetIntegerv(NULL, ALC_MINOR_VERSION, sizeof(minorVersion), &minorVersion);
+        if ((error = alcGetError(NULL))!=AL_NO_ERROR)
+		{
+			switch (error)
+			{
+			case AL_INVALID_NAME:		{ Ogre::LogManager::getSingleton().logError("Invalid Name when attempting: OpenAL Minor Version number"); } break;
+			case AL_INVALID_ENUM:		{ Ogre::LogManager::getSingleton().logError("Invalid Enum when attempting: OpenAL Minor Version number"); } break;
+			case AL_INVALID_VALUE:		{ Ogre::LogManager::getSingleton().logError("Invalid Value when attempting: OpenAL Minor Version number"); } break;
+			case AL_INVALID_OPERATION:	{ Ogre::LogManager::getSingleton().logError("Invalid Operation when attempting: OpenAL Minor Version number"); } break;
+			case AL_OUT_OF_MEMORY:		{ Ogre::LogManager::getSingleton().logError("Out of memory when attempting: OpenAL Minor Version number"); }	break;
+			}
+			Ogre::LogManager::getSingleton().logError("Unable to get OpenAL Minor Version number", Ogre::LML_CRITICAL);
+			return false;
+		}
+		alcGetError(NULL);
+		alcGetIntegerv(NULL, ALC_MAJOR_VERSION, sizeof(majorVersion), &majorVersion);
+        if ((error = alcGetError(NULL))!=AL_NO_ERROR)
+		{
+			switch (error)
+			{
+			case AL_INVALID_NAME:		{ Ogre::LogManager::getSingleton().logError("Invalid Name when attempting: OpenAL Minor Version number"); } break;
+			case AL_INVALID_ENUM:		{ Ogre::LogManager::getSingleton().logError("Invalid Enum when attempting: OpenAL Minor Version number"); } break;
+			case AL_INVALID_VALUE:		{ Ogre::LogManager::getSingleton().logError("Invalid Value when attempting: OpenAL Minor Version number"); } break;
+			case AL_INVALID_OPERATION:	{ Ogre::LogManager::getSingleton().logError("Invalid Operation when attempting: OpenAL Minor Version number"); } break;
+			case AL_OUT_OF_MEMORY:		{ Ogre::LogManager::getSingleton().logError("Out of memory when attempting: OpenAL Minor Version number"); } break;
+			}
+			Ogre::LogManager::getSingleton().logError("Unable to get OpenAL Major Version number");
+			return false;
+		}
+#else
+        alcGetIntegerv(device, ALC_MINOR_VERSION, sizeof(minorVersion), &minorVersion);
+        ALCenum error = alcGetError(device);
         if (error != ALC_NO_ERROR)
 		{
 			OGRE_LOG_ERROR("Unable to get OpenAL Minor Version number");
 			return false;
 		}
-		alcGetIntegerv(NULL, ALC_MAJOR_VERSION, sizeof(majorVersion), &majorVersion);
-		error = alcGetError(NULL);
+		alcGetIntegerv(device, ALC_MAJOR_VERSION, sizeof(majorVersion), &majorVersion);
+		error = alcGetError(device);
         if (error != ALC_NO_ERROR)
 		{
 			OGRE_LOG_ERROR("Unable to get OpenAL Major Version number");
 			return false;
 		}
+		alcCloseDevice(device);
+#endif
+		//Ogre::LogManager::getSingleton().logMessage(Ogre::String("OpenAL version " + Ogre::StringConverter::toString(majorVersion) + "." + Ogre::StringConverter::toString(minorVersion)));
 
 		/*
 		** OpenAL versions prior to 1.0 DO NOT support device enumeration, so we
@@ -332,7 +370,7 @@ namespace OgreOggSound
 				mSceneMgr = inst.begin()->second;
 			#else
 			auto it=Ogre::Root::getSingletonPtr()->getSceneManagerIterator();
-			if ( it.hasMoreElements() ) 
+			if ( it.hasMoreElements() )
 				mSceneMgr = it.getNext();
 			#endif
 			else
@@ -516,6 +554,7 @@ namespace OgreOggSound
 		// Catch exception when plugin hasn't been registered
 		try
 		{
+			params["sceneManagerName"] = scnMgr->getName();
 			sound = static_cast<OgreOggISound*>(
 			#if OGRE_VERSION_MAJOR == 2
 				scnMgr->createMovableObject( OgreOggSoundFactory::FACTORY_TYPE_NAME, &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), &params )
@@ -526,11 +565,13 @@ namespace OgreOggSound
 		}
 		catch (Ogre::Exception& e)
 		{
+			Ogre::LogManager::getSingleton().logError("OgreOggSoundManager::createSound() - There was an error when trying to create sound: " + name);
+
 			// If the sound creation generated an exception, then erase the sound from the soundmap
 			SoundMap::iterator i = mSoundMap.find(name);
 			mSoundMap.erase(i);
 
-			throw; // rethrow
+			OGRE_EXCEPT(Ogre::Exception::ERR_INTERNAL_ERROR, e.getFullDescription(), "OgreOggSoundManager::createSound()");
 		}
 
 		// create Movable Sound
@@ -538,7 +579,8 @@ namespace OgreOggSound
 	}
 
 	/*/////////////////////////////////////////////////////////////////*/
-	OgreOggISound* OgreOggSoundManager::_createSoundImpl(	const Ogre::String& name,
+	OgreOggISound* OgreOggSoundManager::_createSoundImpl(	Ogre::SceneManager* scnMgr,
+															const Ogre::String& name,
 															#if OGRE_VERSION_MAJOR == 2
 															Ogre::IdType id,
 															#endif
@@ -563,9 +605,9 @@ namespace OgreOggSound
 		if ( file == "BUFFER" )
 		{
 			sound = OGRE_NEW_T(OgreOggStreamBufferSound, Ogre::MEMCATEGORY_GENERAL)(
-				name
+				name, scnMgr
 				#if OGRE_VERSION_MAJOR == 2
-				, scnMgr, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
+				, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
 				#endif
 			);
 
@@ -589,16 +631,16 @@ namespace OgreOggSound
 		{
 			if(stream)
 				sound = OGRE_NEW_T(OgreOggStreamSound, Ogre::MEMCATEGORY_GENERAL)(
-					name
+					name, scnMgr
 					#if OGRE_VERSION_MAJOR == 2
-					, scnMgr, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
+					, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
 					#endif
 				);
 			else
 				sound = OGRE_NEW_T(OgreOggStaticSound, Ogre::MEMCATEGORY_GENERAL)(
-					name
+					name, scnMgr
 					#if OGRE_VERSION_MAJOR == 2
-					, scnMgr, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
+					, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
 					#endif
 				);
 
@@ -639,16 +681,16 @@ namespace OgreOggSound
 		{
 			if(stream)
 				sound = OGRE_NEW_T(OgreOggStreamWavSound, Ogre::MEMCATEGORY_GENERAL)(
-					name
+					name, scnMgr
 					#if OGRE_VERSION_MAJOR == 2
-					, scnMgr, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
+					, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
 					#endif
 				);
 			else
 				sound = OGRE_NEW_T(OgreOggStaticWavSound, Ogre::MEMCATEGORY_GENERAL)(
-					name
+					name, scnMgr
 					#if OGRE_VERSION_MAJOR == 2
-					, scnMgr, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
+					, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
 					#endif
 				);
 
@@ -1092,6 +1134,7 @@ namespace OgreOggSound
 			}
 
 			// Check priority...
+			Ogre::uint8 priority = sound->getPriority();
 			iter = mActiveSounds.begin();
 
 			// Search for a lower priority sound
@@ -2852,7 +2895,7 @@ namespace OgreOggSound
 		if ( !sound ) return;
 
 		// Get SceneManager
-		Ogre::SceneManager* s = sound->_getManager();
+		Ogre::SceneManager* s = sound->getSceneManager();
 		s->destroyMovableObject(sound);
 	}
 
@@ -3232,7 +3275,7 @@ namespace OgreOggSound
 	}
 
 	/*/////////////////////////////////////////////////////////////////*/
-	bool OgreOggSoundManager::_releaseSharedBuffer(const Ogre::String& sName, ALuint& buffer)
+	bool OgreOggSoundManager::_releaseSharedBuffer(const Ogre::String& sName, ALuint buffer)
 	{
 		if ( sName.empty() ) return false;
 
@@ -3262,7 +3305,7 @@ namespace OgreOggSound
 	}	
 
 	/*/////////////////////////////////////////////////////////////////*/
-	bool OgreOggSoundManager::_registerSharedBuffer(const Ogre::String& sName, ALuint& buffer, OgreOggISound* parent)
+	bool OgreOggSoundManager::_registerSharedBuffer(const Ogre::String& sName, ALuint buffer, OgreOggISound* parent)
 	{
 		if ( sName.empty() ) return false;
 
@@ -3297,7 +3340,7 @@ namespace OgreOggSound
 		static float rTime=0.f;
 
 		// Get frame time
-		cTime = timer.getMilliseconds();
+		cTime = timer.getMillisecondsCPU();
 		float fTime = (cTime-pTime) * 0.001f;
 
 		// update Listener
