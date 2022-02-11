@@ -65,7 +65,7 @@
 #		ifdef OGGSOUND_EXPORT
 #			define _OGGSOUND_EXPORT __declspec(dllexport)
 #		else
-#			define _OGGSOUND_EXPORT __declspec(dllimport)
+#			define _OGGSOUND_EXPORT
 #		endif
 #	else
 #		define _OGGSOUND_EXPORT
