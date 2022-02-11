@@ -27,7 +27,6 @@ abstract vertex_program PBR_I_vs glsl glsles
         param_named_auto uMVPMatrix worldviewproj_matrix
         param_named_auto uModelMatrix world_matrix
         param_named_auto uTexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
-
     }
 }
 

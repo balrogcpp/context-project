@@ -13,19 +13,19 @@
 #include "header.frag"
 
 #include "srgb.glsl"
-//#include "hosek.glsl"
-//#include "atmos.glsl"
+#include "hosek.glsl"
+#include "atmos.glsl"
 #ifdef NO_MRT
 #include "fog.glsl"
 #endif
 
 uniform vec3 uSunDirection;
-//uniform float uTime;
+uniform float uTime;
 #ifdef NO_MRT
 uniform vec3 uFogColour;
 uniform vec4 uFogParams;
 #endif
-//uniform samplerCube cubemap;
+uniform samplerCube cubemap;
 uniform vec3 A;
 uniform vec3 B;
 uniform vec3 C;
@@ -44,6 +44,16 @@ vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma)
 {
     vec3 chi = (1.0 + cos_gamma * cos_gamma) / pow(1.0 + H * H - 2.0 * cos_gamma * H, vec3(1.5));
     return (1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * (cos_gamma * cos_gamma) + G * chi + I * sqrt(cos_theta));
+}
+
+// CIE-XYZ to linear RGB
+vec3 XYZ_to_RGB(vec3 XYZ)
+{
+    return mat3(
+    3.24096994, -0.96924364, 0.55630080,
+    -1.53738318,  1.8759675, -0.20397696,
+    -0.49861076,  0.04155506, 1.05697151
+    ) * XYZ;
 }
 
 void main()
@@ -78,12 +88,18 @@ void main()
     float theta = acos(cos_theta);
     float gamma = acos(cos_gamma);
     vec3 color = Z * HosekWilkie(cos_theta, gamma, cos_gamma);
-//    vec3 color = sample_sky(theta, gamma, N.y, N.x);
-//    color = XYZ_to_RGB(color);
-    color = expose(color, 0.1);
-    color = SRGBtoLINEAR(color);
 
-    // Cirrus Clouds
+//    if (cos_gamma > 0) {
+//        // Only positive values of dot product, so we don't end up creating two
+//        // spots of light 180 degrees apart
+//        color += pow(vec3(cos_gamma), vec3(256)) * 0.5;
+//    }
+
+    //    color = XYZ_to_RGB(color);
+//    if (cos_gamma > 0.0) color = expose(color, 0.1);
+//    color = SRGBtoLINEAR(color);
+
+        // Cirrus Clouds
 //    float density = smoothstep(1.0 - cirrus, 1.0, fbm(vPosition.xyz / vPosition.y * 2.0 + uTime * 0.05)) * 0.3;
 //    color = mix(color, vec3(1.0), density * max(vPosition.y, 0.0));
 

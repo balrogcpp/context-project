@@ -62,8 +62,6 @@ float Scene::GetHeight(float x, float z) {
 void Scene::AddEntity(Ogre::Entity *EntityPtr) { FixEntityMaterial(EntityPtr); }
 
 void Scene::AddMaterial(Ogre::MaterialPtr material) {
-  using GPU = GpuProgramParameters::AutoConstantType;
-
   for (int i = 0; i < material->getNumTechniques(); i++) {
     if (!material->getTechnique(i)->getPass(0)->hasVertexProgram() || !material->getTechnique(i)->getPass(0)->hasFragmentProgram()) {
       return;

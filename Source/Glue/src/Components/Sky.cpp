@@ -128,8 +128,13 @@ Sky::Sky() {}
 Sky::~Sky() {}
 
 void Sky::OnSetUp() {
-  Vector3 SunPosition = -GetScene().GetSunPosition();
-  PrintParams(recalc_sun(SunPosition.normalisedCopy()));
+  auto HosekParams = recalc_sun(-GetScene().GetSunPosition());
+  //PrintParams(HosekParams);
+  auto SkyMaterial = MaterialManager::getSingleton().getByName("SkyBox");
+  if (!SkyMaterial) return;
+  auto &FpParams = SkyMaterial->getTechnique(0)->getPass(0)->getFragmentProgram()->getDefaultParameters();
+  array<string, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+  for (int i = 0; i < 10; i++) FpParams->setNamedConstant(ParamList[i], HosekParams[i]);
 }
 
 void Sky::OnPause() {

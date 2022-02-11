@@ -18,7 +18,6 @@ fragment_program SkyBoxCustomFp glsl glsles
         param_named_auto uTime time
         param_named_auto uFogParams fog_params
         param_named_auto uFogColour fog_colour
-        param_named cubemap int 0
         param_named A float3 -1.07923 -1.08575 -1.10911
         param_named B float3 -1.07923 -1.08575 -1.10911
         param_named C float3 -1.07923 -1.08575 -1.10911
@@ -41,12 +40,16 @@ material SkyBox
             lighting off
             depth_write off
 
-			vertex_program_ref SkyBoxCustomVp {}
-			fragment_program_ref SkyBoxCustomFp {}
-
 			texture_unit CubeMap
 			{
 				texture OutputCube.dds cubic
+			}
+
+			vertex_program_ref SkyBoxCustomVp {}
+
+			fragment_program_ref SkyBoxCustomFp
+			{
+			    param_named cubemap int 0
 			}
 		}
 	}

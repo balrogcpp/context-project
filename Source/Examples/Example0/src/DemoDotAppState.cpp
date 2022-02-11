@@ -115,7 +115,6 @@ void DemoDotAppState::SetUp() {
   GetEngine().GrabMouse(true);
   //  GetScene().GetCamera().SetStyle(CameraMan::Style::FPS);
   LoadFromFile("1.scene");
-
   //    Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
   //    glue::Pbr::UpdatePbrParams("Examples/Smoke");
   //    auto *ps = scene->createParticleSystem("Smoke", "Examples/Smoke");
@@ -134,9 +133,9 @@ void DemoDotAppState::SetUp() {
   //    anim2->setLoop(true);
   //    anim2->setEnabled(true);
 
-    GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
-    GetAudio().SetVolume("ambient", 0.5);
-    GetAudio().PlaySound("ambient");
+  GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
+  GetAudio().SetVolume("ambient", 0.5);
+  GetAudio().PlaySound("ambient");
 }
 
 }  // namespace Demo

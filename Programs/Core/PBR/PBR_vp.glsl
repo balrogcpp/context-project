@@ -101,6 +101,34 @@ vec4 GetProjectionCoord(vec4 position) {
 
 #ifdef GRASS
 #include "noise.glsl"
+
+//----------------------------------------------------------------------------------------------------------------------
+vec4 ApplyWaveAnimation(vec4 position, float time, float frequency, vec4 direction)
+{
+  float n = fbm(position.xy * time * 0.2) * 2.0 - 2.0;
+  return position + n * direction;
+}
+
+#endif
+
+#ifdef TREES
+//----------------------------------------------------------------------------------------------------------------------
+vec4 WaveTree(vec4 v)
+{
+  vec4 params = uv1;
+  vec4 originPos = uv2;
+
+  float radiusCoeff = params.x;
+  float heightCoeff = params.y;
+  float factorX = params.z;
+  float factorY = params.w;
+
+  vec4 result = v;
+  result.y += sin(uTime + originPos.z + result.y + result.x) * radiusCoeff * radiusCoeff * factorY;
+  result.x += sin(uTime + originPos.z ) * heightCoeff * heightCoeff * factorX;
+
+  return result;
+}
 #endif
 
 void main()
@@ -135,21 +163,11 @@ void main()
   vAlpha = (dist < uFadeRange) ? 1.0 : 0.0;
 #endif
 #ifdef GRASS
-  if (uv0.y < 0.9 && dist < uWindRange) {
+  if (uv0.y < 0.9 && dist < uWindRange)
     new_position = ApplyWaveAnimation(new_position, uTime, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
-  }
 #endif
 #ifdef TREES
-  vec4 params = uv1;
-  vec4 originPos = uv2;
-
-  float radiusCoeff = params.x;
-  float heightCoeff = params.y;
-  float factorX = params.z;
-  float factorY = params.w;
-
-  new_position.y += sin(uTime + originPos.z + new_position.y + new_position.x) * radiusCoeff * radiusCoeff * factorY;
-  new_position.x += sin(uTime + originPos.z ) * heightCoeff * heightCoeff * factorX;
+    new_position = WaveTree(new_position);
 #endif
 #endif
 
@@ -173,9 +191,8 @@ void main()
 
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
-  for (int i = 0; i < uShadowTextureCount; i++) {
-      lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * new_position;
-  }
+  for (int i = 0; i < uShadowTextureCount; i++)
+    lightSpacePosArray[i] = uTexWorldViewProjMatrixArray[i] * new_position;
 #endif
 
 #ifdef HAS_REFLECTION

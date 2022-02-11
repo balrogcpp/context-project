@@ -53,11 +53,4 @@ float fbm(vec2 p)
     return noise(p);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-vec4 ApplyWaveAnimation(vec4 position, float time, float frequency, vec4 direction)
-{
-    float n = fbm(position.xy * time * 0.2) * 2.0 - 2.0;
-    return position + n * direction;
-}
-
 #endif //NOISE_GLSL
