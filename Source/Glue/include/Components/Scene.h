@@ -51,6 +51,8 @@ class Scene final : public Component<Scene> {
   std::unique_ptr<Ogre::TerrainGroup> OgreTerrainList;
   std::vector<std::unique_ptr<Forests::PagedGeometry>> PagedGeometryList;
   std::unique_ptr<SinbadCharacterController> Sinbad;
+  Ogre::GpuProgramParametersSharedPtr SkyBoxFpParams;
+  std::array<Ogre::Vector3, 10> HosekParams;
   std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_fp_params_;
   std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;
 

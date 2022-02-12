@@ -697,6 +697,8 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &XmlNode, SceneNode *ParentNo
   Entity *entity = OgreScene->createEntity(name, meshFile);
 
   try {
+    if(!material_name.empty()) entity->setMaterialName(material_name);
+    GetScene().AddEntity(entity);
     ParentNode->attachObject(entity);
     entity->setCastShadows(cast_shadows);
 
@@ -726,7 +728,6 @@ void DotSceneLoaderB::ProcessParticleSystem(pugi::xml_node &XmlNode, SceneNode *
   // SetUp the particle system
   try {
     ParticleSystem *pParticles = OgreScene->createParticleSystem(name, templateName);
-    //    PBR::UpdatePbrParams(pParticles->getMaterialName());
 
     const uint32 WATER_MASK = 0xF00;
     pParticles->setVisibilityFlags(WATER_MASK);

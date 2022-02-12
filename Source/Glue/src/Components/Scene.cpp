@@ -2,12 +2,12 @@
 
 #include "PCHeader.h"
 #include "Components/Scene.h"
+#include "ArHosekSkyModel.h"
 #include "Engine.h"
 #include "Objects/CameraMan.h"
 #include "Objects/SinbadCharacterController.h"
 #include "PagedGeometry/PagedGeometryAll.h"
 #include "ShaderHelpers.h"
-#include "ArHosekSkyModel.h"
 #include "SkyModel.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
@@ -115,30 +115,21 @@ void Scene::AddSkyBox() {
   auto sunDir = GetSunPosition();
 
   SkyModel sky;
-  sky.SetupSky(sunDir,
-               sunSize,
-               sunColor,
-               groundAlbedo,
-               turbidity,
-               colorspace);
+  sky.SetupSky(sunDir, sunSize, sunColor, groundAlbedo, turbidity, colorspace);
 
-  array<string, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
-  array<Vector3, 10> HosekParams;
-  for (int i = 0; i < 9; i++) {
-    for (int j = 0; j < 3; j++)
-      HosekParams[i][j] = sky.StateX->configs[j][i];
-  }
+  const array<string, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+
+  for (int i = 0; i < 9; i++)
+    for (int j = 0; j < 3; j++) HosekParams[i][j] = sky.StateX->configs[j][i];
+  HosekParams[9] = Vector3(1.0);
 
   PrintParams(HosekParams);
 
   auto SkyMaterial = MaterialManager::getSingleton().getByName("SkyBox");
-  //if (!SkyMaterial) return;
+  if (!SkyMaterial) return;
   auto &FpParams = SkyMaterial->getTechnique(0)->getPass(0)->getFragmentProgram()->getDefaultParameters();
-  //FpParams->setIgnoreMissingParams(true);
-  FpParams->setNamedConstant("uSunDirection", GetScene().GetSunPosition());
-  for (int i = 0; i < 9; i++) FpParams->setNamedConstant(ParamList[i], HosekParams[i]);
-
-  sky.Shutdown();
+  for (int i = 0; i < 10; i++) FpParams->setNamedConstant(ParamList[i], HosekParams[i]);
+  SkyBoxFpParams = FpParams;
 }
 
 void Scene::OnUpdate(float PassedTime) {
@@ -155,6 +146,9 @@ void Scene::OnUpdate(float PassedTime) {
   MVP = CameraPtr->getProjectionMatrixWithRSDepth() * CameraPtr->getViewMatrix();
 
   for (auto &it : gpu_vp_params_) it->setNamedConstant("cWorldViewProjPrev", MVPprev);
+
+  //const array<string, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+  //if (SkyBoxFpParams) for (int i = 0; i < 10; i++) SkyBoxFpParams->setNamedConstant(ParamList[i], HosekParams[i]);
 }
 
 void Scene::OnClean() {
@@ -173,6 +167,7 @@ void Scene::OnClean() {
   gpu_fp_params_.shrink_to_fit();
   gpu_vp_params_.clear();
   gpu_vp_params_.shrink_to_fit();
+  SkyBoxFpParams.reset();
 }
 
 }  // namespace Glue

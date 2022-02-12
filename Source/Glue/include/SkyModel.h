@@ -8,7 +8,8 @@ enum ColorSpace { XYZ, sRGB, ACEScg, ACES2065_1 };
 // Hosek Sky Model forward declare
 struct ArHosekSkyModelState;
 
-struct SkyModel {
+class SkyModel {
+ public:
   ArHosekSkyModelState *StateX = nullptr;
   ArHosekSkyModelState *StateY = nullptr;
   ArHosekSkyModelState *StateZ = nullptr;
@@ -24,7 +25,7 @@ struct SkyModel {
   ColorSpace Colorspace;
 
   void Shutdown();
-  ~SkyModel(){};
+  ~SkyModel() { Shutdown(); };
   void SetupSky(const Ogre::Vector3f &_sunDir, float _sunSize, Ogre::Vector3f _sunRenderColor, const Ogre::Vector3f _groundAlbedo, float _turbidity,
                 ColorSpace _colorspace);
   bool Initialized() const { return StateX != nullptr; }

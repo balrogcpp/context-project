@@ -7,6 +7,12 @@
             <light name="Sun" powerScale="5" type="directional" castShadows="true">
             </light>
         </node>
+<!--        <node name="Sky">-->
+<!--            <position x="0" y="0" z="0"/>-->
+<!--            <scale x="300" y="300" z="300"/>-->
+<!--            <entity meshFile="Cube.mesh" name="Sky" castShadows="false">-->
+<!--            </entity>-->
+<!--        </node>-->
         <node name="Camera">
             <position x="0" y="1.8" z="0"/>
             <rotation qw="0.780483" qx="0.483536" qy="0.336872" qz="-0.208704"/>
@@ -14,21 +20,9 @@
             <camera fov="1.5" name="Default" projectionType="perspective">
                 <clipping far="1000.0" near="0.001"/>
             </camera>
-            <!--            <node name="Point">-->
-            <!--                <position x="0.000000" y="2.00000" z="1.000000"/>&ndash;&gt;-->
-            <!--                <rotation qw="0.164831" qx="-0.107176" qy="-0.825201" qz="0.529516"/>-->
-            <!--                <scale x="1.000000" y="1.000000" z="1.000000"/>-->
-            <!--                <light name="Point" powerScale="20.0" type="spot" castShadows="true">-->
-            <!--                    <colourDiffuse b="1.0" g="1.0" r="1.0"/>-->
-            <!--                    <colourSpecular b="1.0" g="1.0" r="1.0"/>-->
-            <!--                    <lightRange falloff="1.0" inner="0.0" outer="1.5"/>-->
-            <!--                    <lightAttenuation constant="0.0" linear="0.5" quadratic="0.0" range="20"/>-->
-            <!--                </light>-->
-            <!--            </node>-->
         </node>
         <node name="Helmet">
             <position x="0" y="3.0" z="2"/>
-            <!--            <rotation qw="1.000000" qx="0.000000" qy="0.000000" qz="0.000000"/>-->
             <scale x="1" y="1" z="1"/>
             <entity meshFile="DamagedHelmet.mesh" name="DamagedHelmet">
                 <userData>
