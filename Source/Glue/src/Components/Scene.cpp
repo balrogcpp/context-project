@@ -104,7 +104,7 @@ void Scene::AddSkyBox() {
   SkyModel sky;
   sky.SetupSky(sunDir, sunSize, sunColor, groundAlbedo, turbidity, colorspace);
 
-  const static array<string, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+  constexpr array<const char*, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
 
   for (int i = 0; i < 9; i++)
     for (int j = 0; j < 3; j++) HosekParams[i][j] = sky.StateX->configs[j][i];
@@ -135,7 +135,7 @@ void Scene::OnUpdate(float PassedTime) {
   for (auto &it : gpu_vp_params_) it->setNamedConstant("cWorldViewProjPrev", MVPprev);
 
   if (SkyNeedsUpdate) {
-    const static array<string, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+    constexpr array<const char*, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
     if (SkyBoxFpParams)
       for (int i = 0; i < 10; i++) SkyBoxFpParams->setNamedConstant(ParamList[i], HosekParams[i]);
   }
