@@ -691,7 +691,6 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &XmlNode, SceneNode *ParentNo
   string meshFile = GetAttrib(XmlNode, "meshFile");
   string material_name = GetAttrib(XmlNode, "material");
   bool cast_shadows = GetAttribBool(XmlNode, "castShadows", true);
-  bool active_ibl = GetAttribBool(XmlNode, "activeIBL", false);
 
   // SetUp the entity
   Entity *entity = OgreScene->createEntity(name, meshFile);

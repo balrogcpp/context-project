@@ -104,19 +104,19 @@ void Scene::AddSkyBox() {
   SkyModel sky;
   sky.SetupSky(sunDir, sunSize, sunColor, groundAlbedo, turbidity, colorspace);
 
-  const array<string, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+  const static array<string, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
 
   for (int i = 0; i < 9; i++)
     for (int j = 0; j < 3; j++) HosekParams[i][j] = sky.StateX->configs[j][i];
   HosekParams[9] = Vector3(1.0);
 
-  //for (int i = 0; i < 10; i++) cout << "param_named " << ParamList[i] << " float3 " << HosekParams[i].x << ' ' << HosekParams[i].y << ' ' << HosekParams[i].z << '\n';
-
   auto SkyMaterial = MaterialManager::getSingleton().getByName("SkyBox");
   if (!SkyMaterial) return;
-  auto &FpParams = SkyMaterial->getTechnique(0)->getPass(0)->getFragmentProgram()->getDefaultParameters();
+
+  auto FpParams = SkyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+  if (FpParams) SkyBoxFpParams = FpParams;
+
   for (int i = 0; i < 10; i++) FpParams->setNamedConstant(ParamList[i], HosekParams[i]);
-  SkyBoxFpParams = FpParams;
 }
 
 void Scene::OnUpdate(float PassedTime) {
@@ -134,8 +134,11 @@ void Scene::OnUpdate(float PassedTime) {
 
   for (auto &it : gpu_vp_params_) it->setNamedConstant("cWorldViewProjPrev", MVPprev);
 
-  //const array<string, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
-  //if (SkyBoxFpParams) for (int i = 0; i < 10; i++) SkyBoxFpParams->setNamedConstant(ParamList[i], HosekParams[i]);
+  if (SkyNeedsUpdate) {
+    const static array<string, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+    if (SkyBoxFpParams)
+      for (int i = 0; i < 10; i++) SkyBoxFpParams->setNamedConstant(ParamList[i], HosekParams[i]);
+  }
 }
 
 void Scene::OnClean() {
