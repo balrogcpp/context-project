@@ -692,15 +692,13 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &XmlNode, SceneNode *ParentNo
   string material_name = GetAttrib(XmlNode, "material");
   bool cast_shadows = GetAttribBool(XmlNode, "castShadows", true);
   bool active_ibl = GetAttribBool(XmlNode, "activeIBL", false);
-  bool planar_reflection = GetAttribBool(XmlNode, "planarReflection", false);
 
   // SetUp the entity
   Entity *entity = OgreScene->createEntity(name, meshFile);
 
   try {
     ParentNode->attachObject(entity);
-
-    GetScene().AddEntity(entity);
+    entity->setCastShadows(cast_shadows);
 
     // Process userDataReference
     if (auto element = XmlNode.child("userData")) {

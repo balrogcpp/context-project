@@ -2,12 +2,13 @@
 
 #include "PCHeader.h"
 #include "Components/Scene.h"
-#include "Components/Sky.h"
 #include "Engine.h"
 #include "Objects/CameraMan.h"
 #include "Objects/SinbadCharacterController.h"
 #include "PagedGeometry/PagedGeometryAll.h"
 #include "ShaderHelpers.h"
+#include "ArHosekSkyModel.h"
+#include "SkyModel.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>
@@ -47,7 +48,7 @@ CameraMan &Scene::GetCamera() const { return *CameraManPtr; }
 Ogre::Vector3 Scene::GetSunPosition() {
   auto *SunPtr = OgreScene->getLight("Sun");
   if (SunPtr)
-    return Vector3(SunPtr->getDerivedDirection());
+    return -Vector3(SunPtr->getDerivedDirection());
   else
     return Vector3();
 }
@@ -91,7 +92,54 @@ void Scene::AddForests(PagedGeometry *PGPtr, const std::string &MaterialName) {
 
 void Scene::AddTerrain(TerrainGroup *TGP) { OgreTerrainList.reset(TGP); }
 
-void Scene::AddSkyBox() { GetComponent<Sky>().OnSetUp(); }
+template <typename T, size_t N>
+void PrintParams(const array<T, N> params) {
+  Log::Message("===================================================================================");
+  for (const auto &it : params) Log::Message(to_string(it));
+  Log::Message("===================================================================================");
+}
+
+template <typename T>
+void PrintParams(const T *params) {
+  Log::Message("===================================================================================");
+  for (const auto &it : params) Log::Message(to_string(it));
+  Log::Message("===================================================================================");
+}
+
+void Scene::AddSkyBox() {
+  auto colorspace = ACEScg;
+  float sunSize = 0.27f;
+  float turbidity = 4.0f;
+  auto groundAlbedo = Vector3f(0.18);
+  auto sunColor = Vector3f(20000);
+  auto sunDir = GetSunPosition();
+
+  SkyModel sky;
+  sky.SetupSky(sunDir,
+               sunSize,
+               sunColor,
+               groundAlbedo,
+               turbidity,
+               colorspace);
+
+  array<string, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+  array<Vector3, 10> HosekParams;
+  for (int i = 0; i < 9; i++) {
+    for (int j = 0; j < 3; j++)
+      HosekParams[i][j] = sky.StateX->configs[j][i];
+  }
+
+  PrintParams(HosekParams);
+
+  auto SkyMaterial = MaterialManager::getSingleton().getByName("SkyBox");
+  //if (!SkyMaterial) return;
+  auto &FpParams = SkyMaterial->getTechnique(0)->getPass(0)->getFragmentProgram()->getDefaultParameters();
+  //FpParams->setIgnoreMissingParams(true);
+  FpParams->setNamedConstant("uSunDirection", GetScene().GetSunPosition());
+  for (int i = 0; i < 9; i++) FpParams->setNamedConstant(ParamList[i], HosekParams[i]);
+
+  sky.Shutdown();
+}
 
 void Scene::OnUpdate(float PassedTime) {
   if (Paused) return;

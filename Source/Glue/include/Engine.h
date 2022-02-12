@@ -67,7 +67,6 @@ class Engine final : public Singleton<Engine> {
   void InitCompositor();
   void InitPhysics();
   void InitScene();
-  void InitSky();
   void InitSDLSubsystems();
   void InitDefaultRenderSystem();
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
@@ -120,7 +119,6 @@ class Engine final : public Singleton<Engine> {
   std::unique_ptr<Physics> PhysicsPtr;
   std::unique_ptr<Sound> SoundPtr;
   std::unique_ptr<Scene> ScenePtr;
-  std::unique_ptr<Sky> SkyPtr;
   std::vector<ComponentI*> ComponentList;
 
   /// Global access to base components

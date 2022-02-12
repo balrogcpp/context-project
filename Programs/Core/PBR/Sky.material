@@ -14,35 +14,41 @@ fragment_program SkyBoxCustomFp glsl glsles
 	source Sky.frag
     default_params
     {
+        param_named A float3 -1.076 -1.0812 -1.09458
+        param_named B float3 -0.157915 -0.162363 -0.22477
+        param_named C float3 0.518986 0.54836 -0.620342
+        param_named D float3 0.0458022 0.0870748 0.985788
+        param_named E float3 -1.51386 -1.99372 0.0239078
+        param_named F float3 0.680186 0.695495 0.548069
+        param_named G float3 0.226573 0.219602 0.110326
+        param_named H float3 2.45412 2.36798 2.63561
+        param_named I float3 0.677582 0.677982 0.660503
+        param_named Z float3 1 1 1
         param_named_auto uSunDirection light_direction 0
         param_named_auto uTime time
         param_named_auto uFogParams fog_params
         param_named_auto uFogColour fog_colour
-        param_named A float3 -1.07923 -1.08575 -1.10911
-        param_named B float3 -1.07923 -1.08575 -1.10911
-        param_named C float3 -1.07923 -1.08575 -1.10911
-        param_named D float3 -1.07923 -1.08575 -1.10911
-        param_named E float3 -1.07923 -1.08575 -1.10911
-        param_named F float3 -1.07923 -1.08575 -1.10911
-        param_named G float3 -1.07923 -1.08575 -1.10911
-        param_named H float3 -1.07923 -1.08575 -1.10911
-        param_named I float3 -1.07923 -1.08575 -1.10911
-        param_named Z float3 -0.155323 -0.18679 -0.211017
     }
 }
 
 material SkyBox
 {
+    receive_shadows off
+    transparency_casts_shadows off
+
+    set $Cubemap OutputCube.dds
+
 	technique
 	{
 		pass
 		{
             lighting off
             depth_write off
+            cull_hardware anticlockwise
 
 			texture_unit CubeMap
 			{
-				texture OutputCube.dds cubic
+				texture $Cubemap cubic
 			}
 
 			vertex_program_ref SkyBoxCustomVp {}

@@ -78,7 +78,6 @@ void Engine::InitComponents() {
   InitPhysics();
   InitSound();
   InitScene();
-  InitSky();
 }
 
 void Engine::InitSDLSubsystems() {
@@ -375,11 +374,6 @@ void Engine::InitPhysics() {
 void Engine::InitScene() {
   ScenePtr = make_unique<Scene>();
   RegComponent(ScenePtr.get());
-}
-
-void Engine::InitSky() {
-  SkyPtr = make_unique<Sky>();
-  RegComponent(SkyPtr.get());
 }
 
 void Engine::RegComponent(ComponentI *ComponentPtr) { ComponentList.push_back(ComponentPtr); }
