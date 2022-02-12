@@ -2,13 +2,14 @@
 
 #include "PCHeader.h"
 #include "Components/Scene.h"
-#include "ArHosekSkyModel.h"
 #include "Engine.h"
 #include "Objects/CameraMan.h"
 #include "Objects/SinbadCharacterController.h"
 #include "PagedGeometry/PagedGeometryAll.h"
 #include "ShaderHelpers.h"
 #include "SkyModel.h"
+#include "ArHosekSkyModel.h"
+#include "Caelum.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>
@@ -48,7 +49,7 @@ CameraMan &Scene::GetCamera() const { return *CameraManPtr; }
 Ogre::Vector3 Scene::GetSunPosition() {
   auto *SunPtr = OgreScene->getLight("Sun");
   if (SunPtr)
-    return -Vector3(SunPtr->getDerivedDirection());
+    return Vector3(SunPtr->getDerivedDirection().normalisedCopy());
   else
     return Vector3();
 }
@@ -92,26 +93,12 @@ void Scene::AddForests(PagedGeometry *PGPtr, const std::string &MaterialName) {
 
 void Scene::AddTerrain(TerrainGroup *TGP) { OgreTerrainList.reset(TGP); }
 
-template <typename T, size_t N>
-void PrintParams(const array<T, N> params) {
-  Log::Message("===================================================================================");
-  for (const auto &it : params) Log::Message(to_string(it));
-  Log::Message("===================================================================================");
-}
-
-template <typename T>
-void PrintParams(const T *params) {
-  Log::Message("===================================================================================");
-  for (const auto &it : params) Log::Message(to_string(it));
-  Log::Message("===================================================================================");
-}
-
 void Scene::AddSkyBox() {
   auto colorspace = ACEScg;
   float sunSize = 0.27f;
   float turbidity = 4.0f;
-  auto groundAlbedo = Vector3f(0.18);
-  auto sunColor = Vector3f(20000);
+  auto groundAlbedo = Vector3(0.18);
+  auto sunColor = Vector3(20000);
   auto sunDir = GetSunPosition();
 
   SkyModel sky;
@@ -123,7 +110,7 @@ void Scene::AddSkyBox() {
     for (int j = 0; j < 3; j++) HosekParams[i][j] = sky.StateX->configs[j][i];
   HosekParams[9] = Vector3(1.0);
 
-  PrintParams(HosekParams);
+  //for (int i = 0; i < 10; i++) cout << "param_named " << ParamList[i] << " float3 " << HosekParams[i].x << ' ' << HosekParams[i].y << ' ' << HosekParams[i].z << '\n';
 
   auto SkyMaterial = MaterialManager::getSingleton().getByName("SkyBox");
   if (!SkyMaterial) return;

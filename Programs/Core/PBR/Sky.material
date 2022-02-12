@@ -1,6 +1,6 @@
 // This source file is part of "glue project". Created by Andrey Vasiliev
 
-vertex_program SkyBoxCustomVp glsl glsles
+abstract vertex_program SkyBoxCustomVp_I glsl glsles
 {
 	source Sky.vert
     default_params
@@ -9,11 +9,16 @@ vertex_program SkyBoxCustomVp glsl glsles
     }
 }
 
-fragment_program SkyBoxCustomFp glsl glsles
+abstract fragment_program SkyBoxCustomFp_I glsl glsles
 {
 	source Sky.frag
     default_params
     {
+        param_named_auto uSunDirection light_direction 0
+        param_named_auto uFogParams fog_params
+        param_named_auto uFogColour fog_colour
+        param_named_auto cFarClipDistance far_clip_distance
+        param_named_auto uTime time
         param_named A float3 -1.076 -1.0812 -1.09458
         param_named B float3 -0.157915 -0.162363 -0.22477
         param_named C float3 0.518986 0.54836 -0.620342
@@ -24,19 +29,19 @@ fragment_program SkyBoxCustomFp glsl glsles
         param_named H float3 2.45412 2.36798 2.63561
         param_named I float3 0.677582 0.677982 0.660503
         param_named Z float3 1 1 1
-        param_named_auto uSunDirection light_direction 0
-        param_named_auto uTime time
-        param_named_auto uFogParams fog_params
-        param_named_auto uFogColour fog_colour
     }
 }
 
-material SkyBox
+vertex_program SkyBoxCustomVp glsl glsles : SkyBoxCustomVp_I {}
+
+fragment_program SkyBoxCustomFp glsl glsles : SkyBoxCustomFp_I {}
+
+abstract material SkyBoxI
 {
     receive_shadows off
     transparency_casts_shadows off
 
-    set $Cubemap OutputCube.dds
+    set $CubeMap OutputCube.dds
 
 	technique
 	{
@@ -48,15 +53,17 @@ material SkyBox
 
 			texture_unit CubeMap
 			{
-				texture $Cubemap cubic
+				texture $CubeMap cubic
 			}
 
 			vertex_program_ref SkyBoxCustomVp {}
 
 			fragment_program_ref SkyBoxCustomFp
 			{
-			    param_named cubemap int 0
+			    param_named uCubeMap int 0
 			}
 		}
 	}
 }
+
+material SkyBox : SkyBoxI {}

@@ -7,12 +7,6 @@
             <light name="Sun" powerScale="5" type="directional" castShadows="true">
             </light>
         </node>
-<!--        <node name="Sky">-->
-<!--            <position x="0" y="0" z="0"/>-->
-<!--            <scale x="300" y="300" z="300"/>-->
-<!--            <entity meshFile="Cube.mesh" name="Sky" castShadows="false">-->
-<!--            </entity>-->
-<!--        </node>-->
         <node name="Camera">
             <position x="0" y="1.8" z="0"/>
             <rotation qw="0.780483" qx="0.483536" qy="0.336872" qz="-0.208704"/>
