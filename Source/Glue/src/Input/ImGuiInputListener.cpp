@@ -73,7 +73,7 @@ ImGuiInputListener::ImGuiInputListener() {
   io.KeyMap[ImGuiKey_Enter] = SDLK_RETURN;
   io.KeyMap[ImGuiKey_Escape] = '\033';
   io.KeyMap[ImGuiKey_Space] = ' ';
-  io.KeyMap[ImGuiKey_KeyPadEnter] = kc2sc(SDLK_KP_ENTER);
+  io.KeyMap[ImGuiKey_KeypadEnter] = kc2sc(SDLK_KP_ENTER);
   io.KeyMap[ImGuiKey_A] = 'a';
   io.KeyMap[ImGuiKey_C] = 'c';
   io.KeyMap[ImGuiKey_V] = 'v';

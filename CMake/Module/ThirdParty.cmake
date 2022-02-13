@@ -99,11 +99,6 @@ externalproject_add(Target_Bullet
                     -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON
                     )
 
-if (IOS OR ANDROID)
-    set(OPENAL_LIBTYPE STATIC)
-else ()
-    set(OPENAL_LIBTYPE SHARED)
-endif ()
 set(OPENAL_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_OpenAL)
 externalproject_add(Target_OpenAL
                     EXCLUDE_FROM_ALL true
@@ -133,7 +128,7 @@ externalproject_add(Target_OpenAL
                     -DALSOFT_BACKEND_WASAPI=OFF
                     -DALSOFT_BACKEND_WINMM=OFF
                     -DALSOFT_BACKEND_WAVE=OFF
-                    -DLIBTYPE=${OPENAL_LIBTYPE}
+                    -DLIBTYPE=SHARED
                     -DALSOFT_OSX_FRAMEWORK=OFF
                     )
 
@@ -215,7 +210,7 @@ externalproject_add(Target_pugixml
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/zeux/pugixml.git
-                    GIT_TAG v1.11.4
+                    GIT_TAG v1.12
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -251,7 +246,7 @@ externalproject_add(Target_FreeType
                     DEPENDS Target_PNG
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/freetype/freetype.git
-                    GIT_TAG VER-2-10-4
+                    GIT_TAG VER-2-11-1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -270,8 +265,8 @@ externalproject_add(Target_rapidjson
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
-                    GIT_TAG fd3dc29a5c2852df569e1ea81dbde2c412ac5051
-                    GIT_SHALLOW false
+                    GIT_TAG e4bde977440d4a00f820b6586899e48a972d2493
+                    GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
@@ -293,7 +288,7 @@ externalproject_add(Target_assimp
                     DEPENDS Target_zlib
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/assimp/assimp.git
-                    GIT_TAG v5.1.6
+                    GIT_TAG v5.2.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} reset --hard
@@ -375,7 +370,7 @@ externalproject_add(Target_OGRE
                     DEPENDS Target_zlib Target_FreeType Target_pugixml Target_assimp Target_SDL2
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v13.2.4
+                    GIT_TAG v13.3.0
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard
@@ -453,7 +448,7 @@ externalproject_add(Target_FreeGLUT
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/dcnieho/FreeGLUT.git
-                    GIT_TAG FG_3_2_1
+                    GIT_TAG FG_3_2_2
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -475,7 +470,7 @@ externalproject_add(Target_OGRE2
                     DEPENDS Target_ZZIP Target_FreeType
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre-next.git
-                    GIT_TAG v2-2
+                    GIT_TAG v2.3.0
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -504,7 +499,7 @@ externalproject_add(Target_Lua
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/balrogcpp/lua-cmake.git
-                    GIT_TAG 5.4.0
+                    GIT_TAG v5.4.4
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -558,7 +553,7 @@ externalproject_add(Target_filesystem
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/gulrak/filesystem.git
-                    GIT_TAG v1.5.6
+                    GIT_TAG v1.5.10
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -593,7 +588,7 @@ externalproject_add(Target_GoogleBenchmark
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/google/benchmark.git
-                    GIT_TAG v1.6.0
+                    GIT_TAG v1.6.1
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS
@@ -610,7 +605,7 @@ externalproject_add(Target_json
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/nlohmann/json.git
-                    GIT_TAG v3.9.1
+                    GIT_TAG v3.10.5
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS

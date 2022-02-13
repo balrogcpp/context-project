@@ -835,7 +835,7 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
 
   trees->addDetailLevel<Forests::WindBatchPage>(75, 0);
   trees->addDetailLevel<Forests::BatchPage>(150, 0);
-  trees->addDetailLevel<Forests::ImpostorPage>(400, 0);
+//  trees->addDetailLevel<Forests::ImpostorPage>(400, 0);
 
   auto *treeLoader = new TreeLoader3D(trees, TBounds(-bound, -bound, bound, bound));
   FixTransparentShadowCaster("3D-Diggers/fir01");
