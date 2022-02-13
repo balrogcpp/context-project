@@ -100,9 +100,12 @@ the model.
 
 */
 
+#pragma once
+#include <OgrePrerequisites.h>
+
 // Uses Sep 9 pattern / Aug 23 mean dataset
 
-double datasetXYZ1[] = 
+constexpr Ogre::Real datasetXYZ1[] = 
 {
 	// albedo 0, turbidity 1
 	-1.117001e+000,
@@ -1206,7 +1209,7 @@ double datasetXYZ1[] =
 	6.232887e-001,
 };
 
-double datasetXYZRad1[] = 
+constexpr Ogre::Real datasetXYZRad1[] = 
 {
 	// albedo 0, turbidity 1
 	1.560219e+000,
@@ -1350,7 +1353,7 @@ double datasetXYZRad1[] =
 	2.523432e+001,
 };
 
-double datasetXYZ2[] = 
+constexpr Ogre::Real datasetXYZ2[] = 
 {
 	// albedo 0, turbidity 1
 	-1.127942e+000,
@@ -2454,7 +2457,7 @@ double datasetXYZ2[] =
 	6.118645e-001,
 };
 
-double datasetXYZRad2[] = 
+constexpr Ogre::Real datasetXYZRad2[] = 
 {
 	// albedo 0, turbidity 1
 	1.632341e+000,
@@ -2598,7 +2601,7 @@ double datasetXYZRad2[] =
 	2.641780e+001,
 };
 
-double datasetXYZ3[] = 
+constexpr Ogre::Real datasetXYZ3[] = 
 {
 	// albedo 0, turbidity 1
 	-1.310023e+000,
@@ -3702,7 +3705,7 @@ double datasetXYZ3[] =
 	6.791814e-001,
 };
 
-double datasetXYZRad3[] = 
+constexpr Ogre::Real datasetXYZRad3[] = 
 {
 	// albedo 0, turbidity 1
 	1.168084e+000,
@@ -3848,14 +3851,14 @@ double datasetXYZRad3[] =
 
 
 
-double* datasetsXYZ[] =
+constexpr const Ogre::Real* datasetsXYZ[] =
 {
 	datasetXYZ1,
 	datasetXYZ2,
 	datasetXYZ3
 };
 
-double* datasetsXYZRad[] =
+constexpr const Ogre::Real* datasetsXYZRad[] =
 {
 	datasetXYZRad1,
 	datasetXYZRad2,
