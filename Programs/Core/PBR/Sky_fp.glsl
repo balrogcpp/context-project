@@ -82,7 +82,7 @@ void main()
     color *= 0.0009765625;
     color = SRGBtoLINEAR(color);
 
-    color = ProceduralClouds(color);
+    //color = ProceduralClouds(color);
 
 #ifndef NO_MRT
     FragData[0].rgb = color;
