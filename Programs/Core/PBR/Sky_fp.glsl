@@ -31,6 +31,7 @@ uniform float cFarClipDistance;
 uniform vec3 uFogColour;
 uniform vec3 uSunColor;
 uniform float uTime;
+uniform float uTimeScale;
 uniform float uCirrus;
 uniform float uCumulus;
 uniform float uSunSize;
@@ -58,8 +59,6 @@ vec3 ProceduralClouds(vec3 color)
 {
     if (vPosition.y < 0.0)
         return color;
-
-    const float uTimeScale = 0.03;
 
     // Cirrus Clouds
     float density = 0.3 * smoothstep(1.0 - uCirrus, 1.0, fbm(vPosition.xyz / vPosition.y + uTime * uTimeScale));
