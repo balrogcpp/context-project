@@ -19,6 +19,10 @@ abstract fragment_program SkyBoxCustomFp_I glsl glsles
         param_named_auto uFogColour fog_colour
         param_named_auto cFarClipDistance far_clip_distance
         param_named_auto uTime time
+        param_named uCirrus float 0.4
+        param_named uCumulus float 0.4
+        param_named uSunSize float 0.27
+        param_named uSunColor float3 20000 20000 20000
     }
 }
 

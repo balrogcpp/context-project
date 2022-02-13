@@ -94,10 +94,10 @@ void Scene::AddForests(PagedGeometry *PGPtr, const std::string &MaterialName) {
 void Scene::AddTerrain(TerrainGroup *TGP) { OgreTerrainList.reset(TGP); }
 
 void Scene::AddSkyBox() {
-  auto colorspace = ACEScg;
+  auto colorspace = sRGB;
   float sunSize = 0.27f;
   float turbidity = 4.0f;
-  auto groundAlbedo = Vector3(0.18);
+  auto groundAlbedo = Vector3(1.0);
   auto sunColor = Vector3(20000);
   auto sunDir = GetSunPosition();
 

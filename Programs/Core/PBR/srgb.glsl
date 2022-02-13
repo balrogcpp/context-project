@@ -10,7 +10,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 expose(vec3 color, float exposure) {
-  //return vec3(2.0) / (vec3(1.0) + exp(-exposure * color)) - vec3(1.0);
+//  return vec3(2.0) / (vec3(1.0) + exp(-exposure * color)) - vec3(1.0);
   return vec3(1.0) - exp(-color.rgb * exposure);
 }
 

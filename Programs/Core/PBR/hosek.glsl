@@ -320,7 +320,7 @@ float HosekWilkie(float theta, float gamma, in float[9] coeffs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 HosekWilkie2(float cos_theta, float gamma, float cos_gamma, vec3 params[10])
+vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma, vec3 params[10])
 {
     vec3 A = params[0];
     vec3 B = params[1];
@@ -343,7 +343,7 @@ vec3 spectral_radiance(float theta, float gamma, int albedo, int turbidity, floa
     for (int i = 0; i < 3; ++i) {
         float coeffs[9];
         get_coeffs(i, albedo, turbidity, sun_zenith, coeffs);
-        XYZ[i] = HW(theta, gamma, coeffs);
+        XYZ[i] = HosekWilkie(theta, gamma, coeffs);
     }
     return XYZ;
 }

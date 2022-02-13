@@ -455,8 +455,8 @@ void main()
     vec3 total_colour = vec3(0.0);
 
     for (int i = 0; i < int(uLightCount); i++) {
-        vec3 l = -normalize(uLightDirectionArray[i].xyz);// Vector from surface point to light
-        vec3 h = normalize(l+v);// Half vector between both l and v
+        vec3 l = -normalize(uLightDirectionArray[i].xyz); // Vector from surface point to light
+        vec3 h = normalize(l+v); // Half vector between both l and v
         float NdotL = clamp(dot(n, l), 0.001, 1.0);
 
         vec3 vLightView = uLightPositionArray[i].xyz - vPosition;
@@ -474,7 +474,7 @@ void main()
             float attenuation_linear = vAttParams.z;
             float attenuation_quad = vAttParams.w;
 
-            fAtten = float(fLightD < range) / (attenuation_const + attenuation_linear * fLightD + attenuation_quad * fLightD * fLightD);
+            fAtten = float(fLightD < range) / (attenuation_const + (attenuation_linear * fLightD + attenuation_quad * (fLightD * fLightD)));
 
             vec3 vSpotParams = uLightSpotParamsArray[i].xyz;
             float outer_radius = vSpotParams.z;

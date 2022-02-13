@@ -29,12 +29,19 @@ uniform vec4 uFogParams;
 uniform float cFarClipDistance;
 #endif
 uniform vec3 uFogColour;
+uniform vec3 uSunColor;
 uniform float uTime;
+uniform float uCirrus;
+uniform float uCumulus;
+uniform float uSunSize;
 uniform samplerCube uCubeMap;
 
 in vec3 vPosition;
 in vec3 TexCoords;
 
+#ifdef GPU_HOSEK
+#include "hosek.glsl"
+#endif
 #include "atmos.glsl"
 #include "srgb.glsl"
 #ifdef NO_MRT
@@ -43,22 +50,30 @@ in vec3 TexCoords;
 
 vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma)
 {
-    vec3 chi = (1.0 + cos_gamma*cos_gamma) / pow(1.0 + I*I - 2.0*cos_gamma*I, vec3(1.5));
+    vec3 chi = ((1.0 + cos_gamma*cos_gamma) / pow(1.0 + I*I - 2.0*(cos_gamma*I), vec3(1.5)));
     return (1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E*gamma) + F * (cos_gamma*cos_gamma) + G * chi + H * sqrt(cos_theta));
 }
 
 vec3 ProceduralClouds(vec3 color)
 {
+    if (vPosition.y < 0.0)
+        return color;
+
+    const float uTimeScale = 0.03;
+
     // Cirrus Clouds
-    float density = smoothstep(1.0 - cirrus, 1.0, fbm(vPosition.xyz / vPosition.y * 2.0 + uTime * 0.05)) * 0.3;
+    float density = 0.3 * smoothstep(1.0 - uCirrus, 1.0, fbm(vPosition.xyz / vPosition.y + uTime * uTimeScale));
     color = mix(color, uFogColour, density);
 
     // Cumulus Clouds
-    for (int i = 0; i < 3; i++)
-    {
-        float density = smoothstep(1.0 - cumulus, 1.0, fbm((0.7 + float(i) * 0.01) * vPosition.xyz / vPosition.y + uTime * 0.05));
-        color.rgb = mix(color, uFogColour, min(density, 1.0));
-    }
+    density = smoothstep(1.0 - uCumulus, 1.0, fbm((0.7 + 0.0 * 0.01) * vPosition.xyz / vPosition.y + uTime * uTimeScale));
+    color = mix(color, uFogColour, min(density, 1.0));
+
+    density = smoothstep(1.0 - uCumulus, 1.0, fbm((0.7 + 1.0 * 0.01) * vPosition.xyz / vPosition.y + uTime * uTimeScale));
+    color = mix(color, uFogColour, min(density, 1.0));
+
+    density = smoothstep(1.0 - uCumulus, 1.0, fbm((0.7 + 2.0 * 0.01) * vPosition.xyz / vPosition.y + uTime * uTimeScale));
+    color = mix(color, uFogColour, min(density, 1.0));
 
     // Dithering Noise
     //color.rgb += noise(vPosition * 1000.0) * 0.01;
@@ -72,17 +87,19 @@ void main()
     vec3 N = normalize(-uSunDirection);
     float cos_theta = clamp(V.y, 0.0, 1.0);
     float cos_gamma = dot(V, N);
+    float theta = acos(cos_theta);
     float gamma = acos(cos_gamma);
+#ifndef GPU_HOSEK
     vec3 color = Z * HosekWilkie(cos_theta, gamma, cos_gamma);
+#else
+    vec3 color = sample_sky(theta, gamma, N.y, N.x);
+#endif
 
-    color = XYZ_to_ACES2065_1(color);
-    if (cos_gamma >= 0.999) color += vec3(20000.0);
-    color = ACES2065_1_to_sRGB(color);
-    color *= 50.0;
-    color *= 0.0009765625;
+    color = XYZ_to_RGB(color);
+    if (gamma <= uSunSize) color += uSunColor;
+    color = expose(color, 0.1);
+    color = ProceduralClouds(color);
     color = SRGBtoLINEAR(color);
-
-    //color = ProceduralClouds(color);
 
 #ifndef NO_MRT
     FragData[0].rgb = color;

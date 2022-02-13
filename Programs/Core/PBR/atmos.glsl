@@ -113,10 +113,6 @@ vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAt
     return iSun * (pRlh * kRlh * totalRlh + pMie * kMie * totalMie);
 }
 
-const float time = 0.0;
-const float cirrus = 0.4;
-const float cumulus = 0.8;
-
 const float Br = 0.0025;
 const float Bm = 0.0003;
 const float g =  0.9800;
