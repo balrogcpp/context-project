@@ -100,12 +100,10 @@ This file contains the coefficient data for the spectral version of the model.
 */
 
 #pragma once
-#include <OgrePrerequisites.h>
-
 
 // uses Apr 26 dataset
 
-constexpr Ogre::Real dataset320[] = 
+constexpr float dataset320[] = 
 {
 	// albedo 0, turbidity 1
 	-1.341049e+001,
@@ -1209,7 +1207,7 @@ constexpr Ogre::Real dataset320[] =
 	6.227585e-001,
 };
 
-constexpr Ogre::Real datasetRad320[] = 
+constexpr float datasetRad320[] = 
 {
 	// albedo 0, turbidity 1
 	9.282016e-004,
@@ -1353,7 +1351,7 @@ constexpr Ogre::Real datasetRad320[] =
 	8.244103e-002,
 };
 
-constexpr Ogre::Real dataset360[] = 
+constexpr float dataset360[] = 
 {
 	// albedo 0, turbidity 1
 	-2.974290e+000,
@@ -2457,7 +2455,7 @@ constexpr Ogre::Real dataset360[] =
 	7.279518e-001,
 };
 
-constexpr Ogre::Real datasetRad360[] = 
+constexpr float datasetRad360[] = 
 {
 	// albedo 0, turbidity 1
 	2.494129e-003,
@@ -2601,7 +2599,7 @@ constexpr Ogre::Real datasetRad360[] =
 	1.427310e-001,
 };
 
-constexpr Ogre::Real dataset400[] = 
+constexpr float dataset400[] = 
 {
 	// albedo 0, turbidity 1
 	-1.869600e+000,
@@ -3705,7 +3703,7 @@ constexpr Ogre::Real dataset400[] =
 	7.086504e-001,
 };
 
-constexpr Ogre::Real datasetRad400[] = 
+constexpr float datasetRad400[] = 
 {
 	// albedo 0, turbidity 1
 	5.767645e-003,
@@ -3849,7 +3847,7 @@ constexpr Ogre::Real datasetRad400[] =
 	2.328116e-001,
 };
 
-constexpr Ogre::Real dataset440[] = 
+constexpr float dataset440[] = 
 {
 	// albedo 0, turbidity 1
 	-1.397312e+000,
@@ -4953,7 +4951,7 @@ constexpr Ogre::Real dataset440[] =
 	6.840186e-001,
 };
 
-constexpr Ogre::Real datasetRad440[] = 
+constexpr float datasetRad440[] = 
 {
 	// albedo 0, turbidity 1
 	9.406889e-003,
@@ -5097,7 +5095,7 @@ constexpr Ogre::Real datasetRad440[] =
 	2.803810e-001,
 };
 
-constexpr Ogre::Real dataset480[] = 
+constexpr float dataset480[] = 
 {
 	// albedo 0, turbidity 1
 	-1.255072e+000,
@@ -6201,7 +6199,7 @@ constexpr Ogre::Real dataset480[] =
 	6.747408e-001,
 };
 
-constexpr Ogre::Real datasetRad480[] = 
+constexpr float datasetRad480[] = 
 {
 	// albedo 0, turbidity 1
 	1.367487e-002,
@@ -6345,7 +6343,7 @@ constexpr Ogre::Real datasetRad480[] =
 	3.053035e-001,
 };
 
-constexpr Ogre::Real dataset520[] = 
+constexpr float dataset520[] = 
 {
 	// albedo 0, turbidity 1
 	-1.171338e+000,
@@ -7449,7 +7447,7 @@ constexpr Ogre::Real dataset520[] =
 	6.713422e-001,
 };
 
-constexpr Ogre::Real datasetRad520[] = 
+constexpr float datasetRad520[] = 
 {
 	// albedo 0, turbidity 1
 	1.459826e-002,
@@ -7593,7 +7591,7 @@ constexpr Ogre::Real datasetRad520[] =
 	2.692918e-001,
 };
 
-constexpr Ogre::Real dataset560[] = 
+constexpr float dataset560[] = 
 {
 	// albedo 0, turbidity 1
 	-1.121223e+000,
@@ -8697,7 +8695,7 @@ constexpr Ogre::Real dataset560[] =
 	5.872694e-001,
 };
 
-constexpr Ogre::Real datasetRad560[] = 
+constexpr float datasetRad560[] = 
 {
 	// albedo 0, turbidity 1
 	1.518543e-002,
@@ -8841,7 +8839,7 @@ constexpr Ogre::Real datasetRad560[] =
 	2.394514e-001,
 };
 
-constexpr Ogre::Real dataset600[] = 
+constexpr float dataset600[] = 
 {
 	// albedo 0, turbidity 1
 	-1.120756e+000,
@@ -9945,7 +9943,7 @@ constexpr Ogre::Real dataset600[] =
 	6.545784e-001,
 };
 
-constexpr Ogre::Real datasetRad600[] = 
+constexpr float datasetRad600[] = 
 {
 	// albedo 0, turbidity 1
 	1.605147e-002,
@@ -10089,7 +10087,7 @@ constexpr Ogre::Real datasetRad600[] =
 	2.260782e-001,
 };
 
-constexpr Ogre::Real dataset640[] = 
+constexpr float dataset640[] = 
 {
 	// albedo 0, turbidity 1
 	-1.113346e+000,
@@ -11193,7 +11191,7 @@ constexpr Ogre::Real dataset640[] =
 	6.650112e-001,
 };
 
-constexpr Ogre::Real datasetRad640[] = 
+constexpr float datasetRad640[] = 
 {
 	// albedo 0, turbidity 1
 	1.479989e-002,
@@ -11337,7 +11335,7 @@ constexpr Ogre::Real datasetRad640[] =
 	2.043633e-001,
 };
 
-constexpr Ogre::Real dataset680[] = 
+constexpr float dataset680[] = 
 {
 	// albedo 0, turbidity 1
 	-1.112655e+000,
@@ -12441,7 +12439,7 @@ constexpr Ogre::Real dataset680[] =
 	6.710888e-001,
 };
 
-constexpr Ogre::Real datasetRad680[] = 
+constexpr float datasetRad680[] = 
 {
 	// albedo 0, turbidity 1
 	1.320908e-002,
@@ -12585,7 +12583,7 @@ constexpr Ogre::Real datasetRad680[] =
 	1.851691e-001,
 };
 
-constexpr Ogre::Real dataset720[] = 
+constexpr float dataset720[] = 
 {
 	// albedo 0, turbidity 1
 	-1.110553e+000,
@@ -13689,7 +13687,7 @@ constexpr Ogre::Real dataset720[] =
 	6.917938e-001,
 };
 
-constexpr Ogre::Real datasetRad720[] = 
+constexpr float datasetRad720[] = 
 {
 	// albedo 0, turbidity 1
 	1.130152e-002,
@@ -13833,7 +13831,7 @@ constexpr Ogre::Real datasetRad720[] =
 	1.639884e-001,
 };
 
-constexpr const Ogre::Real* datasets[] =
+constexpr const float* datasets[] =
 {
 	dataset320,
 	dataset360,
@@ -13848,7 +13846,7 @@ constexpr const Ogre::Real* datasets[] =
     dataset720
 };
 
-constexpr const Ogre::Real* datasetsRad[] =
+constexpr const float* datasetsRad[] =
 {
 	datasetRad320,
 	datasetRad360,
@@ -13864,7 +13862,7 @@ constexpr const Ogre::Real* datasetsRad[] =
 };
 
 // Uses Feb 9 dataset
-constexpr Ogre::Real solarDataset320[] = 
+constexpr float solarDataset320[] = 
 {
 	0,
 	0,
@@ -15668,7 +15666,7 @@ constexpr Ogre::Real solarDataset320[] =
 	1.715997e+03,
 };
 
-constexpr Ogre::Real solarDataset360[] = 
+constexpr float solarDataset360[] = 
 {
 	0,
 	0,
@@ -17472,7 +17470,7 @@ constexpr Ogre::Real solarDataset360[] =
 	4.337093e+03,
 };
 
-constexpr Ogre::Real solarDataset400[] = 
+constexpr float solarDataset400[] = 
 {
 	1.117129e+12,
 	-1.629427e+07,
@@ -19276,7 +19274,7 @@ constexpr Ogre::Real solarDataset400[] =
 	8.894396e+03,
 };
 
-constexpr Ogre::Real solarDataset440[] = 
+constexpr float solarDataset440[] = 
 {
 	-6.439155e+11,
 	7.682264e+06,
@@ -21080,7 +21078,7 @@ constexpr Ogre::Real solarDataset440[] =
 	1.258462e+04,
 };
 
-constexpr Ogre::Real solarDataset480[] = 
+constexpr float solarDataset480[] = 
 {
 	-2.547404e+13,
 	3.635631e+08,
@@ -22884,7 +22882,7 @@ constexpr Ogre::Real solarDataset480[] =
 	1.549771e+04,
 };
 
-constexpr Ogre::Real solarDataset520[] = 
+constexpr float solarDataset520[] = 
 {
 	3.441260e+12,
 	4.257012e+05,
@@ -24688,7 +24686,7 @@ constexpr Ogre::Real solarDataset520[] =
 	1.483566e+04,
 };
 
-constexpr Ogre::Real solarDataset560[] = 
+constexpr float solarDataset560[] = 
 {
 	9.427478e+12,
 	-2.974054e+07,
@@ -26492,7 +26490,7 @@ constexpr Ogre::Real solarDataset560[] =
 	1.425796e+04,
 };
 
-constexpr Ogre::Real solarDataset600[] = 
+constexpr float solarDataset600[] = 
 {
 	1.454828e+13,
 	-1.753873e+07,
@@ -28296,7 +28294,7 @@ constexpr Ogre::Real solarDataset600[] =
 	1.483525e+04,
 };
 
-constexpr Ogre::Real solarDataset640[] = 
+constexpr float solarDataset640[] = 
 {
 	-4.439940e+13,
 	4.727269e+08,
@@ -30100,7 +30098,7 @@ constexpr Ogre::Real solarDataset640[] =
 	1.419677e+04,
 };
 
-constexpr Ogre::Real solarDataset680[] = 
+constexpr float solarDataset680[] = 
 {
 	-352468042275216.0,
 	4.565228e+09,
@@ -31904,7 +31902,7 @@ constexpr Ogre::Real solarDataset680[] =
 	1.371823e+04,
 };
 
-constexpr Ogre::Real solarDataset720[] = 
+constexpr float solarDataset720[] = 
 {
 	2.525918e+14,
 	-2.554558e+09,
@@ -33708,7 +33706,7 @@ constexpr Ogre::Real solarDataset720[] =
 	1.313697e+04,
 };
 
-constexpr const Ogre::Real* solarDatasets[] =
+constexpr const float* solarDatasets[] =
 {
 	solarDataset320,
 	solarDataset360,
@@ -33723,40 +33721,40 @@ constexpr const Ogre::Real* solarDatasets[] =
 	solarDataset720
 };
 
-constexpr Ogre::Real limbDarkeningDataset320[] =
+constexpr float limbDarkeningDataset320[] =
 { 0.087657, 0.767174, 0.658123, -1.02953, 0.703297, -0.186735 };
 
-constexpr Ogre::Real limbDarkeningDataset360[] =
+constexpr float limbDarkeningDataset360[] =
 { 0.122953, 1.01278, 0.238687, -1.12208, 1.17087, -0.424947 };
 
-constexpr Ogre::Real limbDarkeningDataset400[] =
+constexpr float limbDarkeningDataset400[] =
 { 0.123511, 1.08444, -0.405598, 0.370629, -0.240567, 0.0674778 };
 
-constexpr Ogre::Real limbDarkeningDataset440[] =
+constexpr float limbDarkeningDataset440[] =
 { 0.158489, 1.23346, -0.875754, 0.857812, -0.484919, 0.110895 };
 
-constexpr Ogre::Real limbDarkeningDataset480[] =
+constexpr float limbDarkeningDataset480[] =
 { 0.198587, 1.30507, -1.25998, 1.49727, -1.04047, 0.299516 };
 
-constexpr Ogre::Real limbDarkeningDataset520[] =
+constexpr float limbDarkeningDataset520[] =
 { 0.23695, 1.29927, -1.28034, 1.37760, -0.85054, 0.21706 };
 
-constexpr Ogre::Real limbDarkeningDataset560[] =
+constexpr float limbDarkeningDataset560[] =
 { 0.26892, 1.34319, -1.58427, 1.91271, -1.31350, 0.37295 };
 
-constexpr Ogre::Real limbDarkeningDataset600[] =
+constexpr float limbDarkeningDataset600[] =
 { 0.299804, 1.36718, -1.80884, 2.29294, -1.60595, 0.454874 };
 
-constexpr Ogre::Real limbDarkeningDataset640[] =
+constexpr float limbDarkeningDataset640[] =
 { 0.33551, 1.30791, -1.79382, 2.44646, -1.89082, 0.594769 };
 
-constexpr Ogre::Real limbDarkeningDataset680[] =
+constexpr float limbDarkeningDataset680[] =
 { 0.364007, 1.27316, -1.73824, 2.28535, -1.70203, 0.517758 };
 
-constexpr Ogre::Real limbDarkeningDataset720[] =
+constexpr float limbDarkeningDataset720[] =
 { 0.389704, 1.2448, -1.69708, 2.14061, -1.51803, 0.440004 };
 
-constexpr const Ogre::Real * limbDarkeningDatasets[] =
+constexpr const float * limbDarkeningDatasets[] =
 {
 	limbDarkeningDataset320,
 	limbDarkeningDataset360,

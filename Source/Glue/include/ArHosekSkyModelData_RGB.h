@@ -101,11 +101,10 @@ the model.
 */
 
 #pragma once
-#include <OgrePrerequisites.h>
 
 // uses Aug 23 dataset
 
-constexpr Ogre::Real datasetRGB1[] = 
+constexpr float datasetRGB1[] = 
 {
 	// albedo 0, turbidity 1
 	-1.099459e+000,
@@ -1209,7 +1208,7 @@ constexpr Ogre::Real datasetRGB1[] =
 	6.658012e-001,
 };
 
-constexpr Ogre::Real datasetRGBRad1[] = 
+constexpr float datasetRGBRad1[] = 
 {
 	// albedo 0, turbidity 1
 	1.962684e+000,
@@ -1353,7 +1352,7 @@ constexpr Ogre::Real datasetRGBRad1[] =
 	2.574284e+001,
 };
 
-constexpr Ogre::Real datasetRGB2[] = 
+constexpr float datasetRGB2[] = 
 {
 	// albedo 0, turbidity 1
 	-1.140530e+000,
@@ -2457,7 +2456,7 @@ constexpr Ogre::Real datasetRGB2[] =
 	6.588427e-001,
 };
 
-constexpr Ogre::Real datasetRGBRad2[] = 
+constexpr float datasetRGBRad2[] = 
 {
 	// albedo 0, turbidity 1
 	1.590330e+000,
@@ -2601,7 +2600,7 @@ constexpr Ogre::Real datasetRGBRad2[] =
 	2.643066e+001,
 };
 
-constexpr Ogre::Real datasetRGB3[] = 
+constexpr float datasetRGB3[] = 
 {
 	// albedo 0, turbidity 1
 	-1.372629e+000,
@@ -3705,7 +3704,7 @@ constexpr Ogre::Real datasetRGB3[] =
 	6.966285e-001,
 };
 
-constexpr Ogre::Real datasetRGBRad3[] = 
+constexpr float datasetRGBRad3[] = 
 {
 	// albedo 0, turbidity 1
 	9.926518e-001,
@@ -3849,14 +3848,14 @@ constexpr Ogre::Real datasetRGBRad3[] =
 	2.893432e+001,
 };
 
-constexpr const Ogre::Real* datasetsRGB[] =
+constexpr const float* datasetsRGB[] =
 {
 	datasetRGB1,
 	datasetRGB2,
 	datasetRGB3
 };
 
-constexpr const Ogre::Real* datasetsRGBRad[] =
+constexpr const float* datasetsRGBRad[] =
 {
 	datasetRGBRad1,
 	datasetRGBRad2,

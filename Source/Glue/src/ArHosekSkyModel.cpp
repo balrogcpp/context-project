@@ -139,8 +139,8 @@ All instructions on how to use this code are in the accompanying header file.
 
 // internal definitions
 
-typedef const Ogre::Real *ArHosekSkyModel_Dataset;
-typedef const Ogre::Real *ArHosekSkyModel_Radiance_Dataset;
+typedef const float *ArHosekSkyModel_Dataset;
+typedef const float *ArHosekSkyModel_Radiance_Dataset;
 
 // internal functions
 
@@ -152,7 +152,7 @@ void ArHosekSkyModel_CookConfiguration(
         double                        solar_elevation
         )
 {
-    const Ogre::Real  * elev_matrix;
+    const float  * elev_matrix;
 
     int     int_turbidity = (int)turbidity;
     double  turbidity_rem = turbidity - (double)int_turbidity;
@@ -233,7 +233,7 @@ double ArHosekSkyModel_CookRadianceConfiguration(
         double                            solar_elevation
         )
 {
-    const Ogre::Real* elev_matrix;
+    const float* elev_matrix;
 
     int int_turbidity = (int)turbidity;
     double turbidity_rem = turbidity - (double)int_turbidity;
@@ -668,7 +668,7 @@ double arhosekskymodel_sr_internal(
     const double break_x =
         pow(((double) pos / (double) pieces), 3.0) * (MATH_PI * 0.5);
 
-    const Ogre::Real  * coefs =
+    const float  * coefs =
         solarDatasets[wl] + (order * pieces * turbidity + order * (pos+1) - 1);
 
     double res = 0.0;
