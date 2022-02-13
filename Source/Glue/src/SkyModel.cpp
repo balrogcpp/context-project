@@ -2,9 +2,7 @@
 #include <OgreVector3.h>
 #include "SkyModel.h"
 #include "ArHosekSkyModel.h"
-#define _USE_MATH_DEFINES
 #include <cstdlib>
-#include <math.h>
 
 using namespace std;
 using namespace Ogre;
