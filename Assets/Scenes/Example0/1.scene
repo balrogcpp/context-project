@@ -53,7 +53,7 @@
     <environment>
         <colourAmbient r="127" g="127" b="127"/>
         <shadowColor b="127" g="0.0" r="0.0"/>
-        <fog mode="exp" density="0.01">
+        <fog mode="exp" density="0.007">
             <colour r="155" g="171" b="187"/>
         </fog>
     </environment>

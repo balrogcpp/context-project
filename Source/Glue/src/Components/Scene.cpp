@@ -2,14 +2,14 @@
 
 #include "PCHeader.h"
 #include "Components/Scene.h"
+#include "ArHosekSkyModel.h"
+#include "Caelum.h"
 #include "Engine.h"
 #include "Objects/CameraMan.h"
 #include "Objects/SinbadCharacterController.h"
 #include "PagedGeometry/PagedGeometryAll.h"
 #include "ShaderHelpers.h"
 #include "SkyModel.h"
-#include "ArHosekSkyModel.h"
-#include "Caelum.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>
@@ -49,7 +49,7 @@ CameraMan &Scene::GetCamera() const { return *CameraManPtr; }
 Ogre::Vector3 Scene::GetSunPosition() {
   auto *SunPtr = OgreScene->getLight("Sun");
   if (SunPtr)
-    return Vector3(SunPtr->getDerivedDirection().normalisedCopy());
+    return -Vector3(SunPtr->getDerivedDirection().normalisedCopy());
   else
     return Vector3();
 }
@@ -104,11 +104,12 @@ void Scene::AddSkyBox() {
   SkyModel sky;
   sky.SetupSky(sunDir, sunSize, sunColor, groundAlbedo, turbidity, colorspace);
 
-  constexpr array<const char*, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+  constexpr array<const char *, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+  const ArHosekSkyModelState *States[3] = {sky.StateX, sky.StateY, sky.StateZ};
 
   for (int i = 0; i < 9; i++)
-    for (int j = 0; j < 3; j++) HosekParams[i][j] = sky.StateX->configs[j][i];
-  HosekParams[9] = Vector3(1.0);
+    for (int j = 0; j < 3; j++) HosekParams[i][j] = States[j]->configs[j][i];
+  HosekParams[9] = Vector3(sky.StateX->radiances[0], sky.StateY->radiances[1], sky.StateZ->radiances[2]);
 
   auto SkyMaterial = MaterialManager::getSingleton().getByName("SkyBox");
   if (!SkyMaterial) return;
@@ -116,6 +117,7 @@ void Scene::AddSkyBox() {
   auto FpParams = SkyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
   if (FpParams) SkyBoxFpParams = FpParams;
 
+  FpParams->setIgnoreMissingParams(true);
   for (int i = 0; i < 10; i++) FpParams->setNamedConstant(ParamList[i], HosekParams[i]);
 }
 
@@ -135,7 +137,7 @@ void Scene::OnUpdate(float PassedTime) {
   for (auto &it : gpu_vp_params_) it->setNamedConstant("cWorldViewProjPrev", MVPprev);
 
   if (SkyNeedsUpdate) {
-    constexpr array<const char*, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+    constexpr array<const char *, 10> ParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
     if (SkyBoxFpParams)
       for (int i = 0; i < 10; i++) SkyBoxFpParams->setNamedConstant(ParamList[i], HosekParams[i]);
   }

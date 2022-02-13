@@ -300,7 +300,7 @@ vec3 mean_spectral_radiance(int albedo, int turbidity, float sun_zenith)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float HW(float theta, float gamma, in float[9] coeffs)
+float HosekWilkie(float theta, float gamma, in float[9] coeffs)
 {
     float A = coeffs[0];
     float B = coeffs[1];
@@ -317,6 +317,23 @@ float HW(float theta, float gamma, in float[9] coeffs)
     (1.0 + A * exp(B / (cos(theta) + 0.01))) *
     (C + D * exp(E * gamma) + F * pow(cos(gamma), 2.0) + G * chi + I * sqrt(cos(theta)))
     );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 HosekWilkie2(float cos_theta, float gamma, float cos_gamma, vec3 params[10])
+{
+    vec3 A = params[0];
+    vec3 B = params[1];
+    vec3 C = params[2];
+    vec3 D = params[3];
+    vec3 E = params[4];
+    vec3 F = params[5];
+    vec3 G = params[6];
+    vec3 H = params[7];
+    vec3 I = params[8];
+    vec3 Z = params[9];
+    vec3 chi = (1.0 + cos_gamma * cos_gamma) / pow(1.0 + H * H - 2.0 * cos_gamma * H, vec3(1.5));
+    return (1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * (cos_gamma * cos_gamma) + G * chi + I * sqrt(cos_theta));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -351,33 +368,6 @@ vec3 sample_sky2(float view_zenith, float view_azimuth, float sun_zenith, float 
 vec3 sample_sky(float theta, float gamma, float sun_zenith, float sun_azimuth)
 {
     return spectral_radiance(theta, gamma, ALBEDO, TURBIDITY, sun_zenith) * mean_spectral_radiance(ALBEDO, TURBIDITY, sun_zenith);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma, vec3 params[10])
-{
-    vec3 A = params[0];
-    vec3 B = params[1];
-    vec3 C = params[2];
-    vec3 D = params[3];
-    vec3 E = params[4];
-    vec3 F = params[5];
-    vec3 G = params[6];
-    vec3 H = params[7];
-    vec3 I = params[8];
-    vec3 Z = params[9];
-    vec3 chi = (1.0 + cos_gamma * cos_gamma) / pow(1.0 + H * H - 2.0 * cos_gamma * H, vec3(1.5));
-    return (1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E * gamma) + F * (cos_gamma * cos_gamma) + G * chi + I * sqrt(cos_theta));
-}
-
-// CIE-XYZ to linear RGB
-vec3 XYZ_to_RGB(vec3 XYZ)
-{
-    return mat3(
-    3.24096994, -0.96924364, 0.55630080,
-    -1.53738318,  1.8759675, -0.20397696,
-    -0.49861076,  0.04155506, 1.05697151
-    ) * XYZ;
 }
 
 #endif // GPU_HOSEK
