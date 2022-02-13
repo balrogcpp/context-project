@@ -3,7 +3,7 @@
 #ifndef ATMOS_GLSL
 #define ATMOS_GLSL
 
-#define PI 3.141592
+#define M_PI 3.141592653589793
 #define iSteps 16
 #define jSteps 8
 
@@ -50,8 +50,8 @@ vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAt
     float mu = dot(r, pSun);
     float mumu = mu * mu;
     float gg = g * g;
-    float pRlh = 3.0 / (16.0 * PI) * (1.0 + mumu);
-    float pMie = 3.0 / (8.0 * PI) * ((1.0 - gg) * (mumu + 1.0)) / (pow(1.0 + gg - 2.0 * mu * g, 1.5) * (2.0 + gg));
+    float pRlh = 3.0 / (16.0 * M_PI) * (1.0 + mumu);
+    float pMie = 3.0 / (8.0 * M_PI) * ((1.0 - gg) * (mumu + 1.0)) / (pow(1.0 + gg - 2.0 * mu * g, 1.5) * (2.0 + gg));
 
     // Sample the primary ray.
     for (int i = 0; i < iSteps; i++) {
@@ -149,6 +149,28 @@ float fbm(vec3 p)
     f += noise(p) / 12.0; p = m * p * 1.4;
     f += noise(p) / 24.0;
     return f;
+}
+
+vec3 ProceduralClouds(vec3 color, const vec3 cloud_color, const vec3 position, const float cirrus, const float cumulus, const float time)
+{
+    // Cirrus Clouds
+    float density = 0.3 * smoothstep(1.0 - cirrus, 1.0, fbm(position.xyz / position.y + uTime * uTimeScale));
+    color = mix(color, cloud_color, density);
+
+    // Cumulus Clouds
+    density = smoothstep(1.0 - cumulus, 1.0, fbm((0.7 + 0.0 * 0.01) * position.xyz / position.y + time));
+    color = mix(color, uFogColour, min(density, 1.0));
+
+    density = smoothstep(1.0 - cumulus, 1.0, fbm((0.7 + 1.0 * 0.01) * position.xyz / position.y + time));
+    color = mix(color, uFogColour, min(density, 1.0));
+
+    density = smoothstep(1.0 - cumulus, 1.0, fbm((0.7 + 2.0 * 0.01) * position.xyz / position.y + time));
+    color = mix(color, uFogColour, min(density, 1.0));
+
+    // Dithering Noise
+    //color.rgb += noise(vPosition * 1000.0) * 0.01;
+
+    return color;
 }
 
 #endif // ATMOS_GLSL

@@ -49,36 +49,13 @@ in vec3 TexCoords;
 #include "fog.glsl"
 #endif
 
+#ifndef GPU_HOSEK
 vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma)
 {
     vec3 chi = ((1.0 + cos_gamma*cos_gamma) / pow(1.0 + I*I - 2.0*(cos_gamma*I), vec3(1.5)));
     return (1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E*gamma) + F * (cos_gamma*cos_gamma) + G * chi + H * sqrt(cos_theta));
 }
-
-vec3 ProceduralClouds(vec3 color)
-{
-    if (vPosition.y < 0.0)
-        return color;
-
-    // Cirrus Clouds
-    float density = 0.3 * smoothstep(1.0 - uCirrus, 1.0, fbm(vPosition.xyz / vPosition.y + uTime * uTimeScale));
-    color = mix(color, uFogColour, density);
-
-    // Cumulus Clouds
-    density = smoothstep(1.0 - uCumulus, 1.0, fbm((0.7 + 0.0 * 0.01) * vPosition.xyz / vPosition.y + uTime * uTimeScale));
-    color = mix(color, uFogColour, min(density, 1.0));
-
-    density = smoothstep(1.0 - uCumulus, 1.0, fbm((0.7 + 1.0 * 0.01) * vPosition.xyz / vPosition.y + uTime * uTimeScale));
-    color = mix(color, uFogColour, min(density, 1.0));
-
-    density = smoothstep(1.0 - uCumulus, 1.0, fbm((0.7 + 2.0 * 0.01) * vPosition.xyz / vPosition.y + uTime * uTimeScale));
-    color = mix(color, uFogColour, min(density, 1.0));
-
-    // Dithering Noise
-    //color.rgb += noise(vPosition * 1000.0) * 0.01;
-
-    return color;
-}
+#endif
 
 void main()
 {
@@ -86,18 +63,18 @@ void main()
     vec3 N = normalize(-uSunDirection);
     float cos_theta = clamp(V.y, 0.0, 1.0);
     float cos_gamma = dot(V, N);
-    float theta = acos(cos_theta);
     float gamma = acos(cos_gamma);
 #ifndef GPU_HOSEK
     vec3 color = Z * HosekWilkie(cos_theta, gamma, cos_gamma);
 #else
+    float theta = acos(cos_theta);
     vec3 color = sample_sky(theta, gamma, N.y, N.x);
 #endif
 
-    color = XYZ_to_RGB(color);
+    color = XYZtoRGB(color);
     if (gamma <= uSunSize) color += uSunColor;
     color = expose(color, 0.1);
-    color = ProceduralClouds(color);
+    if (vPosition.y >= 0.0) color = ProceduralClouds(color, uFogColour, vPosition, uCirrus, uCumulus, uTimeScale * uTime);
     color = SRGBtoLINEAR(color);
 
 #ifndef NO_MRT
