@@ -8,8 +8,8 @@
 enum ColorSpace { XYZ, sRGB, ACEScg, ACES2065_1 };
 
 // Scale factor used for storing physical light units in fp16 floats (equal to 2^-10)
-static const float FP16Scale = 0.0009765625f;
-static const float FP16Max = 65000.0f;
+constexpr float FP16Scale = 0.0009765625f;
+constexpr float FP16Max = 65000.0f;
 
 // Useful shader functions
 inline float Deg2Rad(float deg) { return deg * (1.0f / 180.0f) * M_PI; }
