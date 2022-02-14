@@ -45,7 +45,7 @@
 <!--            </entity>-->
 <!--        </node>-->
         <node name="Plane">
-            <plane name="Plane" material="ReflectivePlane" width="200" reflection="false" distance="-10.0"/>
+            <plane name="Plane" material="ReflectivePlane2" width="200" reflection="false" distance="0.0"/>
         </node>
     </nodes>
     <forest>
@@ -58,7 +58,7 @@
         </fog>
     </environment>
   <skyBox cubemap=""/>
-  <terrainGroup worldSize="200" mapSize="257" inputScale="10">
-        <terrain x="0" y="0" heightmap="terrain.png"/>
-    </terrainGroup>
+<!--  <terrainGroup worldSize="200" mapSize="257" inputScale="0">-->
+<!--        <terrain x="0" y="0" heightmap="terrain.png"/>-->
+<!--    </terrainGroup>-->
 </scene>

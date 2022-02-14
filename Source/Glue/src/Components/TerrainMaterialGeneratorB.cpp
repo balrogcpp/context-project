@@ -90,7 +90,6 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
   bool EnableCastShadows = TerrainGlobalOptions::getSingleton().getCastsDynamicShadows();
 
   if (Ogre::MaterialManager::getSingleton().resourceExists(new_name)) {
-    // if (isVertexCompressionSupported() && EnableCastShadows) FixTerrainShadowCaster(new_name, OgreTerrainPtr);
     return Ogre::MaterialManager::getSingleton().getByName(new_name);
   } else {
     auto new_material = Ogre::MaterialManager::getSingleton().getByName(material_name)->clone(new_name);
@@ -102,7 +101,6 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
       texture_state->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
     }
 
-    // if(isVertexCompressionSupported() && EnableCastShadows) FixTerrainShadowCaster(new_material, OgreTerrainPtr);
     GetScene().AddMaterial(new_material);
     return new_material;
   }

@@ -251,12 +251,12 @@ void Engine::CreateOgreRenderWindow() {
 }
 
 void Engine::InitShadowSettings() {
-  bool shadows_enable = false;
+  bool shadows_enable = true;
   float shadow_far = 400;
   int16_t tex_size = 512;
-  string tex_format = "D16";
+  int16_t tex_format = 16;
 
-  shadows_enable = ConfigPtr->GetBool("shadows_enable", shadows_enable);
+//  shadows_enable = ConfigPtr->GetBool("shadows_enable", shadows_enable);
 
   if (!shadows_enable) {
     OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
@@ -264,24 +264,17 @@ void Engine::InitShadowSettings() {
   }
 
   shadow_far = ConfigPtr->GetInt("shadow_far", shadow_far);
-  tex_format = ConfigPtr->GetString("tex_format", tex_format);
+  tex_format = ConfigPtr->GetInt("tex_format", tex_format);
   tex_size = ConfigPtr->GetInt("tex_size", tex_size);
 
+#ifdef DESKTOP
   PixelFormat texture_type = PixelFormat::PF_DEPTH16;
+#else
+  PixelFormat texture_type = PixelFormat::PF_FLOAT16_R;
+#endif
 
   OgreSceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
   OgreSceneManager->setShadowFarDistance(shadow_far);
-
-  if (tex_format == "F32") {
-    texture_type = PixelFormat::PF_FLOAT32_R;
-  } else if (tex_format == "F16") {
-    texture_type = PixelFormat::PF_FLOAT16_R;
-  }
-  if (tex_format == "D32") {
-    texture_type = PixelFormat::PF_DEPTH32;
-  } else if (tex_format == "D16") {
-    texture_type = PixelFormat::PF_DEPTH16;
-  }
 
   OgreSceneManager->setShadowTextureSize(tex_size);
   OgreSceneManager->setShadowTexturePixelFormat(texture_type);
@@ -313,9 +306,7 @@ void Engine::InitShadowSettings() {
   InitRTSSPSSM(PSSMSplitPointList);
 #endif
 
-#ifdef DESKTOP
   TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
-#endif
 }
 
 void Engine::InitTextureSettings() {

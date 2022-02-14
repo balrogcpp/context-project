@@ -592,10 +592,10 @@ void main()
 #ifdef SHADOWCASTER_ALPHA
     if (texture2D(uAlbedoSampler, vUV0.xy).a < 0.5) discard;
 #endif //SHADOWCASTER_ALPHA
-//#ifdef NO_MRT
-//    FragColor.r = vDepth;
-//#else
-//    FragData[0].r = vDepth;
-//#endif
+#ifdef NO_MRT
+    FragColor.r = gl_FragCoord.z;
+#else
+    FragData[0].r = gl_FragCoord.z;
+#endif
 #endif //SHADOWCASTER
 }
