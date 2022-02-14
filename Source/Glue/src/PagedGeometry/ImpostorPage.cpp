@@ -33,7 +33,7 @@ using namespace Ogre;
 using namespace Forests;
 
 // static members initialization
-Ogre::uint  Forests::ImpostorPage::s_nImpostorResolution    = 128;
+Ogre::uint  Forests::ImpostorPage::s_nImpostorResolution    = 512;
 Ogre::uint  Forests::ImpostorPage::s_nSelfInstances         = 0;
 Ogre::uint  Forests::ImpostorPage::s_nUpdateInstanceID      = 0;
 ColourValue Forests::ImpostorPage::s_clrImpostorBackground  = ColourValue(0.0f, 0.3f, 0.0f, 0.0f);
@@ -458,18 +458,18 @@ ImpostorTexture::~ImpostorTexture()
         material[i][o].reset();
 	}
 	}
-	
+
 	//Remove self from list of ImpostorTexture's
 	selfList.erase(entityKey);
 }
 
 void ImpostorTexture::regenerate()
 {
-	if (TextureManager::getSingletonPtr())
-		TextureManager::getSingleton().remove(texture);
-	texture.reset();
-	renderTextures(true);
-	updateMaterials();
+//	if (TextureManager::getSingletonPtr())
+//		TextureManager::getSingleton().remove(texture);
+//	texture.reset();
+//	renderTextures(true);
+//	updateMaterials();
 }
 
 void ImpostorTexture::regenerateAll()
