@@ -11,7 +11,6 @@ RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
     && tar Jxfp ${CONTEXT_HOME}/Binaries/Dependencies/Darwin_x86_64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/ThirdParty/External
 
 COPY ./Source ./Source
-COPY ./Deploy ./Deploy
 COPY ./CMake ./CMake
 COPY ./LICENSE .
 COPY ./Programs ./Programs
