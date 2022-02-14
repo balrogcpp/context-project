@@ -5,7 +5,7 @@ import PBRS_Grass from PBRS_Forests.material
 import PBR_Paged from PBR_Forests.material
 import PBRS_Paged from PBRS_Forests.material
 
-material GrassCustom : PBR_Grass
+material GrassCustom : PBRS_Grass
 {
     technique
     {

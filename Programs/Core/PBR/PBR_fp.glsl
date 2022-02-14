@@ -186,12 +186,7 @@ in vec4 projectionCoord;
 //SRGB corretion
 #include "srgb.glsl"
 #include "fog.glsl"
-
-//Noise Function
-#include "noise.glsl"
-
 #include "lighting.glsl"
-
 #ifdef USE_IBL
 #include "ibl.glsl"
 #endif
@@ -200,6 +195,7 @@ in vec4 projectionCoord;
 #ifdef SHADOWRECEIVER
 #include "receiver.glsl"
 
+//----------------------------------------------------------------------------------------------------------------------
 float GetShadow(const int counter) {
     if (vDepth >= pssmSplitPoints.w)
         return 1.0;
@@ -370,6 +366,8 @@ vec3 GetORM(vec2 uv) {
 }
 
 #ifdef HAS_REFLECTION
+#include "noise.glsl"
+
 //----------------------------------------------------------------------------------------------------------------------
 vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
     vec4 projection = projectionCoord;

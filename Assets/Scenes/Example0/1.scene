@@ -57,7 +57,7 @@
             <colour r="155" g="171" b="187"/>
         </fog>
     </environment>
-  <skyBox cubemap="OutputCube.dds"/>
+  <skyBox cubemap=""/>
   <terrainGroup worldSize="200" mapSize="257" inputScale="10">
         <terrain x="0" y="0" heightmap="terrain.png"/>
     </terrainGroup>

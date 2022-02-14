@@ -251,20 +251,21 @@ void Engine::CreateOgreRenderWindow() {
 }
 
 void Engine::InitShadowSettings() {
-  bool shadows_enable = true;
+  bool shadows_enable = false;
   float shadow_far = 400;
-  int16_t tex_size = 256;
+  int16_t tex_size = 512;
   string tex_format = "D16";
 
-  shadows_enable = ConfigPtr->GetBool("shadows_enable", shadows_enable);
-  //  shadow_far = ConfigPtr->GetInt("shadow_far", shadow_far);
-  //  tex_format = ConfigPtr->GetString("tex_format", tex_format);
-  tex_size = ConfigPtr->GetInt("tex_size", tex_size);
+//  shadows_enable = ConfigPtr->GetBool("shadows_enable", shadows_enable);
 
   if (!shadows_enable) {
     OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
     return;
   }
+
+  shadow_far = ConfigPtr->GetInt("shadow_far", shadow_far);
+  tex_format = ConfigPtr->GetString("tex_format", tex_format);
+  tex_size = ConfigPtr->GetInt("tex_size", tex_size);
 
   PixelFormat texture_type = PixelFormat::PF_DEPTH16;
 

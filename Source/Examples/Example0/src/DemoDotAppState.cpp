@@ -33,7 +33,7 @@ void DemoDotAppState::Update(float time) {
   //  anim1->addTime(time/4);
   //  anim2->addTime(time/4);
 
-  Ogre::ImGuiOverlay::NewFrame();
+//  Ogre::ImGuiOverlay::NewFrame();
 
   {
 //    static ImGuiIO &io = ImGui::GetIO();
@@ -49,14 +49,14 @@ void DemoDotAppState::Update(float time) {
 //    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 //    ImGui::End();
 //
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-    if (!context_menu_) {
-      GetEngine().OffMenu();
-      return;
-    } else {
-      GetEngine().InMenu();
-    }
-#endif
+//#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+//    if (!context_menu_) {
+//      GetEngine().OffMenu();
+//      return;
+//    } else {
+//      GetEngine().InMenu();
+//    }
+//#endif
 //
 //    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 //    ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
@@ -107,7 +107,7 @@ void DemoDotAppState::Update(float time) {
 //
 //    ImGui::NewLine();
 
-    ImGui::End();
+//    ImGui::End();
   }
 }
 
@@ -133,9 +133,12 @@ void DemoDotAppState::SetUp() {
   //    anim2->setLoop(true);
   //    anim2->setEnabled(true);
 
-  GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
-  GetAudio().SetVolume("ambient", 0.5);
-  GetAudio().PlaySound("ambient");
+//  GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
+//  GetAudio().SetVolume("ambient", 0.5);
+//  GetAudio().PlaySound("ambient");
+
+  Ogre::ImGuiOverlay::NewFrame();
+//  ImGui::End();
 }
 
 }  // namespace Demo

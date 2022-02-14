@@ -1048,7 +1048,7 @@ void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &XmlNode) {
 
   MaterialPtr material_ptr = MaterialManager::getSingleton().getByName(material);
 
-  if (material_ptr->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0) {
+  if (material_ptr->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0 && !cubemap.empty()) {
     auto texture_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState(0);
 
     if (texture_unit) {
