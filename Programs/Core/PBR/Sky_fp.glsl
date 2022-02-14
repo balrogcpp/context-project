@@ -13,6 +13,7 @@
 #include "header.frag"
 
 uniform vec3 uSunDirection;
+#ifndef GPU_HOSEK
 uniform vec3 A;
 uniform vec3 B;
 uniform vec3 C;
@@ -23,6 +24,7 @@ uniform vec3 G;
 uniform vec3 H;
 uniform vec3 I;
 uniform vec3 Z;
+#endif
 
 #ifdef NO_MRT
 uniform vec4 uFogParams;
@@ -74,7 +76,7 @@ void main()
     color = XYZtoRGB(color);
     if (gamma <= uSunSize) color += uSunColor;
     color = expose(color, 0.1);
-    if (vPosition.y >= 0.0) color = ProceduralClouds(color, uFogColour, vPosition, uCirrus, uCumulus, uTimeScale * uTime);
+    //if (vPosition.y >= 0.0) color = ProceduralClouds(color, uFogColour, vPosition, uCirrus, uCumulus, uTimeScale * uTime);
     color = SRGBtoLINEAR(color);
 
 #ifndef NO_MRT

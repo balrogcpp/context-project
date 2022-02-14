@@ -32,7 +32,6 @@
 #include "header.frag"
 
 #ifdef SHADOWCASTER
-//in float vDepth;
 #ifdef SHADOWCASTER_ALPHA
 uniform sampler2D uAlbedoSampler;
 uniform float uAlphaRejection;

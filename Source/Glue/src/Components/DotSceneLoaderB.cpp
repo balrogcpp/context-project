@@ -811,8 +811,8 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
 void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   const float bound = 95;
 
-  auto *grass = new PagedGeometry(OgreCameraPtr, 5);
-  grass->addDetailLevel<GrassPage>(50, 10);
+  auto *grass = new PagedGeometry(OgreCameraPtr, 15);
+  grass->addDetailLevel<GrassPage>(30, 0);
   auto *grassLoader = new GrassLoader(grass);
   grass->setPageLoader(grassLoader);
   grassLoader->setHeightFunction([](float x, float z, void *) { return GetScene().GetHeight(x, z); });
@@ -825,7 +825,7 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   layer->setSwayDistribution(10.0f);
   layer->setSwayLength(1.0f);
   layer->setSwaySpeed(0.5f);
-  layer->setDensity(1.0f);
+  layer->setDensity(0.5f);
   layer->setMapBounds(TBounds(-bound, -bound, bound, bound));
 
   GetScene().AddForests(grass, "GrassCustom");

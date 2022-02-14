@@ -39,7 +39,7 @@ out vec4 FragColor;
 
 #else // GLSLES
 
-#define NO_MRT
+//#define NO_MRT
 //#ifdef USE_TEX_LOD
 //#extension GL_ARB_shader_texture_lod : require
 //#endif

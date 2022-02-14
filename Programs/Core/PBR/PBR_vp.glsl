@@ -90,7 +90,6 @@ out vec4 projectionCoord;
 #ifdef SHADOWCASTER_ALPHA
 out vec2 vUV0;
 #endif
-//out float vDepth;
 #endif // !SHADOWCASTER
 
 #ifdef HAS_REFLECTION
@@ -207,6 +206,5 @@ void main()
   vUV0.xy = uv0.xy;
 #endif
   gl_Position = uMVPMatrix * new_position;
-//  vDepth = gl_Position.z;
 #endif //SHADOWCASTER
 }
