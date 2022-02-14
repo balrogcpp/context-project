@@ -26,12 +26,18 @@
 #endif
 #endif
 
+#ifdef SHADOWCASTER
+#define NO_MRT
+#endif
 #include "header.frag"
 
+#ifdef SHADOWCASTER
+//in float vDepth;
 #ifdef SHADOWCASTER_ALPHA
 uniform sampler2D uAlbedoSampler;
 uniform float uAlphaRejection;
 in vec2 vUV0;
+#endif
 #endif
 
 #ifndef SHADOWCASTER
@@ -586,6 +592,10 @@ void main()
 #ifdef SHADOWCASTER_ALPHA
     if (texture2D(uAlbedoSampler, vUV0.xy).a < 0.5) discard;
 #endif //SHADOWCASTER_ALPHA
-    //FragColor.r = gl_FragCoord.z;
+//#ifdef NO_MRT
+//    FragColor.r = vDepth;
+//#else
+//    FragData[0].r = vDepth;
+//#endif
 #endif //SHADOWCASTER
 }

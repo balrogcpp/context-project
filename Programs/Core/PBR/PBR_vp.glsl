@@ -87,7 +87,10 @@ out vec4 projectionCoord;
 #endif // HAS_REFLECTION
 
 #else // SHADOWCASTER
+#ifdef SHADOWCASTER_ALPHA
 out vec2 vUV0;
+#endif
+//out float vDepth;
 #endif // !SHADOWCASTER
 
 #ifdef HAS_REFLECTION
@@ -141,13 +144,13 @@ void main()
   vec2 uv0 = vec2(vertex.x * baseUVScale, 1.0 - (vertex.y * baseUVScale));
 #endif
 
+#ifndef SHADOWCASTER
+
 #ifdef HAS_UV
   vUV0.xy = uv0.xy;
 #else
   vUV0.xy = vec2(0.0);
 #endif
-
-#ifndef SHADOWCASTER
 
 #ifdef HAS_COLOURS
   vColor = colour.rgb;
@@ -200,6 +203,10 @@ void main()
 #endif
 
 #else //SHADOWCASTER
+#ifdef SHADOWCASTER_ALPHA
+  vUV0.xy = uv0.xy;
+#endif
   gl_Position = uMVPMatrix * new_position;
+//  vDepth = gl_Position.z;
 #endif //SHADOWCASTER
 }

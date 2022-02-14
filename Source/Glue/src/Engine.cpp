@@ -256,7 +256,7 @@ void Engine::InitShadowSettings() {
   int16_t tex_size = 512;
   string tex_format = "D16";
 
-//  shadows_enable = ConfigPtr->GetBool("shadows_enable", shadows_enable);
+  shadows_enable = ConfigPtr->GetBool("shadows_enable", shadows_enable);
 
   if (!shadows_enable) {
     OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
