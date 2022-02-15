@@ -37,8 +37,10 @@ class Compositor : public Component<Compositor> {
   void EnableCompositor(const std::string& name);
   void InitMRT();
   void InitOutput();
+  void InitDummyOutput();
 
   bool AnyEffectEnabled = false;
+  bool UseMRT = true;
   std::map<std::string, bool> EffectsList;
   std::unique_ptr<GBufferSchemeHandler> GBufferHandler;
   Ogre::CompositorManager* OgreCompositorManager = nullptr;

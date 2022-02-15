@@ -26,6 +26,11 @@ fragment_program OutputFinal_fs glsl glsles : OutputI_fs
 	}
 }
 
+fragment_program OutputDummy_fs glsl glsles : OutputI_fs
+{
+    preprocessor_defines NOTHING
+}
+
 abstract material OutputI
 {
 	technique
@@ -79,6 +84,33 @@ material OutputFinal : OutputI
 	}
 }
 
+material OutputDummy
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref OutputDummy_fs
+			{
+			    param_named SceneSampler int 0
+			}
+
+			texture_unit
+            {
+                content_type compositor noMRT mrt
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+
 compositor Output
 {
     technique
@@ -104,6 +136,20 @@ compositor OutputFinal
             pass render_quad
             {
                 material OutputFinal
+            }
+        }
+    }
+}
+
+compositor OutputDummy
+{
+    technique
+    {
+        target_output
+        {
+            pass render_quad
+            {
+                material OutputDummy
             }
         }
     }

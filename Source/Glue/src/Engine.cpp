@@ -251,12 +251,12 @@ void Engine::CreateOgreRenderWindow() {
 }
 
 void Engine::InitShadowSettings() {
-  bool shadows_enable = true;
+  bool shadows_enable = false;
   float shadow_far = 400;
   int16_t tex_size = 512;
   int16_t tex_format = 16;
 
-//  shadows_enable = ConfigPtr->GetBool("shadows_enable", shadows_enable);
+  shadows_enable = ConfigPtr->GetBool("shadows_enable", shadows_enable);
 
   if (!shadows_enable) {
     OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
@@ -459,8 +459,7 @@ void Engine::WindowRestoreFullscreenAndroid() {
 std::pair<int, int> Engine::GetWindowSize() const { return make_pair(WindowWidth, WindowHeight); }
 
 void Engine::GrabMouse(bool grab) {
-  // This breaks input on > Android 9.0
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+#ifndef ANDROID // This breaks input on > Android 9.0
   if (!SDLWindowPtr) return;
   SDL_ShowCursor(!grab);
   SDL_SetWindowGrab(SDLWindowPtr, static_cast<SDL_bool>(grab));

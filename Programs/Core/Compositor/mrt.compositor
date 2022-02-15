@@ -16,3 +16,20 @@ compositor MRT
         }
     }
 }
+
+compositor noMRT
+{
+    technique
+    {
+        texture mrt target_width target_height PF_R8G8B8A8
+
+        target mrt
+        {
+            input none
+
+            pass clear {}
+
+            pass render_scene {}
+        }
+    }
+}

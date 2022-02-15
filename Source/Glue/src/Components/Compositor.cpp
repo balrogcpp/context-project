@@ -111,21 +111,29 @@ void Compositor::AddCompositorDisabled(const std::string &name) {
 void Compositor::EnableCompositor(const std::string &name) { OgreCompositorManager->setCompositorEnabled(OgreViewport, name, true); }
 
 void Compositor::InitMRT() {
-  if (OgreCompositorManager->addCompositor(OgreViewport, "MRT")) {
-    OgreCompositorManager->setCompositorEnabled(OgreViewport, "MRT", false);
+  string MRT;
+  if (UseMRT)
+    MRT = "MRT";
+  else
+    MRT = "noMRT";
+
+  if (OgreCompositorManager->addCompositor(OgreViewport, MRT)) {
+    OgreCompositorManager->setCompositorEnabled(OgreViewport, MRT, false);
   } else {
     Throw("Failed to add MRT compositor");
   }
 
-//  if (Config::GetInstance().GetBool("window_fullscreen")) {
-//    auto *MRTCompositor = OgreCompositorChain->getCompositor("MRT");
-//    auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
-//    MRTTextureDefinition->width = Config::GetInstance().GetInt("window_width");
-//    MRTTextureDefinition->height = Config::GetInstance().GetInt("window_high");
-//  }
+#ifdef MOBILE
+  auto *MRTCompositor = OgreCompositorChain->getCompositor(MRT);
+  auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
+  MRTTextureDefinition->width = 1024;
+  MRTTextureDefinition->height = 768;
+#endif
 
-  OgreCompositorManager->setCompositorEnabled(OgreViewport, "MRT", true);
+  OgreCompositorManager->setCompositorEnabled(OgreViewport, MRT, true);
 }
+
+void Compositor::InitDummyOutput() { AddCompositorEnabled("OutputDummy"); }
 
 void Compositor::InitOutput() {
   string OutputCompositor;
@@ -171,7 +179,15 @@ void Compositor::InitOutput() {
 }
 
 void Compositor::SetUp() {
-  //if (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem") return;
+  if (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem") UseMRT = false;
+
+  InitMRT();
+
+  // nothing to do without MTR
+  if (!UseMRT) {
+    InitDummyOutput();
+    return;
+  }
 
   for (const auto &it : EffectsList) {
     if (it.second) {
@@ -179,8 +195,6 @@ void Compositor::SetUp() {
       break;
     }
   }
-
-  InitMRT();
 
   if (EffectsList["ssao"]) {
     AddCompositorEnabled("SSAO");

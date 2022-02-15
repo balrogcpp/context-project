@@ -12,6 +12,9 @@
 
 #include "header.frag"
 
+in vec3 vPosition;
+in vec3 TexCoords;
+
 uniform vec3 uSunDirection;
 #ifndef GPU_HOSEK
 uniform vec3 A;
@@ -38,9 +41,6 @@ uniform float uCirrus;
 uniform float uCumulus;
 uniform float uSunSize;
 uniform samplerCube uCubeMap;
-
-in vec3 vPosition;
-in vec3 TexCoords;
 
 #ifdef GPU_HOSEK
 #include "hosek.glsl"
