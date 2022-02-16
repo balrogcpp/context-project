@@ -55,7 +55,7 @@ uniform samplerCube uCubeMap;
 vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma)
 {
     vec3 chi = ((1.0 + cos_gamma*cos_gamma) / pow(1.0 + I*I - 2.0*(cos_gamma*I), vec3(1.5)));
-    return (1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E*gamma) + F * (cos_gamma*cos_gamma) + G * chi + H * sqrt(cos_theta));
+    return Z * ((1.0 + A * exp(B / (cos_theta + 0.01))) * (C + D * exp(E*gamma) + F * (cos_gamma*cos_gamma) + G * chi + H * sqrt(cos_theta)));
 }
 #endif
 
@@ -67,7 +67,7 @@ void main()
     float cos_gamma = dot(V, N);
     float gamma = acos(cos_gamma);
 #ifndef GPU_HOSEK
-    vec3 color = Z * HosekWilkie(cos_theta, gamma, cos_gamma);
+    vec3 color = HosekWilkie(cos_theta, gamma, cos_gamma);
 #else
     float theta = acos(cos_theta);
     vec3 color = sample_sky(theta, gamma, N.y, N.x);

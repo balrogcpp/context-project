@@ -3,6 +3,7 @@
 #pragma once
 #include "Components/Component.h"
 #include <OgrePrerequisites.h>
+#include <array>
 
 namespace Ogre {
 class TerrainGroup;
@@ -53,6 +54,7 @@ class Scene final : public Component<Scene> {
   std::unique_ptr<SinbadCharacterController> Sinbad;
   Ogre::GpuProgramParametersSharedPtr SkyBoxFpParams;
   bool SkyNeedsUpdate = false;
+  static constexpr std::array<const char *, 10> HosikParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
   std::array<Ogre::Vector3, 10> HosekParams;
   std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_fp_params_;
   std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;

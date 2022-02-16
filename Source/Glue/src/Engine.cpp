@@ -486,12 +486,21 @@ void Engine::InitResourceLocation() {
     AddLocation("Programs/GLSLES", RGN_INTERNAL);
   else
     AddLocation("Programs/GLSL", RGN_INTERNAL);
+  if (GlobalMRTEnabled())
+    AddLocation("Programs/MRT", RGN_INTERNAL);
+  else
+    AddLocation("Programs/noMRT", RGN_INTERNAL);
   AddLocation("Programs/Other", RGN_INTERNAL);
   AddLocation("Assets", RGN_DEFAULT);
 #elif defined(ANDROID)
   auto &RGM = ResourceGroupManager::getSingleton();
   RGM.addResourceLocation("/Programs/Core.zip", "APKZip", RGN_INTERNAL);
   RGM.addResourceLocation("/Programs/GLSLES.zip", "APKZip", RGN_INTERNAL);
+    if (GlobalMRTEnabled())
+    RGM.addResourceLocation("/Programs/MRT.zip", "APKZip", RGN_INTERNAL);
+  else
+    RGM.addResourceLocation("/Programs/noMRT.zip", "APKZip", RGN_INTERNAL);
+
   RGM.addResourceLocation("/Programs/Other.zip", "APKZip", RGN_INTERNAL);
   RGM.addResourceLocation("/Assets.zip", "APKZip", RGN_DEFAULT);
 #endif

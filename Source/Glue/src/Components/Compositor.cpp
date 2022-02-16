@@ -186,7 +186,7 @@ void Compositor::SetUp() {
     }
   }
 
-  if (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem" && !AnyEffectEnabled) UseMRT = false;
+  if (!GlobalMRTEnabled() || !AnyEffectEnabled) UseMRT = false;
 
   InitMRT();
 

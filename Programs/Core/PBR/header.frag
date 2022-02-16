@@ -11,6 +11,8 @@
 #define MAX_SHADOW_TEXTURES 4
 #endif
 
+#include "MRT.glsl"
+
 #ifndef GL_ES
 
 #define USE_TEX_LOD
@@ -39,7 +41,6 @@ out vec4 FragColor;
 
 #else // GLSLES
 
-#define NO_MRT
 #ifdef USE_TEX_LOD
 #extension GL_ARB_shader_texture_lod : require
 #endif
