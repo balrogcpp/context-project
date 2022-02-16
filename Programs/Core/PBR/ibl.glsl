@@ -29,7 +29,7 @@ vec3 GetIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GetIBLContribution(vec3 diffuseColor, vec3 specularColor, float perceptualRoughness, float NdotV, vec3 n, vec3 reflection)
+vec3 GetIBLContribution(const sampler2D ubrdfLUT, const samplerCube uDiffuseEnvSampler, const samplerCube uSpecularEnvSampler, const vec3 diffuseColor, const vec3 specularColor, const float perceptualRoughness, const float NdotV, const vec3 n, const vec3 reflection)
 {
   // retrieve a scale and bias to F0. See [1], Figure 3
   vec3 brdf = SRGBtoLINEAR(texture2D(ubrdfLUT, vec2(NdotV, 1.0 - perceptualRoughness))).rgb;

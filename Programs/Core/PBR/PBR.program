@@ -41,6 +41,8 @@ abstract fragment_program PBR_BaseI_fs glsl glsles
     preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params
     {
+        shared_params_ref PBR_Shared_frag
+
         param_named_auto uLightPositionArray light_position_array 8
         param_named_auto uLightDirectionArray light_direction_array 8
         param_named_auto uLightDiffuseScaledColourArray light_diffuse_colour_power_scaled_array 8
@@ -61,8 +63,6 @@ abstract fragment_program PBR_BaseI_fs glsl glsles
         param_named_auto cFarClipDistance far_clip_distance
         param_named_auto uFrameTime frame_time
         param_named_auto uShadowColour shadow_colour
-
-        shared_params_ref PBR_Shared_frag
     }
 }
 

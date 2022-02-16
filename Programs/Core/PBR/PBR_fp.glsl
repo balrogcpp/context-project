@@ -48,18 +48,19 @@ uniform sampler2D uNormalSampler;
 #endif
 #ifdef HAS_ORM
 uniform sampler2D uORMSampler;
-#endif
-#ifdef HAS_EMISSIVEMAP
-uniform sampler2D uEmissiveSampler;
-#endif
-#ifdef HAS_METALLICMAP
-uniform sampler2D uMetallicSampler;
+#else
+#ifdef HAS_OCCLUSIONMAP
+uniform sampler2D uOcclusionSampler;
 #endif
 #ifdef HAS_ROUGHNESSMAP
 uniform sampler2D uRoughnessSampler;
 #endif
-#ifdef HAS_OCCLUSIONMAP
-uniform sampler2D uOcclusionSampler;
+#ifdef HAS_METALLICMAP
+uniform sampler2D uMetallicSampler;
+#endif
+#endif
+#ifdef HAS_EMISSIVEMAP
+uniform sampler2D uEmissiveSampler;
 #endif
 #ifdef USE_IBL
 uniform samplerCube uDiffuseEnvSampler;
@@ -68,7 +69,6 @@ uniform sampler2D ubrdfLUT;
 #endif
 #ifdef TERRAIN
 uniform sampler2D uGlobalNormalSampler;
-//uniform sampler2D uGlobalShadowSampler;
 #endif
 #ifdef HAS_REFLECTION
 uniform sampler2D uReflectionMap;
@@ -239,7 +239,7 @@ float GetShadow(const int counter) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float CalcPSSMDepthShadow(vec4 pssmSplitPoints, vec4 lightSpacePos0, vec4 lightSpacePos1, vec4 lightSpacePos2, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2)
+float CalcPSSMDepthShadow(const vec4 pssmSplitPoints, const vec4 lightSpacePos0, const vec4 lightSpacePos1, const vec4 lightSpacePos2, const sampler2D shadowMap0, const sampler2D shadowMap1, const sampler2D shadowMap2)
 {
     // calculate shadow
     if (vDepth <= pssmSplitPoints.x)
@@ -299,7 +299,7 @@ mat3 GetTgnTerrain()
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GetNormal(vec2 uv)
+vec3 GetNormal(const vec2 uv)
 {
 #ifdef TERRAIN
     mat3 tbn = GetTgnTerrain();
@@ -318,7 +318,7 @@ vec3 GetNormal(vec2 uv)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec4 GetAlbedo(vec2 uv) {
+vec4 GetAlbedo(const vec2 uv) {
 #ifdef HAS_COLOURS
     vec4 albedo = vec4(uSurfaceDiffuseColour * vColor, 1.0);
 #else
@@ -331,7 +331,7 @@ vec4 GetAlbedo(vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float GetMetallic(vec2 uv) {
+float GetMetallic(const vec2 uv) {
     float metallic = uSurfaceShininessColour;
 #ifdef HAS_METALLICMAP
     metallic *= texture2D(uMetallicSampler, uv, uLOD).r;
@@ -340,7 +340,7 @@ float GetMetallic(vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float GetRoughness(vec2 uv) {
+float GetRoughness(const vec2 uv) {
     float roughness = uSurfaceSpecularColour;
 #ifdef HAS_ROUGHNESSMAP
     roughness *= texture2D(uRoughnessSampler, uv, uLOD).r;
@@ -349,7 +349,7 @@ float GetRoughness(vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float GetOcclusion(vec2 uv) {
+float GetOcclusion(const vec2 uv) {
 #ifdef HAS_OCCLUSIONMAP
      return texture2D(uOcclusionSampler, uv, uLOD).r;
 #endif
@@ -357,7 +357,7 @@ float GetOcclusion(vec2 uv) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 GetORM(vec2 uv) {
+vec3 GetORM(const vec2 uv) {
     vec3 ORM = vec3(1.0, uSurfaceSpecularColour, uSurfaceShininessColour);
 #ifdef HAS_ORM
     vec3 texel = texture2D(uORMSampler, uv, uLOD).rgb;
@@ -553,7 +553,7 @@ void main()
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     vec3 reflection = -normalize(reflect(v, n));
-    total_colour += uSurfaceAmbientColour * GetIBLContribution(diffuseColor, specularColor, roughness, NdotV, n, reflection);
+    total_colour += uSurfaceAmbientColour * GetIBLContribution(ubrdfLUT, uDiffuseEnvSampler, uSpecularEnvSampler, diffuseColor, specularColor, roughness, NdotV, n, reflection);
 #else
     total_colour += uSurfaceAmbientColour * uAmbientLightColour * color;
 #endif

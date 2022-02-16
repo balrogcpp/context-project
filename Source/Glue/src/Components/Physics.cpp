@@ -222,7 +222,6 @@ void Physics::ProcessData(Ogre::Entity *EntityPtr, Ogre::SceneNode *ParentNode, 
 void Physics::ProcessData(Entity *EntityPtr, SceneNode *ParentNode, const UserObjectBindings &UserData) {
   string ProxyType;
   if (UserData.getUserAny("proxy").has_value()) ProxyType = any_cast<string>(UserData.getUserAny("proxy"));
-  bool Static = false;
   string physics_type = any_cast<string>(UserData.getUserAny("physics_type"));
   float Mass = any_cast<float>(UserData.getUserAny("mass"));
   float mass_radius = any_cast<float>(UserData.getUserAny("mass_radius"));
@@ -241,6 +240,7 @@ void Physics::ProcessData(Entity *EntityPtr, SceneNode *ParentNode, const UserOb
   float friction_z = any_cast<float>(UserData.getUserAny("friction_z"));
   float damping_trans = any_cast<float>(UserData.getUserAny("damping_trans"));
   float damping_rot = any_cast<float>(UserData.getUserAny("damping_rot"));
+  bool Static = (physics_type != "dynamic");
 
   btRigidBody *entBody = nullptr;
   btVector3 Inertia = btVector3(0, 0, 0);

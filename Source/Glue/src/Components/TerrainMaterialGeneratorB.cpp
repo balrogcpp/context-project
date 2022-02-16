@@ -68,7 +68,13 @@ static void FixTerrainShadowCaster(const std::string &material, const Ogre::Terr
 }
 
 Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Terrain *OgreTerrainPtr) {
-  string material_name = "TerrainCustom";
+  string material_name;
+
+  if (Root::getSingleton().getSceneManager("Default")->getShadowTechnique() != SHADOWTYPE_NONE)
+    material_name = "TerrainCustom";
+  else
+    material_name = "TerrainCustomPBRS";
+
   const string GENERATOR = "_0";
 
   if (isVertexCompressionSupported()) {
@@ -85,7 +91,6 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
     }
   }
 
-  auto normalmap = OgreTerrainPtr->getTerrainNormalMap();
   string new_name = material_name + GENERATOR;
   bool EnableCastShadows = TerrainGlobalOptions::getSingleton().getCastsDynamicShadows();
 
@@ -96,7 +101,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Ogre::Te
 
     auto *texture_state = new_material->getTechnique(0)->getPass(0)->getTextureUnitState("GlobalNormal");
     if (texture_state) {
-      texture_state->setTexture(normalmap);
+      texture_state->setTexture(OgreTerrainPtr->getTerrainNormalMap());
       texture_state->setTextureFiltering(Ogre::FO_LINEAR, Ogre::FO_LINEAR, Ogre::FO_NONE);
       texture_state->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
     }
@@ -110,7 +115,7 @@ Ogre::MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap
   string material_name = "TerrainCustom";
   const int GENERATOR = 1;
 
-  string new_name = material_name + to_string(GENERATOR);
+  string new_name = material_name + "_" + to_string(GENERATOR);
 
   if (Ogre::MaterialManager::getSingleton().resourceExists(new_name)) {
     return Ogre::MaterialManager::getSingleton().getByName(new_name);

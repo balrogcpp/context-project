@@ -32,18 +32,6 @@ abstract fragment_program PBRS_IBLI_fs glsl glsles : PBRS_BaseI_fs
 
 fragment_program PBRS_IBL_fs glsl glsles : PBRS_IBLI_fs {}
 
-sampler PBRLUTSampler
-{
-    filtering none
-    tex_address_mode clamp
-}
-
-sampler PBRIBLSampler
-{
-    tex_address_mode clamp
-    filtering trilinear
-}
-
 abstract material PBR_IBL : PBRS
 {
     set $IBL_Diffuse diffuse.dds

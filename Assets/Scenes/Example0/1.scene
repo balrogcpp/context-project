@@ -15,14 +15,14 @@
                 <clipping far="1000.0" near="0.001"/>
             </camera>
         </node>
-        <node name="Helmet">
-            <position x="0" y="1.0" z="2"/>
+        <node name="Cube">
+            <position x="1" y="1.0" z="-2"/>
             <scale x="1" y="1" z="1"/>
-            <entity meshFile="Cube.mesh" name="DamagedHelmet">
+            <entity meshFile="Cube.mesh" name="Cube">
                 <userData>
                     <property data="1000.0" name="mass" type="float"/>
                     <property data="1.0" name="mass_radius" type="float"/>
-                    <property data="dynamic" name="physics_type" type="str"/>
+                    <property data="static" name="physics_type" type="str"/>
                     <property data="cube" name="proxy" type="str"/>
                     <property data="False" name="actor" type="bool"/>
                     <property data="False" name="ghost" type="bool"/>

@@ -179,7 +179,14 @@ void Compositor::InitOutput() {
 }
 
 void Compositor::SetUp() {
-  if (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem") UseMRT = false;
+  for (const auto &it : EffectsList) {
+    if (it.second) {
+      AnyEffectEnabled = true;
+      break;
+    }
+  }
+
+  if (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem" && !AnyEffectEnabled) UseMRT = false;
 
   InitMRT();
 
@@ -187,13 +194,6 @@ void Compositor::SetUp() {
   if (!UseMRT) {
     InitDummyOutput();
     return;
-  }
-
-  for (const auto &it : EffectsList) {
-    if (it.second) {
-      AnyEffectEnabled = true;
-      break;
-    }
   }
 
   if (EffectsList["ssao"]) {

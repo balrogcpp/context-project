@@ -2,6 +2,7 @@
 
 sampler ShadowSampler
 {
+    filtering linear linear none
     tex_address_mode border
     tex_border_colour 1 1 1 1
 }
@@ -16,4 +17,16 @@ sampler PBRSSAOSampler
 {
     tex_address_mode clamp
     filtering none
+}
+
+sampler PBRLUTSampler
+{
+    filtering none
+    tex_address_mode clamp
+}
+
+sampler PBRIBLSampler
+{
+    filtering bilinear
+    tex_address_mode clamp
 }

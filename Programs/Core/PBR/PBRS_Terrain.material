@@ -31,10 +31,7 @@ vertex_program PBRS_Terrain_vs glsl glsles : PBRS_Terrain_I_vs
     preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
-fragment_program PBRS_Terrain_fs glsl glsles : PBRS_Terrain_I_fs
-{
-    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-}
+fragment_program PBRS_Terrain_fs glsl glsles : PBRS_Terrain_I_fs {}
 
 abstract material PBRS_Terrain : PBRS
 {
