@@ -264,6 +264,9 @@ void Engine::InitShadowSettings() {
 
   if (!shadows_enable) {
     OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
+    OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 0);
+    OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 0);
+    OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
     return;
   }
 
@@ -479,7 +482,10 @@ void Engine::FreeMouse() { GrabMouse(false); }
 void Engine::InitResourceLocation() {
 #ifdef DESKTOP
   AddLocation("Programs/Core", RGN_INTERNAL);
-  AddLocation("Programs/GLSL", RGN_INTERNAL);
+  if (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem")
+    AddLocation("Programs/GLSLES", RGN_INTERNAL);
+  else
+    AddLocation("Programs/GLSL", RGN_INTERNAL);
   AddLocation("Programs/Other", RGN_INTERNAL);
   AddLocation("Assets", RGN_DEFAULT);
 #elif defined(ANDROID)

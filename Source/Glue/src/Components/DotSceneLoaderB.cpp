@@ -3,12 +3,12 @@
 #include "PCHeader.h"
 #include "Components/DotSceneLoaderB.h"
 #include "Components/XmlParser.h"
+#include "CubeMapCamera.h"
 #include "Engine.h"
 #include "Objects/SinbadCharacterController.h"
 #include "PagedGeometry/PagedGeometryAll.h"
-#include "ShaderHelpers.h"
 #include "ReflectionCamera.h"
-#include "CubeMapCamera.h"
+#include "ShaderHelpers.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>
@@ -402,6 +402,8 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &XmlNode, SceneNode *ParentNod
         }
       }
     }
+  } else {
+    light->setCastShadows(false);
   }
 
   light->setPowerScale(GetAttribReal(XmlNode, "powerScale", 1.0));
@@ -696,7 +698,7 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &XmlNode, SceneNode *ParentNo
   Entity *entity = OgreScene->createEntity(name, meshFile);
 
   try {
-    if(!material_name.empty()) entity->setMaterialName(material_name);
+    if (!material_name.empty()) entity->setMaterialName(material_name);
     GetScene().AddEntity(entity);
     ParentNode->attachObject(entity);
     entity->setCastShadows(cast_shadows);
@@ -778,7 +780,7 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
   MeshPtr res = OMM.createPlane(mesh_name, GroupName, plane, width, height, xSegments, ySegments, hasNormals, numTexCoordSets, uTile, vTile, up);
   res->buildTangentVectors();
   Entity *entity = OgreScene->createEntity(name, mesh_name);
-//  entity->setCastShadows(false);
+  //  entity->setCastShadows(false);
   entity->setVisibilityFlags(0xF00);
   entity->setMaterialName(material);
 
@@ -801,11 +803,11 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
   ParentNode->attachObject(entity);
   FixMaterial(MaterialSPtr);
 
-//  auto *entShape = BtOgre::createBoxCollider(entity);
-//  auto *bodyState = new BtOgre::RigidBodyState(ParentNode);
-//  auto *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-//  entBody->setFriction(1);
-//  GetPhysics().AddRigidBody(entBody);
+  //  auto *entShape = BtOgre::createBoxCollider(entity);
+  //  auto *bodyState = new BtOgre::RigidBodyState(ParentNode);
+  //  auto *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+  //  entBody->setFriction(1);
+  //  GetPhysics().AddRigidBody(entBody);
 }
 
 void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
@@ -834,7 +836,7 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   auto *trees = new PagedGeometry(OgreCameraPtr, 50);
 
   trees->addDetailLevel<Forests::WindBatchPage>(125, 0);
-//  trees->addDetailLevel<Forests::BatchPage>(200, 0);
+  //  trees->addDetailLevel<Forests::BatchPage>(200, 0);
   trees->addDetailLevel<Forests::ImpostorPage>(400, 0);
 
   auto *treeLoader = new TreeLoader3D(trees, TBounds(-bound, -bound, bound, bound));
@@ -877,29 +879,28 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
 
     treeLoader->addTree(fir1EntPtr, Vector3(x, y, z), Degree(yaw), scale * 0.2);
 
-
-//    if (Math::RangeRandom(0, 1) <= 0.8f) {
-//      x = Math::RangeRandom(-bound, bound);
-//      z = Math::RangeRandom(-bound, bound);
-//      if (x < -bound)
-//        x = -bound;
-//      else if (x > bound)
-//        x = bound;
-//      if (z < -bound)
-//        z = -bound;
-//      else if (z > bound)
-//        z = bound;
-//    } else {
-//      x = Math::RangeRandom(-bound, bound);
-//      z = Math::RangeRandom(-bound, bound);
-//    }
-//
-//    y = GetScene().GetHeight(x, z);
-//
-//    scale = Math::RangeRandom(0.9f, 1.1f);
-//    quat.FromAngleAxis(Degree(yaw), Vector3::UNIT_Y);
-//
-//    treeLoader->addTree(fir2EntPtr, Vector3(x, y, z), Degree(yaw), scale * 0.75);
+    //    if (Math::RangeRandom(0, 1) <= 0.8f) {
+    //      x = Math::RangeRandom(-bound, bound);
+    //      z = Math::RangeRandom(-bound, bound);
+    //      if (x < -bound)
+    //        x = -bound;
+    //      else if (x > bound)
+    //        x = bound;
+    //      if (z < -bound)
+    //        z = -bound;
+    //      else if (z > bound)
+    //        z = bound;
+    //    } else {
+    //      x = Math::RangeRandom(-bound, bound);
+    //      z = Math::RangeRandom(-bound, bound);
+    //    }
+    //
+    //    y = GetScene().GetHeight(x, z);
+    //
+    //    scale = Math::RangeRandom(0.9f, 1.1f);
+    //    quat.FromAngleAxis(Degree(yaw), Vector3::UNIT_Y);
+    //
+    //    treeLoader->addTree(fir2EntPtr, Vector3(x, y, z), Degree(yaw), scale * 0.75);
   }
 
   trees->update();

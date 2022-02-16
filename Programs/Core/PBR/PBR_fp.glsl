@@ -190,7 +190,9 @@ in vec4 projectionCoord;
 
 //SRGB corretion
 #include "srgb.glsl"
+#ifdef NO_MRT
 #include "fog.glsl"
+#endif
 #include "lighting.glsl"
 #ifdef USE_IBL
 #include "ibl.glsl"
@@ -447,9 +449,8 @@ void main()
 
     // For typical incident reflectance range (between 4% to 100%) set the grazing reflectance to 100% for typical fresnel effect.
     // For very low reflectance range on highly diffuse objects (below 4%), incrementally reduce grazing reflecance to 0%.
-    float reflectance90 = clamp(reflectance * 25.0, 0.0, 1.0);
-    vec3 specularEnvironmentR0 = specularColor.rgb;
-    vec3 specularEnvironmentR90 = vec3(1.0) * reflectance90;
+    vec3 reflectance90 = vec3(clamp(reflectance * 25.0, 0.0, 1.0));
+    vec3 reflectance0 = specularColor.rgb;
 
     vec3 n = GetNormal(tex_coord);// normal at surface point
 
@@ -495,29 +496,15 @@ void main()
         float NdotH = clamp(dot(n, h), 0.0, 1.0);
         float LdotH = clamp(dot(l, h), 0.0, 1.0);
         float VdotH = clamp(dot(v, h), 0.0, 1.0);
-
-        PBRInfo pbrInputs = PBRInfo(
-                                    NdotL,
-                                    NdotV,
-                                    NdotH,
-                                    LdotH,
-                                    VdotH,
-                                    roughness,
-                                    metallic,
-                                    specularEnvironmentR0,
-                                    specularEnvironmentR90,
-                                    roughness * roughness,
-                                    diffuseColor,
-                                    specularColor
-                                    );
+        float alphaRoughness = (roughness * roughness);
 
         // Calculate the shading terms for the microfacet specular shading model
-        vec3 F = SpecularReflection(pbrInputs);
-        vec3 diffuseContrib = (1.0 - F) * Diffuse(pbrInputs);
+        vec3 F = SpecularReflection(reflectance0, reflectance90, VdotH);
+        vec3 diffuseContrib = (1.0 - F) * Diffuse(diffuseColor);
 
         // Calculation of analytical lighting contribution
-        float G = GeometricOcclusion(pbrInputs);
-        float D = MicrofacetDistribution(pbrInputs);
+        float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
+        float D = MicrofacetDistribution(alphaRoughness, NdotH);
         vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
         float tmp = NdotL * fSpotT * fAtten;
 
@@ -555,7 +542,7 @@ void main()
     vec3 reflection = -normalize(reflect(v, n));
     total_colour += uSurfaceAmbientColour * GetIBLContribution(ubrdfLUT, uDiffuseEnvSampler, uSpecularEnvSampler, diffuseColor, specularColor, roughness, NdotV, n, reflection);
 #else
-    total_colour += uSurfaceAmbientColour * uAmbientLightColour * color;
+    total_colour += (uSurfaceAmbientColour * (uAmbientLightColour * color));
 #endif
 
 #ifdef HAS_REFLECTION
