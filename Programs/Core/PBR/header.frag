@@ -50,6 +50,7 @@ out vec4 FragColor;
 precision highp float;
 precision lowp int;
 precision lowp sampler2D;
+precision lowp sampler3D;
 precision lowp samplerCube;
 
 #if VERSION == 300 || VERSION == 310 || VERSION == 320

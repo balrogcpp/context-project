@@ -57,8 +57,6 @@ class Engine final : public Singleton<Engine> {
   void SetWindowCaption(const char* Caption);
   std::pair<int, int> GetWindowSize() const;
   void GrabMouse(bool grab);
-  void GrabMouse();
-  void FreeMouse();
 
  protected:
   void ReadConfFile();

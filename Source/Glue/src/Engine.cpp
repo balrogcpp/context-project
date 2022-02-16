@@ -316,7 +316,7 @@ void Engine::InitShadowSettings() {
 }
 
 void Engine::InitTextureSettings() {
-  int anisotropy = 4;
+  int anisotropy = 0;
   string filtration = ConfigPtr->GetString("filtration", "bilinear");
   anisotropy = ConfigPtr->GetInt("anisotropy", anisotropy);
 
@@ -336,7 +336,11 @@ void Engine::InitTextureSettings() {
 
   MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
   MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
+#if defined(DESKTOP)
   TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
+#else defined(MOBILE)
+  TextureManager::getSingleton().setDefaultNumMipmaps(5);
+#endif
 }
 
 void Engine::Capture() {
@@ -475,14 +479,10 @@ void Engine::GrabMouse(bool grab) {
 #endif
 }
 
-void Engine::GrabMouse() { GrabMouse(true); }
-
-void Engine::FreeMouse() { GrabMouse(false); }
-
 void Engine::InitResourceLocation() {
 #ifdef DESKTOP
   AddLocation("Programs/Core", RGN_INTERNAL);
-  if (Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem")
+  if (RenderSystemGLES2())
     AddLocation("Programs/GLSLES", RGN_INTERNAL);
   else
     AddLocation("Programs/GLSL", RGN_INTERNAL);
@@ -496,7 +496,7 @@ void Engine::InitResourceLocation() {
   auto &RGM = ResourceGroupManager::getSingleton();
   RGM.addResourceLocation("/Programs/Core.zip", "APKZip", RGN_INTERNAL);
   RGM.addResourceLocation("/Programs/GLSLES.zip", "APKZip", RGN_INTERNAL);
-    if (GlobalMRTEnabled())
+  if (GlobalMRTEnabled())
     RGM.addResourceLocation("/Programs/MRT.zip", "APKZip", RGN_INTERNAL);
   else
     RGM.addResourceLocation("/Programs/noMRT.zip", "APKZip", RGN_INTERNAL);
