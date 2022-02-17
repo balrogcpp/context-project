@@ -79,7 +79,37 @@ void Scene::AddMaterial(const std::string &MaterialName) {
   if (MaterialPtr) AddMaterial(MaterialPtr);
 }
 
-void Scene::AddCamera(Camera *OgreCameraPtr) {}
+void Scene::AddCamera(Camera *OgreCameraPtr) {
+  auto *Actor = OgreScene->createEntity("Actor", "Icosphere.mesh");
+  auto *ParentNode = OgreCameraPtr->getParentSceneNode();
+
+  Actor->setCastShadows(false);
+  Actor->setVisible(false);
+  ParentNode->attachObject(Actor);
+
+  CameraManPtr->SetStyle(CameraMan::FPS);
+  InputSequencer::GetInstance().RegObserver(CameraManPtr.get());
+
+  btVector3 inertia(0, 0, 0);
+  btRigidBody *RigidBody = nullptr;
+  auto *entShape = BtOgre::createCapsuleCollider(Actor);
+  //GetAudio().SetListener(ParentNode);
+  float mass = 100.0;
+  entShape->calculateLocalInertia(mass, inertia);
+  auto *bodyState = new BtOgre::RigidBodyState(ParentNode);
+  RigidBody = new btRigidBody(mass, bodyState, entShape, inertia);
+  RigidBody->setAngularFactor(0);
+  RigidBody->activate(true);
+  RigidBody->forceActivationState(DISABLE_DEACTIVATION);
+  RigidBody->setActivationState(DISABLE_DEACTIVATION);
+  RigidBody->setFriction(1.0);
+  RigidBody->setUserIndex(1);
+  GetPhysics().AddRigidBody(RigidBody);
+  CameraManPtr->SetRigidBody(RigidBody);
+  CameraManPtr->AttachCamera(OgreCameraPtr);
+
+  //RigidBody->applyCentralForce(btVector3(0, 0, 10000.0f));
+}
 
 void Scene::AddSinbad(Camera *OgreCameraPtr) {
   Sinbad = make_unique<SinbadCharacterController>(OgreCameraPtr);
@@ -149,7 +179,7 @@ void Scene::OnClean() {
   if (TGO) delete TGO;
   if (OgreScene) OgreScene->setShadowTechnique(SHADOWTYPE_NONE);
   if (OgreScene) OgreScene->clearScene();
-  if (CameraManPtr) CameraManPtr->SetStyle(CameraMan::Style::MANUAL);
+  if (CameraManPtr) CameraManPtr->SetStyle(CameraMan::ControlStyle::MANUAL);
   ResourceGroupManager::getSingleton().unloadResourceGroup(GroupName);
   gpu_fp_params_.clear();
   gpu_fp_params_.shrink_to_fit();

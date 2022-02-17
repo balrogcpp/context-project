@@ -113,7 +113,7 @@ void DemoDotAppState::Update(float time) {
 
 void DemoDotAppState::SetUp() {
   GetEngine().GrabMouse(true);
-  //  GetScene().GetCamera().SetStyle(CameraMan::Style::FPS);
+  GetScene().GetCamera().SetStyle(CameraMan::ControlStyle::FPS);
   LoadFromFile("1.scene");
   //    Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
   //    glue::Pbr::UpdatePbrParams("Examples/Smoke");

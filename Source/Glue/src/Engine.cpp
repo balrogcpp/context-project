@@ -297,15 +297,11 @@ void Engine::InitShadowSettings() {
   OgreSceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
 
   PSSMSetupPtr = make_shared<PSSMShadowCameraSetup>();
-  const float near_clip_distance = 0.001;
-  PSSMSetupPtr->calculateSplitPoints(PSSMSplitCount, near_clip_distance, OgreSceneManager->getShadowFarDistance());
+  PSSMSetupPtr->calculateSplitPoints(PSSMSplitCount, 0.001, OgreSceneManager->getShadowFarDistance());
   PSSMSplitPointList = PSSMSetupPtr->getSplitPoints();
-  //  PSSMSetupPtr->setSplitPadding(near_clip_distance);
-  //  PSSMSetupPtr->setSplitPadding(0.1);
+  // PSSMSetupPtr->setSplitPadding(0.0);
 
-  for (size_t i = 0; i < PSSMSplitCount; i++) {
-    PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
-  }
+  for (int i = 0; i < PSSMSplitCount; i++) PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
 
   OgreSceneManager->setShadowCameraSetup(PSSMSetupPtr);
   OgreSceneManager->setShadowColour(ColourValue::Black);
@@ -322,23 +318,13 @@ void Engine::InitTextureSettings() {
 
   TextureFilterOptions filtering = TFO_BILINEAR;
 
-  if (filtration == "anisotropic") {
-    filtering = TFO_ANISOTROPIC;
-  } else if (filtration == "bilinear") {
-    filtering = TFO_BILINEAR;
-  } else if (filtration == "trilinear") {
-    filtering = TFO_TRILINEAR;
-  } else if (filtration == "none") {
-    filtering = TFO_NONE;
-  } else {
-    filtering = TFO_BILINEAR;
-  }
+  if (filtration == "anisotropic") filtering = TFO_ANISOTROPIC;
 
   MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
   MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
 #if defined(DESKTOP)
   TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
-#else defined(MOBILE)
+#elif defined(MOBILE)
   TextureManager::getSingleton().setDefaultNumMipmaps(5);
 #endif
 }
@@ -482,20 +468,24 @@ void Engine::GrabMouse(bool grab) {
 void Engine::InitResourceLocation() {
 #ifdef DESKTOP
   AddLocation("Programs/Core", RGN_INTERNAL);
+
   if (RenderSystemGLES2())
     AddLocation("Programs/GLSLES", RGN_INTERNAL);
   else
     AddLocation("Programs/GLSL", RGN_INTERNAL);
+
   if (GlobalMRTEnabled())
     AddLocation("Programs/MRT", RGN_INTERNAL);
   else
     AddLocation("Programs/noMRT", RGN_INTERNAL);
+
   AddLocation("Programs/Other", RGN_INTERNAL);
   AddLocation("Assets", RGN_DEFAULT);
 #elif defined(ANDROID)
   auto &RGM = ResourceGroupManager::getSingleton();
   RGM.addResourceLocation("/Programs/Core.zip", "APKZip", RGN_INTERNAL);
   RGM.addResourceLocation("/Programs/GLSLES.zip", "APKZip", RGN_INTERNAL);
+
   if (GlobalMRTEnabled())
     RGM.addResourceLocation("/Programs/MRT.zip", "APKZip", RGN_INTERNAL);
   else

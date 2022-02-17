@@ -355,33 +355,11 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &XmlNode, SceneNode *ParentNod
   if (Root::getSingleton().getSceneManager("Default")->getShadowTechnique() != SHADOWTYPE_NONE) {
     auto texture_config = OgreScene->getShadowTextureConfigList()[0];
 
-    if (OgreScene->getShadowTextureConfigList().size() < MAX_TEX_COUNT) {
-      if (light->getType() == Light::LT_POINT) {
-        light->setCastShadows(false);
-      } else if (light->getType() == Light::LT_SPOTLIGHT && light->getCastShadows()) {
-        int camera_type = 4;
+    if (light->getType() == Light::LT_POINT) light->setCastShadows(false);
 
-        static ShadowCameraSetupPtr default_scs;
-
-        switch (camera_type) {
-          case 1: {
-            default_scs = DefaultShadowCameraSetup::create();
-            break;
-          }
-          case 2: {
-            default_scs = FocusedShadowCameraSetup::create();
-            break;
-          }
-          case 3: {
-            // default_scs = PlaneOptimalShadowCameraSetup::create();
-            break;
-          }
-          case 4:
-          default: {
-            default_scs = LiSPSMShadowCameraSetup::create();
-            break;
-          }
-        }
+    if (OgreScene->getShadowTextureConfigList().size() < MAX_TEX_COUNT && light->getCastShadows()) {
+      if (light->getType() == Light::LT_SPOTLIGHT) {
+        static ShadowCameraSetupPtr default_scs = LiSPSMShadowCameraSetup::create();
 
         light->setCustomShadowCameraSetup(default_scs);
         size_t tex_count = OgreScene->getShadowTextureConfigList().size() + 1;
@@ -391,7 +369,7 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &XmlNode, SceneNode *ParentNod
         texture_config.height *= pow(2.0, -floor(index / 3.0));
         texture_config.width *= pow(2.0, -floor(index / 3.0));
         OgreScene->setShadowTextureConfig(index, texture_config);
-      } else if (light->getType() == Light::LT_DIRECTIONAL && light->getCastShadows()) {
+      } else if (light->getType() == Light::LT_DIRECTIONAL) {
         size_t per_light = OgreScene->getShadowTextureCountPerLightType(Light::LT_DIRECTIONAL);
         size_t tex_count = OgreScene->getShadowTextureConfigList().size() + per_light - 1;
         OgreScene->setShadowTextureCount(tex_count);
@@ -401,6 +379,8 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &XmlNode, SceneNode *ParentNod
           OgreScene->setShadowTextureConfig(index, texture_config);
         }
       }
+    } else {
+      light->setCastShadows(false);
     }
   } else {
     light->setCastShadows(false);
@@ -441,59 +421,19 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &XmlNode, SceneNode *ParentNod
 void DotSceneLoaderB::ProcessCamera(pugi::xml_node &XmlNode, SceneNode *ParentNode) {
   // Process attributes
   string name = GetAttrib(XmlNode, "name");
-  float fov = GetAttribReal(XmlNode, "fov", 90);
-  float aspectRatio = GetAttribReal(XmlNode, "aspectRatio", 0);
+  float fov = GetAttribReal(XmlNode, "fov", 90.0);
   string projectionType = GetAttrib(XmlNode, "projectionType", "perspective");
   OgreCameraPtr = OgreScene->getCamera("Default");
   ParentNode->attachObject(OgreCameraPtr);
-  // SetUp the camera
-
-  //  if (!CameraManPtr) CameraManPtr = make_unique<CameraMan>();
-
-  //  CameraManPtr->AttachCamera(ParentNode, camera);
-
-  //  if (CameraManPtr->GetStyle() == CameraMan::Style::FPS) {
-  //    auto *scene = Root::getSingleton().getSceneManager("Default");
-  //    auto *actor = scene->createEntity("Actor", "Icosphere.mesh");
-  //    actor->setCastShadows(false);
-  //    actor->setVisible(false);
-  //    ParentNode->attachObject(actor);
-  //    unique_ptr<BtOgre::StaticMeshToShapeConverter> converter;
-  //    btVector3 inertia;
-  //    btRigidBody *entBody;
-  //    converter = make_unique<BtOgre::StaticMeshToShapeConverter>(actor);
-  //    auto *entShape = converter->createCapsule();
-  //    GetAudio().SetListener(camera->getParentSceneNode());
-  //    float mass = 100.0f;
-  //    entShape->calculateLocalInertia(mass, inertia);
-  //    auto *bodyState = new BtOgre::RigidBodyState(ParentNode);
-  //    entBody = new btRigidBody(mass, bodyState, entShape, inertia);
-  //    entBody->setAngularFactor(0);
-  //    entBody->activate(true);
-  //    entBody->forceActivationState(DISABLE_DEACTIVATION);
-  //    entBody->setActivationState(DISABLE_DEACTIVATION);
-  //    entBody->setFriction(1.0);
-  //    entBody->setUserIndex(1);
-  //    GetPhysics().AddRigidBody(entBody);
-  //    CameraManPtr->SetRigidBody(entBody);
-  //    CameraManPtr->AttachNode(ParentNode);
-  //  } else {
-  //    Sinbad = make_unique<SinbadCharacterController>(OgreScene->getCamera("Default"));
-  //    CameraManPtr->AttachNode(ParentNode, Sinbad->GetBodyNode());
-  //  }
 
   // Set the field-of-view
   OgreCameraPtr->setFOVy(Radian(fov));
 
-  // Set the aspect ratio
-  if (aspectRatio != 0) OgreCameraPtr->setAspectRatio(aspectRatio);
-
   // Set the projection type
-  if (projectionType == "perspective") {
+  if (projectionType == "perspective")
     OgreCameraPtr->setProjectionType(PT_PERSPECTIVE);
-  } else if (projectionType == "orthographic") {
+  else if (projectionType == "orthographic")
     OgreCameraPtr->setProjectionType(PT_ORTHOGRAPHIC);
-  }
 
   // Process clipping
   if (auto element = XmlNode.child("clipping")) {
@@ -505,12 +445,10 @@ void DotSceneLoaderB::ProcessCamera(pugi::xml_node &XmlNode, SceneNode *ParentNo
   }
 
   GetScene().AddCamera(OgreCameraPtr);
-  GetScene().AddSinbad(OgreCameraPtr);
+  // GetScene().AddSinbad(OgreCameraPtr);
 
   // Process userDataReference
-  if (auto element = XmlNode.child("userData")) {
-    ProcessUserData(element, static_cast<MovableObject *>(OgreCameraPtr)->getUserObjectBindings());
-  }
+  if (auto element = XmlNode.child("userData")) ProcessUserData(element, static_cast<MovableObject *>(OgreCameraPtr)->getUserObjectBindings());
 }
 
 void DotSceneLoaderB::ProcessNode(pugi::xml_node &XmlNode, SceneNode *ParentNode) {
@@ -522,18 +460,16 @@ void DotSceneLoaderB::ProcessNode(pugi::xml_node &XmlNode, SceneNode *ParentNode
 
   if (name.empty()) {
     // Let Ogre choose the name
-    if (ParentNode) {
+    if (ParentNode)
       node = ParentNode->createChildSceneNode();
-    } else {
+    else
       node = AttachNode->createChildSceneNode();
-    }
   } else {
     // Provide the name
-    if (ParentNode) {
+    if (ParentNode)
       node = ParentNode->createChildSceneNode(name);
-    } else {
+    else
       node = AttachNode->createChildSceneNode(name);
-    }
   }
 
   // Process other attributes

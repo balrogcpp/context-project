@@ -186,7 +186,7 @@ void Compositor::SetUp() {
     }
   }
 
-  if (!GlobalMRTEnabled() || !AnyEffectEnabled) UseMRT = false;
+  if (!GlobalMRTEnabled()) UseMRT = false;
 
   InitMRT();
 

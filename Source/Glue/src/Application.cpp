@@ -26,51 +26,50 @@ using namespace std;
 namespace Glue {
 
 Application::Application(int argc, char *args[]) {
-    InputSequencer::GetInstance().RegWinObserver(this);
+  InputSequencer::GetInstance().RegWinObserver(this);
 
 #ifdef DESKTOP
-    string BinaryDir;
+  string BinaryDir;
 
-     if (args) {
-      BinaryDir = GetCurrentDirectoryB(args[0]);
-    } else {
-      BinaryDir = GetCurrentDirectoryB("");
-    }
+  if (args) {
+    BinaryDir = GetCurrentDirectoryB(args[0]);
+  } else {
+    BinaryDir = GetCurrentDirectoryB("");
+  }
 
-    if (BinaryDir.empty()) {
-      BinaryDir = GetUserDirectory();
-      if (!BinaryDir.empty()) BinaryDir = PathAppend(BinaryDir, ".Glue");
-      if (!DirectoryExists(BinaryDir)) CreateDirectory(BinaryDir);
-    }
+  if (BinaryDir.empty()) {
+    BinaryDir = GetUserDirectory();
+    if (!BinaryDir.empty()) BinaryDir = PathAppend(BinaryDir, ".Glue");
+    if (!DirectoryExists(BinaryDir)) CreateDirectory(BinaryDir);
+  }
 
-    LogPtr = make_unique<Log>(PathAppend(BinaryDir, "Runtime.log"));
-    ConfigPtr = make_unique<Config>(PathAppend(BinaryDir, "Config.ini"));
+  LogPtr = make_unique<Log>(PathAppend(BinaryDir, "Runtime.log"));
+  ConfigPtr = make_unique<Config>(PathAppend(BinaryDir, "Config.ini"));
 
-    bool Verbose = ConfigPtr->GetBool("verbose", false);
-    LogPtr->WriteLogToConsole(Verbose);
-    LogPtr->WriteLogToFile(Verbose);
+  bool Verbose = ConfigPtr->GetBool("verbose", false);
+  LogPtr->WriteLogToConsole(Verbose);
+  LogPtr->WriteLogToFile(Verbose);
 
 #else
-    ConfigPtr = make_unique<Config>("");
+  ConfigPtr = make_unique<Config>("");
 #endif
 
+  EnginePtr = make_unique<Engine>();
+  EnginePtr->InitComponents();
 
-    EnginePtr = make_unique<Engine>();
-    EnginePtr->InitComponents();
+  StateManagerPtr = make_unique<AppStateManager>();
 
-    StateManagerPtr = make_unique<AppStateManager>();
-
-    Verbose = ConfigPtr->GetBool("verbose", Verbose);
-    VerboseInput = ConfigPtr->GetBool("verbose_input", VerboseInput);
+  Verbose = ConfigPtr->GetBool("verbose", Verbose);
+  VerboseInput = ConfigPtr->GetBool("verbose_input", VerboseInput);
 
 #ifdef DESKTOP
-    if (VerboseInput) {
-      VerboseListenerPtr = make_unique<VerboseListener>();
-    }
+  if (VerboseInput) {
+    VerboseListenerPtr = make_unique<VerboseListener>();
+  }
 #endif
 
-    LockFPS = ConfigPtr->GetBool("lock_fps", LockFPS);
-    TargetFPS = ConfigPtr->GetInt("target_fps", TargetFPS);
+  LockFPS = ConfigPtr->GetBool("lock_fps", LockFPS);
+  TargetFPS = ConfigPtr->GetInt("target_fps", TargetFPS);
 }
 
 Application::~Application() { InputSequencer::GetInstance().UnregWinObserver(this); }
@@ -118,9 +117,7 @@ void Application::Loop() {
     }
 
 #ifdef DEBUG
-    if (Verbose) {
-      cout << flush;
-    }
+    if (Verbose) cout << flush;
 #endif
 
     auto TimeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
@@ -171,17 +168,17 @@ void Application::OnResume() {
 
 int Application::Main(unique_ptr<AppState> &&AppStatePtr) {
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC
-    SDL_SetMainReady();
+  SDL_SetMainReady();
 #endif
 
-    ios_base::sync_with_stdio(false);
+  ios_base::sync_with_stdio(false);
 
-    if (StateManagerPtr && AppStatePtr) {
-      StateManagerPtr->SetInitialState(move(AppStatePtr));
-      Go();
-    }
+  if (StateManagerPtr && AppStatePtr) {
+    StateManagerPtr->SetInitialState(move(AppStatePtr));
+    Go();
+  }
 
-    SDL_Quit();
+  SDL_Quit();
 
   return 0;
 }

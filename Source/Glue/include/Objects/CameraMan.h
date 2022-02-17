@@ -20,7 +20,7 @@ namespace Glue {
 class CameraMan final : public Object, public InputObserver {
  public:
   // enumerator values for different styles of camera movement
-  enum Style { FREELOOK, ORBIT, FPS, MANUAL };
+  enum ControlStyle { FREELOOK, ORBIT, FPS, MANUAL };
 
   CameraMan();
   virtual ~CameraMan();
@@ -35,20 +35,20 @@ class CameraMan final : public Object, public InputObserver {
   Ogre::SceneNode* GetCameraNode() const;
   Ogre::Camera* GetCamera() const;
   void AttachNode(Ogre::SceneNode* ParentPtr, Ogre::SceneNode* ProxyPtr = nullptr);
-  void AttachCamera(Ogre::SceneNode* ParentPtr, Ogre::Camera* CameraPtr, Ogre::SceneNode* ProxyPtr = nullptr);
+  void AttachCamera(Ogre::Camera* CameraPtr, Ogre::SceneNode* ProxyPtr = nullptr);
   void UnregCamera();
-  void SetStyle(Style style);
-  Style GetStyle() const noexcept;
+  void SetStyle(ControlStyle style);
+  ControlStyle GetStyle() const noexcept;
 
  protected:
-  Ogre::SceneNode* node = nullptr;
+  Ogre::SceneNode* CameraNode = nullptr;
   Ogre::SceneNode* yaw_node = nullptr;
   Ogre::SceneNode* pitch_node = nullptr;
   Ogre::SceneNode* roll_node = nullptr;
-  btRigidBody* rigid = nullptr;
-  Ogre::Camera* camera = nullptr;
+  btRigidBody* RigidBody = nullptr;
+  Ogre::Camera* OgreCamera = nullptr;
   Ogre::SceneNode* target = nullptr;
-  Style style = Style::MANUAL;
+  ControlStyle Style = ControlStyle::MANUAL;
   float top_speed = 10;
   float run_speed = 20;
   float animation_time = 0.5;
