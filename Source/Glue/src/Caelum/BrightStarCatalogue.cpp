@@ -17,7 +17,7 @@
 // Converted using the following MSVS regexps:
 // ^\|0*{:d+} 0*{:d+} 0*{[0-9.]+}\|{[+\-]}0*{:d+} 0*{:d+} 0*{[0-9.]+}\|{.*}\|$
 // { \(2,1), \(2,2), \(5,3), \4\(2,5), \(2,6), \(4,7),\(5, 8) },
-constexpr Caelum::BrightStarCatalogueEntry Caelum::BrightStarCatalogue[BrightStarCatalogueSize] = {
+const Caelum::BrightStarCatalogueEntry Caelum::BrightStarCatalogue[BrightStarCatalogueSize] = {
     { 21,  8, 46.20, -88, 57, 23.0, 5.47 },
     { 22, 45, 28.61, -88, 49,  5.9, 6.57 },
     { 15, 28, 19.10, -88,  7, 59.2, 6.48 },
