@@ -374,7 +374,7 @@ externalproject_add(Target_OGRE
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard
-                    PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/ogre-13.2.4.patch
+                    PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/ogre-13.3.0.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
