@@ -5,3 +5,4 @@
 #include "Platform.h"
 #include "GlueGlobalSettings.h"
 #include "Filesystem.h"
+#include "Log.h"

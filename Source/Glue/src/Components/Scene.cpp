@@ -107,8 +107,6 @@ void Scene::AddCamera(Camera *OgreCameraPtr) {
   GetPhysics().AddRigidBody(RigidBody);
   CameraManPtr->SetRigidBody(RigidBody);
   CameraManPtr->AttachCamera(OgreCameraPtr);
-
-  //RigidBody->applyCentralForce(btVector3(0, 0, 10000.0f));
 }
 
 void Scene::AddSinbad(Camera *OgreCameraPtr) {

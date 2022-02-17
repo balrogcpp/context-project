@@ -186,7 +186,7 @@ void Physics::CreateTerrainHeightfieldShape(int size, float *data, const float &
   // SetUp Rigid Body using 0 mass so it is static
   auto *entBody = new btRigidBody(groundRigidBodyCI);
 
-  entBody->setFriction(0.0f);
+  entBody->setFriction(0.4f);
   entBody->setHitFraction(0.8f);
   entBody->setRestitution(0.6f);
   entBody->getWorldTransform().setOrigin(btVector3(position.x, position.y + (max_height - min_height) / 2 - 0.5, position.z));

@@ -2,7 +2,6 @@
 
 #include "PCHeader.h"
 #include "Objects/CameraMan.h"
-#include "Log.h"
 #include <BulletDynamics/Dynamics/btRigidBody.h>
 
 namespace Glue {
@@ -12,19 +11,19 @@ CameraMan::CameraMan() {}
 CameraMan::~CameraMan() {}
 
 void CameraMan::ManualStop() {
-  if (Style == ControlStyle::FREELOOK) {
+  if (Style == FREELOOK) {
     move_forward = false;
     move_back = false;
     move_left = false;
     move_right = false;
     move_up = false;
     move_down = false;
-    velocity = Ogre::Vector3::ZERO;
+    Velocity = Ogre::Vector3::ZERO;
   }
 }
 
 void CameraMan::Update(float PassedTime) {
-  if (Style == ControlStyle::FREELOOK) {
+  if (Style == FREELOOK) {
     top_speed = move_fast ? run_speed : const_speed;
 
     Ogre::Vector3 accel = Ogre::Vector3::ZERO;
@@ -39,64 +38,64 @@ void CameraMan::Update(float PassedTime) {
 
     if (accel.squaredLength() != 0) {
       accel.normalise();
-      velocity += accel * top_speed * PassedTime;
+      Velocity += accel * top_speed * PassedTime;
     } else {
-      velocity -= velocity * PassedTime;
+      Velocity -= Velocity * PassedTime;
     }
 
-    if (velocity.squaredLength() > top_speed * top_speed) {
-      velocity.normalise();
-      velocity *= top_speed;
+    if (Velocity.squaredLength() > top_speed * top_speed) {
+      Velocity.normalise();
+      Velocity *= top_speed;
     }
 
-    if (velocity != Ogre::Vector3::ZERO) CameraNode->translate(velocity * PassedTime);
+    if (Velocity != Ogre::Vector3::ZERO) CameraNode->translate(Velocity * PassedTime);
     if (target) {
       Ogre::Vector3 move = target->getPosition() - prev_pos;
       prev_pos = target->getPosition();
       CameraNode->translate(move);
     }
-  } else if (Style == ControlStyle::FPS) {
+  } else if (Style == FPS) {
     top_speed = move_fast ? run_speed : const_speed;
 
-    velocity = {0, 0, 0};
-    if (move_forward) velocity.z = -run_speed;
-    if (move_back) velocity.z = run_speed;
-    if (move_right) velocity.x = run_speed;
-    if (move_left) velocity.x = -run_speed;
-    if (move_up) velocity.y = run_speed;
-    if (move_down) velocity.y = -run_speed;
+    Velocity = {0, 0, 0};
+    if (move_forward) Velocity.z = -run_speed;
+    if (move_back) Velocity.z = run_speed;
+    if (move_right) Velocity.x = run_speed;
+    if (move_left) Velocity.x = -run_speed;
+    if (move_up) Velocity.y = run_speed;
+    if (move_down) Velocity.y = -run_speed;
 
-    if (velocity.squaredLength() > top_speed * top_speed) {
-      velocity.normalise();
-      velocity *= top_speed;
+    if (Velocity.squaredLength() > top_speed * top_speed) {
+      Velocity.normalise();
+      Velocity *= top_speed;
     }
 
     Ogre::Real pitchAngle;
     Ogre::Real pitchAngleSign;
 
-    Ogre::Vector3 Velocity = yaw_node->getOrientation() * pitch_node->getOrientation() * Velocity;
+    Ogre::Vector3 Direction = yaw_node->getOrientation() * pitch_node->getOrientation() * Velocity;
 
     if (RigidBody) {
       if (!Velocity.isZeroLength()) {
-        RigidBody->setFriction(0);
+        RigidBody->setFriction(1);
         float speed = RigidBody->getLinearVelocity().length();
-        if (speed < const_speed) RigidBody->applyCentralForce(btVector3(Velocity.x, 0, Velocity.z).normalize() * 10000.0f);
+        if (speed < const_speed) RigidBody->applyCentralForce(btVector3(Direction.x, 0, Direction.z).normalize() * 10000.0f);
       } else {
-        RigidBody->setFriction(0);
+        RigidBody->setFriction(10);
       }
 
-      float speed = RigidBody->getLinearVelocity().length();
-      if (speed > run_speed) {
-        animation_time += PassedTime;
-      } else {
-        animation_time -= PassedTime;
-      }
+      //float speed = RigidBody->getLinearVelocity().length();
+      //if (speed > run_speed) {
+      //  animation_time += PassedTime;
+      //} else {
+      //  animation_time -= PassedTime;
+      //}
 
-      if (animation_time > anim_duration) {
-        animation_time = anim_duration;
-      } else if (animation_time < 0.0f) {
-        animation_time = 0.0f;
-      }
+      //if (animation_time > anim_duration) {
+      //  animation_time = anim_duration;
+      //} else if (animation_time < 0.0f) {
+      //  animation_time = 0.0f;
+      //}
     }
 
     // Angle of rotation around the X-axis.
@@ -120,10 +119,10 @@ void CameraMan::Update(float PassedTime) {
 
 void CameraMan::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   if (!stop) {
-    if (Style == ControlStyle::FREELOOK) {
+    if (Style == FREELOOK) {
       CameraNode->yaw(Ogre::Degree(-dx));
       CameraNode->pitch(Ogre::Degree(-dy));
-    } else if (Style == ControlStyle::FPS) {
+    } else if (Style == FPS) {
       yaw_node->yaw(Ogre::Degree(-dx));
       pitch_node->pitch(Ogre::Degree(-dy));
     }
@@ -134,7 +133,7 @@ void CameraMan::OnKeyDown(SDL_Keycode sym) {
   SDL_Scancode code = SDL_GetScancodeFromKey(sym);
 
   if (!stop) {
-    if (Style == ControlStyle::FREELOOK) {
+    if (Style == FREELOOK) {
       if (code == SDL_SCANCODE_W || sym == SDLK_UP)
         move_forward = true;
       else if (code == SDL_SCANCODE_S || sym == SDLK_DOWN)
@@ -149,7 +148,7 @@ void CameraMan::OnKeyDown(SDL_Keycode sym) {
         move_down = true;
       else if (sym == SDLK_LSHIFT)
         move_fast = true;
-    } else if (Style == ControlStyle::FPS) {
+    } else if (Style == FPS) {
       if (code == SDL_SCANCODE_W || sym == SDLK_UP)
         move_forward = true;
       else if (code == SDL_SCANCODE_S || sym == SDLK_DOWN)
@@ -172,7 +171,7 @@ void CameraMan::OnKeyUp(SDL_Keycode sym) {
   SDL_Scancode code = SDL_GetScancodeFromKey(sym);
 
   if (!stop) {
-    if (Style == ControlStyle::FREELOOK) {
+    if (Style == FREELOOK) {
       if (code == SDL_SCANCODE_W || sym == SDLK_UP)
         move_forward = false;
       else if (code == SDL_SCANCODE_S || sym == SDLK_DOWN)
@@ -188,7 +187,7 @@ void CameraMan::OnKeyUp(SDL_Keycode sym) {
       else if (sym == SDLK_LSHIFT)
         move_fast = false;
 
-    } else if (Style == ControlStyle::FPS) {
+    } else if (Style == FPS) {
       if (code == SDL_SCANCODE_W || sym == SDLK_UP)
         move_forward = false;
       else if (code == SDL_SCANCODE_S || sym == SDLK_DOWN)
@@ -210,7 +209,7 @@ void CameraMan::OnKeyUp(SDL_Keycode sym) {
 void CameraMan::SetRigidBody(btRigidBody *RigidBodyPtr) { RigidBody = RigidBodyPtr; }
 
 Ogre::SceneNode *CameraMan::GetCameraNode() const {
-  if (Style == ControlStyle::FPS) {
+  if (Style == FPS) {
     return roll_node;
   } else {
     return CameraNode;
@@ -220,7 +219,7 @@ Ogre::SceneNode *CameraMan::GetCameraNode() const {
 Ogre::Camera *CameraMan::GetCamera() const { return OgreCamera; }
 
 void CameraMan::AttachNode(Ogre::SceneNode *ParentPtr, Ogre::SceneNode *ProxyPtr) {
-  if (Style == ControlStyle::FPS) {
+  if (Style == FPS) {
     for (const auto it : ParentPtr->getAttachedObjects()) {
       ParentPtr->detachObject(it);
       roll_node->attachObject(it);
@@ -233,7 +232,7 @@ void CameraMan::AttachNode(Ogre::SceneNode *ParentPtr, Ogre::SceneNode *ProxyPtr
       roll_node->removeChild(it);
       roll_node->addChild(it);
     }
-  } else if (Style == ControlStyle::MANUAL) {
+  } else if (Style == MANUAL) {
     if (!ProxyPtr || ParentPtr == ProxyPtr) return;
 
     for (const auto it : ParentPtr->getAttachedObjects()) {
@@ -257,7 +256,7 @@ void CameraMan::AttachCamera(Ogre::Camera *CameraPtr, Ogre::SceneNode *ProxyPtr)
   this->OgreCamera = CameraPtr;
   ParentPtr->detachObject(CameraPtr);
 
-  if (Style == ControlStyle::FPS) {
+  if (Style == FPS) {
     CameraNode->setOrientation(Ogre::Quaternion(90.0, 1.0, 0.0, 1.0));
 
     // SetUp the camera's yaw node as a child of camera's top node.
@@ -276,13 +275,13 @@ void CameraMan::AttachCamera(Ogre::Camera *CameraPtr, Ogre::SceneNode *ProxyPtr)
     CameraNode->attachObject(CameraPtr);
   }
 
-  if (Style == ControlStyle::FREELOOK) {
+  if (Style == FREELOOK) {
     CameraNode->setFixedYawAxis(true);  // also fix axis with lookAt calls
     CameraNode->setAutoTracking(false);
-  } else if (Style == ControlStyle::MANUAL) {
+  } else if (Style == MANUAL) {
     ManualStop();
     CameraNode->setAutoTracking(false);
-  } else if (Style == ControlStyle::FPS) {
+  } else if (Style == FPS) {
     CameraNode->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z);  // also fix axis with lookAt calls
     CameraNode->setAutoTracking(false);
   }

@@ -8,8 +8,8 @@
             </light>
         </node>
         <node name="Camera">
-            <position x="0" y="10.8" z="0"/>
-            <rotation qw="0.780483" qx="0.483536" qy="0.336872" qz="-0.208704"/>
+            <position x="0" y="2" z="0"/>
+            <direction x="0.0" y="0.0" z="-1"/>
             <scale x="1.000000" y="1.000000" z="1.000000"/>
             <camera fov="1.5" name="Default" projectionType="perspective">
                 <clipping far="1000.0" near="0.001"/>
@@ -22,8 +22,8 @@
                 <userData>
                     <property data="1000.0" name="mass" type="float"/>
                     <property data="1.0" name="mass_radius" type="float"/>
-                    <property data="static" name="physics_type" type="str"/>
-                    <property data="cube" name="proxy" type="str"/>
+                    <property data="dynamic" name="physics_type" type="str"/>
+                    <property data="capsule" name="proxy" type="str"/>
                     <property data="False" name="actor" type="bool"/>
                     <property data="False" name="ghost" type="bool"/>
                     <property data="0.0" name="velocity_min" type="float"/>
@@ -51,8 +51,8 @@
                 <userData>
                     <property data="1000.0" name="mass" type="float"/>
                     <property data="1.0" name="mass_radius" type="float"/>
-                    <property data="static" name="physics_type" type="str"/>
-                    <property data="cube" name="proxy" type="str"/>
+                    <property data="dynamic" name="physics_type" type="str"/>
+                    <property data="capsule" name="proxy" type="str"/>
                     <property data="False" name="actor" type="bool"/>
                     <property data="False" name="ghost" type="bool"/>
                     <property data="0.0" name="velocity_min" type="float"/>

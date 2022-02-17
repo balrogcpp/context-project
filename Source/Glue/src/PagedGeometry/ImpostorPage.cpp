@@ -33,7 +33,11 @@ using namespace Ogre;
 using namespace Forests;
 
 // static members initialization
+#if defined(DESKTOP)
 Ogre::uint  Forests::ImpostorPage::s_nImpostorResolution    = 512;
+#elif defined(MOBILE)
+Ogre::uint Forests::ImpostorPage::s_nImpostorResolution     = 256;
+#endif
 Ogre::uint  Forests::ImpostorPage::s_nSelfInstances         = 0;
 Ogre::uint  Forests::ImpostorPage::s_nUpdateInstanceID      = 0;
 ColourValue Forests::ImpostorPage::s_clrImpostorBackground  = ColourValue(0.0f, 0.3f, 0.0f, 0.0f);
