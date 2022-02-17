@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 544a7643..f4fb8089 100644
+index 289f7817..397c0570 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -280,12 +280,12 @@ elseif(EMSCRIPTEN)
@@ -53,7 +53,7 @@ index ec67ef51..0c74ce29 100644
      execute_process(COMMAND ${CMAKE_COMMAND}
          -E tar xf imgui.tar.gz WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 diff --git a/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp b/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp
-index 0ff8e2e2..746383ad 100644
+index 0ff8e2e2..78342e6e 100644
 --- a/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp
 +++ b/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp
 @@ -74,8 +74,8 @@ namespace Ogre {
@@ -93,6 +93,66 @@ index 44a17787..d9add2ba 100644
  
  # install OgreMain
  ogre_config_lib(OgreMain TRUE)
+diff --git a/RenderSystems/GL3Plus/src/GLSL/src/OgreGLSLMonolithicProgram.cpp b/RenderSystems/GL3Plus/src/GLSL/src/OgreGLSLMonolithicProgram.cpp
+index a549c695..ec1b2661 100644
+--- a/RenderSystems/GL3Plus/src/GLSL/src/OgreGLSLMonolithicProgram.cpp
++++ b/RenderSystems/GL3Plus/src/GLSL/src/OgreGLSLMonolithicProgram.cpp
+@@ -89,18 +89,18 @@ namespace Ogre {
+         }
+ 
+         bindFixedAttributes(mGLProgramHandle);
+-
+-        // the link
+-        OGRE_CHECK_GL_ERROR(glLinkProgram( mGLProgramHandle ));
+-        OGRE_CHECK_GL_ERROR(glGetProgramiv( mGLProgramHandle, GL_LINK_STATUS, &mLinked ));
+-
+-        logObjectInfo( getCombinedName() + String(" GLSL link result : "), mGLProgramHandle );
+-
++#ifdef DEBUG
+         if(glIsProgram(mGLProgramHandle))
+         {
+             OGRE_CHECK_GL_ERROR(glValidateProgram(mGLProgramHandle));
+         }
+         logObjectInfo( getCombinedName() + String(" GLSL validation result : "), mGLProgramHandle );
++#endif
++        // the link
++        OGRE_CHECK_GL_ERROR(glLinkProgram( mGLProgramHandle ));
++        OGRE_CHECK_GL_ERROR(glGetProgramiv( mGLProgramHandle, GL_LINK_STATUS, &mLinked ));
++
++        logObjectInfo( getCombinedName() + String(" GLSL link result : "), mGLProgramHandle );
+ 
+         if(mLinked)
+         {
+diff --git a/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp b/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
+index 5cb05203..4bac2f80 100644
+--- a/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
++++ b/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
+@@ -129,12 +129,7 @@ namespace Ogre {
+         
+         bindFixedAttributes( mGLProgramHandle );
+ 
+-        // The link
+-        OGRE_CHECK_GL_ERROR(glLinkProgram( mGLProgramHandle ));
+-        OGRE_CHECK_GL_ERROR(glGetProgramiv( mGLProgramHandle, GL_LINK_STATUS, &mLinked ));
+-
+-        GLSLES::logObjectInfo( getCombinedName() + String("GLSL link result : "), mGLProgramHandle );
+-
++#ifdef DEBUG
+         const RenderSystemCapabilities* caps = Root::getSingleton().getRenderSystem()->getCapabilities();
+ 
+         if(caps->hasCapability(RSC_SEPARATE_SHADER_OBJECTS))
+@@ -148,6 +143,11 @@ namespace Ogre {
+         }
+ 
+         GLSLES::logObjectInfo( getCombinedName() + String(" GLSL validation result : "), mGLProgramHandle );
++#endif
++        // The link
++        OGRE_CHECK_GL_ERROR(glLinkProgram( mGLProgramHandle ));
++        OGRE_CHECK_GL_ERROR(glGetProgramiv( mGLProgramHandle, GL_LINK_STATUS, &mLinked ));
++        GLSLES::logObjectInfo( getCombinedName() + String("GLSL link result : "), mGLProgramHandle );
+ 
+         if(mLinked)
+         {
 diff --git a/RenderSystems/GLSupport/CMakeLists.txt b/RenderSystems/GLSupport/CMakeLists.txt
 index bae087ae..d4193175 100644
 --- a/RenderSystems/GLSupport/CMakeLists.txt

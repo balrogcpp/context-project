@@ -370,7 +370,7 @@ externalproject_add(Target_OGRE
                     DEPENDS Target_zlib Target_FreeType Target_pugixml Target_assimp Target_SDL2
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v13.3.0
+                    GIT_TAG v13.3.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard
@@ -394,6 +394,11 @@ externalproject_add(Target_OGRE
                     -DOGRE_CONFIG_NODE_INHERIT_TRANSFORM=OFF
                     -DOGRE_STATIC=ON
                     -DOGRE_NODELESS_POSITIONING=OFF
+                    -DOGRE_CONFIG_ENABLE_MESHLOD=ON
+                    -DOGRE_CONFIG_ENABLE_DDS=ON
+                    -DOGRE_CONFIG_ENABLE_PVRTC=OFF
+                    -DOGRE_CONFIG_ENABLE_ETC=OFF
+                    -DOGRE_CONFIG_ENABLE_ASTC=OFF
                     -DOGRE_BUILD_COMPONENT_PYTHON=OFF
                     -DOGRE_BUILD_COMPONENT_JAVA=OFF
                     -DOGRE_BUILD_COMPONENT_CSHARP=OFF
@@ -406,9 +411,8 @@ externalproject_add(Target_OGRE
                     -DOGRE_BUILD_RENDERSYSTEM_METAL=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_GL3PLUS=ON
                     -DOGRE_BUILD_RENDERSYSTEM_GLES2=ON
-                    -DOGRE_CONFIG_ENABLE_GLES2_CG_SUPPORT=OFF
-                    -DOGRE_CONFIG_ENABLE_GL_STATE_CACHE_SUPPORT=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_GL=ON
+                    -DOGRE_CONFIG_ENABLE_GLES2_CG_SUPPORT=OFF
                     -DOGRE_CONFIG_ENABLE_GL_STATE_CACHE_SUPPORT=ON
                     -DOGRE_CONFIG_ENABLE_GLES2_GLSL_OPTIMISER=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_VULKAN=OFF

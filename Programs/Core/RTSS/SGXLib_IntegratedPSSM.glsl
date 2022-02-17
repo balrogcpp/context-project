@@ -32,10 +32,10 @@ THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
 #ifdef PSSM_SAMPLE_CMP
-#define SAMPLER_TYPE sampler2DShadow
-#else
-#define SAMPLER_TYPE sampler2D
+#undef PSSM_SAMPLE_CMP
 #endif
+
+#define SAMPLER_TYPE sampler2D
 
 #ifdef DEBUG_PSSM
 STATIC vec3 pssm_lod_info = vec3(0.0, 0.0, 0.0);
