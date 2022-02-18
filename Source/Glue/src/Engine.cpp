@@ -54,13 +54,14 @@ void Engine::TestCPUCapabilities() {
 }
 
 void Engine::TestGPUCapabilities() {
-  const auto *RSC = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
+  const auto *RS = Ogre::Root::getSingleton().getRenderSystem();
+  const auto *RSC = RS->getCapabilities();
   OgreAssert(RSC->hasCapability(RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
   OgreAssert(RSC->hasCapability(RSC_TEXTURE_FLOAT), "Float texture support required");
-#ifndef ANDROID
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
-  OgreAssert(RSC->hasCapability(RSC_GEOMETRY_PROGRAM), "Geometry shader support required");
-#endif
+  if (!RenderSystemGLES2() && !RenderSystemGL()) {
+    OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
+    OgreAssert(RSC->hasCapability(RSC_GEOMETRY_PROGRAM), "Geometry shader support required");
+  }
 }
 
 void Engine::InitComponents() {
