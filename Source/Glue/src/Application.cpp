@@ -31,11 +31,10 @@ Application::Application(int argc, char *args[]) {
 #ifdef DESKTOP
   string BinaryDir;
 
-  if (args) {
+  if (args)
     BinaryDir = GetCurrentDirectoryB(args[0]);
-  } else {
+  else
     BinaryDir = GetCurrentDirectoryB("");
-  }
 
   if (BinaryDir.empty()) {
     BinaryDir = GetUserDirectory();
@@ -49,7 +48,6 @@ Application::Application(int argc, char *args[]) {
   bool Verbose = ConfigPtr->GetBool("verbose", false);
   LogPtr->WriteLogToConsole(Verbose);
   LogPtr->WriteLogToFile(Verbose);
-
 #else
   ConfigPtr = make_unique<Config>("");
 #endif
@@ -63,9 +61,7 @@ Application::Application(int argc, char *args[]) {
   VerboseInput = ConfigPtr->GetBool("verbose_input", VerboseInput);
 
 #ifdef DESKTOP
-  if (VerboseInput) {
-    VerboseListenerPtr = make_unique<VerboseListener>();
-  }
+  if (VerboseInput) VerboseListenerPtr = make_unique<VerboseListener>();
 #endif
 
   LockFPS = ConfigPtr->GetBool("lock_fps", LockFPS);
@@ -87,9 +83,7 @@ void Application::Loop() {
     int64_t TimeBeforeFrame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
 
     if (CumultedTime > int64_t(1e+6)) {
-      CurrentFPS = FPSCounter;
       CumultedTime = 0;
-      FPSCounter = 0;
     }
 
     EnginePtr->Capture();
@@ -105,8 +99,8 @@ void Application::Loop() {
 
       auto before_update = chrono::system_clock::now().time_since_epoch();
       int64_t TimeBeforeUpdate = chrono::duration_cast<chrono::microseconds>(before_update).count();
-      float frame_time = static_cast<float>(TimeBeforeUpdate - TimeAsLastFrame) / 1e+6;
-      TimeAsLastFrame = TimeBeforeUpdate;
+      float frame_time = static_cast<float>(TimeBeforeUpdate - TimeOfLastFrame) / 1e+6;
+      TimeOfLastFrame = TimeBeforeUpdate;
       StateManagerPtr->Update(frame_time);
       EnginePtr->Update(frame_time);
       EnginePtr->RenderOneFrame();
@@ -125,17 +119,13 @@ void Application::Loop() {
 
     if (LockFPS) {
       auto delay = static_cast<int64_t>((1e+6 / TargetFPS) - RenderTime);
-      if (delay > 0) {
-        this_thread::sleep_for(chrono::microseconds(delay));
-      }
+      if (delay > 0) this_thread::sleep_for(chrono::microseconds(delay));
     }
 
     int64_t TimeInEndOfLoop = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 
     int64_t TimeSinceLastFrame = TimeInEndOfLoop - TimeBeforeFrame;
     CumultedTime += TimeSinceLastFrame;
-
-    FPSCounter++;
   }
 
   EnginePtr->Cleanup();
@@ -147,7 +137,7 @@ void Application::Go() {
     StateManagerPtr->InitCurState();
     Running = true;
     auto duration_before_update = chrono::system_clock::now().time_since_epoch();
-    TimeAsLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
+    TimeOfLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
     Loop();
   }
 }
