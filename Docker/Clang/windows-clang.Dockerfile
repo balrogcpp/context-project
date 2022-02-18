@@ -6,7 +6,7 @@ RUN apt-get update \
     && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.22.1
+ARG CMAKE_VERSION=3.22.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.10.2
 
@@ -28,7 +28,7 @@ RUN apt-get update \
     && echo 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu bionic main' >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
     && apt-get update \
-    && apt-get -y install --no-install-recommends llvm clang lld libomp-14-dev make autoconf file patch \
+    && apt-get -y install --no-install-recommends llvm clang lld make autoconf file patch \
     && apt-get clean
 
 WORKDIR /mnt
@@ -43,6 +43,7 @@ RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_
 
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
+ARG GNU_MIRROR=https://ftp.gnu.org.ua/gnu
 ARG BINUTILS_VERSION=2.37
 ARG MINGW_VERSION=9.0.0
 ARG GCC_VERSION=11.2.0
@@ -52,9 +53,9 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
     && apt-get clean \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
-    && wget https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
+    && wget ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
+    && wget ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
     && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
-    && wget https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
     && export CPPFLAGS='-g0' \
     && mkdir -p ${MINGW_ROOT}/include ${MINGW_ROOT}/lib/pkgconfig \
     && cd pkg-config-${PKG_CONFIG_VERSION} \

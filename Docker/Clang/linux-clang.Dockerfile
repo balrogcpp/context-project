@@ -6,7 +6,7 @@ RUN apt-get update \
     && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.22.1
+ARG CMAKE_VERSION=3.22.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.10.2
 
@@ -28,7 +28,7 @@ RUN apt-get update \
     && echo 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu bionic main' >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
     && apt-get update \
-    && apt-get -y install --no-install-recommends llvm clang lld libomp-14-dev make autoconf file patch \
+    && apt-get -y install --no-install-recommends llvm clang lld make autoconf file patch \
     && apt-get clean
 
 WORKDIR /mnt
