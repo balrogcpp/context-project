@@ -31,15 +31,35 @@
 #include "Android.h"
 #endif
 #include "SDL2.hpp"
+#include <OgrePlatformInformation.h>
 
 using namespace std;
 using namespace Ogre;
 
 namespace Glue {
 
-Engine::Engine() { ReadConfFile(); }
+Engine::Engine() {
+  TestCPUCapabilities();
+  ReadConfFile();
+}
 
 Engine::~Engine() { SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE); }
+
+void Engine::TestCPUCapabilities() {
+#if OGRE_CPU == OGRE_CPU_X86
+  OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE42));
+#elif OGRE_CPU == OGRE_CPU_ARM
+  OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_NEON));
+#endif
+}
+
+void Engine::TestGPUCapabilities() {
+  auto *RSC = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
+  OgreAssert(RSC->hasCapability(RSC_HWRENDER_TO_TEXTURE));
+  OgreAssert(RSC->hasCapability(RSC_TEXTURE_FLOAT));
+  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_DXT));
+  OgreAssert(RSC->hasCapability(RSC_GEOMETRY_PROGRAM));
+}
 
 void Engine::InitComponents() {
   WindowWidth = ConfigPtr->GetInt("window_width", WindowWidth);
@@ -57,6 +77,8 @@ void Engine::InitComponents() {
   InitSDLSubsystems();
   CreateSDLWindow();
   CreateOgreRenderWindow();
+
+  TestGPUCapabilities();
 
 #ifdef ANDROID
   WindowRestoreFullscreenAndroid();
@@ -251,18 +273,19 @@ void Engine::CreateOgreRenderWindow() {
 }
 
 void Engine::InitShadowSettings() {
-  bool shadows_enable;
+  bool ShadowsEnabled;
 #if defined(DESKTOP)
-  shadows_enable = true;
+  ShadowsEnabled = true;
 #elif defined(MOBILE)
   shadows_enable = false;
 #endif
-  float shadow_far = 400;
-  int16_t tex_size = 512;
 
-  shadows_enable = ConfigPtr->GetBool("shadows_enable", shadows_enable);
+  float ShadowFarDistance = 400;
+  int16_t ShadowTexSize = 512;
 
-  if (!shadows_enable) {
+  ShadowsEnabled = ConfigPtr->GetBool("shadows_enable", ShadowsEnabled);
+
+  if (!ShadowsEnabled) {
     OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
     OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 0);
     OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 0);
@@ -271,8 +294,8 @@ void Engine::InitShadowSettings() {
   }
 
 #ifdef DESKTOP
-  shadow_far = ConfigPtr->GetInt("shadow_far", shadow_far);
-  tex_size = ConfigPtr->GetInt("tex_size", tex_size);
+  ShadowFarDistance = ConfigPtr->GetInt("shadow_far", ShadowFarDistance);
+  ShadowTexSize = ConfigPtr->GetInt("tex_size", ShadowTexSize);
 #endif
 
 #if defined(DESKTOP)
@@ -282,30 +305,24 @@ void Engine::InitShadowSettings() {
 #endif
 
   OgreSceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-  OgreSceneManager->setShadowFarDistance(shadow_far);
-
-  OgreSceneManager->setShadowTextureSize(tex_size);
+  OgreSceneManager->setShadowFarDistance(ShadowFarDistance);
+  OgreSceneManager->setShadowTextureSize(ShadowTexSize);
   OgreSceneManager->setShadowTexturePixelFormat(texture_type);
   OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
   OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
   OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
-
   OgreSceneManager->setShadowTextureSelfShadow(true);
   OgreSceneManager->setShadowCasterRenderBackFaces(true);
-  OgreSceneManager->setShadowFarDistance(shadow_far);
+  OgreSceneManager->setShadowFarDistance(ShadowFarDistance);
   auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
   OgreSceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
-
   PSSMSetupPtr = make_shared<PSSMShadowCameraSetup>();
   PSSMSetupPtr->calculateSplitPoints(PSSMSplitCount, 0.001, OgreSceneManager->getShadowFarDistance());
   PSSMSplitPointList = PSSMSetupPtr->getSplitPoints();
-  // PSSMSetupPtr->setSplitPadding(0.0);
-
+  PSSMSetupPtr->setSplitPadding(0.0);
   for (int i = 0; i < PSSMSplitCount; i++) PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
-
   OgreSceneManager->setShadowCameraSetup(PSSMSetupPtr);
   OgreSceneManager->setShadowColour(ColourValue::Black);
-
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
   InitRTSSPSSM(PSSMSplitPointList);
 #endif
@@ -318,15 +335,19 @@ void Engine::InitTextureSettings() {
 
   TextureFilterOptions filtering = TFO_BILINEAR;
 
-  if (filtration == "anisotropic") filtering = TFO_ANISOTROPIC;
+  if (OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, RSC_ANISOTROPY))
+    if (filtration == "anisotropic") filtering = TFO_ANISOTROPIC;
 
   MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
   MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
+  if (OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, RSC_AUTOMIPMAP_COMPRESSED))
 #if defined(DESKTOP)
-  TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
+    TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
 #elif defined(MOBILE)
-  TextureManager::getSingleton().setDefaultNumMipmaps(5);
+    TextureManager::getSingleton().setDefaultNumMipmaps(5);
 #endif
+  else
+    TextureManager::getSingleton().setDefaultNumMipmaps(0);
 }
 
 void Engine::Capture() {

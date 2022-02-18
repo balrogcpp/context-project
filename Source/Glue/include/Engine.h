@@ -36,6 +36,8 @@ class Engine final : public Singleton<Engine> {
  public:
   Engine();
   virtual ~Engine();
+  void TestCPUCapabilities();
+  void TestGPUCapabilities();
   void InitComponents();
 
   void Capture();
