@@ -65,9 +65,7 @@ void Scene::AddEntity(Ogre::Entity *EntityPtr) { FixEntityMaterial(EntityPtr); }
 
 void Scene::AddMaterial(Ogre::MaterialPtr material) {
   for (int i = 0; i < material->getNumTechniques(); i++) {
-    if (!material->getTechnique(i)->getPass(0)->hasVertexProgram() || !material->getTechnique(i)->getPass(0)->hasFragmentProgram()) {
-      return;
-    }
+    if (!material->getTechnique(i)->getPass(0)->hasVertexProgram() || !material->getTechnique(i)->getPass(0)->hasFragmentProgram()) return;
 
     gpu_vp_params_.push_back(material->getTechnique(i)->getPass(0)->getVertexProgramParameters());
     gpu_fp_params_.push_back(material->getTechnique(i)->getPass(0)->getFragmentProgramParameters());

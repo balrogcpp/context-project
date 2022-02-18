@@ -287,6 +287,8 @@ void Engine::InitShadowSettings() {
   int16_t ShadowTexSize = 512;
 
   ShadowsEnabled = ConfigPtr->GetBool("shadows_enable", ShadowsEnabled);
+  ShadowFarDistance = ConfigPtr->GetInt("shadow_far", ShadowFarDistance);
+  ShadowTexSize = ConfigPtr->GetInt("tex_size", ShadowTexSize);
 
   if (!ShadowsEnabled) {
     OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
@@ -295,11 +297,6 @@ void Engine::InitShadowSettings() {
     OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
     return;
   }
-
-#ifdef DESKTOP
-  ShadowFarDistance = ConfigPtr->GetInt("shadow_far", ShadowFarDistance);
-  ShadowTexSize = ConfigPtr->GetInt("tex_size", ShadowTexSize);
-#endif
 
 #if defined(DESKTOP)
   PixelFormat ShadowTextureFormat = PixelFormat::PF_DEPTH16;

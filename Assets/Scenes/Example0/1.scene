@@ -18,11 +18,11 @@
         <node name="Cube">
             <position x="-1" y="1.0" z="-2"/>
             <scale x="1" y="1" z="1"/>
-            <entity meshFile="DamagedHelmet.mesh" name="Cube">
+            <entity meshFile="Cube.mesh" name="Cube">
                 <userData>
                     <property data="1000.0" name="mass" type="float"/>
                     <property data="1.0" name="mass_radius" type="float"/>
-                    <property data="dynamic" name="physics_type" type="str"/>
+                    <property data="static" name="physics_type" type="str"/>
                     <property data="capsule" name="proxy" type="str"/>
                     <property data="False" name="actor" type="bool"/>
                     <property data="False" name="ghost" type="bool"/>
@@ -44,35 +44,35 @@
                 </userData>
             </entity>
         </node>
-        <node name="Helmet">
-            <position x="0" y="1.0" z="2"/>
-            <scale x="1" y="1" z="1"/>
-            <entity meshFile="DamagedHelmet.mesh" name="DamagedHelmet">
-                <userData>
-                    <property data="1000.0" name="mass" type="float"/>
-                    <property data="1.0" name="mass_radius" type="float"/>
-                    <property data="dynamic" name="physics_type" type="str"/>
-                    <property data="capsule" name="proxy" type="str"/>
-                    <property data="False" name="actor" type="bool"/>
-                    <property data="False" name="ghost" type="bool"/>
-                    <property data="0.0" name="velocity_min" type="float"/>
-                    <property data="0.0" name="velocity_max" type="float"/>
-                    <property data="False" name="lock_trans_x" type="bool"/>
-                    <property data="False" name="lock_trans_y" type="bool"/>
-                    <property data="False" name="lock_trans_z" type="bool"/>
-                    <property data="False" name="lock_rot_x" type="bool"/>
-                    <property data="False" name="lock_rot_y" type="bool"/>
-                    <property data="False" name="lock_rot_z" type="bool"/>
-                    <property data="False" name="anisotropic_friction" type="bool"/>
-                    <property data="1.0" name="friction_x" type="float"/>
-                    <property data="1.0" name="friction_y" type="float"/>
-                    <property data="1.0" name="friction_z" type="float"/>
-                    <property data="0.03999999910593033" name="damping_trans" type="float"/>
-                    <property data="0.10000000149011612" name="damping_rot" type="float"/>
-                    <property data="0.4000000059604645" name="inertia_tensor" type="float"/>
-                </userData>
-            </entity>
-        </node>
+<!--        <node name="Helmet">-->
+<!--            <position x="0" y="1.0" z="2"/>-->
+<!--            <scale x="1" y="1" z="1"/>-->
+<!--            <entity meshFile="DamagedHelmet.mesh" name="DamagedHelmet">-->
+<!--                <userData>-->
+<!--                    <property data="1000.0" name="mass" type="float"/>-->
+<!--                    <property data="1.0" name="mass_radius" type="float"/>-->
+<!--                    <property data="static" name="physics_type" type="str"/>-->
+<!--                    <property data="capsule" name="proxy" type="str"/>-->
+<!--                    <property data="False" name="actor" type="bool"/>-->
+<!--                    <property data="False" name="ghost" type="bool"/>-->
+<!--                    <property data="0.0" name="velocity_min" type="float"/>-->
+<!--                    <property data="0.0" name="velocity_max" type="float"/>-->
+<!--                    <property data="False" name="lock_trans_x" type="bool"/>-->
+<!--                    <property data="False" name="lock_trans_y" type="bool"/>-->
+<!--                    <property data="False" name="lock_trans_z" type="bool"/>-->
+<!--                    <property data="False" name="lock_rot_x" type="bool"/>-->
+<!--                    <property data="False" name="lock_rot_y" type="bool"/>-->
+<!--                    <property data="False" name="lock_rot_z" type="bool"/>-->
+<!--                    <property data="False" name="anisotropic_friction" type="bool"/>-->
+<!--                    <property data="1.0" name="friction_x" type="float"/>-->
+<!--                    <property data="1.0" name="friction_y" type="float"/>-->
+<!--                    <property data="1.0" name="friction_z" type="float"/>-->
+<!--                    <property data="0.03999999910593033" name="damping_trans" type="float"/>-->
+<!--                    <property data="0.10000000149011612" name="damping_rot" type="float"/>-->
+<!--                    <property data="0.4000000059604645" name="inertia_tensor" type="float"/>-->
+<!--                </userData>-->
+<!--            </entity>-->
+<!--        </node>-->
         <node name="Plane">
             <plane name="Plane" material="ReflectivePlane" width="200" reflection="false" distance="-10.0"/>
         </node>
