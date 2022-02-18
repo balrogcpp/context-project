@@ -5,7 +5,7 @@ include(Platform)
 if (MSVC)
     string(APPEND CMAKE_EXE_LINKER_FLAGS " /FORCE:MULTIPLE")
     string(APPEND CMAKE_SHARED_LINKER_FLAGS " /FORCE:MULTIPLE")
-endif()
+endif ()
 
 set(GLUE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source)
 
@@ -33,8 +33,13 @@ elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 endif ()
 
+if (SDL2_FOUND)
+    set(SDL2_LIBRARIES SDL2::SDL2-static)
+endif ()
+
 set(GLUE_LINK_LIBRARIES
         ${OGRE_LIBRARIES}
+        ${SDL2_LIBRARIES}
         ${BULLET_LIBRARIES}
         ${PNG_LIBRARY}
         ${VORBIS_LIBRARIES}
