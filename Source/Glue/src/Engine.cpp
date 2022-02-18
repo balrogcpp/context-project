@@ -54,11 +54,13 @@ void Engine::TestCPUCapabilities() {
 }
 
 void Engine::TestGPUCapabilities() {
-  auto *RSC = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
+  const auto *RSC = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
   OgreAssert(RSC->hasCapability(RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
   OgreAssert(RSC->hasCapability(RSC_TEXTURE_FLOAT), "Float texture support required");
+#ifndef ANDROID
   OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
   OgreAssert(RSC->hasCapability(RSC_GEOMETRY_PROGRAM), "Geometry shader support required");
+#endif
 }
 
 void Engine::InitComponents() {
@@ -277,7 +279,7 @@ void Engine::InitShadowSettings() {
 #if defined(DESKTOP)
   ShadowsEnabled = true;
 #elif defined(MOBILE)
-  shadows_enable = false;
+  ShadowsEnabled = false;
 #endif
 
   float ShadowFarDistance = 400;
@@ -299,15 +301,15 @@ void Engine::InitShadowSettings() {
 #endif
 
 #if defined(DESKTOP)
-  PixelFormat texture_type = PixelFormat::PF_DEPTH16;
+  PixelFormat ShadowTextureFormat = PixelFormat::PF_DEPTH16;
 #elif defined(MOBILE)
-  PixelFormat texture_type = PixelFormat::PF_FLOAT16_R;
+  PixelFormat ShadowTextureFormat = PixelFormat::PF_FLOAT16_R;
 #endif
 
   OgreSceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
   OgreSceneManager->setShadowFarDistance(ShadowFarDistance);
   OgreSceneManager->setShadowTextureSize(ShadowTexSize);
-  OgreSceneManager->setShadowTexturePixelFormat(texture_type);
+  OgreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
   OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
   OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
   OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
@@ -335,12 +337,14 @@ void Engine::InitTextureSettings() {
 
   TextureFilterOptions filtering = TFO_BILINEAR;
 
-  if (OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, RSC_ANISOTROPY))
+  const auto *RSC = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
+
+  if (RSC->hasCapability(RSC_ANISOTROPY))
     if (filtration == "anisotropic") filtering = TFO_ANISOTROPIC;
 
   MaterialManager::getSingleton().setDefaultTextureFiltering(filtering);
   MaterialManager::getSingleton().setDefaultAnisotropy(anisotropy);
-  if (OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, RSC_AUTOMIPMAP_COMPRESSED))
+  if (RSC->hasCapability(RSC_AUTOMIPMAP_COMPRESSED))
 #if defined(DESKTOP)
     TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
 #elif defined(MOBILE)
