@@ -202,41 +202,23 @@ void DotSceneLoaderB::ProcessScene(pugi::xml_node &XmlRoot) {
 
   LogManager::getSingleton().logMessage(message);
 
-  if (auto element = XmlRoot.child("environment")) {
-    ProcessEnvironment(element);
-  }
+  if (auto element = XmlRoot.child("environment")) ProcessEnvironment(element);
 
-  if (auto element = XmlRoot.child("terrainGroup")) {
-    ProcessTerrain(element);
-  }
+  if (auto element = XmlRoot.child("terrainGroup")) ProcessTerrain(element);
 
-  if (auto element = XmlRoot.child("nodes")) {
-    ProcessNodes(element);
-  }
+  if (auto element = XmlRoot.child("nodes")) ProcessNodes(element);
 
-  if (auto element = XmlRoot.child("externals")) {
-    ProcessExternals(element);
-  }
+  if (auto element = XmlRoot.child("externals")) ProcessExternals(element);
 
-  if (auto element = XmlRoot.child("forest")) {
-    ProcessForests(element);
-  }
+  if (auto element = XmlRoot.child("forest")) ProcessForests(element);
 
-  if (auto element = XmlRoot.child("skyBox")) {
-    ProcessSkyBox(element);
-  }
+  if (auto element = XmlRoot.child("skyBox")) ProcessSkyBox(element);
 
-  if (auto element = XmlRoot.child("skyDome")) {
-    ProcessSkyDome(element);
-  }
+  if (auto element = XmlRoot.child("skyDome")) ProcessSkyDome(element);
 
-  if (auto element = XmlRoot.child("skyPlane")) {
-    ProcessSkyPlane(element);
-  }
+  if (auto element = XmlRoot.child("skyPlane")) ProcessSkyPlane(element);
 
-  if (auto element = XmlRoot.child("userData")) {
-    ProcessUserData(element, AttachNode->getUserObjectBindings());
-  }
+  if (auto element = XmlRoot.child("userData")) ProcessUserData(element, AttachNode->getUserObjectBindings());
 }
 
 void DotSceneLoaderB::ProcessNodes(pugi::xml_node &XmlNode) {
@@ -273,38 +255,24 @@ void DotSceneLoaderB::ProcessEnvironment(pugi::xml_node &XmlNode) {
   auto *viewport = Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getViewport();
 
   // Process fog
-  if (auto element = XmlNode.child("fog")) {
-    ProcessFog(element);
-  }
+  if (auto element = XmlNode.child("fog")) ProcessFog(element);
 
   // Process skyBox
-  if (auto element = XmlNode.child("skyBox")) {
-    ProcessSkyBox(element);
-  }
+  if (auto element = XmlNode.child("skyBox")) ProcessSkyBox(element);
 
   // Process skyDome
-  if (auto element = XmlNode.child("skyDome")) {
-    ProcessSkyDome(element);
-  }
+  if (auto element = XmlNode.child("skyDome")) ProcessSkyDome(element);
 
   // Process skyPlane
-  if (auto element = XmlNode.child("skyPlane")) {
-    ProcessSkyPlane(element);
-  }
+  if (auto element = XmlNode.child("skyPlane")) ProcessSkyPlane(element);
 
   // Process colourAmbient
-  if (auto element = XmlNode.child("colourAmbient")) {
-    OgreScene->setAmbientLight(ParseColour(element));
-  }
+  if (auto element = XmlNode.child("colourAmbient")) OgreScene->setAmbientLight(ParseColour(element));
 
-  if (auto element = XmlNode.child("shadowColor")) {
-    OgreScene->setShadowColour(ParseColour(element));
-  }
+  if (auto element = XmlNode.child("shadowColor")) OgreScene->setShadowColour(ParseColour(element));
 
   // Process colourBackground
-  if (auto element = XmlNode.child("colourBackground")) {
-    viewport->setBackgroundColour(ParseColour(element));
-  }
+  if (auto element = XmlNode.child("colourBackground")) viewport->setBackgroundColour(ParseColour(element));
 }
 
 void DotSceneLoaderB::ProcessLightRange(pugi::xml_node &XmlNode, Light *light) {
@@ -339,15 +307,14 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &XmlNode, SceneNode *ParentNod
 
   string sValue = GetAttrib(XmlNode, "type");
 
-  if (sValue == "point") {
+  if (sValue == "point")
     light->setType(Light::LT_POINT);
-  } else if (sValue == "directional") {
+  else if (sValue == "directional")
     light->setType(Light::LT_DIRECTIONAL);
-  } else if (sValue == "spot") {
+  else if (sValue == "spot")
     light->setType(Light::LT_SPOTLIGHT);
-  } else if (sValue == "radPoint") {
+  else if (sValue == "radPoint")
     light->setType(Light::LT_POINT);
-  }
 
   light->setVisible(GetAttribBool(XmlNode, "visible", true));
   light->setCastShadows(GetAttribBool(XmlNode, "castShadows", false));
@@ -389,33 +356,21 @@ void DotSceneLoaderB::ProcessLight(pugi::xml_node &XmlNode, SceneNode *ParentNod
   light->setPowerScale(GetAttribReal(XmlNode, "powerScale", 1.0));
 
   // Process colourDiffuse
-  if (auto element = XmlNode.child("colourDiffuse")) {
-    light->setDiffuseColour(ParseColour(element));
-  }
+  if (auto element = XmlNode.child("colourDiffuse")) light->setDiffuseColour(ParseColour(element));
 
   // Process colourSpecular
-  if (auto element = XmlNode.child("colourSpecular")) {
-    light->setSpecularColour(ParseColour(element));
-  }
+  if (auto element = XmlNode.child("colourSpecular")) light->setSpecularColour(ParseColour(element));
 
-  if (light->getType() != Light::LT_DIRECTIONAL) {
-    // Process lightAttenuation
-    if (auto element = XmlNode.child("lightAttenuation")) {
-      ProcessLightAttenuation(element, light);
-    }
-  }
+  // Process lightAttenuation
+  if (light->getType() != Light::LT_DIRECTIONAL)
+    if (auto element = XmlNode.child("lightAttenuation")) ProcessLightAttenuation(element, light);
 
-  if (light->getType() != Light::LT_SPOTLIGHT) {
-    // Process lightRange
-    if (auto element = XmlNode.child("lightRange")) {
-      ProcessLightRange(element, light);
-    }
-  }
+  // Process lightRange
+  if (light->getType() != Light::LT_SPOTLIGHT)
+    if (auto element = XmlNode.child("lightRange")) ProcessLightRange(element, light);
 
   // Process userDataReference
-  if (auto element = XmlNode.child("userData")) {
-    ProcessUserData(element, light->getUserObjectBindings());
-  }
+  if (auto element = XmlNode.child("userData")) ProcessUserData(element, light->getUserObjectBindings());
 }
 
 void DotSceneLoaderB::ProcessCamera(pugi::xml_node &XmlNode, SceneNode *ParentNode) {
@@ -445,7 +400,8 @@ void DotSceneLoaderB::ProcessCamera(pugi::xml_node &XmlNode, SceneNode *ParentNo
   }
 
   GetScene().AddCamera(OgreCameraPtr);
-  // GetScene().AddSinbad(OgreCameraPtr);
+
+  if (GetScene().GetCameraMan().GetStyle() == CameraMan::MANUAL) GetScene().AddSinbad(OgreCameraPtr);
 
   // Process userDataReference
   if (auto element = XmlNode.child("userData")) ProcessUserData(element, static_cast<MovableObject *>(OgreCameraPtr)->getUserObjectBindings());
@@ -503,54 +459,33 @@ void DotSceneLoaderB::ProcessNode(pugi::xml_node &XmlNode, SceneNode *ParentNode
   }
 
   // Process lookTarget
-  if (auto element = XmlNode.child("lookTarget")) {
-    ProcessLookTarget(element, node);
-  }
+  if (auto element = XmlNode.child("lookTarget")) ProcessLookTarget(element, node);
 
   // Process trackTarget
-  if (auto element = XmlNode.child("trackTarget")) {
-    ProcessTrackTarget(element, node);
-  }
+  if (auto element = XmlNode.child("trackTarget")) ProcessTrackTarget(element, node);
 
   // Process node (*)
-  for (auto element : XmlNode.children("node")) {
-    ProcessNode(element, node);
-  }
+  for (auto element : XmlNode.children("node")) ProcessNode(element, node);
 
   // Process entity (*)
-  for (auto element : XmlNode.children("entity")) {
-    ProcessEntity(element, node);
-  }
+  for (auto element : XmlNode.children("entity")) ProcessEntity(element, node);
 
   // Process light (*)
-  for (auto element : XmlNode.children("light")) {
-    ProcessLight(element, node);
-  }
+  for (auto element : XmlNode.children("light")) ProcessLight(element, node);
 
-  // Process particleSystem (*)
-  for (auto element : XmlNode.children("particleSystem")) {
-    ProcessParticleSystem(element, node);
-  }
+  for (auto element : XmlNode.children("particleSystem")) ProcessParticleSystem(element, node);
 
   // Process billboardSet (*)
-  for (auto element : XmlNode.children("billboardSet")) {
-    ProcessBillboardSet(element, node);
-  }
+  for (auto element : XmlNode.children("billboardSet")) ProcessBillboardSet(element, node);
 
   // Process plane (*)
-  for (auto element : XmlNode.children("plane")) {
-    ProcessPlane(element, node);
-  }
+  for (auto element : XmlNode.children("plane")) ProcessPlane(element, node);
 
   // Process camera (*)
-  for (auto element : XmlNode.children("camera")) {
-    ProcessCamera(element, node);
-  }
+  for (auto element : XmlNode.children("camera")) ProcessCamera(element, node);
 
   // Process userDataReference
-  if (auto element = XmlNode.child("userData")) {
-    ProcessUserData(element, node->getUserObjectBindings());
-  }
+  if (auto element = XmlNode.child("userData")) ProcessUserData(element, node->getUserObjectBindings());
 }
 
 void DotSceneLoaderB::ProcessLookTarget(pugi::xml_node &XmlNode, SceneNode *ParentNode) {
@@ -560,27 +495,22 @@ void DotSceneLoaderB::ProcessLookTarget(pugi::xml_node &XmlNode, SceneNode *Pare
   Node::TransformSpace relativeTo = Node::TS_PARENT;
   string sValue = GetAttrib(XmlNode, "relativeTo");
 
-  if (sValue == "local") {
+  if (sValue == "local")
     relativeTo = Node::TS_LOCAL;
-  } else if (sValue == "ParentNode") {
+  else if (sValue == "ParentNode")
     relativeTo = Node::TS_PARENT;
-  } else if (sValue == "world") {
+  else if (sValue == "world")
     relativeTo = Node::TS_WORLD;
-  }
 
   // Process position
   Vector3 position;
 
-  if (auto element = XmlNode.child("position")) {
-    position = ParseVector3(element);
-  }
+  if (auto element = XmlNode.child("position")) position = ParseVector3(element);
 
   // Process localDirection
   Vector3 localDirection = Vector3::NEGATIVE_UNIT_Z;
 
-  if (auto element = XmlNode.child("localDirection")) {
-    localDirection = ParseVector3(element);
-  }
+  if (auto element = XmlNode.child("localDirection")) localDirection = ParseVector3(element);
 
   // Setup the look target
   try {
@@ -602,16 +532,12 @@ void DotSceneLoaderB::ProcessTrackTarget(pugi::xml_node &XmlNode, SceneNode *Par
   // Process localDirection
   Vector3 localDirection = Vector3::NEGATIVE_UNIT_Z;
 
-  if (auto element = XmlNode.child("localDirection")) {
-    localDirection = ParseVector3(element);
-  }
+  if (auto element = XmlNode.child("localDirection")) localDirection = ParseVector3(element);
 
   // Process offset
   Vector3 offset = Vector3::ZERO;
 
-  if (auto element = XmlNode.child("offset")) {
-    offset = ParseVector3(element);
-  }
+  if (auto element = XmlNode.child("offset")) offset = ParseVector3(element);
 
   // Setup the track target
   try {
@@ -739,11 +665,11 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
   ParentNode->attachObject(entity);
   FixMaterial(MaterialSPtr);
 
-  //  auto *entShape = BtOgre::createBoxCollider(entity);
-  //  auto *bodyState = new BtOgre::RigidBodyState(ParentNode);
-  //  auto *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-  //  entBody->setFriction(1);
-  //  GetPhysics().AddRigidBody(entBody);
+  auto *entShape = BtOgre::createBoxCollider(entity);
+  auto *bodyState = new BtOgre::RigidBodyState(ParentNode);
+  auto *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+  entBody->setFriction(1);
+  GetPhysics().AddRigidBody(entBody);
 }
 
 void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
@@ -914,6 +840,7 @@ void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
     int pageY = StringConverter::parseInt(pPageElement.attribute("y").value());
     string cached = pPageElement.attribute("heightmap").value();
     Image image;
+
     if (ResourceGroupManager::getSingleton().resourceExists(GroupName, cached)) {
       image.load(cached, GroupName);
       OgreTerrainPtr->defineTerrain(pageX, pageY, &image);
@@ -945,24 +872,10 @@ void DotSceneLoaderB::ProcessFog(pugi::xml_node &XmlNode) {
   float linearEnd = GetAttribReal(XmlNode, "end", 1.0);
   ColourValue colour = ColourValue::White;
 
-  FogMode mode = FOG_NONE;
+  FogMode mode = FOG_EXP;
   string sMode = GetAttrib(XmlNode, "mode");
 
-  if (sMode == "none") {
-    mode = FOG_NONE;
-  } else if (sMode == "exp") {
-    mode = FOG_EXP;
-  } else if (sMode == "exp2") {
-    mode = FOG_EXP2;
-  } else if (sMode == "linear") {
-    mode = FOG_LINEAR;
-  } else {
-    mode = (FogMode)ToInt(sMode);
-  }
-
-  if (auto element = XmlNode.child("colour")) {
-    colour = ParseColour(element);
-  }
+  if (auto element = XmlNode.child("colour")) colour = ParseColour(element);
 
   // Setup the fog
   OgreScene->setFog(mode, colour, expDensity, linearStart, linearEnd);
@@ -979,18 +892,13 @@ void DotSceneLoaderB::ProcessSkyBox(pugi::xml_node &XmlNode) {
   // Process rotation
   Quaternion rotation = Quaternion::IDENTITY;
 
-  if (auto element = XmlNode.child("rotation")) {
-    rotation = ParseRotation(element);
-  }
+  if (auto element = XmlNode.child("rotation")) rotation = ParseRotation(element);
 
   MaterialPtr material_ptr = MaterialManager::getSingleton().getByName(material);
 
   if (material_ptr->getTechnique(0)->getPass(0)->getNumTextureUnitStates() > 0 && !cubemap.empty()) {
     auto texture_unit = material_ptr->getTechnique(0)->getPass(0)->getTextureUnitState(0);
-
-    if (texture_unit) {
-      texture_unit->setTextureName(cubemap);
-    }
+    if (texture_unit) texture_unit->setTextureName(cubemap);
   }
 
   // Setup the sky box
@@ -1010,9 +918,7 @@ void DotSceneLoaderB::ProcessSkyDome(pugi::xml_node &XmlNode) {
   // Process rotation
   Quaternion rotation = Quaternion::IDENTITY;
 
-  if (auto element = XmlNode.child("rotation")) {
-    rotation = ParseRotation(element);
-  }
+  if (auto element = XmlNode.child("rotation")) rotation = ParseRotation(element);
 
   // Setup the sky dome
   OgreScene->setSkyDome(true, material, curvature, tiling, distance, drawFirst, rotation, 16, 16, -1, GroupName);
@@ -1046,15 +952,14 @@ void DotSceneLoaderB::ProcessUserData(pugi::xml_node &XmlNode, UserObjectBinding
 
     Any value;
 
-    if (type == "bool") {
+    if (type == "bool")
       value = (ToInt(data) != 0);
-    } else if (type == "float") {
+    else if (type == "float")
       value = ToFloat(data);
-    } else if (type == "int") {
+    else if (type == "int")
       value = ToInt(data);
-    } else {
+    else
       value = data;
-    }
 
     user_object_bindings.setUserAny(name, value);
   }

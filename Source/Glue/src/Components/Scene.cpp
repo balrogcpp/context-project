@@ -44,7 +44,7 @@ Scene::Scene() {
 
 Scene::~Scene() {}
 
-CameraMan &Scene::GetCamera() const { return *CameraManPtr; }
+CameraMan &Scene::GetCameraMan() const { return *CameraManPtr; }
 
 Ogre::Vector3 Scene::GetSunPosition() {
   auto *SunPtr = OgreScene->getLight("Sun");
@@ -80,33 +80,34 @@ void Scene::AddMaterial(const std::string &MaterialName) {
 }
 
 void Scene::AddCamera(Camera *OgreCameraPtr) {
-  auto *Actor = OgreScene->createEntity("Actor", "Icosphere.mesh");
-  auto *ParentNode = OgreCameraPtr->getParentSceneNode();
+  if (CameraManPtr->GetStyle() == CameraMan::FPS) {
+    auto *Actor = OgreScene->createEntity("Actor", "Icosphere.mesh");
+    auto *ParentNode = OgreCameraPtr->getParentSceneNode();
 
-  Actor->setCastShadows(false);
-  Actor->setVisible(false);
-  ParentNode->attachObject(Actor);
+    Actor->setCastShadows(false);
+    Actor->setVisible(false);
+    ParentNode->attachObject(Actor);
 
-  CameraManPtr->SetStyle(CameraMan::FPS);
-  InputSequencer::GetInstance().RegObserver(CameraManPtr.get());
+    InputSequencer::GetInstance().RegObserver(CameraManPtr.get());
 
-  btVector3 inertia(0, 0, 0);
-  btRigidBody *RigidBody = nullptr;
-  auto *entShape = BtOgre::createCapsuleCollider(Actor);
-  //GetAudio().SetListener(ParentNode);
-  float mass = 100.0;
-  entShape->calculateLocalInertia(mass, inertia);
-  auto *bodyState = new BtOgre::RigidBodyState(ParentNode);
-  RigidBody = new btRigidBody(mass, bodyState, entShape, inertia);
-  RigidBody->setAngularFactor(0);
-  RigidBody->activate(true);
-  RigidBody->forceActivationState(DISABLE_DEACTIVATION);
-  RigidBody->setActivationState(DISABLE_DEACTIVATION);
-  RigidBody->setFriction(1.0);
-  RigidBody->setUserIndex(1);
-  GetPhysics().AddRigidBody(RigidBody);
-  CameraManPtr->SetRigidBody(RigidBody);
-  CameraManPtr->AttachCamera(OgreCameraPtr);
+    btVector3 inertia(0, 0, 0);
+    btRigidBody *RigidBody = nullptr;
+    auto *entShape = BtOgre::createCapsuleCollider(Actor);
+    // GetAudio().SetListener(ParentNode);
+    float mass = 100.0;
+    entShape->calculateLocalInertia(mass, inertia);
+    auto *bodyState = new BtOgre::RigidBodyState(ParentNode);
+    RigidBody = new btRigidBody(mass, bodyState, entShape, inertia);
+    RigidBody->setAngularFactor(0);
+    RigidBody->activate(true);
+    RigidBody->forceActivationState(DISABLE_DEACTIVATION);
+    RigidBody->setActivationState(DISABLE_DEACTIVATION);
+    RigidBody->setFriction(1.0);
+    RigidBody->setUserIndex(1);
+    GetPhysics().AddRigidBody(RigidBody);
+    CameraManPtr->SetRigidBody(RigidBody);
+    CameraManPtr->AttachCamera(OgreCameraPtr);
+  }
 }
 
 void Scene::AddSinbad(Camera *OgreCameraPtr) {

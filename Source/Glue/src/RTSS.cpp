@@ -41,7 +41,7 @@ void CleanRTSSRuntime() {
   }
 }
 
-void InitRTSSPSSM(const std::vector<float> &SplitPoints) {
+void InitRTSSPSSM(const vector<float> &SplitPoints) {
   const auto DSN = RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME;
   auto &rtShaderGen = RTShader::ShaderGenerator::getSingleton();
   auto *schemRenderState = rtShaderGen.getRenderState(DSN);

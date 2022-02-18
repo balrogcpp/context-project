@@ -34,7 +34,7 @@ class Scene final : public Component<Scene> {
   void OnClean() override;
   void OnUpdate(float PassedTime) override;
 
-  CameraMan &GetCamera() const;
+  CameraMan &GetCameraMan() const;
   Ogre::Vector3 GetSunPosition();
 
   float GetHeight(float x, float z);
