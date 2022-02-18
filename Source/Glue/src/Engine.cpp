@@ -47,18 +47,18 @@ Engine::~Engine() { SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE); }
 
 void Engine::TestCPUCapabilities() {
 #if OGRE_CPU == OGRE_CPU_X86
-  OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE42));
+  OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE3), "SSE4 support required");
 #elif OGRE_CPU == OGRE_CPU_ARM
-  OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_NEON));
+  OgreAssert(Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_NEON), "ARM NEON support required");
 #endif
 }
 
 void Engine::TestGPUCapabilities() {
   auto *RSC = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
-  OgreAssert(RSC->hasCapability(RSC_HWRENDER_TO_TEXTURE));
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_FLOAT));
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_DXT));
-  OgreAssert(RSC->hasCapability(RSC_GEOMETRY_PROGRAM));
+  OgreAssert(RSC->hasCapability(RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
+  OgreAssert(RSC->hasCapability(RSC_TEXTURE_FLOAT), "Float texture support required");
+  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
+  OgreAssert(RSC->hasCapability(RSC_GEOMETRY_PROGRAM), "Geometry shader support required");
 }
 
 void Engine::InitComponents() {
