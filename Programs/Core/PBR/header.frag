@@ -13,9 +13,9 @@
 
 #include "MRT.glsl"
 
-#ifndef GL_ES
-
 #define USE_TEX_LOD
+
+#ifndef GL_ES
 
 #if VERSION == 330 || VERSION == 400 || VERSION == 410 || VERSION == 420 || VERSION == 430 || VERSION == 440 || VERSION == 450 || VERSION == 460
 #define varying in
@@ -41,11 +41,10 @@ out vec4 FragColor;
 
 #else // GLSLES
 
-#ifdef USE_TEX_LOD
-#extension GL_ARB_shader_texture_lod : require
-#endif
 #extension GL_OES_standard_derivatives : enable
-#extension GL_EXT_shader_texture_lod: enable
+#ifdef USE_TEX_LOD
+#extension GL_ARB_shader_texture_lod : enable
+#endif
 
 precision highp float;
 precision lowp int;

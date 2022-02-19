@@ -16,7 +16,6 @@
 #else // GL_ES
 
 #extension GL_OES_standard_derivatives : enable
-#define textureCubeLod textureLodEXT
 
 precision highp float;
 precision lowp int;
