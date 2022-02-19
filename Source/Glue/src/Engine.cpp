@@ -59,14 +59,13 @@ void Engine::TestGPUCapabilities() {
   OgreAssert(RSC->hasCapability(RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
   OgreAssert(RSC->hasCapability(RSC_TEXTURE_FLOAT), "Float texture support required");
   OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION), "Texture compression support required");
-  if (!RenderSystemGLES2()) {
-    OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
-    OgreAssert(RSC->hasCapability(RSC_MIPMAP_LOD_BIAS), "Mipmap support required");
-    OgreAssert(RSC->hasCapability(RSC_GEOMETRY_PROGRAM), "Geometry shader support required");
-  } else {
-    OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
-    OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_ETC2), "ETC2 compression support required");
-  }
+#if defined(DESKTOP)
+  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
+#elif defined(ANDROID)
+  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
+#elif defined(IOS)
+  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
+#endif
 }
 
 void Engine::InitComponents() {
@@ -341,7 +340,7 @@ void Engine::InitTextureSettings() {
   }
 
   OMM.setDefaultTextureFiltering(TextureFiltering);
-  OTM.setDefaultNumMipmaps(5);
+  OTM.setDefaultNumMipmaps(MIP_UNLIMITED);
 }
 
 void Engine::Capture() {
