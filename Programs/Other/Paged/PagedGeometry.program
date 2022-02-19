@@ -27,7 +27,7 @@ fragment_program Default_AlphaTest glsl glsles
     preprocessor_defines USE_FOG,ALPHA_TEST
     default_params
     {
-        param_named_auto cFarClipDistance far_clip_distance
+        param_named_auto uFarClipDistance far_clip_distance
         param_named_auto fogColour fog_colour
         param_named_auto fogParams fog_params
     }
@@ -39,6 +39,6 @@ fragment_program Default_AlphaTest_NoFog glsl glsles
     preprocessor_defines ALPHA_TEST
     default_params
     {
-        param_named_auto cFarClipDistance far_clip_distance
+        param_named_auto uFarClipDistance far_clip_distance
     }
 }
