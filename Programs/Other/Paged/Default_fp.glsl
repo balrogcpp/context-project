@@ -22,7 +22,7 @@
 uniform sampler2D texMap;
 
 #ifndef NO_MRT
-uniform float cFarClipDistance;
+uniform float uFarClipDistance;
 #else
 uniform vec4 fogColour;
 uniform vec4 fogParams;
@@ -43,7 +43,7 @@ void main()
     color = SRGBtoLINEAR(color);
 #ifndef NO_MRT
     FragData[0] = color;
-    FragData[1].r = (oFogCoord / cFarClipDistance);
+    FragData[1].r = (oFogCoord / uFarClipDistance);
 #else // NO_MRT
 #ifdef USE_FOG
     color = ApplyFog(color, fogParams, fogColour.rgb, oFogCoord);

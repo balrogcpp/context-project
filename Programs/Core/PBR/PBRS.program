@@ -48,7 +48,7 @@ abstract fragment_program PBRS_BaseI_fs glsl glsles
         param_named_auto uFogColour fog_colour
         param_named_auto uFogParams fog_params
         param_named_auto uCameraPosition camera_position
-        param_named_auto cFarClipDistance far_clip_distance
+        param_named_auto uFarClipDistance far_clip_distance
         param_named_auto uFrameTime frame_time
     }
 }

@@ -160,7 +160,7 @@ void Scene::OnUpdate(float PassedTime) {
   MVPprev = MVP;
   MVP = CameraPtr->getProjectionMatrixWithRSDepth() * CameraPtr->getViewMatrix();
 
-  for (auto &it : gpu_vp_params_) it->setNamedConstant("cWorldViewProjPrev", MVPprev);
+  for (auto &it : gpu_vp_params_) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
 
   if (SkyNeedsUpdate && SkyBoxFpParams)
     for (int i = 0; i < 10; i++) SkyBoxFpParams->setNamedConstant(HosikParamList[i], HosekParams[i]);

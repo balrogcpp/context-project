@@ -29,6 +29,7 @@
 #ifdef SHADOWCASTER
 #define NO_MRT
 #endif
+
 #include "header.frag"
 
 #ifdef SHADOWCASTER
@@ -119,9 +120,10 @@ uniform vec3 uSurfaceEmissiveColour;
 uniform vec3 uFogColour;
 uniform vec4 uFogParams;
 #endif
-uniform float cNearClipDistance;
-uniform float cFarClipDistance;
+#ifndef NO_MRT
+uniform float uFarClipDistance;
 uniform float uFrameTime;
+#endif
 uniform float uLOD;
 uniform vec3 uCameraPosition;
 #ifdef TERRAIN
@@ -172,8 +174,10 @@ in float vDepth;
 in float vAlpha;
 #endif
 in vec3 vPosition;
+#ifndef NO_MRT
 in vec4 vScreenPosition;
 in vec4 vPrevScreenPosition;
+#endif
 #ifdef HAS_COLOURS
 in vec3 vColor;
 #endif
@@ -197,11 +201,14 @@ in vec4 projectionCoord;
 #ifdef USE_IBL
 #include "ibl.glsl"
 #endif
-
-//Shadows block
 #ifdef SHADOWRECEIVER
 #include "receiver.glsl"
+#endif
+#ifdef HAS_REFLECTION
+#include "noise.glsl"
+#endif
 
+#ifdef SHADOWRECEIVER
 //----------------------------------------------------------------------------------------------------------------------
 float GetShadow(const int counter) {
     if (vDepth >= pssmSplitPoints.w)
@@ -253,7 +260,7 @@ float CalcPSSMDepthShadow(const vec4 pssmSplitPoints, const vec4 lightSpacePos0,
 
     return 1.0;
 }
-#endif
+#endif // SHADOWRECEIVER
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
@@ -281,8 +288,8 @@ mat3 GetTGN()
 #endif //!HAS_TANGENTS
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 #ifdef TERRAIN
+//----------------------------------------------------------------------------------------------------------------------
 mat3 GetTgnTerrain()
 {
     // Retrieve the tangent space matrix
@@ -298,7 +305,7 @@ mat3 GetTgnTerrain()
 
     return tbn;
 }
-#endif
+#endif // TERRAIN
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 GetNormal(const vec2 uv)
@@ -332,13 +339,14 @@ vec4 GetAlbedo(const vec2 uv) {
     return SRGBtoLINEAR(albedo);
 }
 
+#if 0
 //----------------------------------------------------------------------------------------------------------------------
 float GetMetallic(const vec2 uv) {
     float metallic = uSurfaceShininessColour;
 #ifdef HAS_METALLICMAP
     metallic *= texture2D(uMetallicSampler, uv, uLOD).r;
 #endif
-    return clamp(metallic, 0.0, 1.0);
+    return metallic;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -353,10 +361,12 @@ float GetRoughness(const vec2 uv) {
 //----------------------------------------------------------------------------------------------------------------------
 float GetOcclusion(const vec2 uv) {
 #ifdef HAS_OCCLUSIONMAP
-     return texture2D(uOcclusionSampler, uv, uLOD).r;
-#endif
+    return texture2D(uOcclusionSampler, uv, uLOD).r;
+#else
     return 1.0;
+#endif
 }
+#endif // 0
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 GetORM(const vec2 uv) {
@@ -367,14 +377,12 @@ vec3 GetORM(const vec2 uv) {
     ORM.g *= texel.g;
     ORM.b *= texel.b;
 #endif
-//    ORM.g = clamp(ORM.g, 0.0, 1.0);
-//    ORM.b = clamp(ORM.b, F0, 1.0);
+    //ORM.g = clamp(ORM.g, 0.0, 1.0);
+    ORM.b = clamp(ORM.b, F0, 1.0);
     return ORM;
 }
 
 #ifdef HAS_REFLECTION
-#include "noise.glsl"
-
 //----------------------------------------------------------------------------------------------------------------------
 vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
     vec4 projection = projectionCoord;
@@ -408,6 +416,7 @@ vec2 ParallaxMapping(vec2 uv, vec3 viewDir)
 
 #endif // !SHADOWCASTER
 
+//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
 #ifndef SHADOWCASTER
@@ -478,7 +487,7 @@ void main()
             float attenuation_linear = vAttParams.z;
             float attenuation_quad = vAttParams.w;
 
-            fAtten = float(fLightD < range) / (attenuation_const + (attenuation_linear * fLightD + attenuation_quad * (fLightD * fLightD)));
+            fAtten = float(fLightD < range) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * (fLightD * fLightD)));
 
             vec3 vSpotParams = uLightSpotParamsArray[i].xyz;
             float outer_radius = vSpotParams.z;
@@ -505,8 +514,8 @@ void main()
         // Calculation of analytical lighting contribution
         float G = GeometricOcclusion(NdotL, NdotV, alphaRoughness);
         float D = MicrofacetDistribution(alphaRoughness, NdotH);
-        vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
-        float tmp = NdotL * fSpotT * fAtten;
+        vec3 specContrib = (F * (G * D)) / (4.0 * (NdotL * NdotV));
+        float tmp = (NdotL * (fSpotT * fAtten));
 
 #ifdef SHADOWRECEIVER
         float shadow = 1.0;
@@ -531,9 +540,9 @@ void main()
             #endif
         }
 
-        total_colour += uShadowColour * color + shadow * tmp * uLightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib);
+        total_colour += uShadowColour * color + (shadow * (tmp * (uLightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib))));
 #else
-    total_colour += tmp * uLightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib);
+    total_colour += (tmp * (uLightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib)));
 #endif
     }
 
@@ -563,7 +572,7 @@ void main()
 #ifndef NO_MRT
     FragData[0] = vec4(total_colour, alpha);
 
-    FragData[1].r = (vDepth / cFarClipDistance);
+    FragData[1].r = (vDepth / uFarClipDistance);
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);

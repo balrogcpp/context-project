@@ -39,7 +39,7 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
     }
 
     for (auto &it : gpu_vp_params_) {
-      it->setNamedConstant("cWorldViewProjPrev", mvp_prev);
+      it->setNamedConstant("uWorldViewProjPrev", mvp_prev);
     }
   }
 
@@ -112,7 +112,7 @@ void Compositor::EnableCompositor(const std::string &name) { OgreCompositorManag
 
 void Compositor::InitMRT() {
   string MRT;
-  if (UseMRT)
+  if (GlobalMRTEnabled())
     MRT = "MRT";
   else
     MRT = "noMRT";
@@ -184,13 +184,11 @@ void Compositor::SetUp() {
       break;
     }
   }
-
-  if (!GlobalMRTEnabled()) UseMRT = false;
-
+  
   InitMRT();
 
   // nothing to do without MTR
-  if (!UseMRT) {
+  if (!GlobalMRTEnabled()) {
     InitDummyOutput();
     return;
   }

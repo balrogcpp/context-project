@@ -115,11 +115,8 @@ void Engine::InitSDLSubsystems() {
     throw Exception("Failed to init SDL2");
   }
 
-  for (int i = 0; i < SDL_NumJoysticks(); ++i) {
-    if (SDL_IsGameController(i)) {
-      SDL_GameControllerOpen(i);
-    }
-  }
+  for (int i = 0; i < SDL_NumJoysticks(); ++i)
+    if (SDL_IsGameController(i)) SDL_GameControllerOpen(i);
 
   SDL_DisplayMode DM;
   SDL_GetDesktopDisplayMode(0, &DM);
@@ -262,11 +259,11 @@ void Engine::CreateOgreRenderWindow() {
   const char TrueStr[] = "true";
   const char FalseStr[] = "false";
 
-  WindowsVsync = ConfigPtr->GetBool("vsync", WindowsVsync);
+  WindowVsync = ConfigPtr->GetBool("vsync", WindowVsync);
   WindowGammaCorrection = ConfigPtr->GetBool("gamma", WindowGammaCorrection);
   FSAA = ConfigPtr->GetInt("fsaa", FSAA);
 
-  params["vsync"] = WindowsVsync ? TrueStr : FalseStr;
+  params["vsync"] = WindowVsync ? TrueStr : FalseStr;
   params["gamma"] = WindowGammaCorrection ? TrueStr : FalseStr;
   params["FSAA"] = to_string(FSAA);
 

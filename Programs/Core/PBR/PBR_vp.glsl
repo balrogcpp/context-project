@@ -39,7 +39,9 @@ uniform mat4 uMVPMatrix;
 
 #ifndef SHADOWCASTER
 
-uniform mat4 cWorldViewProjPrev;
+#ifndef NO_MRT
+uniform mat4 uWorldViewProjPrev;
+#endif
 #ifdef HAS_COLOURS
 in vec3 colour;
 #endif // HAS_COLOURS
@@ -70,8 +72,10 @@ uniform mat4 uTexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
 out vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif // SHADOWRECEIVER
 out vec3 vPosition;
+#ifndef NO_MRT
 out vec4 vScreenPosition;
 out vec4 vPrevScreenPosition;
+#endif
 #ifdef HAS_COLOURS
 out vec3 vColor;
 #endif // HAS_COLOURS
@@ -186,8 +190,10 @@ void main()
 
   gl_Position = uMVPMatrix * new_position;
 
+#ifndef NO_MRT
   vScreenPosition = gl_Position;
-  vPrevScreenPosition = cWorldViewProjPrev * uModelMatrix * new_position;
+  vPrevScreenPosition = uWorldViewProjPrev * uModelMatrix * new_position;
+#endif
 
   vDepth = gl_Position.z;
 

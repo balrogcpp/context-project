@@ -7,6 +7,7 @@
 #define iSteps 16
 #define jSteps 8
 
+//----------------------------------------------------------------------------------------------------------------------
 vec2 rsi(vec3 r0, vec3 rd, float sr)
 {
     // ray-sphere intersection that assumes
@@ -23,6 +24,7 @@ vec2 rsi(vec3 r0, vec3 rd, float sr)
     );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAtmos, vec3 kRlh, float kMie, float shRlh, float shMie, float g)
 {
     // Normalize the sun and view directions.
@@ -154,18 +156,18 @@ float fbm(vec3 p)
 vec3 ProceduralClouds(vec3 color, const vec3 cloud_color, const vec3 position, const float cirrus, const float cumulus, const float time)
 {
     // Cirrus Clouds
-    float density = 0.3 * smoothstep(1.0 - cirrus, 1.0, fbm(position.xyz / position.y + uTime * uTimeScale));
+    float density = 0.3 * smoothstep(1.0 - cirrus, 1.0, fbm(position.xyz / position.y + time));
     color = mix(color, cloud_color, density);
 
     // Cumulus Clouds
     density = smoothstep(1.0 - cumulus, 1.0, fbm((0.7 + 0.0 * 0.01) * position.xyz / position.y + time));
-    color = mix(color, uFogColour, min(density, 1.0));
+    color = mix(color, cloud_color, min(density, 1.0));
 
     density = smoothstep(1.0 - cumulus, 1.0, fbm((0.7 + 1.0 * 0.01) * position.xyz / position.y + time));
-    color = mix(color, uFogColour, min(density, 1.0));
+    color = mix(color, cloud_color, min(density, 1.0));
 
     density = smoothstep(1.0 - cumulus, 1.0, fbm((0.7 + 2.0 * 0.01) * position.xyz / position.y + time));
-    color = mix(color, uFogColour, min(density, 1.0));
+    color = mix(color, cloud_color, min(density, 1.0));
 
     // Dithering Noise
     //color.rgb += noise(vPosition * 1000.0) * 0.01;

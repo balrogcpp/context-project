@@ -108,7 +108,7 @@ class Engine final : public Singleton<Engine> {
   bool WindowFullScreen = false;
   int ScreenWidth = 0;
   int ScreenHeight = 0;
-  bool WindowsVsync = true;
+  bool WindowVsync = true;
   bool WindowGammaCorrection = false;
   int FSAA = 0;
 

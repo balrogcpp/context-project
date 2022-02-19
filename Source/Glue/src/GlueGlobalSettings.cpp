@@ -10,7 +10,7 @@ using namespace Ogre;
 namespace Glue {
 
 bool GlobalMRTEnabled() {
-  static bool Result = !Ogre::Root::getSingleton().getRenderSystem()->getName().compare("OpenGL ES 2.x Rendering Subsystem");
+  static bool Result = !RenderSystemGLES2();
   return Result;
 }
 
@@ -19,7 +19,7 @@ bool CPUSupportSSE() {
   static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE);
   return Result;
 #else
-return false;
+  return false;
 #endif
 };
 

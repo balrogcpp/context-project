@@ -31,7 +31,7 @@ uniform vec3 Z;
 
 #ifdef NO_MRT
 uniform vec4 uFogParams;
-uniform float cFarClipDistance;
+uniform float uFarClipDistance;
 #endif
 uniform vec3 uFogColour;
 uniform vec3 uSunColor;
@@ -83,7 +83,7 @@ void main()
     FragData[0].rgb = color;
     FragData[1].r = 0.05;
 #else
-    color = ApplyFog(color, uFogParams, uFogColour, 0.05 * cFarClipDistance);
+    color = ApplyFog(color, uFogParams, uFogColour, 0.05 * uFarClipDistance);
     FragColor.rgb = LINEARtoSRGB(color, 1.0);
 #endif
 }
