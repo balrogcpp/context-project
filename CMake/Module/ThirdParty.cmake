@@ -396,9 +396,12 @@ externalproject_add(Target_OGRE
                     -DOGRE_NODELESS_POSITIONING=OFF
                     -DOGRE_CONFIG_ENABLE_MESHLOD=ON
                     -DOGRE_CONFIG_ENABLE_DDS=ON
-                    -DOGRE_CONFIG_ENABLE_PVRTC=OFF
-                    -DOGRE_CONFIG_ENABLE_ETC=OFF
-                    -DOGRE_CONFIG_ENABLE_ASTC=OFF
+                    -DOGRE_CONFIG_ENABLE_PVRTC=ON
+                    -DOGRE_CONFIG_ENABLE_ETC=ON
+                    -DOGRE_CONFIG_ENABLE_ASTC=ON
+                    -DOGRE_CONFIG_ENABLE_QUAD_BUFFER_STEREO=OFF
+                    -DOGRE_CONFIG_ENABLE_ZIP=ON
+                    -DOGRE_CONFIG_ENABLE_VIEWPORT_ORIENTATIONMODE=OFF
                     -DOGRE_BUILD_COMPONENT_PYTHON=OFF
                     -DOGRE_BUILD_COMPONENT_JAVA=OFF
                     -DOGRE_BUILD_COMPONENT_CSHARP=OFF
