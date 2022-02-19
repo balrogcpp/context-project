@@ -117,11 +117,10 @@ void Compositor::InitMRT() {
   else
     MRT = "noMRT";
 
-  if (OgreCompositorManager->addCompositor(OgreViewport, MRT)) {
+  if (OgreCompositorManager->addCompositor(OgreViewport, MRT))
     OgreCompositorManager->setCompositorEnabled(OgreViewport, MRT, false);
-  } else {
+  else
     Throw("Failed to add MRT compositor");
-  }
 
 #ifdef MOBILE
   auto *MRTCompositor = OgreCompositorChain->getCompositor(MRT);

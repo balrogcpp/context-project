@@ -36,7 +36,7 @@ using namespace Forests;
 #if defined(DESKTOP)
 Ogre::uint  Forests::ImpostorPage::s_nImpostorResolution    = 512;
 #elif defined(MOBILE)
-Ogre::uint Forests::ImpostorPage::s_nImpostorResolution     = 256;
+Ogre::uint  Forests::ImpostorPage::s_nImpostorResolution     = 256;
 #endif
 Ogre::uint  Forests::ImpostorPage::s_nSelfInstances         = 0;
 Ogre::uint  Forests::ImpostorPage::s_nUpdateInstanceID      = 0;
@@ -505,6 +505,7 @@ void ImpostorTexture::renderTextures(bool force)
 	renderTexture = TextureManager::getSingleton().createManual(getUniqueID("ImpostorTexture"), "Impostors",
 				TEX_TYPE_2D, textureSize * IMPOSTOR_YAW_ANGLES, textureSize * IMPOSTOR_PITCH_ANGLES, 0, PF_BYTE_RGBA, TU_RENDERTARGET, loader.get());
 	}
+	//renderTexture->setNumMipmaps(MIP_UNLIMITED);
 
 	//Set up render target
 	renderTarget = renderTexture->getBuffer()->getRenderTarget(); 
@@ -543,11 +544,11 @@ void ImpostorTexture::renderTextures(bool force)
 	renderCamera->setFarClipDistance(farDist);
 	
 	//Disable mipmapping (without this, masked textures look bad)
-	MaterialManager *mm = MaterialManager::getSingletonPtr();
-	FilterOptions oldMinFilter = mm->getDefaultTextureFiltering(FT_MIN);
-	FilterOptions oldMagFilter = mm->getDefaultTextureFiltering(FT_MAG);
-	FilterOptions oldMipFilter = mm->getDefaultTextureFiltering(FT_MIP);
-	mm->setDefaultTextureFiltering(FO_POINT, FO_LINEAR, FO_NONE);
+	//MaterialManager *mm = MaterialManager::getSingletonPtr();
+	//FilterOptions oldMinFilter = mm->getDefaultTextureFiltering(FT_MIN);
+	//FilterOptions oldMagFilter = mm->getDefaultTextureFiltering(FT_MAG);
+	//FilterOptions oldMipFilter = mm->getDefaultTextureFiltering(FT_MIP);
+	//mm->setDefaultTextureFiltering(FO_POINT, FO_LINEAR, FO_NONE);
 
 	//Disable fog
 	FogMode oldFogMode = sceneMgr->getFogMode();
@@ -645,7 +646,7 @@ void ImpostorTexture::renderTextures(bool force)
 	sceneMgr->setSpecialCaseRenderQueueMode(OldSpecialCaseRenderQueueMode); 
 
 	//Re-enable mipmapping
-	mm->setDefaultTextureFiltering(oldMinFilter, oldMagFilter, oldMipFilter);
+	//mm->setDefaultTextureFiltering(oldMinFilter, oldMagFilter, oldMipFilter);
 
 	//Re-enable fog
 	sceneMgr->setFog(oldFogMode, oldFogColor, oldFogDensity, oldFogStart, oldFogEnd);
