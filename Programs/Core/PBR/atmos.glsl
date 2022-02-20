@@ -153,6 +153,7 @@ float fbm(vec3 p)
     return f;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 vec3 ProceduralClouds(vec3 color, const vec3 cloud_color, const vec3 position, const float cirrus, const float cumulus, const float time)
 {
     // Cirrus Clouds

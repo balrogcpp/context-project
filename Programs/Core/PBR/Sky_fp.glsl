@@ -52,6 +52,7 @@ uniform samplerCube uCubeMap;
 #endif
 
 #ifndef GPU_HOSEK
+//----------------------------------------------------------------------------------------------------------------------
 vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma)
 {
     vec3 chi = ((1.0 + cos_gamma*cos_gamma) / pow(1.0 + I*I - 2.0*(cos_gamma*I), vec3(1.5)));
@@ -59,6 +60,7 @@ vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma)
 }
 #endif
 
+//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
     vec3 V = normalize(vPosition);
