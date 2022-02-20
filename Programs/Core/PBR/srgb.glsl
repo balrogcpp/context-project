@@ -9,13 +9,19 @@
 //#define SRGB_SQRT
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 expose(vec3 color, float exposure)
+vec3 expose(const vec3 color, const float exposure)
 {
   return vec3(1.0) - exp(-color.rgb * exposure);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec4 SRGBtoLINEAR(vec4 srgbIn)
+vec4 expose(const vec4 color, const float exposure)
+{
+  return vec4(1.0) - vec4(exp(-color.rgb * exposure), color.a);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+vec4 SRGBtoLINEAR(const vec4 srgbIn)
 {
 #ifdef MANUAL_SRGB
 #ifdef SRGB_FAST_APPROXIMATION
@@ -35,7 +41,7 @@ vec4 SRGBtoLINEAR(vec4 srgbIn)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 SRGBtoLINEAR(vec3 srgbIn)
+vec3 SRGBtoLINEAR(const vec3 srgbIn)
 {
 #ifdef MANUAL_SRGB
 #ifdef SRGB_FAST_APPROXIMATION
@@ -55,41 +61,43 @@ vec3 SRGBtoLINEAR(vec3 srgbIn)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec4 LINEARtoSRGB(vec4 srgbIn, float exposure)
+vec4 LINEARtoSRGB(const vec4 linIn, const float exposure)
 {
+  vec4 srgbOut;
 #ifdef MANUAL_SRGB
 #ifdef SRGB_HDR
-  srgbIn.rgb = expose(srgbIn.rgb, exposure);
+  srgbOut = expose(linIn, exposure);
 #endif
 #ifdef SRGB_SQRT
-  return vec4(sqrt(srgbIn.rgb), srgbIn.a);
+  return vec4(sqrt(srgbOut.rgb), linIn.a);
 #else
-  return vec4(pow(srgbIn.rgb, vec3(1.0 / 2.2)), srgbIn.a);
+  return vec4(pow(srgbOut.rgb, vec3(1.0 / 2.2)), linIn.a);
 #endif
 #else
-  return srgbIn;
+  return srgbOut;
 #endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 LINEARtoSRGB(vec3 srgbIn, float exposure)
+vec3 LINEARtoSRGB(const vec3 linIn, float exposure)
 {
+  vec3 srgbOut;
 #ifdef MANUAL_SRGB
 #ifdef SRGB_HDR
-  srgbIn.rgb = expose(srgbIn.rgb, exposure);
+  srgbOut = expose(linIn, exposure);
 #endif
 #ifdef SRGB_SQRT
-  return sqrt(srgbIn);
+  return sqrt(srgbOut);
 #else
-  return pow(srgbIn.rgb, vec3(1.0 / 2.2));
+  return pow(srgbOut, vec3(1.0 / 2.2));
 #endif
 #else
-  return srgbIn;
+  return srgbOut;
 #endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 XYZtoACES2065(vec3 XYZ)
+vec3 XYZtoACES2065(const vec3 XYZ)
 {
   return mat3(
   1.0498110175, 0.0000000000, -0.0000974845,
@@ -99,7 +107,7 @@ vec3 XYZtoACES2065(vec3 XYZ)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 ACES2065toACEScg(vec3 color)
+vec3 ACES2065toACEScg(const vec3 color)
 {
   return mat3(
   1.4514393161, -0.2365107469, -0.2149285693,
@@ -109,7 +117,7 @@ vec3 ACES2065toACEScg(vec3 color)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 ACES2065tosRGB(vec3 color)
+vec3 ACES2065tosRGB(const vec3 color)
 {
   return mat3(
   2.5216494298, -1.1368885542, -0.3849175932,
@@ -119,7 +127,7 @@ vec3 ACES2065tosRGB(vec3 color)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 XYZtoRGB(vec3 XYZ)
+vec3 XYZtoRGB(const vec3 XYZ)
 {
   return mat3(
   3.24096994, -0.96924364, 0.55630080,
@@ -129,7 +137,7 @@ vec3 XYZtoRGB(vec3 XYZ)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 XYZtoSRGB(vec3 XYZ)
+vec3 XYZtoSRGB(const vec3 XYZ)
 {
   return mat3(
   2.64725690611828, -1.1935037210389148, -0.4042041831990032,
@@ -139,7 +147,7 @@ vec3 XYZtoSRGB(vec3 XYZ)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 XYZtoACEScg(vec3 XYZ)
+vec3 XYZtoACEScg(const vec3 XYZ)
 {
   return mat3(
   1.5237361745788764, -0.24829099978242145, -0.22573164190143608,

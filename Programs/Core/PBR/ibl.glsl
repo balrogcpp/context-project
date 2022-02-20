@@ -19,8 +19,8 @@ vec3 GetIBLContribution(const sampler2D ubrdfLUT, const samplerCube uDiffuseEnvS
   vec3 specularLight = SRGBtoLINEAR(textureCube(uSpecularEnvSampler, reflection)).rgb;
 #endif
 
-  vec3 diffuse = diffuseLight * diffuseColor;
-  vec3 specular = specularLight * (specularColor * brdf.x + brdf.y);
+  vec3 diffuse = (diffuseLight * diffuseColor);
+  vec3 specular = specularLight * ((specularColor * brdf.x) + brdf.y);
 
   return diffuse + specular;
 }

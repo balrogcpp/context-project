@@ -29,10 +29,10 @@ vec3 SpecularReflection(const vec3 reflectance0, const vec3 reflectance90, const
 //----------------------------------------------------------------------------------------------------------------------
 float GeometricOcclusion(const float NdotL, const float NdotV, const float r)
 {
-    float r2 = r * r;
-    float r3 = 1.0 - r2;
-    float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r2 + r3 * (NdotL * NdotL)));
-    float attenuationV = 2.0 * NdotV / (NdotV + sqrt(r2 + r3 * (NdotV * NdotV)));
+    float r2 = (r * r);
+    float r3 = (1.0 - r2);
+    float attenuationL = (2.0 * NdotL) / (NdotL + sqrt(r2 + r3 * (NdotL * NdotL)));
+    float attenuationV = (2.0 * NdotV) / (NdotV + sqrt(r2 + r3 * (NdotV * NdotV)));
     return attenuationL * attenuationV;
 }
 

@@ -346,7 +346,7 @@ float GetMetallic(const vec2 uv) {
 #ifdef HAS_METALLICMAP
     metallic *= texture2D(uMetallicSampler, uv, uLOD).r;
 #endif
-    return metallic;
+    return clamp(metallic, 0.0, 1.0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

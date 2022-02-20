@@ -96,9 +96,13 @@ out vec2 vUV0;
 #endif
 #endif // !SHADOWCASTER
 
+#ifdef GRASS
+#include "noise.glsl"
+#endif
+
 #ifdef HAS_REFLECTION
 //----------------------------------------------------------------------------------------------------------------------
-vec4 GetProjectionCoord(vec4 position) {
+vec4 GetProjectionCoord(const vec4 position) {
   return mat4(
   0.5, 0.0, 0.0, 0.0,
   0.0, 0.5, 0.0, 0.0,
@@ -109,20 +113,17 @@ vec4 GetProjectionCoord(vec4 position) {
 #endif
 
 #ifdef GRASS
-#include "noise.glsl"
-
 //----------------------------------------------------------------------------------------------------------------------
-vec4 ApplyWaveAnimation(vec4 position, float time, float frequency, vec4 direction)
+vec4 ApplyWaveAnimation(const vec4 position, const float time, const float frequency, const vec4 direction)
 {
-  float n = fbm(position.xy * time * 0.2) * 2.0 - 2.0;
+  float n = fbm(position.xy * time) * 2.0 - 2.0;
   return position + n * direction;
 }
-
 #endif
 
 #ifdef TREES
 //----------------------------------------------------------------------------------------------------------------------
-vec4 WaveTree(vec4 v)
+vec4 WaveTree(const vec4 v)
 {
   vec4 params = uv1;
   vec4 originPos = uv2;
@@ -173,7 +174,7 @@ void main()
 #endif
 #ifdef GRASS
   if (uv0.y < 0.9 && dist < uWindRange)
-    new_position = ApplyWaveAnimation(new_position, uTime, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
+    new_position = ApplyWaveAnimation(new_position, 0.2 * uTime, 1.0, vec4(0.25, 0.1, 0.25, 0.0));
 #endif
 #ifdef TREES
     new_position = WaveTree(new_position);
