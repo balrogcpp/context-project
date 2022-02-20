@@ -2,7 +2,7 @@
 
 include(Platform)
 
-if (MSVC)
+if (MSVC AND NOT RELEASE)
     string(APPEND CMAKE_EXE_LINKER_FLAGS " /FORCE:MULTIPLE")
     string(APPEND CMAKE_SHARED_LINKER_FLAGS " /FORCE:MULTIPLE")
 endif ()
