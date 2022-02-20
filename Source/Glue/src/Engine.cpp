@@ -340,7 +340,7 @@ void Engine::InitTextureSettings() {
   }
 
   OMM.setDefaultTextureFiltering(TextureFiltering);
-  OTM.setDefaultNumMipmaps(MIP_UNLIMITED);
+  //OTM.setDefaultNumMipmaps(MIP_UNLIMITED);
 }
 
 void Engine::Capture() {
