@@ -5,6 +5,7 @@
 #include <pugixml.hpp>
 
 using namespace std;
+using namespace Ogre;
 
 namespace Glue {
 
@@ -108,6 +109,54 @@ Ogre::Quaternion ParseRotation(const pugi::xml_node &XmlNode) {
   node->setDirection(direction);
   orientation = node->getOrientation();
   scene->destroySceneNode(node);
+
+  return orientation;
+}
+
+Quaternion ParseQuaternion(const pugi::xml_node &XmlNode) {
+  //! @todo Fix this crap!
+
+  Quaternion orientation;
+
+  if (XmlNode.attribute("qw"))
+  {
+    orientation.w = StringConverter::parseReal(XmlNode.attribute("qw").value());
+    orientation.x = StringConverter::parseReal(XmlNode.attribute("qx").value());
+    orientation.y = StringConverter::parseReal(XmlNode.attribute("qy").value());
+    orientation.z = StringConverter::parseReal(XmlNode.attribute("qz").value());
+  }
+  else if (XmlNode.attribute("axisX"))
+  {
+    Vector3 axis;
+    axis.x = StringConverter::parseReal(XmlNode.attribute("axisX").value());
+    axis.y = StringConverter::parseReal(XmlNode.attribute("axisY").value());
+    axis.z = StringConverter::parseReal(XmlNode.attribute("axisZ").value());
+    Real angle = StringConverter::parseReal(XmlNode.attribute("angle").value());
+
+    orientation.FromAngleAxis(Radian(angle), axis);
+  }
+  else if (XmlNode.attribute("angleX"))
+  {
+    Matrix3 rot;
+    rot.FromEulerAnglesXYZ(StringConverter::parseAngle(XmlNode.attribute("angleX").value()),
+                           StringConverter::parseAngle(XmlNode.attribute("angleY").value()),
+                           StringConverter::parseAngle(XmlNode.attribute("angleZ").value()));
+    orientation.FromRotationMatrix(rot);
+  }
+  else if (XmlNode.attribute("x"))
+  {
+    orientation.x = StringConverter::parseReal(XmlNode.attribute("x").value());
+    orientation.y = StringConverter::parseReal(XmlNode.attribute("y").value());
+    orientation.z = StringConverter::parseReal(XmlNode.attribute("z").value());
+    orientation.w = StringConverter::parseReal(XmlNode.attribute("w").value());
+  }
+  else if (XmlNode.attribute("w"))
+  {
+    orientation.w = StringConverter::parseReal(XmlNode.attribute("w").value());
+    orientation.x = StringConverter::parseReal(XmlNode.attribute("x").value());
+    orientation.y = StringConverter::parseReal(XmlNode.attribute("y").value());
+    orientation.z = StringConverter::parseReal(XmlNode.attribute("z").value());
+  }
 
   return orientation;
 }

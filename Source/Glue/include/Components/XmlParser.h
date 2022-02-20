@@ -45,6 +45,7 @@ Ogre::Vector3 ParseVector3(const pugi::xml_node &XmlNode);
 Ogre::Vector3 ParsePosition(const pugi::xml_node &XmlNode);
 Ogre::Vector3 ParseScale(const pugi::xml_node &XmlNode);
 Ogre::Quaternion ParseRotation(const pugi::xml_node &XmlNode);
+Ogre::Quaternion ParseQuaternion(const pugi::xml_node& XmlNode);
 Ogre::ColourValue ParseColour(pugi::xml_node &XmlNode);
 
 }  // namespace Glue

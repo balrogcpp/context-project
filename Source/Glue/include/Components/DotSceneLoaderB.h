@@ -46,13 +46,21 @@ class DotSceneLoaderB final {
   void ExportScene(Ogre::SceneNode *rootNode, const std::string &outFileName);
 
  protected:
+  void WriteNode(pugi::xml_node &parentXML, const Ogre::SceneNode *node);
   void ProcessScene(pugi::xml_node &XmlRoot);
+
   void ProcessNodes(pugi::xml_node &XmlNode);
   void ProcessExternals(pugi::xml_node &XmlNode);
   void ProcessEnvironment(pugi::xml_node &XmlNode);
+  void ProcessTerrainGroup(pugi::xml_node& XmlNode);
+  //void ProcessBlendmaps(pugi::xml_node& XmlNode);
   void ProcessUserData(pugi::xml_node &XmlNode, Ogre::UserObjectBindings &user_object_bindings);
   void ProcessLight(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode = nullptr);
   void ProcessCamera(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode = nullptr);
+
+  void ProcessForests(pugi::xml_node &XmlNode);
+  void ProcessStaticGeometry(pugi::xml_node &XmlNode);
+
   void ProcessNode(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode = nullptr);
   void ProcessLookTarget(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
   void ProcessTrackTarget(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
@@ -60,16 +68,17 @@ class DotSceneLoaderB final {
   void ProcessParticleSystem(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
   void ProcessBillboardSet(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
   void ProcessPlane(pugi::xml_node &XmlNode, Ogre::SceneNode *ParentNode);
-  void ProcessForests(pugi::xml_node &XmlNode);
-  void ProcessStaticGeometry(pugi::xml_node &XmlNode);
-  void ProcessTerrain(pugi::xml_node &XmlNode);
+  void ProcessNodeAnimations(pugi::xml_node& XmlNode, Ogre::SceneNode* ParentNode);
+  void ProcessNodeAnimation(pugi::xml_node& XmlNode, Ogre::SceneNode* ParentNode);
+  void ProcessKeyframe(pugi::xml_node& XmlNode, Ogre::NodeAnimationTrack* ParentNode);
+
   void ProcessFog(pugi::xml_node &XmlNode);
   void ProcessSkyBox(pugi::xml_node &XmlNode);
   void ProcessSkyDome(pugi::xml_node &XmlNode);
   void ProcessSkyPlane(pugi::xml_node &XmlNode);
+
   void ProcessLightRange(pugi::xml_node &XmlNode, Ogre::Light *light);
   void ProcessLightAttenuation(pugi::xml_node &XmlNode, Ogre::Light *light);
-  void WriteNode(pugi::xml_node &parentXML, const Ogre::SceneNode *node);
 
   Ogre::Camera *OgreCameraPtr = nullptr;
   Ogre::SceneManager *OgreScene = nullptr;

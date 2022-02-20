@@ -28,11 +28,11 @@ int main(int argc, char *args[])
   } catch (Exception &e) {
     ErrorWindow("Exception", e.GetDescription());
   } catch (Ogre::Exception &e) {
-    ErrorWindow("Exception", string("Ogre: ") + e.getFullDescription());
+    ErrorWindow("Exception", e.getFullDescription());
   } catch (exception &e) {
-    ErrorWindow("Exception", string("std::exception: ") + e.what());
+    ErrorWindow("Exception", e.what());
   } catch (...) {
-    ErrorWindow("Exception", "unhandled");
+    ErrorWindow("Exception", "Unknown exception");
   }
 
   // to be sure app will return something to system

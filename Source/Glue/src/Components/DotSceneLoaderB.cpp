@@ -204,7 +204,7 @@ void DotSceneLoaderB::ProcessScene(pugi::xml_node &XmlRoot) {
 
   if (auto element = XmlRoot.child("environment")) ProcessEnvironment(element);
 
-  if (auto element = XmlRoot.child("terrainGroup")) ProcessTerrain(element);
+  if (auto element = XmlRoot.child("terrainGroup")) ProcessTerrainGroup(element);
 
   if (auto element = XmlRoot.child("nodes")) ProcessNodes(element);
 
@@ -486,6 +486,9 @@ void DotSceneLoaderB::ProcessNode(pugi::xml_node &XmlNode, SceneNode *ParentNode
 
   // Process userDataReference
   if (auto element = XmlNode.child("userData")) ProcessUserData(element, node->getUserObjectBindings());
+
+  // Process node animations (?)
+  if (auto element = XmlNode.child("animations")) ProcessNodeAnimations(element, node);
 }
 
 void DotSceneLoaderB::ProcessLookTarget(pugi::xml_node &XmlNode, SceneNode *ParentNode) {
@@ -551,30 +554,63 @@ void DotSceneLoaderB::ProcessTrackTarget(pugi::xml_node &XmlNode, SceneNode *Par
 void DotSceneLoaderB::ProcessEntity(pugi::xml_node &XmlNode, SceneNode *ParentNode) {
   // Process attributes
   string name = GetAttrib(XmlNode, "name");
-  string id = GetAttrib(XmlNode, "id");
+  LogManager::getSingleton().logMessage("[DotSceneLoader] Processing Entity: " + name, LML_TRIVIAL);
   string meshFile = GetAttrib(XmlNode, "meshFile");
-  string material_name = GetAttrib(XmlNode, "material");
-  bool cast_shadows = GetAttribBool(XmlNode, "castShadows", true);
+  String staticGeometry = GetAttrib(XmlNode, "static");
+  String instancedManager = GetAttrib(XmlNode, "instanced");
+  string material = GetAttrib(XmlNode, "material");
+  bool castShadows = GetAttribBool(XmlNode, "castShadows", true);
+  bool visible = GetAttribBool(XmlNode, "visible", true);
 
   // SetUp the entity
-  Entity *entity = OgreScene->createEntity(name, meshFile);
+  MovableObject *pEntity = OgreScene->createEntity(name, meshFile);
 
   try {
-    if (!material_name.empty()) entity->setMaterialName(material_name);
-    GetScene().AddEntity(entity);
-    ParentNode->attachObject(entity);
-    entity->setCastShadows(cast_shadows);
+    // If the Entity is instanced then the creation path is different
+    if (!instancedManager.empty()) {
+      LogManager::getSingleton().logMessage("[DotSceneLoader] Adding entity: " + name + " to Instance Manager: " + instancedManager, LML_TRIVIAL);
 
-    // Process userDataReference
-    if (auto element = XmlNode.child("userData")) {
-      ProcessUserData(element, entity->getUserObjectBindings());
-      GetPhysics().ProcessData(entity, ParentNode, entity->getUserObjectBindings());
+      // Load the Mesh to get the material name of the first submesh
+      MeshPtr mesh = MeshManager::getSingletonPtr()->load(meshFile, GroupName);
+
+      // Get the material name of the entity
+      if (!material.empty())
+        pEntity = OgreScene->createInstancedEntity(material, instancedManager);
+      else
+        pEntity = OgreScene->createInstancedEntity(mesh->getSubMesh(0)->getMaterialName(), instancedManager);
+
+      ParentNode->attachObject(static_cast<InstancedEntity *>(pEntity));
     } else {
-      GetPhysics().ProcessData(entity, ParentNode);
+      pEntity = OgreScene->createEntity(name, meshFile, GroupName);
+
+      static_cast<Entity *>(pEntity)->setCastShadows(castShadows);
+      static_cast<Entity *>(pEntity)->setVisible(visible);
+
+      if (!material.empty()) static_cast<Entity *>(pEntity)->setMaterialName(material);
+
+      GetScene().AddEntity(static_cast<Entity *>(pEntity));
+
+      // If the Entity belongs to a Static Geometry group then it doesn't get attached to a node
+      // * TODO * : Clean up nodes without attached entities or children nodes? (should be done afterwards if the hierarchy is being processed)
+      if (!staticGeometry.empty()) {
+        LogManager::getSingleton().logMessage("[DotSceneLoader] Adding entity: " + name + " to Static Group: " + staticGeometry, LML_TRIVIAL);
+        OgreScene->getStaticGeometry(staticGeometry)->addEntity(static_cast<Entity *>(pEntity), ParentNode->_getDerivedPosition(), ParentNode->_getDerivedOrientation(), ParentNode->_getDerivedScale());
+      } else {
+        LogManager::getSingleton().logMessage("[DotSceneLoader] pParent->attachObject(): " + name, LML_TRIVIAL);
+        ParentNode->attachObject(static_cast<Entity *>(pEntity));
+      }
     }
   } catch (Ogre::Exception &e) {
-    LogManager::getSingleton().logMessage(e.getFullDescription());
-    LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
+    LogManager::getSingleton().logError("DotSceneLoader - " + e.getDescription());
+    return;
+  }
+
+  // Process userDataReference
+  if (auto element = XmlNode.child("userData")) {
+    ProcessUserData(element, pEntity->getUserObjectBindings());
+    GetPhysics().ProcessData(static_cast<Entity *>(pEntity), ParentNode, pEntity->getUserObjectBindings());
+  } else {
+    GetPhysics().ProcessData(static_cast<Entity *>(pEntity), ParentNode);
   }
 }
 
@@ -802,14 +838,11 @@ void DotSceneLoaderB::ProcessStaticGeometry(pugi::xml_node &XmlNode) {
   }
 
   rocks->setRegionDimensions(Vector3(25.0));
-
-  //  rocks->setVisibilityFlags(SUBMERGED_MASK);
-  //  rocks->setRenderQueueGroup(Ogre::RENDER_QUEUE_6);
   rocks->build();
   rocks->setCastShadows(true);
 }
 
-void DotSceneLoaderB::ProcessTerrain(pugi::xml_node &XmlNode) {
+void DotSceneLoaderB::ProcessTerrainGroup(pugi::xml_node &XmlNode) {
   float worldSize = GetAttribReal(XmlNode, "worldSize");
   int mapSize = GetAttribInt(XmlNode, "mapSize");
   int inputScale = StringConverter::parseInt(XmlNode.attribute("inputScale").value());
@@ -962,6 +995,91 @@ void DotSceneLoaderB::ProcessUserData(pugi::xml_node &XmlNode, UserObjectBinding
       value = data;
 
     user_object_bindings.setUserAny(name, value);
+  }
+}
+
+void DotSceneLoaderB::ProcessNodeAnimations(pugi::xml_node &XMLNode, SceneNode *pParent) {
+  LogManager::getSingleton().logMessage("[DotSceneLoader] Processing Node Animations for SceneNode: " + pParent->getName(), LML_TRIVIAL);
+
+  // Process node animations (*)
+  for (auto pElement : XMLNode.children("animation")) {
+    ProcessNodeAnimation(pElement, pParent);
+  }
+}
+
+void DotSceneLoaderB::ProcessNodeAnimation(pugi::xml_node &XMLNode, SceneNode *pParent) {
+  // Process node animation (*)
+
+  // Construct the animation name
+  String name = GetAttrib(XMLNode, "name");
+
+  LogManager::getSingleton().logMessage("[DotSceneLoader] Processing Node Animation: " + name, LML_TRIVIAL);
+
+  Real length = GetAttribReal(XMLNode, "length");
+
+  Animation *anim = OgreScene->createAnimation(name, length);
+
+  bool enable = GetAttribBool(XMLNode, "enable", false);
+  bool loop = GetAttribBool(XMLNode, "loop", false);
+
+  String interpolationMode = GetAttrib(XMLNode, "interpolationMode");
+
+  if (interpolationMode == "linear")
+    anim->setInterpolationMode(Animation::IM_LINEAR);
+  else if (interpolationMode == "spline")
+    anim->setInterpolationMode(Animation::IM_SPLINE);
+  else
+    LogManager::getSingleton().logError("DotSceneLoader - Invalid interpolationMode: " + interpolationMode);
+
+  String rotationInterpolationMode = GetAttrib(XMLNode, "rotationInterpolationMode");
+
+  if (rotationInterpolationMode == "linear")
+    anim->setRotationInterpolationMode(Animation::RIM_LINEAR);
+  else if (rotationInterpolationMode == "spherical")
+    anim->setRotationInterpolationMode(Animation::RIM_SPHERICAL);
+  else
+    LogManager::getSingleton().logError("DotSceneLoader - Invalid rotationInterpolationMode: " + rotationInterpolationMode);
+
+  // create a track to animate the camera's node
+  NodeAnimationTrack *track = anim->createNodeTrack(0, pParent);
+
+  // Process keyframes (*)
+  for (auto pElement : XMLNode.children("keyframe")) {
+    ProcessKeyframe(pElement, track);
+  }
+
+  // create a new animation state to track this
+  auto animState = OgreScene->createAnimationState(name);
+  animState->setEnabled(enable);
+  animState->setLoop(loop);
+}
+
+void DotSceneLoaderB::ProcessKeyframe(pugi::xml_node &XMLNode, NodeAnimationTrack *pTrack) {
+  // Process node animation keyframe (*)
+  Real time = GetAttribReal(XMLNode, "time");
+
+  LogManager::getSingleton().logMessage("[DotSceneLoader] Processing Keyframe: " + StringConverter::toString(time), LML_TRIVIAL);
+
+  auto keyframe = pTrack->createNodeKeyFrame(time);
+
+  // Process translation (?)
+  if (auto pElement = XMLNode.child("position")) {
+    Vector3 translation = ParseVector3(pElement);
+    keyframe->setTranslate(translation);
+  }
+
+  // Process rotation (?)
+  // Quaternion rotation = Quaternion::IDENTITY;
+  if (auto pElement = XMLNode.child("rotation")) {
+    Quaternion rotation = ParseQuaternion(pElement);
+    keyframe->setRotation(rotation);
+  }
+
+  // Process scale (?)
+  // Vector3 scale = parseVector3(XMLNode.child("scale"));
+  if (auto pElement = XMLNode.child("scale")) {
+    Vector3 scale = ParseVector3(pElement);
+    keyframe->setScale(scale);
   }
 }
 
