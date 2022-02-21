@@ -79,13 +79,18 @@ add_custom_target(BuildPackage
 # env variable ANDROID_SDK_ROOT must be set manually
 if (NOT RELEASE)
     set(GRADLE_TARGET assembleDebug)
+    set(APK_FILE ${CMAKE_SOURCE_DIR}/Android/app/build/outputs/apk/debug/app-arm64-v8a-debug.apk)
+    set(OUTPUT_FILE ${GLUE_PACKAGE_NAME}_Android_aarch64_Debug_${GIT_SHA1}.apk)
 else ()
     set(GRADLE_TARGET assembleRelease)
+    set(APK_FILE ${CMAKE_SOURCE_DIR}/Android/app/build/outputs/apk/release/app-arm64-v8a-release.apk)
+    set(OUTPUT_FILE ${GLUE_PACKAGE_NAME}_Android_aarch64_${GIT_SHA1}.apk)
 endif ()
 
 add_custom_target(BuildAndroid
         DEPENDS BuildAssets
         COMMAND ./gradlew ${GRADLE_TARGET}
+        COMMAND ${CMAKE_COMMAND} -E copy ${APK_FILE} ${GLUE_ARTIFACT_DIR}/${OUTPUT_FILE}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
         COMMENT "Build packages..."
         USES_TERMINAL
