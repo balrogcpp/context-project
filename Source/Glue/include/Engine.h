@@ -102,7 +102,7 @@ class Engine final : public Singleton<Engine> {
   SDL_GLContext SDLGLContextPtr = nullptr;
   uint32_t SDLWindowFlags = 0;
   int WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED;
-  std::string WindowCaption;
+  std::string WindowCaption = "Example0";
   int WindowWidth = 1024;
   int WindowHeight = 768;
   bool WindowFullScreen = false;

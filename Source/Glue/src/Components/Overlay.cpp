@@ -20,7 +20,6 @@ Overlay::Overlay(Ogre::RenderWindow* OgreRenderWindowPtr) {
   OgreScene->addRenderQueueListener(OgreOverlay);
 
   imgui_overlay = new Ogre::ImGuiOverlay();
-  imgui_overlay->setZOrder(300);
 
   Ogre::OverlayManager::getSingleton().addOverlay(imgui_overlay);
   OgreRenderWindowPtr->addListener(this);
