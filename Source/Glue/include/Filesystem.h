@@ -9,7 +9,7 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 #else
-#include <ghc/filesystem.hpp>
+#include <ghc_filesystem.hpp>
 namespace fs = ghc::filesystem;
 #endif
 

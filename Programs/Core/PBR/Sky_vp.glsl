@@ -20,6 +20,7 @@ in vec3 uv0;
 out vec3 vPosition;
 out vec3 TexCoords; // direction vector representing a 3D texture coordinate
 
+//----------------------------------------------------------------------------------------------------------------------
 void main() {
     TexCoords = uv0;
     vPosition = position.xyz;

@@ -4,7 +4,7 @@
 #include "Config.h"
 #include "Exception.h"
 #include <fstream>
-#include <inih/INIReader.h>
+#include "INIReader.h"
 
 using namespace std;
 
