@@ -42,7 +42,7 @@ include(Doxygen)
 set(CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
 
-set(CMAKE_FOLDER DockerCompose)
+set(CMAKE_FOLDER Docker)
 
 add_custom_target(DockerComposeDep
         COMMAND docker-compose -f docker-compose-3rd.yml up
