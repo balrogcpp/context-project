@@ -223,6 +223,7 @@ in vec4 projectionCoord;
 #endif
 
 #ifdef SHADOWRECEIVER
+#if MAX_SHADOW_TEXTURES > 0
 //----------------------------------------------------------------------------------------------------------------------
 float GetShadow(const int counter) {
     if (vDepth >= pssmSplitPoints.w)
@@ -276,6 +277,7 @@ float CalcPSSMDepthShadow(const vec4 pssmSplitPoints, const vec4 lightSpacePos0,
 
     return 1.0;
 }
+#endif // MAX_SHADOW_TEXTURES > 0
 #endif // SHADOWRECEIVER
 
 // Find the normal for this fragment, pulling either from a predefined normal map
