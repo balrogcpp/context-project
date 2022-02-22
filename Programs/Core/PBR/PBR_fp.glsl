@@ -75,7 +75,12 @@ uniform sampler2D uGlobalNormalSampler;
 uniform sampler2D uReflectionMap;
 #endif
 #ifdef SHADOWRECEIVER
+#ifndef MAX_SHADOW_TEXTURES
+#define MAX_SHADOW_TEXTURES 0
+#endif
+#if MAX_SHADOW_TEXTURES > 0
 uniform sampler2D shadowMap0;
+#endif
 #if MAX_SHADOW_TEXTURES > 1
 uniform sampler2D shadowMap1;
 #endif
@@ -99,6 +104,10 @@ uniform sampler2D shadowMap7;
 #endif
 #endif // SHADOWRECEIVER
 
+#ifndef MAX_LIGHTS
+#define MAX_LIGHTS 0
+#endif
+#if MAX_LIGHTS > 0
 uniform vec4 uLightPositionArray[MAX_LIGHTS];
 uniform vec4 uLightDirectionArray[MAX_LIGHTS];
 uniform vec4 uLightDiffuseScaledColourArray[MAX_LIGHTS];
@@ -106,6 +115,7 @@ uniform vec4 uLightAttenuationArray[MAX_LIGHTS];
 uniform vec4 uLightSpotParamsArray[MAX_LIGHTS];
 #ifdef SHADOWRECEIVER
 uniform float uLightCastsShadowsArray[MAX_LIGHTS];
+#endif
 #endif
 uniform float uLightCount;
 #ifndef USE_IBL
@@ -136,7 +146,9 @@ uniform float uNormalScale;
 uniform float uOffsetScale;
 #endif
 #ifdef SHADOWRECEIVER
+#if MAX_SHADOW_TEXTURES > 0
 uniform float shadowTexel0;
+#endif
 #if MAX_SHADOW_TEXTURES > 1
 uniform float shadowTexel1;
 #endif
@@ -166,7 +178,9 @@ uniform int uShadowFilterIterations;
 #endif // SHADOWRECEIVER
 
 #ifdef SHADOWRECEIVER
+#if MAX_SHADOW_TEXTURES > 0
 in vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
+#endif
 #endif
 in vec2 vUV0;
 in float vDepth;
@@ -213,8 +227,10 @@ in vec4 projectionCoord;
 float GetShadow(const int counter) {
     if (vDepth >= pssmSplitPoints.w)
         return 1.0;
+#if MAX_SHADOW_TEXTURES > 0
     else if (counter == 0)
         return CalcDepthShadow(shadowMap0, lightSpacePosArray[0], uShadowDepthOffset, shadowTexel0*uShadowFilterSize, uShadowFilterIterations);
+#endif
 #if MAX_SHADOW_TEXTURES > 1
     else if (counter == 1)
         return CalcDepthShadow(shadowMap1, lightSpacePosArray[1], uShadowDepthOffset, shadowTexel1*uShadowFilterSize, uShadowFilterIterations);
@@ -467,6 +483,7 @@ void main()
 
     vec3 total_colour = vec3(0.0);
 
+#if MAX_LIGHTS > 0
     for (int i = 0; i < int(uLightCount); i++) {
         vec3 l = -normalize(uLightDirectionArray[i].xyz); // Vector from surface point to light
         vec3 h = normalize(l+v); // Half vector between both l and v
@@ -518,6 +535,7 @@ void main()
         float tmp = (NdotL * (fSpotT * fAtten));
 
 #ifdef SHADOWRECEIVER
+#if MAX_SHADOW_TEXTURES > 0
         float shadow = 1.0;
 
         if (uLightCastsShadowsArray[i] > 0.0) {
@@ -541,10 +559,12 @@ void main()
         }
 
         total_colour += uShadowColour * color + (shadow * (tmp * (uLightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib))));
+#endif
 #else
     total_colour += (tmp * (uLightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib)));
 #endif
     }
+#endif
 
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL

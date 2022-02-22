@@ -755,9 +755,7 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &XmlNode, SceneNode *ParentNo
       // * TODO * : Clean up nodes without attached entities or children nodes? (should be done afterwards if the hierarchy is being processed)
       if (!staticGeometry.empty()) {
         LogManager::getSingleton().logMessage("[DotSceneLoader] Adding entity: " + name + " to Static Group: " + staticGeometry, LML_TRIVIAL);
-        OgreScene->getStaticGeometry(staticGeometry)
-            ->addEntity(static_cast<Entity *>(pEntity), ParentNode->_getDerivedPosition(), ParentNode->_getDerivedOrientation(),
-                        ParentNode->_getDerivedScale());
+        OgreScene->getStaticGeometry(staticGeometry)->addEntity(static_cast<Entity *>(pEntity), ParentNode->_getDerivedPosition(), ParentNode->_getDerivedOrientation(), ParentNode->_getDerivedScale());
       } else {
         LogManager::getSingleton().logMessage("[DotSceneLoader] pParent->attachObject(): " + name, LML_TRIVIAL);
         ParentNode->attachObject(static_cast<Entity *>(pEntity));

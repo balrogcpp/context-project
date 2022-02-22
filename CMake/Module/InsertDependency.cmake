@@ -4,7 +4,7 @@ macro(insert_dependency PACKAGE)
     find_package(${PACKAGE} QUIET)
 
     if (NOT ${PACKAGE}_FOUND)
-        message(STATUS "Not found ${PACKAGE}. Please build ${PACKAGE} first")
+        message(STATUS "${PACKAGE} required but not found")
         set(ANY_NOT_FOUND true)
     else ()
         message(STATUS "Found ${PACKAGE}")

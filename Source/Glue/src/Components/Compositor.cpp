@@ -122,9 +122,9 @@ void Compositor::InitMRT() {
   else
     Throw("Failed to add MRT compositor");
 
-#ifdef MOBILE
   auto *MRTCompositor = OgreCompositorChain->getCompositor(MRT);
   auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
+#ifdef MOBILE
   MRTTextureDefinition->width = 1024;
   MRTTextureDefinition->height = 768;
 #endif

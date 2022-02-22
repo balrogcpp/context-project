@@ -480,32 +480,46 @@ void Engine::GrabMouse(bool grab) {
 }
 
 void Engine::InitResourceLocation() {
-#ifdef DESKTOP
-  AddLocation("Programs/Core", RGN_INTERNAL);
+#if defined(DESKTOP)
 
-  if (RenderSystemGLES2())
-    AddLocation("Programs/GLSLES", RGN_INTERNAL);
-  else
-    AddLocation("Programs/GLSL", RGN_INTERNAL);
+#ifdef WINDOWS
+  const char SEPARATOR = '\\';
+#else
+  const char SEPARATOR = '/';
+#endif
+
+  const string ProgramsDir = string("Programs") + SEPARATOR;
+  const string AssetsDir = string("Assets") + SEPARATOR;
+
+  AddLocation(ProgramsDir + "Core", RGN_INTERNAL);
 
   if (GlobalMRTEnabled())
-    AddLocation("Programs/MRT", RGN_INTERNAL);
+    AddLocation(ProgramsDir + "MRT", RGN_INTERNAL);
   else
-    AddLocation("Programs/noMRT", RGN_INTERNAL);
+    AddLocation(ProgramsDir + "noMRT", RGN_INTERNAL);
 
-  AddLocation("Programs/Other", RGN_INTERNAL);
-  AddLocation("Assets", RGN_DEFAULT);
+  if (RenderSystemGLES2())
+    AddLocation(ProgramsDir + "GLSLES", RGN_INTERNAL);
+  else
+    AddLocation(ProgramsDir + "GLSL", RGN_INTERNAL);
+
+  AddLocation(ProgramsDir + "Other", RGN_INTERNAL);
+
+  AddLocation(AssetsDir, RGN_DEFAULT);
+
 #elif defined(ANDROID)
   auto &RGM = ResourceGroupManager::getSingleton();
   RGM.addResourceLocation("/Programs/Core.zip", "APKZip", RGN_INTERNAL);
-  RGM.addResourceLocation("/Programs/GLSLES.zip", "APKZip", RGN_INTERNAL);
 
   if (GlobalMRTEnabled())
     RGM.addResourceLocation("/Programs/MRT.zip", "APKZip", RGN_INTERNAL);
   else
     RGM.addResourceLocation("/Programs/noMRT.zip", "APKZip", RGN_INTERNAL);
 
+  RGM.addResourceLocation("/Programs/GLSLES.zip", "APKZip", RGN_INTERNAL);
+
   RGM.addResourceLocation("/Programs/Other.zip", "APKZip", RGN_INTERNAL);
+
   RGM.addResourceLocation("/Assets.zip", "APKZip", RGN_DEFAULT);
 #endif
 }

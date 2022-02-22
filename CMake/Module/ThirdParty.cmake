@@ -480,7 +480,6 @@ externalproject_add(Target_FreeGLUT
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     )
 
-if(0)
 externalproject_add(Target_OGRE2
                     EXCLUDE_FROM_ALL true
                     DEPENDS Target_ZZIP Target_FreeType
@@ -510,7 +509,6 @@ externalproject_add(Target_OGRE2
                     -DCMAKE_CXX_STANDARD=11
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     )
-endif()
 
 externalproject_add(Target_Lua
                     EXCLUDE_FROM_ALL true
