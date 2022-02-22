@@ -3,7 +3,7 @@
 #include "PCHeader.h"
 #include "ToggleButton.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "imgui/imgui_internal.h"
+#include "imgui_internal.h"
 
 namespace ImGui {
 

@@ -35,7 +35,7 @@ index 59b51bb4..bc6bf7dc 100644
      io.KeyMap[ImGuiKey_C] = 'c';
      io.KeyMap[ImGuiKey_V] = 'v';
 diff --git a/Components/Overlay/CMakeLists.txt b/Components/Overlay/CMakeLists.txt
-index ec67ef51..0c74ce29 100644
+index ec67ef51..829e6080 100644
 --- a/Components/Overlay/CMakeLists.txt
 +++ b/Components/Overlay/CMakeLists.txt
 @@ -19,11 +19,11 @@ list(APPEND HEADER_FILES
@@ -52,6 +52,15 @@ index ec67ef51..0c74ce29 100644
          ${PROJECT_BINARY_DIR}/imgui.tar.gz)
      execute_process(COMMAND ${CMAKE_COMMAND}
          -E tar xf imgui.tar.gz WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+@@ -86,7 +86,7 @@ if(OGRE_BUILD_COMPONENT_OVERLAY_IMGUI)
+   configure_file(${OGRE_TEMPLATES_DIR}/imconfig.h ${IMGUI_DIR}/imconfig.h)
+ 
+   list(APPEND HEADER_FILES
+-    ${IMGUI_DIR}/imgui.h
++    ${IMGUI_DIR}/imgui.h ${IMGUI_DIR}/imgui_internal.h ${IMGUI_DIR}/imstb_textedit.h ${IMGUI_DIR}/imstb_truetype.h ${IMGUI_DIR}/imstb_rectpack.h
+     ${IMGUI_DIR}/imconfig.h)
+ endif()
+ 
 diff --git a/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp b/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp
 index 0ff8e2e2..78342e6e 100644
 --- a/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp
