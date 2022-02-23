@@ -488,22 +488,22 @@ void Engine::InitResourceLocation() {
   const char SEPARATOR = '/';
 #endif
 
-  const string ProgramsDir = string("Programs") + SEPARATOR;
-  const string AssetsDir = string("Assets") + SEPARATOR;
+  const string ProgramsDir = string("Programs");
+  const string AssetsDir = string("Assets");
 
-  AddLocation(ProgramsDir + "Core", RGN_INTERNAL);
+  AddLocation(ProgramsDir + SEPARATOR + "Core", RGN_INTERNAL);
 
   if (GlobalMRTEnabled())
-    AddLocation(ProgramsDir + "MRT", RGN_INTERNAL);
+    AddLocation(ProgramsDir + SEPARATOR + "MRT", RGN_INTERNAL);
   else
-    AddLocation(ProgramsDir + "noMRT", RGN_INTERNAL);
+    AddLocation(ProgramsDir + SEPARATOR + "noMRT", RGN_INTERNAL);
 
   if (RenderSystemGLES2())
-    AddLocation(ProgramsDir + "GLSLES", RGN_INTERNAL);
+    AddLocation(ProgramsDir + SEPARATOR + "GLSLES", RGN_INTERNAL);
   else
-    AddLocation(ProgramsDir + "GLSL", RGN_INTERNAL);
+    AddLocation(ProgramsDir + SEPARATOR + "GLSL", RGN_INTERNAL);
 
-  AddLocation(ProgramsDir + "Other", RGN_INTERNAL);
+  AddLocation(ProgramsDir + SEPARATOR + "Other", RGN_INTERNAL);
 
   AddLocation(AssetsDir, RGN_DEFAULT);
 
