@@ -13,9 +13,7 @@ using namespace Ogre;
 namespace Glue {
 
 void InitRTSS() {
-  if (!RTShader::ShaderGenerator::initialize()) {
-    throw Exception("RTSS failed to initialize");
-  }
+  if (!RTShader::ShaderGenerator::initialize()) throw Exception("RTSS failed to initialize");
 }
 
 static unique_ptr<ShaderResolver> ResolverPtr;
@@ -86,24 +84,20 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
   const auto DSNOld = MaterialManager::DEFAULT_SCHEME_NAME;
   const auto DSN = RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME;
 
-  if (!originalMaterial) {
-    originalMaterial = MaterialManager::getSingleton().getByName(material_name, RGN_INTERNAL);
-  }
+  if (!originalMaterial) originalMaterial = MaterialManager::getSingleton().getByName(material_name, RGN_INTERNAL);
 
-  if (!originalMaterial) {
-    return false;
-  }
+  if (!originalMaterial) return false;
 
   // SetUp shader generated technique for this material.
   bool techniqueCreated = mShaderGenerator.createShaderBasedTechnique(*originalMaterial, DSNOld, DSN);
 
   // Case technique registration succeeded.
-  if (techniqueCreated) {
-    // Force creating the shaders for the generated technique.
+  // Force creating the shaders for the generated technique.
+
+  if (techniqueCreated)
     mShaderGenerator.validateMaterial(DSN, originalMaterial->getName(), originalMaterial->getGroup());
-  } else {
+  else
     originalMaterial->getTechnique(0)->setSchemeName(DSN);
-  }
 
   return true;
 }
@@ -113,9 +107,7 @@ Technique *ShaderResolver::handleSchemeNotFound(unsigned short SchemeIndex, cons
   const auto DSNOld = MaterialManager::DEFAULT_SCHEME_NAME;
   const auto DSN = RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME;
 
-  if (SchemeName != DSN) {
-    return nullptr;
-  }
+  if (SchemeName != DSN) return nullptr;
 
   // SetUp shader generated technique for this material.
   bool techniqueCreated = ShaderGeneratorPtr->createShaderBasedTechnique(*OriginalMaterialPtr, DSNOld, SchemeName);
