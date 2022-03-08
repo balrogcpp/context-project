@@ -1,4 +1,4 @@
-# This source file is part of "glue project". Created by Andrey Vasiliev
+# This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 option(GLUE_USE_AVX "Use AVX instructions set" OFF)
 option(GLUE_USE_AVX2 "Use AVX2 instructions set" OFF)

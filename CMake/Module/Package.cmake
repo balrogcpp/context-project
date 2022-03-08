@@ -1,4 +1,4 @@
-# This source file is part of "glue project". Created by Andrey Vasiliev
+# This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 set(GLUE_PACKAGE_NAME "GlueSample")
 set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}_${GLUE_TOOLCHAIN_SHORT}_${GIT_SHA1})

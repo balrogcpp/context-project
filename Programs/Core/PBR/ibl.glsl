@@ -1,4 +1,4 @@
-// This source file is part of "glue project". Created by Andrey Vasiliev
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #ifndef IBL_GLSL
 #define IBL_GLSL

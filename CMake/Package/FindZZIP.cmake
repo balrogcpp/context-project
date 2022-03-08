@@ -1,4 +1,4 @@
-# This source file is part of "glue project". Created by Andrey Vasiliev
+# This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 find_path(ZZIP_INCLUDE_DIR NAMES zzip/zzip.h)
 

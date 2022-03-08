@@ -1,4 +1,4 @@
-// This source file is part of "glue project". Created by Andrey Vasiliev
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #pragma once
 #include "InputObserver.h"

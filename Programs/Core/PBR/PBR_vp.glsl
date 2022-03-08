@@ -1,4 +1,4 @@
-// This source file is part of "glue project". Created by Andrey Vasiliev
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 // The MIT License
 // Copyright (c) 2016-2017 Mohamad Moneimne and Contributors

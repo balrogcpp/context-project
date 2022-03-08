@@ -1,4 +1,4 @@
-// This source file is part of "glue project". Created by Andrey Vasiliev
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
 abstract fragment_program OutputI_fs glsl glsles
