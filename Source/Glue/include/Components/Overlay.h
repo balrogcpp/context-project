@@ -25,7 +25,7 @@ class Overlay final : public Component<Overlay>, public Ogre::RenderTargetListen
   void OnResume() override;
   void OnUpdate(float time) override;
   void preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) override;
-  void PrepareFontTexture(const std::string& FontName, const std::string& ResourceGroup = Ogre::RGN_AUTODETECT);
+  void PrepareFontTexture(const std::string& FontName, const ImFontConfig* FontConfig = NULL, const ImWchar* GlyphRanges = NULL, const std::string& ResourceGroup = Ogre::RGN_INTERNAL);
 
  protected:
   std::unique_ptr<ImGuiInputListener> ImGuiListener;

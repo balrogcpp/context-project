@@ -26,12 +26,10 @@ Overlay::Overlay(Ogre::RenderWindow* OgreRenderWindowPtr) {
 
   ImGuiListener = make_unique<ImGuiInputListener>();
 
-#ifndef DEBUG
   // Suppress ini file creation
   ImGuiIO& io = ImGui::GetIO();
   io.IniFilename = nullptr;
   io.LogFilename = nullptr;
-#endif
 }
 
 Overlay::~Overlay() {}
@@ -46,9 +44,13 @@ void Overlay::OnPause() {}
 
 void Overlay::OnResume() {}
 
-void Overlay::PrepareFontTexture(const std::string& FontName, const std::string& ResourceGroup) {
+void Overlay::PrepareFontTexture(const std::string& FontName, const ImFontConfig* FontConfig, const ImWchar* GlyphRanges, const std::string& ResourceGroup) {
   ImGuiIO& io = ImGui::GetIO();
-  imgui_overlay->addFont(FontName, ResourceGroup, nullptr, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+#ifdef DEBUG
+  imgui_overlay->addFont(FontName, ResourceGroup, FontConfig, GlyphRanges);
+#else
+  imgui_overlay->addFont(FontName, ResourceGroup);
+#endif
   imgui_overlay->show();
 }
 

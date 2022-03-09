@@ -366,7 +366,8 @@ void Engine::InitOverlay() {
 void Engine::InitCompositor() {
   CompositorUPtr = make_unique<Compositor>();
   RegComponent(CompositorUPtr.get());
-  OverlayPtr->PrepareFontTexture("Default", RGN_INTERNAL);
+  ImGuiIO& io = ImGui::GetIO();
+  OverlayPtr->PrepareFontTexture("NotoSans-Regular", nullptr, io.Fonts->GetGlyphRangesCyrillic());
   CompositorUPtr->SetUp();
 }
 

@@ -32,15 +32,14 @@ void MenuAppState::Update(float time) {
   static float diag = sqrt(x * x + y * y);
   float scale = 0.5f * diag / hddiag;
   // ImGui::SetWindowFontScale(scale);
-//   ImGui::SetWindowFontScale(3.0);
 
   ImGui::NewLine();
 
-  if (ImGui::Button(u8"人人生出嚟就系自由慨")) ChangeState(make_unique<DemoDotAppState>());
+  if (ImGui::Button(u8"Start")) ChangeState(make_unique<DemoDotAppState>());
 
   ImGui::NewLine();
 
-  if (ImGui::Button(u8"Выход")) ChangeState();
+  if (ImGui::Button(u8"Quit")) ChangeState();
 
   ImGui::NewLine();
 
