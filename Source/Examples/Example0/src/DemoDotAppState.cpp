@@ -36,80 +36,75 @@ void DemoDotAppState::Update(float time) {
 
   Ogre::ImGuiOverlay::NewFrame();
 
-  {
-    static ImGuiIO &io = ImGui::GetIO();
-    ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
-    ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
-    ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
-    ImGui::SetNextWindowBgAlpha(0.5);
+  static ImGuiIO &io = ImGui::GetIO();
+  ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
+  ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
+  ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
+  ImGui::SetNextWindowBgAlpha(0.5);
 
-    ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+  ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 
-    ImGui::SetWindowFontScale(0.25);
+  //ImGui::SetWindowFontScale(0.25);
 
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::End();
+  ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+  ImGui::End();
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-    if (!context_menu_) {
-      GetEngine().OffMenu();
-      return;
-    } else {
-      GetEngine().InMenu();
-    }
+  if (!context_menu_) {
+    GetEngine().OffMenu();
+    return;
+  } else {
+    GetEngine().InMenu();
+  }
 #endif
 
-    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-    ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
-    ImGui::SetNextWindowBgAlpha(0.5);
-    ImGui::SetNextWindowFocus();
+  ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+  ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
+  ImGui::SetNextWindowBgAlpha(0.5);
+  ImGui::SetNextWindowFocus();
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-    ImGui::SetNextWindowCollapsed(true, ImGuiCond_Appearing);
-    ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoResize);
+  ImGui::SetNextWindowCollapsed(true, ImGuiCond_Appearing);
+  ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoResize);
 #else
-    ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
-    ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+  ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
+  ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 #endif
 
-    const float hdx = 1920;
-    const float hdy = 1080;
-    const float hddiag = sqrt(hdx * hdx + hdy * hdy);
-    float x = GetEngine().GetWindowSize().first;
-    float y = GetEngine().GetWindowSize().second;
-    static float diag = sqrt(x * x + y * y);
-    float scale = 0.5 * diag / hddiag;
+  const float hdx = 1920;
+  const float hdy = 1080;
+  const float hddiag = sqrt(hdx * hdx + hdy * hdy);
+  float x = GetEngine().GetWindowSize().first;
+  float y = GetEngine().GetWindowSize().second;
+  static float diag = sqrt(x * x + y * y);
+  float scale = 0.5 * diag / hddiag;
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 //	scale *= 2.0f;
 #endif
-    ImGui::SetWindowFontScale(scale);
+
+  //ImGui::SetWindowFontScale(scale);
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-    ImGui::NewLine();
+  ImGui::NewLine();
 
-    if (ImGui::Button("         RESUME          ")) {
-      GetEngine().GrabMouse(true);
-      GetEngine().OffMenu();
-      context_menu_ = false;
-    }
+  if (ImGui::Button("         RESUME          ")) {
+    GetEngine().GrabMouse(true);
+    GetEngine().OffMenu();
+    context_menu_ = false;
+  }
 #endif
 
-    ImGui::NewLine();
+  ImGui::NewLine();
 
-    if (ImGui::Button("        MAIN MENU        ")) {
-      ChangeState(make_unique<MenuAppState>());
-    }
+  if (ImGui::Button("        MAIN MENU        ")) ChangeState(make_unique<MenuAppState>());
 
-    ImGui::NewLine();
+  ImGui::NewLine();
 
-    if (ImGui::Button("          EXIT           ")) {
-      ChangeState();
-    }
+  if (ImGui::Button("          EXIT           ")) ChangeState();
 
-    ImGui::NewLine();
+  ImGui::NewLine();
 
-    ImGui::End();
-  }
+  ImGui::End();
 }
 
 void DemoDotAppState::SetUp() {
@@ -117,10 +112,10 @@ void DemoDotAppState::SetUp() {
   // GetScene().GetCameraMan().SetStyle(CameraMan::ControlStyle::FPS);
   LoadFromFile("1.scene");
 
-  //Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
-  //FixMaterial("Examples/Smoke");
-  //auto *ps = Ogre::Root::getSingleton().getSceneManager("Default")->createParticleSystem("Smoke", "Examples/Smoke");
-  //Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->createChildSceneNode(Ogre::Vector3(5, 0, 0))->attachObject(ps);
+  // Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
+  // FixMaterial("Examples/Smoke");
+  // auto *ps = Ogre::Root::getSingleton().getSceneManager("Default")->createParticleSystem("Smoke", "Examples/Smoke");
+  // Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->createChildSceneNode(Ogre::Vector3(5, 0, 0))->attachObject(ps);
 
   //    Ogre::Entity *entity = scene->createEntity("ely_vanguardsoldier_kerwinatienza_Mesh.mesh",
   //    "ely_vanguardsoldier_kerwinatienza_Mesh.mesh"); auto *node = root->createChildSceneNode(Ogre::Vector3(0, 0, 0));

@@ -142,7 +142,7 @@ void Compositor::InitOutput() {
   else
     OutputCompositor = "OutputFinal";
 
-  const string MotionBlurCompositor = "MBlur";
+  const string MotionBlurCompositor = "Blur";
 
   auto &material_manager = Ogre::MaterialManager::getSingleton();
   auto material = material_manager.getByName(OutputCompositor);
@@ -174,7 +174,7 @@ void Compositor::InitOutput() {
   }
 
   EnableCompositor(OutputCompositor);
-  if (EffectsList["mblur"]) AddCompositorEnabled("MBlur");
+  if (EffectsList["mblur"]) AddCompositorEnabled("Blur");
 }
 
 void Compositor::SetUp() {

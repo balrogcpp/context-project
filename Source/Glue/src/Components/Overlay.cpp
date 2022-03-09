@@ -26,19 +26,17 @@ Overlay::Overlay(Ogre::RenderWindow* OgreRenderWindowPtr) {
 
   ImGuiListener = make_unique<ImGuiInputListener>();
 
+#ifndef DEBUG
   // Suppress ini file creation
   ImGuiIO& io = ImGui::GetIO();
   io.IniFilename = nullptr;
   io.LogFilename = nullptr;
+#endif
 }
 
 Overlay::~Overlay() {}
 
-void Overlay::preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) {
-  //  if (!evt.source->getOverlaysEnabled())  {
-  //    return;
-  //  }
-}
+void Overlay::preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) {}
 
 void Overlay::OnUpdate(float time) {}
 
@@ -49,7 +47,8 @@ void Overlay::OnPause() {}
 void Overlay::OnResume() {}
 
 void Overlay::PrepareFontTexture(const std::string& FontName, const std::string& ResourceGroup) {
-  imgui_overlay->addFont(FontName, ResourceGroup);
+  ImGuiIO& io = ImGui::GetIO();
+  imgui_overlay->addFont(FontName, ResourceGroup, nullptr, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
   imgui_overlay->show();
 }
 

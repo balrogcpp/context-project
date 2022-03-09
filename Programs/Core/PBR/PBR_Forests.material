@@ -1,3 +1,5 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
 import PBR_Basic from PBR.material
 import PBR_I_vs from PBR.program
 import PBR_I_fs from PBR.program

@@ -1,6 +1,8 @@
-font Roboto-Medium
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+font Default
 {
 	type 		truetype
-	source 		Roboto-Medium.ttf
-	size 		130
+	source 		NotoSansSC-Regular.otf
+	size 		48
 }

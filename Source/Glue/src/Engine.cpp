@@ -366,7 +366,7 @@ void Engine::InitOverlay() {
 void Engine::InitCompositor() {
   CompositorUPtr = make_unique<Compositor>();
   RegComponent(CompositorUPtr.get());
-  OverlayPtr->PrepareFontTexture("Roboto-Medium", RGN_INTERNAL);
+  OverlayPtr->PrepareFontTexture("Default", RGN_INTERNAL);
   CompositorUPtr->SetUp();
 }
 
