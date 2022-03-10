@@ -31,6 +31,7 @@ void MenuAppState::Update(float time) {
   float y = GetEngine().GetWindowSize().second;
   static float diag = sqrt(x * x + y * y);
   float scale = 0.5f * diag / hddiag;
+
   // ImGui::SetWindowFontScale(scale);
 
   ImGui::NewLine();

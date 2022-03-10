@@ -14,14 +14,14 @@ using namespace std;
 namespace Glue {
 
 Overlay::Overlay(Ogre::RenderWindow* OgreRenderWindowPtr) {
-  this->OgreRenderWindow = OgreRenderWindowPtr;
+  OgreRenderWindow = OgreRenderWindowPtr;
   Ogre::SceneManager* OgreScene = Ogre::Root::getSingletonPtr()->getSceneManager("Default");
-  OgreOverlay = new Ogre::OverlaySystem();
-  OgreScene->addRenderQueueListener(OgreOverlay);
+  OgreOverlayPtr = new Ogre::OverlaySystem();
+  OgreScene->addRenderQueueListener(OgreOverlayPtr);
 
-  imgui_overlay = new Ogre::ImGuiOverlay();
+  ImGuiOverlayPtr = new Ogre::ImGuiOverlay();
 
-  Ogre::OverlayManager::getSingleton().addOverlay(imgui_overlay);
+  Ogre::OverlayManager::getSingleton().addOverlay(ImGuiOverlayPtr);
   OgreRenderWindowPtr->addListener(this);
 
   ImGuiListener = make_unique<ImGuiInputListener>();
@@ -46,12 +46,8 @@ void Overlay::OnResume() {}
 
 void Overlay::PrepareFontTexture(const std::string& FontName, const ImFontConfig* FontConfig, const ImWchar* GlyphRanges, const std::string& ResourceGroup) {
   ImGuiIO& io = ImGui::GetIO();
-#ifdef DEBUG
-  imgui_overlay->addFont(FontName, ResourceGroup, FontConfig, GlyphRanges);
-#else
-  imgui_overlay->addFont(FontName, ResourceGroup);
-#endif
-  imgui_overlay->show();
+  ImGuiOverlayPtr->addFont(FontName, ResourceGroup, FontConfig, GlyphRanges);
+  ImGuiOverlayPtr->show();
 }
 
 }  // namespace Glue

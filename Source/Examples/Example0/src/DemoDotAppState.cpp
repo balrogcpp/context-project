@@ -44,8 +44,6 @@ void DemoDotAppState::Update(float time) {
 
   ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 
-  //ImGui::SetWindowFontScale(0.25);
-
   ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
   ImGui::End();
 

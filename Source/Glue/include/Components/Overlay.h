@@ -29,8 +29,8 @@ class Overlay final : public Component<Overlay>, public Ogre::RenderTargetListen
 
  protected:
   std::unique_ptr<ImGuiInputListener> ImGuiListener;
-  Ogre::ImGuiOverlay* imgui_overlay = nullptr;
-  Ogre::OverlaySystem* OgreOverlay = nullptr;
+  Ogre::ImGuiOverlay* ImGuiOverlayPtr = nullptr;
+  Ogre::OverlaySystem* OgreOverlayPtr = nullptr;
   Ogre::RenderWindow* OgreRenderWindow = nullptr;
 };
 
