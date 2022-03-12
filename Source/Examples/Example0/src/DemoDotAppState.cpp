@@ -22,7 +22,7 @@ void DemoDotAppState::Resume() {}
 
 void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
   if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
-    context_menu_ = true;
+    ShowContextMenu = true;
     GetEngine().InMenu();
     GetEngine().GrabMouse(false);
   }
@@ -31,9 +31,6 @@ void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
 void DemoDotAppState::Cleanup() {}
 
 void DemoDotAppState::Update(float time) {
-  //  anim1->addTime(time/4);
-  //  anim2->addTime(time/4);
-
   Ogre::ImGuiOverlay::NewFrame();
 
   static ImGuiIO &io = ImGui::GetIO();
@@ -48,7 +45,7 @@ void DemoDotAppState::Update(float time) {
   ImGui::End();
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-  if (!context_menu_) {
+  if (!ShowContextMenu) {
     GetEngine().OffMenu();
     return;
   } else {
@@ -69,36 +66,30 @@ void DemoDotAppState::Update(float time) {
   ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 #endif
 
-  const float hdx = 1920;
-  const float hdy = 1080;
-  const float hddiag = sqrt(hdx * hdx + hdy * hdy);
-  float x = GetEngine().GetWindowSize().first;
-  float y = GetEngine().GetWindowSize().second;
-  static float diag = sqrt(x * x + y * y);
-  float scale = 0.5 * diag / hddiag;
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-//	scale *= 2.0f;
-#endif
-
-  //ImGui::SetWindowFontScale(scale);
-
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   ImGui::NewLine();
 
-  if (ImGui::Button("         RESUME          ")) {
+  if (ImGui::Button("         Resume          ")) {
+    GetAudio().PlaySound("selection", true);
     GetEngine().GrabMouse(true);
     GetEngine().OffMenu();
-    context_menu_ = false;
+    ShowContextMenu = false;
   }
 #endif
 
   ImGui::NewLine();
 
-  if (ImGui::Button("        MAIN MENU        ")) ChangeState(make_unique<MenuAppState>());
+  if (ImGui::Button("        Menu        ")) {
+    GetAudio().PlaySound("selection", true);
+    ChangeState(make_unique<MenuAppState>());
+  }
 
   ImGui::NewLine();
 
-  if (ImGui::Button("          EXIT           ")) ChangeState();
+  if (ImGui::Button("          Quit           ")) {
+    GetAudio().PlaySound("selection", true);
+    ChangeState();
+  }
 
   ImGui::NewLine();
 
@@ -110,27 +101,11 @@ void DemoDotAppState::SetUp() {
   // GetScene().GetCameraMan().SetStyle(CameraMan::ControlStyle::FPS);
   LoadFromFile("1.scene");
 
-  // Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5.0);
-  // FixMaterial("Examples/Smoke");
-  // auto *ps = Ogre::Root::getSingleton().getSceneManager("Default")->createParticleSystem("Smoke", "Examples/Smoke");
-  // Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode()->createChildSceneNode(Ogre::Vector3(5, 0, 0))->attachObject(ps);
+  GetAudio().CreateSound("menu", "GameSong2.ogg", true);
+  GetAudio().PlaySound("menu");
 
-  //    Ogre::Entity *entity = scene->createEntity("ely_vanguardsoldier_kerwinatienza_Mesh.mesh",
-  //    "ely_vanguardsoldier_kerwinatienza_Mesh.mesh"); auto *node = root->createChildSceneNode(Ogre::Vector3(0, 0, 0));
-  //    node->scale(Ogre::Vector3(0.02));
-  //    node->attachObject(entity);
-  //    UpdateEntityMaterial(entity);
-  //    anim1 = entity->getAnimationState("run");
-  //    anim1->setLoop(true);
-  //    anim1->setEnabled(true);
-  //
-  //    anim2 = entity->getAnimationState("jump");
-  //    anim2->setLoop(true);
-  //    anim2->setEnabled(true);
-
-  GetAudio().CreateSound("ambient", "Wind-Mark_DiAngelo-1940285615.ogg", true);
-  GetAudio().SetVolume("ambient", 0.5);
-  GetAudio().PlaySound("ambient");
+  GetAudio().CreateSound("selection", "Menu-Selection-Change-M.ogg", false);
+  GetAudio().CreateSound("click", "VideoGameMenuSoundsMenu-Selection-Change-N.ogg", false);
 
   Ogre::ImGuiOverlay::NewFrame();
 }

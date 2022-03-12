@@ -61,22 +61,18 @@ void main()
 #ifndef NO_MRT
 
 #ifdef SSAO
-  if (uSSAOEnable > 0.0) {
-    scene.rgb *= texture2D(SsaoSampler, oUv0).r;
-  }
+  if (uSSAOEnable > 0.0) scene.rgb *= texture2D(SsaoSampler, oUv0).r;
 #endif
 
 #ifdef BLOOM
-  if (uBloomEnable > 0.0) {
-    scene.rgb += texture2D(BloomSampler, oUv0).rgb;
-  }
+  if (uBloomEnable > 0.0) scene.rgb += texture2D(BloomSampler, oUv0).rgb;
 #endif
 
 #ifdef FOG
   {
-  float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
-  float fragmentWorldDepth = clampedDepth * farClipDistance;
-  scene = ApplyFog(scene, uFogParams, uFogColour, fragmentWorldDepth);
+    float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
+    float fragmentWorldDepth = clampedDepth * farClipDistance;
+    scene = ApplyFog(scene, uFogParams, uFogColour, fragmentWorldDepth);
   }
 #endif
 
@@ -86,11 +82,11 @@ void main()
   float speed = length(velocity / texelSize);
   int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
 
-  for (int i = 1; i < nSamples; i++) {
-    vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
-    vec2 uv = oUv0 + offset;
-    scene += texture2D(SceneSampler, uv).rgb;
-  }
+    for (int i = 1; i < nSamples; i++) {
+      vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
+      vec2 uv = oUv0 + offset;
+      scene += texture2D(SceneSampler, uv).rgb;
+    }
 
   scene /= float(nSamples);
 }

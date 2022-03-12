@@ -815,7 +815,7 @@ namespace OgreOggSound
 					OgreOggSoundManager::getSingletonPtr()->_updateBuffers();
 					OgreOggSoundManager::getSingletonPtr()->_processQueuedSounds();
 				}
-				std::this_thread::sleep_for(std::chrono::milliseconds(32));
+				std::this_thread::sleep_for(std::chrono::milliseconds(OGGSOUND_UPDATE_INTERVAL));
 			}
 		}
 #endif

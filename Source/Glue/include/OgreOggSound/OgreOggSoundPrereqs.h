@@ -42,6 +42,7 @@
  */
 #ifndef OGGSOUND_THREADED
 	#define OGGSOUND_THREADED 1
+        #define OGGSOUND_UPDATE_INTERVAL 16
 #endif
 
 /**

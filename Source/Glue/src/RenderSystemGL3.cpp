@@ -12,12 +12,8 @@ using namespace std;
 
 namespace Glue {
 
-void Engine::InitOgreRenderSystemGL3() {
-  auto *GL3Ptr = new Ogre::GL3PlusRenderSystem();
-  GL3Ptr->setConfigOption("Separate Shader Objects", "Yes");
-  Ogre::Root::getSingleton().setRenderSystem(GL3Ptr);
-}
+void Engine::InitOgreRenderSystemGL3() { Ogre::Root::getSingleton().setRenderSystem(new Ogre::GL3PlusRenderSystem()); }
 
 }  // namespace Glue
 
-#endif
+#endif  // OGRE_BUILD_RENDERSYSTEM_GL3PLUS

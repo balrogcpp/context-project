@@ -536,4 +536,6 @@ Sound &GetAudio() { return GetComponent<Sound>(); }
 
 Scene &GetScene() { return GetComponent<Scene>(); }
 
+Overlay &GetOverlay() { return GetComponent<Overlay>(); }
+
 }  // namespace Glue

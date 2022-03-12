@@ -31,6 +31,7 @@ Engine& GetEngine();
 Physics& GetPhysics();
 Sound& GetAudio();
 Scene& GetScene();
+Overlay& GetOverlay();
 
 class Engine final : public Singleton<Engine> {
  public:

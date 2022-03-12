@@ -15,8 +15,10 @@ class MenuAppState : public Glue::AppState {
   void Pause() override {}
   void Resume() override {}
   void Update(float time) override;
-
   void OnKeyDown(SDL_Keycode sym) override;
+
+  void DrawOverlay();
+  void DrawMenu();
 };
 
 }  // namespace Demo

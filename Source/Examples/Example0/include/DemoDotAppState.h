@@ -19,9 +19,7 @@ class DemoDotAppState final : public Glue::AppState {
   void OnKeyDown(SDL_Keycode sym) override;
 
  private:
-  //  Ogre::AnimationState *anim1 = nullptr;
-  //  Ogre::AnimationState *anim2 = nullptr;
-  bool context_menu_ = false;
+  bool ShowContextMenu = false;
 };
 
 }  // namespace Demo

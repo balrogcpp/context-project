@@ -4,47 +4,47 @@ font NotoSans-Regular
 {
 	type 		truetype
 	source 		NotoSans-Regular.ttf
-	size 		48
-}
-
-font NotoSansSC-Regular
-{
-	type 		truetype
-	source 		NotoSansSC-Regular.otf
-	size 		48
-}
-
-font NotoSansSC-Medium
-{
-	type 		truetype
-	source 		NotoSansSC-Medium.otf
-	size 		48
-}
-
-font NotoSansJP-Medium
-{
-	type 		truetype
-	source 		NotoSansJP-Medium.otf
-	size 		48
-}
-
-font NotoSansJP-Regular
-{
-	type 		truetype
-	source 		NotoSansJP-Regular.otf
-	size 		48
+	size 		24
 }
 
 font Roboto-Medium
 {
 	type 		truetype
 	source 		Roboto-Medium.ttf
-	size 		48
+	size 		24
 }
 
 font Roboto-Regular
 {
 	type 		truetype
 	source 		Roboto-Regular.ttf
-	size 		48
+	size 		24
+}
+
+font NotoSansSC-Regular
+{
+	type 		truetype
+	source 		NotoSansSC-Regular.otf
+	size 		24
+}
+
+font NotoSansSC-Medium
+{
+	type 		truetype
+	source 		NotoSansSC-Medium.otf
+	size 		24
+}
+
+font NotoSansJP-Medium
+{
+	type 		truetype
+	source 		NotoSansJP-Medium.otf
+	size 		24
+}
+
+font NotoSansJP-Regular
+{
+	type 		truetype
+	source 		NotoSansJP-Regular.otf
+	size 		24
 }

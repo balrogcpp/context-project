@@ -68,16 +68,13 @@ void Sound::PlaySound(const string &SoundName, bool PlayImmediately) {
 void Sound::SetMasterVolume(float Volume) { SoundManagerPtr->setMasterVolume(Volume); }
 
 void Sound::SetMaxVolume(const string &SoundName, float MaxVolume) {
-  if (SoundManagerPtr->getSound(SoundName)) {
-    SoundManagerPtr->getSound(SoundName)->setMaxVolume(MaxVolume);
-  }
+  auto *Sound = SoundManagerPtr->getSound(SoundName);
+  if (Sound) Sound->setMaxVolume(MaxVolume);
 }
 
 void Sound::SetVolume(const string &SoundName, float Volume) {
   auto *sound = SoundManagerPtr->getSound(SoundName);
-  if (sound) {
-    sound->setVolume(Volume);
-  }
+  if (sound) sound->setVolume(Volume);
 }
 
 }  // namespace Glue

@@ -370,7 +370,7 @@ externalproject_add(Target_OGRE
                     DEPENDS Target_zlib Target_FreeType Target_pugixml Target_assimp Target_SDL2
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v13.3.1
+                    GIT_TAG v13.3.2
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard

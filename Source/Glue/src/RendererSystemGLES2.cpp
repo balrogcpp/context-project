@@ -16,4 +16,4 @@ void Engine::InitOgreRenderSystemGLES2() { Ogre::Root::getSingleton().setRenderS
 
 }  // namespace Glue
 
-#endif
+#endif // OGRE_BUILD_RENDERSYSTEM_GLES2
