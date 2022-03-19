@@ -88,6 +88,6 @@
     </environment>
   <skyBox cubemap=""/>
   <terrainGroup worldSize="200" mapSize="257" inputScale="10">
-        <terrain x="0" y="0" heightmap="terrain.png"/>
+        <terrain x="0" y="0" heightmap="terrain2.png"/>
     </terrainGroup>
 </scene>

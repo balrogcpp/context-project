@@ -26,6 +26,7 @@ class Overlay final : public Component<Overlay>, public Ogre::RenderTargetListen
   void OnResume() override;
   void OnUpdate(float time) override;
   void OrangeStyle();
+  void CherryStyle();
   void SetupImGuiStyle(bool bStyleDark_, float alpha_);
   void preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) override;
   void PrepareFontTexture(const std::string& FontName, const ImFontConfig* FontConfig = NULL, const ImWchar* GlyphRanges = NULL,

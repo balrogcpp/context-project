@@ -19,7 +19,7 @@ const static string FILE_CONTENT =
     "verbose=false\n"
 #endif
     "verbose_input=false\n"
-    "window_width=1024\n"
+    "window_width=1366\n"
     "window_high=768\n"
     "window_fullscreen=false\n"
     "enable_bloom=false\n"
