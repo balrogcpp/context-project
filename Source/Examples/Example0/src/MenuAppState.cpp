@@ -14,9 +14,7 @@ namespace Demo {
 
 void MenuAppState::Cleanup() {}
 
-void MenuAppState::Update(float time) {
-  DrawOverlay();
-}
+void MenuAppState::Update(float time) { DrawOverlay(); }
 
 void MenuAppState::OnKeyDown(SDL_Keycode sym) {}
 
@@ -28,9 +26,13 @@ void MenuAppState::DrawOverlay() {
   static bool ShowSimpleOverlay = true;
   if (ShowSimpleOverlay) GetOverlay().DrawSimpleOverlay(&ShowSimpleOverlay);
 
-  DrawMenu();
+//  ImGui::Begin("MetricsGuiMetric");
+//  frameTimeMetric.AddNewValue(1.f / io.Framerate);
+//  frameTimePlot.UpdateAxes();
+//  frameTimePlot.DrawHistory();
+//  ImGui::End();
 
-  ImGui::End();
+  DrawMenu();
 }
 
 void MenuAppState::DrawMenu() {
@@ -58,6 +60,8 @@ void MenuAppState::DrawMenu() {
   }
 
   ImGui::NewLine();
+
+  ImGui::End();
 }
 
 void MenuAppState::SetUp() {
@@ -68,6 +72,30 @@ void MenuAppState::SetUp() {
 
   GetAudio().CreateSound("selection", "Menu-Selection-Change-M.ogg", false);
   GetAudio().CreateSound("click", "VideoGameMenuSoundsMenu-Selection-Change-N.ogg", false);
+
+  frameTimeMetric.mSelected = true;
+
+  frameTimePlot.mBarRounding = 0.f;           // amount of rounding on bars
+  frameTimePlot.mRangeDampening = 0.95f;      // weight of historic range on axis range [0,1]
+  frameTimePlot.mInlinePlotRowCount = 2;      // height of DrawList() inline plots, in text rows
+  frameTimePlot.mPlotRowCount = 5;            // height of DrawHistory() plots, in text rows
+  frameTimePlot.mVBarMinWidth = 6;            // min width of bar graph bar in pixels
+  frameTimePlot.mVBarGapWidth = 1;            // width of bar graph inter-bar gap in pixels
+  frameTimePlot.mShowAverage = false;         // draw horizontal line at series average
+  frameTimePlot.mShowInlineGraphs = false;    // show history plot in DrawList()
+  frameTimePlot.mShowOnlyIfSelected = false;  // draw show selected metrics
+  frameTimePlot.mShowLegendDesc = true;       // show series description in legend
+  frameTimePlot.mShowLegendColor = true;      // use series color in legend
+  frameTimePlot.mShowLegendUnits = true;      // show units in legend values
+  frameTimePlot.mShowLegendAverage = false;   // show series average in legend
+  frameTimePlot.mShowLegendMin = true;        // show plot y-axis minimum in legend
+  frameTimePlot.mShowLegendMax = true;        // show plot y-axis maximum in legend
+  frameTimePlot.mBarGraph = false;            // use bars to draw history
+  frameTimePlot.mStacked = false;             // stack series when drawing history
+  frameTimePlot.mSharedAxis = false;          // use first series' axis range
+  frameTimePlot.mFilterHistory = true;        // allow single plot point to represent more than on history value
+
+  frameTimePlot.AddMetric(&frameTimeMetric);
 }
 
 }  // namespace Demo

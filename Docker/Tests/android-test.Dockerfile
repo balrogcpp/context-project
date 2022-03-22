@@ -1,3 +1,5 @@
+# This file is part of Glue Engine. Created by Andrey Vasiliev
+
 FROM registry.gitlab.com/balrogcpp/context-project/clang-android
 
 ARG DEBIAN_FRONTEND=noninteractive

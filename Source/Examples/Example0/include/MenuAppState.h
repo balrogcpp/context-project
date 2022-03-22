@@ -2,6 +2,7 @@
 
 #pragma once
 #include "AppState.h"
+#include "metrics_gui.h"
 
 namespace Demo {
 
@@ -19,6 +20,10 @@ class MenuAppState : public Glue::AppState {
 
   void DrawOverlay();
   void DrawMenu();
+
+ private:
+  MetricsGuiMetric frameTimeMetric{"Frame time", "s", MetricsGuiMetric::USE_SI_UNIT_PREFIX};
+  MetricsGuiPlot frameTimePlot;
 };
 
 }  // namespace Demo

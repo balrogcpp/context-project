@@ -1,3 +1,5 @@
+# This file is part of Glue Engine. Created by Andrey Vasiliev
+
 FROM ubuntu:18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -43,8 +45,8 @@ RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_
 
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
-ARG GNU_MIRROR=https://ftp.gnu.org.ua/gnu
-ARG BINUTILS_VERSION=2.37
+ARG GNU_MIRROR=https://ftp.gnu.org/gnu
+ARG BINUTILS_VERSION=2.38
 ARG MINGW_VERSION=9.0.0
 ARG GCC_VERSION=11.2.0
 ARG PKG_CONFIG_VERSION=0.29.2
