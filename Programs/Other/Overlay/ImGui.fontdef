@@ -48,3 +48,31 @@ font NotoSansJP-Regular
 	source 		NotoSansJP-Regular.otf
 	size 		24
 }
+
+font KenneyIcon-Regular
+{
+	type 		truetype
+	source 		kenney-icon-font.ttf
+	size 		24
+}
+
+font MaterialIcon-Regular
+{
+	type 		truetype
+	source 		MaterialIcons-Regular.ttf
+	size 		24
+}
+
+font FontAwesomeIcon-Regular
+{
+	type 		truetype
+	source 		fa-regular-400.ttf
+	size 		24
+}
+
+font FontAwesomeIcon-Solid
+{
+	type 		truetype
+	source 		fa-solid-900.ttf
+	size 		24
+}

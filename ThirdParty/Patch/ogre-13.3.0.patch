@@ -1,5 +1,17 @@
+diff --git a/CMake/Templates/imconfig.h b/CMake/Templates/imconfig.h
+index 7f6a28ce..86100989 100644
+--- a/CMake/Templates/imconfig.h
++++ b/CMake/Templates/imconfig.h
+@@ -1,5 +1,6 @@
+ #pragma once
+ #define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
++#define IMGUI_USE_WCHAR32
+ #include <OgreOverlayPrerequisites.h>
+ #define IMGUI_API _OgreOverlayExport
+ #cmakedefine IMGUI_ENABLE_FREETYPE
+\ No newline at end of file
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 289f7817..397c0570 100644
+index 0c3032db..1784e607 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -280,12 +280,12 @@ elseif(EMSCRIPTEN)
