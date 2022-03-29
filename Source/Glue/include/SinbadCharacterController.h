@@ -61,36 +61,36 @@ class SinbadCharacterController : public Object, public InputObserver {
   void OnMouseRbDown(int x, int y) override;
 
  protected:
-  void setupBody(Ogre::SceneManager *sceneMgr);
-  void setupAnimations();
-  void setupCamera(Ogre::Camera *cam);
-  void updateBody(float deltaTime);
-  void updateAnimations(float deltaTime);
-  void fadeAnimations(float deltaTime);
-  void updateCamera(float deltaTime);
-  void updateCameraGoal(float deltaYaw, float deltaPitch, float deltaZoom);
-  void setBaseAnimation(AnimID id, bool reset = false);
-  void setTopAnimation(AnimID id, bool reset = false);
+  void SetupBody();
+  void SetupAnimations();
+  void SetupCamera(Ogre::Camera *CameraPtr);
+  void UpdateBody(float FrameTime);
+  void UpdateAnimations(float FrameTime);
+  void FadeAnimations(float FrameTime);
+  void UpdateCamera(float FrameTime);
+  void UpdateCameraGoal(float deltaYaw, float deltaPitch, float deltaZoom);
+  void SetBaseAnimation(AnimID ID, bool reset = false);
+  void SetTopAnimation(AnimID ID, bool reset = false);
 
-  Ogre::SceneNode *mBodyNode = nullptr;
-  Ogre::SceneNode *mCameraPivot = nullptr;
-  Ogre::SceneNode *mCameraGoal = nullptr;
-  Ogre::SceneNode *mCameraNode = nullptr;
-  float mPivotPitch;
-  Ogre::Entity *mBodyEnt = nullptr;
-  Ogre::Entity *mSword1 = nullptr;
-  Ogre::Entity *mSword2 = nullptr;
-  Ogre::RibbonTrail *mSwordTrail = nullptr;
-  Ogre::AnimationState *mAnims[NUM_ANIMS];  // master animation list
-  AnimID mBaseAnimID;                       // current base (full- or lower-body) animation
-  AnimID mTopAnimID;                        // current top (upper-body) animation
-  bool mFadingIn[NUM_ANIMS];                // which animations are fading in
-  bool mFadingOut[NUM_ANIMS];               // which animations are fading out
-  bool mSwordsDrawn;
-  Ogre::Vector3 mKeyDirection;   // player's local intended direction based on WASD keys
-  Ogre::Vector3 mGoalDirection;  // actual intended direction in world-space
-  float mVerticalVelocity;       // for jumping
-  float mTimer;                  // general timer to see how long animations have been playing
+  Ogre::SceneNode *BodyNode = nullptr;
+  Ogre::SceneNode *CameraPivot = nullptr;
+  Ogre::SceneNode *CameraGoal = nullptr;
+  Ogre::SceneNode *CameraNode = nullptr;
+  float PivotPitch;
+  Ogre::Entity *BodyEnt = nullptr;
+  Ogre::Entity *Sword1 = nullptr;
+  Ogre::Entity *Sword2 = nullptr;
+  Ogre::RibbonTrail *SwordTrail = nullptr;
+  Ogre::AnimationState *Anims[NUM_ANIMS];  // master animation list
+  AnimID BaseAnimID;                       // current base (full- or lower-body) animation
+  AnimID TopAnimID;                        // current top (upper-body) animation
+  bool FadingIn[NUM_ANIMS];                // which animations are fading in
+  bool FadingOut[NUM_ANIMS];               // which animations are fading out
+  bool SwordsDrawn;
+  Ogre::Vector3 KeyDirection;   // player's local intended direction based on WASD keys
+  Ogre::Vector3 GoalDirection;  // actual intended direction in world-space
+  float VerticalVelocity;       // for jumping
+  float Timer;                  // general timer to see how long animations have been playing
 };
 
 }  // namespace Glue
