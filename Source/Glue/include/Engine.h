@@ -37,56 +37,118 @@ class Engine final : public Singleton<Engine> {
  public:
   Engine();
   virtual ~Engine();
-  void TestCPUCapabilities();
-  void TestGPUCapabilities();
+
+  /// Initialized all components. Must be called once after Engine object created
   void InitComponents();
 
+  /// Called every frame to read input
   void Capture();
+
+  /// Set all components to Pause state
   void Pause();
-  void InMenu();
-  void OffMenu();
+
+  /// Called when in-game menu turned on
+  void OnMenuOn();
+
+  /// Called when in-game menu turned off
+  void OnMenuOff();
+
+  /// Called when game is resumed
   void Resume();
+
+  /// Called on game exit
   void Cleanup();
+
+  /// Called every frame
   void Update(float PassedTime);
+
+  /// Called to start render
   void RenderOneFrame();
-  void RenderFirstFrame();
+
+  /// Internal function to add component
   void RegComponent(ComponentI* ComponentPtr);
+
+  /// Internal function to unload component
   void UnRegComponent(ComponentI* ComponentPtr);
 
   void SetFullscreen(bool Fullscreen);
-  void SetFullscreen();
-  void SetWindowed();
+  bool IsFullscreen();
   void ResizeWindow(int Width, int Height);
   void SetWindowCaption(const char* Caption);
   std::pair<int, int> GetWindowSize() const;
   void GrabMouse(bool grab);
 
  protected:
+  /// Internal. Check CPU
+  void TestCPUCapabilities();
+
+  /// Internal. Check GPU
+  void TestGPUCapabilities();
+
+  /// Internal. Read engine parameters from Config.ini. If not exists create and fill it with default value
   void ReadConfFile();
+
+  /// Creates and initiates Sound component instance. Internal
   void InitSound();
+
+  /// Load resources by list. Internal
+  void InitResources();
+
+  /// Creates and initiates Overlay component. Internal
   void InitOverlay();
+
+  /// Creates and initiates Compositor component. Internal
   void InitCompositor();
+
+  /// Creates and initiates Physics component. Internal
   void InitPhysics();
+
+  /// Creates and initiates Scene component. Internal
   void InitScene();
+
+  /// Initiates SDL context
   void InitSDLSubsystems();
+
+  /// Creates one of 3 Ogre render systems: GL, GL3 or GLSLES2
   void InitDefaultRenderSystem();
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+  ///
   void InitOgreRenderSystemGL3();
 #endif
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+  ///
   void InitOgreRenderSystemGLES2();
 #endif
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL
+  ///
   void InitOgreRenderSystemGL();
 #endif
+  /// Load into memory static Ogre plugins
   void InitOgrePlugins();
+
+  /// Creates SDL window
   void CreateSDLWindow();
+
+  /// Creates Ogre render context attached to SDL window
   void CreateOgreRenderWindow();
+
+  /// Scans Assets and Programs directories for shaders, materials, models, textures, sounds etc.
   void InitResourceLocation();
+
+  /// Ogre texture settings, like filtration
   void InitTextureSettings();
+
+  /// Ogre shadow settings
   void InitShadowSettings();
-  /// Android helper
+
+  /// Android helper function
   void WindowRestoreFullscreenAndroid();
+
+  /// Internal helper function
+  void SetFullscreen();
+
+  /// Internal helper function
+  void SetWindowed();
 
   std::vector<Ogre::Plugin*> PluginList;
   std::string RenderSystemName;

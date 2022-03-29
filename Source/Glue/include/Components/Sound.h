@@ -16,17 +16,22 @@ class Sound final : public Component<Sound> {
   Sound(unsigned int MaxSourceCount = 16, unsigned int QueueListSize = 4);
   virtual ~Sound();
 
+  void OnSetUp() override;
   void OnClean() override;
   void OnPause() override;
   void OnResume() override;
+  void Pause();
+  void Resume();
   void OnUpdate(float PassedTime) override;
 
-  void CreateSound(const std::string &SoundName, const std::string &AudioFile, bool PlayInLoop = false);
+  void AddSound(const std::string &SoundName, const std::string &AudioFile, Ogre::SceneNode *Node = nullptr, bool PlayInLoop = false);
   void PlaySound(const std::string &SoundName, bool PlayImmediately = true);
+  void StopSound(const std::string &SoundName);
   void SetMasterVolume(float MasterVolume);
-  void SetMaxVolume(const std::string &SoundName, float MaxVolume);
-  void SetVolume(const std::string &SoundName, float Volume);
-  void SetListener(Ogre::SceneNode *ParentPtr);
+  void SetSoundMaxVolume(const std::string &SoundName, float MaxVolume);
+  void SetSoundVolume(const std::string &SoundName, float Volume);
+  void AddListener(Ogre::SceneNode *ParentPtr);
+  void RemoveListener(Ogre::SceneNode *ParentPtr);
 
  protected:
   std::unique_ptr<OgreOggSound::Root> AudioRootPtr;

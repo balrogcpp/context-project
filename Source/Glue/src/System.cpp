@@ -21,26 +21,26 @@ using namespace std;
 
 namespace Glue {
 
-static std::string CurrentBinDirectory;
+static string CurrentBinDirectory;
 
-void SetCurrentDirectory(const std::string &Path) {
+void SetCurrentDirectory(const string &Path) {
   CurrentBinDirectory = Path;
 }
 
-std::string GetCurrentDirectoryB(const std::string &args) {
+string GetCurrentDirectoryB(const string &args) {
   if (!CurrentBinDirectory.empty()) return CurrentBinDirectory;
 
 #if defined(UNIX)
   if (args.empty()) return "";
 
-  std::string aux(args);
+  string aux(args);
 
   // Get the last position of '/'
   int pos = aux.rfind('/');
 
   // Get the path and the name
-  std::string path = aux.substr(0, pos + 1);
-  std::string name = aux.substr(pos + 1);
+  string path = aux.substr(0, pos + 1);
+  string name = aux.substr(pos + 1);
 
   CurrentBinDirectory = path.append("/");
 
@@ -48,9 +48,9 @@ std::string GetCurrentDirectoryB(const std::string &args) {
 #elif defined(WINDOWS)
   char buffer[MAX_PATH];
   GetModuleFileNameA(NULL, buffer, MAX_PATH);
-  std::string::size_type pos = std::string(buffer).find_last_of("\\/");
+  string::size_type pos = string(buffer).find_last_of("\\/");
 
-  std::string path = std::string(buffer).substr(0, pos);
+  string path = string(buffer).substr(0, pos);
 
   CurrentBinDirectory = path.append("\\");
 
@@ -60,7 +60,7 @@ std::string GetCurrentDirectoryB(const std::string &args) {
   return "";
 }
 
-std::string GetUserDirectory() {
+string GetUserDirectory() {
 #if defined(UNIX)
   struct passwd *pw = getpwuid(getuid());
   const char *homedir = pw->pw_dir;
@@ -73,7 +73,7 @@ std::string GetUserDirectory() {
   return "";
 }
 
-std::string TrunkPath(std::string &Path) {
+string TrunkPath(string &Path) {
 #if defined(UNIX)
   return Path.append("/");
 #elif defined(WINDOWS)
@@ -81,8 +81,8 @@ std::string TrunkPath(std::string &Path) {
 #endif
 }
 
-std::string PathAppend(const std::string &Path, const std::string &Append) {
-  std::string Result = Path;
+string PathAppend(const string &Path, const string &Append) {
+  string Result = Path;
 
 #if defined(UNIX)
   Result.append("/");
@@ -97,9 +97,9 @@ std::string PathAppend(const std::string &Path, const std::string &Append) {
   return "";
 }
 
-bool DirectoryExists(const std::string &Path) { return fs::exists(Path); }
+bool DirectoryExists(const string &Path) { return fs::exists(Path); }
 
-void CreateDirectory(const std::string &Path) {
+void CreateDirectory(const string &Path) {
   if (!fs::exists(Path)) fs::create_directory(Path);
 }
 

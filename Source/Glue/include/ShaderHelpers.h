@@ -20,18 +20,18 @@ void FixTransparentShadowCaster(const std::string &material);
 void EnsureHasTangents(Ogre::MeshPtr MeshSPtr);
 
 ///
-void FixMaterial(const Ogre::MaterialPtr &material);
+void AddMaterial(const Ogre::MaterialPtr &material);
 
 ///
-void FixMaterial(const std::string &material);
+void AddMaterial(const std::string &material);
 
 ///
-void FixMeshMaterial(Ogre::MeshPtr MeshSPtr, const std::string &MaterialName = "");
+void AddMeshMaterial(Ogre::MeshPtr MeshSPtr, const std::string &MaterialName = "");
 
 ///
-void FixMeshMaterial(const std::string &MeshName, const std::string &MaterialName = "");
+void AddMeshMaterial(const std::string &MeshName, const std::string &MaterialName = "");
 
 ///
-void FixEntityMaterial(Ogre::Entity *EntityPtr, const std::string &MaterialName = "");
+void AddEntityMaterial(Ogre::Entity *EntityPtr, const std::string &MaterialName = "");
 
 }  // namespace Glue

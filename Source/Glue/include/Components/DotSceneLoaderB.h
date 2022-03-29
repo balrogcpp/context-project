@@ -5,7 +5,7 @@
 #include "CubeMapCamera.h"
 #include "Input/InputSequencer.h"
 #include "Singleton.h"
-#include "Objects/CameraMan.h"
+#include "CameraMan.h"
 #include "ReflectionCamera.h"
 #include <OgreCodec.h>
 #include <OgrePlugin.h>

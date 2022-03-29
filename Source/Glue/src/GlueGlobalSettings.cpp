@@ -1,6 +1,7 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #include "PCHeader.h"
+#include "Engine.h"
 #include "GlueGlobalSettings.h"
 #include <OgrePlatformInformation.h>
 
@@ -9,12 +10,12 @@ using namespace Ogre;
 
 namespace Glue {
 
-bool GlobalMRTEnabled() {
-  static bool Result = !RenderSystemGLES2();
+bool GlobalMRTIsEnabled() {
+  static bool Result = !RenderSystemIsGLES2();
   return Result;
 }
 
-bool CPUSupportSSE() {
+bool CPUSupportsSSE() {
 #if OGRE_CPU == OGRE_CPU_X86
   static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE);
   return Result;
@@ -23,7 +24,7 @@ bool CPUSupportSSE() {
 #endif
 };
 
-bool CPUSupportSSE2() {
+bool CPUSupportsSSE2() {
 #if OGRE_CPU == OGRE_CPU_X86
   static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE2);
   return Result;
@@ -32,7 +33,7 @@ bool CPUSupportSSE2() {
 #endif
 };
 
-bool CPUSupportSSE3() {
+bool CPUSupportsSSE3() {
 #if OGRE_CPU == OGRE_CPU_X86
   static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE3);
   return Result;
@@ -41,7 +42,7 @@ bool CPUSupportSSE3() {
 #endif
 };
 
-bool CPUSupportSSE41() {
+bool CPUSupportsSSE41() {
 #if OGRE_CPU == OGRE_CPU_X86
   static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE41);
   return Result;
@@ -50,7 +51,7 @@ bool CPUSupportSSE41() {
 #endif
 };
 
-bool CPUSupportSSE42() {
+bool CPUSupportsSSE42() {
 #if OGRE_CPU == OGRE_CPU_X86
   static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE42);
   return Result;
@@ -59,7 +60,7 @@ bool CPUSupportSSE42() {
 #endif
 };
 
-bool CPUSupportNEON() {
+bool CPUSupportsNEON() {
 #if OGRE_CPU == OGRE_CPU_ARM
   static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_NEON);
   return Result;
@@ -68,19 +69,46 @@ bool CPUSupportNEON() {
 #endif
 };
 
-bool RenderSystemGL() {
+bool IsFullscreen() { return GetEngine().IsFullscreen(); }
+
+bool RenderSystemIsGL() {
   static bool Result = !Ogre::Root::getSingleton().getRenderSystem()->getName().compare("OpenGL Rendering Subsystem");
   return Result;
 };
 
-bool RenderSystemGL3() {
+bool RenderSystemIsGL3() {
   static bool Result = !Ogre::Root::getSingleton().getRenderSystem()->getName().compare("OpenGL 3+ Rendering Subsystem");
   return Result;
 };
 
-bool RenderSystemGLES2() {
+bool RenderSystemIsGLES2() {
   static bool Result = !Ogre::Root::getSingleton().getRenderSystem()->getName().compare("OpenGL ES 2.x Rendering Subsystem");
   return Result;
 };
+
+SceneManager* OgreSceneManager() {
+  static SceneManager* Result = Ogre::Root::getSingleton().getSceneManager("Default");
+  return Result;
+}
+
+SceneNode* OgreRootNode() {
+  static SceneNode* Result = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
+  return Result;
+}
+
+Camera* OgreCamera() {
+  static Camera* Result = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
+  return Result;
+}
+
+SceneNode* OgreCameraNode() {
+  static SceneNode* Result = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getParentSceneNode();
+  return Result;
+}
+
+Vector3 SunDirection() {
+  Vector3 Result = -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition();
+  return Result;
+}
 
 }  // namespace Glue

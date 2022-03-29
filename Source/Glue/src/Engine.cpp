@@ -73,46 +73,43 @@ void Engine::InitComponents() {
   WindowHeight = ConfigPtr->GetInt("window_high", WindowHeight);
   WindowFullScreen = ConfigPtr->GetBool("window_fullscreen", WindowFullScreen);
   RenderSystemName = ConfigPtr->Get("render_system", RenderSystemName);
-
   OgreRoot = new Root("", "", "");
-
   InitDefaultRenderSystem();
   InitOgrePlugins();
-
   OgreRoot->initialise(false);
-
   InitSDLSubsystems();
   CreateSDLWindow();
   CreateOgreRenderWindow();
-
   TestGPUCapabilities();
-
 #ifdef ANDROID
   WindowRestoreFullscreenAndroid();
 #endif
-
   InitResourceLocation();
-
-  // RTSS
   InitRTSS();
   CreateRTSSRuntime();
-  //  InitRTSSInstansing();
-
-  // Materials
+  // InitRTSSInstansing();
   InitTextureSettings();
+  InitOverlay();
+  InitResources();
   InitShadowSettings();
 
-  InitOverlay();
+  ImGuiIO &io = ImGui::GetIO();
+  OverlayPtr->AddFont("NotoSans-Regular", nullptr, io.Fonts->GetGlyphRangesCyrillic());
+  ImFontConfig config;
+  config.MergeMode = true;
+  static const ImWchar icon_ranges[] = {ICON_MIN_MD, ICON_MAX_MD, 0};
+  OverlayPtr->AddFont("KenneyIcon-Regular", &config, icon_ranges);
+  GetOverlay().Show();
+
   InitCompositor();
   InitPhysics();
   InitSound();
   InitScene();
+  for (auto it : ComponentList) it->OnSetUp();
 }
 
 void Engine::InitSDLSubsystems() {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
-    throw Exception("Failed to init SDL2");
-  }
+  OgreAssert(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER), "Failed to init SDL2");
 
   for (int i = 0; i < SDL_NumJoysticks(); ++i)
     if (SDL_IsGameController(i)) SDL_GameControllerOpen(i);
@@ -220,17 +217,17 @@ void Engine::CreateSDLWindow() {
 }
 
 void Engine::CreateOgreRenderWindow() {
-  NameValuePairList params;
+  NameValuePairList OgreRenderParams;
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(SDLWindowPtr, &info);
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
+  OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
+  OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
+  OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
 
@@ -242,10 +239,10 @@ void Engine::CreateOgreRenderWindow() {
   jobject raw_resources = env->CallObjectMethod(raw_activity, method_get_resources);
   jobject raw_asset_manager = env->CallObjectMethod(raw_resources, method_get_assets);
 
-  params["currentGLContext"] = "true";
-  params["externalGLControl"] = "true";
-  params["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
-  params["preserveContext"] = "true";
+  OgreRenderParams["currentGLContext"] = "true";
+  OgreRenderParams["externalGLControl"] = "true";
+  OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
+  OgreRenderParams["preserveContext"] = "true";
 
   AAssetManager *asset_manager = AAssetManager_fromJava(env, raw_asset_manager);
   AConfiguration *mAConfig = AConfiguration_new();
@@ -254,7 +251,6 @@ void Engine::CreateOgreRenderWindow() {
   ArchiveManager::getSingleton().addArchiveFactory(new APKFileSystemArchiveFactory(asset_manager));
   ArchiveManager::getSingleton().addArchiveFactory(new APKZipArchiveFactory(asset_manager));
 #endif
-
   const char TrueStr[] = "true";
   const char FalseStr[] = "false";
 
@@ -262,11 +258,11 @@ void Engine::CreateOgreRenderWindow() {
   WindowGammaCorrection = ConfigPtr->GetBool("gamma", WindowGammaCorrection);
   FSAA = ConfigPtr->GetInt("fsaa", FSAA);
 
-  params["vsync"] = WindowVsync ? TrueStr : FalseStr;
-  params["gamma"] = WindowGammaCorrection ? TrueStr : FalseStr;
-  params["FSAA"] = to_string(FSAA);
+  OgreRenderParams["vsync"] = WindowVsync ? TrueStr : FalseStr;
+  OgreRenderParams["gamma"] = WindowGammaCorrection ? TrueStr : FalseStr;
+  OgreRenderParams["FSAA"] = to_string(FSAA);
 
-  OgreRenderWindowPtr = OgreRoot->createRenderWindow(WindowCaption, WindowWidth, WindowHeight, WindowFullScreen, &params);
+  OgreRenderWindowPtr = OgreRoot->createRenderWindow(WindowCaption, WindowWidth, WindowHeight, WindowFullScreen, &OgreRenderParams);
   OgreRenderTarget = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
 
   OgreCamera = OgreSceneManager->createCamera("Default");
@@ -277,19 +273,16 @@ void Engine::CreateOgreRenderWindow() {
 }
 
 void Engine::InitShadowSettings() {
-#if defined(DESKTOP)
   bool ShadowsEnabled = true;
-#elif defined(MOBILE)
-  bool ShadowsEnabled = false;
+#ifdef MOBILE
+  ShadowsEnabled = false;
 #endif
 
   float ShadowFarDistance = 400;
   int16_t ShadowTexSize = 512;
-
   ShadowsEnabled = ConfigPtr->GetBool("shadows_enable", ShadowsEnabled);
   ShadowFarDistance = ConfigPtr->GetInt("shadow_far", ShadowFarDistance);
   ShadowTexSize = ConfigPtr->GetInt("tex_size", ShadowTexSize);
-
   if (!ShadowsEnabled) {
     OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
     OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 0);
@@ -297,13 +290,11 @@ void Engine::InitShadowSettings() {
     OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
     return;
   }
-
 #if defined(DESKTOP)
   PixelFormat ShadowTextureFormat = PixelFormat::PF_DEPTH16;
 #elif defined(MOBILE)
   PixelFormat ShadowTextureFormat = PixelFormat::PF_FLOAT16_R;
 #endif
-
   OgreSceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
   OgreSceneManager->setShadowFarDistance(ShadowFarDistance);
   OgreSceneManager->setShadowTextureSize(ShadowTexSize);
@@ -332,13 +323,11 @@ void Engine::InitTextureSettings() {
   const auto *RSC = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
   auto &OTM = Ogre::TextureManager::getSingleton();
   auto &OMM = Ogre::MaterialManager::getSingleton();
-
   TextureFilterOptions TextureFiltering = TFO_BILINEAR;
   if (RSC->hasCapability(RSC_ANISOTROPY) && ConfigPtr->GetString("filtration") == "anisotropic") {
     TextureFiltering = TFO_ANISOTROPIC;
     OMM.setDefaultAnisotropy(ConfigPtr->GetInt("anisotropy", 1));
   }
-
   OMM.setDefaultTextureFiltering(TextureFiltering);
   OTM.setDefaultNumMipmaps(MIP_UNLIMITED);
 }
@@ -355,19 +344,20 @@ void Engine::InitSound() {
   RegComponent(SoundPtr.get());
 }
 
-void Engine::InitOverlay() {
-  OverlayPtr = make_unique<Overlay>(OgreRenderWindowPtr);
-  RegComponent(OverlayPtr.get());
+void Engine::InitResources() {
   auto &RGM = ResourceGroupManager::getSingleton();
   RGM.initialiseResourceGroup(RGN_INTERNAL);
   RGM.initialiseAllResourceGroups();
 }
 
+void Engine::InitOverlay() {
+  OverlayPtr = make_unique<Overlay>(OgreRenderWindowPtr);
+  RegComponent(OverlayPtr.get());
+}
+
 void Engine::InitCompositor() {
   CompositorUPtr = make_unique<Compositor>();
   RegComponent(CompositorUPtr.get());
-  ImGuiIO& io = ImGui::GetIO();
-  OverlayPtr->PrepareFontTexture("NotoSans-Regular", nullptr, io.Fonts->GetGlyphRangesCyrillic());
   CompositorUPtr->SetUp();
 }
 
@@ -381,22 +371,25 @@ void Engine::InitScene() {
   RegComponent(ScenePtr.get());
 }
 
-void Engine::RegComponent(ComponentI *ComponentPtr) { ComponentList.push_back(ComponentPtr); }
+void Engine::RegComponent(ComponentI *ComponentPtr) {
+  if (ComponentPtr) ComponentList.push_back(ComponentPtr);
+}
 
 void Engine::UnRegComponent(ComponentI *ComponentPtr) {
-  // TODO: implement this
+  auto Iter = find(ComponentList.begin(), ComponentList.end(), ComponentPtr);
+  if (Iter != ComponentList.end()) ComponentList.erase(Iter);
 }
 
 void Engine::Pause() {
   for (auto &it : ComponentList) it->OnPause();
 }
 
-void Engine::InMenu() {
+void Engine::OnMenuOn() {
   PhysicsPtr->OnPause();
   ScenePtr->OnPause();
 }
 
-void Engine::OffMenu() {
+void Engine::OnMenuOff() {
   PhysicsPtr->OnResume();
   ScenePtr->OnResume();
 }
@@ -415,13 +408,9 @@ void Engine::Update(float PassedTime) {
   for (auto &it : ComponentList) it->OnUpdate(PassedTime);
 }
 
-void Engine::RenderFirstFrame() {
-  RenderOneFrame();
-  CleanRTSSRuntime();
-}
-
 void Engine::RenderOneFrame() {
   OgreRoot->renderOneFrame();
+  //CleanRTSSRuntime();
 #if defined(WINDOWS) || defined(ANDROID)
   SDL_GL_SwapWindow(SDLWindowPtr);
 #endif
@@ -459,6 +448,8 @@ void Engine::SetWindowed() {
   SDL_SetWindowSize(SDLWindowPtr, WindowWidth, WindowHeight);
 }
 
+bool Engine::IsFullscreen() { return WindowFullScreen; }
+
 void Engine::SetWindowCaption(const char *Caption) { SDL_SetWindowTitle(SDLWindowPtr, Caption); }
 
 void Engine::WindowRestoreFullscreenAndroid() {
@@ -489,17 +480,17 @@ void Engine::InitResourceLocation() {
   const char SEPARATOR = '/';
 #endif
 
-  const string ProgramsDir = string("Programs");
-  const string AssetsDir = string("Assets");
+  const string ProgramsDir = "Programs";
+  const string AssetsDir = "Assets";
 
   AddLocation(ProgramsDir + SEPARATOR + "Core", RGN_INTERNAL);
 
-  if (GlobalMRTEnabled())
+  if (GlobalMRTIsEnabled())
     AddLocation(ProgramsDir + SEPARATOR + "MRT", RGN_INTERNAL);
   else
     AddLocation(ProgramsDir + SEPARATOR + "noMRT", RGN_INTERNAL);
 
-  if (RenderSystemGLES2())
+  if (RenderSystemIsGLES2())
     AddLocation(ProgramsDir + SEPARATOR + "GLSLES", RGN_INTERNAL);
   else
     AddLocation(ProgramsDir + SEPARATOR + "GLSL", RGN_INTERNAL);

@@ -75,7 +75,8 @@ void Application::Loop() {
 
   if (Running && StateManagerPtr->IsActive()) {
     StateManagerPtr->Update(0);
-    EnginePtr->RenderFirstFrame();
+    EnginePtr->RenderOneFrame();
+    CleanRTSSRuntime();
   }
 
   while (Running && StateManagerPtr->IsActive()) {

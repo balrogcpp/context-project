@@ -4,6 +4,7 @@
 #include "Singleton.h"
 #include <OgreLog.h>
 #include <fstream>
+#include <iostream>
 
 namespace Glue {
 

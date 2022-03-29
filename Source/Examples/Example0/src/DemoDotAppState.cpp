@@ -2,9 +2,9 @@
 
 #include "PCHeader.h"
 #include "DemoDotAppState.h"
+#include "CameraMan.h"
 #include "Engine.h"
 #include "MenuAppState.h"
-#include "Objects/CameraMan.h"
 #include "ShaderHelpers.h"
 
 using namespace std;
@@ -12,44 +12,45 @@ using namespace Glue;
 
 namespace Demo {
 
-DemoDotAppState::DemoDotAppState() {}
+void DemoDotAppState::SetUp() {
+  GetEngine().GrabMouse(true);
+  //GetScene().GetCameraMan().SetStyle(CameraMan::ControlStyle::FPS);
+  LoadFromFile("1.scene");
 
-DemoDotAppState::~DemoDotAppState() {}
+  GetAudio().AddSound("menu", "GameSong2.ogg", nullptr, true);
+  GetAudio().SetSoundVolume("menu", 0.5);
+  GetAudio().PlaySound("menu");
 
-void DemoDotAppState::Pause() {}
+  GetAudio().AddSound("selection", "Menu-Selection-Change-M.ogg");
+  GetAudio().AddSound("click", "VideoGameMenuSoundsMenu-Selection-Change-N.ogg");
 
-void DemoDotAppState::Resume() {}
-
-void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
-  if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
-    ShowContextMenu = true;
-    GetEngine().InMenu();
-    GetEngine().GrabMouse(false);
-  }
+  Overlay::NewFrame();
 }
 
-void DemoDotAppState::Cleanup() {}
-
-void DemoDotAppState::Update(float time) {
+void DemoDotAppState::DrawMenu() {
   Ogre::ImGuiOverlay::NewFrame();
 
-  static ImGuiIO &io = ImGui::GetIO();
-  ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
-  ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
-  ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
-  ImGui::SetNextWindowBgAlpha(0.5);
+  if (ShowContextMenu) {
+    static bool use_work_area = true;
+    static ImGuiWindowFlags flags =
+        ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
 
-  ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
+    ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize : viewport->Size);
+    ImGui::SetNextWindowBgAlpha(0.8);
+    ImGui::Begin("Example: Fullscreen window", nullptr, flags);
+    ImGui::End();
+  }
 
-  ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-  ImGui::End();
+  static ImGuiIO& io = ImGui::GetIO();
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   if (!ShowContextMenu) {
-    GetEngine().OffMenu();
+    GetEngine().OnMenuOff();
     return;
   } else {
-    GetEngine().InMenu();
+    GetEngine().OnMenuOn();
   }
 #endif
 
@@ -63,30 +64,30 @@ void DemoDotAppState::Update(float time) {
   ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoResize);
 #else
   ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
-  ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+  ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
 #endif
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   ImGui::NewLine();
 
-  if (ImGui::Button("         Resume          ")) {
+  if (ImGui::Button(ICON_KI_STAR u8"    Вернуться в игру")) {
     GetAudio().PlaySound("selection", true);
     GetEngine().GrabMouse(true);
-    GetEngine().OffMenu();
+    GetEngine().OnMenuOff();
     ShowContextMenu = false;
   }
 #endif
 
   ImGui::NewLine();
 
-  if (ImGui::Button("        Menu        ")) {
+  if (ImGui::Button(ICON_KI_STAR u8"    Главное меню")) {
     GetAudio().PlaySound("selection", true);
     ChangeState(make_unique<MenuAppState>());
   }
 
   ImGui::NewLine();
 
-  if (ImGui::Button("          Quit           ")) {
+  if (ImGui::Button(ICON_KI_STAR u8"    Выйти из игры")) {
     GetAudio().PlaySound("selection", true);
     ChangeState();
   }
@@ -94,20 +95,35 @@ void DemoDotAppState::Update(float time) {
   ImGui::NewLine();
 
   ImGui::End();
+
+  ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
+  ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
+  ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
+  ImGui::SetNextWindowBgAlpha(0.5);
+  ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+  ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+  ImGui::End();
 }
 
-void DemoDotAppState::SetUp() {
-  GetEngine().GrabMouse(true);
-  // GetScene().GetCameraMan().SetStyle(CameraMan::ControlStyle::FPS);
-  LoadFromFile("1.scene");
+void DemoDotAppState::Update(float time) { DrawMenu(); }
 
-  GetAudio().CreateSound("menu", "GameSong2.ogg", true);
-  GetAudio().PlaySound("menu");
+void DemoDotAppState::Pause() {}
 
-  GetAudio().CreateSound("selection", "Menu-Selection-Change-M.ogg", false);
-  GetAudio().CreateSound("click", "VideoGameMenuSoundsMenu-Selection-Change-N.ogg", false);
+void DemoDotAppState::Resume() {}
 
-  Ogre::ImGuiOverlay::NewFrame();
+void DemoDotAppState::OnKeyDown(SDL_Keycode sym) {
+  if (SDL_GetScancodeFromKey(sym) == SDL_SCANCODE_ESCAPE) {
+    ShowContextMenu = !ShowContextMenu;
+    if (ShowContextMenu) {
+      GetEngine().OnMenuOn();
+      GetEngine().GrabMouse(false);
+    } else {
+      GetEngine().OnMenuOff();
+      GetEngine().GrabMouse(true);
+    }
+  }
 }
+
+void DemoDotAppState::Cleanup() {}
 
 }  // namespace Demo

@@ -2,36 +2,61 @@
 
 #pragma once
 
+namespace Ogre {
+class SceneNode;
+class SceneManager;
+class Camera;
+// class Vector3;
+}  // namespace Ogre
+
 namespace Glue {
 
 ///
-bool GlobalMRTEnabled();
+bool GlobalMRTIsEnabled();
 
 ///
-bool CPUSupportSSE();
+bool CPUSupportsSSE();
 
 ///
-bool CPUSupportSSE2();
+bool CPUSupportsSSE2();
 
 ///
-bool CPUSupportSSE3();
+bool CPUSupportsSSE3();
 
 ///
-bool CPUSupportSSE41();
+bool CPUSupportsSSE41();
 
 ///
-bool CPUSupportSSE42();
+bool CPUSupportsSSE42();
 
 ///
-bool CPUSupportNEON();
+bool CPUSupportsNEON();
 
 ///
-bool RenderSystemGL();
+bool IsFullscreen();
 
 ///
-bool RenderSystemGL3();
+bool RenderSystemIsGL();
 
 ///
-bool RenderSystemGLES2();
+bool RenderSystemIsGL3();
+
+///
+bool RenderSystemIsGLES2();
+
+///
+Ogre::SceneManager* OgreSceneManager();
+
+///
+Ogre::SceneNode* OgreRootNode();
+
+///
+Ogre::Camera* OgreCamera();
+
+///
+Ogre::SceneNode* OgreCameraNode();
+
+///
+Ogre::Vector3 SunDirection();
 
 }  // namespace Glue

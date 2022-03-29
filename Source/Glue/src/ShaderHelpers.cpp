@@ -91,17 +91,17 @@ void FixTransparentShadowCaster(const string &material) {
   FixTransparentShadowCaster(material_ptr);
 }
 
-void FixMaterial(const MaterialPtr &material) {
+void AddMaterial(const MaterialPtr &material) {
   FixTransparentShadowCaster(material);
   GetScene().AddMaterial(material);
 }
 
-void FixMaterial(const string &material) {
+void AddMaterial(const string &material) {
   auto MaterialSPtr = Ogre::MaterialManager::getSingleton().getByName(material);
-  if (MaterialSPtr) FixMaterial(MaterialSPtr);
+  if (MaterialSPtr) AddMaterial(MaterialSPtr);
 }
 
-void FixMeshMaterial(MeshPtr MeshSPtr, const string &MaterialName) {
+void AddMeshMaterial(MeshPtr MeshSPtr, const string &MaterialName) {
   try {
     EnsureHasTangents(MeshSPtr);
 
@@ -113,7 +113,7 @@ void FixMeshMaterial(MeshPtr MeshSPtr, const string &MaterialName) {
       }
 
       material = submesh->getMaterial();
-      if (material) FixMaterial(material);
+      if (material) AddMaterial(material);
     }
   } catch (Ogre::Exception &e) {
     LogManager::getSingleton().logMessage(e.getFullDescription());
@@ -121,22 +121,22 @@ void FixMeshMaterial(MeshPtr MeshSPtr, const string &MaterialName) {
   }
 }
 
-void FixMeshMaterial(const string &MeshName, const string &MaterialName) {
+void AddMeshMaterial(const string &MeshName, const string &MaterialName) {
   const auto &MeshSPtr = MeshManager::getSingleton().getByName(MeshName);
-  FixMeshMaterial(MeshSPtr, MaterialName);
+  AddMeshMaterial(MeshSPtr, MaterialName);
 }
 
-void FixEntityMaterial(Entity *EntityPtr, const string &MaterialName) {
+void AddEntityMaterial(Entity *EntityPtr, const string &MaterialName) {
   try {
     if (!MaterialName.empty()) {
       auto material = MaterialManager::getSingleton().getByName(MaterialName);
       if (material) {
-        FixMaterial(material);
+        AddMaterial(material);
         EntityPtr->setMaterial(material);
       }
     }
 
-    FixMeshMaterial(EntityPtr->getMesh(), MaterialName);
+    AddMeshMaterial(EntityPtr->getMesh(), MaterialName);
   } catch (Ogre::Exception &e) {
     LogManager::getSingleton().logMessage(e.getFullDescription());
     LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");

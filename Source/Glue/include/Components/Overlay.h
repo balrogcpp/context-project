@@ -3,6 +3,9 @@
 #pragma once
 #include "Components/Component.h"
 #include "Input/ImGuiInputListener.h"
+#include "IconsMaterialDesign.h"
+#include "IconsKenney.h"
+#include "IconsFontAwesome5.h"
 #include <imgui.h>
 
 namespace Ogre {
@@ -21,19 +24,18 @@ class Overlay final : public Component<Overlay>, public Ogre::RenderTargetListen
   explicit Overlay(Ogre::RenderWindow* OgreRenderWindowPtr);
   virtual ~Overlay();
 
+  void OnSetUp() override;
   void OnClean() override;
   void OnPause() override;
   void OnResume() override;
   void OnUpdate(float time) override;
-  void OrangeStyle();
-  void CherryStyle();
-  void SetupImGuiStyle(bool bStyleDark_, float alpha_);
   void preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) override;
-  void PrepareFontTexture(const std::string& FontName, const ImFontConfig* FontConfig = NULL, const ImWchar* GlyphRanges = NULL,
+  void AddFont(const std::string& FontName, const ImFontConfig* FontConfig = nullptr, const ImWchar* GlyphRanges = nullptr,
                           const std::string& ResourceGroup = Ogre::RGN_INTERNAL);
 
-  void DrawSimpleOverlay(bool* p_open);
-  void DrawAppFullscreen(bool* p_open);
+  void Show();
+  void Hide();
+  static void NewFrame();
 
  protected:
   std::unique_ptr<ImGuiInputListener> ImGuiListener;

@@ -112,7 +112,7 @@ void Compositor::EnableCompositor(const std::string &name) { OgreCompositorManag
 
 void Compositor::InitMRT() {
   string MRT;
-  if (GlobalMRTEnabled())
+  if (GlobalMRTIsEnabled())
     MRT = "MRT";
   else
     MRT = "noMRT";
@@ -122,12 +122,17 @@ void Compositor::InitMRT() {
   else
     Throw("Failed to add MRT compositor");
 
-  auto *MRTCompositor = OgreCompositorChain->getCompositor(MRT);
-  auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
+  if (IsFullscreen()) {
+    auto *MRTCompositor = OgreCompositorChain->getCompositor(MRT);
+    auto *MRTTextureDefinition = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
 #ifdef MOBILE
-  MRTTextureDefinition->width = 1024;
-  MRTTextureDefinition->height = 768;
+    MRTTextureDefinition->width = 1024;
+    MRTTextureDefinition->height = 768;
+#else
+    MRTTextureDefinition->width = 1280;
+    MRTTextureDefinition->height = 720;
 #endif
+  }
 
   OgreCompositorManager->setCompositorEnabled(OgreViewport, MRT, true);
 }
@@ -184,11 +189,11 @@ void Compositor::SetUp() {
       break;
     }
   }
-  
+
   InitMRT();
 
   // nothing to do without MTR
-  if (!GlobalMRTEnabled()) {
+  if (!GlobalMRTIsEnabled()) {
     InitDummyOutput();
     return;
   }

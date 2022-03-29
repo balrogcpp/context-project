@@ -4,7 +4,7 @@
 #include "Components/DotSceneLoaderB.h"
 #include "CubeMapCamera.h"
 #include "Engine.h"
-#include "Objects/SinbadCharacterController.h"
+#include "SinbadCharacterController.h"
 #include "PagedGeometry/PagedGeometryAll.h"
 #include "ReflectionCamera.h"
 #include "ShaderHelpers.h"
@@ -860,7 +860,7 @@ void DotSceneLoaderB::ProcessPlane(pugi::xml_node &XmlNode, SceneNode *ParentNod
   }
 
   ParentNode->attachObject(entity);
-  FixMaterial(MaterialSPtr);
+  AddMaterial(MaterialSPtr);
 
   auto *entShape = BtOgre::createBoxCollider(entity);
   auto *bodyState = new BtOgre::RigidBodyState(ParentNode);
@@ -977,7 +977,7 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
 void DotSceneLoaderB::ProcessStaticGeometry(pugi::xml_node &XmlNode) {
   // create our grass mesh, and Init a grass entity from it
   Entity *rock = OgreScene->createEntity("Rock", "rock.mesh");
-  FixEntityMaterial(rock);
+  AddEntityMaterial(rock);
 
   // Init a static geometry field, which we will populate with grass
   auto *rocks = OgreScene->createStaticGeometry("Rocks");

@@ -5,8 +5,8 @@
 #include "ArHosekSkyModel.h"
 #include "Caelum.h"
 #include "Engine.h"
-#include "Objects/CameraMan.h"
-#include "Objects/SinbadCharacterController.h"
+#include "CameraMan.h"
+#include "SinbadCharacterController.h"
 #include "PagedGeometry/PagedGeometryAll.h"
 #include "ShaderHelpers.h"
 #include "SkyModel.h"
@@ -61,7 +61,7 @@ float Scene::GetHeight(float x, float z) {
     return 0.0f;
 }
 
-void Scene::AddEntity(Ogre::Entity *EntityPtr) { FixEntityMaterial(EntityPtr); }
+void Scene::AddEntity(Ogre::Entity *EntityPtr) { AddEntityMaterial(EntityPtr); }
 
 void Scene::AddMaterial(Ogre::MaterialPtr material) {
   for (int i = 0; i < material->getNumTechniques(); i++) {
@@ -91,7 +91,7 @@ void Scene::AddCamera(Camera *OgreCameraPtr) {
     btVector3 inertia(0, 0, 0);
     btRigidBody *RigidBody = nullptr;
     auto *entShape = BtOgre::createCapsuleCollider(Actor);
-    // GetAudio().SetListener(ParentNode);
+    // GetAudio().AddListener(ParentNode);
     float mass = 100.0;
     entShape->calculateLocalInertia(mass, inertia);
     auto *bodyState = new BtOgre::RigidBodyState(ParentNode);

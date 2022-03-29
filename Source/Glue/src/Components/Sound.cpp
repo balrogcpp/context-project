@@ -5,6 +5,7 @@
 #include "Exception.h"
 #include "OgreOggSound/OgreOggSound.h"
 #include "OgreOggSound/OgreOggSoundRoot.h"
+#include <iostream>
 
 using namespace std;
 using namespace Ogre;
@@ -32,28 +33,42 @@ Sound::~Sound() { AudioRootPtr->shutdown(); }
 
 void Sound::OnClean() {}
 
+void Sound::OnSetUp() {
+  auto *CameraNode = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getParentSceneNode();
+  if (CameraNode) AddListener(CameraNode);
+}
+
 void Sound::OnUpdate(float PassedTime) {}
 
 void Sound::OnPause() { SoundManagerPtr->pauseAllSounds(); }
 
 void Sound::OnResume() { SoundManagerPtr->resumeAllPausedSounds(); }
 
-void Sound::CreateSound(const string &SoundName, const string &AudioFile, bool PlayInLoop) {
+void Sound::Pause() { SoundManagerPtr->pauseAllSounds(); }
+
+void Sound::Resume() { SoundManagerPtr->resumeAllPausedSounds(); }
+
+void Sound::AddSound(const string &SoundName, const string &AudioFile, Ogre::SceneNode *Node, bool PlayInLoop) {
   auto *sound = SoundManagerPtr->createSound(SoundName, AudioFile, true, PlayInLoop, true, nullptr);
   auto *root_node = Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
-  root_node->createChildSceneNode()->attachObject(sound);
+  if (Node)
+    Node->attachObject(sound);
+  else
+    root_node->createChildSceneNode()->attachObject(sound);
 }
 
-void Sound::SetListener(SceneNode *ParentPtr) {
+void Sound::AddListener(SceneNode *ParentPtr) {
   auto *listener = SoundManagerPtr->getListener();
 
   if (!listener) {
-    SoundManagerPtr->createListener();
+    OgreAssert(SoundManagerPtr->createListener(), "Failed to create sound listener");
     listener = SoundManagerPtr->getListener();
   }
 
   if (ParentPtr) ParentPtr->attachObject(listener);
 }
+
+void Sound::RemoveListener(SceneNode *ParentPtr) {}
 
 void Sound::PlaySound(const string &SoundName, bool PlayImmediately) {
   auto *sound = SoundManagerPtr->getSound(SoundName);
@@ -61,18 +76,27 @@ void Sound::PlaySound(const string &SoundName, bool PlayImmediately) {
     if (PlayImmediately) sound->stop();
     sound->play();
   } else {
-    throw Exception(string("Sound \"") + SoundName + "\" not found. Aborting\n");
+    // throw Exception(string("Sound \"") + SoundName + "\" not found. Aborting\n");
+  }
+}
+
+void Sound::StopSound(const string &SoundName) {
+  auto *sound = SoundManagerPtr->getSound(SoundName);
+  if (sound) {
+    sound->stop();
+  } else {
+    // throw Exception(string("Sound \"") + SoundName + "\" not found. Aborting\n");
   }
 }
 
 void Sound::SetMasterVolume(float Volume) { SoundManagerPtr->setMasterVolume(Volume); }
 
-void Sound::SetMaxVolume(const string &SoundName, float MaxVolume) {
+void Sound::SetSoundMaxVolume(const string &SoundName, float MaxVolume) {
   auto *Sound = SoundManagerPtr->getSound(SoundName);
   if (Sound) Sound->setMaxVolume(MaxVolume);
 }
 
-void Sound::SetVolume(const string &SoundName, float Volume) {
+void Sound::SetSoundVolume(const string &SoundName, float Volume) {
   auto *sound = SoundManagerPtr->getSound(SoundName);
   if (sound) sound->setVolume(Volume);
 }

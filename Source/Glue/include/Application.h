@@ -11,7 +11,7 @@
 
 namespace Glue {
 
-class Application final : public WindowObserver, public Singleton<Application> {
+class Application final : public WindowObserver, public BaseSingleton<Application> {
  public:
   explicit Application(int argc = 0, char* args[] = nullptr);
   virtual ~Application();
