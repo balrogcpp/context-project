@@ -1,8 +1,8 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #include "PCHeader.h"
-#include "Objects/SinbadCharacterController.h"
 #include "Engine.h"
+#include "SinbadCharacterController.h"
 
 using namespace std;
 
@@ -14,7 +14,12 @@ SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam) : mBaseA
   setupBody(cam->getSceneManager());
   setupCamera(cam);
   setupAnimations();
+  GetAudio().AddSound("walk_grass", "Footsteps-in-grass-fast.ogg", mBodyNode, true);
+  GetAudio().SetSoundVolume("walk_grass", 2.0);
+  GetAudio().AddListener(mCameraNode);
 }
+
+SinbadCharacterController::~SinbadCharacterController() {}
 
 void SinbadCharacterController::Update(float deltaTime) {
   updateBody(deltaTime);
@@ -129,22 +134,22 @@ void SinbadCharacterController::setupBody(Ogre::SceneManager *sceneMgr) {
   mBodyEnt->attachObjectToBone("Sheath.R", mSword2);
 
   // create a couple of ribbon trails for the swords, just for fun
-//  Ogre::NameValuePairList params;
-//  params["numberOfChains"] = "2";
-//  params["maxElements"] = "80";
-//  mSwordTrail = (Ogre::RibbonTrail *)sceneMgr->createMovableObject("RibbonTrail", &params);
-//  mSwordTrail->setMaterialName("Examples/LightRibbonTrail");
-//  GetScene().AddMaterial("Examples/LightRibbonTrail");
-//  mSwordTrail->setTrailLength(SCALE * 20);
-//  mSwordTrail->setVisible(false);
-//  sceneMgr->getRootSceneNode()->attachObject(mSwordTrail);
-//
-//  for (int i = 0; i < 2; i++) {
-//    mSwordTrail->setInitialColour(i, 1, 0.8, 0);
-//    mSwordTrail->setColourChange(i, 0.75, 1.25, 1.25, 1.25);
-//    mSwordTrail->setWidthChange(i, SCALE * 1);
-//    mSwordTrail->setInitialWidth(i, SCALE * 0.5);
-//  }
+  //  Ogre::NameValuePairList params;
+  //  params["numberOfChains"] = "2";
+  //  params["maxElements"] = "80";
+  //  mSwordTrail = (Ogre::RibbonTrail *)sceneMgr->createMovableObject("RibbonTrail", &params);
+  //  mSwordTrail->setMaterialName("Examples/LightRibbonTrail");
+  //  GetScene().AddMaterial("Examples/LightRibbonTrail");
+  //  mSwordTrail->setTrailLength(SCALE * 20);
+  //  mSwordTrail->setVisible(false);
+  //  sceneMgr->getRootSceneNode()->attachObject(mSwordTrail);
+  //
+  //  for (int i = 0; i < 2; i++) {
+  //    mSwordTrail->setInitialColour(i, 1, 0.8, 0);
+  //    mSwordTrail->setColourChange(i, 0.75, 1.25, 1.25, 1.25);
+  //    mSwordTrail->setWidthChange(i, SCALE * 1);
+  //    mSwordTrail->setInitialWidth(i, SCALE * 0.5);
+  //  }
 
   mKeyDirection = Ogre::Vector3::ZERO;
   mVerticalVelocity = 0;
@@ -271,15 +276,15 @@ void SinbadCharacterController::updateAnimations(float deltaTime) {
       mAnims[ANIM_HANDS_RELAXED]->setEnabled(mSwordsDrawn);
 
       // toggle sword trails
-//      if (mSwordsDrawn) {
-//        mSwordTrail->setVisible(false);
-//        mSwordTrail->removeNode(mSword1->getParentNode());
-//        mSwordTrail->removeNode(mSword2->getParentNode());
-//      } else {
-//        mSwordTrail->setVisible(true);
-//        mSwordTrail->addNode(mSword1->getParentNode());
-//        mSwordTrail->addNode(mSword2->getParentNode());
-//      }
+      //      if (mSwordsDrawn) {
+      //        mSwordTrail->setVisible(false);
+      //        mSwordTrail->removeNode(mSword1->getParentNode());
+      //        mSwordTrail->removeNode(mSword2->getParentNode());
+      //      } else {
+      //        mSwordTrail->setVisible(true);
+      //        mSwordTrail->addNode(mSword1->getParentNode());
+      //        mSwordTrail->addNode(mSword2->getParentNode());
+      //      }
     }
 
     if (mTimer >= mAnims[mTopAnimID]->getLength()) {
@@ -417,6 +422,11 @@ void SinbadCharacterController::setTopAnimation(AnimID id, bool reset) {
     mFadingIn[id] = true;
     if (reset) mAnims[id]->setTimePosition(0);
   }
+
+  if (id == ANIM_RUN_TOP)
+    GetAudio().PlaySound("walk_grass");
+  else
+    GetAudio().StopSound("walk_grass");
 }
 
 }  // namespace Glue

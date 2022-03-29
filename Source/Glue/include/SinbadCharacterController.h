@@ -1,7 +1,7 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #pragma once
-#include "Objects/Object.h"
+#include "Object.h"
 #include "Input/InputObserver.h"
 #include <OgreVector.h>
 extern "C" {
@@ -51,6 +51,7 @@ class SinbadCharacterController : public Object, public InputObserver {
 
   Ogre::SceneNode *GetBodyNode() const;
   explicit SinbadCharacterController(Ogre::Camera *cam);
+  virtual ~SinbadCharacterController();
   void Update(float deltaTime) override;
   void OnKeyDown(SDL_Keycode key) override;
   void OnKeyUp(SDL_Keycode key) override;

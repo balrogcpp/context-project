@@ -2,7 +2,7 @@
 
 #pragma once
 #include "Input/InputObserver.h"
-#include "Objects/Object.h"
+#include "Object.h"
 #include <OgreVector.h>
 
 namespace Ogre {

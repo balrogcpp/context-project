@@ -1,7 +1,7 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #include "PCHeader.h"
-#include "Objects/CameraMan.h"
+#include "CameraMan.h"
 #include <BulletDynamics/Dynamics/btRigidBody.h>
 
 namespace Glue {

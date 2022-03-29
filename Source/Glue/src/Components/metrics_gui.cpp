@@ -23,8 +23,8 @@ SOFTWARE.
 #include "imgui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
-#include "metrics_gui.h"
-#include "countof.h"
+#include "Components/metrics_gui.h"
+#include "Components/countof.h"
 #include "snprintf.h"
 
 #include <algorithm>
