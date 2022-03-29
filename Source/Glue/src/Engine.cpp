@@ -503,7 +503,7 @@ void Engine::InitResourceLocation() {
   auto &RGM = ResourceGroupManager::getSingleton();
   RGM.addResourceLocation("/Programs/Core.zip", "APKZip", RGN_INTERNAL);
 
-  if (GlobalMRTEnabled())
+  if (GlobalMRTIsEnabled())
     RGM.addResourceLocation("/Programs/MRT.zip", "APKZip", RGN_INTERNAL);
   else
     RGM.addResourceLocation("/Programs/noMRT.zip", "APKZip", RGN_INTERNAL);
