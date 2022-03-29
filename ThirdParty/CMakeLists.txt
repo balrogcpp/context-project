@@ -11,6 +11,7 @@ add_custom_target(BuildAssets
         USES_TERMINAL
         )
 
+list(APPEND GLUE_DEPENDENCY_TARGETS Target_asio)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_sol2)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_json)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_Vorbis)

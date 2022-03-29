@@ -370,7 +370,7 @@ externalproject_add(Target_OGRE
                     DEPENDS Target_zlib Target_FreeType Target_pugixml Target_assimp Target_SDL2
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v13.3.2
+                    GIT_TAG v13.3.3
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard
@@ -651,4 +651,30 @@ externalproject_add(Target_yaml-cpp
                     -DYAML_CPP_BUILD_TOOLS=OFF
                     -DYAML_BUILD_SHARED_LIBS=OFF
                     -DYAML_CPP_BUILD_TESTS=OFF
+                    )
+
+set(ASIO_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_asio)
+externalproject_add(Target_asio
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${GLUE_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
+                    GIT_TAG asio-1-22-1
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+                    BUILD_COMMAND ${ASIO_CHDIR} ${CMAKE_COMMAND} -E copy_directory asio/include/asio ${GLUE_EXTERNAL_INCLUDE_DIR}/asio
+                    INSTALL_COMMAND ${ASIO_CHDIR} ${CMAKE_COMMAND} -E copy asio/include/asio.hpp asio/include/asio ${GLUE_EXTERNAL_INCLUDE_DIR}
+                    )
+
+set(OPENSSL_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_OpenSSL)
+externalproject_add(Target_OpenSSL
+                    EXCLUDE_FROM_ALL true
+                    PREFIX ${GLUE_PREFIX_LOCATION}
+                    GIT_REPOSITORY https://github.com/openssl/openssl.git
+                    GIT_TAG openssl-3.0.2
+                    GIT_SHALLOW true
+                    GIT_PROGRESS false
+                    CONFIGURE_COMMAND ${OPENSSL_CHDIR} ./config --prefix=${GLUE_THIRDPARTY_ROOT} --openssldir=${GLUE_THIRDPARTY_ROOT}
+                    BUILD_COMMAND ${OPENSSL_CHDIR} ${MAKE_COMMAND}
+                    INSTALL_COMMAND ${OPENSSL_CHDIR} ${MAKE_COMMAND} install
                     )
