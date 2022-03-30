@@ -13,10 +13,10 @@ Ogre::SceneNode *SinbadCharacterController::GetBodyNode() const { return BodyNod
 SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam) : BaseAnimID(ANIM_NONE), TopAnimID(ANIM_NONE) {
   SetupBody();
   SetupCamera(cam);
-  SetupAnimations();
   GetAudio().AddSound("walk_grass", "Footsteps-in-grass-fast.ogg", BodyNode, true);
   GetAudio().SetSoundVolume("walk_grass", 2.0);
   GetAudio().AddListener(CameraNode);
+  SetupAnimations();
 }
 
 SinbadCharacterController::~SinbadCharacterController() {}
