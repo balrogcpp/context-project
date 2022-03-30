@@ -54,16 +54,12 @@ Application::Application(int argc, char *args[]) {
 
   EnginePtr = make_unique<Engine>();
   EnginePtr->InitComponents();
-
   StateManagerPtr = make_unique<AppStateManager>();
-
   Verbose = ConfigPtr->GetBool("verbose", Verbose);
   VerboseInput = ConfigPtr->GetBool("verbose_input", VerboseInput);
-
 #ifdef DESKTOP
   if (VerboseInput) VerboseListenerPtr = make_unique<VerboseListener>();
 #endif
-
   LockFPS = ConfigPtr->GetBool("lock_fps", LockFPS);
   TargetFPS = ConfigPtr->GetInt("target_fps", TargetFPS);
 }
@@ -75,7 +71,7 @@ void Application::Loop() {
 
   if (Running && StateManagerPtr->IsActive()) {
     StateManagerPtr->Update(0);
-    EnginePtr->RenderOneFrame();
+    EnginePtr->RenderFrame();
     CleanRTSSRuntime();
   }
 
@@ -83,18 +79,16 @@ void Application::Loop() {
     auto before_frame = chrono::system_clock::now().time_since_epoch();
     int64_t TimeBeforeFrame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
 
-    if (CumultedTime > int64_t(1e+6)) {
-      CumultedTime = 0;
-    }
+    if (CumultedTime > int64_t(1e+6)) CumultedTime = 0;
 
     EnginePtr->Capture();
 
     if (!Suspend) {
       if (StateManagerPtr->IsDirty()) {
-        EnginePtr->Cleanup();
+        EnginePtr->OnCleanup();
         StateManagerPtr->InitNextState();
       } else if (WasSuspend) {
-        EnginePtr->Resume();
+        EnginePtr->OnResume();
         WasSuspend = false;
       }
 
@@ -104,10 +98,9 @@ void Application::Loop() {
       TimeOfLastFrame = TimeBeforeUpdate;
       StateManagerPtr->Update(frame_time);
       EnginePtr->Update(frame_time);
-      EnginePtr->RenderOneFrame();
-
+      EnginePtr->RenderFrame();
     } else {
-      EnginePtr->Pause();
+      EnginePtr->OnPause();
       WasSuspend = true;
     }
 
@@ -122,25 +115,22 @@ void Application::Loop() {
       auto delay = static_cast<int64_t>((1e+6 / TargetFPS) - RenderTime);
       if (delay > 0) this_thread::sleep_for(chrono::microseconds(delay));
     }
-
     int64_t TimeInEndOfLoop = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-
     int64_t TimeSinceLastFrame = TimeInEndOfLoop - TimeBeforeFrame;
     CumultedTime += TimeSinceLastFrame;
   }
 
-  EnginePtr->Cleanup();
-  EnginePtr->Pause();
+  EnginePtr->OnCleanup();
+  EnginePtr->OnPause();
 }
 
 void Application::Go() {
-  if (StateManagerPtr->IsActive()) {
-    StateManagerPtr->InitCurState();
-    Running = true;
-    auto duration_before_update = chrono::system_clock::now().time_since_epoch();
-    TimeOfLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
-    Loop();
-  }
+  OgreAssert(StateManagerPtr->IsActive(), "AppState is not ready");
+  StateManagerPtr->InitCurState();
+  Running = true;
+  auto duration_before_update = chrono::system_clock::now().time_since_epoch();
+  TimeOfLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
+  Loop();
 }
 
 void Application::OnQuit() { Running = false; }
@@ -148,27 +138,24 @@ void Application::OnQuit() { Running = false; }
 void Application::OnPause() {
   Suspend = true;
   StateManagerPtr->Pause();
-  EnginePtr->Pause();
+  EnginePtr->OnPause();
 }
 
 void Application::OnResume() {
   Suspend = false;
   StateManagerPtr->Resume();
-  EnginePtr->Resume();
+  EnginePtr->OnResume();
 }
 
 int Application::Main(unique_ptr<AppState> &&AppStatePtr) {
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC
   SDL_SetMainReady();
 #endif
-
   ios_base::sync_with_stdio(false);
-
-  if (StateManagerPtr && AppStatePtr) {
-    StateManagerPtr->SetInitialState(move(AppStatePtr));
-    Go();
-  }
-
+  OgreAssert(StateManagerPtr, "AppStateManager error");
+  OgreAssert(AppStatePtr, "AppState is not ready");
+  StateManagerPtr->SetInitialState(move(AppStatePtr));
+  Go();
   SDL_Quit();
 
   return 0;

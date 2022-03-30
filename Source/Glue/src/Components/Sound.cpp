@@ -5,7 +5,6 @@
 #include "Exception.h"
 #include "OgreOggSound/OgreOggSound.h"
 #include "OgreOggSound/OgreOggSoundRoot.h"
-#include <iostream>
 
 using namespace std;
 using namespace Ogre;
@@ -49,6 +48,8 @@ void Sound::Pause() { SoundManagerPtr->pauseAllSounds(); }
 void Sound::Resume() { SoundManagerPtr->resumeAllPausedSounds(); }
 
 void Sound::AddSound(const string &SoundName, const string &AudioFile, Ogre::SceneNode *Node, bool PlayInLoop) {
+  this_thread::sleep_for(chrono::milliseconds(OGGSOUND_UPDATE_INTERVAL + 1));
+
   auto *sound = SoundManagerPtr->createSound(SoundName, AudioFile, true, PlayInLoop, true, nullptr);
   auto *root_node = Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
   if (Node)
@@ -76,7 +77,7 @@ void Sound::PlaySound(const string &SoundName, bool PlayImmediately) {
     if (PlayImmediately) sound->stop();
     sound->play();
   } else {
-    // throw Exception(string("Sound \"") + SoundName + "\" not found. Aborting\n");
+    throw Exception(string("Sound \"") + SoundName + "\" not found. Aborting\n");
   }
 }
 
@@ -85,7 +86,7 @@ void Sound::StopSound(const string &SoundName) {
   if (sound) {
     sound->stop();
   } else {
-    // throw Exception(string("Sound \"") + SoundName + "\" not found. Aborting\n");
+    throw Exception(string("Sound \"") + SoundName + "\" not found. Aborting\n");
   }
 }
 

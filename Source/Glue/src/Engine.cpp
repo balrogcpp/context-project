@@ -8,6 +8,11 @@
 #include "Input/InputSequencer.h"
 #include "Log.h"
 #include "RTSS.h"
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#include "Android.h"
+#endif
+#include "SDL2.hpp"
+#include <OgrePlatformInformation.h>
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
 #endif
@@ -27,11 +32,6 @@
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
 #include <Plugins/DotScene/OgreDotSceneLoader.h>
 #endif
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-#include "Android.h"
-#endif
-#include "SDL2.hpp"
-#include <OgrePlatformInformation.h>
 
 using namespace std;
 using namespace Ogre;
@@ -122,7 +122,6 @@ void Engine::InitSDLSubsystems() {
 
 void Engine::InitDefaultRenderSystem() {
 #ifdef OGRE_STATIC_LIB
-
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
   InitOgreRenderSystemGL3();
@@ -134,13 +133,11 @@ void Engine::InitDefaultRenderSystem() {
 #else
   InitOgreRenderSystemGLES2();
 #endif
-
 #endif  // OGRE_STATIC_LIB
 }
 
 void Engine::InitOgrePlugins() {
 #ifdef OGRE_STATIC_LIB
-
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
 #endif
@@ -154,7 +151,6 @@ void Engine::InitOgrePlugins() {
 #endif
 
 #ifdef DEBUG
-
 #if defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI) && defined(DESKTOP)
   Root::getSingleton().installPlugin(new FreeImagePlugin());
 #endif
@@ -162,7 +158,6 @@ void Engine::InitOgrePlugins() {
 #if defined(OGRE_BUILD_PLUGIN_ASSIMP) && defined(DESKTOP)
   Root::getSingleton().installPlugin(new AssimpPlugin());
 #endif
-
 #endif  // DEBUG
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
@@ -176,7 +171,6 @@ void Engine::InitOgrePlugins() {
 #else
   Root::getSingleton().installPlugin(new DotScenePluginB());
 #endif
-
 #endif  // OGRE_STATIC_LIB
 }
 
@@ -229,8 +223,12 @@ void Engine::CreateOgreRenderWindow() {
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
+  OgreRenderParams["currentGLContext"] = "true";
+  OgreRenderParams["externalGLControl"] = "true";
+  OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
+  OgreRenderParams["preserveContext"] = "true";
 
+  JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
   jclass class_activity = env->FindClass("android/app/Activity");
   jclass class_resources = env->FindClass("android/content/res/Resources");
   jmethodID method_get_resources = env->GetMethodID(class_activity, "getResources", "()Landroid/content/res/Resources;");
@@ -238,16 +236,9 @@ void Engine::CreateOgreRenderWindow() {
   jobject raw_activity = (jobject)SDL_AndroidGetActivity();
   jobject raw_resources = env->CallObjectMethod(raw_activity, method_get_resources);
   jobject raw_asset_manager = env->CallObjectMethod(raw_resources, method_get_assets);
-
-  OgreRenderParams["currentGLContext"] = "true";
-  OgreRenderParams["externalGLControl"] = "true";
-  OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
-  OgreRenderParams["preserveContext"] = "true";
-
   AAssetManager *asset_manager = AAssetManager_fromJava(env, raw_asset_manager);
   AConfiguration *mAConfig = AConfiguration_new();
   AConfiguration_fromAssetManager(mAConfig, asset_manager);
-
   ArchiveManager::getSingleton().addArchiveFactory(new APKFileSystemArchiveFactory(asset_manager));
   ArchiveManager::getSingleton().addArchiveFactory(new APKZipArchiveFactory(asset_manager));
 #endif
@@ -257,14 +248,11 @@ void Engine::CreateOgreRenderWindow() {
   WindowVsync = ConfigPtr->GetBool("vsync", WindowVsync);
   WindowGammaCorrection = ConfigPtr->GetBool("gamma", WindowGammaCorrection);
   FSAA = ConfigPtr->GetInt("fsaa", FSAA);
-
   OgreRenderParams["vsync"] = WindowVsync ? TrueStr : FalseStr;
   OgreRenderParams["gamma"] = WindowGammaCorrection ? TrueStr : FalseStr;
   OgreRenderParams["FSAA"] = to_string(FSAA);
-
   OgreRenderWindowPtr = OgreRoot->createRenderWindow(WindowCaption, WindowWidth, WindowHeight, WindowFullScreen, &OgreRenderParams);
   OgreRenderTarget = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
-
   OgreCamera = OgreSceneManager->createCamera("Default");
   OgreViewport = OgreRenderTarget->addViewport(OgreCamera);
   OgreViewport->setBackgroundColour(ColourValue::Black);
@@ -380,8 +368,12 @@ void Engine::UnRegComponent(ComponentI *ComponentPtr) {
   if (Iter != ComponentList.end()) ComponentList.erase(Iter);
 }
 
-void Engine::Pause() {
+void Engine::OnPause() {
   for (auto &it : ComponentList) it->OnPause();
+}
+
+void Engine::OnResume() {
+  for (auto &it : ComponentList) it->OnResume();
 }
 
 void Engine::OnMenuOn() {
@@ -394,11 +386,7 @@ void Engine::OnMenuOff() {
   ScenePtr->OnResume();
 }
 
-void Engine::Resume() {
-  for (auto &it : ComponentList) it->OnResume();
-}
-
-void Engine::Cleanup() {
+void Engine::OnCleanup() {
   for (auto &it : ComponentList) it->OnClean();
   InitShadowSettings();
   CompositorUPtr->SetUp();
@@ -408,9 +396,8 @@ void Engine::Update(float PassedTime) {
   for (auto &it : ComponentList) it->OnUpdate(PassedTime);
 }
 
-void Engine::RenderOneFrame() {
+void Engine::RenderFrame() {
   OgreRoot->renderOneFrame();
-  //CleanRTSSRuntime();
 #if defined(WINDOWS) || defined(ANDROID)
   SDL_GL_SwapWindow(SDLWindowPtr);
 #endif
@@ -425,34 +412,27 @@ void Engine::ResizeWindow(int Width, int Height) {
 }
 
 void Engine::SetFullscreen(bool Fullscreen) {
-  if (Fullscreen)
-    SetFullscreen();
-  else
-    SetWindowed();
-}
-
-void Engine::SetFullscreen() {
-  WindowFullScreen = true;
-  OgreRenderWindowPtr->setFullscreen(WindowFullScreen, WindowWidth, WindowHeight);
+  if (Fullscreen) {
+    WindowFullScreen = true;
+    OgreRenderWindowPtr->setFullscreen(WindowFullScreen, WindowWidth, WindowHeight);
 #ifdef DESKTOP
-  SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
+    SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
 #else
-  SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags | SDL_WINDOW_FULLSCREEN);
+    SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags | SDL_WINDOW_FULLSCREEN);
 #endif
-}
-
-void Engine::SetWindowed() {
-  WindowFullScreen = false;
-  OgreRenderWindowPtr->setFullscreen(WindowFullScreen, WindowWidth, WindowHeight);
-  SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags);
-  SDL_SetWindowSize(SDLWindowPtr, WindowWidth, WindowHeight);
+  } else {
+    WindowFullScreen = false;
+    OgreRenderWindowPtr->setFullscreen(WindowFullScreen, WindowWidth, WindowHeight);
+    SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags);
+    SDL_SetWindowSize(SDLWindowPtr, WindowWidth, WindowHeight);
+  }
 }
 
 bool Engine::IsFullscreen() { return WindowFullScreen; }
 
 void Engine::SetWindowCaption(const char *Caption) { SDL_SetWindowTitle(SDLWindowPtr, Caption); }
 
-void Engine::WindowRestoreFullscreenAndroid() {
+void Engine::AndroidRestoreWindow() {
   SDL_DisplayMode DM;
   SDL_GetDesktopDisplayMode(0, &DM);
   int screen_w = static_cast<int>(DM.w);
@@ -460,20 +440,18 @@ void Engine::WindowRestoreFullscreenAndroid() {
   OgreRenderWindowPtr->resize(screen_w, screen_h);
 }
 
-std::pair<int, int> Engine::GetWindowSize() const { return make_pair(WindowWidth, WindowHeight); }
-
 void Engine::GrabMouse(bool grab) {
-#ifndef ANDROID  // This breaks input on > Android 9.0
-  if (!SDLWindowPtr) return;
-  SDL_ShowCursor(!grab);
-  SDL_SetWindowGrab(SDLWindowPtr, static_cast<SDL_bool>(grab));
-  SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
+#ifndef MOBILE  // This breaks input on > Android 9.0
+  if (SDLWindowPtr) {
+    SDL_ShowCursor(!grab);
+    SDL_SetWindowGrab(SDLWindowPtr, static_cast<SDL_bool>(grab));
+    SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
+  }
 #endif
 }
 
 void Engine::InitResourceLocation() {
 #if defined(DESKTOP)
-
 #ifdef WINDOWS
   const char SEPARATOR = '\\';
 #else
@@ -498,7 +476,6 @@ void Engine::InitResourceLocation() {
   AddLocation(ProgramsDir + SEPARATOR + "Other", RGN_INTERNAL);
 
   AddLocation(AssetsDir, RGN_DEFAULT);
-
 #elif defined(ANDROID)
   auto &RGM = ResourceGroupManager::getSingleton();
   RGM.addResourceLocation("/Programs/Core.zip", "APKZip", RGN_INTERNAL);

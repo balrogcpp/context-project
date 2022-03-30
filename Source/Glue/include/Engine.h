@@ -14,12 +14,15 @@ namespace Glue {
 class Engine;
 
 /// Template helper function
+/// @return pointer to component instance (all components are Singletons)
 template <typename T>
 T* GetComponentPtr() {
   static T* ptr = Component<T>::GetInstancePtr();
   return ptr;
 }
 
+/// Template helper function
+/// @return reference to component instance (all components are Singletons)
 template <typename T>
 T& GetComponent() {
   static T& ref = *Component<T>::GetInstancePtr();
@@ -45,7 +48,7 @@ class Engine final : public Singleton<Engine> {
   void Capture();
 
   /// Set all components to Pause state
-  void Pause();
+  void OnPause();
 
   /// Called when in-game menu turned on
   void OnMenuOn();
@@ -54,16 +57,16 @@ class Engine final : public Singleton<Engine> {
   void OnMenuOff();
 
   /// Called when game is resumed
-  void Resume();
+  void OnResume();
 
   /// Called on game exit
-  void Cleanup();
+  void OnCleanup();
 
   /// Called every frame
   void Update(float PassedTime);
 
   /// Called to start render
-  void RenderOneFrame();
+  void RenderFrame();
 
   /// Internal function to add component
   void RegComponent(ComponentI* ComponentPtr);
@@ -75,7 +78,6 @@ class Engine final : public Singleton<Engine> {
   bool IsFullscreen();
   void ResizeWindow(int Width, int Height);
   void SetWindowCaption(const char* Caption);
-  std::pair<int, int> GetWindowSize() const;
   void GrabMouse(bool grab);
 
  protected:
@@ -142,13 +144,7 @@ class Engine final : public Singleton<Engine> {
   void InitShadowSettings();
 
   /// Android helper function
-  void WindowRestoreFullscreenAndroid();
-
-  /// Internal helper function
-  void SetFullscreen();
-
-  /// Internal helper function
-  void SetWindowed();
+  void AndroidRestoreWindow();
 
   std::vector<Ogre::Plugin*> PluginList;
   std::string RenderSystemName;
@@ -156,7 +152,7 @@ class Engine final : public Singleton<Engine> {
   Ogre::RenderTarget* OgreRenderTarget = nullptr;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> PSSMSetupPtr;
   std::vector<float> PSSMSplitPointList;
-  size_t PSSMSplitCount = 3;
+  int PSSMSplitCount = 3;
   Ogre::Root* OgreRoot = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;
   Ogre::Camera* OgreCamera = nullptr;

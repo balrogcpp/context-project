@@ -2,9 +2,6 @@
 
 #include "PCHeader.h"
 #include "Log.h"
-#include <fstream>
-#include <iostream>
-#include <thread>
 
 using namespace std;
 

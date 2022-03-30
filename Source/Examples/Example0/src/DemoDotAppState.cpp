@@ -8,6 +8,7 @@
 #include "ShaderHelpers.h"
 
 using namespace std;
+//using namespace Ogre;
 using namespace Glue;
 
 namespace Demo {
@@ -17,18 +18,20 @@ void DemoDotAppState::SetUp() {
   //GetScene().GetCameraMan().SetStyle(CameraMan::ControlStyle::FPS);
   LoadFromFile("1.scene");
 
-  GetAudio().AddSound("menu", "GameSong2.ogg", nullptr, true);
-  GetAudio().SetSoundVolume("menu", 0.5);
-  GetAudio().PlaySound("menu");
+  GetAudio().AddSound("ambient_music", "GameSong2.ogg", nullptr, true);
+  GetAudio().SetSoundVolume("ambient_music", 0.5);
+  GetAudio().PlaySound("ambient_music");
+
+  GetAudio().AddSound("wind", "Wind-Mark_DiAngelo-1940285615.ogg", nullptr, true);
+  //GetAudio().SetSoundVolume("wind", 0.2);
+  GetAudio().PlaySound("wind");
 
   GetAudio().AddSound("selection", "Menu-Selection-Change-M.ogg");
   GetAudio().AddSound("click", "VideoGameMenuSoundsMenu-Selection-Change-N.ogg");
-
-  Overlay::NewFrame();
 }
 
 void DemoDotAppState::DrawMenu() {
-  Ogre::ImGuiOverlay::NewFrame();
+  Overlay::NewFrame();
 
   if (ShowContextMenu) {
     static bool use_work_area = true;
