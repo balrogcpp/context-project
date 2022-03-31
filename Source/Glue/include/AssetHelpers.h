@@ -2,7 +2,6 @@
 
 #pragma once
 #include "Platform.h"
-
 #ifdef DESKTOP
 
 #include <OgreResourceGroupManager.h>
@@ -22,5 +21,4 @@ void AddLocation(const std::string &Path, const std::string &GroupName = Ogre::R
 void AddResourceFile(const std::string &Path, const std::string &GroupName = Ogre::RGN_DEFAULT, const std::string &ResourceFile = "");
 
 }  // namespace Glue
-
-#endif
+#endif // DESKTOP

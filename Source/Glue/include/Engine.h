@@ -13,22 +13,6 @@ namespace Glue {
 /// Forward declaration
 class Engine;
 
-/// Template helper function
-/// @return pointer to component instance (all components are Singletons)
-template <typename T>
-T* GetComponentPtr() {
-  static T* ptr = Component<T>::GetInstancePtr();
-  return ptr;
-}
-
-/// Template helper function
-/// @return reference to component instance (all components are Singletons)
-template <typename T>
-T& GetComponent() {
-  static T& ref = *Component<T>::GetInstancePtr();
-  return ref;
-}
-
 /// Global component getters
 Engine& GetEngine();
 Physics& GetPhysics();

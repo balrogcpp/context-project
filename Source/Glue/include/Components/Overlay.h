@@ -2,11 +2,11 @@
 
 #pragma once
 #include "Components/Component.h"
-#include "Input/ImGuiInputListener.h"
-#include "IconsMaterialDesign.h"
-#include "IconsKenney.h"
 #include "IconsFontAwesome5.h"
-#include <imgui.h>
+#include "IconsKenney.h"
+#include "IconsMaterialDesign.h"
+#include "ImGuiHelpers.h"
+#include "Input/ImGuiInputListener.h"
 
 namespace Ogre {
 class RenderTarget;
@@ -31,7 +31,7 @@ class Overlay final : public Component<Overlay>, public Ogre::RenderTargetListen
   void OnUpdate(float time) override;
   void preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) override;
   void AddFont(const std::string& FontName, const ImFontConfig* FontConfig = nullptr, const ImWchar* GlyphRanges = nullptr,
-                          const std::string& ResourceGroup = Ogre::RGN_INTERNAL);
+               const std::string& ResourceGroup = Ogre::RGN_INTERNAL);
 
   void Show();
   void Hide();

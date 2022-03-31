@@ -5,6 +5,8 @@
 
 namespace Glue {
 
+/// @class ComponentI
+/// Component interface. Components are
 class ComponentI {
  public:
   ComponentI();
@@ -24,5 +26,21 @@ class ComponentI {
 
 template <typename T>
 class Component : public ComponentI, public Singleton<T> {};
+
+/// Template helper function
+/// @return pointer to component instance (all components are Singletons)
+template <typename T>
+T* GetComponentPtr() {
+  static T* ptr = Component<T>::GetInstancePtr();
+  return ptr;
+}
+
+/// Template helper function
+/// @return reference to component instance (all components are Singletons)
+template <typename T>
+T& GetComponent() {
+  static T& ref = *Component<T>::GetInstancePtr();
+  return ref;
+}
 
 }  // namespace Glue

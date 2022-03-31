@@ -4,10 +4,11 @@
 #include "Components/DotSceneLoaderB.h"
 #include "CubeMapCamera.h"
 #include "Engine.h"
-#include "SinbadCharacterController.h"
 #include "PagedGeometry/PagedGeometryAll.h"
 #include "ReflectionCamera.h"
 #include "ShaderHelpers.h"
+#include "SinbadCharacterController.h"
+#include <pugixml.hpp>
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
 #include <MeshLodGenerator/OgreMeshLodGenerator.h>
@@ -26,8 +27,6 @@
 #include <Paging/OgrePage.h>
 #include <Paging/OgrePaging.h>
 #endif
-
-#include <pugixml.hpp>
 
 using namespace std;
 using namespace Forests;
@@ -755,7 +754,9 @@ void DotSceneLoaderB::ProcessEntity(pugi::xml_node &XmlNode, SceneNode *ParentNo
       // * TODO * : Clean up nodes without attached entities or children nodes? (should be done afterwards if the hierarchy is being processed)
       if (!staticGeometry.empty()) {
         LogManager::getSingleton().logMessage("[DotSceneLoader] Adding entity: " + name + " to Static Group: " + staticGeometry, LML_TRIVIAL);
-        OgreScene->getStaticGeometry(staticGeometry)->addEntity(static_cast<Entity *>(pEntity), ParentNode->_getDerivedPosition(), ParentNode->_getDerivedOrientation(), ParentNode->_getDerivedScale());
+        OgreScene->getStaticGeometry(staticGeometry)
+            ->addEntity(static_cast<Entity *>(pEntity), ParentNode->_getDerivedPosition(), ParentNode->_getDerivedOrientation(),
+                        ParentNode->_getDerivedScale());
       } else {
         LogManager::getSingleton().logMessage("[DotSceneLoader] pParent->attachObject(): " + name, LML_TRIVIAL);
         ParentNode->attachObject(static_cast<Entity *>(pEntity));
