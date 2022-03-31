@@ -143,8 +143,10 @@ class Engine final : public Singleton<Engine> {
   /// Ogre shadow settings
   void InitShadowSettings();
 
+#ifdef MOBILE
   /// Android helper function
   void AndroidRestoreWindow();
+#endif
 
   std::vector<Ogre::Plugin*> PluginList;
   std::string RenderSystemName;

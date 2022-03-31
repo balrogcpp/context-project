@@ -82,7 +82,7 @@ void Engine::InitComponents() {
   CreateOgreRenderWindow();
   TestGPUCapabilities();
 #ifdef ANDROID
-  WindowRestoreFullscreenAndroid();
+  AndroidRestoreWindow();
 #endif
   InitResourceLocation();
   InitRTSS();
@@ -432,6 +432,7 @@ bool Engine::IsFullscreen() { return WindowFullScreen; }
 
 void Engine::SetWindowCaption(const char *Caption) { SDL_SetWindowTitle(SDLWindowPtr, Caption); }
 
+#ifdef MOBILE
 void Engine::AndroidRestoreWindow() {
   SDL_DisplayMode DM;
   SDL_GetDesktopDisplayMode(0, &DM);
@@ -439,6 +440,7 @@ void Engine::AndroidRestoreWindow() {
   int screen_h = static_cast<int>(DM.h);
   OgreRenderWindowPtr->resize(screen_w, screen_h);
 }
+#endif
 
 void Engine::GrabMouse(bool grab) {
 #ifndef MOBILE  // This breaks input on > Android 9.0
