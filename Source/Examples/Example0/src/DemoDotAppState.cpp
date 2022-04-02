@@ -8,7 +8,6 @@
 #include "ShaderHelpers.h"
 
 using namespace std;
-//using namespace Ogre;
 using namespace Glue;
 
 namespace Demo {
@@ -23,7 +22,6 @@ void DemoDotAppState::SetUp() {
   GetAudio().PlaySound("ambient_music");
 
   GetAudio().AddSound("wind", "Wind-Mark_DiAngelo-1940285615.ogg", nullptr, true);
-  //GetAudio().SetSoundVolume("wind", 0.2);
   GetAudio().PlaySound("wind");
 
   GetAudio().AddSound("selection", "Menu-Selection-Change-M.ogg");

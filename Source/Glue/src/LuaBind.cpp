@@ -2,6 +2,5 @@
 
 #include "PCHeader.h"
 #include "LuaBind.h"
-
-#include <sol/sol.hpp>
 #include "lua.hpp"
+#include <sol/sol.hpp>
