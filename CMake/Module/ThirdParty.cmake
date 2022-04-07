@@ -367,7 +367,7 @@ externalproject_add(Target_assimp
 set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_OGRE)
 externalproject_add(Target_OGRE
                     EXCLUDE_FROM_ALL true
-                    DEPENDS Target_zlib Target_FreeType Target_pugixml Target_assimp Target_SDL2
+                    DEPENDS Target_zlib Target_FreeType Target_pugixml Target_SDL2
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v13.3.4
