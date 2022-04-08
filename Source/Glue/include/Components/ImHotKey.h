@@ -61,6 +61,7 @@ static void GetHotKeyLib(unsigned int functionKeys, char* buffer, size_t bufferS
 
 #include "imgui.h"
 #include "imgui_internal.h"
+#define SDL_h_
 
 namespace ImHotKey
 {

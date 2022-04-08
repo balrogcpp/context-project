@@ -4,7 +4,6 @@
 #include "MenuAppState.h"
 #include "DemoDotAppState.h"
 #include "Engine.h"
-#define SDL_h_
 #include "Components/ImHotKey.h"
 
 using namespace std;

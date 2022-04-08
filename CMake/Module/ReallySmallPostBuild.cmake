@@ -2,7 +2,7 @@
 
 find_package(SelfPackers)
 
-# Stripping don't work on macosm replaced with -g0 -s compiler flags
+# Stripping don't work on macos replaced with -g0 -s compiler flags
 #if (CMAKE_STRIP AND NOT APPLE)
 #    add_custom_command(
 #            TARGET ${TARGET_NAME}
