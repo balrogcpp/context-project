@@ -88,6 +88,9 @@ elseif (MSVC)
     endif ()
 endif ()
 
-# This flags are useful for thirdparty build
+# This variables are used for dependencies
 set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS})
+set(CMAKE_EXTRA_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+set(CMAKE_EXTRA_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS})
+set(CMAKE_EXTRA_STATIC_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS})

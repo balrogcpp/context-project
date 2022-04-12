@@ -150,15 +150,13 @@ void Engine::InitOgrePlugins() {
   Root::getSingleton().installPlugin(new STBIPlugin());
 #endif
 
-#ifdef DEBUG
-#if defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI) && defined(DESKTOP)
+#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI) && defined(DESKTOP)
   Root::getSingleton().installPlugin(new FreeImagePlugin());
 #endif
 
-#if defined(OGRE_BUILD_PLUGIN_ASSIMP) && defined(DESKTOP)
+#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_ASSIMP) && defined(DESKTOP)
   Root::getSingleton().installPlugin(new AssimpPlugin());
 #endif
-#endif  // DEBUG
 
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   OgreSceneManager = OgreRoot->createSceneManager("OctreeSceneManager", "Default");
@@ -454,10 +452,10 @@ void Engine::GrabMouse(bool grab) {
 
 void Engine::InitResourceLocation() {
 #if defined(DESKTOP)
-#ifdef WINDOWS
-  const char SEPARATOR = '\\';
-#else
+#ifndef WINDOWS
   const char SEPARATOR = '/';
+#else
+  const char SEPARATOR = '\\';
 #endif
 
   const string ProgramsDir = "Programs";
