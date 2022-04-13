@@ -1,9 +1,7 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #include "PCHeader.h"
-
 #ifdef DESKTOP
-
 #include "AssetHelpers.h"
 #include "Exception.h"
 #include "Filesystem.h"

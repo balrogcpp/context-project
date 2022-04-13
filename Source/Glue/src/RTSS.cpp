@@ -1,7 +1,6 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #include "PCHeader.h"
-
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 #include "RTSS.h"
 #include <RTShaderSystem/OgreRTShaderSystem.h>

@@ -3,9 +3,7 @@
 
 #include "PCHeader.h"
 #include "Engine.h"
-
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-
 #include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
 
 using namespace std;

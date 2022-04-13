@@ -3,7 +3,6 @@
 #pragma once
 #include "Platform.h"
 #ifdef DESKTOP
-
 #include <OgreResourceGroupManager.h>
 #include <string>
 

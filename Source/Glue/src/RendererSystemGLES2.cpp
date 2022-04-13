@@ -3,9 +3,7 @@
 
 #include "PCHeader.h"
 #include "Engine.h"
-
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-
 #include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 
 using namespace std;
