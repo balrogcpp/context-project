@@ -110,10 +110,8 @@ void Engine::InitComponents() {
 
 void Engine::InitSDLSubsystems() {
   OgreAssert(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER), "Failed to init SDL2");
-
   for (int i = 0; i < SDL_NumJoysticks(); ++i)
     if (SDL_IsGameController(i)) SDL_GameControllerOpen(i);
-
   SDL_DisplayMode DM;
   SDL_GetDesktopDisplayMode(0, &DM);
   ScreenWidth = static_cast<int>(DM.w);
@@ -141,29 +139,23 @@ void Engine::InitOgrePlugins() {
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
 #endif
-
 #ifdef OGRE_BUILD_PLUGIN_PFX
   Root::getSingleton().installPlugin(new ParticleFXPlugin());
 #endif
-
 #ifdef OGRE_BUILD_PLUGIN_STBI
   Root::getSingleton().installPlugin(new STBIPlugin());
 #endif
-
 #if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI) && defined(DESKTOP)
   Root::getSingleton().installPlugin(new FreeImagePlugin());
 #endif
-
 #if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_ASSIMP) && defined(DESKTOP)
   Root::getSingleton().installPlugin(new AssimpPlugin());
 #endif
-
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   OgreSceneManager = OgreRoot->createSceneManager("OctreeSceneManager", "Default");
 #else
   OgreSceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
 #endif
-
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
   Root::getSingleton().installPlugin(new DotScenePluginB());
 #else
@@ -177,14 +169,12 @@ void Engine::CreateSDLWindow() {
   if (WindowWidth == ScreenWidth && WindowHeight == ScreenHeight) {
     SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
   }
-
   if (WindowFullScreen) {
     SDLWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
     WindowWidth = ScreenWidth;
     WindowHeight = ScreenHeight;
   }
-
   WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED_DISPLAY(0);
   SDLWindowPtr = SDL_CreateWindow(WindowCaption.c_str(), WindowPositionFlag, WindowPositionFlag, WindowWidth, WindowHeight, SDLWindowFlags);
 #elif defined(ANDROID)
@@ -195,14 +185,11 @@ void Engine::CreateSDLWindow() {
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-
   SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
   SDLWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
   SDLWindowFlags |= SDL_WINDOW_OPENGL;
-
   WindowWidth = ScreenWidth;
   WindowHeight = ScreenHeight;
-
   SDLWindowPtr = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ScreenWidth, ScreenHeight, SDLWindowFlags);
   SDLGLContextPtr = SDL_GL_CreateContext(SDLWindowPtr);
 #endif
@@ -213,7 +200,6 @@ void Engine::CreateOgreRenderWindow() {
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(SDLWindowPtr, &info);
-
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
@@ -225,7 +211,6 @@ void Engine::CreateOgreRenderWindow() {
   OgreRenderParams["externalGLControl"] = "true";
   OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
   OgreRenderParams["preserveContext"] = "true";
-
   JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
   jclass class_activity = env->FindClass("android/app/Activity");
   jclass class_resources = env->FindClass("android/content/res/Resources");
@@ -242,7 +227,6 @@ void Engine::CreateOgreRenderWindow() {
 #endif
   const char TrueStr[] = "true";
   const char FalseStr[] = "false";
-
   WindowVsync = ConfigPtr->GetBool("vsync", WindowVsync);
   WindowGammaCorrection = ConfigPtr->GetBool("gamma", WindowGammaCorrection);
   FSAA = ConfigPtr->GetInt("fsaa", FSAA);
@@ -263,7 +247,6 @@ void Engine::InitShadowSettings() {
 #ifdef MOBILE
   ShadowsEnabled = false;
 #endif
-
   float ShadowFarDistance = 400;
   int16_t ShadowTexSize = 512;
   ShadowsEnabled = ConfigPtr->GetBool("shadows_enable", ShadowsEnabled);

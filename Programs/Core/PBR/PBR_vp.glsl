@@ -8,8 +8,8 @@
 #version 330 core
 #define VERSION 330
 #else
-#version 100
-#define VERSION 100
+#version 300 es
+#define VERSION 300
 #endif
 #endif
 

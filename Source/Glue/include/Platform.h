@@ -2,6 +2,7 @@
 
 #pragma once
 #include <OgrePlatform.h>
+#include <OgrePlatformInformation.h>
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #define WINDOWS
