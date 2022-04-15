@@ -14,33 +14,22 @@ class GBufferSchemeHandler : public Ogre::MaterialManager::Listener {
  public:
   GBufferSchemeHandler() {
     ref_mat_ = Ogre::MaterialManager::getSingleton().getByName("gbuffer");
-
-    if (!ref_mat_) {
-      throw Exception("No available materials for Compositor::GBufferSchemeHandler");
-    }
-
+    if (!ref_mat_) throw Exception("No available materials for Compositor::GBufferSchemeHandler");
     ref_mat_->load();
   }
 
   Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const Ogre::String &schemeName, Ogre::Material *originalMaterial,
                                         unsigned short lodIndex, const Ogre::Renderable *rend) override {
     Ogre::Technique *gBufferTech = originalMaterial->createTechnique();
-
     gBufferTech->setSchemeName(schemeName);
     Ogre::Pass *gbufPass = gBufferTech->createPass();
     *gbufPass = *ref_mat_->getTechnique(0)->getPass(0);
-
     return gBufferTech;
   }
 
   void Update(Ogre::Matrix4 mvp_prev, float time) {
-    for (auto &it : gpu_fp_params_) {
-      it->setNamedConstant("uFrameTime", time);
-    }
-
-    for (auto &it : gpu_vp_params_) {
-      it->setNamedConstant("uWorldViewProjPrev", mvp_prev);
-    }
+    for (auto &it : gpu_fp_params_) it->setNamedConstant("uFrameTime", time);
+    for (auto &it : gpu_vp_params_) it->setNamedConstant("uWorldViewProjPrev", mvp_prev);
   }
 
  protected:
@@ -85,27 +74,24 @@ void Compositor::InitGBuffer() {
     Ogre::MaterialManager::getSingleton().addListener(GBufferHandler.get(), "GBuffer");
   }
 
-  if (OgreCompositorManager->addCompositor(OgreViewport, "GBuffer")) {
+  if (OgreCompositorManager->addCompositor(OgreViewport, "GBuffer"))
     OgreCompositorManager->setCompositorEnabled(OgreViewport, "GBuffer", true);
-  } else {
+  else
     Ogre::LogManager::getSingleton().logMessage("Failed to add GBuffer compositor\n");
-  }
 }
 
 void Compositor::AddCompositorEnabled(const std::string &name) {
-  if (OgreCompositorManager->addCompositor(OgreViewport, name)) {
+  if (OgreCompositorManager->addCompositor(OgreViewport, name))
     OgreCompositorManager->setCompositorEnabled(OgreViewport, name, true);
-  } else {
+  else
     throw Exception(string("Failed to add ") + name + " compositor");
-  }
 }
 
 void Compositor::AddCompositorDisabled(const std::string &name) {
-  if (OgreCompositorManager->addCompositor(OgreViewport, name)) {
+  if (OgreCompositorManager->addCompositor(OgreViewport, name))
     OgreCompositorManager->setCompositorEnabled(OgreViewport, name, false);
-  } else {
+  else
     throw Exception(string("Failed to add ") + name + " compositor");
-  }
 }
 
 void Compositor::EnableCompositor(const std::string &name) { OgreCompositorManager->setCompositorEnabled(OgreViewport, name, true); }
@@ -174,7 +160,6 @@ void Compositor::InitOutput() {
     auto material = material_manager.getByName(MotionBlurCompositor);
     auto *pass = material->getTechnique(0)->getPass(0);
     auto fs_params = pass->getFragmentProgramParameters();
-
     fs_params->setNamedConstant("uMotionBlurEnable", 1.0f);
   }
 
@@ -205,8 +190,8 @@ void Compositor::SetUp() {
 
   if (EffectsList["bloom"]) {
     AddCompositorEnabled("Bloom");
-    AddCompositorEnabled("FilterX/Bloom");
-    AddCompositorEnabled("FilterY/Bloom");
+    AddCompositorEnabled("Bloom/FilterX");
+    AddCompositorEnabled("Bloom/FilterY");
   }
 
   InitOutput();

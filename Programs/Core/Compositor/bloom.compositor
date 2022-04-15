@@ -50,7 +50,10 @@ compositor Bloom
 }
 
 
-material Bloom/filtery
+//----------------------------------------------------------------------------------------------------------------------
+// Filter Materials
+//----------------------------------------------------------------------------------------------------------------------
+material Bloom/FilterY
 {
 	technique
 	{
@@ -61,7 +64,53 @@ material Bloom/filtery
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref filtery_fs {}
+			fragment_program_ref gauss_filter3y_fs {}
+
+			texture_unit
+            {
+                content_type compositor Bloom bloom
+                tex_address_mode clamp
+                filtering linear linear point
+            }
+		}
+	}
+}
+
+material Bloom/FilterX
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref gauss_filter3x_fs {}
+
+			texture_unit
+            {
+                content_type compositor Bloom bloom
+                tex_address_mode clamp
+                filtering linear linear point
+            }
+		}
+	}
+}
+
+material Bloom/Filter
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref gauss_filter3x3_fs {}
 
 			texture_unit
             {
@@ -73,30 +122,10 @@ material Bloom/filtery
 	}
 }
 
-material Bloom/filterx
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref filterx_fs {}
-
-			texture_unit
-            {
-                content_type compositor Bloom bloom
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-		}
-	}
-}
-
-compositor FilterY/Bloom
+//----------------------------------------------------------------------------------------------------------------------
+// Filter Compositors
+//----------------------------------------------------------------------------------------------------------------------
+compositor Bloom/Filter
 {
     technique
     {
@@ -106,13 +135,13 @@ compositor FilterY/Bloom
         {
             pass render_quad
             {
-                material Bloom/filtery
+                material Bloom/Filter
             }
         }
     }
 }
 
-compositor FilterX/Bloom
+compositor Bloom/FilterY
 {
     technique
     {
@@ -122,7 +151,23 @@ compositor FilterX/Bloom
         {
             pass render_quad
             {
-                material Bloom/filterx
+                material Bloom/FilterY
+            }
+        }
+    }
+}
+
+compositor Bloom/FilterX
+{
+    technique
+    {
+        texture_ref bloom Bloom bloom
+
+        target bloom
+        {
+            pass render_quad
+            {
+                material Bloom/FilterX
             }
         }
     }

@@ -19,10 +19,8 @@ void main()
   float color = 0.0;
   for (int x = -2; x < 2; x++)
   for (int y = -2; y < 2; y++)
-  {
     color += texture2D(uSampler, vec2(oUv0.x + float(x) * texelSize.x, oUv0.y + float(y) * texelSize.y)).x;
-  }
   color /= 16.0;
 
-  FragColor = vec4(color, 0.0, 0.0, 1.0);
+  FragColor.r = color;
 }

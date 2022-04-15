@@ -106,9 +106,7 @@ void main()
   float exponent = fragmentWorldDepth * fog_params.x;
   float fog_value = clamp(1.0 / exp(exponent), 0.0, 1.0);
   accessibility = mix(1.0, accessibility, fog_value);
-//  float fog_value = 1.0 - clamp(1.0 / exp(exponent), 0.0, 1.0);
-//  accessibility = mix(accessibility, 1.0, fog_value);
 
   // amplify and saturate if necessary
-  FragColor = vec4(vec3(accessibility), 1.0);
+  FragColor.r = accessibility;
 }

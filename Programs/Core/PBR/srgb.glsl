@@ -79,12 +79,48 @@ vec4 LINEARtoSRGB(const vec4 linIn, const float exposure)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 LINEARtoSRGB(const vec3 linIn, float exposure)
+vec3 LINEARtoSRGB(const vec3 linIn, const float exposure)
 {
   vec3 srgbOut;
 #ifdef MANUAL_SRGB
 #ifdef SRGB_HDR
   srgbOut = expose(linIn, exposure);
+#endif
+#ifdef SRGB_SQRT
+  return sqrt(srgbOut);
+#else
+  return pow(srgbOut, vec3(1.0 / 2.2));
+#endif
+#else
+  return srgbOut;
+#endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+vec4 LINEARtoSRGB(const vec4 linIn)
+{
+  vec4 srgbOut;
+#ifdef MANUAL_SRGB
+#ifdef SRGB_HDR
+  srgbOut = expose(linIn, 1.0);
+#endif
+#ifdef SRGB_SQRT
+  return vec4(sqrt(srgbOut.rgb), linIn.a);
+#else
+  return vec4(pow(srgbOut.rgb, vec3(1.0 / 2.2)), linIn.a);
+#endif
+#else
+  return srgbOut;
+#endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 LINEARtoSRGB(const vec3 linIn)
+{
+  vec3 srgbOut;
+#ifdef MANUAL_SRGB
+#ifdef SRGB_HDR
+  srgbOut = expose(linIn, 1.0);
 #endif
 #ifdef SRGB_SQRT
   return sqrt(srgbOut);

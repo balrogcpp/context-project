@@ -10,11 +10,14 @@
 
 #include "header.frag"
 
+#ifndef MAX_SAMPLES
+#define MAX_SAMPLES 8
+#endif
+
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
 
 #ifndef NO_MRT
-
 #include "srgb.glsl"
 #include "fog.glsl"
 
@@ -22,36 +25,31 @@ uniform sampler2D SceneSampler;
 uniform sampler2D sSceneDepthSampler;
 #else
 uniform sampler2D SpeedSampler;
-#endif
-
+#endif // ! MOTION_BLUR
 #ifdef SSAO
 uniform sampler2D SsaoSampler;
 uniform float uSSAOEnable;
-#endif
-
+#endif // SSAO
 #ifdef BLOOM
 uniform sampler2D BloomSampler;
 uniform float uBloomEnable;
-#endif
-
+#endif // BLOOM
 #ifdef SRGB
 #ifdef MANUAL_SRGB
 uniform float exposure;
-#endif
-#endif
-
+#endif // MANUAL_SRGB
+#endif // SRGB
 #ifdef FOG
 uniform vec3 uFogColour;
 uniform vec4 uFogParams;
 uniform float nearClipDistance;
 uniform float farClipDistance;
-#endif
+#endif // FOG
 #ifdef MOTION_BLUR
 uniform vec2 texelSize;
 uniform float uScale;
 uniform float uMotionBlurEnable;
-#endif
-
+#endif // MOTION_BLUR
 #endif // !NO_MRT
 
 void main()
@@ -65,7 +63,7 @@ void main()
 #endif
 
 #ifdef BLOOM
-  if (uBloomEnable > 0.0) scene.rgb += texture2D(BloomSampler, oUv0).rgb;
+  if (uBloomEnable > 0.0) scene.rgb += (0.65 * texture2D(BloomSampler, oUv0).rgb);
 #endif
 
 #ifdef FOG
@@ -81,13 +79,11 @@ void main()
   vec2 velocity = uScale * texture2D(SpeedSampler, oUv0).rg;
   float speed = length(velocity / texelSize);
   int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
-
-    for (int i = 1; i < nSamples; i++) {
-      vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
-      vec2 uv = oUv0 + offset;
-      scene += texture2D(SceneSampler, uv).rgb;
-    }
-
+  for (int i = 1; i < nSamples; i++) {
+    vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
+    vec2 uv = oUv0 + offset;
+    scene += texture2D(SceneSampler, uv).rgb;
+  }
   scene /= float(nSamples);
 }
 #endif
@@ -100,5 +96,5 @@ void main()
 
 #endif //!NO_MRT
 
-  FragColor = vec4(scene.rgb, 1.0);
+  FragColor.rgb = scene;
 }

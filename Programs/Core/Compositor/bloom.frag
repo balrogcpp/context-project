@@ -9,20 +9,16 @@
 #endif
 
 #include "header.frag"
+#include "srgb.glsl"
 
 in vec2 oUv0;
 uniform sampler2D SceneSampler;
 
 void main()
 {
-  vec3 color = texture2D(SceneSampler, oUv0, 1.0).rgb;
-  vec3 bloom = vec3(0.0);
-
-  float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
-  if(brightness > 1.0)
-    bloom = color;
-
-  const float scale = 0.01;
-
-  FragColor = vec4(scale * bloom, 1.0);
+  vec3 hdr = vec3(0.0);
+  vec3 color = texture2D(SceneSampler, oUv0, 0.0).rgb;
+  const float theshhold = 0.9999;
+  if(color.x > theshhold || color.y > theshhold || color.z > theshhold) hdr = color;
+  gl_FragColor.rgb = hdr;
 }
