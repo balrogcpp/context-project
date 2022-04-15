@@ -27,7 +27,6 @@ void main()
   const float offset1 = 1.3846153846;
   const float offset2 = 3.2307692308;
 
-
   const float weight0 = 0.2270270270;
   const float weight1 = 0.3162162162;
   const float weight2 = 0.0702702703;
