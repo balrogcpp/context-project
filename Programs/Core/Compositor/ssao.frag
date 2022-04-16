@@ -100,8 +100,6 @@ void main()
   // normalize, remove edge highlighting
   accessibility *= cEdgeHighlight;
 
-  accessibility = clamp(accessibility, 0.0, 1.0);
-
   // amplify and saturate if necessary
   FragColor.r = accessibility;
 }

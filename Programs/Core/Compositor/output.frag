@@ -64,7 +64,7 @@ void main()
     for (int y = -2; y < 1; y++)
       color += texture2D(SsaoSampler, vec2(oUv0.x + float(x) * texelSize.x, oUv0.y + float(y) * texelSize.y)).r;
     color /= 9.0;
-    scene.rgb *= clamp(color + 0.5, 0.0, 1.0);
+    scene.rgb *= clamp(color + 0.25, 0.0, 1.0);
   }
 #endif
 #ifdef BLOOM
