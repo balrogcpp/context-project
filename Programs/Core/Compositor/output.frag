@@ -21,6 +21,7 @@ uniform sampler2D SceneSampler;
 #include "srgb.glsl"
 #include "fog.glsl"
 
+uniform vec2 texelSize;
 #ifndef MOTION_BLUR
 uniform sampler2D sSceneDepthSampler;
 #else
@@ -46,7 +47,6 @@ uniform float nearClipDistance;
 uniform float farClipDistance;
 #endif // FOG
 #ifdef MOTION_BLUR
-uniform vec2 texelSize;
 uniform float uScale;
 uniform float uMotionBlurEnable;
 #endif // MOTION_BLUR
@@ -57,15 +57,19 @@ void main()
   vec3 scene = texture2D(SceneSampler, oUv0).rgb;
 
 #ifndef NO_MRT
-
 #ifdef SSAO
-  if (uSSAOEnable > 0.0) scene.rgb *= texture2D(SsaoSampler, oUv0).r;
+  if (uSSAOEnable > 0.0) {
+    float color = 0.0;
+    for (int x = -2; x < 1; x++)
+    for (int y = -2; y < 1; y++)
+      color += texture2D(SsaoSampler, vec2(oUv0.x + float(x) * texelSize.x, oUv0.y + float(y) * texelSize.y)).r;
+    color /= 9.0;
+    scene.rgb *= clamp(color + 0.5, 0.0, 1.0);
+  }
 #endif
-
 #ifdef BLOOM
   if (uBloomEnable > 0.0) scene.rgb += (0.65 * texture2D(BloomSampler, oUv0).rgb);
 #endif
-
 #ifdef FOG
   {
     float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
@@ -73,7 +77,6 @@ void main()
     scene = ApplyFog(scene, uFogParams, uFogColour, fragmentWorldDepth);
   }
 #endif
-
 #ifdef MOTION_BLUR
   if (uMotionBlurEnable > 0.0) {
   vec2 velocity = uScale * texture2D(SpeedSampler, oUv0).rg;
@@ -87,14 +90,11 @@ void main()
   scene /= float(nSamples);
 }
 #endif
-
 #ifdef MANUAL_SRGB
 #ifdef SRGB
   scene.rgb = LINEARtoSRGB(scene.rgb, exposure);
 #endif
 #endif
-
 #endif //!NO_MRT
-
   FragColor.rgb = scene;
 }

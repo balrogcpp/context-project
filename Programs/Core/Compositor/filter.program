@@ -79,7 +79,7 @@ fragment_program gauss_filter5x5_fs glsl glsles
 
 fragment_program box_filter_fs glsl glsles
 {
-	source box_filter.frag
+	source box.frag
 
     default_params
     {

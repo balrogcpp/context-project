@@ -42,7 +42,6 @@ void main()
     return;
   }
 
-
   float accessibility = 0.0;
 
   // get rotation vector, rotation is tiled every 4 screen pixels
@@ -101,11 +100,7 @@ void main()
   // normalize, remove edge highlighting
   accessibility *= cEdgeHighlight;
 
-  accessibility = clamp(1.0 - shadow_colour + accessibility, 0.0, 1.0);
-
-  float exponent = fragmentWorldDepth * fog_params.x;
-  float fog_value = clamp(1.0 / exp(exponent), 0.0, 1.0);
-  accessibility = mix(1.0, accessibility, fog_value);
+  accessibility = clamp(accessibility, 0.0, 1.0);
 
   // amplify and saturate if necessary
   FragColor.r = accessibility;

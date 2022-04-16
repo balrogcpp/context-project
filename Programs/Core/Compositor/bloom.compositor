@@ -1,5 +1,8 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
+//----------------------------------------------------------------------------------------------------------------------
+// Bloom compositor
+//----------------------------------------------------------------------------------------------------------------------
 fragment_program bloom_fs glsl glsles
 {
 	source bloom.frag
@@ -10,7 +13,7 @@ fragment_program bloom_fs glsl glsles
     }
 }
 
-material bloom
+material Bloom
 {
 	technique
 	{
@@ -43,12 +46,11 @@ compositor Bloom
         {
             pass render_quad
             {
-                material bloom
+                material Bloom
             }
         }
     }
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 // Filter Materials
@@ -70,7 +72,7 @@ material Bloom/FilterY
             {
                 content_type compositor Bloom bloom
                 tex_address_mode clamp
-                filtering linear linear point
+                filtering linear linear none
             }
 		}
 	}
@@ -93,7 +95,7 @@ material Bloom/FilterX
             {
                 content_type compositor Bloom bloom
                 tex_address_mode clamp
-                filtering linear linear point
+                filtering linear linear none
             }
 		}
 	}

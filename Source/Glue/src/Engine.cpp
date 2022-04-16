@@ -293,7 +293,7 @@ void Engine::InitTextureSettings() {
   auto &OTM = Ogre::TextureManager::getSingleton();
   auto &OMM = Ogre::MaterialManager::getSingleton();
   TextureFilterOptions TextureFiltering = TFO_BILINEAR;
-  if (RSC->hasCapability(RSC_ANISOTROPY) && ConfigPtr->GetString("filtration") == "anisotropic") {
+  if (RSC->hasCapability(RSC_ANISOTROPY) && ConfigPtr->GetString("filtration").compare("anisotropic")) {
     TextureFiltering = TFO_ANISOTROPIC;
     OMM.setDefaultAnisotropy(ConfigPtr->GetInt("anisotropy", 1));
   }

@@ -13,10 +13,6 @@ class CompositorChain;
 }  // namespace Ogre
 
 namespace Glue {
-class GBufferSchemeHandler;
-}
-
-namespace Glue {
 
 class Compositor : public Component<Compositor> {
  public:
@@ -31,7 +27,6 @@ class Compositor : public Component<Compositor> {
   void SetUp();
 
  protected:
-  void InitGBuffer();
   void AddCompositorEnabled(const std::string& name);
   void AddCompositorDisabled(const std::string& name);
   void EnableCompositor(const std::string& name);
@@ -41,7 +36,6 @@ class Compositor : public Component<Compositor> {
 
   bool AnyEffectEnabled = false;
   std::map<std::string, bool> EffectsList;
-  std::unique_ptr<GBufferSchemeHandler> GBufferHandler;
   Ogre::CompositorManager* OgreCompositorManager = nullptr;
   Ogre::CompositorChain *OgreCompositorChain = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;

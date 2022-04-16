@@ -1,9 +1,11 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
 fragment_program Crytek_fp glsl glsles
 {
 	source ssao.frag
-
 	default_params
 	{
 		param_named sSceneDepthSampler int 0
@@ -12,8 +14,6 @@ fragment_program Crytek_fp glsl glsles
         param_named_auto nearClipDistance near_clip_distance
         param_named_auto farClipDistance far_clip_distance
         param_named_auto cFov fov
-        param_named_auto shadow_colour shadow_colour
-        param_named_auto fog_params fog_params
 	}
 }
 
@@ -67,136 +67,6 @@ compositor SSAO
             pass render_quad
             {
                 material SSAOCrytek
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-material SSAO/filtery
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref filtery_fs {}
-
-			texture_unit
-            {
-                content_type compositor SSAO ssao
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-		}
-	}
-}
-
-material SSAO/filterx
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref filterx_fs {}
-
-			texture_unit
-            {
-                content_type compositor SSAO ssao
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-		}
-	}
-}
-
-compositor FilterY/SSAO
-{
-    technique
-    {
-        texture_ref ssao SSAO ssao
-
-        target ssao
-        {
-            pass render_quad
-            {
-                material SSAO/filtery
-            }
-        }
-    }
-}
-
-compositor FilterX/SSAO
-{
-    technique
-    {
-        texture_ref ssao SSAO ssao
-
-        target ssao
-        {
-            pass render_quad
-            {
-                material SSAO/filterx
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program ssao_filter_fs glsl glsles
-{
-	source ssao_filter.frag
-
-    default_params
-    {
-        param_named uSampler int 0
-        param_named_auto texelSize inverse_texture_size 0
-    }
-}
-
-material BoxFilter/filter
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-            polygon_mode_overrideable false
-
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref ssao_filter_fs {}
-
-			texture_unit
-            {
-                content_type compositor SSAO ssao
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-		}
-	}
-}
-
-compositor BoxFilter/SSAO
-{
-    technique
-    {
-        texture_ref ssao SSAO ssao
-
-        target ssao
-        {
-            pass render_quad
-            {
-                material BoxFilter/filter
             }
         }
     }
