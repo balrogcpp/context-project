@@ -9,8 +9,8 @@ vertex_program PBR_Paged_vs glsl glsles : PBR_I_vs
     preprocessor_defines PAGED_GEOMETRY,TREES,HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params
     {
-        param_named_auto uTime time
-        param_named_auto uCameraPosition camera_position
+        param_named_auto Time time
+        param_named_auto CameraPosition camera_position
     }
 }
 
@@ -24,10 +24,10 @@ vertex_program PBR_Grass_vs glsl glsles : PBR_I_vs
     preprocessor_defines PAGED_GEOMETRY,GRASS,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
     default_params
     {
-        param_named_auto uTime time
+        param_named_auto Time time
         param_named uFadeRange float 50.0
         param_named uWindRange float 50.0
-        param_named_auto uCameraPosition camera_position
+        param_named_auto CameraPosition camera_position
     }
 }
 

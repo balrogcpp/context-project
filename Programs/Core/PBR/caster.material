@@ -7,7 +7,7 @@ vertex_program PSSM/shadow_caster_alpha_vs glsl glsles
 
 	default_params
 	{
-		param_named_auto uMVPMatrix worldviewproj_matrix
+		param_named_auto MVPMatrix worldviewproj_matrix
 	}
 }
 
@@ -45,7 +45,7 @@ vertex_program PSSM/shadow_caster_vs glsl glsles
 
 	default_params
 	{
-		param_named_auto uMVPMatrix worldviewproj_matrix
+		param_named_auto MVPMatrix worldviewproj_matrix
 	}
 }
 
@@ -76,7 +76,7 @@ vertex_program PSSM/shadow_caster_terrain_vs glsl glsles
 
 	default_params
 	{
-		param_named_auto uMVPMatrix worldviewproj_matrix
+		param_named_auto MVPMatrix worldviewproj_matrix
 	}
 }
 

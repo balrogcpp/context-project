@@ -30,13 +30,13 @@ uniform vec3 Z;
 #endif
 
 #ifdef NO_MRT
-uniform vec4 uFogParams;
-uniform float uFarClipDistance;
+uniform vec4 FogParams;
+uniform float FarClipDistance;
 #endif
-uniform vec3 uFogColour;
+uniform vec3 FogColour;
 uniform vec3 uSunColor;
-uniform float uTime;
-uniform float uTimeScale;
+uniform float Time;
+uniform float TimeScale;
 uniform float uCirrus;
 uniform float uCumulus;
 uniform float uSunSize;
@@ -78,14 +78,14 @@ void main()
     color = XYZtoRGB(color);
     if (gamma <= uSunSize) color += uSunColor;
     color = expose(color, 0.1);
-    //if (vPosition.y >= 0.0) color = ProceduralClouds(color, uFogColour, vPosition, uCirrus, uCumulus, uTimeScale * uTime);
+    //if (vPosition.y >= 0.0) color = ProceduralClouds(color, FogColour, vPosition, uCirrus, uCumulus, TimeScale * Time);
     color = SRGBtoLINEAR(color);
 
 #ifndef NO_MRT
     FragData[0].rgb = color;
     FragData[1].r = 0.05;
 #else
-    color = ApplyFog(color, uFogParams, uFogColour, 0.05 * uFarClipDistance);
+    color = ApplyFog(color, FogParams, FogColour, 0.05 * FarClipDistance);
     FragColor.rgb = LINEARtoSRGB(color, 1.0);
 #endif
 }

@@ -1,0 +1,59 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+// Abstract node to avoid copy & paste
+//----------------------------------------------------------------------------------------------------------------------
+abstract target CubeFace
+{
+    visibility_mask 0xF0 // avoid ogrehead in the reflection
+    pass clear {}
+    pass render_scene
+    {
+        camera CubeMapCamera align_to_face
+    }
+}
+
+compositor CubeMap
+{
+    technique
+    {
+        texture tex 128 128 PF_BYTE_RGB cubic
+        target tex 0 : CubeFace {}
+        target tex 1 : CubeFace {}
+        target tex 2 : CubeFace {}
+        target tex 3 : CubeFace {}
+        target tex 4 : CubeFace {}
+        target tex 5 : CubeFace {}
+
+        target_output
+        {
+            input previous
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+compositor Fresnel
+{
+    technique
+    {
+        texture reflection 512 512 PF_BYTE_RGB
+        texture refraction 512 512 PF_BYTE_RGB
+        target reflection
+        {
+            visibility_mask 0x00F // SURFACE objects
+            input previous
+        }
+        target refraction
+        {
+            visibility_mask 0x0F0 // SUBMERGED objects
+            input previous
+        }
+        target_output
+        {
+            input previous
+        }
+    }
+}

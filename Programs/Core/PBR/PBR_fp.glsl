@@ -108,34 +108,34 @@ uniform sampler2D shadowMap7;
 #define MAX_LIGHTS 0
 #endif
 #if MAX_LIGHTS > 0
-uniform vec4 uLightPositionArray[MAX_LIGHTS];
-uniform vec4 uLightDirectionArray[MAX_LIGHTS];
-uniform vec4 uLightDiffuseScaledColourArray[MAX_LIGHTS];
-uniform vec4 uLightAttenuationArray[MAX_LIGHTS];
-uniform vec4 uLightSpotParamsArray[MAX_LIGHTS];
+uniform vec4 LightPositionArray[MAX_LIGHTS];
+uniform vec4 LightDirectionArray[MAX_LIGHTS];
+uniform vec4 LightDiffuseScaledColourArray[MAX_LIGHTS];
+uniform vec4 LightAttenuationArray[MAX_LIGHTS];
+uniform vec4 LightSpotParamsArray[MAX_LIGHTS];
 #ifdef SHADOWRECEIVER
-uniform float uLightCastsShadowsArray[MAX_LIGHTS];
+uniform float LightCastsShadowsArray[MAX_LIGHTS];
 #endif
 #endif
-uniform float uLightCount;
+uniform float LightCount;
 #ifndef USE_IBL
-uniform vec3 uAmbientLightColour;
+uniform vec3 AmbientLightColour;
 #endif
-uniform vec3 uSurfaceAmbientColour;
-uniform vec3 uSurfaceDiffuseColour;
-uniform float uSurfaceSpecularColour;
-uniform float uSurfaceShininessColour;
-uniform vec3 uSurfaceEmissiveColour;
+uniform vec3 SurfaceAmbientColour;
+uniform vec3 SurfaceDiffuseColour;
+uniform float SurfaceSpecularColour;
+uniform float SurfaceShininessColour;
+uniform vec3 SurfaceEmissiveColour;
 #ifdef NO_MRT
-uniform vec3 uFogColour;
-uniform vec4 uFogParams;
+uniform vec3 FogColour;
+uniform vec4 FogParams;
 #endif
 #ifndef NO_MRT
-uniform float uFarClipDistance;
-uniform float uFrameTime;
+uniform float FarClipDistance;
+uniform float FrameTime;
 #endif
 uniform float uLOD;
-uniform vec3 uCameraPosition;
+uniform vec3 CameraPosition;
 #ifdef TERRAIN
 uniform float uTerrainTexScale;
 #endif
@@ -170,11 +170,11 @@ uniform float shadowTexel6;
 #if MAX_SHADOW_TEXTURES > 7
 uniform float shadowTexel7;
 #endif
-uniform vec4 pssmSplitPoints;
-uniform vec3 uShadowColour;
-uniform float uShadowDepthOffset;
-uniform float uShadowFilterSize;
-uniform int uShadowFilterIterations;
+uniform vec4 uPssmSplitPoints;
+uniform vec3 ShadowColour;
+uniform float ShadowDepthOffset;
+uniform float ShadowFilterSize;
+uniform int ShadowFilterIterations;
 #endif // SHADOWRECEIVER
 
 #ifdef SHADOWRECEIVER
@@ -226,54 +226,54 @@ in vec4 projectionCoord;
 #if MAX_SHADOW_TEXTURES > 0
 //----------------------------------------------------------------------------------------------------------------------
 float GetShadow(const int counter) {
-    if (vDepth >= pssmSplitPoints.w)
+    if (vDepth >= uPssmSplitPoints.w)
         return 1.0;
 #if MAX_SHADOW_TEXTURES > 0
     else if (counter == 0)
-        return CalcDepthShadow(shadowMap0, lightSpacePosArray[0], uShadowDepthOffset, shadowTexel0*uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap0, lightSpacePosArray[0], ShadowDepthOffset, shadowTexel0*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 1
     else if (counter == 1)
-        return CalcDepthShadow(shadowMap1, lightSpacePosArray[1], uShadowDepthOffset, shadowTexel1*uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap1, lightSpacePosArray[1], ShadowDepthOffset, shadowTexel1*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 2
     else if (counter == 2)
-        return CalcDepthShadow(shadowMap2, lightSpacePosArray[2], uShadowDepthOffset, shadowTexel2*uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap2, lightSpacePosArray[2], ShadowDepthOffset, shadowTexel2*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 3
     else if (counter == 3)
-        return CalcDepthShadow(shadowMap3, lightSpacePosArray[3], uShadowDepthOffset, shadowTexel3*uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap3, lightSpacePosArray[3], ShadowDepthOffset, shadowTexel3*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 4
     else if (counter == 4)
-        return CalcDepthShadow(shadowMap4, lightSpacePosArray[4], uShadowDepthOffset, shadowTexel4*uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap4, lightSpacePosArray[4], ShadowDepthOffset, shadowTexel4*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 5
     else if (counter == 5)
-        return CalcDepthShadow(shadowMap5, lightSpacePosArray[5], uShadowDepthOffset, shadowTexel5*uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap5, lightSpacePosArray[5], ShadowDepthOffset, shadowTexel5*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 6
     else if (counter == 6)
-        return CalcDepthShadow(shadowMap6, lightSpacePosArray[6], uShadowDepthOffset, shadowTexel6*uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap6, lightSpacePosArray[6], ShadowDepthOffset, shadowTexel6*ShadowFilterSize, ShadowFilterIterations);
 #endif
 #if MAX_SHADOW_TEXTURES > 7
     else if (counter == 7)
-        return CalcDepthShadow(shadowMap7, lightSpacePosArray[7], uShadowDepthOffset, shadowTexel7*uShadowFilterSize, uShadowFilterIterations);
+        return CalcDepthShadow(shadowMap7, lightSpacePosArray[7], ShadowDepthOffset, shadowTexel7*ShadowFilterSize, ShadowFilterIterations);
 #endif
 
     return 1.0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float CalcPSSMDepthShadow(const vec4 pssmSplitPoints, const vec4 lightSpacePos0, const vec4 lightSpacePos1, const vec4 lightSpacePos2, const sampler2D shadowMap0, const sampler2D shadowMap1, const sampler2D shadowMap2)
+float CalcPSSMDepthShadow(const vec4 uPssmSplitPoints, const vec4 lightSpacePos0, const vec4 lightSpacePos1, const vec4 lightSpacePos2, const sampler2D shadowMap0, const sampler2D shadowMap1, const sampler2D shadowMap2)
 {
     // calculate shadow
-    if (vDepth <= pssmSplitPoints.x)
-        return CalcDepthShadow(shadowMap0, lightSpacePos0, uShadowDepthOffset, shadowTexel0*uShadowFilterSize, uShadowFilterIterations);
-    else if (vDepth <= pssmSplitPoints.y)
-        return CalcDepthShadow(shadowMap1, lightSpacePos1, uShadowDepthOffset, shadowTexel1*uShadowFilterSize, uShadowFilterIterations);
-    else if (vDepth <= pssmSplitPoints.z)
-        return CalcDepthShadow(shadowMap2, lightSpacePos2, uShadowDepthOffset, shadowTexel2*uShadowFilterSize, uShadowFilterIterations);
+    if (vDepth <= uPssmSplitPoints.x)
+        return CalcDepthShadow(shadowMap0, lightSpacePos0, ShadowDepthOffset, shadowTexel0*ShadowFilterSize, ShadowFilterIterations);
+    else if (vDepth <= uPssmSplitPoints.y)
+        return CalcDepthShadow(shadowMap1, lightSpacePos1, ShadowDepthOffset, shadowTexel1*ShadowFilterSize, ShadowFilterIterations);
+    else if (vDepth <= uPssmSplitPoints.z)
+        return CalcDepthShadow(shadowMap2, lightSpacePos2, ShadowDepthOffset, shadowTexel2*ShadowFilterSize, ShadowFilterIterations);
 
     return 1.0;
 }
@@ -347,9 +347,9 @@ vec3 GetNormal(const vec2 uv)
 //----------------------------------------------------------------------------------------------------------------------
 vec4 GetAlbedo(const vec2 uv) {
 #ifdef HAS_COLOURS
-    vec4 albedo = vec4(uSurfaceDiffuseColour * vColor, 1.0);
+    vec4 albedo = vec4(SurfaceDiffuseColour * vColor, 1.0);
 #else
-    vec4 albedo = vec4(uSurfaceDiffuseColour, 1.0);
+    vec4 albedo = vec4(SurfaceDiffuseColour, 1.0);
 #endif
 #ifdef HAS_BASECOLORMAP
     albedo *= texture2D(uAlbedoSampler, uv, uLOD);
@@ -360,7 +360,7 @@ vec4 GetAlbedo(const vec2 uv) {
 #if 0
 //----------------------------------------------------------------------------------------------------------------------
 float GetMetallic(const vec2 uv) {
-    float metallic = uSurfaceShininessColour;
+    float metallic = SurfaceShininessColour;
 #ifdef HAS_METALLICMAP
     metallic *= texture2D(uMetallicSampler, uv, uLOD).r;
 #endif
@@ -369,7 +369,7 @@ float GetMetallic(const vec2 uv) {
 
 //----------------------------------------------------------------------------------------------------------------------
 float GetRoughness(const vec2 uv) {
-    float roughness = uSurfaceSpecularColour;
+    float roughness = SurfaceSpecularColour;
 #ifdef HAS_ROUGHNESSMAP
     roughness *= texture2D(uRoughnessSampler, uv, uLOD).r;
 #endif
@@ -388,7 +388,7 @@ float GetOcclusion(const vec2 uv) {
 
 //----------------------------------------------------------------------------------------------------------------------
 vec3 GetORM(const vec2 uv) {
-    vec3 ORM = vec3(1.0, uSurfaceSpecularColour, uSurfaceShininessColour);
+    vec3 ORM = vec3(1.0, SurfaceSpecularColour, SurfaceShininessColour);
 #ifdef HAS_ORM
     vec3 texel = texture2D(uORMSampler, uv, uLOD).rgb;
     ORM.r = texel.r;
@@ -438,7 +438,7 @@ vec2 ParallaxMapping(vec2 uv, vec3 viewDir)
 void main()
 {
 #ifndef SHADOWCASTER
-    vec3 v = normalize(uCameraPosition - vPosition);
+    vec3 v = normalize(CameraPosition - vPosition);
     vec2 tex_coord = vUV0.xy;
 
 #ifdef TERRAIN
@@ -486,19 +486,19 @@ void main()
     vec3 total_colour = vec3(0.0);
 
 #if MAX_LIGHTS > 0
-    for (int i = 0; i < int(uLightCount); i++) {
-        vec3 l = -normalize(uLightDirectionArray[i].xyz); // Vector from surface point to light
+    for (int i = 0; i < int(LightCount); i++) {
+        vec3 l = -normalize(LightDirectionArray[i].xyz); // Vector from surface point to light
         vec3 h = normalize(l+v); // Half vector between both l and v
         float NdotL = clamp(dot(n, l), 0.001, 1.0);
 
-        vec3 vLightView = uLightPositionArray[i].xyz - vPosition;
+        vec3 vLightView = LightPositionArray[i].xyz - vPosition;
         float fLightD = length(vLightView);
         vLightView = normalize(vLightView);
 
         float fAtten = 1.0;
         float fSpotT = 1.0;
 
-        vec4 vAttParams = uLightAttenuationArray[i];
+        vec4 vAttParams = LightAttenuationArray[i];
         float range = vAttParams.x;
 
         if (range > 0.0) {
@@ -508,7 +508,7 @@ void main()
 
             fAtten = float(fLightD < range) / (attenuation_const + (attenuation_linear * fLightD) + (attenuation_quad * (fLightD * fLightD)));
 
-            vec3 vSpotParams = uLightSpotParamsArray[i].xyz;
+            vec3 vSpotParams = LightSpotParamsArray[i].xyz;
             float outer_radius = vSpotParams.z;
 
             if (outer_radius > 0.0) {
@@ -540,15 +540,15 @@ void main()
 #if MAX_SHADOW_TEXTURES > 0
         float shadow = 1.0;
 
-        if (uLightCastsShadowsArray[i] > 0.0) {
+        if (LightCastsShadowsArray[i] > 0.0) {
             #define EPSILON 0.000001
 
             #if MAX_SHADOW_TEXTURES > 2
-                if (uLightAttenuationArray[0].x < 100000.0) {
+                if (LightAttenuationArray[0].x < 100000.0) {
                     shadow = (tmp > EPSILON) ? GetShadow(i) : 1.0;
                 } else {
                     if (i == 0) {
-                        shadow = (tmp > EPSILON) ? CalcPSSMDepthShadow(pssmSplitPoints, \
+                        shadow = (tmp > EPSILON) ? CalcPSSMDepthShadow(uPssmSplitPoints, \
                                                     lightSpacePosArray[0], lightSpacePosArray[1], lightSpacePosArray[2], \
                                                     shadowMap0, shadowMap1, shadowMap2) : 1.0;
                     } else {
@@ -560,10 +560,10 @@ void main()
             #endif
         }
 
-        total_colour += uShadowColour * color + (shadow * (tmp * (uLightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib))));
+        total_colour += ShadowColour * color + (shadow * (tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib))));
 #endif
 #else
-    total_colour += (tmp * (uLightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib)));
+    total_colour += (tmp * (LightDiffuseScaledColourArray[i].xyz * (diffuseContrib + specContrib)));
 #endif
     }
 #endif
@@ -571,9 +571,9 @@ void main()
 // Calculate lighting contribution from image based lighting source (IBL)
 #ifdef USE_IBL
     vec3 reflection = -normalize(reflect(v, n));
-    total_colour += uSurfaceAmbientColour * GetIBLContribution(ubrdfLUT, uDiffuseEnvSampler, uSpecularEnvSampler, diffuseColor, specularColor, roughness, NdotV, n, reflection);
+    total_colour += SurfaceAmbientColour * GetIBLContribution(ubrdfLUT, uDiffuseEnvSampler, uSpecularEnvSampler, diffuseColor, specularColor, roughness, NdotV, n, reflection);
 #else
-    total_colour += (uSurfaceAmbientColour * (uAmbientLightColour * color));
+    total_colour += (SurfaceAmbientColour * (AmbientLightColour * color));
 #endif
 
 #ifdef HAS_REFLECTION
@@ -586,22 +586,22 @@ void main()
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour + texture2D(uEmissiveSampler, tex_coord, uLOD).rgb);
+    total_colour += SRGBtoLINEAR(SurfaceEmissiveColour + texture2D(uEmissiveSampler, tex_coord, uLOD).rgb);
 #else
-    total_colour += SRGBtoLINEAR(uSurfaceEmissiveColour);
+    total_colour += SRGBtoLINEAR(SurfaceEmissiveColour);
 #endif
 
 #ifndef NO_MRT
     FragData[0] = vec4(total_colour, alpha);
 
-    FragData[1].r = (vDepth / uFarClipDistance);
+    FragData[1].r = (vDepth / FarClipDistance);
 
     vec2 a = (vScreenPosition.xz / vScreenPosition.w);
     vec2 b = (vPrevScreenPosition.xz / vPrevScreenPosition.w);
-    vec2 velocity = (0.0166667 / uFrameTime) * 0.5 * vec2(a - b);
+    vec2 velocity = (0.0166667 / FrameTime) * 0.5 * vec2(a - b);
     FragData[2].rg = velocity;
 #else
-    total_colour = ApplyFog(total_colour, uFogParams, uFogColour, vDepth);
+    total_colour = ApplyFog(total_colour, FogParams, FogColour, vDepth);
     FragColor = LINEARtoSRGB(vec4(total_colour, alpha), 1.0);
 #endif
 

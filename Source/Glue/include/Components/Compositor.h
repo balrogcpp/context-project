@@ -14,6 +14,13 @@ class CompositorChain;
 
 namespace Glue {
 
+enum Compositors {
+  FX_SSAO,
+  FX_BLOOM,
+  FX_BLUR,
+  FX_MAX
+};
+
 class Compositor : public Component<Compositor> {
  public:
   Compositor();
@@ -23,7 +30,8 @@ class Compositor : public Component<Compositor> {
   void OnPause() override;
   void OnResume() override;
   void OnUpdate(float time) override;
-  void EnableEffect(const std::string& name, bool enable = true);
+  //void EnableEffect(const std::string& name, bool enable);
+  void EnableEffect(const Compositors FX, bool enable);
   void SetUp() {}
 
  protected:
@@ -32,7 +40,11 @@ class Compositor : public Component<Compositor> {
   void EnableCompositor(const std::string& name);
   void InitMRT();
 
-  std::map<std::string, bool> EffectsList;
+  bool CompositorList[FX_MAX];
+  const std::string BlurCompositor = "Blur";
+  const std::string BloomCompositor = "Bloom";
+  const std::string SSAOCompositor = "SSAO";
+  const std::string OutputCompositor = "Output";
   Ogre::CompositorManager* OgreCompositorManager = nullptr;
   Ogre::CompositorChain *OgreCompositorChain = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;

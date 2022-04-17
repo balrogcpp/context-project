@@ -15,11 +15,11 @@ abstract fragment_program SkyBoxCustomFp_I glsl glsles
     default_params
     {
         param_named_auto uSunDirection light_direction 0
-        param_named_auto uFogParams fog_params
-        param_named_auto uFogColour fog_colour
-        param_named_auto uFarClipDistance far_clip_distance
-        param_named_auto uTime time
-        param_named uTimeScale float 0.03
+        param_named_auto FogParams fog_params
+        param_named_auto FogColour fog_colour
+        param_named_auto FarClipDistance far_clip_distance
+        param_named_auto Time time
+        param_named TimeScale float 0.03
         param_named uCirrus float 0.4
         param_named uCumulus float 0.4
         param_named uSunSize float 0.27

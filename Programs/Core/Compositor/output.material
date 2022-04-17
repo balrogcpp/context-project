@@ -1,7 +1,7 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
-//
+// Material that blend other steps together
 //----------------------------------------------------------------------------------------------------------------------
 abstract fragment_program OutputI_fs glsl glsles
 {
@@ -9,9 +9,9 @@ abstract fragment_program OutputI_fs glsl glsles
     preprocessor_defines SSAO,BLOOM,FOG
 	default_params
 	{
-		param_named_auto uFogColour fog_colour
-		param_named_auto uFogParams fog_params
-        param_named_auto farClipDistance far_clip_distance
+		param_named_auto FogColour fog_colour
+		param_named_auto FogParams fog_params
+        param_named_auto FarClipDistance far_clip_distance
         param_named uSSAOEnable float 0.0
         param_named uBloomEnable float 0.0
 	}
@@ -32,11 +32,11 @@ abstract material OutputI
 
 			fragment_program_ref Output_fs
 			{
-			    param_named SceneSampler int 0
-			    param_named sSceneDepthSampler int 1
+			    param_named uSceneSampler int 0
+			    param_named uSceneDepthSampler int 1
 			    param_named SsaoSampler int 2
 			    param_named BloomSampler int 3
-                param_named_auto texelSize inverse_texture_size 2
+                param_named_auto TexelSize inverse_texture_size 2
 			}
 
 			texture_unit
@@ -66,9 +66,6 @@ abstract material OutputI
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-// Output compositor but rendered to intermediate texture. Required to apply motion blur later
-//----------------------------------------------------------------------------------------------------------------------
 material Output : OutputI {}
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -89,7 +86,7 @@ material OutputDummy
 
 			fragment_program_ref OutputDummy_fs
 			{
-			    param_named SceneSampler int 0
+			    param_named uSceneSampler int 0
 			}
 
 			texture_unit

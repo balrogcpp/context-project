@@ -15,17 +15,17 @@
 #endif
 
 in vec2 oUv0;
-uniform sampler2D SceneSampler;
+uniform sampler2D uSceneSampler;
 
 #ifndef NO_MRT
 #include "srgb.glsl"
 #include "fog.glsl"
 
-uniform vec2 texelSize;
+uniform vec2 TexelSize;
 #ifndef MOTION_BLUR
-uniform sampler2D sSceneDepthSampler;
+uniform sampler2D uSceneDepthSampler;
 #else
-uniform sampler2D SpeedSampler;
+uniform sampler2D uSpeedSampler;
 #endif // ! MOTION_BLUR
 #ifdef SSAO
 uniform sampler2D SsaoSampler;
@@ -38,14 +38,14 @@ uniform float uBloomEnable;
 #endif // BLOOM
 #ifdef SRGB
 #ifdef MANUAL_SRGB
-uniform float exposure;
+uniform float uExposure;
 #endif // MANUAL_SRGB
 #endif // SRGB
 #ifdef FOG
-uniform vec3 uFogColour;
-uniform vec4 uFogParams;
+uniform vec3 FogColour;
+uniform vec4 FogParams;
 uniform float nearClipDistance;
-uniform float farClipDistance;
+uniform float FarClipDistance;
 #endif // FOG
 #ifdef MOTION_BLUR
 uniform float uScale;
@@ -55,7 +55,7 @@ uniform float uMotionBlurEnable;
 
 void main()
 {
-  vec3 scene = texture2D(SceneSampler, oUv0).rgb;
+  vec3 scene = texture2D(uSceneSampler, oUv0).rgb;
 
 #ifndef NO_MRT
 #ifdef SSAO
@@ -63,7 +63,7 @@ void main()
     float color = 0.0;
     for (int x = -2; x < 1; x++)
     for (int y = -2; y < 1; y++)
-      color += texture2D(SsaoSampler, vec2(oUv0.x + float(x) * texelSize.x, oUv0.y + float(y) * texelSize.y)).r;
+      color += texture2D(SsaoSampler, vec2(oUv0.x + float(x) * TexelSize.x, oUv0.y + float(y) * TexelSize.y)).r;
     color /= 9.0;
     scene.rgb *= vec3(clamp(color + 0.25, 0.0, 1.0));
   }
@@ -82,15 +82,15 @@ void main()
   float weights8 = 1.0/16.0;
 
   vec2 offsets[KERNEL_SIZE];
-  vec2 offsets0 = vec2(-texelSize.x, -texelSize.y);
-  vec2 offsets1 = vec2(0.0, -texelSize.y);
-  vec2 offsets2 = vec2(texelSize.x, -texelSize.y);
-  vec2 offsets3 = vec2(-texelSize.x, 0.0);
+  vec2 offsets0 = vec2(-TexelSize.x, -TexelSize.y);
+  vec2 offsets1 = vec2(0.0, -TexelSize.y);
+  vec2 offsets2 = vec2(TexelSize.x, -TexelSize.y);
+  vec2 offsets3 = vec2(-TexelSize.x, 0.0);
   vec2 offsets4 = vec2(0.0, 0.0);
-  vec2 offsets5 = vec2(texelSize.x, 0.0);
-  vec2 offsets6 = vec2(-texelSize.x, texelSize.y);
-  vec2 offsets7 = vec2(0.0,  texelSize.y);
-  vec2 offsets8 = vec2(texelSize.x, texelSize.y);
+  vec2 offsets5 = vec2(TexelSize.x, 0.0);
+  vec2 offsets6 = vec2(-TexelSize.x, TexelSize.y);
+  vec2 offsets7 = vec2(0.0,  TexelSize.y);
+  vec2 offsets8 = vec2(TexelSize.x, TexelSize.y);
 
   vec3 color = vec3(0.0);
 
@@ -109,27 +109,27 @@ void main()
 #endif
 #ifdef FOG
   {
-    float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
-    float fragmentWorldDepth = clampedDepth * farClipDistance;
-    scene = ApplyFog(scene, uFogParams, uFogColour, fragmentWorldDepth);
+    float clampedDepth = texture2D(uSceneDepthSampler, oUv0).r;
+    float fragmentWorldDepth = clampedDepth * FarClipDistance;
+    scene = ApplyFog(scene, FogParams, FogColour, fragmentWorldDepth);
   }
 #endif
 #ifdef MOTION_BLUR
   if (uMotionBlurEnable > 0.0) {
-  vec2 velocity = uScale * texture2D(SpeedSampler, oUv0).rg;
-  float speed = length(velocity / texelSize);
+  vec2 velocity = uScale * texture2D(uSpeedSampler, oUv0).rg;
+  float speed = length(velocity / TexelSize);
   int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
   for (int i = 1; i < nSamples; i++) {
     vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
     vec2 uv = oUv0 + offset;
-    scene += texture2D(SceneSampler, uv).rgb;
+    scene += texture2D(uSceneSampler, uv).rgb;
   }
   scene /= float(nSamples);
 }
 #endif
 #ifdef MANUAL_SRGB
 #ifdef SRGB
-  scene.rgb = LINEARtoSRGB(scene.rgb, exposure);
+  scene.rgb = LINEARtoSRGB(scene.rgb, uExposure);
 #endif
 #endif
 #endif //!NO_MRT

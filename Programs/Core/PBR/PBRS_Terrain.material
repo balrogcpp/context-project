@@ -55,7 +55,7 @@ abstract material PBRS_Terrain : PBRS
 
             vertex_program_ref PBRS_Terrain_vs
             {
-                param_named_auto uModelMatrix world_matrix
+                param_named_auto ModelMatrix world_matrix
             }
 
             fragment_program_ref PBRS_Terrain_fs
@@ -92,7 +92,7 @@ abstract material PBRS_Terrain_nvc : PBRS
 
             vertex_program_ref PBRS_Terrain_nvc_vs
             {
-                param_named_auto uModelMatrix world_matrix
+                param_named_auto ModelMatrix world_matrix
             }
 
             fragment_program_ref PBRS_Terrain_nvc_fs

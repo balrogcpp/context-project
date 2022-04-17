@@ -5,15 +5,15 @@ shared_params PBR_Shared_frag
     shared_param_named uNormalScale float 1.0
     shared_param_named uOffsetScale float 0.001
     shared_param_named uLOD float 0.0
-    shared_param_named uShadowFilterSize float 4.0
-    shared_param_named uShadowFilterIterations int 8
-    //shared_param_named uShadowDepthOffset float 0.001
-    shared_param_named pssmSplitPoints float4 6.7367 18.4907 400.0 400.0
+    shared_param_named ShadowFilterSize float 4.0
+    shared_param_named ShadowFilterIterations int 8
+    //shared_param_named ShadowDepthOffset float 0.001
+    shared_param_named uPssmSplitPoints float4 6.7367 18.4907 400.0 400.0
 }
 
 shared_params PBR_Shared_vert
 {
-    shared_param_named uShadowTextureCount int 4
+    shared_param_named ShadowTextureCount int 4
 }
 
 abstract vertex_program PBR_I_vs glsl glsles
@@ -24,9 +24,9 @@ abstract vertex_program PBR_I_vs glsl glsles
     {
         shared_params_ref PBR_Shared_vert
 
-        param_named_auto uMVPMatrix worldviewproj_matrix
-        param_named_auto uModelMatrix world_matrix
-        param_named_auto uTexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
+        param_named_auto MVPMatrix worldviewproj_matrix
+        param_named_auto ModelMatrix world_matrix
+        param_named_auto TexWorldViewProjMatrixArray texture_worldviewproj_matrix_array 4
     }
 }
 
@@ -43,26 +43,26 @@ abstract fragment_program PBR_BaseI_fs glsl glsles
     {
         shared_params_ref PBR_Shared_frag
 
-        param_named_auto uLightPositionArray light_position_array 8
-        param_named_auto uLightDirectionArray light_direction_array 8
-        param_named_auto uLightDiffuseScaledColourArray light_diffuse_colour_power_scaled_array 8
-        param_named_auto uLightAttenuationArray light_attenuation_array 8
-        param_named_auto uLightSpotParamsArray spotlight_params_array 8
-        param_named_auto uLightCastsShadowsArray light_casts_shadows_array 8
+        param_named_auto LightPositionArray light_position_array 8
+        param_named_auto LightDirectionArray light_direction_array 8
+        param_named_auto LightDiffuseScaledColourArray light_diffuse_colour_power_scaled_array 8
+        param_named_auto LightAttenuationArray light_attenuation_array 8
+        param_named_auto LightSpotParamsArray spotlight_params_array 8
+        param_named_auto LightCastsShadowsArray light_casts_shadows_array 8
 
-        param_named_auto uLightCount light_count
-        param_named_auto uAmbientLightColour ambient_light_colour
-        param_named_auto uSurfaceAmbientColour surface_ambient_colour
-        param_named_auto uSurfaceDiffuseColour surface_diffuse_colour
-        param_named_auto uSurfaceSpecularColour surface_specular_colour
-        param_named_auto uSurfaceShininessColour surface_shininess
-        param_named_auto uSurfaceEmissiveColour surface_emissive_colour
-        param_named_auto uFogColour fog_colour
-        param_named_auto uFogParams fog_params
-        param_named_auto uCameraPosition camera_position
-        param_named_auto uFarClipDistance far_clip_distance
-        param_named_auto uFrameTime frame_time
-        param_named_auto uShadowColour shadow_colour
+        param_named_auto LightCount light_count
+        param_named_auto AmbientLightColour ambient_light_colour
+        param_named_auto SurfaceAmbientColour surface_ambient_colour
+        param_named_auto SurfaceDiffuseColour surface_diffuse_colour
+        param_named_auto SurfaceSpecularColour surface_specular_colour
+        param_named_auto SurfaceShininessColour surface_shininess
+        param_named_auto SurfaceEmissiveColour surface_emissive_colour
+        param_named_auto FogColour fog_colour
+        param_named_auto FogParams fog_params
+        param_named_auto CameraPosition camera_position
+        param_named_auto FarClipDistance far_clip_distance
+        param_named_auto FrameTime frame_time
+        param_named_auto ShadowColour shadow_colour
     }
 }
 

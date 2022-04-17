@@ -11,19 +11,15 @@ using namespace Ogre;
 namespace Glue {
 
 Compositor::Compositor() {
-  EffectsList["bloom"] = false;
-  EffectsList["ssao"] = false;
-  EffectsList["mblur"] = false;
-
   OgreCompositorManager = Ogre::CompositorManager::getSingletonPtr();
   OgreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
   OgreCamera = OgreSceneManager->getCamera("Default");
   OgreViewport = OgreCamera->getViewport();
   OgreCompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
 
-  EnableEffect("ssao", Config::GetInstance().GetBool("enable_ssao"));
-  EnableEffect("bloom", Config::GetInstance().GetBool("enable_bloom"));
-  EnableEffect("mblur", Config::GetInstance().GetBool("enable_mblur"));
+  EnableEffect(FX_SSAO, Config::GetInstance().GetBool("enable_ssao"));
+  EnableEffect(FX_BLOOM, Config::GetInstance().GetBool("enable_bloom"));
+  EnableEffect(FX_BLUR, Config::GetInstance().GetBool("enable_mblur"));
 
   InitMRT();
 }
@@ -32,7 +28,9 @@ Compositor::~Compositor() {}
 
 void Compositor::OnUpdate(float time) {}
 
-void Compositor::EnableEffect(const string &name, bool enable) { EffectsList[name] = enable; }
+//void Compositor::EnableEffect(const string &name, bool enable) { CompositorList[name] = enable; }
+
+void Compositor::EnableEffect(const Compositors FX, bool enable) { CompositorList[FX] = enable; }
 
 void Compositor::OnClean() {}
 
@@ -79,16 +77,11 @@ void Compositor::InitMRT() {
 #endif
   }
 
-  const string BlurCompositor = "Blur";
-  const string BloomCompositor = "Bloom";
-  const string SSAOCompositor = "SSAO";
-  const string OutputCompositor = "Output";
-
-  if (EffectsList["ssao"]) GetFPparameters(OutputCompositor)->setNamedConstant("uSSAOEnable", 1.0f);
-  if (EffectsList["ssao"]) GetFPparameters(SSAOCompositor)->setNamedConstant("uSSAOEnable", 1.0f);
-  if (EffectsList["bloom"]) GetFPparameters(OutputCompositor)->setNamedConstant("uBloomEnable", 1.0f);
-  if (EffectsList["bloom"]) GetFPparameters(BloomCompositor)->setNamedConstant("uBloomEnable", 1.0f);
-  if (EffectsList["mblur"]) GetFPparameters(BlurCompositor)->setNamedConstant("uMotionBlurEnable", 1.0f);
+  if (CompositorList[FX_SSAO]) GetFPparameters(OutputCompositor)->setNamedConstant("uSSAOEnable", 1.0f);
+  if (CompositorList[FX_SSAO]) GetFPparameters(SSAOCompositor)->setNamedConstant("uSSAOEnable", 1.0f);
+  if (CompositorList[FX_BLOOM]) GetFPparameters(OutputCompositor)->setNamedConstant("uBloomEnable", 1.0f);
+  if (CompositorList[FX_BLOOM]) GetFPparameters(BloomCompositor)->setNamedConstant("uBloomEnable", 1.0f);
+  if (CompositorList[FX_BLUR]) GetFPparameters(BlurCompositor)->setNamedConstant("uMotionBlurEnable", 1.0f);
 
   OgreCompositorManager->setCompositorEnabled(OgreViewport, MRT, true);
 }

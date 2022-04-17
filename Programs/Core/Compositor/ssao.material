@@ -8,12 +8,12 @@ fragment_program SSAOCrytek_fp glsl glsles
 	source ssao.frag
 	default_params
 	{
-		param_named sSceneDepthSampler int 0
+		param_named uSceneDepthSampler int 0
 		param_named sRotSampler4x4 int 1
 		param_named uSSAOEnable float 0.0
         param_named_auto cViewportSize viewport_size
         param_named_auto nearClipDistance near_clip_distance
-        param_named_auto farClipDistance far_clip_distance
+        param_named_auto FarClipDistance far_clip_distance
         param_named_auto cFov fov
 	}
 }
@@ -32,12 +32,12 @@ material SSAO
 
             fragment_program_ref SSAOCrytek_fp
             {
-				param_named cSampleInScreenspace float 0
-                param_named cSampleLengthScreenSpace float 0.06
-                param_named cSampleLengthWorldSpace float 2
-				param_named cOffsetScale float 0.05
-				param_named cDefaultAccessibility float 0.5
-				param_named cEdgeHighlight float 2
+				param_named uSampleInScreenspace float 0
+                param_named uSampleLengthScreenSpace float 0.06
+                param_named uSampleLengthWorldSpace float 2
+				param_named uOffsetScale float 0.05
+				param_named uDefaultAccessibility float 0.5
+				param_named uEdgeHighlight float 2
             }
 
             texture_unit
