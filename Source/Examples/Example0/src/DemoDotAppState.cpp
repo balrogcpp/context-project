@@ -21,8 +21,8 @@ void DemoDotAppState::SetUp() {
   GetAudio().SetSoundVolume("ambient_music", 0.5);
   GetAudio().PlaySound("ambient_music");
 
-  GetAudio().AddSound("wind", "Wind-Mark_DiAngelo-1940285615.ogg", nullptr, true);
-  GetAudio().PlaySound("wind");
+//  GetAudio().AddSound("wind", "Wind-Mark_DiAngelo-1940285615.ogg", nullptr, true);
+//  GetAudio().PlaySound("wind");
 
   GetAudio().AddSound("selection", "Menu-Selection-Change-M.ogg");
   GetAudio().AddSound("click", "VideoGameMenuSoundsMenu-Selection-Change-N.ogg");

@@ -24,17 +24,14 @@ class Compositor : public Component<Compositor> {
   void OnResume() override;
   void OnUpdate(float time) override;
   void EnableEffect(const std::string& name, bool enable = true);
-  void SetUp();
+  void SetUp() {}
 
  protected:
-  void AddCompositorEnabled(const std::string& name);
-  void AddCompositorDisabled(const std::string& name);
+  void AddCompositorEnabled(const std::string& Name);
+  void AddCompositorDisabled(const std::string& Name);
   void EnableCompositor(const std::string& name);
   void InitMRT();
-  void InitOutput();
-  void InitDummyOutput();
 
-  bool AnyEffectEnabled = false;
   std::map<std::string, bool> EffectsList;
   Ogre::CompositorManager* OgreCompositorManager = nullptr;
   Ogre::CompositorChain *OgreCompositorChain = nullptr;

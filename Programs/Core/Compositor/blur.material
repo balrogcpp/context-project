@@ -35,31 +35,15 @@ material Blur
 
 			texture_unit
             {
-                content_type compositor Output output
                 tex_address_mode clamp
                 filtering linear linear none
             }
 
             texture_unit
             {
-                content_type compositor MRT mrt 2
                 tex_address_mode clamp
                 filtering linear linear none
             }
 		}
 	}
-}
-
-compositor Blur
-{
-    technique
-    {
-        target_output
-        {
-            pass render_quad
-            {
-                material Blur
-            }
-        }
-    }
 }

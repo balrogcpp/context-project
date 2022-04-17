@@ -41,30 +41,26 @@ abstract material OutputI
 
 			texture_unit
             {
-                content_type compositor MRT mrt 0
                 tex_address_mode clamp
                 filtering linear linear none
             }
 
             texture_unit
             {
-                content_type compositor MRT mrt 1
                 tex_address_mode clamp
                 filtering linear linear none
             }
 
             texture_unit SSAO
             {
-                //content_type compositor SSAO ssao
-                //tex_address_mode clamp
-                //filtering linear linear none
+                tex_address_mode clamp
+                filtering linear linear none
             }
 
             texture_unit Bloom
             {
-                //content_type compositor Bloom bloom
-                //tex_address_mode clamp
-                //filtering linear linear none
+                tex_address_mode clamp
+                filtering linear linear none
             }
 		}
 	}
@@ -74,59 +70,6 @@ abstract material OutputI
 // Output compositor but rendered to intermediate texture. Required to apply motion blur later
 //----------------------------------------------------------------------------------------------------------------------
 material Output : OutputI {}
-
-compositor Output
-{
-    technique
-    {
-        texture output target_width target_height PF_FLOAT16_RGB
-
-        target output
-        {
-            pass render_quad
-            {
-                material Output
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Output without motion blur
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program OutputFinal_fs glsl glsles : OutputI_fs
-{
-    preprocessor_defines SSAO,BLOOM,FOG,SRGB
-	default_params
-	{
-		param_named exposure float 1.0
-	}
-}
-
-material OutputFinal : OutputI
-{
-	technique
-	{
-		pass
-		{
-			fragment_program_ref OutputFinal_fs {}
-        }
-	}
-}
-
-compositor OutputFinal
-{
-    technique
-    {
-        target_output
-        {
-            pass render_quad
-            {
-                material OutputFinal
-            }
-        }
-    }
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 // Just render scene, used when NoMRT option enabled
@@ -151,24 +94,9 @@ material OutputDummy
 
 			texture_unit
             {
-                content_type compositor noMRT mrt
                 tex_address_mode clamp
                 filtering linear linear none
             }
 		}
 	}
-}
-
-compositor OutputDummy
-{
-    technique
-    {
-        target_output
-        {
-            pass render_quad
-            {
-                material OutputDummy
-            }
-        }
-    }
 }

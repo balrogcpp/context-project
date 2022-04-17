@@ -17,7 +17,7 @@ uniform vec2 texelSize;
 //----------------------------------------------------------------------------------------------------------------------
 vec3 IterationX(const float offset, const float weight)
 {
-  return weight * (texture2D(uSampler, (oUv0 + vec2(offset, 0.0) * texelSize.x)).rgb + texture2D(uSampler, (oUv0 - vec2(offset, 0.0) * texelSize.x)).rgb);
+  return vec3(weight * (texture2D(uSampler, (oUv0 + vec2(offset, 0.0) * texelSize.x)).rgb + texture2D(uSampler, (oUv0 - vec2(offset, 0.0) * texelSize.x)).rgb));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ void main()
   const float weight1 = 0.3162162162;
   const float weight2 = 0.0702702703;
 
-  vec3 final_color = weight0 * texture2D(uSampler, oUv0).rgb;
+  vec3 final_color = (weight0 * texture2D(uSampler, oUv0).rgb);
 
   final_color += IterationX(offset1, weight1);
   final_color += IterationX(offset2, weight2);

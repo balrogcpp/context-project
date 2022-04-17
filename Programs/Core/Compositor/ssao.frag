@@ -24,21 +24,27 @@ uniform float cOffsetScale; // [0, 1] The distance of the first sample. samples 
 // placed in [cOffsetScale * cSampleLengthScreenSpace, cSampleLengthScreenSpace]
 uniform float cDefaultAccessibility; // the default value used in the lerp() expression for invalid samples [0, 1]
 uniform float cEdgeHighlight; // multiplier for edge highlighting in [1, 2] 1 is full highlighting 2 is off
-uniform float shadow_colour;
-uniform vec4 fog_params;
+uniform float uSSAOEnable;
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-//  const float nSampleNum = 32.0; // number of samples
+  if (uSSAOEnable <= 0.0)
+  {
+    FragColor.r = 1.0;
+    return;
+  }
+
+  // const float nSampleNum = 32.0; // number of samples
   const float nSampleNum = 8.0; // number of samples
 
   // get the depth of the current pixel and convert into world space unit [0, inf]
   float clampedDepth = texture2D(sSceneDepthSampler, oUv0).r;
   float fragmentWorldDepth = clampedDepth * farClipDistance - nearClipDistance;
 
-  if (fragmentWorldDepth <= 0.0) {
-    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+  if (fragmentWorldDepth <= 0.0)
+  {
+    FragColor.r = 1.0;
     return;
   }
 

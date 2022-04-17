@@ -11,14 +11,56 @@
 #include "header.frag"
 #include "srgb.glsl"
 
+#define KERNEL_SIZE 9
+#define THRESHOLD 0.9999
+
 in vec2 oUv0;
+uniform float uBloomEnable;
 uniform sampler2D SceneSampler;
+uniform vec2 texelSize;
 
 void main()
 {
+  if (uBloomEnable <= 0.0)
+  {
+    return;
+  }
+
+  float weights[KERNEL_SIZE];
+  float weights0 = 1.0/16.0;
+  float weights1 = 2.0/16.0;
+  float weights2 = 1.0/16.0;
+  float weights3 = 2.0/16.0;
+  float weights4 = 4.0/16.0;
+  float weights5 = 2.0/16.0;
+  float weights6 = 1.0/16.0;
+  float weights7 = 2.0/16.0;
+  float weights8 = 1.0/16.0;
+
+  vec2 offsets[KERNEL_SIZE];
+  vec2 offsets0 = vec2(-texelSize.x, -texelSize.y);
+  vec2 offsets1 = vec2(0.0, -texelSize.y);
+  vec2 offsets2 = vec2(texelSize.x, -texelSize.y);
+  vec2 offsets3 = vec2(-texelSize.x, 0.0);
+  vec2 offsets4 = vec2(0.0, 0.0);
+  vec2 offsets5 = vec2(texelSize.x, 0.0);
+  vec2 offsets6 = vec2(-texelSize.x, texelSize.y);
+  vec2 offsets7 = vec2(0.0,  texelSize.y);
+  vec2 offsets8 = vec2(texelSize.x, texelSize.y);
+
+  vec3 color = vec3(0.0);
+
+  color += (weights0 * texture2D(SceneSampler, oUv0 + offsets0).rgb);
+  color += (weights1 * texture2D(SceneSampler, oUv0 + offsets1).rgb);
+  color += (weights2 * texture2D(SceneSampler, oUv0 + offsets2).rgb);
+  color += (weights3 * texture2D(SceneSampler, oUv0 + offsets3).rgb);
+  color += (weights4 * texture2D(SceneSampler, oUv0 + offsets4).rgb);
+  color += (weights5 * texture2D(SceneSampler, oUv0 + offsets5).rgb);
+  color += (weights6 * texture2D(SceneSampler, oUv0 + offsets6).rgb);
+  color += (weights7 * texture2D(SceneSampler, oUv0 + offsets7).rgb);
+  color += (weights8 * texture2D(SceneSampler, oUv0 + offsets8).rgb);
+
   vec3 hdr = vec3(0.0);
-  vec3 color = texture2D(SceneSampler, oUv0, 0.0).rgb;
-  const float theshhold = 0.9999;
-  if(color.x > theshhold || color.y > theshhold || color.z > theshhold) hdr = color;
+  if(color.x > THRESHOLD || color.y > THRESHOLD || color.z > THRESHOLD) hdr = color;
   gl_FragColor.rgb = hdr;
 }

@@ -1,0 +1,85 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+// Cut bright parts pf scene
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program bloom_fs glsl glsles
+{
+	source bloom.frag
+
+    default_params
+    {
+        param_named SceneSampler int 0
+        param_named uBloomEnable float 0.0
+        param_named_auto texelSize inverse_texture_size 0
+    }
+}
+
+material Bloom
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref bloom_fs {}
+
+			texture_unit
+            {
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Apply linear gaussian blur
+//----------------------------------------------------------------------------------------------------------------------
+material Bloom/FilterY
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref gauss_filter3y_fs {}
+
+			texture_unit
+            {
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+material Bloom/FilterX
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref gauss_filter3x_fs {}
+
+			texture_unit
+            {
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}

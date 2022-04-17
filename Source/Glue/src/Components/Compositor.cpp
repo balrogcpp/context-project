@@ -25,7 +25,7 @@ Compositor::Compositor() {
   EnableEffect("bloom", Config::GetInstance().GetBool("enable_bloom"));
   EnableEffect("mblur", Config::GetInstance().GetBool("enable_mblur"));
 
-  SetUp();
+  InitMRT();
 }
 
 Compositor::~Compositor() {}
@@ -40,21 +40,21 @@ void Compositor::OnPause() {}
 
 void Compositor::OnResume() {}
 
-void Compositor::AddCompositorEnabled(const string &name) {
-  if (OgreCompositorManager->addCompositor(OgreViewport, name))
-    OgreCompositorManager->setCompositorEnabled(OgreViewport, name, true);
-  else
-    throw Exception(string("Failed to add ") + name + " compositor");
+void Compositor::AddCompositorEnabled(const string &Name) {
+  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, Name), "Failed to add MRT compoitor");
+  OgreCompositorManager->setCompositorEnabled(OgreViewport, Name, true);
 }
 
-void Compositor::AddCompositorDisabled(const string &name) {
-  if (OgreCompositorManager->addCompositor(OgreViewport, name))
-    OgreCompositorManager->setCompositorEnabled(OgreViewport, name, false);
-  else
-    throw Exception(string("Failed to add ") + name + " compositor");
+void Compositor::AddCompositorDisabled(const string &Name) {
+  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, Name), "Failed to add MRT compoitor");
 }
 
 void Compositor::EnableCompositor(const string &name) { OgreCompositorManager->setCompositorEnabled(OgreViewport, name, true); }
+
+static GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorName) {
+  static auto &MM = Ogre::MaterialManager::getSingleton();
+  return MM.getByName(CompositorName)->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+}
 
 void Compositor::InitMRT() {
   string MRT;
@@ -79,80 +79,18 @@ void Compositor::InitMRT() {
 #endif
   }
 
+  const string BlurCompositor = "Blur";
+  const string BloomCompositor = "Bloom";
+  const string SSAOCompositor = "SSAO";
+  const string OutputCompositor = "Output";
+
+  if (EffectsList["ssao"]) GetFPparameters(OutputCompositor)->setNamedConstant("uSSAOEnable", 1.0f);
+  if (EffectsList["ssao"]) GetFPparameters(SSAOCompositor)->setNamedConstant("uSSAOEnable", 1.0f);
+  if (EffectsList["bloom"]) GetFPparameters(OutputCompositor)->setNamedConstant("uBloomEnable", 1.0f);
+  if (EffectsList["bloom"]) GetFPparameters(BloomCompositor)->setNamedConstant("uBloomEnable", 1.0f);
+  if (EffectsList["mblur"]) GetFPparameters(BlurCompositor)->setNamedConstant("uMotionBlurEnable", 1.0f);
+
   OgreCompositorManager->setCompositorEnabled(OgreViewport, MRT, true);
-}
-
-void Compositor::InitDummyOutput() { AddCompositorEnabled("OutputDummy"); }
-
-void Compositor::InitOutput() {
-  string OutputCompositor;
-
-  if (EffectsList["mblur"])
-    OutputCompositor = "Output";
-  else
-    OutputCompositor = "OutputFinal";
-
-  const string MotionBlurCompositor = "Blur";
-  auto &material_manager = Ogre::MaterialManager::getSingleton();
-  auto material = material_manager.getByName(OutputCompositor);
-  auto *pass = material->getTechnique(0)->getPass(0);
-  auto OutputParamsPtr = pass->getFragmentProgramParameters();
-
-  AddCompositorDisabled(OutputCompositor);
-
-  if (EffectsList["ssao"]) {
-    auto texture = pass->getTextureUnitState("SSAO");
-    texture->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-    texture->setCompositorReference("SSAO", "ssao");
-    OutputParamsPtr->setNamedConstant("uSSAOEnable", 1.0f);
-  }
-
-  if (EffectsList["bloom"]) {
-    auto texture = pass->getTextureUnitState("Bloom");
-    texture->setContentType(Ogre::TextureUnitState::CONTENT_COMPOSITOR);
-    texture->setCompositorReference("Bloom", "bloom");
-    OutputParamsPtr->setNamedConstant("uBloomEnable", 1.0f);
-  }
-
-  if (EffectsList["mblur"]) {
-    auto material = material_manager.getByName(MotionBlurCompositor);
-    auto *pass = material->getTechnique(0)->getPass(0);
-    auto fs_params = pass->getFragmentProgramParameters();
-    fs_params->setNamedConstant("uMotionBlurEnable", 1.0f);
-  }
-
-  EnableCompositor(OutputCompositor);
-  if (EffectsList["mblur"]) AddCompositorEnabled("Blur");
-}
-
-void Compositor::SetUp() {
-  AnyEffectEnabled = false;
-  for (const auto &it : EffectsList) {
-    if (it.second) {
-      AnyEffectEnabled = true;
-      break;
-    }
-  }
-
-  InitMRT();
-
-  // nothing to do without MTR
-  if (!GlobalMRTIsEnabled()) {
-    InitDummyOutput();
-    return;
-  }
-
-  if (EffectsList["ssao"]) {
-    AddCompositorEnabled("SSAO");
-  }
-
-  if (EffectsList["bloom"]) {
-    AddCompositorEnabled("Bloom");
-    AddCompositorEnabled("Bloom/FilterX");
-    AddCompositorEnabled("Bloom/FilterY");
-  }
-
-  InitOutput();
 }
 
 }  // namespace Glue

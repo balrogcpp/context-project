@@ -3,13 +3,14 @@
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program Crytek_fp glsl glsles
+fragment_program SSAOCrytek_fp glsl glsles
 {
 	source ssao.frag
 	default_params
 	{
 		param_named sSceneDepthSampler int 0
 		param_named sRotSampler4x4 int 1
+		param_named uSSAOEnable float 0.0
         param_named_auto cViewportSize viewport_size
         param_named_auto nearClipDistance near_clip_distance
         param_named_auto farClipDistance far_clip_distance
@@ -17,7 +18,7 @@ fragment_program Crytek_fp glsl glsles
 	}
 }
 
-material SSAOCrytek
+material SSAO
 {
     technique
     {
@@ -29,7 +30,7 @@ material SSAOCrytek
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-            fragment_program_ref Crytek_fp
+            fragment_program_ref SSAOCrytek_fp
             {
 				param_named cSampleInScreenspace float 0
                 param_named cSampleLengthScreenSpace float 0.06
@@ -41,7 +42,6 @@ material SSAOCrytek
 
             texture_unit
             {
-                content_type compositor MRT mrt 1
                 tex_address_mode clamp
                 filtering linear linear none
             }
@@ -51,22 +51,6 @@ material SSAOCrytek
                 texture regularSphereJittered4.dds
                 tex_address_mode wrap
                 filtering none
-            }
-        }
-    }
-}
-
-compositor SSAO
-{
-    technique
-    {
-        texture ssao target_width target_height PF_FLOAT16_R chain_scope
-
-        target ssao
-        {
-            pass render_quad
-            {
-                material SSAOCrytek
             }
         }
     }
