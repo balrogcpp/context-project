@@ -34,8 +34,8 @@ abstract material OutputI
 			{
 			    param_named uSceneSampler int 0
 			    param_named uSceneDepthSampler int 1
-			    param_named SsaoSampler int 2
-			    param_named BloomSampler int 3
+			    param_named uSsaoSampler int 2
+			    param_named uBloomSampler int 3
                 param_named_auto TexelSize inverse_texture_size 2
 			}
 

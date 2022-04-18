@@ -28,9 +28,7 @@ Compositor::~Compositor() {}
 
 void Compositor::OnUpdate(float time) {}
 
-//void Compositor::EnableEffect(const string &name, bool enable) { CompositorList[name] = enable; }
-
-void Compositor::EnableEffect(const Compositors FX, bool enable) { CompositorList[FX] = enable; }
+void Compositor::EnableEffect(const Compositors FX, bool Enable) { CompositorList[FX] = Enable; }
 
 void Compositor::OnClean() {}
 
@@ -47,7 +45,7 @@ void Compositor::AddCompositorDisabled(const string &Name) {
   OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, Name), "Failed to add MRT compoitor");
 }
 
-void Compositor::EnableCompositor(const string &name) { OgreCompositorManager->setCompositorEnabled(OgreViewport, name, true); }
+void Compositor::EnableCompositor(const string &Name) { OgreCompositorManager->setCompositorEnabled(OgreViewport, Name, true); }
 
 static GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorName) {
   static auto &MM = Ogre::MaterialManager::getSingleton();
@@ -72,8 +70,8 @@ void Compositor::InitMRT() {
     MRTTextureDefinition->width = 1024;
     MRTTextureDefinition->height = 768;
 #else
-    MRTTextureDefinition->width = 1280;
-    MRTTextureDefinition->height = 720;
+    MRTTextureDefinition->width = 1360;
+    MRTTextureDefinition->height = 768;
 #endif
   }
 

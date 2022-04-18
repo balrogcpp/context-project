@@ -6,7 +6,7 @@
 fragment_program MBlur_fs glsl glsles
 {
     source output.frag
-    preprocessor_defines MOTION_BLUR,MAX_SAMPLES=8,SRGB
+    preprocessor_defines MOTION_BLUR,MAX_SAMPLES=8,SRGB,FXAA
 	default_params
 	{
 		param_named uExposure float 1.0
@@ -15,7 +15,8 @@ fragment_program MBlur_fs glsl glsles
         param_named uSceneSampler int 0
         param_named uSpeedSampler int 1
         param_named_auto TexelSize inverse_texture_size 0
-
+        param_named uFXAAEnable float 1.0
+        param_named uFXAAStrength float 4.0
 	}
 }
 

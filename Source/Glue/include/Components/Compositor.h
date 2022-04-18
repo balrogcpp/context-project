@@ -30,14 +30,13 @@ class Compositor : public Component<Compositor> {
   void OnPause() override;
   void OnResume() override;
   void OnUpdate(float time) override;
-  //void EnableEffect(const std::string& name, bool enable);
-  void EnableEffect(const Compositors FX, bool enable);
+  void EnableEffect(const Compositors FX, bool Enable);
   void SetUp() {}
 
  protected:
   void AddCompositorEnabled(const std::string& Name);
   void AddCompositorDisabled(const std::string& Name);
-  void EnableCompositor(const std::string& name);
+  void EnableCompositor(const std::string& Name);
   void InitMRT();
 
   bool CompositorList[FX_MAX];
