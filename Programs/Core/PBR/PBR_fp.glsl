@@ -35,7 +35,7 @@
 #ifdef SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
 uniform sampler2D uAlbedoSampler;
-uniform float uAlphaRejection;
+uniform float SurfaceAlphaRejection;
 in vec2 vUV0;
 #endif
 #endif
@@ -126,6 +126,9 @@ uniform vec3 SurfaceDiffuseColour;
 uniform float SurfaceSpecularColour;
 uniform float SurfaceShininessColour;
 uniform vec3 SurfaceEmissiveColour;
+#ifdef HAS_ALPHA
+uniform float SurfaceAlphaRejection;
+#endif
 #ifdef NO_MRT
 uniform vec3 FogColour;
 uniform vec4 FogParams;
@@ -457,7 +460,7 @@ void main()
 #ifdef FADE
     alpha *= vAlpha;
 #endif
-    if (alpha < 0.5) discard;
+    if (alpha < SurfaceAlphaRejection) discard;
 #endif // HAS_ALPHA
 
     vec3 ORM = GetORM(tex_coord);
@@ -607,7 +610,7 @@ void main()
 
 #else //SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
-    if (texture2D(uAlbedoSampler, vUV0.xy).a < 0.5) discard;
+    if (texture2D(uAlbedoSampler, vUV0.xy).a < SurfaceAlphaRejection) discard;
 #endif //SHADOWCASTER_ALPHA
 #ifdef NO_MRT
     FragColor.r = gl_FragCoord.z;

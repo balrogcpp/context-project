@@ -30,11 +30,7 @@ material Blur
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref MBlur_fs
-			{
-                tex_address_mode clamp
-                filtering linear linear none
-			}
+			fragment_program_ref MBlur_fs {}
 
 			texture_unit
             {

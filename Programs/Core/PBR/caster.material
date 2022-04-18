@@ -19,6 +19,7 @@ fragment_program PSSM/shadow_caster_alpha_fs glsl glsles
 	default_params
 	{
 	    param_named uAlbedoSampler int 0
+	    param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
 	}
 }
 
@@ -28,6 +29,8 @@ material PSSM/shadow_caster_alpha
 	{
 		pass
 		{
+		    alpha_rejection greater_equal 127
+
 			vertex_program_ref PSSM/shadow_caster_alpha_vs {}
 
 			fragment_program_ref PSSM/shadow_caster_alpha_fs {}
