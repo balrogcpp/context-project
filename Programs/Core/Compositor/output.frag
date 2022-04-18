@@ -9,6 +9,10 @@
 #endif
 
 #include "header.frag"
+#ifndef NO_MRT
+#include "srgb.glsl"
+#include "fog.glsl"
+#endif
 
 #ifndef MAX_SAMPLES
 #define MAX_SAMPLES 8
@@ -16,17 +20,14 @@
 
 in vec2 oUv0;
 uniform sampler2D uSceneSampler;
-
-#ifndef NO_MRT
-#include "srgb.glsl"
-#include "fog.glsl"
-
 uniform vec2 TexelSize;
-#ifndef MOTION_BLUR
+#ifndef NO_MRT
+#ifdef FOG
 uniform sampler2D uSceneDepthSampler;
-#else
+#endif // FOD
+#ifdef MOTION_BLUR
 uniform sampler2D uSpeedSampler;
-#endif // ! MOTION_BLUR
+#endif // MOTION_BLUR
 #ifdef SSAO
 uniform sampler2D uSsaoSampler;
 uniform float uSSAOEnable;
@@ -51,16 +52,15 @@ uniform float FarClipDistance;
 uniform float uScale;
 uniform float uMotionBlurEnable;
 #endif // MOTION_BLUR
+#endif // !NO_MRT
 #ifdef FXAA
 uniform float uFXAAStrength;
 uniform float uFXAAEnable;
-#endif
-#endif // !NO_MRT
+#endif // FXAA
 
 void main()
 {
   vec3 scene = texture2D(uSceneSampler, oUv0).rgb;
-
 #ifndef NO_MRT
 #ifdef SSAO
   if (uSSAOEnable > 0.0)
@@ -72,7 +72,7 @@ void main()
     color /= 9.0;
     scene.rgb *= vec3(clamp(color + 0.1, 0.0, 1.0));
   }
-#endif
+#endif // SSAO
 #ifdef BLOOM
   if (uBloomEnable > 0.0)
   {
@@ -110,28 +110,15 @@ void main()
 
     scene.rgb += vec3(0.65 * color);
   }
-#endif
+#endif // BLOOM
 #ifdef FOG
   {
     float clampedDepth = texture2D(uSceneDepthSampler, oUv0).r;
     float fragmentWorldDepth = clampedDepth * FarClipDistance;
     scene = ApplyFog(scene, FogParams, FogColour, fragmentWorldDepth);
   }
-#endif
-#ifdef MOTION_BLUR
-  if (uMotionBlurEnable > 0.0)
-  {
-    vec2 velocity = uScale * texture2D(uSpeedSampler, oUv0).rg;
-    float speed = length(velocity / TexelSize);
-    int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
-    for (int i = 1; i < nSamples; i++) {
-      vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
-      vec2 uv = oUv0 + offset;
-      scene += texture2D(uSceneSampler, uv).rgb;
-    }
-    scene /= float(nSamples);
-  }
-#endif
+#endif // FOG
+#endif // !NO_MRT
 #ifdef FXAA
   if (uFXAAEnable > 0.0)
   {
@@ -165,12 +152,27 @@ void main()
     else
       scene = resultB;
   }
-#endif
+#endif // FXAA
+#ifndef NO_MRT
+#ifdef MOTION_BLUR
+  if (uMotionBlurEnable > 0.0)
+  {
+    vec2 velocity = uScale * texture2D(uSpeedSampler, oUv0).rg;
+    float speed = length(velocity / TexelSize);
+    int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
+    for (int i = 1; i < nSamples; i++) {
+      vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
+      vec2 uv = oUv0 + offset;
+      scene += texture2D(uSceneSampler, uv).rgb;
+    }
+    scene /= float(nSamples);
+  }
+#endif // MOTION_BLUR
+#endif // !NO_MRT
 #ifdef MANUAL_SRGB
 #ifdef SRGB
   scene.rgb = LINEARtoSRGB(scene.rgb, uExposure);
-#endif
+#endif // SRGB
 #endif // MANUAL_SRGB
-#endif // !NO_MRT
   FragColor.rgb = scene;
 }

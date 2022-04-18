@@ -3,7 +3,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program MBlur_fs glsl glsles
+fragment_program Blur_fs glsl glsles
 {
     source output.frag
     preprocessor_defines MOTION_BLUR,MAX_SAMPLES=8,SRGB,FXAA
@@ -31,7 +31,7 @@ material Blur
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref MBlur_fs {}
+			fragment_program_ref Blur_fs {}
 
 			texture_unit
             {

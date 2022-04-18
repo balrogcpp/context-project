@@ -3,7 +3,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 // Material that blend other steps together
 //----------------------------------------------------------------------------------------------------------------------
-abstract fragment_program OutputI_fs glsl glsles
+fragment_program Output_fs glsl glsles
 {
     source output.frag
     preprocessor_defines SSAO,BLOOM,FOG
@@ -17,9 +17,7 @@ abstract fragment_program OutputI_fs glsl glsles
 	}
 }
 
-fragment_program Output_fs glsl glsles : OutputI_fs {}
-
-abstract material OutputI
+material Output
 {
 	technique
 	{
@@ -66,12 +64,21 @@ abstract material OutputI
 	}
 }
 
-material Output : OutputI {}
-
 //----------------------------------------------------------------------------------------------------------------------
 // Just render scene, used when NoMRT option enabled
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program OutputDummy_fs glsl glsles : OutputI_fs {}
+fragment_program OutputDummy_fs glsl glsles
+{
+    source output.frag
+    preprocessor_defines FXAA
+	default_params
+	{
+        param_named uSceneSampler int 0
+        param_named_auto TexelSize inverse_texture_size 0
+        param_named uFXAAEnable float 1.0
+        param_named uFXAAStrength float 4.0
+	}
+}
 
 material OutputDummy
 {
@@ -84,10 +91,7 @@ material OutputDummy
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref OutputDummy_fs
-			{
-			    param_named uSceneSampler int 0
-			}
+			fragment_program_ref OutputDummy_fs {}
 
 			texture_unit
             {

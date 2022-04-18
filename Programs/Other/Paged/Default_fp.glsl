@@ -36,18 +36,17 @@ void main()
 {
     vec4 color = texture2D(texMap, oUV.xy);
 #ifdef ALPHA_TEST
-    if(color.a < 0.5 || oColour.a < 0.5)
-        discard;
+    if(color.a < 0.5 || oColour.a < 0.5) discard;
 #endif
     //color *= saturate(oColour);
     color = SRGBtoLINEAR(color);
 #ifndef NO_MRT
     FragData[0] = color;
-    FragData[1].r = (oFogCoord / uFarClipDistance);
+    FragData[1].r = float(oFogCoord / uFarClipDistance);
 #else // NO_MRT
 #ifdef USE_FOG
-    color = ApplyFog(color, fogParams, fogColour.rgb, oFogCoord);
-#endif
+    color.rgb = ApplyFog(color.rgb, fogParams, fogColour.rgb, oFogCoord);
+#endif // USE_FOG
     FragColor = LINEARtoSRGB(color, 1.0);
-#endif
+#endif // ! NO_MRT
 }

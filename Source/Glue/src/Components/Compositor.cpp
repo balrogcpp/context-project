@@ -75,11 +75,13 @@ void Compositor::InitMRT() {
 #endif
   }
 
-  if (CompositorList[FX_SSAO]) GetFPparameters(OutputCompositor)->setNamedConstant("uSSAOEnable", 1.0f);
-  if (CompositorList[FX_SSAO]) GetFPparameters(SSAOCompositor)->setNamedConstant("uSSAOEnable", 1.0f);
-  if (CompositorList[FX_BLOOM]) GetFPparameters(OutputCompositor)->setNamedConstant("uBloomEnable", 1.0f);
-  if (CompositorList[FX_BLOOM]) GetFPparameters(BloomCompositor)->setNamedConstant("uBloomEnable", 1.0f);
-  if (CompositorList[FX_BLUR]) GetFPparameters(BlurCompositor)->setNamedConstant("uMotionBlurEnable", 1.0f);
+  if (GlobalMRTIsEnabled()) {
+    if (CompositorList[FX_SSAO]) GetFPparameters(OutputCompositor)->setNamedConstant("uSSAOEnable", 1.0f);
+    if (CompositorList[FX_SSAO]) GetFPparameters(SSAOCompositor)->setNamedConstant("uSSAOEnable", 1.0f);
+    if (CompositorList[FX_BLOOM]) GetFPparameters(OutputCompositor)->setNamedConstant("uBloomEnable", 1.0f);
+    if (CompositorList[FX_BLOOM]) GetFPparameters(BloomCompositor)->setNamedConstant("uBloomEnable", 1.0f);
+    if (CompositorList[FX_BLUR]) GetFPparameters(BlurCompositor)->setNamedConstant("uMotionBlurEnable", 1.0f);
+  }
 
   OgreCompositorManager->setCompositorEnabled(OgreViewport, MRT, true);
 }

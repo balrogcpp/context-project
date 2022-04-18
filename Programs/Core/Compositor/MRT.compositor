@@ -38,9 +38,9 @@ compositor MRT
     {
         texture mrt target_width target_height PF_FLOAT16_RGBA PF_FLOAT16_R PF_FLOAT16_GR
         texture ssao target_width target_height PF_FLOAT16_R
-        texture rt0 target_width_scaled 0.25 target_height_scaled 0.25 PF_FLOAT16_RGB
-        texture rt1 target_width_scaled 0.25 target_height_scaled 0.25 PF_FLOAT16_RGB
-        texture output target_width target_height PF_FLOAT16_RGB
+        texture rt0 256 256 PF_FLOAT16_RGB
+        texture rt1 256 256 PF_FLOAT16_RGB
+        texture final target_width target_height PF_FLOAT16_RGB
 
         target mrt
         {
@@ -87,7 +87,7 @@ compositor MRT
             }
         }
 
-        target output
+        target final
         {
             pass render_quad
             {
@@ -104,7 +104,7 @@ compositor MRT
             pass render_quad
             {
                 material Blur
-                input 0 output
+                input 0 final
                 input 1 mrt 2
             }
         }
