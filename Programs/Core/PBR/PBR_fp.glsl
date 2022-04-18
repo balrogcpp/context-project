@@ -277,8 +277,8 @@ float CalcPSSMDepthShadow(const vec4 uPssmSplitPoints, const vec4 lightSpacePos0
         return CalcDepthShadow(uShadowMap1, lightSpacePos1, ShadowDepthOffset, ShadowTexel1*ShadowFilterSize, ShadowFilterIterations);
     else if (vDepth <= uPssmSplitPoints.z)
         return CalcDepthShadow(uShadowMap2, lightSpacePos2, ShadowDepthOffset, ShadowTexel2*ShadowFilterSize, ShadowFilterIterations);
-
-    return 1.0;
+    else
+        return 1.0;
 }
 #endif // MAX_SHADOW_TEXTURES > 0
 #endif // SHADOWRECEIVER

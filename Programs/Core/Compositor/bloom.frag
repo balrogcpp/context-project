@@ -21,12 +21,11 @@ uniform vec2 TexelSize;
 
 void main()
 {
-  if (uBloomEnable <= 0.0)
-  {
-    return;
+  if (uBloomEnable <= 0.0) {
+    gl_FragColor.rgb = vec3(0.0);
+   return;
   }
 
-  float weights[KERNEL_SIZE];
   float weights0 = 1.0/16.0;
   float weights1 = 2.0/16.0;
   float weights2 = 1.0/16.0;
@@ -37,7 +36,6 @@ void main()
   float weights7 = 2.0/16.0;
   float weights8 = 1.0/16.0;
 
-  vec2 offsets[KERNEL_SIZE];
   vec2 offsets0 = vec2(-TexelSize.x, -TexelSize.y);
   vec2 offsets1 = vec2(0.0, -TexelSize.y);
   vec2 offsets2 = vec2(TexelSize.x, -TexelSize.y);

@@ -71,8 +71,6 @@ compositor MRT
 
         target rt0
         {
-            //pass clear {}
-
             pass render_quad
             {
                 material Bloom/FilterY
@@ -82,8 +80,6 @@ compositor MRT
 
         target rt1
         {
-            //pass clear {}
-
             pass render_quad
             {
                 material Bloom/FilterX
