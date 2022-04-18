@@ -36,7 +36,7 @@ uniform float FarClipDistance;
 uniform vec3 FogColour;
 uniform vec3 uSunColor;
 uniform float Time;
-uniform float TimeScale;
+uniform float uTimeScale;
 uniform float uCirrus;
 uniform float uCumulus;
 uniform float uSunSize;
@@ -78,7 +78,7 @@ void main()
     color = XYZtoRGB(color);
     if (gamma <= uSunSize) color += uSunColor;
     color = expose(color, 0.1);
-    //if (vPosition.y >= 0.0) color = ProceduralClouds(color, FogColour, vPosition, uCirrus, uCumulus, TimeScale * Time);
+    //if (vPosition.y >= 0.0) color = ProceduralClouds(color, FogColour, vPosition, uCirrus, uCumulus, uTimeScale * Time);
     color = SRGBtoLINEAR(color);
 
 #ifndef NO_MRT

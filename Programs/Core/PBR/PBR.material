@@ -22,22 +22,22 @@ abstract material PBR_Basic
                 texture $Albedo
             }
 
-            texture_unit shadowMap0
+            texture_unit uShadowMap0
             {
                 content_type shadow
                 sampler_ref ShadowSampler            
             }
-            texture_unit shadowMap1
+            texture_unit uShadowMap1
             {
                 content_type shadow
                 sampler_ref ShadowSampler            
             }
-            texture_unit shadowMap2
+            texture_unit uShadowMap2
             {
                 content_type shadow
                 sampler_ref ShadowSampler            
             }
-            texture_unit shadowMap3
+            texture_unit uShadowMap3
             {
                 content_type shadow
                 sampler_ref ShadowSampler            
@@ -90,22 +90,22 @@ abstract material PBR
                 texture $Emissive
             }
 
-            texture_unit shadowMap0
+            texture_unit uShadowMap0
             {
                 content_type shadow
                 sampler_ref ShadowSampler            
             }
-            texture_unit shadowMap1
+            texture_unit uShadowMap1
             {
                 content_type shadow
                 sampler_ref ShadowSampler            
             }
-            texture_unit shadowMap2
+            texture_unit uShadowMap2
             {
                 content_type shadow
                 sampler_ref ShadowSampler            
             }
-            texture_unit shadowMap3
+            texture_unit uShadowMap3
             {
                 content_type shadow
                 sampler_ref ShadowSampler            

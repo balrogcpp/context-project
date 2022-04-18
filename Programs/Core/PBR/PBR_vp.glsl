@@ -69,7 +69,7 @@ in vec4 tangent;
 #ifdef SHADOWRECEIVER
 uniform int ShadowTextureCount;
 uniform mat4 TexWorldViewProjMatrixArray[MAX_SHADOW_TEXTURES];
-out vec4 lightSpacePosArray[MAX_SHADOW_TEXTURES];
+out vec4 LightSpacePosArray[MAX_SHADOW_TEXTURES];
 #endif // SHADOWRECEIVER
 out vec3 vPosition;
 #ifndef NO_MRT
@@ -205,7 +205,7 @@ void main()
 #ifdef SHADOWRECEIVER
   // Calculate the position of vertex in light space
   for (int i = 0; i < ShadowTextureCount; i++)
-    lightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * new_position;
+    LightSpacePosArray[i] = TexWorldViewProjMatrixArray[i] * new_position;
 #endif
 
 #ifdef HAS_REFLECTION
