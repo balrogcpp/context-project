@@ -26,12 +26,12 @@ class Compositor : public Component<Compositor> {
   Compositor();
   virtual ~Compositor();
 
+  void OnSetUp() override;
   void OnClean() override;
   void OnPause() override;
   void OnResume() override;
   void OnUpdate(float time) override;
   void EnableEffect(const Compositors FX, bool Enable);
-  void SetUp() {}
 
  protected:
   void AddCompositorEnabled(const std::string& Name);

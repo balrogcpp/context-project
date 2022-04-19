@@ -386,7 +386,6 @@ void Engine::OnMenuOff() {
 void Engine::OnCleanup() {
   for (auto &it : ComponentList) it->OnClean();
   InitShadowSettings();
-  CompositorUPtr->SetUp();
 }
 
 void Engine::Update(float PassedTime) {

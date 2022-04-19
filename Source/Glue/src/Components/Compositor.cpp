@@ -20,8 +20,6 @@ Compositor::Compositor() {
   EnableEffect(FX_SSAO, Config::GetInstance().GetBool("enable_ssao"));
   EnableEffect(FX_BLOOM, Config::GetInstance().GetBool("enable_bloom"));
   EnableEffect(FX_BLUR, Config::GetInstance().GetBool("enable_mblur"));
-
-  InitMRT();
 }
 
 Compositor::~Compositor() {}
@@ -29,6 +27,8 @@ Compositor::~Compositor() {}
 void Compositor::OnUpdate(float time) {}
 
 void Compositor::EnableEffect(const Compositors FX, bool Enable) { CompositorList[FX] = Enable; }
+
+void Compositor::OnSetUp() { InitMRT(); }
 
 void Compositor::OnClean() {}
 
