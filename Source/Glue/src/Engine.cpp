@@ -130,7 +130,7 @@ bool Engine::CheckRenderSystemVersion(int major, int minor) {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
   if (RenderSystemIsGLES2()) return CheckGLES2Version(major, minor);
 #endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL
   if (RenderSystemIsGL()) return CheckGLVersion(major, minor);
 #endif
   return false;
