@@ -66,6 +66,11 @@ void Engine::TestGPUCapabilities() {
 #elif defined(IOS)
   OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
 #endif
+  if (RenderSystemIsGL3()) {
+    OgreAssert(CheckRenderSystemVersion(3, 3), "OpenGL 3.3 is not supported");
+  } else if (RenderSystemIsGLES2()) {
+    OgreAssert(CheckRenderSystemVersion(3, 0), "OpenGL 3.0 is not supported");
+  }
 }
 
 void Engine::InitComponents() {
@@ -73,12 +78,12 @@ void Engine::InitComponents() {
   WindowHeight = ConfigPtr->GetInt("window_high", WindowHeight);
   WindowFullScreen = ConfigPtr->GetBool("window_fullscreen", WindowFullScreen);
   RenderSystemName = ConfigPtr->Get("render_system", RenderSystemName);
-  OgreRoot = new Root("", "", "");
-  InitDefaultRenderSystem();
-  InitOgrePlugins();
-  OgreRoot->initialise(false);
   InitSDLSubsystems();
   CreateSDLWindow();
+  OgreRoot = new Root("", "", "");
+  InitRenderSystem();
+  InitOgrePlugins();
+  OgreRoot->initialise(false);
   CreateOgreRenderWindow();
   TestGPUCapabilities();
 #ifdef ANDROID
@@ -118,7 +123,18 @@ void Engine::InitSDLSubsystems() {
   ScreenHeight = static_cast<int>(DM.h);
 }
 
-void Engine::InitDefaultRenderSystem() {
+bool Engine::CheckRenderSystemVersion(int major, int minor) {
+  if (RenderSystemIsGL3())
+    return CheckGL3Version(major, minor);
+  else if (RenderSystemIsGLES2())
+    return CheckGLES2Version(major, minor);
+  else if (RenderSystemIsGL())
+    return CheckGLVersion(major, minor);
+  else
+    return false;
+}
+
+void Engine::InitRenderSystem() {
 #ifdef OGRE_STATIC_LIB
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
@@ -190,7 +206,8 @@ void Engine::CreateSDLWindow() {
   SDLWindowFlags |= SDL_WINDOW_OPENGL;
   WindowWidth = ScreenWidth;
   WindowHeight = ScreenHeight;
-  SDLWindowPtr = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ScreenWidth, ScreenHeight, SDLWindowFlags);
+  WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED;
+  SDLWindowPtr = SDL_CreateWindow(nullptr, WindowPositionFlag, WindowPositionFlag, ScreenWidth, ScreenHeight, SDLWindowFlags);
   SDLGLContextPtr = SDL_GL_CreateContext(SDLWindowPtr);
 #endif
 }

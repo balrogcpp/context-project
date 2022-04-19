@@ -96,18 +96,26 @@ class Engine final : public Singleton<Engine> {
   void InitSDLSubsystems();
 
   /// Creates one of 3 Ogre render systems: GL, GL3 or GLSLES2
-  void InitDefaultRenderSystem();
+  void InitRenderSystem();
+  ///
+  bool CheckRenderSystemVersion(int major, int minor);
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   ///
   void InitOgreRenderSystemGL3();
+  ///
+  bool CheckGL3Version(int major, int minor);
 #endif
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
   ///
   void InitOgreRenderSystemGLES2();
+  ///
+  bool CheckGLES2Version(int major, int minor);
 #endif
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL
   ///
   void InitOgreRenderSystemGL();
+  ///
+  bool CheckGLVersion(int major, int minor);
 #endif
   /// Load into memory static Ogre plugins
   void InitOgrePlugins();
