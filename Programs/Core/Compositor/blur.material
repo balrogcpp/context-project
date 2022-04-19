@@ -15,6 +15,7 @@ fragment_program Blur_fs glsl glsles
         param_named uSceneSampler int 0
         param_named uSpeedSampler int 1
         param_named_auto TexelSize inverse_texture_size 0
+        param_named_auto PixelSize texture_size 0
         param_named uFXAAEnable float 1.0
         param_named uFXAAStrength float 4.0
 	}

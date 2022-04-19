@@ -63,15 +63,15 @@ precision lowp samplerCube;
 #define textureCubeLod textureLod
 #ifndef NO_MRT
 out vec4 FragData[3];
-#else
+#else // NO_MRT
 out vec4 FragColor;
-#endif
-#else
+#endif // !NO_MRT
+#else // VERSION < 300
 #define in varying
 #define out varying
 #define FragData gl_FragData
 #define FragColor gl_FragColor
-#endif
+#endif // VERSION >= 300
 
 #endif // GLSL_ES
 

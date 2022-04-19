@@ -49,6 +49,7 @@ uniform float nearClipDistance;
 uniform float FarClipDistance;
 #endif // FOG
 #ifdef MOTION_BLUR
+uniform vec2 PixelSize;
 uniform float uScale;
 uniform float uMotionBlurEnable;
 #endif // MOTION_BLUR
@@ -158,7 +159,7 @@ void main()
   if (uMotionBlurEnable > 0.0)
   {
     vec2 velocity = uScale * texture2D(uSpeedSampler, oUv0).rg;
-    float speed = length(velocity / TexelSize);
+    float speed = length(velocity * PixelSize);
     int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
     for (int i = 1; i < nSamples; i++) {
       vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);

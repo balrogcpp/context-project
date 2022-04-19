@@ -37,10 +37,10 @@ compositor MRT
     technique
     {
         texture mrt target_width target_height PF_FLOAT16_RGBA PF_FLOAT16_R PF_FLOAT16_GR
+        texture final target_width target_height PF_FLOAT16_RGB
         texture ssao target_width target_height PF_FLOAT16_R
         texture rt0 256 256 PF_FLOAT16_RGB
         texture rt1 256 256 PF_FLOAT16_RGB
-        texture final target_width target_height PF_FLOAT16_RGB
 
         target mrt
         {

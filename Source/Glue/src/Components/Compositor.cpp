@@ -43,6 +43,7 @@ void Compositor::AddCompositorEnabled(const string &Name) {
 
 void Compositor::AddCompositorDisabled(const string &Name) {
   OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, Name), "Failed to add MRT compoitor");
+  OgreCompositorManager->setCompositorEnabled(OgreViewport, Name, false);
 }
 
 void Compositor::EnableCompositor(const string &Name) { OgreCompositorManager->setCompositorEnabled(OgreViewport, Name, true); }
@@ -61,6 +62,7 @@ void Compositor::InitMRT() {
     MRT = "noMRT";
 
   OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, MRT), "Failed to add MRT compoitor");
+  OgreCompositorManager->setCompositorEnabled(OgreViewport, MRT, false);
 
   if (IsFullscreen()) {
     auto *MRTCompositor = OgreCompositorChain->getCompositor(MRT);

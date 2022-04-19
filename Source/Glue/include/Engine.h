@@ -3,8 +3,8 @@
 #pragma once
 #include "Components/ComponentsAll.h"
 #include "Input/InputSequencer.h"
-#include "Singleton.h"
 #include "Log.h"
+#include "Singleton.h"
 #include <memory>
 #include <vector>
 
@@ -155,7 +155,7 @@ class Engine final : public Singleton<Engine> {
   int ScreenHeight = 0;
   bool WindowVsync = true;
   bool WindowGammaCorrection = false;
-  int FSAA = 0;
+  int WindowFSAA = 0;
 
   /// Components
   Config* ConfigPtr = nullptr;

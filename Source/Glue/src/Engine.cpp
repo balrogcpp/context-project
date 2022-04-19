@@ -229,10 +229,9 @@ void Engine::CreateOgreRenderWindow() {
   const char FalseStr[] = "false";
   WindowVsync = ConfigPtr->GetBool("vsync", WindowVsync);
   WindowGammaCorrection = ConfigPtr->GetBool("gamma", WindowGammaCorrection);
-  FSAA = ConfigPtr->GetInt("fsaa", FSAA);
   OgreRenderParams["vsync"] = WindowVsync ? TrueStr : FalseStr;
   OgreRenderParams["gamma"] = WindowGammaCorrection ? TrueStr : FalseStr;
-  OgreRenderParams["FSAA"] = to_string(FSAA);
+  OgreRenderParams["FSAA"] = to_string(WindowFSAA);
   OgreRenderWindowPtr = OgreRoot->createRenderWindow(WindowCaption, WindowWidth, WindowHeight, WindowFullScreen, &OgreRenderParams);
   OgreRenderTarget = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
   OgreCamera = OgreSceneManager->createCamera("Default");
