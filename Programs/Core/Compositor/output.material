@@ -38,26 +38,34 @@ material Output
                 param_named_auto TexelSize inverse_texture_size 2
 			}
 
-			texture_unit
+			texture_unit scene
             {
+                texture green.dds
+                tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
             }
 
-            texture_unit
+            texture_unit depth
             {
+                texture black.dds
+                tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
             }
 
-            texture_unit SSAO
+            texture_unit ssao
             {
+                texture white.dds
+                tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
             }
 
-            texture_unit Bloom
+            texture_unit bloom
             {
+                texture black.dds
+                tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
             }
@@ -97,8 +105,10 @@ material OutputDummy
                 param_named_auto TexelSize inverse_texture_size 0
 			}
 
-			texture_unit
+			texture_unit scene
             {
+                texture green.dds
+                tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
             }

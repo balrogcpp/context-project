@@ -38,14 +38,18 @@ material Blur
                 param_named_auto PixelSize texture_size 1
 			}
 
-			texture_unit
+			texture_unit scene
             {
+                texture green.dds
+                tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
             }
 
-            texture_unit
+            texture_unit velocity
             {
+                texture black.dds
+                tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
             }

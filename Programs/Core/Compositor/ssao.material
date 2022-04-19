@@ -41,15 +41,18 @@ material SSAO
 				param_named uEdgeHighlight float 2
             }
 
-            texture_unit
+            texture_unit scene
             {
+                texture green.dds
+                tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
             }
 
-            texture_unit
+            texture_unit noise
             {
                 texture regularSphereJittered4.dds
+                tex_coord_set 0
                 tex_address_mode wrap
                 filtering none
             }

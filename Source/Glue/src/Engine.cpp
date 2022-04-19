@@ -344,7 +344,6 @@ void Engine::InitOverlay() {
 void Engine::InitCompositor() {
   CompositorUPtr = make_unique<Compositor>();
   RegComponent(CompositorUPtr.get());
-  CompositorUPtr->SetUp();
 }
 
 void Engine::InitPhysics() {

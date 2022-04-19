@@ -61,7 +61,7 @@ void Compositor::InitMRT() {
   else
     MRT = "noMRT";
 
-  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, MRT), "Failed to add MRT compoitor");
+  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, MRT, 0), "Failed to add MRT compoitor");
   OgreCompositorManager->setCompositorEnabled(OgreViewport, MRT, false);
 
   if (IsFullscreen()) {

@@ -32,8 +32,10 @@ material Bloom
                 param_named_auto TexelSize inverse_texture_size 0
 			}
 
-			texture_unit
+			texture_unit rt1
             {
+                texture green.dds
+                tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
             }
@@ -58,8 +60,10 @@ material Bloom/FilterY
 
 			fragment_program_ref gauss_filter3y_fs {}
 
-			texture_unit
+			texture_unit rt1
             {
+                texture green.dds
+                tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
             }
@@ -81,8 +85,10 @@ material Bloom/FilterX
 
 			fragment_program_ref gauss_filter3x_fs {}
 
-			texture_unit
+			texture_unit rt1
             {
+                texture green.dds
+                tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
             }
