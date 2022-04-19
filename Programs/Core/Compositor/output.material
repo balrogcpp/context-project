@@ -23,6 +23,7 @@ material Output
 	{
 		pass
 		{
+		    cull_hardware none
 			lighting off
             polygon_mode_overrideable false
 
@@ -73,8 +74,6 @@ fragment_program OutputDummy_fs glsl glsles
     preprocessor_defines FXAA
 	default_params
 	{
-        param_named uSceneSampler int 0
-        param_named_auto TexelSize inverse_texture_size 0
         param_named uFXAAEnable float 1.0
         param_named uFXAAStrength float 4.0
 	}
@@ -86,12 +85,17 @@ material OutputDummy
 	{
 		pass
 		{
+		    cull_hardware none
 			lighting off
             polygon_mode_overrideable false
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref OutputDummy_fs {}
+			fragment_program_ref OutputDummy_fs
+			{
+                param_named uSceneSampler int 0
+                param_named_auto TexelSize inverse_texture_size 0
+			}
 
 			texture_unit
             {

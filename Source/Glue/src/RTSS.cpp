@@ -20,12 +20,11 @@ static unique_ptr<ShaderResolver> ResolverPtr;
 void CreateRTSSRuntime(string CachePath) {
   auto *OgreScene = Root::getSingleton().getSceneManager("Default");
   auto *OgreViewport = OgreScene->getCamera("Default")->getViewport();
-  const auto DSN = RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME;
   auto *ShaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
 
-  OgreViewport->setMaterialScheme(DSN);
+  OgreViewport->setMaterialScheme(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
   ShaderGenerator->addSceneManager(OgreScene);
-  OgreViewport->setMaterialScheme(DSN);
+  OgreViewport->setMaterialScheme(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
   ShaderGenerator->setShaderCachePath(CachePath);
   ResolverPtr = make_unique<ShaderResolver>(ShaderGenerator);
   MaterialManager::getSingleton().addListener(ResolverPtr.get());

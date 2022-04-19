@@ -9,9 +9,7 @@ fragment_program bloom_fs glsl glsles
 
     default_params
     {
-        param_named uSceneSampler int 0
         param_named uBloomEnable float 0.0
-        param_named_auto TexelSize inverse_texture_size 0
     }
 }
 
@@ -21,12 +19,18 @@ material Bloom
 	{
 		pass
 		{
+		    cull_hardware none
 			lighting off
             polygon_mode_overrideable false
+            depth_check off
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref bloom_fs {}
+			fragment_program_ref bloom_fs
+			{
+                param_named uSceneSampler int 0
+                param_named_auto TexelSize inverse_texture_size 0
+			}
 
 			texture_unit
             {
@@ -46,6 +50,7 @@ material Bloom/FilterY
 	{
 		pass
 		{
+		    cull_hardware none
 			lighting off
             polygon_mode_overrideable false
 
@@ -68,6 +73,7 @@ material Bloom/FilterX
 	{
 		pass
 		{
+		    cull_hardware none
 			lighting off
             polygon_mode_overrideable false
 

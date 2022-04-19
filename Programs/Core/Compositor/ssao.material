@@ -24,6 +24,7 @@ material SSAO
     {
         pass
         {
+            cull_hardware none
             lighting off
             polygon_mode_overrideable false
             depth_check off

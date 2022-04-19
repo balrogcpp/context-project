@@ -59,7 +59,7 @@ void Overlay::preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) {}
 
 void Overlay::OnUpdate(float time) {}
 
-void Overlay::OnSetUp() {}
+void Overlay::OnSetUp() { Show(); }
 
 void Overlay::OnClean() {}
 

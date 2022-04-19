@@ -78,10 +78,10 @@ void Engine::InitComponents() {
   WindowHeight = ConfigPtr->GetInt("window_high", WindowHeight);
   WindowFullScreen = ConfigPtr->GetBool("window_fullscreen", WindowFullScreen);
   RenderSystemName = ConfigPtr->Get("render_system", RenderSystemName);
-  InitSDLSubsystems();
-  CreateSDLWindow();
   OgreRoot = new Root("", "", "");
   InitRenderSystem();
+  InitSDLSubsystems();
+  CreateSDLWindow();
   InitOgrePlugins();
   OgreRoot->initialise(false);
   CreateOgreRenderWindow();
@@ -104,12 +104,11 @@ void Engine::InitComponents() {
   config.MergeMode = true;
   static const ImWchar icon_ranges[] = {ICON_MIN_MD, ICON_MAX_MD, 0};
   OverlayPtr->AddFont("KenneyIcon-Regular", &config, icon_ranges);
-  GetOverlay().Show();
 
-  InitCompositor();
   InitPhysics();
   InitSound();
   InitScene();
+  InitCompositor();
   for (auto it : ComponentList) it->OnSetUp();
 }
 
