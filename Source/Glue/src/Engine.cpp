@@ -124,21 +124,24 @@ void Engine::InitSDLSubsystems() {
 }
 
 bool Engine::CheckRenderSystemVersion(int major, int minor) {
-  if (RenderSystemIsGL3())
-    return CheckGL3Version(major, minor);
-  else if (RenderSystemIsGLES2())
-    return CheckGLES2Version(major, minor);
-  else if (RenderSystemIsGL())
-    return CheckGLVersion(major, minor);
-  else
-    return false;
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+  if (RenderSystemIsGL3()) return CheckGL3Version(major, minor);
+#endif
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+  if (RenderSystemIsGLES2()) return CheckGLES2Version(major, minor);
+#endif
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+  if (RenderSystemIsGL()) return CheckGLVersion(major, minor);
+#endif
+  return false;
 }
 
 void Engine::InitRenderSystem() {
 #ifdef OGRE_STATIC_LIB
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
-  InitOgreRenderSystemGL3();
+  InitOgreRenderSystemGLES2();
+//  InitOgreRenderSystemGL3();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GL)
   InitOgreRenderSystemGL();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
