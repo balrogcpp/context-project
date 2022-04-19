@@ -140,8 +140,7 @@ void Engine::InitRenderSystem() {
 #ifdef OGRE_STATIC_LIB
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
-  InitOgreRenderSystemGLES2();
-//  InitOgreRenderSystemGL3();
+  InitOgreRenderSystemGL3();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GL)
   InitOgreRenderSystemGL();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
