@@ -74,17 +74,24 @@ void Compositor::InitMRT() {
     auto *MRTCompositor = OgreCompositorChain->getCompositor(MRT);
     auto *MRTTexture = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
     auto *SSAOTexture = MRTCompositor->getTechnique()->getTextureDefinition("ssao");
+    auto *FinalTexture = MRTCompositor->getTechnique()->getTextureDefinition("final");
     OgreAssert(MRTTexture, "MRT texture not created");
+    OgreAssert(SSAOTexture, "SSAO texture not created");
+    OgreAssert(FinalTexture, "Final texture not created");
 #ifdef MOBILE
     MRTTexture->width = 1024;
     MRTTexture->height = 768;
-    SSAOTexture->width = 1024;
-    SSAOTexture->height = 768;
+    FinalTexture->width = MRTTexture->width;
+    FinalTexture->height = MRTTexture->height;
+    SSAOTexture->width = MRTTexture->width;
+    SSAOTexture->height = MRTTexture->height;
 #else
     MRTTexture->width = 1360;
     MRTTexture->height = 768;
-    SSAOTexture->width = 1360;
-    SSAOTexture->height = 768;
+    SSAOTexture->width = MRTTexture->width;
+    SSAOTexture->height = MRTTexture->height;
+    FinalTexture->width = MRTTexture->width;
+    FinalTexture->height = MRTTexture->height;
 #endif
   }
 

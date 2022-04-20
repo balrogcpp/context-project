@@ -10,9 +10,13 @@
 
 #include "header.frag"
 #ifndef NO_MRT
+#ifdef SRGB
 #include "srgb.glsl"
+#endif // SRGB
+#ifdef FOG
 #include "fog.glsl"
-#endif
+#endif // FOG
+#endif // NO_MRT
 
 #ifndef MAX_SAMPLES
 #define MAX_SAMPLES 8
@@ -33,7 +37,6 @@ uniform sampler2D uSsaoSampler;
 uniform float uSSAOEnable;
 #endif // SSAO
 #ifdef BLOOM
-#define KERNEL_SIZE 9
 uniform sampler2D uBloomSampler;
 uniform float uBloomEnable;
 #endif // BLOOM
@@ -77,15 +80,15 @@ void main()
 #ifdef BLOOM
   if (uBloomEnable > 0.0)
   {
-    const float weights0 = 1.0/16.0;
-    const float weights1 = 2.0/16.0;
-    const float weights2 = 1.0/16.0;
-    const float weights3 = 2.0/16.0;
-    const float weights4 = 4.0/16.0;
-    const float weights5 = 2.0/16.0;
-    const float weights6 = 1.0/16.0;
-    const float weights7 = 2.0/16.0;
-    const float weights8 = 1.0/16.0;
+    const float weights0 = 0.0625; // 1.0/16.0;
+    const float weights1 = 0.125; // 2.0/16.0;
+    const float weights2 = 0.0625;// 1.0/16.0;
+    const float weights3 = 0.125; // 2.0/16.0;
+    const float weights4 = 0.25; // 4.0/16.0;
+    const float weights5 = 0.125; // 2.0/16.0;
+    const float weights6 = 0.0625; // 1.0/16.0;
+    const float weights7 = 0.125; // 2.0/16.0;
+    const float weights8 = 0.0625; // 1.0/16.0;
 
     vec2 offsets0 = vec2(-TexelSize.x, -TexelSize.y);
     vec2 offsets1 = vec2(0.0, -TexelSize.y);
@@ -123,8 +126,8 @@ void main()
 #ifdef FXAA
   if (uFXAAEnable > 0.0)
   {
-    const float reducemul = 1.0 / 8.0;
-    const float reducemin = 1.0 / 128.0;
+    const float reducemul = 0.125; //1.0/8.0;
+    const float reducemin = 0.0078125; //1.0 / 128.0;
     const vec3 gray = vec3(0.299, 0.587, 0.114);
 
     vec3 basecol = texture2D(uSceneSampler, oUv0).rgb;
@@ -146,7 +149,7 @@ void main()
 
     vec3 resultA = 0.5 * (texture2D(uSceneSampler, oUv0 + dir * -0.166667).rgb + texture2D(uSceneSampler, oUv0 + dir * 0.166667).rgb);
     vec3 resultB = resultA * 0.5 + 0.25 * (texture2D(uSceneSampler, oUv0 + dir * -0.5).rgb + texture2D(uSceneSampler, oUv0 + dir * 0.5).rgb);
-    float monoB = dot(resultB.rgb, gray);
+    float monoB = dot(resultB, gray);
 
     if(monoB < monomin || monoB > monomax)
       scene = resultA;

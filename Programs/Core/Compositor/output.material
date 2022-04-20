@@ -43,7 +43,7 @@ material Output
                 texture green.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering none
             }
 
             texture_unit depth
@@ -51,7 +51,7 @@ material Output
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering none
             }
 
             texture_unit ssao
@@ -59,7 +59,7 @@ material Output
                 texture white.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering linear linear none
+                filtering none
             }
 
             texture_unit bloom

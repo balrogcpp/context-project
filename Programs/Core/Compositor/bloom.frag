@@ -21,10 +21,7 @@ uniform vec2 TexelSize;
 
 void main()
 {
-  if (uBloomEnable <= 0.0) {
-    gl_FragColor.rgb = vec3(0.0);
-   return;
-  }
+  if (uBloomEnable <= 0.0) discard;
 
   const float weights0 = 1.0/16.0;
   const float weights1 = 2.0/16.0;

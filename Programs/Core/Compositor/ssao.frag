@@ -29,11 +29,7 @@ uniform float uSSAOEnable;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  if (uSSAOEnable <= 0.0)
-  {
-    FragColor.r = 1.0;
-    return;
-  }
+  if (uSSAOEnable <= 0.0) discard;
 
   // const float nSampleNum = 32.0; // number of samples
   const float nSampleNum = 8.0; // number of samples

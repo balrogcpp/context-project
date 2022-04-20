@@ -11,8 +11,6 @@ compositor noMRT
 
         target mrt
         {
-            input none
-
             pass clear {}
 
             pass render_scene {}
@@ -44,8 +42,6 @@ compositor MRT
 
         target mrt
         {
-            input none
-
             pass clear {}
 
             pass render_scene {}
