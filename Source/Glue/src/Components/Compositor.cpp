@@ -17,9 +17,15 @@ Compositor::Compositor() {
   OgreViewport = OgreCamera->getViewport();
   OgreCompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
 
+#ifdef MOBILE
+  EnableEffect(FX_SSAO, false);
+  EnableEffect(FX_BLOOM, false);
+  EnableEffect(FX_BLUR, false);
+#else
   EnableEffect(FX_SSAO, Config::GetInstance().GetBool("enable_ssao"));
   EnableEffect(FX_BLOOM, Config::GetInstance().GetBool("enable_bloom"));
   EnableEffect(FX_BLUR, Config::GetInstance().GetBool("enable_mblur"));
+#endif
 }
 
 Compositor::~Compositor() {}

@@ -1,8 +1,8 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #include "PCHeader.h"
-#include "Engine.h"
 #include "GlueGlobalSettings.h"
+#include "Engine.h"
 #include <OgrePlatformInformation.h>
 
 using namespace std;
@@ -10,10 +10,7 @@ using namespace Ogre;
 
 namespace Glue {
 
-bool GlobalMRTIsEnabled() {
-  static bool Result = !RenderSystemIsGLES2();
-  return Result;
-}
+bool GlobalMRTIsEnabled() { return true; }
 
 bool CPUSupportsSSE() {
 #if OGRE_CPU == OGRE_CPU_X86

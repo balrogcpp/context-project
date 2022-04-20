@@ -13,7 +13,7 @@ namespace Glue {
 void Engine::InitOgreRenderSystemGLES2() { Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem()); }
 
 bool Engine::CheckGLES2Version(int major, int minor) {
-  static auto *RS = dynamic_cast<Ogre::GLRenderSystemCommon*>(Ogre::Root::getSingleton().getRenderSystem());
+  static auto *RS = static_cast<Ogre::GLRenderSystemCommon*>(Ogre::Root::getSingleton().getRenderSystem());
   return RS->hasMinGLVersion(major, minor);
 }
 

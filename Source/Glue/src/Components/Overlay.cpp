@@ -59,7 +59,16 @@ void Overlay::preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt) {}
 
 void Overlay::OnUpdate(float time) {}
 
-void Overlay::OnSetUp() { Show(); }
+void Overlay::OnSetUp() {
+  ImGuiIO& io = ImGui::GetIO();
+  AddFont("NotoSans-Regular", nullptr, io.Fonts->GetGlyphRangesCyrillic());
+  ImFontConfig config;
+  config.MergeMode = true;
+  static const ImWchar icon_ranges[] = {ICON_MIN_MD, ICON_MAX_MD, 0};
+  AddFont("KenneyIcon-Regular", &config, icon_ranges);
+
+  Show();
+}
 
 void Overlay::OnClean() {}
 
