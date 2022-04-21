@@ -3,8 +3,8 @@
 #include "PCHeader.h"
 #include "Components/Sound.h"
 #include "Exception.h"
-#include "OgreOggSound/OgreOggSound.h"
-#include "OgreOggSound/OgreOggSoundRoot.h"
+#include "OggSound/OgreOggSound.h"
+#include "OggSound/OgreOggSoundRoot.h"
 
 using namespace std;
 using namespace Ogre;

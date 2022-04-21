@@ -12,9 +12,10 @@ set(GLUE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source)
 set(GLUE_INCLUDE_DIRS
         ${GLUE_SOURCE_DIR}/include
         ${GLUE_SOURCE_DIR}/Glue/include
-        ${GLUE_SOURCE_DIR}/Glue/include/OgreOggSound
+        ${GLUE_SOURCE_DIR}/Glue/include/OggSound
         ${GLUE_SOURCE_DIR}/Glue/include/PagedGeometry
         ${GLUE_SOURCE_DIR}/Glue/include/Caelum
+        ${GLUE_SOURCE_DIR}/Glue/include/Procedural
         ${GLUE_THIRDPARTY_ROOT}/include
         ${OPENAL_INCLUDE_DIR}
         ${BULLET_INCLUDE_DIR}
