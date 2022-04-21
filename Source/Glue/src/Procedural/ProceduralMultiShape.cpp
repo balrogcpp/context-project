@@ -38,6 +38,15 @@ namespace Procedural
 {
 //-----------------------------------------------------------------------
 
+void MultiShape::addMultiShape(const MultiShape& other)
+{
+  for (std::vector<Shape>::const_iterator it = other.mShapes.begin(); it!=other.mShapes.end(); ++it)
+  {
+    mShapes.push_back(*it);
+  }
+}
+
+
 MeshPtr MultiShape::realizeMesh(const std::string& name)
 {
 	Ogre::SceneManager* smgr = Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second;

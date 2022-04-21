@@ -39,6 +39,7 @@ THE SOFTWARE.
 namespace Procedural
 {
 class Path;
+class MultiShape;
 
 /**
 \defgroup shapegrp Shape
