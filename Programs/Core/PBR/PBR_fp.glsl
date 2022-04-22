@@ -367,7 +367,7 @@ float GetMetallic(const vec2 uv) {
 #ifdef HAS_METALLICMAP
     metallic *= texture2D(uMetallicSampler, uv, uLOD).r;
 #endif
-    return clamp(metallic, 0.0, 1.0);
+    return metallic;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -376,7 +376,7 @@ float GetRoughness(const vec2 uv) {
 #ifdef HAS_ROUGHNESSMAP
     roughness *= texture2D(uRoughnessSampler, uv, uLOD).r;
 #endif
-    return clamp(roughness, F0, 1.0);
+    return roughness;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -393,19 +393,14 @@ float GetOcclusion(const vec2 uv) {
 vec3 GetORM(const vec2 uv) {
     vec3 ORM = vec3(1.0, SurfaceSpecularColour, SurfaceShininessColour);
 #ifdef HAS_ORM
-    vec3 texel = texture2D(uORMSampler, uv, uLOD).rgb;
-    ORM.r = texel.r;
-    ORM.g *= texel.g;
-    ORM.b *= texel.b;
+    ORM *= texture2D(uORMSampler, uv, uLOD).rgb;
 #endif
-    //ORM.g = clamp(ORM.g, 0.0, 1.0);
-    ORM.b = clamp(ORM.b, F0, 1.0);
     return ORM;
 }
 
 #ifdef HAS_REFLECTION
 //----------------------------------------------------------------------------------------------------------------------
-vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
+vec3 ApplyReflection(const vec3 color, const vec3 n, const vec3 v, const float metallic) {
     vec4 projection = projectionCoord;
 
     const float fresnelBias = 0.1;
@@ -417,10 +412,8 @@ vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
     float cosa = dot(n, -v);
     float fresnel = fresnelBias + fresnelScale * pow(1.0 + cosa, fresnelPower);
     fresnel = clamp(fresnel, 0.0, 1.0);
-
     float gradientNoise = InterleavedGradientNoise(gl_FragCoord.xy);
     projection.xy += VogelDiskSample(3, sample_count, gradientNoise) * filter_max_size;
-
     vec3 reflectionColour = texture2DProj(uReflectionMap, projection).rgb;
     return mix(color, reflectionColour, fresnel * metallic);
 }
@@ -428,7 +421,7 @@ vec3 ApplyReflection(vec3 color, vec3 n, vec3 v, float metallic) {
 
 #ifdef HAS_PARALLAXMAP
 //----------------------------------------------------------------------------------------------------------------------
-vec2 ParallaxMapping(vec2 uv, vec3 viewDir)
+vec2 ParallaxMapping(const vec2 uv, const vec3 viewDir)
 {
     float displacement = uOffsetScale * texture2D(uNormalSampler, uv, uLOD).a;
     return uv - viewDir.xy * displacement;
@@ -467,6 +460,8 @@ void main()
     float occlusion = ORM.r;
     float roughness = ORM.g;
     float metallic = ORM.b;
+
+    roughness = clamp(roughness, F0, 1.0);
 
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
