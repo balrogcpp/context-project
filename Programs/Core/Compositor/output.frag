@@ -54,7 +54,7 @@ uniform float FarClipDistance;
 #ifdef MOTION_BLUR
 uniform vec2 PixelSize;
 uniform float uScale;
-uniform float uMotionBlurEnable;
+uniform float uBlurEnable;
 #endif // MOTION_BLUR
 #endif // !NO_MRT
 #ifdef FXAA
@@ -159,7 +159,7 @@ void main()
 #endif // FXAA
 #ifndef NO_MRT
 #ifdef MOTION_BLUR
-  if (uMotionBlurEnable > 0.0)
+  if (uBlurEnable > 0.0)
   {
     vec2 velocity = uScale * texture2D(uSpeedSampler, oUv0).rg;
     float speed = length(velocity * PixelSize);

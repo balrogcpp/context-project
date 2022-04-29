@@ -60,50 +60,51 @@ static GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorNam
 }
 
 void Compositor::InitMRT() {
-  string MRT;
+  string MRTCompositor;
 
   if (GlobalMRTIsEnabled())
-    MRT = "MRT";
+    MRTCompositor = "MRT";
   else
-    MRT = "noMRT";
+    MRTCompositor = "noMRT";
 
-  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, MRT, 0), "Failed to add MRT compoitor");
-  OgreCompositorManager->setCompositorEnabled(OgreViewport, MRT, false);
+  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, MRTCompositor, 0), "Failed to add MRT compoitor");
+  OgreCompositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, false);
 
   if (IsFullscreen()) {
-    auto *MRTCompositor = OgreCompositorChain->getCompositor(MRT);
-    auto *MRTTexture = MRTCompositor->getTechnique()->getTextureDefinition("mrt");
-    auto *SSAOTexture = MRTCompositor->getTechnique()->getTextureDefinition("ssao");
-    auto *FinalTexture = MRTCompositor->getTechnique()->getTextureDefinition("final");
-    OgreAssert(MRTTexture, "MRT texture not created");
-    OgreAssert(SSAOTexture, "SSAO texture not created");
-    OgreAssert(FinalTexture, "Final texture not created");
+    auto *MRTCompositorPtr = OgreCompositorChain->getCompositor(MRTCompositor);
+    auto *MRTTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("mrt");
+    auto *SSAOTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("ssao");
+    auto *FinalTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("final");
+    OgreAssert(MRTTexturePtr, "MRTCompositor texture not created");
+    OgreAssert(SSAOTexturePtr, "SSAO texture not created");
+    OgreAssert(FinalTexturePtr, "Final texture not created");
 #ifdef MOBILE
-    MRTTexture->width = 1024;
-    MRTTexture->height = 768;
-    FinalTexture->width = MRTTexture->width;
-    FinalTexture->height = MRTTexture->height;
-    SSAOTexture->width = MRTTexture->width;
-    SSAOTexture->height = MRTTexture->height;
+    MRTTexturePtr->width = 1024;
+    MRTTexturePtr->height = 768;
+    FinalTexturePtr->width = MRTTexturePtr->width;
+    FinalTexturePtr->height = MRTTexturePtr->height;
+    SSAOTexturePtr->width = MRTTexturePtr->width;
+    SSAOTexturePtr->height = MRTTexturePtr->height;
 #else
-    MRTTexture->width = 1360;
-    MRTTexture->height = 768;
-    SSAOTexture->width = MRTTexture->width;
-    SSAOTexture->height = MRTTexture->height;
-    FinalTexture->width = MRTTexture->width;
-    FinalTexture->height = MRTTexture->height;
+    MRTTexturePtr->width = 1360;
+    MRTTexturePtr->height = 768;
+    SSAOTexturePtr->width = MRTTexturePtr->width;
+    SSAOTexturePtr->height = MRTTexturePtr->height;
+    FinalTexturePtr->width = MRTTexturePtr->width;
+    FinalTexturePtr->height = MRTTexturePtr->height;
 #endif
   }
 
   if (GlobalMRTIsEnabled()) {
-    if (CompositorList[FX_SSAO]) GetFPparameters(OutputCompositor)->setNamedConstant("uSSAOEnable", 1.0f);
-    if (CompositorList[FX_SSAO]) GetFPparameters(SSAOCompositor)->setNamedConstant("uSSAOEnable", 1.0f);
-    if (CompositorList[FX_BLOOM]) GetFPparameters(OutputCompositor)->setNamedConstant("uBloomEnable", 1.0f);
-    if (CompositorList[FX_BLOOM]) GetFPparameters(BloomCompositor)->setNamedConstant("uBloomEnable", 1.0f);
-    if (CompositorList[FX_BLUR]) GetFPparameters(BlurCompositor)->setNamedConstant("uMotionBlurEnable", 1.0f);
+    if (CompositorList[FX_SSAO])
+      for (const auto &it : SSAOCompositorChain) GetFPparameters(it)->setNamedConstant(SSAOEnable, 1.0f);
+    if (CompositorList[FX_SSAO])
+      for (const auto &it : BloomCompositorChain) GetFPparameters(it)->setNamedConstant(BloomEnable, 1.0f);
+    if (CompositorList[FX_BLUR])
+      for (const auto &it : BlurCompositorChain) GetFPparameters(it)->setNamedConstant(BlurEnable, 1.0f);
   }
 
-  OgreCompositorManager->setCompositorEnabled(OgreViewport, MRT, true);
+  OgreCompositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, true);
 }
 
 }  // namespace Glue

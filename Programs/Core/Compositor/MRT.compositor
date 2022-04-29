@@ -39,21 +39,17 @@ compositor MRT
         texture ssao target_width target_height PF_FLOAT16_R
         texture rt0 256 256 PF_FLOAT16_RGB
         texture rt1 256 256 PF_FLOAT16_RGB
+        texture rt2 128 128 PF_FLOAT16_RGB
+        texture rt3 64 64 PF_FLOAT16_RGB
+        texture rt4 16 16 PF_FLOAT16_RGB
+        texture rt5 4 4 PF_FLOAT16_RGB
+        texture rt6 1 1 PF_FLOAT16_RGB
 
         target mrt
         {
             pass clear {}
 
             pass render_scene {}
-        }
-
-        target ssao
-        {
-            pass render_quad
-            {
-                material SSAO
-                input 0 mrt 1
-            }
         }
 
         target rt1
@@ -80,6 +76,15 @@ compositor MRT
             {
                 material Bloom/FilterX
                 input 0 rt0
+            }
+        }
+
+        target ssao
+        {
+            pass render_quad
+            {
+                material SSAO
+                input 0 mrt 1
             }
         }
 

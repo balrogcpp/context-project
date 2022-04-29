@@ -11,6 +11,7 @@
 #include "header.frag"
 
 in vec2 oUv0;
+uniform float uBloomEnable;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize;
 
@@ -23,6 +24,8 @@ vec3 IterationX(const float offset, const float weight)
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
+  if (uBloomEnable <= 0.0) discard;
+
   const float offset0 = 0.0;
   const float offset1 = 1.3846153846;
   const float offset2 = 3.2307692308;

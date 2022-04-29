@@ -4,6 +4,7 @@
 #include "Components/Component.h"
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace Ogre {
 class Camera;
@@ -40,12 +41,18 @@ class Compositor : public Component<Compositor> {
   void InitMRT();
 
   bool CompositorList[FX_MAX];
+  const std::string OutputCompositor = "Output";
   const std::string BlurCompositor = "Blur";
   const std::string BloomCompositor = "Bloom";
   const std::string SSAOCompositor = "SSAO";
-  const std::string OutputCompositor = "Output";
+  const std::string BlurEnable = "uBlurEnable";
+  const std::vector<std::string> BlurCompositorChain = {"Blur"};
+  const std::string BloomEnable = "uBloomEnable";
+  const std::vector<std::string> BloomCompositorChain = {"Bloom", "Bloom/FilterY", "Bloom/FilterX", "Output"};
+  const std::string SSAOEnable = "uSSAOEnable";
+  const std::vector<std::string> SSAOCompositorChain = {"SSAO", "Output"};
   Ogre::CompositorManager* OgreCompositorManager = nullptr;
-  Ogre::CompositorChain *OgreCompositorChain = nullptr;
+  Ogre::CompositorChain* OgreCompositorChain = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;
   Ogre::Camera* OgreCamera = nullptr;
   Ogre::Viewport* OgreViewport = nullptr;
