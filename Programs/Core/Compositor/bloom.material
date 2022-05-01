@@ -9,7 +9,7 @@ fragment_program bloom_fs glsl glsles
 
     default_params
     {
-        param_named uBloomEnable float 0.0
+        param_named uEnable float 0.0
     }
 }
 
@@ -34,7 +34,7 @@ material Bloom
 
 			texture_unit rt1
             {
-                texture green.dds
+                texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
@@ -62,7 +62,7 @@ material Bloom/FilterY
 
 			texture_unit rt1
             {
-                texture green.dds
+                texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
@@ -87,7 +87,7 @@ material Bloom/FilterX
 
 			texture_unit rt1
             {
-                texture green.dds
+                texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none

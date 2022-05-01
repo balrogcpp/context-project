@@ -25,7 +25,7 @@ fragment_program gauss_filter3y_fs glsl glsles
 	source gaussy3.frag
     default_params
     {
-        param_named uBloomEnable float 0.0
+        param_named uEnable float 0.0
         param_named uSampler int 0
         param_named_auto TexelSize inverse_texture_size 0
     }
@@ -36,7 +36,7 @@ fragment_program gauss_filter3x_fs glsl glsles
 	source gaussx3.frag
     default_params
     {
-        param_named uBloomEnable float 0.0
+        param_named uEnable float 0.0
         param_named uSampler int 0
         param_named_auto TexelSize inverse_texture_size 0
     }

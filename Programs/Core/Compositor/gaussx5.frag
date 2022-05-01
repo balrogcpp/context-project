@@ -11,12 +11,15 @@
 #include "header.frag"
 
 in vec2 oUv0;
+uniform float uEnable;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize;
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
+  if (uEnable <= 0.0) discard;
+
   const vec2 offset0 = vec2(0.0, 0.0);
   const vec2 offset1 = vec2(1.0, 0.0);
   const vec2 offset2 = vec2(2.0, 0.0);

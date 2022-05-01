@@ -204,10 +204,15 @@ const float kHosekRadZ[] = float[](
 );
 
 // Ground albedo and turbidy are baked into the lookup tables
+#ifndef ALBEDO
 #define ALBEDO 1
+#endif
+#ifndef TURBIDITY
 #define TURBIDITY 4
-
+#endif
+#ifndef M_PI
 #define M_PI 3.1415926535897932384626433832795
+#endif
 #define CIE_X 0
 #define CIE_Y 1
 #define CIE_Z 2

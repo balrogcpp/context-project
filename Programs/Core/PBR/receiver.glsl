@@ -5,8 +5,10 @@
 
 #include "noise.glsl"
 
+#ifdef PENUMBRA
+
 //----------------------------------------------------------------------------------------------------------------------
-float AvgBlockersDepthToPenumbra(float z_shadowMapView, float avgBlockersDepth)
+float AvgBlockersDepthToPenumbra(const float z_shadowMapView, const float avgBlockersDepth)
 {
   float penumbra = (z_shadowMapView - avgBlockersDepth) / avgBlockersDepth;
   penumbra *= penumbra;
@@ -14,7 +16,7 @@ float AvgBlockersDepthToPenumbra(float z_shadowMapView, float avgBlockersDepth)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float AvgBlockersDepthToPenumbra(float lightSize, float z_shadowMapView, float avgBlockersDepth)
+float AvgBlockersDepthToPenumbra(const float lightSize, const float z_shadowMapView, const float avgBlockersDepth)
 {
   float penumbra = lightSize * (z_shadowMapView - avgBlockersDepth) / avgBlockersDepth;
   penumbra *= penumbra;
@@ -22,7 +24,7 @@ float AvgBlockersDepthToPenumbra(float lightSize, float z_shadowMapView, float a
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float z_shadowMapView, int samplesCount)
+float Penumbra(const sampler2D shadowMap, const vec2 shadowMapUV, const float gradientNoise, const float z_shadowMapView, const int samplesCount)
 {
   float avgBlockersDepth = 0.0;
   float blockersCount = 0.0;
@@ -53,8 +55,10 @@ float Penumbra(sampler2D shadowMap, float gradientNoise, vec2 shadowMapUV, float
   }
 }
 
+#endif // PENUMBRA
+
 //----------------------------------------------------------------------------------------------------------------------
-float CalcDepthShadow(sampler2D shadowMap, vec4 lightSpace, const float offset, const float filter_size, const int iterations)
+float CalcDepthShadow(const sampler2D shadowMap, vec4 lightSpace, const float offset, const float filter_size, const int iterations)
 {
   lightSpace /= lightSpace.w;
 

@@ -37,13 +37,15 @@ compositor MRT
         texture mrt target_width target_height PF_FLOAT16_RGBA PF_FLOAT16_R PF_FLOAT16_GR
         texture final target_width target_height PF_FLOAT16_RGB
         texture ssao target_width target_height PF_FLOAT16_R
-        texture rt0 256 256 PF_FLOAT16_RGB
-        texture rt1 256 256 PF_FLOAT16_RGB
-        texture rt2 128 128 PF_FLOAT16_RGB
-        texture rt3 64 64 PF_FLOAT16_RGB
-        texture rt4 16 16 PF_FLOAT16_RGB
-        texture rt5 4 4 PF_FLOAT16_RGB
-        texture rt6 1 1 PF_FLOAT16_RGB
+        texture rt0 512 512 PF_R11G11B10_FLOAT
+        texture rt1 512 512 PF_R11G11B10_FLOAT
+        texture rt2 256 256 PF_R11G11B10_FLOAT
+        texture rt3 128 128 PF_R11G11B10_FLOAT
+        texture rt4 64 64 PF_R11G11B10_FLOAT
+        texture rt5 32 32 PF_R11G11B10_FLOAT
+        texture rt6 16 16 PF_R11G11B10_FLOAT
+        texture rt7 4 4 PF_R11G11B10_FLOAT
+        texture rt8 1 1 PF_R11G11B10_FLOAT
 
         target mrt
         {
@@ -84,7 +86,7 @@ compositor MRT
             pass render_quad
             {
                 material Downscale3x3
-                input 0 rt0
+                input 0 rt1
             }
         }
 
@@ -142,6 +144,13 @@ compositor MRT
                 input 1 mrt 1
                 input 2 ssao
                 input 3 rt1
+                input 4 rt2
+                input 5 rt3
+                input 6 rt4
+                input 7 rt5
+                input 8 rt6
+                input 9 rt7
+                input 10 rt8
             }
         }
 

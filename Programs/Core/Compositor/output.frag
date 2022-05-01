@@ -37,8 +37,24 @@ uniform sampler2D uSsaoSampler;
 uniform float uSSAOEnable;
 #endif // SSAO
 #ifdef BLOOM
-uniform sampler2D uBloomSampler;
+uniform sampler2D uRT1;
+uniform sampler2D uRT2;
+uniform sampler2D uRT3;
+uniform sampler2D uRT4;
+uniform sampler2D uRT5;
+uniform sampler2D uRT6;
+uniform sampler2D uRT7;
+uniform sampler2D uRT8;
+uniform vec2 TexelSize3;
+uniform vec2 TexelSize4;
+uniform vec2 TexelSize5;
+uniform vec2 TexelSize6;
+uniform vec2 TexelSize7;
+uniform vec2 TexelSize8;
+uniform vec2 TexelSize9;
+uniform vec2 TexelSize10;
 uniform float uBloomEnable;
+uniform float uHDREnable;
 #endif // BLOOM
 #ifdef SRGB
 #ifdef MANUAL_SRGB
@@ -60,10 +76,47 @@ uniform float uBlurEnable;
 #ifdef FXAA
 uniform float uFXAAStrength;
 uniform float uFXAAEnable;
-#ifdef HDR
-uniform float uHDREnable;
-#endif
 #endif // FXAA
+
+#ifdef BLOOM
+//----------------------------------------------------------------------------------------------------------------------
+vec3 UpscaleSample(const sampler2D sampler, const vec2 uv, const vec2 psize)
+{
+  const float weights0 = 0.0625; // 1/16
+  const float weights1 = 0.125; // 2/16
+  const float weights2 = 0.0625; // 1/16
+  const float weights3 = 0.125; // 2/16
+  const float weights4 = 0.25; // 4/16
+  const float weights5 = 0.125; // 2/16
+  const float weights6 = 0.0625; // 1/16
+  const float weights7 = 0.125; // 2/16
+  const float weights8 = 0.0625; // 1/16
+
+  const vec2 offsets0 = vec2(-1.0, -1.0);
+  const vec2 offsets1 = vec2(0.0, -1.0);
+  const vec2 offsets2 = vec2(1.0, -1.0);
+  const vec2 offsets3 = vec2(-1.0, 0.0);
+  const vec2 offsets4 = vec2(0.0, 0.0);
+  const vec2 offsets5 = vec2(1.0, 0.0);
+  const vec2 offsets6 = vec2(-1.0, 1.0);
+  const vec2 offsets7 = vec2(0.0,  1.0);
+  const vec2 offsets8 = vec2(1.0, 1.0);
+
+  vec3 color = vec3(0.0);
+
+  color += vec3(weights0 * texture2D(sampler, oUv0 + offsets0 * psize).rgb);
+  color += vec3(weights1 * texture2D(sampler, oUv0 + offsets1 * psize).rgb);
+  color += vec3(weights2 * texture2D(sampler, oUv0 + offsets2 * psize).rgb);
+  color += vec3(weights3 * texture2D(sampler, oUv0 + offsets3 * psize).rgb);
+  color += vec3(weights4 * texture2D(sampler, oUv0 + offsets4 * psize).rgb);
+  color += vec3(weights5 * texture2D(sampler, oUv0 + offsets5 * psize).rgb);
+  color += vec3(weights6 * texture2D(sampler, oUv0 + offsets6 * psize).rgb);
+  color += vec3(weights7 * texture2D(sampler, oUv0 + offsets7 * psize).rgb);
+  color += vec3(weights8 * texture2D(sampler, oUv0 + offsets8 * psize).rgb);
+
+  return color;
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
@@ -77,46 +130,28 @@ void main()
     for (int x = -2; x < 1; x++)
     for (int y = -2; y < 1; y++)
       color += texture2D(uSsaoSampler, vec2(oUv0.x + float(x) * TexelSize.x, oUv0.y + float(y) * TexelSize.y)).r;
-    color /= 9.0;
+    color *= 0.11111111111111111111; // 1/9
     scene.rgb *= vec3(clamp(color + 0.1, 0.0, 1.0));
   }
 #endif // SSAO
 #ifdef BLOOM
   if (uBloomEnable > 0.0)
   {
-    const float weights0 = 0.0625; // 1/16
-    const float weights1 = 0.125; // 2/16
-    const float weights2 = 0.0625; // 1/16
-    const float weights3 = 0.125; // 2/16
-    const float weights4 = 0.25; // 4/16
-    const float weights5 = 0.125; // 2/16
-    const float weights6 = 0.0625; // 1/16
-    const float weights7 = 0.125; // 2/16
-    const float weights8 = 0.0625; // 1/16
+    const vec3 weight1 = vec3(0.65);
+    const vec3 weight2 = vec3(0.65);
+    const vec3 weight3 = vec3(0.65);
+    const vec3 weight4 = vec3(0.65);
+    const vec3 weight5 = vec3(0.65);
+    const vec3 weight6 = vec3(0.65);
 
-    vec2 offsets0 = TexelSize * vec2(-1.0, -1.0);
-    vec2 offsets1 = TexelSize * vec2(0.0, -1.0);
-    vec2 offsets2 = TexelSize * vec2(1.0, -1.0);
-    vec2 offsets3 = TexelSize * vec2(-1.0, 0.0);
-    vec2 offsets4 = TexelSize * vec2(0.0, 0.0);
-    vec2 offsets5 = TexelSize * vec2(1.0, 0.0);
-    vec2 offsets6 = TexelSize * vec2(-1.0, 1.0);
-    vec2 offsets7 = TexelSize * vec2(0.0,  1.0);
-    vec2 offsets8 = TexelSize * vec2(1.0, 1.0);
-
-    vec3 color = vec3(0.0);
-
-    color += vec3(weights0 * texture2D(uBloomSampler, oUv0 + offsets0).rgb);
-    color += vec3(weights1 * texture2D(uBloomSampler, oUv0 + offsets1).rgb);
-    color += vec3(weights2 * texture2D(uBloomSampler, oUv0 + offsets2).rgb);
-    color += vec3(weights3 * texture2D(uBloomSampler, oUv0 + offsets3).rgb);
-    color += vec3(weights4 * texture2D(uBloomSampler, oUv0 + offsets4).rgb);
-    color += vec3(weights5 * texture2D(uBloomSampler, oUv0 + offsets5).rgb);
-    color += vec3(weights6 * texture2D(uBloomSampler, oUv0 + offsets6).rgb);
-    color += vec3(weights7 * texture2D(uBloomSampler, oUv0 + offsets7).rgb);
-    color += vec3(weights8 * texture2D(uBloomSampler, oUv0 + offsets8).rgb);
-
-    scene.rgb += vec3(0.65 * color);
+    scene.rgb += weight1 * UpscaleSample(uRT1, oUv0, TexelSize3);
+    scene.rgb += weight2 * UpscaleSample(uRT2, oUv0, TexelSize4);
+    scene.rgb += weight3 * UpscaleSample(uRT3, oUv0, TexelSize5);
+    scene.rgb += weight4 * UpscaleSample(uRT4, oUv0, TexelSize6);
+    scene.rgb += weight5 * UpscaleSample(uRT5, oUv0, TexelSize7);
+    scene.rgb += weight6 * UpscaleSample(uRT6, oUv0, TexelSize8);
+    scene.rgb += weight6 * UpscaleSample(uRT7, oUv0, TexelSize8);
+    scene.rgb += weight6 * UpscaleSample(uRT8, oUv0, TexelSize10);
   }
 #endif // BLOOM
 #ifdef FOG
@@ -126,12 +161,6 @@ void main()
     scene = ApplyFog(scene, FogParams, FogColour, fragmentWorldDepth);
   }
 #endif // FOG
-#ifdef HDR
-//  if (uHDREnable > 0.0)
-//  {
-//
-//  }
-#endif // HDR
 #endif // !NO_MRT
 #ifdef FXAA
   if (uFXAAEnable > 0.0)

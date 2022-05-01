@@ -13,13 +13,13 @@
 #define THRESHOLD 0.9999
 
 in vec2 oUv0;
-uniform float uBloomEnable;
+uniform float uEnable;
 uniform sampler2D uSceneSampler;
 uniform vec2 TexelSize;
 
 void main()
 {
-  if (uBloomEnable <= 0.0) discard;
+  if (uEnable <= 0.0) discard;
 
   const float weights0 = 0.0625; // 1/16
   const float weights1 = 0.125; // 2/16

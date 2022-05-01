@@ -9,6 +9,11 @@ using namespace Ogre;
 
 namespace Glue {
 
+static GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorName) {
+  static auto &MM = Ogre::MaterialManager::getSingleton();
+  return MM.getByName(CompositorName)->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+}
+
 Compositor::Compositor() {
   OgreCompositorManager = Ogre::CompositorManager::getSingletonPtr();
   OgreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
@@ -24,6 +29,7 @@ Compositor::Compositor() {
   EnableEffect(FX_SSAO, Config::GetInstance().GetBool("enable_ssao"));
   EnableEffect(FX_BLOOM, Config::GetInstance().GetBool("enable_bloom"));
   EnableEffect(FX_BLUR, Config::GetInstance().GetBool("enable_mblur"));
+  EnableEffect(FX_HDR, Config::GetInstance().GetBool("enable_hdr"));
   EnableEffect(FX_FXAA, Config::GetInstance().GetBool("enable_fxaa"));
 #endif
 }
@@ -32,7 +38,35 @@ Compositor::~Compositor() {}
 
 void Compositor::OnUpdate(float time) {}
 
-void Compositor::EnableEffect(const Compositors FX, bool Enable) { CompositorList[FX] = Enable; }
+void Compositor::EnableEffect(const Compositors FX, bool Enable) {
+  CompositorList[FX] = Enable;
+  const string EnableStr = "uEnable";
+  float Flag = Enable ? 1.0f : 0.0f;
+
+  if (GlobalMRTIsEnabled()) {
+    switch (FX) {
+      case FX_SSAO:
+        Log::Message("Enabling SSAO");
+        GetFPparameters(SSAOOutput)->setNamedConstant(SSAOEnable, Flag);
+        for (const auto &it : SSAOCompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
+        break;
+      case FX_BLOOM:
+        Log::Message("Enabling Bloom");
+        GetFPparameters(BloomOutput)->setNamedConstant(BloomEnable, Flag);
+        for (const auto &it : BloomCompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
+        break;
+      case FX_BLUR:
+        Log::Message("Enabling Motion Blur");
+        GetFPparameters(BlurOutput)->setNamedConstant(BlurEnable, Flag);
+        for (const auto &it : BlurCompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
+        break;
+      case FX_HDR:
+      case FX_FXAA:
+      default:
+        break;
+    }
+  }
+}
 
 void Compositor::OnSetUp() { InitMRT(); }
 
@@ -53,11 +87,6 @@ void Compositor::AddCompositorDisabled(const string &Name) {
 }
 
 void Compositor::EnableCompositor(const string &Name) { OgreCompositorManager->setCompositorEnabled(OgreViewport, Name, true); }
-
-static GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorName) {
-  static auto &MM = Ogre::MaterialManager::getSingleton();
-  return MM.getByName(CompositorName)->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-}
 
 void Compositor::InitMRT() {
   string MRTCompositor;
@@ -93,19 +122,6 @@ void Compositor::InitMRT() {
     FinalTexturePtr->width = MRTTexturePtr->width;
     FinalTexturePtr->height = MRTTexturePtr->height;
 #endif
-  }
-
-  if (GlobalMRTIsEnabled()) {
-    if (CompositorList[FX_SSAO])
-      for (const auto &it : SSAOCompositorChain) GetFPparameters(it)->setNamedConstant(SSAOEnable, 1.0f);
-    if (CompositorList[FX_SSAO])
-      for (const auto &it : BloomCompositorChain) GetFPparameters(it)->setNamedConstant(BloomEnable, 1.0f);
-    if (CompositorList[FX_BLUR])
-      for (const auto &it : BlurCompositorChain) GetFPparameters(it)->setNamedConstant(BlurEnable, 1.0f);
-//    if (CompositorList[FX_HDR])
-//      for (const auto &it : HDRCompositorChain) GetFPparameters(it)->setNamedConstant(HDREnable, 1.0f);
-    if (CompositorList[FX_FXAA])
-      for (const auto &it : FXAACompositorChain) GetFPparameters(it)->setNamedConstant(FXAAEnable, 1.0f);
   }
 
   OgreCompositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, true);

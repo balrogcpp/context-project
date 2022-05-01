@@ -11,14 +11,14 @@
 #include "header.frag"
 
 in vec2 oUv0;
-uniform float uHDREnable;
+uniform float uEnable;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize;
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  if (uHDREnable <= 0.0) discard;
+  if (uEnable <= 0.0) discard;
   
   const float weights0 = 0.25; // 1/4
   const float weights1 = 0.25; // 1/4
