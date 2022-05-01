@@ -4,7 +4,6 @@
 #include "MenuAppState.h"
 #include "DemoDotAppState.h"
 #include "Engine.h"
-#include "Components/ImHotKey.h"
 
 using namespace std;
 using namespace Glue;

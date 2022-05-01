@@ -1,0 +1,23 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+fragment_program downscale3x3_fs glsl glsles
+{
+	source downscale3x3.frag
+    default_params
+    {
+        param_named uHDREnable float 0.0
+        param_named uSampler int 0
+        param_named_auto TexelSize inverse_texture_size 0
+    }
+}
+
+fragment_program downscale2x2_fs glsl glsles
+{
+	source downscale2x2.frag
+    default_params
+    {
+        param_named uHDREnable float 0.0
+        param_named uSampler int 0
+        param_named_auto TexelSize inverse_texture_size 0
+    }
+}

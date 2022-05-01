@@ -1,15 +1,5 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
-abstract fragment_program filter_template glsl glsles
-{
-    source gauss3x3.frag
-    default_params
-    {
-        param_named uSampler int 0
-        param_named_auto TexelSize inverse_texture_size 0
-    }
-}
-
 fragment_program gauss_filter5y_fs glsl glsles
 {
 	source gaussy5.frag

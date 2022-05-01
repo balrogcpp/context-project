@@ -62,6 +62,7 @@ uniform float uFXAAStrength;
 uniform float uFXAAEnable;
 #endif // FXAA
 
+//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
   vec3 scene = texture2D(uSceneSampler, oUv0).rgb;
@@ -80,25 +81,25 @@ void main()
 #ifdef BLOOM
   if (uBloomEnable > 0.0)
   {
-    const float weights0 = 0.0625; // 1.0/16.0;
-    const float weights1 = 0.125; // 2.0/16.0;
-    const float weights2 = 0.0625;// 1.0/16.0;
-    const float weights3 = 0.125; // 2.0/16.0;
-    const float weights4 = 0.25; // 4.0/16.0;
-    const float weights5 = 0.125; // 2.0/16.0;
-    const float weights6 = 0.0625; // 1.0/16.0;
-    const float weights7 = 0.125; // 2.0/16.0;
-    const float weights8 = 0.0625; // 1.0/16.0;
+    const float weights0 = 0.0625; // 1/16
+    const float weights1 = 0.125; // 2/16
+    const float weights2 = 0.0625; // 1/16
+    const float weights3 = 0.125; // 2/16
+    const float weights4 = 0.25; // 4/16
+    const float weights5 = 0.125; // 2/16
+    const float weights6 = 0.0625; // 1/16
+    const float weights7 = 0.125; // 2/16
+    const float weights8 = 0.0625; // 1/16
 
-    vec2 offsets0 = vec2(-TexelSize.x, -TexelSize.y);
-    vec2 offsets1 = vec2(0.0, -TexelSize.y);
-    vec2 offsets2 = vec2(TexelSize.x, -TexelSize.y);
-    vec2 offsets3 = vec2(-TexelSize.x, 0.0);
-    vec2 offsets4 = vec2(0.0, 0.0);
-    vec2 offsets5 = vec2(TexelSize.x, 0.0);
-    vec2 offsets6 = vec2(-TexelSize.x, TexelSize.y);
-    vec2 offsets7 = vec2(0.0,  TexelSize.y);
-    vec2 offsets8 = vec2(TexelSize.x, TexelSize.y);
+    vec2 offsets0 = TexelSize * vec2(-1.0, -1.0);
+    vec2 offsets1 = TexelSize * vec2(0.0, -1.0);
+    vec2 offsets2 = TexelSize * vec2(1.0, -1.0);
+    vec2 offsets3 = TexelSize * vec2(-1.0, 0.0);
+    vec2 offsets4 = TexelSize * vec2(0.0, 0.0);
+    vec2 offsets5 = TexelSize * vec2(1.0, 0.0);
+    vec2 offsets6 = TexelSize * vec2(-1.0, 1.0);
+    vec2 offsets7 = TexelSize * vec2(0.0,  1.0);
+    vec2 offsets8 = TexelSize * vec2(1.0, 1.0);
 
     vec3 color = vec3(0.0);
 
@@ -126,8 +127,8 @@ void main()
 #ifdef FXAA
   if (uFXAAEnable > 0.0)
   {
-    const float reducemul = 0.125; //1.0/8.0;
-    const float reducemin = 0.0078125; //1.0 / 128.0;
+    const float reducemul = 0.125; // 1/8
+    const float reducemin = 0.0078125; // 1/128
     const vec3 gray = vec3(0.299, 0.587, 0.114);
 
     vec3 basecol = texture2D(uSceneSampler, oUv0).rgb;

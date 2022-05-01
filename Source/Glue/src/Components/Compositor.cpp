@@ -3,7 +3,6 @@
 #include "PCHeader.h"
 #include "Components/Compositor.h"
 #include "Config.h"
-#include "ShaderHelpers.h"
 
 using namespace std;
 using namespace Ogre;
@@ -25,6 +24,7 @@ Compositor::Compositor() {
   EnableEffect(FX_SSAO, Config::GetInstance().GetBool("enable_ssao"));
   EnableEffect(FX_BLOOM, Config::GetInstance().GetBool("enable_bloom"));
   EnableEffect(FX_BLUR, Config::GetInstance().GetBool("enable_mblur"));
+  EnableEffect(FX_FXAA, Config::GetInstance().GetBool("enable_fxaa"));
 #endif
 }
 
@@ -67,7 +67,7 @@ void Compositor::InitMRT() {
   else
     MRTCompositor = "noMRT";
 
-  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, MRTCompositor, 0), "Failed to add MRT compoitor");
+  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, MRTCompositor, 0), "Failed to add MRT compositor");
   OgreCompositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, false);
 
   if (IsFullscreen()) {

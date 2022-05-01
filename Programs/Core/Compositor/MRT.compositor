@@ -79,6 +79,51 @@ compositor MRT
             }
         }
 
+        target rt2
+        {
+            pass render_quad
+            {
+                material Downscale3x3
+                input 0 rt0
+            }
+        }
+
+        target rt3
+        {
+            pass render_quad
+            {
+                material Downscale3x3
+                input 0 rt2
+            }
+        }
+
+        target rt4
+        {
+            pass render_quad
+            {
+                material Downscale3x3
+                input 0 rt3
+            }
+        }
+
+        target rt5
+        {
+            pass render_quad
+            {
+                material Downscale3x3
+                input 0 rt4
+            }
+        }
+
+        target rt6
+        {
+            pass render_quad
+            {
+                material Downscale3x3
+                input 0 rt5
+            }
+        }
+
         target ssao
         {
             pass render_quad

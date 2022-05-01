@@ -15,12 +15,6 @@ uniform sampler2D uSampler;
 uniform vec2 TexelSize;
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 IterationX(const float offset, const float weight)
-{
-  return weight * (texture2D(uSampler, (oUv0 + vec2(offset, 0.0) * TexelSize.x)).rgb + texture2D(uSampler, (oUv0 - vec2(offset, 0.0) * TexelSize.x)).rgb);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
   const float offset0 = 0.0;
@@ -37,10 +31,10 @@ void main()
 
   vec3 final_color = vec3(weight0 * texture2D(uSampler, oUv0).rgb);
 
-  final_color += IterationX(offset1, weight1);
-  final_color += IterationX(offset2, weight2);
-  final_color += IterationX(offset3, weight3);
-  final_color += IterationX(offset4, weight4);
+  final_color += vec3(weight1 * (texture2D(uSampler, (oUv0 + vec2(offset1, 0.0) * TexelSize.x)).rgb + texture2D(uSampler, (oUv0 - vec2(offset1, 0.0) * TexelSize.x)).rgb));
+  final_color += vec3(weight2 * (texture2D(uSampler, (oUv0 + vec2(offset2, 0.0) * TexelSize.x)).rgb + texture2D(uSampler, (oUv0 - vec2(offset2, 0.0) * TexelSize.x)).rgb));
+  final_color += vec3(weight3 * (texture2D(uSampler, (oUv0 + vec2(offset3, 0.0) * TexelSize.x)).rgb + texture2D(uSampler, (oUv0 - vec2(offset3, 0.0) * TexelSize.x)).rgb));
+  final_color += vec3(weight4 * (texture2D(uSampler, (oUv0 + vec2(offset4, 0.0) * TexelSize.x)).rgb + texture2D(uSampler, (oUv0 - vec2(offset4, 0.0) * TexelSize.x)).rgb));
 
   FragColor.rgb = final_color;
 }

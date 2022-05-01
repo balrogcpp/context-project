@@ -1247,7 +1247,9 @@ void DotSceneLoaderB::ProcessKeyframe(pugi::xml_node &XMLNode, NodeAnimationTrac
 
 struct DotSceneCodec : public Codec {
   string magicNumberToFileExt(const char *magicNumberPtr, size_t maxbytes) const { return ""; }
+
   string getType() const override { return "scene"; }
+
   void decode(const DataStreamPtr &stream, const Any &output) const override {
     DataStreamPtr _stream(stream);
     DotSceneLoaderB Loader;

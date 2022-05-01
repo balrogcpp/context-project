@@ -9,9 +9,7 @@
 #endif
 
 #include "header.frag"
-#include "srgb.glsl"
 
-#define KERNEL_SIZE 9
 #define THRESHOLD 0.9999
 
 in vec2 oUv0;
@@ -23,25 +21,25 @@ void main()
 {
   if (uBloomEnable <= 0.0) discard;
 
-  const float weights0 = 1.0/16.0;
-  const float weights1 = 2.0/16.0;
-  const float weights2 = 1.0/16.0;
-  const float weights3 = 2.0/16.0;
-  const float weights4 = 4.0/16.0;
-  const float weights5 = 2.0/16.0;
-  const float weights6 = 1.0/16.0;
-  const float weights7 = 2.0/16.0;
-  const float weights8 = 1.0/16.0;
+  const float weights0 = 0.0625; // 1/16
+  const float weights1 = 0.125; // 2/16
+  const float weights2 = 0.0625; // 1/16
+  const float weights3 = 0.125; // 2/16
+  const float weights4 = 0.25; // 4/16
+  const float weights5 = 0.125; // 2/16
+  const float weights6 = 0.0625; // 1/16
+  const float weights7 = 0.125; // 2/16
+  const float weights8 = 0.0625; // 1/16
 
-  vec2 offsets0 = vec2(-TexelSize.x, -TexelSize.y);
-  vec2 offsets1 = vec2(0.0, -TexelSize.y);
-  vec2 offsets2 = vec2(TexelSize.x, -TexelSize.y);
-  vec2 offsets3 = vec2(-TexelSize.x, 0.0);
-  vec2 offsets4 = vec2(0.0, 0.0);
-  vec2 offsets5 = vec2(TexelSize.x, 0.0);
-  vec2 offsets6 = vec2(-TexelSize.x, TexelSize.y);
-  vec2 offsets7 = vec2(0.0,  TexelSize.y);
-  vec2 offsets8 = vec2(TexelSize.x, TexelSize.y);
+  vec2 offsets0 = TexelSize * vec2(-1.0, -1.0);
+  vec2 offsets1 = TexelSize * vec2(0.0, -1.0);
+  vec2 offsets2 = TexelSize * vec2(1.0, -1.0);
+  vec2 offsets3 = TexelSize * vec2(-1.0, 0.0);
+  vec2 offsets4 = TexelSize * vec2(0.0, 0.0);
+  vec2 offsets5 = TexelSize * vec2(1.0, 0.0);
+  vec2 offsets6 = TexelSize * vec2(-1.0, 1.0);
+  vec2 offsets7 = TexelSize * vec2(0.0,  1.0);
+  vec2 offsets8 = TexelSize * vec2(1.0, 1.0);
 
   vec3 color = vec3(0.0);
 
@@ -57,5 +55,6 @@ void main()
 
   vec3 hdr = vec3(0.0);
   if(color.x > THRESHOLD || color.y > THRESHOLD || color.z > THRESHOLD) hdr = color;
-  gl_FragColor.rgb = hdr;
+
+  FragColor.rgb = hdr;
 }

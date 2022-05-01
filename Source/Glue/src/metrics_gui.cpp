@@ -22,11 +22,10 @@ SOFTWARE.
 
 #include "imgui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
+#include "countof.h"
 #include "imgui_internal.h"
-#include "Components/metrics_gui.h"
-#include "Components/countof.h"
+#include "metrics_gui.h"
 #include "snprintf.h"
-
 #include <algorithm>
 #include <assert.h>
 

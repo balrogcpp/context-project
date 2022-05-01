@@ -1,7 +1,7 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #include "PCHeader.h"
-#include "Components/ToggleButton.h"
+#include "ToggleButton.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
 

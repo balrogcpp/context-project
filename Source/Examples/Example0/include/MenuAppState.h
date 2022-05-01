@@ -2,7 +2,7 @@
 
 #pragma once
 #include "AppState.h"
-#include "Components/metrics_gui.h"
+#include "metrics_gui.h"
 
 namespace Demo {
 
