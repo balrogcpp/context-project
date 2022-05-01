@@ -11,8 +11,7 @@
 #define MAX_SHADOW_TEXTURES 4
 #endif
 
-#include "MRT.glsl"
-
+#define MRT
 #define USE_TEX_LOD
 
 #ifndef GL_ES
@@ -29,15 +28,15 @@
 #define textureCubeLod textureLod
 #ifndef NO_MRT
 out vec4 FragData[3];
-#else
+#else // NO_MRT
 out vec4 FragColor;
-#endif
-#else 
+#endif // ! NO_MRT
+#else  // VERSION < 300
 #define in varying
 #define out varying
 #define FragData gl_FragData
 #define FragColor gl_FragColor
-#endif
+#endif // VERSION >= 300
 
 #else // GLSLES
 

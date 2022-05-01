@@ -432,7 +432,7 @@ void Engine::AndroidRestoreWindow() {
 #endif
 
 void Engine::GrabMouse(bool grab) {
-#ifndef MOBILE  // This breaks input on > Android 9.0
+#ifndef MOBILE  // This breaks input @Android >9.0
   if (SDLWindowPtr) {
     SDL_ShowCursor(!grab);
     SDL_SetWindowGrab(SDLWindowPtr, static_cast<SDL_bool>(grab));
@@ -448,38 +448,20 @@ void Engine::InitResourceLocation() {
 #else
   const char SEPARATOR = '\\';
 #endif
-
   const string ProgramsDir = "Programs";
   const string AssetsDir = "Assets";
-
   AddLocation(ProgramsDir + SEPARATOR + "Core", RGN_INTERNAL);
-
-  if (GlobalMRTIsEnabled())
-    AddLocation(ProgramsDir + SEPARATOR + "MRT", RGN_INTERNAL);
-  else
-    AddLocation(ProgramsDir + SEPARATOR + "noMRT", RGN_INTERNAL);
-
   if (RenderSystemIsGLES2())
     AddLocation(ProgramsDir + SEPARATOR + "GLSLES", RGN_INTERNAL);
   else
     AddLocation(ProgramsDir + SEPARATOR + "GLSL", RGN_INTERNAL);
-
   AddLocation(ProgramsDir + SEPARATOR + "Other", RGN_INTERNAL);
-
   AddLocation(AssetsDir, RGN_DEFAULT);
 #elif defined(ANDROID)
   auto &RGM = ResourceGroupManager::getSingleton();
   RGM.addResourceLocation("/Programs/Core.zip", "APKZip", RGN_INTERNAL);
-
-  if (GlobalMRTIsEnabled())
-    RGM.addResourceLocation("/Programs/MRT.zip", "APKZip", RGN_INTERNAL);
-  else
-    RGM.addResourceLocation("/Programs/noMRT.zip", "APKZip", RGN_INTERNAL);
-
   RGM.addResourceLocation("/Programs/GLSLES.zip", "APKZip", RGN_INTERNAL);
-
   RGM.addResourceLocation("/Programs/Other.zip", "APKZip", RGN_INTERNAL);
-
   RGM.addResourceLocation("/Assets.zip", "APKZip", RGN_DEFAULT);
 #endif
 }
