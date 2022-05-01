@@ -102,6 +102,10 @@ void Compositor::InitMRT() {
       for (const auto &it : BloomCompositorChain) GetFPparameters(it)->setNamedConstant(BloomEnable, 1.0f);
     if (CompositorList[FX_BLUR])
       for (const auto &it : BlurCompositorChain) GetFPparameters(it)->setNamedConstant(BlurEnable, 1.0f);
+//    if (CompositorList[FX_HDR])
+//      for (const auto &it : HDRCompositorChain) GetFPparameters(it)->setNamedConstant(HDREnable, 1.0f);
+    if (CompositorList[FX_FXAA])
+      for (const auto &it : FXAACompositorChain) GetFPparameters(it)->setNamedConstant(FXAAEnable, 1.0f);
   }
 
   OgreCompositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, true);

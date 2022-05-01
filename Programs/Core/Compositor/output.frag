@@ -60,6 +60,9 @@ uniform float uBlurEnable;
 #ifdef FXAA
 uniform float uFXAAStrength;
 uniform float uFXAAEnable;
+#ifdef HDR
+uniform float uHDREnable;
+#endif
 #endif // FXAA
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -123,6 +126,12 @@ void main()
     scene = ApplyFog(scene, FogParams, FogColour, fragmentWorldDepth);
   }
 #endif // FOG
+#ifdef HDR
+//  if (uHDREnable > 0.0)
+//  {
+//
+//  }
+#endif // HDR
 #endif // !NO_MRT
 #ifdef FXAA
   if (uFXAAEnable > 0.0)

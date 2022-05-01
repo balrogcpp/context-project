@@ -15,7 +15,7 @@ class CompositorChain;
 
 namespace Glue {
 
-enum Compositors { FX_SSAO, FX_BLOOM, FX_BLUR, FX_FXAA, FX_MAX };
+enum Compositors { FX_SSAO, FX_BLOOM, FX_BLUR, FX_FXAA, FX_HDR, FX_MAX };
 
 class Compositor : public Component<Compositor> {
  public:
@@ -49,6 +49,8 @@ class Compositor : public Component<Compositor> {
   const std::vector<std::string> SSAOCompositorChain = {"SSAO", "Output"};
   const std::string FXAAEnable = "uFXAAEnable";
   const std::vector<std::string> FXAACompositorChain = {"Output"};
+  const std::string HDREnable = "uHDREnable";
+  const std::vector<std::string> HDRCompositorChain = {"Downscale3x3", "Downscale2x2", "Output"};
   Ogre::CompositorManager* OgreCompositorManager = nullptr;
   Ogre::CompositorChain* OgreCompositorChain = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;
