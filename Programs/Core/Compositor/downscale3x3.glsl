@@ -1,5 +1,8 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
+#ifndef DOWNSCALE3X3_GLSL
+#define DOWNSCALE3X3_GLSL
+
 //----------------------------------------------------------------------------------------------------------------------
 vec3 Downscale3x3(const sampler2D sampler, const vec2 uv, const vec2 tsize) {
     const vec3 weights0 = vec3(0.0625); // 1/16
@@ -36,3 +39,5 @@ vec3 Downscale3x3(const sampler2D sampler, const vec2 uv, const vec2 tsize) {
 
     return color;
 }
+
+#endif // DOWNSCALE3X3_GLSL

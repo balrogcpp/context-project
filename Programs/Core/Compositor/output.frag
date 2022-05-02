@@ -77,15 +77,15 @@ uniform vec2 PixelSize;
 uniform float uScale;
 uniform float uBlurEnable;
 #endif // MOTION_BLUR
+#ifdef HDR
+uniform sampler2D uRT8;
+uniform float uHDREnable;
+#endif // HDR
 #endif // !NO_MRT
 #ifdef FXAA
 uniform float uFXAAStrength;
 uniform float uFXAAEnable;
 #endif // FXAA
-#ifdef HDR
-uniform sampler2D uRT8;
-uniform float uHDREnable;
-#endif // HDR
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
@@ -134,8 +134,7 @@ void main()
 #ifdef HDR
   if (uHDREnable > 0.0)
   {
-    const vec3 LUMINENCE_FACTOR  = vec3(0.27, 0.67, 0.06);
-    float lum = dot(scene, LUMINENCE_FACTOR);
+    float lum = dot(scene, vec3(0.27, 0.67, 0.06));
     scene = tone_map(scene, lum);
   }
 #endif // HDR
