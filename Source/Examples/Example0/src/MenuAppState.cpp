@@ -14,7 +14,7 @@ void MenuAppState::SetUp() {
   GetEngine().GrabMouse(false);
 
   GetAudio().AddSound("menu", "GameMenu.ogg", nullptr, true);
-  GetAudio().PlaySound("menu");
+//  GetAudio().PlaySound("menu");
 
   GetAudio().AddSound("selection", "Menu-Selection-Change-M.ogg");
   GetAudio().AddSound("click", "VideoGameMenuSoundsMenu-Selection-Change-N.ogg");

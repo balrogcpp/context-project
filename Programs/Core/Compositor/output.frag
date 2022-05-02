@@ -121,7 +121,7 @@ void main()
     scene += weight5 * Upscale3x3(uRT5, oUv0, TexelSize7);
     scene += weight6 * Upscale3x3(uRT6, oUv0, TexelSize8);
     scene += weight7 * Upscale3x3(uRT7, oUv0, TexelSize9);
-    scene += weight8 * texture2D(uRT8, vec2(0.5, 0.5)).rgb;
+    scene += weight8 * Upscale3x3(uRT8, oUv0, TexelSize10);
   }
 #endif // BLOOM
 #ifdef FOG
@@ -146,12 +146,11 @@ void main()
     const float reducemin = 0.0078125; // 1/128
     const vec3 gray = vec3(0.299, 0.587, 0.114);
 
-    vec3 basecol = texture2D(uSceneSampler, oUv0).rgb;
     vec3 baseNW = texture2D(uSceneSampler, oUv0 - TexelSize).rgb;
     vec3 baseNE = texture2D(uSceneSampler, oUv0 + vec2(TexelSize.x, -TexelSize.y)).rgb;
     vec3 baseSW = texture2D(uSceneSampler, oUv0 + vec2(-TexelSize.x, TexelSize.y)).rgb;
     vec3 baseSE = texture2D(uSceneSampler, oUv0 + TexelSize).rgb;
-    float monocol = dot(basecol, gray);
+    float monocol = dot(scene, gray);
     float monoNW = dot(baseNW, gray);
     float monoNE = dot(baseNE, gray);
     float monoSW = dot(baseSW, gray);

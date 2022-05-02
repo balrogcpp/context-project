@@ -19,7 +19,7 @@ void DemoDotAppState::SetUp() {
 
   GetAudio().AddSound("ambient_music", "GameSong2.ogg", nullptr, true);
   GetAudio().SetSoundVolume("ambient_music", 0.5);
-  GetAudio().PlaySound("ambient_music");
+//  GetAudio().PlaySound("ambient_music");
 
 //  GetAudio().AddSound("wind", "Wind-Mark_DiAngelo-1940285615.ogg", nullptr, true);
 //  GetAudio().PlaySound("wind");
