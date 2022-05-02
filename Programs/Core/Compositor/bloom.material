@@ -28,7 +28,7 @@ material Bloom
 
 			fragment_program_ref bloom_fs
 			{
-                param_named uSceneSampler int 0
+                param_named uSampler int 0
                 param_named_auto TexelSize inverse_texture_size 0
 			}
 

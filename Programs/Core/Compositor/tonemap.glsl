@@ -7,6 +7,7 @@
 #define FUDGE 0.001
 #define L_WHITE 1.5
 
+//----------------------------------------------------------------------------------------------------------------------
 vec3 tone_map(vec3 inColour, const float lum)
 {
 	// From Reinhard et al

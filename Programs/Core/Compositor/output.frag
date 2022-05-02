@@ -19,8 +19,11 @@
 #ifdef BLOOM
 #include "upscale3x3.glsl"
 #endif // BLOOM
+#ifdef SSAO
+#include "box.glsl"
+#endif // SSAO
 #ifdef HDR
-#include "hdr_tonemap_util.glsl"
+#include "tonemap.glsl"
 #endif // HDR
 #endif // NO_MRT
 
@@ -95,11 +98,7 @@ void main()
 #ifdef SSAO
   if (uSSAOEnable > 0.0)
   {
-    float color = 0.0;
-    for (int x = -2; x < 1; x++)
-    for (int y = -2; y < 1; y++)
-      color += texture2D(uSsaoSampler, vec2(oUv0.x + float(x) * TexelSize.x, oUv0.y + float(y) * TexelSize.y)).r;
-    color *= 0.11111111111111111111; // 1/9
+    float color = BoxFilterR(uSsaoSampler, oUv0, TexelSize);
     scene *= vec3(clamp(color + 0.1, 0.0, 1.0));
   }
 #endif // SSAO
@@ -112,6 +111,8 @@ void main()
     const vec3 weight4 = vec3(0.65);
     const vec3 weight5 = vec3(0.65);
     const vec3 weight6 = vec3(0.65);
+    const vec3 weight7 = vec3(0.65);
+    const vec3 weight8 = vec3(0.65);
 
     scene += weight1 * Upscale3x3(uRT1, oUv0, TexelSize3);
     scene += weight2 * Upscale3x3(uRT2, oUv0, TexelSize4);
@@ -119,8 +120,8 @@ void main()
     scene += weight4 * Upscale3x3(uRT4, oUv0, TexelSize6);
     scene += weight5 * Upscale3x3(uRT5, oUv0, TexelSize7);
     scene += weight6 * Upscale3x3(uRT6, oUv0, TexelSize8);
-    scene += weight6 * Upscale3x3(uRT7, oUv0, TexelSize9);
-    scene += weight6 * texture2D(uRT8, vec2(0.5, 0.5)).rgb;
+    scene += weight7 * Upscale3x3(uRT7, oUv0, TexelSize9);
+    scene += weight8 * texture2D(uRT8, vec2(0.5, 0.5)).rgb;
   }
 #endif // BLOOM
 #ifdef FOG
@@ -130,7 +131,6 @@ void main()
     scene = ApplyFog(scene, FogParams, FogColour, fragmentWorldDepth);
   }
 #endif // FOG
-#endif // !NO_MRT
 #ifdef HDR
   if (uHDREnable > 0.0)
   {
@@ -138,6 +138,7 @@ void main()
     scene = tone_map(scene, lum);
   }
 #endif // HDR
+#endif // !NO_MRT
 #ifdef FXAA
   if (uFXAAEnable > 0.0)
   {

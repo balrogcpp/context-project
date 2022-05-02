@@ -33,7 +33,7 @@ material Blur
 
 			fragment_program_ref Blur_fs
 			{
-                param_named uSceneSampler int 0
+                param_named uSampler int 0
                 param_named uSpeedSampler int 1
                 param_named uLuminanceSampler int 2
                 param_named_auto TexelSize inverse_texture_size 0
