@@ -41,7 +41,7 @@ void Compositor::OnUpdate(float time) {}
 void Compositor::EnableEffect(const Compositors FX, bool Enable) {
   CompositorList[FX] = Enable;
   const string EnableStr = "uEnable";
-  float Flag = Enable ? 1.0f : 0.0f;
+  const float Flag = Enable ? 1.0f : 0.0f;
 
   if (GlobalMRTIsEnabled()) {
     switch (FX) {
@@ -61,14 +61,14 @@ void Compositor::EnableEffect(const Compositors FX, bool Enable) {
         for (const auto &it : BlurCompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
         break;
       case FX_HDR:
-//        Log::Message("Enabling HDR");
-//        GetFPparameters(HDROutput)->setNamedConstant(HDREnable, Flag);
-//        for (const auto &it : HDRCompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
+        Log::Message("Enabling HDR");
+        GetFPparameters(HDROutput)->setNamedConstant(HDREnable, Flag);
+        for (const auto &it : HDRCompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
         break;
       case FX_FXAA:
-//        Log::Message("Enabling FXAA");
-//        GetFPparameters(FXAAOutput)->setNamedConstant(FXAAEnable, Flag);
-//        for (const auto &it : FXAACompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
+        Log::Message("Enabling FXAA");
+        GetFPparameters(FXAAOutput)->setNamedConstant(FXAAEnable, Flag);
+        for (const auto &it : FXAACompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
         break;
       default:
         break;

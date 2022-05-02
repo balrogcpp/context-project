@@ -56,7 +56,7 @@ class Compositor : public Component<Compositor> {
   const std::vector<std::string> FXAACompositorChain = {};
   const std::string HDREnable = "uHDREnable";
   const std::string HDROutput = "Blur";
-  const std::vector<std::string> HDRCompositorChain = {"Downscale3x3", "Downscale2x2"};
+  const std::vector<std::string> HDRCompositorChain = {};
   Ogre::CompositorManager* OgreCompositorManager = nullptr;
   Ogre::CompositorChain* OgreCompositorChain = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;
