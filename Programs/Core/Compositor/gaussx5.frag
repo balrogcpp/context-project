@@ -20,11 +20,11 @@ void main()
 {
   if (uEnable <= 0.0) discard;
 
-  vec2 offset0 = TexelSize * vec2(0.0, 0.0);
-  vec2 offset1 = TexelSize * vec2(1.0, 0.0);
-  vec2 offset2 = TexelSize * vec2(2.0, 0.0);
-  vec2 offset3 = TexelSize * vec2(3.0, 0.0);
-  vec2 offset4 = TexelSize * vec2(4.0, 0.0);
+  const vec2 offset0 = vec2(0.0, 0.0);
+  const vec2 offset1 = vec2(1.0, 0.0);
+  const vec2 offset2 = vec2(2.0, 0.0);
+  const vec2 offset3 = vec2(3.0, 0.0);
+  const vec2 offset4 = vec2(4.0, 0.0);
 
   const float weight0 = 0.2270270270;
   const float weight1 = 0.1945945946;
@@ -34,10 +34,10 @@ void main()
 
   vec3 color = weight0 * texture2D(uSampler, oUv0).rgb;
 
-  color += weight1 * (texture2D(uSampler, oUv0 + offset1).rgb + texture2D(uSampler, oUv0 - offset1).rgb);
-  color += weight2 * (texture2D(uSampler, oUv0 + offset2).rgb + texture2D(uSampler, oUv0 - offset2).rgb);
-  color += weight3 * (texture2D(uSampler, oUv0 + offset3).rgb + texture2D(uSampler, oUv0 - offset3).rgb);
-  color += weight4 * (texture2D(uSampler, oUv0 + offset4).rgb + texture2D(uSampler, oUv0 - offset4).rgb);
+  color += weight1 * (texture2D(uSampler, oUv0 + (offset1 * TexelSize)).rgb + texture2D(uSampler, oUv0 - (offset1 * TexelSize)).rgb);
+  color += weight2 * (texture2D(uSampler, oUv0 + (offset2 * TexelSize)).rgb + texture2D(uSampler, oUv0 - (offset2 * TexelSize)).rgb);
+  color += weight3 * (texture2D(uSampler, oUv0 + (offset3 * TexelSize)).rgb + texture2D(uSampler, oUv0 - (offset3 * TexelSize)).rgb);
+  color += weight4 * (texture2D(uSampler, oUv0 + (offset4 * TexelSize)).rgb + texture2D(uSampler, oUv0 - (offset4 * TexelSize)).rgb);
 
   FragColor.rgb = color;
 }
