@@ -6,7 +6,7 @@
 fragment_program Output_fs glsl glsles
 {
     source output.frag
-    preprocessor_defines SSAO,BLOOM,FOG,HDR
+    preprocessor_defines SSAO,BLOOM,FOG
 	default_params
 	{
 		param_named_auto FogColour fog_colour
@@ -14,7 +14,6 @@ fragment_program Output_fs glsl glsles
         param_named_auto FarClipDistance far_clip_distance
         param_named uSSAOEnable float 0.0
         param_named uBloomEnable float 0.0
-        param_named uEnable float 0.0
 	}
 }
 

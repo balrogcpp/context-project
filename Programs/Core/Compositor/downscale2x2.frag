@@ -20,10 +20,10 @@ void main()
 {
   if (uEnable <= 0.0) discard;
   
-  const float weights0 = 0.25; // 1/4
-  const float weights1 = 0.25; // 1/4
-  const float weights2 = 0.25; // 1/4
-  const float weights3 = 0.25; // 1/4
+  const vec3 weights0 = vec3(0.25); // 1/4
+  const vec3 weights1 = vec3(0.25); // 1/4
+  const vec3 weights2 = vec3(0.25); // 1/4
+  const vec3 weights3 = vec3(0.25); // 1/4
 
   const vec2 offsets0 = vec2(-0.5, -0.5);
   const vec2 offsets1 = vec2(-0.5, 0.5);
@@ -32,10 +32,10 @@ void main()
 
   vec3 color = vec3(0.0);
   
-  color += vec3(weights0 * texture2D(uSampler, oUv0 + offsets0 * TexelSize).rgb);
-  color += vec3(weights1 * texture2D(uSampler, oUv0 + offsets1 * TexelSize).rgb);
-  color += vec3(weights2 * texture2D(uSampler, oUv0 + offsets2 * TexelSize).rgb);
-  color += vec3(weights3 * texture2D(uSampler, oUv0 + offsets3 * TexelSize).rgb);
+  color += weights0 * texture2D(uSampler, oUv0 + offsets0 * TexelSize).rgb;
+  color += weights1 * texture2D(uSampler, oUv0 + offsets1 * TexelSize).rgb;
+  color += weights2 * texture2D(uSampler, oUv0 + offsets2 * TexelSize).rgb;
+  color += weights3 * texture2D(uSampler, oUv0 + offsets3 * TexelSize).rgb;
 
   FragColor.rgb = color;
 }

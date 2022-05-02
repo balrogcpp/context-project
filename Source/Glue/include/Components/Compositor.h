@@ -52,10 +52,10 @@ class Compositor : public Component<Compositor> {
   const std::string SSAOOutput = "Output";
   const std::vector<std::string> SSAOCompositorChain = {"SSAO"};
   const std::string FXAAEnable = "uFXAAEnable";
-  const std::string FXAAOutput = "Output";
+  const std::string FXAAOutput = "Blur";
   const std::vector<std::string> FXAACompositorChain = {};
   const std::string HDREnable = "uHDREnable";
-  const std::string HDROutput = "Output";
+  const std::string HDROutput = "Blur";
   const std::vector<std::string> HDRCompositorChain = {"Downscale3x3", "Downscale2x2"};
   Ogre::CompositorManager* OgreCompositorManager = nullptr;
   Ogre::CompositorChain* OgreCompositorChain = nullptr;

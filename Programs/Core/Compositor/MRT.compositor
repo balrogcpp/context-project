@@ -54,7 +54,7 @@ compositor MRT
             pass render_scene {}
         }
 
-        target rt1
+        target rt0
         {
             pass render_quad
             {
@@ -63,12 +63,12 @@ compositor MRT
             }
         }
 
-        target rt0
+        target rt1
         {
             pass render_quad
             {
                 material Bloom/FilterY
-                input 0 rt1
+                input 0 rt0
             }
         }
 
@@ -77,7 +77,7 @@ compositor MRT
             pass render_quad
             {
                 material Bloom/FilterX
-                input 0 rt0
+                input 0 rt1
             }
         }
 
@@ -90,12 +90,48 @@ compositor MRT
             }
         }
 
+        target rt2
+        {
+            pass render_quad
+            {
+                material Bloom/FilterY
+                input 0 rt2
+            }
+        }
+
+        target rt2
+        {
+            pass render_quad
+            {
+                material Bloom/FilterX
+                input 0 rt2
+            }
+        }
+
         target rt3
         {
             pass render_quad
             {
                 material Downscale3x3
                 input 0 rt2
+            }
+        }
+
+        target rt3
+        {
+            pass render_quad
+            {
+                material Bloom/FilterY
+                input 0 rt3
+            }
+        }
+
+        target rt3
+        {
+            pass render_quad
+            {
+                material Bloom/FilterX
+                input 0 rt3
             }
         }
 
@@ -161,6 +197,7 @@ compositor MRT
                 material Blur
                 input 0 final
                 input 1 mrt 2
+                input 2 rt8
             }
         }
     }

@@ -6,7 +6,7 @@
 fragment_program Blur_fs glsl glsles
 {
     source output.frag
-    preprocessor_defines MOTION_BLUR,MAX_SAMPLES=8,SRGB,FXAA
+    preprocessor_defines MOTION_BLUR,MAX_SAMPLES=8,SRGB,FXAA,HDR
 	default_params
 	{
 		param_named uExposure float 1.0
@@ -14,6 +14,7 @@ fragment_program Blur_fs glsl glsles
         param_named uBlurEnable float 0.0
         param_named uFXAAEnable float 1.0
         param_named uFXAAStrength float 4.0
+        param_named uHDREnable float 1.0
 	}
 }
 
@@ -34,6 +35,7 @@ material Blur
 			{
                 param_named uSceneSampler int 0
                 param_named uSpeedSampler int 1
+                param_named uLuminanceSampler int 2
                 param_named_auto TexelSize inverse_texture_size 0
                 param_named_auto PixelSize texture_size 1
 			}
@@ -53,11 +55,17 @@ material Blur
                 tex_address_mode clamp
                 filtering none
             }
+
+            texture_unit luminance
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering none
+            }
 		}
 	}
 }
-
-// This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 material Downscale3x3
 {
