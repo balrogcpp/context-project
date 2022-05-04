@@ -9,14 +9,16 @@
 #endif
 
 #include "header.frag"
-#include "box.glsl"
+#include "filters.glsl"
 
-in vec2 oUv0;
+in vec2 vUV0;
+uniform float uEnable;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize;
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  FragColor.rgb = BoxFilter(uSampler, oUv0, TexelSize);
+  if (uEnable <= 0.0) discard;
+  FragColor.rgb = BoxFilter(uSampler, vUV0, TexelSize);
 }

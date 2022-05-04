@@ -9,9 +9,9 @@
 #endif
 
 #include "header.frag"
-#include "downscale3x3.glsl"
+#include "filters.glsl"
 
-in vec2 oUv0;
+in vec2 vUV0;
 uniform float uEnable;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize;
@@ -20,6 +20,5 @@ uniform vec2 TexelSize;
 void main()
 {
   if (uEnable <= 0.0) discard;
-
-  FragColor.rgb = Downscale3x3(uSampler, oUv0, TexelSize);
+  FragColor.rgb = Downscale3x3(uSampler, vUV0, TexelSize);
 }

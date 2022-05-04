@@ -12,8 +12,8 @@
 uniform mat4 worldViewProj;
 in vec4 vertex;
 in vec2 uv0;
-out vec2 oUv0;
-out vec2 oUv1;
+out vec2 vUV0;
+out vec2 vUV1;
 
 void main()
 {
@@ -21,6 +21,6 @@ void main()
     gl_Position = worldViewProj * vertex;
 
     // Convert to image-space
-    oUv0 = uv0;
-    oUv1 = oUv0;
+    vUV0 = uv0;
+    vUV1 = vUV0;
 }

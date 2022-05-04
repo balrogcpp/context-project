@@ -137,10 +137,10 @@ void Engine::InitRenderSystem() {
   InitOgreRenderSystemGL();
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
   InitOgreRenderSystemGLES2();
-#endif // DESKTOP
-#else // ! DESKTOP
+#endif  // DESKTOP
+#else   // ! DESKTOP
   InitOgreRenderSystemGLES2();
-#endif // DESKTOP
+#endif  // DESKTOP
 #endif  // OGRE_STATIC_LIB
 }
 
@@ -176,9 +176,7 @@ void Engine::InitOgrePlugins() {
 
 void Engine::CreateSDLWindow() {
 #if defined(DESKTOP)
-  if (WindowWidth == ScreenWidth && WindowHeight == ScreenHeight) {
-    SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
-  }
+  if (WindowWidth == ScreenWidth && WindowHeight == ScreenHeight) SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
   if (WindowFullScreen) {
     SDLWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
@@ -478,5 +476,17 @@ Sound &GetAudio() { return GetComponent<Sound>(); }
 Scene &GetScene() { return GetComponent<Scene>(); }
 
 Overlay &GetOverlay() { return GetComponent<Overlay>(); }
+
+std::string Engine::GetWindowCaption() {
+  return WindowCaption;
+}
+
+int Engine::GetWindowSizeX() {
+  return WindowWidth;
+}
+
+int Engine::GetWindowSizeY() {
+  return WindowHeight;
+}
 
 }  // namespace Glue

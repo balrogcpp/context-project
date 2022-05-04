@@ -9,23 +9,27 @@
 #endif
 
 #include "header.frag"
-#include "downscale3x3.glsl"
+#include "filters.glsl"
 
-#define THRESHOLD 0.9999
-
-in vec2 oUv0;
+in vec2 vUV0;
 uniform float uEnable;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize;
+uniform float uThreshhold;
 
+//----------------------------------------------------------------------------------------------------------------------
+vec3 ApplyThreshold(const vec3 color, const float threshold)
+{
+  const float strength = 1.0;
+  // convert rgb to grayscale/brightness
+  float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
+  if (brightness > threshold) return strength * color;
+  else return vec3(0.0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 void main()
 {
   if (uEnable <= 0.0) discard;
-
-  vec3 color = Downscale3x3(uSampler, oUv0, TexelSize);
-
-  vec3 hdr = vec3(0.0);
-  if(color.x > THRESHOLD || color.y > THRESHOLD || color.z > THRESHOLD) hdr = color;
-
-  FragColor.rgb = hdr;
+  FragColor.rgb = ApplyThreshold(texture2D(uSampler, vUV0).rgb, uThreshhold) ;
 }

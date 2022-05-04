@@ -10,7 +10,7 @@
 
 #include "header.frag"
 
-in vec2 oUv0;
+in vec2 vUV0;
 uniform sampler2D uSceneDepthSampler;
 uniform sampler2D sRotSampler4x4;
 uniform vec4 cViewportSize; // auto param width/height/inv. width/inv. height
@@ -35,7 +35,7 @@ void main()
   const float nSampleNum = 8.0; // number of samples
 
   // get the depth of the current pixel and convert into world space unit [0, inf]
-  float clampedDepth = texture2D(uSceneDepthSampler, oUv0).r;
+  float clampedDepth = texture2D(uSceneDepthSampler, vUV0).r;
   float fragmentWorldDepth = clampedDepth * FarClipDistance - nearClipDistance;
 
   if (fragmentWorldDepth <= 0.0)
@@ -47,7 +47,7 @@ void main()
   float accessibility = 0.0;
 
   // get rotation vector, rotation is tiled every 4 screen pixels
-  vec2 rotationTC = oUv0 * cViewportSize.xy / 4.0;
+  vec2 rotationTC = vUV0 * cViewportSize.xy / 4.0;
   vec3 rotationVector = 2.0 * texture2D(sRotSampler4x4, rotationTC).xyz - 1.0;// [-1, 1]x[-1. 1]x[-1. 1]
 
   float rUV = 0.0;// radius of influence in screen space
@@ -82,7 +82,7 @@ void main()
       // reflect offset vector by random rotation sample (i.e. rotating it)
       vec3 rotatedOffset = reflect(offset, rotationVector);
 
-      vec2 sampleTC = oUv0 + rotatedOffset.xy * rUV;
+      vec2 sampleTC = vUV0 + rotatedOffset.xy * rUV;
 
       // read scene depth at sampling point and convert into world space units (m or whatever)
       float sampleWorldDepth = texture2D(uSceneDepthSampler, sampleTC).r * FarClipDistance;

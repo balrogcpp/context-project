@@ -6,7 +6,7 @@
 fragment_program Output_fs glsl glsles
 {
     source output.frag
-    preprocessor_defines SSAO,BLOOM,FOG
+    preprocessor_defines USE_SSAO,USE_BLOOM,USE_FOG
 	default_params
 	{
 		param_named_auto FogColour fog_colour
@@ -42,6 +42,8 @@ material Output
 			    param_named uRT6 int 8
 			    param_named uRT7 int 9
 			    param_named uRT8 int 10
+			    param_named uRT9 int 11
+			    param_named uRT10 int 12
                 param_named_auto TexelSize inverse_texture_size 0
                 param_named_auto TexelSize0 inverse_texture_size 0
                 param_named_auto TexelSize1 inverse_texture_size 1
@@ -54,6 +56,8 @@ material Output
                 param_named_auto TexelSize8 inverse_texture_size 8
                 param_named_auto TexelSize9 inverse_texture_size 9
                 param_named_auto TexelSize10 inverse_texture_size 10
+                param_named_auto TexelSize11 inverse_texture_size 11
+                param_named_auto TexelSize12 inverse_texture_size 12
 			}
 
 			texture_unit scene
@@ -61,7 +65,7 @@ material Output
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering none
+                filtering linear linear none
             }
 
             texture_unit depth
@@ -69,7 +73,7 @@ material Output
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering none
+                filtering linear linear none
             }
 
             texture_unit ssao
@@ -77,7 +81,7 @@ material Output
                 texture white.dds
                 tex_coord_set 0
                 tex_address_mode clamp
-                filtering none
+                filtering linear linear none
             }
 
             texture_unit rt1
@@ -137,6 +141,22 @@ material Output
             }
 
             texture_unit rt8
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt9
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt10
             {
                 texture black.dds
                 tex_coord_set 0

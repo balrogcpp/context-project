@@ -2,6 +2,8 @@
 
 #pragma once
 #include "Components/Component.h"
+#include <array>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,7 +17,15 @@ class CompositorChain;
 
 namespace Glue {
 
-enum Compositors { FX_SSAO, FX_BLOOM, FX_BLUR, FX_FXAA, FX_HDR, FX_MAX };
+struct FX {
+  std::string Name;
+  bool Enabled = false;
+  std::string EnableParam;
+  std::string OutputCompositor;
+  std::vector<std::string> CompositorChain;
+
+  operator bool() { return Enabled; }
+};
 
 class Compositor : public Component<Compositor> {
  public:
@@ -27,7 +37,7 @@ class Compositor : public Component<Compositor> {
   void OnPause() override;
   void OnResume() override;
   void OnUpdate(float time) override;
-  void EnableEffect(const Compositors FX, bool Enable);
+  void EnableEffect(const std::string& FX, bool Enable);
 
  protected:
   void AddCompositorEnabled(const std::string& Name);
@@ -35,28 +45,19 @@ class Compositor : public Component<Compositor> {
   void EnableCompositor(const std::string& Name);
   void InitMRT();
 
-  bool CompositorList[FX_MAX];
-  const std::string OutputCompositor = "Output";
-  const std::string BlurCompositor = "Blur";
-  const std::string BloomCompositor = "Bloom";
-  const std::string SSAOCompositor = "SSAO";
-  const std::string HDRCompositor = "Output";
-  const std::string FXAACompositor = "Output";
-  const std::string BlurEnable = "uBlurEnable";
-  const std::string BlurOutput = "Blur";
-  const std::vector<std::string> BlurCompositorChain = {};
-  const std::string BloomEnable = "uBloomEnable";
-  const std::string BloomOutput = "Output";
-  const std::vector<std::string> BloomCompositorChain = {"Bloom", "Bloom/FilterY", "Bloom/FilterX", "Downscale3x3", "Downscale2x2"};
-  const std::string SSAOEnable = "uSSAOEnable";
-  const std::string SSAOOutput = "Output";
-  const std::vector<std::string> SSAOCompositorChain = {"SSAO"};
-  const std::string FXAAEnable = "uFXAAEnable";
-  const std::string FXAAOutput = "Blur";
-  const std::vector<std::string> FXAACompositorChain = {};
-  const std::string HDREnable = "uHDREnable";
-  const std::string HDROutput = "Blur";
-  const std::vector<std::string> HDRCompositorChain = {};
+  int ViewportSizeX = 0;
+  int ViewportSizeY = 0;
+  std::map<std::string, FX> CompositorList;
+  const FX Bloom{"Bloom", false, "uBloomEnable", "Output", {"Bloom", "Downscale3x3", "Downscale2x2", "Flares"}};
+  const FX SSAO{"SSAO", false, "uSSAOEnable", "Output", {"SSAO"}};
+  const FX Blur{"Blur", false, "uBlurEnable", "Blur", {}};
+  const FX FXAA{"FXAA", true, "uEnable", "FXAA", {}};
+  const FX HDR{"HDR", false, "uHDREnable", "Blur", {}};
+  const std::string FX_SSAO = "SSAO";
+  const std::string FX_BLOOM = "Bloom";
+  const std::string FX_BLUR = "Blur";
+  const std::string FX_FXAA = "FXAA";
+  const std::string FX_HDR = "HDR";
   Ogre::CompositorManager* OgreCompositorManager = nullptr;
   Ogre::CompositorChain* OgreCompositorChain = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;

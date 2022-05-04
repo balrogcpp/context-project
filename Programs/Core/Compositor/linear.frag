@@ -20,5 +20,5 @@ uniform vec2 TexelSize;
 void main()
 {
   if (uEnable <= 0.0) discard;
-  FragColor.rgb = Downscale2x2(uSampler, vUV0, TexelSize);;
+  FragColor.rgb = texture2D(uSampler, vUV0).rgb;
 }

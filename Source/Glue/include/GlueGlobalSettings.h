@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <string>
+
 namespace Ogre {
 class SceneNode;
 class SceneManager;
@@ -58,5 +60,14 @@ Ogre::SceneNode* OgreCameraNode();
 
 ///
 Ogre::Vector3 SunDirection();
+
+///
+int WindowSizeX();
+
+///
+int WindowSizeY();
+
+///
+std::string WindowCaption();
 
 }  // namespace Glue

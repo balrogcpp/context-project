@@ -3,22 +3,18 @@
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program Blur_fs glsl glsles
+fragment_program FXAA_fs glsl glsles
 {
-    source output.frag
-    preprocessor_defines MOTION_BLUR,MAX_SAMPLES=8,SRGB
+    source fxaa.frag
+    preprocessor_defines USE_FXAA
 	default_params
 	{
-		param_named uExposure float 1.0
-        param_named uScale float 0.5
-        param_named uBlurEnable float 0.0
         param_named uFXAAEnable float 1.0
         param_named uFXAAStrength float 4.0
-        param_named uHDREnable float 0.0
 	}
 }
 
-material Blur
+material FXAA
 {
 	technique
 	{
@@ -31,7 +27,7 @@ material Blur
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Blur_fs
+			fragment_program_ref FXAA_fs
 			{
                 param_named uSampler int 0
                 param_named uSpeedSampler int 1
@@ -46,22 +42,6 @@ material Blur
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
-            }
-
-            texture_unit velocity
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-
-            texture_unit luminance
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering none
             }
 		}
 	}

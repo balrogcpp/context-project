@@ -1,25 +1,5 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
-fragment_program gauss_filter5y_fs glsl glsles
-{
-	source gaussy5.frag
-    default_params
-    {
-        param_named uSampler int 0
-        param_named_auto TexelSize inverse_texture_size 0
-    }
-}
-
-fragment_program gauss_filter5x_fs glsl glsles
-{
-	source gaussx5.frag
-    default_params
-    {
-        param_named uSampler int 0
-        param_named_auto TexelSize inverse_texture_size 0
-    }
-}
-
 fragment_program gauss_filter3y_fs glsl glsles
 {
 	source gaussy3.frag
@@ -42,31 +22,44 @@ fragment_program gauss_filter3x_fs glsl glsles
     }
 }
 
-fragment_program gauss_filter3x3_fs glsl glsles
-{
-	source gauss3x3.frag
-    default_params
-    {
-        param_named uSampler int 0
-        param_named_auto TexelSize inverse_texture_size 0
-    }
-}
-
-fragment_program gauss_filter5x5_fs glsl glsles
-{
-	source gauss5x5.frag
-    default_params
-    {
-        param_named uSampler int 0
-        param_named_auto TexelSize inverse_texture_size 0
-    }
-}
-
 fragment_program box_filter_fs glsl glsles
 {
 	source box.frag
     default_params
     {
+        param_named uSampler int 0
+        param_named_auto TexelSize inverse_texture_size 0
+    }
+}
+
+fragment_program downscale3x3_fs glsl glsles
+{
+	source downscale3x3.frag
+    default_params
+    {
+        param_named uEnable float 0.0
+        param_named uSampler int 0
+        param_named_auto TexelSize inverse_texture_size 0
+    }
+}
+
+fragment_program downscale2x2_fs glsl glsles
+{
+	source downscale2x2.frag
+    default_params
+    {
+        param_named uEnable float 0.0
+        param_named uSampler int 0
+        param_named_auto TexelSize inverse_texture_size 0
+    }
+}
+
+fragment_program downscale_fs glsl glsles
+{
+	source linear.frag
+    default_params
+    {
+        param_named uEnable float 0.0
         param_named uSampler int 0
         param_named_auto TexelSize inverse_texture_size 0
     }

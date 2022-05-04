@@ -1,7 +1,7 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
-// Cut bright parts pf scene
+// Cut bright parts of scene
 //----------------------------------------------------------------------------------------------------------------------
 fragment_program bloom_fs glsl glsles
 {
@@ -10,6 +10,7 @@ fragment_program bloom_fs glsl glsles
     default_params
     {
         param_named uEnable float 0.0
+        param_named uThreshhold float 0.9999
     }
 }
 
@@ -44,34 +45,19 @@ material Bloom
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Apply linear gaussian blur
+// Add flares
 //----------------------------------------------------------------------------------------------------------------------
-material Bloom/FilterY
+fragment_program flares_fs glsl glsles
 {
-	technique
-	{
-		pass
-		{
-		    cull_hardware none
-			lighting off
-            polygon_mode_overrideable false
+	source flares.frag
 
-			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
-
-			fragment_program_ref gauss_filter3y_fs {}
-
-			texture_unit rt1
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-		}
-	}
+    default_params
+    {
+        param_named uEnable float 0.0
+    }
 }
 
-material Bloom/FilterX
+material Flares
 {
 	technique
 	{
@@ -80,10 +66,15 @@ material Bloom/FilterX
 		    cull_hardware none
 			lighting off
             polygon_mode_overrideable false
+            depth_check off
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref gauss_filter3x_fs {}
+			fragment_program_ref flares_fs
+			{
+                param_named uSampler int 0
+                param_named_auto TexelSize inverse_texture_size 0
+			}
 
 			texture_unit rt1
             {

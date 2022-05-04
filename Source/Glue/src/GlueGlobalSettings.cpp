@@ -108,4 +108,16 @@ Vector3 SunDirection() {
   return Result;
 }
 
+int WindowSizeX() {
+  return GetEngine().GetWindowSizeX();
+}
+
+int WindowSizeY() {
+  return GetEngine().GetWindowSizeY();
+}
+
+std::string WindowCaption() {
+  return GetEngine().GetWindowCaption();
+}
+
 }  // namespace Glue

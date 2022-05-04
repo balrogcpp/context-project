@@ -58,11 +58,29 @@ class Engine final : public Singleton<Engine> {
   /// Internal function to unload component
   void UnRegComponent(ComponentI* ComponentPtr);
 
+  ///
   void SetFullscreen(bool Fullscreen);
+
+  ///
   bool IsFullscreen();
+
+  ///
   void ResizeWindow(int Width, int Height);
+
+  ///
   void SetWindowCaption(const char* Caption);
+
+  ///
   void GrabMouse(bool grab);
+
+  ///
+  std::string GetWindowCaption();
+
+  ///
+  int GetWindowSizeX();
+
+  ///
+  int GetWindowSizeY();
 
  protected:
   /// Internal. Check CPU
@@ -97,23 +115,27 @@ class Engine final : public Singleton<Engine> {
 
   /// Creates one of 3 Ogre render systems: GL, GL3 or GLSLES2
   void InitRenderSystem();
+
   ///
   bool CheckRenderSystemVersion(int major, int minor);
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   ///
   void InitOgreRenderSystemGL3();
+
   ///
   bool CheckGL3Version(int major, int minor);
 #endif
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
   ///
   void InitOgreRenderSystemGLES2();
+
   ///
   bool CheckGLES2Version(int major, int minor);
 #endif
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL
   ///
   void InitOgreRenderSystemGL();
+
   ///
   bool CheckGLVersion(int major, int minor);
 #endif
@@ -140,7 +162,6 @@ class Engine final : public Singleton<Engine> {
   void AndroidRestoreWindow();
 #endif
 
-  std::vector<Ogre::Plugin*> PluginList;
   std::string RenderSystemName;
   Ogre::RenderWindow* OgreRenderWindowPtr = nullptr;
   Ogre::RenderTarget* OgreRenderTarget = nullptr;

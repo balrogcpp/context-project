@@ -45,6 +45,8 @@ compositor MRT
         texture rt6 32 32 PF_R11G11B10_FLOAT
         texture rt7 16 16 PF_R11G11B10_FLOAT
         texture rt8 8 8 PF_R11G11B10_FLOAT
+        texture rt9 4 4 PF_R11G11B10_FLOAT
+        texture rt10 2 2 PF_R11G11B10_FLOAT
 
         target mrt
         {
@@ -111,7 +113,7 @@ compositor MRT
         {
             pass render_quad
             {
-                material Downscale3x3
+                material Downscale2x2
                 input 0 rt6
             }
         }
@@ -120,8 +122,26 @@ compositor MRT
         {
             pass render_quad
             {
-                material Downscale3x3
+                material Downscale2x2
                 input 0 rt7
+            }
+        }
+
+        target rt9
+        {
+            pass render_quad
+            {
+                material Downscale2x2
+                input 0 rt8
+            }
+        }
+
+        target rt10
+        {
+            pass render_quad
+            {
+                material Downscale2x2
+                input 0 rt8
             }
         }
 
@@ -150,6 +170,17 @@ compositor MRT
                 input 8 rt6
                 input 9 rt7
                 input 10 rt8
+                input 11 rt9
+                input 12 rt10
+            }
+        }
+
+        target final
+        {
+            pass render_quad
+            {
+                material FXAA
+                input 0 final
             }
         }
 
@@ -160,7 +191,7 @@ compositor MRT
                 material Blur
                 input 0 final
                 input 1 mrt 2
-                input 2 rt8
+                input 2 rt10
             }
         }
     }
