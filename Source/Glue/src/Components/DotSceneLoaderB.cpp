@@ -874,7 +874,7 @@ void DotSceneLoaderB::ProcessForests(pugi::xml_node &XmlNode) {
   const float bound = 95;
 
   auto *grass = new PagedGeometry(OgreCameraPtr, 15);
-  grass->addDetailLevel<GrassPage>(30, 0);
+  grass->addDetailLevel<GrassPage>(60, 0);
   auto *grassLoader = new GrassLoader(grass);
   grass->setPageLoader(grassLoader);
   grassLoader->setHeightFunction([](float x, float z, void *) { return GetScene().GetHeight(x, z); });

@@ -36,17 +36,19 @@ compositor MRT
     {
         texture mrt target_width target_height PF_R11G11B10_FLOAT PF_FLOAT16_R PF_FLOAT16_GR
         texture final target_width target_height PF_R11G11B10_FLOAT
-        texture ssao target_width target_height PF_FLOAT16_R
-        texture rt1 1024 1024 PF_R11G11B10_FLOAT
-        texture rt2 512 512 PF_R11G11B10_FLOAT
-        texture rt3 256 255 PF_R11G11B10_FLOAT
-        texture rt4 128 128 PF_R11G11B10_FLOAT
-        texture rt5 64 64 PF_R11G11B10_FLOAT
-        texture rt6 32 32 PF_R11G11B10_FLOAT
-        texture rt7 16 16 PF_R11G11B10_FLOAT
-        texture rt8 8 8 PF_R11G11B10_FLOAT
-        texture rt9 4 4 PF_R11G11B10_FLOAT
-        texture rt10 2 2 PF_R11G11B10_FLOAT
+        texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
+        texture rt1 target_width_scaled 0.5 target_height_scaled 0.5 PF_R11G11B10_FLOAT
+        texture rt2 target_width_scaled 0.25 target_height_scaled 0.25 PF_R11G11B10_FLOAT
+        texture rt3 target_width_scaled 0.125 target_height_scaled 0.125 PF_R11G11B10_FLOAT
+        texture rt4 target_width_scaled 0.0625 target_height_scaled 0.0625 PF_R11G11B10_FLOAT
+        texture rt5 target_width_scaled 0.03125 target_height_scaled 0.03125 PF_R11G11B10_FLOAT
+        texture rt6 target_width_scaled 0.015625 target_height_scaled 0.015625 PF_R11G11B10_FLOAT
+        texture rt7 target_width_scaled 0.0078125 target_height_scaled 0.0078125 PF_R11G11B10_FLOAT
+        texture rt8 target_width_scaled 0.00390625 target_height_scaled 0.00390625 PF_R11G11B10_FLOAT
+        texture rt9 target_width_scaled 0.001953125 target_height_scaled 0.001953125 PF_R11G11B10_FLOAT
+        texture rt10 target_width_scaled 0.0009765625 target_height_scaled 0.0009765625 PF_R11G11B10_FLOAT
+        texture rt11 target_width_scaled 0.00048828125 target_height_scaled 0.00048828125 PF_R11G11B10_FLOAT
+        texture rt12 target_width_scaled 0.000244140625 target_height_scaled 0.000244140625 PF_R11G11B10_FLOAT
 
         target mrt
         {
@@ -113,7 +115,7 @@ compositor MRT
         {
             pass render_quad
             {
-                material Downscale2x2
+                material Downscale3x3
                 input 0 rt6
             }
         }
@@ -122,7 +124,7 @@ compositor MRT
         {
             pass render_quad
             {
-                material Downscale2x2
+                material Downscale3x3
                 input 0 rt7
             }
         }
@@ -131,7 +133,7 @@ compositor MRT
         {
             pass render_quad
             {
-                material Downscale2x2
+                material Downscale3x3
                 input 0 rt8
             }
         }
@@ -140,7 +142,7 @@ compositor MRT
         {
             pass render_quad
             {
-                material Downscale2x2
+                material Downscale3x3
                 input 0 rt8
             }
         }
@@ -151,6 +153,24 @@ compositor MRT
             {
                 material SSAO
                 input 0 mrt 1
+            }
+        }
+
+        target ssao
+        {
+            pass render_quad
+            {
+                material FilterY
+                input 0 ssao
+            }
+        }
+
+        target ssao
+        {
+            pass render_quad
+            {
+                material FilterX
+                input 0 ssao
             }
         }
 
@@ -172,6 +192,8 @@ compositor MRT
                 input 10 rt8
                 input 11 rt9
                 input 12 rt10
+                input 13 rt11
+                input 14 rt12
             }
         }
 

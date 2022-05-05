@@ -11,10 +11,11 @@ fragment_program SSAOCrytek_fp glsl glsles
 		param_named uSceneDepthSampler int 0
 		param_named sRotSampler4x4 int 1
 		param_named uEnable float 0.0
-        param_named_auto cViewportSize viewport_size
-        param_named_auto nearClipDistance near_clip_distance
+        param_named_auto ViewportSize viewport_size
+        param_named_auto NearClipDistance near_clip_distance
         param_named_auto FarClipDistance far_clip_distance
-        param_named_auto cFov fov
+        param_named_auto FOV fov
+        param_named_auto TexelSize inverse_texture_size 0
 	}
 }
 

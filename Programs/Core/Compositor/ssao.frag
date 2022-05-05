@@ -12,10 +12,11 @@
 
 in vec2 vUV0;
 uniform sampler2D uSceneDepthSampler;
+uniform vec2 TexelSize;
 uniform sampler2D sRotSampler4x4;
-uniform vec4 cViewportSize; // auto param width/height/inv. width/inv. height
-uniform float cFov; // vertical field of view in radians
-uniform float nearClipDistance;
+uniform vec4 ViewportSize; // auto param width/height/inv. width/inv. height
+uniform float FOV; // vertical field of view in radians
+uniform float NearClipDistance;
 uniform float FarClipDistance;
 uniform float uSampleInScreenspace; // whether to sample in screen or world space
 uniform float uSampleLengthScreenSpace; // The sample length in screen space [0, 1]
@@ -31,12 +32,12 @@ void main()
 {
   if (uEnable <= 0.0) discard;
 
-  // const float nSampleNum = 32.0; // number of samples
-  const float nSampleNum = 8.0; // number of samples
+//   const float nSampleNum = 32.0; // number of samples
+  const float nSampleNum = 16.0; // number of samples
 
   // get the depth of the current pixel and convert into world space unit [0, inf]
   float clampedDepth = texture2D(uSceneDepthSampler, vUV0).r;
-  float fragmentWorldDepth = clampedDepth * FarClipDistance - nearClipDistance;
+  float fragmentWorldDepth = clampedDepth * FarClipDistance - NearClipDistance;
 
   if (fragmentWorldDepth <= 0.0)
   {
@@ -47,7 +48,7 @@ void main()
   float accessibility = 0.0;
 
   // get rotation vector, rotation is tiled every 4 screen pixels
-  vec2 rotationTC = vUV0 * cViewportSize.xy / 4.0;
+  vec2 rotationTC = vUV0 * ViewportSize.xy / 4.0;
   vec3 rotationVector = 2.0 * texture2D(sRotSampler4x4, rotationTC).xyz - 1.0;// [-1, 1]x[-1. 1]x[-1. 1]
 
   float rUV = 0.0;// radius of influence in screen space
@@ -55,11 +56,11 @@ void main()
   if (uSampleInScreenspace == 1.0)
   {
     rUV = uSampleLengthScreenSpace;
-    r = tan(rUV * cFov) * fragmentWorldDepth;
+    r = tan(rUV * FOV) * fragmentWorldDepth;
   }
   else
   {
-    rUV = atan(uSampleLengthWorldSpace / fragmentWorldDepth) / cFov;// the radius of influence projected into screen space
+    rUV = atan(uSampleLengthWorldSpace / fragmentWorldDepth) / FOV;// the radius of influence projected into screen space
     r = uSampleLengthWorldSpace;
   }
 

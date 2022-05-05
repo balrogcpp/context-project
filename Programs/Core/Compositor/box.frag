@@ -20,5 +20,5 @@ uniform vec2 TexelSize;
 void main()
 {
   if (uEnable <= 0.0) discard;
-  FragColor.rgb = BoxFilter(uSampler, vUV0, TexelSize);
+  FragColor.rgb = BoxFilter16(uSampler, vUV0, TexelSize);
 }

@@ -6,7 +6,7 @@
 fragment_program Output_fs glsl glsles
 {
     source output.frag
-    preprocessor_defines USE_SSAO,USE_BLOOM,USE_FOG
+    preprocessor_defines USE_SSAO,USE_BLOOM,USE_FOG,USE_HDR
 	default_params
 	{
 		param_named_auto FogColour fog_colour
@@ -163,6 +163,22 @@ material Output
                 tex_address_mode clamp
                 filtering linear linear none
             }
+
+            texture_unit rt11
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt12
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
 		}
 	}
 }
@@ -173,7 +189,7 @@ material Output
 fragment_program OutputDummy_fs glsl glsles
 {
     source output.frag
-    preprocessor_defines FXAA
+    preprocessor_defines USE_FXAA
 	default_params
 	{
         param_named uFXAAEnable float 1.0

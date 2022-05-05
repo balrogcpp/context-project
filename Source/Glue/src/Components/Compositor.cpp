@@ -27,15 +27,11 @@ Compositor::Compositor() {
   CompositorList.insert(make_pair("FXAA", FXAA));
   CompositorList.insert(make_pair("HDR", HDR));
 
-#ifdef MOBILE
-  EnableEffect(FX_SSAO, false);
-  EnableEffect(FX_BLOOM, false);
-  EnableEffect(FX_BLUR, false);
-#else
+#ifndef MOBILE
   EnableEffect(FX_SSAO, Config::GetInstance().GetBool("enable_ssao"));
   EnableEffect(FX_BLOOM, Config::GetInstance().GetBool("enable_bloom"));
   EnableEffect(FX_BLUR, Config::GetInstance().GetBool("enable_mblur"));
-//  EnableEffect(FX_HDR, Config::GetInstance().GetBool("enable_hdr"));
+  EnableEffect(FX_HDR, Config::GetInstance().GetBool("enable_hdr"));
   EnableEffect(FX_FXAA, Config::GetInstance().GetBool("enable_fxaa"));
 #endif
 }
@@ -45,14 +41,12 @@ Compositor::~Compositor() {}
 void Compositor::OnUpdate(float time) {}
 
 void Compositor::EnableEffect(const std::string &FX, bool Enable) {
-  if (GlobalMRTIsEnabled()) {
-    CompositorList[FX].Enabled = Enable;
-    const string EnableStr = "uEnable";
-    const float Flag = Enable ? 1.0f : 0.0f;
-    Log::Message(string("Enabling ").append(FX));
-    GetFPparameters(CompositorList[FX].OutputCompositor)->setNamedConstant(CompositorList[FX].EnableParam, Flag);
-    for (const auto &it : CompositorList[FX].CompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
-  }
+  CompositorList[FX].Enabled = Enable;
+  const string EnableStr = "uEnable";
+  const float Flag = Enable ? 1.0f : 0.0f;
+  Log::Message(string("Enabling ").append(FX));
+  GetFPparameters(CompositorList[FX].OutputCompositor)->setNamedConstant(CompositorList[FX].EnableParam, Flag);
+  for (const auto &it : CompositorList[FX].CompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
 }
 
 void Compositor::OnSetUp() { InitMRT(); }
@@ -76,19 +70,28 @@ void Compositor::AddCompositorDisabled(const string &Name) {
 void Compositor::EnableCompositor(const string &Name) { OgreCompositorManager->setCompositorEnabled(OgreViewport, Name, true); }
 
 void Compositor::InitMRT() {
-  string MRTCompositor;
-
-  if (GlobalMRTIsEnabled())
-    MRTCompositor = "MRT";
-  else
-    MRTCompositor = "noMRT";
-
-  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, MRTCompositor, 0), "Failed to add MRT compositor");
-  OgreCompositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, false);
+  string MRTCompositor = "MRT";
   ViewportSizeY = OgreViewport->getActualDimensions().height();
   ViewportSizeX = OgreViewport->getActualDimensions().width();
+  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, MRTCompositor, 0), "Failed to add MRT compositor");
+  OgreCompositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, false);
   auto *MRTCompositorPtr = OgreCompositorChain->getCompositor(MRTCompositor);
   auto *MRTTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("mrt");
+  OgreAssert(MRTTexturePtr, "MRTCompositor texture not created");
+
+  if (IsFullscreen()) {
+#ifdef MOBILE
+    MRTTexturePtr->width = 1024;
+    MRTTexturePtr->height = 768;
+#else
+    MRTTexturePtr->width = ViewportSizeX;
+    MRTTexturePtr->height = ViewportSizeY;
+#endif
+  } else {
+    MRTTexturePtr->width = ViewportSizeX;
+    MRTTexturePtr->height = ViewportSizeY;
+  }
+
   auto *SSAOTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("ssao");
   auto *FinalTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("final");
   auto *RT1TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt1");
@@ -99,33 +102,29 @@ void Compositor::InitMRT() {
   auto *RT6TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt6");
   auto *RT7TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt7");
   auto *RT8TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt8");
-  OgreAssert(MRTTexturePtr, "MRTCompositor texture not created");
+  auto *RT9TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt9");
+  auto *RT10TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt10");
+  auto *RT11TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt11");
+  auto *RT12TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt12");
   OgreAssert(SSAOTexturePtr, "SSAO texture not created");
   OgreAssert(FinalTexturePtr, "Final texture not created");
   OgreAssert(RT1TexturePtr, "RT1 texture not created");
   OgreAssert(RT2TexturePtr, "RT2 texture not created");
   OgreAssert(RT3TexturePtr, "RT3 texture not created");
   OgreAssert(RT4TexturePtr, "RT4 texture not created");
+  OgreAssert(RT5TexturePtr, "RT5 texture not created");
+  OgreAssert(RT6TexturePtr, "RT6 texture not created");
+  OgreAssert(RT7TexturePtr, "RT7 texture not created");
+  OgreAssert(RT8TexturePtr, "RT8 texture not created");
+  OgreAssert(RT9TexturePtr, "RT9 texture not created");
+  OgreAssert(RT10TexturePtr, "RT10 texture not created");
+  OgreAssert(RT11TexturePtr, "RT11 texture not created");
+  OgreAssert(RT12TexturePtr, "RT12 texture not created");
 
-  if (IsFullscreen()) {
-#ifdef MOBILE
-    MRTTexturePtr->width = 1024;
-    MRTTexturePtr->height = 768;
-#else
-    MRTTexturePtr->width = ViewportSizeX;
-    MRTTexturePtr->height = ViewportSizeY;
-//    MRTTexturePtr->width = ViewportSizeX / 1.5;
-//    MRTTexturePtr->height = ViewportSizeY / 1.5;
-#endif
-  } else {
-    MRTTexturePtr->width = ViewportSizeX;
-    MRTTexturePtr->height = ViewportSizeY;
-  }
-
-  SSAOTexturePtr->width = MRTTexturePtr->width;
-  SSAOTexturePtr->height = MRTTexturePtr->height;
   FinalTexturePtr->width = MRTTexturePtr->width;
   FinalTexturePtr->height = MRTTexturePtr->height;
+  SSAOTexturePtr->width = MRTTexturePtr->width / 2;
+  SSAOTexturePtr->height = MRTTexturePtr->height / 2;
   RT1TexturePtr->width = MRTTexturePtr->width / 2;
   RT1TexturePtr->height = MRTTexturePtr->height / 2;
   RT2TexturePtr->width = MRTTexturePtr->width / 4;
@@ -142,6 +141,14 @@ void Compositor::InitMRT() {
   RT7TexturePtr->height = MRTTexturePtr->height / 128;
   RT8TexturePtr->width = MRTTexturePtr->width / 256;
   RT8TexturePtr->height = MRTTexturePtr->height / 256;
+  RT9TexturePtr->width = MRTTexturePtr->width / 512;
+  RT9TexturePtr->height = MRTTexturePtr->height / 512;
+  RT10TexturePtr->width = MRTTexturePtr->width / 1024;
+  RT10TexturePtr->height = MRTTexturePtr->height / 1024;
+  RT11TexturePtr->width = MRTTexturePtr->width / 2048;
+  RT11TexturePtr->height = MRTTexturePtr->height / 2048;
+  RT12TexturePtr->width = MRTTexturePtr->width / 4096;
+  RT12TexturePtr->height = MRTTexturePtr->height / 4096;
 
   OgreCompositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, true);
 }

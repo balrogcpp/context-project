@@ -10,7 +10,7 @@ vec3 Linear(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-vec3 BoxFilter(const sampler2D sampler, const vec2 uv, const vec2 tsize)
+vec3 BoxFilter9(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 {
   vec3 color = vec3(0.0);
   for (int x = -2; x < 1; x++)
@@ -22,11 +22,35 @@ vec3 BoxFilter(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-float BoxFilterR(const sampler2D sampler, const vec2 uv, const vec2 tsize)
+float BoxFilter9R(const sampler2D sampler, const vec2 uv, const vec2 tsize)
 {
   float color = 0.0;
   for (int x = -2; x < 1; x++)
   for (int y = -2; y < 1; y++)
+    color += texture2D(sampler, uv + vec2(float(x), float(y)) * tsize).r;
+  color *= 0.0625; // 1/16
+
+  return color;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+vec3 BoxFilter16(const sampler2D sampler, const vec2 uv, const vec2 tsize)
+{
+  vec3 color = vec3(0.0);
+  for (int x = -2; x < 2; x++)
+  for (int y = -2; y < 2; y++)
+    color += texture2D(sampler, uv + vec2(float(x), float(y)) * tsize).rgb;
+  color *= 0.0625; // 1/16
+
+  return color;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+float BoxFilter16R(const sampler2D sampler, const vec2 uv, const vec2 tsize)
+{
+  float color = 0.0;
+  for (int x = -2; x < 2; x++)
+  for (int y = -2; y < 2; y++)
     color += texture2D(sampler, uv + vec2(float(x), float(y)) * tsize).r;
   color *= 0.11111111111111111111; // 1/9
 

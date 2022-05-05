@@ -48,11 +48,11 @@ class Compositor : public Component<Compositor> {
   int ViewportSizeX = 0;
   int ViewportSizeY = 0;
   std::map<std::string, FX> CompositorList;
-  const FX Bloom{"Bloom", false, "uBloomEnable", "Output", {"Bloom", "Downscale3x3", "Downscale2x2", "Flares"}};
-  const FX SSAO{"SSAO", false, "uSSAOEnable", "Output", {"SSAO"}};
+  const FX Bloom{"Bloom", false, "uBloomEnable", "Output", {"Bloom", "Downscale3x3", "Downscale2x2"}};
+  const FX SSAO{"SSAO", false, "uSSAOEnable", "Output", {"SSAO", "FilterX", "FilterY"}};
   const FX Blur{"Blur", false, "uBlurEnable", "Blur", {}};
   const FX FXAA{"FXAA", true, "uEnable", "FXAA", {}};
-  const FX HDR{"HDR", false, "uHDREnable", "Blur", {}};
+  const FX HDR{"HDR", false, "uHDREnable", "Output", {}};
   const std::string FX_SSAO = "SSAO";
   const std::string FX_BLOOM = "Bloom";
   const std::string FX_BLUR = "Blur";

@@ -31,5 +31,5 @@ vec3 ApplyThreshold(const vec3 color, const float threshold)
 void main()
 {
   if (uEnable <= 0.0) discard;
-  FragColor.rgb = ApplyThreshold(texture2D(uSampler, vUV0).rgb, uThreshhold) ;
+  FragColor.rgb = ApplyThreshold(texture2D(uSampler, vUV0).rgb, uThreshhold);
 }

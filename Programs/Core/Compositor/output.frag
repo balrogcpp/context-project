@@ -17,19 +17,13 @@
 #ifdef USE_FOG
 #include "fog.glsl"
 #endif // USE_FOG
-#ifdef USE_BLOOM
-#include "filters.glsl"
-#endif // USE_BLOOM
-#ifdef USE_SSAO
-#include "filters.glsl"
-#endif // USE_SSAO
-//#ifdef USE_HDR
-//#include "tonemap.glsl"
-//#endif // USE_HDR
+#ifdef USE_HDR
+#include "tonemap.glsl"
+#endif // USE_HDR
 #endif // NO_MRT
 
 #ifndef MAX_SAMPLES
-#define MAX_SAMPLES 8
+#define MAX_SAMPLES 4
 #endif
 
 in vec2 vUV0;
@@ -39,9 +33,9 @@ uniform vec2 TexelSize;
 #ifdef USE_FOG
 uniform sampler2D uSceneDepthSampler;
 #endif // FOD
-#ifdef MOTION_BLUR
+#ifdef USE_BLUR
 uniform sampler2D uSpeedSampler;
-#endif // MOTION_BLUR
+#endif // USE_BLUR
 #ifdef USE_SSAO
 uniform sampler2D uSsaoSampler;
 uniform float uSSAOEnable;
@@ -57,6 +51,8 @@ uniform sampler2D uRT7;
 uniform sampler2D uRT8;
 uniform sampler2D uRT9;
 uniform sampler2D uRT10;
+uniform sampler2D uRT11;
+uniform sampler2D uRT12;
 uniform vec2 TexelSize3;
 uniform vec2 TexelSize4;
 uniform vec2 TexelSize5;
@@ -68,6 +64,9 @@ uniform vec2 TexelSize10;
 uniform vec2 TexelSize11;
 uniform vec2 TexelSize12;
 uniform float uBloomEnable;
+#ifdef USE_HDR
+uniform float uHDREnable;
+#endif // USE_HDR
 #endif // USE_BLOOM
 #ifdef SRGB
 #ifdef MANUAL_SRGB
@@ -77,18 +76,14 @@ uniform float uExposure;
 #ifdef USE_FOG
 uniform vec3 FogColour;
 uniform vec4 FogParams;
-uniform float nearClipDistance;
+uniform float NearClipDistance;
 uniform float FarClipDistance;
 #endif // USE_FOG
-#ifdef MOTION_BLUR
+#ifdef USE_BLUR
 uniform vec2 PixelSize;
 uniform float uScale;
 uniform float uBlurEnable;
-#endif // MOTION_BLUR
-//#ifdef USE_HDR
-//uniform sampler2D uRT8;
-//uniform float uHDREnable;
-//#endif // USE_HDR
+#endif // USE_BLUR
 #endif // !NO_MRT
 #ifdef USE_FXAA
 uniform float uFXAAStrength;
@@ -98,20 +93,20 @@ uniform float uFXAAEnable;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  vec3 scene = texture2D(uSceneSampler, vUV0).rgb;
 #ifndef NO_MRT
+    vec3 scene = texture2D(uSceneSampler, vUV0).rgb;
 #ifdef USE_SSAO
   if (uSSAOEnable > 0.0)
   {
-    float color = BoxFilterR(uSsaoSampler, vUV0, TexelSize);
+    float color = texture2D(uSsaoSampler, vUV0).r;
     scene *= clamp(color + 0.1, 0.0, 1.0);
   }
 #endif // USE_SSAO
 #ifdef USE_BLOOM
   if (uBloomEnable > 0.0)
   {
-    vec3 A = Upscale3x3(uRT1, vUV0, TexelSize3);
-    vec3 B = Upscale3x3(uRT2, vUV0, TexelSize4);
+    vec3 A = Linear(uRT1, vUV0, TexelSize3);
+    vec3 B = Linear(uRT2, vUV0, TexelSize4);
     vec3 C = Upscale3x3(uRT3, vUV0, TexelSize5);
     vec3 D = Upscale3x3(uRT4, vUV0, TexelSize6);
     vec3 E = Upscale3x3(uRT5, vUV0, TexelSize7);
@@ -122,27 +117,24 @@ void main()
     vec3 K = Upscale3x3(uRT10, vUV0, TexelSize12);
 
     scene += (A + B + C + D) * 0.65;
-    scene += (E + F + G + H) * 0.35;
+    scene += (E + F + G + H) * 0.25;
     scene += (I + K) * 0.25;
+#ifdef USE_HDR
+    if (uHDREnable > 0.0)
+    {
+      float lum = dot(K, vec3(0.27, 0.67, 0.06));
+      scene = tone_map(scene, lum);
+    }
+#endif // USE_HDR
   }
 #endif // USE_BLOOM
 #ifdef USE_FOG
   {
     float clampedDepth = texture2D(uSceneDepthSampler, vUV0).r;
-    float fragmentWorldDepth = clampedDepth * FarClipDistance;
-    scene = ApplyFog(scene, FogParams, FogColour, fragmentWorldDepth);
+    scene = ApplyFog(scene, FogParams, FogColour, clampedDepth * FarClipDistance);
   }
 #endif // USE_FOG
-//#ifdef USE_HDR
-//  if (uHDREnable > 0.0)
-//  {
-//    float lum = dot(scene, vec3(0.27, 0.67, 0.06));
-//    scene = tone_map(scene, lum);
-//  }
-//#endif // USE_HDR
-#endif // !NO_MRT
-#ifndef NO_MRT
-#ifdef MOTION_BLUR
+#ifdef USE_BLUR
   if (uBlurEnable > 0.0)
   {
     vec2 velocity = uScale * texture2D(uSpeedSampler, vUV0).rg;
@@ -150,12 +142,17 @@ void main()
     int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
     for (int i = 1; i < nSamples; i++) {
       vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
-      vec2 uv = vUV0 + offset;
-      scene += texture2D(uSceneSampler, uv).rgb;
+      scene += texture2D(uSceneSampler, vUV0 + offset).rgb;
     }
     scene /= float(nSamples);
   }
-#endif // MOTION_BLUR
+#endif // USE_BLUR
+#else // NO_MRT
+#ifdef USE_FXAA
+  vec3 scene = FXAA(uSceneSampler, vUV0, TexelSize, uFXAAStrength * uFXAAEnable);
+#else // !USE_FXAA
+  vec3 scene = texture2D(uSceneSampler, vUV0).rgb;
+#endif // USE_FXAA
 #endif // !NO_MRT
 #ifdef MANUAL_SRGB
 #ifdef SRGB
