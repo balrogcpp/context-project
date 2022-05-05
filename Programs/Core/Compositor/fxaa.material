@@ -9,7 +9,7 @@ fragment_program FXAA_fs glsl glsles
     preprocessor_defines USE_FXAA
 	default_params
 	{
-        param_named uFXAAEnable float 1.0
+        param_named uFXAAEnable float 0.0
         param_named uFXAAStrength float 4.0
 	}
 }

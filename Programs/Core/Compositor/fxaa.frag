@@ -20,8 +20,8 @@ uniform float uFXAAStrength;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    if (uFXAAEnable > 0.0)
-      FragColor.rgb = FXAA(uSampler, vUV0, TexelSize, uFXAAStrength);
-    else
-     FragColor.rgb = texture2D(uSampler, vUV0).rgb;
+  if (uFXAAEnable > 0.0)
+    FragColor.rgb = FXAA(uSampler, vUV0, TexelSize, uFXAAStrength);
+  else
+   FragColor.rgb = texture2D(uSampler, vUV0).rgb;
 }

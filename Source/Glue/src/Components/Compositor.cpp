@@ -129,6 +129,10 @@ void Compositor::InitMRT() {
   OgreAssert(RT10TexturePtr, "RT10 texture not created");
   OgreAssert(RT11TexturePtr, "RT11 texture not created");
   OgreAssert(RT12TexturePtr, "RT12 texture not created");
+#ifdef MOBILE
+  FinalTexturePtr->width = MRTTexturePtr->width;
+  FinalTexturePtr->height = MRTTexturePtr->height;
+#endif
   SSAOTexturePtr->width = MRTTexturePtr->width / 2;
   SSAOTexturePtr->height = MRTTexturePtr->height / 2;
   RT1TexturePtr->width = MRTTexturePtr->width / 2;
