@@ -197,14 +197,14 @@ compositor MRT
             }
         }
 
-        target final
+        /*target final
         {
             pass render_quad
             {
                 material FXAA
                 input 0 final
             }
-        }
+        }*/
 
         target_output
         {
