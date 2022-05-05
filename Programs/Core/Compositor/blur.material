@@ -12,8 +12,6 @@ fragment_program Blur_fs glsl glsles
 		param_named uExposure float 1.0
         param_named uScale float 0.5
         param_named uBlurEnable float 0.0
-        param_named uFXAAEnable float 1.0
-        param_named uFXAAStrength float 4.0
 	}
 }
 

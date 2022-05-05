@@ -14,20 +14,35 @@ static GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorNam
   return MM.getByName(CompositorName)->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
 }
 
+const static FX Bloom{"Bloom", false, "uBloomEnable", "Output", {"Bloom", "Downscale3x3"}};
+const static FX SSAO{"SSAO", false, "uSSAOEnable", "Output", {"SSAO", "FilterX", "FilterY"}};
+const static FX Blur{"Blur", false, "uBlurEnable", "Blur", {}};
+const static FX FXAA{"FXAA", false, "uFXAAEnable", "FXAA", {}};
+const static FX HDR{"HDR", false, "uHDREnable", "Output", {}};
+const static std::string FX_SSAO = "SSAO";
+const static std::string FX_BLOOM = "Bloom";
+const static std::string FX_BLUR = "Blur";
+const static std::string FX_FXAA = "FXAA";
+const static std::string FX_HDR = "HDR";
+
 Compositor::Compositor() {
   OgreCompositorManager = Ogre::CompositorManager::getSingletonPtr();
   OgreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
   OgreCamera = OgreSceneManager->getCamera("Default");
   OgreViewport = OgreCamera->getViewport();
   OgreCompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
-
-  CompositorList.insert(make_pair("Bloom", Bloom));
-  CompositorList.insert(make_pair("SSAO", SSAO));
-  CompositorList.insert(make_pair("Blur", Blur));
-  CompositorList.insert(make_pair("FXAA", FXAA));
-  CompositorList.insert(make_pair("HDR", HDR));
-
-#ifndef MOBILE
+  CompositorList.insert(make_pair(FX_BLOOM, Bloom));
+  CompositorList.insert(make_pair(FX_SSAO, SSAO));
+  CompositorList.insert(make_pair(FX_BLUR, Blur));
+  CompositorList.insert(make_pair(FX_FXAA, FXAA));
+  CompositorList.insert(make_pair(FX_HDR, HDR));
+#ifdef MOBILE
+  EnableEffect(FX_SSAO, false);
+  EnableEffect(FX_BLOOM, false);
+  EnableEffect(FX_BLUR, false);
+  EnableEffect(FX_HDR, false);
+  EnableEffect(FX_FXAA, false);
+#else
   EnableEffect(FX_SSAO, Config::GetInstance().GetBool("enable_ssao"));
   EnableEffect(FX_BLOOM, Config::GetInstance().GetBool("enable_bloom"));
   EnableEffect(FX_BLUR, Config::GetInstance().GetBool("enable_mblur"));
@@ -44,9 +59,10 @@ void Compositor::EnableEffect(const std::string &FX, bool Enable) {
   CompositorList[FX].Enabled = Enable;
   const string EnableStr = "uEnable";
   const float Flag = Enable ? 1.0f : 0.0f;
-  Log::Message(string("Enabling ").append(FX));
-  GetFPparameters(CompositorList[FX].OutputCompositor)->setNamedConstant(CompositorList[FX].EnableParam, Flag);
-  for (const auto &it : CompositorList[FX].CompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
+  Log::Message(string(Enable ? "Enable " : "Disable ").append(FX).append(" FX"));
+  const auto &FXPtr = CompositorList[FX];
+  GetFPparameters(FXPtr.OutputCompositor)->setNamedConstant(FXPtr.EnableParam, Flag);
+  for (const auto &it : FXPtr.CompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
 }
 
 void Compositor::OnSetUp() { InitMRT(); }
@@ -78,20 +94,13 @@ void Compositor::InitMRT() {
   auto *MRTCompositorPtr = OgreCompositorChain->getCompositor(MRTCompositor);
   auto *MRTTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("mrt");
   OgreAssert(MRTTexturePtr, "MRTCompositor texture not created");
-
-  if (IsFullscreen()) {
 #ifdef MOBILE
-    MRTTexturePtr->width = 1024;
-    MRTTexturePtr->height = 768;
+  MRTTexturePtr->width = 1024;
+  MRTTexturePtr->height = 768;
 #else
-    MRTTexturePtr->width = ViewportSizeX;
-    MRTTexturePtr->height = ViewportSizeY;
+  MRTTexturePtr->width = ViewportSizeX;
+  MRTTexturePtr->height = ViewportSizeY;
 #endif
-  } else {
-    MRTTexturePtr->width = ViewportSizeX;
-    MRTTexturePtr->height = ViewportSizeY;
-  }
-
   auto *SSAOTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("ssao");
   auto *FinalTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("final");
   auto *RT1TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt1");
@@ -120,9 +129,6 @@ void Compositor::InitMRT() {
   OgreAssert(RT10TexturePtr, "RT10 texture not created");
   OgreAssert(RT11TexturePtr, "RT11 texture not created");
   OgreAssert(RT12TexturePtr, "RT12 texture not created");
-
-  FinalTexturePtr->width = MRTTexturePtr->width;
-  FinalTexturePtr->height = MRTTexturePtr->height;
   SSAOTexturePtr->width = MRTTexturePtr->width / 2;
   SSAOTexturePtr->height = MRTTexturePtr->height / 2;
   RT1TexturePtr->width = MRTTexturePtr->width / 2;

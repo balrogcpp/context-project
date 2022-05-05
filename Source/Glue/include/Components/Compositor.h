@@ -45,24 +45,14 @@ class Compositor : public Component<Compositor> {
   void EnableCompositor(const std::string& Name);
   void InitMRT();
 
-  int ViewportSizeX = 0;
-  int ViewportSizeY = 0;
-  std::map<std::string, FX> CompositorList;
-  const FX Bloom{"Bloom", false, "uBloomEnable", "Output", {"Bloom", "Downscale3x3", "Downscale2x2"}};
-  const FX SSAO{"SSAO", false, "uSSAOEnable", "Output", {"SSAO", "FilterX", "FilterY"}};
-  const FX Blur{"Blur", false, "uBlurEnable", "Blur", {}};
-  const FX FXAA{"FXAA", true, "uEnable", "FXAA", {}};
-  const FX HDR{"HDR", false, "uHDREnable", "Output", {}};
-  const std::string FX_SSAO = "SSAO";
-  const std::string FX_BLOOM = "Bloom";
-  const std::string FX_BLUR = "Blur";
-  const std::string FX_FXAA = "FXAA";
-  const std::string FX_HDR = "HDR";
   Ogre::CompositorManager* OgreCompositorManager = nullptr;
   Ogre::CompositorChain* OgreCompositorChain = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;
   Ogre::Camera* OgreCamera = nullptr;
   Ogre::Viewport* OgreViewport = nullptr;
+  int ViewportSizeX = 0;
+  int ViewportSizeY = 0;
+  std::map<std::string, FX> CompositorList;
 };
 
 }  // namespace Glue

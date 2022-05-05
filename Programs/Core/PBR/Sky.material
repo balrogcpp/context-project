@@ -22,7 +22,7 @@ abstract fragment_program SkyBoxCustomFp_I glsl glsles
         param_named uTimeScale float 0.03
         param_named uCirrus float 0.4
         param_named uCumulus float 0.4
-        param_named uSunSize float 0.27
+        param_named uSunSize float 0.03
         param_named uSunColor float3 20000 20000 20000
     }
 }

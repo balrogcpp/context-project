@@ -12,7 +12,7 @@
 #include "filters.glsl"
 
 in vec2 vUV0;
-uniform float uEnable;
+uniform float uFXAAEnable;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize;
 uniform float uFXAAStrength;
@@ -20,7 +20,7 @@ uniform float uFXAAStrength;
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    if (uEnable > 0.0)
+    if (uFXAAEnable > 0.0)
       FragColor.rgb = FXAA(uSampler, vUV0, TexelSize, uFXAAStrength);
     else
      FragColor.rgb = texture2D(uSampler, vUV0).rgb;
