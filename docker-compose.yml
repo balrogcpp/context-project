@@ -1,6 +1,6 @@
 version: "3.3"
 services:
-  sample-linux:
+  test-linux:
     build:
       context: .
       dockerfile: Docker/Tests/linux-test.Dockerfile
@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/var/artifacts
     command: cp -R /mnt/build/Artifacts /var/artifacts
-  sample-windows:
+  test-windows:
     build:
       context: .
       dockerfile: Docker/Tests/windows-test.Dockerfile
@@ -20,7 +20,7 @@ services:
     volumes:
       - .:/var/artifacts
     command: cp -R /mnt/build/Artifacts /var/artifacts
-  sample-apple:
+  test-apple:
     build:
       context: .
       dockerfile: Docker/Tests/darwin-test.Dockerfile
@@ -30,7 +30,7 @@ services:
     volumes:
       - .:/var/artifacts
     command: cp -R /mnt/build/Artifacts /var/artifacts
-  sample-android:
+  test-android:
     build:
       context: .
       dockerfile: Docker/Tests/android-test.Dockerfile

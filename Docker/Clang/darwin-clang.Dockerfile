@@ -8,10 +8,9 @@ RUN apt-get update \
     && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.22.2
+ARG CMAKE_VERSION=3.23.1
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.10.2
-
 RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp \
     && unzip /tmp/ninja-linux.zip -d /usr/local/bin \
     && rm /tmp/ninja-linux.zip \
@@ -20,7 +19,6 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && mkdir ${CMAKE_HOME} \
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
     && rm /tmp/cmake-install.sh
-
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 RUN apt-get update \
@@ -34,9 +32,7 @@ RUN apt-get update \
     && apt-get clean
 
 WORKDIR /mnt
-
 ARG UPX_VERSION=3.96
-
 RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
     && cd upx-${UPX_VERSION}-amd64_linux \
     && cp upx /usr/local/bin \
@@ -44,8 +40,7 @@ RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_
     && rm -rf upx-${UPX_VERSION}-amd64_linux
 
 ARG OSXCROSS_ROOT=/opt/osxcross
-ARG MACOS_SDK_VERSION=11.3
-
+ARG MACOS_SDK_VERSION=12.1
 RUN apt-get update \
     && apt-get install --no-install-recommends -y libxml2 lzma-dev libxml2-dev libssl-dev python \
     && apt-get clean \
@@ -57,9 +52,8 @@ RUN apt-get update \
     && rm -rf osxcross \
     && apt-get -y purge lzma-dev libxml2-dev libssl-dev python \
     && apt-get -y autoremove
-
-ENV OSXCROSS_HOST=x86_64-apple-darwin20.4
+ENV OSXCROSS_HOST=x86_64-apple-darwin21.2
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
-ENV X86_64_EVAL=`x86_64-apple-darwin20.4-osxcross-conf`
-ENV ARM64_EVAL=`arm64-apple-darwin20.4-osxcross-conf`
+ENV X86_64_EVAL=`x86_64-apple-darwin21.2-osxcross-conf`
+ENV ARM64_EVAL=`arm64-apple-darwin21.2-osxcross-conf`

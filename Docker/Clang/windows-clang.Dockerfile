@@ -8,10 +8,9 @@ RUN apt-get update \
     && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.22.2
+ARG CMAKE_VERSION=3.23.1
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.10.2
-
 RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp \
     && unzip /tmp/ninja-linux.zip -d /usr/local/bin \
     && rm /tmp/ninja-linux.zip \
@@ -20,7 +19,6 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && mkdir ${CMAKE_HOME} \
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
     && rm /tmp/cmake-install.sh
-
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 RUN apt-get update \
@@ -34,9 +32,7 @@ RUN apt-get update \
     && apt-get clean
 
 WORKDIR /mnt
-
 ARG UPX_VERSION=3.96
-
 RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
     && cd upx-${UPX_VERSION}-amd64_linux \
     && cp upx /usr/local/bin \
@@ -46,11 +42,10 @@ RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://ftp.gnu.org/gnu
-ARG BINUTILS_VERSION=2.37 ##2.38 is broken
-ARG MINGW_VERSION=9.0.0
-ARG GCC_VERSION=11.2.0
+ARG BINUTILS_VERSION=2.37 # 2.38 is broken
+ARG MINGW_VERSION=10.0.0
+ARG GCC_VERSION=11.2.0 // 12.1.0 openal error: undefined symbol: std::__once_callable
 ARG PKG_CONFIG_VERSION=0.29.2
-
 RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
     && apt-get clean \

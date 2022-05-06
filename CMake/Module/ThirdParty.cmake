@@ -23,7 +23,7 @@ externalproject_add(Target_SDL2
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-                    GIT_TAG release-2.0.20
+                    GIT_TAG release-2.0.22
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${SDL2_CHDIR} ${GIT_EXECUTABLE} reset --hard
@@ -67,7 +67,7 @@ externalproject_add(Target_Bullet
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
-                    GIT_TAG 3.21
+                    GIT_TAG 3.24
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -104,7 +104,7 @@ externalproject_add(Target_OpenAL
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/kcat/openal-soft.git
-                    GIT_TAG 1.21.1
+                    GIT_TAG 1.22.0
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} reset --hard
@@ -123,6 +123,7 @@ externalproject_add(Target_OpenAL
                     -DALSOFT_UTILS=OFF
                     -DALSOFT_EXAMPLES=OFF
                     -DALSOFT_CONFIG=OFF
+                    -DALSOFT_EAX=OFF
                     -DALSOFT_BACKEND_SDL2=OFF
                     -DALSOFT_BACKEND_SNDIO=OFF
                     -DALSOFT_BACKEND_WASAPI=OFF
@@ -193,8 +194,8 @@ externalproject_add(Target_ZZIP
                     EXCLUDE_FROM_ALL true
                     DEPENDS Target_zlib
                     PREFIX ${GLUE_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/paroj/ZZIPlib.git
-                    #GIT_TAG 4b4d9ca1134397dd6c0649fce2dfd80643e53cf6 repo is archived
+                    GIT_REPOSITORY https://github.com/gdraheim/zziplib.git
+                    GIT_TAG v0.13.72
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -203,6 +204,16 @@ externalproject_add(Target_ZZIP
                     -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
                     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    -DBUILD_SHARED_LIBS=OFF
+                    -DBUILD_STATIC_LIBS=ON
+                    -DMSVC_STATIC_RUNTIME=OFF
+                    -DZZIPMMAPPED=OFF
+                    -DZZIPFSEEKO=OFF
+                    -DZZIPWRAP=OFF
+                    -DZZIPSDL=OFF
+                    -DZZIPDOCS=OFF
+                    -DZZIPTEST=OFF
+                    -DZZIPBINS=OFF
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     )
 
@@ -210,7 +221,7 @@ externalproject_add(Target_pugixml
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/zeux/pugixml.git
-                    GIT_TAG v1.12
+                    GIT_TAG v1.12.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -265,7 +276,7 @@ externalproject_add(Target_rapidjson
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
-                    GIT_TAG e4bde977440d4a00f820b6586899e48a972d2493
+                    GIT_TAG fcb23c2dbf561ec0798529be4f66394d3e4996d8
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
@@ -569,7 +580,7 @@ externalproject_add(Target_filesystem
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/gulrak/filesystem.git
-                    GIT_TAG v1.5.10
+                    GIT_TAG v1.5.12
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS

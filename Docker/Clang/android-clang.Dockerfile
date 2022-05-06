@@ -11,7 +11,6 @@ RUN apt-get update \
 ARG CMAKE_VERSION=3.19.8
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.10.2
-
 RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp \
     && unzip /tmp/ninja-linux.zip -d /usr/local/bin \
     && rm /tmp/ninja-linux.zip \
@@ -20,31 +19,25 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && mkdir ${CMAKE_HOME} \
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
     && rm /tmp/cmake-install.sh
-
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 ARG ANDROID_HOME=/opt/android-sdk
-
 WORKDIR /opt
-
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends openjdk-8-jdk \
+    && apt-get -y install --no-install-recommends openjdk-11-jdk \
     && apt-get clean \
-    && wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O tools.zip \
+    && wget https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip -O tools.zip \
     && unzip tools.zip \
     && rm tools.zip \
     && cd cmdline-tools/bin \
     && yes | ./sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
     && rm -rf /root/.android /root/.gradle
-
 ENV PATH="/opt/tools/bin:${PATH}"
 ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
 
-#ARG GRADLE_VERSION=7.3.2
-#
-#RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip \
-#    && unzip gradle-${GRADLE_VERSION}-bin.zip \
-#    && rm gradle-${GRADLE_VERSION}-bin.zip \
-#    && ./gradle-${GRADLE_VERSION}/bin/gradle
-#
-#ENV PATH="${PATH}:/opt/gradle-${GRADLE_VERSION}/bin"
+ARG GRADLE_VERSION=7.4.2
+RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip \
+    && unzip gradle-${GRADLE_VERSION}-bin.zip \
+    && rm gradle-${GRADLE_VERSION}-bin.zip \
+    && ./gradle-${GRADLE_VERSION}/bin/gradle
+ENV PATH="${PATH}:/opt/gradle-${GRADLE_VERSION}/bin"
