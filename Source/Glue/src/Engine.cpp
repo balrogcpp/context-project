@@ -92,12 +92,13 @@ void Engine::InitComponents() {
   InitResourceLocation();
   InitRTSS();
   CreateRTSSRuntime();
-  // InitRTSSInstansing();
+#ifdef DESKTOP
+  InitRTSSInstansing();
+#endif
   InitTextureSettings();
   InitOverlay();
   InitResources();
   InitShadowSettings();
-
   InitPhysics();
   InitSound();
   InitScene();
@@ -107,12 +108,25 @@ void Engine::InitComponents() {
 
 void Engine::InitSDLSubsystems() {
   OgreAssert(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER), "Failed to init SDL2");
+  SDL_DisplayMode Current;
+  for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
+    if (SDL_GetCurrentDisplayMode(i, &Current) == 0) {
+      SDL_Log("Display #%d: current display mode is %dx%dpx @ %dhz.", i, Current.w, Current.h, Current.refresh_rate);
+      SDLMonitorList.push_back(Current);
+      int ScreenDiag = sqrt(ScreenWidth * ScreenWidth + ScreenHeight * ScreenHeight);
+      int TmpDiag = sqrt(Current.w * Current.w + Current.h * Current.h);
+      if (WindowFullScreen && TmpDiag > ScreenDiag) {
+        CurrentSDLDisplayMode = Current;
+        ScreenWidth = Current.w;
+        ScreenHeight = Current.h;
+        CurrentDisplay = i;
+      } else {
+        SDL_Log("Could not get display mode for video display #%d: %s", i, SDL_GetError());
+      }
+    }
+  }
   for (int i = 0; i < SDL_NumJoysticks(); ++i)
     if (SDL_IsGameController(i)) SDL_GameControllerOpen(i);
-  SDL_DisplayMode DM;
-  SDL_GetDesktopDisplayMode(0, &DM);
-  ScreenWidth = static_cast<int>(DM.w);
-  ScreenHeight = static_cast<int>(DM.h);
 }
 
 bool Engine::CheckRenderSystemVersion(int major, int minor) {
@@ -138,7 +152,7 @@ void Engine::InitRenderSystem() {
 #elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
   InitOgreRenderSystemGLES2();
 #endif  // DESKTOP
-#else   // ! DESKTOP
+#else   // !DESKTOP
   InitOgreRenderSystemGLES2();
 #endif  // DESKTOP
 #endif  // OGRE_STATIC_LIB
@@ -183,8 +197,10 @@ void Engine::CreateSDLWindow() {
     WindowWidth = ScreenWidth;
     WindowHeight = ScreenHeight;
   }
-  WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED_DISPLAY(0);
+  WindowPositionFlag = SDL_WINDOWPOS_CENTERED_DISPLAY(CurrentDisplay);
   SDLWindowPtr = SDL_CreateWindow(WindowCaption.c_str(), WindowPositionFlag, WindowPositionFlag, WindowWidth, WindowHeight, SDLWindowFlags);
+  GrabCursor(true);
+  ShowCursor(false);
 #elif defined(ANDROID)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -201,6 +217,8 @@ void Engine::CreateSDLWindow() {
   WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED;
   SDLWindowPtr = SDL_CreateWindow(nullptr, WindowPositionFlag, WindowPositionFlag, ScreenWidth, ScreenHeight, SDLWindowFlags);
   SDLGLContextPtr = SDL_GL_CreateContext(SDLWindowPtr);
+  GrabCursor(true);
+  ShowCursor(false);
 #endif
 }
 
@@ -242,9 +260,9 @@ void Engine::CreateOgreRenderWindow() {
   OgreRenderParams["gamma"] = WindowGammaCorrection ? TrueStr : FalseStr;
   OgreRenderParams["FSAA"] = to_string(WindowFSAA);
   OgreRenderWindowPtr = OgreRoot->createRenderWindow(WindowCaption, WindowWidth, WindowHeight, WindowFullScreen, &OgreRenderParams);
-  OgreRenderTarget = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
+  OgreRenderTargetPtr = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
   OgreCamera = OgreSceneManager->createCamera("Default");
-  OgreViewport = OgreRenderTarget->addViewport(OgreCamera);
+  OgreViewport = OgreRenderTargetPtr->addViewport(OgreCamera);
   OgreViewport->setBackgroundColour(ColourValue::Black);
   OgreCamera->setAspectRatio(static_cast<float>(OgreViewport->getActualWidth()) / static_cast<float>(OgreViewport->getActualHeight()));
   OgreCamera->setAutoAspectRatio(true);
@@ -367,11 +385,13 @@ void Engine::OnResume() {
 void Engine::OnMenuOn() {
   PhysicsPtr->OnPause();
   ScenePtr->OnPause();
+  ShowMouseCursor(true);
 }
 
 void Engine::OnMenuOff() {
   PhysicsPtr->OnResume();
   ScenePtr->OnResume();
+  ShowMouseCursor(false);
 }
 
 void Engine::OnCleanup() {
@@ -415,27 +435,31 @@ void Engine::SetFullscreen(bool Fullscreen) {
   }
 }
 
-bool Engine::IsFullscreen() { return WindowFullScreen; }
+bool Engine::IsWindowFullscreen() { return WindowFullScreen; }
 
 void Engine::SetWindowCaption(const char *Caption) { SDL_SetWindowTitle(SDLWindowPtr, Caption); }
 
 #ifdef MOBILE
 void Engine::AndroidRestoreWindow() {
   SDL_DisplayMode DM;
-  SDL_GetDesktopDisplayMode(0, &DM);
-  int screen_w = static_cast<int>(DM.w);
-  int screen_h = static_cast<int>(DM.h);
-  OgreRenderWindowPtr->resize(screen_w, screen_h);
+  SDL_GetDesktopDisplayMode(CurrentDisplay, &CurrentSDLDisplayMode);
+  OgreRenderWindowPtr->resize(static_cast<int>(CurrentSDLDisplayMode.w), static_cast<int>(CurrentSDLDisplayMode.h));
 }
 #endif
 
-void Engine::GrabMouse(bool grab) {
+void Engine::GrabCursor(bool grab) {
 #ifndef MOBILE  // This breaks input @Android >9.0
   if (SDLWindowPtr) {
     SDL_ShowCursor(!grab);
     SDL_SetWindowGrab(SDLWindowPtr, static_cast<SDL_bool>(grab));
     SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
   }
+#endif
+}
+
+void Engine::ShowCursor(bool show) {
+#ifndef MOBILE  // This breaks input @Android >9.0
+  if (SDLWindowPtr) SDL_ShowCursor(show);
 #endif
 }
 
@@ -477,16 +501,10 @@ Scene &GetScene() { return GetComponent<Scene>(); }
 
 Overlay &GetOverlay() { return GetComponent<Overlay>(); }
 
-std::string Engine::GetWindowCaption() {
-  return WindowCaption;
-}
+std::string Engine::GetWindowCaption() { return WindowCaption; }
 
-int Engine::GetWindowSizeX() {
-  return WindowWidth;
-}
+int Engine::GetWindowSizeX() { return WindowWidth; }
 
-int Engine::GetWindowSizeY() {
-  return WindowHeight;
-}
+int Engine::GetWindowSizeY() { return WindowHeight; }
 
 }  // namespace Glue

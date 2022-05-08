@@ -15,7 +15,7 @@ namespace Glue {
 
 int ErrorWindow(const string &WindowCaption, const string &MessageText) {
   static Engine *EnginePtr = Engine::GetInstancePtr();
-  if (EnginePtr) EnginePtr->GrabMouse(false);
+  if (EnginePtr) EnginePtr->GrabCursor(false);
 
   SDL_Log("%s", string(WindowCaption + " : " + MessageText).c_str());
 

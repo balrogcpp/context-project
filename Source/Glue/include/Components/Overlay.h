@@ -35,6 +35,7 @@ class Overlay final : public Component<Overlay>, public Ogre::RenderTargetListen
 
   void Show();
   void Hide();
+  void DrawMouseCursor(bool Draw);
   static void NewFrame();
 
  protected:
@@ -42,6 +43,7 @@ class Overlay final : public Component<Overlay>, public Ogre::RenderTargetListen
   Ogre::ImGuiOverlay* ImGuiOverlayPtr = nullptr;
   Ogre::OverlaySystem* OgreOverlayPtr = nullptr;
   Ogre::RenderWindow* OgreRenderWindow = nullptr;
+  ImGuiIO* IoPtr = nullptr;
 };
 
 }  // namespace Glue

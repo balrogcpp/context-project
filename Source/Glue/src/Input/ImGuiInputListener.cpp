@@ -53,7 +53,6 @@ static int keypad2kc(int sym, int mod) {
 
 ImGuiInputListener::ImGuiInputListener() {
   InputSequencer::GetInstance().RegObserver(this);
-
   static ImGuiIO &io = ImGui::GetIO();
 
   // Keyboard mapping. ImGui will use those indices to peek into the
@@ -70,7 +69,7 @@ ImGuiInputListener::ImGuiInputListener() {
   io.KeyMap[ImGuiKey_Insert] = kc2sc(SDLK_INSERT);
   io.KeyMap[ImGuiKey_Delete] = kc2sc(SDLK_DELETE);
   io.KeyMap[ImGuiKey_Backspace] = '\b';
-  io.KeyMap[ImGuiKey_Enter] = SDLK_RETURN;
+  io.KeyMap[ImGuiKey_Enter] = kc2sc(SDLK_RETURN);
   io.KeyMap[ImGuiKey_Escape] = '\033';
   io.KeyMap[ImGuiKey_Space] = ' ';
   io.KeyMap[ImGuiKey_KeypadEnter] = kc2sc(SDLK_KP_ENTER);
@@ -104,7 +103,6 @@ void ImGuiInputListener::OnKeyUp(SDL_Keycode sym) {
 
 void ImGuiInputListener::OnTextInput(const char *text) {
   static auto &io = ImGui::GetIO();
-
   io.AddInputCharactersUTF8(text);
 }
 
@@ -114,7 +112,6 @@ void ImGuiInputListener::OnMouseMove(int dx, int dy) {}
 
 void ImGuiInputListener::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
   static auto &io = ImGui::GetIO();
-
   io.MousePos.x = static_cast<float>(x);
   io.MousePos.y = static_cast<float>(y);
 }
@@ -126,62 +123,43 @@ static int sign(T val) {
 
 void ImGuiInputListener::OnMouseWheel(int x, int y) {
   static auto &io = ImGui::GetIO();
-
   io.MouseWheel = static_cast<float>(sign(y));
 }
 
 void ImGuiInputListener::OnMouseLbDown(int x, int y) {
   static auto &io = ImGui::GetIO();
-
   int b = sdl2imgui(SDL_BUTTON_LEFT);
-  if (b < 5) {
-    io.MouseDown[b] = true;
-  }
+  if (b < 5) io.MouseDown[b] = true;
 }
 
 void ImGuiInputListener::OnMouseLbUp(int x, int y) {
   static auto &io = ImGui::GetIO();
-
   int b = sdl2imgui(SDL_BUTTON_LEFT);
-  if (b < 5) {
-    io.MouseDown[b] = false;
-  }
+  if (b < 5) io.MouseDown[b] = false;
 }
 
 void ImGuiInputListener::OnMouseRbDown(int x, int y) {
   static auto &io = ImGui::GetIO();
-
   int b = sdl2imgui(SDL_BUTTON_RIGHT);
-  if (b < 5) {
-    io.MouseDown[b] = true;
-  }
+  if (b < 5) io.MouseDown[b] = true;
 }
 
 void ImGuiInputListener::OnMouseRbUp(int x, int y) {
   static auto &io = ImGui::GetIO();
-
   int b = sdl2imgui(SDL_BUTTON_RIGHT);
-  if (b < 5) {
-    io.MouseDown[b] = false;
-  }
+  if (b < 5) io.MouseDown[b] = false;
 }
 
 void ImGuiInputListener::OnMouseMbDown(int x, int y) {
   static auto &io = ImGui::GetIO();
-
   int b = sdl2imgui(SDL_BUTTON_MIDDLE);
-  if (b < 5) {
-    io.MouseDown[b] = true;
-  }
+  if (b < 5) io.MouseDown[b] = true;
 }
 
 void ImGuiInputListener::OnMouseMbUp(int x, int y) {
   static auto &io = ImGui::GetIO();
-
   int b = sdl2imgui(SDL_BUTTON_MIDDLE);
-  if (b < 5) {
-    io.MouseDown[b] = false;
-  }
+  if (b < 5) io.MouseDown[b] = false;
 }
 
 }  // namespace Glue

@@ -70,4 +70,7 @@ int WindowSizeY();
 ///
 std::string WindowCaption();
 
+///
+void ShowMouseCursor(bool draw);
+
 }  // namespace Glue

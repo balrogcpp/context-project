@@ -66,7 +66,7 @@ bool CPUSupportsNEON() {
 #endif
 };
 
-bool IsFullscreen() { return GetEngine().IsFullscreen(); }
+bool IsFullscreen() { return GetEngine().IsWindowFullscreen(); }
 
 bool RenderSystemIsGL() {
   static bool Result = !Ogre::Root::getSingleton().getRenderSystem()->getName().compare("OpenGL Rendering Subsystem");
@@ -118,6 +118,11 @@ int WindowSizeY() {
 
 std::string WindowCaption() {
   return GetEngine().GetWindowCaption();
+}
+
+void ShowMouseCursor(bool draw) {
+  static ImGuiIO& io = ImGui::GetIO();
+  io.MouseDrawCursor = draw;
 }
 
 }  // namespace Glue

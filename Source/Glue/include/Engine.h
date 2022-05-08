@@ -5,6 +5,7 @@
 #include "Input/InputSequencer.h"
 #include "Log.h"
 #include "Singleton.h"
+#include <SDL2/SDL_video.h>
 #include <memory>
 #include <vector>
 
@@ -62,7 +63,7 @@ class Engine final : public Singleton<Engine> {
   void SetFullscreen(bool Fullscreen);
 
   ///
-  bool IsFullscreen();
+  bool IsWindowFullscreen();
 
   ///
   void ResizeWindow(int Width, int Height);
@@ -71,7 +72,10 @@ class Engine final : public Singleton<Engine> {
   void SetWindowCaption(const char* Caption);
 
   ///
-  void GrabMouse(bool grab);
+  void ShowCursor(bool show);
+
+  ///
+  void GrabCursor(bool grab);
 
   ///
   std::string GetWindowCaption();
@@ -163,19 +167,16 @@ class Engine final : public Singleton<Engine> {
 #endif
 
   std::string RenderSystemName;
+  Ogre::Root* OgreRoot = nullptr;
+  Ogre::SceneManager* OgreSceneManager = nullptr;
   Ogre::RenderWindow* OgreRenderWindowPtr = nullptr;
-  Ogre::RenderTarget* OgreRenderTarget = nullptr;
+  Ogre::RenderTarget* OgreRenderTargetPtr = nullptr;
+  Ogre::Camera* OgreCamera = nullptr;
+  Ogre::Viewport* OgreViewport = nullptr;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> PSSMSetupPtr;
   std::vector<float> PSSMSplitPointList;
   int PSSMSplitCount = 3;
-  Ogre::Root* OgreRoot = nullptr;
-  Ogre::SceneManager* OgreSceneManager = nullptr;
-  Ogre::Camera* OgreCamera = nullptr;
-  Ogre::Viewport* OgreViewport = nullptr;
-  SDL_Window* SDLWindowPtr = nullptr;
-  SDL_GLContext SDLGLContextPtr = nullptr;
-  uint32_t SDLWindowFlags = 0;
-  int WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED;
+
   std::string WindowCaption = "Example0";
   int WindowWidth = 1024;
   int WindowHeight = 768;
@@ -185,6 +186,13 @@ class Engine final : public Singleton<Engine> {
   bool WindowVsync = true;
   bool WindowGammaCorrection = false;
   int WindowFSAA = 0;
+  int CurrentDisplay = 0;
+  SDL_DisplayMode CurrentSDLDisplayMode;
+  std::vector<SDL_DisplayMode> SDLMonitorList;
+  SDL_Window* SDLWindowPtr = nullptr;
+  SDL_GLContext SDLGLContextPtr = nullptr;
+  uint32_t SDLWindowFlags = 0;
+  int WindowPositionFlag = SDL_WINDOWPOS_CENTERED;
 
   /// Components
   Config* ConfigPtr = nullptr;

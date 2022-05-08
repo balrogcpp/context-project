@@ -55,9 +55,9 @@ Application::Application(int argc, char *args[]) {
   EnginePtr = make_unique<Engine>();
   EnginePtr->InitComponents();
   StateManagerPtr = make_unique<AppStateManager>();
+#ifdef DESKTOP
   Verbose = ConfigPtr->GetBool("verbose", Verbose);
   VerboseInput = ConfigPtr->GetBool("verbose_input", VerboseInput);
-#ifdef DESKTOP
   if (VerboseInput) VerboseListenerPtr = make_unique<VerboseListener>();
 #endif
   LockFPS = ConfigPtr->GetBool("lock_fps", LockFPS);
@@ -104,7 +104,7 @@ void Application::Loop() {
       WasSuspend = true;
     }
 
-#ifdef DEBUG
+#if defined(DEBUG) && defined(DESKTOP)
     if (Verbose) cout << flush;
 #endif
 
@@ -147,6 +147,40 @@ void Application::OnResume() {
   EnginePtr->OnResume();
 }
 
+void Application::OnKeyDown(SDL_Keycode sym) {}
+
+void Application::OnKeyUp(SDL_Keycode sym) {}
+
+void Application::OnMouseMove(int dx, int dy) {}
+
+void Application::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {}
+
+void Application::OnMouseWheel(int x, int y) {}
+
+void Application::OnMouseLbDown(int x, int y) {}
+
+void Application::OnMouseLbUp(int x, int y) {}
+
+void Application::OnMouseRbDown(int x, int y) {}
+
+void Application::OnMouseRbUp(int x, int y) {}
+
+void Application::OnMouseMbDown(int x, int y) {}
+
+void Application::OnMouseMbUp(int x, int y) {}
+
+void Application::OnTextInput(const char *text) {}
+
+void Application::OnGamepadAxis(int which, int axis, int value) {}
+
+void Application::OnGamepadBtDown(int which, int button) {}
+
+void Application::OnGamepadBtUp(int which, int button) {}
+
+void Application::OnGamepadHat(int which, int hat, int value) {}
+
+void Application::OnGamepadBall(int which, int ball, int xrel, int yrel) {}
+
 int Application::Main(unique_ptr<AppState> &&AppStatePtr) {
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC
   SDL_SetMainReady();
@@ -157,7 +191,6 @@ int Application::Main(unique_ptr<AppState> &&AppStatePtr) {
   StateManagerPtr->SetInitialState(move(AppStatePtr));
   Go();
   SDL_Quit();
-
   return 0;
 }
 

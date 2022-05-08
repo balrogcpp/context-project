@@ -13,11 +13,7 @@ class BaseSingleton : public NoCopy {
  public:
   /// Constructor
   BaseSingleton() {
-    if (Instanced) {
-      std::string Message = std::string(typeid(T).name()) + " is a Singleton class. Creation of another instance is forbidden";
-      Throw(Message);
-    }
-
+    if (Instanced) Throw(std::string(typeid(T).name()) + " is a Singleton class. Creation of another instance is forbidden");
     Instanced = true;
   }
 
