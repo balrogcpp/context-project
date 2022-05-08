@@ -172,7 +172,7 @@ externalproject_add(Target_Vorbis
 externalproject_add(Target_zlib
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/madler/zlib
+                    GIT_REPOSITORY https://github.com/madler/zlib.git
                     GIT_TAG v1.2.12
                     GIT_SHALLOW true
                     GIT_PROGRESS false
@@ -678,15 +678,19 @@ externalproject_add(Target_asio
                     INSTALL_COMMAND ${ASIO_CHDIR} ${CMAKE_COMMAND} -E copy asio/include/asio.hpp asio/include/asio ${GLUE_EXTERNAL_INCLUDE_DIR}
                     )
 
-set(OPENSSL_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_OpenSSL)
 externalproject_add(Target_OpenSSL
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
-                    GIT_REPOSITORY https://github.com/openssl/openssl.git
-                    GIT_TAG openssl-3.0.2
+                    GIT_REPOSITORY https://github.com/janbar/openssl-cmake.git
+                    GIT_TAG 1.1.1n-20220327
                     GIT_SHALLOW true
                     GIT_PROGRESS false
-                    CONFIGURE_COMMAND ${OPENSSL_CHDIR} ./config --prefix=${GLUE_THIRDPARTY_ROOT} --openssldir=${GLUE_THIRDPARTY_ROOT}
-                    BUILD_COMMAND ${OPENSSL_CHDIR} ${MAKE_COMMAND}
-                    INSTALL_COMMAND ${OPENSSL_CHDIR} ${MAKE_COMMAND} install
+                    CMAKE_ARGS
+                    -G "${CMAKE_GENERATOR}"
+                    -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_PREFIX_PATH=${GLUE_THIRDPARTY_ROOT}
+                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                    ${GLUE_CMAKE_EXTRA_FLAGS}
+                    -DWITH_APPS=OFF
                     )
