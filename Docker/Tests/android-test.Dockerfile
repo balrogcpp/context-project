@@ -21,9 +21,8 @@ COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
 COPY ./Android ./Android
 
-RUN cmake -P CMake/FlatZipAssets.cmake
-
-RUN cd Android \
+RUN cmake -P CMake/FlatZipAssets.cmake \
+    && cd Android \
     && ./gradlew assembleRelease \
     && cd ../ \
     && mv Android/app/build/outputs/apk/release/app-arm64-v8a-release.apk Artifacts/GlueSample_Android_aarch64_$GIT_HASH.apk \

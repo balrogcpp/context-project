@@ -1,6 +1,6 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
-cmake_minimum_required(VERSION 3.19.8)
+cmake_minimum_required(VERSION 3.18.1)
 project(GlueEngine VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -92,6 +92,13 @@ add_custom_target(BuildAndroid
         COMMAND ./gradlew ${GRADLE_TARGET}
         COMMAND ${CMAKE_COMMAND} -E copy ${APK_FILE} ${GLUE_ARTIFACT_DIR}/${OUTPUT_FILE}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
-        COMMENT "Build packages..."
+        COMMENT "Build Android package..."
+        USES_TERMINAL
+        )
+
+add_custom_target(CleanAndroid
+        COMMAND ${CMAKE_COMMAND} -E rm -rf .gradle app/.cxx app/build
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
+        COMMENT "Clean Android build files..."
         USES_TERMINAL
         )

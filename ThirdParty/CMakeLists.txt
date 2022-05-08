@@ -3,7 +3,7 @@
 include(ThirdParty)
 include(ExternalProject)
 
-add_custom_target(BuildAssets
+add_custom_target(BuildAssets ALL
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Tmp
         COMMAND ${CMAKE_COMMAND} -P CMake/FlatZipAssets.cmake
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
