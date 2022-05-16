@@ -92,13 +92,13 @@ add_custom_target(BuildAndroid
         COMMAND ./gradlew ${GRADLE_TARGET}
         COMMAND ${CMAKE_COMMAND} -E copy ${APK_FILE} ${GLUE_ARTIFACT_DIR}/${OUTPUT_FILE}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
-        COMMENT "Build Android package..."
+        COMMENT "Building Android package..."
         USES_TERMINAL
         )
 
-add_custom_target(CleanAndroid
+add_custom_target(ClearAndroid
         COMMAND ${CMAKE_COMMAND} -E rm -rf .gradle app/.cxx app/build
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
-        COMMENT "Clean Android build files..."
+        COMMENT "Deleting Android build files..."
         USES_TERMINAL
         )

@@ -299,7 +299,7 @@ externalproject_add(Target_assimp
                     DEPENDS Target_zlib
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/assimp/assimp.git
-                    GIT_TAG v5.2.3
+                    GIT_TAG v5.2.4
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} reset --hard
