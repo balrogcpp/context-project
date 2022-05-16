@@ -114,12 +114,6 @@ class Engine final : public Singleton<Engine> {
   /// Creates and initiates Scene component. Internal
   void InitScene();
 
-  /// Initiates SDL context
-  void InitSDLSubsystems();
-
-  /// Creates one of 3 Ogre render systems: GL, GL3 or GLSLES2
-  void InitRenderSystem();
-
   ///
   bool CheckRenderSystemVersion(int major, int minor);
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
@@ -147,10 +141,10 @@ class Engine final : public Singleton<Engine> {
   void InitOgrePlugins();
 
   /// Creates SDL window
-  void CreateSDLWindow();
+  void InitSDLWindow();
 
   /// Creates Ogre render context attached to SDL window
-  void CreateOgreRenderWindow();
+  void InitOgreRenderWindow();
 
   /// Scans Assets and Programs directories for shaders, materials, models, textures, sounds etc.
   void InitResourceLocation();

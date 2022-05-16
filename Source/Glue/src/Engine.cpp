@@ -78,20 +78,15 @@ void Engine::InitComponents() {
   WindowHeight = ConfigPtr->GetInt("window_high", WindowHeight);
   WindowFullScreen = ConfigPtr->GetBool("window_fullscreen", WindowFullScreen);
   RenderSystemName = ConfigPtr->Get("render_system", RenderSystemName);
+  InitSDLWindow();
   OgreRoot = new Root("", "", "");
-  InitRenderSystem();
-  InitSDLSubsystems();
-  CreateSDLWindow();
   InitOgrePlugins();
   OgreRoot->initialise(false);
-  CreateOgreRenderWindow();
+  InitOgreRenderWindow();
   TestGPUCapabilities();
-#ifdef ANDROID
-  AndroidRestoreWindow();
-#endif
   InitResourceLocation();
   InitRTSS();
-  CreateRTSSRuntime();
+  InitRTSSRuntime();
 #ifdef DESKTOP
   InitRTSSInstansing();
 #endif
@@ -106,7 +101,7 @@ void Engine::InitComponents() {
   for (auto it : ComponentList) it->OnSetUp();
 }
 
-void Engine::InitSDLSubsystems() {
+void Engine::InitSDLWindow() {
   OgreAssert(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER), "Failed to init SDL2");
   SDL_DisplayMode Current;
   for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
@@ -115,7 +110,7 @@ void Engine::InitSDLSubsystems() {
       SDLMonitorList.push_back(Current);
       int ScreenDiag = sqrt(ScreenWidth * ScreenWidth + ScreenHeight * ScreenHeight);
       int TmpDiag = sqrt(Current.w * Current.w + Current.h * Current.h);
-      if (WindowFullScreen && TmpDiag > ScreenDiag) {
+      if (TmpDiag > ScreenDiag) {
         CurrentSDLDisplayMode = Current;
         ScreenWidth = Current.w;
         ScreenHeight = Current.h;
@@ -127,68 +122,6 @@ void Engine::InitSDLSubsystems() {
   }
   for (int i = 0; i < SDL_NumJoysticks(); ++i)
     if (SDL_IsGameController(i)) SDL_GameControllerOpen(i);
-}
-
-bool Engine::CheckRenderSystemVersion(int major, int minor) {
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-  if (RenderSystemIsGL3()) return CheckGL3Version(major, minor);
-#endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-  if (RenderSystemIsGLES2()) return CheckGLES2Version(major, minor);
-#endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL
-  if (RenderSystemIsGL()) return CheckGLVersion(major, minor);
-#endif
-  return false;
-}
-
-void Engine::InitRenderSystem() {
-#ifdef OGRE_STATIC_LIB
-#ifdef DESKTOP
-#if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
-  InitOgreRenderSystemGL3();
-#elif defined(OGRE_BUILD_RENDERSYSTEM_GL)
-  InitOgreRenderSystemGL();
-#elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
-  InitOgreRenderSystemGLES2();
-#endif  // DESKTOP
-#else   // !DESKTOP
-  InitOgreRenderSystemGLES2();
-#endif  // DESKTOP
-#endif  // OGRE_STATIC_LIB
-}
-
-void Engine::InitOgrePlugins() {
-#ifdef OGRE_STATIC_LIB
-#ifdef OGRE_BUILD_PLUGIN_OCTREE
-  Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
-#endif
-#ifdef OGRE_BUILD_PLUGIN_PFX
-  Root::getSingleton().installPlugin(new ParticleFXPlugin());
-#endif
-#ifdef OGRE_BUILD_PLUGIN_STBI
-  Root::getSingleton().installPlugin(new STBIPlugin());
-#endif
-#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI) && defined(DESKTOP)
-  Root::getSingleton().installPlugin(new FreeImagePlugin());
-#endif
-#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_ASSIMP) && defined(DESKTOP)
-  Root::getSingleton().installPlugin(new AssimpPlugin());
-#endif
-#ifdef OGRE_BUILD_PLUGIN_OCTREE
-  OgreSceneManager = OgreRoot->createSceneManager("OctreeSceneManager", "Default");
-#else
-  OgreSceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
-#endif
-#ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
-  Root::getSingleton().installPlugin(new DotScenePluginB());
-#else
-  Root::getSingleton().installPlugin(new DotScenePluginB());
-#endif
-#endif  // OGRE_STATIC_LIB
-}
-
-void Engine::CreateSDLWindow() {
 #if defined(DESKTOP)
   if (WindowWidth == ScreenWidth && WindowHeight == ScreenHeight) SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
   if (WindowFullScreen) {
@@ -222,7 +155,61 @@ void Engine::CreateSDLWindow() {
 #endif
 }
 
-void Engine::CreateOgreRenderWindow() {
+bool Engine::CheckRenderSystemVersion(int major, int minor) {
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+  if (RenderSystemIsGL3()) return CheckGL3Version(major, minor);
+#endif
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+  if (RenderSystemIsGLES2()) return CheckGLES2Version(major, minor);
+#endif
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL
+  if (RenderSystemIsGL()) return CheckGLVersion(major, minor);
+#endif
+  return false;
+}
+
+void Engine::InitOgrePlugins() {
+#ifdef OGRE_STATIC_LIB
+#ifdef DESKTOP
+#if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
+  InitOgreRenderSystemGL3();
+#elif defined(OGRE_BUILD_RENDERSYSTEM_GL)
+  InitOgreRenderSystemGL();
+#elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
+  InitOgreRenderSystemGLES2();
+#endif  // DESKTOP
+#else   // !DESKTOP
+  InitOgreRenderSystemGLES2();
+#endif  // DESKTOP
+#ifdef OGRE_BUILD_PLUGIN_OCTREE
+  Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
+#endif
+#ifdef OGRE_BUILD_PLUGIN_PFX
+  Root::getSingleton().installPlugin(new ParticleFXPlugin());
+#endif
+#ifdef OGRE_BUILD_PLUGIN_STBI
+  Root::getSingleton().installPlugin(new STBIPlugin());
+#endif
+#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI) && defined(DESKTOP)
+  Root::getSingleton().installPlugin(new FreeImagePlugin());
+#endif
+#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_ASSIMP) && defined(DESKTOP)
+  Root::getSingleton().installPlugin(new AssimpPlugin());
+#endif
+#ifdef OGRE_BUILD_PLUGIN_OCTREE
+  OgreSceneManager = OgreRoot->createSceneManager("OctreeSceneManager", "Default");
+#else
+  OgreSceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
+#endif
+#ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
+  Root::getSingleton().installPlugin(new DotScenePluginB());
+#else
+  Root::getSingleton().installPlugin(new DotScenePluginB());
+#endif
+#endif  // OGRE_STATIC_LIB
+}
+
+void Engine::InitOgreRenderWindow() {
   NameValuePairList OgreRenderParams;
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
@@ -266,6 +253,9 @@ void Engine::CreateOgreRenderWindow() {
   OgreViewport->setBackgroundColour(ColourValue::Black);
   OgreCamera->setAspectRatio(static_cast<float>(OgreViewport->getActualWidth()) / static_cast<float>(OgreViewport->getActualHeight()));
   OgreCamera->setAutoAspectRatio(true);
+#ifdef ANDROID
+  AndroidRestoreWindow();
+#endif
 }
 
 void Engine::InitShadowSettings() {

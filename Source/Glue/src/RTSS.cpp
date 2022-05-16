@@ -17,7 +17,7 @@ void InitRTSS() {
 
 static unique_ptr<ShaderResolver> ResolverPtr;
 
-void CreateRTSSRuntime(string CachePath) {
+void InitRTSSRuntime(string CachePath) {
   auto *OgreScene = Root::getSingleton().getSceneManager("Default");
   auto *OgreViewport = OgreScene->getCamera("Default")->getViewport();
   auto *ShaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
@@ -30,7 +30,7 @@ void CreateRTSSRuntime(string CachePath) {
   MaterialManager::getSingleton().addListener(ResolverPtr.get());
 }
 
-void CleanRTSSRuntime() {
+void ClearRTSSRuntime() {
   if (ResolverPtr) {
     MaterialManager::getSingleton().removeListener(ResolverPtr.get());
     ResolverPtr.reset();

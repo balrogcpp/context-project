@@ -72,7 +72,7 @@ void Application::Loop() {
   if (Running && StateManagerPtr->IsActive()) {
     StateManagerPtr->Update(0);
     EnginePtr->RenderFrame();
-    CleanRTSSRuntime();
+    ClearRTSSRuntime();
   }
 
   while (Running && StateManagerPtr->IsActive()) {

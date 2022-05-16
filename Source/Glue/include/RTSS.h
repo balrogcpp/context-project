@@ -10,9 +10,9 @@ namespace Glue {
 
 void InitRTSS();
 
-void CreateRTSSRuntime(std::string CachePath = "");
+void InitRTSSRuntime(std::string CachePath = "");
 
-void CleanRTSSRuntime();
+void ClearRTSSRuntime();
 
 void InitRTSSPSSM(const std::vector<float> &SplitPoints);
 
