@@ -43,7 +43,6 @@ set(CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
 
 set(CMAKE_FOLDER Docker)
-
 add_custom_target(DockerComposeDep
         COMMAND docker-compose -f docker-compose-3rd.yml up
         COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
@@ -59,7 +58,6 @@ add_custom_target(DockerCompose
         COMMENT "Building tests with docker..."
         USES_TERMINAL
         )
-
 set(CMAKE_FOLDER "")
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/Source)
