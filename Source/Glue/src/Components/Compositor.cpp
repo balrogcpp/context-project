@@ -9,11 +9,6 @@ using namespace Ogre;
 
 namespace Glue {
 
-static GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorName) {
-  static auto &MM = Ogre::MaterialManager::getSingleton();
-  return MM.getByName(CompositorName)->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-}
-
 const static FX Bloom{"Bloom", false, "uBloomEnable", "Output", {"Bloom", "Downscale3x3"}};
 const static FX SSAO{"SSAO", false, "uSSAOEnable", "Output", {"SSAO", "FilterX", "FilterY"}};
 const static FX Blur{"Blur", false, "uBlurEnable", "Blur", {}};
@@ -24,6 +19,11 @@ const static std::string FX_BLOOM = "Bloom";
 const static std::string FX_BLUR = "Blur";
 const static std::string FX_FXAA = "FXAA";
 const static std::string FX_HDR = "HDR";
+
+static GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorName) {
+  static auto &MM = Ogre::MaterialManager::getSingleton();
+  return MM.getByName(CompositorName)->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+}
 
 Compositor::Compositor() {
   OgreCompositorManager = Ogre::CompositorManager::getSingletonPtr();
@@ -86,7 +86,7 @@ void Compositor::AddCompositorDisabled(const string &Name) {
 void Compositor::EnableCompositor(const string &Name) { OgreCompositorManager->setCompositorEnabled(OgreViewport, Name, true); }
 
 void Compositor::InitMRT() {
-  string MRTCompositor = "MRT";
+  const string MRTCompositor = "MRT";
   ViewportSizeY = OgreViewport->getActualDimensions().height();
   ViewportSizeX = OgreViewport->getActualDimensions().width();
   OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, MRTCompositor, 0), "Failed to add MRT compositor");

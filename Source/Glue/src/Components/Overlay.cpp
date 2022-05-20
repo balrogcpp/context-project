@@ -100,7 +100,7 @@ constexpr ResolutionItem ResolutionList[] = {
 void Overlay::OnUpdate(float time) {
   static ImGuiIO& io = ImGui::GetIO();
   //  io.AddKeyEvent(kc2sc(SDLK_KP_ENTER), true);
-  if (io.KeysDown[SDL_SCANCODE_RETURN]) io.NavInputs[ImGuiNavInput_Activate] = 1.0f;
+  // if (io.KeysDown[SDL_SCANCODE_RETURN]) io.NavInputs[ImGuiNavInput_Activate] = 1.0f;
   //  ImGui::ShowDemoWindow();
 }
 
@@ -113,7 +113,6 @@ void Overlay::OnSetUp() {
   AddFont("KenneyIcon-Regular", &config, icon_ranges);
   ImGuiOverlayPtr->setZOrder(300);
   Show();
-//  sort(begin(ResolutionList), end(ResolutionList));
 }
 
 void Overlay::OnClean() {}
