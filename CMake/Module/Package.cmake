@@ -1,5 +1,7 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
+include(CMakeDependentOption)
+
 set(GLUE_PACKAGE_NAME "GlueSample")
 set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}_${GLUE_TOOLCHAIN_SHORT}_${GIT_SHA1})
 if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
@@ -40,8 +42,13 @@ else ()
 endif ()
 
 find_package(NSIS QUIET)
-option(GLUE_CPACK_NSIS "Generate msi installer if NSIS available" OFF)
-if (${NSIS_FOUND} AND GLUE_CPACK_NSIS)
+cmake_dependent_option(GLUE_CPACK_NSIS "Generate msi installer if NSIS available" ON "WIN32" OFF)
+if (${NSIS_FOUND})
+    message(STATUS "Found NSIS")
+else ()
+    message(STATUS "NSIS not found")
+endif ()
+if (${NSIS_FOUND})
     list(APPEND CPACK_GENERATOR "NSIS")
     set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "PRJ_GLUE")
     set(CPACK_NSIS_MODIFY_PATH ON)

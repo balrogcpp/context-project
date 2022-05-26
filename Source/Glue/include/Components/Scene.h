@@ -44,7 +44,7 @@ class Scene final : public Component<Scene> {
   void AddCamera(Ogre::Camera *OgreCameraPtr);
   void AddSinbad(Ogre::Camera *OgreCameraPtr);
   void AddForests(Forests::PagedGeometry *PGPtr, const std::string &MaterialName = "");
-  void AddTerrain(Ogre::TerrainGroup* TGP);
+  void AddTerrain(Ogre::TerrainGroup *TGP);
   void AddSkyBox();
 
  protected:
@@ -54,10 +54,10 @@ class Scene final : public Component<Scene> {
   std::unique_ptr<SinbadCharacterController> Sinbad;
   Ogre::GpuProgramParametersSharedPtr SkyBoxFpParams;
   bool SkyNeedsUpdate = false;
-  static constexpr std::array<const char *, 10> HosikParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+  const std::array<const char *, 10> HosikParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
   std::array<Ogre::Vector3, 10> HosekParams;
-  std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_fp_params_;
-  std::vector<Ogre::GpuProgramParametersSharedPtr> gpu_vp_params_;
+  std::vector<Ogre::GpuProgramParametersSharedPtr> GpuFpParams;
+  std::vector<Ogre::GpuProgramParametersSharedPtr> GpuVpParams;
 
   Ogre::SceneManager *OgreScene = nullptr;
   Ogre::Root *OgreRoot = nullptr;

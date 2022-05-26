@@ -4,11 +4,11 @@
 #include "Components/Scene.h"
 #include "ArHosekSkyModel.h"
 #include "Caelum.h"
-#include "Engine.h"
 #include "CameraMan.h"
-#include "SinbadCharacterController.h"
+#include "Engine.h"
 #include "PagedGeometry/PagedGeometryAll.h"
 #include "ShaderHelpers.h"
+#include "SinbadCharacterController.h"
 #include "SkyModel.h"
 #ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
 #include <MeshLodGenerator/OgreLodConfig.h>
@@ -64,12 +64,9 @@ float Scene::GetHeight(float x, float z) {
 void Scene::AddEntity(Ogre::Entity *EntityPtr) { AddEntityMaterial(EntityPtr); }
 
 void Scene::AddMaterial(Ogre::MaterialPtr material) {
-  for (int i = 0; i < material->getNumTechniques(); i++) {
-    if (!material->getTechnique(i)->getPass(0)->hasVertexProgram() || !material->getTechnique(i)->getPass(0)->hasFragmentProgram()) return;
-
-    gpu_vp_params_.push_back(material->getTechnique(i)->getPass(0)->getVertexProgramParameters());
-    gpu_fp_params_.push_back(material->getTechnique(i)->getPass(0)->getFragmentProgramParameters());
-  }
+  const auto *Pass = material->getTechnique(0)->getPass(0);
+  if (Pass->hasVertexProgram()) GpuVpParams.push_back(Pass->getVertexProgramParameters());
+  if (Pass->hasFragmentProgram()) GpuFpParams.push_back(Pass->getFragmentProgramParameters());
 }
 
 void Scene::AddMaterial(const std::string &MaterialName) {
@@ -160,7 +157,7 @@ void Scene::OnUpdate(float PassedTime) {
   MVPprev = MVP;
   MVP = CameraPtr->getProjectionMatrixWithRSDepth() * CameraPtr->getViewMatrix();
 
-  for (auto &it : gpu_vp_params_) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
+  for (auto &it : GpuVpParams) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
 
   if (SkyNeedsUpdate && SkyBoxFpParams)
     for (int i = 0; i < 10; i++) SkyBoxFpParams->setNamedConstant(HosikParamList[i], HosekParams[i]);
@@ -178,10 +175,10 @@ void Scene::OnClean() {
   if (OgreScene) OgreScene->clearScene();
   if (CameraManPtr) CameraManPtr->SetStyle(CameraMan::ControlStyle::MANUAL);
   ResourceGroupManager::getSingleton().unloadResourceGroup(GroupName);
-  gpu_fp_params_.clear();
-  gpu_fp_params_.shrink_to_fit();
-  gpu_vp_params_.clear();
-  gpu_vp_params_.shrink_to_fit();
+  GpuFpParams.clear();
+  GpuFpParams.shrink_to_fit();
+  GpuVpParams.clear();
+  GpuVpParams.shrink_to_fit();
   SkyBoxFpParams.reset();
 }
 
