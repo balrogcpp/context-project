@@ -85,6 +85,7 @@ else ()
     set(OUTPUT_FILE ${GLUE_PACKAGE_NAME}_Android_aarch64_${GIT_SHA1}.apk)
 endif ()
 
+set(CMAKE_FOLDER Android)
 add_custom_target(BuildAndroid
         DEPENDS BuildAssets
         COMMAND ./gradlew ${GRADLE_TARGET}
@@ -100,3 +101,4 @@ add_custom_target(ClearAndroid
         COMMENT "Deleting Android build files..."
         USES_TERMINAL
         )
+set(CMAKE_FOLDER "")
