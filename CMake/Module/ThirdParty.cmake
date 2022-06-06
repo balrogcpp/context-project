@@ -81,22 +81,25 @@ externalproject_add(Target_Bullet
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DCMAKE_RELWITHDEBINFO_POSTFIX=
                     -DCMAKE_DEBUG_POSTFIX=
+                    -DCMAKE_RELEASE_POSTFIX=
                     -DCMAKE_MINSIZEREL_POSTFIX=
                     -DCLAMP_VELOCITIES=0
                     -DBULLET2_MULTITHREADING=ON
-                    -DBULLET2_USE_OPEN_MP_MULTITHREADING=OFF
                     -DBUILD_BULLET2_DEMOS=OFF
+                    -DBUILD_OPENGL3_DEMOS=OFF
                     -DBUILD_CPU_DEMOS=OFF
                     -DBUILD_EXTRAS=OFF
                     -DBUILD_ENET=OFF
                     -DBUILD_CLSOCKET=OFF
-                    -DBUILD_OPENGL3_DEMOS=OFF
                     -DUSE_GRAPHICAL_BENCHMARK=OFF
                     -DBUILD_UNIT_TESTS=OFF
                     -DBUILD_SHARED_LIBS=OFF
                     -DUSE_SOFT_BODY_MULTI_BODY_DYNAMICS_WORLD=OFF
                     -DINSTALL_LIBS=ON
                     -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON
+                    -DUSE_MSVC_SSE2=ON
+                    -DUSE_MSVC_AVX=OFF
+                    -DINTERNAL_CREATE_MSVC_RELATIVE_PATH_PROJECTFILES=ON
                     )
 
 set(OPENAL_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_OpenAL)

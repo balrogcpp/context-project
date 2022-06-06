@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if (NOT CMAKE_BUILD_TYPE)
-    message(STATUS "No build type selected, set CMAKE_BUILD_TYPE to RelWithDebInfo")
+    message(STATUS "No build type selected, CMAKE_BUILD_TYPE defaulted to RelWithDebInfo")
     set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif ()
 set(ALLOWED_BUILD_TYPES "Release;RelWithDebInfo;Debug")
@@ -55,7 +55,7 @@ add_custom_target(DockerCompose
         COMMAND ${CMAKE_COMMAND} -E env GIT_HASH=${GIT_SHA1} docker-compose up
         COMMAND docker-compose down --volumes
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building tests with docker..."
+        COMMENT "Building tests with docker-compose..."
         USES_TERMINAL
         )
 set(CMAKE_FOLDER "")
@@ -70,7 +70,7 @@ add_custom_target(BuildPackage
         COMMAND ${CMAKE_COMMAND} --build . --target package --config ${CMAKE_BUILD_TYPE}
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Build packages..."
+        COMMENT "Building package..."
         USES_TERMINAL
         )
 
