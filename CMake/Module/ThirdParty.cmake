@@ -384,11 +384,11 @@ externalproject_add(Target_OGRE
                     DEPENDS Target_zlib Target_FreeType Target_pugixml Target_SDL2
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v13.3.4
+                    GIT_TAG v13.4.0
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard
-                    PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/ogre-13.3.0.patch
+                    PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${GLUE_PATCH_LOCATION}/ogre-13.4.0.patch
                     CMAKE_ARGS
                     -G "${CMAKE_GENERATOR}"
                     -DCMAKE_INSTALL_PREFIX=${GLUE_THIRDPARTY_ROOT}
@@ -437,6 +437,7 @@ externalproject_add(Target_OGRE
                     -DOGRE_BUILD_RENDERSYSTEM_TINY=OFF
                     -DOGRE_BUILD_COMPONENT_OVERLAY=ON
                     -DOGRE_BUILD_COMPONENT_BITES=ON
+                    -DOGRE_BUILD_COMPONENT_BULLET=ON
                     -DOGRE_BITES_STATIC_PLUGINS=ON
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=ON
                     -DOGRE_BUILD_COMPONENT_PAGING=ON

@@ -22,9 +22,9 @@ void InitRTSSRuntime(string CachePath) {
   auto *OgreViewport = OgreScene->getCamera("Default")->getViewport();
   auto *ShaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
 
-  OgreViewport->setMaterialScheme(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+  OgreViewport->setMaterialScheme(MSN_SHADERGEN);
   ShaderGenerator->addSceneManager(OgreScene);
-  OgreViewport->setMaterialScheme(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+  OgreViewport->setMaterialScheme(MSN_SHADERGEN);
   ShaderGenerator->setShaderCachePath(CachePath);
   ResolverPtr = make_unique<ShaderResolver>(ShaderGenerator);
   MaterialManager::getSingleton().addListener(ResolverPtr.get());
@@ -38,7 +38,7 @@ void ClearRTSSRuntime() {
 }
 
 void InitRTSSPSSM(const vector<float> &SplitPoints) {
-  const auto DSN = RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME;
+  const auto DSN = MSN_SHADERGEN;
   auto &rtShaderGen = RTShader::ShaderGenerator::getSingleton();
   auto *schemRenderState = rtShaderGen.getRenderState(DSN);
 
@@ -51,7 +51,7 @@ void InitRTSSInstansing() {
   auto *scene_ = Root::getSingleton().getSceneManager("Default");
   auto *camera_ = scene_->getCamera("Default");
   auto *viewport_ = camera_->getViewport();
-  const auto DSN = RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME;
+  const auto DSN = MSN_SHADERGEN;
 
   RTShader::ShaderGenerator &rtShaderGen = RTShader::ShaderGenerator::getSingleton();
   viewport_->setMaterialScheme(DSN);
@@ -80,7 +80,7 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
   auto &mShaderGenerator = RTShader::ShaderGenerator::getSingleton();
   auto originalMaterial = MaterialManager::getSingleton().getByName(material_name);
   const auto DSNOld = MaterialManager::DEFAULT_SCHEME_NAME;
-  const auto DSN = RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME;
+  const auto DSN = MSN_SHADERGEN;
 
   if (!originalMaterial) originalMaterial = MaterialManager::getSingleton().getByName(material_name, RGN_INTERNAL);
 
@@ -103,7 +103,7 @@ bool ShaderResolver::FixMaterial(const string &material_name) {
 Technique *ShaderResolver::handleSchemeNotFound(unsigned short SchemeIndex, const string &SchemeName, Material *OriginalMaterialPtr,
                                                 unsigned short LodIndex, const Renderable *OgreRenderable) {
   const auto DSNOld = MaterialManager::DEFAULT_SCHEME_NAME;
-  const auto DSN = RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME;
+  const auto DSN = MSN_SHADERGEN;
 
   if (SchemeName != DSN) return nullptr;
 
@@ -130,7 +130,7 @@ Technique *ShaderResolver::handleSchemeNotFound(unsigned short SchemeIndex, cons
 
 bool ShaderResolver::afterIlluminationPassesCreated(Technique *OgreTechnique) {
   const auto DSNOld = MaterialManager::DEFAULT_SCHEME_NAME;
-  const auto DSN = RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME;
+  const auto DSN = MSN_SHADERGEN;
 
   if (OgreTechnique->getSchemeName() == DSN) {
     Material *mat = OgreTechnique->getParent();
@@ -142,7 +142,7 @@ bool ShaderResolver::afterIlluminationPassesCreated(Technique *OgreTechnique) {
 }
 
 bool ShaderResolver::beforeIlluminationPassesCleared(Technique *OgreTechnique) {
-  if (OgreTechnique->getSchemeName() == RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME) {
+  if (OgreTechnique->getSchemeName() == MSN_SHADERGEN) {
     Material *mat = OgreTechnique->getParent();
     ShaderGeneratorPtr->invalidateMaterialIlluminationPasses(OgreTechnique->getSchemeName(), mat->getName(), mat->getGroup());
     return true;

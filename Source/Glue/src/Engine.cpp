@@ -32,6 +32,9 @@
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
 #include <Plugins/DotScene/OgreDotSceneLoader.h>
 #endif
+#ifdef OGRE_BUILD_COMPONENT_BULLET
+#include <Bullet/OgreBullet.h>
+#endif
 
 using namespace std;
 using namespace Ogre;
