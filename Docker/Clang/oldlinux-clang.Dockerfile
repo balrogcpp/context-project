@@ -17,10 +17,10 @@ RUN rm /etc/apt/sources.list \
     && apt-get install --no-install-recommends -y git zip unzip xz-utils wget ca-certificates make autoconf file patch \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.19.8
+ARG CMAKE_VERSION=3.23.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
-ARG NINJA_VERSION=1.10.2
-
+ARG NINJA_VERSION=1.11.0
+ARG UPX_VERSION=3.96
 RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp \
     && unzip /tmp/ninja-linux.zip -d /usr/local/bin \
     && rm /tmp/ninja-linux.zip \
@@ -28,17 +28,13 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && chmod u+x /tmp/cmake-install.sh \
     && mkdir ${CMAKE_HOME} \
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
-    && rm /tmp/cmake-install.sh
-
-ENV PATH="${CMAKE_HOME}/bin:${PATH}"
-
-ARG UPX_VERSION=3.96
-
-RUN wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
+    && rm /tmp/cmake-install.sh \
+    && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
     && cd upx-${UPX_VERSION}-amd64_linux \
     && cp upx /usr/local/bin \
     && cd .. \
     && rm -rf upx-${UPX_VERSION}-amd64_linux
+ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 #ARG BINUTILS_VERSION=2.37
 #ARG GCC_VERSION=10.3.0

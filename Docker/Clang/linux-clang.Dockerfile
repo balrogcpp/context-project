@@ -18,9 +18,9 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends llvm clang lld make autoconf file patch \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.23.1
+ARG CMAKE_VERSION=3.23.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
-ARG NINJA_VERSION=1.10.2
+ARG NINJA_VERSION=1.11.0
 ARG UPX_VERSION=3.96
 RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp \
     && unzip /tmp/ninja-linux.zip -d /usr/local/bin \
@@ -29,7 +29,7 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && chmod u+x /tmp/cmake-install.sh \
     && mkdir ${CMAKE_HOME} \
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
-    && rm /tmp/cmake-install.sh
+    && rm /tmp/cmake-install.sh \
     && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
     && cd upx-${UPX_VERSION}-amd64_linux \
     && cp upx /usr/local/bin \

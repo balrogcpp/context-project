@@ -18,9 +18,9 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends llvm clang lld make autoconf file patch \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.23.1
+ARG CMAKE_VERSION=3.23.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
-ARG NINJA_VERSION=1.10.2
+ARG NINJA_VERSION=1.11.0
 ARG UPX_VERSION=3.96
 RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp \
     && unzip /tmp/ninja-linux.zip -d /usr/local/bin \
@@ -29,7 +29,7 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && chmod u+x /tmp/cmake-install.sh \
     && mkdir ${CMAKE_HOME} \
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
-    && rm /tmp/cmake-install.sh
+    && rm /tmp/cmake-install.sh \
     && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
     && cd upx-${UPX_VERSION}-amd64_linux \
     && cp upx /usr/local/bin \
@@ -40,9 +40,11 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://ftp.gnu.org/gnu
-ARG BINUTILS_VERSION=2.37 # 2.38 is broken
+## 2.38 is broken
+ARG BINUTILS_VERSION=2.37
 ARG MINGW_VERSION=10.0.0
-ARG GCC_VERSION=11.2.0 // 12.1.0 openal error: undefined symbol: std::__once_callable
+# 12.1.0 openal error: undefined symbol: std::__once_callable
+ARG GCC_VERSION=11.3.0
 ARG PKG_CONFIG_VERSION=0.29.2
 RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
@@ -123,13 +125,7 @@ RUN apt-get update \
     && make install > /dev/null \
     && cd .. \
     && cd gcc-mingw32 \
-    && mv /mnt/gcc-mingw32/gcc/xgcc /mnt/gcc-mingw32/gcc/xgcc.bak \
-    && echo "#!/bin/bash" >> /mnt/gcc-mingw32/gcc/xgcc \
-    && echo "/mnt/gcc-mingw32/gcc/xgcc.bak -Wno-format \$@" >> /mnt/gcc-mingw32/gcc/xgcc \
-    && chmod +x /mnt/gcc-mingw32/gcc/xgcc \
     && make -j`nproc` > /dev/null \
-    && rm /mnt/gcc-mingw32/gcc/xgcc \
-    && mv /mnt/gcc-mingw32/gcc/xgcc.bak /mnt/gcc-mingw32/gcc/xgcc \
     && make install > /dev/null \
     && cd .. \
     && rm -rf pkg-config-${PKG_CONFIG_VERSION} \
@@ -142,8 +138,8 @@ RUN apt-get update \
     && rm -rf ${MINGW_ROOT} \
     && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev bzip2 \
     && apt-get -y autoremove \
-    && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 11200 \
+    && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 11300 \
         --slave ${GCC_HOME}/bin/mingw32-g++ mingw32-g++ ${GCC_HOME}/bin/x86_64-w64-mingw32-g++ \
-    && update-alternatives --install /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 11200 \
+    && update-alternatives --install /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 11300 \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
