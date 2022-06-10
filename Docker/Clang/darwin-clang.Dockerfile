@@ -39,6 +39,7 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 ARG OSXCROSS_ROOT=/opt/osxcross
 ARG MACOS_SDK_VERSION=12.1
+ARG MACOS_SDK_CODE=21.2
 RUN apt-get update \
     && apt-get install --no-install-recommends -y libxml2 lzma-dev libxml2-dev libssl-dev python \
     && apt-get clean \
@@ -50,8 +51,8 @@ RUN apt-get update \
     && rm -rf osxcross \
     && apt-get -y purge lzma-dev libxml2-dev libssl-dev python \
     && apt-get -y autoremove
-ENV OSXCROSS_HOST=x86_64-apple-darwin21.2
+ENV OSXCROSS_HOST=x86_64-apple-darwin${MACOS_SDK_CODE}
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
-ENV X86_64_EVAL=`x86_64-apple-darwin21.2-osxcross-conf`
-ENV ARM64_EVAL=`arm64-apple-darwin21.2-osxcross-conf`
+ENV X86_64_EVAL=`x86_64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
+ENV ARM64_EVAL=`arm64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
