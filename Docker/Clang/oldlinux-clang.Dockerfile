@@ -17,7 +17,7 @@ RUN rm /etc/apt/sources.list \
     && apt-get install --no-install-recommends -y git zip unzip xz-utils wget ca-certificates make autoconf file patch \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.23.2
+ARG CMAKE_VERSION=3.18.1
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.0
 ARG UPX_VERSION=3.96
