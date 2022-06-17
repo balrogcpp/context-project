@@ -316,17 +316,16 @@ externalproject_add(Target_assimp
                     -DCMAKE_CXX_FLAGS=${CMAKE_EXTRA_CXX_FLAGS}
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
+                    -DASSIMP_WARNINGS_AS_ERRORS=OFF
+                    -DASSIMP_BUILD_SAMPLES=OFF
+                    -DASSIMP_INSTALL_PDB=OFF
                     -DINJECT_DEBUG_POSTFIX=OFF
                     -DASSIMP_INJECT_DEBUG_POSTFIX=OFF
-                    -DIGNORE_GIT_HASH=ON
                     -DASSIMP_IGNORE_GIT_HASH=ON
                     -DASSIMP_BUILD_TESTS=OFF
                     -DBUILD_SHARED_LIBS=OFF
                     -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
-                    -DASSIMP_BUILD_ZLIB=OFF
                     -DASSIMP_NO_EXPORT=ON
-                    -DASSIMP_BUILD_SAMPLES=OFF
-                    -DASSIMP_INSTALL_PDB=OFF
                     -DASSIMP_BUILD_AMF_IMPORTER=OFF
                     -DASSIMP_BUILD_3DS_IMPORTER=ON
                     -DASSIMP_BUILD_AC_IMPORTER=OFF
