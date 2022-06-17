@@ -11,7 +11,7 @@ index 7f6a28ce..86100989 100644
  #cmakedefine IMGUI_ENABLE_FREETYPE
 \ No newline at end of file
 diff --git a/Components/Overlay/CMakeLists.txt b/Components/Overlay/CMakeLists.txt
-index ec67ef51..829e6080 100644
+index 0c74ce29..829e6080 100644
 --- a/Components/Overlay/CMakeLists.txt
 +++ b/Components/Overlay/CMakeLists.txt
 @@ -86,7 +86,7 @@ if(OGRE_BUILD_COMPONENT_OVERLAY_IMGUI)
@@ -76,17 +76,18 @@ index 0ff8e2e2..78342e6e 100644
                  os << "precision mediump float;" << std::endl;
              }
 diff --git a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
-index d8b07def..f7e1358a 100644
+index ac9e4c35..24dd07f1 100644
 --- a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
 +++ b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
-@@ -67,6 +67,7 @@ namespace Ogre
-         , mVertexDataRecord(0)
-         , mLocalNode(0)
-     {
+@@ -179,7 +179,7 @@ namespace Ogre
+             for (int i = 0; i < 4; ++i)
+                 mChildren[i]->prepare();
+         }
+-
 +        setCastShadows(TerrainGlobalOptions::getSingleton().getCastsDynamicShadows());
-         if (terrain->getMaxBatchSize() < size)
-         {
-             uint16 childSize = (uint16)(((size - 1) * 0.5f) + 1);
+     }
+     //---------------------------------------------------------------------
+     void TerrainQuadTreeNode::prepare(StreamSerialiser& stream)
 diff --git a/OgreMain/CMakeLists.txt b/OgreMain/CMakeLists.txt
 index 44a17787..d9add2ba 100644
 --- a/OgreMain/CMakeLists.txt
