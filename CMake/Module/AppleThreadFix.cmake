@@ -1,4 +1,5 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
+# Enable find_package(Threads) @Apple
 
 if (APPLE)
     set(CMAKE_THREAD_LIBS_INIT "-lpthread")

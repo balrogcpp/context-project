@@ -1,4 +1,5 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
+# Zip files from directory with subdirectories into flat zip
 
 macro(FlatZipSubdirectories curdir destination)
     make_directory(${destination})
@@ -20,6 +21,7 @@ macro(FlatZipSubdirectories curdir destination)
     endforeach ()
 endmacro()
 
+# Zip files from directory into flat zip
 macro(FlatZipDirectory curdir destination)
     make_directory(${destination})
     file(GLOB directories RELATIVE ${curdir} ${curdir}/*)

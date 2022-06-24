@@ -1,11 +1,12 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
+# Add doxygen targets
 
 set(CMAKE_FOLDER Doxygen)
 find_package(Doxygen COMPONENTS dot QUIET)
 find_package(LATEX COMPONENTS PDFLATEX QUIET)
 if (${DOXYGEN_FOUND})
     message(STATUS "Found Doxygen. Doxygen generation enabled")
-    add_custom_target(Doxygen
+    add_custom_target(DoxygenHtml
             COMMAND ${DOXYGEN_EXECUTABLE}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             COMMENT "Generating API documentation with Doxygen..."
@@ -21,7 +22,7 @@ elseif (WIN32)
 endif ()
 if (${LATEX_PDFLATEX_FOUND})
     message(STATUS "Found Latex PDF. PDF generation enabled")
-    add_custom_target(DoxygenPdf
+    add_custom_target(DoxygenLatexPdf
             DEPENDS Doxygen
             COMMAND ${CMAKE_COMMAND} -E chdir ${GLUE_ARTIFACT_DIR}/Doxygen/latex ${GLUE_DOXYGEN_MAKE_COMMAND}
             COMMAND ${CMAKE_COMMAND} -E copy ${GLUE_ARTIFACT_DIR}/Doxygen/latex/refman.pdf ${GLUE_ARTIFACT_DIR}/Doxygen

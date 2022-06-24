@@ -1,4 +1,5 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
+# Define GIT_SHA1 variable
 
 if (NOT GIT_SHA1)
     execute_process(
