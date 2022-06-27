@@ -551,7 +551,7 @@ externalproject_add(Target_sol2
                     DEPENDS Target_Lua
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/ThePhD/sol2.git
-                    GIT_TAG v3.2.3
+                    GIT_TAG v3.3.0
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
