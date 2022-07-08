@@ -4,7 +4,7 @@ include(GlueCppFlags)
 include(GlueBuildVariables)
 
 set(GLUE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source)
-file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${GLUE_SOURCE_DIR}/Glue/*.cpp ${GLUE_SOURCE_DIR}/Glue/*.h ${GLUE_SOURCE_DIR}/Glue/*.hpp src/*.cpp include/*.h include/*.hpp)
+file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${GLUE_SOURCE_DIR}/Source/*.cpp ${GLUE_SOURCE_DIR}/Source/*.h ${GLUE_SOURCE_DIR}/Source/*.hpp src/*.cpp include/*.h include/*.hpp)
 file(GLOB_RECURSE SHADER_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Programs/*)
 file(GLOB_RECURSE ASSETS_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Assets/*)
 file(GLOB_RECURSE MISC_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Misc/*)

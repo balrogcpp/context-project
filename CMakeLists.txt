@@ -8,15 +8,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# Default build type is RelWithDebInfo
 if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type selected, CMAKE_BUILD_TYPE defaulted to RelWithDebInfo")
     set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif ()
+
+# Enable only Release, RelWithDebInfo, Debug build types
 set(ALLOWED_BUILD_TYPES "Release;RelWithDebInfo;Debug")
 if (NOT ${CMAKE_BUILD_TYPE} IN_LIST ALLOWED_BUILD_TYPES)
     message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not valid build type. Valid are ${ALLOWED_BUILD_TYPES}")
 endif ()
 
+# Include necessary submodules
 set(GLUE_CMAKE_DIR ${PROJECT_SOURCE_DIR}/CMake)
 list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR})
 list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Package)
@@ -35,12 +39,15 @@ make_directory(${GLUE_TMP_DIR})
 
 # Insert dependencies
 add_subdirectory(${CMAKE_SOURCE_DIR}/ThirdParty)
+set(CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
+list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
+
+add_subdirectory(Source)
+add_subdirectory(Examples)
+add_subdirectory(Tests)
 
 # Doxygen
 include(Doxygen)
-
-set(CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
-list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
 
 set(CMAKE_FOLDER Docker)
 add_custom_target(DockerComposeDep
@@ -59,8 +66,6 @@ add_custom_target(DockerCompose
         USES_TERMINAL
         )
 set(CMAKE_FOLDER "")
-
-add_subdirectory(${CMAKE_SOURCE_DIR}/Source)
 
 #Packaging
 include(Package)
