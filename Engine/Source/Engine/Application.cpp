@@ -39,7 +39,7 @@ Application::Application(int argc, char *args[]) {
   if (BinaryDir.empty()) {
     BinaryDir = GetUserDirectory();
     if (!BinaryDir.empty()) BinaryDir = PathAppend(BinaryDir, ".Glue");
-    if (!DirectoryExists(BinaryDir)) CreateDirectory(BinaryDir);
+    if (!DirectoryExists(BinaryDir)) CreateDirectoryB(BinaryDir);
   }
 
   LogPtr = make_unique<Log>(PathAppend(BinaryDir, "Runtime.log"));
@@ -67,7 +67,7 @@ Application::Application(int argc, char *args[]) {
 Application::~Application() { InputSequencer::GetInstance().UnregWinObserver(this); }
 
 void Application::Loop() {
-  bool WasSuspend = false;
+  bool WasSuspended = false;
 
   if (Running && StateManagerPtr->IsActive()) {
     StateManagerPtr->Update(0);
@@ -87,9 +87,9 @@ void Application::Loop() {
       if (StateManagerPtr->IsDirty()) {
         EnginePtr->OnCleanup();
         StateManagerPtr->InitNextState();
-      } else if (WasSuspend) {
+      } else if (WasSuspended) {
         EnginePtr->OnResume();
-        WasSuspend = false;
+        WasSuspended = false;
       }
 
       auto before_update = chrono::system_clock::now().time_since_epoch();
@@ -101,7 +101,7 @@ void Application::Loop() {
       EnginePtr->RenderFrame();
     } else {
       EnginePtr->OnPause();
-      WasSuspend = true;
+      WasSuspended = true;
     }
 
 #if defined(DEBUG) && defined(DESKTOP)

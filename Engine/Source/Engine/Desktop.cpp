@@ -97,7 +97,7 @@ string PathAppend(const string &Path, const string &Append) {
 
 bool DirectoryExists(const string &Path) { return fs::exists(Path); }
 
-void CreateDirectory(const string &Path) {
+void CreateDirectoryB(const string &Path) {
   if (!fs::exists(Path)) fs::create_directory(Path);
 }
 

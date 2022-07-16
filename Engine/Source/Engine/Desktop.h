@@ -26,7 +26,7 @@ std::string TrunkPath(std::string &Path);
 bool DirectoryExists(const std::string &Path);
 
 ///
-void CreateDirectory(const std::string &Path);
+void CreateDirectoryB(const std::string &Path);
 
 }  // namespace Glue
 
