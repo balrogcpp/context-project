@@ -3,8 +3,8 @@
 #include "PCHeader.h"
 #include "Config.h"
 #include "Exception.h"
+#include "ini/INIReader.h"
 #include <fstream>
-#include "INIReader.h"
 
 using namespace std;
 

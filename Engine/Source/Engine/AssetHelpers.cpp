@@ -3,9 +3,9 @@
 #include "PCHeader.h"
 #ifdef DESKTOP
 #include "AssetHelpers.h"
+#include "Desktop.h"
 #include "Exception.h"
 #include "Filesystem.h"
-#include "System.h"
 
 using namespace std;
 using namespace Ogre;

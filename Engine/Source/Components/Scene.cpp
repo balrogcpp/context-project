@@ -2,7 +2,7 @@
 
 #include "PCHeader.h"
 #include "Components/Scene.h"
-#include "Hosek/ArHosekSkyModel.h"
+#include "SkyModel/ArHosekSkyModel.h"
 #include "Caelum/Caelum.h"
 #include "CameraMan.h"
 #include "Engine.h"

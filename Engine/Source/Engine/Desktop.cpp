@@ -2,8 +2,8 @@
 
 #include "PCHeader.h"
 #ifdef DESKTOP
+#include "Desktop.h"
 #include "Filesystem.h"
-#include "System.h"
 
 #if defined(WINDOWS)
 #define WIN32_LEAN_AND_MEAN
