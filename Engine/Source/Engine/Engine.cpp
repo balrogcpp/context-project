@@ -463,8 +463,13 @@ void Engine::InitResourceLocation() {
 #else
   const char SEPARATOR = '\\';
 #endif
+#ifndef DEBUG
   const string ProgramsDir = "Programs";
   const string AssetsDir = "Assets";
+#else
+  const string ProgramsDir = "Engine/Programs";
+  const string AssetsDir = "Example/Assets";
+#endif
   AddLocation(ProgramsDir + SEPARATOR + "Core", RGN_INTERNAL);
   if (RenderSystemIsGLES2())
     AddLocation(ProgramsDir + SEPARATOR + "GLSLES", RGN_INTERNAL);
