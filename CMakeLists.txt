@@ -6,7 +6,24 @@ project(GlueEngine VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
+# VS project folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+
+# CMake module path
+set(GLUE_CMAKE_DIR ${PROJECT_SOURCE_DIR}/CMake)
+list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR})
+list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Package)
+list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Module)
+
+
+# Include necessary submodules
+include(Make)
+include(Platform)
+include(GitHash)
+include(CMakeDependentOption)
+
 
 # Default build type is RelWithDebInfo
 if (NOT CMAKE_BUILD_TYPE)
@@ -14,42 +31,41 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif ()
 
+
 # Enable only Release, RelWithDebInfo, Debug build types
 set(ALLOWED_BUILD_TYPES "Release;RelWithDebInfo;Debug")
 if (NOT ${CMAKE_BUILD_TYPE} IN_LIST ALLOWED_BUILD_TYPES)
     message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not valid build type. Valid are ${ALLOWED_BUILD_TYPES}")
 endif ()
 
-# Include necessary submodules
-set(GLUE_CMAKE_DIR ${PROJECT_SOURCE_DIR}/CMake)
-list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR})
-list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Package)
-list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Module)
 
-include(Make)
-include(Platform)
-include(GitHash)
-include(CMakeDependentOption)
-
-# Create artifacts directory
+# Create required directories
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
 set(GLUE_TMP_DIR ${CMAKE_SOURCE_DIR}/Tmp)
 make_directory(${GLUE_ARTIFACT_DIR})
 make_directory(${GLUE_TMP_DIR})
 
-# Insert dependencies
-add_subdirectory(${CMAKE_SOURCE_DIR}/ThirdParty)
-set(CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
-list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
 
-add_subdirectory(Source)
-add_subdirectory(Examples)
-add_subdirectory(Tests)
+# Engine sources
+add_subdirectory(Engine)
 
-# Doxygen
+
+# Examples sources
+add_subdirectory(Example)
+
+
+# Examples sources
+#add_subdirectory(Project)
+
+
+# Doxygen targets
 include(Doxygen)
 
+
+# Docker target
+# VS folder
 set(CMAKE_FOLDER Docker)
+
 add_custom_target(DockerComposeDep
         COMMAND docker-compose -f docker-compose-3rd.yml up
         COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
@@ -65,9 +81,21 @@ add_custom_target(DockerCompose
         COMMENT "Building tests with docker-compose..."
         USES_TERMINAL
         )
+
 set(CMAKE_FOLDER "")
 
-#Packaging
+
+# Assets
+add_custom_target(BuildAssets ALL
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Tmp
+        COMMAND ${CMAKE_COMMAND} -P CMake/FlatZipAssets.cmake
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Creating assets and programs zip package..."
+        USES_TERMINAL
+        )
+
+
+#Package targets
 include(Package)
 
 add_custom_target(BuildPackage
@@ -79,31 +107,39 @@ add_custom_target(BuildPackage
         USES_TERMINAL
         )
 
+
+# Android target
 # env variable ANDROID_SDK_ROOT must be set manually
+set(GLUE_ANDROID_ROOT ${CMAKE_SOURCE_DIR}/Engine/Android)
+
 if (NOT RELEASE)
     set(GRADLE_TARGET assembleDebug)
-    set(APK_FILE ${CMAKE_SOURCE_DIR}/Android/app/build/outputs/apk/debug/app-arm64-v8a-debug.apk)
+    set(APK_FILE ${GLUE_ANDROID_ROOT}/app/build/outputs/apk/debug/app-arm64-v8a-debug.apk)
     set(OUTPUT_FILE ${GLUE_PACKAGE_NAME}_Android_aarch64_Debug_${GIT_SHA1}.apk)
 else ()
     set(GRADLE_TARGET assembleRelease)
-    set(APK_FILE ${CMAKE_SOURCE_DIR}/Android/app/build/outputs/apk/release/app-arm64-v8a-release.apk)
+    set(APK_FILE ${GLUE_ANDROID_ROOT}/app/build/outputs/apk/release/app-arm64-v8a-release.apk)
     set(OUTPUT_FILE ${GLUE_PACKAGE_NAME}_Android_aarch64_${GIT_SHA1}.apk)
 endif ()
 
+
+# VS folder
 set(CMAKE_FOLDER Android)
+
 add_custom_target(BuildAndroid
         DEPENDS BuildAssets
         COMMAND ./gradlew ${GRADLE_TARGET}
         COMMAND ${CMAKE_COMMAND} -E copy ${APK_FILE} ${GLUE_ARTIFACT_DIR}/${OUTPUT_FILE}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
+        WORKING_DIRECTORY ${GLUE_ANDROID_ROOT}
         COMMENT "Building Android package..."
         USES_TERMINAL
         )
 
 add_custom_target(ClearAndroid
         COMMAND ${CMAKE_COMMAND} -E rm -rf .gradle app/.cxx app/build
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Android
+        WORKING_DIRECTORY ${GLUE_ANDROID_ROOT}
         COMMENT "Deleting Android build files..."
         USES_TERMINAL
         )
+
 set(CMAKE_FOLDER "")

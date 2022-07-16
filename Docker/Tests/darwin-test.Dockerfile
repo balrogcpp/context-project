@@ -7,18 +7,15 @@ ARG CONTEXT_HOME=/mnt/build
 ARG GIT_HASH=00000000
 WORKDIR ${CONTEXT_HOME}
 
-COPY ./Binaries ./Binaries
+COPY ./Engine/Binaries ./Engine/Binaries
 
-RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
-    && tar Jxfp ${CONTEXT_HOME}/Binaries/Dependencies/Darwin_x86_64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/ThirdParty/External
+RUN mkdir -p ${CONTEXT_HOME}/Engine/ThirdParty/External \
+    && tar Jxfp ${CONTEXT_HOME}/Engine/Binaries/Dependencies/Darwin_x86_64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/Engine/ThirdParty/External
 
-COPY ./Source ./Source
-COPY ./CMake ./CMake
-COPY ./LICENSE .
-COPY ./Programs ./Programs
-COPY ./Assets ./Assets
+COPY ./Engine ./Engine
+COPY ./Example ./Example
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
+COPY ./CMake ./CMake
 
 RUN mkdir build-apple && cd build-apple \
     && eval $X86_64_EVAL \

@@ -8,7 +8,7 @@ RUN apt-get update \
     && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.18.1
+ARG CMAKE_VERSION=3.23.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.0
 ARG UPX_VERSION=3.96

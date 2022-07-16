@@ -1,17 +1,10 @@
 **
 
-!/Android/
-!/Assets/
-!/Binaries/
 !/CMake/
-!/Source/
-!/ThirdParty/CMakeLists.txt/
-!/ThirdParty/Patch/
-!/Deploy/
-!/Programs/
-!/Tests/
-!/Doc/
+!/Example/
+!/Project/
+!/Engine/
+/Engine/ThirdParty/External
 !/CMakeLists.txt/
 !/README.md/
 !/LICENSE/
-!/Binaries/

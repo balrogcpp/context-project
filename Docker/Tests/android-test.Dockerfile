@@ -7,23 +7,19 @@ ARG CONTEXT_HOME=/mnt/build
 ARG GIT_HASH=00000000
 WORKDIR ${CONTEXT_HOME}
 
-COPY ./Binaries ./Binaries
+COPY ./Engine/Binaries ./Engine/Binaries
 
-RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
-    && tar Jxfp ${CONTEXT_HOME}/Binaries/Dependencies/Android_aarch64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/ThirdParty/External
+RUN mkdir -p ${CONTEXT_HOME}/Engine/ThirdParty/External \
+    && tar Jxfp ${CONTEXT_HOME}/Engine/Binaries/Dependencies/Android_aarch64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/Engine/ThirdParty/External
 
-COPY ./Source ./Source
-COPY ./CMake ./CMake
-COPY ./LICENSE .
-COPY ./Programs ./Programs
-COPY ./Assets ./Assets
+COPY ./Engine ./Engine
+COPY ./Example ./Example
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
-COPY ./Android ./Android
+COPY ./CMake ./CMake
 
 RUN cmake -P CMake/FlatZipAssets.cmake \
-    && cd Android \
+    && cd Engine/Android \
     && ./gradlew assembleRelease \
-    && cd ../ \
-    && mv Android/app/build/outputs/apk/release/app-arm64-v8a-release.apk Artifacts/GlueSample_Android_aarch64_$GIT_HASH.apk \
+    && cd ../../ \
+    && mv Engine/Android/app/build/outputs/apk/release/app-arm64-v8a-release.apk Artifacts/GlueSample_Android_aarch64_$GIT_HASH.apk \
     && rm -rf Android ${ANDROID_HOME} /root/.android

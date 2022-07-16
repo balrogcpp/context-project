@@ -8,7 +8,7 @@ RUN apt-get update \
     && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.18.1
+ARG CMAKE_VERSION=3.23.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.0
 ARG UPX_VERSION=3.96
@@ -38,14 +38,15 @@ RUN apt-get update \
     && apt-get clean
 
 ARG OSXCROSS_ROOT=/opt/osxcross
-ARG MACOS_SDK_VERSION=12.1
-ARG MACOS_SDK_CODE=21.2
+ARG MACOS_SDK_VERSION=12.3
+ARG MACOS_SDK_CODE=21.4
 RUN apt-get update \
     && apt-get install --no-install-recommends -y libxml2 lzma-dev libxml2-dev libssl-dev python \
     && apt-get clean \
-    && git clone --depth 1 https://github.com/tpoechtrager/osxcross.git \
+    && git clone https://github.com/tpoechtrager/osxcross.git \
     && wget https://github.com/balrogcpp/MacOSXsdk/raw/master/MacOSX${MACOS_SDK_VERSION}.sdk.tar.xz -O ./osxcross/tarballs/MacOSX${MACOS_SDK_VERSION}.sdk.tar.xz \
     && cd osxcross \
+    && git checkout 17bb5e2d0a46533c1dd525cf4e9a80d88bd9f00e \
     && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} ./build.sh \
     && cd .. \
     && rm -rf osxcross \
