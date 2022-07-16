@@ -1,5 +1,6 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
+
 include(GlueBuildVariables)
 
 if (ANY_NOT_FOUND)

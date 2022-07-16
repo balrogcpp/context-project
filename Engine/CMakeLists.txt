@@ -1,8 +1,5 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
-add_subdirectory(ThirdParty)
-set(CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
-list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
 
 # include GLUE_ENGINE_SOURCE_FILES, GLUE_INCLUDE_DIRS,
 include(GlueBuildVariables)

@@ -9,27 +9,6 @@ include(AppleThreadFix)
 include(GlueCppFlags)
 
 
-if (NOT MOBILE)
-    insert_dependency(OpenGL)
-else ()
-    insert_dependency(OpenGLES2)
-endif ()
-insert_dependency(Threads)
-insert_dependency_static(Bullet)
-mark_as_advanced(BULLET_INCLUDE_DIR)
-insert_dependency_static(ZLIB)
-insert_dependency(Lua51)
-insert_dependency(OpenAL)
-insert_dependency_static(Ogg)
-insert_dependency_static(Vorbis)
-insert_dependency_static(SDL2)
-insert_dependency_static(PNG)
-insert_dependency_static(Freetype)
-insert_dependency_static(pugixml)
-set(OGRE_STATIC 1)
-insert_dependency_static(OGRE)
-
-
 if (assimp_FOUND AND MSVC AND NOT RELEASE)
     string(APPEND CMAKE_EXE_LINKER_FLAGS " /FORCE:MULTIPLE")
     string(APPEND CMAKE_SHARED_LINKER_FLAGS " /FORCE:MULTIPLE")
@@ -50,6 +29,7 @@ set(GLUE_INCLUDE_DIRS
 
 
 set(GLUE_LINK_DIRS ${GLUE_THIRDPARTY_ROOT}/lib ${GLUE_THIRDPARTY_ROOT}/lib/OGRE)
+
 
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)

@@ -23,7 +23,7 @@ include(Make)
 include(Platform)
 include(GitHash)
 include(CMakeDependentOption)
-
+include(InsertDependency)
 
 # Default build type is RelWithDebInfo
 if (NOT CMAKE_BUILD_TYPE)
@@ -46,15 +46,45 @@ make_directory(${GLUE_ARTIFACT_DIR})
 make_directory(${GLUE_TMP_DIR})
 
 
-# Engine sources
+# Dependencies
+add_subdirectory(Engine/ThirdParty)
+set(CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
+list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
+
+if (NOT MOBILE)
+    insert_dependency(OpenGL)
+else ()
+    insert_dependency(OpenGLES2)
+endif ()
+insert_dependency(Threads)
+insert_dependency_static(Bullet)
+mark_as_advanced(BULLET_INCLUDE_DIR)
+insert_dependency_static(ZLIB)
+insert_dependency(Lua51)
+insert_dependency(OpenAL)
+insert_dependency_static(Ogg)
+insert_dependency_static(Vorbis)
+insert_dependency_static(SDL2)
+insert_dependency_static(PNG)
+insert_dependency_static(Freetype)
+insert_dependency_static(pugixml)
+set(OGRE_STATIC 1)
+insert_dependency_static(OGRE)
+
+if (ANY_NOT_FOUND)
+    return()
+endif ()
+
+
+# Engine libraries
 add_subdirectory(Engine)
 
 
-# Examples sources
+# Examples
 add_subdirectory(Example)
 
 
-# Examples sources
+# Template project
 #add_subdirectory(Project)
 
 
@@ -62,9 +92,8 @@ add_subdirectory(Example)
 include(Doxygen)
 
 
-# Docker target
-# VS folder
-set(CMAKE_FOLDER Docker)
+# Docker helper target
+set(CMAKE_FOLDER Docker) # VS folder
 
 add_custom_target(DockerComposeDep
         COMMAND docker-compose -f docker-compose-3rd.yml up
@@ -85,7 +114,7 @@ add_custom_target(DockerCompose
 set(CMAKE_FOLDER "")
 
 
-# Assets
+# package helper target
 add_custom_target(BuildAssets ALL
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Tmp
         COMMAND ${CMAKE_COMMAND} -P CMake/FlatZipAssets.cmake
@@ -94,8 +123,6 @@ add_custom_target(BuildAssets ALL
         USES_TERMINAL
         )
 
-
-#Package targets
 include(Package)
 
 add_custom_target(BuildPackage
@@ -108,7 +135,7 @@ add_custom_target(BuildPackage
         )
 
 
-# Android target
+# Android helper targets
 # env variable ANDROID_SDK_ROOT must be set manually
 set(GLUE_ANDROID_ROOT ${CMAKE_SOURCE_DIR}/Engine/Android)
 
@@ -122,9 +149,7 @@ else ()
     set(OUTPUT_FILE ${GLUE_PACKAGE_NAME}_Android_aarch64_${GIT_SHA1}.apk)
 endif ()
 
-
-# VS folder
-set(CMAKE_FOLDER Android)
+set(CMAKE_FOLDER Android) # VS folder
 
 add_custom_target(BuildAndroid
         DEPENDS BuildAssets
