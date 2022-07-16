@@ -3,8 +3,8 @@
 #pragma once
 #include "Exception.h"
 #include "Singleton.h"
+#include "json/json.hpp"
 #include <fstream>
-#include <nlohmann/json.hpp>
 
 namespace Glue {
 
