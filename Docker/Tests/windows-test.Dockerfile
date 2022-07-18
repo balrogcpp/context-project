@@ -7,18 +7,15 @@ ARG CONTEXT_HOME=/mnt/build
 ARG GIT_HASH=00000000
 WORKDIR ${CONTEXT_HOME}
 
-COPY ./Binaries ./Binaries
+COPY ./Engine/Binaries ./Engine/Binaries
 
-RUN mkdir -p ${CONTEXT_HOME}/ThirdParty/External \
-    && tar Jxfp ${CONTEXT_HOME}/Binaries/Dependencies/Windows_x86_64_Clang_Mingw_Release.tar.xz -C ${CONTEXT_HOME}/ThirdParty/External
+RUN mkdir -p ${CONTEXT_HOME}/Engine/Dependencies/External \
+    && tar Jxfp ${CONTEXT_HOME}/Engine/Binaries/Dependencies/Windows_x86_64_Clang_Mingw_Release.tar.xz -C ${CONTEXT_HOME}/Engine/Dependencies/External
 
-COPY ./Source ./Source
-COPY ./CMake ./CMake
-COPY ./LICENSE .
-COPY ./Programs ./Programs
-COPY ./Assets ./Assets
+COPY ./Engine ./Engine
+COPY ./Example ./Example
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./ThirdParty/CMakeLists.txt ./ThirdParty/CMakeLists.txt
+COPY ./CMake ./CMake
 
 RUN mkdir build-windows && cd build-windows \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -DGIT_SHA1=$GIT_HASH -G Ninja .. \
