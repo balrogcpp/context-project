@@ -73,7 +73,6 @@ insert_dependency_static(OGRE)
 
 if (ANY_NOT_FOUND)
     message(WARNING "Build cmake target ThirdParty to get all dependencies. Then configure cmake again to enable GlueLibrary and GlueExample targets. Exiting")
-    include(Dependencies)
     return()
 endif ()
 
