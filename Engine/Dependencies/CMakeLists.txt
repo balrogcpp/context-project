@@ -10,4 +10,7 @@ list(APPEND GLUE_DEPENDENCY_TARGETS Target_Vorbis)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_OGRE)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_SDL2)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_Bullet)
-add_custom_target(ThirdParty DEPENDS ${GLUE_DEPENDENCY_TARGETS})
+add_custom_target(Dependencies
+        COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/dependencies_ready
+        DEPENDS ${GLUE_DEPENDENCY_TARGETS}
+        )

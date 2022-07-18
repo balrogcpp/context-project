@@ -16,8 +16,8 @@ RUN cd ./Engine/Android \
     && ./gradlew assembleRelease \
     && rm -rf ${CONTEXT_HOME}/android ${ANDROID_HOME}/emulator ${ANDROID_HOME}/tools /root/.android /root/.gradle
 
-RUN cd ${CONTEXT_HOME}/Engine/ThirdParty/External/Android_aarch64_Clang_Release \
+RUN cd ${CONTEXT_HOME}/Engine/Dependencies/External/Android_aarch64_Clang_Release \
     && rm -rf src tmp \
-    && cd  ${CONTEXT_HOME}/Engine/ThirdParty/External \
+    && cd  ${CONTEXT_HOME}/Engine/Dependencies/External \
     && tar cfJ Android_aarch64_Clang_Release.tar.xz Android_aarch64_Clang_Release \
     && mv Android_aarch64_Clang_Release.tar.xz ${CONTEXT_HOME}/Artifacts

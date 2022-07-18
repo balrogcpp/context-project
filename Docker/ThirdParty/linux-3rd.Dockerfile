@@ -20,10 +20,10 @@ RUN  mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
      && export CC=clang \
      && export CXX=clang++ \
      && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -G Ninja .. \
-     && cmake --build . --target ThirdParty
+     && cmake --build . --target Dependencies
 
-RUN cd ${CONTEXT_HOME}/Engine/ThirdParty/External/Linux_x86_64_Clang_Release \
+RUN cd ${CONTEXT_HOME}/Engine/Dependencies/External/Linux_x86_64_Clang_Release \
     && rm -rf src tmp \
-    && cd  ${CONTEXT_HOME}/Engine/ThirdParty/External \
+    && cd  ${CONTEXT_HOME}/Engine/Dependencies/External \
     && tar cfJ Linux_x86_64_Clang_Release.tar.xz Linux_x86_64_Clang_Release \
     && mv Linux_x86_64_Clang_Release.tar.xz ${CONTEXT_HOME}/Artifacts

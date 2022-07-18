@@ -47,7 +47,7 @@ make_directory(${GLUE_TMP_DIR})
 
 
 # Dependencies
-add_subdirectory(Engine/ThirdParty)
+add_subdirectory(Engine/Dependencies)
 set(CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
 
@@ -72,7 +72,7 @@ set(OGRE_STATIC 1)
 insert_dependency_static(OGRE)
 
 if (ANY_NOT_FOUND)
-    message(WARNING "Build cmake target ThirdParty to get all dependencies. Then configure cmake again to enable GlueLibrary and GlueExample targets. Exiting")
+    message(WARNING "Build cmake target Dependencies to get all dependencies. Then configure cmake again to enable GlueLibrary and GlueExample targets. Exiting")
     return()
 endif ()
 

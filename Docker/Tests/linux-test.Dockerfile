@@ -13,8 +13,8 @@ RUN apt-get update \
 
 COPY ./Engine/Binaries ./Engine/Binaries
 
-RUN mkdir -p ${CONTEXT_HOME}/Engine/ThirdParty/External \
-    && tar Jxfp ${CONTEXT_HOME}/Engine/Binaries/Dependencies/Linux_x86_64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/Engine/ThirdParty/External
+RUN mkdir -p ${CONTEXT_HOME}/Engine/Dependencies/External \
+    && tar Jxfp ${CONTEXT_HOME}/Engine/Binaries/Dependencies/Linux_x86_64_Clang_Release.tar.xz -C ${CONTEXT_HOME}/Engine/Dependencies/External
 
 COPY ./Engine ./Engine
 COPY ./Example ./Example

@@ -4,7 +4,7 @@
 !/Example/
 !/Project/
 !/Engine/
-/Engine/ThirdParty/External
+/Engine/Dependencies/External
 !/CMakeLists.txt/
 !/README.md/
 !/LICENSE/
