@@ -8,6 +8,7 @@ include(GlueBuildVariables)
 # glob sources
 file(GLOB_RECURSE SHADER_SOURCE_FILES Programs/*)
 
+
 # VS project folders
 source_group(TREE ${CMAKE_SOURCE_DIR}/Engine/Source PREFIX "Engine" FILES ${GLUE_ENGINE_SOURCE_FILES})
 source_group(TREE ${CMAKE_SOURCE_DIR}/Engine/Programs PREFIX "Programs" FILES ${SHADER_SOURCE_FILES})

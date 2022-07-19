@@ -84,6 +84,7 @@ else ()
     set(OUTPUT_FILE ${GLUE_PACKAGE_NAME}_Android_aarch64_${GIT_SHA1}.apk)
 endif ()
 
+
 set(CMAKE_FOLDER Android) # VS folder
 
 add_custom_target(BuildAndroid
