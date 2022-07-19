@@ -24,6 +24,8 @@ include(Platform)
 include(GitHash)
 include(CMakeDependentOption)
 include(InsertDependency)
+include(Doxygen)
+
 
 # Default build type is RelWithDebInfo
 if (NOT CMAKE_BUILD_TYPE)
@@ -46,53 +48,6 @@ make_directory(${GLUE_ARTIFACT_DIR})
 make_directory(${GLUE_TMP_DIR})
 
 
-# Dependencies
-add_subdirectory(Engine/Dependencies)
-set(CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
-list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
-
-if (NOT MOBILE)
-    insert_dependency(OpenGL)
-else ()
-    insert_dependency(OpenGLES2)
-endif ()
-insert_dependency(Threads)
-insert_dependency_static(Bullet)
-mark_as_advanced(BULLET_INCLUDE_DIR)
-insert_dependency_static(ZLIB)
-insert_dependency(Lua51)
-insert_dependency(OpenAL)
-insert_dependency_static(Ogg)
-insert_dependency_static(Vorbis)
-insert_dependency_static(SDL2)
-insert_dependency_static(PNG)
-insert_dependency_static(Freetype)
-insert_dependency_static(pugixml)
-set(OGRE_STATIC 1)
-insert_dependency_static(OGRE)
-
-if (ANY_NOT_FOUND)
-    message(WARNING "Build cmake target Dependencies to get all dependencies. Then configure cmake again to enable GlueLibrary and GlueExample targets. Exiting")
-    return()
-endif ()
-
-
-# Engine libraries
-add_subdirectory(Engine)
-
-
-# Examples
-add_subdirectory(Example)
-
-
-# Template project
-#add_subdirectory(Project)
-
-
-# Doxygen targets
-include(Doxygen)
-
-
 # Docker helper target
 set(CMAKE_FOLDER Docker) # VS folder
 
@@ -113,27 +68,6 @@ add_custom_target(DockerCompose
         )
 
 set(CMAKE_FOLDER "")
-
-
-# package helper target
-add_custom_target(BuildAssets ALL
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Tmp
-        COMMAND ${CMAKE_COMMAND} -P CMake/FlatZipAssets.cmake
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Creating assets and programs zip package..."
-        USES_TERMINAL
-        )
-
-include(Package)
-
-add_custom_target(BuildPackage
-        DEPENDS BuildAssets
-        COMMAND ${CMAKE_COMMAND} --build . --target package --config ${CMAKE_BUILD_TYPE}
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Building package..."
-        USES_TERMINAL
-        )
 
 
 # Android helper targets
@@ -169,3 +103,72 @@ add_custom_target(ClearAndroid
         )
 
 set(CMAKE_FOLDER "")
+
+
+# Dependencies
+add_subdirectory(Engine/Dependencies)
+set(CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
+list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
+
+if (NOT MOBILE)
+    insert_dependency(OpenGL)
+else ()
+    insert_dependency(OpenGLES2)
+endif ()
+insert_dependency(Threads)
+insert_dependency_static(Bullet)
+mark_as_advanced(BULLET_INCLUDE_DIR)
+insert_dependency_static(ZLIB)
+insert_dependency(Lua51)
+insert_dependency(OpenAL)
+insert_dependency_static(Ogg)
+insert_dependency_static(Vorbis)
+insert_dependency_static(SDL2)
+insert_dependency_static(PNG)
+insert_dependency_static(Freetype)
+insert_dependency_static(pugixml)
+set(OGRE_STATIC 1)
+insert_dependency_static(OGRE)
+
+if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
+    add_library(AndroidDummy SHARED Engine/Android/app/src/main/cpp/main.cpp)
+    add_dependencies(AndroidDummy Dependencies)
+endif ()
+
+if (ANY_NOT_FOUND)
+    message(WARNING "Build cmake target Dependencies to get all dependencies. Then configure cmake again to enable GlueLibrary and GlueExample targets. Exiting")
+    return()
+endif ()
+
+
+# Engine libraries
+add_subdirectory(Engine)
+
+
+# Examples
+add_subdirectory(Example)
+
+
+# Template project
+#add_subdirectory(Project)
+
+
+# package helper target
+add_custom_target(BuildAssets ALL
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Tmp
+        COMMAND ${CMAKE_COMMAND} -P CMake/FlatZipAssets.cmake
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Creating assets and programs zip package..."
+        USES_TERMINAL
+        )
+
+include(Package)
+
+add_custom_target(BuildPackage
+        DEPENDS BuildAssets
+        COMMAND ${CMAKE_COMMAND} --build . --target package --config ${CMAKE_BUILD_TYPE}
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Building package..."
+        USES_TERMINAL
+        )

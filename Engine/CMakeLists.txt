@@ -5,17 +5,6 @@
 include(GlueBuildVariables)
 
 
-# This will build project dependencies
-if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
-    add_library(AndroidDummy SHARED Android/app/src/main/cpp/main.cpp)
-    add_dependencies(AndroidDummy Dependencies)
-endif ()
-
-if (ANY_NOT_FOUND)
-    return()
-endif ()
-
-
 # glob sources
 file(GLOB_RECURSE SHADER_SOURCE_FILES Programs/*)
 
@@ -37,10 +26,10 @@ add_library(GlueStatic STATIC EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
 include_directories(GlueStatic ${GLUE_INCLUDE_DIRS})
 set_target_properties(GlueStatic PROPERTIES OUTPUT_NAME "GlueStatic")
 target_precompile_headers(GlueStatic PUBLIC Source/PCHeader.h)
-add_dependencies(GlueStatic Dependencies)
+#add_dependencies(GlueStatic Dependencies)
 
 # Shared library
-add_library(GlueShared SHARED EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
-include_directories(GlueShared ${GLUE_INCLUDE_DIRS})
-set_target_properties(GlueShared PROPERTIES OUTPUT_NAME "GlueShared")
-target_precompile_headers(GlueShared PUBLIC Source/PCHeader.h)
+#add_library(GlueShared SHARED EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
+#include_directories(GlueShared ${GLUE_INCLUDE_DIRS})
+#set_target_properties(GlueShared PROPERTIES OUTPUT_NAME "GlueShared")
+#target_precompile_headers(GlueShared PUBLIC Source/PCHeader.h)
