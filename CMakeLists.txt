@@ -52,8 +52,8 @@ make_directory(${GLUE_TMP_DIR})
 set(CMAKE_FOLDER Docker) # VS folder
 
 add_custom_target(DockerComposeDep
-        COMMAND docker-compose -f docker-compose-3rd.yml up
-        COMMAND docker-compose -f docker-compose-3rd.yml down --volumes
+        COMMAND docker-compose -f docker-compose-dependencies.yml up
+        COMMAND docker-compose -f docker-compose-dependencies.yml down --volumes
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Building thirdparty libraries with docker-compose..."
         USES_TERMINAL

@@ -3,7 +3,7 @@
 
 # include GLUE_ENGINE_SOURCE_FILES, GLUE_INCLUDE_DIRS,
 include(GlueBuildVariables)
-
+include(Platform)
 
 # glob sources
 file(GLOB_RECURSE SHADER_SOURCE_FILES Programs/*)
@@ -29,8 +29,11 @@ set_target_properties(GlueStatic PROPERTIES OUTPUT_NAME "GlueStatic")
 target_precompile_headers(GlueStatic PUBLIC Source/PCHeader.h)
 #add_dependencies(GlueStatic Dependencies)
 
+
 # Shared library
-#add_library(GlueShared SHARED EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
-#include_directories(GlueShared ${GLUE_INCLUDE_DIRS})
-#set_target_properties(GlueShared PROPERTIES OUTPUT_NAME "GlueShared")
-#target_precompile_headers(GlueShared PUBLIC Source/PCHeader.h)
+if (DESKTOP)
+    add_library(GlueShared SHARED EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
+    include_directories(GlueShared ${GLUE_INCLUDE_DIRS})
+    set_target_properties(GlueShared PROPERTIES OUTPUT_NAME "GlueShared")
+    target_precompile_headers(GlueShared PUBLIC Source/PCHeader.h)
+endif ()
