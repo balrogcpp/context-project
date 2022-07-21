@@ -35,7 +35,7 @@ using namespace Forests;
 // static members initialization
 #if defined(DESKTOP)
 Ogre::uint  Forests::ImpostorPage::s_nImpostorResolution    = 512;
-#elif defined(MOBILE)
+#else
 Ogre::uint  Forests::ImpostorPage::s_nImpostorResolution     = 256;
 #endif
 Ogre::uint  Forests::ImpostorPage::s_nSelfInstances         = 0;

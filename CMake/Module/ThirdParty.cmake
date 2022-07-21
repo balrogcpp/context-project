@@ -138,7 +138,6 @@ externalproject_add(Target_OpenAL
 
 externalproject_add(Target_Ogg
                     EXCLUDE_FROM_ALL true
-                    DEPENDS Target_OpenAL
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/xiph/ogg.git
                     GIT_TAG v1.3.5
@@ -546,6 +545,9 @@ externalproject_add(Target_Lua
                     -DLUA_BUILD_WLUA=OFF
                     -DBUILD_SHARED_LIBS=OFF
                     -DLUA_USE_READLINE=OFF
+                    -DLUA_USE_RELATIVE_LOADLIB=OFF
+                    -DLUA_USE_POSIX=OFF
+                    -DLUA_USE_DLOPEN=OFF
                     )
 
 externalproject_add(Target_sol2

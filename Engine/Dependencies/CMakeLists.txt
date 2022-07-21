@@ -12,8 +12,11 @@ list(APPEND GLUE_DEPENDENCY_TARGETS Target_pugixml)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_FreeType)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_Vorbis)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_OGRE)
-list(APPEND GLUE_DEPENDENCY_TARGETS Target_SDL2)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_Bullet)
+if (NOT EMSCRIPTEN)
+    add_dependencies(Target_Ogg Target_OpenAL)
+    list(APPEND GLUE_DEPENDENCY_TARGETS Target_SDL2)
+endif ()
 
 
 # proxy target
