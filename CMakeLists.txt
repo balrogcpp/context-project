@@ -49,7 +49,7 @@ make_directory(${GLUE_TMP_DIR})
 
 
 # Docker helper target
-set(CMAKE_FOLDER Docker) # VS folder
+set(CMAKE_FOLDER Docker)
 
 add_custom_target(DockerComposeDep
         COMMAND docker-compose -f docker-compose-dependencies.yml up

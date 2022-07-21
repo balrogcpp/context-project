@@ -4,9 +4,11 @@ FROM ubuntu:18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+
 RUN apt-get update \
     && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates \
     && apt-get clean
+
 
 ARG CMAKE_VERSION=3.23.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
@@ -27,6 +29,7 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && rm -rf upx-${UPX_VERSION}-amd64_linux
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
+
 RUN apt-get update \
     && apt-get install -y wget ca-certificates gnupg2 apt-transport-https \
     && echo 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main' >> /etc/apt/sources.list \
@@ -36,6 +39,9 @@ RUN apt-get update \
     && apt-get update \
     && apt-get -y install --no-install-recommends llvm clang lld make autoconf file patch \
     && apt-get clean
+
+
+WORKDIR /mnt
 
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr

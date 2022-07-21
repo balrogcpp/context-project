@@ -4,9 +4,11 @@ FROM ubuntu:18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+
 RUN apt-get update \
     && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates \
     && apt-get clean
+
 
 ARG CMAKE_VERSION=3.18.1
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
@@ -27,11 +29,14 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && rm -rf upx-${UPX_VERSION}-amd64_linux
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
+
 RUN apt-get update \
     && apt-get -y install --no-install-recommends openjdk-11-jdk \
     && apt-get clean
 
+
 WORKDIR /opt
+
 ARG ANDROID_HOME=/opt/android-sdk
 ARG ANDROID_CMD_VERSION=8512546
 RUN wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -O tools.zip \

@@ -44,3 +44,16 @@ RUN apt-get update \
 RUN apt-get update \
     && apt-get -y install --no-install-recommends libgcc-7-dev libstdc++-7-dev \
     && apt-get clean
+
+
+WORKDIR /opt
+
+RUN apt-get update \
+    && apt-get --no-install-recommends -y install python3 \
+    && apt-get clean \
+    && git clone --recursive --depth 1 https://github.com/emscripten-core/emsdk.git \
+    && cd emsdk \
+    && rm -rf .git \
+    && ./emsdk install latest \
+    && ./emsdk activate latest \
+    && . ./emsdk_env.sh

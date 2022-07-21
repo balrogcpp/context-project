@@ -1,9 +1,10 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
 
-# include GLUE_ENGINE_SOURCE_FILES, GLUE_INCLUDE_DIRS,
+# GLUE_ENGINE_SOURCE_FILES, GLUE_INCLUDE_DIRS
 include(GlueBuildVariables)
 include(Platform)
+
 
 # glob sources
 file(GLOB_RECURSE SHADER_SOURCE_FILES Programs/*)

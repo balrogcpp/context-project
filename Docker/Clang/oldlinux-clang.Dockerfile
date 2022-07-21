@@ -3,7 +3,9 @@
 FROM ubuntu:12.04
 
 ARG DEBIAN_FRONTEND=noninteractive
+
 WORKDIR /mnt
+
 
 RUN rm /etc/apt/sources.list \
     && echo 'deb http://old-releases.ubuntu.com/ubuntu/ precise main restricted universe multiverse' >> /etc/apt/sources.list \
@@ -16,6 +18,7 @@ RUN rm /etc/apt/sources.list \
     && apt-get update \
     && apt-get install --no-install-recommends -y git zip unzip xz-utils wget ca-certificates make autoconf file patch \
     && apt-get clean
+
 
 ARG CMAKE_VERSION=3.23.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
@@ -35,6 +38,7 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
     && cd .. \
     && rm -rf upx-${UPX_VERSION}-amd64_linux
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+
 
 #ARG BINUTILS_VERSION=2.37
 #ARG GCC_VERSION=10.3.0
@@ -93,6 +97,7 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 #
 #ENV PATH="${GCC_HOME}/bin:${PATH}"
 #ENV LD_LIBRARY_PATH="${GCC_HOME}/lib64:${LD_LIBRARY_PATH}"
+
 
 ARG LLVM_VERSION=12.0.1
 ARG BINUTILS_VERSION=2.37
