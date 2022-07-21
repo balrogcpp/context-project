@@ -13,7 +13,7 @@ find_package(SelfPackers)
 #    )
 #endif ()
 
-if (SELF_PACKER_FOR_EXECUTABLE)
+if (SELF_PACKER_FOR_EXECUTABLE AND NOT APPLE)
     add_custom_command(
             TARGET ${TARGET_NAME}
             POST_BUILD

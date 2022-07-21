@@ -280,7 +280,7 @@ void Engine::InitShadowSettings() {
   }
 #if defined(DESKTOP)
   PixelFormat ShadowTextureFormat = PixelFormat::PF_DEPTH16;
-#elif defined(MOBILE)
+#else
   PixelFormat ShadowTextureFormat = PixelFormat::PF_FLOAT16_R;
 #endif
   OgreSceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);

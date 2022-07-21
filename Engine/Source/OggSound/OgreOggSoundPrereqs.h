@@ -41,7 +41,7 @@
  * 1 - OGRE-native multithreading
  */
 #ifndef OGGSOUND_THREADED
-	#define OGGSOUND_THREADED 1
+	#define OGGSOUND_THREADED (OGRE_THREAD_SUPPORT > 0)
         #define OGGSOUND_UPDATE_INTERVAL 16
 #endif
 
@@ -51,7 +51,7 @@
  * 1 - using OpenAL Soft (alext.h available)
  */
 #ifndef HAVE_ALEXT
-#	define HAVE_ALEXT 1
+#	define HAVE_ALEXT (OGRE_PLATFORM != OGRE_PLATFORM_EMSCRIPTEN)
 #endif
 
 /**

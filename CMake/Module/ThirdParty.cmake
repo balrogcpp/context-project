@@ -257,7 +257,6 @@ externalproject_add(Target_PNG
 
 externalproject_add(Target_FreeType
                     EXCLUDE_FROM_ALL true
-                    DEPENDS Target_PNG
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/freetype/freetype.git
                     GIT_TAG VER-2-11-1
@@ -272,6 +271,9 @@ externalproject_add(Target_FreeType
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=ON
                     -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=ON
+                    -DCMAKE_DISABLE_FIND_PACKAGE_PNG=ON
+                    -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=ON
+                    -DCMAKE_DISABLE_FIND_PACKAGE_BrotliDec=ON
                     -DBUILD_SHARED_LIBS=OFF
                     )
 
@@ -380,7 +382,7 @@ externalproject_add(Target_assimp
 set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_OGRE)
 externalproject_add(Target_OGRE
                     EXCLUDE_FROM_ALL true
-                    DEPENDS Target_zlib Target_FreeType Target_pugixml Target_SDL2
+                    DEPENDS Target_FreeType
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
                     GIT_TAG v13.4.2
@@ -426,8 +428,8 @@ externalproject_add(Target_OGRE
                     -DOGRE_BUILD_PLUGIN_GLSLANG=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_METAL=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_GL3PLUS=ON
-                    -DOGRE_BUILD_RENDERSYSTEM_GLES2=ON
-                    -DOGRE_BUILD_RENDERSYSTEM_GL=ON
+                    -DOGRE_BUILD_RENDERSYSTEM_GLES2=OFF
+                    -DOGRE_BUILD_RENDERSYSTEM_GL=OFF
                     -DOGRE_CONFIG_ENABLE_GLES3_SUPPORT=ON
                     -DOGRE_CONFIG_ENABLE_GLES2_CG_SUPPORT=OFF
                     -DOGRE_CONFIG_ENABLE_GL_STATE_CACHE_SUPPORT=OFF
@@ -435,13 +437,13 @@ externalproject_add(Target_OGRE
                     -DOGRE_BUILD_RENDERSYSTEM_VULKAN=OFF
                     -DOGRE_BUILD_RENDERSYSTEM_TINY=OFF
                     -DOGRE_BUILD_COMPONENT_OVERLAY=ON
-                    -DOGRE_BUILD_COMPONENT_BITES=ON
-                    -DOGRE_BUILD_COMPONENT_BULLET=ON
+                    -DOGRE_BUILD_COMPONENT_BITES=OFF
+                    -DOGRE_BUILD_COMPONENT_BULLET=OFF
                     -DOGRE_BITES_STATIC_PLUGINS=ON
                     -DOGRE_BUILD_COMPONENT_OVERLAY_IMGUI=ON
-                    -DOGRE_BUILD_COMPONENT_PAGING=ON
+                    -DOGRE_BUILD_COMPONENT_PAGING=OFF
                     -DOGRE_BUILD_COMPONENT_MESHLODGENERATOR=ON
-                    -DOGRE_BUILD_COMPONENT_PROPERTY=ON
+                    -DOGRE_BUILD_COMPONENT_PROPERTY=OFF
                     -DOGRE_BUILD_COMPONENT_VOLUME=ON
                     -DOGRE_BUILD_COMPONENT_TERRAIN=ON
                     -DOGRE_BUILD_PLUGIN_FREEIMAGE=OFF
@@ -452,7 +454,7 @@ externalproject_add(Target_OGRE
                     -DOGRE_BUILD_PLUGIN_PCZ=OFF
                     -DOGRE_BUILD_PLUGIN_PFX=ON
                     -DOGRE_BUILD_PLUGIN_OCTREE=ON
-                    -DOGRE_BUILD_PLUGIN_DOT_SCENE=ON
+                    -DOGRE_BUILD_PLUGIN_DOT_SCENE=OFF
                     -DOGRE_BUILD_COMPONENT_HLMS=OFF
                     -DOGRE_BUILD_COMPONENT_RTSHADERSYSTEM=ON
                     -DOGRE_BUILD_RTSHADERSYSTEM_SHADERS=ON
@@ -548,7 +550,6 @@ externalproject_add(Target_Lua
 
 externalproject_add(Target_sol2
                     EXCLUDE_FROM_ALL true
-                    DEPENDS Target_Lua
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/ThePhD/sol2.git
                     GIT_TAG v3.3.0

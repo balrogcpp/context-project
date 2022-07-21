@@ -23,6 +23,10 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STRE
         string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
         string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     endif ()
+    if (EMSCRIPTEN)
+        string(APPEND CMAKE_CXX_FLAGS " -DEMSCRIPTEN=1 -D__EMSCRIPTEN__=1")
+        string(APPEND CMAKE_C_FLAGS " -DEMSCRIPTEN=1 -D__EMSCRIPTEN__=1")
+    endif ()
     if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
         string(APPEND CMAKE_CXX_FLAGS " -msse4")
         string(APPEND CMAKE_C_FLAGS " -msse4")
@@ -88,6 +92,7 @@ elseif (MSVC)
         string(APPEND CMAKE_C_FLAGS " /Zi /Ob1 /DDEBUG")
     endif ()
 endif ()
+
 
 # This variables are used for dependencies
 set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS})

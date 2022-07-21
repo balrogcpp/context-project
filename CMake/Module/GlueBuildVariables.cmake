@@ -35,19 +35,27 @@ if (MINGW)
     list(APPEND SYSTEM_LIBRARIES imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
 elseif (LINUX)
     list(APPEND SYSTEM_LIBRARIES X11 Xrandr dl)
+elseif (APPLE)
+    list(APPEND SYSTEM_LIBRARIES z)
 elseif (ANDROID)
     list(APPEND SYSTEM_LIBRARIES android atomic EGL GLESv1_CM GLESv2 log OpenSLES)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 endif ()
 
+find_package(SDL2 QUIET)
 if (SDL2_FOUND)
     set(SDL2_LIBRARIES SDL2::SDL2-static)
+endif ()
+find_package(pugixml QUIET)
+if (pugixml_FOUND)
+    set(PUGIXML_LIBRARIES pugixml::static)
 endif ()
 
 set(GLUE_LINK_LIBRARIES
         ${OGRE_LIBRARIES}
         ${SDL2_LIBRARIES}
+        ${PUGIXML_LIBRARIES}
         ${BULLET_LIBRARIES}
         ${PNG_LIBRARY}
         ${VORBIS_LIBRARIES}

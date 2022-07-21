@@ -48,8 +48,9 @@ void Sound::Pause() { SoundManagerPtr->pauseAllSounds(); }
 void Sound::Resume() { SoundManagerPtr->resumeAllPausedSounds(); }
 
 void Sound::AddSound(const string &SoundName, const string &AudioFile, Ogre::SceneNode *Node, bool PlayInLoop) {
+#if OGRE_THREAD_SUPPORT > 0
   this_thread::sleep_for(chrono::milliseconds(OGGSOUND_UPDATE_INTERVAL + 1));
-
+#endif
   auto *sound = SoundManagerPtr->createSound(SoundName, AudioFile, true, PlayInLoop, true, nullptr);
   auto *root_node = Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
   if (Node)
