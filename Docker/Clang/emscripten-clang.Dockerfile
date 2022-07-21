@@ -48,12 +48,15 @@ RUN apt-get update \
 
 WORKDIR /opt
 
+ARG EMSDK_ROOT=/opt/emsdk
+ARG EMSDK_VERSION=3.1.16
 RUN apt-get update \
     && apt-get --no-install-recommends -y install python3 \
     && apt-get clean \
-    && git clone --recursive --depth 1 https://github.com/emscripten-core/emsdk.git \
+    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
     && cd emsdk \
     && rm -rf .git \
     && ./emsdk install latest \
     && ./emsdk activate latest \
     && . ./emsdk_env.sh
+ENV EMSDK_EVAL=`${EMSDK_ROOT}/emsdk_env.sh`
