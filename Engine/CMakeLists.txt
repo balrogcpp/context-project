@@ -28,7 +28,6 @@ add_library(GlueStatic STATIC EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
 include_directories(GlueStatic ${GLUE_INCLUDE_DIRS})
 set_target_properties(GlueStatic PROPERTIES OUTPUT_NAME "GlueStatic")
 target_precompile_headers(GlueStatic PUBLIC Source/PCHeader.h)
-#add_dependencies(GlueStatic Dependencies)
 
 
 # Shared library

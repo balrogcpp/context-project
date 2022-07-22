@@ -26,12 +26,11 @@ endmacro()
 macro(insert_dependency2 PACKAGE VARIABLE)
     find_package(${PACKAGE} QUIET)
 
-    if (NOT ${VARIABLE}_FOUND)
+    if (NOT ${VARIABLE})
         message(STATUS "${PACKAGE} required but not found")
         set(ANY_NOT_FOUND true)
     else ()
         message(STATUS "${PACKAGE} found")
-        mark_as_advanced(${VARIABLE}_DIR)
     endif ()
 endmacro()
 

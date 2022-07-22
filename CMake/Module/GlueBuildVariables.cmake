@@ -61,13 +61,14 @@ set(GLUE_LINK_LIBRARIES
         ${PNG_LIBRARY}
         ${VORBIS_LIBRARIES}
         ${OGG_LIBRARIES}
-        ${LUA_LIBRARIES}
+        ${LUA_LIBRARY}
         ${OPENAL_LIBRARY}
         ${SYSTEM_LIBRARIES}
         )
 
 file(GLOB_RECURSE GLUE_ENGINE_SOURCE_FILES ${GLUE_SOURCE_DIR}/*.cpp ${GLUE_SOURCE_DIR}/*.h ${GLUE_SOURCE_DIR}/*.hpp)
 
+# this required to ti disable windows upscaling @hdp monitors @windows
 if (MINGW)
     list(APPEND GLUE_ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Engine/Source/manifest.rc)
 elseif (MSVC)

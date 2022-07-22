@@ -18,6 +18,12 @@ list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Package)
 list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Module)
 
 
+# build html as emscripten
+if (EMSCRIPTEN)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+endif ()
+
+
 # Include necessary submodules
 include(Make)
 include(Platform)
@@ -123,9 +129,9 @@ endif ()
 insert_dependency(Threads)
 insert_dependency_static(Bullet)
 mark_as_advanced(BULLET_INCLUDE_DIR)
-insert_dependency(Lua)
-insert_dependency_static(sol2)
-insert_dependency2(OpenAL OPENAL)
+insert_dependency_static2(Lua LUA_LIBRARY)
+insert_dependency(sol2)
+insert_dependency2(OpenAL OPENAL_FOUND)
 insert_dependency_static(Ogg)
 insert_dependency_static(Vorbis)
 insert_dependency_static(SDL2)
