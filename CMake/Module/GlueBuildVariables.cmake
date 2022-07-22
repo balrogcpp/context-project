@@ -52,6 +52,7 @@ if (pugixml_FOUND)
     set(PUGIXML_LIBRARIES pugixml::static)
 endif ()
 
+
 set(GLUE_LINK_LIBRARIES
         ${OGRE_LIBRARIES}
         ${SDL2_LIBRARIES}
