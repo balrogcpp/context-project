@@ -2,7 +2,7 @@
 
 #pragma once
 #include "Platform.h"
-#ifdef DESKTOP
+#ifndef MOBILE
 #include <OgreResourceGroupManager.h>
 #include <string>
 

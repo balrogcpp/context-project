@@ -1,7 +1,7 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #include "PCHeader.h"
-#ifdef DESKTOP
+#ifndef MOBILE
 #include "AssetHelpers.h"
 #include "Desktop.h"
 #include "Exception.h"
@@ -19,7 +19,9 @@ static inline string FindPath(string Path, int Depth = 2) {
 
   string result = Path;
 
+#ifndef EMSCRIPTEN
   fs::current_path(GetCurrentDirectoryB(""));
+#endif
 
   for (int i = 0; i < Depth; i++) {
     if (fs::exists(result))

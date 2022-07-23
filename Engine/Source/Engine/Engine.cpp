@@ -105,7 +105,11 @@ void Engine::InitComponents() {
 }
 
 void Engine::InitSDLWindow() {
+#ifndef EMSCRIPTEN
   OgreAssert(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER), "Failed to init SDL2");
+#else
+  OgreAssert(!SDL_Init(SDL_INIT_VIDEO), "Failed to init SDL2");
+#endif
   SDL_DisplayMode Current;
   for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
     if (SDL_GetCurrentDisplayMode(i, &Current) == 0) {
@@ -137,16 +141,43 @@ void Engine::InitSDLWindow() {
   SDLWindowPtr = SDL_CreateWindow(WindowCaption.c_str(), WindowPositionFlag, WindowPositionFlag, WindowWidth, WindowHeight, SDLWindowFlags);
   GrabCursor(true);
   ShowCursor(false);
-#elif defined(ANDROID)
+#elif defined(EMSCRIPTEN)
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  SDLWindowFlags |= SDL_WINDOW_OPENGL;
+  SDLWindowFlags |= SDL_WINDOW_RESIZABLE;
+  SDLWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
+  WindowWidth = ScreenWidth;
+  WindowHeight = ScreenHeight;
+  WindowPositionFlag = SDL_WINDOWPOS_CENTERED;
+  SDLWindowPtr = SDL_CreateWindow(nullptr, WindowPositionFlag, WindowPositionFlag, ScreenWidth, ScreenHeight, SDLWindowFlags);
+  SDLGLContextPtr = SDL_GL_CreateContext(SDLWindowPtr);
+  SDL_GL_SetSwapInterval(1); // Enable vsync
+  GrabCursor(true);
+  ShowCursor(false);
+
+#elif defined(ANDROID)
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
-  SDLWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+  SDLWindowFlags |= SDL_WINDOW_FULLSCREEN;
+  SDLWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
   SDLWindowFlags |= SDL_WINDOW_OPENGL;
   WindowWidth = ScreenWidth;
   WindowHeight = ScreenHeight;
@@ -267,7 +298,7 @@ void Engine::InitShadowSettings() {
   ShadowsEnabled = false;
 #endif
   float ShadowFarDistance = 400;
-  int16_t ShadowTexSize = 512;
+  int16_t ShadowTexSize = 2048;
   ShadowsEnabled = ConfigPtr->GetBool("shadows_enable", ShadowsEnabled);
   ShadowFarDistance = ConfigPtr->GetInt("shadow_far", ShadowFarDistance);
   ShadowTexSize = ConfigPtr->GetInt("tex_size", ShadowTexSize);
@@ -457,7 +488,7 @@ void Engine::ShowCursor(bool show) {
 }
 
 void Engine::InitResourceLocation() {
-#if defined(DESKTOP)
+#if !defined(MOBILE)
 #ifndef WINDOWS
   const char SEPARATOR = '/';
 #else

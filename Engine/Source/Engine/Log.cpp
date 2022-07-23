@@ -46,10 +46,8 @@ void Log::messageLogged(const string &message, Ogre::LogMessageLevel lml, bool m
 }
 
 void Log::Message(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug) {
-#ifdef DESKTOP
   static auto &OgreLogManager = Ogre::LogManager::getSingleton();
   OgreLogManager.logMessage(message, lml, maskDebug);
-#endif
 }
 
 }  // namespace Glue

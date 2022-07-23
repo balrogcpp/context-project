@@ -27,12 +27,24 @@ int main(int argc, char *args[])
     return app.Main(MainAppState());
   } catch (Exception &e) {
     ErrorWindow("Exception", e.GetDescription());
+#ifdef EMSCRIPTEN
+    emscripten_pause_main_loop();
+#endif
   } catch (Ogre::Exception &e) {
     ErrorWindow("Exception", e.getFullDescription());
+#ifdef EMSCRIPTEN
+    emscripten_pause_main_loop();
+#endif
   } catch (exception &e) {
     ErrorWindow("Exception", e.what());
+#ifdef EMSCRIPTEN
+    emscripten_pause_main_loop();
+#endif
   } catch (...) {
     ErrorWindow("Exception", "Unknown exception");
+#ifdef EMSCRIPTEN
+    emscripten_pause_main_loop();
+#endif
   }
 
   // to be sure app will return something to system

@@ -66,63 +66,68 @@ Application::Application(int argc, char *args[]) {
 
 Application::~Application() { InputSequencer::GetInstance().UnregWinObserver(this); }
 
-void Application::Loop() {
-  bool WasSuspended = false;
+void Application::LoopBody() {
+  auto before_frame = chrono::system_clock::now().time_since_epoch();
+  int64_t TimeBeforeFrame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
 
-  if (Running && StateManagerPtr->IsActive()) {
-    StateManagerPtr->Update(0);
-    EnginePtr->RenderFrame();
-    ClearRTSSRuntime();
-  }
+  if (CumultedTime > int64_t(1e+6)) CumultedTime = 0;
 
-  while (Running && StateManagerPtr->IsActive()) {
-    auto before_frame = chrono::system_clock::now().time_since_epoch();
-    int64_t TimeBeforeFrame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
+  EnginePtr->Capture();
 
-    if (CumultedTime > int64_t(1e+6)) CumultedTime = 0;
-
-    EnginePtr->Capture();
-
-    if (!Suspend) {
-      if (StateManagerPtr->IsDirty()) {
-        EnginePtr->OnCleanup();
-        StateManagerPtr->InitNextState();
-      } else if (WasSuspended) {
-        EnginePtr->OnResume();
-        WasSuspended = false;
-      }
-
-      auto before_update = chrono::system_clock::now().time_since_epoch();
-      int64_t TimeBeforeUpdate = chrono::duration_cast<chrono::microseconds>(before_update).count();
-      float frame_time = static_cast<float>(TimeBeforeUpdate - TimeOfLastFrame) / 1e+6;
-      TimeOfLastFrame = TimeBeforeUpdate;
-      StateManagerPtr->Update(frame_time);
-      EnginePtr->Update(frame_time);
-      EnginePtr->RenderFrame();
-    } else {
-      EnginePtr->OnPause();
-      WasSuspended = true;
+  if (!Suspend) {
+    if (StateManagerPtr->IsDirty()) {
+      EnginePtr->OnCleanup();
+      StateManagerPtr->InitNextState();
+    } else if (WasSuspended) {
+      EnginePtr->OnResume();
+      WasSuspended = false;
     }
+
+    auto before_update = chrono::system_clock::now().time_since_epoch();
+    int64_t TimeBeforeUpdate = chrono::duration_cast<chrono::microseconds>(before_update).count();
+    float frame_time = static_cast<float>(TimeBeforeUpdate - TimeOfLastFrame) / 1e+6;
+    TimeOfLastFrame = TimeBeforeUpdate;
+    StateManagerPtr->Update(frame_time);
+    EnginePtr->Update(frame_time);
+    EnginePtr->RenderFrame();
+  } else {
+    EnginePtr->OnPause();
+    WasSuspended = true;
+  }
 
 #if defined(DEBUG) && defined(DESKTOP)
-    if (Verbose) cout << flush;
+  if (Verbose) cout << flush;
 #endif
 
-    auto TimeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-    auto RenderTime = TimeAftetRender - TimeBeforeFrame;
+  auto TimeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+  auto RenderTime = TimeAftetRender - TimeBeforeFrame;
 
-    if (LockFPS) {
-      auto delay = static_cast<int64_t>((1e+6 / TargetFPS) - RenderTime);
-      if (delay > 0) this_thread::sleep_for(chrono::microseconds(delay));
-    }
-    int64_t TimeInEndOfLoop = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-    int64_t TimeSinceLastFrame = TimeInEndOfLoop - TimeBeforeFrame;
-    CumultedTime += TimeSinceLastFrame;
+  if (LockFPS) {
+    auto delay = static_cast<int64_t>((1e+6 / TargetFPS) - RenderTime);
+    if (delay > 0) this_thread::sleep_for(chrono::microseconds(delay));
   }
 
-  EnginePtr->OnCleanup();
-  EnginePtr->OnPause();
+  int64_t TimeInEndOfLoop = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+  int64_t TimeSinceLastFrame = TimeInEndOfLoop - TimeBeforeFrame;
+  CumultedTime += TimeSinceLastFrame;
+
+#ifdef EMSCRIPTEN
+  if (!Running || !StateManagerPtr->IsActive()) emscripten_cancel_main_loop();
+#endif
 }
+
+void Application::Loop() {
+  while (Running && StateManagerPtr->IsActive()) {
+    LoopBody();
+  }
+}
+
+#ifdef EMSCRIPTEN
+void Application::EmscriptenLoop(void *arg) {
+  Application *App = static_cast<Application *>(arg);
+  App->LoopBody();
+}
+#endif
 
 void Application::Go() {
   OgreAssert(StateManagerPtr->IsActive(), "AppState is not ready");
@@ -130,7 +135,25 @@ void Application::Go() {
   Running = true;
   auto duration_before_update = chrono::system_clock::now().time_since_epoch();
   TimeOfLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
+
+  if (Running && StateManagerPtr->IsActive()) {
+    StateManagerPtr->Update(0);
+    EnginePtr->RenderFrame();
+    ClearRTSSRuntime();
+  }
+
+#ifdef MOBILE
+  TargetFPS = 30;
+#endif
+#ifndef EMSCRIPTEN
   Loop();
+#else
+  LockFPS=false;
+  emscripten_set_main_loop_arg(Application::EmscriptenLoop, GetInstancePtr(), 0, 1);
+#endif
+
+  EnginePtr->OnCleanup();
+  EnginePtr->OnPause();
 }
 
 void Application::OnQuit() { Running = false; }

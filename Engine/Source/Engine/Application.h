@@ -3,23 +3,27 @@
 #pragma once
 #include "AppStateManager.h"
 #include "Engine.h"
-#include "Singleton.h"
-#include "Input/WindowObserver.h"
 #include "Input/InputObserver.h"
 #include "Input/VerboseListener.h"
+#include "Input/WindowObserver.h"
+#include "Singleton.h"
 #include <memory>
 #include <string>
 
 namespace Glue {
 
-class Application final : public WindowObserver, public InputObserver, public BaseSingleton<Application> {
+class Application final : public WindowObserver, public InputObserver, public Singleton<Application> {
  public:
   /// Constructors
-  explicit Application(int argc = 0, char* args[] = nullptr);
+  explicit Application(int argc = 0, char *args[] = nullptr);
   virtual ~Application();
   int Main(std::unique_ptr<AppState> &&AppStatePtr);
+#ifdef EMSCRIPTEN
+  static void EmscriptenLoop(void *arg);
+#endif
 
  protected:
+  void LoopBody();
   void Loop();
   void Go();
 
@@ -63,9 +67,10 @@ class Application final : public WindowObserver, public InputObserver, public Ba
 #endif
   bool Running = false;
   bool Suspend = false;
+  bool WasSuspended = false;
   int64_t TimeOfLastFrame = 0;
   int64_t CumultedTime = 0;
-  int64_t TargetFPS = 30;
+  int64_t TargetFPS = 60;
   bool LockFPS = true;
 };
 
