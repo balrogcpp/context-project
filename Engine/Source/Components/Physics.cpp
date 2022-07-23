@@ -20,12 +20,25 @@ Physics::Physics(bool threaded) : Threaded(threaded) {
   btSetTaskScheduler(Scheduler);
   BtBroadphase = make_unique<btDbvtBroadphase>();
   BtConfig = make_unique<btDefaultCollisionConfiguration>();
+
+
+#if (OGRE_THREAD_SUPPORT > 0)
   BtDispatcher = make_unique<btCollisionDispatcherMt>(BtConfig.get(), 40);
   BtSolver = make_unique<btSequentialImpulseConstraintSolverMt>();
 
   btConstraintSolverPoolMt *solverPool = new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT);
 
   BtWorld = make_unique<btDiscreteDynamicsWorldMt>(BtDispatcher.get(), BtBroadphase.get(), solverPool, BtSolver.get(), BtConfig.get());
+
+#else
+ // BtDispatcher = make_unique<btCollisionDispatcherMt>(BtConfig.get(), 40);
+  BtDispatcher = make_unique<btCollisionDispatcher>(BtConfig.get());
+  BtSolver = make_unique<btSequentialImpulseConstraintSolver>();
+
+//  btConstraintSolverPoolMt *solverPool = new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT);
+//  BtWorld = make_unique<btDiscreteDynamicsWorldMt>(BtDispatcher.get(), BtBroadphase.get(), solverPool, BtSolver.get(), BtConfig.get());
+  BtWorld = make_unique<btDiscreteDynamicsWorld>(BtDispatcher.get(), BtBroadphase.get(), BtSolver.get(), BtConfig.get());
+#endif
 
   BtWorld->setGravity(btVector3(0.0, -9.8, 0.0));
 

@@ -68,9 +68,9 @@ class Physics final : public Component<Physics> {
   std::unique_ptr<BtOgre::DebugDrawer> DbgDraw;
   std::unique_ptr<btDbvtBroadphase> BtBroadphase;
   std::unique_ptr<btDefaultCollisionConfiguration> BtConfig;
-  std::unique_ptr<btCollisionDispatcherMt> BtDispatcher;
-  std::unique_ptr<btSequentialImpulseConstraintSolverMt> BtSolver;
-  std::unique_ptr<btDiscreteDynamicsWorldMt> BtWorld;
+  std::unique_ptr<btCollisionDispatcher> BtDispatcher;
+  std::unique_ptr<btSequentialImpulseConstraintSolver> BtSolver;
+  std::unique_ptr<btDiscreteDynamicsWorld> BtWorld;
   std::unique_ptr<std::thread> UpdateThread;
   std::map<const btCollisionObject *, ContactInfo> ContactList;
   std::function<void(int a, int b)> ContactCalback;
