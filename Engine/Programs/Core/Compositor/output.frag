@@ -140,7 +140,8 @@ void main()
     vec2 velocity = uScale * texture2D(uSpeedSampler, vUV0).rg;
     float speed = length(velocity * PixelSize);
     int nSamples = int(clamp(speed, 1.0, float(MAX_SAMPLES)));
-    for (int i = 1; i < nSamples; i++) {
+    for (int i = 1; i < MAX_SAMPLES; i++) {
+      if (nSamples <= i) break;
       vec2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5);
       scene += texture2D(uSceneSampler, vUV0 + offset).rgb;
     }
