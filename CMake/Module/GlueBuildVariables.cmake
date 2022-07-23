@@ -15,6 +15,15 @@ if (assimp_FOUND AND MSVC AND NOT RELEASE)
 endif ()
 
 
+# build html as emscripten
+if (EMSCRIPTEN)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " -s FULL_ES3 --preload-file ${GLUE_TMP_DIR}/@. --shell-file ${CMAKE_SOURCE_DIR}/Engine/Source/shell_minimal.html ")
+    string(APPEND CMAKE_CXX_FLAGS " -s FULL_ES3")
+    string(APPEND CMAKE_C_FLAGS " -s FULL_ES3")
+endif ()
+
+
 set(GLUE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Engine/Source)
 
 

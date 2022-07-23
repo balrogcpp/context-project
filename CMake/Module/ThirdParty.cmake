@@ -1,11 +1,14 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
+
 include(Platform)
 include(Make)
 include(GlueCppFlags)
 include(ExternalProject)
 
+
 find_package(Git REQUIRED)
+
 
 set(GLUE_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/External/${GLUE_TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE})
 set(GLUE_THIRDPARTY_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/External/${GLUE_TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE}/sdk CACHE PATH "")
@@ -17,6 +20,7 @@ set(GLUE_EXTERNAL_BIN_DIR ${GLUE_THIRDPARTY_ROOT}/bin)
 if (ANDROID)
     set(GLUE_CMAKE_EXTRA_FLAGS -DANDROID_NDK=${ANDROID_NDK} -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM})
 endif ()
+
 
 set(SDL2_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_SDL2)
 externalproject_add(Target_SDL2
@@ -45,6 +49,7 @@ externalproject_add(Target_SDL2
                     -DSDL_HIDAPI_JOYSTICK=OFF
                     )
 
+
 externalproject_add(Target_OIS
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
@@ -62,6 +67,7 @@ externalproject_add(Target_OIS
                     -DOIS_BUILD_SHARED_LIBS=OFF
                     -DOIS_BUILD_DEMOS=OFF
                     )
+
 
 externalproject_add(Target_Bullet
                     EXCLUDE_FROM_ALL true
@@ -102,6 +108,7 @@ externalproject_add(Target_Bullet
                     -DINTERNAL_CREATE_MSVC_RELATIVE_PATH_PROJECTFILES=ON
                     )
 
+
 set(OPENAL_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_OpenAL)
 externalproject_add(Target_OpenAL
                     EXCLUDE_FROM_ALL true
@@ -136,6 +143,7 @@ externalproject_add(Target_OpenAL
                     -DALSOFT_OSX_FRAMEWORK=OFF
                     )
 
+
 externalproject_add(Target_Ogg
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
@@ -151,6 +159,10 @@ externalproject_add(Target_Ogg
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     )
+if (NOT EMSCRIPTEN)
+    add_dependencies(Target_Ogg Target_OpenAL)
+endif ()
+
 
 externalproject_add(Target_Vorbis
                     EXCLUDE_FROM_ALL true
@@ -170,6 +182,7 @@ externalproject_add(Target_Vorbis
                     -DOGG_INCLUDE_DIR=${GLUE_THIRDPARTY_ROOT}/include #for Android
                     -DOGG_LIBRARY=${GLUE_THIRDPARTY_ROOT}/lib/libogg.a #for Android
                     )
+
 
 externalproject_add(Target_zlib
                     EXCLUDE_FROM_ALL true
@@ -191,6 +204,7 @@ externalproject_add(Target_zlib
                     ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll lib/libz.dylib
                     TEST_AFTER_INSTALL true
                     )
+
 
 externalproject_add(Target_ZZIP
                     EXCLUDE_FROM_ALL true
@@ -219,6 +233,7 @@ externalproject_add(Target_ZZIP
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     )
 
+
 externalproject_add(Target_pugixml
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
@@ -234,6 +249,7 @@ externalproject_add(Target_pugixml
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     )
+
 
 externalproject_add(Target_PNG
                     EXCLUDE_FROM_ALL true
@@ -253,6 +269,7 @@ externalproject_add(Target_PNG
                     -DPNG_SHARED=OFF
                     -DPNG_TESTS=OFF
                     )
+
 
 externalproject_add(Target_FreeType
                     EXCLUDE_FROM_ALL true
@@ -276,6 +293,7 @@ externalproject_add(Target_FreeType
                     -DBUILD_SHARED_LIBS=OFF
                     )
 
+
 externalproject_add(Target_rapidjson
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
@@ -296,6 +314,7 @@ externalproject_add(Target_rapidjson
                     -DRAPIDJSON_BUILD_THIRDPARTY_GTEST=OFF
                     -DRAPIDJSON_HAS_STDSTRING=ON
                     )
+
 
 set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_assimp)
 externalproject_add(Target_assimp
@@ -377,6 +396,7 @@ externalproject_add(Target_assimp
                     -DASSIMP_BUILD_MMD_IMPORTER=OFF
                     -DASSIMP_BUILD_STEP_IMPORTER=OFF
                     )
+
 
 set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_OGRE)
 externalproject_add(Target_OGRE
@@ -475,6 +495,7 @@ externalproject_add(Target_OGRE
                     TEST_AFTER_INSTALL true
                     )
 
+
 externalproject_add(Target_FreeGLUT
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
@@ -495,6 +516,7 @@ externalproject_add(Target_FreeGLUT
                     -DINSTALL_PDB=OFF
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     )
+
 
 externalproject_add(Target_OGRE2
                     EXCLUDE_FROM_ALL true
@@ -526,6 +548,7 @@ externalproject_add(Target_OGRE2
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     )
 
+
 externalproject_add(Target_Lua
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
@@ -550,6 +573,7 @@ externalproject_add(Target_Lua
                     -DLUA_USE_DLOPEN=OFF
                     )
 
+
 externalproject_add(Target_sol2
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
@@ -566,6 +590,7 @@ externalproject_add(Target_sol2
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     )
 
+
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(JEMALLOC_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_jemalloc)
     externalproject_add(Target_jemalloc
@@ -580,6 +605,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
                         INSTALL_COMMAND ${JEMALLOC_CHDIR} ${MAKE_COMMAND} install_lib_static
                         )
 endif ()
+
 
 #std::filesystem is not supported on some platforms with c++17 support
 externalproject_add(Target_filesystem
@@ -600,6 +626,7 @@ externalproject_add(Target_filesystem
                     -DGHC_FILESYSTEM_BUILD_EXAMPLES=OFF
                     )
 
+
 externalproject_add(Target_GoogleTest
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
@@ -616,6 +643,7 @@ externalproject_add(Target_GoogleTest
                     -Dgtest_force_shared_crt=ON
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     )
+
 
 externalproject_add(Target_GoogleBenchmark
                     EXCLUDE_FROM_ALL true
@@ -634,6 +662,7 @@ externalproject_add(Target_GoogleBenchmark
                     -DBENCHMARK_ENABLE_TESTING=OFF
                     )
 
+
 externalproject_add(Target_json
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
@@ -650,6 +679,7 @@ externalproject_add(Target_json
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     -DJSON_BuildTests=OFF
                     )
+
 
 externalproject_add(Target_yaml-cpp
                     EXCLUDE_FROM_ALL true
@@ -671,6 +701,7 @@ externalproject_add(Target_yaml-cpp
                     -DYAML_CPP_BUILD_TESTS=OFF
                     )
 
+
 set(ASIO_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_asio)
 externalproject_add(Target_asio
                     EXCLUDE_FROM_ALL true
@@ -683,6 +714,7 @@ externalproject_add(Target_asio
                     BUILD_COMMAND ${ASIO_CHDIR} ${CMAKE_COMMAND} -E copy_directory asio/include/asio ${GLUE_EXTERNAL_INCLUDE_DIR}/asio
                     INSTALL_COMMAND ${ASIO_CHDIR} ${CMAKE_COMMAND} -E copy asio/include/asio.hpp asio/include/asio ${GLUE_EXTERNAL_INCLUDE_DIR}
                     )
+
 
 externalproject_add(Target_OpenSSL
                     EXCLUDE_FROM_ALL true

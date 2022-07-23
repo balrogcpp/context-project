@@ -1,8 +1,10 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 # C++ optimization flags
 
+
 option(GLUE_USE_AVX "Use AVX instructions set" OFF)
 option(GLUE_USE_AVX2 "Use AVX2 instructions set" OFF)
+
 
 if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND NOT MSVC)
     string(APPEND CMAKE_CXX_FLAGS " -Wall")
@@ -23,22 +25,33 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STRE
         string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
         string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     endif ()
+
+
     if (EMSCRIPTEN)
-        string(APPEND CMAKE_CXX_FLAGS " -DEMSCRIPTEN=1 -D__EMSCRIPTEN__=1 -Wl,--shared-memory,--no-check-features")
-        string(APPEND CMAKE_C_FLAGS " -DEMSCRIPTEN=1 -D__EMSCRIPTEN__=1 -Wl,--shared-memory,--no-check-features")
+        string(APPEND CMAKE_CXX_FLAGS " -s DISABLE_EXCEPTION_CATCHING=0")
+        string(APPEND CMAKE_C_FLAGS " -s DISABLE_EXCEPTION_CATCHING=0")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0")
     endif ()
+
+
     if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
         string(APPEND CMAKE_CXX_FLAGS " -msse4")
         string(APPEND CMAKE_C_FLAGS " -msse4")
     endif ()
+
+
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
         string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
     endif ()
+
+
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND MINGW)
         string(APPEND CMAKE_CXX_FLAGS " -mwindows")
         string(APPEND CMAKE_C_FLAGS " -mwindows")
     endif ()
+
+
     if (GLUE_USE_AVX2)
         string(APPEND CMAKE_CXX_FLAGS " -mavx2")
         string(APPEND CMAKE_C_FLAGS " -mavx2")
@@ -47,13 +60,17 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STRE
         string(APPEND CMAKE_C_FLAGS " -mavx")
     endif ()
 
+
     # gcc-mingw links everything as shared libraries by default
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
     endif ()
 
-    string(APPEND CMAKE_CXX_FLAGS " -pthread")
-    string(APPEND CMAKE_C_FLAGS " -pthread")
+
+    if (NOT EMSCRIPTEN)
+        string(APPEND CMAKE_CXX_FLAGS " -pthread")
+        string(APPEND CMAKE_C_FLAGS " -pthread")
+    endif ()
 
     option(GLUE_USE_OPENMP "" OFF)
     if (GLUE_USE_OPENMP)

@@ -18,12 +18,6 @@ list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Package)
 list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Module)
 
 
-# build html as emscripten
-if (EMSCRIPTEN)
-    set(CMAKE_EXECUTABLE_SUFFIX ".html")
-endif ()
-
-
 # Include necessary submodules
 include(Make)
 include(Platform)
@@ -164,7 +158,7 @@ add_subdirectory(Example)
 #add_subdirectory(Project)
 
 
-# package helper target
+# assets helper target
 add_custom_target(BuildAssets ALL
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Tmp
         COMMAND ${CMAKE_COMMAND} -P CMake/FlatZipAssets.cmake
@@ -173,6 +167,8 @@ add_custom_target(BuildAssets ALL
         USES_TERMINAL
         )
 
+
+# package helper target
 include(Package)
 
 add_custom_target(BuildPackage

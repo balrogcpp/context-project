@@ -21,6 +21,7 @@ if (WIN32)
     install(FILES DESTINATION .)
 endif ()
 
+
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
@@ -41,18 +42,12 @@ else ()
     set(CPACK_GENERATOR "ZIP")
 endif ()
 
+
 find_package(NSIS QUIET)
-cmake_dependent_option(GLUE_CPACK_NSIS "Generate msi installer if NSIS available" ON "WIN32" OFF)
-if (WIN32)
-    if (${NSIS_FOUND})
-        message(STATUS "NSIS found. MSI installer will be created")
-    else ()
-        message(STATUS "NSIS not found")
-    endif ()
-endif ()
 
 
-if (${NSIS_FOUND})
+if (${NSIS_FOUND} AND WIN32)
+    message(STATUS "NSIS found. MSI installer will be created")
     list(APPEND CPACK_GENERATOR "NSIS")
     set(CPACK_NSIS_MODIFY_PATH ON)
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
@@ -63,6 +58,8 @@ if (${NSIS_FOUND})
     elseif (CMAKE_SIZEOF_VOID_P STREQUAL 4)
         set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES32")
     endif ()
+else ()
+    message(STATUS "NSIS not found")
 endif ()
 
 include(CPack)
