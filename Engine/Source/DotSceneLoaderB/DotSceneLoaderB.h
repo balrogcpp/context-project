@@ -29,11 +29,10 @@ class SceneNode;
  * %Codec for loading and saving the SceneNode hierarchy in .scene files.
  * @{
  */
-
 class DotSceneLoaderB
 {
 public:
- DotSceneLoaderB();
+    DotSceneLoaderB();
     virtual ~DotSceneLoaderB();
 
     void load(Ogre::DataStreamPtr& stream, const Ogre::String& groupName, Ogre::SceneNode* rootNode);
