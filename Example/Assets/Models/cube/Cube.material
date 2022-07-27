@@ -1,0 +1,10 @@
+import PBR from PBR.material
+import PBRS from PBRS.material
+import PBR_IBL from PBR_IBL.material
+
+material Cube : PBR
+{
+    set $Albedo hard-edged-rock7_albedo.dds
+    set $Normal bog_normal.dds
+    set $ORM Titanium-Scuffed_roughness.dds
+}

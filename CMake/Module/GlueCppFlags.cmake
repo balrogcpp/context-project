@@ -2,6 +2,10 @@
 # C++ optimization flags
 
 
+include(ProcessorCount)
+processorcount(PROCESSOR_COUNT)
+
+
 option(GLUE_USE_AVX "Use AVX instructions set" OFF)
 option(GLUE_USE_AVX2 "Use AVX2 instructions set" OFF)
 

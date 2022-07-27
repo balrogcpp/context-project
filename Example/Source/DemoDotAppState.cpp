@@ -16,13 +16,13 @@ void DemoDotAppState::SetUp() {
   ShowMouseCursor(false);
   // GetScene().GetCameraMan().SetStyle(CameraMan::ControlStyle::FPS);
   LoadFromFile("1.scene");
-  GetAudio().AddSound("ambient_music", "GameSong2.ogg", nullptr, true);
-  GetAudio().SetSoundVolume("ambient_music", 0.5);
-  //  GetAudio().PlaySound("ambient_music");
+//  GetAudio().AddSound("ambient_music", "GameSong2.ogg", nullptr, true);
+//  GetAudio().SetSoundVolume("ambient_music", 0.5);
+//    GetAudio().PlaySound("ambient_music");
   //  GetAudio().AddSound("wind", "Wind-Mark_DiAngelo-1940285615.ogg", nullptr, true);
   //  GetAudio().PlaySound("wind");
-  GetAudio().AddSound("selection", "Menu-Selection-Change-M.ogg");
-  GetAudio().AddSound("click", "VideoGameMenuSoundsMenu-Selection-Change-N.ogg");
+//  GetAudio().AddSound("selection", "Menu-Selection-Change-M.ogg");
+//  GetAudio().AddSound("click", "VideoGameMenuSoundsMenu-Selection-Change-N.ogg");
 }
 
 void DemoDotAppState::DrawMenu() {
@@ -60,7 +60,7 @@ void DemoDotAppState::DrawMenu() {
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
   ImGui::NewLine();
   if (ImGui::Button(ICON_KI_STAR u8"    Вернуться в игру")) {
-    GetAudio().PlaySound("selection", true);
+//    GetAudio().PlaySound("selection", true);
     GetEngine().GrabCursor(true);
     GetEngine().OnMenuOff();
     ShowContextMenu = false;
@@ -68,12 +68,12 @@ void DemoDotAppState::DrawMenu() {
 #endif
   ImGui::NewLine();
   if (ImGui::Button(ICON_KI_STAR u8"    Главное меню")) {
-    GetAudio().PlaySound("selection", true);
+//    GetAudio().PlaySound("selection", true);
     ChangeState(make_unique<MenuAppState>());
   }
   ImGui::NewLine();
   if (ImGui::Button(ICON_KI_STAR u8"    Выйти из игры")) {
-    GetAudio().PlaySound("selection", true);
+//    GetAudio().PlaySound("selection", true);
     ChangeState();
   }
   ImGui::NewLine();

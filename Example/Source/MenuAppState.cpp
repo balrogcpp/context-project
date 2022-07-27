@@ -12,10 +12,10 @@ namespace Demo {
 
 void MenuAppState::SetUp() {
   ShowMouseCursor(true);
-  GetAudio().AddSound("menu", "GameMenu.ogg", nullptr, true);
+//  GetAudio().AddSound("menu", "GameMenu.ogg", nullptr, true);
   //  GetAudio().PlaySound("menu");
-  GetAudio().AddSound("selection", "Menu-Selection-Change-M.ogg");
-  GetAudio().AddSound("click", "VideoGameMenuSoundsMenu-Selection-Change-N.ogg");
+//  GetAudio().AddSound("selection", "Menu-Selection-Change-M.ogg");
+//  GetAudio().AddSound("click", "VideoGameMenuSoundsMenu-Selection-Change-N.ogg");
 }
 
 void MenuAppState::Cleanup() {}
@@ -34,14 +34,14 @@ void MenuAppState::DrawMainMenu() {
   ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
   ImGui::NewLine();
   if (ImGui::Button(ICON_KI_GAMEPAD u8"    Начать")) {
-    GetAudio().PlaySound("selection", true);
+//    GetAudio().PlaySound("selection", true);
     ChangeState(make_unique<DemoDotAppState>());
   }
   ImGui::NewLine();
-  if (ImGui::Button(ICON_KI_WRENCH u8"    Настройки")) GetAudio().PlaySound("selection", true);
-  ImGui::NewLine();
+//  if (ImGui::Button(ICON_KI_WRENCH u8"    Настройки")) GetAudio().PlaySound("selection", true);
+//  ImGui::NewLine();
   if (ImGui::Button(ICON_KI_EXIT u8"    Выйти")) {
-    GetAudio().PlaySound("selection", true);
+//    GetAudio().PlaySound("selection", true);
     ChangeState();
   }
   ImGui::NewLine();

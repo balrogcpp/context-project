@@ -1,8 +1,9 @@
-#ifndef DOT_SCENELOADER_H
-#define DOT_SCENELOADER_H
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+/// @file modified version of DotSceneLoader https://github.com/OGRECave/ogre/tree/master/PlugIns/DotScene
+
+#pragma once
 
 // Includes
-//#include <OgreDotScenePluginExports.h>
 #include <OgreColourValue.h>
 #include <OgreQuaternion.h>
 #include <OgreResourceGroupManager.h>
@@ -93,4 +94,3 @@ private:
 /** @} */
 /** @} */
 } // namespace Ogre
-#endif // DOT_SCENELOADER_H

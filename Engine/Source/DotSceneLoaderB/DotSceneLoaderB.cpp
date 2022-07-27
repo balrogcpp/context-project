@@ -1,3 +1,7 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+#include "PCHeader.h"
+
 #include <Ogre.h>
 #include "DotSceneLoaderB.h"
 #include <OgreComponents.h>
@@ -5,6 +9,7 @@
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainGroup.h>
+#include "Components/TerrainMaterialGeneratorB.h"
 #endif
 
 #include <pugixml.hpp>
@@ -35,6 +40,14 @@ Real getAttribReal(const pugi::xml_node& XMLNode, const String& attrib, Real def
         return defaultValue;
 }
 
+int getAttribInt(const pugi::xml_node& XMLNode, const String& attrib, int defaultValue = 0)
+{
+    if (auto anode = XMLNode.attribute(attrib.c_str()))
+        return StringConverter::parseInt(anode.value());
+    else
+        return defaultValue;
+}
+
 bool getAttribBool(const pugi::xml_node& XMLNode, const String& attrib, bool defaultValue = false)
 {
     if (auto anode = XMLNode.attribute(attrib.c_str()))
@@ -45,25 +58,25 @@ bool getAttribBool(const pugi::xml_node& XMLNode, const String& attrib, bool def
     return false;
 }
 
-Vector3 parseVector3(const pugi::xml_node& XMLNode)
+Vector3 parseVector3(const pugi::xml_node& XMLNode, Vector3 defaultValue = Vector3::ZERO)
 {
-    return Vector3(StringConverter::parseReal(XMLNode.attribute("x").value()),
-                   StringConverter::parseReal(XMLNode.attribute("y").value()),
-                   StringConverter::parseReal(XMLNode.attribute("z").value()));
+    return Vector3(StringConverter::parseReal(XMLNode.attribute("x").value(), defaultValue.x),
+                   StringConverter::parseReal(XMLNode.attribute("y").value(), defaultValue.y),
+                   StringConverter::parseReal(XMLNode.attribute("z").value(), defaultValue.z));
 }
 
-Quaternion parseQuaternion(const pugi::xml_node& XMLNode)
+Quaternion parseQuaternion(const pugi::xml_node& XMLNode, Quaternion defaultValue = Quaternion::IDENTITY)
 {
     //! @todo Fix this crap!
 
-    Quaternion orientation;
+    Quaternion orientation = defaultValue;
 
     if (XMLNode.attribute("qw"))
     {
         orientation.w = StringConverter::parseReal(XMLNode.attribute("qw").value());
         orientation.x = StringConverter::parseReal(XMLNode.attribute("qx").value());
-        orientation.y = StringConverter::parseReal(XMLNode.attribute("qy").value());
-        orientation.z = StringConverter::parseReal(XMLNode.attribute("qz").value());
+        orientation.y = -StringConverter::parseReal(XMLNode.attribute("qz").value());
+        orientation.z = StringConverter::parseReal(XMLNode.attribute("qy").value());
     }
     else if (XMLNode.attribute("axisX"))
     {
@@ -98,15 +111,23 @@ Quaternion parseQuaternion(const pugi::xml_node& XMLNode)
         orientation.z = StringConverter::parseReal(XMLNode.attribute("z").value());
     }
 
-    return orientation;
+  Ogre::Vector3 direction = orientation * Ogre::Vector3::NEGATIVE_UNIT_Z;
+  direction = Vector3(direction.x, direction.z, -direction.y).normalisedCopy();
+  auto *scene = Root::getSingleton().getSceneManager("Default");
+  auto *node = scene->getRootSceneNode()->createChildSceneNode("tmp");
+  node->setDirection(direction);
+  orientation = node->getOrientation();
+  scene->destroySceneNode(node);
+
+  return orientation;
 }
 
-ColourValue parseColour(pugi::xml_node& XMLNode)
+ColourValue parseColour(pugi::xml_node& XMLNode, ColourValue defaultValue = ColourValue::Black)
 {
-    return ColourValue(StringConverter::parseReal(XMLNode.attribute("r").value()),
-                       StringConverter::parseReal(XMLNode.attribute("g").value()),
-                       StringConverter::parseReal(XMLNode.attribute("b").value()),
-                       XMLNode.attribute("a") != NULL ? StringConverter::parseReal(XMLNode.attribute("a").value()) : 1);
+    return ColourValue(StringConverter::parseReal(XMLNode.attribute("r").value(), defaultValue.r) / 255.0,
+                       StringConverter::parseReal(XMLNode.attribute("g").value(), defaultValue.g) / 255.0,
+                       StringConverter::parseReal(XMLNode.attribute("b").value(), defaultValue.b) / 255.0,
+                       XMLNode.attribute("a") != NULL ? StringConverter::parseReal(XMLNode.attribute("a").value(), defaultValue.a) / 255.0 : 1.0) ;
 }
 
 struct DotSceneCodecB : public Codec
@@ -180,13 +201,17 @@ void DotSceneLoaderB::processScene(pugi::xml_node& XMLRoot)
 
     LogManager::getSingleton().logMessage(message);
 
-    // Process environment (?)
-    if (auto pElement = XMLRoot.child("environment"))
-        processEnvironment(pElement);
+    // Process terrain (?)
+    if (auto pElement = XMLRoot.child("terrainGroup"))
+        processTerrainGroup(pElement);
 
     // Process nodes (?)
     if (auto pElement = XMLRoot.child("nodes"))
         processNodes(pElement);
+
+    // Process environment (?)
+    if (auto pElement = XMLRoot.child("environment"))
+        processEnvironment(pElement);
 
     // Process externals (?)
     if (auto pElement = XMLRoot.child("externals"))
@@ -203,10 +228,6 @@ void DotSceneLoaderB::processScene(pugi::xml_node& XMLRoot)
     // Process camera (?)
     if (auto pElement = XMLRoot.child("camera"))
         processCamera(pElement);
-
-    // Process terrain (?)
-    if (auto pElement = XMLRoot.child("terrainGroup"))
-        processTerrainGroup(pElement);
 }
 
 void DotSceneLoaderB::processNodes(pugi::xml_node& XMLNode)
@@ -230,6 +251,13 @@ void DotSceneLoaderB::processNodes(pugi::xml_node& XMLNode)
     if (auto pElement = XMLNode.child("rotation"))
     {
         mAttachNode->setOrientation(parseQuaternion(pElement));
+        mAttachNode->setInitialState();
+    }
+
+    // Process direction (?)
+    if (auto pElement = XMLNode.child("direction"))
+    {
+        mAttachNode->setDirection(parseVector3(pElement).normalisedCopy());
         mAttachNode->setInitialState();
     }
 
@@ -285,33 +313,63 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
     LogManager::getSingleton().logMessage("[DotSceneLoaderB] Processing Terrain Group...", LML_TRIVIAL);
 
     Real worldSize = getAttribReal(XMLNode, "worldSize");
-    int mapSize = StringConverter::parseInt(XMLNode.attribute("size").value());
+    int mapSize = getAttribInt(XMLNode, "size", 513);
     int compositeMapDistance = StringConverter::parseInt(XMLNode.attribute("tuningCompositeMapDistance").value());
-    int maxPixelError = StringConverter::parseInt(XMLNode.attribute("tuningMaxPixelError").value());
+    int maxPixelError = getAttribInt(XMLNode, "tuningMaxPixelError", 1);
+    int inputScale = StringConverter::parseInt(XMLNode.attribute("inputScale").value());
 
-    auto terrainGlobalOptions = TerrainGlobalOptions::getSingletonPtr();
-    OgreAssert(terrainGlobalOptions, "TerrainGlobalOptions not available");
+    auto *TGO = TerrainGlobalOptions::getSingletonPtr();
+    if (!TGO) TGO = new TerrainGlobalOptions();
+    TGO->setUseVertexCompressionWhenAvailable(true);
+    TGO->setCastsDynamicShadows(true);
+    TGO->setCompositeMapDistance(300);
+    TGO->setMaxPixelError(0);
+    TGO->setUseRayBoxDistanceCalculation(true);
+    TGO->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
 
-    terrainGlobalOptions->setMaxPixelError((Real)maxPixelError);
-    terrainGlobalOptions->setCompositeMapDistance((Real)compositeMapDistance);
+    TerrainGroup *OgreTerrainPtr = new TerrainGroup(mSceneMgr, Terrain::ALIGN_X_Z, mapSize, worldSize);
+    OgreTerrainPtr->setOrigin(Vector3::ZERO);
+    OgreTerrainPtr->setResourceGroup(m_sGroupName);
 
-    auto terrainGroup = std::make_shared<TerrainGroup>(mSceneMgr, Terrain::ALIGN_X_Z, mapSize, worldSize);
-    terrainGroup->setOrigin(Vector3::ZERO);
-    terrainGroup->setResourceGroup(m_sGroupName);
+    Terrain::ImportData &defaultimp = OgreTerrainPtr->getDefaultImportSettings();
+    //defaultimp.terrainSize = mapSize;
+    //defaultimp.worldSize = worldSize;
+    defaultimp.inputScale = inputScale;
+    //defaultimp.minBatchSize = 17;
+    //defaultimp.maxBatchSize = 65;
 
-    // Process terrain pages (*)
-    for (auto pPageElement : XMLNode.children("terrain"))
+    for (auto &pPageElement : XMLNode.children("terrain"))
     {
-        int pageX = StringConverter::parseInt(pPageElement.attribute("x").value());
-        int pageY = StringConverter::parseInt(pPageElement.attribute("y").value());
+      int pageX = StringConverter::parseInt(pPageElement.attribute("x").value());
+      int pageY = StringConverter::parseInt(pPageElement.attribute("y").value());
+      String cached = pPageElement.attribute("heightmap").value();
+      Image image;
 
-        terrainGroup->defineTerrain(pageX, pageY, pPageElement.attribute("dataFile").value());
+      if (ResourceGroupManager::getSingleton().resourceExists(m_sGroupName, cached))
+      {
+        image.load(cached, m_sGroupName);
+        OgreTerrainPtr->defineTerrain(pageX, pageY, &image);
+      }
+      else
+      {
+        OgreTerrainPtr->defineTerrain(pageX, pageY, 0.0);
+      }
     }
-    terrainGroup->loadAllTerrains(true);
 
-    terrainGroup->freeTemporaryResources();
+    OgreTerrainPtr->loadAllTerrains(true);
 
-    mAttachNode->getUserObjectBindings().setUserAny("TerrainGroup", terrainGroup);
+    OgreTerrainPtr->freeTemporaryResources();
+
+    auto terrainIterator = OgreTerrainPtr->getTerrainIterator();
+
+    while (terrainIterator.hasMoreElements())
+    {
+      auto *terrain = terrainIterator.getNext()->instance;
+      Glue::GetPhysics().CreateTerrainHeightfieldShape(terrain->getSize(), terrain->getHeightData(), terrain->getMinHeight(), terrain->getMaxHeight(),
+                                                 terrain->getPosition(), terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1)));
+    }
+
+    Glue::GetScene().AddTerrain(OgreTerrainPtr);
 #else
     OGRE_EXCEPT(Exception::ERR_INVALID_CALL, "recompile with Terrain component");
 #endif
@@ -364,6 +422,48 @@ void DotSceneLoaderB::processLight(pugi::xml_node& XMLNode, SceneNode* pParent)
     // Process userDataReference (?)
     if (auto pElement = XMLNode.child("userData"))
         processUserData(pElement, pLight->getUserObjectBindings());
+
+    if (mSceneMgr->getShadowTechnique() != SHADOWTYPE_NONE)
+    {
+      auto texture_config = mSceneMgr->getShadowTextureConfigList()[0];
+
+      if (pLight->getType() == Light::LT_POINT) pLight->setCastShadows(false);
+
+      if (mSceneMgr->getShadowTextureConfigList().size() < 9 && pLight->getCastShadows())
+      {
+        if (pLight->getType() == Light::LT_SPOTLIGHT) {
+          static ShadowCameraSetupPtr default_scs = LiSPSMShadowCameraSetup::create();
+
+          pLight->setCustomShadowCameraSetup(default_scs);
+          size_t tex_count = mSceneMgr->getShadowTextureConfigList().size() + 1;
+          mSceneMgr->setShadowTextureCount(tex_count);
+
+          size_t index = tex_count - 1;
+          texture_config.height *= pow(2.0, -floor(index / 3.0));
+          texture_config.width *= pow(2.0, -floor(index / 3.0));
+          mSceneMgr->setShadowTextureConfig(index, texture_config);
+        }
+        else if (pLight->getType() == Light::LT_DIRECTIONAL)
+        {
+          size_t per_light = mSceneMgr->getShadowTextureCountPerLightType(Light::LT_DIRECTIONAL);
+          size_t tex_count = mSceneMgr->getShadowTextureConfigList().size() + per_light - 1;
+          mSceneMgr->setShadowTextureCount(tex_count);
+
+          for (size_t i = 1; i <= per_light; i++) {
+            size_t index = tex_count - i;
+            mSceneMgr->setShadowTextureConfig(index, texture_config);
+          }
+        }
+      }
+      else
+      {
+        pLight->setCastShadows(false);
+      }
+    }
+    else
+    {
+      pLight->setCastShadows(false);
+    }
 }
 
 void DotSceneLoaderB::processCamera(pugi::xml_node& XMLNode, SceneNode* pParent)
@@ -373,12 +473,13 @@ void DotSceneLoaderB::processCamera(pugi::xml_node& XMLNode, SceneNode* pParent)
 
     LogManager::getSingleton().logMessage("[DotSceneLoaderB] Processing Camera: " + name, LML_TRIVIAL);
 
-    // Real fov = getAttribReal(XMLNode, "fov", 45);
+    Real fov = getAttribReal(XMLNode, "fov", 45);
     Real aspectRatio = getAttribReal(XMLNode, "aspectRatio", 1.3333);
     String projectionType = getAttrib(XMLNode, "projectionType", "perspective");
 
     // Create the camera
-    Camera* pCamera = mSceneMgr->createCamera(name);
+    //Camera* pCamera = mSceneMgr->createCamera(name);
+    Camera* pCamera = mSceneMgr->getCamera(name);
 
     // construct a scenenode is no parent
     if (!pParent)
@@ -388,10 +489,10 @@ void DotSceneLoaderB::processCamera(pugi::xml_node& XMLNode, SceneNode* pParent)
 
     // Set the field-of-view
     //! @todo Is this always in degrees?
-    // pCamera->setFOVy(Degree(fov));
+    pCamera->setFOVy(Degree(fov));
 
     // Set the aspect ratio
-    pCamera->setAspectRatio(aspectRatio);
+    //pCamera->setAspectRatio(aspectRatio);
 
     // Set the projection type
     if (projectionType == "perspective")
@@ -412,6 +513,9 @@ void DotSceneLoaderB::processCamera(pugi::xml_node& XMLNode, SceneNode* pParent)
     // Process userDataReference (?)
     if (auto pElement = XMLNode.child("userData"))
         processUserData(pElement, static_cast<MovableObject*>(pCamera)->getUserObjectBindings());
+
+    Glue::GetScene().AddCamera(pCamera);
+    if (Glue::GetScene().GetCameraMan().GetStyle() == Glue::CameraMan::MANUAL) Glue::GetScene().AddSinbad(pCamera);
 }
 
 void DotSceneLoaderB::processNode(pugi::xml_node& XMLNode, SceneNode* pParent)
@@ -454,6 +558,13 @@ void DotSceneLoaderB::processNode(pugi::xml_node& XMLNode, SceneNode* pParent)
     {
         pNode->setOrientation(parseQuaternion(pElement));
         pNode->setInitialState();
+    }
+
+    // Process direction (?)
+    if (auto pElement = XMLNode.child("direction"))
+    {
+      pNode->setDirection(parseVector3(pElement).normalisedCopy());
+      pNode->setInitialState();
     }
 
     // Process scale (?)
@@ -661,9 +772,15 @@ void DotSceneLoaderB::processEntity(pugi::xml_node& XMLNode, SceneNode* pParent)
         return;
     }
 
-    // Process userDataReference (?)
-    if (auto pElement = XMLNode.child("userData"))
-        processUserData(pElement, pEntity->getUserObjectBindings());
+  // Process userDataReference (?)
+  if (auto pElement = XMLNode.child("userData")) {
+    processUserData(pElement, pEntity->getUserObjectBindings());
+    Glue::GetPhysics().ProcessData(static_cast<Entity *>(pEntity), pParent, pEntity->getUserObjectBindings());
+  } else {
+    Glue::GetPhysics().ProcessData(static_cast<Entity *>(pEntity), pParent);
+  }
+
+  Glue::GetScene().AddEntity(static_cast<Entity *>(pEntity));
 }
 
 void DotSceneLoaderB::processParticleSystem(pugi::xml_node& XMLNode, SceneNode* pParent)
@@ -701,18 +818,18 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
 
     LogManager::getSingleton().logMessage("[DotSceneLoaderB] Processing Plane: " + name, LML_TRIVIAL);
 
-    Real distance = getAttribReal(XMLNode, "distance");
-    Real width = getAttribReal(XMLNode, "width");
-    Real height = getAttribReal(XMLNode, "height");
-    int xSegments = StringConverter::parseInt(getAttrib(XMLNode, "xSegments"));
-    int ySegments = StringConverter::parseInt(getAttrib(XMLNode, "ySegments"));
-    int numTexCoordSets = StringConverter::parseInt(getAttrib(XMLNode, "numTexCoordSets"));
-    Real uTile = getAttribReal(XMLNode, "uTile");
-    Real vTile = getAttribReal(XMLNode, "vTile");
+    Real distance = getAttribReal(XMLNode, "distance", 0.0);
+    Real width = getAttribReal(XMLNode, "width", 1.0);
+    Real height = getAttribReal(XMLNode, "height", 1.0);
+    int xSegments = getAttribInt(XMLNode, "xSegments", width);
+    int ySegments = getAttribInt(XMLNode, "ySegments", height);
+    int numTexCoordSets = getAttribInt(XMLNode, "numTexCoordSets", 1);
+    Real uTile = getAttribReal(XMLNode, "uTile", width);
+    Real vTile = getAttribReal(XMLNode, "vTile", height);
     String material = getAttrib(XMLNode, "material");
-    bool hasNormals = getAttribBool(XMLNode, "hasNormals");
-    Vector3 normal = parseVector3(XMLNode.child("normal"));
-    Vector3 up = parseVector3(XMLNode.child("upVector"));
+    bool hasNormals = getAttribBool(XMLNode, "hasNormals", true);
+    Vector3 normal = parseVector3(XMLNode.child("normal"), {0, 1, 0});
+    Vector3 up = parseVector3(XMLNode.child("upVector"), {0, 0, 1});
 
     Plane plane(normal, distance);
     MeshPtr res =
@@ -723,6 +840,13 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     ent->setMaterialName(material);
 
     pParent->attachObject(ent);
+
+    auto *entShape = BtOgre::createBoxCollider(ent);
+    auto *bodyState = new BtOgre::RigidBodyState(pParent);
+    auto *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
+    entBody->setFriction(1);
+    Glue::GetPhysics().AddRigidBody(entBody);
+    Glue::AddMaterial(material);
 }
 
 void DotSceneLoaderB::processFog(pugi::xml_node& XMLNode)
@@ -762,10 +886,10 @@ void DotSceneLoaderB::processSkyBox(pugi::xml_node& XMLNode)
     LogManager::getSingleton().logMessage("[DotSceneLoaderB] Processing SkyBox...", LML_TRIVIAL);
 
     // Process attributes
-    String material = getAttrib(XMLNode, "material", "BaseWhite");
-    Real distance = getAttribReal(XMLNode, "distance", 5000);
+    String material = getAttrib(XMLNode, "material", "SkyBox");
+    Real distance = getAttribReal(XMLNode, "distance", 600);
     bool drawFirst = getAttribBool(XMLNode, "drawFirst", true);
-    bool active = getAttribBool(XMLNode, "active", false);
+    bool active = getAttribBool(XMLNode, "active", true);
     if (!active)
         return;
 
@@ -777,6 +901,7 @@ void DotSceneLoaderB::processSkyBox(pugi::xml_node& XMLNode)
 
     // Setup the sky box
     mSceneMgr->setSkyBox(true, material, distance, drawFirst, rotation, m_sGroupName);
+    Glue::GetScene().AddSkyBox();
 }
 
 void DotSceneLoaderB::processSkyDome(pugi::xml_node& XMLNode)

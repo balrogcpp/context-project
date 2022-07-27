@@ -3,7 +3,7 @@
 #include "PCHeader.h"
 #include "Engine.h"
 #include "AssetHelpers.h"
-#include "Components/DotSceneLoaderB.h"
+#include "DotSceneLoaderB/DotSceneLoaderB.h"
 #include "Config.h"
 #include "Input/InputSequencer.h"
 #include "Log.h"
@@ -150,7 +150,7 @@ void Engine::InitSDLWindow() {
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   SDLWindowFlags |= SDL_WINDOW_OPENGL;
   SDLWindowFlags |= SDL_WINDOW_RESIZABLE;
@@ -160,7 +160,6 @@ void Engine::InitSDLWindow() {
   WindowPositionFlag = SDL_WINDOWPOS_CENTERED;
   SDLWindowPtr = SDL_CreateWindow(nullptr, WindowPositionFlag, WindowPositionFlag, ScreenWidth, ScreenHeight, SDLWindowFlags);
   SDLGLContextPtr = SDL_GL_CreateContext(SDLWindowPtr);
-  SDL_GL_SetSwapInterval(1); // Enable vsync
   GrabCursor(true);
   ShowCursor(false);
 

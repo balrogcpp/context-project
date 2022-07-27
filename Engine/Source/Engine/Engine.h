@@ -116,6 +116,7 @@ class Engine final : public Singleton<Engine> {
 
   ///
   bool CheckRenderSystemVersion(int major, int minor);
+
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
   ///
   void InitOgreRenderSystemGL3();
@@ -123,6 +124,7 @@ class Engine final : public Singleton<Engine> {
   ///
   bool CheckGL3Version(int major, int minor);
 #endif
+
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
   ///
   void InitOgreRenderSystemGLES2();
@@ -130,6 +132,7 @@ class Engine final : public Singleton<Engine> {
   ///
   bool CheckGLES2Version(int major, int minor);
 #endif
+
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL
   ///
   void InitOgreRenderSystemGL();
@@ -137,6 +140,7 @@ class Engine final : public Singleton<Engine> {
   ///
   bool CheckGLVersion(int major, int minor);
 #endif
+
   /// Load into memory static Ogre plugins
   void InitOgrePlugins();
 
@@ -160,6 +164,7 @@ class Engine final : public Singleton<Engine> {
   void AndroidRestoreWindow();
 #endif
 
+  ///
   std::string RenderSystemName;
   Ogre::Root* OgreRoot = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;
@@ -171,6 +176,7 @@ class Engine final : public Singleton<Engine> {
   std::vector<float> PSSMSplitPointList;
   int PSSMSplitCount = 3;
 
+  ///
   std::string WindowCaption = "Example0";
   int WindowWidth = 1024;
   int WindowHeight = 768;

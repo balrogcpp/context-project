@@ -4,25 +4,55 @@
         <node name="Sun">
             <position x="0" y="0" z="0"/>
             <direction x="40.659888" y="-20.704975" z="-30.950829"/>
-            <light name="Sun" powerScale="5" type="directional" castShadows="true">
-            </light>
+            <light name="Sun" powerScale="5" type="directional" castShadows="true"/>
         </node>
         <node name="Camera">
             <position x="0" y="2" z="0"/>
             <direction x="0.0" y="0.0" z="-1"/>
             <scale x="1.000000" y="1.000000" z="1.000000"/>
-            <camera fov="1" name="Default" projectionType="perspective">
+            <camera fov="45" name="Default" projectionType="perspective">
                 <clipping far="1000.0" near="0.001"/>
             </camera>
         </node>
-        <node name="Sinbad002Node">
-            <position x="0" y="2.0" z="2.0"/>
-            <scale x="0.2" y="20." z="0.2"/>
-            <entity meshFile="Sinbad.002.mesh" name="Sinbad002">
+                <node name="Sinbad002Node">
+                    <position x="1" y="1.0" z="2.0"/>
+                    <scale x="0.002" y="0.002" z="0.002"/>
+                    <direction x="40.659888" y="-20.704975" z="-30.950829"/>
+                    <entity meshFile="Sinbad.002.mesh" name="Sinbad002">
+                        <userData>
+                            <property data="1000.0" name="mass" type="float"/>
+                            <property data="1.0" name="mass_radius" type="float"/>
+                            <property data="static" name="physics_type" type="str"/>
+                            <property data="sphere" name="proxy" type="str"/>
+                            <property data="False" name="actor" type="bool"/>
+                            <property data="False" name="ghost" type="bool"/>
+                            <property data="0.0" name="velocity_min" type="float"/>
+                            <property data="0.0" name="velocity_max" type="float"/>
+                            <property data="False" name="lock_trans_x" type="bool"/>
+                            <property data="False" name="lock_trans_y" type="bool"/>
+                            <property data="False" name="lock_trans_z" type="bool"/>
+                            <property data="False" name="lock_rot_x" type="bool"/>
+                            <property data="False" name="lock_rot_y" type="bool"/>
+                            <property data="False" name="lock_rot_z" type="bool"/>
+                            <property data="False" name="anisotropic_friction" type="bool"/>
+                            <property data="1.0" name="friction_x" type="float"/>
+                            <property data="1.0" name="friction_y" type="float"/>
+                            <property data="1.0" name="friction_z" type="float"/>
+                            <property data="0.03999999910593033" name="damping_trans" type="float"/>
+                            <property data="0.10000000149011612" name="damping_rot" type="float"/>
+                            <property data="0.4000000059604645" name="inertia_tensor" type="float"/>
+                        </userData>
+                    </entity>
+                </node>
+        <node name="Helmet">
+            <position x="0" y="10.0" z="2.0"/>
+            <!--            <direction x="40.659888" y="-20.704975" z="-30.950829"/>-->
+            <scale x="1" y="1" z="1"/>
+            <entity meshFile="DamagedHelmet.mesh" name="Helmet2">
                 <userData>
                     <property data="1000.0" name="mass" type="float"/>
                     <property data="1.0" name="mass_radius" type="float"/>
-                    <property data="static" name="physics_type" type="str"/>
+                    <property data="dynamic" name="physics_type" type="str"/>
                     <property data="capsule" name="proxy" type="str"/>
                     <property data="False" name="actor" type="bool"/>
                     <property data="False" name="ghost" type="bool"/>
@@ -45,20 +75,20 @@
             </entity>
         </node>
         <node name="Plane">
-            <plane name="Plane" material="ReflectivePlane" width="200" reflection="false" distance="-10.0"/>
+            <plane name="Plane" material="Plane" width="5" height="5" distance="0.0"/>
         </node>
     </nodes>
     <forest>
     </forest>
     <environment>
-        <colourAmbient r="127" g="127" b="127"/>
-        <shadowColor b="127" g="0.0" r="0.0"/>
-        <fog mode="exp" density="0.007">
-            <colour r="155" g="171" b="187"/>
-        </fog>
+        <colourAmbient r="60" g="60" b="60"/>
+        <shadowColor b="60"/>
+        <skyBox active="true"/>
+            <fog mode="exp" density="0.007">
+                <colour r="155" g="171" b="187"/>
+            </fog>
     </environment>
-    <skyBox cubemap=""/>
-    <terrainGroup worldSize="100" mapSize="257" inputScale="10">
-        <terrain x="0" y="0" heightmap="terrain2.png"/>
-    </terrainGroup>
+<!--        <terrainGroup worldSize="450" size="1025" inputScale="45">-->
+<!--            <terrain x="0" y="0" heightmap="terrain2.png"/>-->
+<!--        </terrainGroup>-->
 </scene>

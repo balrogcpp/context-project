@@ -13,9 +13,9 @@ Ogre::SceneNode *SinbadCharacterController::GetBodyNode() const { return BodyNod
 SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam) : BaseAnimID(ANIM_NONE), TopAnimID(ANIM_NONE) {
   SetupBody();
   SetupCamera(cam);
-  GetAudio().AddSound("walk_grass", "Footsteps-in-grass-fast.ogg", BodyNode, true);
-  GetAudio().SetSoundVolume("walk_grass", 2.0);
-  GetAudio().AddListener(CameraNode);
+  //GetAudio().AddSound("walk_grass", "Footsteps-in-grass-fast.ogg", BodyNode, true);
+  //GetAudio().SetSoundVolume("walk_grass", 2.0);
+  //GetAudio().AddListener(CameraNode);
   SetupAnimations();
 }
 
@@ -425,10 +425,10 @@ void SinbadCharacterController::SetTopAnimation(AnimID ID, bool reset) {
     if (reset) Anims[ID]->setTimePosition(0);
   }
 
-  if (ID == ANIM_RUN_TOP)
-    GetAudio().PlaySound("walk_grass");
-  else
-    GetAudio().StopSound("walk_grass");
+//  if (ID == ANIM_RUN_TOP)
+//    GetAudio().PlaySound("walk_grass");
+//  else
+//    GetAudio().StopSound("walk_grass");
 }
 
 }  // namespace Glue
