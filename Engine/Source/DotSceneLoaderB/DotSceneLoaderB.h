@@ -50,6 +50,7 @@ protected:
     void processExternals(pugi::xml_node& XMLNode);
     void processEnvironment(pugi::xml_node& XMLNode);
     void processTerrainGroup(pugi::xml_node& XMLNode);
+    void processTerrainGroupLegacy(pugi::xml_node& XMLNode);
     void processBlendmaps(pugi::xml_node& XMLNode);
     void processUserData(pugi::xml_node& XMLNode, Ogre::UserObjectBindings& userData);
     void processLight(pugi::xml_node& XMLNode, Ogre::SceneNode* pParent = 0);

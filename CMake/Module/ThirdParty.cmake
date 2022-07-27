@@ -467,7 +467,7 @@ externalproject_add(Target_OGRE
                     -DOGRE_BUILD_COMPONENT_TERRAIN=ON
                     -DOGRE_BUILD_PLUGIN_FREEIMAGE=OFF
                     -DOGRE_BUILD_PLUGIN_EXRCODEC=OFF
-                    -DOGRE_BUILD_PLUGIN_ASSIMP=ON
+                    -DOGRE_BUILD_PLUGIN_ASSIMP=OFF
                     -DOGRE_BUILD_PLUGIN_STBI=ON
                     -DOGRE_BUILD_PLUGIN_BSP=OFF
                     -DOGRE_BUILD_PLUGIN_PCZ=OFF

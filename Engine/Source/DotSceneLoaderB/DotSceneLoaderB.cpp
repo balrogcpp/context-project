@@ -205,6 +205,10 @@ void DotSceneLoaderB::processScene(pugi::xml_node& XMLRoot)
     if (auto pElement = XMLRoot.child("terrainGroup"))
         processTerrainGroup(pElement);
 
+    // Process terrain (?)
+    if (auto pElement = XMLRoot.child("terrainGroupLegacy"))
+        processTerrainGroupLegacy(pElement);
+
     // Process nodes (?)
     if (auto pElement = XMLRoot.child("nodes"))
         processNodes(pElement);
@@ -307,23 +311,23 @@ void DotSceneLoaderB::processEnvironment(pugi::xml_node& XMLNode)
         mBackgroundColour = parseColour(pElement);
 }
 
-void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
+void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
 {
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
     LogManager::getSingleton().logMessage("[DotSceneLoaderB] Processing Terrain Group...", LML_TRIVIAL);
 
     Real worldSize = getAttribReal(XMLNode, "worldSize");
     int mapSize = getAttribInt(XMLNode, "size", 513);
-    int compositeMapDistance = StringConverter::parseInt(XMLNode.attribute("tuningCompositeMapDistance").value());
-    int maxPixelError = getAttribInt(XMLNode, "tuningMaxPixelError", 1);
+    int compositeMapDistance = getAttribInt(XMLNode, "tuningCompositeMapDistance", 300);
+    int maxPixelError = getAttribInt(XMLNode, "tuningMaxPixelError", 8);
     int inputScale = StringConverter::parseInt(XMLNode.attribute("inputScale").value());
 
     auto *TGO = TerrainGlobalOptions::getSingletonPtr();
     if (!TGO) TGO = new TerrainGlobalOptions();
     TGO->setUseVertexCompressionWhenAvailable(true);
-    TGO->setCastsDynamicShadows(true);
-    TGO->setCompositeMapDistance(300);
-    TGO->setMaxPixelError(0);
+    TGO->setCastsDynamicShadows(false);
+    TGO->setCompositeMapDistance(compositeMapDistance);
+    TGO->setMaxPixelError(maxPixelError);
     TGO->setUseRayBoxDistanceCalculation(true);
     TGO->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
 
@@ -331,33 +335,18 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
     OgreTerrainPtr->setOrigin(Vector3::ZERO);
     OgreTerrainPtr->setResourceGroup(m_sGroupName);
 
-    Terrain::ImportData &defaultimp = OgreTerrainPtr->getDefaultImportSettings();
-    //defaultimp.terrainSize = mapSize;
-    //defaultimp.worldSize = worldSize;
-    defaultimp.inputScale = inputScale;
-    //defaultimp.minBatchSize = 17;
-    //defaultimp.maxBatchSize = 65;
-
     for (auto &pPageElement : XMLNode.children("terrain"))
     {
-      int pageX = StringConverter::parseInt(pPageElement.attribute("x").value());
-      int pageY = StringConverter::parseInt(pPageElement.attribute("y").value());
-      String cached = pPageElement.attribute("heightmap").value();
-      Image image;
-
-      if (ResourceGroupManager::getSingleton().resourceExists(m_sGroupName, cached))
-      {
-        image.load(cached, m_sGroupName);
-        OgreTerrainPtr->defineTerrain(pageX, pageY, &image);
-      }
-      else
-      {
-        OgreTerrainPtr->defineTerrain(pageX, pageY, 0.0);
-      }
+      int x = StringConverter::parseInt(pPageElement.attribute("x").value());
+      int y = StringConverter::parseInt(pPageElement.attribute("y").value());
+      String cached = pPageElement.attribute("file").value();
+      OgreTerrainPtr->loadLegacyTerrain(cached, x, y, true);
     }
 
+    OgreTerrainPtr->setOrigin(Vector3::ZERO);
     OgreTerrainPtr->loadAllTerrains(true);
-
+    OgreTerrainPtr->freeTemporaryResources();
+    OgreTerrainPtr->loadAllTerrains(true);
     OgreTerrainPtr->freeTemporaryResources();
 
     auto terrainIterator = OgreTerrainPtr->getTerrainIterator();
@@ -366,10 +355,48 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
     {
       auto *terrain = terrainIterator.getNext()->instance;
       Glue::GetPhysics().CreateTerrainHeightfieldShape(terrain->getSize(), terrain->getHeightData(), terrain->getMinHeight(), terrain->getMaxHeight(),
-                                                 terrain->getPosition(), terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1)));
+                                                     terrain->getPosition(), terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1)));
     }
 
     Glue::GetScene().AddTerrain(OgreTerrainPtr);
+#else
+  OGRE_EXCEPT(Exception::ERR_INVALID_CALL, "recompile with Terrain component");
+#endif
+}
+
+void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
+{
+#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+    LogManager::getSingleton().logMessage("[DotSceneLoaderB] Processing Terrain Group...", LML_TRIVIAL);
+
+    Real worldSize = getAttribReal(XMLNode, "worldSize");
+    int mapSize = StringConverter::parseInt(XMLNode.attribute("size").value());
+    int compositeMapDistance = StringConverter::parseInt(XMLNode.attribute("tuningCompositeMapDistance").value());
+    int maxPixelError = StringConverter::parseInt(XMLNode.attribute("tuningMaxPixelError").value());
+
+    auto terrainGlobalOptions = TerrainGlobalOptions::getSingletonPtr();
+    OgreAssert(terrainGlobalOptions, "TerrainGlobalOptions not available");
+
+    terrainGlobalOptions->setMaxPixelError((Real)maxPixelError);
+    terrainGlobalOptions->setCompositeMapDistance((Real)compositeMapDistance);
+
+    auto terrainGroup = std::make_shared<TerrainGroup>(mSceneMgr, Terrain::ALIGN_X_Z, mapSize, worldSize);
+    terrainGroup->setOrigin(Vector3::ZERO);
+    terrainGroup->setResourceGroup(m_sGroupName);
+
+    // Process terrain pages (*)
+    for (auto pPageElement : XMLNode.children("terrain"))
+    {
+        int pageX = StringConverter::parseInt(pPageElement.attribute("x").value());
+        int pageY = StringConverter::parseInt(pPageElement.attribute("y").value());
+
+        terrainGroup->defineTerrain(pageX, pageY, pPageElement.attribute("dataFile").value());
+    }
+    terrainGroup->loadAllTerrains(true);
+
+    terrainGroup->freeTemporaryResources();
+
+    mAttachNode->getUserObjectBindings().setUserAny("TerrainGroup", terrainGroup);
 #else
     OGRE_EXCEPT(Exception::ERR_INVALID_CALL, "recompile with Terrain component");
 #endif
@@ -887,7 +914,7 @@ void DotSceneLoaderB::processSkyBox(pugi::xml_node& XMLNode)
 
     // Process attributes
     String material = getAttrib(XMLNode, "material", "SkyBox");
-    Real distance = getAttribReal(XMLNode, "distance", 600);
+    Real distance = getAttribReal(XMLNode, "distance", 500);
     bool drawFirst = getAttribBool(XMLNode, "drawFirst", true);
     bool active = getAttribBool(XMLNode, "active", true);
     if (!active)

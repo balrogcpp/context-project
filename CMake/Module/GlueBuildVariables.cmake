@@ -31,9 +31,6 @@ set(GLUE_INCLUDE_DIRS
         ${GLUE_SOURCE_DIR}
         ${GLUE_SOURCE_DIR}/Engine
         ${GLUE_THIRDPARTY_ROOT}/include
-        ${OPENAL_INCLUDE_DIR}
-        ${BULLET_INCLUDE_DIR}
-        ${OGRE_INCLUDE_DIRS}
         )
 
 
@@ -52,28 +49,35 @@ elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 endif ()
 
-find_package(SDL2 QUIET)
+
+if (OGRE_FOUND)
+    list(APPEND GLUE_LINK_LIBRARIES ${OGRE_LIBRARIES})
+    list(APPEND GLUE_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS})
+endif ()
 if (SDL2_FOUND)
-    set(SDL2_LIBRARIES SDL2::SDL2-static)
+    list(APPEND GLUE_LINK_LIBRARIES ${SDL2_LIBRARIES})
 endif ()
-find_package(pugixml QUIET)
 if (pugixml_FOUND)
-    set(PUGIXML_LIBRARIES pugixml::static)
+    list(APPEND GLUE_LINK_LIBRARIES pugixml::pugixml)
 endif ()
+if (Bullet_FOUND)
+    list(APPEND GLUE_LINK_LIBRARIES ${BULLET_LIBRARIES})
+    list(APPEND GLUE_INCLUDE_DIRS ${BULLET_INCLUDE_DIR})
+endif ()
+if (Vorbis_FOUND)
+    list(APPEND GLUE_LINK_LIBRARIES ${VORBIS_LIBRARIES})
+endif ()
+if (Ogg_FOUND)
+    list(APPEND GLUE_LINK_LIBRARIES ${OGG_LIBRARIES})
+endif ()
+if (OpenAL_FOUND)
+    list(APPEND GLUE_LINK_LIBRARIES ${OPENAL_LIBRARY})
+endif ()
+if (Lua_FOUND)
+    list(APPEND GLUE_LINK_LIBRARIES ${LUA_LIBRARY})
+endif ()
+list(APPEND GLUE_LINK_LIBRARIES ${SYSTEM_LIBRARIES})
 
-
-set(GLUE_LINK_LIBRARIES
-        ${OGRE_LIBRARIES}
-        ${SDL2_LIBRARIES}
-        ${PUGIXML_LIBRARIES}
-        ${BULLET_LIBRARIES}
-        ${PNG_LIBRARY}
-        ${VORBIS_LIBRARIES}
-        ${OGG_LIBRARIES}
-        ${LUA_LIBRARY}
-        ${OPENAL_LIBRARY}
-        ${SYSTEM_LIBRARIES}
-        )
 
 file(GLOB_RECURSE GLUE_ENGINE_SOURCE_FILES ${GLUE_SOURCE_DIR}/*.cpp ${GLUE_SOURCE_DIR}/*.h ${GLUE_SOURCE_DIR}/*.hpp)
 
