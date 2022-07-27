@@ -346,8 +346,6 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
     OgreTerrainPtr->setOrigin(Vector3::ZERO);
     OgreTerrainPtr->loadAllTerrains(true);
     OgreTerrainPtr->freeTemporaryResources();
-    OgreTerrainPtr->loadAllTerrains(true);
-    OgreTerrainPtr->freeTemporaryResources();
 
     auto terrainIterator = OgreTerrainPtr->getTerrainIterator();
 
