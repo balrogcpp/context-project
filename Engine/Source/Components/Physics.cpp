@@ -259,7 +259,7 @@ void Physics::ProcessData(Entity *EntityPtr, SceneNode *ParentNode, const UserOb
   btVector3 Inertia = btVector3(0, 0, 0);
 
   if (!EntityPtr->getParentSceneNode() && ParentNode) ParentNode->attachObject(EntityPtr);
-  auto *entShape = BtOgre::createCapsuleCollider(EntityPtr);
+  auto *entShape = BtOgre::createBoxCollider(EntityPtr);
 
   if (Static)
     Mass = 0.0;

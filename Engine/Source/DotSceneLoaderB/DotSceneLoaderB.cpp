@@ -316,11 +316,8 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
     LogManager::getSingleton().logMessage("[DotSceneLoaderB] Processing Terrain Group...", LML_TRIVIAL);
 
-    Real worldSize = getAttribReal(XMLNode, "worldSize");
-    int mapSize = getAttribInt(XMLNode, "size", 513);
     int compositeMapDistance = getAttribInt(XMLNode, "tuningCompositeMapDistance", 300);
     int maxPixelError = getAttribInt(XMLNode, "tuningMaxPixelError", 8);
-    int inputScale = StringConverter::parseInt(XMLNode.attribute("inputScale").value());
 
     auto *TGO = TerrainGlobalOptions::getSingletonPtr();
     if (!TGO) TGO = new TerrainGlobalOptions();
@@ -331,8 +328,7 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
     TGO->setUseRayBoxDistanceCalculation(true);
     TGO->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
 
-    TerrainGroup *OgreTerrainPtr = new TerrainGroup(mSceneMgr, Terrain::ALIGN_X_Z, mapSize, worldSize);
-    OgreTerrainPtr->setOrigin(Vector3::ZERO);
+    TerrainGroup *OgreTerrainPtr = new TerrainGroup(mSceneMgr);
     OgreTerrainPtr->setResourceGroup(m_sGroupName);
 
     for (auto &pPageElement : XMLNode.children("terrain"))
@@ -344,12 +340,9 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
     }
 
     OgreTerrainPtr->setOrigin(Vector3::ZERO);
-    OgreTerrainPtr->loadAllTerrains(true);
     OgreTerrainPtr->freeTemporaryResources();
 
-    auto terrainIterator = OgreTerrainPtr->getTerrainIterator();
-
-    while (terrainIterator.hasMoreElements())
+    for (auto terrainIterator = OgreTerrainPtr->getTerrainIterator(); terrainIterator.hasMoreElements();)
     {
       auto *terrain = terrainIterator.getNext()->instance;
       Glue::GetPhysics().CreateTerrainHeightfieldShape(terrain->getSize(), terrain->getHeightData(), terrain->getMinHeight(), terrain->getMaxHeight(),

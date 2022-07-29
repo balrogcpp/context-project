@@ -15,7 +15,7 @@ abstract fragment_program PBR_Terrain_I_fs glsl glsles : PBR_BaseI_fs
 
     default_params
     {
-        param_named uTerrainTexScale float 20.0
+        param_named uTerrainTexScale float 10.0
         param_named uShadowMap0 int 5
         param_named uShadowMap1 int 6
         param_named uShadowMap2 int 7
