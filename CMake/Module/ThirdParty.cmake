@@ -404,7 +404,7 @@ externalproject_add(Target_OGRE
                     DEPENDS Target_FreeType
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-                    GIT_TAG v13.4.2
+                    GIT_TAG v13.4.3
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard
@@ -631,7 +631,7 @@ externalproject_add(Target_GoogleTest
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/google/googletest.git
-                    GIT_TAG release-1.11.0
+                    GIT_TAG v1.12.0
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS
@@ -649,7 +649,7 @@ externalproject_add(Target_GoogleBenchmark
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/google/benchmark.git
-                    GIT_TAG v1.6.1
+                    GIT_TAG v1.7.0
                     GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
                     GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
                     CMAKE_ARGS
@@ -667,7 +667,7 @@ externalproject_add(Target_json
                     EXCLUDE_FROM_ALL true
                     PREFIX ${GLUE_PREFIX_LOCATION}
                     GIT_REPOSITORY https://github.com/nlohmann/json.git
-                    GIT_TAG v3.10.5
+                    GIT_TAG v3.11.1
                     GIT_SHALLOW true
                     GIT_PROGRESS false
                     CMAKE_ARGS
