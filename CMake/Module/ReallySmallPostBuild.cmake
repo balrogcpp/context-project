@@ -2,6 +2,7 @@
 
 find_package(SelfPackers)
 
+
 # Stripping don't work on macos replaced with -g0 -s compiler flags
 #if (CMAKE_STRIP AND NOT APPLE)
 #    add_custom_command(
@@ -12,6 +13,7 @@ find_package(SelfPackers)
 #            USES_TERMINAL
 #    )
 #endif ()
+
 
 if (SELF_PACKER_FOR_EXECUTABLE AND NOT APPLE)
     add_custom_command(

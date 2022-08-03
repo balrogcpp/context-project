@@ -9,5 +9,5 @@ using namespace std;
 using namespace Glue;
 
 AppStateUPtr MainAppState() {
-  return make_unique<Demo::MenuAppState>();
+  return make_unique<Demo::DemoDotAppState>();
 }

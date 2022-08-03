@@ -19,12 +19,9 @@ list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Module)
 
 
 # Include necessary submodules
-include(Make)
 include(Platform)
-include(GitHash)
 include(CMakeDependentOption)
 include(InsertDependency)
-include(Doxygen)
 
 
 # Default build type is Release
@@ -46,28 +43,6 @@ set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
 set(GLUE_TMP_DIR ${CMAKE_SOURCE_DIR}/Tmp)
 make_directory(${GLUE_ARTIFACT_DIR})
 make_directory(${GLUE_TMP_DIR})
-
-
-# Docker helper target
-set(CMAKE_FOLDER Docker)
-
-add_custom_target(DockerComposeDep
-        COMMAND docker-compose -f docker-compose-dependencies.yml up
-        COMMAND docker-compose -f docker-compose-dependencies.yml down --volumes
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building thirdparty libraries with docker-compose..."
-        USES_TERMINAL
-        )
-
-add_custom_target(DockerCompose
-        COMMAND ${CMAKE_COMMAND} -E env GIT_HASH=${GIT_SHA1} docker-compose up
-        COMMAND docker-compose down --volumes
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building tests with docker-compose..."
-        USES_TERMINAL
-        )
-
-set(CMAKE_FOLDER "")
 
 
 # Android helper targets
@@ -110,6 +85,15 @@ set(CMAKE_FOLDER "")
 add_subdirectory(Engine/Dependencies)
 list(APPEND CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
+
+
+if (APPLE)
+    set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+    set(CMAKE_HAVE_THREADS_LIBRARY 1)
+    set(CMAKE_USE_WIN32_THREADS_INIT 0)
+    set(CMAKE_USE_PTHREADS_INIT 1)
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+endif ()
 
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -167,9 +151,103 @@ add_custom_target(BuildAssets ALL
         USES_TERMINAL
         )
 
+# Helper targets
+if (NOT GIT_SHA1)
+    execute_process(
+            COMMAND git rev-parse --short=8 HEAD
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_VARIABLE GIT_SHA1
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+endif ()
+
+# Docker helper target
+set(CMAKE_FOLDER Docker)
+
+add_custom_target(DockerComposeDep
+        COMMAND docker-compose -f docker-compose-dependencies.yml up
+        COMMAND docker-compose -f docker-compose-dependencies.yml down --volumes
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Building thirdparty libraries with docker-compose..."
+        USES_TERMINAL
+        )
+
+add_custom_target(DockerCompose
+        COMMAND ${CMAKE_COMMAND} -E env GIT_HASH=${GIT_SHA1} docker-compose up
+        COMMAND docker-compose down --volumes
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Building tests with docker-compose..."
+        USES_TERMINAL
+        )
+
+set(CMAKE_FOLDER "")
+
 
 # package helper target
-include(Package)
+include(CMakeDependentOption)
+
+set(GLUE_PACKAGE_NAME "GlueSample")
+set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}_${GLUE_TOOLCHAIN_SHORT}_${GIT_SHA1})
+if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
+    string(APPEND GLUE_ARTIFACT_NAME "_${CMAKE_BUILD_TYPE}")
+endif ()
+if (NOT ${CMAKE_INSTALL_PREFIX})
+    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/Install/${GLUE_ARTIFACT_NAME})
+endif ()
+install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
+install(FILES ${GLUE_TMP_DIR}/Assets.zip DESTINATION .)
+install(DIRECTORY ${GLUE_TMP_DIR}/Programs DESTINATION .)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    install(FILES PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
+endif ()
+if (WIN32)
+    install(FILES DESTINATION .)
+endif ()
+
+
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_DIRECTORY ${GLUE_ARTIFACT_DIR})
+set(CPACK_PACKAGE_NAME ${GLUE_ARTIFACT_NAME})
+set(CPACK_SOURCE_PACKAGE_FILE_NAME ${GLUE_ARTIFACT_NAME})
+set(CPACK_PACKAGE_FILE_NAME ${GLUE_ARTIFACT_NAME})
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "GlueSample")
+set(CPACK_PACKAGE_VENDOR "Andrey Vasiliev")
+
+if (WIN32)
+    set(CPACK_GENERATOR "ZIP")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(CPACK_GENERATOR "TXZ")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set(CPACK_GENERATOR "TXZ")
+else ()
+    set(CPACK_GENERATOR "ZIP")
+endif ()
+
+
+find_package(NSIS QUIET)
+
+
+if (${NSIS_FOUND} AND WIN32)
+    message(STATUS "NSIS found. MSI installer will be created")
+    list(APPEND CPACK_GENERATOR "NSIS")
+    set(CPACK_NSIS_MODIFY_PATH ON)
+    set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
+    set(CPACK_CREATE_DESKTOP_LINKS Sample)
+    set(CPACK_NSIS_IGNORE_LICENSE_PAGE ON)
+    if (CMAKE_SIZEOF_VOID_P STREQUAL 8)
+        set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
+    elseif (CMAKE_SIZEOF_VOID_P STREQUAL 4)
+        set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES32")
+    endif ()
+else ()
+    message(STATUS "NSIS not found")
+endif ()
+
+include(CPack)
+
 
 add_custom_target(BuildPackage
         DEPENDS BuildAssets

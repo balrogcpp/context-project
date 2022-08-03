@@ -2,7 +2,6 @@
 
 
 include(Platform)
-include(Make)
 include(GlueCppFlags)
 include(ExternalProject)
 
@@ -589,22 +588,6 @@ externalproject_add(Target_sol2
                     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     )
-
-
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    set(JEMALLOC_CHDIR ${CMAKE_COMMAND} -E chdir ${GLUE_PREFIX_LOCATION}/src/Target_jemalloc)
-    externalproject_add(Target_jemalloc
-                        EXCLUDE_FROM_ALL true
-                        PREFIX ${GLUE_PREFIX_LOCATION}
-                        GIT_REPOSITORY https://github.com/jemalloc/jemalloc.git
-                        GIT_TAG 5.2.1
-                        GIT_SHALLOW true
-                        GIT_PROGRESS false
-                        CONFIGURE_COMMAND ${JEMALLOC_CHDIR} ./autogen.sh
-                        BUILD_COMMAND ${JEMALLOC_CHDIR} ./configure --disable-stats --prefix ${GLUE_THIRDPARTY_ROOT}
-                        INSTALL_COMMAND ${JEMALLOC_CHDIR} ${MAKE_COMMAND} install_lib_static
-                        )
-endif ()
 
 
 #std::filesystem is not supported on some platforms with c++17 support

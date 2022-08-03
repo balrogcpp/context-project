@@ -5,7 +5,6 @@
 
 include(Platform)
 include(InsertDependency)
-include(AppleThreadFix)
 include(GlueCppFlags)
 
 
