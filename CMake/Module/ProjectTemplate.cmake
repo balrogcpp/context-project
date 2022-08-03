@@ -63,7 +63,7 @@ endif ()
 
 
 #Package
-if (WIN32)
+if (WIN32 AND EXISTS ${GLUE_THIRDPARTY_ROOT}/bin/OpenAL32.dll)
     set(EXTERNAL_DLL_GLOB ${GLUE_THIRDPARTY_ROOT}/bin/OpenAL32.dll)
     file(COPY ${EXTERNAL_DLL_GLOB} DESTINATION .)
 endif ()

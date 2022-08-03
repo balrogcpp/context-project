@@ -27,10 +27,10 @@ include(InsertDependency)
 include(Doxygen)
 
 
-# Default build type is RelWithDebInfo
+# Default build type is Release
 if (NOT CMAKE_BUILD_TYPE)
-    message(STATUS "No build type selected, CMAKE_BUILD_TYPE defaulted to RelWithDebInfo")
-    set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+    message(STATUS "No build type selected, CMAKE_BUILD_TYPE defaulted to Release")
+    set(CMAKE_BUILD_TYPE "Release")
 endif ()
 
 

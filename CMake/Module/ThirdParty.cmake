@@ -160,7 +160,7 @@ externalproject_add(Target_Ogg
                     ${GLUE_CMAKE_EXTRA_FLAGS}
                     )
 if (NOT EMSCRIPTEN)
-    add_dependencies(Target_Ogg Target_OpenAL)
+    externalproject_add_stepdependencies(Target_Ogg configure Target_OpenAL)
 endif ()
 
 
