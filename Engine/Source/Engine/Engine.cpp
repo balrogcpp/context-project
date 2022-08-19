@@ -1348,8 +1348,8 @@ void Engine::InitResourceLocation() {
     AddLocation("Engine/GLSL", RGN_INTERNAL);
   AddLocation(AssetsDir);
 #else
-  RGM.addResourceLocation("/Programs.zip", "Zip", RGN_INTERNAL);
-  RGM.addResourceLocation("/Assets.zip", "Zip", RGN_DEFAULT);
+  RGM.addResourceLocation("Programs.zip", "Zip", RGN_INTERNAL);
+  RGM.addResourceLocation("Assets.zip", "Zip", RGN_DEFAULT);
 #endif
 }
 
