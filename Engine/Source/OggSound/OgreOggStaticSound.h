@@ -62,7 +62,7 @@ namespace OgreOggSound
 			@param src
 				OpenAL Source ID.
 		 */
-		void setSource(ALuint src);
+		void setSource(ALuint src);	
 		/** Returns whether sound is mono
 		*/
 		bool isMono();
@@ -90,9 +90,9 @@ namespace OgreOggSound
 				SceneManager which created this sound (if the sound was created through the plugin method createMovableobject()).
 		 */
 		OgreOggStaticSound(
-			const Ogre::String& name, Ogre::SceneManager* scnMgr
+			const Ogre::String& name
 			#if OGRE_VERSION_MAJOR == 2
-			, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+			, Ogre::SceneManager* scnMgr, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
 			#endif
 		);
 		/**

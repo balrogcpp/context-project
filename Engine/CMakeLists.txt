@@ -27,7 +27,7 @@ endif ()
 add_library(GlueStatic STATIC EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
 include_directories(GlueStatic ${GLUE_INCLUDE_DIRS})
 set_target_properties(GlueStatic PROPERTIES OUTPUT_NAME "GlueStatic")
-target_precompile_headers(GlueStatic PUBLIC Source/PCHeader.h)
+target_precompile_headers(GlueStatic PUBLIC Source/pch.h)
 
 
 # Shared library
@@ -35,7 +35,7 @@ if (DESKTOP)
     add_library(GlueShared SHARED EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
     include_directories(GlueShared ${GLUE_INCLUDE_DIRS})
     set_target_properties(GlueShared PROPERTIES OUTPUT_NAME "GlueShared")
-    target_precompile_headers(GlueShared PUBLIC Source/PCHeader.h)
+    target_precompile_headers(GlueShared PUBLIC Source/pch.h)
 endif ()
 
 # Documentation

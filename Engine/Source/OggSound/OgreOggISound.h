@@ -426,9 +426,6 @@ namespace OgreOggSound
 		/** Gets the sounds source
 		 */
 		inline ALuint getSource() const { return mSource; }
-		/** Gets the sounds name
-		 */
-		inline const Ogre::String& getName( void ) const { return mName; }
 		/** Gets the sounds file name
 		 */
 		virtual const Ogre::String& getFileName( void ) const { return mAudioStream ? Ogre::BLANKSTRING : mAudioStream->getName(); }
@@ -490,11 +487,6 @@ namespace OgreOggSound
 			Overridden from MovableObject.
 		 */
 		virtual float getBoundingRadius(void) const;
-		/** Gets the SceneManager pointer registered at creation.
-		@remarks
-			This will only be set if the sound was created through the plugin method createMovableobject().
-		*/
-		inline Ogre::SceneManager* getSceneManager() const { return mScnMgr; }
 
 		/** Sets a listener object to be notified of events.
 		@remarks
@@ -524,6 +516,12 @@ namespace OgreOggSound
 		*/
 		void _getSharedProperties(BufferListPtr& buffers, float& length, ALenum& format); 
 	
+		#if OGRE_VERSION_MAJOR == 2
+		/** Gets name
+		 */
+		virtual Ogre::String getName();
+		#endif
+
 	protected:
 
 		/** Superclass describing a single sound object.
@@ -533,9 +531,9 @@ namespace OgreOggSound
 			SceneManager which created this sound (if the sound was created through the plugin method createMovableobject()).
 		 */
 		OgreOggISound(
-			const Ogre::String& name, Ogre::SceneManager* scnMgr
+			const Ogre::String& name
 			#if OGRE_VERSION_MAJOR == 2
-			, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
+			, Ogre::SceneManager* scnMgr, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
 			#endif
 		);
 		/** Superclass destructor.
@@ -645,7 +643,7 @@ namespace OgreOggSound
 			sound properties.
 		 */
 		virtual bool _queryBufferInfo() = 0;		
-
+		
 		/**
 		 * Variables used to fade sound
 		 */
@@ -666,7 +664,6 @@ namespace OgreOggSound
 		/** Sound properties 
 		 */
 		ALuint mSource;					// OpenAL Source
-		Ogre::SceneManager* mScnMgr;	// SceneManager pointer for plugin registered sounds
 		Ogre::uint8 mPriority;			// Priority assigned to source 
 		Ogre::Vector3 mVelocity;		// 3D velocity
 		float mGain;					// Current volume
@@ -680,7 +677,6 @@ namespace OgreOggSound
 		float mInnerConeAngle;			// Inner cone angle
 		float mOuterConeAngle;			// outer cone angle
 		float mPlayTime;				// Time in seconds of sound file
-		Ogre::String mName;				// Sound name
 		SoundState mState;				// Sound state
 		bool mLoop;						// Loop status
 		bool mDisable3D;				// 3D status
@@ -692,6 +688,7 @@ namespace OgreOggSound
 		#else
 		Ogre::Vector3 mPosition;		// 3D position
 		Ogre::Vector3 mDirection;		// 3D direction
+		Ogre::String mName;				// Sound Name (Ogre-Next don't internal store real name for movable objects)
 		#endif
 		bool mPlayPosChanged;			// Flag indicating playback position has changed
 		bool mSeekable;					// Flag indicating seeking available

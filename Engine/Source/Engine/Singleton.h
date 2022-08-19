@@ -1,8 +1,8 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #pragma once
-#include "Exception.h"
 #include "BaseSingleton.h"
+
 
 namespace Glue {
 

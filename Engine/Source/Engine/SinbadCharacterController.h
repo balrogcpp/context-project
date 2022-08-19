@@ -1,8 +1,7 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #pragma once
-#include "Object.h"
-#include "Input/InputObserver.h"
+#include "InputObserver.h"
 #include <OgreVector.h>
 extern "C" {
 #include <SDL2/SDL_keycode.h>
@@ -27,7 +26,7 @@ class AnimationState;
 
 namespace Glue {
 
-class SinbadCharacterController : public Object, public InputObserver {
+class SinbadCharacterController : public InputObserver {
  public:
   // all the animations our character has, and a null ID
   // some of these affect separate body parts and will be blended together
@@ -49,10 +48,9 @@ class SinbadCharacterController : public Object, public InputObserver {
     ANIM_NONE = NUM_ANIMS
   };
 
-  Ogre::SceneNode *GetBodyNode() const;
   explicit SinbadCharacterController(Ogre::Camera *cam);
   virtual ~SinbadCharacterController();
-  void Update(float deltaTime) override;
+  void Update(float deltaTime);
   void OnKeyDown(SDL_Keycode key) override;
   void OnKeyUp(SDL_Keycode key) override;
   void OnMouseMove(int dx, int dy) override;

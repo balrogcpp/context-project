@@ -14,8 +14,6 @@ Permission is granted to anyone to use this software for any purpose, including 
 //does not allow billboards to be moved or deleted individually in real-time)
 //-------------------------------------------------------------------------------------
 
-#include "PCHeader.h"
-
 #include <OgreRoot.h>
 #include <OgreCamera.h>
 #include <OgreVector3.h>

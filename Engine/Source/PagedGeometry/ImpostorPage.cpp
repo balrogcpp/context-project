@@ -13,8 +13,6 @@ Permission is granted to anyone to use this software for any purpose, including 
 //ImposterPage is an extension to PagedGeometry which displays entities as imposters.
 //-------------------------------------------------------------------------------------
 
-#include "PCHeader.h"
-
 #include <OgreRoot.h>
 #include <OgreTimer.h>
 #include <OgreCamera.h>
@@ -33,11 +31,7 @@ using namespace Ogre;
 using namespace Forests;
 
 // static members initialization
-#if defined(DESKTOP)
 Ogre::uint  Forests::ImpostorPage::s_nImpostorResolution    = 512;
-#else
-Ogre::uint  Forests::ImpostorPage::s_nImpostorResolution     = 256;
-#endif
 Ogre::uint  Forests::ImpostorPage::s_nSelfInstances         = 0;
 Ogre::uint  Forests::ImpostorPage::s_nUpdateInstanceID      = 0;
 ColourValue Forests::ImpostorPage::s_clrImpostorBackground  = ColourValue(0.0f, 0.3f, 0.0f, 0.0f);
@@ -363,16 +357,10 @@ String ImpostorBatch::generateEntityKey(Entity *entity)
 
 //-------------------------------------------------------------------------------------
 
-
-ImpostorTextureResourceLoader::ImpostorTextureResourceLoader(ImpostorTexture& impostorTexture)
-: texture(impostorTexture)
-{
-}
-
-void ImpostorTextureResourceLoader::loadResource (Ogre::Resource *resource)
+void ImpostorTexture::loadResource (Ogre::Resource *resource)
 {
 	if (resource->getLoadingState() == Ogre::Resource::LOADSTATE_UNLOADED) {
-		texture.regenerate();
+		regenerate();
 	}
 }
 
@@ -462,7 +450,7 @@ ImpostorTexture::~ImpostorTexture()
         material[i][o].reset();
 	}
 	}
-
+	
 	//Remove self from list of ImpostorTexture's
 	selfList.erase(entityKey);
 }
@@ -486,12 +474,13 @@ void ImpostorTexture::regenerateAll()
 
 void ImpostorTexture::renderTextures(bool force)
 {
+	Ogre::ManualResourceLoader* loader = 0;
 #ifdef IMPOSTOR_FILE_SAVE
 	TexturePtr renderTexture;
 #else
 	TexturePtr renderTexture(texture);
 	//if we're not using a file image we need to set up a resource loader, so that the texture is regenerated if it's ever unloaded (such as switching between fullscreen and the desktop in win32)
-	loader = std::unique_ptr<ImpostorTextureResourceLoader>(new ImpostorTextureResourceLoader(*this));
+	loader = this;
 #endif
 	RenderTexture *renderTarget;
 	Camera *renderCamera;
@@ -503,10 +492,10 @@ void ImpostorTexture::renderTextures(bool force)
 	if (!renderTexture)
    {
 	renderTexture = TextureManager::getSingleton().createManual(getUniqueID("ImpostorTexture"), "Impostors",
-				TEX_TYPE_2D, textureSize * IMPOSTOR_YAW_ANGLES, textureSize * IMPOSTOR_PITCH_ANGLES, 0, PF_BYTE_RGBA, TU_RENDERTARGET, loader.get());
+				TEX_TYPE_2D, textureSize * IMPOSTOR_YAW_ANGLES, textureSize * IMPOSTOR_PITCH_ANGLES, 0, PF_BYTE_RGBA, TU_RENDERTARGET, loader);
 	}
 	//renderTexture->setNumMipmaps(MIP_UNLIMITED);
-
+	
 	//Set up render target
 	renderTarget = renderTexture->getBuffer()->getRenderTarget(); 
 	renderTarget->setAutoUpdated(false);

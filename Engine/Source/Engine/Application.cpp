@@ -1,15 +1,24 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
-#include "PCHeader.h"
+#include "pch.h"
 #include "Application.h"
-#include "Config.h"
-#include "Desktop.h"
-#include "DesktopIcon.h"
 #include "Engine.h"
-#include "Exception.h"
-#include "RTSS.h"
-#include "SDL2.hpp"
-#include <iostream>
+#include <OgreFileSystemLayer.h>
+#ifndef MOBILE
+#if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
+#include <filesystem>
+namespace fs = std::filesystem;
+#else  // APPLE
+#include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
+#endif  // !APPLE
+#endif  // DESKTOP
+extern "C" {
+#ifdef _MSC_VER
+#define SDL_MAIN_HANDLED
+#endif
+#include <SDL2/SDL.h>
+}
 
 #ifdef _WIN32
 extern "C" {
@@ -20,48 +29,26 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
+#if defined(WINDOWS)
+#define WIN32_LEAN_AND_MEAN
+#include <shlobj.h>
+#include <windows.h>
+#elif defined(UNIX)
+#include <pwd.h>
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+
 
 using namespace std;
 
+
 namespace Glue {
 
-Application::Application(int argc, char *args[]) {
+Application::Application() {
   InputSequencer::GetInstance().RegWinObserver(this);
-
-#ifdef DESKTOP
-  string BinaryDir;
-
-  if (args)
-    BinaryDir = GetCurrentDirectoryB(args[0]);
-  else
-    BinaryDir = GetCurrentDirectoryB("");
-
-  if (BinaryDir.empty()) {
-    BinaryDir = GetUserDirectory();
-    if (!BinaryDir.empty()) BinaryDir = PathAppend(BinaryDir, ".Glue");
-    if (!DirectoryExists(BinaryDir)) CreateDirectoryB(BinaryDir);
-  }
-
-  LogPtr = make_unique<Log>(PathAppend(BinaryDir, "Runtime.log"));
-  ConfigPtr = make_unique<Config>(PathAppend(BinaryDir, "Config.ini"));
-
-  bool Verbose = ConfigPtr->GetBool("verbose", false);
-  LogPtr->WriteLogToConsole(Verbose);
-  LogPtr->WriteLogToFile(Verbose);
-#else
-  ConfigPtr = make_unique<Config>("");
-#endif
-
   EnginePtr = make_unique<Engine>();
   EnginePtr->InitComponents();
-  StateManagerPtr = make_unique<AppStateManager>();
-#ifdef DESKTOP
-  Verbose = ConfigPtr->GetBool("verbose", Verbose);
-  VerboseInput = ConfigPtr->GetBool("verbose_input", VerboseInput);
-  if (VerboseInput) VerboseListenerPtr = make_unique<VerboseListener>();
-#endif
-  LockFPS = ConfigPtr->GetBool("lock_fps", LockFPS);
-  TargetFPS = ConfigPtr->GetInt("target_fps", TargetFPS);
 }
 
 Application::~Application() { InputSequencer::GetInstance().UnregWinObserver(this); }
@@ -75,10 +62,7 @@ void Application::LoopBody() {
   EnginePtr->Capture();
 
   if (!Suspend) {
-    if (StateManagerPtr->IsDirty()) {
-      EnginePtr->OnCleanup();
-      StateManagerPtr->InitNextState();
-    } else if (WasSuspended) {
+    if (WasSuspended) {
       EnginePtr->OnResume();
       WasSuspended = false;
     }
@@ -87,17 +71,12 @@ void Application::LoopBody() {
     int64_t TimeBeforeUpdate = chrono::duration_cast<chrono::microseconds>(before_update).count();
     float frame_time = static_cast<float>(TimeBeforeUpdate - TimeOfLastFrame) / 1e+6;
     TimeOfLastFrame = TimeBeforeUpdate;
-    StateManagerPtr->Update(frame_time);
     EnginePtr->Update(frame_time);
     EnginePtr->RenderFrame();
   } else {
     EnginePtr->OnPause();
     WasSuspended = true;
   }
-
-#if defined(DEBUG) && defined(DESKTOP)
-  if (Verbose) cout << flush;
-#endif
 
   auto TimeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
   auto RenderTime = TimeAftetRender - TimeBeforeFrame;
@@ -112,12 +91,12 @@ void Application::LoopBody() {
   CumultedTime += TimeSinceLastFrame;
 
 #ifdef EMSCRIPTEN
-  if (!Running || !StateManagerPtr->IsActive()) emscripten_cancel_main_loop();
+  if (!Running) emscripten_cancel_main_loop();
 #endif
 }
 
 void Application::Loop() {
-  while (Running && StateManagerPtr->IsActive()) {
+  while (Running) {
     LoopBody();
   }
 }
@@ -130,17 +109,19 @@ void Application::EmscriptenLoop(void *arg) {
 #endif
 
 void Application::Go() {
-  OgreAssert(StateManagerPtr->IsActive(), "AppState is not ready");
-  StateManagerPtr->InitCurState();
   Running = true;
   auto duration_before_update = chrono::system_clock::now().time_since_epoch();
   TimeOfLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
 
-  if (Running && StateManagerPtr->IsActive()) {
-    StateManagerPtr->Update(0);
-    EnginePtr->RenderFrame();
-    ClearRTSSRuntime();
-  }
+  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+  auto *root = scene->getRootSceneNode();
+  root->loadChildren("1.scene");
+
+
+  //if (Running) {
+    //EnginePtr->RenderFrame();
+    // ClearRTSSRuntime();
+  //}
 
 #ifdef MOBILE
   TargetFPS = 30;
@@ -148,7 +129,7 @@ void Application::Go() {
 #ifndef EMSCRIPTEN
   Loop();
 #else
-  LockFPS=false;
+  LockFPS = false;
   emscripten_set_main_loop_arg(Application::EmscriptenLoop, GetInstancePtr(), 0, 1);
 #endif
 
@@ -160,58 +141,20 @@ void Application::OnQuit() { Running = false; }
 
 void Application::OnPause() {
   Suspend = true;
-  StateManagerPtr->Pause();
   EnginePtr->OnPause();
 }
 
 void Application::OnResume() {
   Suspend = false;
-  StateManagerPtr->Resume();
   EnginePtr->OnResume();
 }
 
-void Application::OnKeyDown(SDL_Keycode sym) {}
 
-void Application::OnKeyUp(SDL_Keycode sym) {}
-
-void Application::OnMouseMove(int dx, int dy) {}
-
-void Application::OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {}
-
-void Application::OnMouseWheel(int x, int y) {}
-
-void Application::OnMouseLbDown(int x, int y) {}
-
-void Application::OnMouseLbUp(int x, int y) {}
-
-void Application::OnMouseRbDown(int x, int y) {}
-
-void Application::OnMouseRbUp(int x, int y) {}
-
-void Application::OnMouseMbDown(int x, int y) {}
-
-void Application::OnMouseMbUp(int x, int y) {}
-
-void Application::OnTextInput(const char *text) {}
-
-void Application::OnGamepadAxis(int which, int axis, int value) {}
-
-void Application::OnGamepadBtDown(int which, int button) {}
-
-void Application::OnGamepadBtUp(int which, int button) {}
-
-void Application::OnGamepadHat(int which, int hat, int value) {}
-
-void Application::OnGamepadBall(int which, int ball, int xrel, int yrel) {}
-
-int Application::Main(unique_ptr<AppState> &&AppStatePtr) {
+int Application::Main() {
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC
   SDL_SetMainReady();
 #endif
   ios_base::sync_with_stdio(false);
-  OgreAssert(StateManagerPtr, "AppStateManager error");
-  OgreAssert(AppStatePtr, "AppState is not ready");
-  StateManagerPtr->SetInitialState(move(AppStatePtr));
   Go();
   SDL_Quit();
   return 0;

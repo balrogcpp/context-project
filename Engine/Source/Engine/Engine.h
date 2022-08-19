@@ -1,13 +1,35 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #pragma once
-#include "Components/ComponentsAll.h"
-#include "Input/InputSequencer.h"
-#include "Log.h"
+#include "InputSequencer.h"
 #include "Singleton.h"
+#include "Physics.h"
+#include "Sound.h"
+#include "ImGuiInputListener.h"
+extern "C" {
 #include <SDL2/SDL_video.h>
+}
 #include <memory>
 #include <vector>
+
+
+namespace Ogre {
+class TerrainGroup;
+}  // namespace Ogre
+
+namespace Forests {
+class PagedGeometry;
+class PageLoader;
+class GeometryPage;
+}  // namespace Forests
+
+namespace Glue {
+class CameraMan;
+class Physics;
+class Sound;
+class SinbadCharacterController;
+}  // namespace Glue
+
 
 namespace Glue {
 
@@ -18,10 +40,98 @@ class Engine;
 Engine& GetEngine();
 Physics& GetPhysics();
 Sound& GetAudio();
-Scene& GetScene();
-Overlay& GetOverlay();
 
-class Engine final : public Singleton<Engine> {
+
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+///
+void InitOgreRenderSystemGL3();
+
+///
+bool CheckGL3Version(const int major, const int minor);
+#endif
+
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+///
+void InitOgreRenderSystemGLES2();
+
+///
+bool CheckGLES2Version(const int major, const int minor);
+#endif
+
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL
+///
+void InitOgreRenderSystemGL();
+
+///
+bool CheckGLVersion(const int major, const int minor);
+#endif
+
+///
+bool GlobalMRTIsEnabled();
+
+///
+bool CPUSupportsSSE();
+
+///
+bool CPUSupportsSSE2();
+
+///
+bool CPUSupportsSSE3();
+
+///
+bool CPUSupportsSSE41();
+
+///
+bool CPUSupportsSSE42();
+
+///
+bool CPUSupportsNEON();
+
+///
+bool IsFullscreen();
+
+///
+bool RenderSystemIsGL();
+
+///
+bool RenderSystemIsGL3();
+
+///
+bool RenderSystemIsGLES2();
+
+///
+Ogre::SceneManager* OgreSceneManager();
+
+///
+Ogre::SceneNode* OgreRootNode();
+
+///
+Ogre::Camera* OgreCamera();
+
+///
+Ogre::SceneNode* OgreCameraNode();
+
+///
+Ogre::Vector3 SunDirection();
+
+///
+int WindowSizeX();
+
+///
+int WindowSizeY();
+
+///
+std::string WindowCaption();
+
+struct CompositorFX {
+  std::string Name;
+  bool Enabled = false;
+  std::string EnableParam;
+  std::string OutputCompositor;
+  std::vector<std::string> CompositorChain;
+};
+
+class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener {
  public:
   Engine();
   virtual ~Engine();
@@ -54,10 +164,10 @@ class Engine final : public Singleton<Engine> {
   void RenderFrame();
 
   /// Internal function to add component
-  void RegComponent(ComponentI* ComponentPtr);
+  void RegComponent(SystemI* ComponentPtr);
 
   /// Internal function to unload component
-  void UnRegComponent(ComponentI* ComponentPtr);
+  void UnRegComponent(SystemI* ComponentPtr);
 
   ///
   void SetFullscreen(bool Fullscreen);
@@ -86,15 +196,24 @@ class Engine final : public Singleton<Engine> {
   ///
   int GetWindowSizeY();
 
+  ///
+  float GetHeight(float x, float z);
+  void AddEntity(Ogre::Entity *EntityPtr);
+  void AddMaterial(Ogre::MaterialPtr material);
+  void AddMaterial(const std::string &MaterialName);
+  void AddCamera(Ogre::Camera *OgreCameraPtr);
+  void AddSinbad(Ogre::Camera *OgreCameraPtr);
+  void AddForests(Forests::PagedGeometry *PGPtr, const std::string &MaterialName = "");
+  void AddTerrain(Ogre::TerrainGroup *TGP);
+  void AddSkyBox();
+  Ogre::Vector3 GetSunPosition();
+
  protected:
   /// Internal. Check CPU
   void TestCPUCapabilities();
 
   /// Internal. Check GPU
   void TestGPUCapabilities();
-
-  /// Internal. Read engine parameters from Config.ini. If not exists create and fill it with default value
-  void ReadConfFile();
 
   /// Creates and initiates Sound component instance. Internal
   void InitSound();
@@ -106,40 +225,14 @@ class Engine final : public Singleton<Engine> {
   void InitOverlay();
 
   /// Creates and initiates Compositor component. Internal
+  void EnableEffect(const std::string& FX, bool Enable);
   void InitCompositor();
 
   /// Creates and initiates Physics component. Internal
   void InitPhysics();
 
-  /// Creates and initiates Scene component. Internal
-  void InitScene();
-
   ///
   bool CheckRenderSystemVersion(int major, int minor);
-
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-  ///
-  void InitOgreRenderSystemGL3();
-
-  ///
-  bool CheckGL3Version(int major, int minor);
-#endif
-
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-  ///
-  void InitOgreRenderSystemGLES2();
-
-  ///
-  bool CheckGLES2Version(int major, int minor);
-#endif
-
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL
-  ///
-  void InitOgreRenderSystemGL();
-
-  ///
-  bool CheckGLVersion(int major, int minor);
-#endif
 
   /// Load into memory static Ogre plugins
   void InitOgrePlugins();
@@ -167,19 +260,35 @@ class Engine final : public Singleton<Engine> {
   ///
   std::string RenderSystemName;
   Ogre::Root* OgreRoot = nullptr;
+  Ogre::SceneNode *RootNode = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;
   Ogre::RenderWindow* OgreRenderWindowPtr = nullptr;
   Ogre::RenderTarget* OgreRenderTargetPtr = nullptr;
   Ogre::Camera* OgreCamera = nullptr;
   Ogre::Viewport* OgreViewport = nullptr;
+  std::string GroupName = Ogre::RGN_DEFAULT;
+
+  ///
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> PSSMSetupPtr;
   std::vector<float> PSSMSplitPointList;
   int PSSMSplitCount = 3;
 
   ///
+  std::unique_ptr<Ogre::TerrainGroup> OgreTerrainList;
+  std::vector<std::unique_ptr<Forests::PagedGeometry>> PagedGeometryList;
+  std::unique_ptr<SinbadCharacterController> Sinbad;
+  Ogre::GpuProgramParametersSharedPtr SkyBoxFpParams;
+  bool SkyNeedsUpdate = false;
+  const std::array<const char *, 10> HosikParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+  std::array<Ogre::Vector3, 10> HosekParams;
+  std::vector<Ogre::GpuProgramParametersSharedPtr> GpuFpParams;
+  std::vector<Ogre::GpuProgramParametersSharedPtr> GpuVpParams;
+  bool Paused = false;
+
+  ///
   std::string WindowCaption = "Example0";
-  int WindowWidth = 1024;
-  int WindowHeight = 768;
+  int WindowWidth = 1270;
+  int WindowHeight = 720;
   bool WindowFullScreen = false;
   int ScreenWidth = 0;
   int ScreenHeight = 0;
@@ -194,20 +303,28 @@ class Engine final : public Singleton<Engine> {
   uint32_t SDLWindowFlags = 0;
   int WindowPositionFlag = SDL_WINDOWPOS_CENTERED;
 
+  /// Compositor stuff
+  Ogre::CompositorManager* OgreCompositorManager = nullptr;
+  Ogre::CompositorChain* OgreCompositorChain = nullptr;
+  int ViewportSizeX = 0;
+  int ViewportSizeY = 0;
+  std::map<std::string, CompositorFX> CompositorList;
+
+  /// ImGui stuff
+  std::unique_ptr<ImGuiInputListener> ImGuiListener;
+  Ogre::ImGuiOverlay* ImGuiOverlayPtr = nullptr;
+  Ogre::OverlaySystem* OgreOverlayPtr = nullptr;
+  ImGuiIO* IoPtr = nullptr;
+
   /// Components
-  Config* ConfigPtr = nullptr;
-  std::unique_ptr<Compositor> CompositorUPtr;
-  std::unique_ptr<Overlay> OverlayPtr;
   std::unique_ptr<Physics> PhysicsPtr;
   std::unique_ptr<Sound> SoundPtr;
-  std::unique_ptr<Scene> ScenePtr;
-  std::vector<ComponentI*> ComponentList;
+  std::vector<SystemI*> ComponentList;
 
   /// Global access to base components
   friend Engine& GetEngine();
   friend Physics& GetPhysics();
   friend Sound& GetAudio();
-  friend Scene& GetScene();
 };
 
 }  // namespace Glue

@@ -12,8 +12,6 @@ Permission is granted to anyone to use this software for any purpose, including 
 //BatchPage is an extension to PagedGeometry which displays entities as static geometry.
 //-------------------------------------------------------------------------------------
 
-#include "PCHeader.h"
-
 #include <OgreRoot.h>
 #include <OgreCamera.h>
 #include <OgreVector3.h>

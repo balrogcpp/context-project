@@ -1,18 +1,16 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
-#include "PCHeader.h"
-#include "Engine.h"
 #include "SinbadCharacterController.h"
+#include "Engine.h"
+#include "pch.h"
 
 using namespace std;
 
 namespace Glue {
 
-Ogre::SceneNode *SinbadCharacterController::GetBodyNode() const { return BodyNode; }
-
 SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam) : BaseAnimID(ANIM_NONE), TopAnimID(ANIM_NONE) {
-  SetupBody();
   SetupCamera(cam);
+  SetupBody();
   //GetAudio().AddSound("walk_grass", "Footsteps-in-grass-fast.ogg", BodyNode, true);
   //GetAudio().SetSoundVolume("walk_grass", 2.0);
   //GetAudio().AddListener(CameraNode);
@@ -118,20 +116,20 @@ void SinbadCharacterController::OnMouseRbDown(int x, int y) {
 }
 
 void SinbadCharacterController::SetupBody() {
-  auto *sceneMgr = OgreSceneManager();
+  auto *sceneMgr = CameraNode->getCreator();
 
   // create main model
   BodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * CHAR_HEIGHT);
   BodyEnt = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
-  GetScene().AddEntity(BodyEnt);
+  GetEngine().AddEntity(BodyEnt);
   BodyNode->attachObject(BodyEnt);
-  BodyNode->scale(Ogre::Vector3{SCALE});
+  BodyNode->scale(Ogre::Vector3(SCALE));
 
   // create swords and attach to sheath
   Sword1 = sceneMgr->createEntity("SinbadSword1", "Sword.mesh");
   Sword2 = sceneMgr->createEntity("SinbadSword2", "Sword.mesh");
-  GetScene().AddEntity(Sword1);
-  GetScene().AddEntity(Sword2);
+  GetEngine().AddEntity(Sword1);
+  GetEngine().AddEntity(Sword2);
   BodyEnt->attachObjectToBone("Sheath.L", Sword1);
   BodyEnt->attachObjectToBone("Sheath.R", Sword2);
 
@@ -141,7 +139,7 @@ void SinbadCharacterController::SetupBody() {
   //  params["maxElements"] = "80";
   //  mSwordTrail = (Ogre::RibbonTrail *)sceneMgr->createMovableObject("RibbonTrail", &params);
   //  mSwordTrail->setMaterialName("Examples/LightRibbonTrail");
-  //  GetScene().AddMaterial("Examples/LightRibbonTrail");
+  //  GetEngine().AddMaterial("Examples/LightRibbonTrail");
   //  mSwordTrail->setTrailLength(SCALE * 20);
   //  mSwordTrail->setVisible(false);
   //  sceneMgr->getRootSceneNode()->attachObject(mSwordTrail);
@@ -202,7 +200,7 @@ void SinbadCharacterController::UpdateBody(float FrameTime) {
   GoalDirection = Ogre::Vector3::ZERO;  // we will calculate this
   float x = BodyNode->getPosition().x;
   float z = BodyNode->getPosition().z;
-  float y = GetScene().GetHeight(x, z) + CHAR_HEIGHT;
+  float y = GetEngine().GetHeight(x, z) + CHAR_HEIGHT;
   BodyNode->setPosition(x, y, z);
 
   if (KeyDirection != Ogre::Vector3::ZERO && BaseAnimID != ANIM_DANCE) {
@@ -247,9 +245,9 @@ void SinbadCharacterController::UpdateBody(float FrameTime) {
       SetBaseAnimation(ANIM_JUMP_END, true);
       Timer = 0;
     }
-    if (pos.y <= GetScene().GetHeight(x, z) + CHAR_HEIGHT) {
+    if (pos.y <= GetEngine().GetHeight(x, z) + CHAR_HEIGHT) {
       // if we've hit the ground, change to landing state
-      pos.y = GetScene().GetHeight(x, z) + CHAR_HEIGHT;
+      pos.y = GetEngine().GetHeight(x, z) + CHAR_HEIGHT;
       BodyNode->setPosition(pos);
       SetBaseAnimation(ANIM_JUMP_END, true);
       Timer = 0;

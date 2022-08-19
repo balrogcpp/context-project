@@ -70,7 +70,7 @@ IncludeCategories:
 #    Priority:        3
 #  - Regex:           '.*'
 #    Priority:        1
-  - Regex:           'PCHeader.h'
+  - Regex:           'pch.h'
     Priority:       -2
 IncludeIsMainRegex: '([-_](test|unittest))?$'
 IndentCaseLabels: true

@@ -10,7 +10,7 @@ RUN apt-get update \
     && apt-get clean
 
 
-ARG CMAKE_VERSION=3.23.2
+ARG CMAKE_VERSION=3.24.0
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.0
 ARG UPX_VERSION=3.96
@@ -47,7 +47,6 @@ RUN apt-get update \
 
 
 WORKDIR /opt
-
 ARG EMSDK_ROOT=/opt/emsdk
 ARG EMSDK_VERSION=3.1.16
 RUN apt-get update \

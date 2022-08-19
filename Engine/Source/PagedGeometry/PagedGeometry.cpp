@@ -12,8 +12,6 @@ Permission is granted to anyone to use this software for any purpose, including 
 //Main source file for the PagedGeometry engine.
 //-------------------------------------------------------------------------------------
 
-#include "PCHeader.h"
-
 #include <OgreRoot.h>
 #include <OgreTimer.h>
 #include <OgreCamera.h>
@@ -77,7 +75,7 @@ m_nRenderQueue(queue)
 	auto& mgr = HighLevelGpuProgramManager::getSingleton();
 	for(auto lang : {"glsl", "hlsl", "glsles"})
 	{
-		if(mgr.isLanguageSupported(lang))
+		if(mgr.isSyntaxSupported(lang))
 		{
 			shaderLanguage = lang;
 			break;
@@ -95,6 +93,7 @@ PagedGeometry::~PagedGeometry()
 
 	//Remove all page managers and the geometry associated with them
 	removeDetailLevels();
+
         // Prevent memory leak
         delete pageLoader;
 }

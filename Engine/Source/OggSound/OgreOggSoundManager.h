@@ -315,7 +315,7 @@ namespace OgreOggSound
 		@note
 			Internal function - SHOULD NOT BE CALLED BY USER CODE.\n
 		*/
-		bool _releaseSharedBuffer(const Ogre::String& sName, ALuint buffer);
+		bool _releaseSharedBuffer(const Ogre::String& sName, ALuint& buffer);
 		/** Registers a shared audio buffer
 		@remarks
 			Its possible to share audio buffer data among many sources so this function registers an audio buffer as 'sharable', 
@@ -330,7 +330,7 @@ namespace OgreOggSound
 		@note
 			Internal function - SHOULD NOT BE CALLED BY USER CODE.\n
 		 */
-		bool _registerSharedBuffer(const Ogre::String& sName, ALuint buffer, OgreOggISound* parent=0);
+		bool _registerSharedBuffer(const Ogre::String& sName, ALuint& buffer, OgreOggISound* parent=0);
 		/** Sets distance model.
 		@remarks
 			Sets the global distance attenuation algorithm used by all sounds in the system.
@@ -815,7 +815,7 @@ namespace OgreOggSound
 					OgreOggSoundManager::getSingletonPtr()->_updateBuffers();
 					OgreOggSoundManager::getSingletonPtr()->_processQueuedSounds();
 				}
-				std::this_thread::sleep_for(std::chrono::milliseconds(OGGSOUND_UPDATE_INTERVAL));
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			}
 		}
 #endif
@@ -824,8 +824,6 @@ namespace OgreOggSound
 			Creates and inits a single sound object, depending on passed
 			parameters this function will create a static/streamed sound.\n
 			Each sound must have a unique name within the manager.
-			@param scnMgr
-				Pointer to creator
 			@param name 
 				Unique name of sound
 			@param file 
@@ -842,7 +840,6 @@ namespace OgreOggSound
 		 */
 		
 		OgreOggISound* _createSoundImpl(
-			Ogre::SceneManager* scnMgr,
 			const Ogre::String& name,
 			#if OGRE_VERSION_MAJOR == 2
 			Ogre::IdType id,

@@ -28,8 +28,6 @@
 *
 */
 
-#include "PCHeader.h"
-
 #include "OgreOggSoundRoot.h"
 
 namespace OgreOggSound

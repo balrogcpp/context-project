@@ -36,7 +36,6 @@ RUN apt-get update \
 
 
 WORKDIR /opt
-
 ARG ANDROID_HOME=/opt/android-sdk
 ARG ANDROID_CMD_VERSION=8512546
 RUN wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -O tools.zip \

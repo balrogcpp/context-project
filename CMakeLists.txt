@@ -14,8 +14,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # CMake module path
 set(GLUE_CMAKE_DIR ${PROJECT_SOURCE_DIR}/CMake)
 list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR})
-list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Package)
-list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR}/Module)
 
 
 # Include necessary submodules
@@ -63,7 +61,6 @@ endif ()
 set(CMAKE_FOLDER Android) # VS folder
 
 add_custom_target(BuildAndroid
-        DEPENDS BuildAssets
         COMMAND ./gradlew ${GRADLE_TARGET}
         COMMAND ${CMAKE_COMMAND} -E copy ${APK_FILE} ${GLUE_ARTIFACT_DIR}/${OUTPUT_FILE}
         WORKING_DIRECTORY ${GLUE_ANDROID_ROOT}
@@ -87,24 +84,12 @@ list(APPEND CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
 
 
-if (APPLE)
-    set(CMAKE_THREAD_LIBS_INIT "-lpthread")
-    set(CMAKE_HAVE_THREADS_LIBRARY 1)
-    set(CMAKE_USE_WIN32_THREADS_INIT 0)
-    set(CMAKE_USE_PTHREADS_INIT 1)
-    set(THREADS_PREFER_PTHREAD_FLAG ON)
-endif ()
-
-
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     insert_dependency(X11)
 endif ()
 if (DESKTOP)
     insert_dependency(OpenGL)
-else ()
-    insert_dependency(OpenGLES2)
 endif ()
-insert_dependency(Threads)
 insert_dependency_static(Bullet)
 mark_as_advanced(BULLET_INCLUDE_DIR)
 insert_dependency_static2(Lua LUA_LIBRARY)
@@ -127,6 +112,7 @@ endif ()
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(AndroidDummy SHARED Engine/Android/app/src/main/cpp/main.cpp)
     add_dependencies(AndroidDummy Dependencies)
+    return()
 endif ()
 
 
@@ -138,18 +124,91 @@ add_subdirectory(Engine)
 add_subdirectory(Example)
 
 
-# Template project
-#add_subdirectory(Project)
+# assets
+macro(FlatZipSubdirectories curdir destination)
+    make_directory(${destination})
+    file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
+
+    foreach (directory ${directories})
+        if (${directory} STREQUAL ".git") #omit .git directory
+            continue()
+        endif ()
+        set(filelist "")
+        if (IS_DIRECTORY ${curdir}/${directory})
+            file(GLOB_RECURSE files LIST_DIRECTORIES false ${curdir}/${directory} ${curdir}/${directory}/*)
+            make_directory(${destination}/${directory})
+            file(COPY ${files} DESTINATION ${destination}/${directory})
+            file(GLOB filelist RELATIVE ${destination}/${directory} ${destination}/${directory}/*)
+            execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${destination}/${directory} ${CMAKE_COMMAND} -E tar cf ${destination}/${directory}.zip --format=zip ${filelist})
+            file(REMOVE_RECURSE ${destination}/${directory})
+        endif ()
+    endforeach ()
+endmacro()
 
 
-# assets helper target
-add_custom_target(BuildAssets ALL
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_SOURCE_DIR}/Tmp
-        COMMAND ${CMAKE_COMMAND} -P CMake/FlatZipAssets.cmake
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Creating assets and programs zip package..."
-        USES_TERMINAL
-        )
+# Zip files from directory into flat zip
+macro(CopyFlatZipDirectory curdir destination)
+    make_directory(${destination})
+    file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
+
+    foreach (directory ${directories})
+        if (${directory} STREQUAL ".git") #omit .git directory
+            continue()
+        endif ()
+        set(filelist "")
+        if (IS_DIRECTORY ${curdir}/${directory})
+            file(GLOB_RECURSE files LIST_DIRECTORIES false ${curdir}/${directory} ${curdir}/${directory}/*)
+            file(COPY ${files} DESTINATION ${destination})
+        endif ()
+    endforeach ()
+endmacro()
+
+
+# Zip files from directory into flat zip
+macro(ZipDirectory destination)
+    file(GLOB filelist RELATIVE ${destination} ${destination}/*)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${destination}/${directory} ${CMAKE_COMMAND} -E tar cf ${destination}.zip --format=zip ${filelist})
+    file(REMOVE_RECURSE ${destination})
+endmacro()
+
+
+# Zip files from directory into flat zip
+macro(FlatZipDirectory curdir destination)
+    make_directory(${destination})
+    file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
+
+    foreach (directory ${directories})
+        if (${directory} STREQUAL ".git") #omit .git directory
+            continue()
+        endif ()
+        set(filelist "")
+        if (IS_DIRECTORY ${curdir}/${directory})
+            file(GLOB_RECURSE files LIST_DIRECTORIES false ${curdir}/${directory} ${curdir}/${directory}/*)
+            file(COPY ${files} DESTINATION ${destination})
+        endif ()
+    endforeach ()
+
+    file(GLOB filelist RELATIVE ${destination} ${destination}/*)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${destination}/${directory} ${CMAKE_COMMAND} -E tar cf ${destination}.zip --format=zip ${filelist})
+    file(REMOVE_RECURSE ${destination})
+endmacro()
+
+
+set(GLUE_TMP_DIR ${CMAKE_SOURCE_DIR}/Tmp)
+file(REMOVE_RECURSE ${GLUE_TMP_DIR})
+make_directory(${GLUE_TMP_DIR})
+
+
+CopyFlatZipDirectory(${CMAKE_SOURCE_DIR}/Engine/Programs ${GLUE_TMP_DIR}/Programs)
+if (ANDROID OR IOS OR EMSCRIPTEN)
+    file(GLOB files ${CMAKE_SOURCE_DIR}/Engine/GLSLES/*)
+else ()
+    file(GLOB files ${CMAKE_SOURCE_DIR}/Engine/GLSL/*)
+endif ()
+file(COPY ${files} DESTINATION ${GLUE_TMP_DIR}/Programs)
+ZipDirectory(${GLUE_TMP_DIR}/Programs)
+FlatZipDirectory(${CMAKE_SOURCE_DIR}/Example/Assets ${GLUE_TMP_DIR}/Assets)
+
 
 # Helper targets
 if (NOT GIT_SHA1)
@@ -196,7 +255,7 @@ if (NOT ${CMAKE_INSTALL_PREFIX})
 endif ()
 install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
 install(FILES ${GLUE_TMP_DIR}/Assets.zip DESTINATION .)
-install(DIRECTORY ${GLUE_TMP_DIR}/Programs DESTINATION .)
+install(FILES ${GLUE_TMP_DIR}/Programs.zip DESTINATION .)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(FILES PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
@@ -227,30 +286,10 @@ else ()
 endif ()
 
 
-find_package(NSIS QUIET)
-
-
-if (${NSIS_FOUND} AND WIN32)
-    message(STATUS "NSIS found. MSI installer will be created")
-    list(APPEND CPACK_GENERATOR "NSIS")
-    set(CPACK_NSIS_MODIFY_PATH ON)
-    set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
-    set(CPACK_CREATE_DESKTOP_LINKS Sample)
-    set(CPACK_NSIS_IGNORE_LICENSE_PAGE ON)
-    if (CMAKE_SIZEOF_VOID_P STREQUAL 8)
-        set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
-    elseif (CMAKE_SIZEOF_VOID_P STREQUAL 4)
-        set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES32")
-    endif ()
-else ()
-    message(STATUS "NSIS not found")
-endif ()
-
 include(CPack)
 
 
 add_custom_target(BuildPackage
-        DEPENDS BuildAssets
         COMMAND ${CMAKE_COMMAND} --build . --target package --config ${CMAKE_BUILD_TYPE}
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

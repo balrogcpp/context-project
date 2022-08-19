@@ -1,8 +1,8 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #pragma once
-#include "Exception.h"
 #include "NoCopy.h"
+#include <stdexcept>
 
 namespace Glue {
 
@@ -13,7 +13,7 @@ class BaseSingleton : public NoCopy {
  public:
   /// Constructor
   BaseSingleton() {
-    if (Instanced) Throw(std::string(typeid(T).name()) + " is a Singleton class. Creation of another instance is forbidden");
+    if (Instanced) throw std::runtime_error(std::string(typeid(T).name()) + " is a Singleton class. Creation of another instance is forbidden");
     Instanced = true;
   }
 

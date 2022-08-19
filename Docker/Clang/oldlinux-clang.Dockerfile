@@ -20,7 +20,7 @@ RUN rm /etc/apt/sources.list \
     && apt-get clean
 
 
-ARG CMAKE_VERSION=3.23.2
+ARG CMAKE_VERSION=3.24.0
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.0
 ARG UPX_VERSION=3.96

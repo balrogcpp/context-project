@@ -39,43 +39,6 @@ index 0c74ce29..829e6080 100644
      ${IMGUI_DIR}/imconfig.h)
  endif()
  
-diff --git a/Components/Overlay/include/OgreImGuiOverlay.h b/Components/Overlay/include/OgreImGuiOverlay.h
-index 07b76129..b6bb2309 100644
---- a/Components/Overlay/include/OgreImGuiOverlay.h
-+++ b/Components/Overlay/include/OgreImGuiOverlay.h
-@@ -21,7 +21,7 @@ public:
- 
-     /// add font from ogre .fontdef file
-     /// must be called before first show()
--    ImFont* addFont(const String& name, const String& group OGRE_RESOURCE_GROUP_INIT);
-+    ImFont* addFont(const String& name, const String& group OGRE_RESOURCE_GROUP_INIT, const ImFontConfig* fontCfg = NULL, const ImWchar* glyphRanges = NULL);
- 
-     static void NewFrame();
- 
-diff --git a/Components/Overlay/src/OgreImGuiOverlay.cpp b/Components/Overlay/src/OgreImGuiOverlay.cpp
-index 10831078..b8872769 100644
---- a/Components/Overlay/src/OgreImGuiOverlay.cpp
-+++ b/Components/Overlay/src/OgreImGuiOverlay.cpp
-@@ -77,7 +77,7 @@ void ImGuiOverlay::ImGUIRenderable::createMaterial()
-     mMaterial->setReceiveShadows(false);
- }
- 
--ImFont* ImGuiOverlay::addFont(const String& name, const String& group)
-+ImFont* ImGuiOverlay::addFont(const String& name, const String& group, const ImFontConfig* fontCfg, const ImWchar* glyphRanges)
- {
-     FontPtr font = FontManager::getSingleton().getByName(name, group);
-     OgreAssert(font, "font does not exist");
-@@ -108,8 +108,8 @@ ImFont* ImGuiOverlay::addFont(const String& name, const String& group)
- 
-     ImFontConfig cfg;
-     strncpy(cfg.Name, name.c_str(), IM_ARRAYSIZE(cfg.Name) - 1);
--    return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), font->getTrueTypeSize() * vpScale, &cfg,
--                                          cprangePtr);
-+    return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), font->getTrueTypeSize() * vpScale, fontCfg,
-+                                          glyphRanges);
- }
- 
- void ImGuiOverlay::ImGUIRenderable::createFontTexture()
 diff --git a/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp b/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp
 index 0ff8e2e2..78342e6e 100644
 --- a/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp

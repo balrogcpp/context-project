@@ -1,10 +1,8 @@
-#include "PCHeader.h"
 #include <OgreVector3.h>
 #include "SkyModel.h"
 #include "ArHosekSkyModel.h"
 #include <cstdlib>
 
-using namespace std;
 using namespace Ogre;
 
 void SkyModel::SetupSky(const Vector3f &_sunDir, float _sunSize, Vector3f _sunRenderColor, const Vector3f _groundAlbedo, float _turbidity, ColorSpace _colorspace)
