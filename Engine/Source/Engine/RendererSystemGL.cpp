@@ -3,8 +3,8 @@
 
 #include <OgreComponents.h>
 
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL
 
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL
 #include <OgreRoot.h>
 #include <RenderSystems/GL/OgreGLRenderSystem.h>
 
@@ -17,5 +17,4 @@ bool CheckGLVersion(const int major, const int minor) {
 }
 
 }  // namespace Glue
-
 #endif  // OGRE_BUILD_RENDERSYSTEM_GL

@@ -3,8 +3,8 @@
 
 #include <OgreComponents.h>
 
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 #include <OgreRoot.h>
 #include <RenderSystems/GL3Plus/OgreGL3PlusRenderSystem.h>
 

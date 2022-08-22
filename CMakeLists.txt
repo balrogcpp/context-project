@@ -80,6 +80,8 @@ set(CMAKE_FOLDER "")
 
 # Dependencies
 add_subdirectory(Engine/Dependencies)
+
+
 list(APPEND CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
 

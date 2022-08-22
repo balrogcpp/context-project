@@ -3,8 +3,8 @@
 
 #include <OgreComponents.h>
 
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
 
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
 #include <OgreRoot.h>
 #include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 

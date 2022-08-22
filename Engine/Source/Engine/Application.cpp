@@ -13,6 +13,7 @@ namespace fs = std::filesystem;
 namespace fs = ghc::filesystem;
 #endif  // !APPLE
 #endif  // DESKTOP
+
 extern "C" {
 #ifdef _MSC_VER
 #define SDL_MAIN_HANDLED
@@ -28,15 +29,6 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#endif
-#if defined(WINDOWS)
-#define WIN32_LEAN_AND_MEAN
-#include <shlobj.h>
-#include <windows.h>
-#elif defined(UNIX)
-#include <pwd.h>
-#include <sys/types.h>
-#include <unistd.h>
 #endif
 
 
