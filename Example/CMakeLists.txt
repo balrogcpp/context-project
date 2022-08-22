@@ -1,8 +1,8 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
 
-
 include(GlueBuildVariables)
+
 
 # glob sources
 file(GLOB_RECURSE SAMPLE_SOURCE_FILES Source/*.cpp Source/*.h Source/*.hpp)
@@ -58,12 +58,6 @@ target_link_libraries(Example PUBLIC ${GLUE_LIBRARIES})
 
 
 install(TARGETS Example RUNTIME DESTINATION .)
-
-
-# use upx to reduce binary size
-if (${CMAKE_BUILD_TYPE} STREQUAL "Release" AND DESKTOP)
-    include(ReallySmallPostBuild)
-endif ()
 
 
 #Package
