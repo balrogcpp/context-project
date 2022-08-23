@@ -29,32 +29,30 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STRE
         string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
         string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     endif ()
-
+    string(APPEND CMAKE_CXX_FLAGS " -pthread")
+    string(APPEND CMAKE_C_FLAGS " -pthread")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " -pthread")
 
     if (EMSCRIPTEN)
-        string(APPEND CMAKE_CXX_FLAGS " -s DISABLE_EXCEPTION_CATCHING=0")
-        string(APPEND CMAKE_C_FLAGS " -s DISABLE_EXCEPTION_CATCHING=0")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0")
+        string(APPEND CMAKE_CXX_FLAGS " -s DISABLE_EXCEPTION_CATCHING=0 -s PTHREAD_POOL_SIZE=4 -s SHARED_MEMORY=1")
+        string(APPEND CMAKE_C_FLAGS " -s DISABLE_EXCEPTION_CATCHING=0 -s PTHREAD_POOL_SIZE=4 -s SHARED_MEMORY=1")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0 -s PTHREAD_POOL_SIZE=4 -s SHARED_MEMORY=1")
     endif ()
-
 
     if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
         string(APPEND CMAKE_CXX_FLAGS " -msse4")
         string(APPEND CMAKE_C_FLAGS " -msse4")
     endif ()
 
-
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
         string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
     endif ()
 
-
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND MINGW)
         string(APPEND CMAKE_CXX_FLAGS " -mwindows")
         string(APPEND CMAKE_C_FLAGS " -mwindows")
     endif ()
-
 
     if (GLUE_USE_AVX2)
         string(APPEND CMAKE_CXX_FLAGS " -mavx2")
@@ -64,18 +62,10 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STRE
         string(APPEND CMAKE_C_FLAGS " -mavx")
     endif ()
 
-
     # gcc-mingw links everything as shared libraries by default
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
     endif ()
-
-
-    if (NOT EMSCRIPTEN)
-        string(APPEND CMAKE_CXX_FLAGS " -pthread")
-        string(APPEND CMAKE_C_FLAGS " -pthread")
-    endif ()
-
 
     option(GLUE_USE_OPENMP "" OFF)
     if (GLUE_USE_OPENMP)
@@ -91,12 +81,10 @@ elseif (MSVC)
     string(REPLACE " /DNDEBUG" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
     string(REPLACE " /DNDEBUG" "" CMAKE_C_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO})
 
-
     if (CMAKE_SIZEOF_VOID_P LESS 8)
         string(APPEND CMAKE_CXX_FLAGS " /arch:SSE2")
         string(APPEND CMAKE_C_FLAGS " /arch:SSE2")
     endif ()
-
 
     if (GLUE_USE_AVX2)
         string(APPEND CMAKE_CXX_FLAGS " /arch:AVX2")
@@ -106,10 +94,8 @@ elseif (MSVC)
         string(APPEND CMAKE_C_FLAGS " /arch:AVX")
     endif ()
 
-
     string(APPEND CMAKE_CXX_FLAGS " /EHa /MP /GS- /GF /utf-8")
     string(APPEND CMAKE_C_FLAGS " /EHa /MP /GS- /GF /utf-8")
-
 
     if (${CMAKE_BUILD_TYPE} STREQUAL Release)
         string(APPEND CMAKE_CXX_FLAGS " /O2 /Ot /Ob2 /fp:fast /GL /DNDEBUG")
@@ -120,8 +106,6 @@ elseif (MSVC)
         string(APPEND CMAKE_CXX_FLAGS " /Zi /Ob1 /DDEBUG")
         string(APPEND CMAKE_C_FLAGS " /Zi /Ob1 /DDEBUG")
     endif ()
-
-
 endif ()
 
 
