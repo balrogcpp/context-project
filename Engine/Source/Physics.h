@@ -5,29 +5,14 @@
 #include <Bullet/OgreBullet.h>
 #include <OgreAny.h>
 #include <OgreFrameListener.h>
+#include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
+#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
+#include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
+#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
 #include <functional>
 #include <map>
 #include <thread>
 
-
-namespace Ogre {
-class Entity;
-class SceneNode;
-}  // namespace Ogre
-
-// Forward declaration
-struct btDbvtBroadphase;
-class btAxisSweep3;
-class btDefaultCollisionConfiguration;
-class btCollisionDispatcher;
-class btCollisionDispatcherMt;
-class btSequentialImpulseConstraintSolver;
-class btSequentialImpulseConstraintSolverMt;
-class btDynamicsWorld;
-class btDiscreteDynamicsWorld;
-class btDiscreteDynamicsWorldMt;
-class btRigidBody;
-class btCollisionObject;
 
 namespace Glue {
 

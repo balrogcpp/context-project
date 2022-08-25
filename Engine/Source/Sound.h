@@ -1,18 +1,13 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #pragma once
+#include "OggSound/OgreOggSound.h"
+#include "OggSound/OgreOggSoundRoot.h"
 #include "System.h"
+#include <Ogre.h>
 #include <memory>
 #include <string>
 
-namespace OgreOggSound {
-class OgreOggSoundManager;
-class Root;
-}
-
-namespace Ogre {
-class SceneNode;
-}
 
 namespace Glue {
 

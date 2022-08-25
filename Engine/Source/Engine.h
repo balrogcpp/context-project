@@ -1,17 +1,23 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #pragma once
-#include "InputSequencer.h"
-#include "Singleton.h"
-#include "Physics.h"
-#include "Sound.h"
 #include "ImGuiInputListener.h"
+#include "InputSequencer.h"
+#include "Physics.h"
+#include "Singleton.h"
+#include "Sound.h"
 extern "C" {
 #include <SDL2/SDL_video.h>
 }
+#include <imgui.h>
 #include <memory>
 #include <vector>
-
+#ifdef OGRE_BUILD_COMPONENT_OVERLAY
+#include <Overlay/OgreImGuiOverlay.h>
+#include <Overlay/OgreOverlay.h>
+#include <Overlay/OgreOverlayManager.h>
+#include <Overlay/OgreOverlaySystem.h>
+#endif
 
 namespace Ogre {
 class TerrainGroup;
@@ -30,7 +36,6 @@ class Sound;
 class SinbadCharacterController;
 }  // namespace Glue
 
-
 namespace Glue {
 
 /// Forward declaration
@@ -40,7 +45,6 @@ class Engine;
 Engine& GetEngine();
 Physics& GetPhysics();
 Sound& GetAudio();
-
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 ///
@@ -198,13 +202,13 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
 
   ///
   float GetHeight(float x, float z);
-  void AddEntity(Ogre::Entity *EntityPtr);
+  void AddEntity(Ogre::Entity* EntityPtr);
   void AddMaterial(Ogre::MaterialPtr material);
-  void AddMaterial(const std::string &MaterialName);
-  void AddCamera(Ogre::Camera *OgreCameraPtr);
-  void AddSinbad(Ogre::Camera *OgreCameraPtr);
-  void AddForests(Forests::PagedGeometry *PGPtr, const std::string &MaterialName = "");
-  void AddTerrain(Ogre::TerrainGroup *TGP);
+  void AddMaterial(const std::string& MaterialName);
+  void AddCamera(Ogre::Camera* OgreCameraPtr);
+  void AddSinbad(Ogre::Camera* OgreCameraPtr);
+  void AddForests(Forests::PagedGeometry* PGPtr, const std::string& MaterialName = "");
+  void AddTerrain(Ogre::TerrainGroup* TGP);
   void AddSkyBox();
   Ogre::Vector3 GetSunPosition();
 
@@ -260,7 +264,7 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   ///
   std::string RenderSystemName;
   Ogre::Root* OgreRoot = nullptr;
-  Ogre::SceneNode *RootNode = nullptr;
+  Ogre::SceneNode* RootNode = nullptr;
   Ogre::SceneManager* OgreSceneManager = nullptr;
   Ogre::RenderWindow* OgreRenderWindowPtr = nullptr;
   Ogre::RenderTarget* OgreRenderTargetPtr = nullptr;
@@ -279,7 +283,7 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   std::unique_ptr<SinbadCharacterController> Sinbad;
   Ogre::GpuProgramParametersSharedPtr SkyBoxFpParams;
   bool SkyNeedsUpdate = false;
-  const std::array<const char *, 10> HosikParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+  const std::array<const char*, 10> HosikParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
   std::array<Ogre::Vector3, 10> HosekParams;
   std::vector<Ogre::GpuProgramParametersSharedPtr> GpuFpParams;
   std::vector<Ogre::GpuProgramParametersSharedPtr> GpuVpParams;

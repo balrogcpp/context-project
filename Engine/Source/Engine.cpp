@@ -12,11 +12,6 @@
 #include "imgui_user/IconsFontAwesome5.h"
 #include "imgui_user/IconsKenney.h"
 #include "imgui_user/IconsMaterialDesign.h"
-#ifdef OGRE_BUILD_COMPONENT_TERRAIN
-#include "TerrainMaterialGeneratorB.h"
-#include <OgreTerrain.h>
-#include <OgreTerrainGroup.h>
-#endif
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include <OgreArchiveFactory.h>
 #include <OgreFileSystem.h>
@@ -84,10 +79,10 @@ extern "C" {
 #include <Paging/OgrePaging.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
-#include <Overlay/OgreImGuiOverlay.h>
-#include <Overlay/OgreOverlay.h>
 #include <Overlay/OgreFont.h>
 #include <Overlay/OgreFontManager.h>
+#include <Overlay/OgreImGuiOverlay.h>
+#include <Overlay/OgreOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
 #endif
@@ -396,31 +391,28 @@ void Engine::TestGPUCapabilities() {
   }
 }
 
-ImFont* AddFont(const String& name, const String& group OGRE_RESOURCE_GROUP_INIT, const ImFontConfig* fontCfg = NULL, const ImWchar* glyphRanges = NULL)
-{
+ImFont *AddFont(const String &name, const String &group OGRE_RESOURCE_GROUP_INIT, const ImFontConfig *fontCfg = NULL,
+                const ImWchar *glyphRanges = NULL) {
   typedef std::vector<ImWchar> CodePointRange;
   std::vector<CodePointRange> mCodePointRanges;
 
   FontPtr font = FontManager::getSingleton().getByName(name, group);
   OgreAssert(font, "font does not exist");
   OgreAssert(font->getType() == FT_TRUETYPE, "font must be of FT_TRUETYPE");
-  DataStreamPtr dataStreamPtr =
-      ResourceGroupManager::getSingleton().openResource(font->getSource(), font->getGroup());
-  MemoryDataStream ttfchunk(dataStreamPtr, false); // transfer ownership to imgui
+  DataStreamPtr dataStreamPtr = ResourceGroupManager::getSingleton().openResource(font->getSource(), font->getGroup());
+  MemoryDataStream ttfchunk(dataStreamPtr, false);  // transfer ownership to imgui
 
   // convert codepoint ranges for imgui
   CodePointRange cprange;
-  for (const auto& r : font->getCodePointRangeList())
-  {
+  for (const auto &r : font->getCodePointRangeList()) {
     cprange.push_back(r.first);
     cprange.push_back(r.second);
   }
 
-  ImGuiIO& io = ImGui::GetIO();
-  const ImWchar* cprangePtr = io.Fonts->GetGlyphRangesDefault();
-  if (!cprange.empty())
-  {
-    cprange.push_back(0); // terminate
+  ImGuiIO &io = ImGui::GetIO();
+  const ImWchar *cprangePtr = io.Fonts->GetGlyphRangesDefault();
+  if (!cprange.empty()) {
+    cprange.push_back(0);  // terminate
     mCodePointRanges.push_back(cprange);
     // ptr must persist until createFontTexture
     cprangePtr = mCodePointRanges.back().data();
@@ -430,10 +422,7 @@ ImFont* AddFont(const String& name, const String& group OGRE_RESOURCE_GROUP_INIT
 
   ImFontConfig cfg;
   strncpy(cfg.Name, name.c_str(), IM_ARRAYSIZE(cfg.Name) - 1);
-//  return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), font->getTrueTypeSize() * vpScale, &cfg,
-//                                        cprangePtr);
-  return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), font->getTrueTypeSize() * vpScale, fontCfg,
-                                        +                                          glyphRanges);
+  return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), font->getTrueTypeSize() * vpScale, fontCfg, +glyphRanges);
 }
 
 void Engine::InitComponents() {
@@ -460,7 +449,6 @@ void Engine::InitComponents() {
   InitCompositor();
   for (auto it : ComponentList) it->OnSetUp();
 
-
   ImGuiIO &io = ImGui::GetIO();
   AddFont("NotoSans-Regular", Ogre::RGN_INTERNAL, nullptr, io.Fonts->GetGlyphRangesCyrillic());
   ImFontConfig config;
@@ -468,7 +456,6 @@ void Engine::InitComponents() {
   static const ImWchar icon_ranges[] = {ICON_MIN_MD, ICON_MAX_MD, 0};
   AddFont("KenneyIcon-Regular", Ogre::RGN_INTERNAL, &config, icon_ranges);
   ImGuiOverlayPtr->show();
-
 
   auto *TGO = TerrainGlobalOptions::getSingletonPtr();
   if (!TGO) TGO = new TerrainGlobalOptions();
@@ -752,26 +739,21 @@ void Engine::InitResources() {
 //    {"2560x1440", 2560, 1440},
 //};
 
-//static void AddFont(const std::string &FontName, const ImFontConfig *FontConfig = nullptr, const ImWchar *GlyphRanges = nullptr,
-//                    const std::string &ResourceGroup = Ogre::RGN_INTERNAL) {
-//  static_cast<Ogre::ImGuiOverlay *>(Ogre::OverlayManager::getSingleton().getByName(""))->addFont(FontName, ResourceGroup, FontConfig, GlyphRanges);
-//}
-
 void Engine::InitOverlay() {
   OgreOverlayPtr = new Ogre::OverlaySystem();
   ImGuiOverlayPtr = new Ogre::ImGuiOverlay();
 
   // handle DPI scaling
   float vpScale = OverlayManager::getSingleton().getPixelRatio();
-  ImGui::GetIO().FontGlobalScale = std::round(vpScale); // default font does not work with fractional scaling
+  ImGui::GetIO().FontGlobalScale = std::round(vpScale);  // default font does not work with fractional scaling
   ImGui::GetStyle().ScaleAllSizes(vpScale);
 
   ImGuiOverlayPtr->setZOrder(300);
-//  ImGuiOverlayPtr->show();
+  //  ImGuiOverlayPtr->show();
   Ogre::OverlayManager::getSingleton().addOverlay(ImGuiOverlayPtr);
 
   OgreSceneManager->addRenderQueueListener(OgreOverlayPtr);
-//  OgreRenderWindowPtr->addListener(this);
+  //  OgreRenderWindowPtr->addListener(this);
 
   ImGuiListener = make_unique<ImGuiInputListener>();
   ImGuiIO &io = ImGui::GetIO();
@@ -782,8 +764,6 @@ void Engine::InitOverlay() {
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
   io.MouseDrawCursor = false;
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
-
-
 }
 
 const static CompositorFX Bloom{"Bloom", false, "uBloomEnable", "Output", {"Bloom", "Downscale3x3"}};
@@ -1178,8 +1158,8 @@ void Engine::Update(float PassedTime) {
 
   ImGuiOverlay::NewFrame();
 
-//  ImGui::ShowDemoWindow();
-  static ImGuiIO& io = ImGui::GetIO();
+  //  ImGui::ShowDemoWindow();
+  static ImGuiIO &io = ImGui::GetIO();
   ImGuiOverlay::NewFrame();
   ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
   ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
@@ -1188,7 +1168,6 @@ void Engine::Update(float PassedTime) {
   ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
   ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
   ImGui::End();
-
 }
 
 void Engine::RenderFrame() {
@@ -1251,18 +1230,14 @@ void Engine::ShowCursor(bool show) {
 #endif
 }
 
-#ifndef MOBILE
+#if defined(DESKTOP) && defined(DEBUG)
 static inline bool IsHidden(const fs::path &p) {
   string name = p.filename().string();
   return name.compare("..") && name.compare(".") && name[0] == '.';
 }
 
-static inline string FindPath(string Path, int Depth = 2) {
+static inline string FindPath(string Path, int Depth = 4) {
 #ifdef DESKTOP
-#ifdef DEBUG
-  Depth = 6;
-#endif
-
   string result = Path;
 
   for (int i = 0; i < Depth; i++) {

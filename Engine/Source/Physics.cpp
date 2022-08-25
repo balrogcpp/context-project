@@ -1,11 +1,7 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
-#include "Physics.h"
 #include "pch.h"
-#include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
-#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
-#include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
-#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
+#include "Physics.h"
 
 using namespace std;
 using namespace Ogre;
@@ -21,7 +17,6 @@ Physics::Physics(bool threaded) : Threaded(threaded) {
   BtBroadphase = make_unique<btDbvtBroadphase>();
   BtConfig = make_unique<btDefaultCollisionConfiguration>();
 
-
 #if (OGRE_THREAD_SUPPORT > 0)
   BtDispatcher = make_unique<btCollisionDispatcherMt>(BtConfig.get(), 40);
   BtSolver = make_unique<btSequentialImpulseConstraintSolverMt>();
@@ -30,23 +25,23 @@ Physics::Physics(bool threaded) : Threaded(threaded) {
 
   BtWorld = make_unique<btDiscreteDynamicsWorldMt>(BtDispatcher.get(), BtBroadphase.get(), solverPool, BtSolver.get(), BtConfig.get());
 #else
- // BtDispatcher = make_unique<btCollisionDispatcherMt>(BtConfig.get(), 40);
+  // BtDispatcher = make_unique<btCollisionDispatcherMt>(BtConfig.get(), 40);
   BtDispatcher = make_unique<btCollisionDispatcher>(BtConfig.get());
   BtSolver = make_unique<btSequentialImpulseConstraintSolver>();
 
-//  btConstraintSolverPoolMt *solverPool = new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT);
-//  BtWorld = make_unique<btDiscreteDynamicsWorldMt>(BtDispatcher.get(), BtBroadphase.get(), solverPool, BtSolver.get(), BtConfig.get());
+  //  btConstraintSolverPoolMt *solverPool = new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT);
+  //  BtWorld = make_unique<btDiscreteDynamicsWorldMt>(BtDispatcher.get(), BtBroadphase.get(), solverPool, BtSolver.get(), BtConfig.get());
   BtWorld = make_unique<btDiscreteDynamicsWorld>(BtDispatcher.get(), BtBroadphase.get(), BtSolver.get(), BtConfig.get());
 #endif
 
   BtWorld->setGravity(btVector3(0.0, -9.8, 0.0));
 
-//  if (DebugWraw) {
-//    auto *node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
-//    DbgDraw = make_unique<DebugDrawer>(node, BtWorld.get());
-//    DbgDraw->setDebugMode(DebugWraw);
-//    BtWorld->setDebugDrawer(DbgDraw.get());
-//  }
+  //  if (DebugWraw) {
+  //    auto *node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
+  //    DbgDraw = make_unique<DebugDrawer>(node, BtWorld.get());
+  //    DbgDraw->setDebugMode(DebugWraw);
+  //    BtWorld->setDebugDrawer(DbgDraw.get());
+  //  }
 
   if (Threaded) InitThread();
 
@@ -70,7 +65,7 @@ void Physics::InitThread() {
       if (!Paused) {
         BtWorld->stepSimulation(frame_time, SubSteps, 1.0f / UpdateRate);
 
-        //if (DebugWraw) DbgDraw->update();
+        // if (DebugWraw) DbgDraw->update();
 
         DispatchCollisions();
       }
@@ -149,7 +144,7 @@ void Physics::OnUpdate(float time) {
 
   BtWorld->stepSimulation(time, SubSteps, 1.0f / UpdateRate);
 
-  //if (DebugWraw) DbgDraw->update();
+  // if (DebugWraw) DbgDraw->update();
 
   DispatchCollisions();
 }

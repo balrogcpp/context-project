@@ -2,8 +2,6 @@
 
 #include "pch.h"
 #include "Sound.h"
-#include "OggSound/OgreOggSound.h"
-#include "OggSound/OgreOggSoundRoot.h"
 
 using namespace std;
 using namespace Ogre;
