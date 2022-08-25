@@ -1,6 +1,6 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
-project(dependencies)
+project(deps)
 
 include(GlueCppFlags)
 include(ExternalProject)
@@ -824,7 +824,4 @@ list(APPEND GLUE_DEPENDENCY_TARGETS Target_Vorbis)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_Bullet)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_SDL2)
 list(APPEND GLUE_DEPENDENCY_TARGETS Target_OGRE)
-
-
-# proxy target
 add_custom_target(Dependencies DEPENDS ${GLUE_DEPENDENCY_TARGETS})

@@ -43,41 +43,6 @@ make_directory(${GLUE_ARTIFACT_DIR})
 make_directory(${GLUE_TMP_DIR})
 
 
-# Android helper targets
-# env variable ANDROID_SDK_ROOT must be set manually
-set(GLUE_ANDROID_ROOT ${CMAKE_SOURCE_DIR}/Engine/Android)
-
-if (NOT RELEASE)
-    set(GRADLE_TARGET assembleDebug)
-    set(APK_FILE ${GLUE_ANDROID_ROOT}/app/build/outputs/apk/debug/app-arm64-v8a-debug.apk)
-    set(OUTPUT_FILE ${GLUE_PACKAGE_NAME}_Android_aarch64_Debug_${GIT_SHA1}.apk)
-else ()
-    set(GRADLE_TARGET assembleRelease)
-    set(APK_FILE ${GLUE_ANDROID_ROOT}/app/build/outputs/apk/release/app-arm64-v8a-release.apk)
-    set(OUTPUT_FILE ${GLUE_PACKAGE_NAME}_Android_aarch64_${GIT_SHA1}.apk)
-endif ()
-
-
-set(CMAKE_FOLDER Android) # VS folder
-
-add_custom_target(BuildAndroid
-        COMMAND ./gradlew ${GRADLE_TARGET}
-        COMMAND ${CMAKE_COMMAND} -E copy ${APK_FILE} ${GLUE_ARTIFACT_DIR}/${OUTPUT_FILE}
-        WORKING_DIRECTORY ${GLUE_ANDROID_ROOT}
-        COMMENT "Building Android package..."
-        USES_TERMINAL
-        )
-
-add_custom_target(ClearAndroid
-        COMMAND ${CMAKE_COMMAND} -E rm -rf .gradle app/.cxx app/build
-        WORKING_DIRECTORY ${GLUE_ANDROID_ROOT}
-        COMMENT "Deleting Android build files..."
-        USES_TERMINAL
-        )
-
-set(CMAKE_FOLDER "")
-
-
 # Dependencies
 add_subdirectory(Engine/Dependencies)
 
@@ -112,7 +77,7 @@ endif ()
 
 
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
-    add_library(AndroidDummy SHARED Engine/Android/app/src/main/cpp/main.cpp)
+    add_library(AndroidDummy SHARED Engine/Source/Android/app/src/main/cpp/main.cpp)
     add_dependencies(AndroidDummy Dependencies)
     return()
 endif ()
@@ -222,27 +187,6 @@ if (NOT GIT_SHA1)
     )
 endif ()
 
-# Docker helper target
-set(CMAKE_FOLDER Docker)
-
-add_custom_target(DockerComposeDep
-        COMMAND docker-compose -f docker-compose-dependencies.yml up
-        COMMAND docker-compose -f docker-compose-dependencies.yml down --volumes
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building thirdparty libraries with docker-compose..."
-        USES_TERMINAL
-        )
-
-add_custom_target(DockerCompose
-        COMMAND ${CMAKE_COMMAND} -E env GIT_HASH=${GIT_SHA1} docker-compose up
-        COMMAND docker-compose down --volumes
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Building tests with docker-compose..."
-        USES_TERMINAL
-        )
-
-set(CMAKE_FOLDER "")
-
 
 # package helper target
 include(CMakeDependentOption)
@@ -284,17 +228,8 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CPACK_GENERATOR "TXZ")
 else ()
-    set(CPACK_GENERATOR "ZIP")
+    set(CPACK_GENERATOR "TXZ")
 endif ()
 
 
 include(CPack)
-
-
-add_custom_target(BuildPackage
-        COMMAND ${CMAKE_COMMAND} --build . --target package --config ${CMAKE_BUILD_TYPE}
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${GLUE_ARTIFACT_DIR}/_CPack_Packages
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Building package..."
-        USES_TERMINAL
-        )

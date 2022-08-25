@@ -87,8 +87,6 @@ list(APPEND GLUE_LIBRARIES ${SYSTEM_LIBRARIES})
 
 
 file(GLOB_RECURSE GLUE_ENGINE_SOURCE_FILES ${GLUE_SOURCE_DIR}/*.cpp ${GLUE_SOURCE_DIR}/*.h ${GLUE_SOURCE_DIR}/*.hpp)
-
-
 # this required to ti disable windows upscaling @hdp monitors @windows
 if (MINGW)
     list(APPEND GLUE_ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Engine/Source/manifest.rc)

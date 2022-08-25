@@ -1,12 +1,12 @@
 version: "3.3"
 services:
-  cross_test:
+  cross_deps:
     build:
       context: .
-      dockerfile: cross-test.Dockerfile
+      dockerfile: cross-deps.Dockerfile
       args:
         GIT_HASH: ${GIT_HASH}
-    container_name: cross_test
+    container_name: cross_deps
     volumes:
       - .:/var/artifacts
     command: cp -R /mnt/build/Artifacts /var/artifacts
