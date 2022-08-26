@@ -1237,7 +1237,6 @@ static inline bool IsHidden(const fs::path &p) {
 }
 
 static inline string FindPath(string Path, int Depth = 4) {
-#ifdef DESKTOP
   string result = Path;
 
   for (int i = 0; i < Depth; i++) {
@@ -1246,13 +1245,12 @@ static inline string FindPath(string Path, int Depth = 4) {
     else if (fs::exists(result + ".zip"))
       return result.append(".zip");
     else
-#ifndef WINDOWS
+#ifndef WIN32
       result = string("../").append(result);
 #else
       result = string("..\\").append(result);
 #endif
   }
-#endif
 
   return "";
 }
@@ -1314,13 +1312,13 @@ void Engine::InitResourceLocation() {
   RGM.addResourceLocation("/Programs.zip", "APKZip", RGN_INTERNAL);
   RGM.addResourceLocation("/Assets.zip", "APKZip", RGN_DEFAULT);
 #elif defined(DEBUG)
-  const string ProgramsDir = "Engine/Programs";
+  const string ProgramsDir = "Source/Programs";
   const string AssetsDir = "Example/Assets";
   AddLocation(ProgramsDir, RGN_INTERNAL);
   if (RenderSystemIsGLES2())
-    AddLocation("Engine/GLSLES", RGN_INTERNAL);
+    AddLocation("Source/GLSLES", RGN_INTERNAL);
   else
-    AddLocation("Engine/GLSL", RGN_INTERNAL);
+    AddLocation("Source/GLSL", RGN_INTERNAL);
   AddLocation(AssetsDir);
 #else
   RGM.addResourceLocation("Programs.zip", "Zip", RGN_INTERNAL);

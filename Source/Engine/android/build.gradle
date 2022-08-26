@@ -40,7 +40,7 @@ android {
     externalNativeBuild {
         cmake {
             version '3.18.1'
-            path '../../../../CMakeLists.txt'
+            path '../../../CMakeLists.txt'
         }
     }
     splits {
@@ -53,7 +53,7 @@ android {
     }
     sourceSets {
         main {
-            assets.srcDirs = ['../../../../Tmp']
+            assets.srcDirs = ['../../../Tmp']
         }
     }
 

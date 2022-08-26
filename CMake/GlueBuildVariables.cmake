@@ -28,7 +28,7 @@ set(GLUE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source/Engine)
 
 set(GLUE_INCLUDE_DIRS
         ${GLUE_SOURCE_DIR}
-        ${GLUE_SOURCE_DIR}/Engine
+        ${GLUE_SOURCE_DIR}/Code
         ${GLUE_THIRDPARTY_ROOT}/include
         )
 
