@@ -44,7 +44,7 @@ make_directory(${GLUE_TMP_DIR})
 
 
 # Dependencies
-add_subdirectory(Engine/Dependencies)
+add_subdirectory(Source/Dependencies)
 
 
 list(APPEND CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
@@ -84,7 +84,7 @@ endif ()
 
 
 # Engine libraries
-add_subdirectory(Engine)
+add_subdirectory(Source)
 
 
 # Examples
@@ -166,11 +166,11 @@ file(REMOVE_RECURSE ${GLUE_TMP_DIR})
 make_directory(${GLUE_TMP_DIR})
 
 
-CopyFlatZipDirectory(${CMAKE_SOURCE_DIR}/Engine/Programs ${GLUE_TMP_DIR}/Programs)
+CopyFlatZipDirectory(${CMAKE_SOURCE_DIR}/Source/Programs ${GLUE_TMP_DIR}/Programs)
 if (ANDROID OR IOS OR EMSCRIPTEN)
-    file(GLOB files ${CMAKE_SOURCE_DIR}/Engine/GLSLES/*)
+    file(GLOB files ${CMAKE_SOURCE_DIR}/Source/GLSLES/*)
 else ()
-    file(GLOB files ${CMAKE_SOURCE_DIR}/Engine/GLSL/*)
+    file(GLOB files ${CMAKE_SOURCE_DIR}/Source/GLSL/*)
 endif ()
 file(COPY ${files} DESTINATION ${GLUE_TMP_DIR}/Programs)
 ZipDirectory(${GLUE_TMP_DIR}/Programs)

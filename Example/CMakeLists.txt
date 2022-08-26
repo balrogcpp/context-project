@@ -7,12 +7,12 @@ include(GlueBuildVariables)
 # glob sources
 file(GLOB_RECURSE SAMPLE_SOURCE_FILES Source/*.cpp Source/*.h Source/*.hpp)
 file(GLOB_RECURSE ASSETS_SOURCE_FILES Assets/*)
-file(GLOB_RECURSE SHADER_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Engine/Programs/*)
+file(GLOB_RECURSE SHADER_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Source/Programs/*)
 
 
 # VS project folders
-source_group(TREE ${CMAKE_SOURCE_DIR}/Engine/Source PREFIX "Engine" FILES ${GLUE_ENGINE_SOURCE_FILES})
-source_group(TREE ${CMAKE_SOURCE_DIR}/Engine/Programs PREFIX "Programs" FILES ${SHADER_SOURCE_FILES})
+source_group(TREE ${CMAKE_SOURCE_DIR}/Source/Engine PREFIX "Engine" FILES ${GLUE_ENGINE_SOURCE_FILES})
+source_group(TREE ${CMAKE_SOURCE_DIR}/Source/Programs PREFIX "Programs" FILES ${SHADER_SOURCE_FILES})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Source PREFIX "Source" FILES ${SAMPLE_SOURCE_FILES})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Assets PREFIX "Assets" FILES ${ASSETS_SOURCE_FILES})
 
