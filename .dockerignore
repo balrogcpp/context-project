@@ -2,9 +2,8 @@
 
 !/CMake/
 !/Example/
-!/Engine/
-/Engine/Dependencies/External
+!/Source/
+/Source/Dependencies/External
 !/CMakeLists.txt/
 !/README.md/
 !/LICENSE/
-!/FlatZipAssets.cmake/
