@@ -79,8 +79,6 @@ endif ()
 # Create required directories
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
 set(GLUE_TMP_DIR ${CMAKE_SOURCE_DIR}/Tmp)
-make_directory(${GLUE_ARTIFACT_DIR})
-make_directory(${GLUE_TMP_DIR})
 
 
 # Dependencies

@@ -9,10 +9,6 @@ ARG CONTEXT_HOME=/mnt/build
 WORKDIR ${CONTEXT_HOME}
 
 
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
-    && apt-get clean
-
 COPY ./Source ./Source
 COPY ./Example ./Example
 COPY ./CMakeLists.txt ./CMakeLists.txt
@@ -20,6 +16,10 @@ COPY ./CMake ./CMake
 
 
 # Linux
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
+    && apt-get clean
+
 RUN mkdir -p ${CONTEXT_HOME}/Source/Dependencies/External \
     && cd ${CONTEXT_HOME}/Source/Dependencies/External \
     && wget https://github.com/balrogcpp/glue-deps/raw/master/Linux_x86_64_Clang_Release.tar.xz -O - | tar -xJ
