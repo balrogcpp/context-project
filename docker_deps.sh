@@ -1,5 +1,6 @@
 #!/bin/bash
 
+mkdir Artifacts
 docker build -t cross_deps . -f cross_deps.Dockerfile &&\
 docker run cross_deps &&\
 CONTAINER_ID=$(docker ps -alq)

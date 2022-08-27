@@ -1,5 +1,6 @@
 #!/bin/bash
 
+mkdir Artifacts
 docker build -t cross_test . &&\
 docker run cross_test &&\
 CONTAINER_ID=$(docker ps -alq)
