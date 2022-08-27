@@ -11,8 +11,7 @@ build:
   stage: build
   script:
     - mkdir Artifacts
-    - GIT_HASH=$CI_COMMIT_SHORT_SHA docker-compose up
-    - docker-compose down --volumes
+    - sh docker.sh
   artifacts:
     paths:
       - "Artifacts/*"

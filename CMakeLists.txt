@@ -217,28 +217,17 @@ ZipDirectory(${GLUE_TMP_DIR}/Programs)
 FlatZipDirectory(${CMAKE_SOURCE_DIR}/Example/Assets ${GLUE_TMP_DIR}/Assets)
 
 
-# Helper targets
-if (NOT GIT_SHA1)
-    execute_process(
-            COMMAND git rev-parse --short=8 HEAD
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            OUTPUT_VARIABLE GIT_SHA1
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-endif ()
-
-
 # package helper target
 include(CMakeDependentOption)
 
 set(GLUE_PACKAGE_NAME "GlueSample")
-set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}_${GLUE_TOOLCHAIN_SHORT}_${GIT_SHA1})
+set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}_${GLUE_TOOLCHAIN_SHORT})
 if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
     string(APPEND GLUE_ARTIFACT_NAME "_${CMAKE_BUILD_TYPE}")
 endif ()
-if (NOT ${CMAKE_INSTALL_PREFIX})
-    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/Install/${GLUE_ARTIFACT_NAME})
-endif ()
+#if (NOT ${CMAKE_INSTALL_PREFIX})
+#    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/Install/${GLUE_ARTIFACT_NAME})
+#endif ()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(FILES PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
