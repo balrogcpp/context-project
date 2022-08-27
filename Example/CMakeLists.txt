@@ -58,7 +58,19 @@ target_link_libraries(Example PUBLIC ${GLUE_LIBRARIES})
 
 
 install(TARGETS Example RUNTIME DESTINATION .)
-
+if (EMSCRIPTEN)
+    install(FILES
+            "$<TARGET_FILE_DIR:Example>/Example.html"
+            "$<TARGET_FILE_DIR:Example>/Example.js"
+            "$<TARGET_FILE_DIR:Example>/Example.wasm"
+            "$<TARGET_FILE_DIR:Example>/Example.data"
+            "$<TARGET_FILE_DIR:Example>/Example.worker.js"
+            DESTINATION .)
+else ()
+    install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
+    install(FILES ${GLUE_TMP_DIR}/Assets.zip DESTINATION .)
+    install(FILES ${GLUE_TMP_DIR}/Programs.zip DESTINATION .)
+endif ()
 
 #Package
 if (WIN32 AND EXISTS ${GLUE_THIRDPARTY_ROOT}/bin/OpenAL32.dll)
@@ -79,8 +91,3 @@ endif ()
 if (NOT ${CMAKE_INSTALL_PREFIX})
     set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/Install/${GLUE_ARTIFACT_NAME})
 endif ()
-
-
-install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
-install(FILES ${GLUE_TMP_DIR}/Assets.zip DESTINATION .)
-install(FILES ${GLUE_TMP_DIR}/Programs.zip DESTINATION .)
