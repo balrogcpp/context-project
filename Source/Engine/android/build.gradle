@@ -53,7 +53,7 @@ android {
     }
     sourceSets {
         main {
-            assets.srcDirs = ['../../../Tmp']
+            assets.srcDirs = ['../../../tmp']
         }
     }
 
