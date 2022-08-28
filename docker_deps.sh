@@ -9,5 +9,6 @@ docker cp $CONTAINER_ID:/mnt/Source/Dependencies/External/Windows_x86_64_Clang_M
 docker cp $CONTAINER_ID:/mnt/Source/Dependencies/External/Darwin_x86_64_Clang_Release.tar.xz ./Artifacts/Darwin_x86_64_Clang_Release.tar.xz
 docker cp $CONTAINER_ID:/mnt/Source/Dependencies/External/Emscripten_x86_Clang_Release.tar.xz ./Artifacts/Emscripten_x86_Clang_Release.tar.xz
 docker cp $CONTAINER_ID:/mnt/Source/Dependencies/External/Android_aarch64_Clang_Release.tar.xz ./Artifacts/Android_aarch64_Clang_Release.tar.xz
+docker stop $CONTAINER_ID
 
 exit 0
