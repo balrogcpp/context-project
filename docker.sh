@@ -2,7 +2,7 @@
 
 mkdir Artifacts
 docker build -t cross_test . &&\
-docker run cross_test &&\
+docker run -it -d cross_test &&\
 CONTAINER_ID=$(docker ps -alq)
 docker cp $CONTAINER_ID:/mnt/build/Artifacts/GlueSample_Linux_x86_64.tar.xz ./Artifacts/GlueSample_Linux_x86_64.tar.xz
 docker cp $CONTAINER_ID:/mnt/build/Artifacts/GlueSample_Windows_x86_64.zip ./Artifacts/GlueSample_Windows_x86_64.zip

@@ -37,20 +37,15 @@ RUN apt-get update \
     && echo 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu bionic main' >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
     && apt-get update \
-    && apt-get -y install --no-install-recommends llvm-14 clang-14 lld-14 make autoconf file patch \
+    && apt-get -y install --no-install-recommends llvm-14 clang-14 lld-14 make autoconf file patch libgcc-7-dev libstdc++-7-dev \
     && apt-get clean
 
 RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-14 \
     && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-14 100 --slave /usr/bin/c++ c++ /usr/bin/clang++-14 \
-    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-14 100 \
-    && cd /usr/bin \
-    && ln -s lld-14 lld
+    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-14 100 \
+    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-14 100
 
-
-# Linux stuff
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends libgcc-7-dev libstdc++-7-dev \
-    && apt-get clean
+ENV PATH="/usr/lib/llvm-14/bin:$PATH"
 
 
 # Win32 stuff

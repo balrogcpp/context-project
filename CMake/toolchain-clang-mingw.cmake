@@ -7,10 +7,6 @@ set(triple x86_64-w64-mingw32)
 
 # which compilers to use for C and C++
 # cross compilers to use for C, C++ and Fortran
-string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-ld=lld-14")
-string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-ld=lld-14")
-
-
 set(CMAKE_RC_COMPILER x86_64-w64-mingw32-windres)
 set(CMAKE_AR llvm-ar)
 set(CMAKE_C_COMPILER clang)

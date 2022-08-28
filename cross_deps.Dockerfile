@@ -3,13 +3,8 @@
 FROM registry.gitlab.com/balrogcpp/context-project/clang-cross
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/build
+ARG CONTEXT_HOME=/mnt
 WORKDIR ${CONTEXT_HOME}
-
-
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev \
-    && apt-get clean
 
 
 COPY ./Source ./Source
@@ -19,16 +14,17 @@ COPY ./CMake ./CMake
 
 
 # Linux
-RUN mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
-    && export CC=clang \
-    && export CXX=clang++ \
-    && cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -G Ninja .. \
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev \
+    && apt-get clean \
+    && mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
+    && cmake -G Ninja .. \
     && ninja Dependencies \
     && cd ${CONTEXT_HOME}/Source/Dependencies/External/Linux_x86_64_Clang_Release \
     && rm -rf src tmp \
     && cd  ${CONTEXT_HOME}/Source/Dependencies/External \
     && tar cfJ Linux_x86_64_Clang_Release.tar.xz Linux_x86_64_Clang_Release \
-    && mv Linux_x86_64_Clang_Release.tar.xz ${CONTEXT_HOME}/Artifacts
+    && rm -rf Linux_x86_64_Clang_Release
 
 
 # Win32
@@ -39,19 +35,47 @@ RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
     && rm -rf src tmp \
     && cd ${CONTEXT_HOME}/Source/Dependencies/External \
     && tar cfJ Windows_x86_64_Clang_Mingw_Release.tar.xz Windows_x86_64_Clang_Mingw_Release \
-    && mv Windows_x86_64_Clang_Mingw_Release.tar.xz ${CONTEXT_HOME}/Artifacts
+    && rm -rf Windows_x86_64_Clang_Mingw_Release
 
 
 # Apple
 RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
     && eval $X86_64_EVAL \
-    && cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -G Ninja .. \
+    && cmake -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
     && cmake --build . --target Dependencies \
     && cd ${CONTEXT_HOME}/Source/Dependencies/External/Darwin_x86_64_Clang_Release \
     && rm -rf src tmp \
     && cd  ${CONTEXT_HOME}/Source/Dependencies/External \
     && tar cfJ Darwin_x86_64_Clang_Release.tar.xz Darwin_x86_64_Clang_Release \
-    && mv Darwin_x86_64_Clang_Release.tar.xz ${CONTEXT_HOME}/Artifacts
+    && rm -rf Darwin_x86_64_Clang_Release
+
+
+# wasm
+ARG EMSDK_ROOT=/opt/emsdk
+ARG EMSDK_VERSION=3.1.19
+ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
+RUN apt-get update \
+    && apt-get --no-install-recommends -y install python3 \
+    && apt-get clean \
+    && cd /opt \
+    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
+    && cd emsdk \
+    && rm -rf .git \
+    && ./emsdk install latest \
+    && ./emsdk activate latest \
+    && . ./emsdk_env.sh
+
+RUN mkdir build-wasm && cd build-wasm \
+    && cd ${EMSDK_ROOT} \
+    && . ./emsdk_env.sh \
+    && cd ${CONTEXT_HOME}/build-wasm \
+    && emcmake cmake -G Ninja .. \
+    && emmake ninja Dependencies \
+    && cd ${CONTEXT_HOME}/Source/Dependencies/External/Emscripten_x86_Clang_Release \
+    && rm -rf src tmp \
+    && cd  ${CONTEXT_HOME}/Source/Dependencies/External \
+    && tar cfJ Emscripten_x86_Clang_Release.tar.xz Emscripten_x86_Clang_Release \
+    && rm -rf Emscripten_x86_Clang_Release
 
 
 # Android
@@ -79,31 +103,4 @@ RUN cd ./Source/Engine \
     && rm -rf src tmp \
     && cd  ${CONTEXT_HOME}/Source/Dependencies/External \
     && tar cfJ Android_aarch64_Clang_Release.tar.xz Android_aarch64_Clang_Release \
-    && mv Android_aarch64_Clang_Release.tar.xz ${CONTEXT_HOME}/Artifacts
-
-# wasm
-ARG EMSDK_ROOT=/opt/emsdk
-ARG EMSDK_VERSION=3.1.19
-ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
-RUN apt-get update \
-    && apt-get --no-install-recommends -y install python3 \
-    && apt-get clean \
-    && cd /opt \
-    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
-    && cd emsdk \
-    && rm -rf .git \
-    && ./emsdk install latest \
-    && ./emsdk activate latest \
-    && . ./emsdk_env.sh
-
-RUN mkdir build-wasm && cd build-wasm \
-    && cd ${EMSDK_ROOT} \
-    && . ./emsdk_env.sh \
-    && cd ${CONTEXT_HOME}/build-wasm \
-    && emcmake cmake -G Ninja .. \
-    && emmake ninja Dependencies \
-    && cd ${CONTEXT_HOME}/Source/Dependencies/External/Emscripten_x86_Clang_Release \
-    && rm -rf src tmp \
-    && cd  ${CONTEXT_HOME}/Source/Dependencies/External \
-    && tar cfJ Emscripten_x86_Clang_Release.tar.xz Emscripten_x86_Clang_Release \
-    && mv Emscripten_x86_Clang_Release.tar.xz ${CONTEXT_HOME}/Artifacts
+    && rm -rf Android_aarch64_Clang_Release

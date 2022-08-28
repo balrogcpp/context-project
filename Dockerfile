@@ -5,7 +5,7 @@ FROM registry.gitlab.com/balrogcpp/context-project/clang-cross
 
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt/build
+ARG CONTEXT_HOME=/mnt
 WORKDIR ${CONTEXT_HOME}
 
 
@@ -25,7 +25,7 @@ RUN mkdir -p ${CONTEXT_HOME}/Source/Dependencies/External \
     && wget https://github.com/balrogcpp/glue-deps/raw/master/Linux_x86_64_Clang_Release.tar.xz -O - | tar -xJ
 
 RUN mkdir build-linux && cd build-linux \
-    && cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-linux.cmake -G Ninja .. \
+    && cmake -G Ninja .. \
     && ninja package \
     && rm -rf ../Artifacts/_CPack_Packages \
     && rm -rf ../build-linux
@@ -50,21 +50,48 @@ RUN mkdir -p ${CONTEXT_HOME}/Source/Dependencies/External \
 
 RUN mkdir build-apple && cd build-apple \
     && eval $X86_64_EVAL \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-apple.cmake -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
     && ninja package \
     && rm -rf ../Artifacts/_CPack_Packages \
     && rm -rf ../build-apple
 
 
-# Android
+# wasm
+ARG EMSDK_ROOT=/opt/emsdk
+ARG EMSDK_VERSION=3.1.19
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends openjdk-11-jdk \
-    && apt-get clean
+    && apt-get --no-install-recommends -y install python3 \
+    && apt-get clean \
+    && cd /opt \
+    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
+    && cd emsdk \
+    && rm -rf .git \
+    && ./emsdk install latest \
+    && ./emsdk activate latest \
+    && . ./emsdk_env.sh
+ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
 
-WORKDIR /opt
+RUN mkdir -p ${CONTEXT_HOME}/Source/Dependencies/External \
+    && cd ${CONTEXT_HOME}/Source/Dependencies/External \
+    && wget https://github.com/balrogcpp/glue-deps/raw/master/Emscripten_x86_Clang_Release.tar.xz -O - | tar -xJ
+
+RUN mkdir ${CONTEXT_HOME}/build-wasm && cd ${CONTEXT_HOME}/build-wasm \
+    && cd ${EMSDK_ROOT} && . ./emsdk_env.sh \
+    && cd ${CONTEXT_HOME}/build-wasm \
+    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
+    && emmake ninja package \
+    && rm -rf ../Artifacts/_CPack_Packages \
+    && rm -rf ../build-windows
+
+
+# Android
 ARG ANDROID_HOME=/opt/android-sdk
 ARG ANDROID_CMD_VERSION=8512546
-RUN wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -O tools.zip \
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends openjdk-11-jdk \
+    && apt-get clean \
+    && cd /opt \
+    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -O tools.zip \
     && unzip tools.zip \
     && rm tools.zip \
     && cd cmdline-tools/bin \
@@ -82,30 +109,3 @@ RUN mkdir -p ${CONTEXT_HOME}/Source/Dependencies/External \
 RUN cd ${CONTEXT_HOME}/Source/Engine \
     && ./gradlew assembleRelease \
     && rm -rf ${ANDROID_HOME} /root/.android
-
-# wasm
-WORKDIR /opt
-ARG EMSDK_ROOT=/opt/emsdk
-ARG EMSDK_VERSION=3.1.19
-RUN apt-get update \
-    && apt-get --no-install-recommends -y install python3 \
-    && apt-get clean \
-    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
-    && cd emsdk \
-    && rm -rf .git \
-    && ./emsdk install latest \
-    && ./emsdk activate latest \
-    && . ./emsdk_env.sh
-ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
-
-RUN mkdir -p ${CONTEXT_HOME}/Source/Dependencies/External \
-    && cd ${CONTEXT_HOME}/Source/Dependencies/External \
-    && wget https://github.com/balrogcpp/glue-deps/raw/master/Emscripten_x86_Clang_Release.tar.xz -O - | tar -xJ
-
-RUN  mkdir ${CONTEXT_HOME}/build-wasm && cd ${CONTEXT_HOME}/build-wasm \
-    && cd ${EMSDK_ROOT} && . ./emsdk_env.sh \
-    && cd ${CONTEXT_HOME}/build-wasm \
-    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
-    && emmake ninja package \
-    && rm -rf ../Artifacts/_CPack_Packages \
-    && rm -rf ../build-windows
