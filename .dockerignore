@@ -3,7 +3,9 @@
 !/CMake/
 !/Example/
 !/Source/
-/Source/Dependencies/External
+!/Dependencies/
 !/CMakeLists.txt/
 !/README.md/
 !/LICENSE/
+!/Dependencies/CMakeLists.txt
+!/Dependencies/Patch/

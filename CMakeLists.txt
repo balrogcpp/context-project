@@ -78,11 +78,11 @@ endif ()
 
 # Create required directories
 set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/Artifacts)
-set(GLUE_TMP_DIR ${CMAKE_SOURCE_DIR}/Tmp)
+set(GLUE_TMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
 
 
 # Dependencies
-add_subdirectory(Source/Dependencies)
+add_subdirectory(Dependencies)
 
 
 list(APPEND CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
@@ -199,7 +199,6 @@ macro(FlatZipDirectory curdir destination)
 endmacro()
 
 
-set(GLUE_TMP_DIR ${CMAKE_SOURCE_DIR}/Tmp)
 file(REMOVE_RECURSE ${GLUE_TMP_DIR})
 make_directory(${GLUE_TMP_DIR})
 
