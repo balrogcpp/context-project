@@ -180,3 +180,38 @@ ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
 ENV X86_64_EVAL=`x86_64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
 ENV ARM64_EVAL=`arm64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
+
+
+# wasm
+#ARG EMSDK_ROOT=/opt/emsdk
+#ARG EMSDK_VERSION=3.1.19
+#ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
+#RUN apt-get update \
+#    && apt-get --no-install-recommends -y install python3 \
+#    && apt-get clean \
+#    && cd /opt \
+#    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
+#    && cd emsdk \
+#    && rm -rf .git \
+#    && ./emsdk install latest \
+#    && ./emsdk activate latest \
+#    && . ./emsdk_env.sh
+
+
+# Android
+#ARG ANDROID_HOME=/opt/android-sdk
+#ARG ANDROID_CMD_VERSION=8512546
+#RUN apt-get update \
+#    && apt-get -y install --no-install-recommends openjdk-11-jdk \
+#    && apt-get clean \
+#    && cd /opt \
+#    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -O tools.zip \
+#    && unzip tools.zip \
+#    && rm tools.zip \
+#    && cd cmdline-tools/bin \
+#    && yes | ./sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
+#    && ./sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} \
+#    && cd ../../ \
+#    && rm -rf /root/.android /root/.gradle
+#ENV PATH="/opt/cmdline-tools/bin:${PATH}"
+#ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"

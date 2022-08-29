@@ -603,9 +603,9 @@ externalproject_add(Target_FreeGLUT
 externalproject_add(Target_Lua
         EXCLUDE_FROM_ALL true
         PREFIX ${GLUE_PREFIX_LOCATION}
-        GIT_REPOSITORY https://github.com/balrogcpp/lua-cmake.git
-        GIT_TAG v5.4.4
-        GIT_SHALLOW true
+        GIT_REPOSITORY https://github.com/balrogcpp/lua.git
+        GIT_TAG 7094d983ed5394e25a4c65e21c38756cd566dbc5
+        GIT_SHALLOW false
         GIT_PROGRESS false
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
@@ -627,6 +627,7 @@ externalproject_add(Target_Lua
         -DLUA_USE_RELATIVE_LOADLIB=OFF
         -DLUA_USE_POSIX=OFF
         -DLUA_USE_DLOPEN=OFF
+        -DLUA_VERSION=v5.4.4
         )
 
 
