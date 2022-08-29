@@ -19,47 +19,8 @@ list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR})
 # Include necessary submodules
 include(Platform)
 include(CMakeDependentOption)
-macro(insert_dependency PACKAGE)
-    find_package(${PACKAGE} QUIET)
-
-    if (NOT ${PACKAGE}_FOUND)
-        message(STATUS "${PACKAGE} required but not found")
-        set(ANY_NOT_FOUND true)
-    else ()
-        message(STATUS "${PACKAGE} found")
-        mark_as_advanced(${PACKAGE}_DIR)
-    endif ()
-endmacro()
-
-
-macro(insert_dependency_static PACKAGE)
-    set(_OLD_FIND_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".a" ".so" ".sl" ".dylib" ".dll.a")
-    insert_dependency(${PACKAGE})
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ${_OLD_FIND_SUFFIXES})
-    unset(_OLD_FIND_SUFFIXES)
-endmacro()
-
-
-macro(insert_dependency2 PACKAGE VARIABLE)
-    find_package(${PACKAGE} QUIET)
-
-    if (NOT ${VARIABLE})
-        message(STATUS "${PACKAGE} required but not found")
-        set(ANY_NOT_FOUND true)
-    else ()
-        message(STATUS "${PACKAGE} found")
-    endif ()
-endmacro()
-
-
-macro(insert_dependency_static2 PACKAGE VARIABLE)
-    set(_OLD_FIND_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".a" ".so" ".sl" ".dylib" ".dll.a")
-    insert_dependency2(${PACKAGE} ${VARIABLE})
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ${_OLD_FIND_SUFFIXES})
-    unset(_OLD_FIND_SUFFIXES)
-endmacro()
+include(InsertDependency)
+include(FlatZip)
 
 
 # Default build type is Release
@@ -130,79 +91,8 @@ add_subdirectory(Example)
 
 
 # assets
-macro(FlatZipSubdirectories curdir destination)
-    make_directory(${destination})
-    file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
-
-    foreach (directory ${directories})
-        if (${directory} STREQUAL ".git") #omit .git directory
-            continue()
-        endif ()
-        set(filelist "")
-        if (IS_DIRECTORY ${curdir}/${directory})
-            file(GLOB_RECURSE files LIST_DIRECTORIES false ${curdir}/${directory} ${curdir}/${directory}/*)
-            make_directory(${destination}/${directory})
-            file(COPY ${files} DESTINATION ${destination}/${directory})
-            file(GLOB filelist RELATIVE ${destination}/${directory} ${destination}/${directory}/*)
-            execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${destination}/${directory} ${CMAKE_COMMAND} -E tar cf ${destination}/${directory}.zip --format=zip ${filelist})
-            file(REMOVE_RECURSE ${destination}/${directory})
-        endif ()
-    endforeach ()
-endmacro()
-
-
-# Zip files from directory into flat zip
-macro(CopyFlatZipDirectory curdir destination)
-    make_directory(${destination})
-    file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
-
-    foreach (directory ${directories})
-        if (${directory} STREQUAL ".git") #omit .git directory
-            continue()
-        endif ()
-        set(filelist "")
-        if (IS_DIRECTORY ${curdir}/${directory})
-            file(GLOB_RECURSE files LIST_DIRECTORIES false ${curdir}/${directory} ${curdir}/${directory}/*)
-            file(COPY ${files} DESTINATION ${destination})
-        endif ()
-    endforeach ()
-endmacro()
-
-
-# Zip files from directory into flat zip
-macro(ZipDirectory destination)
-    file(GLOB filelist RELATIVE ${destination} ${destination}/*)
-    execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${destination}/${directory} ${CMAKE_COMMAND} -E tar cf ${destination}.zip --format=zip ${filelist})
-    file(REMOVE_RECURSE ${destination})
-endmacro()
-
-
-# Zip files from directory into flat zip
-macro(FlatZipDirectory curdir destination)
-    make_directory(${destination})
-    file(GLOB directories RELATIVE ${curdir} ${curdir}/*)
-
-    foreach (directory ${directories})
-        if (${directory} STREQUAL ".git") #omit .git directory
-            continue()
-        endif ()
-        set(filelist "")
-        if (IS_DIRECTORY ${curdir}/${directory})
-            file(GLOB_RECURSE files LIST_DIRECTORIES false ${curdir}/${directory} ${curdir}/${directory}/*)
-            file(COPY ${files} DESTINATION ${destination})
-        endif ()
-    endforeach ()
-
-    file(GLOB filelist RELATIVE ${destination} ${destination}/*)
-    execute_process(COMMAND ${CMAKE_COMMAND} -E chdir ${destination}/${directory} ${CMAKE_COMMAND} -E tar cf ${destination}.zip --format=zip ${filelist})
-    file(REMOVE_RECURSE ${destination})
-endmacro()
-
-
 file(REMOVE_RECURSE ${GLUE_TMP_DIR})
 make_directory(${GLUE_TMP_DIR})
-
-
 CopyFlatZipDirectory(${CMAKE_SOURCE_DIR}/Source/Programs ${GLUE_TMP_DIR}/Programs)
 if (ANDROID OR IOS OR EMSCRIPTEN)
     file(GLOB files ${CMAKE_SOURCE_DIR}/Source/GLSLES/*)
@@ -215,8 +105,6 @@ FlatZipDirectory(${CMAKE_SOURCE_DIR}/Example/Assets ${GLUE_TMP_DIR}/Assets)
 
 
 # package helper target
-include(CMakeDependentOption)
-
 set(GLUE_PACKAGE_NAME "GlueSample")
 set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}_${GLUE_TOOLCHAIN_SHORT})
 if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
