@@ -170,7 +170,8 @@ RUN apt-get update \
     && wget https://github.com/balrogcpp/MacOSXsdk/raw/master/MacOSX${MACOS_SDK_VERSION}.sdk.tar.xz -O ./osxcross/tarballs/MacOSX${MACOS_SDK_VERSION}.sdk.tar.xz \
     && cd osxcross \
     && git checkout 17bb5e2d0a46533c1dd525cf4e9a80d88bd9f00e \
-    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} ./build.sh \
+    && rm -rf .git \
+    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} sh build.sh \
     && cd .. \
     && rm -rf osxcross \
     && apt-get -y purge lzma-dev libxml2-dev libssl-dev python \

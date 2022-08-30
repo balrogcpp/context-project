@@ -5,9 +5,6 @@ project(GlueEngine VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-
-# VS project folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
