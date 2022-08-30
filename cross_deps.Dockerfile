@@ -1,6 +1,6 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
-FROM registry.gitlab.com/balrogcpp/context-project/clang-cross
+FROM balrogcpp/cross_clang
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt
