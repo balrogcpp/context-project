@@ -32,13 +32,6 @@ Physics::Physics(bool threaded) : Threaded(threaded) {
 
   BtWorld->setGravity(btVector3(0.0, -9.8, 0.0));
 
-  //  if (DebugWraw) {
-  //    auto *node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
-  //    DbgDraw = make_unique<DebugDrawer>(node, BtWorld.get());
-  //    DbgDraw->setDebugMode(DebugWraw);
-  //    BtWorld->setDebugDrawer(DbgDraw.get());
-  //  }
-
   if (Threaded) InitThread();
 
   Paused = false;
@@ -60,10 +53,6 @@ void Physics::InitThread() {
       // Actually do calculations
       if (!Paused) {
         BtWorld->stepSimulation(frame_time, SubSteps, 1.0f / UpdateRate);
-
-        // if (DebugWraw) DbgDraw->update();
-
-        DispatchCollisions();
       }
       // Actually do calculations
 
@@ -81,54 +70,6 @@ void Physics::InitThread() {
   UpdateThread->detach();
 }
 
-void Physics::DispatchCollisions() {
-  //  map<const btCollisionObject *, ContactInfo> new_contacts;
-
-  /* Browse all collision pairs */
-
-  //  for (size_t i = 0; i < world_->getDispatcher()->getNumManifolds(); i++) {
-  //    btPersistentManifold *manifold = world_->getDispatcher()->getManifoldByIndexInternal(i);
-  //    auto *obA = manifold->getBody0();
-  //    auto *obB = manifold->getBody1();
-
-  /* Check all contacts points */
-  //    for (size_t j = 0; j < manifold->getNumContacts(); j++) {
-  //      btManifoldPoint &pt = manifold->getContactPoint(j);
-  //      if (pt.getDistance() < 1E-6) {
-  //        const btVector3 &ptA = pt.getPositionWorldOnA();
-  //        const btVector3 &ptB = pt.getPositionWorldOnB();
-  //        const btVector3 &normalOnB = pt.m_normalWorldOnB;
-  //        if (new_contacts.find(obA) == new_contacts.end())
-  //          new_contacts[obA] = {obB, manifold->getNumContacts()};
-  //      }
-  //    }
-  //  }
-
-  /* Check for added contacts ... */
-  //  for (const auto &it : new_contacts) {
-  //    bool detected = false;
-  //    if (contacts_.find(it.first) == contacts_.end()) {
-  //      detected = true;
-  //    } else {
-  //      contacts_.erase(it.first);
-  //            if (new_contacts[it.first].points_ == contacts_[it.first].points_)
-  //            {
-  //              contacts_.erase(it.first);
-  //            } else {
-  //              detected = true;
-  //            }
-  //    }
-
-  //    if (detected && callback_) callback_(it.first->getUserIndex(), it.first->getUserIndex());
-  //  }
-
-  /* ... and removed contacts */
-  //  for (const auto &it : contacts_) {
-  //  }
-  //  contacts_.clear();
-  //  contacts_ = new_contacts;
-}
-
 Physics::~Physics() { Running = false; }
 
 void Physics::OnResume() { Paused = false; }
@@ -139,10 +80,6 @@ void Physics::OnUpdate(float time) {
   if (Threaded || Paused) return;
 
   BtWorld->stepSimulation(time, SubSteps, 1.0f / UpdateRate);
-
-  // if (DebugWraw) DbgDraw->update();
-
-  DispatchCollisions();
 }
 
 void Physics::OnClean() {

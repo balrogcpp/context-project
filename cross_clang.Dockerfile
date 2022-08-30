@@ -12,7 +12,7 @@ RUN apt-get update \
 
 ARG CMAKE_VERSION=3.24.1
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
-ARG NINJA_VERSION=1.11.0
+ARG NINJA_VERSION=1.11.1
 ARG UPX_VERSION=3.96
 RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp \
     && unzip /tmp/ninja-linux.zip -d /usr/local/bin \
@@ -30,22 +30,23 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 
+ARG CLANG_VERSION=14
 RUN apt-get update \
     && apt-get install -y wget ca-certificates gnupg2 apt-transport-https \
-    && echo 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-14 main' >> /etc/apt/sources.list \
+    && echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${CLANG_VERSION} main" >> /etc/apt/sources.list \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
-    && echo 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu bionic main' >> /etc/apt/sources.list \
+    && echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu bionic main" >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
     && apt-get update \
-    && apt-get -y install --no-install-recommends llvm-14 clang-14 lld-14 make autoconf file patch libgcc-7-dev libstdc++-7-dev \
+    && apt-get -y install --no-install-recommends llvm-${CLANG_VERSION} clang-${CLANG_VERSION} lld-${CLANG_VERSION} make autoconf file patch libgcc-7-dev libstdc++-7-dev \
     && apt-get clean
 
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-14 \
-    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-14 100 --slave /usr/bin/c++ c++ /usr/bin/clang++-14 \
-    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-14 100 \
-    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-14 100
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_VERSION} 100 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_VERSION} \
+    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_VERSION} 100 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_VERSION} \
+    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_VERSION} 100 \
+    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_VERSION} 100
 
-ENV PATH="/usr/lib/llvm-14/bin:$PATH"
+ENV PATH="/usr/lib/llvm-${CLANG_VERSION}/bin:$PATH"
 
 
 # Win32 stuff
@@ -151,9 +152,9 @@ RUN apt-get update \
     && rm -rf ${MINGW_ROOT} \
     && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev bzip2 \
     && apt-get -y autoremove \
-    && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 11300 \
+    && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 100 \
         --slave ${GCC_HOME}/bin/mingw32-g++ mingw32-g++ ${GCC_HOME}/bin/x86_64-w64-mingw32-g++ \
-    && update-alternatives --install /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 11300 \
+    && update-alternatives --install /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 100 \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
 
@@ -171,7 +172,7 @@ RUN apt-get update \
     && cd osxcross \
     && git checkout 17bb5e2d0a46533c1dd525cf4e9a80d88bd9f00e \
     && rm -rf .git \
-    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} sh build.sh \
+    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} ./build.sh \
     && cd .. \
     && rm -rf osxcross \
     && apt-get -y purge lzma-dev libxml2-dev libssl-dev python \

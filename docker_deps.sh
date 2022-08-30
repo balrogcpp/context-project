@@ -10,5 +10,3 @@ docker cp $CONTAINER_ID:/mnt/Dependencies/Darwin_x86_64_Clang_Release.tar.xz ./A
 docker cp $CONTAINER_ID:/mnt/Dependencies/Emscripten_x86_Clang_Release.tar.xz ./Artifacts/Emscripten_x86_Clang_Release.tar.xz
 docker cp $CONTAINER_ID:/mnt/Dependencies/Android_aarch64_Clang_Release.tar.xz ./Artifacts/Android_aarch64_Clang_Release.tar.xz
 docker stop $CONTAINER_ID
-
-exit 0
