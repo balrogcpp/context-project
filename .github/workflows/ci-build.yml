@@ -6,12 +6,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - uses: addnab/docker-run-action@v3
+      - name: Docker
+        uses: addnab/docker-run-action@v3
         with:
           registry: docker.io
           image: balrogcpp/cross_clang:latest
           options: -v ${{ github.workspace }}:/mnt
           run: |
+            git config --global --add safe.directory /mnt
             sh docker.sh
           name: artifacts
           path: "Artifacts/*"
