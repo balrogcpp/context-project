@@ -1,5 +1,10 @@
 name: CI Build
-on: [push]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
 jobs:
   compile:
     runs-on: ubuntu-latest
@@ -15,5 +20,5 @@ jobs:
         with:
           path: |
             "Artifacts/*"
-          retention-days: 3
+          retention-days: 2
           
