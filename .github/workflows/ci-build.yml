@@ -6,5 +6,7 @@ jobs:
     container: docker:latest
     steps:
       - name: checkout
+        uses: actions/checkout@v2
+      - name: compile
         run: |
           sh docker.sh
