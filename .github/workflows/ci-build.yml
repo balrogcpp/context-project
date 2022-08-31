@@ -13,8 +13,11 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: compile
         run: |
+          chown -R $(id -u):$(id -g) $PWD #this is to fix GIT not liking owner of the checkout dir
           sh docker.sh
       - name: artifacts
         uses: actions/upload-artifact@v3
