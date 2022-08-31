@@ -1,17 +1,24 @@
 name: CI Build
-on: [push]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
 jobs:
   compile:
     runs-on: ubuntu-latest
+    container: docker:latest
     steps:
-      - name: Checkout
+      - name: checkout
         uses: actions/checkout@v2
-      - uses: addnab/docker-run-action@v3
+      - name: compile
+        run: |
+          sh docker.sh
+      - name: artifacts
+        uses: actions/upload-artifact@v3
         with:
-          registry: docker.io
-          image: docker
-          options: -v ${{ github.workspace }}:/mnt
-          run: |
-            sh docker.sh
-          name: artifacts
-          path: "Artifacts/*"
+          path: |
+            "Artifacts/*"
+          retention-days: 2
+          
