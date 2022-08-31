@@ -6,11 +6,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Docker
-        uses: addnab/docker-run-action@v3
+      - uses: addnab/docker-run-action@v3
         with:
           registry: docker.io
-          image: balrogcpp/cross_clang:latest
+          image: docker
           options: -v ${{ github.workspace }}:/mnt
           run: |
             git config --global --add safe.directory /mnt
