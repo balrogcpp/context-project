@@ -3,17 +3,8 @@ on: [push]
 jobs:
   compile:
     runs-on: ubuntu-latest
+    container: docker:latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
-      - uses: addnab/docker-run-action@v3
-        with:
-          registry: docker.io
-          image: docker:latest
-          options: -v ${{ github.workspace }}:/mnt
-          run: |
-            apt-get update
-            apt-get install -y --
-            sh docker.sh
-          name: artifacts
-          path: "Artifacts/*"
+        run: |
+          sh docker.sh
