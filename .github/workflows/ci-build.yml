@@ -10,3 +10,8 @@ jobs:
       - name: compile
         run: |
           sh docker.sh
+      - name: artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: "Artifacts/*"
+          
