@@ -12,7 +12,6 @@ jobs:
           image: docker
           options: -v ${{ github.workspace }}:/mnt
           run: |
-            git config --global --add safe.directory /mnt
             sh docker.sh
           name: artifacts
           path: "Artifacts/*"
