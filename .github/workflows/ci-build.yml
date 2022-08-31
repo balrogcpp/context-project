@@ -2,11 +2,10 @@ name: CI Build
 on: [push]
 jobs:
   compile:
-    name: Build sample
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       - name: Run the build process with Docker
         uses: addnab/docker-run-action@v3
         with:

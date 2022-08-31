@@ -10,6 +10,7 @@
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
 #include <thread>
+#include <functional>
 
 
 namespace Glue {
