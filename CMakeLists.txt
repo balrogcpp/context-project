@@ -83,10 +83,6 @@ endif ()
 add_subdirectory(Source)
 
 
-# Examples
-add_subdirectory(Example)
-
-
 # assets
 file(REMOVE_RECURSE ${GLUE_TMP_DIR})
 make_directory(${GLUE_TMP_DIR})
@@ -98,7 +94,7 @@ else ()
 endif ()
 file(COPY ${files} DESTINATION ${GLUE_TMP_DIR}/Programs)
 ZipDirectory(${GLUE_TMP_DIR}/Programs)
-FlatZipDirectory(${CMAKE_SOURCE_DIR}/Example/Assets ${GLUE_TMP_DIR}/Assets)
+FlatZipDirectory(${CMAKE_SOURCE_DIR}/Source/Assets ${GLUE_TMP_DIR}/Assets)
 
 
 # package helper target

@@ -28,3 +28,6 @@ add_library(GlueStatic STATIC EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
 include_directories(GlueStatic ${GLUE_INCLUDE_DIRS})
 set_target_properties(GlueStatic PROPERTIES OUTPUT_NAME "GlueStatic")
 target_precompile_headers(GlueStatic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/pch.h)
+
+
+add_subdirectory(Example)

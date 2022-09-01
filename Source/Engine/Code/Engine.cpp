@@ -1313,7 +1313,7 @@ void Engine::InitResourceLocation() {
   RGM.addResourceLocation("/Assets.zip", "APKZip", RGN_DEFAULT);
 #elif defined(DEBUG)
   const string ProgramsDir = "Source/Programs";
-  const string AssetsDir = "Example/Assets";
+  const string AssetsDir = "Source/Assets";
   AddLocation(ProgramsDir, RGN_INTERNAL);
   if (RenderSystemIsGLES2())
     AddLocation("Source/GLSLES", RGN_INTERNAL);
