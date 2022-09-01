@@ -15,7 +15,6 @@ list(APPEND CMAKE_MODULE_PATH ${GLUE_CMAKE_DIR})
 
 # Include necessary submodules
 include(Platform)
-include(CMakeDependentOption)
 include(InsertDependency)
 include(FlatZip)
 
