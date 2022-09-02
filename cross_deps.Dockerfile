@@ -12,7 +12,7 @@ COPY ./Source ./Source
 COPY ./Dependencies ./Dependencies
 COPY ./Example ./Example
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./CMake ./CMake
+COPY ./cmake ./cmake
 
 
 # Linux
@@ -99,7 +99,7 @@ ENV PATH="/opt/cmdline-tools/bin:${PATH}"
 ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
 
 RUN cd ./Source/Engine \
-    && ./gradlew assembleRelease \
+    && sh gradlew assembleRelease \
     && rm -rf ${CONTEXT_HOME}/android ${ANDROID_HOME}/emulator ${ANDROID_HOME}/tools /root/.android /root/.gradle \
     && cd ${DEPS_DIR}/Android_aarch64_Clang_Release \
     && rm -rf src tmp \

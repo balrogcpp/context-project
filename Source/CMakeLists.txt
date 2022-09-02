@@ -3,7 +3,39 @@
 
 # GLUE_ENGINE_SOURCE_FILES, GLUE_INCLUDE_DIRS
 include(GlueBuildVariables)
+include(InsertDependency)
 include(Platform)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    insert_dependency(X11)
+endif ()
+if (DESKTOP)
+    insert_dependency(OpenGL)
+endif ()
+insert_dependency_static(Bullet)
+mark_as_advanced(BULLET_INCLUDE_DIR)
+insert_dependency_static2(Lua LUA_LIBRARY)
+insert_dependency(sol2)
+insert_dependency2(OpenAL OPENAL_FOUND)
+insert_dependency_static(Ogg)
+insert_dependency_static(Vorbis)
+insert_dependency_static(SDL2)
+insert_dependency_static(Freetype)
+insert_dependency_static(pugixml)
+set(OGRE_STATIC 1)
+insert_dependency_static(OGRE)
+
+
+if (ANY_NOT_FOUND)
+    message(WARNING "Build cmake target Dependencies to get all dependencies. Then configure cmake again to enable GlueLibrary and GlueExample targets. Exiting")
+endif ()
+
+
+if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
+    add_library(AndroidDummy SHARED Source/Engine/android/src/main/cpp/main.cpp)
+    add_dependencies(AndroidDummy Dependencies)
+    return()
+endif ()
 
 
 # glob sources

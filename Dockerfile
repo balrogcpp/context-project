@@ -12,7 +12,7 @@ COPY ./Source ./Source
 COPY ./Dependencies ./Dependencies
 COPY ./Example ./Example
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./CMake ./CMake
+COPY ./cmake ./cmake
 
 
 # Linux
@@ -102,5 +102,5 @@ RUN cd ${DEPS_DIR} \
     && wget https://github.com/balrogcpp/glue-deps/raw/master/Android_aarch64_Clang_Release.tar.xz -O - | tar -xJ
 
 RUN cd ${CONTEXT_HOME}/Source/Engine \
-    && ./gradlew assembleRelease \
+    && sh gradlew assembleRelease \
     && rm -rf ${ANDROID_HOME} /root/.android
