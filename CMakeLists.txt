@@ -37,7 +37,7 @@ set(GLUE_TMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
 
 
 # Dependencies
-add_subdirectory(thirdparty)
+add_subdirectory(contrib)
 
 
 list(APPEND CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})

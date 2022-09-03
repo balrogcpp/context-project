@@ -5,5 +5,5 @@
 !/CMakeLists.txt/
 !/README.md/
 !/LICENSE/
-!/thirdparty/CMakeLists.txt
-!/thirdparty/patch/
+!/contrib/CMakeLists.txt
+!/contrib/patch/

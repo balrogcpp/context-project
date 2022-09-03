@@ -9,7 +9,7 @@ WORKDIR ${CONTEXT_HOME}
 
 
 COPY ./source ./source
-COPY ./thirdparty ./thirdparty
+COPY ./contrib ./thirdparty
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
 
