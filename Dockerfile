@@ -4,12 +4,12 @@ FROM balrogcpp/cross_clang
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt
-ARG DEPS_DIR=${CONTEXT_HOME}/thirdparty
+ARG DEPS_DIR=${CONTEXT_HOME}/contrib
 WORKDIR ${CONTEXT_HOME}
 
 
 COPY ./source ./source
-COPY ./contrib ./thirdparty
+COPY ./contrib ./contrib
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
 
