@@ -4,7 +4,7 @@ FROM balrogcpp/cross_clang
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt
-ARG DEPS_DIR=${CONTEXT_HOME}/Dependencies
+ARG DEPS_DIR=${CONTEXT_HOME}/thirdparty
 WORKDIR ${CONTEXT_HOME}
 
 
@@ -34,7 +34,7 @@ RUN cd ${DEPS_DIR} \
     && wget https://github.com/balrogcpp/glue-deps/raw/master/Windows_x86_64_Clang_Mingw_Release.tar.xz -O - | tar -xJ
 
 RUN mkdir build-windows && cd build-windows \
-    && cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -G Ninja .. \
+    && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
     && ninja package \
     && rm -rf ../artifacts/_CPack_Packages \
     && rm -rf ../build-windows
@@ -100,6 +100,6 @@ ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
 RUN cd ${DEPS_DIR} \
     && wget https://github.com/balrogcpp/glue-deps/raw/master/Android_aarch64_Clang_Release.tar.xz -O - | tar -xJ
 
-RUN cd ${CONTEXT_HOME}/Source/Engine \
+RUN cd ${CONTEXT_HOME}/source/Engine \
     && sh gradlew assembleRelease \
     && rm -rf ${ANDROID_HOME} /root/.android

@@ -4,7 +4,8 @@ FROM balrogcpp/cross_clang
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt
-ARG DEPS_DIR=${CONTEXT_HOME}/Dependencies
+ARG DEPS_DIR=${CONTEXT_HOME}/thirdparty
+ARG DEPS_TARGET=Dependencies
 WORKDIR ${CONTEXT_HOME}
 
 
@@ -20,7 +21,7 @@ RUN apt-get update \
     && apt-get clean \
     && mkdir ${CONTEXT_HOME}/build-linux && cd ${CONTEXT_HOME}/build-linux \
     && cmake -G Ninja .. \
-    && ninja Dependencies \
+    && ninja ${DEPS_TARGET} \
     && cd ${DEPS_DIR}/Linux_x86_64_Clang_Release \
     && rm -rf src tmp \
     && cd ${DEPS_DIR} \
@@ -30,8 +31,8 @@ RUN apt-get update \
 
 # Win32
 RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
-    && cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -G Ninja .. \
-    && ninja Dependencies \
+    && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
+    && ninja ${DEPS_TARGET} \
     && cd ${DEPS_DIR}/Windows_x86_64_Clang_Mingw_Release \
     && rm -rf src tmp \
     && cd ${DEPS_DIR} \
@@ -43,7 +44,7 @@ RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
 RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
     && eval $X86_64_EVAL \
     && cmake -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
-    && cmake --build . --target Dependencies \
+    && cmake --build . --target ${DEPS_TARGET} \
     && cd ${DEPS_DIR}/Darwin_x86_64_Clang_Release \
     && rm -rf src tmp \
     && cd ${DEPS_DIR} \
@@ -71,7 +72,7 @@ RUN mkdir build-wasm && cd build-wasm \
     && . ./emsdk_env.sh \
     && cd ${CONTEXT_HOME}/build-wasm \
     && emcmake cmake -G Ninja .. \
-    && emmake ninja Dependencies \
+    && emmake ninja ${DEPS_TARGET} \
     && cd ${DEPS_DIR}/Emscripten_x86_Clang_Release \
     && rm -rf src tmp \
     && cd ${DEPS_DIR} \
@@ -97,7 +98,7 @@ RUN apt-get update \
 ENV PATH="/opt/cmdline-tools/bin:${PATH}"
 ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
 
-RUN cd ./Source/Engine \
+RUN cd ./source/Engine \
     && sh gradlew assembleRelease \
     && rm -rf ${CONTEXT_HOME}/android ${ANDROID_HOME}/emulator ${ANDROID_HOME}/tools /root/.android /root/.gradle \
     && cd ${DEPS_DIR}/Android_aarch64_Clang_Release \
