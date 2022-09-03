@@ -16,13 +16,13 @@ endif ()
 # build html as emscripten
 if (EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    string(APPEND CMAKE_EXE_LINKER_FLAGS " -s FULL_ES3 --preload-file ${GLUE_TMP_DIR}/@. --shell-file ${CMAKE_SOURCE_DIR}/Source/Engine/shell_minimal.html")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " -s FULL_ES3 --preload-file ${GLUE_TMP_DIR}/@. --shell-file ${CMAKE_SOURCE_DIR}/source/Engine/shell_minimal.html")
     string(APPEND CMAKE_CXX_FLAGS " -s FULL_ES3")
     string(APPEND CMAKE_C_FLAGS " -s FULL_ES3")
 endif ()
 
 
-set(GLUE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Source/Engine)
+set(GLUE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/source/Engine)
 
 
 set(GLUE_INCLUDE_DIRS
@@ -88,7 +88,7 @@ list(APPEND GLUE_LIBRARIES ${SYSTEM_LIBRARIES})
 file(GLOB_RECURSE GLUE_ENGINE_SOURCE_FILES ${GLUE_SOURCE_DIR}/*.cpp ${GLUE_SOURCE_DIR}/*.h ${GLUE_SOURCE_DIR}/*.hpp)
 # this required to ti disable windows upscaling @hdp monitors @windows
 if (MINGW)
-    list(APPEND GLUE_ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Source/Engine/manifest.rc)
+    list(APPEND GLUE_ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/source/Engine/manifest.rc)
 elseif (MSVC)
-    list(APPEND GLUE_ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Source/Engine/app.manifest)
+    list(APPEND GLUE_ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/source/Engine/app.manifest)
 endif ()

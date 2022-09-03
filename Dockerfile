@@ -8,9 +8,8 @@ ARG DEPS_DIR=${CONTEXT_HOME}/Dependencies
 WORKDIR ${CONTEXT_HOME}
 
 
-COPY ./Source ./Source
-COPY ./Dependencies ./Dependencies
-COPY ./Example ./Example
+COPY ./source ./source
+COPY ./thirdparty ./thirdparty
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
 
@@ -26,7 +25,7 @@ RUN cd ${DEPS_DIR} \
 RUN mkdir build-linux && cd build-linux \
     && cmake -G Ninja .. \
     && ninja package \
-    && rm -rf ../Artifacts/_CPack_Packages \
+    && rm -rf ../artifacts/_CPack_Packages \
     && rm -rf ../build-linux
 
 
@@ -37,7 +36,7 @@ RUN cd ${DEPS_DIR} \
 RUN mkdir build-windows && cd build-windows \
     && cmake -DCMAKE_TOOLCHAIN_FILE=../CMake/toolchain-clang-mingw.cmake -G Ninja .. \
     && ninja package \
-    && rm -rf ../Artifacts/_CPack_Packages \
+    && rm -rf ../artifacts/_CPack_Packages \
     && rm -rf ../build-windows
 
 
@@ -49,7 +48,7 @@ RUN mkdir build-apple && cd build-apple \
     && eval $X86_64_EVAL \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
     && ninja package \
-    && rm -rf ../Artifacts/_CPack_Packages \
+    && rm -rf ../artifacts/_CPack_Packages \
     && rm -rf ../build-apple
 
 
@@ -76,7 +75,7 @@ RUN mkdir ${CONTEXT_HOME}/build-wasm && cd ${CONTEXT_HOME}/build-wasm \
     && cd ${CONTEXT_HOME}/build-wasm \
     && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
     && emmake ninja package \
-    && rm -rf ../Artifacts/_CPack_Packages \
+    && rm -rf ../artifacts/_CPack_Packages \
     && rm -rf ../build-windows
 
 

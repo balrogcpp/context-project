@@ -1,11 +1,9 @@
 **
 
-!/CMake/
-!/Example/
-!/Source/
-!/Dependencies/
+!/cmake/
+!/source/
 !/CMakeLists.txt/
 !/README.md/
 !/LICENSE/
-!/Dependencies/CMakeLists.txt
-!/Dependencies/Patch/
+!/thirdparty/CMakeLists.txt
+!/thirdparty/patch/

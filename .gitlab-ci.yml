@@ -13,4 +13,4 @@ build:
     - sh docker.sh
   artifacts:
     paths:
-      - "Artifacts/*"
+      - "artifacts/*"

@@ -8,9 +8,8 @@ ARG DEPS_DIR=${CONTEXT_HOME}/Dependencies
 WORKDIR ${CONTEXT_HOME}
 
 
-COPY ./Source ./Source
-COPY ./Dependencies ./Dependencies
-COPY ./Example ./Example
+COPY ./source ./source
+COPY ./thirdparty ./thirdparty
 COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
 

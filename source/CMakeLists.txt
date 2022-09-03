@@ -32,7 +32,7 @@ endif ()
 
 
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
-    add_library(AndroidDummy SHARED Source/Engine/android/src/main/cpp/main.cpp)
+    add_library(AndroidDummy SHARED source/Engine/android/src/main/cpp/main.cpp)
     add_dependencies(AndroidDummy Dependencies)
     return()
 endif ()
@@ -43,8 +43,8 @@ file(GLOB_RECURSE SHADER_SOURCE_FILES Programs/*)
 
 
 # VS project folders
-source_group(TREE ${CMAKE_SOURCE_DIR}/Source/Engine PREFIX "Engine" FILES ${GLUE_ENGINE_SOURCE_FILES})
-source_group(TREE ${CMAKE_SOURCE_DIR}/Source/Programs PREFIX "Programs" FILES ${SHADER_SOURCE_FILES})
+source_group(TREE ${CMAKE_SOURCE_DIR}/source/Engine PREFIX "Engine" FILES ${GLUE_ENGINE_SOURCE_FILES})
+source_group(TREE ${CMAKE_SOURCE_DIR}/source/Programs PREFIX "Programs" FILES ${SHADER_SOURCE_FILES})
 
 if (MSVC)
     list(APPEND GLUE_ENGINE_SOURCE_FILES ${SHADER_SOURCE_FILES})
