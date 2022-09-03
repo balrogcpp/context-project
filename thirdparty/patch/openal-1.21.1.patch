@@ -1,0 +1,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0cf0613..60c08e0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1326,6 +1326,7 @@ endif()
+ 
+ if(WIN32 AND MINGW AND ALSOFT_BUILD_IMPORT_LIB AND NOT LIBTYPE STREQUAL "STATIC")
+     find_program(SED_EXECUTABLE NAMES sed DOC "sed executable")
++    find_program(CMAKE_DLLTOOL NAMES "${DLLTOOL}" DOC "dlltool executable")
+     if(NOT SED_EXECUTABLE OR NOT CMAKE_DLLTOOL)
+         message(STATUS "")
+         if(NOT SED_EXECUTABLE)

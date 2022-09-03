@@ -1,0 +1,66 @@
+diff --git a/contrib/unzip/crypt.c b/contrib/unzip/crypt.c
+index 299ce03..e7c2d36 100644
+--- a/contrib/unzip/crypt.c
++++ b/contrib/unzip/crypt.c
+@@ -43,7 +43,7 @@
+ 
+ #include "crypt.h"
+ 
+-#ifdef _WIN32
++#ifdef _MSC_VER
+ #   pragma warning(push)
+ #   pragma warning(disable : 4244)
+ #endif // _WIN32
+@@ -164,7 +164,7 @@ int crypthead(const char *passwd, uint8_t *buf, int buf_size, uint32_t *pkeys,
+     return n;
+ }
+ 
+-#ifdef _WIN32
++#ifdef _MSC_VER
+ #   pragma warning(pop)
+ #endif // _WIN32
+ 
+diff --git a/contrib/unzip/ioapi.c b/contrib/unzip/ioapi.c
+index 30a296d..61a2b3d 100644
+--- a/contrib/unzip/ioapi.c
++++ b/contrib/unzip/ioapi.c
+@@ -21,7 +21,7 @@
+ 
+ #include "ioapi.h"
+ 
+-#ifdef _WIN32
++#ifdef _MSC_VER
+ #   define snprintf _snprintf
+ #   pragma warning(push)
+ #   pragma warning(disable : 4131 4100)
+@@ -357,7 +357,7 @@ void fill_fopen64_filefunc(zlib_filefunc64_def *pzlib_filefunc_def)
+     pzlib_filefunc_def->opaque = NULL;
+ }
+ 
+-#ifdef _WIN32
++#ifdef _MSC_VER
+ #   pragma warning(pop)
+ #   ifdef __clang__
+ #       pragma clang diagnostic pop
+diff --git a/contrib/unzip/unzip.c b/contrib/unzip/unzip.c
+index f1eddee..3451a42 100644
+--- a/contrib/unzip/unzip.c
++++ b/contrib/unzip/unzip.c
+@@ -73,7 +73,7 @@
+ #  define TRYFREE(p) {if (p) free(p);}
+ #endif
+ 
+-#ifdef _WIN32
++#ifdef _MSC_VER
+ #   pragma warning(push)
+ #   pragma warning(disable : 4131 4244 4189 4245)
+ #endif // _WIN32
+@@ -1995,6 +1995,6 @@ extern int ZEXPORT unzEndOfFile(unzFile file)
+     return 0;
+ }
+ 
+-#ifdef _WIN32
++#ifdef _MSC_VER
+ #   pragma warning(pop)
+ #endif // _WIN32
+\ No newline at end of file
