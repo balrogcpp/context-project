@@ -5,7 +5,7 @@ FROM balrogcpp/cross_clang
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CONTEXT_HOME=/mnt
 ARG DEPS_DIR=${CONTEXT_HOME}/contrib
-ARG DEPS_TARGET=Dependencies
+ARG DEPS_TARGET=contrib
 WORKDIR ${CONTEXT_HOME}
 
 

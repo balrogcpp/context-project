@@ -36,7 +36,7 @@ endif ()
 
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(AndroidDummy SHARED Engine/android/src/main/cpp/main.cpp)
-    add_dependencies(AndroidDummy Dependencies)
+    add_dependencies(AndroidDummy contrib)
     return()
 endif ()
 
