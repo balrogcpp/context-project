@@ -50,15 +50,15 @@ add_subdirectory(source)
 # assets
 file(REMOVE_RECURSE ${GLUE_TMP_DIR})
 make_directory(${GLUE_TMP_DIR})
-CopyFlatZipDirectory(${CMAKE_SOURCE_DIR}/source/Programs ${GLUE_TMP_DIR}/Programs)
+CopyFlatZipDirectory(${CMAKE_SOURCE_DIR}/source/Programs ${GLUE_TMP_DIR}/programs)
 if (ANDROID OR IOS OR EMSCRIPTEN)
     file(GLOB files ${CMAKE_SOURCE_DIR}/source/GLSLES/*)
 else ()
     file(GLOB files ${CMAKE_SOURCE_DIR}/source/GLSL/*)
 endif ()
-file(COPY ${files} DESTINATION ${GLUE_TMP_DIR}/Programs)
-ZipDirectory(${GLUE_TMP_DIR}/Programs)
-FlatZipDirectory(${CMAKE_SOURCE_DIR}/source/Assets ${GLUE_TMP_DIR}/Assets)
+file(COPY ${files} DESTINATION ${GLUE_TMP_DIR}/programs)
+ZipDirectory(${GLUE_TMP_DIR}/programs)
+FlatZipDirectory(${CMAKE_SOURCE_DIR}/source/Example/Assets ${GLUE_TMP_DIR}/assets)
 
 
 # package helper target

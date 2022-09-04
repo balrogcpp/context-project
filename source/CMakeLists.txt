@@ -2,9 +2,8 @@
 
 
 # GLUE_ENGINE_SOURCE_FILES, GLUE_INCLUDE_DIRS
-include(GlueBuildVariables)
 include(InsertDependency)
-include(Platform)
+
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     insert_dependency(X11)
@@ -26,6 +25,10 @@ set(OGRE_STATIC 1)
 insert_dependency_static(OGRE)
 
 
+include(GlueBuildVariables)
+
+
+
 if (ANY_NOT_FOUND)
     message(WARNING "Build cmake target Dependencies to get all dependencies. Then configure cmake again to enable GlueLibrary and GlueExample targets. Exiting")
 endif ()
@@ -38,13 +41,10 @@ if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
 endif ()
 
 
-# glob sources
-file(GLOB_RECURSE SHADER_SOURCE_FILES Programs/*)
-
-
 # VS project folders
-source_group(TREE ${CMAKE_SOURCE_DIR}/source/Engine PREFIX "Engine" FILES ${GLUE_ENGINE_SOURCE_FILES})
-source_group(TREE ${CMAKE_SOURCE_DIR}/source/Programs PREFIX "Programs" FILES ${SHADER_SOURCE_FILES})
+file(GLOB_RECURSE SHADER_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Programs/*)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Engine PREFIX "Engine" FILES ${GLUE_ENGINE_SOURCE_FILES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Programs PREFIX "Programs" FILES ${SHADER_SOURCE_FILES})
 
 if (MSVC)
     list(APPEND GLUE_ENGINE_SOURCE_FILES ${SHADER_SOURCE_FILES})
@@ -56,10 +56,11 @@ endif ()
 
 
 # Static library
-add_library(GlueStatic STATIC EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
-include_directories(GlueStatic ${GLUE_INCLUDE_DIRS})
-set_target_properties(GlueStatic PROPERTIES OUTPUT_NAME "GlueStatic")
-target_precompile_headers(GlueStatic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/pch.h)
+add_library(engine STATIC EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
+include_directories(engine ${GLUE_INCLUDE_DIRS})
+set_target_properties(engine PROPERTIES OUTPUT_NAME "glue")
+target_precompile_headers(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/pch.h)
 
 
+# example project
 add_subdirectory(Example)

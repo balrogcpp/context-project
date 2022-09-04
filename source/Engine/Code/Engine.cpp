@@ -1309,11 +1309,11 @@ void AddLocation(const std::string &Path, const std::string &GroupName = Ogre::R
 void Engine::InitResourceLocation() {
   auto &RGM = ResourceGroupManager::getSingleton();
 #if defined(ANDROID)
-  RGM.addResourceLocation("/Programs.zip", "APKZip", RGN_INTERNAL);
-  RGM.addResourceLocation("/Assets.zip", "APKZip", RGN_DEFAULT);
+  RGM.addResourceLocation("programs.zip", "APKZip", RGN_INTERNAL);
+  RGM.addResourceLocation("assets.zip", "APKZip", RGN_DEFAULT);
 #elif defined(DEBUG)
   const string ProgramsDir = "source/Programs";
-  const string AssetsDir = "source/Assets";
+  const string AssetsDir = "source/Example/Assets";
   AddLocation(ProgramsDir, RGN_INTERNAL);
   if (RenderSystemIsGLES2())
     AddLocation("source/GLSLES", RGN_INTERNAL);
@@ -1321,8 +1321,8 @@ void Engine::InitResourceLocation() {
     AddLocation("source/GLSL", RGN_INTERNAL);
   AddLocation(AssetsDir);
 #else
-  RGM.addResourceLocation("Programs.zip", "Zip", RGN_INTERNAL);
-  RGM.addResourceLocation("Assets.zip", "Zip", RGN_DEFAULT);
+  RGM.addResourceLocation("programs.zip", "Zip", RGN_INTERNAL);
+  RGM.addResourceLocation("assets.zip", "Zip", RGN_DEFAULT);
 #endif
 }
 

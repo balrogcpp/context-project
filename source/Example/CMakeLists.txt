@@ -4,57 +4,28 @@
 include(GlueBuildVariables)
 
 
-# glob sources
-file(GLOB_RECURSE SAMPLE_SOURCE_FILES Source/*.cpp Source/*.h Source/*.hpp)
-file(GLOB_RECURSE ASSETS_SOURCE_FILES Assets/*)
-file(GLOB_RECURSE SHADER_SOURCE_FILES ${CMAKE_SOURCE_DIR}/source/Programs/*)
 
-
-# VS project folders
-source_group(TREE ${CMAKE_SOURCE_DIR}/source/Engine PREFIX "Engine" FILES ${GLUE_ENGINE_SOURCE_FILES})
-source_group(TREE ${CMAKE_SOURCE_DIR}/source/Programs PREFIX "Programs" FILES ${SHADER_SOURCE_FILES})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Source PREFIX "Source" FILES ${SAMPLE_SOURCE_FILES})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Assets PREFIX "Assets" FILES ${ASSETS_SOURCE_FILES})
-
-
-if (MSVC)
-    list(APPEND SAMPLE_SOURCE_FILES ${ASSETS_SOURCE_FILES})
-    set_source_files_properties(${ASSETS_SOURCE_FILES} PROPERTIES LANGUAGE Assets)
-    list(APPEND SAMPLE_SOURCE_FILES ${SHADER_SOURCE_FILES})
-    set_source_files_properties(${SHADER_SOURCE_FILES} PROPERTIES LANGUAGE Shaders)
-elseif (${CMAKE_GENERATOR} STREQUAL "Xcode")
-    list(APPEND SAMPLE_SOURCE_FILES ${ASSETS_SOURCE_FILES})
-    set_source_files_properties(${ASSETS_SOURCE_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
-    list(APPEND SAMPLE_SOURCE_FILES ${SHADER_SOURCE_FILES})
-    set_source_files_properties(${SHADER_SOURCE_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
-endif ()
-
-
-list(APPEND SAMPLE_SOURCE_FILES ${GLUE_ENGINE_SOURCE_FILES})
-
-
+file(GLOB_RECURSE SAMPLE_SOURCE_FILES *.cpp *.h *.hpp)
 if (NOT ANDROID)
     if (CMAKE_BUILD_TYPE STREQUAL "Release")
-        add_executable(Example WIN32 ${SAMPLE_SOURCE_FILES})
+        add_executable(example WIN32 ${GLUE_ENGINE_SOURCE_FILES} ${SAMPLE_SOURCE_FILES})
     else ()
-        add_executable(Example ${SAMPLE_SOURCE_FILES})
+        add_executable(example ${GLUE_ENGINE_SOURCE_FILES} ${SAMPLE_SOURCE_FILES})
     endif ()
 else ()
-    add_library(Example SHARED ${SAMPLE_SOURCE_FILES})
+    add_library(example SHARED ${GLUE_ENGINE_SOURCE_FILES} ${SAMPLE_SOURCE_FILES})
 endif ()
-
-
-include_directories(Example include ${GLUE_INCLUDE_DIRS})
-target_link_directories(Example PUBLIC ${GLUE_LINK_DIRS})
-target_precompile_headers(Example PUBLIC ${GLUE_SOURCE_DIR}/pch.h)
+include_directories(example include ${GLUE_INCLUDE_DIRS})
+target_link_directories(example PUBLIC ${GLUE_LINK_DIRS})
+target_precompile_headers(example PUBLIC ${GLUE_SOURCE_DIR}/pch.h)
 if (NOT ANDROID)
-    set_target_properties(Example PROPERTIES OUTPUT_NAME "Example")
+    set_target_properties(example PROPERTIES OUTPUT_NAME "example")
 else ()
-    set_target_properties(Example PROPERTIES OUTPUT_NAME "main")
+    set_target_properties(example PROPERTIES OUTPUT_NAME "main")
 endif ()
 
 
-target_link_libraries(Example PUBLIC ${GLUE_LIBRARIES})
+target_link_libraries(example PUBLIC ${GLUE_LIBRARIES})
 
 
 #Package
@@ -64,19 +35,19 @@ if (WIN32 AND EXISTS ${GLUE_THIRDPARTY_ROOT}/bin/OpenAL32.dll)
 endif ()
 
 
-install(TARGETS Example RUNTIME DESTINATION .)
+install(TARGETS example RUNTIME DESTINATION .)
 if (EMSCRIPTEN)
     install(FILES
-            "$<TARGET_FILE_DIR:Example>/Example.html"
-            "$<TARGET_FILE_DIR:Example>/Example.js"
-            "$<TARGET_FILE_DIR:Example>/Example.wasm"
-            "$<TARGET_FILE_DIR:Example>/Example.data"
-            "$<TARGET_FILE_DIR:Example>/Example.worker.js"
+            "$<TARGET_FILE_DIR:example>/example.html"
+            "$<TARGET_FILE_DIR:example>/example.js"
+            "$<TARGET_FILE_DIR:example>/example.wasm"
+            "$<TARGET_FILE_DIR:example>/example.data"
+            "$<TARGET_FILE_DIR:example>/example.worker.js"
             DESTINATION .)
 else ()
     install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
-    install(FILES ${GLUE_TMP_DIR}/Assets.zip DESTINATION .)
-    install(FILES ${GLUE_TMP_DIR}/Programs.zip DESTINATION .)
+    install(FILES ${GLUE_TMP_DIR}/assets.zip DESTINATION .)
+    install(FILES ${GLUE_TMP_DIR}/programs.zip DESTINATION .)
 endif ()
 
 
