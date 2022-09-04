@@ -1,0 +1,48 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program FXAA_fs glsl glsles
+{
+    source fxaa.frag
+    preprocessor_defines USE_FXAA
+	default_params
+	{
+        param_named uFXAAEnable float 0.0
+        param_named uFXAAStrength float 4.0
+	}
+}
+
+material FXAA
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			lighting off
+            polygon_mode_overrideable false
+            depth_check off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref FXAA_fs
+			{
+                param_named uSampler int 0
+                param_named uSpeedSampler int 1
+                param_named uLuminanceSampler int 2
+                param_named_auto TexelSize inverse_texture_size 0
+                param_named_auto PixelSize texture_size 1
+			}
+
+			texture_unit scene
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}

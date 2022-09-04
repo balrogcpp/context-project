@@ -1,0 +1,121 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+import PBRS_Basic from PBRS.material
+import PBRS_I_vs from PBRS.program
+import PBRS_I_fs from PBRS.program
+
+vertex_program PBRS_Paged_vs glsl glsles : PBRS_I_vs
+{
+    preprocessor_defines PAGED_GEOMETRY,TREES,HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8
+    default_params
+    {
+        param_named_auto Time time
+        param_named_auto CameraPosition camera_position
+    }
+}
+
+fragment_program PBRS_Paged_fs glsl glsles : PBRS_I_fs
+{
+    preprocessor_defines PAGED_GEOMETRY,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_ALPHA,MAX_LIGHTS=8
+}
+
+vertex_program PBRS_Grass_vs glsl glsles : PBRS_I_vs
+{
+    preprocessor_defines PAGED_GEOMETRY,GRASS,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_UV,HAS_COLOURS,MAX_LIGHTS=8
+    default_params
+    {
+        param_named uFadeRange float 50.0
+        param_named uWindRange float 50.0
+        param_named_auto CameraPosition camera_position
+        param_named_auto Time time
+    }
+}
+
+fragment_program PBRS_Grass_fs glsl glsles : PBRS_I_fs
+{
+    preprocessor_defines PAGED_GEOMETRY,FADE,HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_COLOURS,HAS_ALPHA
+}
+
+abstract material PBRS_Grass : PBRS_Basic
+{
+    receive_shadows off
+    transparency_casts_shadows off
+
+    set $Albedo white.dds
+
+    technique
+    {
+        pass
+        {
+            alpha_rejection greater_equal 128
+            cull_hardware none
+            //scene_blend alpha_blend
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+                tex_address_mode clamp
+            }
+
+            vertex_program_ref PBRS_Grass_vs {}
+
+            fragment_program_ref PBRS_Grass_fs
+            {
+                param_named uAlbedoSampler int 0
+            }
+        }
+    }
+}
+
+abstract material PBRS_Paged : PBRS_Basic
+{
+    transparency_casts_shadows on
+
+    set $Albedo white.dds
+
+    technique
+    {
+        pass
+        {
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+
+            vertex_program_ref PBRS_Paged_vs {}
+
+            fragment_program_ref PBRS_Paged_fs
+            {
+                param_named uAlbedoSampler int 0
+            }
+        }
+    }
+}
+
+abstract material PBRS_Plant : PBRS_Basic
+{
+    receive_shadows off
+    transparency_casts_shadows off
+
+    set $Albedo white.dds
+
+    technique
+    {
+        pass
+        {
+            alpha_rejection greater_equal 128
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+
+            vertex_program_ref PBRS_Grass_vs {}
+
+            fragment_program_ref PBRS_Grass_fs
+            {
+                param_named uAlbedoSampler int 0
+            }
+        }
+    }
+}

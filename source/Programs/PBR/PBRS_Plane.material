@@ -1,0 +1,73 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+import PBRS from PBRS.material
+import PBRS_vs from PBRS.program
+import PBRS_BaseI_fs from PBRS.program
+
+vertex_program PBRS_Reflective_vs glsl glsles : PBRS_vs
+{
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_UV,MAX_LIGHTS=8,HAS_REFLECTION
+}
+
+abstract fragment_program PBRS_ReflectiveI_fs glsl glsles : PBRS_BaseI_fs
+{
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,MAX_LIGHTS=8,HAS_REFLECTION
+}
+
+fragment_program PBRS_Reflective_fs glsl glsles : PBRS_ReflectiveI_fs {}
+
+abstract material PBRS_Plane
+{
+    transparency_casts_shadows off
+    receive_shadows on
+
+    set $Albedo white.dds
+    set $Normal normal.dds
+    set $ORM white.dds
+    set $Emissive black.dds
+
+    technique
+    {
+        pass
+        {
+            diffuse 1 1 1
+            specular 1 1 1 1
+            ambient 1 1 1
+            emissive 0 0 0
+            alpha_rejection greater_equal 127
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+            texture_unit Normal
+            {
+                texture $Normal
+            }
+            texture_unit ORM
+            {
+                texture $ORM
+            }
+            texture_unit Emissive
+            {
+                texture $Emissive
+            }
+            texture_unit ReflectionMap
+            {
+                texture violet.dds
+                filtering bilinear
+            }
+
+            vertex_program_ref PBRS_Reflective_vs {}
+
+            fragment_program_ref PBRS_Reflective_fs
+            {
+                param_named uAlbedoSampler      int 0
+                param_named uNormalSampler      int 1
+                param_named uORMSampler         int 2
+                param_named uEmissiveSampler    int 3
+                param_named uReflectionMap      int 4
+            }
+        }
+    }
+}

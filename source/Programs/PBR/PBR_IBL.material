@@ -1,0 +1,77 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+import PBR from PBR.material
+import PBRS from PBRS.material
+import PBR_vs from PBR.program
+import PBR_BaseI_fs from PBR.program
+import PBRS_vs from PBRS.program
+import PBRS_BaseI_fs from PBRS.program
+
+abstract fragment_program PBR_IBLI_fs glsl glsles : PBR_BaseI_fs
+{
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+}
+
+fragment_program PBR_IBL_fs glsl glsles : PBR_IBLI_fs
+{
+    default_params
+    {
+        param_named uShadowMap0 int 7
+        param_named uShadowMap1 int 8
+        param_named uShadowMap2 int 9
+        param_named uShadowMap3 int 10
+        param_named_auto ShadowTexel0 inverse_texture_size 7
+        param_named_auto ShadowTexel1 inverse_texture_size 8
+        param_named_auto ShadowTexel2 inverse_texture_size 9
+        param_named_auto ShadowTexel3 inverse_texture_size 10
+    }
+}
+
+abstract fragment_program PBRS_IBLI_fs glsl glsles : PBRS_BaseI_fs
+{
+    preprocessor_defines HAS_NORMALS,HAS_TANGENTS,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_ORM,USE_IBL,MAX_LIGHTS=8
+}
+
+fragment_program PBRS_IBL_fs glsl glsles : PBRS_IBLI_fs {}
+
+abstract material PBR_IBL : PBRS
+{
+    set $IBL_Diffuse diffuse.dds
+    set $IBL_Specular specular.dds
+    set $IBL_LUT brdfLUT.dds
+
+    technique
+    {
+        pass
+        {
+            texture_unit IBL_Diffuse
+            {
+                texture $IBL_Diffuse cubic
+                sampler_ref PBRIBLSampler
+            }
+            texture_unit IBL_Specular
+            {
+                texture $IBL_Specular cubic
+                sampler_ref PBRIBLSampler
+            }
+            texture_unit IBL_LUT
+            {
+                texture $IBL_LUT
+                sampler_ref PBRLUTSampler
+            }
+
+            vertex_program_ref PBRS_vs {}
+
+            fragment_program_ref PBRS_IBL_fs
+            {
+                param_named uAlbedoSampler      int 0
+                param_named uNormalSampler      int 1
+                param_named uORMSampler         int 2
+                param_named uEmissiveSampler    int 3
+                param_named uDiffuseEnvSampler  int 4
+                param_named uSpecularEnvSampler int 5
+                param_named uBrdfLUT            int 6
+            }
+        }
+    }
+}

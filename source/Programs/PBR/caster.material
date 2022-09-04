@@ -1,0 +1,103 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+vertex_program PSSM/shadow_caster_alpha_vs glsl glsles
+{
+	source PBR.vert
+	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
+
+	default_params
+	{
+		param_named_auto MVPMatrix worldviewproj_matrix
+	}
+}
+
+fragment_program PSSM/shadow_caster_alpha_fs glsl glsles
+{
+	source PBR.frag
+	preprocessor_defines SHADOWCASTER,SHADOWCASTER_ALPHA
+
+	default_params
+	{
+	    param_named uAlbedoSampler int 0
+	    param_named_auto SurfaceAlphaRejection surface_alpha_rejection_value
+	}
+}
+
+material PSSM/shadow_caster_alpha
+{
+	technique
+	{
+		pass
+		{
+		    alpha_rejection greater_equal 127
+
+			vertex_program_ref PSSM/shadow_caster_alpha_vs {}
+
+			fragment_program_ref PSSM/shadow_caster_alpha_fs {}
+
+            texture_unit BaseColor {}
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PSSM/shadow_caster_vs glsl glsles
+{
+	source PBR.vert
+	preprocessor_defines SHADOWCASTER
+
+	default_params
+	{
+		param_named_auto MVPMatrix worldviewproj_matrix
+	}
+}
+
+fragment_program PSSM/shadow_caster_fs glsl glsles
+{
+	source PBR.frag
+	preprocessor_defines SHADOWCASTER
+}
+
+material PSSM/shadow_caster
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref PSSM/shadow_caster_vs {}
+
+			fragment_program_ref PSSM/shadow_caster_fs {}
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vertex_program PSSM/shadow_caster_terrain_vs glsl glsles
+{
+	source PBR.vert
+	preprocessor_defines SHADOWCASTER,VERTEX_COMPRESSION,HAS_UV
+
+	default_params
+	{
+		param_named_auto MVPMatrix worldviewproj_matrix
+	}
+}
+
+fragment_program PSSM/shadow_caster_terrain_fs glsl glsles
+{
+	source PBR.frag
+	preprocessor_defines SHADOWCASTER
+}
+
+material PSSM/shadow_caster_terrain
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref PSSM/shadow_caster_terrain_vs {}
+
+			fragment_program_ref PSSM/shadow_caster_terrain_fs {}
+		}
+	}
+}

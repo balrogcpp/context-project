@@ -10,25 +10,7 @@ variables:
 build:
   stage: build
   script:
-    - git clone --depth 1 https://github.com/balrogcpp/scenes.git assets
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD`  . -f docker/build-linux/Dockerfile -t balrogcpp/build-linux
-    - docker create -ti --name abc balrogcpp/build-linux bash
-    - mkdir artifacts
-    - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-linux-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
-    - docker rm -f abc
-    - docker rmi balrogcpp/build-linux
-    - docker rmi balrogcpp/deps-linux
-    - docker build --build-arg GIT_HASH=`git rev-parse --short=8 HEAD`  . -f docker/build-cross/Dockerfile -t balrogcpp/build-cross
-    - docker create -ti --name abc balrogcpp/build-cross bash
-    - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-windows-clang-mingw-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
-    - docker cp abc:/mnt/build/artifacts/ContextProjectDemo-apple-darwin-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip artifacts
-    - docker cp abc:/mnt/build/artifacts/app-arm64-v8a-$CI_COMMIT_SHORT_SHA.apk artifacts
-    - docker rm -f abc
-    - docker rmi balrogcpp/build-cross
-    - docker rmi balrogcpp/deps-cross
+    - sh docker.sh
   artifacts:
     paths:
-      - artifacts/ContextProjectDemo-linux-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip
-      - artifacts/ContextProjectDemo-windows-clang-mingw-x86_64-$CI_COMMIT_SHORT_SHA.zip
-      - artifacts/ContextProjectDemo-apple-darwin-clang-x86_64-$CI_COMMIT_SHORT_SHA.zip
-      - artifacts/app-arm64-v8a-$CI_COMMIT_SHORT_SHA.apk
+      - "artifacts/*"

@@ -1,17 +1,9 @@
 **
 
-!/android/
-!/assets/
 !/cmake/
-!/demo/
-!/dependencies/CMakeLists.txt/
-!/dependencies/patch/
-!/deploy/
-!/doc/
-!/programs/
-!/sources/
-!/tests/
+!/source/
 !/CMakeLists.txt/
 !/README.md/
 !/LICENSE/
-!/zip-dependencies.py/
+!/contrib/CMakeLists.txt
+!/contrib/patch/

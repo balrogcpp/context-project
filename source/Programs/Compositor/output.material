@@ -1,0 +1,228 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+// Material that blend other steps together
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program Output_fs glsl glsles
+{
+    source output.frag
+    preprocessor_defines USE_SSAO,USE_BLOOM,USE_FOG,USE_HDR
+	default_params
+	{
+		param_named_auto FogColour fog_colour
+		param_named_auto FogParams fog_params
+        param_named_auto FarClipDistance far_clip_distance
+        param_named uSSAOEnable float 0.0
+        param_named uBloomEnable float 0.0
+        param_named uHDREnable float 0.0
+	}
+}
+
+material Output
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Output_fs
+			{
+			    param_named uSceneSampler int 0
+			    param_named uSceneDepthSampler int 1
+			    param_named uSsaoSampler int 2
+			    param_named uRT1 int 3
+			    param_named uRT2 int 4
+			    param_named uRT3 int 5
+			    param_named uRT4 int 6
+			    param_named uRT5 int 7
+			    param_named uRT6 int 8
+			    param_named uRT7 int 9
+			    param_named uRT8 int 10
+			    param_named uRT9 int 11
+			    param_named uRT10 int 12
+                param_named_auto TexelSize inverse_texture_size 0
+                param_named_auto TexelSize0 inverse_texture_size 0
+                param_named_auto TexelSize1 inverse_texture_size 1
+                param_named_auto TexelSize2 inverse_texture_size 2
+                param_named_auto TexelSize3 inverse_texture_size 3
+                param_named_auto TexelSize4 inverse_texture_size 4
+                param_named_auto TexelSize5 inverse_texture_size 5
+                param_named_auto TexelSize6 inverse_texture_size 6
+                param_named_auto TexelSize7 inverse_texture_size 7
+                param_named_auto TexelSize8 inverse_texture_size 8
+                param_named_auto TexelSize9 inverse_texture_size 9
+                param_named_auto TexelSize10 inverse_texture_size 10
+                param_named_auto TexelSize11 inverse_texture_size 11
+                param_named_auto TexelSize12 inverse_texture_size 12
+			}
+
+			texture_unit scene
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit depth
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit ssao
+            {
+                texture white.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt1
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt2
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt3
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt4
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt5
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt6
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt7
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt8
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt9
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt10
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt11
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit rt12
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Just render scene, used when NoMRT option enabled
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program OutputDummy_fs glsl glsles
+{
+    source output.frag
+    preprocessor_defines USE_FXAA
+	default_params
+	{
+        param_named uFXAAEnable float 0.0
+        param_named uFXAAStrength float 4.0
+	}
+}
+
+material OutputDummy
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref OutputDummy_fs
+			{
+                param_named uSceneSampler int 0
+                param_named_auto TexelSize inverse_texture_size 0
+			}
+
+			texture_unit scene
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}

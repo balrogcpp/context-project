@@ -1,0 +1,109 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+import PBRS from PBRS.material
+
+abstract vertex_program PBRS_Terrain_I_vs glsl glsles
+{
+	source PBR.vert
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    default_params
+    {
+        shared_params_ref PBRS_Shared_vert
+    }
+}
+
+abstract fragment_program PBRS_Terrain_I_fs glsl glsles
+{
+	source PBR.frag
+    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+
+    default_params
+    {
+        shared_params_ref PBRS_Shared_frag
+        param_named uTerrainTexScale float 20.0
+    }
+}
+
+vertex_program PBRS_Terrain_nvc_vs glsl glsles : PBRS_Terrain_I_vs {}
+
+fragment_program PBRS_Terrain_nvc_fs glsl glsles : PBRS_Terrain_I_fs {}
+
+vertex_program PBRS_Terrain_vs glsl glsles : PBRS_Terrain_I_vs
+{
+    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+}
+
+fragment_program PBRS_Terrain_fs glsl glsles : PBRS_Terrain_I_fs {}
+
+abstract material PBRS_Terrain : PBRS
+{
+    technique
+    {
+        pass
+        {
+            texture_unit GlobalNormal
+            {
+                texture normal.dds
+                filtering bilinear
+            }
+
+            /*texture_unit GlobalShadow
+            {
+                texture white.dds
+                filtering bilinear
+            }*/
+
+            vertex_program_ref PBRS_Terrain_vs
+            {
+                param_named_auto ModelMatrix world_matrix
+            }
+
+            fragment_program_ref PBRS_Terrain_fs
+            {
+                param_named uAlbedoSampler       int 0
+                param_named uNormalSampler       int 1
+                param_named uORMSampler          int 2
+                param_named uEmissiveSampler     int 3
+                param_named uGlobalNormalSampler int 4
+                //param_named uGlobalShadowSampler int 5
+            }
+        }
+    }
+}
+
+// no vertex compression
+abstract material PBRS_Terrain_nvc : PBRS
+{
+    technique
+    {
+        pass
+        {
+            texture_unit GlobalNormal
+            {
+                texture normal.dds
+                filtering bilinear
+            }
+
+            /*texture_unit GlobalShadow
+            {
+                texture white.dds
+                filtering bilinear
+            }*/
+
+            vertex_program_ref PBRS_Terrain_nvc_vs
+            {
+                param_named_auto ModelMatrix world_matrix
+            }
+
+            fragment_program_ref PBRS_Terrain_nvc_fs
+            {
+                param_named uAlbedoSampler       int 0
+                param_named uNormalSampler       int 1
+                param_named uORMSampler          int 2
+                param_named uEmissiveSampler     int 3
+                param_named uGlobalNormalSampler int 4
+                //param_named uGlobalShadowSampler int 5
+            }
+        }
+    }
+}

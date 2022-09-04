@@ -1,0 +1,64 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+abstract vertex_program SkyBoxCustomVp_I glsl glsles
+{
+	source Sky.vert
+    default_params
+    {
+        param_named_auto worldViewProj worldviewproj_matrix
+    }
+}
+
+abstract fragment_program SkyBoxCustomFp_I glsl glsles
+{
+	source Sky.frag
+    default_params
+    {
+        param_named_auto uSunDirection light_direction 0
+        param_named_auto FogParams fog_params
+        param_named_auto FogColour fog_colour
+        param_named_auto FarClipDistance far_clip_distance
+        param_named_auto Time time
+        param_named uTimeScale float 0.03
+        param_named uCirrus float 0.4
+        param_named uCumulus float 0.4
+        param_named uSunSize float 0.03
+        param_named uSunColor float3 20000 20000 20000
+    }
+}
+
+vertex_program SkyBoxCustomVp glsl glsles : SkyBoxCustomVp_I {}
+
+fragment_program SkyBoxCustomFp glsl glsles : SkyBoxCustomFp_I {}
+
+abstract material SkyBoxI
+{
+    receive_shadows off
+    transparency_casts_shadows off
+
+    set $CubeMap specular.dds
+
+	technique
+	{
+		pass
+		{
+            lighting off
+            depth_write off
+            cull_hardware none
+
+			texture_unit CubeMap
+			{
+				texture $CubeMap cubic
+			}
+
+			vertex_program_ref SkyBoxCustomVp {}
+
+			fragment_program_ref SkyBoxCustomFp
+			{
+			    param_named uCubeMap int 0
+			}
+		}
+	}
+}
+
+material SkyBox : SkyBoxI {}

@@ -1,0 +1,67 @@
+apply plugin: 'com.android.application'
+
+android {
+    buildToolsVersion '30.0.3'
+    compileSdkVersion 33
+    ndkVersion '25.1.8937393'
+
+    defaultConfig {
+        applicationId 'org.libsdl.app'
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode     1
+        versionName    '1.0'
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_ARM_NEON=ON -G Ninja'
+            }
+        }
+    }
+    signingConfigs {
+        release {
+            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+    sourceSets.main {
+        jniLibs.srcDir 'libs'
+    }
+    externalNativeBuild {
+        cmake {
+            version '3.18.1'
+            path '../../../CMakeLists.txt'
+        }
+    }
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'arm64-v8a'
+            universalApk false
+        }
+    }
+    sourceSets {
+        main {
+            assets.srcDirs = ['../../../tmp']
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+}

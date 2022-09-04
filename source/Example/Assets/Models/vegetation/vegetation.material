@@ -1,0 +1,111 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+import PBR_Basic from PBR.material
+import PBRS_Basic from PBRS.material
+import PBR_Grass from PBR_Forests.material
+import PBRS_Grass from PBRS_Forests.material
+import PBR_Paged from PBR_Forests.material
+import PBRS_Paged from PBRS_Forests.material
+
+material GrassCustom : PBR_Grass
+{
+    technique
+    {
+      pass
+      {
+        texture_unit Albedo
+        {
+            texture Grass_A.dds
+        }
+      }
+	}
+}
+
+material 3D-Diggers/fir01 : PBRS_Paged
+{
+    technique
+    {
+      pass
+      {
+        texture_unit Albedo
+        {
+            texture fir01.dds
+        }
+
+      }
+	}
+}
+
+material 3D-Diggers/fir02 : PBRS_Paged
+{
+    technique
+    {
+      pass
+      {
+        texture_unit Albedo
+        {
+            texture fir02.dds
+        }
+      }
+	}
+}
+
+material 3D-Diggers/farn01 : PBR_Paged
+{
+    technique
+    {
+      pass
+      {
+        texture_unit Albedo
+        {
+            texture farn01.dds
+        }
+	}
+	}
+}
+
+material 3D-Diggers/farn02 : PBR_Paged
+{
+    technique
+    {
+      pass
+      {
+        texture_unit Albedo
+        {
+            tex_address_mode clamp
+            texture farn02.dds
+        }
+	}
+	}
+}
++
+material 3D-Diggers/plant1 : PBR_Paged
+{
+    receive_shadows off
+    transparency_casts_shadows off
+    technique
+    {
+      pass
+      {
+        alpha_rejection greater_equal 250
+        texture_unit Albedo
+        {
+            texture plant1.dds
+        }
+	    }
+    }
+}
+
+material 3D-Diggers/plant2 : PBR_Paged
+{
+    technique
+    {
+      pass
+      {
+        texture_unit Albedo
+        {
+            texture plant2.dds
+        }
+       }
+	}
+}

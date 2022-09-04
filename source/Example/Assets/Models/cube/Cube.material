@@ -1,0 +1,10 @@
+import PBR from PBR.material
+import PBRS from PBRS.material
+import PBR_IBL from PBR_IBL.material
+
+material Cube : PBR
+{
+    set $Albedo ridged-foam1_albedo.png
+    set $Normal ridged-foam1_normal-ogl.png
+    set $ORM ridged-foam1_roughness.png
+}

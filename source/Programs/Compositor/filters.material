@@ -1,0 +1,157 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+// Linear gaussian blur
+//----------------------------------------------------------------------------------------------------------------------
+material FilterY
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref gauss_filter3y_fs {}
+
+			texture_unit rt1
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+material FilterX
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			lighting off
+            polygon_mode_overrideable false
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref gauss_filter3x_fs {}
+
+			texture_unit rt1
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Tent downsampling
+//----------------------------------------------------------------------------------------------------------------------
+material Downscale3x3
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+            vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref downscale3x3_fs {}
+
+            texture_unit Scene
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+        }
+    }
+}
+
+material Downscale2x2
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+            vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref downscale2x2_fs {}
+
+            texture_unit Scene
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+        }
+    }
+}
+
+material Downscale
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+            vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref downscale_fs {}
+
+            texture_unit Scene
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+        }
+    }
+}
+
+material BoxFilter
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            depth_check off
+            polygon_mode_overrideable false
+
+            vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref box_filter_fs {}
+
+            texture_unit Scene
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+        }
+    }
+}

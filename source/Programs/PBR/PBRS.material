@@ -1,0 +1,83 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+abstract material PBRS_Basic
+{
+    transparency_casts_shadows off
+    receive_shadows off
+
+    set $Albedo white.dds
+
+    technique
+    {
+        pass
+        {
+            specular 1 1 1 1
+            diffuse 1 1 1
+            ambient 1 1 1
+            emissive 0 0 0
+            alpha_rejection greater_equal 127
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+
+            vertex_program_ref PBRS_vs {}
+
+            fragment_program_ref PBRS_Basic_fs
+            {
+                param_named uAlbedoSampler int 0
+            }
+        }
+    }
+}
+
+abstract material PBRS
+{
+    transparency_casts_shadows off
+    receive_shadows off
+
+    set $Albedo white.dds
+    set $Normal normal.dds
+    set $ORM white.dds
+    set $Emissive black.dds
+
+    technique
+    {
+        pass
+        {
+            diffuse 1 1 1
+            specular 1 1 1 1
+            ambient 1 1 1
+            emissive 0 0 0
+            alpha_rejection greater_equal 127
+            
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+            texture_unit Normal
+            {
+                texture $Normal
+            }
+            texture_unit ORM
+            {
+                texture $ORM
+            }
+            texture_unit Emissive
+            {
+                texture $Emissive
+            }
+
+            vertex_program_ref PBRS_vs {}
+
+            fragment_program_ref PBRS_fs
+            {
+                param_named uAlbedoSampler      int 0
+                param_named uNormalSampler      int 1
+                param_named uORMSampler         int 2
+                param_named uEmissiveSampler    int 3
+            }
+        }
+    }
+}

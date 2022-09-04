@@ -1,0 +1,26 @@
+name: CI Build
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    container: docker:git
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: compile
+        run: |
+          chown -R $(id -u):$(id -g) $PWD #this is to fix GIT not liking owner of the checkout dir
+          sh docker.sh
+      - name: artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: "artifacts/*"
+          retention-days: 2
+          

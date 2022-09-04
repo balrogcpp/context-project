@@ -1,0 +1,32 @@
+import PBR_Terrain from PBR_Terrain.material
+import PBR_Terrain_nvc from PBR_Terrain.material
+import PBRS_Terrain from PBRS_Terrain.material
+
+    /*set $Albedo bog_albedo.dds
+    set $Normal bog_normal.dds
+    set $Metallic bog_metallic.dds
+    set $Roughness bog_roughness.dds
+    set $AO bog_ao.dds*/
+
+material TerrainCustom : PBR_Terrain_nvc
+{
+    set $Albedo sand-dunes1_albedo.png
+    set $Normal sand-dunes1_normal-ogl.png
+    set $ORM sand-dunes1_roughness.png
+    set $AO sand-dunes1_ao.png
+
+    /*technique {
+        pass {
+            diffuse 0.49 0.40 0.0
+        }
+    }*/
+}
+
+material TerrainCustomPBRS : PBRS_Terrain
+{
+    technique {
+        pass {
+            diffuse 0.13 0.49 0.25
+        }
+    }
+}

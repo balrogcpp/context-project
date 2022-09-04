@@ -1,0 +1,44 @@
+// First shader, simple camera-alignment
+vertex_program Sprite_vp glsl glsles
+{
+    source Sprite.vert
+    default_params
+    {
+        param_named_auto worldViewProj worldviewproj_matrix
+    }
+}
+
+// Second shader, camera alignment and distance based fading
+vertex_program SpriteFade_vp glsl glsles
+{
+    source Sprite.vert
+    preprocessor_defines FADE
+    default_params
+    {
+        param_named_auto worldViewProj worldviewproj_matrix
+        param_named_auto camPos camera_position_object_space
+    }
+}
+
+// Default pixel shader
+fragment_program Default_AlphaTest glsl glsles
+{
+    source Default.frag
+    preprocessor_defines USE_FOG,ALPHA_TEST
+    default_params
+    {
+        param_named_auto uFarClipDistance far_clip_distance
+        param_named_auto fogColour fog_colour
+        param_named_auto fogParams fog_params
+    }
+}
+
+fragment_program Default_AlphaTest_NoFog glsl glsles
+{
+    source Default.frag
+    preprocessor_defines ALPHA_TEST
+    default_params
+    {
+        param_named_auto uFarClipDistance far_clip_distance
+    }
+}

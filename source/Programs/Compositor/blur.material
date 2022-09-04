@@ -1,0 +1,65 @@
+// This source file is part of Glue Engine. Created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program Blur_fs glsl glsles
+{
+    source output.frag
+    preprocessor_defines USE_BLUR,MAX_SAMPLES=4,SRGB
+	default_params
+	{
+		param_named uExposure float 1.0
+        param_named uScale float 0.5
+        param_named uBlurEnable float 0.0
+	}
+}
+
+material Blur
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			lighting off
+            polygon_mode_overrideable false
+            depth_check off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Blur_fs
+			{
+                param_named uSampler int 0
+                param_named uSpeedSampler int 1
+                param_named uLuminanceSampler int 2
+                param_named_auto TexelSize inverse_texture_size 0
+                param_named_auto PixelSize texture_size 1
+			}
+
+			texture_unit scene
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit velocity
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit luminance
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering none
+            }
+		}
+	}
+}
