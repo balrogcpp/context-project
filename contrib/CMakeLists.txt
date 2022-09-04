@@ -1,13 +1,10 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
-project(deps)
-
-include(GlueCppFlags)
-include(ExternalProject)
-
+project(contrib)
 
 find_package(Git REQUIRED)
-
+include(ExternalProject)
+include(GlueCppFlags)
 
 set(GLUE_THIRDPARTY_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/${GLUE_TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE}/sdk CACHE PATH "")
 set(GLUE_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/${GLUE_TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE})
