@@ -6,8 +6,7 @@ include(ProcessorCount)
 processorcount(PROCESSOR_COUNT)
 
 
-option(GLUE_USE_AVX "Use AVX instructions set" OFF)
-option(GLUE_USE_AVX2 "Use AVX2 instructions set" OFF)
+option(USE_AVX2 "Use AVX2 instructions set" OFF)
 
 
 if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND NOT MSVC)
@@ -33,6 +32,7 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STRE
         string(APPEND CMAKE_CXX_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
         string(APPEND CMAKE_C_FLAGS " -g -O2 -DDEBUG -D_DEBUG")
     endif ()
+
     string(APPEND CMAKE_CXX_FLAGS " -pthread")
     string(APPEND CMAKE_C_FLAGS " -pthread")
     string(APPEND CMAKE_EXE_LINKER_FLAGS " -pthread")
@@ -48,6 +48,11 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STRE
         string(APPEND CMAKE_C_FLAGS " -msse4")
     endif ()
 
+    if (USE_AVX2)
+        string(APPEND CMAKE_CXX_FLAGS " -mavx2")
+        string(APPEND CMAKE_C_FLAGS " -mavx2")
+    endif ()
+
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         string(APPEND CMAKE_CXX_FLAGS " -floop-parallelize-all")
         string(APPEND CMAKE_C_FLAGS " -floop-parallelize-all")
@@ -58,28 +63,10 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW OR CMAKE_CXX_COMPILER_ID STRE
         string(APPEND CMAKE_C_FLAGS " -mwindows")
     endif ()
 
-    if (GLUE_USE_AVX2)
-        string(APPEND CMAKE_CXX_FLAGS " -mavx2")
-        string(APPEND CMAKE_C_FLAGS " -mavx2")
-    elseif (GLUE_USE_AVX)
-        string(APPEND CMAKE_CXX_FLAGS " -mavx")
-        string(APPEND CMAKE_C_FLAGS " -mavx")
-    endif ()
 
     # gcc-mingw links everything as shared libraries by default
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -no-pie")
-    endif ()
-
-    option(GLUE_USE_OPENMP "" OFF)
-    if (GLUE_USE_OPENMP)
-        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            string(APPEND CMAKE_C_FLAGS " -D_GLIBCXX_PARALLEL -fopenmp")
-            string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_PARALLEL -fopenmp")
-        elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            string(APPEND CMAKE_EXE_LINKER_FLAGS " -fopenmp -static-openmp")
-            string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fopenmp -static-openmp")
-        endif ()
     endif ()
 elseif (MSVC)
     string(REPLACE " /DNDEBUG" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
@@ -90,12 +77,9 @@ elseif (MSVC)
         string(APPEND CMAKE_C_FLAGS " /arch:SSE2")
     endif ()
 
-    if (GLUE_USE_AVX2)
+    if (USE_AVX2)
         string(APPEND CMAKE_CXX_FLAGS " /arch:AVX2")
         string(APPEND CMAKE_C_FLAGS " /arch:AVX2")
-    elseif (GLUE_USE_AVX)
-        string(APPEND CMAKE_CXX_FLAGS " /arch:AVX")
-        string(APPEND CMAKE_C_FLAGS " /arch:AVX")
     endif ()
 
     string(APPEND CMAKE_CXX_FLAGS " /EHa /MP /GS- /GF /utf-8")
@@ -113,7 +97,7 @@ elseif (MSVC)
 endif ()
 
 
-# This variables are used for dependencies
+# These variables are used for dependencies
 set(CMAKE_EXTRA_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 set(CMAKE_EXTRA_C_FLAGS ${CMAKE_C_FLAGS})
 set(CMAKE_EXTRA_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
