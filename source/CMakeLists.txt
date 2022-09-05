@@ -1,6 +1,5 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
-
 # GLUE_ENGINE_SOURCE_FILES, GLUE_INCLUDE_DIRS
 include(InsertDependency)
 

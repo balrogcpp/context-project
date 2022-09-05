@@ -1,7 +1,10 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
 cmake_minimum_required(VERSION 3.18.1)
+
+
 project(GlueEngine VERSION 0.1.0)
+
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
