@@ -3,12 +3,15 @@
 FROM ubuntu:18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-
+ARG UBUNRU_VERSION="bionic"
 
 RUN apt-get update \
-    && apt-get --no-install-recommends -y install git zip unzip xz-utils wget ca-certificates \
+    && apt-get --no-install-recommends install -y wget ca-certificates gnupg2 apt-transport-https \
+    && echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu ${UBUNRU_VERSION} main" >> /etc/apt/sources.list \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
+    && apt-get update \
+    && apt-get -y install --no-install-recommends git zip unzip xz-utils make autoconf file patch \
     && apt-get clean
-
 
 ARG CMAKE_VERSION=3.24.1
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
@@ -30,26 +33,7 @@ RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 
-ARG CLANG_VERSION=14
-RUN apt-get update \
-    && apt-get install -y wget ca-certificates gnupg2 apt-transport-https \
-    && echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${CLANG_VERSION} main" >> /etc/apt/sources.list \
-    && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
-    && echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu bionic main" >> /etc/apt/sources.list \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
-    && apt-get update \
-    && apt-get -y install --no-install-recommends llvm-${CLANG_VERSION} clang-${CLANG_VERSION} lld-${CLANG_VERSION} make autoconf file patch libgcc-7-dev libstdc++-7-dev \
-    && apt-get clean
-
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_VERSION} 100 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_VERSION} \
-    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_VERSION} 100 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_VERSION} \
-    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_VERSION} 100 \
-    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_VERSION} 100
-
-ENV PATH="/usr/lib/llvm-${CLANG_VERSION}/bin:$PATH"
-
-
-# Win32 stuff
+# gcc and mingw
 WORKDIR /mnt
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
@@ -57,12 +41,15 @@ ARG GNU_MIRROR=https://ftp.gnu.org/gnu
 ## 2.38 is broken
 ARG BINUTILS_VERSION=2.37
 ARG MINGW_VERSION=10.0.0
-# 12.1.0 openal error: undefined symbol: std::__once_callable
+# 12.2.0 openal error: undefined symbol: std::__once_callable
 ARG GCC_VERSION=11.3.0
 ARG PKG_CONFIG_VERSION=0.29.2
+ARG GCC_APT_VERSION=10
 RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
+    && apt-get install --no-install-recommends -y gcc-${GCC_APT_VERSION} g++-${GCC_APT_VERSION} \
     && apt-get clean \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_VERSION} 100 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_VERSION} \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
@@ -151,15 +138,32 @@ RUN apt-get update \
     && rm -rf gcc-mingw32 \
     && rm -rf ${MINGW_ROOT} \
     && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev bzip2 \
+    && apt-get -y purge gcc-${GCC_APT_VERSION} g++-${GCC_APT_VERSION} \
     && apt-get -y autoremove \
+    && apt-get -y clean \
     && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 100 \
         --slave ${GCC_HOME}/bin/mingw32-g++ mingw32-g++ ${GCC_HOME}/bin/x86_64-w64-mingw32-g++ \
-    && update-alternatives --install /usr/bin/ld ld ${GCC_HOME}/bin/x86_64-linux-gnu-ld 100 \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_eh.a \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
 
 
-# Apple stuff
+# clang
+ARG CLANG_VERSION=15
+RUN echo "deb http://apt.llvm.org/${UBUNRU_VERSION} llvm-toolchain-${UBUNRU_VERSION}-${CLANG_VERSION} main" >> /etc/apt/sources.list \
+    && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
+    && apt-get update \
+    && apt-get -y install --no-install-recommends llvm-${CLANG_VERSION} clang-${CLANG_VERSION} lld-${CLANG_VERSION} libgcc-7-dev libstdc++-7-dev \
+    && apt-get clean
+
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_VERSION} 100 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_VERSION} \
+    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_VERSION} 100 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_VERSION} \
+    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_VERSION} 100 \
+    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_VERSION} 100
+
+ENV PATH="/usr/lib/llvm-${CLANG_VERSION}/bin:$PATH"
+
+
+# apple
 WORKDIR /mnt
 ARG OSXCROSS_ROOT=/opt/osxcross
 ARG MACOS_SDK_VERSION=12.3
