@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "LazySingleton.h"
-#include "NoCopy.h"
+#include "Singleton.h"
 #include <exception>
 #include <set>
 #include <string>

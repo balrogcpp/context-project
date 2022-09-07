@@ -6,6 +6,7 @@ extern "C" {
 #include <SDL2/SDL_keycode.h>
 }
 
+
 namespace Glue {
 
 /// Interface for Physical input listener (Mouse, Keyboard and Gamepad)
