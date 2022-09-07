@@ -2,6 +2,7 @@
 
 # GLUE_ENGINE_SOURCE_FILES, GLUE_INCLUDE_DIRS
 include(InsertDependency)
+include(CppFlags)
 
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -24,8 +25,7 @@ set(OGRE_STATIC 1)
 insert_dependency_static(OGRE)
 
 
-include(GlueBuildVariables)
-
+include(BuildVariables)
 
 
 if (ANY_NOT_FOUND)
@@ -53,6 +53,27 @@ elseif (${CMAKE_GENERATOR} STREQUAL "Xcode")
     set_source_files_properties(${SHADER_SOURCE_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
 endif ()
 
+# adjust flags
+if (assimp_FOUND AND MSVC AND NOT RELEASE)
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " /FORCE:MULTIPLE")
+    string(APPEND CMAKE_SHARED_LINKER_FLAGS " /FORCE:MULTIPLE")
+endif ()
+if (EMSCRIPTEN)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " -s FULL_ES3 --preload-file ${GLUE_TMP_DIR}/@. --shell-file ${CMAKE_SOURCE_DIR}/source/Engine/shell_minimal.html")
+    string(APPEND CMAKE_CXX_FLAGS " -s FULL_ES3")
+    string(APPEND CMAKE_C_FLAGS " -s FULL_ES3")
+endif ()
+
+
+file(GLOB_RECURSE GLUE_ENGINE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.h)
+# this required to to disable windows upscaling @hdp monitors @windows
+if (MINGW)
+    list(APPEND GLUE_ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/source/Engine/manifest.rc)
+elseif (MSVC)
+    list(APPEND GLUE_ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/source/Engine/app.manifest)
+endif ()
+
 
 # Static library
 add_library(engine STATIC EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
@@ -74,7 +95,7 @@ else ()
 endif ()
 include_directories(example include ${GLUE_INCLUDE_DIRS})
 target_link_directories(example PUBLIC ${GLUE_LINK_DIRS})
-target_precompile_headers(example PUBLIC ${GLUE_SOURCE_DIR}/pch.h)
+target_precompile_headers(example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/pch.h)
 if (NOT ANDROID)
     set_target_properties(example PROPERTIES OUTPUT_NAME "glue")
 else ()

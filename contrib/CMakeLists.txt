@@ -5,7 +5,7 @@ project(contrib)
 
 find_package(Git REQUIRED)
 include(ExternalProject)
-include(GlueCppFlags)
+include(CppFlags)
 
 
 set(GLUE_THIRDPARTY_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/${GLUE_TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE}/sdk CACHE PATH "")
