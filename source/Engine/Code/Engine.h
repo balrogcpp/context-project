@@ -36,6 +36,9 @@ class Sound;
 class SinbadCharacterController;
 }  // namespace Glue
 
+int ErrorWindow(const std::string &WindowCaption, const std::string &MessageText);
+
+
 namespace Glue {
 
 /// Forward declaration

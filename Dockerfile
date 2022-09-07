@@ -52,6 +52,19 @@ RUN mkdir build-apple && cd build-apple \
     && rm -rf ../build-apple
 
 
+# apple aarch64
+RUN cd ${DEPS_DIR} \
+    && wget https://github.com/balrogcpp/glue-deps/raw/master/Darwin_aarch64_Clang_Release.tar.xz -O - | tar -xJ
+
+ENV OSXCROSS_HOST=$OSXCROSS_HOST_ARM64
+RUN mkdir build-apple-aarch64 && cd build-apple-aarch64 \
+    && eval $ARM64_EVAL \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+    && ninja package \
+    && rm -rf ../artifacts/_CPack_Packages \
+    && rm -rf ../build-apple
+
+
 # wasm
 ARG EMSDK_ROOT=/opt/emsdk
 ARG EMSDK_VERSION=3.1.19

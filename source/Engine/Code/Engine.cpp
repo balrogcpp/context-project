@@ -101,8 +101,27 @@ namespace fs = ghc::filesystem;
 using namespace std;
 using namespace Ogre;
 
-namespace Glue {
+int ErrorWindow(const string &WindowCaption, const string &MessageText) {
+  using namespace Glue;
+  static Engine *EnginePtr = Engine::GetInstancePtr();
+  if (EnginePtr) EnginePtr->GrabCursor(false);
 
+  SDL_Log("%s", string(WindowCaption + " : " + MessageText).c_str());
+
+#ifdef _WIN32
+  MessageBox(nullptr, MessageText.c_str(), WindowCaption.c_str(), MB_ICONERROR);
+#else
+  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, WindowCaption.c_str(), MessageText.c_str(), nullptr);
+#endif
+
+#ifdef EMSCRIPTEN
+  emscripten_pause_main_loop();
+#endif
+
+  return -1;
+}
+
+namespace Glue {
 bool GlobalMRTIsEnabled() { return true; }
 
 bool CPUSupportsSSE() {
