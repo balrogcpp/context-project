@@ -25,9 +25,9 @@ class ImGuiInputListener final : public InputObserver, public Singleton<ImGuiInp
   }
 
   /// SDL2 keycode to scancode
-  static int kc2sc(int kc) { return kc & ~(1 << 30); }
+  inline int kc2sc(int kc) { return kc & ~(1 << 30); }
 
-  static int keypad2kc(int sym, int mod) {
+  inline int keypad2kc(int sym, int mod) {
     if (sym < SDLK_KP_1 || sym > SDLK_KP_PERIOD) return sym;
     bool numlock = (mod & KMOD_NUM) != 0;
     if (numlock) return sym;
@@ -84,7 +84,7 @@ class ImGuiInputListener final : public InputObserver, public Singleton<ImGuiInp
     io.KeyMap[ImGuiKey_Z] = 'z';
   }
 
-  ~ImGuiInputListener() { InputSequencer::GetInstance().UnRegObserver(this); }
+  virtual ~ImGuiInputListener() { InputSequencer::GetInstance().UnRegObserver(this); }
 
   void OnKeyDown(SDL_Keycode sym) {
     static auto &io = ImGui::GetIO();
