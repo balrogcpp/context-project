@@ -2,8 +2,7 @@
 
 #pragma once
 #include "Engine.h"
-#include "InputObserver.h"
-#include "WindowObserver.h"
+#include "Observer.h"
 #include "Singleton.h"
 #include <memory>
 #include <string>
