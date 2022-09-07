@@ -15,7 +15,7 @@ COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
 
 
-# Linux
+# linux
 RUN apt-get update \
     && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev \
     && apt-get clean \
@@ -29,7 +29,7 @@ RUN apt-get update \
     && rm -rf Linux_x86_64_Clang_Release
 
 
-# Win32
+# win32
 RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
     && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
     && ninja ${DEPS_TARGET} \
@@ -40,16 +40,29 @@ RUN mkdir ${CONTEXT_HOME}/build-windows && cd ${CONTEXT_HOME}/build-windows \
     && rm -rf Windows_x86_64_Clang_Mingw_Release
 
 
-# Apple
+# apple x86_64
 RUN mkdir ${CONTEXT_HOME}/build-apple && cd ${CONTEXT_HOME}/build-apple \
     && eval $X86_64_EVAL \
-    && cmake -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+    && cmake -DCMAKE_TOOLCHAIN_FILE=$OSXCROSS_TOOLCHAIN_FILE -G Ninja .. \
     && cmake --build . --target ${DEPS_TARGET} \
     && cd ${DEPS_DIR}/Darwin_x86_64_Clang_Release \
     && rm -rf src tmp \
     && cd ${DEPS_DIR} \
     && tar cfJ Darwin_x86_64_Clang_Release.tar.xz Darwin_x86_64_Clang_Release \
     && rm -rf Darwin_x86_64_Clang_Release
+
+
+# apple aarch64
+ENV OSXCROSS_HOST=$OSXCROSS_HOST_ARM64
+RUN mkdir ${CONTEXT_HOME}/build-apple-arm64 && cd ${CONTEXT_HOME}/build-apple-arm64 \
+    && eval $ARM64_EVAL \
+    && cmake -DCMAKE_TOOLCHAIN_FILE=$OSXCROSS_TOOLCHAIN_FILE -G Ninja .. \
+    && cmake --build . --target ${DEPS_TARGET} \
+    && cd ${DEPS_DIR}/Darwin_aarch64_Clang_Release \
+    && rm -rf src tmp \
+    && cd ${DEPS_DIR} \
+    && tar cfJ Darwin_aarch64_Clang_Release.tar.xz Darwin_aarch64_Clang_Release \
+    && rm -rf Darwin_aarch64_Clang_Release
 
 
 # wasm
@@ -80,7 +93,7 @@ RUN mkdir build-wasm && cd build-wasm \
     && rm -rf Emscripten_x86_Clang_Release
 
 
-# Android
+# android
 ARG ANDROID_HOME=/opt/android-sdk
 ARG ANDROID_CMD_VERSION=8512546
 RUN apt-get update \

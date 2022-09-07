@@ -14,7 +14,7 @@ COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
 
 
-# Linux
+# linux
 RUN apt-get update \
     && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
     && apt-get clean
@@ -29,7 +29,7 @@ RUN mkdir build-linux && cd build-linux \
     && rm -rf ../build-linux
 
 
-# Win32
+# win32
 RUN cd ${DEPS_DIR} \
     && wget https://github.com/balrogcpp/glue-deps/raw/master/Windows_x86_64_Clang_Mingw_Release.tar.xz -O - | tar -xJ
 
@@ -40,7 +40,7 @@ RUN mkdir build-windows && cd build-windows \
     && rm -rf ../build-windows
 
 
-# Apple
+# apple x86_64
 RUN cd ${DEPS_DIR} \
     && wget https://github.com/balrogcpp/glue-deps/raw/master/Darwin_x86_64_Clang_Release.tar.xz -O - | tar -xJ
 
@@ -79,7 +79,7 @@ RUN mkdir ${CONTEXT_HOME}/build-wasm && cd ${CONTEXT_HOME}/build-wasm \
     && rm -rf ../build-windows
 
 
-# Android
+# android
 ARG ANDROID_HOME=/opt/android-sdk
 ARG ANDROID_CMD_VERSION=8512546
 RUN apt-get update \

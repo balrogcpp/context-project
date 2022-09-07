@@ -182,6 +182,8 @@ RUN apt-get update \
     && apt-get -y purge lzma-dev libxml2-dev libssl-dev python \
     && apt-get -y autoremove
 ENV OSXCROSS_HOST=x86_64-apple-darwin${MACOS_SDK_CODE}
+ENV OSXCROSS_HOST_X86_64=x86_64-apple-darwin${MACOS_SDK_CODE}
+ENV OSXCROSS_HOST_ARM64=aarch64-apple-darwin${MACOS_SDK_CODE}
 ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
 ENV X86_64_EVAL=`x86_64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`

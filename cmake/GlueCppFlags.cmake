@@ -34,10 +34,12 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT MSVC) OR CMAKE_CXX_COMPILER_
     endif ()
 
     if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-ld=lld ")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-ld=lld ")
+        string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-ld=lld")
+        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-ld=lld")
     endif ()
 
+    string(APPEND CMAKE_CXX_FLAGS " -pthread")
+    string(APPEND CMAKE_C_FLAGS " -pthread")
     string(APPEND CMAKE_EXE_LINKER_FLAGS " -pthread")
     string(APPEND CMAKE_SHARED_LINKER_FLAGS " -pthread")
 
