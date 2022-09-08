@@ -64,7 +64,7 @@ ZipDirectory(${GLUE_TMP_DIR}/programs)
 FlatZipDirectory(${CMAKE_SOURCE_DIR}/source/Example/Assets ${GLUE_TMP_DIR}/assets)
 
 
-# package helper target
+# packages
 set(GLUE_PACKAGE_NAME "GlueSample")
 set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}_${GLUE_TOOLCHAIN_SHORT})
 if (NOT CMAKE_BUILD_TYPE STREQUAL Release)

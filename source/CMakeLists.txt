@@ -34,7 +34,7 @@ endif ()
 
 
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
-    add_library(AndroidDummy SHARED Engine/android/src/main/cpp/main.cpp)
+    add_library(AndroidDummy SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/src/main/cpp/main.cpp)
     add_dependencies(AndroidDummy contrib)
     return()
 endif ()
@@ -60,9 +60,7 @@ if (assimp_FOUND AND MSVC AND NOT RELEASE)
 endif ()
 if (EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    string(APPEND CMAKE_EXE_LINKER_FLAGS " -s FULL_ES3 --preload-file ${GLUE_TMP_DIR}/@. --shell-file ${CMAKE_SOURCE_DIR}/source/Engine/shell_minimal.html")
-    string(APPEND CMAKE_CXX_FLAGS " -s FULL_ES3")
-    string(APPEND CMAKE_C_FLAGS " -s FULL_ES3")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " --preload-file ${GLUE_TMP_DIR}/@. --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/Engine/shell_minimal.html")
 endif ()
 
 
@@ -96,12 +94,13 @@ endif ()
 include_directories(example include ${GLUE_INCLUDE_DIRS})
 target_link_directories(example PUBLIC ${GLUE_LINK_DIRS})
 target_precompile_headers(example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/pch.h)
-if (NOT ANDROID)
-    set_target_properties(example PROPERTIES OUTPUT_NAME "glue")
-else ()
+if (ANDROID)
     set_target_properties(example PROPERTIES OUTPUT_NAME "main")
-endif ()
-
+elseif(EMSCRIPTEN)
+    set_target_properties(example PROPERTIES OUTPUT_NAME "index")
+else()
+    set_target_properties(example PROPERTIES OUTPUT_NAME "glue")
+endif()
 
 target_link_libraries(example PUBLIC ${GLUE_LIBRARIES})
 
@@ -116,11 +115,11 @@ endif ()
 install(TARGETS example RUNTIME DESTINATION .)
 if (EMSCRIPTEN)
     install(FILES
-            "$<TARGET_FILE_DIR:example>/example.html"
-            "$<TARGET_FILE_DIR:example>/example.js"
-            "$<TARGET_FILE_DIR:example>/example.wasm"
-            "$<TARGET_FILE_DIR:example>/example.data"
-            "$<TARGET_FILE_DIR:example>/example.worker.js"
+            "$<TARGET_FILE_DIR:example>/index.html"
+            "$<TARGET_FILE_DIR:example>/index.js"
+            "$<TARGET_FILE_DIR:example>/index.wasm"
+            "$<TARGET_FILE_DIR:example>/index.data"
+            "$<TARGET_FILE_DIR:example>/index.worker.js"
             DESTINATION .)
 else ()
     install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
