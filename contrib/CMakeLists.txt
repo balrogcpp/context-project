@@ -378,7 +378,7 @@ externalproject_add(Target_rapidjson
         EXCLUDE_FROM_ALL true
         PREFIX ${GLUE_PREFIX_LOCATION}
         GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
-        GIT_TAG fcb23c2dbf561ec0798529be4f66394d3e4996d8
+        GIT_TAG 27c3a8dc0e2c9218fe94986d249a12b5ed838f1d
         GIT_SHALLOW false
         GIT_PROGRESS false
         CMAKE_ARGS
@@ -787,7 +787,7 @@ externalproject_add(Target_json
         EXCLUDE_FROM_ALL true
         PREFIX ${GLUE_PREFIX_LOCATION}
         GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.11.1
+        GIT_TAG v3.11.2
         GIT_SHALLOW true
         GIT_PROGRESS false
         CMAKE_ARGS
