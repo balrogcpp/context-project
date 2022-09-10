@@ -5,6 +5,7 @@ include(InsertDependency)
 include(CppFlags)
 
 
+# deps
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     insert_dependency(X11)
 endif ()

@@ -3,19 +3,21 @@
 cmake_minimum_required(VERSION 3.18.1)
 
 
+# version
 project(GlueEngine VERSION 0.1.0)
 
 
+# cxx standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
-# CMake module path
+# cmake module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 
-# Include necessary submodules
+# include modules
 include(Platform)
 include(FlatZip)
 
@@ -41,10 +43,9 @@ set(GLUE_TMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
 
 # Dependencies
 add_subdirectory(contrib)
-
-
 list(APPEND CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
+
 
 # Engine libraries
 add_subdirectory(source)
@@ -79,6 +80,7 @@ if (WIN32)
 endif ()
 
 
+# cpack
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
