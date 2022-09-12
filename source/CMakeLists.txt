@@ -39,7 +39,7 @@ if (ANY_NOT_FOUND)
 endif ()
 
 
-# VS project folders
+# vs project folders
 file(GLOB_RECURSE SHADER_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Programs/*)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Engine PREFIX "Engine" FILES ${GLUE_ENGINE_SOURCE_FILES})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Programs PREFIX "Programs" FILES ${SHADER_SOURCE_FILES})
@@ -72,10 +72,9 @@ elseif (MSVC)
 endif ()
 
 
-# Static library
+# static library
 add_library(engine STATIC EXCLUDE_FROM_ALL ${GLUE_ENGINE_SOURCE_FILES})
 include_directories(engine ${GLUE_INCLUDE_DIRS})
-set_target_properties(engine PROPERTIES OUTPUT_NAME "glue")
 target_precompile_headers(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/pch.h)
 
 
@@ -83,12 +82,12 @@ target_precompile_headers(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/pch.h
 file(GLOB_RECURSE SAMPLE_SOURCE_FILES Example/*.cpp Example/*.h Example/*.hpp)
 if (NOT ANDROID)
     if (CMAKE_BUILD_TYPE STREQUAL "Release")
-        add_executable(example WIN32 ${GLUE_ENGINE_SOURCE_FILES} ${SAMPLE_SOURCE_FILES})
+        add_executable(example WIN32 ${SAMPLE_SOURCE_FILES})
     else ()
-        add_executable(example ${GLUE_ENGINE_SOURCE_FILES} ${SAMPLE_SOURCE_FILES})
+        add_executable(example ${SAMPLE_SOURCE_FILES})
     endif ()
 else ()
-    add_library(example SHARED ${GLUE_ENGINE_SOURCE_FILES} ${SAMPLE_SOURCE_FILES})
+    add_library(example SHARED ${SAMPLE_SOURCE_FILES})
 endif ()
 include_directories(example include ${GLUE_INCLUDE_DIRS})
 target_link_directories(example PUBLIC ${GLUE_LINK_DIRS})
@@ -100,16 +99,14 @@ elseif(EMSCRIPTEN)
 else()
     set_target_properties(example PROPERTIES OUTPUT_NAME "glue")
 endif()
+target_link_libraries(example PUBLIC ${GLUE_LIBRARIES} engine)
 
-target_link_libraries(example PUBLIC ${GLUE_LIBRARIES})
 
-
-#Package
+# package
 if (WIN32 AND EXISTS ${GLUE_THIRDPARTY_ROOT}/bin/OpenAL32.dll)
     set(EXTERNAL_DLL_GLOB ${GLUE_THIRDPARTY_ROOT}/bin/OpenAL32.dll)
     file(COPY ${EXTERNAL_DLL_GLOB} DESTINATION .)
 endif ()
-
 
 install(TARGETS example RUNTIME DESTINATION .)
 if (EMSCRIPTEN)
@@ -125,18 +122,11 @@ else ()
     install(FILES ${GLUE_TMP_DIR}/assets.zip DESTINATION .)
     install(FILES ${GLUE_TMP_DIR}/programs.zip DESTINATION .)
 endif ()
-
-
-
 set(GLUE_PACKAGE_NAME "Glue${TARGET_NAME}")
 set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}_${GLUE_TOOLCHAIN_SHORT})
-
-
 if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
     string(APPEND GLUE_ARTIFACT_NAME "_${CMAKE_BUILD_TYPE}")
 endif ()
-
-
 if (NOT ${CMAKE_INSTALL_PREFIX})
     set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/Install/${GLUE_ARTIFACT_NAME})
 endif ()

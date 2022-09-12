@@ -29,8 +29,6 @@ elseif (ANDROID)
 elseif (MSVC)
     list(APPEND SYSTEM_LIBRARIES winmm Version imm32 Setupapi)
 endif ()
-
-
 if (OGRE_FOUND)
     list(APPEND GLUE_LIBRARIES ${OGRE_LIBRARIES})
     list(APPEND GLUE_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS})
