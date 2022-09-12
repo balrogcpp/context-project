@@ -29,14 +29,12 @@ insert_dependency_static(OGRE)
 include(BuildVariables)
 
 
-if (ANY_NOT_FOUND)
-    message(WARNING "Build cmake target Dependencies to get all dependencies. Then configure cmake again to enable GlueLibrary and GlueExample targets. Exiting")
-endif ()
-
-
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(AndroidDummy SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/src/main/cpp/main.cpp)
     add_dependencies(AndroidDummy contrib)
+endif ()
+if (ANY_NOT_FOUND)
+    message(WARNING "Build cmake target Dependencies to get all dependencies. Then configure cmake again to enable GlueLibrary and GlueExample targets. Exiting")
     return()
 endif ()
 
