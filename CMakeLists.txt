@@ -1,10 +1,12 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
+
+# cmake min version
 cmake_minimum_required(VERSION 3.18.1)
 
 
-# version
-project(GlueEngine VERSION 0.1.0)
+# project version
+project(Engine VERSION 0.1.0)
 
 
 # cxx standard
