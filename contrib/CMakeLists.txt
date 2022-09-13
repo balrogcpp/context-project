@@ -410,8 +410,8 @@ externalproject_add(Target_assimp
         GIT_TAG v5.2.5
         GIT_SHALLOW true
         GIT_PROGRESS false
-        UPDATE_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} reset --hard
-        PATCH_COMMAND ${ASSIMP_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/assimp-5.1.6.patch
+        UPDATE_COMMAND ${ASSIMP_CHDIR} ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${ASSIMP_CHDIR} ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
