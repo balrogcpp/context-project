@@ -22,56 +22,55 @@ include(Platform)
 include(FlatZip)
 
 
-# Default build type is Release
+# default build type is Release
 if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type selected, CMAKE_BUILD_TYPE defaulted to Release")
     set(CMAKE_BUILD_TYPE "Release")
 endif ()
 
 
-# Enable only Release, RelWithDebInfo, Debug build types
+# enabled only Release, RelWithDebInfo, Debug build types
 set(ALLOWED_BUILD_TYPES "Release;RelWithDebInfo;Debug")
 if (NOT ${CMAKE_BUILD_TYPE} IN_LIST ALLOWED_BUILD_TYPES)
     message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not valid build type. Valid are ${ALLOWED_BUILD_TYPES}")
 endif ()
 
 
-# Create required directories
-set(GLUE_ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
-set(GLUE_TMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
+# set artifact dir
+set(ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
+set(TMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
 
 
-# Dependencies
+# deps
 add_subdirectory(contrib)
-list(APPEND CMAKE_PREFIX_PATH ${GLUE_THIRDPARTY_ROOT})
-list(APPEND CMAKE_FIND_ROOT_PATH ${GLUE_THIRDPARTY_ROOT})
+list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})
+list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 
 
-# Engine libraries
+# engine sources
 add_subdirectory(source)
 
 
 # assets
-file(REMOVE_RECURSE ${GLUE_TMP_DIR})
-make_directory(${GLUE_TMP_DIR})
-CopyFlatZipDirectory(${CMAKE_SOURCE_DIR}/source/Programs ${GLUE_TMP_DIR}/programs)
+file(REMOVE_RECURSE ${TMP_DIR})
+make_directory(${TMP_DIR})
+CopyFlatZipDirectory(${CMAKE_SOURCE_DIR}/source/Programs ${TMP_DIR}/programs)
 if (ANDROID OR IOS OR EMSCRIPTEN)
     file(GLOB files ${CMAKE_SOURCE_DIR}/source/GLSLES/*)
 else ()
     file(GLOB files ${CMAKE_SOURCE_DIR}/source/GLSL/*)
 endif ()
-file(COPY ${files} DESTINATION ${GLUE_TMP_DIR}/programs)
-ZipDirectory(${GLUE_TMP_DIR}/programs)
-FlatZipDirectory(${CMAKE_SOURCE_DIR}/source/Example/Assets ${GLUE_TMP_DIR}/assets)
+file(COPY ${files} DESTINATION ${TMP_DIR}/programs)
+ZipDirectory(${TMP_DIR}/programs)
+FlatZipDirectory(${CMAKE_SOURCE_DIR}/source/Example/Assets ${TMP_DIR}/assets)
 
 
 # packages
-set(GLUE_PACKAGE_NAME "GlueSample")
-set(GLUE_ARTIFACT_NAME ${GLUE_PACKAGE_NAME}_${GLUE_TOOLCHAIN_SHORT})
+set(PACKAGE_NAME "GlueSample")
+set(ARTIFACT_NAME ${PACKAGE_NAME}_${TOOLCHAIN_SHORT})
 if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
-    string(APPEND GLUE_ARTIFACT_NAME "_${CMAKE_BUILD_TYPE}")
+    string(APPEND ARTIFACT_NAME "_${CMAKE_BUILD_TYPE}")
 endif ()
-
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(FILES PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ OWNER_EXECUTE DESTINATION .)
 endif ()
@@ -84,13 +83,12 @@ endif ()
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-set(CPACK_PACKAGE_DIRECTORY ${GLUE_ARTIFACT_DIR})
-set(CPACK_PACKAGE_NAME ${GLUE_ARTIFACT_NAME})
-set(CPACK_SOURCE_PACKAGE_FILE_NAME ${GLUE_ARTIFACT_NAME})
-set(CPACK_PACKAGE_FILE_NAME ${GLUE_ARTIFACT_NAME})
+set(CPACK_PACKAGE_DIRECTORY ${ARTIFACT_DIR})
+set(CPACK_PACKAGE_NAME ${ARTIFACT_NAME})
+set(CPACK_SOURCE_PACKAGE_FILE_NAME ${ARTIFACT_NAME})
+set(CPACK_PACKAGE_FILE_NAME ${ARTIFACT_NAME})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "GlueSample")
 set(CPACK_PACKAGE_VENDOR "Andrey Vasiliev")
-
 if (WIN32)
     set(CPACK_GENERATOR "ZIP")
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -100,5 +98,4 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 else ()
     set(CPACK_GENERATOR "TXZ")
 endif ()
-
 include(CPack)
