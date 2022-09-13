@@ -95,7 +95,7 @@ if (ANDROID)
 elseif(EMSCRIPTEN)
     set_target_properties(example PROPERTIES OUTPUT_NAME "index")
 else()
-    set_target_properties(example PROPERTIES OUTPUT_NAME "glue")
+    set_target_properties(example PROPERTIES OUTPUT_NAME "app")
 endif()
 target_link_libraries(example PUBLIC ${ENGINE_LIBRARIES} engine)
 

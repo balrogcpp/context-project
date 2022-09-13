@@ -1,10 +1,6 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
-# ENGINE_SOURCE_DIR, ENGINE_SOURCE_FILES, ENGINE_INCLUDE_DIRS, ENGINE_LINK_DIRS, ENGINE_LIBRARIES
-
-
 include(Platform)
-
 
 set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/source/Engine)
 
@@ -14,9 +10,7 @@ set(ENGINE_INCLUDE_DIRS
         ${DEPS_ROOT}/include
         )
 
-
 set(ENGINE_LINK_DIRS ${DEPS_ROOT}/lib ${DEPS_ROOT}/lib/OGRE)
-
 
 if (MINGW)
     list(APPEND SYSTEM_LIBRARIES imagehlp dinput8 dxguid dxerr8 user32 gdi32 imm32 winmm ole32 oleaut32 shell32 version uuid setupapi hid)
