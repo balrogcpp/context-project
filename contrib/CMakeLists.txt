@@ -1,11 +1,7 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
 
-# project name
-project(contrib)
-
-
-# externalproject_add and c++ flags 
+# externalproject_add and c++ flags
 include(ExternalProject)
 include(CppFlags)
 
