@@ -1,8 +1,10 @@
 # This file is part of Glue Engine. Created by Andrey Vasiliev
 
-# ENGINE_SOURCE_FILES, ENGINE_INCLUDE_DIRS
+
+# macro insert_dependency and c++ flags
 include(InsertDependency)
 include(CppFlags)
+include(Platform)
 
 
 # insert_dependency
@@ -25,6 +27,7 @@ insert_dependency_static(pugixml)
 set(OGRE_STATIC 1)
 insert_dependency_static(OGRE)
 
+
 # deps
 include(BuildVariables)
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
@@ -41,7 +44,6 @@ endif ()
 file(GLOB_RECURSE SHADER_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Programs/*)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Engine PREFIX "Engine" FILES ${ENGINE_SOURCE_FILES})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Programs PREFIX "Programs" FILES ${SHADER_SOURCE_FILES})
-
 if (MSVC)
     list(APPEND ENGINE_SOURCE_FILES ${SHADER_SOURCE_FILES})
     set_source_files_properties(${SHADER_SOURCE_FILES} PROPERTIES LANGUAGE Shaders)
@@ -49,6 +51,7 @@ elseif (${CMAKE_GENERATOR} STREQUAL "Xcode")
     list(APPEND ENGINE_SOURCE_FILES ${SHADER_SOURCE_FILES})
     set_source_files_properties(${SHADER_SOURCE_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
 endif ()
+
 
 # adjust flags
 if (assimp_FOUND AND MSVC AND NOT RELEASE)
