@@ -5,30 +5,29 @@
 #include "Engine.h"
 #include <OgreFileSystemLayer.h>
 #ifndef MOBILE
-#if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
+#if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
+    || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) \
+    || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
 #include <filesystem>
 namespace fs = std::filesystem;
-#else  // APPLE
+#else
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
-#endif  // !APPLE
+#endif
 #endif  // DESKTOP
-
 extern "C" {
 #ifdef _MSC_VER
 #define SDL_MAIN_HANDLED
 #endif
 #include <SDL2/SDL.h>
 }
-
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 extern "C" {
 __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 #endif
 
 

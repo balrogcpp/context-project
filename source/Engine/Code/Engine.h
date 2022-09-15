@@ -36,10 +36,75 @@ class Sound;
 class SinbadCharacterController;
 }  // namespace Glue
 
-int ErrorWindow(const std::string &WindowCaption, const std::string &MessageText);
-
+int ErrorWindow(const std::string& WindowCaption, const std::string& MessageText);
 
 namespace Glue {
+
+inline bool GlobalMRTIsEnabled() { return true; }
+
+inline bool CPUSupportsSSE() {
+#if OGRE_CPU == OGRE_CPU_X86
+  return Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE);
+#else
+  return false;
+#endif
+};
+
+inline bool CPUSupportsSSE2() {
+#if OGRE_CPU == OGRE_CPU_X86
+  return Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE2);
+#else
+  return false;
+#endif
+};
+
+inline bool CPUSupportsSSE3() {
+#if OGRE_CPU == OGRE_CPU_X86
+  return Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE3);
+#else
+  return false;
+#endif
+};
+
+inline bool CPUSupportsSSE41() {
+#if OGRE_CPU == OGRE_CPU_X86
+  return Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE41);
+#else
+  return false;
+#endif
+}
+
+inline bool CPUSupportsSSE42() {
+#if OGRE_CPU == OGRE_CPU_X86
+  return Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE42);
+#else
+  return false;
+#endif
+}
+
+inline bool CPUSupportsNEON() {
+#if OGRE_CPU == OGRE_CPU_ARM
+  return Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_NEON);
+#else
+  return false;
+#endif
+};
+
+// inline bool IsFullscreen() { return GetEngine().IsWindowFullscreen(); }
+
+inline bool RenderSystemIsGL() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL Rendering Subsystem"; };
+
+inline bool RenderSystemIsGL3() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL 3+ Rendering Subsystem"; };
+
+inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"; };
+
+inline Ogre::SceneManager* OgreSceneManager() { return Ogre::Root::getSingleton().getSceneManager("Default"); }
+
+inline Ogre::SceneNode* OgreRootNode() { return OgreSceneManager()->getRootSceneNode(); }
+
+inline Ogre::Camera* OgreCamera() { return OgreSceneManager()->getCamera("Default"); }
+
+inline Ogre::SceneNode* OgreCameraNode() { return OgreCamera()->getParentSceneNode(); }
 
 /// Forward declaration
 class Engine;
@@ -72,45 +137,6 @@ void InitOgreRenderSystemGL();
 ///
 bool CheckGLVersion(const int major, const int minor);
 #endif
-
-///
-bool GlobalMRTIsEnabled();
-
-///
-bool CPUSupportsSSE();
-
-///
-bool CPUSupportsSSE2();
-
-///
-bool CPUSupportsSSE3();
-
-///
-bool CPUSupportsSSE41();
-
-///
-bool CPUSupportsSSE42();
-
-///
-bool CPUSupportsNEON();
-
-///
-bool IsFullscreen();
-
-///
-bool RenderSystemIsGL();
-
-///
-bool RenderSystemIsGL3();
-
-///
-bool RenderSystemIsGLES2();
-
-///
-Ogre::SceneManager* OgreSceneManager();
-
-///
-Ogre::SceneNode* OgreRootNode();
 
 ///
 Ogre::Camera* OgreCamera();

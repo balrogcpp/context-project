@@ -8,8 +8,6 @@
 #include "SinbadCharacterController.h"
 #include "SkyModel/ArHosekSkyModel.h"
 #include "SkyModel/SkyModel.h"
-#include "imgui_user/IconsFontAwesome5.h"
-#include "imgui_user/IconsKenney.h"
 #include "imgui_user/IconsMaterialDesign.h"
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include <OgreArchiveFactory.h>
@@ -85,16 +83,16 @@ extern "C" {
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
 #endif
-
 #ifndef MOBILE
-#if __has_include( \
-    <filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
+#if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
+    || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) \
+    || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
 #include <filesystem>
 namespace fs = std::filesystem;
-#else  // APPLE
+#else
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
-#endif  // !APPLE
+#endif
 #endif  // DESKTOP
 
 using namespace std;
@@ -121,98 +119,8 @@ int ErrorWindow(const string &WindowCaption, const string &MessageText) {
 }
 
 namespace Glue {
-bool GlobalMRTIsEnabled() { return true; }
 
-bool CPUSupportsSSE() {
-#if OGRE_CPU == OGRE_CPU_X86
-  static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE);
-  return Result;
-#else
-  return false;
-#endif
-};
 
-bool CPUSupportsSSE2() {
-#if OGRE_CPU == OGRE_CPU_X86
-  static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE2);
-  return Result;
-#else
-  return false;
-#endif
-};
-
-bool CPUSupportsSSE3() {
-#if OGRE_CPU == OGRE_CPU_X86
-  static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE3);
-  return Result;
-#else
-  return false;
-#endif
-};
-
-bool CPUSupportsSSE41() {
-#if OGRE_CPU == OGRE_CPU_X86
-  static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE41);
-  return Result;
-#else
-  return false;
-#endif
-};
-
-bool CPUSupportsSSE42() {
-#if OGRE_CPU == OGRE_CPU_X86
-  static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE42);
-  return Result;
-#else
-  return false;
-#endif
-};
-
-bool CPUSupportsNEON() {
-#if OGRE_CPU == OGRE_CPU_ARM
-  static bool Result = Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_NEON);
-  return Result;
-#else
-  return false;
-#endif
-};
-
-bool IsFullscreen() { return GetEngine().IsWindowFullscreen(); }
-
-bool RenderSystemIsGL() {
-  static bool Result = !Ogre::Root::getSingleton().getRenderSystem()->getName().compare("OpenGL Rendering Subsystem");
-  return Result;
-};
-
-bool RenderSystemIsGL3() {
-  static bool Result = !Ogre::Root::getSingleton().getRenderSystem()->getName().compare("OpenGL 3+ Rendering Subsystem");
-  return Result;
-};
-
-bool RenderSystemIsGLES2() {
-  static bool Result = !Ogre::Root::getSingleton().getRenderSystem()->getName().compare("OpenGL ES 2.x Rendering Subsystem");
-  return Result;
-};
-
-SceneManager *OgreSceneManager() {
-  static SceneManager *Result = Ogre::Root::getSingleton().getSceneManager("Default");
-  return Result;
-}
-
-SceneNode *OgreRootNode() {
-  static SceneNode *Result = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
-  return Result;
-}
-
-Camera *OgreCamera() {
-  static Camera *Result = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default");
-  return Result;
-}
-
-SceneNode *OgreCameraNode() {
-  static SceneNode *Result = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getParentSceneNode();
-  return Result;
-}
 
 Vector3 SunDirection() {
   Vector3 Result = -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition();
@@ -667,10 +575,7 @@ void Engine::InitShadowSettings() {
   ShadowsEnabled = false;
 #endif
   float ShadowFarDistance = 400;
-  int16_t ShadowTexSize = 2048;
-  //  ShadowsEnabled = ConfigPtr->GetBool("shadows_enable", ShadowsEnabled);
-  //  ShadowFarDistance = ConfigPtr->GetInt("shadow_far", ShadowFarDistance);
-  //  ShadowTexSize = ConfigPtr->GetInt("tex_size", ShadowTexSize);
+  int16_t ShadowTexSize = 1024;
   if (!ShadowsEnabled) {
     OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
     OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 0);
