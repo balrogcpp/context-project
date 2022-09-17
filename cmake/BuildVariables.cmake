@@ -1,5 +1,3 @@
-# This file is part of Glue Engine. Created by Andrey Vasiliev
-
 include(Platform)
 
 set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/source/Engine)

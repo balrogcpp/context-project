@@ -1,6 +1,3 @@
-# This file is part of Glue Engine. Created by Andrey Vasiliev
-
-
 find_path(OGRE_INCLUDE_DIR NAMES OgreRoot.h PATH_SUFFIXES "OGRE")
 
 

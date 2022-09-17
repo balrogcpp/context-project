@@ -1,7 +1,3 @@
-# This file is part of Glue Engine. Created by Andrey Vasiliev
-# Define default platforms
-
-
 set(TOOLCHAIN_SHORT "${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}")
 set(TOOLCHAIN_FULL "${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}_${CMAKE_CXX_COMPILER_ID}")
 if (MINGW)

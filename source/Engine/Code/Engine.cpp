@@ -120,8 +120,6 @@ int ErrorWindow(const string &WindowCaption, const string &MessageText) {
 
 namespace Glue {
 
-
-
 Vector3 SunDirection() {
   Vector3 Result = -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition();
   return Result;

@@ -30,9 +30,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 #endif
 
-
 using namespace std;
-
 
 namespace Glue {
 
@@ -108,10 +106,9 @@ void Application::Go() {
   auto *root = scene->getRootSceneNode();
   root->loadChildren("1.scene");
 
-
-  //if (Running) {
-    //EnginePtr->RenderFrame();
-    // ClearRTSSRuntime();
+  // if (Running) {
+  // EnginePtr->RenderFrame();
+  // ClearRTSSRuntime();
   //}
 
 #ifdef MOBILE
@@ -139,7 +136,6 @@ void Application::OnResume() {
   Suspend = false;
   EnginePtr->OnResume();
 }
-
 
 int Application::Main() {
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC

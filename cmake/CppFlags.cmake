@@ -1,7 +1,3 @@
-# This file is part of Glue Engine. Created by Andrey Vasiliev
-# C++ optimization flags
-
-
 include(ProcessorCount)
 processorcount(PROCESSOR_COUNT)
 

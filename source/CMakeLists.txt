@@ -1,6 +1,3 @@
-# This file is part of Glue Engine. Created by Andrey Vasiliev
-
-
 # macro insert_dependency and c++ flags
 include(InsertDependency)
 include(CppFlags)

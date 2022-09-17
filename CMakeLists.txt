@@ -1,6 +1,3 @@
-# This file is part of Glue Engine. Created by Andrey Vasiliev
-
-
 # cmake min version
 cmake_minimum_required(VERSION 3.18.1)
 
@@ -83,7 +80,7 @@ endif ()
 
 # cpack
 set(CPACK_PACKAGE_DIRECTORY ${ARTIFACT_DIR})
-set(CPACK_PACKAGE_NAME ${ARTIFACT_NAME})
+set(CPACK_PACKAGE_FILE_NAME ${ARTIFACT_NAME})
 if (WIN32)
     set(CPACK_GENERATOR "ZIP")
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")

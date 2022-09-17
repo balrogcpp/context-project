@@ -1,6 +1,3 @@
-# This file is part of Glue Engine. Created by Andrey Vasiliev
-
-
 # externalproject_add and c++ flags
 include(ExternalProject)
 include(CppFlags)
@@ -633,11 +630,11 @@ externalproject_add(Target_OGRE2
         )
 
 
-externalproject_add(Target_FreeGLUT
+externalproject_add(Target_freeglut
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
-        GIT_REPOSITORY https://github.com/dcnieho/FreeGLUT.git
-        GIT_TAG FG_3_2_2
+        GIT_REPOSITORY https://github.com/FreeGLUTProject/freeglut.git
+        GIT_TAG v3.2.2
         GIT_SHALLOW true
         GIT_PROGRESS false
         CMAKE_ARGS

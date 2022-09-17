@@ -1,5 +1,3 @@
-# This file is part of Glue Engine. Created by Andrey Vasiliev
-
 set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
 set(CMAKE_CROSSCOMPILING ON)
