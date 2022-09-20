@@ -1,4 +1,4 @@
-// This source file is part of Glue Engine. Created by Andrey Vasiliev
+/// created by Andrey Vasiliev
 /// \file Compilation failes with both GL3 and GLES2 headers included
 
 #include <OgreComponents.h>

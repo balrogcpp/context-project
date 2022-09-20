@@ -1,4 +1,4 @@
-// This source file is part of Glue Engine. Created by Andrey Vasiliev
+/// created by Andrey Vasiliev
 
 #include "pch.h"
 #include "Application.h"
@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
 #endif
-#endif  // DESKTOP
+#endif  // !MOBILE
 extern "C" {
 #ifdef _MSC_VER
 #define SDL_MAIN_HANDLED

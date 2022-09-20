@@ -1,8 +1,5 @@
-// This source file is part of Glue Engine. Created by Andrey Vasiliev
-/// @file modified version of DotSceneLoader https://github.com/OGRECave/ogre/tree/master/PlugIns/DotScene
-
 #include <Ogre.h>
-#include "DotSceneLoaderB.h"
+#include <DotSceneLoaderB.h>
 #include <OgreComponents.h>
 #include "Engine.h"
 
@@ -1241,3 +1238,19 @@ void DotScenePluginB::shutdown() {
     Codec::unregisterCodec(mCodec);
     delete mCodec;
 }
+
+#ifndef OGRE_STATIC_LIB
+    extern "C" _OgreDotScenePluginExport void dllStartPlugin();
+    extern "C" _OgreDotScenePluginExport void dllStopPlugin();
+
+    static DotScenePlugin plugin;
+
+    extern "C" _OgreDotScenePluginExport void dllStartPlugin()
+    {
+        Ogre::Root::getSingleton().installPlugin(&plugin);
+    }
+    extern "C" _OgreDotScenePluginExport void dllStopPlugin()
+    {
+        Ogre::Root::getSingleton().uninstallPlugin(&plugin);
+    }
+#endif
