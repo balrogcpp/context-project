@@ -3,8 +3,10 @@
 FROM ubuntu:18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG UBUNRU_VERSION="bionic"
+ARG UBUNRU_VERSION=bionic
 
+
+# git zip etc.
 RUN apt-get update \
     && apt-get --no-install-recommends install -y wget ca-certificates gnupg2 apt-transport-https \
     && echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu ${UBUNRU_VERSION} main" >> /etc/apt/sources.list \
@@ -13,7 +15,9 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends git zip unzip xz-utils make autoconf file patch \
     && apt-get clean
 
-ARG CMAKE_VERSION=3.24.1
+
+# cmake ninja upx
+ARG CMAKE_VERSION=3.24.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
 ARG UPX_VERSION=3.96
@@ -147,7 +151,7 @@ RUN apt-get update \
     && ln -s ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc.a ${GCC_HOME}/lib/gcc/x86_64-w64-mingw32/${GCC_VERSION}/libgcc_s.a
 
 
-# clang
+# clang; libgcc-7 is for ubuntu 18.04, newer ubuntus have newer libgcc
 ARG CLANG_VERSION=15
 RUN echo "deb http://apt.llvm.org/${UBUNRU_VERSION} llvm-toolchain-${UBUNRU_VERSION}-${CLANG_VERSION} main" >> /etc/apt/sources.list \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
@@ -174,7 +178,7 @@ RUN apt-get update \
     && git clone https://github.com/tpoechtrager/osxcross.git \
     && wget https://github.com/balrogcpp/MacOSXsdk/raw/master/MacOSX${MACOS_SDK_VERSION}.sdk.tar.xz -O ./osxcross/tarballs/MacOSX${MACOS_SDK_VERSION}.sdk.tar.xz \
     && cd osxcross \
-    && git checkout 17bb5e2d0a46533c1dd525cf4e9a80d88bd9f00e \
+    && git checkout 50e86ebca7d14372febd0af8cd098705049161b9 \
     && rm -rf .git \
     && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} ./build.sh \
     && cd .. \
@@ -188,38 +192,3 @@ ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
 ENV X86_64_EVAL=`x86_64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
 ENV ARM64_EVAL=`arm64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
-
-
-# wasm
-#ARG EMSDK_ROOT=/opt/emsdk
-#ARG EMSDK_VERSION=3.1.19
-#ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
-#RUN apt-get update \
-#    && apt-get --no-install-recommends -y install python3 \
-#    && apt-get clean \
-#    && cd /opt \
-#    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
-#    && cd emsdk \
-#    && rm -rf .git \
-#    && ./emsdk install latest \
-#    && ./emsdk activate latest \
-#    && . ./emsdk_env.sh
-
-
-# Android
-#ARG ANDROID_HOME=/opt/android-sdk
-#ARG ANDROID_CMD_VERSION=8512546
-#RUN apt-get update \
-#    && apt-get -y install --no-install-recommends openjdk-11-jdk \
-#    && apt-get clean \
-#    && cd /opt \
-#    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -O tools.zip \
-#    && unzip tools.zip \
-#    && rm tools.zip \
-#    && cd cmdline-tools/bin \
-#    && yes | ./sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
-#    && ./sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} \
-#    && cd ../../ \
-#    && rm -rf /root/.android /root/.gradle
-#ENV PATH="/opt/cmdline-tools/bin:${PATH}"
-#ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
