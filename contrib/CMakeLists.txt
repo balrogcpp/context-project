@@ -661,7 +661,7 @@ externalproject_add(Target_Lua
         EXCLUDE_FROM_ALL true
         PREFIX ${DEPS_PREFIX_LOCATION}
         GIT_REPOSITORY https://github.com/balrogcpp/lua.git
-        GIT_TAG 6fb886fc308a0c9e32a596f7383a1ea0ec01a6a1
+        GIT_TAG 3474888a4cc6a78ce3ba905e20af0c8a5778cb0e
         GIT_SHALLOW false
         GIT_PROGRESS false
         CMAKE_ARGS
@@ -680,7 +680,6 @@ externalproject_add(Target_Lua
         -DLUA_DOC=OFF
         -DLUA_BUILD_WLUA=OFF
         -DBUILD_SHARED_LIBS=OFF
-        -DLUA_BUILD_AS_DLL=OFF
         -DLUA_USE_READLINE=OFF
         -DLUA_USE_RELATIVE_LOADLIB=OFF
         -DLUA_USE_POSIX=OFF
@@ -709,6 +708,8 @@ externalproject_add(Target_sol2
         -DCMAKE_SHARED_LINKER_FLAGS=${DEPS_SHARED_LINKER_FLAGS}
         -DCMAKE_STATIC_LINKER_FLAGS=${DEPS_STATIC_LINKER_FLAGS}
         ${DEPS_CMAKE_FLAGS}
+        -DSOL2_BUILD_LUA=ON
+        -DBUILD_LUA_AS_DLL=OFF
         )
 
 
