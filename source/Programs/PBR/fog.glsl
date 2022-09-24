@@ -1,4 +1,4 @@
-// This source file is part of Glue Engine. Created by Andrey Vasiliev
+/// created by Andrey Vasiliev
 
 #ifndef FOG_GLSL
 #define FOG_GLSL

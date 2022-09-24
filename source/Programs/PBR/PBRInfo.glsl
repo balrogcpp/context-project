@@ -1,4 +1,4 @@
-// This source file is part of Glue Engine. Created by Andrey Vasiliev
+/// created by Andrey Vasiliev
 
 #ifndef PBRINFO_GLSL
 #define PBRINFO_GLSL

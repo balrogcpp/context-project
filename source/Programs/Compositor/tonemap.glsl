@@ -1,4 +1,4 @@
-// This source file is part of Glue Engine. Created by Andrey Vasiliev
+/// created by Andrey Vasiliev
 
 #ifndef HDR_TONEMAP_GLSL
 #define HDR_TONEMAP_GLSL
