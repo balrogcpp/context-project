@@ -13,12 +13,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
 # cmake module path
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 
 # include modules
 include(Platform)
-include(FlatZip)
 
 
 # default build type is Release
@@ -37,7 +36,6 @@ endif ()
 
 # set artifact dir
 set(ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
-set(TMP_DIR ${CMAKE_SOURCE_DIR}/tmp)
 
 
 # deps
@@ -45,23 +43,13 @@ add_subdirectory(contrib)
 list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 
+# assets
+set(TMP_DIR ${CMAKE_BINARY_DIR}/tmp)
+add_custom_target(assets ALL ${CMAKE_COMMAND} -D ROOT_DIR=${CMAKE_SOURCE_DIR} -D TMP_DIR=${TMP_DIR} -P ${CMAKE_MODULE_PATH}/Assets.cmake)
+
 
 # engine sources
 add_subdirectory(source)
-
-
-# assets
-file(REMOVE_RECURSE ${TMP_DIR})
-make_directory(${TMP_DIR})
-CopyFlatZipDirectory(${CMAKE_SOURCE_DIR}/source/Programs ${TMP_DIR}/programs)
-if (ANDROID OR IOS OR EMSCRIPTEN)
-    file(GLOB files ${CMAKE_SOURCE_DIR}/source/GLSLES/*)
-else ()
-    file(GLOB files ${CMAKE_SOURCE_DIR}/source/GLSL/*)
-endif ()
-file(COPY ${files} DESTINATION ${TMP_DIR}/programs)
-ZipDirectory(${TMP_DIR}/programs)
-FlatZipDirectory(${CMAKE_SOURCE_DIR}/source/Example/Assets ${TMP_DIR}/assets)
 
 
 # packages
