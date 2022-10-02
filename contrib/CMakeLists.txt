@@ -3,10 +3,7 @@ include(ExternalProject)
 include(CppFlags)
 
 
-# externalproject_add require git
-find_package(Git REQUIRED)
-
-
+# cached variables
 set(DEPS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/sdk/${TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE} CACHE PATH "")
 set(DEPS_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/tmp/${TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE})
 set(DEPS_SOURCE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/download)
@@ -22,6 +19,7 @@ set(DEPS_C_FLAGS ${CMAKE_C_FLAGS})
 set(DEPS_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
 set(DEPS_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS})
 set(DEPS_STATIC_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS})
+#set(SKIP_DOWNLOAD ${CMAKE_COMMAND} -E true)
 
 
 if (NOT EMSCRIPTEN)
@@ -37,6 +35,7 @@ if (NOT EMSCRIPTEN)
             GIT_TAG release-2.24.0
             GIT_SHALLOW true
             GIT_PROGRESS false
+            DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
             UPDATE_COMMAND ${SDL2_CHDIR} ${GIT_EXECUTABLE} reset --hard
             PATCH_COMMAND ${SDL2_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/sdl2-2.24.0.patch
             CMAKE_ARGS
@@ -76,6 +75,7 @@ externalproject_add(Target_OIS
         GIT_TAG v1.5.1
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -104,6 +104,7 @@ externalproject_add(Target_Bullet
         GIT_TAG 3.24
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -154,6 +155,7 @@ if (NOT EMSCRIPTEN)
             GIT_TAG 1.22.2
             GIT_SHALLOW true
             GIT_PROGRESS false
+            DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
             UPDATE_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} reset --hard
             PATCH_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/openal-1.21.1.patch
             CMAKE_ARGS
@@ -200,6 +202,7 @@ externalproject_add(Target_Ogg
         GIT_TAG v1.3.5
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         UPDATE_COMMAND ${OGG_CHDIR} ${GIT_EXECUTABLE} reset --hard
         PATCH_COMMAND ${OGG_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogg-1.3.5.patch
         CMAKE_ARGS
@@ -235,6 +238,7 @@ externalproject_add(Target_Vorbis
         GIT_TAG v1.3.7
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -264,6 +268,7 @@ if (NOT EMSCRIPTEN)
             GIT_TAG v1.2.12
             GIT_SHALLOW true
             GIT_PROGRESS false
+            DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
             CMAKE_ARGS
             -G "${CMAKE_GENERATOR}"
             -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -299,6 +304,7 @@ externalproject_add(Target_ZZIP
         GIT_TAG v0.13.72
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -335,6 +341,7 @@ externalproject_add(Target_pugixml
         GIT_TAG v1.12.1
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -362,6 +369,7 @@ externalproject_add(Target_PNG
         GIT_TAG v1.6.37
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -391,6 +399,7 @@ externalproject_add(Target_FreeType
         GIT_TAG VER-2-12-1
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -428,6 +437,7 @@ externalproject_add(Target_rapidjson
         GIT_TAG 27c3a8dc0e2c9218fe94986d249a12b5ed838f1d
         GIT_SHALLOW false
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -461,6 +471,7 @@ externalproject_add(Target_assimp
         GIT_TAG v5.2.5
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         UPDATE_COMMAND ${ASSIMP_CHDIR} ${CMAKE_COMMAND} -E true
         PATCH_COMMAND ${ASSIMP_CHDIR} ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
@@ -550,6 +561,7 @@ externalproject_add(Target_OGRE
         GIT_TAG v13.4.4
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard
         PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogre-13.4.0.patch
         CMAKE_ARGS
@@ -653,6 +665,7 @@ externalproject_add(Target_OGRE
 #        GIT_TAG v2.3.1
 #        GIT_SHALLOW true
 #        GIT_PROGRESS false
+#        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
 #        CMAKE_ARGS
 #        -G "${CMAKE_GENERATOR}"
 #        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -702,6 +715,7 @@ externalproject_add(Target_freeglut
         GIT_TAG v3.2.2
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -733,6 +747,7 @@ externalproject_add(Target_Lua
         GIT_TAG 0918a56e0458dc2b22a1e39e4a34b0dbbada191f
         GIT_SHALLOW false
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -769,6 +784,7 @@ externalproject_add(Target_sol2
         GIT_TAG v3.3.0
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -797,6 +813,7 @@ externalproject_add(Target_filesystem
         GIT_TAG v1.5.12
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -825,6 +842,7 @@ externalproject_add(Target_GoogleTest
         GIT_TAG v1.12.0
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -852,6 +870,7 @@ externalproject_add(Target_GoogleBenchmark
         GIT_TAG v1.7.0
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -879,6 +898,7 @@ externalproject_add(Target_json
         GIT_TAG v3.11.2
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -907,6 +927,7 @@ externalproject_add(Target_ini
         GIT_TAG cd52297c5ad5c8f1bd622fee45b7ea0301bcb856
         GIT_SHALLOW false
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
         INSTALL_COMMAND ${INI_CHDIR} ${CMAKE_COMMAND} -E copy ini_parser.hpp ${DEPS_INCLUDE_DIR}
@@ -924,6 +945,7 @@ externalproject_add(Target_yaml-cpp
         GIT_TAG yaml-cpp-0.7.0
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -955,6 +977,7 @@ externalproject_add(Target_asio
         GIT_TAG asio-1-22-1
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${ASIO_CHDIR} ${CMAKE_COMMAND} -E copy_directory asio/include/asio ${DEPS_INCLUDE_DIR}/asio
         INSTALL_COMMAND ${ASIO_CHDIR} ${CMAKE_COMMAND} -E copy asio/include/asio.hpp asio/include/asio ${DEPS_INCLUDE_DIR}
@@ -972,6 +995,7 @@ externalproject_add(Target_OpenSSL
         GIT_TAG 1.1.1n-20220327
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -999,6 +1023,7 @@ externalproject_add(Target_entt
         GIT_TAG v3.10.3
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1031,6 +1056,7 @@ externalproject_add(Target_opencv
         GIT_TAG 4.6.0
         GIT_SHALLOW true
         GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
