@@ -7,8 +7,9 @@ include(CppFlags)
 find_package(Git REQUIRED)
 
 
-set(DEPS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/${TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE}/sdk CACHE PATH "")
-set(DEPS_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/${TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE})
+set(DEPS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/sdk/${TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE} CACHE PATH "")
+set(DEPS_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/tmp/${TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE})
+set(DEPS_SOURCE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/download)
 set(DEPS_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/patch)
 set(DEPS_INCLUDE_DIR ${DEPS_ROOT}/include CACHE PATH "")
 set(DEPS_LIB_DIR ${DEPS_ROOT}/lib CACHE PATH "")
@@ -24,10 +25,14 @@ set(DEPS_STATIC_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS})
 
 
 if (NOT EMSCRIPTEN)
-    set(SDL2_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_PREFIX_LOCATION}/src/Target_SDL2)
+    set(SDL2_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_SDL2)
     externalproject_add(Target_SDL2
             EXCLUDE_FROM_ALL true
+            BUILD_ALWAYS false
+            BUILD_IN_SOURCE false
             PREFIX ${DEPS_PREFIX_LOCATION}
+            DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+            SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_SDL2
             GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
             GIT_TAG release-2.24.0
             GIT_SHALLOW true
@@ -62,7 +67,11 @@ endif ()
 
 externalproject_add(Target_OIS
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OIS
         GIT_REPOSITORY https://github.com/wgois/OIS.git
         GIT_TAG v1.5.1
         GIT_SHALLOW true
@@ -86,7 +95,11 @@ externalproject_add(Target_OIS
 
 externalproject_add(Target_Bullet
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Bullet
         GIT_REPOSITORY https://github.com/bulletphysics/bullet3.git
         GIT_TAG 3.24
         GIT_SHALLOW true
@@ -129,10 +142,14 @@ externalproject_add(Target_Bullet
 
 
 if (NOT EMSCRIPTEN)
-    set(OPENAL_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_PREFIX_LOCATION}/src/Target_OpenAL)
+    set(OPENAL_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OpenAL)
     externalproject_add(Target_OpenAL
             EXCLUDE_FROM_ALL true
+            BUILD_ALWAYS false
+            BUILD_IN_SOURCE false
             PREFIX ${DEPS_PREFIX_LOCATION}
+            DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+            SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenAL
             GIT_REPOSITORY https://github.com/kcat/openal-soft.git
             GIT_TAG 1.22.2
             GIT_SHALLOW true
@@ -170,11 +187,15 @@ else ()
 endif ()
 
 
-set(OGG_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_PREFIX_LOCATION}/src/Target_Ogg)
+set(OGG_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_Ogg)
 externalproject_add(Target_Ogg
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         DEPENDS Target_OpenAL
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Ogg
         GIT_REPOSITORY https://github.com/xiph/ogg.git
         GIT_TAG v1.3.5
         GIT_SHALLOW true
@@ -204,8 +225,12 @@ externalproject_add(Target_Ogg
 
 externalproject_add(Target_Vorbis
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         DEPENDS Target_Ogg
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Vorbis
         GIT_REPOSITORY https://github.com/xiph/vorbis.git
         GIT_TAG v1.3.7
         GIT_SHALLOW true
@@ -230,7 +255,11 @@ externalproject_add(Target_Vorbis
 if (NOT EMSCRIPTEN)
     externalproject_add(Target_zlib
             EXCLUDE_FROM_ALL true
+            BUILD_ALWAYS false
+            BUILD_IN_SOURCE false
             PREFIX ${DEPS_PREFIX_LOCATION}
+            DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+            SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_zlib
             GIT_REPOSITORY https://github.com/madler/zlib.git
             GIT_TAG v1.2.12
             GIT_SHALLOW true
@@ -260,8 +289,12 @@ endif ()
 
 externalproject_add(Target_ZZIP
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         DEPENDS Target_zlib
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_ZZIP
         GIT_REPOSITORY https://github.com/gdraheim/zziplib.git
         GIT_TAG v0.13.72
         GIT_SHALLOW true
@@ -293,7 +326,11 @@ externalproject_add(Target_ZZIP
 
 externalproject_add(Target_pugixml
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_pugixml
         GIT_REPOSITORY https://github.com/zeux/pugixml.git
         GIT_TAG v1.12.1
         GIT_SHALLOW true
@@ -315,8 +352,12 @@ externalproject_add(Target_pugixml
 
 externalproject_add(Target_PNG
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         DEPENDS Target_zlib
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_PNG
         GIT_REPOSITORY https://github.com/glennrp/libpng.git
         GIT_TAG v1.6.37
         GIT_SHALLOW true
@@ -340,8 +381,12 @@ externalproject_add(Target_PNG
 
 externalproject_add(Target_FreeType
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         DEPENDS Target_zlib
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_FreeType
         GIT_REPOSITORY https://github.com/freetype/freetype.git
         GIT_TAG VER-2-12-1
         GIT_SHALLOW true
@@ -374,7 +419,11 @@ externalproject_add(Target_FreeType
 
 externalproject_add(Target_rapidjson
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_rapidjson
         GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
         GIT_TAG 27c3a8dc0e2c9218fe94986d249a12b5ed838f1d
         GIT_SHALLOW false
@@ -399,11 +448,15 @@ externalproject_add(Target_rapidjson
         )
 
 
-set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_PREFIX_LOCATION}/src/Target_assimp)
+set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_assimp)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         DEPENDS Target_zlib
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_assimp
         GIT_REPOSITORY https://github.com/assimp/assimp.git
         GIT_TAG v5.2.5
         GIT_SHALLOW true
@@ -484,11 +537,15 @@ externalproject_add(Target_assimp
         )
 
 
-set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_PREFIX_LOCATION}/src/Target_OGRE)
+set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OGRE)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         DEPENDS Target_zlib Target_FreeType Target_SDL2 Target_Bullet Target_pugixml
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
         GIT_REPOSITORY https://github.com/OGRECave/ogre.git
         GIT_TAG v13.4.4
         GIT_SHALLOW true
@@ -578,7 +635,7 @@ externalproject_add(Target_OGRE
         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
         -DOGRE_BUILD_PLATFORM_APPLE_IOS=OFF
         TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${DEPS_PREFIX_LOCATION}/src/Target_OGRE/RenderSystems/GLSupport/include/GLSL
+        ${DEPS_SOURCE_LOCATION}/Target_OGRE/RenderSystems/GLSupport/include/GLSL
         ${DEPS_ROOT}/include/OGRE/RenderSystems/GLES2
         TEST_AFTER_INSTALL true
         )
@@ -586,8 +643,12 @@ externalproject_add(Target_OGRE
 
 #externalproject_add(Target_OGRE2
 #        EXCLUDE_FROM_ALL true
+#        BUILD_ALWAYS false
+#        BUILD_IN_SOURCE false
 #        DEPENDS Target_rapidjson
 #        PREFIX ${DEPS_PREFIX_LOCATION}
+#        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+#        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE2
 #        GIT_REPOSITORY https://github.com/OGRECave/ogre-next.git
 #        GIT_TAG v2.3.1
 #        GIT_SHALLOW true
@@ -632,7 +693,11 @@ externalproject_add(Target_OGRE
 
 externalproject_add(Target_freeglut
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_freeglut
         GIT_REPOSITORY https://github.com/FreeGLUTProject/freeglut.git
         GIT_TAG v3.2.2
         GIT_SHALLOW true
@@ -659,9 +724,13 @@ externalproject_add(Target_freeglut
 
 externalproject_add(Target_Lua
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Lua
         GIT_REPOSITORY https://github.com/balrogcpp/lua.git
-        GIT_TAG 3474888a4cc6a78ce3ba905e20af0c8a5778cb0e
+        GIT_TAG 0918a56e0458dc2b22a1e39e4a34b0dbbada191f
         GIT_SHALLOW false
         GIT_PROGRESS false
         CMAKE_ARGS
@@ -690,8 +759,12 @@ externalproject_add(Target_Lua
 
 externalproject_add(Target_sol2
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         DEPENDS Target_Lua
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_sol2
         GIT_REPOSITORY https://github.com/ThePhD/sol2.git
         GIT_TAG v3.3.0
         GIT_SHALLOW true
@@ -715,7 +788,11 @@ externalproject_add(Target_sol2
 
 externalproject_add(Target_filesystem
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_filesystem
         GIT_REPOSITORY https://github.com/gulrak/filesystem.git
         GIT_TAG v1.5.12
         GIT_SHALLOW true
@@ -739,7 +816,11 @@ externalproject_add(Target_filesystem
 
 externalproject_add(Target_GoogleTest
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GoogleTest
         GIT_REPOSITORY https://github.com/google/googletest.git
         GIT_TAG v1.12.0
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
@@ -762,7 +843,11 @@ externalproject_add(Target_GoogleTest
 
 externalproject_add(Target_GoogleBenchmark
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GoogleBenchmark
         GIT_REPOSITORY https://github.com/google/benchmark.git
         GIT_TAG v1.7.0
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
@@ -785,7 +870,11 @@ externalproject_add(Target_GoogleBenchmark
 
 externalproject_add(Target_json
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_json
         GIT_REPOSITORY https://github.com/nlohmann/json.git
         GIT_TAG v3.11.2
         GIT_SHALLOW true
@@ -806,10 +895,14 @@ externalproject_add(Target_json
         )
 
 
-set(INI_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_PREFIX_LOCATION}/src/Target_ini)
+set(INI_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_ini)
 externalproject_add(Target_ini
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_ini
         GIT_REPOSITORY https://github.com/jhpy1024/ini_parser
         GIT_TAG cd52297c5ad5c8f1bd622fee45b7ea0301bcb856
         GIT_SHALLOW false
@@ -822,7 +915,11 @@ externalproject_add(Target_ini
 
 externalproject_add(Target_yaml-cpp
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_yaml-cpp
         GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
         GIT_TAG yaml-cpp-0.7.0
         GIT_SHALLOW true
@@ -846,10 +943,14 @@ externalproject_add(Target_yaml-cpp
         )
 
 
-set(ASIO_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_PREFIX_LOCATION}/src/Target_asio)
+set(ASIO_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_asio)
 externalproject_add(Target_asio
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_asio
         GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
         GIT_TAG asio-1-22-1
         GIT_SHALLOW true
@@ -862,7 +963,11 @@ externalproject_add(Target_asio
 
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OpenSSL
         GIT_REPOSITORY https://github.com/janbar/openssl-cmake.git
         GIT_TAG 1.1.1n-20220327
         GIT_SHALLOW true
@@ -885,7 +990,11 @@ externalproject_add(Target_OpenSSL
 
 externalproject_add(Target_entt
         EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_entt
         GIT_REPOSITORY https://github.com/skypjack/entt.git
         GIT_TAG v3.10.3
         GIT_SHALLOW true
@@ -911,16 +1020,49 @@ externalproject_add(Target_entt
         )
 
 
+externalproject_add(Target_opencv
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_opencv
+        GIT_REPOSITORY https://github.com/opencv/opencv.git
+        GIT_TAG 4.6.0
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        CMAKE_ARGS
+        -G "${CMAKE_GENERATOR}"
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_C_FLAGS=${DEPS_C_FLAGS}
+        -DCMAKE_CXX_FLAGS=${DEPS_CXX_FLAGS}
+        -DCMAKE_EXE_LINKER_FLAGS=${DEPS_EXE_LINKER_FLAGS}
+        -DCMAKE_SHARED_LINKER_FLAGS=${DEPS_SHARED_LINKER_FLAGS}
+        -DCMAKE_STATIC_LINKER_FLAGS=${DEPS_STATIC_LINKER_FLAGS}
+        ${DEPS_CMAKE_FLAGS}
+        -DOPENCV_FORCE_3RDPARTY_BUILD=OFF
+        -DBUILD_ZLIB=OFF
+        -DBUILD_SHARED_LIBS=OFF
+        -DBUILD_opencv_apps=OFF
+        -DBUILD_EXAMPLES=OFF
+        -DBUILD_TESTS=OFF
+        -DBUILD_DOCS=OFF
+        )
+
+
 # list of dependency targets
-list(APPEND DEPS_TARGETS Target_zlib)
-list(APPEND DEPS_TARGETS Target_Lua)
-list(APPEND DEPS_TARGETS Target_sol2)
-list(APPEND DEPS_TARGETS Target_pugixml)
-list(APPEND DEPS_TARGETS Target_FreeType)
-list(APPEND DEPS_TARGETS Target_OpenAL)
-list(APPEND DEPS_TARGETS Target_Ogg)
-list(APPEND DEPS_TARGETS Target_Vorbis)
-list(APPEND DEPS_TARGETS Target_Bullet)
-list(APPEND DEPS_TARGETS Target_SDL2)
-list(APPEND DEPS_TARGETS Target_OGRE)
-add_custom_target(contrib DEPENDS ${DEPS_TARGETS})
+list(APPEND DEP_TARGETS Target_zlib)
+list(APPEND DEP_TARGETS Target_Lua)
+list(APPEND DEP_TARGETS Target_sol2)
+list(APPEND DEP_TARGETS Target_pugixml)
+list(APPEND DEP_TARGETS Target_FreeType)
+list(APPEND DEP_TARGETS Target_OpenAL)
+list(APPEND DEP_TARGETS Target_Ogg)
+list(APPEND DEP_TARGETS Target_Vorbis)
+list(APPEND DEP_TARGETS Target_Bullet)
+list(APPEND DEP_TARGETS Target_SDL2)
+list(APPEND DEP_TARGETS Target_OGRE)
+add_custom_target(contrib ALL DEPENDS ${DEP_TARGETS})

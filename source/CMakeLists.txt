@@ -25,8 +25,11 @@ set(OGRE_STATIC 1)
 insert_dependency_static(OGRE)
 
 
-# deps
+# includes and libraries
 include(BuildVariables)
+
+
+# deps
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(AndroidDummy SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/src/main/cpp/main.cpp)
     add_dependencies(AndroidDummy contrib)
@@ -93,11 +96,11 @@ target_link_directories(example PUBLIC ${ENGINE_LINK_DIRS})
 target_precompile_headers(example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/pch.h)
 if (ANDROID)
     set_target_properties(example PROPERTIES OUTPUT_NAME "main")
-elseif(EMSCRIPTEN)
+elseif (EMSCRIPTEN)
     set_target_properties(example PROPERTIES OUTPUT_NAME "index")
-else()
+else ()
     set_target_properties(example PROPERTIES OUTPUT_NAME "app")
-endif()
+endif ()
 target_link_libraries(example PUBLIC ${ENGINE_LIBRARIES} engine)
 
 

@@ -1,3 +1,10 @@
+# include guard
+if(_build_variables_included)
+    return()
+endif(_build_variables_included)
+set(_build_variables_included true)
+
+
 include(Platform)
 
 set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/source/Engine)
