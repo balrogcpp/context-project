@@ -16,13 +16,12 @@ COPY ./cmake ./cmake
 
 # linux
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
+    && apt-get install --no-install-recommends -y gnutls-bin libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
     && apt-get clean
 
-RUN cd ${DEPS_DIR} \
-    && wget https://github.com/balrogcpp/glue-deps/raw/master/Linux_x86_64_Clang_Release.tar.xz -O - | tar -xJ
-
 RUN mkdir build-linux && cd build-linux \
+    && cmake -G Ninja .. \
+    && ninja contrib \
     && cmake -G Ninja .. \
     && ninja package \
     && rm -rf ../artifacts/_CPack_Packages \
@@ -30,89 +29,83 @@ RUN mkdir build-linux && cd build-linux \
 
 
 # win32
-RUN cd ${DEPS_DIR} \
-    && wget https://github.com/balrogcpp/glue-deps/raw/master/Windows_x86_64_Clang_Mingw_Release.tar.xz -O - | tar -xJ
-
 RUN mkdir build-windows && cd build-windows \
     && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
+    && ninja contrib \
+    && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
     && ninja package \
-    && rm -rf ../artifacts/_CPack_Packages \
-    && rm -rf ../build-windows
+    && rm -rf ../artifacts/_CPack_Packages ../build-windows
 
 
 # apple x86_64
-RUN cd ${DEPS_DIR} \
-    && wget https://github.com/balrogcpp/glue-deps/raw/master/Darwin_x86_64_Clang_Release.tar.xz -O - | tar -xJ
-
 RUN mkdir build-apple && cd build-apple \
     && eval $X86_64_EVAL \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+    && ninja contrib \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
     && ninja package \
-    && rm -rf ../artifacts/_CPack_Packages \
-    && rm -rf ../build-apple
+    && rm -rf ../artifacts/_CPack_Packages ../build-apple
 
 
 # apple aarch64
-RUN cd ${DEPS_DIR} \
-    && wget https://github.com/balrogcpp/glue-deps/raw/master/Darwin_aarch64_Clang_Release.tar.xz -O - | tar -xJ
-
-ENV OSXCROSS_HOST=$OSXCROSS_HOST_ARM64
-RUN mkdir build-apple-aarch64 && cd build-apple-aarch64 \
-    && eval $ARM64_EVAL \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
-    && ninja package \
-    && rm -rf ../artifacts/_CPack_Packages \
-    && rm -rf ../build-apple
+#ENV OSXCROSS_HOST=$OSXCROSS_HOST_ARM64
+#RUN mkdir build-apple && cd build-apple \
+#    && eval $ARM64_EVAL \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+#    && ninja contrib \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+#    && ninja package \
+#    && rm -rf ../artifacts/_CPack_Packages ../build-apple
 
 
 # wasm
-ARG EMSDK_ROOT=/opt/emsdk
-ARG EMSDK_VERSION=3.1.19
-RUN apt-get update \
-    && apt-get --no-install-recommends -y install python3 \
-    && apt-get clean \
-    && cd /opt \
-    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
-    && cd emsdk \
-    && rm -rf .git \
-    && ./emsdk install latest \
-    && ./emsdk activate latest \
-    && . ./emsdk_env.sh
-ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
-
-RUN cd ${DEPS_DIR} \
-    && wget https://github.com/balrogcpp/glue-deps/raw/master/Emscripten_x86_Clang_Release.tar.xz -O - | tar -xJ
-
-RUN mkdir ${CONTEXT_HOME}/build-wasm && cd ${CONTEXT_HOME}/build-wasm \
-    && cd ${EMSDK_ROOT} && . ./emsdk_env.sh \
-    && cd ${CONTEXT_HOME}/build-wasm \
-    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
-    && emmake ninja package \
-    && rm -rf ../artifacts/_CPack_Packages \
-    && rm -rf ../build-windows
+#ARG EMSDK_ROOT=/opt/emsdk
+#ARG EMSDK_VERSION=3.1.19
+#RUN apt-get update \
+#    && apt-get --no-install-recommends -y install python3 \
+#    && apt-get clean \
+#    && cd /opt \
+#    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
+#    && cd emsdk \
+#    && rm -rf .git \
+#    && ./emsdk install latest \
+#    && ./emsdk activate latest \
+#    && . ./emsdk_env.sh
+#ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
+#
+#RUN mkdir ${CONTEXT_HOME}/build-wasm && cd ${CONTEXT_HOME}/build-wasm \
+#    && cd ${EMSDK_ROOT} && . ./emsdk_env.sh \
+#    && cd ${CONTEXT_HOME}/build-wasm \
+#    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
+#    && emmake ninja contrib \
+#    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
+#    && emmake ninja package \
+#    && rm -rf ../artifacts/_CPack_Packages ../build-wasm
 
 
 # android
-ARG ANDROID_HOME=/opt/android-sdk
-ARG ANDROID_CMD_VERSION=8512546
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends openjdk-11-jdk \
-    && apt-get clean \
-    && cd /opt \
-    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -O tools.zip \
-    && unzip tools.zip \
-    && rm tools.zip \
-    && cd cmdline-tools/bin \
-    && yes | ./sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
-    && ./sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} \
-    && cd ../../ \
-    && rm -rf /root/.android /root/.gradle
-ENV PATH="/opt/cmdline-tools/bin:${PATH}"
-ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
-
-RUN cd ${DEPS_DIR} \
-    && wget https://github.com/balrogcpp/glue-deps/raw/master/Android_aarch64_Clang_Release.tar.xz -O - | tar -xJ
-
-RUN cd ${CONTEXT_HOME}/source/Engine \
-    && sh gradlew assembleRelease \
-    && rm -rf ${ANDROID_HOME} /root/.android
+#ARG ANDROID_HOME=/opt/android-sdk
+#ARG ANDROID_CMD_VERSION=8512546
+#RUN apt-get update \
+#    && apt-get -y install --no-install-recommends openjdk-11-jdk \
+#    && apt-get clean \
+#    && cd /opt \
+#    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -O tools.zip \
+#    && unzip tools.zip \
+#    && rm tools.zip \
+#    && cd cmdline-tools/bin \
+#    && yes | ./sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
+#    && ./sdkmanager  --install "build-tools;30.0.3" --sdk_root=${ANDROID_HOME} \
+#    && ./sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} \
+#    && ./sdkmanager  --install "ndk;25.1.8937393" --sdk_root=${ANDROID_HOME} \
+#    && cd ../../ \
+#    && rm -rf /root/.android /root/.gradle
+#ENV PATH="/opt/cmdline-tools/bin:${PATH}"
+#ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
+#
+#RUN cd ${CONTEXT_HOME}/source/Engine \
+#    && sh gradlew assembleRelease \
+#    && rm -rf android/.cxx \
+#    && sh gradlew assembleRelease \
+#    && cp android/build/outputs/apk/release/android-arm64-v8a-release.apk ${CONTEXT_HOME}/artifacts\
+#    && rm -rf ${ANDROID_HOME} /root/.android

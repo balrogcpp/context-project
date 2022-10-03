@@ -52,7 +52,7 @@ if (NOT EMSCRIPTEN)
             UPDATE_COMMAND ${SDL2_CHDIR} ${GIT_EXECUTABLE} reset --hard
             PATCH_COMMAND ${SDL2_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/sdl2-2.24.0.patch
             CMAKE_ARGS
-            -G "${CMAKE_GENERATOR}"
+            -G ${CMAKE_GENERATOR}
             -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
             -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -92,7 +92,7 @@ externalproject_add(Target_OIS
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -123,7 +123,7 @@ externalproject_add(Target_Bullet
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -178,7 +178,7 @@ if (NOT EMSCRIPTEN)
             UPDATE_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} reset --hard
             PATCH_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/openal-1.21.1.patch
             CMAKE_ARGS
-            -G "${CMAKE_GENERATOR}"
+            -G ${CMAKE_GENERATOR}
             -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
             -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
             -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
@@ -227,7 +227,7 @@ externalproject_add(Target_Ogg
         UPDATE_COMMAND ${OGG_CHDIR} ${GIT_EXECUTABLE} reset --hard
         PATCH_COMMAND ${OGG_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogg-1.3.5.patch
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -263,7 +263,7 @@ externalproject_add(Target_Vorbis
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -295,7 +295,7 @@ if (NOT EMSCRIPTEN)
             GIT_PROGRESS false
             DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
             CMAKE_ARGS
-            -G "${CMAKE_GENERATOR}"
+            -G ${CMAKE_GENERATOR}
             -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
             -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -333,7 +333,7 @@ externalproject_add(Target_ZZIP
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -372,7 +372,7 @@ externalproject_add(Target_pugixml
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -402,7 +402,7 @@ externalproject_add(Target_PNG
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -434,7 +434,7 @@ externalproject_add(Target_FreeType
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -474,7 +474,7 @@ externalproject_add(Target_rapidjson
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -512,7 +512,7 @@ externalproject_add(Target_assimp
         UPDATE_COMMAND ${ASSIMP_CHDIR} ${CMAKE_COMMAND} -E true
         PATCH_COMMAND ${ASSIMP_CHDIR} ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -604,7 +604,7 @@ externalproject_add(Target_OGRE
         UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard
         PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogre-13.4.0.patch
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
@@ -708,7 +708,7 @@ externalproject_add(Target_OGRE
 #        GIT_PROGRESS false
 #        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
 #        CMAKE_ARGS
-#        -G "${CMAKE_GENERATOR}"
+#        -G ${CMAKE_GENERATOR}
 #        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
 #        -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
 #        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
@@ -760,7 +760,7 @@ externalproject_add(Target_freeglut
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_FIND_ROOT_PATH=${CMAKE_EXTRA_ROOT_PATH}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
@@ -792,7 +792,7 @@ externalproject_add(Target_Lua
         UPDATE_COMMAND ${CMAKE_COMMAND} -E true
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_MODULE_PATH}/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -831,7 +831,7 @@ externalproject_add(Target_sol2
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -862,7 +862,7 @@ externalproject_add(Target_filesystem
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -893,7 +893,7 @@ externalproject_add(Target_GoogleTest
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -923,7 +923,7 @@ externalproject_add(Target_GoogleBenchmark
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -953,7 +953,7 @@ externalproject_add(Target_json
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -1002,7 +1002,7 @@ externalproject_add(Target_yaml-cpp
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -1054,7 +1054,7 @@ externalproject_add(Target_OpenSSL
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -1084,7 +1084,7 @@ externalproject_add(Target_entt
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -1119,7 +1119,7 @@ externalproject_add(Target_opencv
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CMAKE_ARGS
-        -G "${CMAKE_GENERATOR}"
+        -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
         -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
