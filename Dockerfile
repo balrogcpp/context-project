@@ -1,5 +1,3 @@
-# This file is part of Glue Engine. Created by Andrey Vasiliev
-
 FROM balrogcpp/cross_clang
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -14,18 +12,23 @@ COPY ./CMakeLists.txt ./CMakeLists.txt
 COPY ./cmake ./cmake
 
 
-# linux
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y gnutls-bin libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
-    && apt-get clean
+# https://stackoverflow.com/questions/38378914/how-to-fix-git-error-rpc-failed-curl-56-gnutls
+RUN git config --global http.postBuffer 1048576000 \
+    && git config --global https.postBuffer 1048576000 \
 
-RUN mkdir build-linux && cd build-linux \
-    && cmake -G Ninja .. \
+
+# linux x86_64
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
+    && apt-get clean \
+    && mkdir build-linux && cd build-linux \
+    && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
     && ninja contrib \
-    && cmake -G Ninja .. \
+    && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
     && ninja package \
-    && rm -rf ../artifacts/_CPack_Packages \
-    && rm -rf ../build-linux
+    && rm -rf ../artifacts/_CPack_Packages ../build-linux \
+    && apt-get -y purge libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
+    && apt-get -y autoremove
 
 
 # win32
@@ -48,8 +51,8 @@ RUN mkdir build-apple && cd build-apple \
 
 
 # apple aarch64
-#ENV OSXCROSS_HOST=$OSXCROSS_HOST_ARM64
 #RUN mkdir build-apple && cd build-apple \
+#    && export OSXCROSS_HOST=$OSXCROSS_HOST_ARM64 \
 #    && eval $ARM64_EVAL \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
 #    && ninja contrib \

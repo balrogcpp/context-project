@@ -10,7 +10,7 @@ RUN apt-get update \
     && echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu ${UBUNRU_VERSION} main" >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
     && apt-get update \
-    && apt-get -y install --no-install-recommends git zip unzip xz-utils make autoconf file patch \
+    && apt-get -y install --no-install-recommends git openssl zip unzip xz-utils make autoconf file patch \
     && apt-get clean
 
 
@@ -155,13 +155,11 @@ RUN echo "deb http://apt.llvm.org/${UBUNRU_VERSION} llvm-toolchain-${UBUNRU_VERS
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
     && apt-get -y install --no-install-recommends llvm-${CLANG_VERSION} clang-${CLANG_VERSION} lld-${CLANG_VERSION} libgcc-7-dev libstdc++-7-dev \
-    && apt-get clean
-
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_VERSION} 100 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_VERSION} \
+    && apt-get clean \
+    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_VERSION} 100 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_VERSION} \
     && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_VERSION} 100 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_VERSION} \
     && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_VERSION} 100 \
     && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_VERSION} 100
-
 ENV PATH="/usr/lib/llvm-${CLANG_VERSION}/bin:$PATH"
 
 
@@ -177,10 +175,8 @@ RUN apt-get update \
     && wget https://github.com/balrogcpp/MacOSXsdk/raw/master/MacOSX${MACOS_SDK_VERSION}.sdk.tar.xz -O ./osxcross/tarballs/MacOSX${MACOS_SDK_VERSION}.sdk.tar.xz \
     && cd osxcross \
     && git checkout 50e86ebca7d14372febd0af8cd098705049161b9 \
-    && rm -rf .git \
     && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} ./build.sh \
-    && cd .. \
-    && rm -rf osxcross \
+    && rm -rf ../osxcross \
     && apt-get -y purge lzma-dev libxml2-dev libssl-dev python \
     && apt-get -y autoremove
 ENV OSXCROSS_HOST=x86_64-apple-darwin${MACOS_SDK_CODE}
