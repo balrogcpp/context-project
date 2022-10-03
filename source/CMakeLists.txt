@@ -35,7 +35,7 @@ if (NOT ANDROID)
 else ()
     set(ASSETS_DIR ${CMAKE_SOURCE_DIR}/.assets)
 endif ()
-add_custom_target(assets ALL ${CMAKE_COMMAND} -D ROOT_DIR=${CMAKE_SOURCE_DIR} -D ASSETS_DIR=${ASSETS_DIR} -P ${CMAKE_MODULE_PATH}/Assets.cmake)
+add_custom_target(assets ALL ${CMAKE_COMMAND} -DGLSLES=${GLSLES} -DROOT_DIR=${CMAKE_SOURCE_DIR} -DASSETS_DIR=${ASSETS_DIR} -P ${CMAKE_MODULE_PATH}/Assets.cmake)
 
 
 # deps
@@ -113,7 +113,7 @@ endif ()
 target_link_libraries(example PUBLIC ${ENGINE_LIBRARIES} engine)
 if (ANDROID)
     add_dependencies(example assets)
-endif()
+endif ()
 
 
 # package
