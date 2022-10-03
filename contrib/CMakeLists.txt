@@ -759,8 +759,8 @@ externalproject_add(Target_Lua
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Lua
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E true
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_MODULE_PATH}/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
