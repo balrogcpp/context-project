@@ -1,3 +1,7 @@
+# cmake min version
+cmake_minimum_required(VERSION 3.18.1)
+
+
 # project
 project(contrib)
 
@@ -13,7 +17,7 @@ find_package(Git REQUIRED)
 
 # cached variables
 set(DEPS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/sdk/${TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE} CACHE PATH "")
-set(DEPS_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/tmp/${TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE})
+set(DEPS_PREFIX_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/build/${TOOLCHAIN_FULL}_${CMAKE_BUILD_TYPE})
 set(DEPS_SOURCE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/download)
 set(DEPS_PATCH_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/patch)
 set(DEPS_INCLUDE_DIR ${DEPS_ROOT}/include CACHE PATH "")
@@ -27,9 +31,13 @@ set(DEPS_C_FLAGS ${CMAKE_C_FLAGS})
 set(DEPS_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
 set(DEPS_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS})
 set(DEPS_STATIC_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS})
-#set(SKIP_DOWNLOAD ${CMAKE_COMMAND} -E true)
+set(STAMP_FILE ${DEPS_SOURCE_LOCATION}/delete_me)
+if (EXISTS ${STAMP_FILE})
+    set(SKIP_DOWNLOAD ${CMAKE_COMMAND} -E true)
+endif ()
 
 
+# list of thirdparty targets
 if (NOT EMSCRIPTEN)
     set(SDL2_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_SDL2)
     externalproject_add(Target_SDL2
@@ -751,11 +759,9 @@ externalproject_add(Target_Lua
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Lua
-        GIT_REPOSITORY https://github.com/balrogcpp/lua.git
-        GIT_TAG 0918a56e0458dc2b22a1e39e4a34b0dbbada191f
-        GIT_SHALLOW false
-        GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_MODULE_PATH}/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
         CMAKE_ARGS
         -G "${CMAKE_GENERATOR}"
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1099,4 +1105,4 @@ list(APPEND DEP_TARGETS Target_Vorbis)
 list(APPEND DEP_TARGETS Target_Bullet)
 list(APPEND DEP_TARGETS Target_SDL2)
 list(APPEND DEP_TARGETS Target_OGRE)
-add_custom_target(contrib ALL DEPENDS ${DEP_TARGETS})
+add_custom_target(contrib COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILE} DEPENDS ${DEP_TARGETS})
