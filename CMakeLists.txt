@@ -38,11 +38,6 @@ endif ()
 set(ARTIFACT_DIR ${CMAKE_SOURCE_DIR}/artifacts)
 
 
-# assets
-set(TMP_DIR ${CMAKE_BINARY_DIR}/tmp)
-add_custom_target(assets ALL ${CMAKE_COMMAND} -D ROOT_DIR=${CMAKE_SOURCE_DIR} -D TMP_DIR=${TMP_DIR} -P ${CMAKE_MODULE_PATH}/Assets.cmake)
-
-
 # contrib
 add_subdirectory(contrib)
 list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})

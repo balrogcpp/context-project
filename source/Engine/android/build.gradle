@@ -13,7 +13,7 @@ android {
         versionName    '1.0'
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_ARM_NEON=ON -G Ninja'
+                arguments ' -G Ninja'
             }
         }
     }
@@ -53,7 +53,7 @@ android {
     }
     sourceSets {
         main {
-            assets.srcDirs = ['../../../tmp']
+            assets.srcDirs = ['../../../.assets']
         }
     }
 

@@ -29,6 +29,15 @@ insert_dependency_static(OGRE)
 include(BuildVariables)
 
 
+# assets
+if (NOT ANDROID)
+    set(ASSETS_DIR ${CMAKE_BINARY_DIR}/assets)
+else ()
+    set(ASSETS_DIR ${CMAKE_SOURCE_DIR}/.assets)
+endif ()
+add_custom_target(assets ALL ${CMAKE_COMMAND} -D ROOT_DIR=${CMAKE_SOURCE_DIR} -D ASSETS_DIR=${ASSETS_DIR} -P ${CMAKE_MODULE_PATH}/Assets.cmake)
+
+
 # deps
 if ((ANDROID OR IOS) AND ANY_NOT_FOUND)
     add_library(AndroidDummy SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/src/main/cpp/main.cpp)
@@ -61,7 +70,7 @@ if (assimp_FOUND AND MSVC AND NOT RELEASE)
 endif ()
 if (EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    string(APPEND CMAKE_EXE_LINKER_FLAGS " --preload-file ${TMP_DIR}/@. --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/Engine/shell_minimal.html")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " --preload-file ${ASSETS_DIR}/@. --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/Engine/shell_minimal.html")
 endif ()
 
 
@@ -102,6 +111,9 @@ else ()
     set_target_properties(example PROPERTIES OUTPUT_NAME "app")
 endif ()
 target_link_libraries(example PUBLIC ${ENGINE_LIBRARIES} engine)
+if (ANDROID)
+    add_dependencies(example assets)
+endif()
 
 
 # package
@@ -120,8 +132,8 @@ if (EMSCRIPTEN)
             DESTINATION .)
 else ()
     install(FILES ${EXTERNAL_DLL_GLOB} DESTINATION .)
-    install(FILES ${TMP_DIR}/assets.zip DESTINATION .)
-    install(FILES ${TMP_DIR}/programs.zip DESTINATION .)
+    install(FILES ${ASSETS_DIR}/assets.zip DESTINATION .)
+    install(FILES ${ASSETS_DIR}/programs.zip DESTINATION .)
 endif ()
 set(PACKAGE_NAME "Glue${TARGET_NAME}")
 set(ARTIFACT_NAME ${PACKAGE_NAME}_${TOOLCHAIN_SHORT})
