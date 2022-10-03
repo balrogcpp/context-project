@@ -1,6 +1,14 @@
+# project
+project(contrib)
+
+
 # externalproject_add and c++ flags
 include(ExternalProject)
 include(CppFlags)
+
+
+# externalproject_add require git
+find_package(Git REQUIRED)
 
 
 # cached variables

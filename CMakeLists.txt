@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.18.1)
 
 
 # project version
-project(Engine VERSION 0.1.0)
+project(engine VERSION 0.1.0)
 
 
 # cxx standard
@@ -47,9 +47,7 @@ add_custom_target(assets ALL ${CMAKE_COMMAND} -D ROOT_DIR=${CMAKE_SOURCE_DIR} -D
 add_subdirectory(contrib)
 list(APPEND CMAKE_PREFIX_PATH ${DEPS_ROOT})
 list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
-execute_process(
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/contrib --target contrib
-)
+
 
 # engine sources
 add_subdirectory(source)
