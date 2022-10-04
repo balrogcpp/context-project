@@ -7,7 +7,7 @@ WORKDIR /var/build
 
 # git zip etc.
 RUN apt-get update \
-    && apt-get --no-install-recommends install -y wget ca-certificates gnupg2 apt-transport-https \
+    && apt-get -y install --no-install-recommends wget ca-certificates gnupg2 apt-transport-https \
     && echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu ${UBUNRU_VERSION} main" >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
     && apt-get update \
@@ -49,7 +49,7 @@ ARG PKG_CONFIG_VERSION=0.29.2
 ARG GCC_APT_VERSION=10
 RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
-    && apt-get install --no-install-recommends -y gcc-${GCC_APT_VERSION} g++-${GCC_APT_VERSION} \
+    && apt-get -y install --no-install-recommends gcc-${GCC_APT_VERSION} g++-${GCC_APT_VERSION} \
     && apt-get clean \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_VERSION} 100 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_VERSION} \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
@@ -168,7 +168,7 @@ COPY ./tarballs ./tarballs
 ARG OSXCROSS_ROOT=/opt/osxcross
 ARG MACOS_SDK_CODE=21.4
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y libxml2 lzma-dev libxml2-dev libssl-dev python \
+    && apt-get -y install --no-install-recommends libxml2 lzma-dev libxml2-dev libssl-dev python \
     && apt-get clean \
     && git clone https://github.com/tpoechtrager/osxcross.git \
     && cd osxcross \

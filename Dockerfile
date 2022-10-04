@@ -19,53 +19,53 @@ RUN git config --global http.postBuffer 1048576000 \
 
 # linux x86_64
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
+    && apt-get -y install --no-install-recommends libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
     && apt-get clean \
-    && mkdir build-linux && cd build-linux \
+    && mkdir build && cd build \
     && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
     && ninja contrib \
     && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
     && ninja package \
-    && rm -rf ../artifacts/_CPack_Packages ../build-linux \
+    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build \
     && apt-get -y purge libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
     && apt-get -y autoremove
 
 
 # win32
-RUN mkdir build-windows && cd build-windows \
+RUN mkdir build && cd build \
     && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
     && ninja contrib \
     && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
     && ninja package \
-    && rm -rf ../artifacts/_CPack_Packages ../build-windows
+    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
 # apple x86_64
-RUN mkdir build-apple && cd build-apple \
+RUN mkdir build && cd build \
     && eval $X86_64_EVAL \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
     && ninja contrib \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
     && ninja package \
-    && rm -rf ../artifacts/_CPack_Packages ../build-apple
+    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
 # apple aarch64
-#RUN mkdir build-apple && cd build-apple \
+#RUN mkdir build && cd build \
 #    && export OSXCROSS_HOST=$OSXCROSS_HOST_ARM64 \
 #    && eval $ARM64_EVAL \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
 #    && ninja contrib \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
 #    && ninja package \
-#    && rm -rf ../artifacts/_CPack_Packages ../build-apple
+#    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
 # wasm
 #ARG EMSDK_ROOT=/opt/emsdk
 #ARG EMSDK_VERSION=3.1.19
 #RUN apt-get update \
-#    && apt-get --no-install-recommends -y install python3 \
+#    && apt-get -y install --no-install-recommends python3 \
 #    && apt-get clean \
 #    && cd /opt \
 #    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
@@ -76,14 +76,14 @@ RUN mkdir build-apple && cd build-apple \
 #    && . ./emsdk_env.sh
 #ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
 #
-#RUN mkdir ${CONTEXT_HOME}/build-wasm && cd ${CONTEXT_HOME}/build-wasm \
+#RUN mkdir ${CONTEXT_HOME}/build && cd ${CONTEXT_HOME}/build \
 #    && cd ${EMSDK_ROOT} && . ./emsdk_env.sh \
 #    && cd ${CONTEXT_HOME}/build-wasm \
 #    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
 #    && emmake ninja contrib \
 #    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
 #    && emmake ninja package \
-#    && rm -rf ../artifacts/_CPack_Packages ../build-wasm
+#    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
 # android
