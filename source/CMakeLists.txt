@@ -1,31 +1,6 @@
-# macro insert_dependency and c++ flags
-include(InsertDependency)
+# macro insert_dependency and c++ flags, includes and libraries
 include(CppFlags)
 include(Platform)
-
-
-# insert_dependency
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    insert_dependency(X11)
-endif ()
-if (DESKTOP)
-    insert_dependency(OpenGL)
-endif ()
-insert_dependency_static(Bullet)
-mark_as_advanced(BULLET_INCLUDE_DIR)
-insert_dependency_static2(Lua LUA_LIBRARY)
-insert_dependency(sol2)
-insert_dependency2(OpenAL OPENAL_FOUND)
-insert_dependency_static(Ogg)
-insert_dependency_static(Vorbis)
-insert_dependency_static(SDL2)
-insert_dependency_static(Freetype)
-insert_dependency_static(pugixml)
-set(OGRE_STATIC 1)
-insert_dependency_static(OGRE)
-
-
-# includes and libraries
 include(BuildVariables)
 
 

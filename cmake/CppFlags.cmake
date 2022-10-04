@@ -1,7 +1,7 @@
 # include guard
-if(_cppflags_included)
+if (_cppflags_included)
     return()
-endif(_cppflags_included)
+endif (_cppflags_included)
 set(_cppflags_included true)
 
 

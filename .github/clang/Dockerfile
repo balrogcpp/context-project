@@ -2,6 +2,7 @@ FROM ubuntu:18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG UBUNRU_VERSION=bionic
+WORKDIR /var/build
 
 
 # git zip etc.
@@ -36,11 +37,10 @@ ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 
 # gcc and mingw
-WORKDIR /mnt
 ARG MINGW_ROOT=/mingw
 ARG GCC_HOME=/usr
 ARG GNU_MIRROR=https://ftp.gnu.org/gnu
-## 2.38 is broken
+## 2.38;2.39 is broken
 ARG BINUTILS_VERSION=2.37
 ARG MINGW_VERSION=10.0.0
 # 12.2.0 openal error: undefined symbol: std::__once_callable
@@ -164,19 +164,18 @@ ENV PATH="/usr/lib/llvm-${CLANG_VERSION}/bin:$PATH"
 
 
 # apple
-WORKDIR /mnt
+COPY ./tarballs ./tarballs
 ARG OSXCROSS_ROOT=/opt/osxcross
-ARG MACOS_SDK_VERSION=12.3
 ARG MACOS_SDK_CODE=21.4
 RUN apt-get update \
     && apt-get install --no-install-recommends -y libxml2 lzma-dev libxml2-dev libssl-dev python \
     && apt-get clean \
     && git clone https://github.com/tpoechtrager/osxcross.git \
-    && wget https://github.com/balrogcpp/MacOSXsdk/raw/master/MacOSX${MACOS_SDK_VERSION}.sdk.tar.xz -O ./osxcross/tarballs/MacOSX${MACOS_SDK_VERSION}.sdk.tar.xz \
     && cd osxcross \
+    && cp -r ../tarballs ./ \
     && git checkout 50e86ebca7d14372febd0af8cd098705049161b9 \
     && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} ./build.sh \
-    && rm -rf ../osxcross \
+    && rm -rf ./tarballs ../osxcross \
     && apt-get -y purge lzma-dev libxml2-dev libssl-dev python \
     && apt-get -y autoremove
 ENV OSXCROSS_HOST=x86_64-apple-darwin${MACOS_SDK_CODE}

@@ -1,7 +1,7 @@
 FROM balrogcpp/cross_clang
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CONTEXT_HOME=/mnt
+ARG CONTEXT_HOME=/var/build
 ARG DEPS_DIR=${CONTEXT_HOME}/contrib
 WORKDIR ${CONTEXT_HOME}
 
@@ -14,7 +14,7 @@ COPY ./cmake ./cmake
 
 # https://stackoverflow.com/questions/38378914/how-to-fix-git-error-rpc-failed-curl-56-gnutls
 RUN git config --global http.postBuffer 1048576000 \
-    && git config --global https.postBuffer 1048576000 \
+    && git config --global https.postBuffer 1048576000
 
 
 # linux x86_64

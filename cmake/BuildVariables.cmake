@@ -1,11 +1,33 @@
 # include guard
-if(_build_variables_included)
+if (_buildvariables_included)
     return()
-endif(_build_variables_included)
-set(_build_variables_included true)
+endif (_buildvariables_included)
+set(_buildvariables_included true)
 
 
+# insert_dependency macro
+include(InsertDependency)
 include(Platform)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    insert_dependency(X11)
+endif ()
+if (DESKTOP)
+    insert_dependency(OpenGL)
+endif ()
+insert_dependency_static(Bullet)
+mark_as_advanced(BULLET_INCLUDE_DIR)
+insert_dependency_static2(Lua LUA_LIBRARY)
+insert_dependency(sol2)
+insert_dependency2(OpenAL OPENAL_FOUND)
+insert_dependency_static(Ogg)
+insert_dependency_static(Vorbis)
+insert_dependency_static(SDL2)
+insert_dependency_static(Freetype)
+insert_dependency_static(pugixml)
+set(OGRE_STATIC 1)
+insert_dependency_static(OGRE)
+
 
 set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/source/Engine)
 
