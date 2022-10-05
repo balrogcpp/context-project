@@ -310,8 +310,9 @@ if (NOT EMSCRIPTEN)
             -DANDROID_ABI=${ANDROID_ABI}
             -DANDROID_PLATFORM=${ANDROID_PLATFORM}
             -DBUILD_SHARED_LIBS=OFF
+            -DCMAKE_DEBUG_POSTFIX=
             TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT}
-            ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib bin/libzlib.dll bin/zlib.dll lib/libz.dylib
+            ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib lib/zlibd.lib bin/libzlib.dll bin/zlib.dll bin/zlibd.dll lib/libz.dylib
             TEST_AFTER_INSTALL true
             )
 else ()

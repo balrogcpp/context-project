@@ -38,7 +38,7 @@ elseif (${CMAKE_GENERATOR} STREQUAL "Xcode")
 endif ()
 
 
-# adjust flags
+# adjust flags if required
 if (assimp_FOUND AND MSVC AND NOT RELEASE)
     string(APPEND CMAKE_EXE_LINKER_FLAGS " /FORCE:MULTIPLE")
     string(APPEND CMAKE_SHARED_LINKER_FLAGS " /FORCE:MULTIPLE")
@@ -92,8 +92,8 @@ endif ()
 
 
 # package
-if (WIN32 AND EXISTS ${DEPS_ROOT}/bin/OpenAL32.dll)
-    set(EXTERNAL_DLL_GLOB ${DEPS_ROOT}/bin/OpenAL32.dll)
+if (WIN32)
+    file(GLOB EXTERNAL_DLL_GLOB ${DEPS_ROOT}/bin/*.dll)
     file(COPY ${EXTERNAL_DLL_GLOB} DESTINATION .)
 endif ()
 install(TARGETS example RUNTIME DESTINATION .)
