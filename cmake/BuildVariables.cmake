@@ -9,6 +9,8 @@ set(_buildvariables_included true)
 include(InsertDependency)
 include(Platform)
 
+
+# check dependencies
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     insert_dependency(X11)
 endif ()
@@ -29,6 +31,7 @@ set(OGRE_STATIC 1)
 insert_dependency_static(OGRE)
 
 
+# engine
 set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/source/Engine)
 
 set(ENGINE_INCLUDE_DIRS

@@ -1,39 +1,20 @@
 FROM ubuntu:18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG UBUNRU_VERSION=bionic
+ARG UBUNTU_VERSION=bionic
 WORKDIR /var/build
 
 
 # git zip etc.
 RUN apt-get update \
     && apt-get -y install --no-install-recommends wget ca-certificates gnupg2 apt-transport-https \
-    && echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu ${UBUNRU_VERSION} main" >> /etc/apt/sources.list \
+    && echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu ${UBUNTU_VERSION} main" >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
+    && echo "deb https://ppa.launchpadcontent.net/git-core/ppa/ubuntu ${UBUNTU_VERSION} main" >> /etc/apt/sources.list \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E1DD270288B4E6030699E45FA1715D88E1DF1F24 \
     && apt-get update \
-    && apt-get -y install --no-install-recommends git openssl zip unzip xz-utils make autoconf file patch \
+    && apt-get -y install --no-install-recommends git zip unzip xz-utils make autoconf file patch \
     && apt-get clean
-
-
-# cmake ninja upx
-ARG CMAKE_VERSION=3.24.2
-ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
-ARG NINJA_VERSION=1.11.1
-ARG UPX_VERSION=3.96
-RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp \
-    && unzip /tmp/ninja-linux.zip -d /usr/local/bin \
-    && rm /tmp/ninja-linux.zip \
-    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
-    && chmod u+x /tmp/cmake-install.sh \
-    && mkdir ${CMAKE_HOME} \
-    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
-    && rm /tmp/cmake-install.sh \
-    && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
-    && cd upx-${UPX_VERSION}-amd64_linux \
-    && cp upx /usr/local/bin \
-    && cd .. \
-    && rm -rf upx-${UPX_VERSION}-amd64_linux
-ENV PATH="${CMAKE_HOME}/bin:${PATH}"
 
 
 # gcc and mingw
@@ -46,12 +27,12 @@ ARG MINGW_VERSION=10.0.0
 # 12.2.0 openal error: undefined symbol: std::__once_callable
 ARG GCC_VERSION=11.3.0
 ARG PKG_CONFIG_VERSION=0.29.2
-ARG GCC_APT_VERSION=10
+ARG GCC_APT_MAJOR=10
 RUN apt-get update \
     && apt-get -y install --no-install-recommends zlib1g-dev libgmp-dev libmpfr-dev libmpc-dev libssl-dev libisl-dev bzip2 libisl19 libmpc3 \
-    && apt-get -y install --no-install-recommends gcc-${GCC_APT_VERSION} g++-${GCC_APT_VERSION} \
+    && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
     && apt-get clean \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_VERSION} 100 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_VERSION} \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} 100 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
     && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
     && wget ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
@@ -140,7 +121,7 @@ RUN apt-get update \
     && rm -rf gcc-mingw32 \
     && rm -rf ${MINGW_ROOT} \
     && apt-get -y purge zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev bzip2 \
-    && apt-get -y purge gcc-${GCC_APT_VERSION} g++-${GCC_APT_VERSION} \
+    && apt-get -y purge gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
     && apt-get -y autoremove \
     && apt-get -y clean \
     && update-alternatives --install ${GCC_HOME}/bin/mingw32-gcc mingw32-gcc ${GCC_HOME}/bin/x86_64-w64-mingw32-gcc 100 \
@@ -150,33 +131,34 @@ RUN apt-get update \
 
 
 # clang; libgcc-7 is for ubuntu 18.04, newer ubuntus have newer libgcc
-ARG CLANG_VERSION=15
-RUN echo "deb http://apt.llvm.org/${UBUNRU_VERSION} llvm-toolchain-${UBUNRU_VERSION}-${CLANG_VERSION} main" >> /etc/apt/sources.list \
+ARG CLANG_MAJOR=15
+RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
-    && apt-get -y install --no-install-recommends llvm-${CLANG_VERSION} clang-${CLANG_VERSION} lld-${CLANG_VERSION} libgcc-7-dev libstdc++-7-dev \
+    && apt-get -y install --no-install-recommends llvm-${CLANG_MAJOR} clang-${CLANG_MAJOR} lld-${CLANG_MAJOR} libgcc-7-dev libstdc++-7-dev \
     && apt-get clean \
-    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_VERSION} 100 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_VERSION} \
-    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_VERSION} 100 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_VERSION} \
-    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_VERSION} 100 \
-    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_VERSION} 100
-ENV PATH="/usr/lib/llvm-${CLANG_VERSION}/bin:$PATH"
+    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${CLANG_MAJOR} 100 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_MAJOR} \
+    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${CLANG_MAJOR} 100 --slave /usr/bin/c++ c++ /usr/bin/clang++-${CLANG_MAJOR} \
+    && update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${CLANG_MAJOR} 100 \
+    && update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-${CLANG_MAJOR} 100
+ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 
 
 # apple
 COPY ./tarballs ./tarballs
 ARG OSXCROSS_ROOT=/opt/osxcross
 ARG MACOS_SDK_CODE=21.4
+ARG OSXCROSS_GIT_HASH=50e86ebca7d14372febd0af8cd098705049161b9
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends libxml2 lzma-dev libxml2-dev libssl-dev python \
+    && apt-get -y install --no-install-recommends cmake python libxml2 lzma-dev libxml2-dev libssl-dev \
     && apt-get clean \
-    && git clone https://github.com/tpoechtrager/osxcross.git \
-    && cd osxcross \
+    && wget https://github.com/tpoechtrager/osxcross/archive/${OSXCROSS_GIT_HASH}.zip -O osxcross.zip \
+    && unzip osxcross.zip \
+    && cd osxcross-${OSXCROSS_GIT_HASH} \
     && cp -r ../tarballs ./ \
-    && git checkout 50e86ebca7d14372febd0af8cd098705049161b9 \
     && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} ./build.sh \
     && rm -rf ./tarballs ../osxcross \
-    && apt-get -y purge lzma-dev libxml2-dev libssl-dev python \
+    && apt-get -y purge cmake python lzma-dev libxml2-dev libssl-dev \
     && apt-get -y autoremove
 ENV OSXCROSS_HOST=x86_64-apple-darwin${MACOS_SDK_CODE}
 ENV OSXCROSS_HOST_X86_64=x86_64-apple-darwin${MACOS_SDK_CODE}
@@ -185,3 +167,24 @@ ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
 ENV X86_64_EVAL=`x86_64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
 ENV ARM64_EVAL=`arm64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
+
+
+# cmake ninja upx
+ARG CMAKE_VERSION=3.24.2
+ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
+ARG NINJA_VERSION=1.11.1
+ARG UPX_VERSION=3.96
+RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp \
+    && unzip /tmp/ninja-linux.zip -d /usr/local/bin \
+    && rm /tmp/ninja-linux.zip \
+    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
+    && chmod u+x /tmp/cmake-install.sh \
+    && mkdir ${CMAKE_HOME} \
+    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
+    && rm /tmp/cmake-install.sh \
+    && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
+    && cd upx-${UPX_VERSION}-amd64_linux \
+    && cp upx /usr/local/bin \
+    && cd .. \
+    && rm -rf upx-${UPX_VERSION}-amd64_linux
+ENV PATH="${CMAKE_HOME}/bin:${PATH}"

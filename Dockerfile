@@ -14,7 +14,8 @@ COPY ./cmake ./cmake
 
 # https://stackoverflow.com/questions/38378914/how-to-fix-git-error-rpc-failed-curl-56-gnutls
 RUN git config --global http.postBuffer 1048576000 \
-    && git config --global https.postBuffer 1048576000
+    && git config --global https.postBuffer 1048576000 \
+    && git config --global core.compression -1
 
 
 # linux x86_64
