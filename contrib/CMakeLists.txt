@@ -36,7 +36,6 @@ endif ()
 
 # list of thirdparty targets
 if (NOT EMSCRIPTEN)
-    set(SDL2_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_SDL2)
     externalproject_add(Target_SDL2
             EXCLUDE_FROM_ALL true
             BUILD_ALWAYS false
@@ -49,8 +48,8 @@ if (NOT EMSCRIPTEN)
             GIT_SHALLOW true
             GIT_PROGRESS false
             DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-            UPDATE_COMMAND ${SDL2_CHDIR} ${GIT_EXECUTABLE} reset --hard
-            PATCH_COMMAND ${SDL2_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/sdl2-2.24.0.patch
+            UPDATE_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_SDL2 ${GIT_EXECUTABLE} reset --hard
+            PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_SDL2 ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/sdl2-2.24.0.patch
             CMAKE_ARGS
             -G ${CMAKE_GENERATOR}
             -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -91,6 +90,8 @@ externalproject_add(Target_OIS
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -122,6 +123,8 @@ externalproject_add(Target_Bullet
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -162,7 +165,6 @@ externalproject_add(Target_Bullet
 
 
 if (NOT EMSCRIPTEN)
-    set(OPENAL_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OpenAL)
     externalproject_add(Target_OpenAL
             EXCLUDE_FROM_ALL true
             BUILD_ALWAYS false
@@ -175,8 +177,8 @@ if (NOT EMSCRIPTEN)
             GIT_SHALLOW true
             GIT_PROGRESS false
             DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-            UPDATE_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} reset --hard
-            PATCH_COMMAND ${OPENAL_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/openal-1.21.1.patch
+            UPDATE_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OpenAL ${GIT_EXECUTABLE} reset --hard
+            PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OpenAL ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/openal-1.21.1.patch
             CMAKE_ARGS
             -G ${CMAKE_GENERATOR}
             -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -210,7 +212,6 @@ else ()
 endif ()
 
 
-set(OGG_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_Ogg)
 externalproject_add(Target_Ogg
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -224,8 +225,8 @@ externalproject_add(Target_Ogg
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${OGG_CHDIR} ${GIT_EXECUTABLE} reset --hard
-        PATCH_COMMAND ${OGG_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogg-1.3.5.patch
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_Ogg ${GIT_EXECUTABLE} reset --hard
+        PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_Ogg ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogg-1.3.5.patch
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -262,6 +263,8 @@ externalproject_add(Target_Vorbis
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -294,6 +297,8 @@ if (NOT EMSCRIPTEN)
             GIT_SHALLOW true
             GIT_PROGRESS false
             DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+            UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+            PATCH_COMMAND ${CMAKE_COMMAND} -E true
             CMAKE_ARGS
             -G ${CMAKE_GENERATOR}
             -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -333,6 +338,8 @@ externalproject_add(Target_ZZIP
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -372,6 +379,8 @@ externalproject_add(Target_pugixml
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -402,6 +411,8 @@ externalproject_add(Target_PNG
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -434,6 +445,8 @@ externalproject_add(Target_FreeType
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -474,6 +487,8 @@ externalproject_add(Target_rapidjson
         GIT_SHALLOW false
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -496,7 +511,6 @@ externalproject_add(Target_rapidjson
         )
 
 
-set(ASSIMP_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_assimp)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -510,8 +524,8 @@ externalproject_add(Target_assimp
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${ASSIMP_CHDIR} ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${ASSIMP_CHDIR} ${CMAKE_COMMAND} -E true
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -588,7 +602,6 @@ externalproject_add(Target_assimp
         )
 
 
-set(OGRE_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OGRE)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -602,8 +615,8 @@ externalproject_add(Target_OGRE
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} reset --hard
-        PATCH_COMMAND ${OGRE_CHDIR} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogre-13.4.0.patch
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OGRE ${GIT_EXECUTABLE} reset --hard
+        PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OGRE ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogre-13.4.0.patch
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -709,6 +722,8 @@ externalproject_add(Target_OGRE2
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -764,6 +779,8 @@ externalproject_add(Target_freeglut
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -835,6 +852,8 @@ externalproject_add(Target_sol2
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -866,6 +885,8 @@ externalproject_add(Target_filesystem
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -897,6 +918,8 @@ externalproject_add(Target_GoogleTest
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -927,6 +950,8 @@ externalproject_add(Target_GoogleBenchmark
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -957,6 +982,8 @@ externalproject_add(Target_json
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -975,13 +1002,14 @@ externalproject_add(Target_json
         )
 
 
-set(INI_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_ini)
 externalproject_add(Target_ini
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_ini
         GIT_REPOSITORY https://github.com/jhpy1024/ini_parser
         GIT_TAG cd52297c5ad5c8f1bd622fee45b7ea0301bcb856
@@ -990,7 +1018,7 @@ externalproject_add(Target_ini
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
-        INSTALL_COMMAND ${INI_CHDIR} ${CMAKE_COMMAND} -E copy ini_parser.hpp ${DEPS_INCLUDE_DIR}
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${DEPS_SOURCE_LOCATION}/Target_ini/ini_parser.hpp ${DEPS_INCLUDE_DIR}
         )
 
 
@@ -1006,6 +1034,8 @@ externalproject_add(Target_yaml-cpp
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1027,13 +1057,14 @@ externalproject_add(Target_yaml-cpp
         )
 
 
-set(ASIO_CHDIR ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_asio)
 externalproject_add(Target_asio
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_asio
         GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
         GIT_TAG asio-1-22-1
@@ -1041,8 +1072,8 @@ externalproject_add(Target_asio
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
-        BUILD_COMMAND ${ASIO_CHDIR} ${CMAKE_COMMAND} -E copy_directory asio/include/asio ${DEPS_INCLUDE_DIR}/asio
-        INSTALL_COMMAND ${ASIO_CHDIR} ${CMAKE_COMMAND} -E copy asio/include/asio.hpp asio/include/asio ${DEPS_INCLUDE_DIR}
+        BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_asio/asio/include/asio ${DEPS_INCLUDE_DIR}/asio
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${DEPS_SOURCE_LOCATION}/Target_asio/asio/include/asio.hpp asio/include/asio ${DEPS_INCLUDE_DIR}
         )
 
 
@@ -1058,6 +1089,8 @@ externalproject_add(Target_OpenSSL
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1088,6 +1121,8 @@ externalproject_add(Target_entt
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1111,10 +1146,31 @@ externalproject_add(Target_entt
         )
 
 
+externalproject_add(Target_opencv_contrib
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_opencv_contrib
+        GIT_REPOSITORY https://github.com/opencv/opencv_contrib.git
+        GIT_TAG 4.6.0
+        GIT_SHALLOW true
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E true
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E true
+        )
+
+
 externalproject_add(Target_opencv
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
+        DEPENDS Target_opencv_contrib
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_opencv
@@ -1123,6 +1179,8 @@ externalproject_add(Target_opencv
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E true
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1137,6 +1195,7 @@ externalproject_add(Target_opencv
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DOPENCV_EXTRA_MODULES_PATH=${DEPS_SOURCE_LOCATION}/Target_opencv_contrib/modules
         -DOPENCV_FORCE_3RDPARTY_BUILD=OFF
         -DBUILD_ZLIB=OFF
         -DBUILD_SHARED_LIBS=OFF
