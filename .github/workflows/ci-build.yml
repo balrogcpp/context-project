@@ -17,7 +17,7 @@ jobs:
       - name: compile
         run: |
           chown -R $(id -u):$(id -g) $PWD #this is to fix GIT not liking owner of the checkout dir
-          sh docker.sh
+          sh docker_compile.sh
       - name: artifacts
         uses: actions/upload-artifact@v3
         with:
