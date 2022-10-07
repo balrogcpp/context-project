@@ -775,7 +775,7 @@ externalproject_add(Target_freeglut
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_freeglut
         GIT_REPOSITORY https://github.com/FreeGLUTProject/freeglut.git
-        GIT_TAG v3.2.2
+        GIT_TAG v3.4.0
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}

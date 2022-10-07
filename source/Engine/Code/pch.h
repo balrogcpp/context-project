@@ -1,3 +1,5 @@
+/// created by Andrey Vasiliev
+
 #pragma once
 
 #include <Ogre.h>
@@ -11,7 +13,6 @@
 #include <Bullet/OgreBullet.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-#include "Code/TerrainMaterialGeneratorB.h"
 #include <Terrain/OgreTerrainGroup.h>
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainAutoUpdateLod.h>

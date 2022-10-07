@@ -1,13 +1,14 @@
 /// created by Andrey Vasiliev
 
 #pragma once
+
 #include "Singleton.h"
 extern "C" {
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>
 }
-#include <algorithm>
 #include <set>
+
 
 namespace Glue {
 

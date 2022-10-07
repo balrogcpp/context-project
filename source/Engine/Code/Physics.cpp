@@ -10,19 +10,15 @@ namespace Glue {
 
 Physics::Physics(bool threaded) : Threaded(threaded) {
   auto *Scheduler = btCreateDefaultTaskScheduler();
-
   if (!Scheduler) throw std::runtime_error("Bullet physics no task scheduler available");
-
   btSetTaskScheduler(Scheduler);
   BtBroadphase = make_unique<btDbvtBroadphase>();
   BtConfig = make_unique<btDefaultCollisionConfiguration>();
 
 #if (OGRE_THREAD_SUPPORT > 0)
-  BtDispatcher = make_unique<btCollisionDispatcherMt>(BtConfig.get(), 40);
+  BtDispatcher = make_unique<btCollisionDispatcherMt>(BtConfig.get());
   BtSolver = make_unique<btSequentialImpulseConstraintSolverMt>();
-
-  btConstraintSolverPoolMt *solverPool = new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT);
-
+  auto *solverPool = new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT);
   BtWorld = make_unique<btDiscreteDynamicsWorldMt>(BtDispatcher.get(), BtBroadphase.get(), solverPool, BtSolver.get(), BtConfig.get());
 #else
   BtDispatcher = make_unique<btCollisionDispatcher>(BtConfig.get());
@@ -31,9 +27,7 @@ Physics::Physics(bool threaded) : Threaded(threaded) {
 #endif
 
   BtWorld->setGravity(btVector3(0.0, -9.8, 0.0));
-
-  if (Threaded) InitThread();
-
+  //if (Threaded) InitThread();
   Paused = false;
   Running = true;
 }

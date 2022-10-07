@@ -1,6 +1,7 @@
 /// created by Andrey Vasiliev
 
 #pragma once
+
 #include "Observer.h"
 #include "Singleton.h"
 #include <imgui.h>

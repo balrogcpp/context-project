@@ -11,8 +11,8 @@ namespace Glue {
 
 void InitOgreRenderSystemGL() { Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLRenderSystem()); }
 
-bool CheckGLVersion(const int major, const int minor) {
-  return static_cast<Ogre::GLRenderSystemCommon *>(Ogre::Root::getSingleton().getRenderSystem())->hasMinGLVersion(major, minor);
+bool CheckGLVersion(int major, int minor) {
+  return dynamic_cast<Ogre::GLRenderSystemCommon *>(Ogre::Root::getSingleton().getRenderSystem())->hasMinGLVersion(major, minor);
 }
 
 }  // namespace Glue

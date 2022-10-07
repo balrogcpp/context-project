@@ -23,7 +23,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
-#pragma once
 /*
 How to use it?
 
@@ -58,6 +57,8 @@ To help you integrate in your app, you can get a text (like "Ctrl + O") to integ
 static void GetHotKeyLib(unsigned int functionKeys, char* buffer, size_t bufferSize);
 
 */
+
+#pragma once
 
 #include "imgui.h"
 #include "imgui_internal.h"

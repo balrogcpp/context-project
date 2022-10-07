@@ -61,7 +61,7 @@ endif ()
 # static library
 add_library(engine STATIC EXCLUDE_FROM_ALL ${ENGINE_SOURCE_FILES})
 include_directories(engine ${ENGINE_INCLUDE_DIRS})
-target_precompile_headers(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/pch.h)
+target_precompile_headers(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
 
 
 # example project
@@ -77,7 +77,7 @@ else ()
 endif ()
 include_directories(example include ${ENGINE_INCLUDE_DIRS})
 target_link_directories(example PUBLIC ${ENGINE_LINK_DIRS})
-target_precompile_headers(example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/pch.h)
+target_precompile_headers(example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
 if (ANDROID)
     set_target_properties(example PROPERTIES OUTPUT_NAME "main")
 elseif (EMSCRIPTEN)

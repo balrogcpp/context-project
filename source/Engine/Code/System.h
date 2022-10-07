@@ -1,6 +1,7 @@
 /// created by Andrey Vasiliev
 
 #pragma once
+
 #include "Singleton.h"
 
 namespace Glue {

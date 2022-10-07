@@ -1,7 +1,8 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-#include <stdexcept>
+
+#include "Assert.h"
 
 namespace Glue {
 
@@ -15,7 +16,6 @@ class NoCopy {
   NoCopy &operator=(NoCopy &&) = default;
   virtual ~NoCopy() = default;
 };
-
 
 /// Implement "Dynamic Singleton" pattern. Keeps flag that class was already instanced once.
 /// Throws exception when tried to create second instance
@@ -36,28 +36,24 @@ class BaseSingleton : public NoCopy {
   inline static bool Instanced = false;
 };
 
-
 /// Implement "Dynamic Singleton" pattern. Keeps flag that class was already instanced once.
 /// Throws exception when tried to create second instance
 template <typename T>
 class Singleton : public BaseSingleton<T> {
  public:
   /// Constructor
-  Singleton() {
-    SingletonPtr = static_cast<T*>(this);
-  }
+  Singleton() { InstancePtr = static_cast<T *>(this); }
 
   ///
-  static T* GetInstancePtr() { return SingletonPtr; }
+  static T *GetInstancePtr() { return InstancePtr; }
 
   ///
-  static T& GetInstance() { return *SingletonPtr; }
+  static T &GetInstance() { return *InstancePtr; }
 
  protected:
   /// Pointer to singleton instance
-  inline static T* SingletonPtr = nullptr;
+  inline static T *InstancePtr = nullptr;
 };
-
 
 /// Implements "Lazy DynamicSingleton" pattern. Creates instance only when called GetInstance
 template <typename T>
@@ -65,7 +61,7 @@ class LazySingleton : public BaseSingleton<T> {
  public:
   /// Create and return instance of class
   /// \return ref to instance
-  static T& GetInstance() {
+  static T &GetInstance() {
     static T t;
     return t;
   }

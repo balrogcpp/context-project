@@ -1,6 +1,7 @@
 /// created by Andrey Vasiliev
 
 #pragma once
+
 #include "OggSound/OgreOggSound.h"
 #include "OggSound/OgreOggSoundRoot.h"
 #include "System.h"

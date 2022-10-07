@@ -37,7 +37,7 @@ namespace Glue {
 Application::Application() {
   InputSequencer::GetInstance().RegWinObserver(this);
   EnginePtr = make_unique<Engine>();
-  EnginePtr->InitComponents();
+  EnginePtr->Init();
 }
 
 Application::~Application() { InputSequencer::GetInstance().UnregWinObserver(this); }
@@ -101,16 +101,9 @@ void Application::Go() {
   Running = true;
   auto duration_before_update = chrono::system_clock::now().time_since_epoch();
   TimeOfLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
-
   auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
   auto *root = scene->getRootSceneNode();
   root->loadChildren("1.scene");
-
-  // if (Running) {
-  // EnginePtr->RenderFrame();
-  // ClearRTSSRuntime();
-  //}
-
 #ifdef MOBILE
   TargetFPS = 30;
 #endif
@@ -120,7 +113,6 @@ void Application::Go() {
   LockFPS = false;
   emscripten_set_main_loop_arg(Application::EmscriptenLoop, GetInstancePtr(), 0, 1);
 #endif
-
   EnginePtr->OnCleanup();
   EnginePtr->OnPause();
 }

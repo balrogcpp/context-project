@@ -1,6 +1,7 @@
 /// created by Andrey Vasiliev
 
 #pragma once
+
 #include "Engine.h"
 #include "Observer.h"
 #include <OgreVector.h>

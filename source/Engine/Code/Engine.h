@@ -1,6 +1,7 @@
 /// created by Andrey Vasiliev
 
 #pragma once
+
 #include "ImGuiInputListener.h"
 #include "Observer.h"
 #include "Physics.h"
@@ -36,7 +37,7 @@ class Sound;
 class SinbadCharacterController;
 }  // namespace Glue
 
-int ErrorWindow(const std::string& WindowCaption, const std::string& MessageText);
+int ErrorWindow(const char* WindowCaption, const char* MessageText);
 
 namespace Glue {
 
@@ -119,7 +120,7 @@ Sound& GetAudio();
 void InitOgreRenderSystemGL3();
 
 ///
-bool CheckGL3Version(const int major, const int minor);
+bool CheckGL3Version(int major, int minor);
 #endif
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
@@ -127,7 +128,7 @@ bool CheckGL3Version(const int major, const int minor);
 void InitOgreRenderSystemGLES2();
 
 ///
-bool CheckGLES2Version(const int major, const int minor);
+bool CheckGLES2Version(int major, int minor);
 #endif
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL
@@ -135,7 +136,7 @@ bool CheckGLES2Version(const int major, const int minor);
 void InitOgreRenderSystemGL();
 
 ///
-bool CheckGLVersion(const int major, const int minor);
+bool CheckGLVersion(int major, int minor);
 #endif
 
 ///
@@ -170,6 +171,7 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   virtual ~Engine();
 
   /// Initialized all components. Must be called once after Engine object created
+  void Init();
   void InitComponents();
 
   /// Called every frame to read input
@@ -242,30 +244,14 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   Ogre::Vector3 GetSunPosition();
 
  protected:
-  /// Internal. Check CPU
-  void TestCPUCapabilities();
-
-  /// Internal. Check GPU
-  void TestGPUCapabilities();
-
-  /// Creates and initiates Sound component instance. Internal
-  void InitSound();
-
-  /// Load resources by list. Internal
-  void InitResources();
-
   /// Creates and initiates Overlay component. Internal
   void InitOverlay();
 
   /// Creates and initiates Compositor component. Internal
   void EnableEffect(const std::string& FX, bool Enable);
-  void InitCompositor();
-
-  /// Creates and initiates Physics component. Internal
-  void InitPhysics();
 
   ///
-  bool CheckRenderSystemVersion(int major, int minor);
+  void InitCompositor();
 
   /// Load into memory static Ogre plugins
   void InitOgrePlugins();
@@ -284,11 +270,6 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
 
   /// Ogre shadow settings
   void InitShadowSettings();
-
-#ifdef MOBILE
-  /// Android helper function
-  void AndroidRestoreWindow();
-#endif
 
   ///
   std::string RenderSystemName;

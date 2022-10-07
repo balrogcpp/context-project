@@ -1,6 +1,7 @@
 /// created by Andrey Vasiliev
 
 #pragma once
+
 #include <OgrePlatform.h>
 #include <OgrePlatformInformation.h>
 
@@ -10,6 +11,7 @@
 #define ANDROID
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #define APPLE
+#define DARWIN
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
 #define IOS
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
@@ -40,4 +42,10 @@
 
 #if defined(__MINGW32__)
 #define MINGW
+#endif
+
+#if defined(MOBILE) || defined(EMSCRIPTEN)
+#define GLSLES
+#else
+#define GLSL
 #endif
