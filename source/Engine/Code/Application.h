@@ -16,9 +16,7 @@ class Application : public WindowObserver, public InputObserver, public Singleto
   Application();
   virtual ~Application();
   int Main();
-#ifdef EMSCRIPTEN
   static void EmscriptenLoop(void *arg);
-#endif
 
  protected:
   void LoopBody();

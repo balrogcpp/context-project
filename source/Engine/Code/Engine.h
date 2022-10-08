@@ -172,7 +172,6 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
 
   /// Initialized all components. Must be called once after Engine object created
   void Init();
-  void InitComponents();
 
   /// Called every frame to read input
   void Capture();
@@ -217,10 +216,10 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   void SetWindowCaption(const char* Caption);
 
   ///
-  void ShowCursor(bool show);
+  void ShowCursor(bool Show);
 
   ///
-  void GrabCursor(bool grab);
+  void GrabCursor(bool Grab);
 
   ///
   std::string GetWindowCaption();
@@ -244,32 +243,11 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   Ogre::Vector3 GetSunPosition();
 
  protected:
-  /// Creates and initiates Overlay component. Internal
-  void InitOverlay();
-
   /// Creates and initiates Compositor component. Internal
   void EnableEffect(const std::string& FX, bool Enable);
 
   ///
   void InitCompositor();
-
-  /// Load into memory static Ogre plugins
-  void InitOgrePlugins();
-
-  /// Creates SDL window
-  void InitSDLWindow();
-
-  /// Creates Ogre render context attached to SDL window
-  void InitOgreRenderWindow();
-
-  /// Scans Assets and Programs directories for shaders, materials, models, textures, sounds etc.
-  void InitResourceLocation();
-
-  /// Ogre texture settings, like filtration
-  void InitTextureSettings();
-
-  /// Ogre shadow settings
-  void InitShadowSettings();
 
   ///
   std::string RenderSystemName;

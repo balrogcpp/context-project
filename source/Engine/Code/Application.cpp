@@ -10,7 +10,6 @@ extern "C" {
 #include <SDL2/SDL.h>
 }
 
-
 using namespace std;
 
 namespace Glue {
@@ -71,12 +70,10 @@ void Application::Loop() {
   }
 }
 
-#ifdef EMSCRIPTEN
 void Application::EmscriptenLoop(void *arg) {
-  Application *App = static_cast<Application *>(arg);
-  App->LoopBody();
+  auto *app = static_cast<Application *>(arg);
+  app->LoopBody();
 }
-#endif
 
 void Application::Go() {
   Running = true;
@@ -111,7 +108,7 @@ void Application::OnResume() {
 }
 
 int Application::Main() {
-#if OGRE_COMPILER == OGRE_COMPILER_MSVC
+#ifdef _MSC_VER
   SDL_SetMainReady();
 #endif
   ios_base::sync_with_stdio(false);
