@@ -10,10 +10,10 @@
 
 namespace Glue {
 
-class Application final : public WindowObserver, public InputObserver, public Singleton<Application> {
+class Application : public WindowObserver, public InputObserver, public Singleton<Application> {
  public:
   /// Constructors
-  explicit Application();
+  Application();
   virtual ~Application();
   int Main();
 #ifdef EMSCRIPTEN

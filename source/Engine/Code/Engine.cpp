@@ -8,7 +8,6 @@
 #include "SinbadCharacterController.h"
 #include "SkyModel/ArHosekSkyModel.h"
 #include "SkyModel/SkyModel.h"
-// #include "imgui_user/IconsMaterialDesign.h"
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 #include <OgreArchiveFactory.h>
 #include <OgreFileSystem.h>
@@ -92,6 +91,15 @@ namespace fs = std::filesystem;
 namespace fs = ghc::filesystem;
 #endif
 #endif  // DESKTOP
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+ extern "C" {
+__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
+__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif
+
 
 using namespace std;
 using namespace Ogre;
@@ -102,7 +110,7 @@ int ErrorWindow(const char *WindowCaption, const char *MessageText) {
   if (EnginePtr) EnginePtr->GrabCursor(false);
   SDL_Log("%s%s%s", WindowCaption, " : ", MessageText);
 #ifdef _WIN32
-  MessageBox(nullptr, MessageText.c_str(), WindowCaption.c_str(), MB_ICONERROR);
+  MessageBox(nullptr, MessageText, WindowCaption, MB_ICONERROR);
 #else
   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, WindowCaption, MessageText, nullptr);
 #endif
