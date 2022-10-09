@@ -144,7 +144,7 @@ Engine &GetEngine() {
 
 Physics &GetPhysics() { return GetComponent<Physics>(); }
 
-Sound &GetAudio() { return GetComponent<Sound>(); }
+Audio &GetAudio() { return GetComponent<Audio>(); }
 
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 class ShaderResolver final : public Ogre::MaterialManager::Listener {
@@ -440,10 +440,10 @@ void Engine::Init() {
 #ifdef OGRE_BUILD_PLUGIN_STBI
   Root::getSingleton().installPlugin(new STBIPlugin());
 #endif
-#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI) && defined(DESKTOP)
+#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI)
   Root::getSingleton().installPlugin(new FreeImagePlugin());
 #endif
-#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_ASSIMP) && defined(DESKTOP)
+#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_ASSIMP)
   Root::getSingleton().installPlugin(new AssimpPlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
@@ -545,17 +545,6 @@ void Engine::Init() {
   RGM.addResourceLocation("assets.zip", "Zip", RGN_DEFAULT);
 #endif
 
-  // RTSS init
-  // #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-  //   OgreAssert(RTShader::ShaderGenerator::initialize(), "OGRE RTSS init failed");
-  //   auto *ShaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
-  //   OgreViewport->setMaterialScheme(MSN_SHADERGEN);
-  //   ShaderGenerator->addSceneManager(OgreSceneManager);
-  //   ShaderGenerator->setShaderCachePath("");
-  //   auto ResolverPtr = make_unique<ShaderResolver>(ShaderGenerator);
-  //   MaterialManager::getSingleton().addListener(ResolverPtr.get());
-  // #endif  // OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-
   // texture init
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
   if (Ogre::Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_ANISOTROPY)) {
@@ -649,7 +638,7 @@ void Engine::Init() {
   PhysicsPtr = make_unique<Physics>();
   RegComponent(PhysicsPtr.get());
 
-  SoundPtr = make_unique<Sound>();
+  SoundPtr = make_unique<Audio>();
   RegComponent(SoundPtr.get());
 
   InitCompositor();

@@ -2,11 +2,11 @@
 
 #pragma once
 
+#include "Audio.h"
 #include "ImGuiInputListener.h"
 #include "Observer.h"
 #include "Physics.h"
 #include "Singleton.h"
-#include "Sound.h"
 extern "C" {
 #include <SDL2/SDL_video.h>
 }
@@ -33,7 +33,7 @@ class GeometryPage;
 namespace Glue {
 class CameraMan;
 class Physics;
-class Sound;
+class Audio;
 class SinbadCharacterController;
 }  // namespace Glue
 
@@ -113,7 +113,7 @@ class Engine;
 /// Global component getters
 Engine& GetEngine();
 Physics& GetPhysics();
-Sound& GetAudio();
+Audio& GetAudio();
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 ///
@@ -285,8 +285,6 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   int ScreenWidth = 0;
   int ScreenHeight = 0;
   bool WindowVsync = true;
-  bool WindowGammaCorrection = false;
-  int WindowFSAA = 0;
   int CurrentDisplay = 0;
   SDL_DisplayMode CurrentSDLDisplayMode;
   std::vector<SDL_DisplayMode> SDLMonitorList;
@@ -306,17 +304,16 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   std::unique_ptr<ImGuiInputListener> ImGuiListener;
   Ogre::ImGuiOverlay* ImGuiOverlayPtr = nullptr;
   Ogre::OverlaySystem* OgreOverlayPtr = nullptr;
-  ImGuiIO* IoPtr = nullptr;
 
   /// Components
   std::unique_ptr<Physics> PhysicsPtr;
-  std::unique_ptr<Sound> SoundPtr;
+  std::unique_ptr<Audio> SoundPtr;
   std::vector<SystemI*> ComponentList;
 
   /// Global access to base components
   friend Engine& GetEngine();
   friend Physics& GetPhysics();
-  friend Sound& GetAudio();
+  friend Audio& GetAudio();
 };
 
 }  // namespace Glue

@@ -1,14 +1,14 @@
 /// created by Andrey Vasiliev
 
 #include "pch.h"
-#include "Sound.h"
+#include "Audio.h"
 
 using namespace std;
 using namespace Ogre;
 
 namespace Glue {
 
-Sound::Sound(const int MaxSourceCount, const int QueueListSize) {
+Audio::Audio(int MaxSourceCount, int QueueListSize) {
 #ifndef DEBUG
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
@@ -19,35 +19,34 @@ Sound::Sound(const int MaxSourceCount, const int QueueListSize) {
 
   AudioRootPtr = make_unique<OgreOggSound::Root>();
   AudioRootPtr->initialise();
-
-  OgreOggSound::OgreOggSoundManager::getSingleton().init("", MaxSourceCount, QueueListSize);
   SoundManagerPtr = &OgreOggSound::OgreOggSoundManager::getSingleton();
+  SoundManagerPtr->init("", MaxSourceCount, QueueListSize);
   SoundManagerPtr->setResourceGroupName(RGN_AUTODETECT);
 }
 
-Sound::~Sound() { AudioRootPtr->shutdown(); }
+Audio::~Audio() { AudioRootPtr->shutdown(); }
 
-void Sound::OnClean() {}
+void Audio::OnClean() {}
 
-void Sound::OnSetUp() {
+void Audio::OnSetUp() {
   auto *CameraNode = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getParentSceneNode();
   if (CameraNode) AddListener(CameraNode);
 }
 
-void Sound::OnUpdate(float PassedTime) {}
+void Audio::OnUpdate(float PassedTime) {}
 
-void Sound::OnPause() { SoundManagerPtr->pauseAllSounds(); }
+void Audio::OnPause() { SoundManagerPtr->pauseAllSounds(); }
 
-void Sound::OnResume() { SoundManagerPtr->resumeAllPausedSounds(); }
+void Audio::OnResume() { SoundManagerPtr->resumeAllPausedSounds(); }
 
-void Sound::Pause() { SoundManagerPtr->pauseAllSounds(); }
+void Audio::Pause() { SoundManagerPtr->pauseAllSounds(); }
 
-void Sound::Resume() { SoundManagerPtr->resumeAllPausedSounds(); }
+void Audio::Resume() { SoundManagerPtr->resumeAllPausedSounds(); }
 
-void Sound::AddSound(const string &SoundName, const string &AudioFile, Ogre::SceneNode *Node, bool PlayInLoop) {
-#if OGRE_THREAD_SUPPORT > 0
-  this_thread::sleep_for(chrono::milliseconds(16));
-#endif
+void Audio::AddSound(const char *SoundName, const char *AudioFile, Ogre::SceneNode *Node, bool PlayInLoop) {
+//#if OGRE_THREAD_SUPPORT > 0
+//  this_thread::sleep_for(chrono::milliseconds(16));
+//#endif
   auto *sound = SoundManagerPtr->createSound(SoundName, AudioFile, true, PlayInLoop, true, nullptr);
   auto *root_node = Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
   if (Node)
@@ -56,7 +55,7 @@ void Sound::AddSound(const string &SoundName, const string &AudioFile, Ogre::Sce
     root_node->createChildSceneNode()->attachObject(sound);
 }
 
-void Sound::AddListener(SceneNode *ParentPtr) {
+void Audio::AddListener(SceneNode *ParentPtr) {
   auto *listener = SoundManagerPtr->getListener();
 
   if (!listener) {
@@ -67,9 +66,9 @@ void Sound::AddListener(SceneNode *ParentPtr) {
   if (ParentPtr) ParentPtr->attachObject(listener);
 }
 
-void Sound::RemoveListener(SceneNode *ParentPtr) {}
+void Audio::RemoveListener(SceneNode *ParentPtr) {}
 
-void Sound::PlaySound(const string &SoundName, bool PlayImmediately) {
+void Audio::PlaySound(const char *SoundName, bool PlayImmediately) {
   auto *sound = SoundManagerPtr->getSound(SoundName);
   if (sound) {
     if (PlayImmediately) sound->stop();
@@ -79,7 +78,7 @@ void Sound::PlaySound(const string &SoundName, bool PlayImmediately) {
   }
 }
 
-void Sound::StopSound(const string &SoundName) {
+void Audio::StopSound(const char *SoundName) {
   auto *sound = SoundManagerPtr->getSound(SoundName);
   if (sound) {
     sound->stop();
@@ -88,14 +87,14 @@ void Sound::StopSound(const string &SoundName) {
   }
 }
 
-void Sound::SetMasterVolume(float Volume) { SoundManagerPtr->setMasterVolume(Volume); }
+void Audio::SetMasterVolume(float Volume) { SoundManagerPtr->setMasterVolume(Volume); }
 
-void Sound::SetSoundMaxVolume(const string &SoundName, float MaxVolume) {
+void Audio::SetSoundMaxVolume(const char *SoundName, float MaxVolume) {
   auto *Sound = SoundManagerPtr->getSound(SoundName);
   if (Sound) Sound->setMaxVolume(MaxVolume);
 }
 
-void Sound::SetSoundVolume(const string &SoundName, float Volume) {
+void Audio::SetSoundVolume(const char *SoundName, float Volume) {
   auto *sound = SoundManagerPtr->getSound(SoundName);
   if (sound) sound->setVolume(Volume);
 }

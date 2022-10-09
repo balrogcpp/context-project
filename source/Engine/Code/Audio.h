@@ -9,13 +9,12 @@
 #include <memory>
 #include <string>
 
-
 namespace Glue {
 
-class Sound final : public System<Sound> {
+class Audio final : public System<Audio> {
  public:
-  Sound(const int MaxSourceCount = 16, const int QueueListSize = 4);
-  virtual ~Sound();
+  explicit Audio(int MaxSourceCount = 16, int QueueListSize = 4);
+  virtual ~Audio();
 
   void OnSetUp() override;
   void OnClean() override;
@@ -25,12 +24,12 @@ class Sound final : public System<Sound> {
   void Resume();
   void OnUpdate(float PassedTime) override;
 
-  void AddSound(const std::string &SoundName, const std::string &AudioFile, Ogre::SceneNode *Node = nullptr, bool PlayInLoop = false);
-  void PlaySound(const std::string &SoundName, bool PlayImmediately = true);
-  void StopSound(const std::string &SoundName);
+  void AddSound(const char *SoundName, const char *AudioFile, Ogre::SceneNode *Node = nullptr, bool PlayInLoop = false);
+  void PlaySound(const char *SoundName, bool PlayImmediately = true);
+  void StopSound(const char *SoundName);
   void SetMasterVolume(float MasterVolume);
-  void SetSoundMaxVolume(const std::string &SoundName, float MaxVolume);
-  void SetSoundVolume(const std::string &SoundName, float Volume);
+  void SetSoundMaxVolume(const char *SoundName, float MaxVolume);
+  void SetSoundVolume(const char *SoundName, float Volume);
   void AddListener(Ogre::SceneNode *ParentPtr);
   void RemoveListener(Ogre::SceneNode *ParentPtr);
 

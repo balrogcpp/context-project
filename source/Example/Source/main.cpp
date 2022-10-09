@@ -14,6 +14,11 @@ int main()
   try {
     // main app class object
     Glue::Application app;
+
+    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
+    auto *root = scene->getRootSceneNode();
+    root->loadChildren("1.scene");
+
     // main function
     return app.Main();
   } catch (std::exception &e) {

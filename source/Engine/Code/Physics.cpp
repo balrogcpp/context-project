@@ -27,7 +27,7 @@ Physics::Physics(bool threaded) : Threaded(threaded) {
 #endif
 
   BtWorld->setGravity(btVector3(0.0, -9.8, 0.0));
-  //if (Threaded) InitThread();
+  // if (Threaded) InitThread();
   Paused = false;
   Running = true;
 }

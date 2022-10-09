@@ -79,9 +79,6 @@ void Application::Go() {
   Running = true;
   auto duration_before_update = chrono::system_clock::now().time_since_epoch();
   TimeOfLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
-  auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-  auto *root = scene->getRootSceneNode();
-  root->loadChildren("1.scene");
 #ifdef MOBILE
   TargetFPS = 30;
 #endif
