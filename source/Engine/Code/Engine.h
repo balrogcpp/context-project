@@ -7,6 +7,7 @@
 #include "Observer.h"
 #include "Physics.h"
 #include "Singleton.h"
+#include "Video.h"
 extern "C" {
 #include <SDL2/SDL_video.h>
 }
@@ -41,72 +42,6 @@ int ErrorWindow(const char* WindowCaption, const char* MessageText);
 
 namespace Glue {
 
-inline bool GlobalMRTIsEnabled() { return true; }
-
-inline bool CPUSupportsSSE() {
-#if OGRE_CPU == OGRE_CPU_X86
-  return Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE);
-#else
-  return false;
-#endif
-};
-
-inline bool CPUSupportsSSE2() {
-#if OGRE_CPU == OGRE_CPU_X86
-  return Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE2);
-#else
-  return false;
-#endif
-};
-
-inline bool CPUSupportsSSE3() {
-#if OGRE_CPU == OGRE_CPU_X86
-  return Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE3);
-#else
-  return false;
-#endif
-};
-
-inline bool CPUSupportsSSE41() {
-#if OGRE_CPU == OGRE_CPU_X86
-  return Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE41);
-#else
-  return false;
-#endif
-}
-
-inline bool CPUSupportsSSE42() {
-#if OGRE_CPU == OGRE_CPU_X86
-  return Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_SSE42);
-#else
-  return false;
-#endif
-}
-
-inline bool CPUSupportsNEON() {
-#if OGRE_CPU == OGRE_CPU_ARM
-  return Ogre::PlatformInformation::hasCpuFeature(Ogre::PlatformInformation::CPU_FEATURE_NEON);
-#else
-  return false;
-#endif
-};
-
-// inline bool IsFullscreen() { return GetEngine().IsWindowFullscreen(); }
-
-inline bool RenderSystemIsGL() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL Rendering Subsystem"; };
-
-inline bool RenderSystemIsGL3() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL 3+ Rendering Subsystem"; };
-
-inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"; };
-
-inline Ogre::SceneManager* OgreSceneManager() { return Ogre::Root::getSingleton().getSceneManager("Default"); }
-
-inline Ogre::SceneNode* OgreRootNode() { return OgreSceneManager()->getRootSceneNode(); }
-
-inline Ogre::Camera* OgreCamera() { return OgreSceneManager()->getCamera("Default"); }
-
-inline Ogre::SceneNode* OgreCameraNode() { return OgreCamera()->getParentSceneNode(); }
-
 /// Forward declaration
 class Engine;
 
@@ -114,30 +49,6 @@ class Engine;
 Engine& GetEngine();
 Physics& GetPhysics();
 Audio& GetAudio();
-
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-///
-void InitOgreRenderSystemGL3();
-
-///
-bool CheckGL3Version(int major, int minor);
-#endif
-
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-///
-void InitOgreRenderSystemGLES2();
-
-///
-bool CheckGLES2Version(int major, int minor);
-#endif
-
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL
-///
-void InitOgreRenderSystemGL();
-
-///
-bool CheckGLVersion(int major, int minor);
-#endif
 
 ///
 Ogre::Camera* OgreCamera();
@@ -263,7 +174,7 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   ///
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> PSSMSetupPtr;
   std::vector<float> PSSMSplitPointList;
-  int PSSMSplitCount = 3;
+  const int PSSM_SPLITS = 3;
 
   ///
   std::unique_ptr<Ogre::TerrainGroup> OgreTerrainList;

@@ -360,7 +360,7 @@ void Engine::Init() {
       }
     }
   }
-  for (int i = 0; i < SDL_NumJoysticks(); ++i) {
+  for (int i = 0; i < SDL_NumJoysticks(); i++) {
     if (SDL_IsGameController(i)) SDL_GameControllerOpen(i);
   }
 
@@ -526,6 +526,15 @@ void Engine::Init() {
 #endif
   }
 
+  // texture init
+  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
+  if (Ogre::Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_ANISOTROPY)) {
+    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_ANISOTROPIC);
+    Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(8);
+  } else {
+    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_BILINEAR);
+  }
+
   // scan resources
   auto &RGM = ResourceGroupManager::getSingleton();
 #if defined(ANDROID)
@@ -544,35 +553,6 @@ void Engine::Init() {
   RGM.addResourceLocation("programs.zip", "Zip", RGN_INTERNAL);
   RGM.addResourceLocation("assets.zip", "Zip", RGN_DEFAULT);
 #endif
-
-  // texture init
-  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
-  if (Ogre::Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_ANISOTROPY)) {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_ANISOTROPIC);
-    Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(8);
-  } else {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_BILINEAR);
-  }
-
-  // overlay init
-  OgreOverlayPtr = new Ogre::OverlaySystem();
-  ImGuiOverlayPtr = new Ogre::ImGuiOverlay();
-  float vpScale = OverlayManager::getSingleton().getPixelRatio();
-  ImGui::GetIO().FontGlobalScale = std::round(vpScale);  // default font does not work with fractional scaling
-  ImGui::GetStyle().ScaleAllSizes(vpScale);
-  ImGuiOverlayPtr->setZOrder(300);
-  ImGuiOverlayPtr->show();
-  Ogre::OverlayManager::getSingleton().addOverlay(ImGuiOverlayPtr);
-  OgreSceneManager->addRenderQueueListener(OgreOverlayPtr);
-  ImGuiListener = make_unique<ImGuiInputListener>();
-  ImGuiIO &io = ImGui::GetIO();
-  io.IniFilename = nullptr;
-  io.LogFilename = nullptr;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
-  io.MouseDrawCursor = false;
-  io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 
   // load resources
   RGM.initialiseResourceGroup(RGN_INTERNAL);
@@ -610,10 +590,10 @@ void Engine::Init() {
   auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
   OgreSceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
   PSSMSetupPtr = make_shared<PSSMShadowCameraSetup>();
-  PSSMSetupPtr->calculateSplitPoints(PSSMSplitCount, 0.001, OgreSceneManager->getShadowFarDistance());
+  PSSMSetupPtr->calculateSplitPoints(PSSM_SPLITS, 0.001, OgreSceneManager->getShadowFarDistance());
   PSSMSplitPointList = PSSMSetupPtr->getSplitPoints();
   PSSMSetupPtr->setSplitPadding(0.0);
-  for (int i = 0; i < PSSMSplitCount; i++) PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
+  for (int i = 0; i < PSSM_SPLITS; i++) PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
   OgreSceneManager->setShadowCameraSetup(PSSMSetupPtr);
   OgreSceneManager->setShadowColour(ColourValue::Black);
 
@@ -633,6 +613,26 @@ void Engine::Init() {
   subRenderState->setSplitPoints(PSSMSplitPointList);
   schemRenderState->addTemplateSubRenderState(subRenderState);
 #endif  // OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
+
+  // overlay init
+  OgreOverlayPtr = new Ogre::OverlaySystem();
+  ImGuiOverlayPtr = new Ogre::ImGuiOverlay();
+  float vpScale = OverlayManager::getSingleton().getPixelRatio();
+  ImGui::GetIO().FontGlobalScale = std::round(vpScale);  // default font does not work with fractional scaling
+  ImGui::GetStyle().ScaleAllSizes(vpScale);
+  ImGuiOverlayPtr->setZOrder(300);
+  ImGuiOverlayPtr->show();
+  Ogre::OverlayManager::getSingleton().addOverlay(ImGuiOverlayPtr);
+  OgreSceneManager->addRenderQueueListener(OgreOverlayPtr);
+  ImGuiListener = make_unique<ImGuiInputListener>();
+  ImGuiIO &io = ImGui::GetIO();
+  io.IniFilename = nullptr;
+  io.LogFilename = nullptr;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
+  io.MouseDrawCursor = false;
+  io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 
   // components init
   PhysicsPtr = make_unique<Physics>();

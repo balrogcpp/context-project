@@ -7,7 +7,7 @@
 #include <OgreRoot.h>
 #include <RenderSystems/GLES2/OgreGLES2RenderSystem.h>
 
-namespace Glue {
+//namespace Glue {
 
 void InitOgreRenderSystemGLES2() { Ogre::Root::getSingleton().setRenderSystem(new Ogre::GLES2RenderSystem()); }
 
@@ -15,5 +15,5 @@ bool CheckGLES2Version(int major, int minor) {
   return dynamic_cast<Ogre::GLRenderSystemCommon *>(Ogre::Root::getSingleton().getRenderSystem())->hasMinGLVersion(major, minor);
 }
 
-}  // namespace Glue
+//}  // namespace Glue
 #endif  // OGRE_BUILD_RENDERSYSTEM_GLES2
