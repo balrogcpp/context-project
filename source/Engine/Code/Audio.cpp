@@ -8,7 +8,7 @@ using namespace Ogre;
 
 namespace Glue {
 
-Audio::Audio(int MaxSourceCount, int QueueListSize) {
+Audio::Audio(int maxSourceCount, int queueListSize) {
 #ifndef DEBUG
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
@@ -17,14 +17,14 @@ Audio::Audio(int MaxSourceCount, int QueueListSize) {
 #endif
 #endif
 
-  AudioRootPtr = make_unique<OgreOggSound::Root>();
-  AudioRootPtr->initialise();
-  SoundManagerPtr = &OgreOggSound::OgreOggSoundManager::getSingleton();
-  SoundManagerPtr->init("", MaxSourceCount, QueueListSize);
-  SoundManagerPtr->setResourceGroupName(RGN_AUTODETECT);
+  audioRoot = make_unique<OgreOggSound::Root>();
+  audioRoot->initialise();
+  soundManager = &OgreOggSound::OgreOggSoundManager::getSingleton();
+  soundManager->init("", maxSourceCount, queueListSize);
+  soundManager->setResourceGroupName(RGN_AUTODETECT);
 }
 
-Audio::~Audio() { AudioRootPtr->shutdown(); }
+Audio::~Audio() { audioRoot->shutdown(); }
 
 void Audio::OnClean() {}
 
@@ -33,70 +33,70 @@ void Audio::OnSetUp() {
   if (CameraNode) AddListener(CameraNode);
 }
 
-void Audio::OnUpdate(float PassedTime) {}
+void Audio::OnUpdate(float passedTime) {}
 
-void Audio::OnPause() { SoundManagerPtr->pauseAllSounds(); }
+void Audio::OnPause() { soundManager->pauseAllSounds(); }
 
-void Audio::OnResume() { SoundManagerPtr->resumeAllPausedSounds(); }
+void Audio::OnResume() { soundManager->resumeAllPausedSounds(); }
 
-void Audio::Pause() { SoundManagerPtr->pauseAllSounds(); }
+void Audio::Pause() { soundManager->pauseAllSounds(); }
 
-void Audio::Resume() { SoundManagerPtr->resumeAllPausedSounds(); }
+void Audio::Resume() { soundManager->resumeAllPausedSounds(); }
 
-void Audio::AddSound(const char *SoundName, const char *AudioFile, Ogre::SceneNode *Node, bool PlayInLoop) {
+void Audio::AddSound(const char *name, const char *audioFile, Ogre::SceneNode *parent, bool playInLoop) {
 //#if OGRE_THREAD_SUPPORT > 0
 //  this_thread::sleep_for(chrono::milliseconds(16));
 //#endif
-  auto *sound = SoundManagerPtr->createSound(SoundName, AudioFile, true, PlayInLoop, true, nullptr);
+  auto *sound = soundManager->createSound(name, audioFile, true, playInLoop, true, nullptr);
   auto *root_node = Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
-  if (Node)
-    Node->attachObject(sound);
+  if (parent)
+    parent->attachObject(sound);
   else
     root_node->createChildSceneNode()->attachObject(sound);
 }
 
-void Audio::AddListener(SceneNode *ParentPtr) {
-  auto *listener = SoundManagerPtr->getListener();
+void Audio::AddListener(SceneNode *parent) {
+  auto *listener = soundManager->getListener();
 
   if (!listener) {
-    OgreAssert(SoundManagerPtr->createListener(), "Failed to create sound listener");
-    listener = SoundManagerPtr->getListener();
+    OgreAssert(soundManager->createListener(), "Failed to create sound listener");
+    listener = soundManager->getListener();
   }
 
-  if (ParentPtr) ParentPtr->attachObject(listener);
+  if (parent) parent->attachObject(listener);
 }
 
-void Audio::RemoveListener(SceneNode *ParentPtr) {}
+void Audio::RemoveListener(SceneNode *parent) {}
 
-void Audio::PlaySound(const char *SoundName, bool PlayImmediately) {
-  auto *sound = SoundManagerPtr->getSound(SoundName);
+void Audio::PlaySound(const char *name, bool playImmediately) {
+  auto *sound = soundManager->getSound(name);
   if (sound) {
-    if (PlayImmediately) sound->stop();
+    if (playImmediately) sound->stop();
     sound->play();
   } else {
-    throw std::runtime_error(string("Sound \"") + SoundName + "\" not found. Aborting\n");
+    throw std::runtime_error(string("Sound \"") + name + "\" not found. Aborting\n");
   }
 }
 
-void Audio::StopSound(const char *SoundName) {
-  auto *sound = SoundManagerPtr->getSound(SoundName);
+void Audio::StopSound(const char *name) {
+  auto *sound = soundManager->getSound(name);
   if (sound) {
     sound->stop();
   } else {
-    throw std::runtime_error(string("Sound \"") + SoundName + "\" not found. Aborting\n");
+    throw std::runtime_error(string("Sound \"") + name + "\" not found. Aborting\n");
   }
 }
 
-void Audio::SetMasterVolume(float Volume) { SoundManagerPtr->setMasterVolume(Volume); }
+void Audio::SetMasterVolume(float volume) { soundManager->setMasterVolume(volume); }
 
-void Audio::SetSoundMaxVolume(const char *SoundName, float MaxVolume) {
-  auto *Sound = SoundManagerPtr->getSound(SoundName);
-  if (Sound) Sound->setMaxVolume(MaxVolume);
+void Audio::SetSoundMaxVolume(const char *name, float volume) {
+  auto *Sound = soundManager->getSound(name);
+  if (Sound) Sound->setMaxVolume(volume);
 }
 
-void Audio::SetSoundVolume(const char *SoundName, float Volume) {
-  auto *sound = SoundManagerPtr->getSound(SoundName);
-  if (sound) sound->setVolume(Volume);
+void Audio::SetSoundVolume(const char *name, float volume) {
+  auto *sound = soundManager->getSound(name);
+  if (sound) sound->setVolume(volume);
 }
 
 }  // namespace Glue

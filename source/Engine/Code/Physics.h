@@ -28,9 +28,9 @@ class Physics final : public System<Physics> {
   void OnResume() override;
   void OnPause() override;
 
-  void AddRigidBody(btRigidBody *RidigBodyPtr);
-  void ProcessData(Ogre::Entity *EntityPtr, Ogre::SceneNode *ParentNode, const Ogre::UserObjectBindings &UserData);
-  void ProcessData(Ogre::Entity *EntityPtr, Ogre::SceneNode *ParentNode, bool Static = true, const std::string &ProxyType = "box", float Mass = 1.0,
+  void AddRigidBody(btRigidBody *rigidBody);
+  void ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, const Ogre::UserObjectBindings &userData);
+  void ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, bool isStatic = true, const std::string &type = "box", float mass = 1.0,
                    float friction = 1.0);
   void CreateTerrainHeightfieldShape(int size, float *data, const float &min_height, const float &max_height, const Ogre::Vector3 &position,
                                      const float &scale);

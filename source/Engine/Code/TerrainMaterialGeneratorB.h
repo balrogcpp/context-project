@@ -20,7 +20,7 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
 
     Ogre::MaterialPtr generate(const Ogre::Terrain *OgreTerrainPtr) override;
     Ogre::MaterialPtr generateForCompositeMap(const Ogre::Terrain *terrain) override;
-    Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const override { return TerrainMaxLayers; }
+    Ogre::uint8 getMaxLayers(const Ogre::Terrain *terrain) const override { return terrainMaxLayers; }
     void updateParams(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
     void updateParamsForCompositeMap(const Ogre::MaterialPtr &mat, const Ogre::Terrain *terrain) override {}
     void requestOptions(Ogre::Terrain *OgreTerrainPtr) override;
@@ -28,8 +28,8 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
     void setLightmapEnabled(bool enabled) override;
 
    protected:
-    bool EnableLightmap = false;
-    int8_t TerrainMaxLayers = 4;
+    bool enableLightmap = false;
+    int8_t terrainMaxLayers = 4;
   };
 };
 

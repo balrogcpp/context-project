@@ -16,48 +16,51 @@ namespace Glue {
 
 Application::Application() {
   InputSequencer::GetInstance().RegWinObserver(this);
-  EnginePtr = make_unique<Engine>();
-  EnginePtr->Init();
+  engine = make_unique<Engine>();
+  engine->Init();
 }
 
 Application::~Application() { InputSequencer::GetInstance().UnregWinObserver(this); }
 
 void Application::LoopBody() {
-  auto before_frame = chrono::system_clock::now().time_since_epoch();
-  int64_t TimeBeforeFrame = chrono::duration_cast<chrono::microseconds>(before_frame).count();
+  static int64_t cumulatedTime = 0;
+  auto duration_before_frame = chrono::system_clock::now().time_since_epoch();
+  static int64_t timeOfLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_frame).count();
+  static bool wasSuspended = false;
+  int64_t timeBeforeFrame = chrono::duration_cast<chrono::microseconds>(duration_before_frame).count();
 
-  if (CumultedTime > int64_t(1e+6)) CumultedTime = 0;
+  if (cumulatedTime > int64_t(1e+6)) cumulatedTime = 0;
 
-  EnginePtr->Capture();
+  engine->Capture();
 
-  if (!Suspend) {
-    if (WasSuspended) {
-      EnginePtr->OnResume();
-      WasSuspended = false;
+  if (!suspend) {
+    if (wasSuspended) {
+      engine->OnResume();
+      wasSuspended = false;
     }
 
-    auto before_update = chrono::system_clock::now().time_since_epoch();
-    int64_t TimeBeforeUpdate = chrono::duration_cast<chrono::microseconds>(before_update).count();
-    float frame_time = static_cast<float>(TimeBeforeUpdate - TimeOfLastFrame) / 1e+6;
-    TimeOfLastFrame = TimeBeforeUpdate;
-    EnginePtr->Update(frame_time);
-    EnginePtr->RenderFrame();
+    auto duration_before_update = chrono::system_clock::now().time_since_epoch();
+    int64_t timeBeforeUpdate = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
+    float frameTime = static_cast<float>(timeBeforeUpdate - timeOfLastFrame) / 1e+6;
+    timeOfLastFrame = timeBeforeUpdate;
+    engine->Update(frameTime);
+    engine->RenderFrame();
   } else {
-    EnginePtr->OnPause();
-    WasSuspended = true;
+    engine->OnPause();
+    wasSuspended = true;
   }
 
   auto TimeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-  auto RenderTime = TimeAftetRender - TimeBeforeFrame;
+  auto RenderTime = TimeAftetRender - timeBeforeFrame;
 
-  if (LockFPS) {
-    auto delay = static_cast<int64_t>((1e+6 / TargetFPS) - RenderTime);
+  if (lockFps) {
+    auto delay = static_cast<int64_t>((1e+6 / targetFps) - RenderTime);
     if (delay > 0) this_thread::sleep_for(chrono::microseconds(delay));
   }
 
   int64_t TimeInEndOfLoop = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-  int64_t TimeSinceLastFrame = TimeInEndOfLoop - TimeBeforeFrame;
-  CumultedTime += TimeSinceLastFrame;
+  int64_t TimeSinceLastFrame = TimeInEndOfLoop - timeBeforeFrame;
+  cumulatedTime += TimeSinceLastFrame;
 
 #ifdef EMSCRIPTEN
   if (!Running) emscripten_cancel_main_loop();
@@ -65,7 +68,7 @@ void Application::LoopBody() {
 }
 
 void Application::Loop() {
-  while (Running) {
+  while (running) {
     LoopBody();
   }
 }
@@ -76,9 +79,7 @@ void Application::EmscriptenLoop(void *arg) {
 }
 
 void Application::Go() {
-  Running = true;
-  auto duration_before_update = chrono::system_clock::now().time_since_epoch();
-  TimeOfLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
+  running = true;
 #ifdef MOBILE
   TargetFPS = 30;
 #endif
@@ -88,20 +89,20 @@ void Application::Go() {
   LockFPS = false;
   emscripten_set_main_loop_arg(Application::EmscriptenLoop, GetInstancePtr(), 0, 1);
 #endif
-  EnginePtr->OnCleanup();
-  EnginePtr->OnPause();
+  engine->OnCleanup();
+  engine->OnPause();
 }
 
-void Application::OnQuit() { Running = false; }
+void Application::OnQuit() { running = false; }
 
 void Application::OnPause() {
-  Suspend = true;
-  EnginePtr->OnPause();
+  suspend = true;
+  engine->OnPause();
 }
 
 void Application::OnResume() {
-  Suspend = false;
-  EnginePtr->OnResume();
+  suspend = false;
+  engine->OnResume();
 }
 
 int Application::Main() {

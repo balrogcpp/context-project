@@ -13,7 +13,7 @@ namespace Glue {
 
 class Audio final : public System<Audio> {
  public:
-  explicit Audio(int MaxSourceCount = 16, int QueueListSize = 4);
+  explicit Audio(int maxSourceCount = 16, int queueListSize = 4);
   virtual ~Audio();
 
   void OnSetUp() override;
@@ -22,20 +22,20 @@ class Audio final : public System<Audio> {
   void OnResume() override;
   void Pause();
   void Resume();
-  void OnUpdate(float PassedTime) override;
+  void OnUpdate(float passedTime) override;
 
-  void AddSound(const char *SoundName, const char *AudioFile, Ogre::SceneNode *Node = nullptr, bool PlayInLoop = false);
-  void PlaySound(const char *SoundName, bool PlayImmediately = true);
-  void StopSound(const char *SoundName);
-  void SetMasterVolume(float MasterVolume);
-  void SetSoundMaxVolume(const char *SoundName, float MaxVolume);
-  void SetSoundVolume(const char *SoundName, float Volume);
-  void AddListener(Ogre::SceneNode *ParentPtr);
-  void RemoveListener(Ogre::SceneNode *ParentPtr);
+  void AddSound(const char *name, const char *audioFile, Ogre::SceneNode *parent = nullptr, bool playInLoop = false);
+  void PlaySound(const char *name, bool playImmediately = true);
+  void StopSound(const char *name);
+  void SetMasterVolume(float volume);
+  void SetSoundMaxVolume(const char *name, float volume);
+  void SetSoundVolume(const char *name, float volume);
+  void AddListener(Ogre::SceneNode *parent);
+  void RemoveListener(Ogre::SceneNode *parent);
 
  protected:
-  std::unique_ptr<OgreOggSound::Root> AudioRootPtr;
-  OgreOggSound::OgreOggSoundManager *SoundManagerPtr = nullptr;
+  std::unique_ptr<OgreOggSound::Root> audioRoot;
+  OgreOggSound::OgreOggSoundManager *soundManager = nullptr;
 };
 
 }  // namespace Glue

@@ -189,37 +189,37 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   bool Paused = false;
 
   ///
-  std::string WindowCaption = "Example0";
-  int WindowWidth = 1270;
-  int WindowHeight = 720;
-  bool WindowFullScreen = false;
-  int ScreenWidth = 0;
-  int ScreenHeight = 0;
-  bool WindowVsync = true;
-  int CurrentDisplay = 0;
-  SDL_DisplayMode CurrentSDLDisplayMode;
-  std::vector<SDL_DisplayMode> SDLMonitorList;
-  SDL_Window* SDLWindowPtr = nullptr;
-  SDL_GLContext SDLGLContextPtr = nullptr;
-  uint32_t SDLWindowFlags = 0;
-  int WindowPositionFlag = SDL_WINDOWPOS_CENTERED;
+  std::string windowCaption = "Example0";
+  int windowWidth = 1270;
+  int windowHeight = 720;
+  bool windowFullScreen = false;
+  int screenWidth = 0;
+  int screenHeight = 0;
+  bool windowVsync = true;
+  int currentDisplay = 0;
+  SDL_DisplayMode displayMode;
+  std::vector<SDL_DisplayMode> sdlMonitorList;
+  SDL_Window* sdlWindow = nullptr;
+  SDL_GLContext sdlContext = nullptr;
+  uint32_t sdlWindowFlags = 0;
+  int windowPositionFlag = SDL_WINDOWPOS_CENTERED;
 
   /// Compositor stuff
-  Ogre::CompositorManager* OgreCompositorManager = nullptr;
-  Ogre::CompositorChain* OgreCompositorChain = nullptr;
+  Ogre::CompositorManager* compositorManager = nullptr;
+  Ogre::CompositorChain* compositorChain = nullptr;
   int ViewportSizeX = 0;
   int ViewportSizeY = 0;
-  std::map<std::string, CompositorFX> CompositorList;
+  std::map<std::string, CompositorFX> compositorList;
 
   /// ImGui stuff
-  std::unique_ptr<ImGuiInputListener> ImGuiListener;
-  Ogre::ImGuiOverlay* ImGuiOverlayPtr = nullptr;
-  Ogre::OverlaySystem* OgreOverlayPtr = nullptr;
+  std::unique_ptr<ImGuiInputListener> imguiListener;
+  Ogre::ImGuiOverlay* imguiOverlay = nullptr;
+  Ogre::OverlaySystem* overlay = nullptr;
 
   /// Components
-  std::unique_ptr<Physics> PhysicsPtr;
-  std::unique_ptr<Audio> SoundPtr;
-  std::vector<SystemI*> ComponentList;
+  std::unique_ptr<Physics> physics;
+  std::unique_ptr<Audio> audio;
+  std::vector<SystemI*> componentList;
 
   /// Global access to base components
   friend Engine& GetEngine();

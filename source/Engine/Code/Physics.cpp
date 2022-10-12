@@ -93,7 +93,7 @@ void Physics::OnClean() {
   }
 }
 
-void Physics::AddRigidBody(btRigidBody *body) { BtWorld->addRigidBody(body); }
+void Physics::AddRigidBody(btRigidBody *rigidBody) { BtWorld->addRigidBody(rigidBody); }
 
 void Physics::CreateTerrainHeightfieldShape(int size, float *data, const float &min_height, const float &max_height, const Ogre::Vector3 &position,
                                             const float &scale) {
@@ -132,62 +132,62 @@ void Physics::CreateTerrainHeightfieldShape(int size, float *data, const float &
   BtWorld->setForceUpdateAllAabbs(false);
 }
 
-void Physics::ProcessData(Ogre::Entity *EntityPtr, Ogre::SceneNode *ParentNode, bool Static, const std::string &ProxyType, float Mass,
+void Physics::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, bool isStatic, const std::string &type, float mass,
                           float friction) {
   btRigidBody *entBody = nullptr;
   btVector3 Inertia = btVector3(0, 0, 0);
 
-  if (!EntityPtr->getParentSceneNode() && ParentNode) ParentNode->attachObject(EntityPtr);
-  auto *entShape = Bullet::createCapsuleCollider(EntityPtr);
+  if (!entity->getParentSceneNode() && parent) parent->attachObject(entity);
+  auto *entShape = Bullet::createCapsuleCollider(entity);
 
-  if (Static)
-    Mass = 0.0;
+  if (isStatic)
+    mass = 0.0;
   else
-    entShape->calculateLocalInertia(Mass, Inertia);
+    entShape->calculateLocalInertia(mass, Inertia);
 
-  auto *bodyState = new Bullet::RigidBodyState(ParentNode);
+  auto *bodyState = new Bullet::RigidBodyState(parent);
 
-  entBody = new btRigidBody(Mass, bodyState, entShape, Inertia);
-  if (Static) entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+  entBody = new btRigidBody(mass, bodyState, entShape, Inertia);
+  if (isStatic) entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
   AddRigidBody(entBody);
 }
 
-void Physics::ProcessData(Entity *EntityPtr, SceneNode *ParentNode, const UserObjectBindings &UserData) {
+void Physics::ProcessData(Entity *entity, SceneNode *parent, const UserObjectBindings &userData) {
   string ProxyType;
-  if (UserData.getUserAny("proxy").has_value()) ProxyType = any_cast<string>(UserData.getUserAny("proxy"));
-  string physics_type = any_cast<string>(UserData.getUserAny("physics_type"));
-  float Mass = any_cast<float>(UserData.getUserAny("mass"));
-  float mass_radius = any_cast<float>(UserData.getUserAny("mass_radius"));
-  float inertia_tensor = any_cast<float>(UserData.getUserAny("inertia_tensor"));
-  float velocity_min = any_cast<float>(UserData.getUserAny("velocity_min"));
-  float velocity_max = any_cast<float>(UserData.getUserAny("velocity_max"));
-  bool lock_trans_x = any_cast<bool>(UserData.getUserAny("lock_trans_x"));
-  bool lock_trans_y = any_cast<bool>(UserData.getUserAny("lock_trans_y"));
-  bool lock_trans_z = any_cast<bool>(UserData.getUserAny("lock_trans_z"));
-  bool lock_rot_x = any_cast<bool>(UserData.getUserAny("lock_rot_x"));
-  bool lock_rot_y = any_cast<bool>(UserData.getUserAny("lock_rot_y"));
-  bool lock_rot_z = any_cast<bool>(UserData.getUserAny("lock_rot_z"));
-  bool anisotropic_friction = any_cast<bool>(UserData.getUserAny("anisotropic_friction"));
-  float friction_x = any_cast<float>(UserData.getUserAny("friction_x"));
-  float friction_y = any_cast<float>(UserData.getUserAny("friction_y"));
-  float friction_z = any_cast<float>(UserData.getUserAny("friction_z"));
-  float damping_trans = any_cast<float>(UserData.getUserAny("damping_trans"));
-  float damping_rot = any_cast<float>(UserData.getUserAny("damping_rot"));
+  if (userData.getUserAny("proxy").has_value()) ProxyType = any_cast<string>(userData.getUserAny("proxy"));
+  string physics_type = any_cast<string>(userData.getUserAny("physics_type"));
+  float Mass = any_cast<float>(userData.getUserAny("mass"));
+  float mass_radius = any_cast<float>(userData.getUserAny("mass_radius"));
+  float inertia_tensor = any_cast<float>(userData.getUserAny("inertia_tensor"));
+  float velocity_min = any_cast<float>(userData.getUserAny("velocity_min"));
+  float velocity_max = any_cast<float>(userData.getUserAny("velocity_max"));
+  bool lock_trans_x = any_cast<bool>(userData.getUserAny("lock_trans_x"));
+  bool lock_trans_y = any_cast<bool>(userData.getUserAny("lock_trans_y"));
+  bool lock_trans_z = any_cast<bool>(userData.getUserAny("lock_trans_z"));
+  bool lock_rot_x = any_cast<bool>(userData.getUserAny("lock_rot_x"));
+  bool lock_rot_y = any_cast<bool>(userData.getUserAny("lock_rot_y"));
+  bool lock_rot_z = any_cast<bool>(userData.getUserAny("lock_rot_z"));
+  bool anisotropic_friction = any_cast<bool>(userData.getUserAny("anisotropic_friction"));
+  float friction_x = any_cast<float>(userData.getUserAny("friction_x"));
+  float friction_y = any_cast<float>(userData.getUserAny("friction_y"));
+  float friction_z = any_cast<float>(userData.getUserAny("friction_z"));
+  float damping_trans = any_cast<float>(userData.getUserAny("damping_trans"));
+  float damping_rot = any_cast<float>(userData.getUserAny("damping_rot"));
   bool Static = (physics_type != "dynamic");
 
   btRigidBody *entBody = nullptr;
   btVector3 Inertia = btVector3(0, 0, 0);
 
-  if (!EntityPtr->getParentSceneNode() && ParentNode) ParentNode->attachObject(EntityPtr);
-  auto *entShape = Bullet::createBoxCollider(EntityPtr);
+  if (!entity->getParentSceneNode() && parent) parent->attachObject(entity);
+  auto *entShape = Bullet::createBoxCollider(entity);
 
   if (Static)
     Mass = 0.0;
   else
     entShape->calculateLocalInertia(Mass, Inertia);
 
-  auto *bodyState = new Bullet::RigidBodyState(ParentNode);
+  auto *bodyState = new Bullet::RigidBodyState(parent);
 
   entBody = new btRigidBody(Mass, bodyState, entShape, Inertia);
   if (Static) entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);

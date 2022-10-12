@@ -24,16 +24,16 @@ class BaseSingleton : public NoCopy {
  public:
   /// Constructor
   BaseSingleton() {
-    if (Instanced) throw std::runtime_error(std::string(typeid(T).name()) + " is a Singleton class. Creation of another instance is forbidden");
-    Instanced = true;
+    if (instanced) throw std::runtime_error(std::string(typeid(T).name()) + " is a Singleton class. Creation of another instance is forbidden");
+    instanced = true;
   }
 
   ///
-  static bool IsInstanced() { return Instanced; }
+  static bool IsInstanced() { return instanced; }
 
  protected:
   /// Is this flag is up -- any call of "new" will throw exception
-  inline static bool Instanced = false;
+  inline static bool instanced = false;
 };
 
 /// Implement "Dynamic Singleton" pattern. Keeps flag that class was already instanced once.
@@ -42,17 +42,17 @@ template <typename T>
 class Singleton : public BaseSingleton<T> {
  public:
   /// Constructor
-  Singleton() { InstancePtr = static_cast<T *>(this); }
+  Singleton() { instancePtr = static_cast<T *>(this); }
 
   ///
-  static T *GetInstancePtr() { return InstancePtr; }
+  static T *GetInstancePtr() { return instancePtr; }
 
   ///
-  static T &GetInstance() { return *InstancePtr; }
+  static T &GetInstance() { return *instancePtr; }
 
  protected:
   /// Pointer to singleton instance
-  inline static T *InstancePtr = nullptr;
+  inline static T *instancePtr = nullptr;
 };
 
 /// Implements "Lazy DynamicSingleton" pattern. Creates instance only when called GetInstance

@@ -25,12 +25,12 @@ TerrainMaterialGeneratorB::SM2Profile::~SM2Profile() {}
 
 bool TerrainMaterialGeneratorB::SM2Profile::isVertexCompressionSupported() const { return false; }
 
-void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { EnableLightmap = enabled; }
+void TerrainMaterialGeneratorB::SM2Profile::setLightmapEnabled(bool enabled) { enableLightmap = enabled; }
 
 void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Terrain *OgreTerrainPtr) {
   OgreTerrainPtr->_setMorphRequired(true);
   OgreTerrainPtr->_setNormalMapRequired(true);
-  OgreTerrainPtr->_setLightMapRequired(EnableLightmap, false);
+  OgreTerrainPtr->_setLightMapRequired(enableLightmap, false);
   OgreTerrainPtr->_setCompositeMapRequired(false);
 }
 

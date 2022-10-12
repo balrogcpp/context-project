@@ -225,7 +225,7 @@ class ShaderResolver final : public Ogre::MaterialManager::Listener {
 
 Engine::Engine() {}
 
-Engine::~Engine() { SDL_SetWindowFullscreen(SDLWindowPtr, SDL_FALSE); }
+Engine::~Engine() { SDL_SetWindowFullscreen(sdlWindow, SDL_FALSE); }
 
 ImFont *AddFont(const String &name, const char *group OGRE_RESOURCE_GROUP_INIT, const ImFontConfig *fontCfg = NULL,
                 const ImWchar *glyphRanges = NULL) {
@@ -347,14 +347,14 @@ void Engine::Init() {
   for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
     if (SDL_GetCurrentDisplayMode(i, &Current) == 0) {
       SDL_Log("Display #%d: current display mode is %dx%dpx @ %dhz.", i, Current.w, Current.h, Current.refresh_rate);
-      SDLMonitorList.push_back(Current);
-      int ScreenDiag = sqrt(ScreenWidth * ScreenWidth + ScreenHeight * ScreenHeight);
+      sdlMonitorList.push_back(Current);
+      int ScreenDiag = sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
       int TmpDiag = sqrt(Current.w * Current.w + Current.h * Current.h);
       if (TmpDiag > ScreenDiag) {
-        CurrentSDLDisplayMode = Current;
-        ScreenWidth = Current.w;
-        ScreenHeight = Current.h;
-        CurrentDisplay = i;
+        displayMode = Current;
+        screenWidth = Current.w;
+        screenHeight = Current.h;
+        currentDisplay = i;
       } else {
         SDL_Log("Could not get display mode for video display #%d: %s", i, SDL_GetError());
       }
@@ -366,17 +366,17 @@ void Engine::Init() {
 
   // SDL window
 #if defined(DESKTOP)
-  if (WindowWidth == ScreenWidth && WindowHeight == ScreenHeight) {
-    SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
+  if (windowWidth == screenWidth && windowHeight == screenHeight) {
+    sdlWindowFlags |= SDL_WINDOW_BORDERLESS;
   }
-  if (WindowFullScreen) {
-    SDLWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
-    WindowWidth = ScreenWidth;
-    WindowHeight = ScreenHeight;
+  if (windowFullScreen) {
+    sdlWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    sdlWindowFlags |= SDL_WINDOW_BORDERLESS;
+    windowWidth = screenWidth;
+    windowHeight = screenHeight;
   }
-  WindowPositionFlag = SDL_WINDOWPOS_CENTERED_DISPLAY(CurrentDisplay);
-  SDLWindowPtr = SDL_CreateWindow(WindowCaption.c_str(), WindowPositionFlag, WindowPositionFlag, WindowWidth, WindowHeight, SDLWindowFlags);
+  windowPositionFlag = SDL_WINDOWPOS_CENTERED_DISPLAY(currentDisplay);
+  sdlWindow = SDL_CreateWindow(windowCaption.c_str(), windowPositionFlag, windowPositionFlag, windowWidth, windowHeight, sdlWindowFlags);
 #elif defined(EMSCRIPTEN)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -462,7 +462,7 @@ void Engine::Init() {
   NameValuePairList OgreRenderParams;
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
-  SDL_GetWindowWMInfo(SDLWindowPtr, &info);
+  SDL_GetWindowWMInfo(sdlWindow, &info);
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
@@ -490,9 +490,9 @@ void Engine::Init() {
 #endif
   const char *TRUE_STR = "true";
   const char *FALSE_STR = "false";
-  WindowVsync = true;
-  OgreRenderParams["vsync"] = WindowVsync ? TRUE_STR : FALSE_STR;
-  OgreRenderWindowPtr = OgreRoot->createRenderWindow(WindowCaption, WindowWidth, WindowHeight, WindowFullScreen, &OgreRenderParams);
+  windowVsync = true;
+  OgreRenderParams["vsync"] = windowVsync ? TRUE_STR : FALSE_STR;
+  OgreRenderWindowPtr = OgreRoot->createRenderWindow(windowCaption, windowWidth, windowHeight, windowFullScreen, &OgreRenderParams);
   OgreRenderTargetPtr = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
   OgreCamera = OgreSceneManager->createCamera("Default");
   OgreViewport = OgreRenderTargetPtr->addViewport(OgreCamera);
@@ -615,16 +615,16 @@ void Engine::Init() {
 #endif  // OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 
   // overlay init
-  OgreOverlayPtr = new Ogre::OverlaySystem();
-  ImGuiOverlayPtr = new Ogre::ImGuiOverlay();
+  overlay = new Ogre::OverlaySystem();
+  imguiOverlay = new Ogre::ImGuiOverlay();
   float vpScale = OverlayManager::getSingleton().getPixelRatio();
   ImGui::GetIO().FontGlobalScale = std::round(vpScale);  // default font does not work with fractional scaling
   ImGui::GetStyle().ScaleAllSizes(vpScale);
-  ImGuiOverlayPtr->setZOrder(300);
-  ImGuiOverlayPtr->show();
-  Ogre::OverlayManager::getSingleton().addOverlay(ImGuiOverlayPtr);
-  OgreSceneManager->addRenderQueueListener(OgreOverlayPtr);
-  ImGuiListener = make_unique<ImGuiInputListener>();
+  imguiOverlay->setZOrder(300);
+  imguiOverlay->show();
+  Ogre::OverlayManager::getSingleton().addOverlay(imguiOverlay);
+  OgreSceneManager->addRenderQueueListener(overlay);
+  imguiListener = make_unique<ImGuiInputListener>();
   ImGuiIO &io = ImGui::GetIO();
   io.IniFilename = nullptr;
   io.LogFilename = nullptr;
@@ -635,16 +635,16 @@ void Engine::Init() {
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 
   // components init
-  PhysicsPtr = make_unique<Physics>();
-  RegComponent(PhysicsPtr.get());
+  physics = make_unique<Physics>();
+  RegComponent(physics.get());
 
-  SoundPtr = make_unique<Audio>();
-  RegComponent(SoundPtr.get());
+  audio = make_unique<Audio>();
+  RegComponent(audio.get());
 
   InitCompositor();
 
-  PhysicsPtr->OnSetUp();
-  SoundPtr->OnSetUp();
+  physics->OnSetUp();
+  audio->OnSetUp();
 
   //  AddFont("NotoSans-Regular", Ogre::RGN_INTERNAL, nullptr, io.Fonts->GetGlyphRangesCyrillic());
   //  ImFontConfig config;
@@ -662,7 +662,7 @@ void Engine::Init() {
   TGO->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
 
   // cleanup
-  ImGuiOverlayPtr->show();
+  imguiOverlay->show();
   ImGuiOverlay::NewFrame();
   OgreRoot->renderOneFrame();
   MaterialManager::getSingleton().removeListener(ResolverPtr.get());
@@ -713,22 +713,22 @@ static GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorNam
 }
 
 void Engine::EnableEffect(const std::string &FX, bool Enable) {
-  CompositorList[FX].Enabled = Enable;
+  compositorList[FX].Enabled = Enable;
   const string EnableStr = "uEnable";
   const float Flag = Enable ? 1.0f : 0.0f;
-  const auto &FXPtr = CompositorList[FX];
+  const auto &FXPtr = compositorList[FX];
   GetFPparameters(FXPtr.OutputCompositor)->setNamedConstant(FXPtr.EnableParam, Flag);
   for (const auto &it : FXPtr.CompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
 }
 
 void Engine::InitCompositor() {
-  OgreCompositorManager = Ogre::CompositorManager::getSingletonPtr();
-  OgreCompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
-  CompositorList.insert(make_pair(FX_BLOOM, Bloom));
-  CompositorList.insert(make_pair(FX_SSAO, SSAO));
-  CompositorList.insert(make_pair(FX_BLUR, Blur));
-  CompositorList.insert(make_pair(FX_FXAA, FXAA));
-  CompositorList.insert(make_pair(FX_HDR, HDR));
+  compositorManager = Ogre::CompositorManager::getSingletonPtr();
+  compositorChain = compositorManager->getCompositorChain(OgreViewport);
+  compositorList.insert(make_pair(FX_BLOOM, Bloom));
+  compositorList.insert(make_pair(FX_SSAO, SSAO));
+  compositorList.insert(make_pair(FX_BLUR, Blur));
+  compositorList.insert(make_pair(FX_FXAA, FXAA));
+  compositorList.insert(make_pair(FX_HDR, HDR));
   EnableEffect(FX_SSAO, false);
   EnableEffect(FX_BLOOM, false);
   EnableEffect(FX_BLUR, false);
@@ -738,9 +738,9 @@ void Engine::InitCompositor() {
   const char *MRTCompositor = "MRT";
   ViewportSizeY = OgreViewport->getActualDimensions().height();
   ViewportSizeX = OgreViewport->getActualDimensions().width();
-  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, MRTCompositor, 0), "Failed to add MRT compositor");
-  OgreCompositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, false);
-  auto *MRTCompositorPtr = OgreCompositorChain->getCompositor(MRTCompositor);
+  OgreAssert(compositorManager->addCompositor(OgreViewport, MRTCompositor, 0), "Failed to add MRT compositor");
+  compositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, false);
+  auto *MRTCompositorPtr = compositorChain->getCompositor(MRTCompositor);
   auto *MRTTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("mrt");
   OgreAssert(MRTTexturePtr, "MRTCompositor texture not created");
 #ifdef MOBILE
@@ -808,7 +808,7 @@ void Engine::InitCompositor() {
   RT11TexturePtr->height = MRTTexturePtr->height / 2048;
   RT12TexturePtr->width = MRTTexturePtr->width / 4096;
   RT12TexturePtr->height = MRTTexturePtr->height / 4096;
-  OgreCompositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, true);
+  compositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, true);
 }
 
 static bool HasNoTangentsAndCanGenerate(VertexDeclaration *vertex_declaration) {
@@ -1014,34 +1014,34 @@ void Engine::AddSkyBox() {
 }
 
 void Engine::RegComponent(SystemI *ComponentPtr) {
-  if (ComponentPtr) ComponentList.push_back(ComponentPtr);
+  if (ComponentPtr) componentList.push_back(ComponentPtr);
 }
 
 void Engine::UnRegComponent(SystemI *ComponentPtr) {
-  auto Iter = find(ComponentList.begin(), ComponentList.end(), ComponentPtr);
-  if (Iter != ComponentList.end()) ComponentList.erase(Iter);
+  auto Iter = find(componentList.begin(), componentList.end(), ComponentPtr);
+  if (Iter != componentList.end()) componentList.erase(Iter);
 }
 
 void Engine::OnPause() {
-  for (auto &it : ComponentList) it->OnPause();
+  for (auto &it : componentList) it->OnPause();
 }
 
 void Engine::OnResume() {
-  for (auto &it : ComponentList) it->OnResume();
+  for (auto &it : componentList) it->OnResume();
 }
 
 void Engine::OnMenuOn() {
-  PhysicsPtr->OnPause();
+  physics->OnPause();
   ShowMouseCursor(true);
 }
 
 void Engine::OnMenuOff() {
-  PhysicsPtr->OnResume();
+  physics->OnResume();
   ShowMouseCursor(false);
 }
 
 void Engine::OnCleanup() {
-  for (auto &it : ComponentList) it->OnClean();
+  for (auto &it : componentList) it->OnClean();
   InputSequencer::GetInstance().UnRegObserver(Sinbad.get());
   Sinbad.reset();
   PagedGeometryList.clear();
@@ -1074,7 +1074,7 @@ void Engine::Update(float PassedTime) {
   if (SkyNeedsUpdate && SkyBoxFpParams)
     for (int i = 0; i < 10; i++) SkyBoxFpParams->setNamedConstant(HosikParamList[i], HosekParams[i]);
 
-  for (auto &it : ComponentList) it->OnUpdate(PassedTime);
+  for (auto &it : componentList) it->OnUpdate(PassedTime);
 
   static ImGuiIO &io = ImGui::GetIO();
   ImGuiOverlay::NewFrame();
@@ -1095,39 +1095,39 @@ void Engine::RenderFrame() {
 }
 
 void Engine::ResizeWindow(int Width, int Height) {
-  WindowWidth = Width;
-  WindowHeight = Height;
-  SDL_SetWindowPosition(SDLWindowPtr, (ScreenWidth - WindowWidth) / 2, (ScreenHeight - WindowHeight) / 2);
-  SDL_SetWindowSize(SDLWindowPtr, WindowWidth, WindowHeight);
+  windowWidth = Width;
+  windowHeight = Height;
+  SDL_SetWindowPosition(sdlWindow, (screenWidth - windowWidth) / 2, (screenHeight - windowHeight) / 2);
+  SDL_SetWindowSize(sdlWindow, windowWidth, windowHeight);
   OgreRenderWindowPtr->resize(Width, Height);
 }
 
 void Engine::SetFullscreen(bool Fullscreen) {
   if (Fullscreen) {
-    WindowFullScreen = true;
-    OgreRenderWindowPtr->setFullscreen(WindowFullScreen, WindowWidth, WindowHeight);
+    windowFullScreen = true;
+    OgreRenderWindowPtr->setFullscreen(windowFullScreen, windowWidth, windowHeight);
 #ifdef DESKTOP
-    SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
+    SDL_SetWindowFullscreen(sdlWindow, sdlWindowFlags | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
 #else
     SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags | SDL_WINDOW_FULLSCREEN);
 #endif
   } else {
-    WindowFullScreen = false;
-    OgreRenderWindowPtr->setFullscreen(WindowFullScreen, WindowWidth, WindowHeight);
-    SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags);
-    SDL_SetWindowSize(SDLWindowPtr, WindowWidth, WindowHeight);
+    windowFullScreen = false;
+    OgreRenderWindowPtr->setFullscreen(windowFullScreen, windowWidth, windowHeight);
+    SDL_SetWindowFullscreen(sdlWindow, sdlWindowFlags);
+    SDL_SetWindowSize(sdlWindow, windowWidth, windowHeight);
   }
 }
 
-bool Engine::IsWindowFullscreen() { return WindowFullScreen; }
+bool Engine::IsWindowFullscreen() { return windowFullScreen; }
 
-void Engine::SetWindowCaption(const char *Caption) { SDL_SetWindowTitle(SDLWindowPtr, Caption); }
+void Engine::SetWindowCaption(const char *Caption) { SDL_SetWindowTitle(sdlWindow, Caption); }
 
 void Engine::GrabCursor(bool Grab) {
 #ifndef MOBILE  // This breaks input @Android >9.0
-  if (SDLWindowPtr) {
+  if (sdlWindow) {
     SDL_ShowCursor(!Grab);
-    SDL_SetWindowGrab(SDLWindowPtr, static_cast<SDL_bool>(Grab));
+    SDL_SetWindowGrab(sdlWindow, static_cast<SDL_bool>(Grab));
     SDL_SetRelativeMouseMode(static_cast<SDL_bool>(Grab));
   }
 #endif
@@ -1135,14 +1135,14 @@ void Engine::GrabCursor(bool Grab) {
 
 void Engine::ShowCursor(bool Show) {
 #ifndef MOBILE  // This breaks input @Android >9.0
-  if (SDLWindowPtr) SDL_ShowCursor(Show);
+  if (sdlWindow) SDL_ShowCursor(Show);
 #endif
 }
 
-std::string Engine::GetWindowCaption() { return WindowCaption; }
+std::string Engine::GetWindowCaption() { return windowCaption; }
 
-int Engine::GetWindowSizeX() { return WindowWidth; }
+int Engine::GetWindowSizeX() { return windowWidth; }
 
-int Engine::GetWindowSizeY() { return WindowHeight; }
+int Engine::GetWindowSizeY() { return windowHeight; }
 
 }  // namespace Glue

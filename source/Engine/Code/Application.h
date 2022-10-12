@@ -29,14 +29,11 @@ class Application : public WindowObserver, public InputObserver, public Singleto
   void OnResume() override;
 
   /// Handle components
-  std::unique_ptr<Engine> EnginePtr;
-  bool Running = false;
-  bool Suspend = false;
-  bool WasSuspended = false;
-  int64_t TimeOfLastFrame = 0;
-  int64_t CumultedTime = 0;
-  int64_t TargetFPS = 60;
-  bool LockFPS = true;
+  std::unique_ptr<Engine> engine;
+  bool running = false;
+  bool suspend = false;
+  int64_t targetFps = 60;
+  bool lockFps = true;
 };
 
 }  // namespace Glue
