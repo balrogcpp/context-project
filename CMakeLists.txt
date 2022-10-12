@@ -48,7 +48,7 @@ list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 add_subdirectory(source)
 
 
-# packages
+# cpack
 set(PACKAGE_NAME "GlueSample")
 set(ARTIFACT_NAME ${PACKAGE_NAME}_${TOOLCHAIN_SHORT})
 if (NOT CMAKE_BUILD_TYPE STREQUAL Release)
@@ -60,9 +60,6 @@ endif ()
 if (WIN32)
     install(FILES DESTINATION .)
 endif ()
-
-
-# cpack
 set(CPACK_PACKAGE_DIRECTORY ${ARTIFACT_DIR})
 set(CPACK_PACKAGE_FILE_NAME ${ARTIFACT_NAME})
 if (WIN32)
