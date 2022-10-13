@@ -32,6 +32,7 @@ insert_dependency_static(Vorbis)
 insert_dependency_static(SDL2)
 insert_dependency_static(Freetype)
 insert_dependency_static(pugixml)
+insert_dependency(ZLIB)
 set(OGRE_STATIC 1)
 insert_dependency_static(OGRE)
 
