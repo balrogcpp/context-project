@@ -63,7 +63,7 @@ void Application::LoopBody() {
   cumulatedTime += TimeSinceLastFrame;
 
 #ifdef EMSCRIPTEN
-  if (!Running) emscripten_cancel_main_loop();
+  if (!running) emscripten_cancel_main_loop();
 #endif
 }
 
@@ -86,7 +86,7 @@ void Application::Go() {
 #ifndef EMSCRIPTEN
   Loop();
 #else
-  LockFPS = false;
+  lockFps = false;
   emscripten_set_main_loop_arg(Application::EmscriptenLoop, GetInstancePtr(), 0, 1);
 #endif
   engine->OnCleanup();

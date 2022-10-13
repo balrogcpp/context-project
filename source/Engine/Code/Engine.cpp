@@ -80,7 +80,7 @@ extern "C" {
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
 #endif
-#ifdef DESKTOP
+#if defined(DESKTOP) && defined(DEBUG)
 #if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
     || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) \
     || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
@@ -121,17 +121,6 @@ int ErrorWindow(const char *WindowCaption, const char *MessageText) {
 
 namespace Glue {
 
-Vector3 SunDirection() {
-  Vector3 Result = -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition();
-  return Result;
-}
-
-int WindowSizeX() { return GetEngine().GetWindowSizeX(); }
-
-int WindowSizeY() { return GetEngine().GetWindowSizeY(); }
-
-std::string WindowCaption() { return GetEngine().GetWindowCaption(); }
-
 void ShowMouseCursor(bool draw) {
   //  static ImGuiIO& io = ImGui::GetIO();
   //  io.MouseDrawCursor = draw;
@@ -145,6 +134,82 @@ Engine &GetEngine() {
 Physics &GetPhysics() { return GetComponent<Physics>(); }
 
 Audio &GetAudio() { return GetComponent<Audio>(); }
+
+#if defined(DESKTOP) && defined(DEBUG)
+static inline bool IsHidden(const fs::path &Path) {
+  string name = Path.filename().string();
+  return name == ".." && name == "." && name[0] == '.';
+}
+
+static inline string FindPath(const char *Path, int Depth = 4) {
+  string result = Path;
+
+  for (int i = 0; i < Depth; i++) {
+    if (fs::exists(result))
+      return result;
+    else if (fs::exists(result + ".zip"))
+      return result.append(".zip");
+    else
+#ifndef WIN32
+      result = string("../").append(result);
+#else
+      result = string("..\\").append(result);
+#endif
+  }
+
+  return "";
+}
+
+static void AddLocation(const char *Path, const std::string &GroupName = Ogre::RGN_DEFAULT) {
+  const char *FILE_SYSTEM = "FileSystem";
+  const char *ZIP = "Zip";
+
+  std::vector<string> file_list;
+  std::vector<string> dir_list;
+  std::vector<tuple<string, string, string>> resource_list;
+  auto &RGM = ResourceGroupManager::getSingleton();
+
+  string path = FindPath(Path);
+
+  if (fs::exists(path)) {
+    if (fs::is_directory(path))
+      resource_list.push_back(make_tuple(path, FILE_SYSTEM, GroupName));
+    else if (fs::is_regular_file(path) && fs::path(path).extension() == ".zip")
+      RGM.addResourceLocation(path, ZIP, GroupName);
+  }
+
+  for (const auto &it : resource_list) {
+    RGM.addResourceLocation(get<0>(it), get<1>(it), get<2>(it));
+    dir_list.push_back(get<0>(it));
+
+    for (fs::recursive_directory_iterator end, jt(get<0>(it)); jt != end; ++jt) {
+      const string full_path = jt->path().string();
+      const string file_name = jt->path().filename().string();
+      const string extention = jt->path().filename().extension().string();
+
+      if (jt->is_directory()) {
+        if (IsHidden(jt->path())) {
+          jt.disable_recursion_pending();
+          continue;
+        }
+
+        dir_list.push_back(file_name);
+
+        RGM.addResourceLocation(full_path, FILE_SYSTEM, get<2>(it));
+      } else if (jt->is_regular_file()) {
+        if (IsHidden(jt->path())) continue;
+
+        if (extention == ".zip") {
+          RGM.addResourceLocation(full_path, ZIP, get<2>(it));
+        } else {
+          file_list.push_back(file_name);
+        }
+      }
+    }
+  }
+}
+#endif
+
 
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 class ShaderResolver final : public Ogre::MaterialManager::Listener {
@@ -261,80 +326,6 @@ ImFont *AddFont(const String &name, const char *group OGRE_RESOURCE_GROUP_INIT, 
   return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), font->getTrueTypeSize() * vpScale, fontCfg, +glyphRanges);
 }
 
-#if defined(DESKTOP) && defined(DEBUG)
-static inline bool IsHidden(const fs::path &Path) {
-  string name = Path.filename().string();
-  return name == ".." && name == "." && name[0] == '.';
-}
-
-static inline string FindPath(const char *Path, int Depth = 4) {
-  string result = Path;
-
-  for (int i = 0; i < Depth; i++) {
-    if (fs::exists(result))
-      return result;
-    else if (fs::exists(result + ".zip"))
-      return result.append(".zip");
-    else
-#ifndef WIN32
-      result = string("../").append(result);
-#else
-      result = string("..\\").append(result);
-#endif
-  }
-
-  return "";
-}
-
-static void AddLocation(const char *Path, const std::string &GroupName = Ogre::RGN_DEFAULT) {
-  const char *FILE_SYSTEM = "FileSystem";
-  const char *ZIP = "Zip";
-
-  std::vector<string> file_list;
-  std::vector<string> dir_list;
-  std::vector<tuple<string, string, string>> resource_list;
-  auto &RGM = ResourceGroupManager::getSingleton();
-
-  string path = FindPath(Path);
-
-  if (fs::exists(path)) {
-    if (fs::is_directory(path))
-      resource_list.push_back(make_tuple(path, FILE_SYSTEM, GroupName));
-    else if (fs::is_regular_file(path) && fs::path(path).extension() == ".zip")
-      RGM.addResourceLocation(path, ZIP, GroupName);
-  }
-
-  for (const auto &it : resource_list) {
-    RGM.addResourceLocation(get<0>(it), get<1>(it), get<2>(it));
-    dir_list.push_back(get<0>(it));
-
-    for (fs::recursive_directory_iterator end, jt(get<0>(it)); jt != end; ++jt) {
-      const string full_path = jt->path().string();
-      const string file_name = jt->path().filename().string();
-      const string extention = jt->path().filename().extension().string();
-
-      if (jt->is_directory()) {
-        if (IsHidden(jt->path())) {
-          jt.disable_recursion_pending();
-          continue;
-        }
-
-        dir_list.push_back(file_name);
-
-        RGM.addResourceLocation(full_path, FILE_SYSTEM, get<2>(it));
-      } else if (jt->is_regular_file()) {
-        if (IsHidden(jt->path())) continue;
-
-        if (extention == ".zip") {
-          RGM.addResourceLocation(full_path, ZIP, get<2>(it));
-        } else {
-          file_list.push_back(file_name);
-        }
-      }
-    }
-  }
-}
-#endif  // DESKTOP
 
 void Engine::Init() {
   // SDL init
@@ -377,6 +368,7 @@ void Engine::Init() {
   }
   windowPositionFlag = SDL_WINDOWPOS_CENTERED_DISPLAY(currentDisplay);
   sdlWindow = SDL_CreateWindow(windowCaption.c_str(), windowPositionFlag, windowPositionFlag, windowWidth, windowHeight, sdlWindowFlags);
+  //SDL_GL_CreateContext(sdlWindow);
 #elif defined(EMSCRIPTEN)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -388,14 +380,14 @@ void Engine::Init() {
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-  SDLWindowFlags |= SDL_WINDOW_OPENGL;
-  SDLWindowFlags |= SDL_WINDOW_RESIZABLE;
-  SDLWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
-  WindowWidth = ScreenWidth;
-  WindowHeight = ScreenHeight;
-  WindowPositionFlag = SDL_WINDOWPOS_CENTERED;
-  SDLWindowPtr = SDL_CreateWindow(nullptr, WindowPositionFlag, WindowPositionFlag, ScreenWidth, ScreenHeight, SDLWindowFlags);
-  SDLGLContextPtr = SDL_GL_CreateContext(SDLWindowPtr);
+  sdlWindowFlags |= SDL_WINDOW_OPENGL;
+  sdlWindowFlags |= SDL_WINDOW_RESIZABLE;
+  sdlWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
+  windowWidth = screenWidth;
+  windowHeight = screenHeight;
+  windowPositionFlag = SDL_WINDOWPOS_CENTERED;
+  sdlWindow = SDL_CreateWindow(nullptr, windowPositionFlag, windowPositionFlag, screenWidth, screenHeight, sdlWindowFlags);
+  SDL_GL_CreateContext(sdlWindow);
 #elif defined(ANDROID)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -407,15 +399,15 @@ void Engine::Init() {
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-  SDLWindowFlags |= SDL_WINDOW_BORDERLESS;
-  SDLWindowFlags |= SDL_WINDOW_FULLSCREEN;
-  SDLWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
-  SDLWindowFlags |= SDL_WINDOW_OPENGL;
-  WindowWidth = ScreenWidth;
-  WindowHeight = ScreenHeight;
-  WindowPositionFlag = SDL_WINDOWPOS_UNDEFINED;
-  SDLWindowPtr = SDL_CreateWindow(nullptr, WindowPositionFlag, WindowPositionFlag, ScreenWidth, ScreenHeight, SDLWindowFlags);
-  SDLGLContextPtr = SDL_GL_CreateContext(SDLWindowPtr);
+  sdlWindowFlags |= SDL_WINDOW_BORDERLESS;
+  sdlWindowFlags |= SDL_WINDOW_FULLSCREEN;
+  sdlWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
+  sdlWindowFlags |= SDL_WINDOW_OPENGL;
+  windowWidth = screenWidth;
+  windowHeight = screenHeight;
+  windowPositionFlag = SDL_WINDOWPOS_UNDEFINED;
+  sdlWindow = SDL_CreateWindow(nullptr, windowPositionFlag, windowPositionFlag, screenWidth, screenHeight, sdlWindowFlags);
+  //SDL_GL_CreateContext(sdlWindow);
 #endif
 
   // Init OGRE Root and plugins
@@ -1090,7 +1082,7 @@ void Engine::Update(float PassedTime) {
 void Engine::RenderFrame() {
   OgreRoot->renderOneFrame();
 #if defined(WINDOWS) || defined(ANDROID)
-  SDL_GL_SwapWindow(SDLWindowPtr);
+  SDL_GL_SwapWindow(sdlWindow);
 #endif
 }
 
@@ -1109,7 +1101,7 @@ void Engine::SetFullscreen(bool Fullscreen) {
 #ifdef DESKTOP
     SDL_SetWindowFullscreen(sdlWindow, sdlWindowFlags | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
 #else
-    SDL_SetWindowFullscreen(SDLWindowPtr, SDLWindowFlags | SDL_WINDOW_FULLSCREEN);
+    SDL_SetWindowFullscreen(sdlWindow, sdlWindowFlags | SDL_WINDOW_FULLSCREEN);
 #endif
   } else {
     windowFullScreen = false;
@@ -1144,5 +1136,16 @@ std::string Engine::GetWindowCaption() { return windowCaption; }
 int Engine::GetWindowSizeX() { return windowWidth; }
 
 int Engine::GetWindowSizeY() { return windowHeight; }
+
+Vector3 SunDirection() {
+  Vector3 Result = -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition();
+  return Result;
+}
+
+int WindowSizeX() { return GetEngine().GetWindowSizeX(); }
+
+int WindowSizeY() { return GetEngine().GetWindowSizeY(); }
+
+std::string WindowCaption() { return GetEngine().GetWindowCaption(); }
 
 }  // namespace Glue
