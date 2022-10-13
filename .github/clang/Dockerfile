@@ -154,10 +154,12 @@ RUN apt-get update \
     && apt-get clean \
     && wget https://github.com/tpoechtrager/osxcross/archive/${OSXCROSS_GIT_HASH}.zip -O osxcross.zip \
     && unzip osxcross.zip \
+    && rm osxcross.zip \
     && cd osxcross-${OSXCROSS_GIT_HASH} \
-    && cp -r ../tarballs ./ \
+    && cp -r ../tarballs . \
+    && rm -rf ../tarballs \
     && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} ./build.sh \
-    && rm -rf ./tarballs ../osxcross \
+    && rm -rf ../osxcross-${OSXCROSS_GIT_HASH} \
     && apt-get -y purge cmake python lzma-dev libxml2-dev libssl-dev \
     && apt-get -y autoremove
 ENV OSXCROSS_HOST=x86_64-apple-darwin${MACOS_SDK_CODE}
