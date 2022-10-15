@@ -100,12 +100,10 @@ RUN apt-get update \
     && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
     && cd emsdk \
     && rm -rf .git \
-    && ./emsdk install latest \
-    && ./emsdk activate latest \
-    && . emsdk_env.sh
+    && ./emsdk install latest
 ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
 
-RUN cd ${EMSDK_ROOT} && . ./emsdk_env.sh  \
+RUN cd ${EMSDK_ROOT} && . ./emsdk_env.sh \
     && mkdir ${CONTEXT_HOME}/build && cd ${CONTEXT_HOME}/build \
     && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
     && emmake ninja contrib \

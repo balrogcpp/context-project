@@ -851,7 +851,7 @@ externalproject_add(Target_Lua
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Lua
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E true
         UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_MODULE_PATH}/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
+        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/cmake/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
