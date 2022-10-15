@@ -210,7 +210,6 @@ static void AddLocation(const char *Path, const std::string &GroupName = Ogre::R
 }
 #endif
 
-
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 class ShaderResolver final : public Ogre::MaterialManager::Listener {
  public:
@@ -326,7 +325,6 @@ ImFont *AddFont(const String &name, const char *group OGRE_RESOURCE_GROUP_INIT, 
   return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), font->getTrueTypeSize() * vpScale, fontCfg, +glyphRanges);
 }
 
-
 void Engine::Init() {
   // SDL init
 #ifndef EMSCRIPTEN
@@ -334,17 +332,17 @@ void Engine::Init() {
 #else
   OgreAssert(!SDL_Init(SDL_INIT_VIDEO), "Failed to init SDL2");
 #endif
-  SDL_DisplayMode Current;
+  SDL_DisplayMode DM;
   for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
-    if (SDL_GetCurrentDisplayMode(i, &Current) == 0) {
-      SDL_Log("Display #%d: current display mode is %dx%dpx @ %dhz.", i, Current.w, Current.h, Current.refresh_rate);
-      sdlMonitorList.push_back(Current);
+    if (SDL_GetCurrentDisplayMode(i, &DM) == 0) {
+      SDL_Log("Display #%d: current display mode is %dx%dpx @ %dhz.", i, DM.w, DM.h, DM.refresh_rate);
+      sdlMonitorList.push_back(DM);
       int ScreenDiag = sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
-      int TmpDiag = sqrt(Current.w * Current.w + Current.h * Current.h);
+      int TmpDiag = sqrt(DM.w * DM.w + DM.h * DM.h);
       if (TmpDiag > ScreenDiag) {
-        displayMode = Current;
-        screenWidth = Current.w;
-        screenHeight = Current.h;
+        // displayMode = DM;
+        screenWidth = DM.w;
+        screenHeight = DM.h;
         currentDisplay = i;
       } else {
         SDL_Log("Could not get display mode for video display #%d: %s", i, SDL_GetError());
@@ -368,8 +366,7 @@ void Engine::Init() {
   }
   windowPositionFlag = SDL_WINDOWPOS_CENTERED_DISPLAY(currentDisplay);
   sdlWindow = SDL_CreateWindow(windowCaption.c_str(), windowPositionFlag, windowPositionFlag, windowWidth, windowHeight, sdlWindowFlags);
-  //SDL_GL_CreateContext(sdlWindow);
-#elif defined(EMSCRIPTEN)
+#else
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -381,37 +378,23 @@ void Engine::Init() {
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   sdlWindowFlags |= SDL_WINDOW_OPENGL;
+#ifdef EMSCRIPTEN
   sdlWindowFlags |= SDL_WINDOW_RESIZABLE;
+#endif
   sdlWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
+#ifdef MOBILE
+  sdlWindowFlags |= SDL_WINDOW_BORDERLESS;
+  sdlWindowFlags |= SDL_WINDOW_FULLSCREEN;
+#endif
   windowWidth = screenWidth;
   windowHeight = screenHeight;
   windowPositionFlag = SDL_WINDOWPOS_CENTERED;
   sdlWindow = SDL_CreateWindow(nullptr, windowPositionFlag, windowPositionFlag, screenWidth, screenHeight, sdlWindowFlags);
   SDL_GL_CreateContext(sdlWindow);
-#elif defined(ANDROID)
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-  sdlWindowFlags |= SDL_WINDOW_BORDERLESS;
-  sdlWindowFlags |= SDL_WINDOW_FULLSCREEN;
-  sdlWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
-  sdlWindowFlags |= SDL_WINDOW_OPENGL;
-  windowWidth = screenWidth;
-  windowHeight = screenHeight;
-  windowPositionFlag = SDL_WINDOWPOS_UNDEFINED;
-  sdlWindow = SDL_CreateWindow(nullptr, windowPositionFlag, windowPositionFlag, screenWidth, screenHeight, sdlWindowFlags);
-  //SDL_GL_CreateContext(sdlWindow);
 #endif
 
   // Init OGRE Root and plugins
-  OgreRoot = new Root("", "", "");
+  ogreRoot = new Root("", "", "");
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
   InitOgreRenderSystemGL3();
@@ -439,16 +422,16 @@ void Engine::Init() {
   Root::getSingleton().installPlugin(new AssimpPlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
-  OgreSceneManager = OgreRoot->createSceneManager("OctreeSceneManager", "Default");
+  sceneManager = ogreRoot->createSceneManager("OctreeSceneManager", "Default");
 #else
-  OgreSceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
+  sceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
 #endif
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
   Root::getSingleton().installPlugin(new DotScenePluginB());
 #else
   Root::getSingleton().installPlugin(new DotScenePluginB());
 #endif
-  OgreRoot->initialise(false);
+  ogreRoot->initialise(false);
 
   // OGRE window
   NameValuePairList OgreRenderParams;
@@ -484,16 +467,15 @@ void Engine::Init() {
   const char *FALSE_STR = "false";
   windowVsync = true;
   OgreRenderParams["vsync"] = windowVsync ? TRUE_STR : FALSE_STR;
-  OgreRenderWindowPtr = OgreRoot->createRenderWindow(windowCaption, windowWidth, windowHeight, windowFullScreen, &OgreRenderParams);
-  OgreRenderTargetPtr = OgreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
-  OgreCamera = OgreSceneManager->createCamera("Default");
+  OgreRenderWindowPtr = ogreRoot->createRenderWindow(windowCaption, windowWidth, windowHeight, windowFullScreen, &OgreRenderParams);
+  OgreRenderTargetPtr = ogreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
+  OgreCamera = sceneManager->createCamera("Default");
   OgreViewport = OgreRenderTargetPtr->addViewport(OgreCamera);
   OgreCamera->setAspectRatio(static_cast<float>(OgreViewport->getActualWidth()) / static_cast<float>(OgreViewport->getActualHeight()));
   OgreCamera->setAutoAspectRatio(true);
 #ifdef ANDROID
-  SDL_DisplayMode DM;
-  SDL_GetDesktopDisplayMode(CurrentDisplay, &CurrentSDLDisplayMode);
-  OgreRenderWindowPtr->resize(static_cast<int>(CurrentSDLDisplayMode.w), static_cast<int>(CurrentSDLDisplayMode.h));
+  SDL_GetDesktopDisplayMode(currentDisplay, &DM);
+  OgreRenderWindowPtr->resize(static_cast<int>(DM.w), static_cast<int>(DM.h));
 #endif
 
   // GPU capabilities
@@ -517,6 +499,35 @@ void Engine::Init() {
     OgreAssert(CheckGLES2Version(3, 0), "OpenGLES 3.0 is not supported");
 #endif
   }
+// RTSS init
+#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
+  OgreAssert(RTShader::ShaderGenerator::initialize(), "OGRE RTSS init failed");
+  auto *shaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
+  OgreViewport->setMaterialScheme(MSN_SHADERGEN);
+  shaderGenerator->addSceneManager(sceneManager);
+  shaderGenerator->setShaderCachePath("");
+  auto resolver = make_unique<ShaderResolver>(shaderGenerator);
+  MaterialManager::getSingleton().addListener(resolver.get());
+#endif
+
+  // overlay init
+  overlay = new Ogre::OverlaySystem();
+  imguiOverlay = new Ogre::ImGuiOverlay();
+  float vpScale = OverlayManager::getSingleton().getPixelRatio();
+  ImGui::GetIO().FontGlobalScale = std::round(vpScale);  // default font does not work with fractional scaling
+  ImGui::GetStyle().ScaleAllSizes(vpScale);
+  imguiOverlay->setZOrder(300);
+  Ogre::OverlayManager::getSingleton().addOverlay(imguiOverlay);
+  sceneManager->addRenderQueueListener(overlay);
+  imguiListener = make_unique<ImGuiInputListener>();
+  ImGuiIO &io = ImGui::GetIO();
+  io.IniFilename = nullptr;
+  io.LogFilename = nullptr;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
+  io.MouseDrawCursor = false;
+  io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 
   // texture init
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
@@ -532,7 +543,7 @@ void Engine::Init() {
 #if defined(ANDROID)
   RGM.addResourceLocation("programs.zip", "APKZip", RGN_INTERNAL);
   RGM.addResourceLocation("assets.zip", "APKZip", RGN_DEFAULT);
-#elif defined(DEBUG)
+#elif defined(DESKTOP) && defined(DEBUG)
   const char *PROGRAMS_DIR = "source/Programs";
   const char *ASSETS_DIR = "source/Example/Assets";
   AddLocation(PROGRAMS_DIR, RGN_INTERNAL);
@@ -558,85 +569,53 @@ void Engine::Init() {
   float ShadowFarDistance = 400;
   int16_t ShadowTexSize = 1024;
   if (!ShadowsEnabled) {
-    OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
-    OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 0);
-    OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 0);
-    OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
-    return;
-  }
+    sceneManager->setShadowTechnique(SHADOWTYPE_NONE);
+    sceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 0);
+    sceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 0);
+    sceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
+  } else {
 #ifdef DESKTOP
-  PixelFormat ShadowTextureFormat = PixelFormat::PF_DEPTH16;
+    PixelFormat ShadowTextureFormat = PixelFormat::PF_DEPTH16;
 #else
-  PixelFormat ShadowTextureFormat = PixelFormat::PF_FLOAT16_R;
+    PixelFormat ShadowTextureFormat = PixelFormat::PF_FLOAT16_R;
 #endif
-  OgreSceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-  OgreSceneManager->setShadowFarDistance(ShadowFarDistance);
-  OgreSceneManager->setShadowTextureSize(ShadowTexSize);
-  OgreSceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
-  OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
-  OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
-  OgreSceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
-  OgreSceneManager->setShadowTextureSelfShadow(true);
-  OgreSceneManager->setShadowCasterRenderBackFaces(true);
-  OgreSceneManager->setShadowFarDistance(ShadowFarDistance);
-  auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
-  OgreSceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
-  PSSMSetupPtr = make_shared<PSSMShadowCameraSetup>();
-  PSSMSetupPtr->calculateSplitPoints(PSSM_SPLITS, 0.001, OgreSceneManager->getShadowFarDistance());
-  PSSMSplitPointList = PSSMSetupPtr->getSplitPoints();
-  PSSMSetupPtr->setSplitPadding(0.0);
-  for (int i = 0; i < PSSM_SPLITS; i++) PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
-  OgreSceneManager->setShadowCameraSetup(PSSMSetupPtr);
-  OgreSceneManager->setShadowColour(ColourValue::Black);
-
-  // RTSS init
+    sceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    sceneManager->setShadowFarDistance(ShadowFarDistance);
+    sceneManager->setShadowTextureSize(ShadowTexSize);
+    sceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
+    sceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
+    sceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
+    sceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
+    sceneManager->setShadowTextureSelfShadow(true);
+    sceneManager->setShadowCasterRenderBackFaces(true);
+    sceneManager->setShadowFarDistance(ShadowFarDistance);
+    auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+    sceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
+    PSSMSetupPtr = make_shared<PSSMShadowCameraSetup>();
+    PSSMSetupPtr->calculateSplitPoints(PSSM_SPLITS, 0.001, sceneManager->getShadowFarDistance());
+    PSSMSplitPointList = PSSMSetupPtr->getSplitPoints();
+    PSSMSetupPtr->setSplitPadding(0.0);
+    for (int i = 0; i < PSSM_SPLITS; i++) PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
+    sceneManager->setShadowCameraSetup(PSSMSetupPtr);
+    sceneManager->setShadowColour(ColourValue::Black);
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-  OgreAssert(RTShader::ShaderGenerator::initialize(), "OGRE RTSS init failed");
-  auto *ShaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
-  OgreViewport->setMaterialScheme(MSN_SHADERGEN);
-  ShaderGenerator->addSceneManager(OgreSceneManager);
-  ShaderGenerator->setShaderCachePath("");
-  auto ResolverPtr = make_unique<ShaderResolver>(ShaderGenerator);
-  MaterialManager::getSingleton().addListener(ResolverPtr.get());
-  const auto DSN = MSN_SHADERGEN;
-  auto &rtShaderGen = RTShader::ShaderGenerator::getSingleton();
-  auto *schemRenderState = rtShaderGen.getRenderState(DSN);
-  auto subRenderState = rtShaderGen.createSubRenderState<RTShader::IntegratedPSSM3>();
-  subRenderState->setSplitPoints(PSSMSplitPointList);
-  schemRenderState->addTemplateSubRenderState(subRenderState);
+    auto *schemRenderState = shaderGenerator->getRenderState(MSN_SHADERGEN);
+    auto subRenderState = shaderGenerator->createSubRenderState<RTShader::IntegratedPSSM3>();
+    subRenderState->setSplitPoints(PSSMSplitPointList);
+    schemRenderState->addTemplateSubRenderState(subRenderState);
 #endif  // OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-
-  // overlay init
-  overlay = new Ogre::OverlaySystem();
-  imguiOverlay = new Ogre::ImGuiOverlay();
-  float vpScale = OverlayManager::getSingleton().getPixelRatio();
-  ImGui::GetIO().FontGlobalScale = std::round(vpScale);  // default font does not work with fractional scaling
-  ImGui::GetStyle().ScaleAllSizes(vpScale);
-  imguiOverlay->setZOrder(300);
-  imguiOverlay->show();
-  Ogre::OverlayManager::getSingleton().addOverlay(imguiOverlay);
-  OgreSceneManager->addRenderQueueListener(overlay);
-  imguiListener = make_unique<ImGuiInputListener>();
-  ImGuiIO &io = ImGui::GetIO();
-  io.IniFilename = nullptr;
-  io.LogFilename = nullptr;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
-  io.MouseDrawCursor = false;
-  io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
+  }
 
   // components init
   physics = make_unique<Physics>();
   RegComponent(physics.get());
 
-  audio = make_unique<Audio>();
-  RegComponent(audio.get());
+  //  audio = make_unique<Audio>();
+  //  RegComponent(audio.get());
 
   InitCompositor();
 
-  physics->OnSetUp();
-  audio->OnSetUp();
+  for (auto &it : componentList) it->OnSetUp();
 
   //  AddFont("NotoSans-Regular", Ogre::RGN_INTERNAL, nullptr, io.Fonts->GetGlyphRangesCyrillic());
   //  ImFontConfig config;
@@ -644,20 +623,22 @@ void Engine::Init() {
   //  static const ImWchar icon_ranges[] = {ICON_MIN_MD, ICON_MAX_MD, 0};
   //  AddFont("KenneyIcon-Regular", Ogre::RGN_INTERNAL, &config, icon_ranges);
 
-  auto *TGO = TerrainGlobalOptions::getSingletonPtr();
-  if (!TGO) TGO = new TerrainGlobalOptions();
-  TGO->setUseVertexCompressionWhenAvailable(true);
-  TGO->setCastsDynamicShadows(false);
-  TGO->setCompositeMapDistance(300);
-  TGO->setMaxPixelError(8);
-  TGO->setUseRayBoxDistanceCalculation(true);
-  TGO->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
+//  auto *TGO = TerrainGlobalOptions::getSingletonPtr();
+//  if (!TGO) TGO = new TerrainGlobalOptions();
+//  TGO->setUseVertexCompressionWhenAvailable(true);
+//  TGO->setCastsDynamicShadows(false);
+//  TGO->setCompositeMapDistance(300);
+//  TGO->setMaxPixelError(8);
+//  TGO->setUseRayBoxDistanceCalculation(true);
+//  TGO->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
 
   // cleanup
   imguiOverlay->show();
   ImGuiOverlay::NewFrame();
-  OgreRoot->renderOneFrame();
-  MaterialManager::getSingleton().removeListener(ResolverPtr.get());
+  ogreRoot->renderOneFrame();
+#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
+  MaterialManager::getSingleton().removeListener(resolver.get());
+#endif
 }
 
 void Engine::Capture() {
@@ -937,7 +918,7 @@ static void AddEntityMaterial(Entity *EntityPtr, const string &MaterialName = ""
 }
 
 Ogre::Vector3 Engine::GetSunPosition() {
-  auto *SunPtr = OgreSceneManager->getLight("Sun");
+  auto *SunPtr = sceneManager->getLight("Sun");
   if (SunPtr)
     return -Vector3(SunPtr->getDerivedDirection().normalisedCopy());
   else
@@ -1040,8 +1021,8 @@ void Engine::OnCleanup() {
   if (OgreTerrainList) OgreTerrainList->removeAllTerrains();
   OgreTerrainList.reset();
   delete Ogre::TerrainGlobalOptions::getSingletonPtr();
-  if (OgreSceneManager) OgreSceneManager->setShadowTechnique(SHADOWTYPE_NONE);
-  if (OgreSceneManager) OgreSceneManager->clearScene();
+  if (sceneManager) sceneManager->setShadowTechnique(SHADOWTYPE_NONE);
+  if (sceneManager) sceneManager->clearScene();
   ResourceGroupManager::getSingleton().unloadResourceGroup(GroupName);
   GpuFpParams.clear();
   GpuFpParams.shrink_to_fit();
@@ -1080,7 +1061,7 @@ void Engine::Update(float PassedTime) {
 }
 
 void Engine::RenderFrame() {
-  OgreRoot->renderOneFrame();
+  ogreRoot->renderOneFrame();
 #if defined(WINDOWS) || defined(ANDROID)
   SDL_GL_SwapWindow(sdlWindow);
 #endif

@@ -50,11 +50,11 @@ void Application::LoopBody() {
     wasSuspended = true;
   }
 
-  auto TimeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-  auto RenderTime = TimeAftetRender - timeBeforeFrame;
+  int64_t timeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
+  int64_t renderDuration = timeAftetRender - timeBeforeFrame;
 
   if (lockFps) {
-    auto delay = static_cast<int64_t>((1e+6 / targetFps) - RenderTime);
+    int64_t delay = static_cast<int64_t>((1e+6 / targetFps) - renderDuration);
     if (delay > 0) this_thread::sleep_for(chrono::microseconds(delay));
   }
 
@@ -74,20 +74,20 @@ void Application::Loop() {
 }
 
 void Application::EmscriptenLoop(void *arg) {
-  auto *app = static_cast<Application *>(arg);
+  static auto *app = static_cast<Application *>(arg);
   app->LoopBody();
 }
 
 void Application::Go() {
   running = true;
 #ifdef MOBILE
-  TargetFPS = 30;
+  targetFps = 30;
 #endif
 #ifndef EMSCRIPTEN
   Loop();
 #else
   lockFps = false;
-  emscripten_set_main_loop_arg(Application::EmscriptenLoop, GetInstancePtr(), 0, 1);
+  emscripten_set_main_loop_arg(EmscriptenLoop, GetInstancePtr(), 0, 1);
 #endif
   engine->OnCleanup();
   engine->OnPause();
@@ -109,7 +109,9 @@ int Application::Main() {
 #ifdef _MSC_VER
   SDL_SetMainReady();
 #endif
+#ifndef DEBUG
   ios_base::sync_with_stdio(false);
+#endif
   Go();
   SDL_Quit();
   return 0;

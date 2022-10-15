@@ -162,9 +162,9 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
 
   ///
   std::string RenderSystemName;
-  Ogre::Root* OgreRoot = nullptr;
+  Ogre::Root* ogreRoot = nullptr;
   Ogre::SceneNode* RootNode = nullptr;
-  Ogre::SceneManager* OgreSceneManager = nullptr;
+  Ogre::SceneManager* sceneManager = nullptr;
   Ogre::RenderWindow* OgreRenderWindowPtr = nullptr;
   Ogre::RenderTarget* OgreRenderTargetPtr = nullptr;
   Ogre::Camera* OgreCamera = nullptr;
@@ -197,10 +197,10 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   int screenHeight = 0;
   bool windowVsync = true;
   int currentDisplay = 0;
-  SDL_DisplayMode displayMode;
+  //SDL_DisplayMode displayMode;
   std::vector<SDL_DisplayMode> sdlMonitorList;
   SDL_Window* sdlWindow = nullptr;
-  SDL_GLContext sdlContext = nullptr;
+  //SDL_GLContext sdlContext = nullptr;
   uint32_t sdlWindowFlags = 0;
   int windowPositionFlag = SDL_WINDOWPOS_CENTERED;
 
