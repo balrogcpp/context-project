@@ -8,9 +8,9 @@ include(BuildVariables)
 if (NOT ANDROID)
     set(ASSETS_DIR ${CMAKE_BINARY_DIR}/assets)
 else ()
-    set(ASSETS_DIR ${CMAKE_SOURCE_DIR}/.assets)
+    set(ASSETS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Engine/android/assets)
 endif ()
-add_custom_target(assets ALL ${CMAKE_COMMAND} -DGLSLES=${GLSLES} -DROOT_DIR=${CMAKE_SOURCE_DIR} -DASSETS_DIR=${ASSETS_DIR} -P ${CMAKE_MODULE_PATH}/Assets.cmake)
+add_custom_target(assets ALL ${CMAKE_COMMAND} -DGLSLES=${GLSLES} -DROOT_DIR=${CMAKE_SOURCE_DIR} -DASSETS_DIR=${ASSETS_DIR} -P ${CMAKE_SOURCE_DIR}/cmake/Assets.cmake)
 
 
 # deps
