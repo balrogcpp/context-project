@@ -340,7 +340,6 @@ void Engine::Init() {
       int ScreenDiag = sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
       int TmpDiag = sqrt(DM.w * DM.w + DM.h * DM.h);
       if (TmpDiag > ScreenDiag) {
-        // displayMode = DM;
         screenWidth = DM.w;
         screenHeight = DM.h;
         currentDisplay = i;
@@ -530,13 +529,13 @@ void Engine::Init() {
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 
   // texture init
-  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
-  if (Ogre::Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_ANISOTROPY)) {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_ANISOTROPIC);
-    Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(8);
-  } else {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_BILINEAR);
-  }
+  //  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
+  //  if (Ogre::Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_ANISOTROPY)) {
+  //    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_ANISOTROPIC);
+  //    Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(8);
+  //  } else {
+  //    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_BILINEAR);
+  //  }
 
   // scan resources
   auto &RGM = ResourceGroupManager::getSingleton();
@@ -566,8 +565,6 @@ void Engine::Init() {
 #ifdef MOBILE
   ShadowsEnabled = false;
 #endif
-  float ShadowFarDistance = 400;
-  int16_t ShadowTexSize = 1024;
   if (!ShadowsEnabled) {
     sceneManager->setShadowTechnique(SHADOWTYPE_NONE);
     sceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 0);
@@ -579,16 +576,18 @@ void Engine::Init() {
 #else
     PixelFormat ShadowTextureFormat = PixelFormat::PF_FLOAT16_R;
 #endif
+    float shadowFarDistance = 400;
+    int16_t shadowTexSize = 1024;
     sceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-    sceneManager->setShadowFarDistance(ShadowFarDistance);
-    sceneManager->setShadowTextureSize(ShadowTexSize);
+    sceneManager->setShadowFarDistance(shadowFarDistance);
+    sceneManager->setShadowTextureSize(shadowTexSize);
     sceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
     sceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
     sceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
     sceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
     sceneManager->setShadowTextureSelfShadow(true);
     sceneManager->setShadowCasterRenderBackFaces(true);
-    sceneManager->setShadowFarDistance(ShadowFarDistance);
+    sceneManager->setShadowFarDistance(shadowFarDistance);
     auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     sceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
     PSSMSetupPtr = make_shared<PSSMShadowCameraSetup>();
@@ -623,14 +622,14 @@ void Engine::Init() {
   //  static const ImWchar icon_ranges[] = {ICON_MIN_MD, ICON_MAX_MD, 0};
   //  AddFont("KenneyIcon-Regular", Ogre::RGN_INTERNAL, &config, icon_ranges);
 
-//  auto *TGO = TerrainGlobalOptions::getSingletonPtr();
-//  if (!TGO) TGO = new TerrainGlobalOptions();
-//  TGO->setUseVertexCompressionWhenAvailable(true);
-//  TGO->setCastsDynamicShadows(false);
-//  TGO->setCompositeMapDistance(300);
-//  TGO->setMaxPixelError(8);
-//  TGO->setUseRayBoxDistanceCalculation(true);
-//  TGO->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
+  auto *TGO = TerrainGlobalOptions::getSingletonPtr();
+  if (!TGO) TGO = new TerrainGlobalOptions();
+  TGO->setUseVertexCompressionWhenAvailable(true);
+  TGO->setCastsDynamicShadows(false);
+  TGO->setCompositeMapDistance(300);
+  TGO->setMaxPixelError(8);
+  TGO->setUseRayBoxDistanceCalculation(true);
+  TGO->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
 
   // cleanup
   imguiOverlay->show();

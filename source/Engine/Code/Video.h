@@ -5,6 +5,8 @@
 #include "System.h"
 #include <Ogre.h>
 
+namespace Glue {
+
 inline bool RenderSystemIsGL() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL Rendering Subsystem"; };
 
 inline bool RenderSystemIsGL3() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL 3+ Rendering Subsystem"; };
@@ -34,4 +36,4 @@ void InitOgreRenderSystemGL();
 bool CheckGLVersion(int major, int minor);
 #endif
 
-namespace Glue {}
+}  // namespace Glue
