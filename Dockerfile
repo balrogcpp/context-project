@@ -44,9 +44,9 @@ RUN mkdir build && cd build \
 # apple x86_64
 RUN mkdir build && cd build \
     && eval $X86_64_EVAL \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
     && ninja contrib \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
     && ninja package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
@@ -55,61 +55,60 @@ RUN mkdir build && cd build \
 #RUN mkdir build && cd build \
 #    && export OSXCROSS_HOST=$OSXCROSS_HOST_ARM64 \
 #    && eval $ARM64_EVAL \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
 #    && ninja contrib \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
 #    && ninja package \
 #    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
-# wasm
-#ARG EMSDK_ROOT=/opt/emsdk
-#ARG EMSDK_VERSION=3.1.19
-#RUN apt-get update \
-#    && apt-get -y install --no-install-recommends python3 \
-#    && apt-get clean \
-#    && cd /opt \
-#    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
-#    && cd emsdk \
-#    && rm -rf .git \
-#    && ./emsdk install latest \
-#    && ./emsdk activate latest \
-#    && . ./emsdk_env.sh
-#ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
-#
-#RUN mkdir ${CONTEXT_HOME}/build && cd ${CONTEXT_HOME}/build \
-#    && cd ${EMSDK_ROOT} && . ./emsdk_env.sh \
-#    && cd ${CONTEXT_HOME}/build-wasm \
-#    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
-#    && emmake ninja contrib \
-#    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
-#    && emmake ninja package \
-#    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
-
-
 # android
-#ARG ANDROID_HOME=/opt/android-sdk
-#ARG ANDROID_CMD_VERSION=8512546
-#RUN apt-get update \
-#    && apt-get -y install --no-install-recommends openjdk-11-jdk \
-#    && apt-get clean \
-#    && cd /opt \
-#    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -O tools.zip \
-#    && unzip tools.zip \
-#    && rm tools.zip \
-#    && cd cmdline-tools/bin \
-#    && yes | ./sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
-#    && ./sdkmanager  --install "build-tools;30.0.3" --sdk_root=${ANDROID_HOME} \
-#    && ./sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} \
-#    && ./sdkmanager  --install "ndk;25.1.8937393" --sdk_root=${ANDROID_HOME} \
-#    && cd ../../ \
-#    && rm -rf /root/.android /root/.gradle
-#ENV PATH="/opt/cmdline-tools/bin:${PATH}"
-#ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
-#
-#RUN cd ${CONTEXT_HOME}/source/Engine \
-#    && sh gradlew assembleRelease \
-#    && rm -rf android/.cxx \
-#    && sh gradlew assembleRelease \
-#    && cp android/build/outputs/apk/release/android-arm64-v8a-release.apk ${CONTEXT_HOME}/artifacts\
-#    && rm -rf ${ANDROID_HOME} /root/.android
+ARG ANDROID_HOME=/opt/android-sdk
+ARG ANDROID_CMD_VERSION=8512546
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends openjdk-11-jdk \
+    && apt-get clean \
+    && cd /opt \
+    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -O tools.zip \
+    && unzip tools.zip \
+    && rm tools.zip \
+    && cd cmdline-tools/bin \
+    && yes | ./sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
+    && ./sdkmanager  --install "build-tools;30.0.3" --sdk_root=${ANDROID_HOME} \
+    && ./sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} \
+    && ./sdkmanager  --install "ndk;25.1.8937393" --sdk_root=${ANDROID_HOME} \
+    && cd ../../ \
+    && rm -rf /root/.android /root/.gradle
+ENV PATH="/opt/cmdline-tools/bin:${PATH}"
+ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
+
+RUN cd ${CONTEXT_HOME}/source/Engine \
+    && sh gradlew assembleRelease \
+    && rm -rf android/.cxx \
+    && sh gradlew assembleRelease \
+    && cp android/build/outputs/apk/release/android-arm64-v8a-release.apk ${CONTEXT_HOME}/artifacts\
+    && rm -rf ${ANDROID_HOME} /root/.android
+
+
+# wasm
+ARG EMSDK_ROOT=/opt/emsdk
+ARG EMSDK_VERSION=3.1.24
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends python3 \
+    && apt-get clean \
+    && cd /opt \
+    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
+    && cd emsdk \
+    && rm -rf .git \
+    && ./emsdk install latest \
+    && ./emsdk activate latest \
+    && . emsdk_env.sh
+ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
+
+RUN cd ${EMSDK_ROOT} && . ./emsdk_env.sh  \
+    && mkdir ${CONTEXT_HOME}/build && cd ${CONTEXT_HOME}/build \
+    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
+    && emmake ninja contrib \
+    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
+    && emmake ninja package \
+    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
