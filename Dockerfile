@@ -52,14 +52,14 @@ RUN mkdir build && cd build \
 
 
 # apple aarch64
-#RUN mkdir build && cd build \
-#    && export OSXCROSS_HOST=$OSXCROSS_HOST_ARM64 \
-#    && eval $ARM64_EVAL \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
-#    && ninja contrib \
-#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
-#    && ninja package \
-#    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
+RUN mkdir build && cd build \
+    && export OSXCROSS_HOST=$OSXCROSS_HOST_ARM64 \
+    && eval $ARM64_EVAL \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+    && ninja contrib \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+    && ninja package \
+    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
 # android
@@ -91,22 +91,23 @@ RUN cd ${CONTEXT_HOME}/source/Engine \
 
 
 # wasm
-ARG EMSDK_ROOT=/opt/emsdk
-ARG EMSDK_VERSION=3.1.24
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends python3 \
-    && apt-get clean \
-    && cd /opt \
-    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
-    && cd emsdk \
-    && rm -rf .git \
-    && ./emsdk install latest
-ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
-
-RUN cd ${EMSDK_ROOT} && . ./emsdk_env.sh \
-    && mkdir ${CONTEXT_HOME}/build && cd ${CONTEXT_HOME}/build \
-    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
-    && emmake ninja contrib \
-    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
-    && emmake ninja package \
-    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
+#ARG EMSDK_ROOT=/opt/emsdk
+#ARG EMSDK_VERSION=3.1.24
+#RUN apt-get update \
+#    && apt-get -y install --no-install-recommends python3 \
+#    && apt-get clean \
+#    && cd /opt \
+#    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
+#    && cd emsdk \
+#    && rm -rf .git \
+#    && ./emsdk install latest \
+#    && ./emsdk activate latest
+#ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
+#
+#RUN cd ${EMSDK_ROOT} && . ./emsdk_env.sh \
+#    && mkdir ${CONTEXT_HOME}/build && cd ${CONTEXT_HOME}/build \
+#    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
+#    && emmake ninja contrib \
+#    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
+#    && emmake ninja package \
+#    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
