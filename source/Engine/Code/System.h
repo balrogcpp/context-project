@@ -11,15 +11,15 @@ namespace Glue {
 class SystemI {
  public:
   virtual void OnSetUp() {}
-  virtual void OnPause() { Paused = true; }
-  virtual void OnResume() { Paused = false; }
+  virtual void OnPause() { paused = true; }
+  virtual void OnResume() { paused = false; }
   virtual void OnUpdate(float PassedTime) {}
   virtual void OnClean() {}
 
-  bool IsPaused() { return Paused; }
+  bool IsPaused() { return paused; }
 
  protected:
-  bool Paused = false;
+  bool paused = false;
 };
 
 template <typename T>

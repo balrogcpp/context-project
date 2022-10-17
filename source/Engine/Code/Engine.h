@@ -6,37 +6,22 @@
 #include "ImGuiInputListener.h"
 #include "Observer.h"
 #include "Physics.h"
+#include "SinbadCharacterController.h"
 #include "Singleton.h"
 #include "Video.h"
 extern "C" {
 #include <SDL2/SDL_video.h>
 }
-#include <imgui.h>
 #include <memory>
 #include <vector>
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
 #include <Overlay/OgreImGuiOverlay.h>
-#include <Overlay/OgreOverlay.h>
-#include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
 #endif
-
-namespace Ogre {
-class TerrainGroup;
-}  // namespace Ogre
-
-namespace Forests {
-class PagedGeometry;
-class PageLoader;
-class GeometryPage;
-}  // namespace Forests
-
-namespace Glue {
-class CameraMan;
-class Physics;
-class Audio;
-class SinbadCharacterController;
-}  // namespace Glue
+#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+#include <Terrain/OgreTerrainGroup.h>
+#endif
+#include "PagedGeometry/PagedGeometry.h"
 
 int ErrorWindow(const char* WindowCaption, const char* MessageText);
 
@@ -81,67 +66,28 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   Engine();
   virtual ~Engine();
 
-  /// Initialized all components. Must be called once after Engine object created
   void Init();
-
-  /// Called every frame to read input
   void Capture();
-
-  /// Set all components to Pause state
   void OnPause();
-
-  /// Called when in-game menu turned on
   void OnMenuOn();
-
-  /// Called when in-game menu turned off
   void OnMenuOff();
-
-  /// Called when game is resumed
   void OnResume();
-
-  /// Called on game exit
   void OnCleanup();
-
-  /// Called every frame
   void Update(float PassedTime);
 
-  /// Called to start render
   void RenderFrame();
 
-  /// Internal function to add component
   void RegComponent(SystemI* ComponentPtr);
-
-  /// Internal function to unload component
   void UnRegComponent(SystemI* ComponentPtr);
-
-  ///
   void SetFullscreen(bool Fullscreen);
-
-  ///
   bool IsWindowFullscreen();
-
-  ///
   void ResizeWindow(int Width, int Height);
-
-  ///
   void SetWindowCaption(const char* Caption);
-
-  ///
   void ShowCursor(bool Show);
-
-  ///
   void GrabCursor(bool Grab);
-
-  ///
   std::string GetWindowCaption();
-
-  ///
   int GetWindowSizeX();
-
-  ///
   int GetWindowSizeY();
-
-  ///
   float GetHeight(float x, float z);
   void AddEntity(Ogre::Entity* EntityPtr);
   void AddMaterial(Ogre::MaterialPtr material);
@@ -161,32 +107,28 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   void InitCompositor();
 
   ///
-  std::string RenderSystemName;
   Ogre::Root* ogreRoot = nullptr;
-  Ogre::SceneNode* RootNode = nullptr;
   Ogre::SceneManager* sceneManager = nullptr;
-  Ogre::RenderWindow* OgreRenderWindowPtr = nullptr;
-  Ogre::RenderTarget* OgreRenderTargetPtr = nullptr;
-  Ogre::Camera* OgreCamera = nullptr;
-  Ogre::Viewport* OgreViewport = nullptr;
-  std::string GroupName = Ogre::RGN_DEFAULT;
+  Ogre::RenderWindow* ogreWindow = nullptr;
+  Ogre::Camera* camera = nullptr;
+  Ogre::Viewport* viewport = nullptr;
 
   ///
-  std::shared_ptr<Ogre::PSSMShadowCameraSetup> PSSMSetupPtr;
-  std::vector<float> PSSMSplitPointList;
+  std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssmSetup;
+  std::vector<float> pssmSplitPointList;
   const int PSSM_SPLITS = 3;
 
   ///
-  std::unique_ptr<Ogre::TerrainGroup> OgreTerrainList;
-  std::vector<std::unique_ptr<Forests::PagedGeometry>> PagedGeometryList;
-  std::unique_ptr<SinbadCharacterController> Sinbad;
-  Ogre::GpuProgramParametersSharedPtr SkyBoxFpParams;
-  bool SkyNeedsUpdate = false;
-  const std::array<const char*, 10> HosikParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
-  std::array<Ogre::Vector3, 10> HosekParams;
-  std::vector<Ogre::GpuProgramParametersSharedPtr> GpuFpParams;
-  std::vector<Ogre::GpuProgramParametersSharedPtr> GpuVpParams;
-  bool Paused = false;
+  std::unique_ptr<Ogre::TerrainGroup> terrainGroup;
+  std::vector<std::unique_ptr<Forests::PagedGeometry>> pgList;
+  std::unique_ptr<SinbadCharacterController> sinbad;
+  Ogre::GpuProgramParametersSharedPtr skyBoxFpParams;
+  bool skyNeedsUpdate = false;
+  const std::array<const char*, 10> hosekParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
+  std::array<Ogre::Vector3, 10> hosekParams;
+  std::vector<Ogre::GpuProgramParametersSharedPtr> gpuFpParams;
+  std::vector<Ogre::GpuProgramParametersSharedPtr> gpuVpParams;
+  bool paused = false;
 
   ///
   std::string windowCaption = "Example0";
@@ -197,24 +139,19 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   int screenHeight = 0;
   bool windowVsync = true;
   int currentDisplay = 0;
-  //SDL_DisplayMode displayMode;
   std::vector<SDL_DisplayMode> sdlMonitorList;
   SDL_Window* sdlWindow = nullptr;
-  //SDL_GLContext sdlContext = nullptr;
   uint32_t sdlWindowFlags = 0;
-  int windowPositionFlag = SDL_WINDOWPOS_CENTERED;
+  int sdlWindowPositionFlag = SDL_WINDOWPOS_CENTERED;
 
   /// Compositor stuff
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;
-  int ViewportSizeX = 0;
-  int ViewportSizeY = 0;
   std::map<std::string, CompositorFX> compositorList;
 
   /// ImGui stuff
   std::unique_ptr<ImGuiInputListener> imguiListener;
   Ogre::ImGuiOverlay* imguiOverlay = nullptr;
-  Ogre::OverlaySystem* overlay = nullptr;
 
   /// Components
   std::unique_ptr<Physics> physics;

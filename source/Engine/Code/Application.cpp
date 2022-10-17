@@ -63,12 +63,12 @@ void Application::LoopBody() {
   cumulatedTime += TimeSinceLastFrame;
 
 #ifdef EMSCRIPTEN
-  if (!running) emscripten_cancel_main_loop();
+  if (quit) emscripten_cancel_main_loop();
 #endif
 }
 
 void Application::Loop() {
-  while (running) {
+  while (!quit) {
     LoopBody();
   }
 }
@@ -79,7 +79,6 @@ void Application::EmscriptenLoop(void *arg) {
 }
 
 void Application::Go() {
-  running = true;
 #ifdef MOBILE
   targetFps = 30;
 #endif
@@ -93,7 +92,7 @@ void Application::Go() {
   engine->OnPause();
 }
 
-void Application::OnQuit() { running = false; }
+void Application::OnQuit() { quit = true; }
 
 void Application::OnPause() {
   suspend = true;

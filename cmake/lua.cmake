@@ -1,10 +1,3 @@
-# Copyright (C) Andrey Vasiliev 2022
-# Copyright (C) 2007-2015 LuaDist.
-# Created by Peter Drahoš, Peter Kapec
-# Redistribution and use of this file is allowed according to the terms of the MIT license.
-# For details see the COPYRIGHT file distributed with LuaDist.
-# Please note that the package source code is licensed under its own license.
-
 project(lua C)
 cmake_minimum_required(VERSION 2.8)
 find_package(Git REQUIRED)

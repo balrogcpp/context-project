@@ -1,52 +1,59 @@
-/// created by Andrey Vasiliev
+/// created by Andrey VasilievBullet
 
 #include "pch.h"
 #include "Physics.h"
+#ifdef OGRE_BUILD_COMPONENT_BULLET
+#include <Bullet/OgreBullet.h>
+#endif
+#include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
+#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
+#include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
+#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
+
 
 using namespace std;
 using namespace Ogre;
 
 namespace Glue {
 
-Physics::Physics(bool threaded) : Threaded(threaded) {
+Physics::Physics(bool threaded) : threaded(threaded) {
   auto *Scheduler = btCreateDefaultTaskScheduler();
   if (!Scheduler) throw std::runtime_error("Bullet physics no task scheduler available");
   btSetTaskScheduler(Scheduler);
-  BtBroadphase = make_unique<btDbvtBroadphase>();
-  BtConfig = make_unique<btDefaultCollisionConfiguration>();
+  btBroadphase = make_unique<btDbvtBroadphase>();
+  btConfig = make_unique<btDefaultCollisionConfiguration>();
 
 #if (OGRE_THREAD_SUPPORT > 0)
-  BtDispatcher = make_unique<btCollisionDispatcherMt>(BtConfig.get());
-  BtSolver = make_unique<btSequentialImpulseConstraintSolverMt>();
+  btDispatcher = make_unique<btCollisionDispatcherMt>(btConfig.get());
+  btSolver = make_unique<btSequentialImpulseConstraintSolverMt>();
   auto *solverPool = new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT);
-  BtWorld = make_unique<btDiscreteDynamicsWorldMt>(BtDispatcher.get(), BtBroadphase.get(), solverPool, BtSolver.get(), BtConfig.get());
+  btWorld = make_unique<btDiscreteDynamicsWorldMt>(btDispatcher.get(), btBroadphase.get(), solverPool, btSolver.get(), btConfig.get());
 #else
-  BtDispatcher = make_unique<btCollisionDispatcher>(BtConfig.get());
-  BtSolver = make_unique<btSequentialImpulseConstraintSolver>();
-  BtWorld = make_unique<btDiscreteDynamicsWorld>(BtDispatcher.get(), BtBroadphase.get(), BtSolver.get(), BtConfig.get());
+  btDispatcher = make_unique<btCollisionDispatcher>(btConfig.get());
+  btSolver = make_unique<btSequentialImpulseConstraintSolver>();
+  btWorld = make_unique<btDiscreteDynamicsWorld>(btDispatcher.get(), btBroadphase.get(), btSolver.get(), btConfig.get());
 #endif
 
-  BtWorld->setGravity(btVector3(0.0, -9.8, 0.0));
-  // if (Threaded) InitThread();
-  Paused = false;
-  Running = true;
+  btWorld->setGravity(btVector3(0.0, -9.8, 0.0));
+  // if (threaded) InitThread();
+  paused = false;
 }
 
 void Physics::InitThread() {
-  if (!Threaded) return;
+  if (!threaded) return;
 
   static int64_t time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 
   function<void(void)> update_func_ = [&]() {
-    while (Running) {
+    while (!paused) {
       auto before_update = chrono::system_clock::now().time_since_epoch();
       int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
       float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_) / 1e+6;
       time_of_last_frame_ = micros_before_update;
 
       // Actually do calculations
-      if (!Paused) {
-        BtWorld->stepSimulation(frame_time, SubSteps, 1.0f / UpdateRate);
+      if (!paused) {
+        btWorld->stepSimulation(frame_time, SubSteps, 1.0f / updateRate);
       }
       // Actually do calculations
 
@@ -55,48 +62,47 @@ void Physics::InitThread() {
 
       auto update_time = micros_after_update - micros_before_update;
 
-      auto delay = static_cast<int64_t>((1e+6 / UpdateRate) - update_time);
+      auto delay = static_cast<int64_t>((1e+6 / updateRate) - update_time);
       if (delay > 0) this_thread::sleep_for(chrono::microseconds(delay));
     }
   };
 
-  UpdateThread = make_unique<thread>(update_func_);
-  UpdateThread->detach();
+  updateThread = make_unique<thread>(update_func_);
+  updateThread->detach();
 }
 
-Physics::~Physics() { Running = false; }
+Physics::~Physics() {}
 
-void Physics::OnResume() { Paused = false; }
+void Physics::OnResume() { paused = false; }
 
-void Physics::OnPause() { Paused = true; }
+void Physics::OnPause() { paused = true; }
 
 void Physics::OnUpdate(float time) {
-  if (Threaded || Paused) return;
+  if (threaded || paused) return;
 
-  BtWorld->stepSimulation(time, SubSteps, 1.0f / UpdateRate);
+  btWorld->stepSimulation(time, SubSteps, 1.0f / updateRate);
 }
 
 void Physics::OnClean() {
-  BtWorld->clearForces();
+  btWorld->clearForces();
 
-  // remove the rigidbodies from the dynamics BtWorld and delete them
-  for (int i = BtWorld->getNumCollisionObjects() - 1; i >= 0; i--) {
-    btCollisionObject *obj = BtWorld->getCollisionObjectArray()[i];
-    BtWorld->removeCollisionObject(obj);
+  // remove the rigidbodies from the dynamics btWorld and delete them
+  for (int i = btWorld->getNumCollisionObjects() - 1; i >= 0; i--) {
+    btCollisionObject *obj = btWorld->getCollisionObjectArray()[i];
+    btWorld->removeCollisionObject(obj);
     delete obj;
   }
 
-  for (int i = BtWorld->getNumConstraints() - 1; i >= 0; i--) {
-    btTypedConstraint *constraint = BtWorld->getConstraint(i);
-    BtWorld->removeConstraint(constraint);
+  for (int i = btWorld->getNumConstraints() - 1; i >= 0; i--) {
+    btTypedConstraint *constraint = btWorld->getConstraint(i);
+    btWorld->removeConstraint(constraint);
     delete constraint;
   }
 }
 
-void Physics::AddRigidBody(btRigidBody *rigidBody) { BtWorld->addRigidBody(rigidBody); }
+void Physics::AddRigidBody(btRigidBody *rigidBody) { btWorld->addRigidBody(rigidBody); }
 
-void Physics::CreateTerrainHeightfieldShape(int size, float *data, const float &min_height, const float &max_height, const Ogre::Vector3 &position,
-                                            const float &scale) {
+void Physics::CreateTerrainHeightfieldShape(int size, float *data, float minHeight, float maxHeight, Ogre::Vector3 position, float scale) {
   // Convert height data in a format suitable for the physics engine
   auto *terrainHeights = new float[size * size];
   assert(terrainHeights != 0);
@@ -109,7 +115,7 @@ void Physics::CreateTerrainHeightfieldShape(int size, float *data, const float &
 
   btVector3 localScaling(scale, heightScale, scale);
 
-  auto *terrainShape = new btHeightfieldTerrainShape(size, size, terrainHeights, 1, min_height, max_height, 1, PHY_FLOAT, false);
+  auto *terrainShape = new btHeightfieldTerrainShape(size, size, terrainHeights, 1, minHeight, maxHeight, 1, PHY_FLOAT, false);
 
   terrainShape->setUseDiamondSubdivision(true);
   terrainShape->setLocalScaling(localScaling);
@@ -123,17 +129,16 @@ void Physics::CreateTerrainHeightfieldShape(int size, float *data, const float &
   entBody->setFriction(0.4f);
   entBody->setHitFraction(0.8f);
   entBody->setRestitution(0.6f);
-  entBody->getWorldTransform().setOrigin(btVector3(position.x, position.y + (max_height - min_height) / 2 - 0.5, position.z));
+  entBody->getWorldTransform().setOrigin(btVector3(position.x, position.y + (maxHeight - minHeight) / 2 - 0.5, position.z));
   entBody->getWorldTransform().setRotation(Bullet::convert(Ogre::Quaternion::IDENTITY));
   entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
   entBody->setUserIndex(0);
   AddRigidBody(entBody);
-  BtWorld->setForceUpdateAllAabbs(false);
+  btWorld->setForceUpdateAllAabbs(false);
 }
 
-void Physics::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, bool isStatic, const std::string &type, float mass,
-                          float friction) {
+void Physics::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, bool isStatic, const std::string &type, float mass, float friction) {
   btRigidBody *entBody = nullptr;
   btVector3 Inertia = btVector3(0, 0, 0);
 

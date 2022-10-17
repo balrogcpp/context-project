@@ -797,7 +797,7 @@ namespace OgreOggSound
 		 */
 		void _performAction(const SoundAction& act);
 
-		/** Threaded function for streaming updates
+		/** threaded function for streaming updates
 		@remarks
 			Optional threading function specified in OgreOggPreReqs.h.\n
 			Implemented to handle updating of streamed audio buffers independently of main game thread, 

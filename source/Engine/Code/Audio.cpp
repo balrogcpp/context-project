@@ -19,9 +19,9 @@ Audio::Audio(int maxSourceCount, int queueListSize) {
 
   audioRoot = make_unique<OgreOggSound::Root>();
   audioRoot->initialise();
-  soundManager = &OgreOggSound::OgreOggSoundManager::getSingleton();
-  soundManager->init("", maxSourceCount, queueListSize);
-  soundManager->setResourceGroupName(RGN_AUTODETECT);
+  oggSoundManager = &OgreOggSound::OgreOggSoundManager::getSingleton();
+  oggSoundManager->init("", maxSourceCount, queueListSize);
+  oggSoundManager->setResourceGroupName(RGN_AUTODETECT);
 }
 
 Audio::~Audio() { audioRoot->shutdown(); }
@@ -35,19 +35,19 @@ void Audio::OnSetUp() {
 
 void Audio::OnUpdate(float passedTime) {}
 
-void Audio::OnPause() { soundManager->pauseAllSounds(); }
+void Audio::OnPause() { oggSoundManager->pauseAllSounds(); }
 
-void Audio::OnResume() { soundManager->resumeAllPausedSounds(); }
+void Audio::OnResume() { oggSoundManager->resumeAllPausedSounds(); }
 
-void Audio::Pause() { soundManager->pauseAllSounds(); }
+void Audio::Pause() { oggSoundManager->pauseAllSounds(); }
 
-void Audio::Resume() { soundManager->resumeAllPausedSounds(); }
+void Audio::Resume() { oggSoundManager->resumeAllPausedSounds(); }
 
 void Audio::AddSound(const char *name, const char *audioFile, Ogre::SceneNode *parent, bool playInLoop) {
 //#if OGRE_THREAD_SUPPORT > 0
 //  this_thread::sleep_for(chrono::milliseconds(16));
 //#endif
-  auto *sound = soundManager->createSound(name, audioFile, true, playInLoop, true, nullptr);
+  auto *sound = oggSoundManager->createSound(name, audioFile, true, playInLoop, true, nullptr);
   auto *root_node = Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
   if (parent)
     parent->attachObject(sound);
@@ -56,11 +56,11 @@ void Audio::AddSound(const char *name, const char *audioFile, Ogre::SceneNode *p
 }
 
 void Audio::AddListener(SceneNode *parent) {
-  auto *listener = soundManager->getListener();
+  auto *listener = oggSoundManager->getListener();
 
   if (!listener) {
-    OgreAssert(soundManager->createListener(), "Failed to create sound listener");
-    listener = soundManager->getListener();
+    OgreAssert(oggSoundManager->createListener(), "Failed to create sound listener");
+    listener = oggSoundManager->getListener();
   }
 
   if (parent) parent->attachObject(listener);
@@ -69,7 +69,7 @@ void Audio::AddListener(SceneNode *parent) {
 void Audio::RemoveListener(SceneNode *parent) {}
 
 void Audio::PlaySound(const char *name, bool playImmediately) {
-  auto *sound = soundManager->getSound(name);
+  auto *sound = oggSoundManager->getSound(name);
   if (sound) {
     if (playImmediately) sound->stop();
     sound->play();
@@ -79,7 +79,7 @@ void Audio::PlaySound(const char *name, bool playImmediately) {
 }
 
 void Audio::StopSound(const char *name) {
-  auto *sound = soundManager->getSound(name);
+  auto *sound = oggSoundManager->getSound(name);
   if (sound) {
     sound->stop();
   } else {
@@ -87,15 +87,15 @@ void Audio::StopSound(const char *name) {
   }
 }
 
-void Audio::SetMasterVolume(float volume) { soundManager->setMasterVolume(volume); }
+void Audio::SetMasterVolume(float volume) { oggSoundManager->setMasterVolume(volume); }
 
 void Audio::SetSoundMaxVolume(const char *name, float volume) {
-  auto *Sound = soundManager->getSound(name);
+  auto *Sound = oggSoundManager->getSound(name);
   if (Sound) Sound->setMaxVolume(volume);
 }
 
 void Audio::SetSoundVolume(const char *name, float volume) {
-  auto *sound = soundManager->getSound(name);
+  auto *sound = oggSoundManager->getSound(name);
   if (sound) sound->setVolume(volume);
 }
 

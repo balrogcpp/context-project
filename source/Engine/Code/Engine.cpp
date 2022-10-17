@@ -56,12 +56,6 @@ extern "C" {
 #include <RTShaderSystem/OgreRTShaderSystem.h>
 #include <RTShaderSystem/OgreShaderGenerator.h>
 #endif
-#ifdef OGRE_BUILD_COMPONENT_MESHLODGENERATOR
-#include <MeshLodGenerator/OgreLodConfig.h>
-#include <MeshLodGenerator/OgreMeshLodGenerator.h>
-#include <OgreDistanceLodStrategy.h>
-#include <OgrePixelCountLodStrategy.h>
-#endif
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include "TerrainMaterialGeneratorB.h"
 #include <Terrain/OgreTerrain.h>
@@ -69,16 +63,10 @@ extern "C" {
 #include <Terrain/OgreTerrainMaterialGeneratorA.h>
 #include <Terrain/OgreTerrainQuadTreeNode.h>
 #endif
-#ifdef OGRE_BUILD_COMPONENT_PAGING
-#include <Paging/OgrePage.h>
-#include <Paging/OgrePaging.h>
-#endif
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
-#include <Overlay/OgreFont.h>
 #include <Overlay/OgreFontManager.h>
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
-#include <Overlay/OgreOverlaySystem.h>
 #endif
 #if defined(DESKTOP) && defined(DEBUG)
 #if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
@@ -141,10 +129,10 @@ static inline bool IsHidden(const fs::path &Path) {
   return name == ".." && name == "." && name[0] == '.';
 }
 
-static inline string FindPath(const char *Path, int Depth = 4) {
-  string result = Path;
+static inline string FindPath(const string &path, int depth = 4) {
+  string result = path;
 
-  for (int i = 0; i < Depth; i++) {
+  for (int i = 0; i < depth; i++) {
     if (fs::exists(result))
       return result;
     else if (fs::exists(result + ".zip"))
@@ -160,31 +148,31 @@ static inline string FindPath(const char *Path, int Depth = 4) {
   return "";
 }
 
-static void AddLocation(const char *Path, const std::string &GroupName = Ogre::RGN_DEFAULT) {
+static void AddLocation(const char *path, const string &groupName = RGN_DEFAULT) {
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
 
-  std::vector<string> file_list;
-  std::vector<string> dir_list;
-  std::vector<tuple<string, string, string>> resource_list;
+  vector<string> fileList;
+  vector<string> dirList;
+  vector<tuple<string, string, string>> resourceList;
   auto &RGM = ResourceGroupManager::getSingleton();
 
-  string path = FindPath(Path);
+  string newPath = FindPath(path);
 
-  if (fs::exists(path)) {
-    if (fs::is_directory(path))
-      resource_list.push_back(make_tuple(path, FILE_SYSTEM, GroupName));
-    else if (fs::is_regular_file(path) && fs::path(path).extension() == ".zip")
-      RGM.addResourceLocation(path, ZIP, GroupName);
+  if (fs::exists(newPath)) {
+    if (fs::is_directory(newPath))
+      resourceList.push_back(make_tuple(newPath, FILE_SYSTEM, groupName));
+    else if (fs::is_regular_file(newPath) && fs::path(newPath).extension() == ".zip")
+      RGM.addResourceLocation(newPath, ZIP, groupName);
   }
 
-  for (const auto &it : resource_list) {
+  for (const auto &it : resourceList) {
     RGM.addResourceLocation(get<0>(it), get<1>(it), get<2>(it));
-    dir_list.push_back(get<0>(it));
+    dirList.push_back(get<0>(it));
 
     for (fs::recursive_directory_iterator end, jt(get<0>(it)); jt != end; ++jt) {
       const string full_path = jt->path().string();
-      const string file_name = jt->path().filename().string();
+      const string fileName = jt->path().filename().string();
       const string extention = jt->path().filename().extension().string();
 
       if (jt->is_directory()) {
@@ -193,7 +181,7 @@ static void AddLocation(const char *Path, const std::string &GroupName = Ogre::R
           continue;
         }
 
-        dir_list.push_back(file_name);
+        dirList.push_back(fileName);
 
         RGM.addResourceLocation(full_path, FILE_SYSTEM, get<2>(it));
       } else if (jt->is_regular_file()) {
@@ -202,7 +190,7 @@ static void AddLocation(const char *Path, const std::string &GroupName = Ogre::R
         if (extention == ".zip") {
           RGM.addResourceLocation(full_path, ZIP, get<2>(it));
         } else {
-          file_list.push_back(file_name);
+          fileList.push_back(fileName);
         }
       }
     }
@@ -211,79 +199,61 @@ static void AddLocation(const char *Path, const std::string &GroupName = Ogre::R
 #endif
 
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-class ShaderResolver final : public Ogre::MaterialManager::Listener {
+class ShaderResolver final : public MaterialManager::Listener {
  public:
-  explicit ShaderResolver(Ogre::RTShader::ShaderGenerator *ShaderGeneratorPtr) { this->ShaderGeneratorPtr = ShaderGeneratorPtr; }
+  explicit ShaderResolver(RTShader::ShaderGenerator *shaderGenerator) : shaderGenerator(shaderGenerator) {}
 
-  static bool FixMaterial(const std::string &material_name) {
-    auto &mShaderGenerator = RTShader::ShaderGenerator::getSingleton();
-    auto originalMaterial = MaterialManager::getSingleton().getByName(material_name);
-
-    if (!originalMaterial) {
-      originalMaterial = MaterialManager::getSingleton().getByName(material_name, RGN_INTERNAL);
-      return false;
+  Technique *handleSchemeNotFound(unsigned short schemeIndex, const string &schemeName, Material *originalMaterial, unsigned short lodIndex,
+                                  const Renderable *rend) override {
+    if (!shaderGenerator->hasRenderState(schemeName)) {
+      return nullptr;
     }
+    // Case this is the default shader generator scheme.
 
-    // SetUp shader generated technique for this material.
-    bool techniqueCreated = mShaderGenerator.createShaderBasedTechnique(*originalMaterial, MaterialManager::DEFAULT_SCHEME_NAME, MSN_SHADERGEN);
+    // Create shader generated technique for this material.
+    bool techniqueCreated = shaderGenerator->createShaderBasedTechnique(*originalMaterial, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, schemeName);
 
+    if (!techniqueCreated) {
+      return nullptr;
+    }
     // Case technique registration succeeded.
+
     // Force creating the shaders for the generated technique.
-    if (techniqueCreated)
-      mShaderGenerator.validateMaterial(MSN_SHADERGEN, originalMaterial->getName(), originalMaterial->getGroup());
-    else
-      originalMaterial->getTechnique(0)->setSchemeName(MSN_SHADERGEN);
+    shaderGenerator->validateMaterial(schemeName, *originalMaterial);
 
-    return true;
-  }
+    // Grab the generated technique.
+    Ogre::Material::Techniques::const_iterator it;
+    for (it = originalMaterial->getTechniques().begin(); it != originalMaterial->getTechniques().end(); ++it) {
+      Ogre::Technique *curTech = *it;
 
-  Ogre::Technique *handleSchemeNotFound(unsigned short SchemeIndex, const std::string &SchemeName, Ogre::Material *OriginalMaterialPtr,
-                                        unsigned short LodIndex, const Ogre::Renderable *OgreRenderable) override {
-    if (SchemeName != MSN_SHADERGEN) return nullptr;
-
-    // SetUp shader generated technique for this material.
-    bool techniqueCreated = ShaderGeneratorPtr->createShaderBasedTechnique(*OriginalMaterialPtr, MaterialManager::DEFAULT_SCHEME_NAME, SchemeName);
-
-    // Case technique registration succeeded.
-    if (techniqueCreated) {
-      // Force creating the shaders for the generated technique.
-      ShaderGeneratorPtr->validateMaterial(SchemeName, OriginalMaterialPtr->getName(), OriginalMaterialPtr->getGroup());
-
-      // Grab the generated technique.
-      for (const auto &it : OriginalMaterialPtr->getTechniques()) {
-        if (it->getSchemeName() == SchemeName) {
-          return it;
-        }
+      if (curTech->getSchemeName() == schemeName) {
+        return curTech;
       }
-    } else {
-      OriginalMaterialPtr->getTechnique(0)->setSchemeName(MSN_SHADERGEN);
     }
 
     return nullptr;
   }
 
-  bool afterIlluminationPassesCreated(Ogre::Technique *OgreTechnique) override {
-    if (OgreTechnique->getSchemeName() == MSN_SHADERGEN) {
-      Material *mat = OgreTechnique->getParent();
-      ShaderGeneratorPtr->validateMaterialIlluminationPasses(OgreTechnique->getSchemeName(), mat->getName(), mat->getGroup());
+  bool afterIlluminationPassesCreated(Technique *tech) override {
+    if (shaderGenerator->hasRenderState(tech->getSchemeName())) {
+      Ogre::Material *mat = tech->getParent();
+      shaderGenerator->validateMaterialIlluminationPasses(tech->getSchemeName(), mat->getName(), mat->getGroup());
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
-  bool beforeIlluminationPassesCleared(Ogre::Technique *OgreTechnique) override {
-    if (OgreTechnique->getSchemeName() == MSN_SHADERGEN) {
-      Material *mat = OgreTechnique->getParent();
-      ShaderGeneratorPtr->invalidateMaterialIlluminationPasses(OgreTechnique->getSchemeName(), mat->getName(), mat->getGroup());
+  bool beforeIlluminationPassesCleared(Technique *tech) override {
+    if (shaderGenerator->hasRenderState(tech->getSchemeName())) {
+      Ogre::Material *mat = tech->getParent();
+      shaderGenerator->invalidateMaterialIlluminationPasses(tech->getSchemeName(), mat->getName(), mat->getGroup());
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
  protected:
-  Ogre::RTShader::ShaderGenerator *ShaderGeneratorPtr = nullptr;
+  RTShader::ShaderGenerator *shaderGenerator = nullptr;
 };
 #endif  // OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 
@@ -293,8 +263,8 @@ Engine::~Engine() { SDL_SetWindowFullscreen(sdlWindow, SDL_FALSE); }
 
 ImFont *AddFont(const String &name, const char *group OGRE_RESOURCE_GROUP_INIT, const ImFontConfig *fontCfg = NULL,
                 const ImWchar *glyphRanges = NULL) {
-  typedef std::vector<ImWchar> CodePointRange;
-  std::vector<CodePointRange> mCodePointRanges;
+  typedef vector<ImWchar> CodePointRange;
+  vector<CodePointRange> mCodePointRanges;
 
   FontPtr font = FontManager::getSingleton().getByName(name, group);
   OgreAssert(font, "font does not exist");
@@ -363,8 +333,8 @@ void Engine::Init() {
     windowWidth = screenWidth;
     windowHeight = screenHeight;
   }
-  windowPositionFlag = SDL_WINDOWPOS_CENTERED_DISPLAY(currentDisplay);
-  sdlWindow = SDL_CreateWindow(windowCaption.c_str(), windowPositionFlag, windowPositionFlag, windowWidth, windowHeight, sdlWindowFlags);
+  sdlWindowPositionFlag = SDL_WINDOWPOS_CENTERED_DISPLAY(currentDisplay);
+  sdlWindow = SDL_CreateWindow(windowCaption.c_str(), sdlWindowPositionFlag, sdlWindowPositionFlag, windowWidth, windowHeight, sdlWindowFlags);
 #else
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -387,8 +357,8 @@ void Engine::Init() {
 #endif
   windowWidth = screenWidth;
   windowHeight = screenHeight;
-  windowPositionFlag = SDL_WINDOWPOS_CENTERED;
-  sdlWindow = SDL_CreateWindow(nullptr, windowPositionFlag, windowPositionFlag, screenWidth, screenHeight, sdlWindowFlags);
+  sdlWindowPositionFlag = SDL_WINDOWPOS_CENTERED;
+  sdlWindow = SDL_CreateWindow(nullptr, sdlWindowPositionFlag, sdlWindowPositionFlag, screenWidth, screenHeight, sdlWindowFlags);
   SDL_GL_CreateContext(sdlWindow);
 #endif
 
@@ -433,52 +403,52 @@ void Engine::Init() {
   ogreRoot->initialise(false);
 
   // OGRE window
-  NameValuePairList OgreRenderParams;
+  NameValuePairList renderParams;
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(sdlWindow, &info);
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
+  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
+  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
+  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  OgreRenderParams["currentGLContext"] = "true";
-  OgreRenderParams["externalGLControl"] = "true";
-  OgreRenderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
-  OgreRenderParams["preserveContext"] = "true";
-  JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
-  jclass class_activity = env->FindClass("android/app/Activity");
-  jclass class_resources = env->FindClass("android/content/res/Resources");
-  jmethodID method_get_resources = env->GetMethodID(class_activity, "getResources", "()Landroid/content/res/Resources;");
-  jmethodID method_get_assets = env->GetMethodID(class_resources, "getAssets", "()Landroid/content/res/AssetManager;");
-  jobject raw_activity = (jobject)SDL_AndroidGetActivity();
-  jobject raw_resources = env->CallObjectMethod(raw_activity, method_get_resources);
-  jobject raw_asset_manager = env->CallObjectMethod(raw_resources, method_get_assets);
-  AAssetManager *asset_manager = AAssetManager_fromJava(env, raw_asset_manager);
-  AConfiguration *mAConfig = AConfiguration_new();
-  AConfiguration_fromAssetManager(mAConfig, asset_manager);
-  ArchiveManager::getSingleton().addArchiveFactory(new APKFileSystemArchiveFactory(asset_manager));
-  ArchiveManager::getSingleton().addArchiveFactory(new APKZipArchiveFactory(asset_manager));
+  renderParams["currentGLContext"] = "true";
+  renderParams["externalGLControl"] = "true";
+  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
+  renderParams["preserveContext"] = "true";
+  JNIEnv *env = static_cast<JNIEnv *> SDL_AndroidGetJNIEnv();
+  jclass classActivity = env->FindClass("android/app/Activity");
+  jclass classResources = env->FindClass("android/content/res/Resources");
+  jmethodID methodGetResources = env->GetMethodID(classActivity, "getResources", "()Landroid/content/res/Resources;");
+  jmethodID methodGetAssets = env->GetMethodID(classResources, "getAssets", "()Landroid/content/res/AssetManager;");
+  jobject rawActivity = static_cast<jobject> SDL_AndroidGetActivity();
+  jobject rawResources = env->CallObjectMethod(rawActivity, methodGetResources);
+  jobject rawAssetManager = env->CallObjectMethod(rawResources, methodGetAssets);
+  AAssetManager *assetManager = AAssetManager_fromJava(env, rawAssetManager);
+  AConfiguration *aConfig = AConfiguration_new();
+  AConfiguration_fromAssetManager(aConfig, assetManager);
+  ArchiveManager::getSingleton().addArchiveFactory(new APKFileSystemArchiveFactory(assetManager));
+  ArchiveManager::getSingleton().addArchiveFactory(new APKZipArchiveFactory(assetManager));
 #endif
   const char *TRUE_STR = "true";
   const char *FALSE_STR = "false";
   windowVsync = true;
-  OgreRenderParams["vsync"] = windowVsync ? TRUE_STR : FALSE_STR;
-  OgreRenderWindowPtr = ogreRoot->createRenderWindow(windowCaption, windowWidth, windowHeight, windowFullScreen, &OgreRenderParams);
-  OgreRenderTargetPtr = ogreRoot->getRenderTarget(OgreRenderWindowPtr->getName());
-  OgreCamera = sceneManager->createCamera("Default");
-  OgreViewport = OgreRenderTargetPtr->addViewport(OgreCamera);
-  OgreCamera->setAspectRatio(static_cast<float>(OgreViewport->getActualWidth()) / static_cast<float>(OgreViewport->getActualHeight()));
-  OgreCamera->setAutoAspectRatio(true);
+  renderParams["vsync"] = windowVsync ? TRUE_STR : FALSE_STR;
+  ogreWindow = ogreRoot->createRenderWindow(windowCaption, windowWidth, windowHeight, windowFullScreen, &renderParams);
+  RenderTarget *renderTarget = ogreRoot->getRenderTarget(ogreWindow->getName());
+  camera = sceneManager->createCamera("Default");
+  viewport = renderTarget->addViewport(camera);
+  camera->setAspectRatio(static_cast<float>(viewport->getActualWidth()) / static_cast<float>(viewport->getActualHeight()));
+  camera->setAutoAspectRatio(true);
 #ifdef ANDROID
   SDL_GetDesktopDisplayMode(currentDisplay, &DM);
-  OgreRenderWindowPtr->resize(static_cast<int>(DM.w), static_cast<int>(DM.h));
+  ogreWindow->resize(static_cast<int>(DM.w), static_cast<int>(DM.h));
 #endif
 
   // GPU capabilities
-  const auto *RSC = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
+  const auto *RSC = Root::getSingleton().getRenderSystem()->getCapabilities();
   OgreAssert(RSC->hasCapability(RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
   OgreAssert(RSC->hasCapability(RSC_TEXTURE_FLOAT), "Float texture support required");
   OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION), "Texture compression support required");
@@ -502,7 +472,7 @@ void Engine::Init() {
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
   OgreAssert(RTShader::ShaderGenerator::initialize(), "OGRE RTSS init failed");
   auto *shaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
-  OgreViewport->setMaterialScheme(MSN_SHADERGEN);
+  viewport->setMaterialScheme(MSN_SHADERGEN);
   shaderGenerator->addSceneManager(sceneManager);
   shaderGenerator->setShaderCachePath("");
   auto resolver = make_unique<ShaderResolver>(shaderGenerator);
@@ -510,14 +480,14 @@ void Engine::Init() {
 #endif
 
   // overlay init
-  overlay = new Ogre::OverlaySystem();
-  imguiOverlay = new Ogre::ImGuiOverlay();
+  auto *ogreOverlay = new OverlaySystem();
+  imguiOverlay = new ImGuiOverlay();
   float vpScale = OverlayManager::getSingleton().getPixelRatio();
-  ImGui::GetIO().FontGlobalScale = std::round(vpScale);  // default font does not work with fractional scaling
+  ImGui::GetIO().FontGlobalScale = round(vpScale);  // default font does not work with fractional scaling
   ImGui::GetStyle().ScaleAllSizes(vpScale);
   imguiOverlay->setZOrder(300);
-  Ogre::OverlayManager::getSingleton().addOverlay(imguiOverlay);
-  sceneManager->addRenderQueueListener(overlay);
+  OverlayManager::getSingleton().addOverlay(imguiOverlay);
+  sceneManager->addRenderQueueListener(ogreOverlay);
   imguiListener = make_unique<ImGuiInputListener>();
   ImGuiIO &io = ImGui::GetIO();
   io.IniFilename = nullptr;
@@ -529,12 +499,12 @@ void Engine::Init() {
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 
   // texture init
-  //  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
-  //  if (Ogre::Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_ANISOTROPY)) {
-  //    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_ANISOTROPIC);
-  //    Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(8);
+  //  TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
+  //  if (Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_ANISOTROPY)) {
+  //    MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_ANISOTROPIC);
+  //    MaterialManager::getSingleton().setDefaultAnisotropy(8);
   //  } else {
-  //    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_BILINEAR);
+  //    MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_BILINEAR);
   //  }
 
   // scan resources
@@ -590,17 +560,17 @@ void Engine::Init() {
     sceneManager->setShadowFarDistance(shadowFarDistance);
     auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     sceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
-    PSSMSetupPtr = make_shared<PSSMShadowCameraSetup>();
-    PSSMSetupPtr->calculateSplitPoints(PSSM_SPLITS, 0.001, sceneManager->getShadowFarDistance());
-    PSSMSplitPointList = PSSMSetupPtr->getSplitPoints();
-    PSSMSetupPtr->setSplitPadding(0.0);
-    for (int i = 0; i < PSSM_SPLITS; i++) PSSMSetupPtr->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
-    sceneManager->setShadowCameraSetup(PSSMSetupPtr);
+    pssmSetup = make_shared<PSSMShadowCameraSetup>();
+    pssmSetup->calculateSplitPoints(PSSM_SPLITS, 0.001, sceneManager->getShadowFarDistance());
+    pssmSplitPointList = pssmSetup->getSplitPoints();
+    pssmSetup->setSplitPadding(0.0);
+    for (int i = 0; i < PSSM_SPLITS; i++) pssmSetup->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
+    sceneManager->setShadowCameraSetup(pssmSetup);
     sceneManager->setShadowColour(ColourValue::Black);
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
     auto *schemRenderState = shaderGenerator->getRenderState(MSN_SHADERGEN);
     auto subRenderState = shaderGenerator->createSubRenderState<RTShader::IntegratedPSSM3>();
-    subRenderState->setSplitPoints(PSSMSplitPointList);
+    subRenderState->setSplitPoints(pssmSplitPointList);
     schemRenderState->addTemplateSubRenderState(subRenderState);
 #endif  // OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
   }
@@ -609,18 +579,18 @@ void Engine::Init() {
   physics = make_unique<Physics>();
   RegComponent(physics.get());
 
-  //  audio = make_unique<Audio>();
-  //  RegComponent(audio.get());
+  audio = make_unique<Audio>();
+  RegComponent(audio.get());
 
   InitCompositor();
 
   for (auto &it : componentList) it->OnSetUp();
 
-  //  AddFont("NotoSans-Regular", Ogre::RGN_INTERNAL, nullptr, io.Fonts->GetGlyphRangesCyrillic());
+  //  AddFont("NotoSans-Regular", RGN_INTERNAL, nullptr, io.Fonts->GetGlyphRangesCyrillic());
   //  ImFontConfig config;
   //  config.MergeMode = true;
   //  static const ImWchar icon_ranges[] = {ICON_MIN_MD, ICON_MAX_MD, 0};
-  //  AddFont("KenneyIcon-Regular", Ogre::RGN_INTERNAL, &config, icon_ranges);
+  //  AddFont("KenneyIcon-Regular", RGN_INTERNAL, &config, icon_ranges);
 
   auto *TGO = TerrainGlobalOptions::getSingletonPtr();
   if (!TGO) TGO = new TerrainGlobalOptions();
@@ -629,7 +599,7 @@ void Engine::Init() {
   TGO->setCompositeMapDistance(300);
   TGO->setMaxPixelError(8);
   TGO->setUseRayBoxDistanceCalculation(true);
-  TGO->setDefaultMaterialGenerator(std::make_shared<TerrainMaterialGeneratorB>());
+  TGO->setDefaultMaterialGenerator(make_shared<TerrainMaterialGeneratorB>());
 
   // cleanup
   imguiOverlay->show();
@@ -673,18 +643,18 @@ const static CompositorFX SSAO{"SSAO", false, "uSSAOEnable", "Output", {"SSAO", 
 const static CompositorFX Blur{"Blur", false, "uBlurEnable", "Blur", {}};
 const static CompositorFX FXAA{"FXAA", false, "uFXAAEnable", "FXAA", {}};
 const static CompositorFX HDR{"HDR", false, "uHDREnable", "Output", {}};
-const static std::string FX_SSAO = "SSAO";
-const static std::string FX_BLOOM = "Bloom";
-const static std::string FX_BLUR = "Blur";
-const static std::string FX_FXAA = "FXAA";
-const static std::string FX_HDR = "HDR";
+const static string FX_SSAO = "SSAO";
+const static string FX_BLOOM = "Bloom";
+const static string FX_BLUR = "Blur";
+const static string FX_FXAA = "FXAA";
+const static string FX_HDR = "HDR";
 
 static GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorName) {
-  static auto &MM = Ogre::MaterialManager::getSingleton();
+  static auto &MM = MaterialManager::getSingleton();
   return MM.getByName(CompositorName)->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
 }
 
-void Engine::EnableEffect(const std::string &FX, bool Enable) {
+void Engine::EnableEffect(const string &FX, bool Enable) {
   compositorList[FX].Enabled = Enable;
   const string EnableStr = "uEnable";
   const float Flag = Enable ? 1.0f : 0.0f;
@@ -694,8 +664,8 @@ void Engine::EnableEffect(const std::string &FX, bool Enable) {
 }
 
 void Engine::InitCompositor() {
-  compositorManager = Ogre::CompositorManager::getSingletonPtr();
-  compositorChain = compositorManager->getCompositorChain(OgreViewport);
+  compositorManager = CompositorManager::getSingletonPtr();
+  compositorChain = compositorManager->getCompositorChain(viewport);
   compositorList.insert(make_pair(FX_BLOOM, Bloom));
   compositorList.insert(make_pair(FX_SSAO, SSAO));
   compositorList.insert(make_pair(FX_BLUR, Blur));
@@ -708,10 +678,10 @@ void Engine::InitCompositor() {
   EnableEffect(FX_FXAA, false);
 
   const char *MRTCompositor = "MRT";
-  ViewportSizeY = OgreViewport->getActualDimensions().height();
-  ViewportSizeX = OgreViewport->getActualDimensions().width();
-  OgreAssert(compositorManager->addCompositor(OgreViewport, MRTCompositor, 0), "Failed to add MRT compositor");
-  compositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, false);
+  int sizeY = viewport->getActualDimensions().height();
+  int sizeX = viewport->getActualDimensions().width();
+  OgreAssert(compositorManager->addCompositor(viewport, MRTCompositor, 0), "Failed to add MRT compositor");
+  compositorManager->setCompositorEnabled(viewport, MRTCompositor, false);
   auto *MRTCompositorPtr = compositorChain->getCompositor(MRTCompositor);
   auto *MRTTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("mrt");
   OgreAssert(MRTTexturePtr, "MRTCompositor texture not created");
@@ -719,8 +689,8 @@ void Engine::InitCompositor() {
   MRTTexturePtr->width = 1024;
   MRTTexturePtr->height = 768;
 #else
-  MRTTexturePtr->width = ViewportSizeX;
-  MRTTexturePtr->height = ViewportSizeY;
+  MRTTexturePtr->width = sizeX;
+  MRTTexturePtr->height = sizeY;
 #endif
   auto *SSAOTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("ssao");
   auto *FinalTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("final");
@@ -780,7 +750,7 @@ void Engine::InitCompositor() {
   RT11TexturePtr->height = MRTTexturePtr->height / 2048;
   RT12TexturePtr->width = MRTTexturePtr->width / 4096;
   RT12TexturePtr->height = MRTTexturePtr->height / 4096;
-  compositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, true);
+  compositorManager->setCompositorEnabled(viewport, MRTCompositor, true);
 }
 
 static bool HasNoTangentsAndCanGenerate(VertexDeclaration *vertex_declaration) {
@@ -870,7 +840,7 @@ static void AddMaterial(const MaterialPtr &material) {
 }
 
 static void AddMaterial(const string &material) {
-  auto MaterialSPtr = Ogre::MaterialManager::getSingleton().getByName(material);
+  auto MaterialSPtr = MaterialManager::getSingleton().getByName(material);
   if (MaterialSPtr) AddMaterial(MaterialSPtr);
 }
 
@@ -888,7 +858,7 @@ static void AddMeshMaterial(MeshPtr MeshSPtr, const string &MaterialName) {
       material = submesh->getMaterial();
       if (material) AddMaterial(material);
     }
-  } catch (Ogre::Exception &e) {
+  } catch (Exception &e) {
     LogManager::getSingleton().logMessage(e.getFullDescription());
     LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
   }
@@ -910,13 +880,13 @@ static void AddEntityMaterial(Entity *EntityPtr, const string &MaterialName = ""
     }
 
     AddMeshMaterial(EntityPtr->getMesh(), MaterialName);
-  } catch (Ogre::Exception &e) {
+  } catch (Exception &e) {
     LogManager::getSingleton().logMessage(e.getFullDescription());
     LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
   }
 }
 
-Ogre::Vector3 Engine::GetSunPosition() {
+Vector3 Engine::GetSunPosition() {
   auto *SunPtr = sceneManager->getLight("Sun");
   if (SunPtr)
     return -Vector3(SunPtr->getDerivedDirection().normalisedCopy());
@@ -925,21 +895,21 @@ Ogre::Vector3 Engine::GetSunPosition() {
 }
 
 float Engine::GetHeight(float x, float z) {
-  if (OgreTerrainList)
-    return OgreTerrainList->getHeightAtWorldPosition(x, 1000, z);
+  if (terrainGroup)
+    return terrainGroup->getHeightAtWorldPosition(x, 1000, z);
   else
     return 0.0f;
 }
 
-void Engine::AddEntity(Ogre::Entity *EntityPtr) { AddEntityMaterial(EntityPtr); }
+void Engine::AddEntity(Entity *EntityPtr) { AddEntityMaterial(EntityPtr); }
 
-void Engine::AddMaterial(Ogre::MaterialPtr material) {
+void Engine::AddMaterial(MaterialPtr material) {
   const auto *Pass = material->getTechnique(0)->getPass(0);
-  if (Pass->hasVertexProgram()) GpuVpParams.push_back(Pass->getVertexProgramParameters());
-  if (Pass->hasFragmentProgram()) GpuFpParams.push_back(Pass->getFragmentProgramParameters());
+  if (Pass->hasVertexProgram()) gpuVpParams.push_back(Pass->getVertexProgramParameters());
+  if (Pass->hasFragmentProgram()) gpuFpParams.push_back(Pass->getFragmentProgramParameters());
 }
 
-void Engine::AddMaterial(const std::string &MaterialName) {
+void Engine::AddMaterial(const string &MaterialName) {
   auto MaterialPtr = MaterialManager::getSingleton().getByName(MaterialName);
   if (MaterialPtr) AddMaterial(MaterialPtr);
 }
@@ -947,16 +917,16 @@ void Engine::AddMaterial(const std::string &MaterialName) {
 void Engine::AddCamera(Camera *OgreCameraPtr) {}
 
 void Engine::AddSinbad(Camera *OgreCameraPtr) {
-  Sinbad = make_unique<SinbadCharacterController>(OgreCameraPtr);
-  InputSequencer::GetInstance().RegObserver(Sinbad.get());
+  sinbad = make_unique<SinbadCharacterController>(OgreCameraPtr);
+  InputSequencer::GetInstance().RegObserver(sinbad.get());
 }
 
-void Engine::AddForests(Forests::PagedGeometry *PGPtr, const std::string &MaterialName) {
-  PagedGeometryList.push_back(unique_ptr<Forests::PagedGeometry>(PGPtr));
+void Engine::AddForests(Forests::PagedGeometry *PGPtr, const string &MaterialName) {
+  pgList.push_back(unique_ptr<Forests::PagedGeometry>(PGPtr));
   if (!MaterialName.empty()) AddMaterial(MaterialName);
 }
 
-void Engine::AddTerrain(TerrainGroup *TGP) { OgreTerrainList.reset(TGP); }
+void Engine::AddTerrain(TerrainGroup *TGP) { terrainGroup.reset(TGP); }
 
 void Engine::AddSkyBox() {
   auto colorspace = sRGB;
@@ -972,17 +942,17 @@ void Engine::AddSkyBox() {
   const ArHosekSkyModelState *States[3] = {sky.StateX, sky.StateY, sky.StateZ};
 
   for (int i = 0; i < 9; i++)
-    for (int j = 0; j < 3; j++) HosekParams[i][j] = States[j]->configs[j][i];
-  HosekParams[9] = Vector3(sky.StateX->radiances[0], sky.StateY->radiances[1], sky.StateZ->radiances[2]);
+    for (int j = 0; j < 3; j++) hosekParams[i][j] = States[j]->configs[j][i];
+  hosekParams[9] = Vector3(sky.StateX->radiances[0], sky.StateY->radiances[1], sky.StateZ->radiances[2]);
 
   auto SkyMaterial = MaterialManager::getSingleton().getByName("SkyBox");
   if (!SkyMaterial) return;
 
   auto FpParams = SkyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-  if (FpParams) SkyBoxFpParams = FpParams;
+  if (FpParams) skyBoxFpParams = FpParams;
 
   FpParams->setIgnoreMissingParams(true);
-  for (int i = 0; i < 10; i++) FpParams->setNamedConstant(HosikParamList[i], HosekParams[i]);
+  for (int i = 0; i < 10; i++) FpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
 }
 
 void Engine::RegComponent(SystemI *ComponentPtr) {
@@ -1014,37 +984,37 @@ void Engine::OnMenuOff() {
 
 void Engine::OnCleanup() {
   for (auto &it : componentList) it->OnClean();
-  InputSequencer::GetInstance().UnRegObserver(Sinbad.get());
-  Sinbad.reset();
-  PagedGeometryList.clear();
-  if (OgreTerrainList) OgreTerrainList->removeAllTerrains();
-  OgreTerrainList.reset();
-  delete Ogre::TerrainGlobalOptions::getSingletonPtr();
+  InputSequencer::GetInstance().UnRegObserver(sinbad.get());
+  sinbad.reset();
+  pgList.clear();
+  if (terrainGroup) terrainGroup->removeAllTerrains();
+  terrainGroup.reset();
+  delete TerrainGlobalOptions::getSingletonPtr();
   if (sceneManager) sceneManager->setShadowTechnique(SHADOWTYPE_NONE);
   if (sceneManager) sceneManager->clearScene();
-  ResourceGroupManager::getSingleton().unloadResourceGroup(GroupName);
-  GpuFpParams.clear();
-  GpuFpParams.shrink_to_fit();
-  GpuVpParams.clear();
-  GpuVpParams.shrink_to_fit();
-  SkyBoxFpParams.reset();
+  ResourceGroupManager::getSingleton().unloadResourceGroup(RGN_DEFAULT);
+  gpuFpParams.clear();
+  gpuFpParams.shrink_to_fit();
+  gpuVpParams.clear();
+  gpuVpParams.shrink_to_fit();
+  skyBoxFpParams.reset();
 }
 
 void Engine::Update(float PassedTime) {
-  if (Paused) return;
-  if (Sinbad) Sinbad->Update(PassedTime);
-  for (auto &it : PagedGeometryList) it->update();
+  if (paused) return;
+  if (sinbad) sinbad->Update(PassedTime);
+  for (auto &it : pgList) it->update();
 
   static Matrix4 MVP;
   static Matrix4 MVPprev;
 
   MVPprev = MVP;
-  MVP = OgreCamera->getProjectionMatrixWithRSDepth() * OgreCamera->getViewMatrix();
+  MVP = camera->getProjectionMatrixWithRSDepth() * camera->getViewMatrix();
 
-  for (auto &it : GpuVpParams) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
+  for (auto &it : gpuVpParams) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
 
-  if (SkyNeedsUpdate && SkyBoxFpParams)
-    for (int i = 0; i < 10; i++) SkyBoxFpParams->setNamedConstant(HosikParamList[i], HosekParams[i]);
+  if (skyNeedsUpdate && skyBoxFpParams)
+    for (int i = 0; i < 10; i++) skyBoxFpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
 
   for (auto &it : componentList) it->OnUpdate(PassedTime);
 
@@ -1071,13 +1041,13 @@ void Engine::ResizeWindow(int Width, int Height) {
   windowHeight = Height;
   SDL_SetWindowPosition(sdlWindow, (screenWidth - windowWidth) / 2, (screenHeight - windowHeight) / 2);
   SDL_SetWindowSize(sdlWindow, windowWidth, windowHeight);
-  OgreRenderWindowPtr->resize(Width, Height);
+  ogreWindow->resize(Width, Height);
 }
 
 void Engine::SetFullscreen(bool Fullscreen) {
   if (Fullscreen) {
     windowFullScreen = true;
-    OgreRenderWindowPtr->setFullscreen(windowFullScreen, windowWidth, windowHeight);
+    ogreWindow->setFullscreen(windowFullScreen, windowWidth, windowHeight);
 #ifdef DESKTOP
     SDL_SetWindowFullscreen(sdlWindow, sdlWindowFlags | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
 #else
@@ -1085,7 +1055,7 @@ void Engine::SetFullscreen(bool Fullscreen) {
 #endif
   } else {
     windowFullScreen = false;
-    OgreRenderWindowPtr->setFullscreen(windowFullScreen, windowWidth, windowHeight);
+    ogreWindow->setFullscreen(windowFullScreen, windowWidth, windowHeight);
     SDL_SetWindowFullscreen(sdlWindow, sdlWindowFlags);
     SDL_SetWindowSize(sdlWindow, windowWidth, windowHeight);
   }
@@ -1111,7 +1081,7 @@ void Engine::ShowCursor(bool Show) {
 #endif
 }
 
-std::string Engine::GetWindowCaption() { return windowCaption; }
+string Engine::GetWindowCaption() { return windowCaption; }
 
 int Engine::GetWindowSizeX() { return windowWidth; }
 
@@ -1126,6 +1096,6 @@ int WindowSizeX() { return GetEngine().GetWindowSizeX(); }
 
 int WindowSizeY() { return GetEngine().GetWindowSizeY(); }
 
-std::string WindowCaption() { return GetEngine().GetWindowCaption(); }
+string WindowCaption() { return GetEngine().GetWindowCaption(); }
 
 }  // namespace Glue

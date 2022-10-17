@@ -2775,7 +2775,7 @@ namespace OgreOggSound
 			}
 		}
 
-		/** Paused sound list - created by a call to pauseAllSounds()
+		/** paused sound list - created by a call to pauseAllSounds()
 		*/
 		if ( !mPausedSounds.empty() )
 		{

@@ -15,14 +15,3 @@ material Plane : PBR_Basic
             }
         }*/
 }
-
-material ReflectivePlane
-{
-   technique
-   {
-       pass
-       {
-           rtshader_system {}
-       }
-   }
-}

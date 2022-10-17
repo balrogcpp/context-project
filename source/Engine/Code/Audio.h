@@ -35,7 +35,7 @@ class Audio final : public System<Audio> {
 
  protected:
   std::unique_ptr<OgreOggSound::Root> audioRoot;
-  OgreOggSound::OgreOggSoundManager *soundManager = nullptr;
+  OgreOggSound::OgreOggSoundManager *oggSoundManager = nullptr;
 };
 
 }  // namespace Glue

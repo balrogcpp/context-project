@@ -43,6 +43,7 @@ RUN mkdir build && cd build \
 
 # apple x86_64
 RUN mkdir build && cd build \
+    && export OSXCROSS_HOST=$OSXCROSS_HOST_X86_64 \
     && eval $X86_64_EVAL \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
     && ninja contrib \
@@ -74,9 +75,6 @@ RUN apt-get update \
     && rm tools.zip \
     && cd cmdline-tools/bin \
     && yes | ./sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
-    && ./sdkmanager  --install "build-tools;30.0.3" --sdk_root=${ANDROID_HOME} \
-    && ./sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} \
-    && ./sdkmanager  --install "ndk;25.1.8937393" --sdk_root=${ANDROID_HOME} \
     && cd ../../ \
     && rm -rf /root/.android /root/.gradle
 ENV PATH="/opt/cmdline-tools/bin:${PATH}"
@@ -84,10 +82,10 @@ ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
 
 RUN cd ${CONTEXT_HOME}/source/Engine \
     && sh gradlew assembleRelease \
-    && rm -rf android/.cxx \
+    && rm -rf .gradle android/.cxx /android/build android/assets \
     && sh gradlew assembleRelease \
     && cp android/build/outputs/apk/release/android-arm64-v8a-release.apk ${CONTEXT_HOME}/artifacts\
-    && rm -rf ${ANDROID_HOME} /root/.android
+    && rm -rf .gradle android/.cxx /android/build android/assets ${ANDROID_HOME} /root/.android
 
 
 # wasm

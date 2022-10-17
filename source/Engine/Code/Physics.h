@@ -3,15 +3,15 @@
 #pragma once
 
 #include "System.h"
-#include <Bullet/OgreBullet.h>
-#include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
-#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
-#include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
-#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
-#include <OgreAny.h>
-#include <OgreFrameListener.h>
-#include <functional>
 #include <thread>
+
+// forward declaration
+class btRigidBody;
+class btDiscreteDynamicsWorld;
+class btDbvtBroadphase;
+class btDefaultCollisionConfiguration;
+class btCollisionDispatcher;
+class btSequentialImpulseConstraintSolver;
 
 namespace Glue {
 
@@ -32,22 +32,18 @@ class Physics final : public System<Physics> {
   void ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, const Ogre::UserObjectBindings &userData);
   void ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, bool isStatic = true, const std::string &type = "box", float mass = 1.0,
                    float friction = 1.0);
-  void CreateTerrainHeightfieldShape(int size, float *data, const float &min_height, const float &max_height, const Ogre::Vector3 &position,
-                                     const float &scale);
+  void CreateTerrainHeightfieldShape(int size, float *data, float minHeight, float maxHeight, Ogre::Vector3 position, float scale);
 
  protected:
-  std::unique_ptr<btDbvtBroadphase> BtBroadphase;
-  std::unique_ptr<btDefaultCollisionConfiguration> BtConfig;
-  std::unique_ptr<btCollisionDispatcher> BtDispatcher;
-  std::unique_ptr<btSequentialImpulseConstraintSolver> BtSolver;
-  std::unique_ptr<btDiscreteDynamicsWorld> BtWorld;
-  std::unique_ptr<std::thread> UpdateThread;
+  std::unique_ptr<btDiscreteDynamicsWorld> btWorld;
+  std::unique_ptr<btDbvtBroadphase> btBroadphase;
+  std::unique_ptr<btDefaultCollisionConfiguration> btConfig;
+  std::unique_ptr<btCollisionDispatcher> btDispatcher;
+  std::unique_ptr<btSequentialImpulseConstraintSolver> btSolver;
+  std::unique_ptr<std::thread> updateThread;
   int SubSteps = 4;
-  bool Running = false;
-  std::atomic<bool> MTPaused = false;
-  std::atomic<bool> MTRunning = false;
-  bool Threaded = false;
-  int64_t UpdateRate = 60;
+  bool threaded = false;
+  int64_t updateRate = 60;
 };
 
 }  // namespace Glue

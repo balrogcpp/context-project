@@ -30,7 +30,7 @@ class Application : public WindowObserver, public InputObserver, public Singleto
 
   /// Handle components
   std::unique_ptr<Engine> engine;
-  bool running = false;
+  bool quit = false;
   bool suspend = false;
   int64_t targetFps = 60;
   bool lockFps = true;
