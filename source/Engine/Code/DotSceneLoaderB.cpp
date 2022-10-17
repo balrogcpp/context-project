@@ -7,6 +7,9 @@
 #include <OgreTerrain.h>
 #include <OgreTerrainGroup.h>
 #endif
+#ifdef OGRE_BUILD_COMPONENT_BULLET
+#include <Bullet/OgreBullet.h>
+#endif
 
 #include <pugixml.hpp>
 
