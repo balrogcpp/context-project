@@ -18,6 +18,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # include modules
 include(Platform)
+include(GitHash)
 
 
 # default build type is Release
@@ -46,6 +47,10 @@ list(APPEND CMAKE_FIND_ROOT_PATH ${DEPS_ROOT})
 
 # engine sources
 add_subdirectory(source)
+
+
+# doc
+#include(Doxygen)
 
 
 # cpack
