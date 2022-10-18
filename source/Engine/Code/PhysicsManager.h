@@ -15,14 +15,15 @@ class btSequentialImpulseConstraintSolver;
 
 namespace Glue {
 
-class Physics final : public System<Physics> {
+class PhysicsManager final : public System<PhysicsManager> {
  public:
   /// Constructors
-  Physics(bool threaded = false);
-  virtual ~Physics();
+  PhysicsManager(bool threaded = false);
+  virtual ~PhysicsManager();
 
   /// Create thread
   void InitThread();
+  void OnSetUp() override;
   void OnClean() override;
   void OnUpdate(float time) override;
   void OnResume() override;

@@ -1,7 +1,7 @@
 /// created by Andrey VasilievBullet
 
 #include "pch.h"
-#include "Physics.h"
+#include "PhysicsManager.h"
 #ifdef OGRE_BUILD_COMPONENT_BULLET
 #include <Bullet/OgreBullet.h>
 #endif
@@ -16,7 +16,7 @@ using namespace Ogre;
 
 namespace Glue {
 
-Physics::Physics(bool threaded) : threaded(threaded) {
+PhysicsManager::PhysicsManager(bool threaded) : threaded(threaded) {
   auto *Scheduler = btCreateDefaultTaskScheduler();
   if (!Scheduler) throw std::runtime_error("Bullet physics no task scheduler available");
   btSetTaskScheduler(Scheduler);
@@ -39,7 +39,7 @@ Physics::Physics(bool threaded) : threaded(threaded) {
   paused = false;
 }
 
-void Physics::InitThread() {
+void PhysicsManager::InitThread() {
   if (!threaded) return;
 
   static int64_t time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
@@ -71,19 +71,21 @@ void Physics::InitThread() {
   updateThread->detach();
 }
 
-Physics::~Physics() {}
+PhysicsManager::~PhysicsManager() {}
 
-void Physics::OnResume() { paused = false; }
+void PhysicsManager::OnResume() { paused = false; }
 
-void Physics::OnPause() { paused = true; }
+void PhysicsManager::OnPause() { paused = true; }
 
-void Physics::OnUpdate(float time) {
+void PhysicsManager::OnUpdate(float time) {
   if (threaded || paused) return;
 
   btWorld->stepSimulation(time, SubSteps, 1.0f / updateRate);
 }
 
-void Physics::OnClean() {
+void PhysicsManager::OnSetUp() {}
+
+void PhysicsManager::OnClean() {
   btWorld->clearForces();
 
   // remove the rigidbodies from the dynamics btWorld and delete them
@@ -100,9 +102,9 @@ void Physics::OnClean() {
   }
 }
 
-void Physics::AddRigidBody(btRigidBody *rigidBody) { btWorld->addRigidBody(rigidBody); }
+void PhysicsManager::AddRigidBody(btRigidBody *rigidBody) { btWorld->addRigidBody(rigidBody); }
 
-void Physics::CreateTerrainHeightfieldShape(int size, float *data, float minHeight, float maxHeight, Ogre::Vector3 position, float scale) {
+void PhysicsManager::CreateTerrainHeightfieldShape(int size, float *data, float minHeight, float maxHeight, Ogre::Vector3 position, float scale) {
   // Convert height data in a format suitable for the physics engine
   auto *terrainHeights = new float[size * size];
   assert(terrainHeights != 0);
@@ -138,7 +140,7 @@ void Physics::CreateTerrainHeightfieldShape(int size, float *data, float minHeig
   btWorld->setForceUpdateAllAabbs(false);
 }
 
-void Physics::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, bool isStatic, const std::string &type, float mass, float friction) {
+void PhysicsManager::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, bool isStatic, const std::string &type, float mass, float friction) {
   btRigidBody *entBody = nullptr;
   btVector3 Inertia = btVector3(0, 0, 0);
 
@@ -158,7 +160,7 @@ void Physics::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, bool is
   AddRigidBody(entBody);
 }
 
-void Physics::ProcessData(Entity *entity, SceneNode *parent, const UserObjectBindings &userData) {
+void PhysicsManager::ProcessData(Entity *entity, SceneNode *parent, const UserObjectBindings &userData) {
   string ProxyType;
   if (userData.getUserAny("proxy").has_value()) ProxyType = any_cast<string>(userData.getUserAny("proxy"));
   string physics_type = any_cast<string>(userData.getUserAny("physics_type"));

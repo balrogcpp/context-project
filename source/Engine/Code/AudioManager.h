@@ -11,10 +11,10 @@
 
 namespace Glue {
 
-class Audio final : public System<Audio> {
+class AudioManager final : public System<AudioManager> {
  public:
-  explicit Audio(int maxSourceCount = 16, int queueListSize = 4);
-  virtual ~Audio();
+  AudioManager();
+  virtual ~AudioManager();
 
   void OnSetUp() override;
   void OnClean() override;

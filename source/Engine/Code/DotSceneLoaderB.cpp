@@ -1,5 +1,5 @@
 #include <Ogre.h>
-#include <DotSceneLoaderB.h>
+#include "DotSceneLoaderB.h"
 #include <OgreComponents.h>
 #include "Engine.h"
 
@@ -856,7 +856,7 @@ void DotSceneLoaderB::processSkyBox(pugi::xml_node& XMLNode)
     String material = getAttrib(XMLNode, "material", "SkyBox");
     Real distance = getAttribReal(XMLNode, "distance", 500);
     bool drawFirst = getAttribBool(XMLNode, "drawFirst", true);
-    bool active = getAttribBool(XMLNode, "active", true);
+    bool active = getAttribBool(XMLNode, "active", false);
     if (!active)
         return;
 
@@ -868,7 +868,6 @@ void DotSceneLoaderB::processSkyBox(pugi::xml_node& XMLNode)
 
     // Setup the sky box
     mSceneMgr->setSkyBox(true, material, distance, drawFirst, rotation, m_sGroupName);
-    Glue::GetEngine().AddSkyBox();
 }
 
 void DotSceneLoaderB::processSkyDome(pugi::xml_node& XMLNode)
@@ -1241,19 +1240,3 @@ void DotScenePluginB::shutdown() {
     Codec::unregisterCodec(mCodec);
     delete mCodec;
 }
-
-#ifndef OGRE_STATIC_LIB
-    extern "C" _OgreDotScenePluginExport void dllStartPlugin();
-    extern "C" _OgreDotScenePluginExport void dllStopPlugin();
-
-    static DotScenePlugin plugin;
-
-    extern "C" _OgreDotScenePluginExport void dllStartPlugin()
-    {
-        Ogre::Root::getSingleton().installPlugin(&plugin);
-    }
-    extern "C" _OgreDotScenePluginExport void dllStopPlugin()
-    {
-        Ogre::Root::getSingleton().uninstallPlugin(&plugin);
-    }
-#endif
