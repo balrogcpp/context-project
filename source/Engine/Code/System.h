@@ -13,7 +13,7 @@ class SystemI {
   virtual void OnSetUp()  = 0;
   virtual void OnPause() { paused = true; }
   virtual void OnResume() { paused = false; }
-  virtual void OnUpdate(float PassedTime)  = 0;
+  virtual void OnUpdate(float time)  = 0;
   virtual void OnClean()  = 0;
   bool IsPaused() { return paused; }
 

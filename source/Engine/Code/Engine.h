@@ -9,16 +9,15 @@
 #include "SinbadCharacterController.h"
 #include "Singleton.h"
 #include "VideoManager.h"
-extern "C" {
-#include <SDL2/SDL_video.h>
-}
+//extern "C" {
+//#include <SDL2/SDL_video.h>
+//}
+//#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+//#include <Terrain/OgreTerrainGroup.h>
+//#endif
+//#include "PagedGeometry/PagedGeometry.h"
 
-#ifdef OGRE_BUILD_COMPONENT_TERRAIN
-#include <Terrain/OgreTerrainGroup.h>
-#endif
-#include "PagedGeometry/PagedGeometry.h"
-
-int ErrorWindow(const char* WindowCaption, const char* MessageText);
+int ErrorWindow(const char* caption, const char* text);
 
 namespace Glue {
 
@@ -51,23 +50,22 @@ class Engine final : public Singleton<Engine>, public Ogre::RenderTargetListener
   void OnResume();
   void OnCleanup();
   void Update(float PassedTime);
-
   void RenderFrame();
 
-  void RegComponent(SystemI* ComponentPtr);
-  void UnRegComponent(SystemI* ComponentPtr);
+  void RegComponent(SystemI* component);
+  void UnRegComponent(SystemI* component);
   float GetHeight(float x, float z);
   void AddEntity(Ogre::Entity* EntityPtr);
   void AddMaterial(Ogre::MaterialPtr material);
   void AddMaterial(const std::string& MaterialName);
   void AddCamera(Ogre::Camera* OgreCameraPtr);
   void AddSinbad(Ogre::Camera* OgreCameraPtr);
-  void AddForests(Forests::PagedGeometry* PGPtr, const std::string& MaterialName = "");
-  void AddTerrain(Ogre::TerrainGroup* TGP);
+//  void AddForests(Forests::PagedGeometry* PGPtr, const std::string& MaterialName = "");
+//  void AddTerrain(Ogre::TerrainGroup* TGP);
 
  protected:
-  std::unique_ptr<Ogre::TerrainGroup> terrainGroup;
-  std::vector<std::unique_ptr<Forests::PagedGeometry>> pgList;
+//  std::unique_ptr<Ogre::TerrainGroup> terrainGroup;
+//  std::vector<std::unique_ptr<Forests::PagedGeometry>> pgList;
   std::unique_ptr<SinbadCharacterController> sinbad;
   bool paused = false;
 

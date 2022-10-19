@@ -14,6 +14,7 @@
 #include <pugixml.hpp>
 
 using namespace Ogre;
+using namespace Glue;
 
 #ifndef OGRE_BUILD_COMPONENT_TERRAIN
 namespace Ogre {
@@ -332,11 +333,9 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
     for (auto terrainIterator = OgreTerrainPtr->getTerrainIterator(); terrainIterator.hasMoreElements();)
     {
       auto *terrain = terrainIterator.getNext()->instance;
-      Glue::GetPhysics().CreateTerrainHeightfieldShape(terrain->getSize(), terrain->getHeightData(), terrain->getMinHeight(), terrain->getMaxHeight(),
+      GetComponent<PhysicsManager>().CreateTerrainHeightfieldShape(terrain->getSize(), terrain->getHeightData(), terrain->getMinHeight(), terrain->getMaxHeight(),
                                                      terrain->getPosition(), terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1)));
     }
-
-    Glue::GetEngine().AddTerrain(OgreTerrainPtr);
 #else
   OGRE_EXCEPT(Exception::ERR_INVALID_CALL, "recompile with Terrain component");
 #endif
@@ -813,7 +812,6 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     auto *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
     entBody->setFriction(1);
     Glue::GetPhysics().AddRigidBody(entBody);
-    //Glue::AddMaterial(material);
 }
 
 void DotSceneLoaderB::processFog(pugi::xml_node& XMLNode)

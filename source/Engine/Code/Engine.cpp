@@ -3,15 +3,7 @@
 #include "pch.h"
 #include "Engine.h"
 #include "Observer.h"
-#include "PagedGeometry/PagedGeometryAll.h"
 #include "SinbadCharacterController.h"
-extern "C" {
-#ifdef _MSC_VER
-#define SDL_MAIN_HANDLED
-#endif
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
-}
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -25,15 +17,13 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 using namespace Ogre;
 
-int ErrorWindow(const char *WindowCaption, const char *MessageText) {
+int ErrorWindow(const char *caption, const char *text) {
   using namespace Glue;
-  //  static Engine *EnginePtr = Engine::GetInstancePtr();
-  //  if (EnginePtr) EnginePtr->GrabCursor(false);
-  SDL_Log("%s%s%s", WindowCaption, " : ", MessageText);
+  SDL_Log("%s%s%s", caption, " : ", text);
 #ifdef _WIN32
-  MessageBox(nullptr, MessageText, WindowCaption, MB_ICONERROR);
+  MessageBox(nullptr, text, caption, MB_ICONERROR);
 #else
-  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, WindowCaption, MessageText, nullptr);
+  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption, text, nullptr);
 #endif
 #ifdef EMSCRIPTEN
   emscripten_pause_main_loop();
@@ -42,7 +32,6 @@ int ErrorWindow(const char *WindowCaption, const char *MessageText) {
 }
 
 namespace Glue {
-
 
 Engine &GetEngine() {
   static auto &EnginePtr = Engine::GetInstance();
@@ -69,8 +58,6 @@ void Engine::Init() {
 
   audio = make_unique<AudioManager>();
   RegComponent(audio.get());
-
-  for (auto &it : componentList) it->OnSetUp();
 
   //  AddFont("NotoSans-Regular", RGN_INTERNAL, nullptr, io.Fonts->GetGlyphRangesCyrillic());
   //  ImFontConfig config;
@@ -250,10 +237,11 @@ static void AddEntityMaterial(Entity *EntityPtr, const string &MaterialName = ""
 }
 
 float Engine::GetHeight(float x, float z) {
-  if (terrainGroup)
-    return terrainGroup->getHeightAtWorldPosition(x, 1000, z);
-  else
-    return 0.0f;
+//  if (terrainGroup)
+//    return terrainGroup->getHeightAtWorldPosition(x, 1000, z);
+//  else
+//    return 0.0f;
+return 0.0;
 }
 
 void Engine::AddEntity(Entity *EntityPtr) { AddEntityMaterial(EntityPtr); }
@@ -276,20 +264,23 @@ void Engine::AddSinbad(Camera *OgreCameraPtr) {
   InputSequencer::GetInstance().RegObserver(sinbad.get());
 }
 
-void Engine::AddForests(Forests::PagedGeometry *PGPtr, const string &MaterialName) {
-  pgList.push_back(unique_ptr<Forests::PagedGeometry>(PGPtr));
-  if (!MaterialName.empty()) AddMaterial(MaterialName);
+//void Engine::AddForests(Forests::PagedGeometry *PGPtr, const string &MaterialName) {
+//  pgList.push_back(unique_ptr<Forests::PagedGeometry>(PGPtr));
+//  if (!MaterialName.empty()) AddMaterial(MaterialName);
+//}
+//
+//void Engine::AddTerrain(TerrainGroup *TGP) { terrainGroup.reset(TGP); }
+
+void Engine::RegComponent(SystemI *component) {
+  component->OnSetUp();
+  auto it = find(componentList.begin(), componentList.end(), component);
+  if (it == componentList.end()) componentList.push_back(component);
 }
 
-void Engine::AddTerrain(TerrainGroup *TGP) { terrainGroup.reset(TGP); }
-
-void Engine::RegComponent(SystemI *ComponentPtr) {
-  if (ComponentPtr) componentList.push_back(ComponentPtr);
-}
-
-void Engine::UnRegComponent(SystemI *ComponentPtr) {
-  auto Iter = find(componentList.begin(), componentList.end(), ComponentPtr);
-  if (Iter != componentList.end()) componentList.erase(Iter);
+void Engine::UnRegComponent(SystemI *component) {
+  component->OnClean();
+  auto it = find(componentList.begin(), componentList.end(), component);
+  if (it != componentList.end()) componentList.erase(it);
 }
 
 void Engine::OnPause() {
@@ -300,30 +291,24 @@ void Engine::OnResume() {
   for (auto &it : componentList) it->OnResume();
 }
 
-void Engine::OnMenuOn() {
-  physics->OnPause();
-}
+void Engine::OnMenuOn() { physics->OnPause(); }
 
-void Engine::OnMenuOff() {
-  physics->OnResume();
-}
+void Engine::OnMenuOff() { physics->OnResume(); }
 
 void Engine::OnCleanup() {
   for (auto &it : componentList) it->OnClean();
   InputSequencer::GetInstance().UnRegObserver(sinbad.get());
   sinbad.reset();
-  pgList.clear();
-  if (terrainGroup) terrainGroup->removeAllTerrains();
-  terrainGroup.reset();
-  delete TerrainGlobalOptions::getSingletonPtr();
+//  pgList.clear();
+//  if (terrainGroup) terrainGroup->removeAllTerrains();
+//  terrainGroup.reset();
+//  delete TerrainGlobalOptions::getSingletonPtr();
 }
 
 void Engine::Update(float PassedTime) {
   if (paused) return;
   if (sinbad) sinbad->Update(PassedTime);
-  for (auto &it : pgList) it->update();
-
-
+//  for (auto &it : pgList) it->update();
   for (auto &it : componentList) it->OnUpdate(PassedTime);
 
   static ImGuiIO &io = ImGui::GetIO();
@@ -338,10 +323,5 @@ void Engine::Update(float PassedTime) {
 }
 
 void Engine::RenderFrame() { video->renderFrame(); }
-
-Vector3 SunDirection() {
-  Vector3 Result = -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition();
-  return Result;
-}
 
 }  // namespace Glue

@@ -735,7 +735,7 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_TESTS=OFF
         -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=OFF
         -DOGRE_BUILD_PLATFORM_APPLE_IOS=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
+        TEST_COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${DEPS_SOURCE_LOCATION}/Target_OGRE/RenderSystems/GLSupport/include/GLSL
         ${DEPS_ROOT}/include/OGRE/RenderSystems/GLES2
         TEST_AFTER_INSTALL true

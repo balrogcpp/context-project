@@ -3,6 +3,8 @@
 #include "pch.h"
 #include "Application.h"
 
+using namespace Glue;
+
 #if defined(_WIN32) && !defined(DEBUG)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -18,6 +20,7 @@ int main()
     auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
     auto *root = scene->getRootSceneNode();
     root->loadChildren("1.scene");
+    GetComponent<VideoManager>().InitSky();
 
     // main function
     return app.Main();
