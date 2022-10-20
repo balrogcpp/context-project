@@ -9,13 +9,6 @@
 #include "SinbadCharacterController.h"
 #include "Singleton.h"
 #include "VideoManager.h"
-//extern "C" {
-//#include <SDL2/SDL_video.h>
-//}
-//#ifdef OGRE_BUILD_COMPONENT_TERRAIN
-//#include <Terrain/OgreTerrainGroup.h>
-//#endif
-//#include "PagedGeometry/PagedGeometry.h"
 
 int ErrorWindow(const char* caption, const char* text);
 

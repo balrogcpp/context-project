@@ -81,6 +81,7 @@ ENV PATH="/opt/cmdline-tools/bin:${PATH}"
 ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
 
 RUN cd ${CONTEXT_HOME}/source/Engine \
+    && sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} \
     && sh gradlew assembleRelease \
     && rm -rf .gradle android/.cxx /android/build android/assets \
     && sh gradlew assembleRelease \

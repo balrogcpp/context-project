@@ -3,6 +3,9 @@
 #pragma once
 
 #include "System.h"
+#include <Ogre.h>
+#include <functional>
+#include <memory>
 #include <thread>
 
 // forward declaration
@@ -17,11 +20,9 @@ namespace Glue {
 
 class PhysicsManager final : public System<PhysicsManager> {
  public:
-  /// Constructors
-  PhysicsManager(bool threaded = false);
+  PhysicsManager();
   virtual ~PhysicsManager();
 
-  /// Create thread
   void InitThread();
   void OnSetUp() override;
   void OnClean() override;

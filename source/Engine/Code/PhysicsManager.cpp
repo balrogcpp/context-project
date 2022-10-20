@@ -4,19 +4,18 @@
 #include "PhysicsManager.h"
 #ifdef OGRE_BUILD_COMPONENT_BULLET
 #include <Bullet/OgreBullet.h>
-#endif
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
-
+#endif
 
 using namespace std;
 using namespace Ogre;
 
 namespace Glue {
 
-PhysicsManager::PhysicsManager(bool threaded) : threaded(threaded) {
+PhysicsManager::PhysicsManager() {
   auto *Scheduler = btCreateDefaultTaskScheduler();
   if (!Scheduler) throw std::runtime_error("Bullet physics no task scheduler available");
   btSetTaskScheduler(Scheduler);
@@ -35,7 +34,7 @@ PhysicsManager::PhysicsManager(bool threaded) : threaded(threaded) {
 #endif
 
   btWorld->setGravity(btVector3(0.0, -9.8, 0.0));
-  // if (threaded) InitThread();
+  if (threaded) InitThread();
   paused = false;
 }
 
