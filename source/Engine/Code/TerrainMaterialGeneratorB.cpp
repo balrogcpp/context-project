@@ -9,7 +9,8 @@
 #endif
 
 using namespace std;
-using namespace Ogre;
+
+namespace Ogre {
 
 TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
   mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
@@ -121,3 +122,5 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const
     return new_material;
   }
 }
+
+}  // namespace Ogre

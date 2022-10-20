@@ -3,7 +3,6 @@
 #pragma once
 
 #include "FSHelpers.h"
-#include "SDL2.hpp"
 #include "System.h"
 #include <Ogre.h>
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
@@ -16,6 +15,25 @@ namespace Glue {
 
 class Window {
  public:
+  Window(const std::string &caption);
+  virtual ~Window();
+  void Create(int monitor, bool fullscreen, int width, int height);
+  void Delete();
+  void GrabCursor(bool grab);
+  void ShowCursor(bool show);
+  void Resize(int width, int height);
+  void SetFullscreen(bool fullscreen);
+  void SetWindowCaption(const char* caption);
+
+  SDL_Window* sdlWindow;
+  std::string caption;
+  bool fullscreen;
+  int width;
+  int height;
+  uint32_t sdlFlags;
+  bool vsync;
+  Ogre::RenderWindow *ogreWindow;
+  Ogre::RenderTarget *renderTarget;
 };
 
 class VideoManager : public System<VideoManager> {
@@ -35,33 +53,15 @@ class VideoManager : public System<VideoManager> {
   void OnResume() override;
   void OnUpdate(float time) override;
 
-  void grabCursor(bool grab);
-  void showCursor(bool show);
-  void resizeWindow(int width, int height);
-  void setFullscreen(bool fullscreen);
-  void setWindowCaption(const char* caption);
-  void renderFrame();
+  void RenderFrame();
 
  protected:
   std::vector<Window> windowList;
-  std::string windowCaption = "Example0";
-  int windowWidth = 1270;
-  int windowHeight = 720;
-  bool windowFullScreen = false;
-  int screenWidth = 0;
-  int screenHeight = 0;
-  bool windowVsync = true;
-  int currentDisplay = 0;
-  std::vector<SDL_DisplayMode> sdlMonitorList;
-  SDL_Window* sdlWindow = nullptr;
-  uint32_t sdlWindowFlags = 0;
-  int sdlWindowPositionFlag = SDL_WINDOWPOS_CENTERED;
-
   Ogre::Root* ogreRoot = nullptr;
   Ogre::SceneManager* sceneManager = nullptr;
   Ogre::RenderWindow* ogreWindow = nullptr;
-  Ogre::Camera* camera = nullptr;
-  Ogre::Viewport* viewport = nullptr;
+  Ogre::Camera* ogreCamera = nullptr;
+  Ogre::Viewport* ogreViewport = nullptr;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssmSetup;
   std::vector<float> pssmSplitPointList;
   const int PSSM_SPLITS = 3;

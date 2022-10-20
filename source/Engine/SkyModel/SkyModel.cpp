@@ -3,23 +3,21 @@
 #include "ArHosekSkyModel.h"
 #include <cstdlib>
 
-using namespace Ogre;
-
-void SkyModel::SetupSky(const Vector3f &_sunDir, float _sunSize, Vector3f _sunRenderColor, const Vector3f _groundAlbedo, float _turbidity, ColorSpace _colorspace)
+void SkyModel::SetupSky(const Ogre::Vector3f &_sunDir, float _sunSize, Ogre::Vector3f _sunRenderColor, const Ogre::Vector3f _groundAlbedo, float _turbidity, ColorSpace _colorspace)
 {
-	Vector3f sunDir = _sunDir;
-	Vector3f groundAlbedo = _groundAlbedo;
+	Ogre::Vector3f sunDir = _sunDir;
+	Ogre::Vector3f groundAlbedo = _groundAlbedo;
 	sunDir.y = Clamp(sunDir.y, 0.0, 1.0);
 	sunDir.normalise();
 	_turbidity = Clamp(_turbidity, 1.0f, 32.0f);
-	groundAlbedo = Vector3f(Clamp(groundAlbedo.x, 0.0, 1.0), Clamp(groundAlbedo.y, 0.0, 1.0), Clamp(groundAlbedo.z, 0.0, 1.0));
+	groundAlbedo = Ogre::Vector3f(Clamp(groundAlbedo.x, 0.0, 1.0), Clamp(groundAlbedo.y, 0.0, 1.0), Clamp(groundAlbedo.z, 0.0, 1.0));
 	_sunSize = std::max(_sunSize, 0.01f);
 
 	Colorspace = _colorspace;
 
 	Shutdown();
 
-	float thetaS = AngleBetween(sunDir, Vector3f(0, 1, 0));
+	float thetaS = AngleBetween(sunDir, Ogre::Vector3f(0, 1, 0));
 	float elevation = M_PI_2 - thetaS;
 	StateX = arhosek_xyz_skymodelstate_alloc_init(_turbidity, groundAlbedo.x, elevation);
 	StateY = arhosek_xyz_skymodelstate_alloc_init(_turbidity, groundAlbedo.y, elevation);
@@ -56,21 +54,21 @@ void SkyModel::Shutdown()
 
 }
 
-Vector3f SkyModel::Sample(Vector3f _sampleDir, bool _bEnableSun, Vector3f _skyTint, Vector3f _sunTint) const
+Ogre::Vector3f SkyModel::Sample(Ogre::Vector3f _sampleDir, bool _bEnableSun, Ogre::Vector3f _skyTint, Ogre::Vector3f _sunTint) const
 {
 	assert(StateX != nullptr);
 
 	float gamma = AngleBetween(_sampleDir, SunDir);
-	float theta = AngleBetween(_sampleDir, Vector3f(0, 1, 0));
+	float theta = AngleBetween(_sampleDir, Ogre::Vector3f(0, 1, 0));
 
-	Vector3f radiance;
+	Ogre::Vector3f radiance;
 
 	radiance.x = float(arhosek_tristim_skymodel_radiance(StateX, theta, gamma, 0));
 	radiance.y = float(arhosek_tristim_skymodel_radiance(StateY, theta, gamma, 1));
 	radiance.z = float(arhosek_tristim_skymodel_radiance(StateZ, theta, gamma, 2));
 
 	// If raw XYZ values are required
-	if (Colorspace == XYZ)
+	if (Colorspace == ColorSpace::XYZ)
 		return radiance;
 
 	// Move to workable RGB color space
@@ -92,10 +90,10 @@ Vector3f SkyModel::Sample(Vector3f _sampleDir, bool _bEnableSun, Vector3f _skyTi
 	//radiance *= 683.0f
 
 	// Color space conversion. Default is ACES2065-1
-	if (Colorspace == sRGB)
+	if (Colorspace == ColorSpace::sRGB)
 		radiance = ACES2065_1_to_sRGB(radiance);
 
-	if (Colorspace == ACEScg)
+	if (Colorspace == ColorSpace::ACEScg)
 		radiance = ACES2065_1_to_ACEScg(radiance);
 
 	radiance *= 50.0f;

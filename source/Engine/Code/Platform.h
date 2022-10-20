@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <OgreComponents.h>
 #include <OgrePlatform.h>
 #include <OgrePlatformInformation.h>
 
@@ -48,4 +49,8 @@
 #define GLSLES
 #else
 #define GLSL
+#endif
+
+#if defined(OGRE_BUILD_RENDERSYSTEM_GL) || defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS) || defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
+#define OGRE_OPENGL
 #endif

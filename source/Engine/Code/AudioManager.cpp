@@ -4,7 +4,6 @@
 #include "AudioManager.h"
 
 using namespace std;
-using namespace Ogre;
 
 namespace Glue {
 
@@ -27,7 +26,7 @@ void AudioManager::OnSetUp() {
   audioRoot->initialise();
   oggSoundManager = &OgreOggSound::OgreOggSoundManager::getSingleton();
   oggSoundManager->init();
-  oggSoundManager->setResourceGroupName(RGN_AUTODETECT);
+  oggSoundManager->setResourceGroupName(Ogre::RGN_AUTODETECT);
 
   auto *CameraNode = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getParentSceneNode();
   if (CameraNode) AddListener(CameraNode);
@@ -48,14 +47,14 @@ void AudioManager::AddSound(const char *name, const char *audioFile, Ogre::Scene
 //  this_thread::sleep_for(chrono::milliseconds(16));
 //#endif
   auto *sound = oggSoundManager->createSound(name, audioFile, true, playInLoop, true, nullptr);
-  auto *root_node = Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
+  auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
   if (parent)
     parent->attachObject(sound);
   else
     root_node->createChildSceneNode()->attachObject(sound);
 }
 
-void AudioManager::AddListener(SceneNode *parent) {
+void AudioManager::AddListener(Ogre::SceneNode *parent) {
   auto *listener = oggSoundManager->getListener();
 
   if (!listener) {
@@ -66,7 +65,7 @@ void AudioManager::AddListener(SceneNode *parent) {
   if (parent) parent->attachObject(listener);
 }
 
-void AudioManager::RemoveListener(SceneNode *parent) {}
+void AudioManager::RemoveListener(Ogre::SceneNode *parent) {}
 
 void AudioManager::PlaySound(const char *name, bool playImmediately) {
   auto *sound = oggSoundManager->getSound(name);

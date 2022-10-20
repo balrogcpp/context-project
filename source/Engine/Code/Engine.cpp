@@ -4,7 +4,9 @@
 #include "Engine.h"
 #include "Observer.h"
 #include "SinbadCharacterController.h"
-
+extern "C" {
+#include <SDL2/SDL_messagebox.h>
+}
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -15,11 +17,8 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
 using namespace std;
-using namespace Ogre;
 
 int ErrorWindow(const char *caption, const char *text) {
-  using namespace Glue;
-  SDL_Log("%s%s%s", caption, " : ", text);
 #ifdef _WIN32
   MessageBox(nullptr, text, caption, MB_ICONERROR);
 #else
@@ -103,7 +102,7 @@ void Engine::Capture() {
 //    {"2560x1440", 2560, 1440},
 //};
 
-static bool HasNoTangentsAndCanGenerate(VertexDeclaration *vertex_declaration) {
+static bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
   bool hasTangents = false;
   bool hasUVs = false;
   auto &elementList = vertex_declaration->getElements();
@@ -111,9 +110,9 @@ static bool HasNoTangentsAndCanGenerate(VertexDeclaration *vertex_declaration) {
   auto end = elementList.end();
 
   while (iter != end && !hasTangents) {
-    const VertexElement &vertexElem = *iter;
-    if (vertexElem.getSemantic() == VES_TANGENT) hasTangents = true;
-    if (vertexElem.getSemantic() == VES_TEXTURE_COORDINATES) hasUVs = true;
+    const auto &vertexElem = *iter;
+    if (vertexElem.getSemantic() == Ogre::VES_TANGENT) hasTangents = true;
+    if (vertexElem.getSemantic() == Ogre::VES_TEXTURE_COORDINATES) hasUVs = true;
 
     ++iter;
   }
@@ -121,17 +120,17 @@ static bool HasNoTangentsAndCanGenerate(VertexDeclaration *vertex_declaration) {
   return !hasTangents && hasUVs;
 }
 
-static void EnsureHasTangents(const MeshPtr &MeshSPtr) {
+static void EnsureHasTangents(const Ogre::MeshPtr &MeshSPtr) {
   bool generateTangents = false;
   if (MeshSPtr->sharedVertexData) {
-    VertexDeclaration *vertexDecl = MeshSPtr->sharedVertexData->vertexDeclaration;
+    auto *vertexDecl = MeshSPtr->sharedVertexData->vertexDeclaration;
     generateTangents |= HasNoTangentsAndCanGenerate(vertexDecl);
   }
 
   for (unsigned i = 0; i < MeshSPtr->getNumSubMeshes(); ++i) {
-    SubMesh *subMesh = MeshSPtr->getSubMesh(i);
+    auto *subMesh = MeshSPtr->getSubMesh(i);
     if (subMesh->vertexData) {
-      VertexDeclaration *vertexDecl = subMesh->vertexData->vertexDeclaration;
+      auto *vertexDecl = subMesh->vertexData->vertexDeclaration;
       generateTangents |= HasNoTangentsAndCanGenerate(vertexDecl);
     }
   }
@@ -141,7 +140,7 @@ static void EnsureHasTangents(const MeshPtr &MeshSPtr) {
   }
 }
 
-static void FixTransparentShadowCaster(const MaterialPtr &material) {
+static void FixTransparentShadowCaster(const Ogre::MaterialPtr &material) {
   auto *pass = material->getTechnique(0)->getPass(0);
   int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
   bool transparency_casts_shadows = material->getTransparencyCastsShadows();
@@ -149,9 +148,9 @@ static void FixTransparentShadowCaster(const MaterialPtr &material) {
   string MaterialName = material->getName();
 
   if (num_textures > 0 && alpha_rejection > 0 && transparency_casts_shadows) {
-    auto caster_material = MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
+    auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
     string caster_name = "PSSM/shadow_caster_alpha/" + MaterialName;
-    MaterialPtr new_caster = MaterialManager::getSingleton().getByName(caster_name);
+    auto new_caster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
 
     if (!new_caster) {
       new_caster = caster_material->clone(caster_name);
@@ -164,7 +163,7 @@ static void FixTransparentShadowCaster(const MaterialPtr &material) {
         auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
 
         if (texPtr3) {
-          texPtr3->setContentType(TextureUnitState::CONTENT_NAMED);
+          texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
           texPtr3->setTextureName(texture_name);
         }
       }
@@ -180,26 +179,26 @@ static void FixTransparentShadowCaster(const MaterialPtr &material) {
 }
 
 static void FixTransparentShadowCaster(const string &material) {
-  auto material_ptr = MaterialManager::getSingleton().getByName(material);
+  auto material_ptr = Ogre::MaterialManager::getSingleton().getByName(material);
   FixTransparentShadowCaster(material_ptr);
 }
 
-static void AddMaterial(const MaterialPtr &material) {
+static void AddMaterial(const Ogre::MaterialPtr &material) {
   FixTransparentShadowCaster(material);
   GetEngine().AddMaterial(material);
 }
 
 static void AddMaterial(const string &material) {
-  auto MaterialSPtr = MaterialManager::getSingleton().getByName(material);
+  auto MaterialSPtr = Ogre::MaterialManager::getSingleton().getByName(material);
   if (MaterialSPtr) AddMaterial(MaterialSPtr);
 }
 
-static void AddMeshMaterial(MeshPtr MeshSPtr, const string &MaterialName) {
+static void AddMeshMaterial(Ogre::MeshPtr MeshSPtr, const string &MaterialName) {
   try {
     EnsureHasTangents(MeshSPtr);
 
     for (auto &submesh : MeshSPtr->getSubMeshes()) {
-      MaterialPtr material;
+      Ogre::MaterialPtr material;
 
       if (!MaterialName.empty()) {
         submesh->setMaterialName(MaterialName);
@@ -208,21 +207,21 @@ static void AddMeshMaterial(MeshPtr MeshSPtr, const string &MaterialName) {
       material = submesh->getMaterial();
       if (material) AddMaterial(material);
     }
-  } catch (Exception &e) {
-    LogManager::getSingleton().logMessage(e.getFullDescription());
-    LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
+  } catch (Ogre::Exception &e) {
+    Ogre::LogManager::getSingleton().logMessage(e.getFullDescription());
+    Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
   }
 }
 
 static void AddMeshMaterial(const string &MeshName, const string &MaterialName = "") {
-  const auto &MeshSPtr = MeshManager::getSingleton().getByName(MeshName);
+  const auto &MeshSPtr = Ogre::MeshManager::getSingleton().getByName(MeshName);
   AddMeshMaterial(MeshSPtr, MaterialName);
 }
 
-static void AddEntityMaterial(Entity *EntityPtr, const string &MaterialName = "") {
+static void AddEntityMaterial(Ogre::Entity *EntityPtr, const string &MaterialName = "") {
   try {
     if (!MaterialName.empty()) {
-      auto material = MaterialManager::getSingleton().getByName(MaterialName);
+      auto material = Ogre::MaterialManager::getSingleton().getByName(MaterialName);
       if (material) {
         AddMaterial(material);
         EntityPtr->setMaterial(material);
@@ -230,23 +229,23 @@ static void AddEntityMaterial(Entity *EntityPtr, const string &MaterialName = ""
     }
 
     AddMeshMaterial(EntityPtr->getMesh(), MaterialName);
-  } catch (Exception &e) {
-    LogManager::getSingleton().logMessage(e.getFullDescription());
-    LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
+  } catch (Ogre::Exception &e) {
+    Ogre::LogManager::getSingleton().logMessage(e.getFullDescription());
+    Ogre::LogManager::getSingleton().logMessage("[DotSceneLoader] Error loading an entity!");
   }
 }
 
 float Engine::GetHeight(float x, float z) {
-//  if (terrainGroup)
-//    return terrainGroup->getHeightAtWorldPosition(x, 1000, z);
-//  else
-//    return 0.0f;
-return 0.0;
+  //  if (terrainGroup)
+  //    return terrainGroup->getHeightAtWorldPosition(x, 1000, z);
+  //  else
+  //    return 0.0f;
+  return 0.0;
 }
 
-void Engine::AddEntity(Entity *EntityPtr) { AddEntityMaterial(EntityPtr); }
+void Engine::AddEntity(Ogre::Entity *EntityPtr) { AddEntityMaterial(EntityPtr); }
 
-void Engine::AddMaterial(MaterialPtr material) {
+void Engine::AddMaterial(Ogre::MaterialPtr material) {
   //  const auto *Pass = material->getTechnique(0)->getPass(0);
   //  if (Pass->hasVertexProgram()) gpuVpParams.push_back(Pass->getVertexProgramParameters());
   //  if (Pass->hasFragmentProgram()) gpuFpParams.push_back(Pass->getFragmentProgramParameters());
@@ -257,19 +256,19 @@ void Engine::AddMaterial(const string &MaterialName) {
   //  if (MaterialPtr) AddMaterial(MaterialPtr);
 }
 
-void Engine::AddCamera(Camera *OgreCameraPtr) {}
+void Engine::AddCamera(Ogre::Camera *OgreCameraPtr) {}
 
-void Engine::AddSinbad(Camera *OgreCameraPtr) {
+void Engine::AddSinbad(Ogre::Camera *OgreCameraPtr) {
   sinbad = make_unique<SinbadCharacterController>(OgreCameraPtr);
   InputSequencer::GetInstance().RegObserver(sinbad.get());
 }
 
-//void Engine::AddForests(Forests::PagedGeometry *PGPtr, const string &MaterialName) {
+// void Engine::AddForests(Forests::PagedGeometry *PGPtr, const string &MaterialName) {
 //  pgList.push_back(unique_ptr<Forests::PagedGeometry>(PGPtr));
 //  if (!MaterialName.empty()) AddMaterial(MaterialName);
 //}
 //
-//void Engine::AddTerrain(TerrainGroup *TGP) { terrainGroup.reset(TGP); }
+// void Engine::AddTerrain(TerrainGroup *TGP) { terrainGroup.reset(TGP); }
 
 void Engine::RegComponent(SystemI *component) {
   component->OnSetUp();
@@ -299,20 +298,20 @@ void Engine::OnCleanup() {
   for (auto &it : componentList) it->OnClean();
   InputSequencer::GetInstance().UnRegObserver(sinbad.get());
   sinbad.reset();
-//  pgList.clear();
-//  if (terrainGroup) terrainGroup->removeAllTerrains();
-//  terrainGroup.reset();
-//  delete TerrainGlobalOptions::getSingletonPtr();
+  //  pgList.clear();
+  //  if (terrainGroup) terrainGroup->removeAllTerrains();
+  //  terrainGroup.reset();
+  //  delete TerrainGlobalOptions::getSingletonPtr();
 }
 
 void Engine::Update(float PassedTime) {
   if (paused) return;
   if (sinbad) sinbad->Update(PassedTime);
-//  for (auto &it : pgList) it->update();
+  //  for (auto &it : pgList) it->update();
   for (auto &it : componentList) it->OnUpdate(PassedTime);
 
   static ImGuiIO &io = ImGui::GetIO();
-  ImGuiOverlay::NewFrame();
+  Ogre::ImGuiOverlay::NewFrame();
   ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
   ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
   ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
@@ -322,6 +321,6 @@ void Engine::Update(float PassedTime) {
   ImGui::End();
 }
 
-void Engine::RenderFrame() { video->renderFrame(); }
+void Engine::RenderFrame() { video->RenderFrame(); }
 
 }  // namespace Glue

@@ -2,10 +2,12 @@
 #define SKYMODEL_H
 
 #include <OgreVector3.h>
+#ifdef _MSC_VER
 #define _USE_MATH_DEFINES
+#endif
 #include <math.h>
 
-enum ColorSpace { XYZ, sRGB, ACEScg, ACES2065_1 };
+enum class ColorSpace { XYZ, sRGB, ACEScg, ACES2065_1 };
 
 // Scale factor used for storing physical light units in fp16 floats (equal to 2^-10)
 constexpr float FP16Scale = 0.0009765625f;

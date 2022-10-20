@@ -11,7 +11,6 @@
 #endif
 
 using namespace std;
-using namespace Ogre;
 
 namespace Glue {
 
@@ -131,7 +130,7 @@ void PhysicsManager::CreateTerrainHeightfieldShape(int size, float *data, float 
   entBody->setHitFraction(0.8f);
   entBody->setRestitution(0.6f);
   entBody->getWorldTransform().setOrigin(btVector3(position.x, position.y + (maxHeight - minHeight) / 2 - 0.5, position.z));
-  entBody->getWorldTransform().setRotation(Bullet::convert(Ogre::Quaternion::IDENTITY));
+  entBody->getWorldTransform().setRotation(Ogre::Bullet::convert(Ogre::Quaternion::IDENTITY));
   entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
   entBody->setUserIndex(0);
@@ -144,14 +143,14 @@ void PhysicsManager::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, 
   btVector3 Inertia = btVector3(0, 0, 0);
 
   if (!entity->getParentSceneNode() && parent) parent->attachObject(entity);
-  auto *entShape = Bullet::createCapsuleCollider(entity);
+  auto *entShape = Ogre::Bullet::createCapsuleCollider(entity);
 
   if (isStatic)
     mass = 0.0;
   else
     entShape->calculateLocalInertia(mass, Inertia);
 
-  auto *bodyState = new Bullet::RigidBodyState(parent);
+  auto *bodyState = new Ogre::Bullet::RigidBodyState(parent);
 
   entBody = new btRigidBody(mass, bodyState, entShape, Inertia);
   if (isStatic) entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
@@ -159,7 +158,7 @@ void PhysicsManager::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, 
   AddRigidBody(entBody);
 }
 
-void PhysicsManager::ProcessData(Entity *entity, SceneNode *parent, const UserObjectBindings &userData) {
+void PhysicsManager::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, const Ogre::UserObjectBindings &userData) {
   string ProxyType;
   if (userData.getUserAny("proxy").has_value()) ProxyType = any_cast<string>(userData.getUserAny("proxy"));
   string physics_type = any_cast<string>(userData.getUserAny("physics_type"));
@@ -186,14 +185,14 @@ void PhysicsManager::ProcessData(Entity *entity, SceneNode *parent, const UserOb
   btVector3 Inertia = btVector3(0, 0, 0);
 
   if (!entity->getParentSceneNode() && parent) parent->attachObject(entity);
-  auto *entShape = Bullet::createBoxCollider(entity);
+  auto *entShape = Ogre::Bullet::createBoxCollider(entity);
 
   if (Static)
     Mass = 0.0;
   else
     entShape->calculateLocalInertia(Mass, Inertia);
 
-  auto *bodyState = new Bullet::RigidBodyState(parent);
+  auto *bodyState = new Ogre::Bullet::RigidBodyState(parent);
 
   entBody = new btRigidBody(Mass, bodyState, entShape, Inertia);
   if (Static) entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);

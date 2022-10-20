@@ -2,10 +2,8 @@
 
 #include "pch.h"
 #include "CompositorManager.h"
-//#include "Config.h"
 
 using namespace std;
-using namespace Ogre;
 
 namespace Glue {
 
@@ -20,7 +18,7 @@ const static std::string FX_BLUR = "Blur";
 const static std::string FX_FXAA = "FXAA";
 const static std::string FX_HDR = "HDR";
 
-static GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorName) {
+static Ogre::GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorName) {
   static auto &MM = Ogre::MaterialManager::getSingleton();
   return MM.getByName(CompositorName)->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
 }

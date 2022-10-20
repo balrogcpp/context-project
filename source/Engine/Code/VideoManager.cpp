@@ -4,10 +4,19 @@
 #include "VideoManager.h"
 #include "Android.h"
 #include "DotSceneLoaderB.h"
-#include "SDL2.hpp"
+extern "C" {
+#ifdef _MSC_VER
+#define SDL_MAIN_HANDLED
+#endif
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
+}
 #include "SkyModel/ArHosekSkyModel.h"
 #include "SkyModel/SkyModel.h"
 #include <Ogre.h>
+#ifdef OGRE_OPENGL
+#include <OgreGLRenderSystemCommon.h>
+#endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
 #endif
@@ -17,9 +26,8 @@
 #ifdef OGRE_BUILD_PLUGIN_STBI
 #include <Plugins/STBICodec/OgreSTBICodec.h>
 #endif
-#if defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI)
+#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
 #include <Plugins/FreeImageCodec/OgreFreeImageCodec.h>
-#include <Plugins/FreeImageCodec/OgreFreeImageCodecExports.h>
 #endif
 #ifdef OGRE_BUILD_PLUGIN_ASSIMP
 #include <Plugins/Assimp/OgreAssimpLoader.h>
@@ -29,14 +37,12 @@
 #endif
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 #include <RTShaderSystem/OgreRTShaderSystem.h>
-#include <RTShaderSystem/OgreShaderGenerator.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
 #include <Overlay/OgreFontManager.h>
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
 #endif
-#include <OgreGLRenderSystemCommon.h>
 
 using namespace std;
 using namespace Ogre;
@@ -50,7 +56,7 @@ inline Ogre::SceneManager *OgreSceneManager() { return Ogre::Root::getSingleton(
 inline Ogre::SceneNode *OgreRootNode() { return OgreSceneManager()->getRootSceneNode(); }
 inline Ogre::Camera *OgreCamera() { return OgreSceneManager()->getCamera("Default"); }
 inline Ogre::SceneNode *OgreCameraNode() { return OgreCamera()->getParentSceneNode(); }
-Vector3 SunDirection() { return -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition(); }
+inline Vector3 SunDirection() { return -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition(); }
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 void InitOgreRenderSystemGL3();
 #endif
@@ -60,6 +66,153 @@ void InitOgreRenderSystemGLES2();
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL
 void InitOgreRenderSystemGL();
 #endif
+
+Window::Window(const std::string &caption)
+    : sdlFlags(0), caption(caption), vsync(true), width(1024), height(728), fullscreen(false), ogreWindow(nullptr), renderTarget(nullptr) {
+  if (caption.empty()) this->caption = "Example0";
+}
+
+Window::~Window() { SDL_SetWindowFullscreen(sdlWindow, SDL_FALSE); }
+
+void Window::Create(int monitor, bool fullscreen, int width, int height) {
+  this->width = width;
+  this->height = height;
+  this->fullscreen = fullscreen;
+
+  // select biggest display
+  SDL_DisplayMode displayMode;
+  int screenWidth, screenHeight, currentDisplay;
+  for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
+    if (SDL_GetCurrentDisplayMode(i, &displayMode) == 0) {
+      SDL_Log("Display #%d: current display mode is %dx%dpx @ %dhz.", i, displayMode.w, displayMode.h, displayMode.refresh_rate);
+      int screenDiag = sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
+      int screenDiagI = sqrt(displayMode.w * displayMode.w + displayMode.h * displayMode.h);
+      if (screenDiagI > screenDiag) {
+        screenWidth = displayMode.w;
+        screenHeight = displayMode.h;
+        currentDisplay = i;
+      } else {
+        SDL_Log("Could not get display mode for video display #%d: %s", i, SDL_GetError());
+      }
+    }
+  }
+
+#if defined(DESKTOP)
+  if (width == screenWidth && height == screenHeight) {
+    sdlFlags |= SDL_WINDOW_BORDERLESS;
+  }
+  if (fullscreen) {
+    sdlFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    sdlFlags |= SDL_WINDOW_BORDERLESS;
+    width = screenWidth;
+    height = screenHeight;
+  }
+  int32_t sdlWindowPositionFlag = SDL_WINDOWPOS_CENTERED_DISPLAY(currentDisplay);
+  sdlWindow = SDL_CreateWindow(caption.c_str(), sdlWindowPositionFlag, sdlWindowPositionFlag, width, height, sdlFlags);
+  OgreAssert(sdlWindow, "SDL_CreateWindow failed");
+#else
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  sdlWindowFlags |= SDL_WINDOW_OPENGL;
+#ifdef EMSCRIPTEN
+  sdlWindowFlags |= SDL_WINDOW_RESIZABLE;
+#endif
+  sdlWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
+#ifdef MOBILE
+  sdlWindowFlags |= SDL_WINDOW_BORDERLESS;
+  sdlWindowFlags |= SDL_WINDOW_FULLSCREEN;
+#endif
+  width = screenWidth;
+  windowHeight = screenHeight;
+  sdlWindowPositionFlag = SDL_WINDOWPOS_CENTERED;
+  sdlWindow = SDL_CreateWindow(nullptr, sdlWindowPositionFlag, sdlWindowPositionFlag, screenWidth, screenHeight, sdlWindowFlags);
+  SDL_GL_CreateContext(sdlWindow);
+#endif
+
+  NameValuePairList renderParams;
+  SDL_SysWMinfo info;
+  SDL_VERSION(&info.version);
+  SDL_GetWindowWMInfo(sdlWindow, &info);
+  const char *TRUE_STR = "true";
+  const char *FALSE_STR = "false";
+  renderParams["vsync"] = vsync ? TRUE_STR : FALSE_STR;
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
+#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
+#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
+#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+  renderParams["currentGLContext"] = TRUE_STR;
+  renderParams["externalGLControl"] = TRUE_STR;
+  renderParams["preserveContext"] = TRUE_STR;
+  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
+#endif
+  auto &ogreRoot = Ogre::Root::getSingleton();
+  ogreWindow = ogreRoot.createRenderWindow(caption, width, height, fullscreen, &renderParams);
+  renderTarget = ogreRoot.getRenderTarget(ogreWindow->getName());
+#ifdef ANDROID
+  SDL_DisplayMode displayMode;
+  SDL_GetDesktopDisplayMode(currentDisplay, &displayMode);
+  ogreWindow->resize(static_cast<int>(displayMode.w), static_cast<int>(displayMode.h));
+#endif
+}
+
+void Window::Resize(int width, int height) {
+  width = width;
+  height = height;
+  SDL_SetWindowSize(sdlWindow, width, height);
+  ogreWindow->resize(width, height);
+}
+
+void Window::GrabCursor(bool grab) {
+#ifndef MOBILE  // This breaks input @Android >9.0
+  if (sdlWindow) {
+    SDL_ShowCursor(!grab);
+    SDL_SetWindowGrab(sdlWindow, static_cast<SDL_bool>(grab));
+    SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
+    ShowCursor(!grab);
+  }
+#endif
+}
+
+void Window::ShowCursor(bool show) {
+#ifndef MOBILE  // This breaks input @Android >9.0
+  if (sdlWindow) SDL_ShowCursor(show);
+#endif
+}
+
+void Window::SetWindowCaption(const char *caption) {
+  this->caption = caption;
+  SDL_SetWindowTitle(sdlWindow, caption);
+}
+
+void Window::SetFullscreen(bool fullscreen) {
+  if (fullscreen) {
+    fullscreen = true;
+    ogreWindow->setFullscreen(fullscreen, width, height);
+#ifdef DESKTOP
+    SDL_SetWindowFullscreen(sdlWindow, sdlFlags | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
+#else
+    SDL_SetWindowFullscreen(sdlWindow, sdlWindowFlags | SDL_WINDOW_FULLSCREEN);
+#endif
+  } else {
+    fullscreen = false;
+    ogreWindow->setFullscreen(fullscreen, width, height);
+    SDL_SetWindowFullscreen(sdlWindow, sdlFlags);
+    SDL_SetWindowSize(sdlWindow, width, height);
+  }
+}
+
+void Window::Delete() {}
 
 ImFont *AddFont(const String &name, const char *group OGRE_RESOURCE_GROUP_INIT, const ImFontConfig *fontCfg = NULL,
                 const ImWchar *glyphRanges = NULL) {
@@ -155,299 +308,27 @@ class ShaderResolver final : public MaterialManager::Listener {
 #endif  // OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 
 VideoManager::VideoManager() {}
-VideoManager::~VideoManager() { SDL_SetWindowFullscreen(sdlWindow, SDL_FALSE); }
-
-void VideoManager::OnUpdate(float time) {
-  static Matrix4 MVP;
-  static Matrix4 MVPprev;
-  MVPprev = MVP;
-  MVP = camera->getProjectionMatrixWithRSDepth() * camera->getViewMatrix();
-  for (auto &it : gpuVpParams) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
-  if (skyNeedsUpdate && skyBoxFpParams)
-    for (int i = 0; i < 10; i++) skyBoxFpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
-}
-
-void VideoManager::resizeWindow(int width, int height) {
-  windowWidth = width;
-  windowHeight = height;
-  SDL_SetWindowPosition(sdlWindow, (screenWidth - windowWidth) / 2, (screenHeight - windowHeight) / 2);
-  SDL_SetWindowSize(sdlWindow, windowWidth, windowHeight);
-  ogreWindow->resize(width, height);
-}
-
-void VideoManager::grabCursor(bool grab) {
-#ifndef MOBILE  // This breaks input @Android >9.0
-  if (sdlWindow) {
-    SDL_ShowCursor(!grab);
-    SDL_SetWindowGrab(sdlWindow, static_cast<SDL_bool>(grab));
-    SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
-  }
-#endif
-}
-
-void VideoManager::showCursor(bool show) {
-#ifndef MOBILE  // This breaks input @Android >9.0
-  if (sdlWindow) SDL_ShowCursor(show);
-#endif
-}
-
-void VideoManager::setWindowCaption(const char *caption) {
-  windowCaption = caption;
-  SDL_SetWindowTitle(sdlWindow, caption);
-}
-
-void VideoManager::setFullscreen(bool fullscreen) {
-  if (fullscreen) {
-    windowFullScreen = true;
-    ogreWindow->setFullscreen(windowFullScreen, windowWidth, windowHeight);
-#ifdef DESKTOP
-    SDL_SetWindowFullscreen(sdlWindow, sdlWindowFlags | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
-#else
-    SDL_SetWindowFullscreen(sdlWindow, sdlWindowFlags | SDL_WINDOW_FULLSCREEN);
-#endif
-  } else {
-    windowFullScreen = false;
-    ogreWindow->setFullscreen(windowFullScreen, windowWidth, windowHeight);
-    SDL_SetWindowFullscreen(sdlWindow, sdlWindowFlags);
-    SDL_SetWindowSize(sdlWindow, windowWidth, windowHeight);
-  }
-}
-
-void VideoManager::renderFrame() {
-  ogreRoot->renderOneFrame();
-#if defined(WINDOWS) || defined(ANDROID)
-  SDL_GL_SwapWindow(sdlWindow);
-#endif
-}
-
-Vector3 VideoManager::GetSunPosition() {
-  auto *SunPtr = sceneManager->getLight("Sun");
-  if (SunPtr)
-    return -Vector3(SunPtr->getDerivedDirection().normalisedCopy());
-  else
-    return Vector3::ZERO;
-}
-
-bool CheckGLVersion(int major, int minor) {
-  return dynamic_cast<Ogre::GLRenderSystemCommon *>(Ogre::Root::getSingleton().getRenderSystem())->hasMinGLVersion(major, minor);
-}
-
-void VideoManager::CheckGPU() {
-  const auto *RSC = Root::getSingleton().getRenderSystem()->getCapabilities();
-  OgreAssert(RSC->hasCapability(RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_FLOAT), "Float texture support required");
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION), "Texture compression support required");
-#if defined(DESKTOP)
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
-#elif defined(ANDROID)
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
-#elif defined(IOS)
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
-#endif
-  if (RenderSystemIsGL3()) {
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-    OgreAssert(CheckGLVersion(3, 3), "OpenGL 3.3 is not supported");
-#endif
-  } else if (RenderSystemIsGLES2()) {
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-    OgreAssert(CheckGLVersion(3, 0), "OpenGLES 3.0 is not supported");
-#endif
-  }
-}
-
-void VideoManager::InitSky() {
-  auto colorspace = sRGB;
-  float sunSize = 0.27f;
-  float turbidity = 4.0f;
-  auto groundAlbedo = Vector3(1.0);
-  auto sunColor = Vector3(20000);
-  auto sunDir = GetSunPosition();
-
-  SkyModel sky;
-  sky.SetupSky(sunDir, sunSize, sunColor, groundAlbedo, turbidity, colorspace);
-
-  const ArHosekSkyModelState *States[3] = {sky.StateX, sky.StateY, sky.StateZ};
-
-  for (int i = 0; i < 9; i++)
-    for (int j = 0; j < 3; j++) hosekParams[i][j] = States[j]->configs[j][i];
-  hosekParams[9] = Vector3(sky.StateX->radiances[0], sky.StateY->radiances[1], sky.StateZ->radiances[2]);
-
-  auto SkyMaterial = MaterialManager::getSingleton().getByName("SkyBox");
-  if (!SkyMaterial) return;
-
-  auto FpParams = SkyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-  if (FpParams) skyBoxFpParams = FpParams;
-
-  FpParams->setIgnoreMissingParams(true);
-  for (int i = 0; i < 10; i++) FpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
-}
-
-void VideoManager::InitSDL() {
-#ifndef EMSCRIPTEN
-  OgreAssert(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER), "Failed to init SDL2");
-#else
-  OgreAssert(!SDL_Init(SDL_INIT_VIDEO), "Failed to init SDL2");
-#endif
-  SDL_DisplayMode DM;
-  for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
-    if (SDL_GetCurrentDisplayMode(i, &DM) == 0) {
-      SDL_Log("Display #%d: current display mode is %dx%dpx @ %dhz.", i, DM.w, DM.h, DM.refresh_rate);
-      sdlMonitorList.push_back(DM);
-      int ScreenDiag = sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
-      int TmpDiag = sqrt(DM.w * DM.w + DM.h * DM.h);
-      if (TmpDiag > ScreenDiag) {
-        screenWidth = DM.w;
-        screenHeight = DM.h;
-        currentDisplay = i;
-      } else {
-        SDL_Log("Could not get display mode for video display #%d: %s", i, SDL_GetError());
-      }
-    }
-  }
-  for (int i = 0; i < SDL_NumJoysticks(); i++) {
-    if (SDL_IsGameController(i)) SDL_GameControllerOpen(i);
-  }
-}
-
-void VideoManager::InitOgreRoot() {
-  ogreRoot = new Root("", "", "");
-#ifdef ANDROID
-  JNIEnv *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
-  jclass classActivity = env->FindClass("android/app/Activity");
-  jclass classResources = env->FindClass("android/content/res/Resources");
-  jmethodID methodGetResources = env->GetMethodID(classActivity, "getResources", "()Landroid/content/res/Resources;");
-  jmethodID methodGetAssets = env->GetMethodID(classResources, "getAssets", "()Landroid/content/res/AssetManager;");
-  jobject rawActivity = static_cast<jobject>(SDL_AndroidGetActivity());
-  jobject rawResources = env->CallObjectMethod(rawActivity, methodGetResources);
-  jobject rawAssetManager = env->CallObjectMethod(rawResources, methodGetAssets);
-  AAssetManager *assetManager = AAssetManager_fromJava(env, rawAssetManager);
-  AConfiguration *aConfig = AConfiguration_new();
-  AConfiguration_fromAssetManager(aConfig, assetManager);
-  ArchiveManager::getSingleton().addArchiveFactory(new APKFileSystemArchiveFactory(assetManager));
-  ArchiveManager::getSingleton().addArchiveFactory(new APKZipArchiveFactory(assetManager));
-#endif
-#ifdef DESKTOP
-#if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
-  InitOgreRenderSystemGL3();
-#elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
-  InitOgreRenderSystemGLES2();
-#elif defined(OGRE_BUILD_RENDERSYSTEM_GL)
-  InitOgreRenderSystemGL();
-#endif  // DESKTOP
-#else   // !DESKTOP
-  InitOgreRenderSystemGLES2();
-#endif  // DESKTOP
-#ifdef OGRE_BUILD_PLUGIN_OCTREE
-  Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
-#endif
-#ifdef OGRE_BUILD_PLUGIN_PFX
-  Root::getSingleton().installPlugin(new ParticleFXPlugin());
-#endif
-#ifdef OGRE_BUILD_PLUGIN_STBI
-  Root::getSingleton().installPlugin(new STBIPlugin());
-#endif
-#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI)
-  Root::getSingleton().installPlugin(new FreeImagePlugin());
-#endif
-#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_ASSIMP)
-  Root::getSingleton().installPlugin(new AssimpPlugin());
-#endif
-#ifdef OGRE_BUILD_PLUGIN_OCTREE
-  sceneManager = ogreRoot->createSceneManager("OctreeSceneManager", "Default");
-#else
-  sceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
-#endif
-#ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
-  Root::getSingleton().installPlugin(new DotScenePluginB());
-#else
-  Root::getSingleton().installPlugin(new DotScenePluginB());
-#endif
-  ogreRoot->initialise(false);
-}
+VideoManager::~VideoManager() {}
 
 void VideoManager::OnSetUp() {
-  InitSDL();
-
   InitOgreRoot();
 
-  // SDL window
-#if defined(DESKTOP)
-  if (windowWidth == screenWidth && windowHeight == screenHeight) {
-    sdlWindowFlags |= SDL_WINDOW_BORDERLESS;
-  }
-  if (windowFullScreen) {
-    sdlWindowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    sdlWindowFlags |= SDL_WINDOW_BORDERLESS;
-    windowWidth = screenWidth;
-    windowHeight = screenHeight;
-  }
-  sdlWindowPositionFlag = SDL_WINDOWPOS_CENTERED_DISPLAY(currentDisplay);
-  sdlWindow = SDL_CreateWindow(windowCaption.c_str(), sdlWindowPositionFlag, sdlWindowPositionFlag, windowWidth, windowHeight, sdlWindowFlags);
-#else
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-  sdlWindowFlags |= SDL_WINDOW_OPENGL;
-#ifdef EMSCRIPTEN
-  sdlWindowFlags |= SDL_WINDOW_RESIZABLE;
-#endif
-  sdlWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
-#ifdef MOBILE
-  sdlWindowFlags |= SDL_WINDOW_BORDERLESS;
-  sdlWindowFlags |= SDL_WINDOW_FULLSCREEN;
-#endif
-  windowWidth = screenWidth;
-  windowHeight = screenHeight;
-  sdlWindowPositionFlag = SDL_WINDOWPOS_CENTERED;
-  sdlWindow = SDL_CreateWindow(nullptr, sdlWindowPositionFlag, sdlWindowPositionFlag, screenWidth, screenHeight, sdlWindowFlags);
-  SDL_GL_CreateContext(sdlWindow);
-#endif
+  InitSDL();
 
-  // OGRE window
-  NameValuePairList renderParams;
-  SDL_SysWMinfo info;
-  SDL_VERSION(&info.version);
-  SDL_GetWindowWMInfo(sdlWindow, &info);
-  const char *TRUE_STR = "true";
-  const char *FALSE_STR = "false";
-  renderParams["vsync"] = windowVsync ? TRUE_STR : FALSE_STR;
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
-#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.x11.window));
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.cocoa.window));
-#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  renderParams["currentGLContext"] = "true";
-  renderParams["externalGLControl"] = "true";
-  renderParams["preserveContext"] = "true";
-  renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
-#endif
-  ogreWindow = ogreRoot->createRenderWindow(windowCaption, windowWidth, windowHeight, windowFullScreen, &renderParams);
-  RenderTarget *renderTarget = ogreRoot->getRenderTarget(ogreWindow->getName());
-  camera = sceneManager->createCamera("Default");
-  viewport = renderTarget->addViewport(camera);
-  camera->setAspectRatio(static_cast<float>(viewport->getActualWidth()) / static_cast<float>(viewport->getActualHeight()));
-  camera->setAutoAspectRatio(true);
-#ifdef ANDROID
-  SDL_DisplayMode DM;
-  SDL_GetDesktopDisplayMode(currentDisplay, &DM);
-  ogreWindow->resize(static_cast<int>(DM.w), static_cast<int>(DM.h));
-#endif
+  windowList.emplace_back("Example0");
+  windowList[0].Create(-1, false, 1024, 768);
   CheckGPU();
+
+  ogreCamera = sceneManager->createCamera("Default");
+  ogreViewport = windowList[0].renderTarget->addViewport(ogreCamera);
+  ogreCamera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
+  ogreCamera->setAutoAspectRatio(true);
 
 // RTSS init
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
   OgreAssert(RTShader::ShaderGenerator::initialize(), "OGRE RTSS init failed");
   auto *shaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
-  viewport->setMaterialScheme(MSN_SHADERGEN);
+  ogreViewport->setMaterialScheme(MSN_SHADERGEN);
   shaderGenerator->addSceneManager(sceneManager);
   shaderGenerator->setShaderCachePath("");
   auto resolver = make_unique<ShaderResolver>(shaderGenerator);
@@ -458,7 +339,7 @@ void VideoManager::OnSetUp() {
   auto *ogreOverlay = new OverlaySystem();
   imguiOverlay = new ImGuiOverlay();
   float vpScale = OverlayManager::getSingleton().getPixelRatio();
-  ImGui::GetIO().FontGlobalScale = round(vpScale);  // default font does not work with fractional scaling
+  ImGui::GetIO().FontGlobalScale = round(vpScale);
   ImGui::GetStyle().ScaleAllSizes(vpScale);
   imguiOverlay->setZOrder(300);
   OverlayManager::getSingleton().addOverlay(imguiOverlay);
@@ -473,16 +354,16 @@ void VideoManager::OnSetUp() {
   io.MouseDrawCursor = false;
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 
-  // texture init
-  //  TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
-  //  if (Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_ANISOTROPY)) {
-  //    MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_ANISOTROPIC);
-  //    MaterialManager::getSingleton().setDefaultAnisotropy(8);
-  //  } else {
-  //    MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_BILINEAR);
-  //  }
-
-  // scan resources
+  // scan and load resources
+#ifdef DESKTOP
+  TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
+  if (Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_ANISOTROPY)) {
+    MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_ANISOTROPIC);
+    MaterialManager::getSingleton().setDefaultAnisotropy(8);
+  } else {
+    MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_BILINEAR);
+  }
+#endif
   auto &RGM = ResourceGroupManager::getSingleton();
 #if defined(ANDROID)
   RGM.addResourceLocation("programs.zip", "APKZip", RGN_INTERNAL);
@@ -500,8 +381,6 @@ void VideoManager::OnSetUp() {
   RGM.addResourceLocation("programs.zip", "Zip", RGN_INTERNAL);
   RGM.addResourceLocation("assets.zip", "Zip", RGN_DEFAULT);
 #endif
-
-  // load resources
   RGM.initialiseResourceGroup(RGN_INTERNAL);
   RGM.initialiseAllResourceGroups();
 
@@ -559,6 +438,16 @@ void VideoManager::OnSetUp() {
 #endif
 }
 
+void VideoManager::OnUpdate(float time) {
+  static Matrix4 MVP;
+  static Matrix4 MVPprev;
+  MVPprev = MVP;
+  MVP = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
+  for (auto &it : gpuVpParams) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
+  if (skyNeedsUpdate && skyBoxFpParams)
+    for (int i = 0; i < 10; i++) skyBoxFpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
+}
+
 void VideoManager::OnClean() {
   ResourceGroupManager::getSingleton().unloadResourceGroup(RGN_DEFAULT);
   if (sceneManager) sceneManager->setShadowTechnique(SHADOWTYPE_NONE);
@@ -573,5 +462,142 @@ void VideoManager::OnClean() {
 void VideoManager::OnPause() {}
 
 void VideoManager::OnResume() {}
+
+void VideoManager::RenderFrame() {
+  ogreRoot->renderOneFrame();
+#if defined(WINDOWS) || defined(ANDROID)
+  SDL_GL_SwapWindow(sdlWindow);
+#endif
+}
+
+Vector3 VideoManager::GetSunPosition() {
+  auto *SunPtr = sceneManager->getLight("Sun");
+  if (SunPtr)
+    return -Vector3(SunPtr->getDerivedDirection().normalisedCopy());
+  else
+    return Vector3::ZERO;
+}
+
+bool CheckGLVersion(int major, int minor) {
+  return dynamic_cast<Ogre::GLRenderSystemCommon *>(Ogre::Root::getSingleton().getRenderSystem())->hasMinGLVersion(major, minor);
+}
+
+void VideoManager::CheckGPU() {
+  const auto *RSC = Root::getSingleton().getRenderSystem()->getCapabilities();
+  OgreAssert(RSC->hasCapability(RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
+  OgreAssert(RSC->hasCapability(RSC_TEXTURE_FLOAT), "Float texture support required");
+  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION), "Texture compression support required");
+#if defined(DESKTOP)
+  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
+#elif defined(ANDROID)
+  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
+#elif defined(IOS)
+  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
+#endif
+  if (RenderSystemIsGL3()) {
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+    OgreAssert(CheckGLVersion(3, 3), "OpenGL 3.3 is not supported");
+#endif
+  } else if (RenderSystemIsGLES2()) {
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+    OgreAssert(CheckGLVersion(3, 0), "OpenGLES 3.0 is not supported");
+#endif
+  }
+}
+
+void VideoManager::InitSky() {
+  auto colorspace = ColorSpace::sRGB;
+  float sunSize = 0.27f;
+  float turbidity = 4.0f;
+  auto groundAlbedo = Vector3(1.0);
+  auto sunColor = Vector3(20000);
+  auto sunDir = GetSunPosition();
+
+  SkyModel sky;
+  sky.SetupSky(sunDir, sunSize, sunColor, groundAlbedo, turbidity, colorspace);
+
+  const ArHosekSkyModelState *States[3] = {sky.StateX, sky.StateY, sky.StateZ};
+
+  for (int i = 0; i < 9; i++)
+    for (int j = 0; j < 3; j++) hosekParams[i][j] = States[j]->configs[j][i];
+  hosekParams[9] = Vector3(sky.StateX->radiances[0], sky.StateY->radiances[1], sky.StateZ->radiances[2]);
+
+  auto SkyMaterial = MaterialManager::getSingleton().getByName("SkyBox");
+  if (!SkyMaterial) return;
+
+  auto FpParams = SkyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+  if (FpParams) skyBoxFpParams = FpParams;
+
+  FpParams->setIgnoreMissingParams(true);
+  for (int i = 0; i < hosekParamList.size(); i++) FpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
+}
+
+void VideoManager::InitSDL() {
+  // init SDL subsystems
+#ifndef EMSCRIPTEN
+  OgreAssert(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER), "Failed to init SDL2");
+  for (int i = 0; i < SDL_NumJoysticks(); i++) {
+    if (SDL_IsGameController(i)) SDL_GameControllerOpen(i);
+  }
+#else
+  OgreAssert(!SDL_Init(SDL_INIT_VIDEO), "Failed to init SDL2");
+#endif
+}
+
+void VideoManager::InitOgreRoot() {
+  ogreRoot = new Root("", "", "");
+#ifdef ANDROID
+  JNIEnv *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
+  jclass classActivity = env->FindClass("android/app/Activity");
+  jclass classResources = env->FindClass("android/content/res/Resources");
+  jmethodID methodGetResources = env->GetMethodID(classActivity, "getResources", "()Landroid/content/res/Resources;");
+  jmethodID methodGetAssets = env->GetMethodID(classResources, "getAssets", "()Landroid/content/res/AssetManager;");
+  jobject rawActivity = static_cast<jobject>(SDL_AndroidGetActivity());
+  jobject rawResources = env->CallObjectMethod(rawActivity, methodGetResources);
+  jobject rawAssetManager = env->CallObjectMethod(rawResources, methodGetAssets);
+  AAssetManager *assetManager = AAssetManager_fromJava(env, rawAssetManager);
+  AConfiguration *aConfig = AConfiguration_new();
+  AConfiguration_fromAssetManager(aConfig, assetManager);
+  ArchiveManager::getSingleton().addArchiveFactory(new APKFileSystemArchiveFactory(assetManager));
+  ArchiveManager::getSingleton().addArchiveFactory(new APKZipArchiveFactory(assetManager));
+#endif
+#ifdef DESKTOP
+#if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
+  InitOgreRenderSystemGL3();
+#elif defined(OGRE_BUILD_RENDERSYSTEM_GLES2)
+  InitOgreRenderSystemGLES2();
+#elif defined(OGRE_BUILD_RENDERSYSTEM_GL)
+  InitOgreRenderSystemGL();
+#endif  // DESKTOP
+#else   // !DESKTOP
+  InitOgreRenderSystemGLES2();
+#endif  // DESKTOP
+#ifdef OGRE_BUILD_PLUGIN_OCTREE
+  Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
+#endif
+#ifdef OGRE_BUILD_PLUGIN_PFX
+  Root::getSingleton().installPlugin(new ParticleFXPlugin());
+#endif
+#ifdef OGRE_BUILD_PLUGIN_STBI
+  Root::getSingleton().installPlugin(new STBIPlugin());
+#endif
+#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI)
+  Root::getSingleton().installPlugin(new FreeImagePlugin());
+#endif
+#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_ASSIMP)
+  Root::getSingleton().installPlugin(new AssimpPlugin());
+#endif
+#ifdef OGRE_BUILD_PLUGIN_OCTREE
+  sceneManager = ogreRoot->createSceneManager("OctreeSceneManager", "Default");
+#else
+  sceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
+#endif
+#ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
+  Root::getSingleton().installPlugin(new DotScenePluginB());
+#else
+  Root::getSingleton().installPlugin(new DotScenePluginB());
+#endif
+  ogreRoot->initialise(false);
+}
 
 }  // namespace Glue

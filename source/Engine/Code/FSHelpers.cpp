@@ -14,7 +14,6 @@ namespace fs = ghc::filesystem;
 #endif
 
 using namespace std;
-using namespace Ogre;
 
 namespace Glue {
 
@@ -42,14 +41,14 @@ inline string FindPath(const string &path, int depth = 4) {
   return "";
 }
 
-void ScanLocation(const char *path, const string &groupName = RGN_DEFAULT) {
+void ScanLocation(const char *path, const string &groupName = Ogre::RGN_DEFAULT) {
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
 
   vector<string> fileList;
   vector<string> dirList;
   vector<tuple<string, string, string>> resourceList;
-  auto &RGM = ResourceGroupManager::getSingleton();
+  auto &RGM = Ogre::ResourceGroupManager::getSingleton();
 
   string newPath = FindPath(path);
 

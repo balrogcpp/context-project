@@ -2,11 +2,7 @@
 
 #pragma once
 #include "System.h"
-//#include <array>
-//#include <map>
-//#include <memory>
-//#include <string>
-//#include <vector>
+#include <Ogre.h>
 
 namespace Ogre {
 class Camera;
