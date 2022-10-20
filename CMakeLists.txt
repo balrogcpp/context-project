@@ -29,7 +29,8 @@ endif ()
 
 
 # enabled only Release, RelWithDebInfo, Debug build types
-set(ALLOWED_BUILD_TYPES "Release;RelWithDebInfo;Debug")
+string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)
+set(ALLOWED_BUILD_TYPES "release;relwithdebinfo;debug")
 if (NOT ${CMAKE_BUILD_TYPE} IN_LIST ALLOWED_BUILD_TYPES)
     message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not valid build type. Valid are ${ALLOWED_BUILD_TYPES}")
 endif ()

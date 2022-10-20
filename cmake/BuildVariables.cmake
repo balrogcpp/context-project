@@ -11,9 +11,6 @@ include(Platform)
 
 
 # check dependencies
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    insert_dependency(X11)
-endif ()
 # https://stackoverflow.com/questions/54587052/cmake-on-mac-could-not-find-threads-missing-threads-found
 if (APPLE)
     set(CMAKE_THREAD_LIBS_INIT "-lpthread")
@@ -23,6 +20,9 @@ if (APPLE)
     set(THREADS_PREFER_PTHREAD_FLAG ON)
 endif ()
 insert_dependency(Threads)
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    insert_dependency(X11)
+endif ()
 if (GLSL)
     insert_dependency(OpenGL)
 elseif (GLSLES)
