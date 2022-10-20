@@ -312,12 +312,12 @@ void VideoManager::InitSDL() {
 void VideoManager::InitOgreRoot() {
   ogreRoot = new Root("", "", "");
 #ifdef ANDROID
-  JNIEnv *env = static_cast<JNIEnv *> SDL_AndroidGetJNIEnv();
+  JNIEnv *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
   jclass classActivity = env->FindClass("android/app/Activity");
   jclass classResources = env->FindClass("android/content/res/Resources");
   jmethodID methodGetResources = env->GetMethodID(classActivity, "getResources", "()Landroid/content/res/Resources;");
   jmethodID methodGetAssets = env->GetMethodID(classResources, "getAssets", "()Landroid/content/res/AssetManager;");
-  jobject rawActivity = static_cast<jobject> SDL_AndroidGetActivity();
+  jobject rawActivity = static_cast<jobject>(SDL_AndroidGetActivity());
   jobject rawResources = env->CallObjectMethod(rawActivity, methodGetResources);
   jobject rawAssetManager = env->CallObjectMethod(rawResources, methodGetAssets);
   AAssetManager *assetManager = AAssetManager_fromJava(env, rawAssetManager);
@@ -366,8 +366,9 @@ void VideoManager::InitOgreRoot() {
 }
 
 void VideoManager::OnSetUp() {
-  InitOgreRoot();
   InitSDL();
+
+  InitOgreRoot();
 
   // SDL window
 #if defined(DESKTOP)
@@ -436,6 +437,7 @@ void VideoManager::OnSetUp() {
   camera->setAspectRatio(static_cast<float>(viewport->getActualWidth()) / static_cast<float>(viewport->getActualHeight()));
   camera->setAutoAspectRatio(true);
 #ifdef ANDROID
+  SDL_DisplayMode DM;
   SDL_GetDesktopDisplayMode(currentDisplay, &DM);
   ogreWindow->resize(static_cast<int>(DM.w), static_cast<int>(DM.h));
 #endif
