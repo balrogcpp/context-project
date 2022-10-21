@@ -2,10 +2,7 @@
 #define SKYMODEL_H
 
 #include <OgreVector3.h>
-#ifdef _MSC_VER
-#define _USE_MATH_DEFINES
-#endif
-#include <math.h>
+#include <cmath>
 
 enum class ColorSpace { XYZ, sRGB, ACEScg, ACES2065_1 };
 

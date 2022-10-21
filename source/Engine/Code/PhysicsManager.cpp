@@ -160,25 +160,25 @@ void PhysicsManager::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, 
 
 void PhysicsManager::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, const Ogre::UserObjectBindings &userData) {
   string ProxyType;
-  if (userData.getUserAny("proxy").has_value()) ProxyType = any_cast<string>(userData.getUserAny("proxy"));
-  string physics_type = any_cast<string>(userData.getUserAny("physics_type"));
-  float Mass = any_cast<float>(userData.getUserAny("mass"));
-  float mass_radius = any_cast<float>(userData.getUserAny("mass_radius"));
-  float inertia_tensor = any_cast<float>(userData.getUserAny("inertia_tensor"));
-  float velocity_min = any_cast<float>(userData.getUserAny("velocity_min"));
-  float velocity_max = any_cast<float>(userData.getUserAny("velocity_max"));
-  bool lock_trans_x = any_cast<bool>(userData.getUserAny("lock_trans_x"));
-  bool lock_trans_y = any_cast<bool>(userData.getUserAny("lock_trans_y"));
-  bool lock_trans_z = any_cast<bool>(userData.getUserAny("lock_trans_z"));
-  bool lock_rot_x = any_cast<bool>(userData.getUserAny("lock_rot_x"));
-  bool lock_rot_y = any_cast<bool>(userData.getUserAny("lock_rot_y"));
-  bool lock_rot_z = any_cast<bool>(userData.getUserAny("lock_rot_z"));
-  bool anisotropic_friction = any_cast<bool>(userData.getUserAny("anisotropic_friction"));
-  float friction_x = any_cast<float>(userData.getUserAny("friction_x"));
-  float friction_y = any_cast<float>(userData.getUserAny("friction_y"));
-  float friction_z = any_cast<float>(userData.getUserAny("friction_z"));
-  float damping_trans = any_cast<float>(userData.getUserAny("damping_trans"));
-  float damping_rot = any_cast<float>(userData.getUserAny("damping_rot"));
+  if (userData.getUserAny("proxy").has_value()) ProxyType = Ogre::any_cast<string>(userData.getUserAny("proxy"));
+  string physics_type = Ogre::any_cast<string>(userData.getUserAny("physics_type"));
+  float Mass = Ogre::any_cast<float>(userData.getUserAny("mass"));
+  float mass_radius = Ogre::any_cast<float>(userData.getUserAny("mass_radius"));
+  float inertia_tensor = Ogre::any_cast<float>(userData.getUserAny("inertia_tensor"));
+  float velocity_min = Ogre::any_cast<float>(userData.getUserAny("velocity_min"));
+  float velocity_max = Ogre::any_cast<float>(userData.getUserAny("velocity_max"));
+  bool lock_trans_x = Ogre::any_cast<bool>(userData.getUserAny("lock_trans_x"));
+  bool lock_trans_y = Ogre::any_cast<bool>(userData.getUserAny("lock_trans_y"));
+  bool lock_trans_z = Ogre::any_cast<bool>(userData.getUserAny("lock_trans_z"));
+  bool lock_rot_x = Ogre::any_cast<bool>(userData.getUserAny("lock_rot_x"));
+  bool lock_rot_y = Ogre::any_cast<bool>(userData.getUserAny("lock_rot_y"));
+  bool lock_rot_z = Ogre::any_cast<bool>(userData.getUserAny("lock_rot_z"));
+  bool anisotropic_friction = Ogre::any_cast<bool>(userData.getUserAny("anisotropic_friction"));
+  float friction_x = Ogre::any_cast<float>(userData.getUserAny("friction_x"));
+  float friction_y = Ogre::any_cast<float>(userData.getUserAny("friction_y"));
+  float friction_z = Ogre::any_cast<float>(userData.getUserAny("friction_z"));
+  float damping_trans = Ogre::any_cast<float>(userData.getUserAny("damping_trans"));
+  float damping_rot = Ogre::any_cast<float>(userData.getUserAny("damping_rot"));
   bool Static = (physics_type != "dynamic");
 
   btRigidBody *entBody = nullptr;

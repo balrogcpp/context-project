@@ -81,7 +81,7 @@ void Window::Create(int monitor, bool fullscreen, int width, int height) {
 
   // select biggest display
   SDL_DisplayMode displayMode;
-  int screenWidth, screenHeight, currentDisplay;
+  int screenWidth = 0, screenHeight = 0, currentDisplay = 0;
   for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
     if (SDL_GetCurrentDisplayMode(i, &displayMode) == 0) {
       SDL_Log("Display #%d: current display mode is %dx%dpx @ %dhz.", i, displayMode.w, displayMode.h, displayMode.refresh_rate);
@@ -466,7 +466,7 @@ void VideoManager::OnResume() {}
 void VideoManager::RenderFrame() {
   ogreRoot->renderOneFrame();
 #if defined(WINDOWS) || defined(ANDROID)
-  SDL_GL_SwapWindow(sdlWindow);
+  SDL_GL_SwapWindow(windowList[0].sdlWindow);
 #endif
 }
 

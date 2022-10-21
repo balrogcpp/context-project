@@ -12,7 +12,7 @@ SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam) : BaseAn
   SetupCamera(cam);
   SetupBody();
   GetAudio().AddListener(CameraNode);
-  GetAudio().AddSound("walk_grass", "Footsteps-in-grass-fast.ogg", BodyNode, true);
+  //GetAudio().AddSound("walk_grass", "Footsteps-in-grass-fast.ogg", BodyNode, true);
 //  GetAudio().SetSoundVolume("walk_grass", 2.0);
   SetupAnimations();
 }
@@ -423,10 +423,10 @@ void SinbadCharacterController::SetTopAnimation(AnimID ID, bool reset) {
     if (reset) Anims[ID]->setTimePosition(0);
   }
 
-  if (ID == ANIM_RUN_TOP)
-    GetAudio().PlaySound("walk_grass");
-  else
-    GetAudio().StopSound("walk_grass");
+  //if (ID == ANIM_RUN_TOP)
+  //  GetAudio().PlaySound("walk_grass");
+  //else
+  //  GetAudio().StopSound("walk_grass");
 }
 
 }  // namespace Glue
