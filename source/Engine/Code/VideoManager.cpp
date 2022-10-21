@@ -4,6 +4,7 @@
 #include "VideoManager.h"
 #include "Android.h"
 #include "DotSceneLoaderB.h"
+#include "ImguiHelpers.h"
 extern "C" {
 #ifdef _MSC_VER
 #define SDL_MAIN_HANDLED
@@ -68,16 +69,26 @@ void InitOgreRenderSystemGL();
 #endif
 
 Window::Window(const std::string &caption)
-    : sdlFlags(0), caption(caption), vsync(true), width(1024), height(728), fullscreen(false), ogreWindow(nullptr), renderTarget(nullptr) {
+    : sdlFlags(0),
+      caption(caption),
+      vsync(true),
+      width(1270),
+      height(720),
+      fullscreen(false),
+      ogreWindow(0),
+      renderTarget(0),
+      ogreViewport(0),
+      ogreCamera(0) {
   if (caption.empty()) this->caption = "Example0";
 }
 
 Window::~Window() { SDL_SetWindowFullscreen(sdlWindow, SDL_FALSE); }
 
-void Window::Create(int monitor, bool fullscreen, int width, int height) {
+void Window::Create(Ogre::Camera *ogreCamera, int monitor, bool fullscreen, int width, int height) {
   this->width = width;
   this->height = height;
   this->fullscreen = fullscreen;
+  this->ogreCamera = ogreCamera;
 
   // select biggest display
   SDL_DisplayMode displayMode;
@@ -159,6 +170,9 @@ void Window::Create(int monitor, bool fullscreen, int width, int height) {
   auto &ogreRoot = Ogre::Root::getSingleton();
   ogreWindow = ogreRoot.createRenderWindow(caption, width, height, fullscreen, &renderParams);
   renderTarget = ogreRoot.getRenderTarget(ogreWindow->getName());
+  ogreViewport = renderTarget->addViewport(ogreCamera);
+  ogreCamera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
+  ogreCamera->setAutoAspectRatio(true);
 #ifdef ANDROID
   SDL_DisplayMode displayMode;
   SDL_GetDesktopDisplayMode(currentDisplay, &displayMode);
@@ -214,42 +228,7 @@ void Window::SetFullscreen(bool fullscreen) {
 
 void Window::Delete() {}
 
-ImFont *AddFont(const String &name, const char *group OGRE_RESOURCE_GROUP_INIT, const ImFontConfig *fontCfg = NULL,
-                const ImWchar *glyphRanges = NULL) {
-  typedef vector<ImWchar> CodePointRange;
-  vector<CodePointRange> mCodePointRanges;
-
-  FontPtr font = FontManager::getSingleton().getByName(name, group);
-  OgreAssert(font, "font does not exist");
-  OgreAssert(font->getType() == FT_TRUETYPE, "font must be of FT_TRUETYPE");
-  DataStreamPtr dataStreamPtr = ResourceGroupManager::getSingleton().openResource(font->getSource(), font->getGroup());
-  MemoryDataStream ttfchunk(dataStreamPtr, false);  // transfer ownership to imgui
-
-  // convert codepoint ranges for imgui
-  CodePointRange cprange;
-  for (const auto &r : font->getCodePointRangeList()) {
-    cprange.push_back(r.first);
-    cprange.push_back(r.second);
-  }
-
-  ImGuiIO &io = ImGui::GetIO();
-  const ImWchar *cprangePtr = io.Fonts->GetGlyphRangesDefault();
-  if (!cprange.empty()) {
-    cprange.push_back(0);  // terminate
-    mCodePointRanges.push_back(cprange);
-    // ptr must persist until createFontTexture
-    cprangePtr = mCodePointRanges.back().data();
-  }
-
-  float vpScale = OverlayManager::getSingleton().getPixelRatio();
-
-  ImFontConfig cfg;
-  strncpy(cfg.Name, name.c_str(), IM_ARRAYSIZE(cfg.Name) - 1);
-  return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), font->getTrueTypeSize() * vpScale, fontCfg, +glyphRanges);
-}
-
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-class ShaderResolver final : public MaterialManager::Listener {
+class VideoManager::ShaderResolver final : public MaterialManager::Listener {
  public:
   explicit ShaderResolver(RTShader::ShaderGenerator *shaderGenerator) : shaderGenerator(shaderGenerator) {}
 
@@ -305,137 +284,27 @@ class ShaderResolver final : public MaterialManager::Listener {
  protected:
   RTShader::ShaderGenerator *shaderGenerator = nullptr;
 };
-#endif  // OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 
 VideoManager::VideoManager() {}
-VideoManager::~VideoManager() {}
+VideoManager::~VideoManager() { SDL_Quit(); }
 
 void VideoManager::OnSetUp() {
+  // init
   InitOgreRoot();
-
   InitSDL();
-
-  windowList.emplace_back("Example0");
-  windowList[0].Create(-1, false, 1024, 768);
+  CreateWindow();
   CheckGPU();
-
-  ogreCamera = sceneManager->createCamera("Default");
-  ogreViewport = windowList[0].renderTarget->addViewport(ogreCamera);
-  ogreCamera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
-  ogreCamera->setAutoAspectRatio(true);
-
-// RTSS init
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-  OgreAssert(RTShader::ShaderGenerator::initialize(), "OGRE RTSS init failed");
-  auto *shaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
-  ogreViewport->setMaterialScheme(MSN_SHADERGEN);
-  shaderGenerator->addSceneManager(sceneManager);
-  shaderGenerator->setShaderCachePath("");
-  auto resolver = make_unique<ShaderResolver>(shaderGenerator);
-  MaterialManager::getSingleton().addListener(resolver.get());
-#endif
-
-  // overlay init
-  auto *ogreOverlay = new OverlaySystem();
-  imguiOverlay = new ImGuiOverlay();
-  float vpScale = OverlayManager::getSingleton().getPixelRatio();
-  ImGui::GetIO().FontGlobalScale = round(vpScale);
-  ImGui::GetStyle().ScaleAllSizes(vpScale);
-  imguiOverlay->setZOrder(300);
-  OverlayManager::getSingleton().addOverlay(imguiOverlay);
-  sceneManager->addRenderQueueListener(ogreOverlay);
-  imguiListener = make_unique<ImGuiInputListener>();
-  ImGuiIO &io = ImGui::GetIO();
-  io.IniFilename = nullptr;
-  io.LogFilename = nullptr;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
-  io.MouseDrawCursor = false;
-  io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
-
-  // scan and load resources
-#ifdef DESKTOP
-  TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
-  if (Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_ANISOTROPY)) {
-    MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_ANISOTROPIC);
-    MaterialManager::getSingleton().setDefaultAnisotropy(8);
-  } else {
-    MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_BILINEAR);
-  }
-#endif
-  auto &RGM = ResourceGroupManager::getSingleton();
-#if defined(ANDROID)
-  RGM.addResourceLocation("programs.zip", "APKZip", RGN_INTERNAL);
-  RGM.addResourceLocation("assets.zip", "APKZip", RGN_DEFAULT);
-#elif defined(DESKTOP) && defined(DEBUG)
-  const char *PROGRAMS_DIR = "source/Programs";
-  const char *ASSETS_DIR = "source/Example/Assets";
-  ScanLocation(PROGRAMS_DIR, RGN_INTERNAL);
-  if (RenderSystemIsGLES2())
-    ScanLocation("source/GLSLES", RGN_INTERNAL);
-  else
-    ScanLocation("source/GLSL", RGN_INTERNAL);
-  ScanLocation(ASSETS_DIR);
-#else
-  RGM.addResourceLocation("programs.zip", "Zip", RGN_INTERNAL);
-  RGM.addResourceLocation("assets.zip", "Zip", RGN_DEFAULT);
-#endif
-  RGM.initialiseResourceGroup(RGN_INTERNAL);
-  RGM.initialiseAllResourceGroups();
-
-  // shadows init
-  bool ShadowsEnabled = true;
-#ifdef MOBILE
-  ShadowsEnabled = false;
-#endif
-  if (!ShadowsEnabled) {
-    sceneManager->setShadowTechnique(SHADOWTYPE_NONE);
-    sceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 0);
-    sceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 0);
-    sceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
-  } else {
-#ifdef DESKTOP
-    PixelFormat ShadowTextureFormat = PixelFormat::PF_DEPTH16;
-#else
-    PixelFormat ShadowTextureFormat = PixelFormat::PF_FLOAT16_R;
-#endif
-    float shadowFarDistance = 400;
-    int16_t shadowTexSize = 1024;
-    sceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
-    sceneManager->setShadowFarDistance(shadowFarDistance);
-    sceneManager->setShadowTextureSize(shadowTexSize);
-    sceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
-    sceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
-    sceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
-    sceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
-    sceneManager->setShadowTextureSelfShadow(true);
-    sceneManager->setShadowCasterRenderBackFaces(true);
-    sceneManager->setShadowFarDistance(shadowFarDistance);
-    auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
-    sceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
-    pssmSetup = make_shared<PSSMShadowCameraSetup>();
-    pssmSetup->calculateSplitPoints(PSSM_SPLITS, 0.001, sceneManager->getShadowFarDistance());
-    pssmSplitPointList = pssmSetup->getSplitPoints();
-    pssmSetup->setSplitPadding(0.0);
-    for (int i = 0; i < PSSM_SPLITS; i++) pssmSetup->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
-    sceneManager->setShadowCameraSetup(pssmSetup);
-    sceneManager->setShadowColour(ColourValue::Black);
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-    auto *schemRenderState = shaderGenerator->getRenderState(MSN_SHADERGEN);
-    auto subRenderState = shaderGenerator->createSubRenderState<RTShader::IntegratedPSSM3>();
-    subRenderState->setSplitPoints(pssmSplitPointList);
-    schemRenderState->addTemplateSubRenderState(subRenderState);
-#endif  // OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-  }
+  InitOgreRTSS();
+  InitOgreOverlay();
+  LoadResources();
+  InitOgreScene();
 
   // cleanup
   imguiOverlay->show();
   ImGuiOverlay::NewFrame();
   ogreRoot->renderOneFrame();
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-  MaterialManager::getSingleton().removeListener(resolver.get());
-#endif
+  MaterialManager::getSingleton().removeListener(shaderResolver);
+  delete shaderResolver;
 }
 
 void VideoManager::OnUpdate(float time) {
@@ -533,14 +402,16 @@ void VideoManager::InitSky() {
 }
 
 void VideoManager::InitSDL() {
-  // init SDL subsystems
+#ifdef _MSC_VER
+  SDL_SetMainReady();
+#endif
 #ifndef EMSCRIPTEN
-  OgreAssert(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER), "Failed to init SDL2");
+  OgreAssert(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER), "Failed to init SDL");
   for (int i = 0; i < SDL_NumJoysticks(); i++) {
     if (SDL_IsGameController(i)) SDL_GameControllerOpen(i);
   }
 #else
-  OgreAssert(!SDL_Init(SDL_INIT_VIDEO), "Failed to init SDL2");
+  OgreAssert(!SDL_Init(SDL_INIT_VIDEO), "Failed to init SDL");
 #endif
 }
 
@@ -598,6 +469,120 @@ void VideoManager::InitOgreRoot() {
   Root::getSingleton().installPlugin(new DotScenePluginB());
 #endif
   ogreRoot->initialise(false);
+}
+
+void VideoManager::CreateWindow() {
+  windowList.emplace_back("Example0");
+  ogreCamera = sceneManager->createCamera("Default");
+  windowList[0].Create(ogreCamera, -1, false, 1270, 720);
+  ogreViewport = windowList[0].ogreViewport;
+}
+
+void VideoManager::InitOgreRTSS() {
+  OgreAssert(RTShader::ShaderGenerator::initialize(), "OGRE RTSS init failed");
+  auto *shaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
+  ogreViewport->setMaterialScheme(MSN_SHADERGEN);
+  shaderGenerator->addSceneManager(sceneManager);
+  shaderGenerator->setShaderCachePath("");
+  shaderResolver = new ShaderResolver(shaderGenerator);
+  MaterialManager::getSingleton().addListener(shaderResolver);
+}
+
+void VideoManager::InitOgreOverlay() {
+  auto *ogreOverlay = new OverlaySystem();
+  imguiOverlay = new ImGuiOverlay();
+  float vpScale = OverlayManager::getSingleton().getPixelRatio();
+  ImGui::GetIO().FontGlobalScale = round(vpScale);
+  ImGui::GetStyle().ScaleAllSizes(vpScale);
+  imguiOverlay->setZOrder(300);
+  OverlayManager::getSingleton().addOverlay(imguiOverlay);
+  sceneManager->addRenderQueueListener(ogreOverlay);
+  imguiListener = make_unique<ImGuiInputListener>();
+  ImGuiIO &io = ImGui::GetIO();
+  io.IniFilename = nullptr;
+  io.LogFilename = nullptr;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
+  io.MouseDrawCursor = false;
+  io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
+}
+
+void VideoManager::LoadResources() {
+#ifdef DESKTOP
+  TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
+  if (Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_ANISOTROPY)) {
+    MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_ANISOTROPIC);
+    MaterialManager::getSingleton().setDefaultAnisotropy(8);
+  } else {
+    MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_BILINEAR);
+  }
+#endif
+  auto &RGM = ResourceGroupManager::getSingleton();
+#if defined(ANDROID)
+  RGM.addResourceLocation("programs.zip", "APKZip", RGN_INTERNAL);
+  RGM.addResourceLocation("assets.zip", "APKZip", RGN_DEFAULT);
+#elif defined(DESKTOP) && defined(DEBUG)
+  const char *PROGRAMS_DIR = "source/Programs";
+  const char *ASSETS_DIR = "source/Example/Assets";
+  ScanLocation(PROGRAMS_DIR, RGN_INTERNAL);
+  if (RenderSystemIsGLES2())
+    ScanLocation("source/GLSLES", RGN_INTERNAL);
+  else
+    ScanLocation("source/GLSL", RGN_INTERNAL);
+  ScanLocation(ASSETS_DIR);
+#else
+  RGM.addResourceLocation("programs.zip", "Zip", RGN_INTERNAL);
+  RGM.addResourceLocation("assets.zip", "Zip", RGN_DEFAULT);
+#endif
+  RGM.initialiseResourceGroup(RGN_INTERNAL);
+  RGM.initialiseAllResourceGroups();
+}
+
+void VideoManager::InitOgreScene() {
+#ifdef DESKTOP
+  bool ShadowsEnabled = true;
+#else
+  bool ShadowsEnabled = false;
+#endif
+  if (!ShadowsEnabled) {
+    sceneManager->setShadowTechnique(SHADOWTYPE_NONE);
+    sceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 0);
+    sceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 0);
+    sceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
+  } else {
+#ifdef DESKTOP
+    PixelFormat ShadowTextureFormat = PixelFormat::PF_DEPTH16;
+#else
+    PixelFormat ShadowTextureFormat = PixelFormat::PF_FLOAT16_R;
+#endif
+    shadowFarDistance = 400;
+    shadowTexSize = 1024;
+    sceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    sceneManager->setShadowFarDistance(shadowFarDistance);
+    sceneManager->setShadowTextureSize(shadowTexSize);
+    sceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
+    sceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
+    sceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
+    sceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
+    sceneManager->setShadowTextureSelfShadow(true);
+    sceneManager->setShadowCasterRenderBackFaces(true);
+    sceneManager->setShadowFarDistance(shadowFarDistance);
+    auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+    sceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
+    pssmSetup = make_shared<PSSMShadowCameraSetup>();
+    pssmSetup->calculateSplitPoints(PSSM_SPLITS, 0.001, sceneManager->getShadowFarDistance());
+    pssmSplitPointList = pssmSetup->getSplitPoints();
+    pssmSetup->setSplitPadding(0.0);
+    for (int i = 0; i < PSSM_SPLITS; i++) pssmSetup->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
+    sceneManager->setShadowCameraSetup(pssmSetup);
+    sceneManager->setShadowColour(ColourValue::Black);
+    auto *shaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
+    auto *schemRenderState = shaderGenerator->getRenderState(MSN_SHADERGEN);
+    auto subRenderState = shaderGenerator->createSubRenderState<RTShader::IntegratedPSSM3>();
+    subRenderState->setSplitPoints(pssmSplitPointList);
+    schemRenderState->addTemplateSubRenderState(subRenderState);
+  }
 }
 
 }  // namespace Glue

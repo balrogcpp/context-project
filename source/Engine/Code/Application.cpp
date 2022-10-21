@@ -3,12 +3,6 @@
 #include "pch.h"
 #include "Application.h"
 #include "Engine.h"
-extern "C" {
-#ifdef _MSC_VER
-#define SDL_MAIN_HANDLED
-#endif
-#include <SDL2/SDL.h>
-}
 
 using namespace std;
 
@@ -89,7 +83,6 @@ void Application::Go() {
   emscripten_set_main_loop_arg(EmscriptenLoop, GetInstancePtr(), 0, 1);
 #endif
   engine->OnCleanup();
-  engine->OnPause();
 }
 
 void Application::OnQuit() { quit = true; }
@@ -105,14 +98,10 @@ void Application::OnResume() {
 }
 
 int Application::Main() {
-#ifdef _MSC_VER
-  SDL_SetMainReady();
-#endif
 #ifndef DEBUG
   ios_base::sync_with_stdio(false);
 #endif
   Go();
-  SDL_Quit();
   return 0;
 }
 

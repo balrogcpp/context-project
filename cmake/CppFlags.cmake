@@ -82,7 +82,7 @@ elseif (MSVC)
     string(APPEND CMAKE_CXX_FLAGS " /EHa /MP /GS- /GF /utf-8 /D_USE_MATH_DEFINES")
     string(APPEND CMAKE_C_FLAGS " /EHa /MP /GS- /GF /utf-8 /D_USE_MATH_DEFINES")
 
-    if (${CMAKE_BUILD_TYPE_LOWER} STREQUAL release)
+    if (${CMAKE_BUILD_TYPE_LOWER} STREQUAL "release")
         string(APPEND CMAKE_CXX_FLAGS " /Ot /GL /DNDEBUG")
         string(APPEND CMAKE_C_FLAGS " /Ot /GL /DNDEBUG")
         if (USE_FASTMATH)

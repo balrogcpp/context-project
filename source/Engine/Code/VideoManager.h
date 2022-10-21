@@ -15,9 +15,9 @@ namespace Glue {
 
 class Window {
  public:
-  Window(const std::string &caption);
+  Window(const std::string& caption);
   virtual ~Window();
-  void Create(int monitor, bool fullscreen, int width, int height);
+  void Create(Ogre::Camera* ogreCamera, int monitor, bool fullscreen, int width, int height);
   void Delete();
   void GrabCursor(bool grab);
   void ShowCursor(bool show);
@@ -32,18 +32,28 @@ class Window {
   int height;
   uint32_t sdlFlags;
   bool vsync;
-  Ogre::RenderWindow *ogreWindow;
-  Ogre::RenderTarget *renderTarget;
+  Ogre::RenderWindow* ogreWindow;
+  Ogre::RenderTarget* renderTarget;
+  Ogre::Viewport* ogreViewport;
+  Ogre::Camera* ogreCamera;
 };
 
 class VideoManager : public System<VideoManager> {
+ protected:
+  class ShaderResolver;
+
  public:
   VideoManager();
   virtual ~VideoManager();
 
+  void CreateWindow();
   void InitSky();
   void InitOgreRoot();
   void InitSDL();
+  void InitOgreRTSS();
+  void InitOgreOverlay();
+  void LoadResources();
+  void InitOgreScene();
   void CheckGPU();
   Ogre::Vector3 GetSunPosition();
 
@@ -62,6 +72,10 @@ class VideoManager : public System<VideoManager> {
   Ogre::RenderWindow* ogreWindow = nullptr;
   Ogre::Camera* ogreCamera = nullptr;
   Ogre::Viewport* ogreViewport = nullptr;
+  ShaderResolver* shaderResolver = nullptr;
+  Ogre::ShadowTechnique shadowTechnique;
+  Ogre::Real shadowFarDistance;
+  unsigned short shadowTexSize;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssmSetup;
   std::vector<float> pssmSplitPointList;
   const int PSSM_SPLITS = 3;
