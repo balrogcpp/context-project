@@ -4,6 +4,7 @@ if (_platform_included)
 endif (_platform_included)
 set(_platform_included true)
 
+string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
 
 set(TOOLCHAIN_SHORT "${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}")
 set(TOOLCHAIN_FULL "${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}_${CMAKE_CXX_COMPILER_ID}")
@@ -41,11 +42,11 @@ if (${CMAKE_GENERATOR} STREQUAL "Xcode")
     set(XCODE 1)
 endif ()
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+if (CMAKE_BUILD_TYPE_LOWER STREQUAL "debug")
     set(DEBUG 1)
-elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+elseif (CMAKE_BUILD_TYPE_LOWER STREQUAL "release")
     set(RELEASE 1)
-elseif (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+elseif (CMAKE_BUILD_TYPE_LOWER STREQUAL "relwithdebinfo")
     set(RELWITHDEBINFO 1)
 endif ()
 
