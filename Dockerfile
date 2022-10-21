@@ -53,14 +53,14 @@ RUN mkdir build && cd build \
 
 
 # apple aarch64
-RUN mkdir build && cd build \
-    && export OSXCROSS_HOST=$OSXCROSS_HOST_ARM64 \
-    && eval $ARM64_EVAL \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
-    && ninja contrib \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
-    && ninja package \
-    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
+#RUN mkdir build && cd build \
+#    && export OSXCROSS_HOST=$OSXCROSS_HOST_ARM64 \
+#    && eval $ARM64_EVAL \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+#    && ninja contrib \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
+#    && ninja package \
+#    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
 # android
