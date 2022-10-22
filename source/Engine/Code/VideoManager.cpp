@@ -45,7 +45,7 @@ extern "C" {
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 }
-#ifdef _MSC_VER
+#ifdef _WIN32
 #undef CreateWindow
 #endif
 
