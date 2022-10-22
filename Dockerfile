@@ -67,18 +67,15 @@ RUN mkdir build && cd build \
 ARG ANDROID_HOME=/opt/android-sdk
 ARG ANDROID_CMD_VERSION=8512546
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends openjdk-11-jdk \
+    && apt-get -y install --no-install-recommends openjdk-8-jdk \
     && apt-get clean \
     && cd /opt \
-    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -O tools.zip \
-    && unzip tools.zip \
-    && rm tools.zip \
-    && cd cmdline-tools/bin \
-    && yes | ./sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
-    && cd ../../ \
+    && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -q -O tools.zip \
+    && unzip tools.zip && rm tools.zip \
+    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
     && rm -rf /root/.android /root/.gradle
 ENV PATH="/opt/cmdline-tools/bin:${PATH}"
-ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
+ENV ANDROID_SDK_ROOT=${ANDROID_HOME}
 
 RUN cd ${CONTEXT_HOME}/source/Engine \
     && sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} \
