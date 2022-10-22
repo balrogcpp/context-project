@@ -90,7 +90,7 @@ RUN cd ${CONTEXT_HOME}/source/Engine \
 #ARG EMSDK_ROOT=/opt/emsdk
 #ARG EMSDK_VERSION=3.1.24
 #RUN apt-get update \
-#    && apt-get -y install --no-install-recommends python3 \
+#    && apt-get -y install --no-install-recommends python \
 #    && apt-get clean \
 #    && cd /opt \
 #    && git clone --recursive -b ${EMSDK_VERSION} --depth 1 https://github.com/emscripten-core/emsdk.git \
@@ -100,7 +100,7 @@ RUN cd ${CONTEXT_HOME}/source/Engine \
 #    && ./emsdk activate latest
 #ENV EMSDK_EVAL=${EMSDK_ROOT}/emsdk_env.sh
 #
-#RUN cd ${EMSDK_ROOT} && . ./emsdk_env.sh \
+#RUN cd ${EMSDK_ROOT} && EMSDK_QUIET=1 . ./emsdk_env.sh \
 #    && mkdir ${CONTEXT_HOME}/build && cd ${CONTEXT_HOME}/build \
 #    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
 #    && emmake ninja contrib > /dev/null \
