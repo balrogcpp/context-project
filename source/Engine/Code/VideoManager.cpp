@@ -33,13 +33,14 @@
 #ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
 #include <RTShaderSystem/OgreRTShaderSystem.h>
 #endif
+#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+#include "TerrainMaterialGeneratorB.h"
+#include <Terrain/OgreTerrainGroup.h>
+#endif
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
 #include <Overlay/OgreFontManager.h>
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
-#endif
-#ifdef _MSC_VER
-#define SDL_MAIN_HANDLED
 #endif
 extern "C" {
 #include <SDL2/SDL.h>
@@ -111,8 +112,8 @@ void Window::Create(Ogre::Camera *ogreCamera, int monitor, bool fullscreen, int 
     width = screenWidth;
     height = screenHeight;
   }
-  int32_t sdlWindowPositionFlag = SDL_WINDOWPOS_CENTERED_DISPLAY(currentDisplay);
-  sdlWindow = SDL_CreateWindow(caption.c_str(), sdlWindowPositionFlag, sdlWindowPositionFlag, width, height, sdlFlags);
+  int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(currentDisplay);
+  sdlWindow = SDL_CreateWindow(caption.c_str(), sdlPositionFlags, sdlPositionFlags, width, height, sdlFlags);
   OgreAssert(sdlWindow, "SDL_CreateWindow failed");
 #else
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
@@ -136,8 +137,8 @@ void Window::Create(Ogre::Camera *ogreCamera, int monitor, bool fullscreen, int 
 #endif
   width = screenWidth;
   height = screenHeight;
-  int32_t sdlWindowPositionFlag = SDL_WINDOWPOS_CENTERED;
-  sdlWindow = SDL_CreateWindow(nullptr, sdlWindowPositionFlag, sdlWindowPositionFlag, screenWidth, screenHeight, sdlFlags);
+  int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED;
+  sdlWindow = SDL_CreateWindow(nullptr, sdlPositionFlags, sdlPositionFlags, screenWidth, screenHeight, sdlFlags);
   SDL_GL_CreateContext(sdlWindow);
 #endif
 
@@ -437,6 +438,9 @@ void VideoManager::InitOgreRoot() {
 #endif  // DESKTOP
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
+  sceneManager = ogreRoot->createSceneManager("OctreeSceneManager", "Default");
+#else
+  sceneManager = OgreRoot->createSceneManager(Ogre::ST_GENERIC, "Default");
 #endif
 #ifdef OGRE_BUILD_PLUGIN_PFX
   Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
@@ -444,21 +448,22 @@ void VideoManager::InitOgreRoot() {
 #ifdef OGRE_BUILD_PLUGIN_STBI
   Ogre::Root::getSingleton().installPlugin(new Ogre::STBIPlugin());
 #endif
-#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI)
+#if defined(OGRE_BUILD_PLUGIN_FREEIMAGE)
   Root::getSingleton().installPlugin(new Ogre::FreeImagePlugin());
 #endif
-#if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_ASSIMP)
+#if defined(OGRE_BUILD_PLUGIN_ASSIMP)
   Root::getSingleton().installPlugin(new Ogre::AssimpPlugin());
-#endif
-#ifdef OGRE_BUILD_PLUGIN_OCTREE
-  sceneManager = ogreRoot->createSceneManager("OctreeSceneManager", "Default");
-#else
-  sceneManager = OgreRoot->createSceneManager(Ogre::ST_GENERIC, "Default");
 #endif
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
   Root::getSingleton().installPlugin(new Ogre::DotScenePluginB());
 #else
   Ogre::Root::getSingleton().installPlugin(new Ogre::DotScenePluginB());
+#endif
+#ifdef OGRE_BUILD_COMPONENT_TERRAIN
+  auto *terrainGlobalOption = Ogre::TerrainGlobalOptions::getSingletonPtr();
+  if (!terrainGlobalOption) terrainGlobalOption = new Ogre::TerrainGlobalOptions();
+  terrainGlobalOption->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
+  terrainGlobalOption->setUseRayBoxDistanceCalculation(true);
 #endif
   ogreRoot->initialise(false);
 }
