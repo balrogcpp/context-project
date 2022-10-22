@@ -46,8 +46,19 @@ class VideoManager : public System<VideoManager> {
   VideoManager();
   virtual ~VideoManager();
 
-  void CreateWindow();
+  void OnSetUp() override;
+  void OnClean() override;
+  void OnPause() override;
+  void OnResume() override;
+  void OnUpdate(float time) override;
+
   void InitSky();
+
+  void RenderFrame();
+  Ogre::Vector3 GetSunPosition();
+
+ protected:
+  void CreateWindow();
   void InitOgreRoot();
   void InitSDL();
   void InitOgreRTSS();
@@ -55,17 +66,7 @@ class VideoManager : public System<VideoManager> {
   void LoadResources();
   void InitOgreScene();
   void CheckGPU();
-  Ogre::Vector3 GetSunPosition();
 
-  void OnSetUp() override;
-  void OnClean() override;
-  void OnPause() override;
-  void OnResume() override;
-  void OnUpdate(float time) override;
-
-  void RenderFrame();
-
- protected:
   std::vector<Window> windowList;
   Ogre::Root* ogreRoot = nullptr;
   Ogre::SceneManager* sceneManager = nullptr;
