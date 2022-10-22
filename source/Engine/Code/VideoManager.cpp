@@ -71,17 +71,7 @@ void InitOgreRenderSystemGLES2();
 void InitOgreRenderSystemGL();
 #endif
 
-Window::Window(const std::string &caption)
-    : sdlFlags(0),
-      caption(caption),
-      vsync(true),
-      width(1270),
-      height(720),
-      fullscreen(false),
-      ogreWindow(0),
-      renderTarget(0),
-      ogreViewport(0),
-      ogreCamera(0) {
+Window::Window(const std::string &caption) : sdlFlags(0), caption(caption), vsync(true), width(1270), height(720), fullscreen(false) {
   if (caption.empty()) this->caption = "Example0";
 }
 
@@ -135,19 +125,19 @@ void Window::Create(Ogre::Camera *ogreCamera, int monitor, bool fullscreen, int 
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-  sdlWindowFlags |= SDL_WINDOW_OPENGL;
+  sdlFlags |= SDL_WINDOW_OPENGL;
 #ifdef EMSCRIPTEN
-  sdlWindowFlags |= SDL_WINDOW_RESIZABLE;
+  sdlFlags |= SDL_WINDOW_RESIZABLE;
 #endif
-  sdlWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
+  sdlFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
 #ifdef MOBILE
-  sdlWindowFlags |= SDL_WINDOW_BORDERLESS;
-  sdlWindowFlags |= SDL_WINDOW_FULLSCREEN;
+  sdlFlags |= SDL_WINDOW_BORDERLESS;
+  sdlFlags |= SDL_WINDOW_FULLSCREEN;
 #endif
   width = screenWidth;
-  windowHeight = screenHeight;
-  sdlWindowPositionFlag = SDL_WINDOWPOS_CENTERED;
-  sdlWindow = SDL_CreateWindow(nullptr, sdlWindowPositionFlag, sdlWindowPositionFlag, screenWidth, screenHeight, sdlWindowFlags);
+  height = screenHeight;
+  int32_t sdlWindowPositionFlag = SDL_WINDOWPOS_CENTERED;
+  sdlWindow = SDL_CreateWindow(nullptr, sdlWindowPositionFlag, sdlWindowPositionFlag, screenWidth, screenHeight, sdlFlags);
   SDL_GL_CreateContext(sdlWindow);
 #endif
 
@@ -177,7 +167,6 @@ void Window::Create(Ogre::Camera *ogreCamera, int monitor, bool fullscreen, int 
   ogreCamera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
   ogreCamera->setAutoAspectRatio(true);
 #ifdef ANDROID
-  SDL_DisplayMode displayMode;
   SDL_GetDesktopDisplayMode(currentDisplay, &displayMode);
   ogreWindow->resize(static_cast<int>(displayMode.w), static_cast<int>(displayMode.h));
 #endif
@@ -219,7 +208,7 @@ void Window::SetFullscreen(bool fullscreen) {
 #ifdef DESKTOP
     SDL_SetWindowFullscreen(sdlWindow, sdlFlags | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
 #else
-    SDL_SetWindowFullscreen(sdlWindow, sdlWindowFlags | SDL_WINDOW_FULLSCREEN);
+    SDL_SetWindowFullscreen(sdlWindow, sdlFlags | SDL_WINDOW_FULLSCREEN);
 #endif
   } else {
     fullscreen = false;
@@ -432,8 +421,8 @@ void VideoManager::InitOgreRoot() {
   AAssetManager *assetManager = AAssetManager_fromJava(env, rawAssetManager);
   AConfiguration *aConfig = AConfiguration_new();
   AConfiguration_fromAssetManager(aConfig, assetManager);
-  ArchiveManager::getSingleton().addArchiveFactory(new APKFileSystemArchiveFactory(assetManager));
-  ArchiveManager::getSingleton().addArchiveFactory(new APKZipArchiveFactory(assetManager));
+  Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(assetManager));
+  Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKZipArchiveFactory(assetManager));
 #endif
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)
@@ -557,7 +546,7 @@ void VideoManager::InitOgreScene() {
 #ifdef DESKTOP
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_DEPTH16;
 #else
-    PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
+    Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
 #endif
     shadowFarDistance = 400;
     shadowTexSize = 1024;
