@@ -19,6 +19,12 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 # include modules
 include(Platform)
 include(GitHash)
+include(ProcessorCount)
+
+
+# set parallel level
+processorcount(PROCESSOR_COUNT)
+set(CMAKE_BUILD_PARALLEL_LEVEL ${PROCESSOR_COUNT})
 
 
 # default build type is Release

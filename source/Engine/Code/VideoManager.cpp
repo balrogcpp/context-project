@@ -5,13 +5,6 @@
 #include "Android.h"
 #include "DotSceneLoaderB.h"
 #include "ImguiHelpers.h"
-extern "C" {
-#ifdef _MSC_VER
-#define SDL_MAIN_HANDLED
-#endif
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
-}
 #include "SkyModel/ArHosekSkyModel.h"
 #include "SkyModel/SkyModel.h"
 #include <Ogre.h>
@@ -44,9 +37,18 @@ extern "C" {
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
 #endif
+#ifdef _MSC_VER
+#define SDL_MAIN_HANDLED
+#endif
+extern "C" {
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
+}
+#ifdef _MSC_VER
+#undef CreateWindow
+#endif
 
 using namespace std;
-using namespace Ogre;
 
 namespace Glue {
 
@@ -57,7 +59,7 @@ inline Ogre::SceneManager *OgreSceneManager() { return Ogre::Root::getSingleton(
 inline Ogre::SceneNode *OgreRootNode() { return OgreSceneManager()->getRootSceneNode(); }
 inline Ogre::Camera *OgreCamera() { return OgreSceneManager()->getCamera("Default"); }
 inline Ogre::SceneNode *OgreCameraNode() { return OgreCamera()->getParentSceneNode(); }
-inline Vector3 SunDirection() { return -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition(); }
+inline Ogre::Vector3 SunDirection() { return -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition(); }
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 void InitOgreRenderSystemGL3();
 #endif
@@ -148,7 +150,7 @@ void Window::Create(Ogre::Camera *ogreCamera, int monitor, bool fullscreen, int 
   SDL_GL_CreateContext(sdlWindow);
 #endif
 
-  NameValuePairList renderParams;
+  Ogre::NameValuePairList renderParams;
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(sdlWindow, &info);
@@ -228,12 +230,13 @@ void Window::SetFullscreen(bool fullscreen) {
 
 void Window::Delete() {}
 
-class VideoManager::ShaderResolver final : public MaterialManager::Listener {
+class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listener {
  public:
-  explicit ShaderResolver(RTShader::ShaderGenerator *shaderGenerator) : shaderGenerator(shaderGenerator) {}
+  explicit ShaderResolver(Ogre::RTShader::ShaderGenerator *shaderGenerator) : shaderGenerator(shaderGenerator) {}
 
-  Technique *handleSchemeNotFound(unsigned short schemeIndex, const string &schemeName, Material *originalMaterial, unsigned short lodIndex,
-                                  const Renderable *rend) override {
+  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const string &schemeName, Ogre::Material *originalMaterial,
+                                        unsigned short lodIndex,
+                                        const Ogre::Renderable *rend) override {
     if (!shaderGenerator->hasRenderState(schemeName)) {
       return nullptr;
     }
@@ -263,7 +266,7 @@ class VideoManager::ShaderResolver final : public MaterialManager::Listener {
     return nullptr;
   }
 
-  bool afterIlluminationPassesCreated(Technique *tech) override {
+  bool afterIlluminationPassesCreated(Ogre::Technique *tech) override {
     if (shaderGenerator->hasRenderState(tech->getSchemeName())) {
       Ogre::Material *mat = tech->getParent();
       shaderGenerator->validateMaterialIlluminationPasses(tech->getSchemeName(), mat->getName(), mat->getGroup());
@@ -272,7 +275,7 @@ class VideoManager::ShaderResolver final : public MaterialManager::Listener {
     return false;
   }
 
-  bool beforeIlluminationPassesCleared(Technique *tech) override {
+  bool beforeIlluminationPassesCleared(Ogre::Technique *tech) override {
     if (shaderGenerator->hasRenderState(tech->getSchemeName())) {
       Ogre::Material *mat = tech->getParent();
       shaderGenerator->invalidateMaterialIlluminationPasses(tech->getSchemeName(), mat->getName(), mat->getGroup());
@@ -282,7 +285,7 @@ class VideoManager::ShaderResolver final : public MaterialManager::Listener {
   }
 
  protected:
-  RTShader::ShaderGenerator *shaderGenerator = nullptr;
+  Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
 };
 
 VideoManager::VideoManager() {}
@@ -301,15 +304,15 @@ void VideoManager::OnSetUp() {
 
   // cleanup
   imguiOverlay->show();
-  ImGuiOverlay::NewFrame();
+  Ogre::ImGuiOverlay::NewFrame();
   ogreRoot->renderOneFrame();
-  MaterialManager::getSingleton().removeListener(shaderResolver);
+  Ogre::MaterialManager::getSingleton().removeListener(shaderResolver);
   delete shaderResolver;
 }
 
 void VideoManager::OnUpdate(float time) {
-  static Matrix4 MVP;
-  static Matrix4 MVPprev;
+  static Ogre::Matrix4 MVP;
+  static Ogre::Matrix4 MVPprev;
   MVPprev = MVP;
   MVP = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
   for (auto &it : gpuVpParams) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
@@ -318,8 +321,8 @@ void VideoManager::OnUpdate(float time) {
 }
 
 void VideoManager::OnClean() {
-  ResourceGroupManager::getSingleton().unloadResourceGroup(RGN_DEFAULT);
-  if (sceneManager) sceneManager->setShadowTechnique(SHADOWTYPE_NONE);
+  Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::RGN_DEFAULT);
+  if (sceneManager) sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   if (sceneManager) sceneManager->clearScene();
   skyBoxFpParams.reset();
   gpuFpParams.clear();
@@ -339,12 +342,12 @@ void VideoManager::RenderFrame() {
 #endif
 }
 
-Vector3 VideoManager::GetSunPosition() {
+Ogre::Vector3 VideoManager::GetSunPosition() {
   auto *SunPtr = sceneManager->getLight("Sun");
   if (SunPtr)
-    return -Vector3(SunPtr->getDerivedDirection().normalisedCopy());
+    return -Ogre::Vector3(SunPtr->getDerivedDirection().normalisedCopy());
   else
-    return Vector3::ZERO;
+    return Ogre::Vector3::ZERO;
 }
 
 bool CheckGLVersion(int major, int minor) {
@@ -352,16 +355,16 @@ bool CheckGLVersion(int major, int minor) {
 }
 
 void VideoManager::CheckGPU() {
-  const auto *RSC = Root::getSingleton().getRenderSystem()->getCapabilities();
-  OgreAssert(RSC->hasCapability(RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_FLOAT), "Float texture support required");
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION), "Texture compression support required");
+  const auto *RSC = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
+  OgreAssert(RSC->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
+  OgreAssert(RSC->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
+  OgreAssert(RSC->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
 #if defined(DESKTOP)
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
+  OgreAssert(RSC->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
 #elif defined(ANDROID)
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
+  OgreAssert(RSC->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
 #elif defined(IOS)
-  OgreAssert(RSC->hasCapability(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
+  OgreAssert(RSC->hasCapabilityOgre::(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
 #endif
   if (RenderSystemIsGL3()) {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
@@ -378,8 +381,8 @@ void VideoManager::InitSky() {
   auto colorspace = ColorSpace::sRGB;
   float sunSize = 0.27f;
   float turbidity = 4.0f;
-  auto groundAlbedo = Vector3(1.0);
-  auto sunColor = Vector3(20000);
+  auto groundAlbedo = Ogre::Vector3(1.0);
+  auto sunColor = Ogre::Vector3(20000);
   auto sunDir = GetSunPosition();
 
   SkyModel sky;
@@ -389,9 +392,9 @@ void VideoManager::InitSky() {
 
   for (int i = 0; i < 9; i++)
     for (int j = 0; j < 3; j++) hosekParams[i][j] = States[j]->configs[j][i];
-  hosekParams[9] = Vector3(sky.StateX->radiances[0], sky.StateY->radiances[1], sky.StateZ->radiances[2]);
+  hosekParams[9] = Ogre::Vector3(sky.StateX->radiances[0], sky.StateY->radiances[1], sky.StateZ->radiances[2]);
 
-  auto SkyMaterial = MaterialManager::getSingleton().getByName("SkyBox");
+  auto SkyMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
   if (!SkyMaterial) return;
 
   auto FpParams = SkyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
@@ -416,7 +419,7 @@ void VideoManager::InitSDL() {
 }
 
 void VideoManager::InitOgreRoot() {
-  ogreRoot = new Root("", "", "");
+  ogreRoot = new Ogre::Root("", "", "");
 #ifdef ANDROID
   JNIEnv *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
   jclass classActivity = env->FindClass("android/app/Activity");
@@ -444,29 +447,29 @@ void VideoManager::InitOgreRoot() {
   InitOgreRenderSystemGLES2();
 #endif  // DESKTOP
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
-  Root::getSingleton().addSceneManagerFactory(new OctreeSceneManagerFactory());
+  Ogre::Root::getSingleton().addSceneManagerFactory(new Ogre::OctreeSceneManagerFactory());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_PFX
-  Root::getSingleton().installPlugin(new ParticleFXPlugin());
+  Ogre::Root::getSingleton().installPlugin(new Ogre::ParticleFXPlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_STBI
-  Root::getSingleton().installPlugin(new STBIPlugin());
+  Ogre::Root::getSingleton().installPlugin(new Ogre::STBIPlugin());
 #endif
 #if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_FREEIMAGE) && !defined(OGRE_BUILD_PLUGIN_STBI)
-  Root::getSingleton().installPlugin(new FreeImagePlugin());
+  Root::getSingleton().installPlugin(new Ogre::FreeImagePlugin());
 #endif
 #if defined(DEBUG) && defined(OGRE_BUILD_PLUGIN_ASSIMP)
-  Root::getSingleton().installPlugin(new AssimpPlugin());
+  Root::getSingleton().installPlugin(new Ogre::AssimpPlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
   sceneManager = ogreRoot->createSceneManager("OctreeSceneManager", "Default");
 #else
-  sceneManager = OgreRoot->createSceneManager(ST_GENERIC, "Default");
+  sceneManager = OgreRoot->createSceneManager(Ogre::ST_GENERIC, "Default");
 #endif
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
-  Root::getSingleton().installPlugin(new DotScenePluginB());
+  Root::getSingleton().installPlugin(new Ogre::DotScenePluginB());
 #else
-  Root::getSingleton().installPlugin(new DotScenePluginB());
+  Ogre::Root::getSingleton().installPlugin(new Ogre::DotScenePluginB());
 #endif
   ogreRoot->initialise(false);
 }
@@ -479,23 +482,23 @@ void VideoManager::CreateWindow() {
 }
 
 void VideoManager::InitOgreRTSS() {
-  OgreAssert(RTShader::ShaderGenerator::initialize(), "OGRE RTSS init failed");
-  auto *shaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
-  ogreViewport->setMaterialScheme(MSN_SHADERGEN);
+  OgreAssert(Ogre::RTShader::ShaderGenerator::initialize(), "OGRE RTSS init failed");
+  auto *shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
+  ogreViewport->setMaterialScheme(Ogre::MSN_SHADERGEN);
   shaderGenerator->addSceneManager(sceneManager);
   shaderGenerator->setShaderCachePath("");
   shaderResolver = new ShaderResolver(shaderGenerator);
-  MaterialManager::getSingleton().addListener(shaderResolver);
+  Ogre::MaterialManager::getSingleton().addListener(shaderResolver);
 }
 
 void VideoManager::InitOgreOverlay() {
-  auto *ogreOverlay = new OverlaySystem();
-  imguiOverlay = new ImGuiOverlay();
-  float vpScale = OverlayManager::getSingleton().getPixelRatio();
+  auto *ogreOverlay = new Ogre::OverlaySystem();
+  imguiOverlay = new Ogre::ImGuiOverlay();
+  float vpScale = Ogre::OverlayManager::getSingleton().getPixelRatio();
   ImGui::GetIO().FontGlobalScale = round(vpScale);
   ImGui::GetStyle().ScaleAllSizes(vpScale);
   imguiOverlay->setZOrder(300);
-  OverlayManager::getSingleton().addOverlay(imguiOverlay);
+  Ogre::OverlayManager::getSingleton().addOverlay(imguiOverlay);
   sceneManager->addRenderQueueListener(ogreOverlay);
   imguiListener = make_unique<ImGuiInputListener>();
   ImGuiIO &io = ImGui::GetIO();
@@ -510,32 +513,32 @@ void VideoManager::InitOgreOverlay() {
 
 void VideoManager::LoadResources() {
 #ifdef DESKTOP
-  TextureManager::getSingleton().setDefaultNumMipmaps(MIP_UNLIMITED);
-  if (Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_ANISOTROPY)) {
-    MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_ANISOTROPIC);
-    MaterialManager::getSingleton().setDefaultAnisotropy(8);
+  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
+  if (Ogre::Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_ANISOTROPY)) {
+    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_ANISOTROPIC);
+    Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(8);
   } else {
-    MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_BILINEAR);
+    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
   }
 #endif
-  auto &RGM = ResourceGroupManager::getSingleton();
+  auto &RGM = Ogre::ResourceGroupManager::getSingleton();
 #if defined(ANDROID)
-  RGM.addResourceLocation("programs.zip", "APKZip", RGN_INTERNAL);
-  RGM.addResourceLocation("assets.zip", "APKZip", RGN_DEFAULT);
+  RGM.addResourceLocation("programs.zip", "APKZip", Ogre::RGN_INTERNAL);
+  RGM.addResourceLocation("assets.zip", "APKZip", Ogre::RGN_DEFAULT);
 #elif defined(DESKTOP) && defined(DEBUG)
   const char *PROGRAMS_DIR = "source/Programs";
   const char *ASSETS_DIR = "source/Example/Assets";
-  ScanLocation(PROGRAMS_DIR, RGN_INTERNAL);
+  ScanLocation(PROGRAMS_DIR, Ogre::RGN_INTERNAL);
   if (RenderSystemIsGLES2())
-    ScanLocation("source/GLSLES", RGN_INTERNAL);
+    ScanLocation("source/GLSLES", Ogre::RGN_INTERNAL);
   else
-    ScanLocation("source/GLSL", RGN_INTERNAL);
+    ScanLocation("source/GLSL", Ogre::RGN_INTERNAL);
   ScanLocation(ASSETS_DIR);
 #else
-  RGM.addResourceLocation("programs.zip", "Zip", RGN_INTERNAL);
-  RGM.addResourceLocation("assets.zip", "Zip", RGN_DEFAULT);
+  RGM.addResourceLocation("programs.zip", "Zip", Ogre::RGN_INTERNAL);
+  RGM.addResourceLocation("assets.zip", "Zip", Ogre::RGN_DEFAULT);
 #endif
-  RGM.initialiseResourceGroup(RGN_INTERNAL);
+  RGM.initialiseResourceGroup(Ogre::RGN_INTERNAL);
   RGM.initialiseAllResourceGroups();
 }
 
@@ -546,40 +549,40 @@ void VideoManager::InitOgreScene() {
   bool ShadowsEnabled = false;
 #endif
   if (!ShadowsEnabled) {
-    sceneManager->setShadowTechnique(SHADOWTYPE_NONE);
-    sceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 0);
-    sceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 0);
-    sceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
+    sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 0);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
   } else {
 #ifdef DESKTOP
-    PixelFormat ShadowTextureFormat = PixelFormat::PF_DEPTH16;
+    Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_DEPTH16;
 #else
-    PixelFormat ShadowTextureFormat = PixelFormat::PF_FLOAT16_R;
+    PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
 #endif
     shadowFarDistance = 400;
     shadowTexSize = 1024;
-    sceneManager->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
+    sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
     sceneManager->setShadowFarDistance(shadowFarDistance);
     sceneManager->setShadowTextureSize(shadowTexSize);
     sceneManager->setShadowTexturePixelFormat(ShadowTextureFormat);
-    sceneManager->setShadowTextureCountPerLightType(Light::LT_DIRECTIONAL, 3);
-    sceneManager->setShadowTextureCountPerLightType(Light::LT_SPOTLIGHT, 1);
-    sceneManager->setShadowTextureCountPerLightType(Light::LT_POINT, 0);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
     sceneManager->setShadowTextureSelfShadow(true);
     sceneManager->setShadowCasterRenderBackFaces(true);
     sceneManager->setShadowFarDistance(shadowFarDistance);
-    auto passCaterMaterial = MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+    auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     sceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
-    pssmSetup = make_shared<PSSMShadowCameraSetup>();
+    pssmSetup = make_shared<Ogre::PSSMShadowCameraSetup>();
     pssmSetup->calculateSplitPoints(PSSM_SPLITS, 0.001, sceneManager->getShadowFarDistance());
     pssmSplitPointList = pssmSetup->getSplitPoints();
     pssmSetup->setSplitPadding(0.0);
     for (int i = 0; i < PSSM_SPLITS; i++) pssmSetup->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
     sceneManager->setShadowCameraSetup(pssmSetup);
-    sceneManager->setShadowColour(ColourValue::Black);
-    auto *shaderGenerator = RTShader::ShaderGenerator::getSingletonPtr();
-    auto *schemRenderState = shaderGenerator->getRenderState(MSN_SHADERGEN);
-    auto subRenderState = shaderGenerator->createSubRenderState<RTShader::IntegratedPSSM3>();
+    sceneManager->setShadowColour(Ogre::ColourValue::Black);
+    auto *shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
+    auto *schemRenderState = shaderGenerator->getRenderState(Ogre::MSN_SHADERGEN);
+    auto subRenderState = shaderGenerator->createSubRenderState<Ogre::RTShader::IntegratedPSSM3>();
     subRenderState->setSplitPoints(pssmSplitPointList);
     schemRenderState->addTemplateSubRenderState(subRenderState);
   }
