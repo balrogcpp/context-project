@@ -4,6 +4,7 @@
 #include "VideoManager.h"
 #include "Android.h"
 #include "DotSceneLoaderB.h"
+#include "FSHelpers.h"
 #include "ImguiHelpers.h"
 #include "SkyModel/ArHosekSkyModel.h"
 #include "SkyModel/SkyModel.h"
@@ -235,8 +236,7 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
   explicit ShaderResolver(Ogre::RTShader::ShaderGenerator *shaderGenerator) : shaderGenerator(shaderGenerator) {}
 
   Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const string &schemeName, Ogre::Material *originalMaterial,
-                                        unsigned short lodIndex,
-                                        const Ogre::Renderable *rend) override {
+                                        unsigned short lodIndex, const Ogre::Renderable *rend) override {
     if (!shaderGenerator->hasRenderState(schemeName)) {
       return nullptr;
     }
@@ -574,10 +574,10 @@ void VideoManager::InitOgreScene() {
     auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     sceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
     pssmSetup = make_shared<Ogre::PSSMShadowCameraSetup>();
-    pssmSetup->calculateSplitPoints(PSSM_SPLITS, 0.001, sceneManager->getShadowFarDistance());
+    pssmSetup->calculateSplitPoints(pssmSplitCount, 0.001, sceneManager->getShadowFarDistance());
     pssmSplitPointList = pssmSetup->getSplitPoints();
     pssmSetup->setSplitPadding(0.0);
-    for (int i = 0; i < PSSM_SPLITS; i++) pssmSetup->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
+    for (int i = 0; i < pssmSplitCount; i++) pssmSetup->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
     sceneManager->setShadowCameraSetup(pssmSetup);
     sceneManager->setShadowColour(Ogre::ColourValue::Black);
     auto *shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();

@@ -24,7 +24,7 @@ RUN apt-get update \
     && apt-get clean \
     && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
-    && ninja contrib \
+    && ninja contrib > /dev/null \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
     && ninja package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build \
@@ -35,7 +35,7 @@ RUN apt-get update \
 # win32
 RUN mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
-    && ninja contrib \
+    && ninja contrib > /dev/null \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
     && ninja package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
@@ -46,7 +46,7 @@ RUN mkdir build && cd build \
     && export OSXCROSS_HOST=$OSXCROSS_HOST_X86_64 \
     && eval $X86_64_EVAL \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
-    && ninja contrib \
+    && ninja contrib > /dev/null \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
     && ninja package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
@@ -57,7 +57,7 @@ RUN mkdir build && cd build \
 #    && export OSXCROSS_HOST=$OSXCROSS_HOST_ARM64 \
 #    && eval $ARM64_EVAL \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
-#    && ninja contrib \
+#    && ninja contrib > /dev/null \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
 #    && ninja package \
 #    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
@@ -82,7 +82,7 @@ ENV ANDROID_SDK_ROOT="${ANDROID_HOME}"
 
 RUN cd ${CONTEXT_HOME}/source/Engine \
     && sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} \
-    && sh gradlew assembleRelease \
+    && sh gradlew assembleRelease > /dev/null \
     && rm -rf .gradle android/.cxx /android/build android/assets \
     && sh gradlew assembleRelease \
     && cp android/build/outputs/apk/release/android-arm64-v8a-release.apk ${CONTEXT_HOME}/artifacts\
@@ -106,7 +106,7 @@ RUN cd ${CONTEXT_HOME}/source/Engine \
 #RUN cd ${EMSDK_ROOT} && . ./emsdk_env.sh \
 #    && mkdir ${CONTEXT_HOME}/build && cd ${CONTEXT_HOME}/build \
 #    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
-#    && emmake ninja contrib \
+#    && emmake ninja contrib > /dev/null \
 #    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
 #    && emmake ninja package \
 #    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build

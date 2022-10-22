@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FSHelpers.h"
 #include "System.h"
 #include <Ogre.h>
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
@@ -10,6 +9,8 @@
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlaySystem.h>
 #endif
+
+struct SDL_Window;
 
 namespace Glue {
 
@@ -25,17 +26,17 @@ class Window {
   void SetFullscreen(bool fullscreen);
   void SetWindowCaption(const char* caption);
 
-  SDL_Window* sdlWindow;
   std::string caption;
   bool fullscreen;
   int width;
   int height;
   uint32_t sdlFlags;
   bool vsync;
-  Ogre::RenderWindow* ogreWindow;
-  Ogre::RenderTarget* renderTarget;
-  Ogre::Viewport* ogreViewport;
-  Ogre::Camera* ogreCamera;
+  SDL_Window* sdlWindow = nullptr;
+  Ogre::RenderWindow* ogreWindow = nullptr;
+  Ogre::RenderTarget* renderTarget = nullptr;
+  Ogre::Viewport* ogreViewport = nullptr;
+  Ogre::Camera* ogreCamera = nullptr;
 };
 
 class VideoManager : public System<VideoManager> {
@@ -79,7 +80,7 @@ class VideoManager : public System<VideoManager> {
   unsigned short shadowTexSize;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssmSetup;
   std::vector<float> pssmSplitPointList;
-  const int PSSM_SPLITS = 3;
+  int pssmSplitCount = 3;
   std::unique_ptr<ImGuiInputListener> imguiListener;
   Ogre::ImGuiOverlay* imguiOverlay = nullptr;
   bool skyNeedsUpdate = false;
