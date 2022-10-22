@@ -80,10 +80,10 @@ ENV ANDROID_SDK_ROOT=${ANDROID_HOME}
 RUN cd ${CONTEXT_HOME}/source/Engine \
     && sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} \
     && sh gradlew assembleRelease > /dev/null \
-    && rm -rf .gradle android/.cxx /android/build android/assets \
+    && rm -rf .gradle android/.cxx android/build android/assets \
     && sh gradlew assembleRelease \
     && cp android/build/outputs/apk/release/android-arm64-v8a-release.apk ${CONTEXT_HOME}/artifacts\
-    && rm -rf .gradle android/.cxx /android/build android/assets ${ANDROID_HOME} /root/.android
+    && rm -rf .gradle android/.cxx android/build android/assets ../../artifacts/_CPack_Packages ../../contrib/build ../../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME}
 
 
 # wasm
