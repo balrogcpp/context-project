@@ -455,14 +455,14 @@ void VideoManager::InitOgreRoot() {
 #ifdef OGRE_BUILD_PLUGIN_STBI
   Ogre::Root::getSingleton().installPlugin(new Ogre::STBIPlugin());
 #endif
-#if defined(OGRE_BUILD_PLUGIN_FREEIMAGE)
-  Root::getSingleton().installPlugin(new Ogre::FreeImagePlugin());
+#ifdef OGRE_BUILD_PLUGIN_FREEIMAGE
+  Ogre::Root::getSingleton().installPlugin(new Ogre::FreeImagePlugin());
 #endif
 #if defined(OGRE_BUILD_PLUGIN_ASSIMP)
-  Root::getSingleton().installPlugin(new Ogre::AssimpPlugin());
+  Ogre::Root::getSingleton().installPlugin(new Ogre::AssimpPlugin());
 #endif
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
-  Root::getSingleton().installPlugin(new Ogre::DotScenePluginB());
+  Ogre::Root::getSingleton().installPlugin(new Ogre::DotScenePlugin());
 #else
   Ogre::Root::getSingleton().installPlugin(new Ogre::DotScenePluginB());
 #endif
