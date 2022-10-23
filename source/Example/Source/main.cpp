@@ -21,6 +21,7 @@ int main()
     auto *root = scene->getRootSceneNode();
     root->loadChildren("1.scene");
     GetComponent<VideoManager>().InitSky();
+    //GetComponent<VideoManager>().GetWindow(0).GrabCursor(true);
 
     // main function
     return app.Main();

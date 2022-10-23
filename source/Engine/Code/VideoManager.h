@@ -16,9 +16,10 @@ namespace Glue {
 
 class Window {
  public:
-  Window(const std::string& caption);
+  Window();
   virtual ~Window();
-  void Create(Ogre::Camera* ogreCamera, int monitor, bool fullscreen, int width, int height);
+  void Create(const std::string& caption, Ogre::Camera* ogreCamera, int monitor, bool fullscreen, int width, int height);
+  void Show(bool show);
   void Delete();
   void GrabCursor(bool grab);
   void ShowCursor(bool show);
@@ -57,6 +58,8 @@ class VideoManager : public System<VideoManager> {
 
   void RenderFrame();
   Ogre::Vector3 GetSunPosition();
+  Window& GetWindow(int number);
+  Window& GetMainWindow();
 
  protected:
   void CreateWindow();
@@ -68,6 +71,7 @@ class VideoManager : public System<VideoManager> {
   void InitOgreScene();
   void CheckGPU();
 
+  Window* mainWindow = nullptr;
   std::vector<Window> windowList;
   std::string ogreLogFile;
   unsigned short ogreMinLogLevel;

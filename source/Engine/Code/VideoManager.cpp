@@ -57,6 +57,15 @@ extern "C" {
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 }
+#ifdef LINUX
+extern "C" {
+#include <unistd.h>
+}
+#endif
+#ifdef WINDOWS
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 #ifdef _WIN32
 #undef CreateWindow
 #endif
@@ -68,11 +77,6 @@ namespace Glue {
 inline bool RenderSystemIsGL() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL Rendering Subsystem"; };
 inline bool RenderSystemIsGL3() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL 3+ Rendering Subsystem"; };
 inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"; };
-inline Ogre::SceneManager *OgreSceneManager() { return Ogre::Root::getSingleton().getSceneManager("Default"); }
-inline Ogre::Camera *OgreCamera() { return OgreSceneManager()->getCamera("Default"); }
-// inline Ogre::SceneNode *OgreRootNode() { return OgreSceneManager()->getRootSceneNode(); }
-// inline Ogre::SceneNode *OgreCameraNode() { return OgreCamera()->getParentSceneNode(); }
-// inline Ogre::Vector3 SunDirection() { return -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition(); }
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 void InitOgreRenderSystemGL3();
 #endif
@@ -83,13 +87,12 @@ void InitOgreRenderSystemGLES2();
 void InitOgreRenderSystemGL();
 #endif
 
-Window::Window(const std::string &caption) : sdlFlags(0), caption(caption), vsync(true), width(1270), height(720), fullscreen(false) {
-  if (caption.empty()) this->caption = "Example0";
-}
+Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), width(1270), height(720), fullscreen(false) {}
 
 Window::~Window() { SDL_SetWindowFullscreen(sdlWindow, SDL_FALSE); }
 
-void Window::Create(Ogre::Camera *ogreCamera, int monitor, bool fullscreen, int width, int height) {
+void Window::Create(const string &caption, Ogre::Camera *ogreCamera, int monitor, bool fullscreen, int width, int height) {
+  this->caption = caption;
   this->width = width;
   this->height = height;
   this->fullscreen = fullscreen;
@@ -154,11 +157,11 @@ void Window::Create(Ogre::Camera *ogreCamera, int monitor, bool fullscreen, int 
 #endif
 
   Ogre::NameValuePairList renderParams;
+  const char *TRUE_STR = "true";
+  const char *FALSE_STR = "false";
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(sdlWindow, &info);
-  const char *TRUE_STR = "true";
-  const char *FALSE_STR = "false";
   renderParams["vsync"] = vsync ? TRUE_STR : FALSE_STR;
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
@@ -172,9 +175,10 @@ void Window::Create(Ogre::Camera *ogreCamera, int monitor, bool fullscreen, int 
   renderParams["preserveContext"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
 #endif
-  auto &ogreRoot = Ogre::Root::getSingleton();
-  ogreWindow = ogreRoot.createRenderWindow(caption, width, height, fullscreen, &renderParams);
-  renderTarget = ogreRoot.getRenderTarget(ogreWindow->getName());
+  auto *ogreRoot = Ogre::Root::getSingletonPtr();
+  OgreAssert(ogreRoot, "ogreRoot not initialised");
+  ogreWindow = ogreRoot->createRenderWindow(caption, width, height, fullscreen, &renderParams);
+  renderTarget = ogreRoot->getRenderTarget(ogreWindow->getName());
   ogreViewport = renderTarget->addViewport(ogreCamera);
   ogreCamera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
   ogreCamera->setAutoAspectRatio(true);
@@ -183,6 +187,8 @@ void Window::Create(Ogre::Camera *ogreCamera, int monitor, bool fullscreen, int 
   ogreWindow->resize(static_cast<int>(displayMode.w), static_cast<int>(displayMode.h));
 #endif
 }
+
+void Window::Show(bool show) { show ? SDL_ShowWindow(sdlWindow) : SDL_HideWindow(sdlWindow); }
 
 void Window::Resize(int width, int height) {
   width = width;
@@ -193,18 +199,17 @@ void Window::Resize(int width, int height) {
 
 void Window::GrabCursor(bool grab) {
 #ifndef MOBILE  // This breaks input @Android >9.0
-  if (sdlWindow) {
-    SDL_ShowCursor(!grab);
-    SDL_SetWindowGrab(sdlWindow, static_cast<SDL_bool>(grab));
-    SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
-    ShowCursor(!grab);
-  }
+  OgreAssert(sdlWindow, "sdlWindow not initialised");
+  SDL_SetWindowGrab(sdlWindow, static_cast<SDL_bool>(grab));
+  SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
+  grab ? SDL_ShowCursor(SDL_DISABLE) : SDL_ShowCursor(SDL_ENABLE);
 #endif
 }
 
 void Window::ShowCursor(bool show) {
 #ifndef MOBILE  // This breaks input @Android >9.0
-  if (sdlWindow) SDL_ShowCursor(show);
+  OgreAssert(sdlWindow, "sdlWindow not initialised");
+  show ? SDL_ShowCursor(SDL_ENABLE) : SDL_ShowCursor(SDL_DISABLE);
 #endif
 }
 
@@ -303,6 +308,7 @@ void VideoManager::OnSetUp() {
   InitOgreOverlay();
   LoadResources();
   InitOgreScene();
+  mainWindow->Show(true);
 
   // cleanup
   imguiOverlay->show();
@@ -340,33 +346,34 @@ void VideoManager::OnResume() {}
 void VideoManager::RenderFrame() {
   ogreRoot->renderOneFrame();
 #if defined(WINDOWS) || defined(ANDROID)
-  SDL_GL_SwapWindow(windowList[0].sdlWindow);
+  SDL_GL_SwapWindow(mainWindow->sdlWindow);
 #endif
 }
 
 Ogre::Vector3 VideoManager::GetSunPosition() {
   auto *SunPtr = sceneManager->getLight("Sun");
-  if (SunPtr)
-    return -Ogre::Vector3(SunPtr->getDerivedDirection().normalisedCopy());
-  else
-    return Ogre::Vector3::ZERO;
+  return SunPtr ? -SunPtr->getDerivedDirection().normalisedCopy() : Ogre::Vector3::ZERO;
 }
+
+Window &VideoManager::GetWindow(int number) { return windowList[0]; }
+
+Window &VideoManager::GetMainWindow() { return *mainWindow; }
 
 bool CheckGLVersion(int major, int minor) {
   return dynamic_cast<Ogre::GLRenderSystemCommon *>(Ogre::Root::getSingleton().getRenderSystem())->hasMinGLVersion(major, minor);
 }
 
 void VideoManager::CheckGPU() {
-  const auto *RSC = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
-  OgreAssert(RSC->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
-  OgreAssert(RSC->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
-  OgreAssert(RSC->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
+  const auto *ogreRenderCapabilities = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
+  OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
+  OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
+  OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
 #if defined(DESKTOP)
-  OgreAssert(RSC->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
+  OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
 #elif defined(ANDROID)
-  OgreAssert(RSC->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
+  OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
 #elif defined(IOS)
-  OgreAssert(RSC->hasCapabilityOgre::(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
+  OgreAssert(ogreRenderCapabilities->hasCapabilityOgre::(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
 #endif
   if (RenderSystemIsGL3()) {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
@@ -488,10 +495,11 @@ void VideoManager::InitOgreRoot() {
 }
 
 void VideoManager::CreateWindow() {
-  windowList.emplace_back("Example0");
+  windowList.emplace_back();
+  mainWindow = &windowList[0];
   ogreCamera = sceneManager->createCamera("Default");
-  windowList[0].Create(ogreCamera, -1, false, 1270, 720);
-  ogreViewport = windowList[0].ogreViewport;
+  mainWindow->Create("Example0", ogreCamera, -1, false, 1270, 720);
+  ogreViewport = mainWindow->ogreViewport;
 }
 
 void VideoManager::InitOgreRTSS() {
@@ -525,14 +533,40 @@ void VideoManager::InitOgreOverlay() {
 }
 
 #ifdef DESKTOP
-static inline string FindPath(const string &path, int depth) {
-  string result = path;
+static std::string GetBinaryDir() {
+#ifndef MAX_PATH
+#define MAX_PATH 4096
+#endif
+  char buffer[MAX_PATH] = {0};
+#ifdef APPLE
+  uint32_t bufferSize = 0;
+  _NSGetExecutablePath(nullptr, &bufferSize);
+  char unresolvedPath[bufferSize];
+  _NSGetExecutablePath(unresolvedPath, &bufferSize);
+  OgreAssert(realpath(unresolvedPath, buffer), "macos realpath failed");
+#elif defined(WINDOWS)
+  GetModuleFileNameA(NULL, buffer, MAX_PATH);
+#elif defined(LINUX)
+  OgreAssert(readlink("/proc/self/exe", buffer, MAX_PATH), "linux readlink failed");
+#endif
+  buffer[MAX_PATH - 1] = 0;
+  auto pos = std::string(buffer).find_last_of("\\/");
+  return std::string(buffer).substr(0, pos + 1);
+}
+
+static inline std::string FindPath(const std::string &path, int depth) {
+  std::string result = path;
+  std::string buffer = GetBinaryDir();
+
+  if (fs::exists(buffer.append(path))) {
+    return buffer;
+  }
 
   for (int i = 0; i < depth; i++) {
     if (fs::exists(result))
       return result;
     else
-      result = string("../").append(result);
+      result = std::string("../").append(result);
   }
 
   return "";
@@ -541,17 +575,14 @@ static inline string FindPath(const string &path, int depth) {
 static void ScanLocation(const string &path, const string &groupName) {
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
-  vector<string> resourceList;
+  std::vector<std::string> resourceList;
+  OgreAssert(fs::is_directory(path), "path is not directory");
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
-
-  if (!fs::is_directory(path)) {
-    return;
-  }
-
   ogreResourceManager.addResourceLocation(path, FILE_SYSTEM, groupName);
+
   for (fs::recursive_directory_iterator end, it(path); it != end; ++it) {
-    const string fullPath = it->path().string();
-    const string fileExtention = it->path().filename().extension().string();
+    const std::string fullPath = it->path().string();
+    const std::string fileExtention = it->path().filename().extension().string();
 
     if (it->is_directory())
       ogreResourceManager.addResourceLocation(fullPath, FILE_SYSTEM, groupName);
@@ -593,8 +624,8 @@ void VideoManager::LoadResources() {
   ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, APKZIP, Ogre::RGN_DEFAULT);
 #else
-  ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, ZIP, Ogre::RGN_INTERNAL);
-  ogreResourceManager.addResourceLocation(ASSETS_ZIP, ZIP, Ogre::RGN_DEFAULT);
+  ogreResourceManager.addResourceLocation(FindPath(PROGRAMS_ZIP), ZIP, Ogre::RGN_INTERNAL);
+  ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP), ZIP, Ogre::RGN_DEFAULT);
 #endif
   ogreResourceManager.initialiseResourceGroup(Ogre::RGN_INTERNAL);
   ogreResourceManager.initialiseAllResourceGroups();
