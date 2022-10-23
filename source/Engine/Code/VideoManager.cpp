@@ -290,7 +290,7 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
 };
 
 VideoManager::VideoManager()
-    : ogreMinLogLevel(Ogre::LML_TRIVIAL), ogreLogFile("Ogre.log"), shadowTechnique(Ogre::SHADOWTYPE_NONE), pssmSplitCount(3) {}
+    : ogreMinLogLevel(Ogre::LML_TRIVIAL), ogreLogFile("Ogre.log"), shadowEnabled(true), shadowTechnique(Ogre::SHADOWTYPE_NONE), pssmSplitCount(3) {}
 VideoManager::~VideoManager() { SDL_Quit(); }
 
 void VideoManager::OnSetUp() {
@@ -518,14 +518,14 @@ void VideoManager::InitOgreOverlay() {
   io.IniFilename = nullptr;
   io.LogFilename = nullptr;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+  io.ConfigFlags |= ImGuiBackendFlags_HasGamepad;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
-  io.MouseDrawCursor = false;
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 }
 
 #ifdef DESKTOP
-static inline string FindPath(const string &path, int depth = 4) {
+static inline string FindPath(const string &path, int depth) {
   string result = path;
 
   for (int i = 0; i < depth; i++) {
@@ -551,11 +551,11 @@ static void ScanLocation(const string &path, const string &groupName) {
   ogreResourceManager.addResourceLocation(path, FILE_SYSTEM, groupName);
   for (fs::recursive_directory_iterator end, it(path); it != end; ++it) {
     const string fullPath = it->path().string();
-    const string extention = it->path().filename().extension().string();
+    const string fileExtention = it->path().filename().extension().string();
 
     if (it->is_directory())
       ogreResourceManager.addResourceLocation(fullPath, FILE_SYSTEM, groupName);
-    else if (it->is_regular_file() && extention == ".zip")
+    else if (it->is_regular_file() && fileExtention == ".zip")
       ogreResourceManager.addResourceLocation(fullPath, ZIP, groupName);
   }
 }
@@ -577,17 +577,18 @@ void VideoManager::LoadResources() {
   const char *APKZIP = "APKZip";
   const char *PROGRAMS_ZIP = "programs.zip";
   const char *ASSETS_ZIP = "assets.zip";
+  const int SCAN_DEPTH = 4;
 #if defined(DESKTOP) && defined(DEBUG)
   const char *PROGRAMS_DIR = "source/Programs";
   const char *GLSL_DIR = "source/GLSL";
   const char *GLSLES_DIR = "source/GLSLES";
   const char *ASSETS_DIR = "source/Example/Assets";
-  ScanLocation(FindPath(PROGRAMS_DIR), Ogre::RGN_INTERNAL);
+  ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
   if (RenderSystemIsGLES2())
-    ScanLocation(FindPath(GLSLES_DIR), Ogre::RGN_INTERNAL);
+    ScanLocation(FindPath(GLSLES_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
   else
-    ScanLocation(FindPath(GLSL_DIR), Ogre::RGN_INTERNAL);
-  ScanLocation(FindPath(ASSETS_DIR), Ogre::RGN_DEFAULT);
+    ScanLocation(FindPath(GLSL_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
+  ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_DEFAULT);
 #elif defined(ANDROID)
   ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, APKZIP, Ogre::RGN_DEFAULT);
@@ -601,16 +602,11 @@ void VideoManager::LoadResources() {
 
 void VideoManager::InitOgreScene() {
 #ifdef DESKTOP
-  bool ShadowsEnabled = true;
+  shadowEnabled = true;
 #else
-  bool ShadowsEnabled = false;
+  shadowEnabled = false;
 #endif
-  if (!ShadowsEnabled) {
-    sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 0);
-    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
-    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
-  } else {
+  if (shadowEnabled) {
 #ifdef DESKTOP
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_DEPTH16;
 #else
@@ -625,23 +621,24 @@ void VideoManager::InitOgreScene() {
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 3);
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 1);
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
-    sceneManager->setShadowTextureSelfShadow(true);
-    sceneManager->setShadowCasterRenderBackFaces(true);
-    sceneManager->setShadowFarDistance(shadowFarDistance);
     auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     sceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
     pssmSetup = make_shared<Ogre::PSSMShadowCameraSetup>();
     pssmSetup->calculateSplitPoints(pssmSplitCount, 0.001, sceneManager->getShadowFarDistance());
     pssmSplitPointList = pssmSetup->getSplitPoints();
     pssmSetup->setSplitPadding(0.0);
-    for (int i = 0; i < pssmSplitCount; i++) pssmSetup->setOptimalAdjustFactor(i, static_cast<float>(0.5 * i));
+    for (int i = 0; i < pssmSplitCount; i++) pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));
     sceneManager->setShadowCameraSetup(pssmSetup);
-    sceneManager->setShadowColour(Ogre::ColourValue::Black);
     auto *shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
     auto *schemRenderState = shaderGenerator->getRenderState(Ogre::MSN_SHADERGEN);
     auto subRenderState = shaderGenerator->createSubRenderState<Ogre::RTShader::IntegratedPSSM3>();
     subRenderState->setSplitPoints(pssmSplitPointList);
     schemRenderState->addTemplateSubRenderState(subRenderState);
+  } else {
+    sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 0);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
+    sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
   }
 }
 

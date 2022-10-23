@@ -79,9 +79,10 @@ class VideoManager : public System<VideoManager> {
   ShaderResolver* shaderResolver = nullptr;
   Ogre::ShadowTechnique shadowTechnique;
   Ogre::Real shadowFarDistance;
+  bool shadowEnabled;
   unsigned short shadowTexSize;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssmSetup;
-  std::vector<float> pssmSplitPointList;
+  std::vector<Ogre::Real> pssmSplitPointList;
   int pssmSplitCount;
   std::unique_ptr<ImGuiInputListener> imguiListener;
   Ogre::ImGuiOverlay* imguiOverlay = nullptr;
