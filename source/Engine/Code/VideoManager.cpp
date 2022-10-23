@@ -538,7 +538,7 @@ static inline string FindPath(const string &path, int depth = 4) {
   return "";
 }
 
-static void ScanLocation(const string &path, const string &groupName = Ogre::RGN_DEFAULT) {
+static void ScanLocation(const string &path, const string &groupName) {
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
   vector<string> resourceList;

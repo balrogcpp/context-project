@@ -33,10 +33,10 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends gcc-${GCC_APT_MAJOR} g++-${GCC_APT_MAJOR} \
     && apt-get clean \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_APT_MAJOR} 100 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_APT_MAJOR} \
-    && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
-    && wget ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
-    && wget ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
-    && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -O - | tar -xj \
+    && wget https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -q -O - | tar -xz \
+    && wget ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.xz -q -O - | tar -xJ \
+    && wget ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -q -O - | tar -xJ \
+    && wget https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2/download -q -O - | tar -xj \
     && export CPPFLAGS='-g0' \
     && mkdir -p ${MINGW_ROOT}/include ${MINGW_ROOT}/lib/pkgconfig \
     && cd pkg-config-${PKG_CONFIG_VERSION} \
@@ -133,7 +133,7 @@ RUN apt-get update \
 # clang; libgcc-7 is for ubuntu 18.04, newer ubuntus have newer libgcc
 ARG CLANG_MAJOR=15
 RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERSION}-${CLANG_MAJOR} main" >> /etc/apt/sources.list \
-    && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
+    && wget -q -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && apt-get update \
     && apt-get -y install --no-install-recommends llvm-${CLANG_MAJOR} clang-${CLANG_MAJOR} lld-${CLANG_MAJOR} libgcc-7-dev libstdc++-7-dev \
     && apt-get clean \
@@ -152,7 +152,7 @@ ARG OSXCROSS_GIT_HASH=50e86ebca7d14372febd0af8cd098705049161b9
 RUN apt-get update \
     && apt-get -y install --no-install-recommends cmake python libxml2 lzma-dev libxml2-dev libssl-dev \
     && apt-get clean \
-    && wget https://github.com/tpoechtrager/osxcross/archive/${OSXCROSS_GIT_HASH}.zip -O osxcross.zip \
+    && wget https://github.com/tpoechtrager/osxcross/archive/${OSXCROSS_GIT_HASH}.zip -q -O osxcross.zip \
     && unzip osxcross.zip \
     && rm osxcross.zip \
     && cd osxcross-${OSXCROSS_GIT_HASH} \
@@ -176,15 +176,15 @@ ARG CMAKE_VERSION=3.24.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
 ARG UPX_VERSION=3.96
-RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -P /tmp \
-    && unzip /tmp/ninja-linux.zip -d /usr/local/bin \
+RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -q -P /tmp -O ninja-linux.zip \
+    && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin \
     && rm /tmp/ninja-linux.zip \
-    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -O /tmp/cmake-install.sh \
+    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -q -O /tmp/cmake-install.sh \
     && chmod u+x /tmp/cmake-install.sh \
     && mkdir ${CMAKE_HOME} \
     && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
     && rm /tmp/cmake-install.sh \
-    && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz  -O - | tar -xJ \
+    && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -q  -O - | tar -xJ \
     && cd upx-${UPX_VERSION}-amd64_linux \
     && cp upx /usr/local/bin \
     && cd .. \

@@ -71,19 +71,20 @@ RUN apt-get update \
     && apt-get clean \
     && cd /opt \
     && wget https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_VERSION}_latest.zip -q -O tools.zip \
-    && unzip tools.zip && rm tools.zip \
-    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=${ANDROID_HOME} \
-    && rm -rf /root/.android /root/.gradle
-ENV PATH="/opt/cmdline-tools/bin:${PATH}"
-ENV ANDROID_SDK_ROOT=${ANDROID_HOME}
-
-RUN cd ${CONTEXT_HOME}/source/Engine \
-    && sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} \
+    && unzip -q tools.zip && rm tools.zip \
+    && yes | ./cmdline-tools/bin/sdkmanager  --licenses --sdk_root=${ANDROID_HOME} > /dev/null  \
+    && rm -rf /root/.android /root/.gradle \
+    && export PATH="/opt/cmdline-tools/bin:${PATH}" \
+    && export ANDROID_SDK_ROOT=${ANDROID_HOME} \
+    && cd ${CONTEXT_HOME}/source/Engine \
+    && sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} > /dev/null  \
     && sh gradlew assembleRelease > /dev/null \
     && rm -rf .gradle android/.cxx android/build android/assets \
     && sh gradlew assembleRelease \
     && cp android/build/outputs/apk/release/android-arm64-v8a-release.apk ${CONTEXT_HOME}/artifacts\
-    && rm -rf .gradle android/.cxx android/build android/assets ../../artifacts/_CPack_Packages ../../contrib/build ../../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME}
+    && rm -rf .gradle android/.cxx android/build android/assets ../../artifacts/_CPack_Packages ../../contrib/build ../../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
+    && apt-get -y purge openjdk-8-jdk \
+    && apt-get -y autoremove
 
 
 # wasm
