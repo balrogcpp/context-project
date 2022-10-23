@@ -69,6 +69,8 @@ class VideoManager : public System<VideoManager> {
   void CheckGPU();
 
   std::vector<Window> windowList;
+  std::string ogreLogFile;
+  unsigned short ogreMinLogLevel;
   Ogre::Root* ogreRoot = nullptr;
   Ogre::SceneManager* sceneManager = nullptr;
   Ogre::RenderWindow* ogreWindow = nullptr;
@@ -80,7 +82,7 @@ class VideoManager : public System<VideoManager> {
   unsigned short shadowTexSize;
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssmSetup;
   std::vector<float> pssmSplitPointList;
-  int pssmSplitCount = 3;
+  int pssmSplitCount;
   std::unique_ptr<ImGuiInputListener> imguiListener;
   Ogre::ImGuiOverlay* imguiOverlay = nullptr;
   bool skyNeedsUpdate = false;

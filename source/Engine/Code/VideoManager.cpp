@@ -278,7 +278,7 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
   Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
 };
 
-VideoManager::VideoManager() {}
+VideoManager::VideoManager() : ogreMinLogLevel(Ogre::LML_TRIVIAL), ogreLogFile("Ogre.log"), shadowTechnique(Ogre::SHADOWTYPE_NONE), pssmSplitCount(3) {}
 VideoManager::~VideoManager() { SDL_Quit(); }
 
 void VideoManager::OnSetUp() {
@@ -409,7 +409,14 @@ void VideoManager::InitSDL() {
 }
 
 void VideoManager::InitOgreRoot() {
-  ogreRoot = new Ogre::Root("", "", "");
+  ogreLogFile = "runtime.log";
+#ifdef DEBUG
+  ogreMinLogLevel = Ogre::LML_TRIVIAL;
+#else
+  ogreMinLogLevel = Ogre::LML_WARNING;
+#endif
+  ogreRoot = new Ogre::Root("", "", ogreLogFile.c_str());
+  Ogre::LogManager::getSingleton().setMinLogLevel(static_cast<Ogre::LogMessageLevel>(ogreMinLogLevel));
 #ifdef ANDROID
   JNIEnv *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
   jclass classActivity = env->FindClass("android/app/Activity");
