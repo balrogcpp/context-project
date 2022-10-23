@@ -2,5 +2,4 @@
 
 #pragma once
 
-#include "Platform.h"
 #include <Ogre.h>

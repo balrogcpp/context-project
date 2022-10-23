@@ -4,19 +4,19 @@
 #include "VideoManager.h"
 #include "Android.h"
 #include "DotSceneLoaderB.h"
-#include "FSHelpers.h"
 #include "ImguiHelpers.h"
+#include "Platform.h"
 #include "SkyModel/ArHosekSkyModel.h"
 #include "SkyModel/SkyModel.h"
 #include <Ogre.h>
 #ifdef OGRE_OPENGL
 #include <OgreGLRenderSystemCommon.h>
 #endif
+#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
+#include <RTShaderSystem/OgreRTShaderSystem.h>
+#endif
 #ifdef OGRE_BUILD_PLUGIN_OCTREE
 #include <Plugins/OctreeSceneManager/OgreOctreeSceneManager.h>
-#endif
-#ifdef OGRE_BUILD_PLUGIN_PFX
-#include <Plugins/ParticleFX/OgreParticleFXPlugin.h>
 #endif
 #ifdef OGRE_BUILD_PLUGIN_STBI
 #include <Plugins/STBICodec/OgreSTBICodec.h>
@@ -30,8 +30,8 @@
 #ifdef OGRE_BUILD_PLUGIN_DOT_SCENE
 #include <Plugins/DotScene/OgreDotSceneLoader.h>
 #endif
-#ifdef OGRE_BUILD_COMPONENT_RTSHADERSYSTEM
-#include <RTShaderSystem/OgreRTShaderSystem.h>
+#ifdef OGRE_BUILD_PLUGIN_PFX
+#include <Plugins/ParticleFX/OgreParticleFXPlugin.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include "TerrainMaterialGeneratorB.h"
@@ -42,6 +42,17 @@
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
 #endif
+#ifdef DESKTOP
+#if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
+    || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) \
+    || (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101500))
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
+#endif  // <filesystem>
+#endif  // DESKTOP
 extern "C" {
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
@@ -58,10 +69,10 @@ inline bool RenderSystemIsGL() { return Ogre::Root::getSingleton().getRenderSyst
 inline bool RenderSystemIsGL3() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL 3+ Rendering Subsystem"; };
 inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"; };
 inline Ogre::SceneManager *OgreSceneManager() { return Ogre::Root::getSingleton().getSceneManager("Default"); }
-inline Ogre::SceneNode *OgreRootNode() { return OgreSceneManager()->getRootSceneNode(); }
 inline Ogre::Camera *OgreCamera() { return OgreSceneManager()->getCamera("Default"); }
-inline Ogre::SceneNode *OgreCameraNode() { return OgreCamera()->getParentSceneNode(); }
-inline Ogre::Vector3 SunDirection() { return -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition(); }
+// inline Ogre::SceneNode *OgreRootNode() { return OgreSceneManager()->getRootSceneNode(); }
+// inline Ogre::SceneNode *OgreCameraNode() { return OgreCamera()->getParentSceneNode(); }
+// inline Ogre::Vector3 SunDirection() { return -OgreSceneManager()->getLight("Sun")->getParentSceneNode()->getPosition(); }
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 void InitOgreRenderSystemGL3();
 #endif
@@ -278,7 +289,8 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
   Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
 };
 
-VideoManager::VideoManager() : ogreMinLogLevel(Ogre::LML_TRIVIAL), ogreLogFile("Ogre.log"), shadowTechnique(Ogre::SHADOWTYPE_NONE), pssmSplitCount(3) {}
+VideoManager::VideoManager()
+    : ogreMinLogLevel(Ogre::LML_TRIVIAL), ogreLogFile("Ogre.log"), shadowTechnique(Ogre::SHADOWTYPE_NONE), pssmSplitCount(3) {}
 VideoManager::~VideoManager() { SDL_Quit(); }
 
 void VideoManager::OnSetUp() {
@@ -512,6 +524,43 @@ void VideoManager::InitOgreOverlay() {
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 }
 
+#ifdef DESKTOP
+static inline string FindPath(const string &path, int depth = 4) {
+  string result = path;
+
+  for (int i = 0; i < depth; i++) {
+    if (fs::exists(result))
+      return result;
+    else
+      result = string("../").append(result);
+  }
+
+  return "";
+}
+
+static void ScanLocation(const string &path, const string &groupName = Ogre::RGN_DEFAULT) {
+  const char *FILE_SYSTEM = "FileSystem";
+  const char *ZIP = "Zip";
+  vector<string> resourceList;
+  auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
+
+  if (!fs::is_directory(path)) {
+    return;
+  }
+
+  ogreResourceManager.addResourceLocation(path, FILE_SYSTEM, groupName);
+  for (fs::recursive_directory_iterator end, it(path); it != end; ++it) {
+    const string fullPath = it->path().string();
+    const string extention = it->path().filename().extension().string();
+
+    if (it->is_directory())
+      ogreResourceManager.addResourceLocation(fullPath, FILE_SYSTEM, groupName);
+    else if (it->is_regular_file() && extention == ".zip")
+      ogreResourceManager.addResourceLocation(fullPath, ZIP, groupName);
+  }
+}
+#endif  // DESKTOP
+
 void VideoManager::LoadResources() {
 #ifdef DESKTOP
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
@@ -522,25 +571,32 @@ void VideoManager::LoadResources() {
     Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
   }
 #endif
-  auto &RGM = Ogre::ResourceGroupManager::getSingleton();
-#if defined(ANDROID)
-  RGM.addResourceLocation("programs.zip", "APKZip", Ogre::RGN_INTERNAL);
-  RGM.addResourceLocation("assets.zip", "APKZip", Ogre::RGN_DEFAULT);
-#elif defined(DESKTOP) && defined(DEBUG)
+  auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
+  const char *FILE_SYSTEM = "FileSystem";
+  const char *ZIP = "Zip";
+  const char *APKZIP = "APKZip";
+  const char *PROGRAMS_ZIP = "programs.zip";
+  const char *ASSETS_ZIP = "assets.zip";
+#if defined(DESKTOP) && defined(DEBUG)
   const char *PROGRAMS_DIR = "source/Programs";
+  const char *GLSL_DIR = "source/GLSL";
+  const char *GLSLES_DIR = "source/GLSLES";
   const char *ASSETS_DIR = "source/Example/Assets";
-  ScanLocation(PROGRAMS_DIR, Ogre::RGN_INTERNAL);
+  ScanLocation(FindPath(PROGRAMS_DIR), Ogre::RGN_INTERNAL);
   if (RenderSystemIsGLES2())
-    ScanLocation("source/GLSLES", Ogre::RGN_INTERNAL);
+    ScanLocation(FindPath(GLSLES_DIR), Ogre::RGN_INTERNAL);
   else
-    ScanLocation("source/GLSL", Ogre::RGN_INTERNAL);
-  ScanLocation(ASSETS_DIR);
+    ScanLocation(FindPath(GLSL_DIR), Ogre::RGN_INTERNAL);
+  ScanLocation(FindPath(ASSETS_DIR), Ogre::RGN_DEFAULT);
+#elif defined(ANDROID)
+  ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
+  ogreResourceManager.addResourceLocation(ASSETS_ZIP, APKZIP, Ogre::RGN_DEFAULT);
 #else
-  RGM.addResourceLocation("programs.zip", "Zip", Ogre::RGN_INTERNAL);
-  RGM.addResourceLocation("assets.zip", "Zip", Ogre::RGN_DEFAULT);
+  ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, ZIP, Ogre::RGN_INTERNAL);
+  ogreResourceManager.addResourceLocation(ASSETS_ZIP, ZIP, Ogre::RGN_DEFAULT);
 #endif
-  RGM.initialiseResourceGroup(Ogre::RGN_INTERNAL);
-  RGM.initialiseAllResourceGroups();
+  ogreResourceManager.initialiseResourceGroup(Ogre::RGN_INTERNAL);
+  ogreResourceManager.initialiseAllResourceGroups();
 }
 
 void VideoManager::InitOgreScene() {
