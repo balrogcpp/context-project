@@ -16,17 +16,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 
-# include modules
-include(Platform)
-include(GitHash)
-include(ProcessorCount)
-
-
-# set parallel level
-processorcount(PROCESSOR_COUNT)
-set(CMAKE_BUILD_PARALLEL_LEVEL ${PROCESSOR_COUNT})
-
-
 # default build type is Release
 if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type selected, CMAKE_BUILD_TYPE defaulted to Release")
@@ -42,6 +31,17 @@ list(TRANSFORM ALLOWED_BUILD_TYPES_LOWER TOLOWER)
 if (NOT ${CMAKE_BUILD_TYPE_LOWER} IN_LIST ALLOWED_BUILD_TYPES_LOWER)
     message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not valid build type. Valid are ${ALLOWED_BUILD_TYPES}")
 endif ()
+
+
+# include modules
+include(Platform)
+include(GitHash)
+include(ProcessorCount)
+
+
+# set parallel level
+processorcount(PROCESSOR_COUNT)
+set(CMAKE_BUILD_PARALLEL_LEVEL ${PROCESSOR_COUNT})
 
 
 # set artifact dir
