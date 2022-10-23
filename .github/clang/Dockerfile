@@ -144,23 +144,38 @@ RUN echo "deb http://apt.llvm.org/${UBUNTU_VERSION} llvm-toolchain-${UBUNTU_VERS
 ENV PATH="/usr/lib/llvm-${CLANG_MAJOR}/bin:$PATH"
 
 
+# cmake ninja upx
+ARG CMAKE_VERSION=3.24.2
+ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
+ARG NINJA_VERSION=1.11.1
+ARG UPX_VERSION=3.96
+RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -q -O /tmp/ninja-linux.zip \
+    && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
+    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -q -O /tmp/cmake-install.sh \
+    && chmod u+x /tmp/cmake-install.sh \
+    && mkdir ${CMAKE_HOME} \
+    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} && rm /tmp/cmake-install.sh \
+    && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -q  -O - | tar -xJ \
+    && cp upx-${UPX_VERSION}-amd64_linux/upx /usr/local/bin \
+    && rm -rf upx-${UPX_VERSION}-amd64_linux
+ENV PATH="${CMAKE_HOME}/bin:${PATH}"
+
+
 # apple
 COPY ./tarballs ./tarballs
 ARG OSXCROSS_ROOT=/opt/osxcross
 ARG MACOS_SDK_CODE=21.4
 ARG OSXCROSS_GIT_HASH=50e86ebca7d14372febd0af8cd098705049161b9
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends cmake python libxml2 lzma-dev libxml2-dev libssl-dev \
+    && apt-get -y install --no-install-recommends python libxml2 lzma-dev libxml2-dev libssl-dev \
     && apt-get clean \
     && wget https://github.com/tpoechtrager/osxcross/archive/${OSXCROSS_GIT_HASH}.zip -q -O osxcross.zip \
-    && unzip osxcross.zip \
-    && rm osxcross.zip \
+    && unzip osxcross.zip && rm osxcross.zip \
     && cd osxcross-${OSXCROSS_GIT_HASH} \
-    && cp -r ../tarballs . \
-    && rm -rf ../tarballs \
-    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} ./build.sh \
+    && cp -r ../tarballs . && rm -rf ../tarballs \
+    && UNATTENDED=1 TARGET_DIR=${OSXCROSS_ROOT} bash build.sh \
     && rm -rf ../osxcross-${OSXCROSS_GIT_HASH} \
-    && apt-get -y purge cmake python lzma-dev libxml2-dev libssl-dev \
+    && apt-get -y purge python lzma-dev libxml2-dev libssl-dev \
     && apt-get -y autoremove
 ENV OSXCROSS_HOST=x86_64-apple-darwin${MACOS_SDK_CODE}
 ENV OSXCROSS_HOST_X86_64=x86_64-apple-darwin${MACOS_SDK_CODE}
@@ -169,24 +184,3 @@ ENV OSXCROSS_TOOLCHAIN_FILE=${OSXCROSS_ROOT}/toolchain.cmake
 ENV PATH="${OSXCROSS_ROOT}/bin:${PATH}"
 ENV X86_64_EVAL=`x86_64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
 ENV ARM64_EVAL=`arm64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
-
-
-# cmake ninja upx
-ARG CMAKE_VERSION=3.24.2
-ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
-ARG NINJA_VERSION=1.11.1
-ARG UPX_VERSION=3.96
-RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -q -P /tmp -O ninja-linux.zip \
-    && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin \
-    && rm /tmp/ninja-linux.zip \
-    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -q -O /tmp/cmake-install.sh \
-    && chmod u+x /tmp/cmake-install.sh \
-    && mkdir ${CMAKE_HOME} \
-    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} \
-    && rm /tmp/cmake-install.sh \
-    && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -q  -O - | tar -xJ \
-    && cd upx-${UPX_VERSION}-amd64_linux \
-    && cp upx /usr/local/bin \
-    && cd .. \
-    && rm -rf upx-${UPX_VERSION}-amd64_linux
-ENV PATH="${CMAKE_HOME}/bin:${PATH}"
