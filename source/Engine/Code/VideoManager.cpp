@@ -3,7 +3,7 @@
 #include "pch.h"
 #include "VideoManager.h"
 #include "Android.h"
-#include "DotSceneLoaderB.h"
+#include "DotSceneLoaderB/DotSceneLoaderB.h"
 #include "ImguiHelpers.h"
 #include "Platform.h"
 #include <Ogre.h>
@@ -52,7 +52,6 @@ namespace fs = std::filesystem;
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
 #endif  // <filesystem>
-#endif  // DESKTOP
 #ifdef APPLE
 #include <mach-o/dyld.h>
 #endif
@@ -64,6 +63,7 @@ namespace fs = ghc::filesystem;
 #include <windows.h>
 #undef CreateWindow
 #endif
+#endif  // DESKTOP
 
 using namespace std;
 
@@ -171,9 +171,9 @@ void Window::Create(const string &caption, Ogre::Camera *ogreCamera, int monitor
         screenWidth = displayMode.w;
         screenHeight = displayMode.h;
         currentDisplay = i;
-      } else {
-        SDL_Log("Could not get display mode for video display #%d: %s", i, SDL_GetError());
       }
+    } else {
+      SDL_Log("Could not get display mode for video display #%d: %s", i, SDL_GetError());
     }
   }
 
@@ -412,12 +412,9 @@ Window &VideoManager::GetMainWindow() { return *mainWindow; }
 
 void VideoManager::ShowMainWindow(bool show) { mainWindow->Show(show); }
 
-bool CheckGLVersion(int major, int minor) {
-  return dynamic_cast<Ogre::GLRenderSystemCommon *>(Ogre::Root::getSingleton().getRenderSystem())->hasMinGLVersion(major, minor);
-}
-
 void VideoManager::CheckGPU() {
   const auto *ogreRenderCapabilities = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
+  const auto *ogreRenderSystemCommon = dynamic_cast<Ogre::GLRenderSystemCommon *>(Ogre::Root::getSingleton().getRenderSystem());
   OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
   OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
   OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
@@ -430,11 +427,11 @@ void VideoManager::CheckGPU() {
 #endif
   if (RenderSystemIsGL3()) {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-    OgreAssert(CheckGLVersion(3, 3), "OpenGL 3.3 is not supported");
+    OgreAssert(ogreRenderSystemCommon->hasMinGLVersion(3, 3), "OpenGL 3.3 is not supported");
 #endif
   } else if (RenderSystemIsGLES2()) {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-    OgreAssert(CheckGLVersion(3, 0), "OpenGLES 3.0 is not supported");
+    OgreAssert(ogreRenderSystemCommon->hasMinGLVersion(3, 0), "OpenGLES 3.0 is not supported");
 #endif
   }
 }
