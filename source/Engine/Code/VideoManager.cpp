@@ -369,7 +369,6 @@ void VideoManager::OnSetUp() {
   InitOgreOverlay();
   LoadResources();
   InitOgreScene();
-  mainWindow->Show(true);
 
   // cleanup
   imguiOverlay->show();
@@ -410,6 +409,8 @@ void VideoManager::RenderFrame() {
 Window &VideoManager::GetWindow(int number) { return windowList[0]; }
 
 Window &VideoManager::GetMainWindow() { return *mainWindow; }
+
+void VideoManager::ShowMainWindow(bool show) { mainWindow->Show(show); }
 
 bool CheckGLVersion(int major, int minor) {
   return dynamic_cast<Ogre::GLRenderSystemCommon *>(Ogre::Root::getSingleton().getRenderSystem())->hasMinGLVersion(major, minor);
@@ -454,11 +455,7 @@ void VideoManager::InitSDL() {
 
 void VideoManager::InitOgreRoot() {
   ogreLogFile = "runtime.log";
-#ifdef DEBUG
   ogreMinLogLevel = Ogre::LML_TRIVIAL;
-#else
-  ogreMinLogLevel = Ogre::LML_WARNING;
-#endif
   ogreRoot = new Ogre::Root("", "", ogreLogFile.c_str());
   Ogre::LogManager::getSingleton().setMinLogLevel(static_cast<Ogre::LogMessageLevel>(ogreMinLogLevel));
 #ifdef ANDROID

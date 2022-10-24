@@ -20,6 +20,7 @@ int main()
     GetComponent<VideoManager>().GetWindow(0).GrabCursor(true);
     GetComponent<SceneManager>().LoadFromFile("1.scene");
     GetComponent<SceneManager>().SetUpSky();
+    GetComponent<VideoManager>().ShowMainWindow(true);
 
     // main function
     return app.Main();

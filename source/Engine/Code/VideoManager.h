@@ -57,6 +57,7 @@ class VideoManager final : public System<VideoManager>, public Ogre::RenderTarge
   void RenderFrame();
   Window& GetWindow(int number);
   Window& GetMainWindow();
+  void ShowMainWindow(bool show);
 
  protected:
   void CreateWindow();
