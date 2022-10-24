@@ -153,7 +153,7 @@ Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), width(1270), height
 
 Window::~Window() { SDL_SetWindowFullscreen(sdlWindow, SDL_FALSE); }
 
-void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, bool fullscreen, int width, int height) {
+void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, bool resize, bool fullscreen, int width, int height) {
   this->caption = caption;
   this->width = width;
   this->height = height;
@@ -178,6 +178,7 @@ void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, bo
     }
   }
 
+  if (resize) sdlFlags |= SDL_WINDOW_RESIZABLE;
 #if defined(DESKTOP)
   if (width == screenWidth && height == screenHeight) {
     sdlFlags |= SDL_WINDOW_BORDERLESS;
@@ -298,6 +299,12 @@ void Window::SetFullscreen(bool fullscreen) {
 }
 
 void Window::Delete() {}
+
+void Window::OnEvent(const SDL_Event &event) {}
+void Window::OnQuit() {}
+void Window::OnFocusLost() {}
+void Window::OnFocusGained() {}
+void Window::OnSizeChanged(int x, int y, uint32_t id) { Resize(x, y); }
 
 class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listener {
  public:
@@ -518,7 +525,7 @@ void VideoManager::CreateWindow() {
   windowList.emplace_back();
   mainWindow = &windowList[0];
   ogreCamera = sceneManager->createCamera("Default");
-  mainWindow->Create("Example0", ogreCamera, -1, false, 1270, 720);
+  mainWindow->Create("Example0", ogreCamera, -1, true, false, 1270, 720);
   ogreViewport = mainWindow->ogreViewport;
 }
 

@@ -110,9 +110,11 @@ class WindowObserver {
   /// Callback called on Quit
   virtual void OnQuit() {}
   /// Callback called when Window is not in focus
-  virtual void OnPause() {}
+  virtual void OnFocusLost() {}
   /// Callback called when Window back into focus
-  virtual void OnResume() {}
+  virtual void OnFocusGained() {}
+  ///
+  virtual void OnSizeChanged(int x, int y, uint32_t id) {}
 };
 
 /// This Singleton class is main part of Observer implementation
@@ -244,12 +246,21 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
           switch (event.window.event) {
             case SDL_WINDOWEVENT_MINIMIZED:
             case SDL_WINDOWEVENT_FOCUS_LOST: {
-              for (auto &it : winListeners) it->OnPause();
+              for (auto &it : winListeners) it->OnFocusLost();
               break;
             }
 
             case SDL_WINDOWEVENT_FOCUS_GAINED: {
-              for (auto &it : winListeners) it->OnResume();
+              for (auto &it : winListeners) it->OnFocusGained();
+              break;
+            }
+
+            case SDL_WINDOWEVENT_SIZE_CHANGED: {
+              for (auto &it : winListeners) it->OnSizeChanged(event.window.data1, event.window.data2, event.window.windowID);
+              break;
+            }
+
+            case SDL_WINDOWEVENT_EXPOSED: {
               break;
             }
           }
@@ -277,13 +288,13 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
     switch (event->type) {
       case SDL_APP_WILLENTERBACKGROUND:
       case SDL_APP_DIDENTERBACKGROUND: {
-        for (auto &it : winListeners) it->OnPause();
+        for (auto &it : winListeners) it->OnFocusLost();
         return 0;
       }
 
       case SDL_APP_WILLENTERFOREGROUND:
       case SDL_APP_DIDENTERFOREGROUND: {
-        for (auto &it : winListeners) it->OnResume();
+        for (auto &it : winListeners) it->OnFocusGained();
         return 0;
       }
 

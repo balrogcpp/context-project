@@ -25,8 +25,8 @@ class Application : public WindowObserver, public InputObserver, public Singleto
 
   /// Window observer impl
   void OnQuit() override;
-  void OnPause() override;
-  void OnResume() override;
+  void OnFocusLost() override;
+  void OnFocusGained() override;
 
   /// Handle components
   std::unique_ptr<Engine> engine;

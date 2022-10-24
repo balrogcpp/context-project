@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Observer.h"
 #include "System.h"
 #include <Ogre.h>
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
@@ -14,11 +15,11 @@ struct SDL_Window;
 
 namespace Glue {
 
-class Window {
+class Window : public WindowObserver, InputObserver {
  public:
   Window();
   virtual ~Window();
-  void Create(const std::string& caption, Ogre::Camera* camera, int monitor, bool fullscreen, int width, int height);
+  void Create(const std::string& caption, Ogre::Camera* camera, int monitor, bool resize, bool fullscreen, int width, int height);
   void Show(bool show);
   void Delete();
   void GrabCursor(bool grab);
@@ -26,6 +27,13 @@ class Window {
   void Resize(int width, int height);
   void SetFullscreen(bool fullscreen);
   void SetWindowCaption(const char* caption);
+
+  void OnEvent(const SDL_Event& event) override;
+  void OnQuit() override;
+  void OnFocusLost() override;
+  void OnFocusGained() override;
+  void OnSizeChanged(int x, int y, uint32_t id) override;
+
 
   std::string caption;
   bool fullscreen;

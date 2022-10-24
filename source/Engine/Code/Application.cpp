@@ -87,18 +87,20 @@ void Application::Go() {
 
 void Application::OnQuit() { quit = true; }
 
-void Application::OnPause() {
+void Application::OnFocusLost() {
   suspend = true;
   engine->OnPause();
 }
 
-void Application::OnResume() {
+void Application::OnFocusGained() {
   suspend = false;
   engine->OnResume();
 }
 
 int Application::Main() {
+#ifndef DEBUG
   ios_base::sync_with_stdio(false);
+#endif
   Go();
   return 0;
 }
