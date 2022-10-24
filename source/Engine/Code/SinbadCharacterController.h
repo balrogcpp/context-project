@@ -2,18 +2,8 @@
 
 #pragma once
 #include "Observer.h"
-#include <OgreVector.h>
-extern "C" {
+#include <Ogre.h>
 #include <SDL2/SDL_keycode.h>
-}
-
-namespace Ogre {
-class SceneNode;
-class Entity;
-class Camera;
-class RibbonTrail;
-class AnimationState;
-}  // namespace Ogre
 
 #define SCALE 0.2f
 #define CHAR_HEIGHT SCALE * 5.0f  // height of character's center of mass above ground

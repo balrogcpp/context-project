@@ -3,12 +3,9 @@
 #pragma once
 
 #include "Singleton.h"
-extern "C" {
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>
-}
 #include <set>
-
 
 namespace Glue {
 

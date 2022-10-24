@@ -4,9 +4,7 @@
 #include "Engine.h"
 #include "Observer.h"
 #include "SinbadCharacterController.h"
-extern "C" {
 #include <SDL2/SDL_messagebox.h>
-}
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

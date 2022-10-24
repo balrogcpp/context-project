@@ -40,6 +40,8 @@
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
 #endif
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
 #ifdef DESKTOP
 #if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
     || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) \
@@ -51,25 +53,19 @@ namespace fs = std::filesystem;
 namespace fs = ghc::filesystem;
 #endif  // <filesystem>
 #endif  // DESKTOP
-extern "C" {
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
-}
+#ifdef APPLE
+#include <mach-o/dyld.h>
+#endif
 #ifdef LINUX
-extern "C" {
 #include <unistd.h>
-}
 #endif
 #ifdef WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#endif
-#ifdef _WIN32
 #undef CreateWindow
 #endif
 
 using namespace std;
-
 
 namespace {
 
@@ -138,8 +134,7 @@ void ScanLocation(const string &path, const string &groupName) {
 }
 #endif  // DESKTOP
 
-}
-
+}  // namespace
 
 namespace Glue {
 
@@ -381,7 +376,6 @@ void VideoManager::OnSetUp() {
   Ogre::ImGuiOverlay::NewFrame();
   ogreRoot->renderOneFrame();
   Ogre::MaterialManager::getSingleton().removeListener(shaderResolver);
-  delete shaderResolver;
 }
 
 void VideoManager::OnUpdate(float time) {
@@ -567,7 +561,6 @@ void VideoManager::InitOgreOverlay() {
   //  static const ImWchar icon_ranges[] = {ICON_MIN_MD, ICON_MAX_MD, 0};
   //  AddFont("KenneyIcon-Regular", RGN_INTERNAL, &config, icon_ranges);
 }
-
 
 void VideoManager::LoadResources() {
 #ifdef DESKTOP

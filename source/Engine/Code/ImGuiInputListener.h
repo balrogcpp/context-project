@@ -4,10 +4,8 @@
 
 #include "Observer.h"
 #include "Singleton.h"
-#include <imgui.h>
-extern "C" {
 #include <SDL2/SDL_keycode.h>
-}
+#include <imgui.h>
 
 namespace Glue {
 /// \class to control ImGui interface overlay
