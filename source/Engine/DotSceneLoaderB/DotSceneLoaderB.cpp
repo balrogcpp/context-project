@@ -741,9 +741,9 @@ void DotSceneLoaderB::processEntity(pugi::xml_node& XMLNode, SceneNode* pParent)
   // Process userDataReference (?)
   if (auto pElement = XMLNode.child("userData")) {
     processUserData(pElement, pEntity->getUserObjectBindings());
-    Glue::GetPhysics().ProcessData(static_cast<Entity *>(pEntity), pParent, pEntity->getUserObjectBindings());
+    Glue::GetComponent<Glue::PhysicsManager>().ProcessData(static_cast<Entity*>(pEntity), pParent, pEntity->getUserObjectBindings());
   } else {
-    Glue::GetPhysics().ProcessData(static_cast<Entity *>(pEntity), pParent);
+    Glue::GetComponent<Glue::PhysicsManager>().ProcessData(static_cast<Entity*>(pEntity), pParent);
   }
 
   Glue::GetComponent<Glue::SceneManager>().RegEntity(static_cast<Entity *>(pEntity));
@@ -812,7 +812,7 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     auto *bodyState = new Bullet::RigidBodyState(pParent);
     auto *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
     entBody->setFriction(1);
-    Glue::GetPhysics().AddRigidBody(entBody);
+    Glue::GetComponent<Glue::PhysicsManager>().AddRigidBody(entBody);
 }
 
 void DotSceneLoaderB::processFog(pugi::xml_node& XMLNode)

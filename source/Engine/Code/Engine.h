@@ -6,17 +6,11 @@
 #include "CompositorManager.h"
 #include "Observer.h"
 #include "PhysicsManager.h"
+#include "SceneManager.h"
 #include "Singleton.h"
 #include "VideoManager.h"
-#include "SceneManager.h"
-
-int ErrorWindow(const char* caption, const char* text);
 
 namespace Glue {
-
-/// Global component getters
-PhysicsManager& GetPhysics();
-AudioManager& GetAudio();
 
 class Engine final : public Singleton<Engine> {
  public:
@@ -46,10 +40,6 @@ class Engine final : public Singleton<Engine> {
   std::unique_ptr<PhysicsManager> physics;
   std::unique_ptr<AudioManager> audio;
   std::vector<SystemI*> componentList;
-
-  /// Global access to base components
-  friend PhysicsManager& GetPhysics();
-  friend AudioManager& GetAudio();
 };
 
 }  // namespace Glue

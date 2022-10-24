@@ -11,7 +11,7 @@ namespace Glue {
 SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam) : BaseAnimID(ANIM_NONE), TopAnimID(ANIM_NONE) {
   SetupCamera(cam);
   SetupBody();
-  GetAudio().AddListener(CameraNode);
+  //GetAudio().AddListener(CameraNode);
   //GetAudio().AddSound("walk_grass", "Footsteps-in-grass-fast.ogg", BodyNode, true);
 //  GetAudio().SetSoundVolume("walk_grass", 2.0);
   SetupAnimations();

@@ -6,8 +6,6 @@
 #include "SinbadCharacterController.h"
 #include <SDL2/SDL_messagebox.h>
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 extern "C" {
 __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
@@ -16,28 +14,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 using namespace std;
 
-int ErrorWindow(const char *caption, const char *text) {
-#ifdef _WIN32
-  MessageBox(nullptr, text, caption, MB_ICONERROR);
-#else
-  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption, text, nullptr);
-#endif
-#ifdef EMSCRIPTEN
-  emscripten_pause_main_loop();
-#endif
-  return -1;
-}
-
 namespace Glue {
-
-Engine &GetEngine() {
-  static auto &EnginePtr = Engine::GetInstance();
-  return EnginePtr;
-}
-
-PhysicsManager &GetPhysics() { return GetComponent<PhysicsManager>(); }
-
-AudioManager &GetAudio() { return GetComponent<AudioManager>(); }
 
 Engine::Engine() {}
 
