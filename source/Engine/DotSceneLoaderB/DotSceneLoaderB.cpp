@@ -1,20 +1,15 @@
 #include <Ogre.h>
 #include "DotSceneLoaderB.h"
 #include <OgreComponents.h>
-#include "Engine.h"
 
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <OgreTerrain.h>
 #include <OgreTerrainGroup.h>
 #endif
-#ifdef OGRE_BUILD_COMPONENT_BULLET
-#include <Bullet/OgreBullet.h>
-#endif
 
 #include <pugixml.hpp>
 
 using namespace Ogre;
-using namespace Glue;
 
 #ifndef OGRE_BUILD_COMPONENT_TERRAIN
 namespace Ogre {
@@ -329,13 +324,6 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
 
     OgreTerrainPtr->setOrigin(Vector3::ZERO);
     OgreTerrainPtr->freeTemporaryResources();
-
-    for (auto terrainIterator = OgreTerrainPtr->getTerrainIterator(); terrainIterator.hasMoreElements();)
-    {
-      auto *terrain = terrainIterator.getNext()->instance;
-      GetComponent<PhysicsManager>().CreateTerrainHeightfieldShape(terrain->getSize(), terrain->getHeightData(), terrain->getMinHeight(), terrain->getMaxHeight(),
-                                                     terrain->getPosition(), terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1)));
-    }
 #else
   OGRE_EXCEPT(Exception::ERR_INVALID_CALL, "recompile with Terrain component");
 #endif
@@ -444,8 +432,11 @@ void DotSceneLoaderB::processCamera(pugi::xml_node& XMLNode, SceneNode* pParent)
     String projectionType = getAttrib(XMLNode, "projectionType", "perspective");
 
     // Create the camera
-    //Camera* pCamera = mSceneMgr->createCamera(name);
-    Camera* pCamera = mSceneMgr->getCamera(name);
+    Camera* pCamera = nullptr;
+    if (mSceneMgr->hasCamera(name))
+      pCamera = mSceneMgr->getCamera(name);
+    else
+      pCamera = mSceneMgr->createCamera(name);
 
     // construct a scenenode is no parent
     if (!pParent)
@@ -479,9 +470,6 @@ void DotSceneLoaderB::processCamera(pugi::xml_node& XMLNode, SceneNode* pParent)
     // Process userDataReference (?)
     if (auto pElement = XMLNode.child("userData"))
         processUserData(pElement, static_cast<MovableObject*>(pCamera)->getUserObjectBindings());
-
-    Glue::GetComponent<Glue::SceneManager>().RegCamera(pCamera);
-    Glue::GetComponent<Glue::SceneManager>().RegSinbad(pCamera);
 }
 
 void DotSceneLoaderB::processNode(pugi::xml_node& XMLNode, SceneNode* pParent)
@@ -738,15 +726,9 @@ void DotSceneLoaderB::processEntity(pugi::xml_node& XMLNode, SceneNode* pParent)
         return;
     }
 
-  // Process userDataReference (?)
-  if (auto pElement = XMLNode.child("userData")) {
-    processUserData(pElement, pEntity->getUserObjectBindings());
-    Glue::GetComponent<Glue::PhysicsManager>().ProcessData(static_cast<Entity*>(pEntity), pParent, pEntity->getUserObjectBindings());
-  } else {
-    Glue::GetComponent<Glue::PhysicsManager>().ProcessData(static_cast<Entity*>(pEntity), pParent);
-  }
-
-  Glue::GetComponent<Glue::SceneManager>().RegEntity(static_cast<Entity *>(pEntity));
+    // Process userDataReference (?)
+    if (auto pElement = XMLNode.child("userData"))
+        processUserData(pElement, pEntity->getUserObjectBindings());
 }
 
 void DotSceneLoaderB::processParticleSystem(pugi::xml_node& XMLNode, SceneNode* pParent)
@@ -804,15 +786,12 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     Entity* ent = mSceneMgr->createEntity(name, name + "mesh");
 
     ent->setMaterialName(material);
-    Glue::GetComponent<Glue::SceneManager>().RegMaterial(material);
 
     pParent->attachObject(ent);
 
-    auto *entShape = Bullet::createBoxCollider(ent);
-    auto *bodyState = new Bullet::RigidBodyState(pParent);
-    auto *entBody = new btRigidBody(0, bodyState, entShape, btVector3(0, 0, 0));
-    entBody->setFriction(1);
-    Glue::GetComponent<Glue::PhysicsManager>().AddRigidBody(entBody);
+    // Process userDataReference (?)
+    if (auto pElement = XMLNode.child("userData"))
+        processUserData(pElement, ent->getUserObjectBindings());
 }
 
 void DotSceneLoaderB::processFog(pugi::xml_node& XMLNode)

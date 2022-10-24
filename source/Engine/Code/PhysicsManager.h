@@ -31,9 +31,7 @@ class PhysicsManager final : public System<PhysicsManager> {
   void OnPause() override;
 
   void AddRigidBody(btRigidBody *rigidBody);
-  void ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, const Ogre::UserObjectBindings &userData);
-  void ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, bool isStatic = true, const std::string &type = "box", float mass = 1.0,
-                   float friction = 1.0);
+  void ProcessData(Ogre::Entity *entity, const Ogre::UserObjectBindings &userData);
   void CreateTerrainHeightfieldShape(int size, float *data, float minHeight, float maxHeight, Ogre::Vector3 position, float scale);
 
  protected:

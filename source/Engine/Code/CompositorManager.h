@@ -26,8 +26,8 @@ class CompositorManager : public System<CompositorManager> {
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;
   Ogre::SceneManager* sceneManager = nullptr;
-  Ogre::Camera* camera = nullptr;
-  Ogre::Viewport* viewport = nullptr;
+  Ogre::Camera* ogreCamera = nullptr;
+  Ogre::Viewport* ogreViewport = nullptr;
 };
 
 }  // namespace Glue

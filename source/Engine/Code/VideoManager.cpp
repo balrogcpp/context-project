@@ -74,6 +74,8 @@ inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderS
 
 #ifdef DESKTOP
 
+// based on twnsorflow GetBinaryDir
+// https://github.com/tensorflow/tensorflow/blob/e895d5ca395c2362df4f5c8f08b68501b41f8a98/tensorflow/stream_executor/cuda/cuda_gpu_executor.cc#L202
 std::string GetBinaryDir() {
 #ifndef MAX_PATH
 #define MAX_PATH 4096
@@ -151,12 +153,12 @@ Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), width(1270), height
 
 Window::~Window() { SDL_SetWindowFullscreen(sdlWindow, SDL_FALSE); }
 
-void Window::Create(const string &caption, Ogre::Camera *ogreCamera, int monitor, bool fullscreen, int width, int height) {
+void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, bool fullscreen, int width, int height) {
   this->caption = caption;
   this->width = width;
   this->height = height;
   this->fullscreen = fullscreen;
-  this->ogreCamera = ogreCamera;
+  this->ogreCamera = camera;
 
   // select biggest display
   SDL_DisplayMode displayMode;
@@ -607,7 +609,7 @@ void VideoManager::InitOgreScene() {
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
 #endif
     shadowFarDistance = 400;
-    shadowTexSize = 1024;
+    shadowTexSize = 2048;
     sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
     sceneManager->setShadowFarDistance(shadowFarDistance);
     sceneManager->setShadowTextureSize(shadowTexSize);

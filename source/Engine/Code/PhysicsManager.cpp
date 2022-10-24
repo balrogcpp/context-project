@@ -138,31 +138,10 @@ void PhysicsManager::CreateTerrainHeightfieldShape(int size, float *data, float 
   btWorld->setForceUpdateAllAabbs(false);
 }
 
-void PhysicsManager::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, bool isStatic, const std::string &type, float mass, float friction) {
-  btRigidBody *entBody = nullptr;
-  btVector3 Inertia = btVector3(0, 0, 0);
-
-  if (!entity->getParentSceneNode() && parent) parent->attachObject(entity);
-  auto *entShape = Ogre::Bullet::createCapsuleCollider(entity);
-
-  if (isStatic)
-    mass = 0.0;
-  else
-    entShape->calculateLocalInertia(mass, Inertia);
-
-  auto *bodyState = new Ogre::Bullet::RigidBodyState(parent);
-
-  entBody = new btRigidBody(mass, bodyState, entShape, Inertia);
-  if (isStatic) entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
-
-  AddRigidBody(entBody);
-}
-
-void PhysicsManager::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, const Ogre::UserObjectBindings &userData) {
-  string ProxyType;
-  if (userData.getUserAny("proxy").has_value()) ProxyType = Ogre::any_cast<string>(userData.getUserAny("proxy"));
+void PhysicsManager::ProcessData(Ogre::Entity *entity, const Ogre::UserObjectBindings &userData) {
+  string proxy = Ogre::any_cast<string>(userData.getUserAny("proxy"));
   string physics_type = Ogre::any_cast<string>(userData.getUserAny("physics_type"));
-  float Mass = Ogre::any_cast<float>(userData.getUserAny("mass"));
+  float mass = Ogre::any_cast<float>(userData.getUserAny("mass"));
   float mass_radius = Ogre::any_cast<float>(userData.getUserAny("mass_radius"));
   float inertia_tensor = Ogre::any_cast<float>(userData.getUserAny("inertia_tensor"));
   float velocity_min = Ogre::any_cast<float>(userData.getUserAny("velocity_min"));
@@ -184,17 +163,28 @@ void PhysicsManager::ProcessData(Ogre::Entity *entity, Ogre::SceneNode *parent, 
   btRigidBody *entBody = nullptr;
   btVector3 Inertia = btVector3(0, 0, 0);
 
-  if (!entity->getParentSceneNode() && parent) parent->attachObject(entity);
-  auto *entShape = Ogre::Bullet::createBoxCollider(entity);
+  Ogre::SceneNode *parent = entity->getParentSceneNode();
+  btConvexInternalShape *entShape = nullptr;
+
+  if (proxy == "box")
+    entShape = Ogre::Bullet::createBoxCollider(entity);
+  else if (proxy == "capsule")
+    entShape = Ogre::Bullet::createCapsuleCollider(entity);
+  else if (proxy == "sphere")
+    entShape = Ogre::Bullet::createSphereCollider(entity);
+  else if (proxy == "cylinder")
+    entShape = Ogre::Bullet::createCylinderCollider(entity);
+  else
+   entShape = Ogre::Bullet::createBoxCollider(entity);
 
   if (Static)
-    Mass = 0.0;
+    mass = 0.0;
   else
-    entShape->calculateLocalInertia(Mass, Inertia);
+    entShape->calculateLocalInertia(mass, Inertia);
 
   auto *bodyState = new Ogre::Bullet::RigidBodyState(parent);
 
-  entBody = new btRigidBody(Mass, bodyState, entShape, Inertia);
+  entBody = new btRigidBody(mass, bodyState, entShape, Inertia);
   if (Static) entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
   AddRigidBody(entBody);

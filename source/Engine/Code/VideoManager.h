@@ -18,7 +18,7 @@ class Window {
  public:
   Window();
   virtual ~Window();
-  void Create(const std::string& caption, Ogre::Camera* ogreCamera, int monitor, bool fullscreen, int width, int height);
+  void Create(const std::string& caption, Ogre::Camera* camera, int monitor, bool fullscreen, int width, int height);
   void Show(bool show);
   void Delete();
   void GrabCursor(bool grab);

@@ -23,20 +23,22 @@ class SceneManager final : public System<SceneManager> {
   Ogre::Vector3 GetSunPosition();
   void SetUpSky();
   void RegCamera(Ogre::Camera *camera);
-  void RegSinbad(Ogre::Camera *camera);
+  void RegLight(Ogre::Light *light);
   void RegEntity(Ogre::Entity *entity);
   void RegMaterial(const Ogre::MaterialPtr &material);
   void RegMaterial(const std::string &name);
+  void ScanNode(Ogre::SceneNode *node);
 
  protected:
   Ogre::Root *ogreRoot = nullptr;
   Ogre::SceneManager *sceneManager = nullptr;
-  Ogre::Camera *camera = nullptr;
+  Ogre::Camera *ogreCamera = nullptr;
   std::unique_ptr<SinbadCharacterController> sinbad;
   bool skyNeedsUpdate = false;
   Ogre::GpuProgramParametersSharedPtr skyBoxFpParams;
   const std::array<const char *, 10> hosekParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
   std::array<Ogre::Vector3, 10> hosekParams;
+  std::vector<Ogre::Entity*> entityList;
   std::vector<Ogre::GpuProgramParametersSharedPtr> gpuFpParams;
   std::vector<Ogre::GpuProgramParametersSharedPtr> gpuVpParams;
 };

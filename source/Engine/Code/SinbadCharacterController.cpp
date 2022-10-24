@@ -8,8 +8,8 @@ using namespace std;
 
 namespace Glue {
 
-SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam) : BaseAnimID(ANIM_NONE), TopAnimID(ANIM_NONE) {
-  SetupCamera(cam);
+SinbadCharacterController::SinbadCharacterController(Ogre::Camera *camera) : baseAnimID(ANIM_NONE), topAnimID(ANIM_NONE) {
+  SetupCamera(camera);
   SetupBody();
   //GetAudio().AddListener(CameraNode);
   //GetAudio().AddSound("walk_grass", "Footsteps-in-grass-fast.ogg", BodyNode, true);
@@ -19,73 +19,73 @@ SinbadCharacterController::SinbadCharacterController(Ogre::Camera *cam) : BaseAn
 
 SinbadCharacterController::~SinbadCharacterController() {}
 
-void SinbadCharacterController::Update(float deltaTime) {
-  UpdateBody(deltaTime);
-  UpdateAnimations(deltaTime);
-  UpdateCamera(deltaTime);
+void SinbadCharacterController::Update(float time) {
+  UpdateBody(time);
+  UpdateAnimations(time);
+  UpdateCamera(time);
 }
 
 void SinbadCharacterController::OnKeyDown(SDL_Keycode key) {
-  if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_Q && (TopAnimID == ANIM_IDLE_TOP || TopAnimID == ANIM_RUN_TOP)) {
+  if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_Q && (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP)) {
     // take swords out (or put them back, since it's the same animation but
     // reversed)
     SetTopAnimation(ANIM_DRAW_SWORDS, true);
-    Timer = 0;
-  } else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_E && !SwordsDrawn) {
-    if (TopAnimID == ANIM_IDLE_TOP || TopAnimID == ANIM_RUN_TOP) {
+    timer = 0;
+  } else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_E && !swordsDrawn) {
+    if (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP) {
       // start dancing
       SetBaseAnimation(ANIM_DANCE, true);
       SetTopAnimation(ANIM_NONE);
       // disable hand animation because the dance controls hands
-      Anims[ANIM_HANDS_RELAXED]->setEnabled(false);
-    } else if (BaseAnimID == ANIM_DANCE) {
+      animList[ANIM_HANDS_RELAXED]->setEnabled(false);
+    } else if (baseAnimID == ANIM_DANCE) {
       // stop dancing
       SetBaseAnimation(ANIM_IDLE_BASE);
       SetTopAnimation(ANIM_IDLE_TOP);
       // re-enable hand animation
-      Anims[ANIM_HANDS_RELAXED]->setEnabled(true);
+      animList[ANIM_HANDS_RELAXED]->setEnabled(true);
     }
   }
 
     // keep track of the player's intended direction
   else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_W)
-    KeyDirection.z = -1;
+    keyDirection.z = -1;
   else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_A)
-    KeyDirection.x = -1;
+    keyDirection.x = -1;
   else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_S)
-    KeyDirection.z = 1;
+    keyDirection.z = 1;
   else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_D)
-    KeyDirection.x = 1;
+    keyDirection.x = 1;
 
-  else if (key == SDLK_SPACE && (TopAnimID == ANIM_IDLE_TOP || TopAnimID == ANIM_RUN_TOP)) {
+  else if (key == SDLK_SPACE && (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP)) {
     // jump if on ground
     SetBaseAnimation(ANIM_JUMP_START, true);
     SetTopAnimation(ANIM_NONE);
-    Timer = 0;
+    timer = 0;
   }
 
-  if (!KeyDirection.isZeroLength() && BaseAnimID == ANIM_IDLE_BASE) {
+  if (!keyDirection.isZeroLength() && baseAnimID == ANIM_IDLE_BASE) {
     // start running if not already moving and the player wants to move
     SetBaseAnimation(ANIM_RUN_BASE, true);
-    if (TopAnimID == ANIM_IDLE_TOP) SetTopAnimation(ANIM_RUN_TOP, true);
+    if (topAnimID == ANIM_IDLE_TOP) SetTopAnimation(ANIM_RUN_TOP, true);
   }
 }
 
 void SinbadCharacterController::OnKeyUp(SDL_Keycode key) {
   // keep track of the player's intended direction
-  if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_W && KeyDirection.z == -1)
-    KeyDirection.z = 0;
-  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_A && KeyDirection.x == -1)
-    KeyDirection.x = 0;
-  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_S && KeyDirection.z == 1)
-    KeyDirection.z = 0;
-  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_D && KeyDirection.x == 1)
-    KeyDirection.x = 0;
+  if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_W && keyDirection.z == -1)
+    keyDirection.z = 0;
+  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_A && keyDirection.x == -1)
+    keyDirection.x = 0;
+  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_S && keyDirection.z == 1)
+    keyDirection.z = 0;
+  else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_D && keyDirection.x == 1)
+    keyDirection.x = 0;
 
-  if (KeyDirection.isZeroLength() && BaseAnimID == ANIM_RUN_BASE) {
+  if (keyDirection.isZeroLength() && baseAnimID == ANIM_RUN_BASE) {
     // stop running if already moving and the player doesn't want to move
     SetBaseAnimation(ANIM_IDLE_BASE);
-    if (TopAnimID == ANIM_RUN_TOP) SetTopAnimation(ANIM_IDLE_TOP);
+    if (topAnimID == ANIM_RUN_TOP) SetTopAnimation(ANIM_IDLE_TOP);
   }
 }
 
@@ -100,38 +100,35 @@ void SinbadCharacterController::OnMouseWheel(int x, int y) {
 }
 
 void SinbadCharacterController::OnMouseLbDown(int x, int y) {
-  if (SwordsDrawn && (TopAnimID == ANIM_IDLE_TOP || TopAnimID == ANIM_RUN_TOP)) {
+  if (swordsDrawn && (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP)) {
     // if swords are out, and character's not doing something weird, then SLICE!
     SetTopAnimation(ANIM_SLICE_VERTICAL, true);
-    Timer = 0;
+    timer = 0;
   }
 }
 
 void SinbadCharacterController::OnMouseRbDown(int x, int y) {
-  if (SwordsDrawn && (TopAnimID == ANIM_IDLE_TOP || TopAnimID == ANIM_RUN_TOP)) {
+  if (swordsDrawn && (topAnimID == ANIM_IDLE_TOP || topAnimID == ANIM_RUN_TOP)) {
     // if swords are out, and character's not doing something weird, then SLICE!
     SetTopAnimation(ANIM_SLICE_HORIZONTAL, true);
-    Timer = 0;
+    timer = 0;
   }
 }
 
 void SinbadCharacterController::SetupBody() {
-  auto *sceneMgr = CameraNode->getCreator();
+  auto *sceneMgr = cameraNode->getCreator();
 
   // create main model
-  BodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * CHAR_HEIGHT);
-  BodyEnt = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
-  GetComponent<SceneManager>().RegEntity(BodyEnt);
-  BodyNode->attachObject(BodyEnt);
-  BodyNode->scale(Ogre::Vector3(SCALE));
+  bodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * CHAR_HEIGHT);
+  body = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
+  bodyNode->attachObject(body);
+  bodyNode->scale(Ogre::Vector3(SCALE));
 
   // create swords and attach to sheath
-  Sword1 = sceneMgr->createEntity("SinbadSword1", "Sword.mesh");
-  Sword2 = sceneMgr->createEntity("SinbadSword2", "Sword.mesh");
-  GetComponent<SceneManager>().RegEntity(Sword1);
-  GetComponent<SceneManager>().RegEntity(Sword2);
-  BodyEnt->attachObjectToBone("Sheath.L", Sword1);
-  BodyEnt->attachObjectToBone("Sheath.R", Sword2);
+  sword1 = sceneMgr->createEntity("SinbadSword1", "Sword.mesh");
+  sword2 = sceneMgr->createEntity("SinbadSword2", "Sword.mesh");
+  body->attachObjectToBone("Sheath.L", sword1);
+  body->attachObjectToBone("Sheath.R", sword2);
 
   // create a couple of ribbon trails for the swords, just for fun
   //  Ogre::NameValuePairList params;
@@ -151,23 +148,23 @@ void SinbadCharacterController::SetupBody() {
   //    mSwordTrail->setInitialWidth(i, SCALE * 0.5);
   //  }
 
-  KeyDirection = Ogre::Vector3::ZERO;
-  VerticalVelocity = 0;
+  keyDirection = Ogre::Vector3::ZERO;
+  verticalVelocity = 0;
 }
 
 void SinbadCharacterController::SetupAnimations() {
   // this is very important due to the nature of the exported animations
-  BodyEnt->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
+  body->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
 
   Ogre::String animNames[NUM_ANIMS] = {"IdleBase",      "IdleTop",         "RunBase", "RunTop",    "HandsClosed", "HandsRelaxed", "DrawSwords",
                                        "SliceVertical", "SliceHorizontal", "Dance",   "JumpStart", "JumpLoop",    "JumpEnd"};
 
   // populate our animation list
   for (int i = 0; i < NUM_ANIMS; i++) {
-    Anims[i] = BodyEnt->getAnimationState(animNames[i]);
-    Anims[i]->setLoop(true);
-    FadingIn[i] = false;
-    FadingOut[i] = false;
+    animList[i] = body->getAnimationState(animNames[i]);
+    animList[i]->setLoop(true);
+    fadingIn[i] = false;
+    fadingOut[i] = false;
   }
 
   // start off in the idle state (top and bottom together)
@@ -175,51 +172,51 @@ void SinbadCharacterController::SetupAnimations() {
   SetTopAnimation(ANIM_IDLE_TOP);
 
   // relax the hands since we're not holding anything
-  Anims[ANIM_HANDS_RELAXED]->setEnabled(true);
+  animList[ANIM_HANDS_RELAXED]->setEnabled(true);
 
-  SwordsDrawn = false;
+  swordsDrawn = false;
 }
 
-void SinbadCharacterController::SetupCamera(Ogre::Camera *CameraPtr) {
+void SinbadCharacterController::SetupCamera(Ogre::Camera *camera) {
   // create a pivot at roughly the character's shoulder
-  CameraPivot = CameraPtr->getSceneManager()->getRootSceneNode()->createChildSceneNode();
+  cameraPivot = camera->getSceneManager()->getRootSceneNode()->createChildSceneNode();
   // this is where the camera should be soon, and it spins around the pivot
-  CameraGoal = CameraPivot->createChildSceneNode(Ogre::Vector3(0, SCALE * 5, SCALE * 15));
+  cameraGoal = cameraPivot->createChildSceneNode(Ogre::Vector3(0, SCALE * 5, SCALE * 15));
   // this is where the camera actually is
-  CameraNode = CameraPtr->getParentSceneNode();
-  CameraNode->setPosition(CameraPivot->getPosition() + CameraGoal->getPosition());
+  cameraNode = camera->getParentSceneNode();
+  cameraNode->setPosition(cameraPivot->getPosition() + cameraGoal->getPosition());
 
-  CameraPivot->setFixedYawAxis(true);
-  CameraGoal->setFixedYawAxis(true);
-  CameraNode->setFixedYawAxis(true);
+  cameraPivot->setFixedYawAxis(true);
+  cameraGoal->setFixedYawAxis(true);
+  cameraNode->setFixedYawAxis(true);
 
-  PivotPitch = 0;
+  pivotPitch = 0;
 }
 
 void SinbadCharacterController::UpdateBody(float FrameTime) {
-  GoalDirection = Ogre::Vector3::ZERO;  // we will calculate this
-  float x = BodyNode->getPosition().x;
-  float z = BodyNode->getPosition().z;
+  goalDirection = Ogre::Vector3::ZERO;  // we will calculate this
+  float x = bodyNode->getPosition().x;
+  float z = bodyNode->getPosition().z;
 //  float y = GetComponent<SceneManager>().GetHeight(x, z) + CHAR_HEIGHT;
   float y = CHAR_HEIGHT;
-  BodyNode->setPosition(x, y, z);
+  bodyNode->setPosition(x, y, z);
 
-  if (KeyDirection != Ogre::Vector3::ZERO && BaseAnimID != ANIM_DANCE) {
+  if (keyDirection != Ogre::Vector3::ZERO && baseAnimID != ANIM_DANCE) {
     // calculate actually goal direction in world based on player's key
     // directions
-    GoalDirection += KeyDirection.z * CameraNode->getOrientation().zAxis();
-    GoalDirection += KeyDirection.x * CameraNode->getOrientation().xAxis();
-    GoalDirection.y = 0;
-    GoalDirection.normalise();
+    goalDirection += keyDirection.z * cameraNode->getOrientation().zAxis();
+    goalDirection += keyDirection.x * cameraNode->getOrientation().xAxis();
+    goalDirection.y = 0;
+    goalDirection.normalise();
 
-    Ogre::Quaternion toGoal = BodyNode->getOrientation().zAxis().getRotationTo(GoalDirection);
+    Ogre::Quaternion toGoal = bodyNode->getOrientation().zAxis().getRotationTo(goalDirection);
 
     // calculate how much the character has to turn to face goal direction
     float yawToGoal = toGoal.getYaw().valueDegrees();
     // this is how much the character CAN turn this frame
     float yawAtSpeed = yawToGoal / Ogre::Math::Abs(yawToGoal) * FrameTime * TURN_SPEED;
     // reduce "turnability" if we're in midair
-    if (BaseAnimID == ANIM_JUMP_LOOP) yawAtSpeed *= 0.2f;
+    if (baseAnimID == ANIM_JUMP_LOOP) yawAtSpeed *= 0.2f;
 
     // turn as much as we can, but not more than we need to
     if (yawToGoal < 0)
@@ -227,31 +224,31 @@ void SinbadCharacterController::UpdateBody(float FrameTime) {
     else if (yawToGoal > 0)
       yawToGoal = max<float>(0, min<float>(yawToGoal, yawAtSpeed));
 
-    BodyNode->yaw(Ogre::Degree(yawToGoal));
+    bodyNode->yaw(Ogre::Degree(yawToGoal));
 
     // move in current body direction (not the goal direction)
-    BodyNode->translate(0, 0, FrameTime * RUN_SPEED * Anims[BaseAnimID]->getWeight(), Ogre::Node::TS_LOCAL);
+    bodyNode->translate(0, 0, FrameTime * RUN_SPEED * animList[baseAnimID]->getWeight(), Ogre::Node::TS_LOCAL);
   }
 
-  if (BaseAnimID == ANIM_JUMP_LOOP) {
+  if (baseAnimID == ANIM_JUMP_LOOP) {
     // if we're jumping, add a vertical offset too, and apply gravity
-    BodyNode->translate(0, VerticalVelocity * FrameTime, 0, Ogre::Node::TS_LOCAL);
-    VerticalVelocity -= GRAVITY * FrameTime;
+    bodyNode->translate(0, verticalVelocity * FrameTime, 0, Ogre::Node::TS_LOCAL);
+    verticalVelocity -= GRAVITY * FrameTime;
 
-    Ogre::Vector3 pos = BodyNode->getPosition();
+    Ogre::Vector3 pos = bodyNode->getPosition();
     if (pos.y <= 0 + CHAR_HEIGHT) {
       // if we've hit the ground, change to landing state
       pos.y = 0 + CHAR_HEIGHT;
-      BodyNode->setPosition(pos);
+      bodyNode->setPosition(pos);
       SetBaseAnimation(ANIM_JUMP_END, true);
-      Timer = 0;
+      timer = 0;
     }
     if (pos.y <= CHAR_HEIGHT) {
       // if we've hit the ground, change to landing state
       pos.y = CHAR_HEIGHT;
-      BodyNode->setPosition(pos);
+      bodyNode->setPosition(pos);
       SetBaseAnimation(ANIM_JUMP_END, true);
-      Timer = 0;
+      timer = 0;
     }
   }
 }
@@ -260,21 +257,21 @@ void SinbadCharacterController::UpdateAnimations(float FrameTime) {
   float baseAnimSpeed = 1;
   float topAnimSpeed = 1;
 
-  Timer += FrameTime;
+  timer += FrameTime;
 
-  if (TopAnimID == ANIM_DRAW_SWORDS) {
+  if (topAnimID == ANIM_DRAW_SWORDS) {
     // flip the draw swords animation if we need to put it back
-    topAnimSpeed = SwordsDrawn ? -1 : 1;
+    topAnimSpeed = swordsDrawn ? -1 : 1;
 
     // half-way through the animation is when the hand grasps the handles...
-    if (Timer >= Anims[TopAnimID]->getLength() / 2 && Timer - FrameTime < Anims[TopAnimID]->getLength() / 2) {
+    if (timer >= animList[topAnimID]->getLength() / 2 && timer - FrameTime < animList[topAnimID]->getLength() / 2) {
       // so transfer the swords from the sheaths to the hands
-      BodyEnt->detachAllObjectsFromBone();
-      BodyEnt->attachObjectToBone(SwordsDrawn ? "Sheath.L" : "Handle.L", Sword1);
-      BodyEnt->attachObjectToBone(SwordsDrawn ? "Sheath.R" : "Handle.R", Sword2);
+      body->detachAllObjectsFromBone();
+      body->attachObjectToBone(swordsDrawn ? "Sheath.L" : "Handle.L", sword1);
+      body->attachObjectToBone(swordsDrawn ? "Sheath.R" : "Handle.R", sword2);
       // change the hand state to grab or let go
-      Anims[ANIM_HANDS_CLOSED]->setEnabled(!SwordsDrawn);
-      Anims[ANIM_HANDS_RELAXED]->setEnabled(SwordsDrawn);
+      animList[ANIM_HANDS_CLOSED]->setEnabled(!swordsDrawn);
+      animList[ANIM_HANDS_RELAXED]->setEnabled(swordsDrawn);
 
       // toggle sword trails
       //      if (mSwordsDrawn) {
@@ -288,40 +285,40 @@ void SinbadCharacterController::UpdateAnimations(float FrameTime) {
       //      }
     }
 
-    if (Timer >= Anims[TopAnimID]->getLength()) {
+    if (timer >= animList[topAnimID]->getLength()) {
       // animation is finished, so return to what we were doing before
-      if (BaseAnimID == ANIM_IDLE_BASE)
+      if (baseAnimID == ANIM_IDLE_BASE)
         SetTopAnimation(ANIM_IDLE_TOP);
       else {
         SetTopAnimation(ANIM_RUN_TOP);
-        Anims[ANIM_RUN_TOP]->setTimePosition(Anims[ANIM_RUN_BASE]->getTimePosition());
+        animList[ANIM_RUN_TOP]->setTimePosition(animList[ANIM_RUN_BASE]->getTimePosition());
       }
-      SwordsDrawn = !SwordsDrawn;
+      swordsDrawn = !swordsDrawn;
     }
-  } else if (TopAnimID == ANIM_SLICE_VERTICAL || TopAnimID == ANIM_SLICE_HORIZONTAL) {
-    if (Timer >= Anims[TopAnimID]->getLength()) {
+  } else if (topAnimID == ANIM_SLICE_VERTICAL || topAnimID == ANIM_SLICE_HORIZONTAL) {
+    if (timer >= animList[topAnimID]->getLength()) {
       // animation is finished, so return to what we were doing before
-      if (BaseAnimID == ANIM_IDLE_BASE)
+      if (baseAnimID == ANIM_IDLE_BASE)
         SetTopAnimation(ANIM_IDLE_TOP);
       else {
         SetTopAnimation(ANIM_RUN_TOP);
-        Anims[ANIM_RUN_TOP]->setTimePosition(Anims[ANIM_RUN_BASE]->getTimePosition());
+        animList[ANIM_RUN_TOP]->setTimePosition(animList[ANIM_RUN_BASE]->getTimePosition());
       }
     }
 
     // don't sway hips from side to side when slicing. that's just embarrassing.
-    if (BaseAnimID == ANIM_IDLE_BASE) baseAnimSpeed = 0;
-  } else if (BaseAnimID == ANIM_JUMP_START) {
-    if (Timer >= Anims[BaseAnimID]->getLength()) {
+    if (baseAnimID == ANIM_IDLE_BASE) baseAnimSpeed = 0;
+  } else if (baseAnimID == ANIM_JUMP_START) {
+    if (timer >= animList[baseAnimID]->getLength()) {
       // takeoff animation finished, so time to leave the ground!
       SetBaseAnimation(ANIM_JUMP_LOOP, true);
       // apply a jump acceleration to the character
-      VerticalVelocity = JUMP_ACCEL;
+      verticalVelocity = JUMP_ACCEL;
     }
-  } else if (BaseAnimID == ANIM_JUMP_END) {
-    if (Timer >= Anims[BaseAnimID]->getLength()) {
+  } else if (baseAnimID == ANIM_JUMP_END) {
+    if (timer >= animList[baseAnimID]->getLength()) {
       // safely landed, so go back to running or idling
-      if (KeyDirection == Ogre::Vector3::ZERO) {
+      if (keyDirection == Ogre::Vector3::ZERO) {
         SetBaseAnimation(ANIM_IDLE_BASE);
         SetTopAnimation(ANIM_IDLE_TOP);
       } else {
@@ -332,8 +329,8 @@ void SinbadCharacterController::UpdateAnimations(float FrameTime) {
   }
 
   // increment the current base and top animation times
-  if (BaseAnimID != ANIM_NONE) Anims[BaseAnimID]->addTime(FrameTime * baseAnimSpeed);
-  if (TopAnimID != ANIM_NONE) Anims[TopAnimID]->addTime(FrameTime * topAnimSpeed);
+  if (baseAnimID != ANIM_NONE) animList[baseAnimID]->addTime(FrameTime * baseAnimSpeed);
+  if (topAnimID != ANIM_NONE) animList[topAnimID]->addTime(FrameTime * topAnimSpeed);
 
   // apply smooth transitioning between our animations
   FadeAnimations(FrameTime);
@@ -341,19 +338,19 @@ void SinbadCharacterController::UpdateAnimations(float FrameTime) {
 
 void SinbadCharacterController::FadeAnimations(float FrameTime) {
   for (int i = 0; i < NUM_ANIMS; i++) {
-    if (FadingIn[i]) {
+    if (fadingIn[i]) {
       // slowly fade this animation in until it has full weight
-      float newWeight = Anims[i]->getWeight() + FrameTime * ANIM_FADE_SPEED;
-      Anims[i]->setWeight(Ogre::Math::Clamp<float>(newWeight, 0, 1));
-      if (newWeight >= 1) FadingIn[i] = false;
-    } else if (FadingOut[i]) {
+      float newWeight = animList[i]->getWeight() + FrameTime * ANIM_FADE_SPEED;
+      animList[i]->setWeight(Ogre::Math::Clamp<float>(newWeight, 0, 1));
+      if (newWeight >= 1) fadingIn[i] = false;
+    } else if (fadingOut[i]) {
       // slowly fade this animation out until it has no weight, and then disable
       // it
-      float newWeight = Anims[i]->getWeight() - FrameTime * ANIM_FADE_SPEED;
-      Anims[i]->setWeight(Ogre::Math::Clamp<float>(newWeight, 0, 1));
+      float newWeight = animList[i]->getWeight() - FrameTime * ANIM_FADE_SPEED;
+      animList[i]->setWeight(Ogre::Math::Clamp<float>(newWeight, 0, 1));
       if (newWeight <= 0) {
-        Anims[i]->setEnabled(false);
-        FadingOut[i] = false;
+        animList[i]->setEnabled(false);
+        fadingOut[i] = false;
       }
     }
   }
@@ -361,67 +358,67 @@ void SinbadCharacterController::FadeAnimations(float FrameTime) {
 
 void SinbadCharacterController::UpdateCamera(float FrameTime) {
   // place the camera pivot roughly at the character's shoulder
-  CameraPivot->setPosition(BodyNode->getPosition() + Ogre::Vector3::UNIT_Y * CAM_HEIGHT);
+  cameraPivot->setPosition(bodyNode->getPosition() + Ogre::Vector3::UNIT_Y * CAM_HEIGHT);
   // move the camera smoothly to the goal
-  Ogre::Vector3 goalOffset = CameraGoal->_getDerivedPosition() - CameraNode->getPosition();
-  CameraNode->translate(goalOffset * FrameTime * 9.0f);
+  Ogre::Vector3 goalOffset = cameraGoal->_getDerivedPosition() - cameraNode->getPosition();
+  cameraNode->translate(goalOffset * FrameTime * 9.0f);
   // always look at the pivot
-  CameraNode->lookAt(CameraPivot->_getDerivedPosition(), Ogre::Node::TS_PARENT);
+  cameraNode->lookAt(cameraPivot->_getDerivedPosition(), Ogre::Node::TS_PARENT);
 }
 
 void SinbadCharacterController::UpdateCameraGoal(float deltaYaw, float deltaPitch, float deltaZoom) {
-  CameraPivot->yaw(Ogre::Degree(deltaYaw), Ogre::Node::TS_PARENT);
+  cameraPivot->yaw(Ogre::Degree(deltaYaw), Ogre::Node::TS_PARENT);
 
   // bound the pitch
-  if (!(PivotPitch + deltaPitch > 25 && deltaPitch > 0) && !(PivotPitch + deltaPitch < -60 && deltaPitch < 0)) {
-    CameraPivot->pitch(Ogre::Degree(deltaPitch), Ogre::Node::TS_LOCAL);
-    PivotPitch += deltaPitch;
+  if (!(pivotPitch + deltaPitch > 25 && deltaPitch > 0) && !(pivotPitch + deltaPitch < -60 && deltaPitch < 0)) {
+    cameraPivot->pitch(Ogre::Degree(deltaPitch), Ogre::Node::TS_LOCAL);
+    pivotPitch += deltaPitch;
   }
 
-  float dist = CameraGoal->_getDerivedPosition().distance(CameraPivot->_getDerivedPosition());
+  float dist = cameraGoal->_getDerivedPosition().distance(cameraPivot->_getDerivedPosition());
   float distChange = deltaZoom * dist;
 
   // bound the zoom
   if (!(dist + distChange < SCALE * 8 && distChange < 0) && !(dist + distChange > SCALE * 40 && distChange > 0)) {
-    CameraGoal->translate(0, 0, distChange, Ogre::Node::TS_LOCAL);
+    cameraGoal->translate(0, 0, distChange, Ogre::Node::TS_LOCAL);
   }
 }
 
 void SinbadCharacterController::SetBaseAnimation(AnimID ID, bool reset) {
-  if (BaseAnimID != ANIM_NONE) {
+  if (baseAnimID != ANIM_NONE) {
     // if we have an old animation, fade it out
-    FadingIn[BaseAnimID] = false;
-    FadingOut[BaseAnimID] = true;
+    fadingIn[baseAnimID] = false;
+    fadingOut[baseAnimID] = true;
   }
 
-  BaseAnimID = ID;
+  baseAnimID = ID;
 
   if (ID != ANIM_NONE) {
     // if we have a new animation, enable it and fade it in
-    Anims[ID]->setEnabled(true);
-    Anims[ID]->setWeight(0);
-    FadingOut[ID] = false;
-    FadingIn[ID] = true;
-    if (reset) Anims[ID]->setTimePosition(0);
+    animList[ID]->setEnabled(true);
+    animList[ID]->setWeight(0);
+    fadingOut[ID] = false;
+    fadingIn[ID] = true;
+    if (reset) animList[ID]->setTimePosition(0);
   }
 }
 
 void SinbadCharacterController::SetTopAnimation(AnimID ID, bool reset) {
-  if (TopAnimID != ANIM_NONE) {
+  if (topAnimID != ANIM_NONE) {
     // if we have an old animation, fade it out
-    FadingIn[TopAnimID] = false;
-    FadingOut[TopAnimID] = true;
+    fadingIn[topAnimID] = false;
+    fadingOut[topAnimID] = true;
   }
 
-  TopAnimID = ID;
+  topAnimID = ID;
 
   if (ID != ANIM_NONE) {
     // if we have a new animation, enable it and fade it in
-    Anims[ID]->setEnabled(true);
-    Anims[ID]->setWeight(0);
-    FadingOut[ID] = false;
-    FadingIn[ID] = true;
-    if (reset) Anims[ID]->setTimePosition(0);
+    animList[ID]->setEnabled(true);
+    animList[ID]->setWeight(0);
+    fadingOut[ID] = false;
+    fadingIn[ID] = true;
+    if (reset) animList[ID]->setTimePosition(0);
   }
 
   //if (ID == ANIM_RUN_TOP)
