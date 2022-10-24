@@ -25,13 +25,10 @@ uniform float uOffsetScale; // [0, 1] The distance of the first sample. samples 
 // placed in [uOffsetScale * uSampleLengthScreenSpace, uSampleLengthScreenSpace]
 uniform float uDefaultAccessibility; // the default value used in the lerp() expression for invalid samples [0, 1]
 uniform float uEdgeHighlight; // multiplier for edge highlighting in [1, 2] 1 is full highlighting 2 is off
-uniform float uEnable;
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  if (uEnable <= 0.0) discard;
-
 //   const float nSampleNum = 32.0; // number of samples
   const float nSampleNum = 16.0; // number of samples
 

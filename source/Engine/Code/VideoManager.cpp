@@ -6,8 +6,6 @@
 #include "DotSceneLoaderB.h"
 #include "ImguiHelpers.h"
 #include "Platform.h"
-#include "SkyModel/ArHosekSkyModel.h"
-#include "SkyModel/SkyModel.h"
 #include <Ogre.h>
 #ifdef OGRE_OPENGL
 #include <OgreGLRenderSystemCommon.h>
@@ -72,11 +70,79 @@ extern "C" {
 
 using namespace std;
 
-namespace Glue {
+
+namespace {
 
 inline bool RenderSystemIsGL() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL Rendering Subsystem"; };
 inline bool RenderSystemIsGL3() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL 3+ Rendering Subsystem"; };
 inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderSystem()->getName() == "OpenGL ES 2.x Rendering Subsystem"; };
+
+#ifdef DESKTOP
+
+std::string GetBinaryDir() {
+#ifndef MAX_PATH
+#define MAX_PATH 4096
+#endif
+  char buffer[MAX_PATH] = {0};
+#ifdef APPLE
+  uint32_t bufferSize = 0;
+  _NSGetExecutablePath(nullptr, &bufferSize);
+  char unresolvedPath[bufferSize];
+  _NSGetExecutablePath(unresolvedPath, &bufferSize);
+  OgreAssert(realpath(unresolvedPath, buffer), "macos realpath failed");
+#elif defined(WINDOWS)
+  GetModuleFileNameA(NULL, buffer, MAX_PATH);
+#elif defined(LINUX)
+  OgreAssert(readlink("/proc/self/exe", buffer, MAX_PATH), "linux readlink failed");
+#endif
+  buffer[MAX_PATH - 1] = 0;
+  auto pos = std::string(buffer).find_last_of("\\/");
+  return std::string(buffer).substr(0, pos + 1);
+}
+
+inline std::string FindPath(const std::string &path, int depth) {
+  std::string result = path;
+  std::string buffer = GetBinaryDir();
+
+  if (fs::exists(buffer.append(path))) {
+    return buffer;
+  }
+
+  for (int i = 0; i < depth; i++) {
+    if (fs::exists(result))
+      return result;
+    else
+      result = std::string("../").append(result);
+  }
+
+  return "";
+}
+
+void ScanLocation(const string &path, const string &groupName) {
+  const char *FILE_SYSTEM = "FileSystem";
+  const char *ZIP = "Zip";
+  std::vector<std::string> resourceList;
+  OgreAssert(fs::is_directory(path), "path is not directory");
+  auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
+  ogreResourceManager.addResourceLocation(path, FILE_SYSTEM, groupName);
+
+  for (fs::recursive_directory_iterator end, it(path); it != end; ++it) {
+    const std::string fullPath = it->path().string();
+    const std::string fileExtention = it->path().filename().extension().string();
+
+    if (it->is_directory())
+      ogreResourceManager.addResourceLocation(fullPath, FILE_SYSTEM, groupName);
+    else if (it->is_regular_file() && fileExtention == ".zip")
+      ogreResourceManager.addResourceLocation(fullPath, ZIP, groupName);
+  }
+}
+#endif  // DESKTOP
+
+}
+
+
+namespace Glue {
+
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
 void InitOgreRenderSystemGL3();
 #endif
@@ -319,24 +385,21 @@ void VideoManager::OnSetUp() {
 }
 
 void VideoManager::OnUpdate(float time) {
-  static Ogre::Matrix4 MVP;
-  static Ogre::Matrix4 MVPprev;
-  MVPprev = MVP;
-  MVP = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
-  for (auto &it : gpuVpParams) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
-  if (skyNeedsUpdate && skyBoxFpParams)
-    for (int i = 0; i < 10; i++) skyBoxFpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
+  static ImGuiIO &io = ImGui::GetIO();
+  Ogre::ImGuiOverlay::NewFrame();
+  ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
+  ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
+  ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
+  ImGui::SetNextWindowBgAlpha(0.5);
+  ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+  ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+  ImGui::End();
 }
 
 void VideoManager::OnClean() {
   Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::RGN_DEFAULT);
   if (sceneManager) sceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   if (sceneManager) sceneManager->clearScene();
-  skyBoxFpParams.reset();
-  gpuFpParams.clear();
-  gpuFpParams.shrink_to_fit();
-  gpuVpParams.clear();
-  gpuVpParams.shrink_to_fit();
 }
 
 void VideoManager::OnPause() {}
@@ -348,11 +411,6 @@ void VideoManager::RenderFrame() {
 #if defined(WINDOWS) || defined(ANDROID)
   SDL_GL_SwapWindow(mainWindow->sdlWindow);
 #endif
-}
-
-Ogre::Vector3 VideoManager::GetSunPosition() {
-  auto *SunPtr = sceneManager->getLight("Sun");
-  return SunPtr ? -SunPtr->getDerivedDirection().normalisedCopy() : Ogre::Vector3::ZERO;
 }
 
 Window &VideoManager::GetWindow(int number) { return windowList[0]; }
@@ -384,33 +442,6 @@ void VideoManager::CheckGPU() {
     OgreAssert(CheckGLVersion(3, 0), "OpenGLES 3.0 is not supported");
 #endif
   }
-}
-
-void VideoManager::InitSky() {
-  auto colorspace = ColorSpace::sRGB;
-  float sunSize = 0.27f;
-  float turbidity = 4.0f;
-  auto groundAlbedo = Ogre::Vector3(1.0);
-  auto sunColor = Ogre::Vector3(20000);
-  auto sunDir = GetSunPosition();
-
-  SkyModel sky;
-  sky.SetupSky(sunDir, sunSize, sunColor, groundAlbedo, turbidity, colorspace);
-
-  const ArHosekSkyModelState *States[3] = {sky.StateX, sky.StateY, sky.StateZ};
-
-  for (int i = 0; i < 9; i++)
-    for (int j = 0; j < 3; j++) hosekParams[i][j] = States[j]->configs[j][i];
-  hosekParams[9] = Ogre::Vector3(sky.StateX->radiances[0], sky.StateY->radiances[1], sky.StateZ->radiances[2]);
-
-  auto SkyMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
-  if (!SkyMaterial) return;
-
-  auto FpParams = SkyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-  if (FpParams) skyBoxFpParams = FpParams;
-
-  FpParams->setIgnoreMissingParams(true);
-  for (int i = 0; i < hosekParamList.size(); i++) FpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
 }
 
 void VideoManager::InitSDL() {
@@ -530,67 +561,13 @@ void VideoManager::InitOgreOverlay() {
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
+  //  AddFont("NotoSans-Regular", RGN_INTERNAL, nullptr, io.Fonts->GetGlyphRangesCyrillic());
+  //  ImFontConfig config;
+  //  config.MergeMode = true;
+  //  static const ImWchar icon_ranges[] = {ICON_MIN_MD, ICON_MAX_MD, 0};
+  //  AddFont("KenneyIcon-Regular", RGN_INTERNAL, &config, icon_ranges);
 }
 
-#ifdef DESKTOP
-static std::string GetBinaryDir() {
-#ifndef MAX_PATH
-#define MAX_PATH 4096
-#endif
-  char buffer[MAX_PATH] = {0};
-#ifdef APPLE
-  uint32_t bufferSize = 0;
-  _NSGetExecutablePath(nullptr, &bufferSize);
-  char unresolvedPath[bufferSize];
-  _NSGetExecutablePath(unresolvedPath, &bufferSize);
-  OgreAssert(realpath(unresolvedPath, buffer), "macos realpath failed");
-#elif defined(WINDOWS)
-  GetModuleFileNameA(NULL, buffer, MAX_PATH);
-#elif defined(LINUX)
-  OgreAssert(readlink("/proc/self/exe", buffer, MAX_PATH), "linux readlink failed");
-#endif
-  buffer[MAX_PATH - 1] = 0;
-  auto pos = std::string(buffer).find_last_of("\\/");
-  return std::string(buffer).substr(0, pos + 1);
-}
-
-static inline std::string FindPath(const std::string &path, int depth) {
-  std::string result = path;
-  std::string buffer = GetBinaryDir();
-
-  if (fs::exists(buffer.append(path))) {
-    return buffer;
-  }
-
-  for (int i = 0; i < depth; i++) {
-    if (fs::exists(result))
-      return result;
-    else
-      result = std::string("../").append(result);
-  }
-
-  return "";
-}
-
-static void ScanLocation(const string &path, const string &groupName) {
-  const char *FILE_SYSTEM = "FileSystem";
-  const char *ZIP = "Zip";
-  std::vector<std::string> resourceList;
-  OgreAssert(fs::is_directory(path), "path is not directory");
-  auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
-  ogreResourceManager.addResourceLocation(path, FILE_SYSTEM, groupName);
-
-  for (fs::recursive_directory_iterator end, it(path); it != end; ++it) {
-    const std::string fullPath = it->path().string();
-    const std::string fileExtention = it->path().filename().extension().string();
-
-    if (it->is_directory())
-      ogreResourceManager.addResourceLocation(fullPath, FILE_SYSTEM, groupName);
-    else if (it->is_regular_file() && fileExtention == ".zip")
-      ogreResourceManager.addResourceLocation(fullPath, ZIP, groupName);
-  }
-}
-#endif  // DESKTOP
 
 void VideoManager::LoadResources() {
 #ifdef DESKTOP

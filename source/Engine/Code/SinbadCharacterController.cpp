@@ -121,15 +121,15 @@ void SinbadCharacterController::SetupBody() {
   // create main model
   BodyNode = sceneMgr->getRootSceneNode()->createChildSceneNode(Ogre::Vector3::UNIT_Y * CHAR_HEIGHT);
   BodyEnt = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
-  GetEngine().AddEntity(BodyEnt);
+  GetComponent<SceneManager>().RegEntity(BodyEnt);
   BodyNode->attachObject(BodyEnt);
   BodyNode->scale(Ogre::Vector3(SCALE));
 
   // create swords and attach to sheath
   Sword1 = sceneMgr->createEntity("SinbadSword1", "Sword.mesh");
   Sword2 = sceneMgr->createEntity("SinbadSword2", "Sword.mesh");
-  GetEngine().AddEntity(Sword1);
-  GetEngine().AddEntity(Sword2);
+  GetComponent<SceneManager>().RegEntity(Sword1);
+  GetComponent<SceneManager>().RegEntity(Sword2);
   BodyEnt->attachObjectToBone("Sheath.L", Sword1);
   BodyEnt->attachObjectToBone("Sheath.R", Sword2);
 
@@ -139,7 +139,7 @@ void SinbadCharacterController::SetupBody() {
   //  params["maxElements"] = "80";
   //  mSwordTrail = (Ogre::RibbonTrail *)sceneMgr->createMovableObject("RibbonTrail", &params);
   //  mSwordTrail->setMaterialName("Examples/LightRibbonTrail");
-  //  GetEngine().AddMaterial("Examples/LightRibbonTrail");
+  //  GetComponent<SceneManager>().AddMaterial("Examples/LightRibbonTrail");
   //  mSwordTrail->setTrailLength(SCALE * 20);
   //  mSwordTrail->setVisible(false);
   //  sceneMgr->getRootSceneNode()->attachObject(mSwordTrail);
@@ -200,7 +200,8 @@ void SinbadCharacterController::UpdateBody(float FrameTime) {
   GoalDirection = Ogre::Vector3::ZERO;  // we will calculate this
   float x = BodyNode->getPosition().x;
   float z = BodyNode->getPosition().z;
-  float y = GetEngine().GetHeight(x, z) + CHAR_HEIGHT;
+//  float y = GetComponent<SceneManager>().GetHeight(x, z) + CHAR_HEIGHT;
+  float y = CHAR_HEIGHT;
   BodyNode->setPosition(x, y, z);
 
   if (KeyDirection != Ogre::Vector3::ZERO && BaseAnimID != ANIM_DANCE) {
@@ -245,9 +246,9 @@ void SinbadCharacterController::UpdateBody(float FrameTime) {
       SetBaseAnimation(ANIM_JUMP_END, true);
       Timer = 0;
     }
-    if (pos.y <= GetEngine().GetHeight(x, z) + CHAR_HEIGHT) {
+    if (pos.y <= CHAR_HEIGHT) {
       // if we've hit the ground, change to landing state
-      pos.y = GetEngine().GetHeight(x, z) + CHAR_HEIGHT;
+      pos.y = CHAR_HEIGHT;
       BodyNode->setPosition(pos);
       SetBaseAnimation(ANIM_JUMP_END, true);
       Timer = 0;

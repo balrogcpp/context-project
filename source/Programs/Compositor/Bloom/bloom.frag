@@ -12,7 +12,6 @@
 #include "filters.glsl"
 
 in vec2 vUV0;
-uniform float uEnable;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize;
 uniform float uThreshhold;
@@ -30,6 +29,5 @@ vec3 ApplyThreshold(const vec3 color, const float threshold)
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  if (uEnable <= 0.0) discard;
   FragColor.rgb = ApplyThreshold(texture2D(uSampler, vUV0).rgb, uThreshhold);
 }

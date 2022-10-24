@@ -104,7 +104,7 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *OgreT
       texture_state->setTextureAddressingMode(TextureUnitState::TAM_CLAMP);
     }
 
-    Glue::GetEngine().AddMaterial(new_material);
+    Glue::GetComponent<Glue::SceneManager>().RegMaterial(new_material);
     return new_material;
   }
 }

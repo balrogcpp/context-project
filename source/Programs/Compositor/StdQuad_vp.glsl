@@ -7,6 +7,7 @@
 #version 100
 #define VERSION 100
 #endif
+
 #include "header.vert"
 
 in vec4 vertex;

@@ -1,0 +1,86 @@
+/// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+// Cut bright parts of scene
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program bloom_fs glsl glsles
+{
+	source bloom.frag
+
+    default_params
+    {
+        param_named uThreshhold float 0.9999
+    }
+}
+
+material Bloom
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			lighting off
+            polygon_mode_overrideable false
+            depth_check off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref bloom_fs
+			{
+                param_named uSampler int 0
+                param_named_auto TexelSize inverse_texture_size 0
+			}
+
+			texture_unit rt1
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Add flares
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program flares_fs glsl glsles
+{
+	source flares.frag
+
+    default_params
+    {
+    }
+}
+
+material Flares
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			lighting off
+            polygon_mode_overrideable false
+            depth_check off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref flares_fs
+			{
+                param_named uSampler int 0
+                param_named_auto TexelSize inverse_texture_size 0
+			}
+
+			texture_unit rt1
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}

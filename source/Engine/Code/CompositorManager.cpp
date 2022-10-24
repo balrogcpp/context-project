@@ -7,54 +7,26 @@ using namespace std;
 
 namespace Glue {
 
-const static FX Bloom{"Bloom", false, "uBloomEnable", "Output", {"Bloom", "Downscale3x3"}};
-const static FX SSAO{"SSAO", false, "uSSAOEnable", "Output", {"SSAO", "FilterX", "FilterY"}};
-const static FX Blur{"Blur", false, "uBlurEnable", "Blur", {}};
-const static FX FXAA{"FXAA", false, "uFXAAEnable", "FXAA", {}};
-const static FX HDR{"HDR", false, "uHDREnable", "Output", {}};
-const static std::string FX_SSAO = "SSAO";
-const static std::string FX_BLOOM = "Bloom";
-const static std::string FX_BLUR = "Blur";
-const static std::string FX_FXAA = "FXAA";
-const static std::string FX_HDR = "HDR";
-
-static Ogre::GpuProgramParametersSharedPtr GetFPparameters(const string &CompositorName) {
-  static auto &MM = Ogre::MaterialManager::getSingleton();
-  return MM.getByName(CompositorName)->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-}
-
 CompositorManager::CompositorManager() {}
 
 CompositorManager::~CompositorManager() {}
 
 void CompositorManager::OnUpdate(float time) {}
 
-void CompositorManager::EnableEffect(const std::string &FX, bool Enable) {
-  CompositorList[FX].Enabled = Enable;
-  const string EnableStr = "uEnable";
-  const float Flag = Enable ? 1.0f : 0.0f;
-  const auto &FXPtr = CompositorList[FX];
-  GetFPparameters(FXPtr.OutputCompositor)->setNamedConstant(FXPtr.EnableParam, Flag);
-  for (const auto &it : FXPtr.CompositorChain) GetFPparameters(it)->setNamedConstant(EnableStr, Flag);
-}
-
 void CompositorManager::OnSetUp() {
-  OgreCompositorManager = Ogre::CompositorManager::getSingletonPtr();
-  OgreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
-  OgreCamera = OgreSceneManager->getCamera("Default");
-  OgreViewport = OgreCamera->getViewport();
-  OgreCompositorChain = OgreCompositorManager->getCompositorChain(OgreViewport);
-  CompositorList.insert(make_pair(FX_BLOOM, Bloom));
-  CompositorList.insert(make_pair(FX_SSAO, SSAO));
-  CompositorList.insert(make_pair(FX_BLUR, Blur));
-  CompositorList.insert(make_pair(FX_FXAA, FXAA));
-  CompositorList.insert(make_pair(FX_HDR, HDR));
-  EnableEffect(FX_SSAO, false);
-  EnableEffect(FX_BLOOM, false);
-  EnableEffect(FX_BLUR, false);
-  EnableEffect(FX_HDR, false);
-  EnableEffect(FX_FXAA, false);
+  // init fields
+  compositorManager = Ogre::CompositorManager::getSingletonPtr();
+  sceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
+  camera = sceneManager->getCamera("Default");
+  viewport = camera->getViewport();
+  compositorChain = compositorManager->getCompositorChain(viewport);
+
+  // init compositor chain
   InitMRT();
+
+//  AddCompositorEnabled("SSAO");
+//  AddCompositorEnabled("FXAA");
+  AddCompositorEnabled("Output");
 }
 
 void CompositorManager::OnClean() {}
@@ -63,94 +35,90 @@ void CompositorManager::OnPause() {}
 
 void CompositorManager::OnResume() {}
 
-void CompositorManager::AddCompositorEnabled(const string &Name) {
-  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, Name), "Failed to add MRT compoitor");
-  OgreCompositorManager->setCompositorEnabled(OgreViewport, Name, true);
+void CompositorManager::AddCompositorEnabled(const string &name) {
+  OgreAssert(compositorManager->addCompositor(viewport, name), "Failed to add MRT compoitor");
+  compositorManager->setCompositorEnabled(viewport, name, true);
 }
 
-void CompositorManager::AddCompositorDisabled(const string &Name) {
-  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, Name), "Failed to add MRT compoitor");
-  OgreCompositorManager->setCompositorEnabled(OgreViewport, Name, false);
+void CompositorManager::AddCompositorDisabled(const string &name) {
+  OgreAssert(compositorManager->addCompositor(viewport, name), "Failed to add MRT compoitor");
+  compositorManager->setCompositorEnabled(viewport, name, false);
 }
 
-void CompositorManager::EnableCompositor(const string &Name) { OgreCompositorManager->setCompositorEnabled(OgreViewport, Name, true); }
+void CompositorManager::EnableCompositor(const string &name) { compositorManager->setCompositorEnabled(viewport, name, true); }
 
 void CompositorManager::InitMRT() {
-  const string MRTCompositor = "MRT";
-  ViewportSizeY = OgreViewport->getActualDimensions().height();
-  ViewportSizeX = OgreViewport->getActualDimensions().width();
-  OgreAssert(OgreCompositorManager->addCompositor(OgreViewport, MRTCompositor, 0), "Failed to add MRT compositor");
-  OgreCompositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, false);
-  auto *MRTCompositorPtr = OgreCompositorChain->getCompositor(MRTCompositor);
-  auto *MRTTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("mrt");
-  OgreAssert(MRTTexturePtr, "MRTCompositor texture not created");
+  const string MRT = "MRT";
+  int sizeY = viewport->getActualDimensions().height();
+  int sizeX = viewport->getActualDimensions().width();
+  OgreAssert(compositorManager->addCompositor(viewport, MRT, 0), "Failed to add MRT compositor");
+  compositorManager->setCompositorEnabled(viewport, MRT, false);
+  auto *mrtCompositor = compositorChain->getCompositor(MRT);
+  auto *mrtTexture = mrtCompositor->getTechnique()->getTextureDefinition("mrt");
+  OgreAssert(mrtTexture, "MRTCompositor texture not created");
 #ifdef MOBILE
-  MRTTexturePtr->width = 1024;
-  MRTTexturePtr->height = 768;
+  mrtTexture->width = 1024;
+  mrtTexture->height = 768;
 #else
-  MRTTexturePtr->width = ViewportSizeX;
-  MRTTexturePtr->height = ViewportSizeY;
+  mrtTexture->width = sizeX;
+  mrtTexture->height = sizeY;
 #endif
-  auto *SSAOTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("ssao");
-  auto *FinalTexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("final");
-  auto *RT1TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt1");
-  auto *RT2TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt2");
-  auto *RT3TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt3");
-  auto *RT4TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt4");
-  auto *RT5TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt5");
-  auto *RT6TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt6");
-  auto *RT7TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt7");
-  auto *RT8TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt8");
-  auto *RT9TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt9");
-  auto *RT10TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt10");
-  auto *RT11TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt11");
-  auto *RT12TexturePtr = MRTCompositorPtr->getTechnique()->getTextureDefinition("rt12");
-  OgreAssert(SSAOTexturePtr, "SSAO texture not created");
-  OgreAssert(FinalTexturePtr, "Final texture not created");
-  OgreAssert(RT1TexturePtr, "RT1 texture not created");
-  OgreAssert(RT2TexturePtr, "RT2 texture not created");
-  OgreAssert(RT3TexturePtr, "RT3 texture not created");
-  OgreAssert(RT4TexturePtr, "RT4 texture not created");
-  OgreAssert(RT5TexturePtr, "RT5 texture not created");
-  OgreAssert(RT6TexturePtr, "RT6 texture not created");
-  OgreAssert(RT7TexturePtr, "RT7 texture not created");
-  OgreAssert(RT8TexturePtr, "RT8 texture not created");
-  OgreAssert(RT9TexturePtr, "RT9 texture not created");
-  OgreAssert(RT10TexturePtr, "RT10 texture not created");
-  OgreAssert(RT11TexturePtr, "RT11 texture not created");
-  OgreAssert(RT12TexturePtr, "RT12 texture not created");
+  auto *rt0Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt0");
+  auto *rt1Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt1");
+  auto *rt2Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt2");
+  auto *rt3Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt3");
+  auto *rt4Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt4");
+  auto *rt5Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt5");
+  auto *rt6Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt6");
+  auto *rt7Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt7");
+  auto *rt8Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt8");
+  auto *rt9Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt9");
+  auto *rt10Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt10");
+  auto *rt11Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt11");
+  auto *rt12Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt12");
+  OgreAssert(rt0Texture, "rt0 texture failed to create");
+  OgreAssert(rt1Texture, "rt1 texture failed to create");
+  OgreAssert(rt2Texture, "rt2 texture failed to create");
+  OgreAssert(rt3Texture, "rt3 texture failed to create");
+  OgreAssert(rt4Texture, "rt4 texture failed to create");
+  OgreAssert(rt5Texture, "rt5 texture failed to create");
+  OgreAssert(rt6Texture, "rt6 texture failed to create");
+  OgreAssert(rt7Texture, "rt7 texture failed to create");
+  OgreAssert(rt8Texture, "rt8 texture failed to create");
+  OgreAssert(rt9Texture, "rt9 texture failed to create");
+  OgreAssert(rt10Texture, "rt10 texture failed to create");
+  OgreAssert(rt11Texture, "rt11 texture failed to create");
+  OgreAssert(rt12Texture, "rt12 texture failed to create");
 #ifdef MOBILE
-  FinalTexturePtr->width = MRTTexturePtr->width;
-  FinalTexturePtr->height = MRTTexturePtr->height;
+  rt0Texture->width = mrtTexture->width;
+  rt0Texture->height = mrtTexture->height;
 #endif
-  SSAOTexturePtr->width = MRTTexturePtr->width / 2;
-  SSAOTexturePtr->height = MRTTexturePtr->height / 2;
-  RT1TexturePtr->width = MRTTexturePtr->width / 2;
-  RT1TexturePtr->height = MRTTexturePtr->height / 2;
-  RT2TexturePtr->width = MRTTexturePtr->width / 4;
-  RT2TexturePtr->height = MRTTexturePtr->height / 4;
-  RT3TexturePtr->width = MRTTexturePtr->width / 8;
-  RT3TexturePtr->height = MRTTexturePtr->height / 8;
-  RT4TexturePtr->width = MRTTexturePtr->width / 16;
-  RT4TexturePtr->height = MRTTexturePtr->height / 16;
-  RT5TexturePtr->width = MRTTexturePtr->width / 32;
-  RT5TexturePtr->height = MRTTexturePtr->height / 32;
-  RT6TexturePtr->width = MRTTexturePtr->width / 64;
-  RT6TexturePtr->height = MRTTexturePtr->height / 64;
-  RT7TexturePtr->width = MRTTexturePtr->width / 128;
-  RT7TexturePtr->height = MRTTexturePtr->height / 128;
-  RT8TexturePtr->width = MRTTexturePtr->width / 256;
-  RT8TexturePtr->height = MRTTexturePtr->height / 256;
-  RT9TexturePtr->width = MRTTexturePtr->width / 512;
-  RT9TexturePtr->height = MRTTexturePtr->height / 512;
-  RT10TexturePtr->width = MRTTexturePtr->width / 1024;
-  RT10TexturePtr->height = MRTTexturePtr->height / 1024;
-  RT11TexturePtr->width = MRTTexturePtr->width / 2048;
-  RT11TexturePtr->height = MRTTexturePtr->height / 2048;
-  RT12TexturePtr->width = MRTTexturePtr->width / 4096;
-  RT12TexturePtr->height = MRTTexturePtr->height / 4096;
+  rt1Texture->width = mrtTexture->width / 2;
+  rt1Texture->height = mrtTexture->height / 2;
+  rt2Texture->width = mrtTexture->width / 4;
+  rt2Texture->height = mrtTexture->height / 4;
+  rt3Texture->width = mrtTexture->width / 8;
+  rt3Texture->height = mrtTexture->height / 8;
+  rt4Texture->width = mrtTexture->width / 16;
+  rt4Texture->height = mrtTexture->height / 16;
+  rt5Texture->width = mrtTexture->width / 32;
+  rt5Texture->height = mrtTexture->height / 32;
+  rt6Texture->width = mrtTexture->width / 64;
+  rt6Texture->height = mrtTexture->height / 64;
+  rt7Texture->width = mrtTexture->width / 128;
+  rt7Texture->height = mrtTexture->height / 128;
+  rt8Texture->width = mrtTexture->width / 256;
+  rt8Texture->height = mrtTexture->height / 256;
+  rt9Texture->width = mrtTexture->width / 512;
+  rt9Texture->height = mrtTexture->height / 512;
+  rt10Texture->width = mrtTexture->width / 1024;
+  rt10Texture->height = mrtTexture->height / 1024;
+  rt11Texture->width = mrtTexture->width / 2048;
+  rt11Texture->height = mrtTexture->height / 2048;
+  rt12Texture->width = mrtTexture->width / 4096;
+  rt12Texture->height = mrtTexture->height / 4096;
 
-  OgreCompositorManager->setCompositorEnabled(OgreViewport, MRTCompositor, true);
+  compositorManager->setCompositorEnabled(viewport, MRT, true);
 }
 
 }  // namespace Glue

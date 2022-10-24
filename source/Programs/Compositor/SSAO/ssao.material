@@ -10,7 +10,6 @@ fragment_program SSAOCrytek_fp glsl glsles
 	{
 		param_named uSceneDepthSampler int 0
 		param_named sRotSampler4x4 int 1
-		param_named uEnable float 0.0
         param_named_auto ViewportSize viewport_size
         param_named_auto NearClipDistance near_clip_distance
         param_named_auto FarClipDistance far_clip_distance
@@ -56,6 +55,53 @@ material SSAO
                 tex_coord_set 0
                 tex_address_mode wrap
                 filtering none
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program SSAO_mod_fp glsl glsles
+{
+	source ssao_mod.frag
+	default_params
+	{
+		param_named uSceneSampler int 0
+		param_named uSsaoSampler int 1
+	}
+}
+
+material SSAO_mod
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            lighting off
+            polygon_mode_overrideable false
+            depth_check off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+            fragment_program_ref SSAO_mod_fp {}
+
+            texture_unit scene
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit ssao
+            {
+                texture white.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
             }
         }
     }

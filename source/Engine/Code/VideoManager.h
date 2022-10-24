@@ -40,7 +40,7 @@ class Window {
   Ogre::Camera* ogreCamera = nullptr;
 };
 
-class VideoManager : public System<VideoManager> {
+class VideoManager final : public System<VideoManager>, public Ogre::RenderTargetListener {
  protected:
   class ShaderResolver;
 
@@ -54,10 +54,7 @@ class VideoManager : public System<VideoManager> {
   void OnResume() override;
   void OnUpdate(float time) override;
 
-  void InitSky();
-
   void RenderFrame();
-  Ogre::Vector3 GetSunPosition();
   Window& GetWindow(int number);
   Window& GetMainWindow();
 
@@ -90,12 +87,6 @@ class VideoManager : public System<VideoManager> {
   int pssmSplitCount;
   std::unique_ptr<ImGuiInputListener> imguiListener;
   Ogre::ImGuiOverlay* imguiOverlay = nullptr;
-  bool skyNeedsUpdate = false;
-  Ogre::GpuProgramParametersSharedPtr skyBoxFpParams;
-  const std::array<const char*, 10> hosekParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
-  std::array<Ogre::Vector3, 10> hosekParams;
-  std::vector<Ogre::GpuProgramParametersSharedPtr> gpuFpParams;
-  std::vector<Ogre::GpuProgramParametersSharedPtr> gpuVpParams;
 };
 
 }  // namespace Glue

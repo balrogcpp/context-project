@@ -12,7 +12,6 @@
 #include "filters.glsl"
 
 in vec2 vUV0;
-uniform float uEnable;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize;
 
@@ -44,7 +43,6 @@ vec3 Ghosts()
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-    if (uEnable <= 0.0) discard;
     vec3 color = Downscale3x3(uSampler, vUV0, TexelSize);
     color += Ghosts();
     FragColor.rgb = color;

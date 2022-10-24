@@ -1,0 +1,55 @@
+/// created by Andrey Vasiliev
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+
+fragment_program Fog_fs glsl glsles
+{
+    source fog.frag
+    preprocessor_defines NONE
+	default_params
+	{
+        param_named_auto FogColour fog_colour
+        param_named_auto FogParams fog_params
+        param_named_auto FarClipDistance far_clip_distance
+	}
+}
+
+material Fog
+{
+	technique
+	{
+		pass
+		{
+		    cull_hardware none
+			lighting off
+            polygon_mode_overrideable false
+            depth_check off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
+
+			fragment_program_ref Fog_fs
+			{
+                param_named uSceneSampler int 0
+                param_named uSceneDepthSampler int 1
+			}
+
+			texture_unit scene
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+
+            texture_unit depth
+            {
+                texture black.dds
+                tex_coord_set 0
+                tex_address_mode clamp
+                filtering linear linear none
+            }
+		}
+	}
+}

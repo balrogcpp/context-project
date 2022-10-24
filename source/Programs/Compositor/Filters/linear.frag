@@ -12,13 +12,10 @@
 #include "filters.glsl"
 
 in vec2 vUV0;
-uniform float uEnable;
 uniform sampler2D uSampler;
-uniform vec2 TexelSize;
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  if (uEnable <= 0.0) discard;
-  FragColor.rgb = Upscale3x3(uSampler, vUV0, TexelSize);
+  FragColor.rgb = texture2D(uSampler, vUV0).rgb;
 }

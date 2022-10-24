@@ -12,13 +12,12 @@
 #include "filters.glsl"
 
 in vec2 vUV0;
-uniform float uEnable;
 uniform sampler2D uSampler;
 uniform vec2 TexelSize;
+uniform float uFXAAStrength;
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
-  if (uEnable <= 0.0) discard;
-  FragColor.rgb = texture2D(uSampler, vUV0).rgb;
+  FragColor.rgb = FXAA(uSampler, vUV0, TexelSize, uFXAAStrength);
 }

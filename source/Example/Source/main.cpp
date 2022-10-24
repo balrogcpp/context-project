@@ -17,11 +17,9 @@ int main()
     // main app class object
     Glue::Application app;
 
-    auto *scene = Ogre::Root::getSingleton().getSceneManager("Default");
-    auto *root = scene->getRootSceneNode();
-    root->loadChildren("1.scene");
-    GetComponent<VideoManager>().InitSky();
-    //GetComponent<VideoManager>().GetWindow(0).GrabCursor(true);
+    GetComponent<VideoManager>().GetWindow(0).GrabCursor(true);
+    GetComponent<SceneManager>().LoadFromFile("1.scene");
+    GetComponent<SceneManager>().SetUpSky();
 
     // main function
     return app.Main();

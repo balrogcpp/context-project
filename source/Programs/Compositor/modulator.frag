@@ -38,7 +38,6 @@ uniform sampler2D uSpeedSampler;
 #endif // USE_BLUR
 #ifdef USE_SSAO
 uniform sampler2D uSsaoSampler;
-uniform float uSSAOEnable;
 #endif // USE_SSAO
 #ifdef USE_BLOOM
 uniform sampler2D uRT1;
@@ -63,10 +62,6 @@ uniform vec2 TexelSize9;
 uniform vec2 TexelSize10;
 uniform vec2 TexelSize11;
 uniform vec2 TexelSize12;
-uniform float uBloomEnable;
-#ifdef USE_HDR
-uniform float uHDREnable;
-#endif // USE_HDR
 #endif // USE_BLOOM
 #ifdef SRGB
 #ifdef MANUAL_SRGB
@@ -82,28 +77,24 @@ uniform float FarClipDistance;
 #ifdef USE_BLUR
 uniform vec2 PixelSize;
 uniform float uScale;
-uniform float uBlurEnable;
 #endif // USE_BLUR
 #endif // !NO_MRT
 #ifdef USE_FXAA
 uniform float uFXAAStrength;
-uniform float uFXAAEnable;
 #endif // USE_FXAA
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
 {
 #ifndef NO_MRT
-    vec3 scene = texture2D(uSceneSampler, vUV0).rgb;
+  vec3 scene = texture2D(uSceneSampler, vUV0).rgb;
 #ifdef USE_SSAO
-  if (uSSAOEnable > 0.0)
   {
     float color = texture2D(uSsaoSampler, vUV0).r;
     scene *= clamp(color + 0.1, 0.0, 1.0);
   }
 #endif // USE_SSAO
 #ifdef USE_BLOOM
-  if (uBloomEnable > 0.0)
   {
     vec3 A = Linear(uRT1, vUV0, TexelSize3);
     vec3 B = Linear(uRT2, vUV0, TexelSize4);
@@ -120,7 +111,6 @@ void main()
     scene += (E + F + G + H) * 0.25;
     scene += (I + K) * 0.25;
 #ifdef USE_HDR
-    if (uHDREnable > 0.0)
     {
       float lum = dot(K, vec3(0.27, 0.67, 0.06));
       scene = tone_map(scene, lum);
@@ -135,7 +125,6 @@ void main()
   }
 #endif // USE_FOG
 #ifdef USE_BLUR
-  if (uBlurEnable > 0.0)
   {
     vec2 velocity = uScale * texture2D(uSpeedSampler, vUV0).rg;
     float speed = length(velocity * PixelSize);
@@ -150,7 +139,7 @@ void main()
 #endif // USE_BLUR
 #else // NO_MRT
 #ifdef USE_FXAA
-  vec3 scene = FXAA(uSceneSampler, vUV0, TexelSize, uFXAAStrength * uFXAAEnable);
+  vec3 scene = FXAA(uSceneSampler, vUV0, TexelSize, uFXAAStrength);
 #else // !USE_FXAA
   vec3 scene = texture2D(uSceneSampler, vUV0).rgb;
 #endif // USE_FXAA

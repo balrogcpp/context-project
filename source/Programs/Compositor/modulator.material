@@ -1,20 +1,14 @@
 /// created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
-// Cut bright parts of scene
+// Material that blend other steps together
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program bloom_fs glsl glsles
+fragment_program MrtOutput_fs glsl glsles
 {
-	source bloom.frag
-
-    default_params
-    {
-        param_named uEnable float 0.0
-        param_named uThreshhold float 0.9999
-    }
+    source modulator.frag
 }
 
-material Bloom
+material MrtOutput
 {
 	technique
 	{
@@ -23,17 +17,16 @@ material Bloom
 		    cull_hardware none
 			lighting off
             polygon_mode_overrideable false
-            depth_check off
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref bloom_fs
+			fragment_program_ref MrtOutput_fs
 			{
-                param_named uSampler int 0
+                param_named uSceneSampler int 0
                 param_named_auto TexelSize inverse_texture_size 0
 			}
 
-			texture_unit rt1
+			texture_unit scene
             {
                 texture black.dds
                 tex_coord_set 0
@@ -44,20 +37,20 @@ material Bloom
 	}
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-// Add flares
-//----------------------------------------------------------------------------------------------------------------------
-fragment_program flares_fs glsl glsles
-{
-	source flares.frag
 
-    default_params
-    {
-        param_named uEnable float 0.0
-    }
+//----------------------------------------------------------------------------------------------------------------------
+// Just render scene, used when NoMRT option enabled
+//----------------------------------------------------------------------------------------------------------------------
+fragment_program OutputDummy_fs glsl glsles
+{
+    source modulator.frag
+	default_params
+	{
+        param_named uFXAAStrength float 4.0
+	}
 }
 
-material Flares
+material OutputDummy
 {
 	technique
 	{
@@ -66,17 +59,16 @@ material Flares
 		    cull_hardware none
 			lighting off
             polygon_mode_overrideable false
-            depth_check off
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref flares_fs
+			fragment_program_ref OutputDummy_fs
 			{
-                param_named uSampler int 0
+                param_named uSceneSampler int 0
                 param_named_auto TexelSize inverse_texture_size 0
 			}
 
-			texture_unit rt1
+			texture_unit scene
             {
                 texture black.dds
                 tex_coord_set 0

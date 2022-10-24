@@ -480,8 +480,8 @@ void DotSceneLoaderB::processCamera(pugi::xml_node& XMLNode, SceneNode* pParent)
     if (auto pElement = XMLNode.child("userData"))
         processUserData(pElement, static_cast<MovableObject*>(pCamera)->getUserObjectBindings());
 
-    Glue::GetEngine().AddCamera(pCamera);
-    Glue::GetEngine().AddSinbad(pCamera);
+    Glue::GetComponent<Glue::SceneManager>().RegCamera(pCamera);
+    Glue::GetComponent<Glue::SceneManager>().RegSinbad(pCamera);
 }
 
 void DotSceneLoaderB::processNode(pugi::xml_node& XMLNode, SceneNode* pParent)
@@ -746,7 +746,7 @@ void DotSceneLoaderB::processEntity(pugi::xml_node& XMLNode, SceneNode* pParent)
     Glue::GetPhysics().ProcessData(static_cast<Entity *>(pEntity), pParent);
   }
 
-  Glue::GetEngine().AddEntity(static_cast<Entity *>(pEntity));
+  Glue::GetComponent<Glue::SceneManager>().RegEntity(static_cast<Entity *>(pEntity));
 }
 
 void DotSceneLoaderB::processParticleSystem(pugi::xml_node& XMLNode, SceneNode* pParent)
@@ -804,6 +804,7 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     Entity* ent = mSceneMgr->createEntity(name, name + "mesh");
 
     ent->setMaterialName(material);
+    Glue::GetComponent<Glue::SceneManager>().RegMaterial(material);
 
     pParent->attachObject(ent);
 
