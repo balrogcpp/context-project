@@ -4,6 +4,8 @@
 
 #include "SinbadCharacterController.h"
 #include "System.h"
+#include "TerrainManager.h"
+#include "SkyManager.h"
 #include <Ogre.h>
 
 namespace Glue {
@@ -41,6 +43,10 @@ class SceneManager final : public System<SceneManager> {
   std::vector<Ogre::Entity*> entityList;
   std::vector<Ogre::GpuProgramParametersSharedPtr> gpuFpParams;
   std::vector<Ogre::GpuProgramParametersSharedPtr> gpuVpParams;
+
+  std::unique_ptr<TerrainManager> terrain;
+  std::unique_ptr<SkyManager> sky;
+
 };
 
 }  // namespace Glue

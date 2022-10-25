@@ -16,9 +16,10 @@ int main()
     // main app class object
     Glue::Application app;
 
-//    GetComponent<VideoManager>().GetWindow(0).GrabCursor(true);
+    GetComponent<VideoManager>().GetWindow(0).GrabCursor(true);
     GetComponent<SceneManager>().LoadFromFile("1.scene");
     GetComponent<SceneManager>().SetUpSky();
+    GetComponent<VideoManager>().GetMainWindow().SetFullscreen(true);
     GetComponent<VideoManager>().ShowMainWindow(true);
 
     // main function

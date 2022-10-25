@@ -149,36 +149,56 @@ void InitOgreRenderSystemGLES2();
 void InitOgreRenderSystemGL();
 #endif
 
-Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), width(1270), height(720), fullscreen(false) {}
+Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), width(1270), height(720), fullscreen(false), id(0) {}
 
 Window::~Window() { SDL_SetWindowFullscreen(sdlWindow, SDL_FALSE); }
 
-void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, bool resize, bool fullscreen, int width, int height) {
+void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, int width, int height, uint32_t sdlFlags) {
   this->caption = caption;
   this->width = width;
   this->height = height;
-  this->fullscreen = fullscreen;
   this->ogreCamera = camera;
-
-  // select biggest display
+  this->sdlFlags = sdlFlags;
   SDL_DisplayMode displayMode;
   int screenWidth = 0, screenHeight = 0, currentDisplay = 0;
-  for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
-    if (SDL_GetCurrentDisplayMode(i, &displayMode) == 0) {
-      SDL_Log("Display #%d: current display mode is %dx%dpx @ %dhz.", i, displayMode.w, displayMode.h, displayMode.refresh_rate);
-      int screenDiag = sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
-      int screenDiagI = sqrt(displayMode.w * displayMode.w + displayMode.h * displayMode.h);
-      if (screenDiagI > screenDiag) {
-        screenWidth = displayMode.w;
-        screenHeight = displayMode.h;
-        currentDisplay = i;
+
+  // select biggest display
+  if (monitor < 0) {
+    for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
+      if (SDL_GetCurrentDisplayMode(i, &displayMode) == 0) {
+        char buff[500];
+        sprintf(buff, "[SDL_Log] Display #%d: current display mode is %dx%dpx @ %dhz", i, displayMode.w, displayMode.h, displayMode.refresh_rate);
+        Ogre::LogManager::getSingleton().logMessage(buff);
+        int screenDiag = sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
+        int screenDiagI = sqrt(displayMode.w * displayMode.w + displayMode.h * displayMode.h);
+        if (screenDiagI > screenDiag) {
+          screenWidth = displayMode.w;
+          screenHeight = displayMode.h;
+          currentDisplay = i;
+        }
+      } else {
+        char buff[500];
+        sprintf(buff, "[SDL_Log] Display #%d: current display mode is %dx%dpx @ %dhz", i, displayMode.w, displayMode.h, displayMode.refresh_rate);
+        Ogre::LogManager::getSingleton().logError(buff);
       }
+    }
+  } else {
+    if (SDL_GetCurrentDisplayMode(monitor, &displayMode) == 0) {
+      screenWidth = displayMode.w;
+      screenHeight = displayMode.h;
+      currentDisplay = monitor;
+      char buff[500];
+      sprintf(buff, "[SDL_Log] Display #%d: current display mode is %dx%dpx @ %dhz", monitor, displayMode.w, displayMode.h, displayMode.refresh_rate);
+      Ogre::LogManager::getSingleton().logMessage(buff);
     } else {
-      SDL_Log("Could not get display mode for video display #%d: %s", i, SDL_GetError());
+      char buff[500];
+      sprintf(buff, "[SDL_Log] Display #%d: current display mode is %dx%dpx @ %dhz", monitor, displayMode.w, displayMode.h, displayMode.refresh_rate);
+      Ogre::LogManager::getSingleton().logError(buff);
     }
   }
 
-  if (resize) sdlFlags |= SDL_WINDOW_RESIZABLE;
+  if (sdlFlags & SDL_WINDOW_FULLSCREEN) fullscreen = true;
+
 #if defined(DESKTOP)
   if (width == screenWidth && height == screenHeight) {
     sdlFlags |= SDL_WINDOW_BORDERLESS;
@@ -302,6 +322,13 @@ void Window::SetFullscreen(bool fullscreen) {
 
 void Window::Delete() {}
 
+void Window::RenderFrame() const {
+  ogreRoot->renderOneFrame();
+#if defined(WINDOWS) || defined(ANDROID)
+  SDL_GL_SwapWindow(sdlWindow);
+#endif
+}
+
 void Window::OnEvent(const SDL_Event &event) {}
 void Window::OnQuit() {}
 void Window::OnFocusLost() {}
@@ -309,64 +336,7 @@ void Window::OnFocusGained() {}
 void Window::OnSizeChanged(int x, int y, uint32_t id) {
   if (this->id == id) Resize(x, y);
 }
-void Window::OnExposed() {}
-
-class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listener {
- public:
-  explicit ShaderResolver(Ogre::RTShader::ShaderGenerator *shaderGenerator) : shaderGenerator(shaderGenerator) {}
-
-  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const string &schemeName, Ogre::Material *originalMaterial,
-                                        unsigned short lodIndex, const Ogre::Renderable *rend) override {
-    if (!shaderGenerator->hasRenderState(schemeName)) {
-      return nullptr;
-    }
-    // Case this is the default shader generator scheme.
-
-    // Create shader generated technique for this material.
-    bool techniqueCreated = shaderGenerator->createShaderBasedTechnique(*originalMaterial, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, schemeName);
-
-    if (!techniqueCreated) {
-      return nullptr;
-    }
-    // Case technique registration succeeded.
-
-    // Force creating the shaders for the generated technique.
-    shaderGenerator->validateMaterial(schemeName, *originalMaterial);
-
-    // Grab the generated technique.
-    Ogre::Material::Techniques::const_iterator it;
-    for (it = originalMaterial->getTechniques().begin(); it != originalMaterial->getTechniques().end(); ++it) {
-      Ogre::Technique *curTech = *it;
-
-      if (curTech->getSchemeName() == schemeName) {
-        return curTech;
-      }
-    }
-
-    return nullptr;
-  }
-
-  bool afterIlluminationPassesCreated(Ogre::Technique *tech) override {
-    if (shaderGenerator->hasRenderState(tech->getSchemeName())) {
-      Ogre::Material *mat = tech->getParent();
-      shaderGenerator->validateMaterialIlluminationPasses(tech->getSchemeName(), mat->getName(), mat->getGroup());
-      return true;
-    }
-    return false;
-  }
-
-  bool beforeIlluminationPassesCleared(Ogre::Technique *tech) override {
-    if (shaderGenerator->hasRenderState(tech->getSchemeName())) {
-      Ogre::Material *mat = tech->getParent();
-      shaderGenerator->invalidateMaterialIlluminationPasses(tech->getSchemeName(), mat->getName(), mat->getGroup());
-      return true;
-    }
-    return false;
-  }
-
- protected:
-  Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
-};
+void Window::OnExposed() { RenderFrame(); }
 
 VideoManager::VideoManager()
     : ogreMinLogLevel(Ogre::LML_TRIVIAL), ogreLogFile("Ogre.log"), shadowEnabled(true), shadowTechnique(Ogre::SHADOWTYPE_NONE), pssmSplitCount(3) {}
@@ -387,7 +357,6 @@ void VideoManager::OnSetUp() {
   imguiOverlay->show();
   Ogre::ImGuiOverlay::NewFrame();
   ogreRoot->renderOneFrame();
-  Ogre::MaterialManager::getSingleton().removeListener(shaderResolver);
 }
 
 void VideoManager::OnUpdate(float time) {
@@ -413,12 +382,10 @@ void VideoManager::OnPause() {}
 void VideoManager::OnResume() {}
 
 void VideoManager::RenderFrame() {
-  ogreRoot->renderOneFrame();
-#if defined(WINDOWS) || defined(ANDROID)
-  SDL_GL_SwapWindow(mainWindow->sdlWindow);
-#endif
+  for (const auto &it : windowList) {
+    it.RenderFrame();
+  }
 }
-
 Window &VideoManager::GetWindow(int number) { return windowList[0]; }
 
 Window &VideoManager::GetMainWindow() { return *mainWindow; }
@@ -466,7 +433,7 @@ void VideoManager::InitSDL() {
 void VideoManager::InitOgreRoot() {
   ogreLogFile = "runtime.log";
   ogreMinLogLevel = Ogre::LML_TRIVIAL;
-  ogreRoot = new Ogre::Root("", "", ogreLogFile.c_str());
+  ogreRoot = new Ogre::Root("", "", ogreLogFile);
   Ogre::LogManager::getSingleton().setMinLogLevel(static_cast<Ogre::LogMessageLevel>(ogreMinLogLevel));
 #ifdef ANDROID
   JNIEnv *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
@@ -530,19 +497,9 @@ void VideoManager::CreateWindow() {
   windowList.emplace_back();
   mainWindow = &windowList[0];
   ogreCamera = sceneManager->createCamera("Default");
-  mainWindow->Create("Example0", ogreCamera, -1, true, false, 1270, 720);
+  mainWindow->Create("Example0", ogreCamera, -1, 1270, 720, SDL_WINDOW_FULLSCREEN);
   ogreViewport = mainWindow->ogreViewport;
   InputSequencer::GetInstance().RegWinObserver(mainWindow);
-}
-
-void VideoManager::InitOgreRTSS() {
-  OgreAssert(Ogre::RTShader::ShaderGenerator::initialize(), "OGRE RTSS init failed");
-  auto *shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
-  ogreViewport->setMaterialScheme(Ogre::MSN_SHADERGEN);
-  shaderGenerator->addSceneManager(sceneManager);
-  shaderGenerator->setShaderCachePath("");
-  shaderResolver = new ShaderResolver(shaderGenerator);
-  Ogre::MaterialManager::getSingleton().addListener(shaderResolver);
 }
 
 void VideoManager::InitOgreOverlay() {
@@ -649,6 +606,73 @@ void VideoManager::InitOgreScene() {
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
     sceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
   }
+}
+
+class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listener {
+ public:
+  explicit ShaderResolver(Ogre::RTShader::ShaderGenerator *shaderGenerator) : shaderGenerator(shaderGenerator) {}
+
+  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const string &schemeName, Ogre::Material *originalMaterial,
+                                        unsigned short lodIndex, const Ogre::Renderable *rend) override {
+    if (!shaderGenerator->hasRenderState(schemeName)) {
+      return nullptr;
+    }
+    // Case this is the default shader generator scheme.
+
+    // Create shader generated technique for this material.
+    bool techniqueCreated = shaderGenerator->createShaderBasedTechnique(*originalMaterial, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, schemeName);
+
+    if (!techniqueCreated) {
+      return nullptr;
+    }
+    // Case technique registration succeeded.
+
+    // Force creating the shaders for the generated technique.
+    shaderGenerator->validateMaterial(schemeName, *originalMaterial);
+
+    // Grab the generated technique.
+    Ogre::Material::Techniques::const_iterator it;
+    for (it = originalMaterial->getTechniques().begin(); it != originalMaterial->getTechniques().end(); ++it) {
+      Ogre::Technique *curTech = *it;
+
+      if (curTech->getSchemeName() == schemeName) {
+        return curTech;
+      }
+    }
+
+    return nullptr;
+  }
+
+  bool afterIlluminationPassesCreated(Ogre::Technique *tech) override {
+    if (shaderGenerator->hasRenderState(tech->getSchemeName())) {
+      Ogre::Material *mat = tech->getParent();
+      shaderGenerator->validateMaterialIlluminationPasses(tech->getSchemeName(), mat->getName(), mat->getGroup());
+      return true;
+    }
+    return false;
+  }
+
+  bool beforeIlluminationPassesCleared(Ogre::Technique *tech) override {
+    if (shaderGenerator->hasRenderState(tech->getSchemeName())) {
+      Ogre::Material *mat = tech->getParent();
+      shaderGenerator->invalidateMaterialIlluminationPasses(tech->getSchemeName(), mat->getName(), mat->getGroup());
+      return true;
+    }
+    return false;
+  }
+
+ protected:
+  Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
+};
+
+void VideoManager::InitOgreRTSS() {
+  OgreAssert(Ogre::RTShader::ShaderGenerator::initialize(), "OGRE RTSS init failed");
+  auto *shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
+  ogreViewport->setMaterialScheme(Ogre::MSN_SHADERGEN);
+  shaderGenerator->addSceneManager(sceneManager);
+  shaderGenerator->setShaderCachePath("");
+  shaderResolver = make_unique<ShaderResolver>(shaderGenerator);
+  Ogre::MaterialManager::getSingleton().addListener(shaderResolver.get());
 }
 
 }  // namespace Glue

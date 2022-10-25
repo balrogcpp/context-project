@@ -15,18 +15,24 @@ struct SDL_Window;
 
 namespace Glue {
 
+class VideoManager;
+
 class Window : public WindowObserver, InputObserver {
  public:
   Window();
   virtual ~Window();
-  void Create(const std::string& caption, Ogre::Camera* camera, int monitor, bool resize, bool fullscreen, int width, int height);
+  void Create(const std::string& caption, Ogre::Camera* camera, int monitor, int width, int height, uint32_t sdlFlags);
   void Show(bool show);
   void Delete();
+  void RenderFrame() const;
   void GrabCursor(bool grab);
   void ShowCursor(bool show);
   void Resize(int width, int height);
   void SetFullscreen(bool fullscreen);
   void SetWindowCaption(const char* caption);
+
+ protected:
+  friend class VideoManager;
 
   void OnEvent(const SDL_Event& event) override;
   void OnQuit() override;
@@ -34,7 +40,6 @@ class Window : public WindowObserver, InputObserver {
   void OnFocusGained() override;
   void OnSizeChanged(int x, int y, uint32_t id) override;
   void OnExposed() override;
-
 
   std::string caption;
   bool fullscreen;
@@ -89,7 +94,7 @@ class VideoManager final : public System<VideoManager>, public Ogre::RenderTarge
   Ogre::RenderWindow* ogreWindow = nullptr;
   Ogre::Camera* ogreCamera = nullptr;
   Ogre::Viewport* ogreViewport = nullptr;
-  ShaderResolver* shaderResolver = nullptr;
+  std::unique_ptr<ShaderResolver> shaderResolver;
   Ogre::ShadowTechnique shadowTechnique;
   Ogre::Real shadowFarDistance;
   bool shadowEnabled;

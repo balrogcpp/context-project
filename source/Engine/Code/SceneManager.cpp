@@ -12,25 +12,21 @@ namespace {
 
 void CheckTransparentShadowCaster(const Ogre::MaterialPtr &material) {
   auto *pass = material->getTechnique(0)->getPass(0);
-  int alpha_rejection = static_cast<int>(pass->getAlphaRejectValue());
-  bool transparency_casts_shadows = material->getTransparencyCastsShadows();
-  int num_textures = pass->getNumTextureUnitStates();
-  std::string MaterialName = material->getName();
 
-  if (num_textures > 0 && alpha_rejection > 0 && transparency_casts_shadows) {
+  if (pass->getNumTextureUnitStates() > 0 && pass->getAlphaRejectValue() > 0 && material->getTransparencyCastsShadows()) {
     auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
-    std::string caster_name = "PSSM/shadow_caster_alpha/" + MaterialName;
-    auto new_caster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
+    std::string caster_name = "PSSM/shadow_caster_alpha/" + material->getName();
+    auto newCaster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
 
-    if (!new_caster) {
-      new_caster = caster_material->clone(caster_name);
+    if (!newCaster) {
+      newCaster = caster_material->clone(caster_name);
 
       auto texture_albedo = pass->getTextureUnitState("Albedo");
 
       if (texture_albedo) {
         std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
 
-        auto *texPtr3 = new_caster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
+        auto *texPtr3 = newCaster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
 
         if (texPtr3) {
           texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
@@ -39,11 +35,11 @@ void CheckTransparentShadowCaster(const Ogre::MaterialPtr &material) {
       }
     }
 
-    auto *new_pass = new_caster->getTechnique(0)->getPass(0);
-    new_pass->setCullingMode(pass->getCullingMode());
-    new_pass->setManualCullingMode(pass->getManualCullingMode());
-    new_pass->setAlphaRejectValue(alpha_rejection);
-    material->getTechnique(0)->setShadowCasterMaterial(new_caster);
+    auto *newPass = newCaster->getTechnique(0)->getPass(0);
+    newPass->setCullingMode(pass->getCullingMode());
+    newPass->setManualCullingMode(pass->getManualCullingMode());
+    newPass->setAlphaRejectValue(pass->getAlphaRejectValue());
+    material->getTechnique(0)->setShadowCasterMaterial(newCaster);
   }
 }
 
@@ -99,6 +95,7 @@ SceneManager::SceneManager() {}
 SceneManager::~SceneManager() {}
 
 void SceneManager::OnSetUp() {
+  ogreRoot = Ogre::Root::getSingletonPtr();
   sceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
   ogreCamera = sceneManager->getCamera("Default");
 }
@@ -127,17 +124,6 @@ void SceneManager::OnUpdate(float time) {
     for (int i = 0; i < 10; i++) skyBoxFpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
 }
 
-void SceneManager::LoadFromFile(const std::string filename) {
-  auto *rootNode = sceneManager->getRootSceneNode();
-  rootNode->loadChildren(filename);
-
-  for (auto it : rootNode->getChildren()) {
-    ScanNode(static_cast<Ogre::SceneNode *>(it));
-  }
-
-  ScanNode(rootNode);
-}
-
 Ogre::Vector3 SceneManager::GetSunPosition() {
   auto *SunPtr = sceneManager->getLight("Sun");
   return SunPtr ? -SunPtr->getDerivedDirection().normalisedCopy() : Ogre::Vector3::ZERO;
@@ -162,44 +148,60 @@ void SceneManager::SetUpSky() {
       hosekParams[9] = Ogre::Vector3(skyModel.StateX->radiances[0], skyModel.StateY->radiances[1], skyModel.StateZ->radiances[2]);
     }
   }
+
   auto skyMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
   auto FpParams = skyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
   if (FpParams) skyBoxFpParams = FpParams;
 
   FpParams->setIgnoreMissingParams(true);
-  for (int i = 0; i < hosekParamList.size(); i++) FpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
+  for (int i = 0; i < hosekParamList.size(); i++) {
+    FpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
+  }
 }
 
-void SceneManager::RegCamera(Ogre::Camera *camera) {
-  if (!sinbad && camera->getName() == "Default") {
-    sinbad = make_unique<SinbadCharacterController>(camera);
+void SceneManager::LoadFromFile(const std::string filename) {
+  auto *rootNode = sceneManager->getRootSceneNode();
+  rootNode->loadChildren(filename);
+
+  for (auto it : rootNode->getChildren()) {
+    ScanNode(static_cast<Ogre::SceneNode *>(it));
+  }
+
+  if (!sinbad && sceneManager->hasCamera("Default")) {
+    sinbad = make_unique<SinbadCharacterController>(sceneManager->getCamera("Default"));
     InputSequencer::GetInstance().RegObserver(sinbad.get());
   }
-  //printf("[ScanNode] RegCamera %s\n", camera->getName().c_str());
+
+  // scan second time, new objects added during first scan
+  for (auto it : rootNode->getChildren()) {
+    ScanNode(static_cast<Ogre::SceneNode *>(it));
+  }
 }
 
-void SceneManager::RegLight(Ogre::Light *light) {
-  //printf("[ScanNode] RegLight %s\n", light->getName().c_str());
-}
+void SceneManager::RegCamera(Ogre::Camera *camera) {}
+
+void SceneManager::RegLight(Ogre::Light *light) {}
 
 void SceneManager::RegEntity(Ogre::Entity *entity) {
-  //printf("[ScanNode] RegEntity %s\n", entity->getName().c_str());
-
   EnsureHasTangents(entity->getMesh());
 
   if (entity->hasSkeleton()) {
     for (auto it : entity->getAttachedObjects()) {
       if (auto camera = dynamic_cast<Ogre::Camera *>(it)) {
+        Ogre::LogManager::getSingleton().logMessage("[ScanNode] AnimatedEntity: " + entity->getName() + "  Camera: " + it->getName());
         RegCamera(camera);
         continue;
       }
 
       if (auto light = dynamic_cast<Ogre::Light *>(it)) {
+        Ogre::LogManager::getSingleton().logMessage("[ScanNode] AnimatedEntity: " + entity->getName() + "  Light: " + it->getName());
+        ;
         RegLight(light);
         continue;
       }
 
       if (auto entity = dynamic_cast<Ogre::Entity *>(it)) {
+        Ogre::LogManager::getSingleton().logMessage("[ScanNode] AnimatedEntity: " + entity->getName() + "  Entity: " + it->getName());
         RegEntity(entity);
         continue;
       }
@@ -217,8 +219,9 @@ void SceneManager::RegEntity(Ogre::Entity *entity) {
 }
 
 void SceneManager::RegMaterial(const Ogre::MaterialPtr &material) {
-  const auto *pass = material->getTechnique(0)->getPass(0);
   CheckTransparentShadowCaster(material);
+
+  const auto *pass = material->getTechnique(0)->getPass(0);
 
   if (pass->hasVertexProgram()) {
     const auto ptr = pass->getVertexProgramParameters();
@@ -239,21 +242,22 @@ void SceneManager::RegMaterial(const std::string &name) {
 void SceneManager::ScanNode(Ogre::SceneNode *node) {
   for (auto it : node->getAttachedObjects()) {
     if (auto camera = dynamic_cast<Ogre::Camera *>(it)) {
+      Ogre::LogManager::getSingleton().logMessage("[ScanNode] Node: " + node->getName() + "  Camera: " + it->getName());
       RegCamera(camera);
       continue;
     }
 
     if (auto light = dynamic_cast<Ogre::Light *>(it)) {
+      Ogre::LogManager::getSingleton().logMessage("[ScanNode] Node: " + node->getName() + "  Light: " + it->getName());
       RegLight(light);
       continue;
     }
 
     if (auto entity = dynamic_cast<Ogre::Entity *>(it)) {
+      Ogre::LogManager::getSingleton().logMessage("[ScanNode] Node: " + node->getName() + "  Entity: " + it->getName());
       RegEntity(entity);
       continue;
     }
-
-    Ogre::LogManager::getSingleton().logWarning("DotSceneLoaderB - unsupported MovableType " + it->getMovableType());
   }
 
   // recurse
