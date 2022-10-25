@@ -3,18 +3,17 @@
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
-fragment_program Blur_fs glsl glsles
+fragment_program Output_fs glsl glsles
 {
-    source blur.frag
-    preprocessor_defines MAX_SAMPLES=4
+    source LINEARtoSRGB.frag
+    preprocessor_defines NONE
 	default_params
 	{
 		param_named uExposure float 1.0
-        param_named uScale float 0.5
 	}
 }
 
-material Blur
+material Output
 {
 	technique
 	{
@@ -27,11 +26,9 @@ material Blur
 
 			vertex_program_ref Ogre/Compositor/StdQuad_vp {}
 
-			fragment_program_ref Blur_fs
+			fragment_program_ref Output_fs
 			{
                 param_named uSceneSampler int 0
-                param_named uSpeedSampler int 1
-                param_named_auto PixelSize1 texture_size 1
 			}
 
 			texture_unit scene
@@ -41,22 +38,6 @@ material Blur
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
-            texture_unit velocity
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering linear linear none
-            }
-
-            /*texture_unit luminance
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering none
-            }*/
 		}
 	}
 }

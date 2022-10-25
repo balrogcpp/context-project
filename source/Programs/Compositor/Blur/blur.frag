@@ -23,12 +23,6 @@ uniform vec2 TexelSize0;
 uniform vec2 PixelSize1;
 uniform float uScale;
 
-#ifdef SRGB
-#ifdef MANUAL_SRGB
-uniform float uExposure;
-#endif
-#endif
-
 
 //----------------------------------------------------------------------------------------------------------------------
 void main()
@@ -43,10 +37,5 @@ void main()
     scene += texture2D(uSceneSampler, vUV0 + offset).rgb;
   }
   scene /= float(nSamples);
-#ifdef MANUAL_SRGB
-#ifdef SRGB
-  scene = LINEARtoSRGB(scene, uExposure);
-#endif
-#endif
-    FragColor.rgb = scene;
+  FragColor.rgb = scene;
 }

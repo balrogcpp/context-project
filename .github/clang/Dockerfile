@@ -10,8 +10,6 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends wget ca-certificates gnupg2 apt-transport-https \
     && echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu ${UBUNTU_VERSION} main" >> /etc/apt/sources.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F \
-    && echo "deb https://ppa.launchpadcontent.net/git-core/ppa/ubuntu ${UBUNTU_VERSION} main" >> /etc/apt/sources.list \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E1DD270288B4E6030699E45FA1715D88E1DF1F24 \
     && apt-get update \
     && apt-get -y install --no-install-recommends git zip unzip xz-utils make autoconf file patch \
     && apt-get clean

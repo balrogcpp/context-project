@@ -25,8 +25,9 @@ void CompositorManager::OnSetUp() {
   InitMRT();
 
   // extra compositors
-  AddCompositorEnabled("Fog");
-  AddCompositorEnabled("FXAA");
+//  AddCompositorEnabled("SSAO");
+//  AddCompositorEnabled("Fog");
+//  AddCompositorEnabled("FXAA");
   AddCompositorEnabled("Output");
 }
 
