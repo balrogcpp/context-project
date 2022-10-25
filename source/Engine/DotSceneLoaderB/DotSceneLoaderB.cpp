@@ -204,13 +204,13 @@ void DotSceneLoaderB::processScene(pugi::xml_node& XMLRoot)
     if (auto pElement = XMLRoot.child("terrainGroupLegacy"))
         processTerrainGroupLegacy(pElement);
 
-    // Process nodes (?)
-    if (auto pElement = XMLRoot.child("nodes"))
-        processNodes(pElement);
-
     // Process environment (?)
     if (auto pElement = XMLRoot.child("environment"))
         processEnvironment(pElement);
+
+    // Process nodes (?)
+    if (auto pElement = XMLRoot.child("nodes"))
+        processNodes(pElement);
 
     // Process externals (?)
     if (auto pElement = XMLRoot.child("externals"))
@@ -766,14 +766,14 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
 
     LogManager::getSingleton().logMessage("[DotSceneLoaderB] Processing Plane: " + name, LML_TRIVIAL);
 
-    Real distance = getAttribReal(XMLNode, "distance", 0.0);
-    Real width = getAttribReal(XMLNode, "width", 1.0);
-    Real height = getAttribReal(XMLNode, "height", 1.0);
+    Real distance = getAttribReal(XMLNode, "distance");
+    Real width = getAttribReal(XMLNode, "width");
+    Real height = getAttribReal(XMLNode, "height");
     int xSegments = getAttribInt(XMLNode, "xSegments", width);
     int ySegments = getAttribInt(XMLNode, "ySegments", height);
     int numTexCoordSets = getAttribInt(XMLNode, "numTexCoordSets", 1);
-    Real uTile = getAttribReal(XMLNode, "uTile", width);
-    Real vTile = getAttribReal(XMLNode, "vTile", height);
+    Real uTile = getAttribReal(XMLNode, "uTile", xSegments);
+    Real vTile = getAttribReal(XMLNode, "vTile", ySegments);
     String material = getAttrib(XMLNode, "material");
     bool hasNormals = getAttribBool(XMLNode, "hasNormals", true);
     Vector3 normal = parseVector3(XMLNode.child("normal"), {0, 1, 0});
@@ -831,8 +831,8 @@ void DotSceneLoaderB::processSkyBox(pugi::xml_node& XMLNode)
     LogManager::getSingleton().logMessage("[DotSceneLoaderB] Processing SkyBox...", LML_TRIVIAL);
 
     // Process attributes
-    String material = getAttrib(XMLNode, "material", "SkyBox");
-    Real distance = getAttribReal(XMLNode, "distance", 500);
+    String material = getAttrib(XMLNode, "material", "BaseWhite");
+    Real distance = getAttribReal(XMLNode, "distance", 5000);
     bool drawFirst = getAttribBool(XMLNode, "drawFirst", true);
     bool active = getAttribBool(XMLNode, "active", false);
     if (!active)
