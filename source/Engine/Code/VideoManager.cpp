@@ -192,6 +192,7 @@ void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, bo
   int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(currentDisplay);
   sdlWindow = SDL_CreateWindow(caption.c_str(), sdlPositionFlags, sdlPositionFlags, width, height, sdlFlags);
   OgreAssert(sdlWindow, "SDL_CreateWindow failed");
+  id = SDL_GetWindowID(sdlWindow);
 #else
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -238,7 +239,7 @@ void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, bo
   renderParams["preserveContext"] = TRUE_STR;
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.android.window));
 #endif
-  auto *ogreRoot = Ogre::Root::getSingletonPtr();
+  ogreRoot = Ogre::Root::getSingletonPtr();
   OgreAssert(ogreRoot, "ogreRoot not initialised");
   ogreWindow = ogreRoot->createRenderWindow(caption, width, height, fullscreen, &renderParams);
   renderTarget = ogreRoot->getRenderTarget(ogreWindow->getName());
@@ -258,6 +259,7 @@ void Window::Resize(int width, int height) {
   height = height;
   SDL_SetWindowSize(sdlWindow, width, height);
   ogreWindow->resize(width, height);
+  ogreCamera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
 }
 
 void Window::GrabCursor(bool grab) {
@@ -304,7 +306,10 @@ void Window::OnEvent(const SDL_Event &event) {}
 void Window::OnQuit() {}
 void Window::OnFocusLost() {}
 void Window::OnFocusGained() {}
-void Window::OnSizeChanged(int x, int y, uint32_t id) { Resize(x, y); }
+void Window::OnSizeChanged(int x, int y, uint32_t id) {
+  if (this->id == id) Resize(x, y);
+}
+void Window::OnExposed() {}
 
 class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listener {
  public:
@@ -527,6 +532,7 @@ void VideoManager::CreateWindow() {
   ogreCamera = sceneManager->createCamera("Default");
   mainWindow->Create("Example0", ogreCamera, -1, true, false, 1270, 720);
   ogreViewport = mainWindow->ogreViewport;
+  InputSequencer::GetInstance().RegWinObserver(mainWindow);
 }
 
 void VideoManager::InitOgreRTSS() {

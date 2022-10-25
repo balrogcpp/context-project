@@ -175,13 +175,15 @@ void SceneManager::RegCamera(Ogre::Camera *camera) {
     sinbad = make_unique<SinbadCharacterController>(camera);
     InputSequencer::GetInstance().RegObserver(sinbad.get());
   }
-  printf("[ScanNode] RegCamera %s\n", camera->getName().c_str());
+  //printf("[ScanNode] RegCamera %s\n", camera->getName().c_str());
 }
 
-void SceneManager::RegLight(Ogre::Light *light) { printf("[ScanNode] RegLight %s\n", light->getName().c_str()); }
+void SceneManager::RegLight(Ogre::Light *light) {
+  //printf("[ScanNode] RegLight %s\n", light->getName().c_str());
+}
 
 void SceneManager::RegEntity(Ogre::Entity *entity) {
-  printf("[ScanNode] RegEntity %s\n", entity->getName().c_str());
+  //printf("[ScanNode] RegEntity %s\n", entity->getName().c_str());
 
   EnsureHasTangents(entity->getMesh());
 

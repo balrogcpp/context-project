@@ -115,6 +115,8 @@ class WindowObserver {
   virtual void OnFocusGained() {}
   ///
   virtual void OnSizeChanged(int x, int y, uint32_t id) {}
+  ///
+  virtual void OnExposed() {}
 };
 
 /// This Singleton class is main part of Observer implementation
@@ -244,7 +246,6 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
 
         case SDL_WINDOWEVENT: {
           switch (event.window.event) {
-            case SDL_WINDOWEVENT_MINIMIZED:
             case SDL_WINDOWEVENT_FOCUS_LOST: {
               for (auto &it : winListeners) it->OnFocusLost();
               break;
@@ -255,12 +256,13 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
               break;
             }
 
-            case SDL_WINDOWEVENT_SIZE_CHANGED: {
+            case SDL_WINDOWEVENT_RESIZED: {
               for (auto &it : winListeners) it->OnSizeChanged(event.window.data1, event.window.data2, event.window.windowID);
               break;
             }
 
             case SDL_WINDOWEVENT_EXPOSED: {
+              for (auto &it : winListeners) it->OnExposed();
               break;
             }
           }

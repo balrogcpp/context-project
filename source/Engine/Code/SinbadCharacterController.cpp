@@ -1,8 +1,8 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
-#include "SinbadCharacterController.h"
-#include "Engine.h"
 #include "pch.h"
+#include "SinbadCharacterController.h"
+//#include "Engine.h"
 
 using namespace std;
 
@@ -11,9 +11,9 @@ namespace Glue {
 SinbadCharacterController::SinbadCharacterController(Ogre::Camera *camera) : baseAnimID(ANIM_NONE), topAnimID(ANIM_NONE) {
   SetupCamera(camera);
   SetupBody();
-  //GetAudio().AddListener(CameraNode);
-  //GetAudio().AddSound("walk_grass", "Footsteps-in-grass-fast.ogg", BodyNode, true);
-//  GetAudio().SetSoundVolume("walk_grass", 2.0);
+  // GetAudio().AddListener(CameraNode);
+  // GetAudio().AddSound("walk_grass", "Footsteps-in-grass-fast.ogg", BodyNode, true);
+  //  GetAudio().SetSoundVolume("walk_grass", 2.0);
   SetupAnimations();
 }
 
@@ -47,7 +47,7 @@ void SinbadCharacterController::OnKeyDown(SDL_Keycode key) {
     }
   }
 
-    // keep track of the player's intended direction
+  // keep track of the player's intended direction
   else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_W)
     keyDirection.z = -1;
   else if (SDL_GetScancodeFromKey(key) == SDL_SCANCODE_A)
@@ -197,7 +197,7 @@ void SinbadCharacterController::UpdateBody(float FrameTime) {
   goalDirection = Ogre::Vector3::ZERO;  // we will calculate this
   float x = bodyNode->getPosition().x;
   float z = bodyNode->getPosition().z;
-//  float y = GetComponent<SceneManager>().GetHeight(x, z) + CHAR_HEIGHT;
+  //  float y = GetComponent<SceneManager>().GetHeight(x, z) + CHAR_HEIGHT;
   float y = CHAR_HEIGHT;
   bodyNode->setPosition(x, y, z);
 
@@ -421,9 +421,9 @@ void SinbadCharacterController::SetTopAnimation(AnimID ID, bool reset) {
     if (reset) animList[ID]->setTimePosition(0);
   }
 
-  //if (ID == ANIM_RUN_TOP)
+  // if (ID == ANIM_RUN_TOP)
   //  GetAudio().PlaySound("walk_grass");
-  //else
+  // else
   //  GetAudio().StopSound("walk_grass");
 }
 

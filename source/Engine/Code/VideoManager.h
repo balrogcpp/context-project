@@ -33,6 +33,7 @@ class Window : public WindowObserver, InputObserver {
   void OnFocusLost() override;
   void OnFocusGained() override;
   void OnSizeChanged(int x, int y, uint32_t id) override;
+  void OnExposed() override;
 
 
   std::string caption;
@@ -41,6 +42,8 @@ class Window : public WindowObserver, InputObserver {
   int height;
   uint32_t sdlFlags;
   bool vsync;
+  uint32_t id;
+  Ogre::Root* ogreRoot = nullptr;
   SDL_Window* sdlWindow = nullptr;
   Ogre::RenderWindow* ogreWindow = nullptr;
   Ogre::RenderTarget* renderTarget = nullptr;
