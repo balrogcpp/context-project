@@ -5,7 +5,8 @@
 #include "Singleton.h"
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>
-#include <set>
+#include <algorithm>
+#include <vector>
 
 namespace Glue {
 
@@ -16,12 +17,14 @@ class InputObserver {
   virtual void OnKeyDown(SDL_Keycode sym) {}
   /// Callback on keyboard key up
   virtual void OnKeyUp(SDL_Keycode sym) {}
+  /// Callback on keyboard typing
+  /// @param text typed text
+  virtual void OnTextInput(const char *text) {}
 
   /// Callback on mouse move #1
   /// @param dx position change in pixels
   /// @param dy position change in pixels
   virtual void OnMouseMove(int dx, int dy) {}
-
   /// Callback on mouse move #2, called with #1 but with extra params
   /// @param x absolute position in pixels
   /// @param y absolute position in pixels
@@ -31,68 +34,53 @@ class InputObserver {
   /// @param right true is right button down
   /// @param middle true is middle button down
   virtual void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {}
-
   /// Callback on Wheel Button Down
   /// @param x absolute position in pixels
   /// @param y absolute position in pixels
   virtual void OnMouseWheel(int x, int y) {}
-
   /// Callback on Left Button Down
   /// @param x absolute position in pixels
   /// @param y absolute position in pixels
   virtual void OnMouseLbDown(int x, int y) {}
-
   /// Callback on Left Button Up
   /// @param x absolute position in pixels
   /// @param y absolute position in pixels
   virtual void OnMouseLbUp(int x, int y) {}
-
   /// Callback on Right Button Down
   /// @param x absolute position in pixels
   /// @param y absolute position in pixels
   virtual void OnMouseRbDown(int x, int y) {}
-
   /// Callback on Right Button Up
   /// @param x absolute position in pixels
   /// @param y absolute position in pixels
   virtual void OnMouseRbUp(int x, int y) {}
-
   /// Callback on Middle Button Down
   /// @param x absolute position in pixels
   /// @param y absolute position in pixels
   virtual void OnMouseMbDown(int x, int y) {}
-
   /// Callback on Middle Button Up
   /// @param x absolute position in pixels
   /// @param y absolute position in pixels
   virtual void OnMouseMbUp(int x, int y) {}
-
-  /// Callback on keyboard typing
-  /// @param text typed text
-  virtual void OnTextInput(const char *text) {}
 
   /// Callback on joystick axis event
   /// @param which joystick number
   /// @param axis which axis
   /// @param value
   virtual void OnGamepadAxis(int which, int axis, int value) {}
-
   /// Callback on joystick button Down
   /// @param which joystick number
   /// @param button button number
   virtual void OnGamepadBtDown(int which, int button) {}
-
   /// Callback on joystick button Up
   /// @param which joystick number
   /// @param button button number
   virtual void OnGamepadBtUp(int which, int button) {}
-
   /// Callback on joystick Hat
   /// @param which joystick number
   /// @param ball hat number
   /// @param value hat value
   virtual void OnGamepadHat(int which, int hat, int value) {}
-
   /// Callback on joystick Ball
   /// @param which joystick number
   /// @param ball ball number
@@ -124,24 +112,43 @@ class WindowObserver {
 class InputSequencer final : public LazySingleton<InputSequencer> {
  public:
   /// Register physical input listener
-  void RegObserver(InputObserver *p) { ioListeners.insert(p); }
+  void RegObserver(InputObserver *p) {
+    if (std::find(ioListeners.begin(), ioListeners.end(), p) == ioListeners.end()) {
+      ioListeners.push_back(p);
+    }
+  }
 
   /// Un-Register physical input listener
-  void UnRegObserver(InputObserver *p) { ioListeners.erase(p); }
+  void UnRegObserver(InputObserver *p) {
+    auto it = std::find(ioListeners.begin(), ioListeners.end(), p), end = ioListeners.end();
+    if (it != ioListeners.end()) {
+      std::swap(it, --end);
+      ioListeners.pop_back();
+    }
+  }
 
   /// Register SDLWindowPtr input listener
   void RegWinObserver(WindowObserver *p) {
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-    auto callback = [](void *userdata, SDL_Event *event) { return InputSequencer::GetInstance().HandleAppEvents(userdata, event); };
-
-    SDL_SetEventFilter(callback, nullptr);
+#ifdef __ANDROID__
+    if (!SDL_GetEventFilter(nullptr, nullptr)) {
+      auto callback = [](void *userdata, SDL_Event *event) { return InputSequencer::GetInstance().HandleAppEvents(userdata, event); };
+      SDL_SetEventFilter(callback, nullptr);
+    }
 #endif
 
-    winListeners.insert(p);
+    if (std::find(winListeners.begin(), winListeners.end(), p) == winListeners.end()) {
+      winListeners.push_back(p);
+    }
   }
 
   /// Un-Register SDLWindowPtr input listener
-  void UnregWinObserver(WindowObserver *p) { winListeners.erase(p); }
+  void UnregWinObserver(WindowObserver *p) {
+    auto it = std::find(winListeners.begin(), winListeners.end(), p), end = winListeners.end();
+    if (it != winListeners.end()) {
+      std::swap(it, --end);
+      winListeners.pop_back();
+    }
+  }
 
   /// Called once per frame, sent callback message to listeners
   void Capture() {
@@ -238,7 +245,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
           for (auto &it : winListeners) it->OnQuit();
           break;
         }
-#if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+#ifndef __ANDROID__
         case SDL_TEXTINPUT: {
           for (auto &it : ioListeners) it->OnTextInput(event.text.text);
           break;
@@ -280,12 +287,13 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
 
  protected:
   /// Listeners list (physical input)
-  std::set<InputObserver *> ioListeners;
+  std::vector<InputObserver *> ioListeners;
 
   /// Listeners list (SDLWindowPtr input)
-  std::set<WindowObserver *> winListeners;
+  std::vector<WindowObserver *> winListeners;
 
   /// Required for Android/IOS
+#ifdef __ANDROID__
   int HandleAppEvents(void *userdata, SDL_Event *event) {
     switch (event->type) {
       case SDL_APP_WILLENTERBACKGROUND:
@@ -304,6 +312,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
         return 1;
     }
   }
+#endif
 };
 
 }  // namespace Glue

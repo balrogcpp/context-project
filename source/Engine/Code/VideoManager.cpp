@@ -334,7 +334,9 @@ void Window::OnQuit() {}
 void Window::OnFocusLost() {}
 void Window::OnFocusGained() {}
 void Window::OnSizeChanged(int x, int y, uint32_t id) {
-  if (this->id == id) Resize(x, y);
+#ifndef MOBILE
+  if (this->id == id && !fullscreen) Resize(x, y);
+#endif
 }
 void Window::OnExposed() { RenderFrame(); }
 
@@ -497,7 +499,7 @@ void VideoManager::CreateWindow() {
   windowList.emplace_back();
   mainWindow = &windowList[0];
   ogreCamera = sceneManager->createCamera("Default");
-  mainWindow->Create("Example0", ogreCamera, -1, 1270, 720, SDL_WINDOW_FULLSCREEN);
+  mainWindow->Create("Example0", ogreCamera, -1, 1270, 720, 0);
   ogreViewport = mainWindow->ogreViewport;
   InputSequencer::GetInstance().RegWinObserver(mainWindow);
 }
