@@ -41,11 +41,11 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT MSVC) OR CMAKE_CXX_COMPILER_
 
     if (NOT USE_EXCEPTIONS)
         string(APPEND CMAKE_CXX_FLAGS " -D_HAS_EXCEPTIONS=0")
-        string(APPEND CMAKE_CXX_FLAGS " -fno-rtti")
+        string(APPEND CMAKE_CXX_FLAGS " -fno-exceptions")
     endif()
 
     if (NOT USE_RTTI)
-        string(APPEND CMAKE_CXX_FLAGS " -fno-exceptions")
+        string(APPEND CMAKE_CXX_FLAGS " -fno-rtti")
     endif()
 
 
