@@ -25,13 +25,12 @@ void CompositorManager::OnSetUp() {
   InitMRT();
 
   // extra compositors
-#ifdef DESKTOP
-  //  AddCompositorEnabled("SSAO");
-  AddCompositorEnabled("Fog");
-  AddCompositorEnabled("FXAA");
-  AddCompositorEnabled("Blur");
-#endif
-  AddCompositorEnabled("Output");
+  AddCompositor("SSAO", false);
+  AddCompositor("Bloom", false);
+  AddCompositor("Fog", true);
+  AddCompositor("FXAA", false);
+  AddCompositor("Blur", false);
+  AddCompositor("Output", true);
 }
 
 void CompositorManager::OnClean() {}
@@ -40,17 +39,12 @@ void CompositorManager::OnPause() {}
 
 void CompositorManager::OnResume() {}
 
-void CompositorManager::AddCompositorEnabled(const string &name) {
-  OgreAssert(compositorManager->addCompositor(ogreViewport, name), "Failed to add MRT compoitor");
-  compositorManager->setCompositorEnabled(ogreViewport, name, true);
+void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
+  OgreAssert(compositorManager->addCompositor(ogreViewport, name, position), "Failed to add MRT compoitor");
+  compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 }
 
-void CompositorManager::AddCompositorDisabled(const string &name) {
-  OgreAssert(compositorManager->addCompositor(ogreViewport, name), "Failed to add MRT compoitor");
-  compositorManager->setCompositorEnabled(ogreViewport, name, false);
-}
-
-void CompositorManager::EnableCompositor(const string &name) { compositorManager->setCompositorEnabled(ogreViewport, name, true); }
+void CompositorManager::SetCompositorEnabled(const string &name, bool enable) { compositorManager->setCompositorEnabled(ogreViewport, name, enable); }
 
 static void AdjustBlur(Ogre::CompositorInstance *compositor) {
   auto *rt1Texture = compositor->getTechnique()->getTextureDefinition("rt1");
@@ -81,20 +75,28 @@ void CompositorManager::InitMRT() {
   int sizeX = ogreViewport->getActualDimensions().width();
   OgreAssert(compositorManager->addCompositor(ogreViewport, MRT, 0), "Failed to add MRT compositor");
   compositorManager->setCompositorEnabled(ogreViewport, MRT, false);
-  auto *mrtCompositor = compositorChain->getCompositor(MRT);
-  auto *mrtTexture = mrtCompositor->getTechnique()->getTextureDefinition("mrt");
-  auto *rt0Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt0");
-  OgreAssert(mrtTexture, "MRTCompositor mrtTexture not created");
-  OgreAssert(rt0Texture, "MRTCompositor rt0Texture not created");
-#ifdef MOBILE
-  mrtTexture->width = 1024;
-  mrtTexture->height = 768;
-#else
-  mrtTexture->width = sizeX;
-  mrtTexture->height = sizeY;
-#endif
-  rt0Texture->width = mrtTexture->width;
-  rt0Texture->height = mrtTexture->height;
+  //  auto *mrtCompositor = compositorChain->getCompositor(MRT);
+  //  auto *mrtTexture = mrtCompositor->getTechnique()->getTextureDefinition("mrt");
+  //  auto *mrt0Texture = mrtCompositor->getTechnique()->getTextureDefinition("mrt0");
+  //  auto *mrt1Texture = mrtCompositor->getTechnique()->getTextureDefinition("mrt1");
+  //  auto *mrt2Texture = mrtCompositor->getTechnique()->getTextureDefinition("mrt2");
+  //  OgreAssert(mrtTexture, "MRTCompositor mrtTexture not created");
+  //  OgreAssert(mrt0Texture, "MRTCompositor mrt0Texture not created");
+  //  OgreAssert(mrt1Texture, "MRTCompositor mrt1Texture not created");
+  //  OgreAssert(mrt2Texture, "MRTCompositor mrt2Texture not created");
+  //#ifdef MOBILE
+  //  mrtTexture->width = 1024;
+  //  mrtTexture->height = 768;
+  //#else
+  //  mrtTexture->width = sizeX;
+  //  mrtTexture->height = sizeY;
+  //#endif
+  //  mrt0Texture->width = mrtTexture->width;
+  //  mrt0Texture->height = mrtTexture->height;
+  //  mrt1Texture->width = mrtTexture->width;
+  //  mrt1Texture->height = mrtTexture->height;
+  //  mrt2Texture->width = mrtTexture->width;
+  //  mrt2Texture->height = mrtTexture->height;
   compositorManager->setCompositorEnabled(ogreViewport, MRT, true);
 }
 

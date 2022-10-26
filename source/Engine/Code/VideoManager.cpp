@@ -335,10 +335,14 @@ void Window::OnFocusLost() {}
 void Window::OnFocusGained() {}
 void Window::OnSizeChanged(int x, int y, uint32_t id) {
 #ifndef MOBILE
-  if (this->id == id && !fullscreen) Resize(x, y);
+  if (this->id == id && !fullscreen) {
+    width = x;
+    height = y;
+    ogreWindow->resize(width, height);
+  }
 #endif
 }
-void Window::OnExposed() { RenderFrame(); }
+void Window::OnExposed() {}
 
 VideoManager::VideoManager()
     : ogreMinLogLevel(Ogre::LML_TRIVIAL), ogreLogFile("Ogre.log"), shadowEnabled(true), shadowTechnique(Ogre::SHADOWTYPE_NONE), pssmSplitCount(3) {}
@@ -560,6 +564,9 @@ void VideoManager::LoadResources() {
 #elif defined(ANDROID)
   ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, APKZIP, Ogre::RGN_DEFAULT);
+#elif defined(EMSCRIPTEN)
+  ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, ZIP, Ogre::RGN_INTERNAL);
+  ogreResourceManager.addResourceLocation(ASSETS_ZIP, ZIP, Ogre::RGN_DEFAULT);
 #else
   ogreResourceManager.addResourceLocation(FindPath(PROGRAMS_ZIP, SCAN_DEPTH), ZIP, Ogre::RGN_INTERNAL);
   ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP, SCAN_DEPTH), ZIP, Ogre::RGN_DEFAULT);

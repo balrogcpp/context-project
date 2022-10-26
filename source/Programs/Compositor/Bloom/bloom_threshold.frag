@@ -9,7 +9,6 @@
 #endif
 
 #include "header.frag"
-#include "filters.glsl"
 
 in vec2 vUV0;
 uniform sampler2D uSampler;

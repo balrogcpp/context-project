@@ -19,8 +19,9 @@ int main()
     GetComponent<VideoManager>().GetWindow(0).GrabCursor(true);
     GetComponent<SceneManager>().LoadFromFile("1.scene");
     GetComponent<SceneManager>().SetUpSky();
-    GetComponent<VideoManager>().GetMainWindow().SetFullscreen(true);
+    //GetComponent<VideoManager>().GetMainWindow().SetFullscreen(true);
     GetComponent<VideoManager>().ShowMainWindow(true);
+    //GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
 
     // main function
     return app.Main();

@@ -17,11 +17,11 @@ class CompositorManager : public System<CompositorManager> {
   void OnResume() override;
   void OnUpdate(float time) override;
 
+  void AddCompositor(const std::string& name, bool enable, int position = -1);
+  void SetCompositorEnabled(const std::string& name, bool enable);
+
  protected:
   void InitMRT();
-  void AddCompositorEnabled(const std::string& name);
-  void AddCompositorDisabled(const std::string& name);
-  void EnableCompositor(const std::string& name);
 
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;
