@@ -25,9 +25,12 @@ void CompositorManager::OnSetUp() {
   InitMRT();
 
   // extra compositors
-//  AddCompositorEnabled("SSAO");
-//  AddCompositorEnabled("Fog");
-//  AddCompositorEnabled("FXAA");
+#ifdef DESKTOP
+  //  AddCompositorEnabled("SSAO");
+  AddCompositorEnabled("Fog");
+  AddCompositorEnabled("FXAA");
+  AddCompositorEnabled("Blur");
+#endif
   AddCompositorEnabled("Output");
 }
 
@@ -83,15 +86,15 @@ void CompositorManager::InitMRT() {
   auto *rt0Texture = mrtCompositor->getTechnique()->getTextureDefinition("rt0");
   OgreAssert(mrtTexture, "MRTCompositor mrtTexture not created");
   OgreAssert(rt0Texture, "MRTCompositor rt0Texture not created");
-//#ifdef MOBILE
-//  mrtTexture->width = 1024;
-//  mrtTexture->height = 768;
-//#else
-//  mrtTexture->width = sizeX;
-//  mrtTexture->height = sizeY;
-//#endif
-//  rt0Texture->width = mrtTexture->width;
-//  rt0Texture->height = mrtTexture->height;
+#ifdef MOBILE
+  mrtTexture->width = 1024;
+  mrtTexture->height = 768;
+#else
+  mrtTexture->width = sizeX;
+  mrtTexture->height = sizeY;
+#endif
+  rt0Texture->width = mrtTexture->width;
+  rt0Texture->height = mrtTexture->height;
   compositorManager->setCompositorEnabled(ogreViewport, MRT, true);
 }
 

@@ -59,6 +59,56 @@ compositor MRT
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
+compositor SSAO
+{
+    technique
+    {
+        texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
+        texture_ref mrt MRT mrt
+        texture_ref rt0 MRT rt0
+
+        target ssao
+        {
+            pass render_quad
+            {
+                material SSAO
+                input 0 mrt 1
+            }
+        }
+
+        target ssao
+        {
+            pass render_quad
+            {
+                material FilterY
+                input 0 ssao
+            }
+        }
+
+        target ssao
+        {
+            pass render_quad
+            {
+                material FilterX
+                input 0 ssao
+            }
+        }
+
+        target rt0
+        {
+            pass render_quad
+            {
+                material SSAO_mod
+                input 0 rt0
+                input 1 ssao
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
 compositor Bloom
 {
     technique
@@ -190,56 +240,6 @@ compositor Bloom
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
-compositor SSAO
-{
-    technique
-    {
-        texture ssao target_width_scaled 0.5 target_height_scaled 0.5 PF_FLOAT16_R
-        texture_ref mrt MRT mrt
-        texture_ref rt0 MRT rt0
-
-        target ssao
-        {
-            pass render_quad
-            {
-                material SSAO
-                input 0 mrt 1
-            }
-        }
-
-        target ssao
-        {
-            pass render_quad
-            {
-                material FilterY
-                input 0 ssao
-            }
-        }
-
-        target ssao
-        {
-            pass render_quad
-            {
-                material FilterX
-                input 0 ssao
-            }
-        }
-
-        target rt0
-        {
-            pass render_quad
-            {
-                material SSAO_mod
-                input 0 rt0
-                input 1 ssao
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-//----------------------------------------------------------------------------------------------------------------------
 compositor Fog
 {
     technique
@@ -262,27 +262,6 @@ compositor Fog
 //----------------------------------------------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------------------------------------------
-compositor FXAA
-{
-    technique
-    {
-        texture_ref mrt MRT mrt
-        texture_ref rt0 MRT rt0
-
-        target rt0
-        {
-            pass render_quad
-            {
-                material FXAA
-                input 0 rt0
-            }
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-//----------------------------------------------------------------------------------------------------------------------
 compositor Blur
 {
     technique
@@ -297,6 +276,27 @@ compositor Blur
                 material Blur
                 input 0 rt0
                 input 1 mrt 2
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------------------------------------------------------------------------------
+compositor FXAA
+{
+    technique
+    {
+        texture_ref mrt MRT mrt
+        texture_ref rt0 MRT rt0
+
+        target rt0
+        {
+            pass render_quad
+            {
+                material FXAA
+                input 0 rt0
             }
         }
     }

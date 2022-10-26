@@ -29,6 +29,5 @@ void main()
 {
   vec3 scene = texture2D(uSceneSampler, vUV0).rgb;
   float clampedDepth = texture2D(uSceneDepthSampler, vUV0).r;
-  scene = ApplyFog(scene, FogParams, FogColour, clampedDepth * FarClipDistance);
-  FragColor.rgb = scene;
+  FragColor.rgb = ApplyFog(scene, FogParams, FogColour, clampedDepth * FarClipDistance);
 }
