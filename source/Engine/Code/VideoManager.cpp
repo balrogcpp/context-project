@@ -335,10 +335,10 @@ void Window::OnFocusLost() {}
 void Window::OnFocusGained() {}
 void Window::OnSizeChanged(int x, int y, uint32_t id) {
 #ifndef MOBILE
-  if (this->id == id && !fullscreen) {
+  if (this->id == id) {
     width = x;
     height = y;
-    ogreWindow->resize(width, height);
+    ogreWindow->resize(x, y);
   }
 #endif
 }

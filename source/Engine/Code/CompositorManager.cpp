@@ -7,7 +7,7 @@ using namespace std;
 
 namespace Glue {
 
-CompositorManager::CompositorManager() {}
+CompositorManager::CompositorManager() : MRT_COMPOSITOR("MRT") {}
 
 CompositorManager::~CompositorManager() {}
 
@@ -22,7 +22,9 @@ void CompositorManager::OnSetUp() {
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
   // init compositor chain
+  OgreAssert(compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR, 0), "Failed to add MRT compositor");
   InitMRT();
+  compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, true);
 
   // extra compositors
   AddCompositor("SSAO", false);
@@ -31,9 +33,14 @@ void CompositorManager::OnSetUp() {
   AddCompositor("FXAA", false);
   AddCompositor("Blur", false);
   AddCompositor("Output", true);
+
+  //
+  InputSequencer::GetInstance().RegWinObserver(this);
 }
 
-void CompositorManager::OnClean() {}
+void CompositorManager::OnClean() {
+  InputSequencer::GetInstance().UnregWinObserver(this);
+}
 
 void CompositorManager::OnPause() {}
 
@@ -70,34 +77,46 @@ static void AdjustBlur(Ogre::CompositorInstance *compositor) {
 }
 
 void CompositorManager::InitMRT() {
-  const string MRT = "MRT";
+  const string MRT = MRT_COMPOSITOR;
   int sizeY = ogreViewport->getActualDimensions().height();
   int sizeX = ogreViewport->getActualDimensions().width();
-  OgreAssert(compositorManager->addCompositor(ogreViewport, MRT, 0), "Failed to add MRT compositor");
-  compositorManager->setCompositorEnabled(ogreViewport, MRT, false);
-  //  auto *mrtCompositor = compositorChain->getCompositor(MRT);
-  //  auto *mrtTexture = mrtCompositor->getTechnique()->getTextureDefinition("mrt");
-  //  auto *mrt0Texture = mrtCompositor->getTechnique()->getTextureDefinition("mrt0");
-  //  auto *mrt1Texture = mrtCompositor->getTechnique()->getTextureDefinition("mrt1");
-  //  auto *mrt2Texture = mrtCompositor->getTechnique()->getTextureDefinition("mrt2");
-  //  OgreAssert(mrtTexture, "MRTCompositor mrtTexture not created");
-  //  OgreAssert(mrt0Texture, "MRTCompositor mrt0Texture not created");
-  //  OgreAssert(mrt1Texture, "MRTCompositor mrt1Texture not created");
-  //  OgreAssert(mrt2Texture, "MRTCompositor mrt2Texture not created");
-  //#ifdef MOBILE
-  //  mrtTexture->width = 1024;
-  //  mrtTexture->height = 768;
-  //#else
-  //  mrtTexture->width = sizeX;
-  //  mrtTexture->height = sizeY;
-  //#endif
-  //  mrt0Texture->width = mrtTexture->width;
-  //  mrt0Texture->height = mrtTexture->height;
-  //  mrt1Texture->width = mrtTexture->width;
-  //  mrt1Texture->height = mrtTexture->height;
-  //  mrt2Texture->width = mrtTexture->width;
-  //  mrt2Texture->height = mrtTexture->height;
-  compositorManager->setCompositorEnabled(ogreViewport, MRT, true);
+  printf("Actual viewport size: %dx%d\n", sizeX, sizeY);
+  auto *mrtCompositor = compositorChain->getCompositor(MRT);
+  auto *mrtTexture = mrtCompositor->getTechnique()->getTextureDefinition("mrt");
+  auto *rtTexture = mrtCompositor->getTechnique()->getTextureDefinition("rt");
+  auto *mrt1Texture = mrtCompositor->getTechnique()->getTextureDefinition("mrt1");
+  auto *mrt2Texture = mrtCompositor->getTechnique()->getTextureDefinition("mrt2");
+  OgreAssert(mrtTexture, "MRTCompositor mrtTexture not created");
+  OgreAssert(rtTexture, "MRTCompositor rtTexture not created");
+  OgreAssert(mrt1Texture, "MRTCompositor mrt1Texture not created");
+  OgreAssert(mrt2Texture, "MRTCompositor mrt2Texture not created");
+#ifdef MOBILE
+  mrtTexture->width = 1024;
+  mrtTexture->height = 768;
+#else
+  mrtTexture->width = sizeX;
+  mrtTexture->height = sizeY;
+#endif
+  rtTexture->width = mrtTexture->width;
+  rtTexture->height = mrtTexture->height;
+  mrt1Texture->width = mrtTexture->width;
+  mrt1Texture->height = mrtTexture->height;
+  mrt2Texture->width = mrtTexture->width;
+  mrt2Texture->height = mrtTexture->height;
 }
+
+void CompositorManager::OnEvent(const SDL_Event &event) {}
+void CompositorManager::OnQuit() {}
+void CompositorManager::OnFocusLost() {}
+void CompositorManager::OnFocusGained() {}
+void CompositorManager::OnSizeChanged(int x, int y, uint32_t id) {
+#ifndef MOBILE
+  compositorManager->removeCompositor(ogreViewport, MRT_COMPOSITOR);
+  OgreAssert(compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR, 0), "Failed to add MRT compositor");
+  InitMRT();
+  compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, true);
+#endif
+}
+void CompositorManager::OnExposed() {}
 
 }  // namespace Glue

@@ -17,7 +17,7 @@ namespace Glue {
 
 class VideoManager;
 
-class Window : public WindowObserver, InputObserver {
+class Window : public WindowObserver {
  public:
   Window();
   virtual ~Window();
