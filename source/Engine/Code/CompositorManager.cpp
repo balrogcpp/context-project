@@ -35,11 +35,11 @@ void CompositorManager::OnSetUp() {
   AddCompositor("Output", true);
 
   //
-  InputSequencer::GetInstance().RegWinObserver(this);
+  ogreViewport->addListener(this);
 }
 
 void CompositorManager::OnClean() {
-  InputSequencer::GetInstance().UnregWinObserver(this);
+  ogreViewport->removeListener(this);
 }
 
 void CompositorManager::OnPause() {}
@@ -105,11 +105,7 @@ void CompositorManager::InitMRT() {
   mrt2Texture->height = mrtTexture->height;
 }
 
-void CompositorManager::OnEvent(const SDL_Event &event) {}
-void CompositorManager::OnQuit() {}
-void CompositorManager::OnFocusLost() {}
-void CompositorManager::OnFocusGained() {}
-void CompositorManager::OnSizeChanged(int x, int y, uint32_t id) {
+void CompositorManager::viewportDimensionsChanged(Ogre::Viewport* viewport) {
 #ifndef MOBILE
   compositorManager->removeCompositor(ogreViewport, MRT_COMPOSITOR);
   OgreAssert(compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR, 0), "Failed to add MRT compositor");
@@ -117,6 +113,5 @@ void CompositorManager::OnSizeChanged(int x, int y, uint32_t id) {
   compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, true);
 #endif
 }
-void CompositorManager::OnExposed() {}
 
 }  // namespace Glue

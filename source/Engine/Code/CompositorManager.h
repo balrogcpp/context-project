@@ -1,13 +1,12 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #pragma once
-#include "Observer.h"
 #include "System.h"
 #include <Ogre.h>
 
 namespace Glue {
 
-class CompositorManager : public System<CompositorManager>, public WindowObserver {
+class CompositorManager : public System<CompositorManager>, public Ogre::Viewport::Listener {
  public:
   CompositorManager();
   virtual ~CompositorManager();
@@ -24,12 +23,7 @@ class CompositorManager : public System<CompositorManager>, public WindowObserve
  protected:
   void InitMRT();
 
-  void OnEvent(const SDL_Event& event) override;
-  void OnQuit() override;
-  void OnFocusLost() override;
-  void OnFocusGained() override;
-  void OnSizeChanged(int x, int y, uint32_t id) override;
-  void OnExposed() override;
+  void viewportDimensionsChanged(Ogre::Viewport* viewport) override;
 
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;
