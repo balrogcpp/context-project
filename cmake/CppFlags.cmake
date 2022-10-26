@@ -40,6 +40,7 @@ if ((CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT MSVC) OR CMAKE_CXX_COMPILER_
     endif ()
 
     if (NOT USE_EXCEPTIONS)
+        string(APPEND CMAKE_CXX_FLAGS " -D_HAS_EXCEPTIONS=0")
         string(APPEND CMAKE_CXX_FLAGS " -fno-rtti")
     endif()
 
@@ -103,6 +104,7 @@ elseif (MSVC)
     string(REPLACE "/DNDEBUG" "" CMAKE_C_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO})
 
     if (NOT USE_EXCEPTIONS)
+        string(APPEND CMAKE_CXX_FLAGS " /D_HAS_EXCEPTIONS=0")
         string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
     endif()
 
