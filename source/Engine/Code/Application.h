@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "AppStateManager.h"
 #include "Engine.h"
 #include "Observer.h"
 #include "Singleton.h"
@@ -10,7 +11,7 @@
 
 namespace Glue {
 
-class Application : public WindowObserver, public InputObserver, public Singleton<Application> {
+class Application : public WindowObserver, public InputObserver, public DynamicSingleton<Application> {
  public:
   /// Constructors
   Application();
@@ -30,6 +31,7 @@ class Application : public WindowObserver, public InputObserver, public Singleto
 
   /// Handle components
   std::unique_ptr<Engine> engine;
+  std::unique_ptr<AppStateManager> stateManager;
   bool quit = false;
   bool suspend = false;
   int64_t targetFps = 60;

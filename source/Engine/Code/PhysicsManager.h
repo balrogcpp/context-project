@@ -4,6 +4,7 @@
 
 #include "System.h"
 #include <Ogre.h>
+#include <OgreTerrainGroup.h>
 #include <functional>
 #include <memory>
 #include <thread>
@@ -32,7 +33,8 @@ class PhysicsManager final : public System<PhysicsManager> {
 
   void AddRigidBody(btRigidBody *rigidBody);
   void ProcessData(Ogre::Entity *entity, const Ogre::UserObjectBindings &userData);
-  void CreateTerrainHeightfieldShape(int size, float *data, float minHeight, float maxHeight, Ogre::Vector3 position, float scale);
+  void CreateTerrainHeightfieldShape(Ogre::Terrain *terrain);
+  void CreateTerrainHeightfieldShape(Ogre::TerrainGroup *terrainGroup);
 
  protected:
   std::unique_ptr<btDiscreteDynamicsWorld> btWorld;

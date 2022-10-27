@@ -20,11 +20,11 @@ class NoCopy {
 /// Implement "Dynamic Singleton" pattern. Keeps flag that class was already instanced once.
 /// Throws exception when tried to create second instance
 template <typename T>
-class BaseSingleton : public NoCopy {
+class DynamicSingleton : public NoCopy {
  public:
   /// Constructor
-  BaseSingleton() {
-    if (instanced) throw std::runtime_error(std::string(typeid(T).name()) + " is a Singleton class. Creation of another instance is forbidden");
+  DynamicSingleton() {
+    OgreAssert(!instanced, (std::string(typeid(T).name()) + " is a Singleton class. Creation of another instance is forbidden").c_str());
     instanced = true;
   }
 
@@ -39,25 +39,25 @@ class BaseSingleton : public NoCopy {
 /// Implement "Dynamic Singleton" pattern. Keeps flag that class was already instanced once.
 /// Throws exception when tried to create second instance
 template <typename T>
-class Singleton : public BaseSingleton<T> {
+class Singleton : public DynamicSingleton<T> {
  public:
   /// Constructor
-  Singleton() { instancePtr = static_cast<T *>(this); }
+  Singleton() { instance = static_cast<T *>(this); }
 
   ///
-  static T *GetInstancePtr() { return instancePtr; }
+  static T *GetInstancePtr() { return instance; }
 
   ///
-  static T &GetInstance() { return *instancePtr; }
+  static T &GetInstance() { return *instance; }
 
  protected:
   /// Pointer to singleton instance
-  inline static T *instancePtr = nullptr;
+  inline static T *instance = nullptr;
 };
 
 /// Implements "Lazy DynamicSingleton" pattern. Creates instance only when called GetInstance
 template <typename T>
-class LazySingleton : public BaseSingleton<T> {
+class LazySingleton : public DynamicSingleton<T> {
  public:
   /// Create and return instance of class
   /// \return ref to instance

@@ -16,8 +16,8 @@ void CompositorManager::OnUpdate(float time) {}
 void CompositorManager::OnSetUp() {
   // init fields
   compositorManager = Ogre::CompositorManager::getSingletonPtr();
-  sceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
-  ogreCamera = sceneManager->getCamera("Default");
+  ogreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
+  ogreCamera = ogreSceneManager->getCamera("Default");
   ogreViewport = ogreCamera->getViewport();
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
@@ -80,7 +80,7 @@ void CompositorManager::InitMRT() {
   const string MRT = MRT_COMPOSITOR;
   int sizeY = ogreViewport->getActualDimensions().height();
   int sizeX = ogreViewport->getActualDimensions().width();
-  printf("Actual viewport size: %dx%d\n", sizeX, sizeY);
+  Ogre::LogManager::getSingleton().logMessage("[CompositorManager] Actual viewport size: " + to_string(sizeX) + "x" + to_string(sizeY), Ogre::LML_TRIVIAL);
   auto *mrtCompositor = compositorChain->getCompositor(MRT);
   auto *mrtTexture = mrtCompositor->getTechnique()->getTextureDefinition("mrt");
   auto *rtTexture = mrtCompositor->getTechnique()->getTextureDefinition("rt");

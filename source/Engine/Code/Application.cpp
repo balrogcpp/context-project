@@ -9,7 +9,6 @@ using namespace std;
 namespace Glue {
 
 Application::Application() {
-  InputSequencer::GetInstance().RegWinObserver(this);
   engine = make_unique<Engine>();
   engine->Init();
 }
@@ -38,7 +37,6 @@ void Application::LoopBody() {
     float frameTime = static_cast<float>(timeBeforeUpdate - timeOfLastFrame) / 1e+6;
     timeOfLastFrame = timeBeforeUpdate;
     engine->Update(frameTime);
-    engine->RenderFrame();
   } else {
     engine->OnPause();
     wasSuspended = true;
@@ -73,6 +71,7 @@ void Application::EmscriptenLoop(void *arg) {
 }
 
 void Application::Go() {
+  InputSequencer::GetInstance().RegWinObserver(this);
 #ifdef MOBILE
   targetFps = 30;
 #endif

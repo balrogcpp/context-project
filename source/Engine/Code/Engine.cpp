@@ -35,35 +35,18 @@ void Engine::Init() {
 
   audio = make_unique<AudioManager>();
   RegComponent(audio.get());
+
+  sky = make_unique<SkyManager>();
+  RegComponent(sky.get());
+
+  terrain = make_unique<TerrainManager>();
+  RegComponent(terrain.get());
 }
 
 void Engine::Capture() {
   static auto &io = InputSequencer::GetInstance();
   io.Capture();
 }
-
-// constexpr ResolutionItem ResolutionList[] = {
-//    {"360x800", 360, 800},
-//    {"800x600", 800, 600},
-//    {"810x1080", 810, 1080},
-//    {"768x1024", 768, 1024},
-//    {"834x1112", 834, 1112},
-//    {"1024x768", 1024, 768},
-//    {"1024x1366", 1024, 1366},
-//    {"1280x720", 1280, 720},
-//    {"1280x800", 1280, 800},
-//    {"1280x1024", 1280, 1024},
-//    {"1360x768", 1360, 768},
-//    {"1366x768", 1366, 768},
-//    {"1440x900", 1440, 900},
-//    {"1536x864", 1536, 864},
-//    {"1600x900", 1600, 900},
-//    {"1680x1050", 1680, 1050},
-//    {"1920x1080", 1920, 1080},
-//    {"1920x1200", 1920, 1200},
-//    {"2048x1152", 2048, 1152},
-//    {"2560x1440", 2560, 1440},
-//};
 
 void Engine::RegComponent(SystemI *component) {
   component->OnSetUp();
@@ -77,12 +60,18 @@ void Engine::UnRegComponent(SystemI *component) {
   if (it != componentList.end()) componentList.erase(it);
 }
 
+bool Engine::frameRenderingQueued(const Ogre::FrameEvent &evt) { return true; }
+
+bool Engine::frameEnded(const Ogre::FrameEvent &evt) { return true; }
+
+bool Engine::frameStarted(const Ogre::FrameEvent &evt) { return true; }
+
 void Engine::OnPause() {
-  for (auto &it : componentList) it->OnPause();
+  // for (auto &it : componentList) it->OnPause();
 }
 
 void Engine::OnResume() {
-  for (auto &it : componentList) it->OnResume();
+  // for (auto &it : componentList) it->OnResume();
 }
 
 void Engine::OnMenuOn() { physics->OnPause(); }
@@ -96,6 +85,7 @@ void Engine::OnCleanup() {
 void Engine::Update(float PassedTime) {
   if (paused) return;
   for (auto &it : componentList) it->OnUpdate(PassedTime);
+  RenderFrame();
 }
 
 void Engine::RenderFrame() { video->RenderFrame(); }

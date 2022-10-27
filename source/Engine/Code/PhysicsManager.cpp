@@ -102,7 +102,21 @@ void PhysicsManager::OnClean() {
 
 void PhysicsManager::AddRigidBody(btRigidBody *rigidBody) { btWorld->addRigidBody(rigidBody); }
 
-void PhysicsManager::CreateTerrainHeightfieldShape(int size, float *data, float minHeight, float maxHeight, Ogre::Vector3 position, float scale) {
+void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::TerrainGroup *terrainGroup) {
+  for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
+    auto *terrain = it.getNext()->instance;
+    CreateTerrainHeightfieldShape(terrain);
+  }
+}
+
+void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::Terrain *terrain) {
+  int size = terrain->getSize();
+  float *data = terrain->getHeightData();
+  float minHeight = terrain->getMinHeight();
+  float maxHeight = terrain->getMaxHeight();
+  Ogre::Vector3 position = terrain->getPosition();
+  float scale = terrain->getWorldSize() / (static_cast<float>(terrain->getSize() - 1));
+
   // Convert height data in a format suitable for the physics engine
   auto *terrainHeights = new float[size * size];
   assert(terrainHeights != 0);
@@ -175,7 +189,7 @@ void PhysicsManager::ProcessData(Ogre::Entity *entity, const Ogre::UserObjectBin
   else if (proxy == "cylinder")
     entShape = Ogre::Bullet::createCylinderCollider(entity);
   else
-   entShape = Ogre::Bullet::createBoxCollider(entity);
+    entShape = Ogre::Bullet::createBoxCollider(entity);
 
   if (Static)
     mass = 0.0;

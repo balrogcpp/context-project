@@ -3,13 +3,10 @@
 #include "pch.h"
 #include "SceneManager.h"
 #include "PhysicsManager.h"
-#include "SkyModel/ArHosekSkyModel.h"
-#include "SkyModel/SkyModel.h"
 
 using namespace std;
 
 namespace {
-
 void CheckTransparentShadowCaster(const Ogre::MaterialPtr &material) {
   auto *pass = material->getTechnique(0)->getPass(0);
 
@@ -86,89 +83,69 @@ void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
     mesh->buildTangentVectors();
   }
 }
-
 }  // namespace
 
 namespace Glue {
-
 SceneManager::SceneManager() {}
 SceneManager::~SceneManager() {}
 
 void SceneManager::OnSetUp() {
   ogreRoot = Ogre::Root::getSingletonPtr();
-  sceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
-  ogreCamera = sceneManager->getCamera("Default");
+  OgreAssert(ogreRoot, "[SceneManager] ogreRoot is not initialised");
+  ogreSceneManager = ogreRoot->getSceneManager("Default");
+  OgreAssert(ogreSceneManager, "[SceneManager] ogreSceneManager is not initialised");
+  OgreAssert(ogreSceneManager->hasCamera("Default"), "[SceneManager] ogreCamera is not initialised");
+  ogreCamera = ogreSceneManager->getCamera("Default");
+
+  ogreRoot->addFrameListener(this);
+  ogreSceneManager->addRenderObjectListener(this);
 }
 
 void SceneManager::OnClean() {
+  ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+  ogreSceneManager->clearScene();
+  ogreRoot->removeFrameListener(this);
+  ogreSceneManager->removeRenderObjectListener(this);
   InputSequencer::GetInstance().UnRegObserver(sinbad.get());
   sinbad.reset();
-  gpuFpParams.clear();
-  gpuFpParams.shrink_to_fit();
-  gpuVpParams.clear();
-  gpuVpParams.shrink_to_fit();
+  fpParams.clear();
+  fpParams.shrink_to_fit();
+  vpParams.clear();
+  vpParams.shrink_to_fit();
 }
 
 void SceneManager::OnPause() {}
 
 void SceneManager::OnResume() {}
 
-void SceneManager::OnUpdate(float time) {
-  if (sinbad) sinbad->Update(time);
+void SceneManager::OnUpdate(float time) {}
+
+bool SceneManager::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+  if (sinbad) sinbad->Update(evt.timeSinceLastFrame);
   static Ogre::Matrix4 MVP;
   static Ogre::Matrix4 MVPprev;
   MVPprev = MVP;
   MVP = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
-  for (auto &it : gpuVpParams) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
-  if (skyNeedsUpdate && skyBoxFpParams)
-    for (int i = 0; i < 10; i++) skyBoxFpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
+  for (auto &it : vpParams) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
+
+  return true;
 }
+bool SceneManager::frameEnded(const Ogre::FrameEvent &evt) { return true; }
+bool SceneManager::frameStarted(const Ogre::FrameEvent &evt) { return true; }
 
-Ogre::Vector3 SceneManager::GetSunPosition() {
-  auto *SunPtr = sceneManager->getLight("Sun");
-  return SunPtr ? -SunPtr->getDerivedDirection().normalisedCopy() : Ogre::Vector3::ZERO;
-}
-
-void SceneManager::SetUpSky() {
-  auto colorspace = ColorSpace::sRGB;
-  float sunSize = 0.27f;
-  float turbidity = 4.0f;
-  auto groundAlbedo = Ogre::Vector3(1.0);
-  auto sunColor = Ogre::Vector3(20000);
-  auto sunDir = GetSunPosition();
-
-  SkyModel skyModel;
-  skyModel.SetupSky(sunDir, sunSize, sunColor, groundAlbedo, turbidity, colorspace);
-
-  const ArHosekSkyModelState *States[3] = {skyModel.StateX, skyModel.StateY, skyModel.StateZ};
-
-  for (int i = 0; i < 9; i++) {
-    for (int j = 0; j < 3; j++) {
-      hosekParams[i][j] = States[j]->configs[j][i];
-      hosekParams[9] = Ogre::Vector3(skyModel.StateX->radiances[0], skyModel.StateY->radiances[1], skyModel.StateZ->radiances[2]);
-    }
-  }
-
-  auto skyMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyBox");
-  auto FpParams = skyMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-  if (FpParams) skyBoxFpParams = FpParams;
-
-  FpParams->setIgnoreMissingParams(true);
-  for (int i = 0; i < hosekParamList.size(); i++) {
-    FpParams->setNamedConstant(hosekParamList[i], hosekParams[i]);
-  }
-}
+void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
+                                            const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {}
 
 void SceneManager::LoadFromFile(const std::string filename) {
-  auto *rootNode = sceneManager->getRootSceneNode();
+  auto *rootNode = ogreSceneManager->getRootSceneNode();
   rootNode->loadChildren(filename);
 
   for (auto it : rootNode->getChildren()) {
     ScanNode(static_cast<Ogre::SceneNode *>(it));
   }
 
-  if (!sinbad && sceneManager->hasCamera("Default")) {
-    sinbad = make_unique<SinbadCharacterController>(sceneManager->getCamera("Default"));
+  if (!sinbad && ogreSceneManager->hasCamera("Default")) {
+    sinbad = make_unique<SinbadCharacterController>(ogreSceneManager->getCamera("Default"));
     InputSequencer::GetInstance().RegObserver(sinbad.get());
   }
 
@@ -181,6 +158,8 @@ void SceneManager::LoadFromFile(const std::string filename) {
 void SceneManager::RegCamera(Ogre::Camera *camera) {}
 
 void SceneManager::RegLight(Ogre::Light *light) {}
+
+void SceneManager::RegEntity(const std::string &name) { RegEntity(ogreSceneManager->getEntity(name)); }
 
 void SceneManager::RegEntity(Ogre::Entity *entity) {
   EnsureHasTangents(entity->getMesh());
@@ -225,19 +204,16 @@ void SceneManager::RegMaterial(const Ogre::MaterialPtr &material) {
 
   if (pass->hasVertexProgram()) {
     const auto ptr = pass->getVertexProgramParameters();
-    if (find(gpuVpParams.begin(), gpuVpParams.end(), ptr) == gpuVpParams.end()) gpuVpParams.push_back(ptr);
+    if (find(vpParams.begin(), vpParams.end(), ptr) == vpParams.end()) vpParams.push_back(ptr);
   }
 
   if (pass->hasFragmentProgram()) {
     const auto ptr = pass->getFragmentProgramParameters();
-    if (find(gpuFpParams.begin(), gpuFpParams.end(), ptr) == gpuFpParams.end()) gpuFpParams.push_back(ptr);
+    if (find(fpParams.begin(), fpParams.end(), ptr) == fpParams.end()) fpParams.push_back(ptr);
   }
 }
 
-void SceneManager::RegMaterial(const std::string &name) {
-  auto material = Ogre::MaterialManager::getSingleton().getByName(name);
-  RegMaterial(material);
-}
+void SceneManager::RegMaterial(const std::string &name) { RegMaterial(Ogre::MaterialManager::getSingleton().getByName(name)); }
 
 void SceneManager::ScanNode(Ogre::SceneNode *node) {
   for (auto it : node->getAttachedObjects()) {
@@ -265,5 +241,4 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
     ScanNode(static_cast<Ogre::SceneNode *>(it));
   }
 }
-
 }  // namespace Glue

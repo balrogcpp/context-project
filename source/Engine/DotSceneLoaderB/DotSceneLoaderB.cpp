@@ -5,6 +5,7 @@
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <OgreTerrain.h>
 #include <OgreTerrainGroup.h>
+#include "TerrainManager.h"
 #endif
 
 #include <pugixml.hpp>
@@ -196,14 +197,6 @@ void DotSceneLoaderB::processScene(pugi::xml_node& XMLRoot)
 
     LogManager::getSingleton().logMessage(message);
 
-    // Process terrain (?)
-    if (auto pElement = XMLRoot.child("terrainGroup"))
-        processTerrainGroup(pElement);
-
-    // Process terrain (?)
-    if (auto pElement = XMLRoot.child("terrainGroupLegacy"))
-        processTerrainGroupLegacy(pElement);
-
     // Process environment (?)
     if (auto pElement = XMLRoot.child("environment"))
         processEnvironment(pElement);
@@ -227,6 +220,14 @@ void DotSceneLoaderB::processScene(pugi::xml_node& XMLRoot)
     // Process camera (?)
     if (auto pElement = XMLRoot.child("camera"))
         processCamera(pElement);
+
+    // Process terrain (?)
+    if (auto pElement = XMLRoot.child("terrainGroup"))
+        processTerrainGroup(pElement);
+
+    // Process terrain (?)
+    if (auto pElement = XMLRoot.child("terrainGroupLegacy"))
+        processTerrainGroupLegacy(pElement);
 }
 
 void DotSceneLoaderB::processNodes(pugi::xml_node& XMLNode)
@@ -309,23 +310,28 @@ void DotSceneLoaderB::processEnvironment(pugi::xml_node& XMLNode)
 void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
 {
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-    LogManager::getSingleton().logMessage("[DotSceneLoaderB] Processing Terrain Group...", LML_TRIVIAL);
+    LogManager::getSingleton().logMessage("[DotSceneLoaderB] Processing Terrain Group Legacy...", LML_TRIVIAL);
 
-    TerrainGroup *OgreTerrainPtr = new TerrainGroup(mSceneMgr);
-    OgreTerrainPtr->setResourceGroup(m_sGroupName);
+    auto *terrainGroup = new TerrainGroup(mSceneMgr);
+    terrainGroup->setResourceGroup(m_sGroupName);
 
     for (auto &pPageElement : XMLNode.children("terrain"))
     {
-      int x = StringConverter::parseInt(pPageElement.attribute("x").value());
-      int y = StringConverter::parseInt(pPageElement.attribute("y").value());
-      String cached = pPageElement.attribute("file").value();
-      OgreTerrainPtr->loadLegacyTerrain(cached, x, y, true);
+        int x = StringConverter::parseInt(pPageElement.attribute("x").value());
+        int y = StringConverter::parseInt(pPageElement.attribute("y").value());
+        std::string filename = pPageElement.attribute("file").value();
+        terrainGroup->loadLegacyTerrain(filename, x, y, true);
     }
 
-    OgreTerrainPtr->setOrigin(Vector3::ZERO);
-    OgreTerrainPtr->freeTemporaryResources();
+    terrainGroup->setOrigin(Vector3::ZERO);
+    terrainGroup->freeTemporaryResources();
+
+    Glue::GetComponent<Glue::TerrainManager>().RegTerrainGroup(terrainGroup);
+    Glue::GetComponent<Glue::TerrainManager>().ProcessTerrainCollider(terrainGroup);
+
+    mAttachNode->getUserObjectBindings().setUserAny("TerrainGroup", terrainGroup);
 #else
-  OGRE_EXCEPT(Exception::ERR_INVALID_CALL, "recompile with Terrain component");
+    OGRE_EXCEPT(Exception::ERR_INVALID_CALL, "recompile with Terrain component");
 #endif
 }
 

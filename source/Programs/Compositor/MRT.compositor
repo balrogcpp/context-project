@@ -7,7 +7,7 @@ compositor noMRT
 {
     technique
     {
-        texture rt target_width target_height PF_FLOAT16_RGB
+        texture rt target_width target_height PF_BYTE_RGB
 
         target rt
         {

@@ -27,7 +27,7 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Viewpor
 
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;
-  Ogre::SceneManager* sceneManager = nullptr;
+  Ogre::SceneManager* ogreSceneManager = nullptr;
   Ogre::Camera* ogreCamera = nullptr;
   Ogre::Viewport* ogreViewport = nullptr;
   const std::string MRT_COMPOSITOR;

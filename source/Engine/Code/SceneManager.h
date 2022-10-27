@@ -4,13 +4,11 @@
 
 #include "SinbadCharacterController.h"
 #include "System.h"
-#include "TerrainManager.h"
-#include "SkyManager.h"
 #include <Ogre.h>
 
 namespace Glue {
 
-class SceneManager final : public System<SceneManager> {
+class SceneManager final : public System<SceneManager>, public Ogre::FrameListener, public Ogre::RenderObjectListener {
  public:
   SceneManager();
   virtual ~SceneManager();
@@ -20,33 +18,30 @@ class SceneManager final : public System<SceneManager> {
   void OnPause() override;
   void OnResume() override;
   void OnUpdate(float time) override;
+  bool frameStarted(const Ogre::FrameEvent &evt) override;
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) override;
+  bool frameEnded(const Ogre::FrameEvent& evt) override;
+  void notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
+                                const Ogre::LightList *pLightList, bool suppressRenderStateChanges) override;
 
   void LoadFromFile(const std::string filename);
-  Ogre::Vector3 GetSunPosition();
-  void SetUpSky();
   void RegCamera(Ogre::Camera *camera);
   void RegLight(Ogre::Light *light);
   void RegEntity(Ogre::Entity *entity);
+  void RegEntity(const std::string &name);
   void RegMaterial(const Ogre::MaterialPtr &material);
   void RegMaterial(const std::string &name);
   void ScanNode(Ogre::SceneNode *node);
 
  protected:
-  Ogre::Root *ogreRoot = nullptr;
-  Ogre::SceneManager *sceneManager = nullptr;
-  Ogre::Camera *ogreCamera = nullptr;
   std::unique_ptr<SinbadCharacterController> sinbad;
-  bool skyNeedsUpdate = false;
-  Ogre::GpuProgramParametersSharedPtr skyBoxFpParams;
-  const std::array<const char *, 10> hosekParamList{"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"};
-  std::array<Ogre::Vector3, 10> hosekParams;
-  std::vector<Ogre::Entity*> entityList;
-  std::vector<Ogre::GpuProgramParametersSharedPtr> gpuFpParams;
-  std::vector<Ogre::GpuProgramParametersSharedPtr> gpuVpParams;
+  std::vector<Ogre::Entity *> entityList;
+  std::vector<Ogre::GpuProgramParametersSharedPtr> fpParams;
+  std::vector<Ogre::GpuProgramParametersSharedPtr> vpParams;
 
-  std::unique_ptr<TerrainManager> terrain;
-  std::unique_ptr<SkyManager> sky;
-
+  Ogre::Root *ogreRoot = nullptr;
+  Ogre::SceneManager *ogreSceneManager = nullptr;
+  Ogre::Camera *ogreCamera = nullptr;
 };
 
 }  // namespace Glue
