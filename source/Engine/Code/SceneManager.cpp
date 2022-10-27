@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "SceneManager.h"
 #include "PhysicsManager.h"
+#include "TerrainManager.h"
 
 using namespace std;
 
@@ -153,6 +154,14 @@ void SceneManager::LoadFromFile(const std::string filename) {
   for (auto it : rootNode->getChildren()) {
     ScanNode(static_cast<Ogre::SceneNode *>(it));
   }
+
+  // search for TerrainGroup
+  auto objBindings = ogreSceneManager->getRootSceneNode()->getUserObjectBindings();
+  if (objBindings.getUserAny("TerrainGroup").has_value()) {
+    auto terrainGroup = Ogre::any_cast<Ogre::TerrainGroup*>(objBindings.getUserAny("TerrainGroup"));
+    GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
+    GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup);
+  }
 }
 
 void SceneManager::RegCamera(Ogre::Camera *camera) {}
@@ -174,7 +183,6 @@ void SceneManager::RegEntity(Ogre::Entity *entity) {
 
       if (auto light = dynamic_cast<Ogre::Light *>(it)) {
         Ogre::LogManager::getSingleton().logMessage("[ScanNode] AnimatedEntity: " + entity->getName() + "  Light: " + it->getName());
-        ;
         RegLight(light);
         continue;
       }

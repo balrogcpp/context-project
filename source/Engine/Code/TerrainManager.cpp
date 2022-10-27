@@ -32,14 +32,14 @@ void TerrainManager::OnSetUp() {
 void TerrainManager::RegTerrainGroup(Ogre::TerrainGroup *terrainGroup) {
   OgreAssert(terrainGroup, "[TerrainManager] terrainGroup can't be NULL");
   OgreAssert(!ogreTerrainGroup, "[TerrainManager] terrainGroup already registered");
-  ogreTerrainGroup = terrainGroup;
+  ogreTerrainGroup.reset(terrainGroup);
 }
 
 void TerrainManager::ProcessTerrainCollider(Ogre::TerrainGroup *terrainGroup) {
   GetComponent<PhysicsManager>().CreateTerrainHeightfieldShape(terrainGroup);
 }
 
-void TerrainManager::ProcessTerrainGroupLegacy(int x, int y, const std::string &filename) {
+void TerrainManager::LoadTerrainGroupLegacy(int x, int y, const std::string &filename) {
   ogreTerrainGroup->loadLegacyTerrain(filename, x, y, true);
   ogreTerrainGroup->setOrigin(Ogre::Vector3::ZERO);
   ogreTerrainGroup->freeTemporaryResources();
@@ -47,10 +47,10 @@ void TerrainManager::ProcessTerrainGroupLegacy(int x, int y, const std::string &
 
 void TerrainManager::OnUpdate(float time) {}
 void TerrainManager::OnClean() {
-  //  if (ogreTerrainGroup) {
-  //    ogreTerrainGroup->removeAllTerrains();
-  //    delete ogreTerrainGroup;
-  //  }
+  if (ogreTerrainGroup) {
+    ogreTerrainGroup->removeAllTerrains();
+    ogreTerrainGroup.reset();
+  }
 }
 
 }  // namespace Glue

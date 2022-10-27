@@ -5,7 +5,6 @@
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <OgreTerrain.h>
 #include <OgreTerrainGroup.h>
-#include "TerrainManager.h"
 #endif
 
 #include <pugixml.hpp>
@@ -325,9 +324,6 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
 
     terrainGroup->setOrigin(Vector3::ZERO);
     terrainGroup->freeTemporaryResources();
-
-    Glue::GetComponent<Glue::TerrainManager>().RegTerrainGroup(terrainGroup);
-    Glue::GetComponent<Glue::TerrainManager>().ProcessTerrainCollider(terrainGroup);
 
     mAttachNode->getUserObjectBindings().setUserAny("TerrainGroup", terrainGroup);
 #else
