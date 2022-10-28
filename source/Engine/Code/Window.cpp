@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "Window.h"
 #include "Platform.h"
+#include <Ogre.h>
 #include <SDL2/SDL_syswm.h>
 
 using namespace std;
@@ -126,7 +127,7 @@ void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, in
   ogreViewport = renderTarget->addViewport(ogreCamera);
   ogreCamera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
   ogreCamera->setAutoAspectRatio(true);
-#ifdef ANDROID
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
   SDL_GetDesktopDisplayMode(currentDisplay, &displayMode);
   ogreWindow->resize(static_cast<int>(displayMode.w), static_cast<int>(displayMode.h));
 #endif

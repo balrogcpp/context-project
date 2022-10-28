@@ -38,13 +38,7 @@ void CompositorManager::OnSetUp() {
   ogreViewport->addListener(this);
 }
 
-void CompositorManager::OnClean() {
-  ogreViewport->removeListener(this);
-}
-
-void CompositorManager::OnPause() {}
-
-void CompositorManager::OnResume() {}
+void CompositorManager::OnClean() { ogreViewport->removeListener(this); }
 
 void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
   OgreAssert(compositorManager->addCompositor(ogreViewport, name, position), "Failed to add MRT compoitor");
@@ -80,7 +74,8 @@ void CompositorManager::InitMRT() {
   const string MRT = MRT_COMPOSITOR;
   int sizeY = ogreViewport->getActualDimensions().height();
   int sizeX = ogreViewport->getActualDimensions().width();
-  Ogre::LogManager::getSingleton().logMessage("[CompositorManager] Actual viewport size: " + to_string(sizeX) + "x" + to_string(sizeY), Ogre::LML_TRIVIAL);
+  Ogre::LogManager::getSingleton().logMessage("[CompositorManager] Actual viewport size: " + to_string(sizeX) + "x" + to_string(sizeY),
+                                              Ogre::LML_TRIVIAL);
   auto *mrtCompositor = compositorChain->getCompositor(MRT);
   auto *mrtTexture = mrtCompositor->getTechnique()->getTextureDefinition("mrt");
   auto *rtTexture = mrtCompositor->getTechnique()->getTextureDefinition("rt");
@@ -105,7 +100,7 @@ void CompositorManager::InitMRT() {
   mrt2Texture->height = mrtTexture->height;
 }
 
-void CompositorManager::viewportDimensionsChanged(Ogre::Viewport* viewport) {
+void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
 #ifndef MOBILE
   compositorManager->removeCompositor(ogreViewport, MRT_COMPOSITOR);
   OgreAssert(compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR, 0), "Failed to add MRT compositor");

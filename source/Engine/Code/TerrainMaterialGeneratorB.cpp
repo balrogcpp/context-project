@@ -3,15 +3,10 @@
 #include "pch.h"
 #include "TerrainMaterialGeneratorB.h"
 #include "Engine.h"
-#ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainMaterialGenerator.h>
-#endif
-
-using namespace std;
 
 namespace Ogre {
-
 TerrainMaterialGeneratorB::TerrainMaterialGeneratorB() {
   mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
   setActiveProfile(mProfiles.back());
@@ -35,45 +30,15 @@ void TerrainMaterialGeneratorB::SM2Profile::requestOptions(Terrain *OgreTerrainP
   OgreTerrainPtr->_setCompositeMapRequired(false);
 }
 
-static void FixTerrainShadowCaster(const MaterialPtr &material, const Terrain *OgreTerrainPtr) {
-  auto *pass = material->getTechnique(0)->getPass(0);
-  string material_name = material->getName();
-  auto caster_material = MaterialManager::getSingleton().getByName("PSSM/shadow_caster_terrain");
-  string caster_name = "PSSM/shadow_caster_terrain/" + material_name;
-  MaterialPtr new_caster = MaterialManager::getSingleton().getByName(caster_name);
-
-  if (!new_caster) {
-    new_caster = caster_material->clone(caster_name);
-  }
-
-  Matrix4 posIndexToObjectSpace = OgreTerrainPtr->getPointTransform();
-  auto *new_pass = new_caster->getTechnique(0)->getPass(0);
-  new_pass->setCullingMode(pass->getCullingMode());
-  new_pass->setManualCullingMode(pass->getManualCullingMode());
-
-  auto &vert_params = new_pass->getVertexProgram()->getDefaultParameters();
-  vert_params->setIgnoreMissingParams(true);
-  vert_params->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
-  Real baseUVScale = 1.0f / (OgreTerrainPtr->getSize() - 1);
-  vert_params->setNamedConstant("baseUVScale", baseUVScale);
-
-  material->getTechnique(0)->setShadowCasterMaterial(new_caster);
-}
-
-static void FixTerrainShadowCaster(const std::string &material, const Terrain *OgreTerrainPtr) {
-  auto material_ptr = MaterialManager::getSingleton().getByName(material);
-  FixTerrainShadowCaster(material_ptr, OgreTerrainPtr);
-}
-
 MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *OgreTerrainPtr) {
-  string material_name;
+  String material_name;
 
   if (Root::getSingleton().getSceneManager("Default")->getShadowTechnique() != SHADOWTYPE_NONE)
     material_name = "TerrainCustom";
   else
     material_name = "TerrainCustomPBRS";
 
-  const string GENERATOR = "_0";
+  const String GENERATOR = "_0";
 
   if (isVertexCompressionSupported()) {
     auto material = MaterialManager::getSingleton().getByName(material_name);
@@ -89,7 +54,7 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *OgreT
     }
   }
 
-  string new_name = material_name + GENERATOR;
+  String new_name = material_name + GENERATOR;
   bool EnableCastShadows = TerrainGlobalOptions::getSingleton().getCastsDynamicShadows();
 
   if (MaterialManager::getSingleton().resourceExists(new_name)) {
@@ -110,10 +75,10 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *OgreT
 }
 
 MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const Terrain *terrain) {
-  string material_name = "TerrainCustom";
+  String material_name = "TerrainCustom";
   const int GENERATOR = 1;
 
-  string new_name = material_name + "_" + std::to_string(GENERATOR);
+  String new_name = material_name + "_" + std::to_string(GENERATOR);
 
   if (MaterialManager::getSingleton().resourceExists(new_name)) {
     return MaterialManager::getSingleton().getByName(new_name);
@@ -122,5 +87,4 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generateForCompositeMap(const
     return new_material;
   }
 }
-
 }  // namespace Ogre

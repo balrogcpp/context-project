@@ -11,7 +11,7 @@
 #include <Overlay/OgreOverlaySystem.h>
 
 namespace Glue {
-class VideoManager final : public System<VideoManager>, public Ogre::FrameListener {
+class VideoManager final : public System<VideoManager> {
  protected:
   class ShaderResolver;
 
@@ -21,14 +21,12 @@ class VideoManager final : public System<VideoManager>, public Ogre::FrameListen
 
   void OnSetUp() override;
   void OnClean() override;
-  void OnPause() override;
-  void OnResume() override;
   void OnUpdate(float time) override;
 
   void RenderFrame();
   Window& GetWindow(int number);
   Window& GetMainWindow();
-  void ShowMainWindow(bool show);
+  void ShowWindow(int num, bool show);
 
  protected:
   void CreateWindow();

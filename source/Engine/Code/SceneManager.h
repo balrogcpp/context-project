@@ -8,21 +8,14 @@
 
 namespace Glue {
 
-class SceneManager final : public System<SceneManager>, public Ogre::FrameListener, public Ogre::RenderObjectListener {
+class SceneManager final : public System<SceneManager>, public Ogre::RenderObjectListener {
  public:
   SceneManager();
   virtual ~SceneManager();
 
   void OnSetUp() override;
   void OnClean() override;
-  void OnPause() override;
-  void OnResume() override;
   void OnUpdate(float time) override;
-  bool frameStarted(const Ogre::FrameEvent &evt) override;
-  bool frameRenderingQueued(const Ogre::FrameEvent &evt) override;
-  bool frameEnded(const Ogre::FrameEvent& evt) override;
-  void notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
-                                const Ogre::LightList *pLightList, bool suppressRenderStateChanges) override;
 
   void LoadFromFile(const std::string filename);
   void RegCamera(Ogre::Camera *camera);
@@ -34,6 +27,9 @@ class SceneManager final : public System<SceneManager>, public Ogre::FrameListen
   void ScanNode(Ogre::SceneNode *node);
 
  protected:
+  void notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
+                                const Ogre::LightList *pLightList, bool suppressRenderStateChanges) override;
+
   std::unique_ptr<SinbadCharacterController> sinbad;
   std::vector<Ogre::Entity *> entityList;
   std::vector<Ogre::GpuProgramParametersSharedPtr> fpParams;

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "SDLListener.h"
-#include <Ogre.h>
+#include <OgrePrerequisites.h>
 
 struct SDL_Window;
 

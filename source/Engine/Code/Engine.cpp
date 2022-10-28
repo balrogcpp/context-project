@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "SDLListener.h"
 #include "SinbadCharacterController.h"
+#include <Ogre.h>
 #include <SDL2/SDL_messagebox.h>
 #ifdef _WIN32
 extern "C" {
@@ -18,7 +19,7 @@ namespace Glue {
 
 Engine::Engine() {}
 
-Engine::~Engine() {}
+Engine::~Engine() { Ogre::Root::getSingleton().removeFrameListener(this); }
 
 void Engine::Init() {
   video = make_unique<VideoManager>();
@@ -41,6 +42,8 @@ void Engine::Init() {
 
   terrain = make_unique<TerrainManager>();
   RegComponent(terrain.get());
+
+  Ogre::Root::getSingleton().addFrameListener(this);
 }
 
 void Engine::Capture() {
@@ -60,7 +63,10 @@ void Engine::UnRegComponent(SystemI *component) {
   if (it != componentList.end()) componentList.erase(it);
 }
 
-bool Engine::frameRenderingQueued(const Ogre::FrameEvent &evt) { return true; }
+bool Engine::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+  for (auto &it : componentList) it->OnUpdate(evt.timeSinceLastFrame);
+  return true;
+}
 
 bool Engine::frameEnded(const Ogre::FrameEvent &evt) { return true; }
 
@@ -74,19 +80,20 @@ void Engine::OnResume() {
   // for (auto &it : componentList) it->OnResume();
 }
 
-void Engine::OnMenuOn() { physics->OnPause(); }
-
-void Engine::OnMenuOff() { physics->OnResume(); }
-
 void Engine::OnCleanup() {
   for (auto &it : componentList) it->OnClean();
 }
 
-void Engine::Update(float PassedTime) {
-  if (paused) return;
-  for (auto &it : componentList) it->OnUpdate(PassedTime);
+void Engine::OnUpdate(float time) {
+  if (sleep) return;
   RenderFrame();
 }
+
+void Engine::OnQuit() {}
+
+void Engine::OnFocusLost() { sleep = true; }
+
+void Engine::OnFocusGained() { sleep = false; }
 
 void Engine::RenderFrame() { video->RenderFrame(); }
 

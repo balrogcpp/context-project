@@ -11,15 +11,16 @@ class TerrainManager final : public System<TerrainManager> {
   TerrainManager();
   virtual ~TerrainManager();
 
-  void OnSetUp() override;
-  void OnUpdate(float time) override;
-  void OnClean() override;
-
+  float GetHeight(float x, float z);
   void RegTerrainGroup(Ogre::TerrainGroup *terrainGroup);
   void LoadTerrainGroupLegacy(int x, int y, const std::string &filename);
   void ProcessTerrainCollider(Ogre::TerrainGroup *terrainGroup);
 
  protected:
+  void OnSetUp() override;
+  void OnUpdate(float time) override;
+  void OnClean() override;
+
   std::unique_ptr<Ogre::TerrainGroup> ogreTerrainGroup;
 
   Ogre::Root *ogreRoot = nullptr;

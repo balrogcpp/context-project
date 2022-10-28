@@ -5,7 +5,6 @@
 #include <Ogre.h>
 
 namespace Glue {
-
 class SkyManager final : public System<SkyManager> {
  public:
   SkyManager();
@@ -28,5 +27,4 @@ class SkyManager final : public System<SkyManager> {
   Ogre::SceneManager *ogreSceneManager = nullptr;
   Ogre::Camera *ogreCamera = nullptr;
 };
-
 }  // namespace Glue

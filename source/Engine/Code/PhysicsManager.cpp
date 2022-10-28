@@ -2,19 +2,17 @@
 
 #include "pch.h"
 #include "PhysicsManager.h"
-#ifdef OGRE_BUILD_COMPONENT_BULLET
 #include <Bullet/OgreBullet.h>
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
-#endif
 
 using namespace std;
 
 namespace Glue {
 
-PhysicsManager::PhysicsManager() {
+PhysicsManager::PhysicsManager() : sleep(false), threaded(false), updateRate(60), SubSteps(4) {
   auto *Scheduler = btCreateDefaultTaskScheduler();
   if (!Scheduler) throw std::runtime_error("Bullet physics no task scheduler available");
   btSetTaskScheduler(Scheduler);
@@ -34,7 +32,7 @@ PhysicsManager::PhysicsManager() {
 
   btWorld->setGravity(btVector3(0.0, -9.8, 0.0));
   if (threaded) InitThread();
-  paused = false;
+  sleep = false;
 }
 
 void PhysicsManager::InitThread() {
@@ -43,14 +41,14 @@ void PhysicsManager::InitThread() {
   static int64_t time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 
   function<void(void)> update_func_ = [&]() {
-    while (!paused) {
+    while (!sleep) {
       auto before_update = chrono::system_clock::now().time_since_epoch();
       int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
       float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_) / 1e+6;
       time_of_last_frame_ = micros_before_update;
 
       // Actually do calculations
-      if (!paused) {
+      if (!sleep) {
         btWorld->stepSimulation(frame_time, SubSteps, 1.0f / updateRate);
       }
       // Actually do calculations
@@ -71,12 +69,8 @@ void PhysicsManager::InitThread() {
 
 PhysicsManager::~PhysicsManager() {}
 
-void PhysicsManager::OnResume() { paused = false; }
-
-void PhysicsManager::OnPause() { paused = true; }
-
 void PhysicsManager::OnUpdate(float time) {
-  if (threaded || paused) return;
+  if (threaded || sleep) return;
 
   btWorld->stepSimulation(time, SubSteps, 1.0f / updateRate);
 }
@@ -99,8 +93,6 @@ void PhysicsManager::OnClean() {
     delete constraint;
   }
 }
-
-void PhysicsManager::AddRigidBody(btRigidBody *rigidBody) { btWorld->addRigidBody(rigidBody); }
 
 void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::TerrainGroup *terrainGroup) {
   for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
@@ -138,17 +130,17 @@ void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::Terrain *terrain) {
   btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, terrainShape, btVector3(0, 0, 0));
 
   // SetUp Rigid Body using 0 mass so it is static
-  auto *entBody = new btRigidBody(groundRigidBodyCI);
+  auto *rigidBody = new btRigidBody(groundRigidBodyCI);
 
-  entBody->setFriction(0.4f);
-  entBody->setHitFraction(0.8f);
-  entBody->setRestitution(0.6f);
-  entBody->getWorldTransform().setOrigin(btVector3(position.x, position.y + (maxHeight - minHeight) / 2 - 0.5, position.z));
-  entBody->getWorldTransform().setRotation(Ogre::Bullet::convert(Ogre::Quaternion::IDENTITY));
-  entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+  rigidBody->setFriction(0.4f);
+  rigidBody->setHitFraction(0.8f);
+  rigidBody->setRestitution(0.6f);
+  rigidBody->getWorldTransform().setOrigin(btVector3(position.x, position.y + (maxHeight - minHeight) / 2 - 0.5, position.z));
+  rigidBody->getWorldTransform().setRotation(Ogre::Bullet::convert(Ogre::Quaternion::IDENTITY));
+  rigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
-  entBody->setUserIndex(0);
-  AddRigidBody(entBody);
+  rigidBody->setUserIndex(0);
+  btWorld->addRigidBody(rigidBody);
   btWorld->setForceUpdateAllAabbs(false);
 }
 
@@ -172,9 +164,9 @@ void PhysicsManager::ProcessData(Ogre::Entity *entity, const Ogre::UserObjectBin
   float friction_z = Ogre::any_cast<float>(userData.getUserAny("friction_z"));
   float damping_trans = Ogre::any_cast<float>(userData.getUserAny("damping_trans"));
   float damping_rot = Ogre::any_cast<float>(userData.getUserAny("damping_rot"));
-  bool Static = (physics_type != "dynamic");
+  bool isStatic = (physics_type != "dynamic");
 
-  btRigidBody *entBody = nullptr;
+  btRigidBody *rigidBody = nullptr;
   btVector3 Inertia = btVector3(0, 0, 0);
 
   Ogre::SceneNode *parent = entity->getParentSceneNode();
@@ -191,17 +183,14 @@ void PhysicsManager::ProcessData(Ogre::Entity *entity, const Ogre::UserObjectBin
   else
     entShape = Ogre::Bullet::createBoxCollider(entity);
 
-  if (Static)
-    mass = 0.0;
-  else
-    entShape->calculateLocalInertia(mass, Inertia);
+  if (mass > 0.0) entShape->calculateLocalInertia(mass, Inertia);
 
   auto *bodyState = new Ogre::Bullet::RigidBodyState(parent);
 
-  entBody = new btRigidBody(mass, bodyState, entShape, Inertia);
-  if (Static) entBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+  rigidBody = new btRigidBody(mass, bodyState, entShape, Inertia);
+  if (mass == 0.0) rigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
-  AddRigidBody(entBody);
+  btWorld->addRigidBody(rigidBody);
 }
 
 }  // namespace Glue

@@ -5,7 +5,6 @@
 #include <Terrain/OgreTerrainMaterialGenerator.h>
 #include <Terrain/OgreTerrainPrerequisites.h>
 
-
 namespace Ogre {
 
 class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
@@ -33,4 +32,4 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
   };
 };
 
-}  // namespace Glue
+}  // namespace Ogre

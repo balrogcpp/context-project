@@ -20,7 +20,7 @@ int main()
     GetComponent<SceneManager>().LoadFromFile("1.scene");
     GetComponent<SkyManager>().SetUpSky();
     //GetComponent<VideoManager>().GetMainWindow().SetFullscreen(true);
-    GetComponent<VideoManager>().ShowMainWindow(true);
+    GetComponent<VideoManager>().ShowWindow(0, true);
     GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
 
     // main function

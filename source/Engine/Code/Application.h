@@ -10,8 +10,7 @@
 #include <string>
 
 namespace Glue {
-
-class Application : public WindowListener, public MouseListener, public DynamicSingleton<Application> {
+class Application : public WindowListener, public DynamicSingleton<Application> {
  public:
   /// Constructors
   Application();
@@ -32,10 +31,9 @@ class Application : public WindowListener, public MouseListener, public DynamicS
   /// Handle components
   std::unique_ptr<Engine> engine;
   std::unique_ptr<AppStateManager> stateManager;
-  bool quit = false;
-  bool suspend = false;
-  int64_t targetFps = 60;
-  bool lockFps = true;
+  bool exiting;
+  bool sleep;
+  int64_t targetFps;
+  bool lockFps;
 };
-
 }  // namespace Glue

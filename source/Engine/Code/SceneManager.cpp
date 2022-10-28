@@ -98,14 +98,12 @@ void SceneManager::OnSetUp() {
   OgreAssert(ogreSceneManager->hasCamera("Default"), "[SceneManager] ogreCamera is not initialised");
   ogreCamera = ogreSceneManager->getCamera("Default");
 
-  ogreRoot->addFrameListener(this);
   ogreSceneManager->addRenderObjectListener(this);
 }
 
 void SceneManager::OnClean() {
   ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   ogreSceneManager->clearScene();
-  ogreRoot->removeFrameListener(this);
   ogreSceneManager->removeRenderObjectListener(this);
   InputSequencer::GetInstance().UnregMsListener(sinbad.get());
   InputSequencer::GetInstance().UnregKbListener(sinbad.get());
@@ -116,24 +114,14 @@ void SceneManager::OnClean() {
   vpParams.shrink_to_fit();
 }
 
-void SceneManager::OnPause() {}
-
-void SceneManager::OnResume() {}
-
-void SceneManager::OnUpdate(float time) {}
-
-bool SceneManager::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-  if (sinbad) sinbad->Update(evt.timeSinceLastFrame);
+void SceneManager::OnUpdate(float time) {
+  if (sinbad) sinbad->Update(time);
   static Ogre::Matrix4 MVP;
   static Ogre::Matrix4 MVPprev;
   MVPprev = MVP;
   MVP = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
   for (auto &it : vpParams) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
-
-  return true;
 }
-bool SceneManager::frameEnded(const Ogre::FrameEvent &evt) { return true; }
-bool SceneManager::frameStarted(const Ogre::FrameEvent &evt) { return true; }
 
 void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                             const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {}
@@ -160,7 +148,7 @@ void SceneManager::LoadFromFile(const std::string filename) {
   // search for TerrainGroup
   auto objBindings = ogreSceneManager->getRootSceneNode()->getUserObjectBindings();
   if (objBindings.getUserAny("TerrainGroup").has_value()) {
-    auto terrainGroup = Ogre::any_cast<Ogre::TerrainGroup*>(objBindings.getUserAny("TerrainGroup"));
+    auto terrainGroup = Ogre::any_cast<Ogre::TerrainGroup *>(objBindings.getUserAny("TerrainGroup"));
     GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
     GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup);
   }

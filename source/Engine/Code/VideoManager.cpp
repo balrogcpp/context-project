@@ -225,20 +225,17 @@ void VideoManager::OnClean() {
   ogreSceneManager->clearScene();
 }
 
-void VideoManager::OnPause() {}
-
-void VideoManager::OnResume() {}
-
 void VideoManager::RenderFrame() {
   for (const auto &it : windowList) {
     it.RenderFrame();
   }
 }
+
 Window &VideoManager::GetWindow(int number) { return windowList[0]; }
 
 Window &VideoManager::GetMainWindow() { return *mainWindow; }
 
-void VideoManager::ShowMainWindow(bool show) { mainWindow->Show(show); }
+void VideoManager::ShowWindow(int num, bool show) { windowList[0].Show(show); }
 
 void VideoManager::CheckGPU() {
   const auto *ogreRenderCapabilities = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
@@ -333,10 +330,12 @@ void VideoManager::InitOgreRoot() {
   Ogre::Root::getSingleton().installPlugin(new Ogre::DotScenePluginB());
 #endif
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
-  auto *terrainGlobalOption = Ogre::TerrainGlobalOptions::getSingletonPtr();
-  if (!terrainGlobalOption) terrainGlobalOption = new Ogre::TerrainGlobalOptions();
-  terrainGlobalOption->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
-  terrainGlobalOption->setUseRayBoxDistanceCalculation(true);
+  auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
+  if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
+  terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
+  terrainGlobalOptions->setMaxPixelError(8);
+  terrainGlobalOptions->setCompositeMapDistance(300);
+  terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
 #endif
   ogreRoot->initialise(false);
 }

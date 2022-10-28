@@ -7,8 +7,7 @@ using namespace std;
 
 namespace Glue {
 
-AudioManager::AudioManager() {
-}
+AudioManager::AudioManager() {}
 
 AudioManager::~AudioManager() { audioRoot->shutdown(); }
 
@@ -16,7 +15,7 @@ void AudioManager::OnClean() {}
 
 void AudioManager::OnSetUp() {
 #ifndef DEBUG
-  #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
   putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   _putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
@@ -34,18 +33,14 @@ void AudioManager::OnSetUp() {
 
 void AudioManager::OnUpdate(float passedTime) {}
 
-void AudioManager::OnPause() { oggSoundManager->pauseAllSounds(); }
-
-void AudioManager::OnResume() { oggSoundManager->resumeAllPausedSounds(); }
-
 void AudioManager::Pause() { oggSoundManager->pauseAllSounds(); }
 
 void AudioManager::Resume() { oggSoundManager->resumeAllPausedSounds(); }
 
 void AudioManager::AddSound(const char *name, const char *audioFile, Ogre::SceneNode *parent, bool playInLoop) {
-//#if OGRE_THREAD_SUPPORT > 0
-//  this_thread::sleep_for(chrono::milliseconds(16));
-//#endif
+  //#if OGRE_THREAD_SUPPORT > 0
+  //  this_thread::sleep_for(chrono::milliseconds(16));
+  //#endif
   auto *sound = oggSoundManager->createSound(name, audioFile, true, playInLoop, true, nullptr);
   auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
   if (parent)

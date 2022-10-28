@@ -17,15 +17,7 @@ class SystemI {
 };
 
 template <typename T>
-class System : public SystemI, public Singleton<T> {
- public:
-  virtual bool IsPaused() { return paused; }
-  virtual void OnPause() { paused = true; }
-  virtual void OnResume() { paused = false; }
-
- protected:
-  bool paused = false;
-};
+class System : public SystemI, public Singleton<T> {};
 
 /// Template helper function
 /// @return pointer to component instance (all components are Singletons)

@@ -13,8 +13,6 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Viewpor
 
   void OnSetUp() override;
   void OnClean() override;
-  void OnPause() override;
-  void OnResume() override;
   void OnUpdate(float time) override;
 
   void AddCompositor(const std::string& name, bool enable, int position = -1);

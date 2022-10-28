@@ -18,8 +18,6 @@ class AudioManager final : public System<AudioManager> {
 
   void OnSetUp() override;
   void OnClean() override;
-  void OnPause() override;
-  void OnResume() override;
   void Pause();
   void Resume();
   void OnUpdate(float passedTime) override;

@@ -8,7 +8,7 @@ using namespace std;
 
 namespace Glue {
 
-Application::Application() {
+Application::Application() : targetFps(60), lockFps(true), exiting(false), sleep(false) {
   engine = make_unique<Engine>();
   engine->Init();
 }
@@ -19,27 +19,27 @@ void Application::LoopBody() {
   static int64_t cumulatedTime = 0;
   auto duration_before_frame = chrono::system_clock::now().time_since_epoch();
   static int64_t timeOfLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_frame).count();
-  static bool wasSuspended = false;
+  static bool onWakeUp = false;
   int64_t timeBeforeFrame = chrono::duration_cast<chrono::microseconds>(duration_before_frame).count();
 
   if (cumulatedTime > int64_t(1e+6)) cumulatedTime = 0;
 
   engine->Capture();
 
-  if (!suspend) {
-    if (wasSuspended) {
+  if (!sleep) {
+    if (onWakeUp) {
       engine->OnResume();
-      wasSuspended = false;
+      onWakeUp = false;
     }
 
     auto duration_before_update = chrono::system_clock::now().time_since_epoch();
     int64_t timeBeforeUpdate = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
     float frameTime = static_cast<float>(timeBeforeUpdate - timeOfLastFrame) / 1e+6;
     timeOfLastFrame = timeBeforeUpdate;
-    engine->Update(frameTime);
+    engine->OnUpdate(frameTime);
   } else {
     engine->OnPause();
-    wasSuspended = true;
+    onWakeUp = true;
   }
 
   int64_t timeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
@@ -55,12 +55,12 @@ void Application::LoopBody() {
   cumulatedTime += TimeSinceLastFrame;
 
 #ifdef EMSCRIPTEN
-  if (quit) emscripten_cancel_main_loop();
+  if (exiting) emscripten_cancel_main_loop();
 #endif
 }
 
 void Application::Loop() {
-  while (!quit) {
+  while (!exiting) {
     LoopBody();
   }
 }
@@ -84,15 +84,15 @@ void Application::Go() {
   engine->OnCleanup();
 }
 
-void Application::OnQuit() { quit = true; }
+void Application::OnQuit() { exiting = true; }
 
 void Application::OnFocusLost() {
-  suspend = true;
+  sleep = true;
   engine->OnPause();
 }
 
 void Application::OnFocusGained() {
-  suspend = false;
+  sleep = false;
   engine->OnResume();
 }
 

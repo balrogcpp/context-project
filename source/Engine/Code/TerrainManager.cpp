@@ -4,8 +4,8 @@
 #include "TerrainManager.h"
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
 #include "PhysicsManager.h"
-#include "Platform.h"
 #include "TerrainMaterialGeneratorB.h"
+#include <Ogre.h>
 
 using namespace std;
 
@@ -28,6 +28,8 @@ void TerrainManager::OnSetUp() {
     terrainGlobalOption->setUseRayBoxDistanceCalculation(true);
   }
 }
+
+float TerrainManager::GetHeight(float x, float z) { return ogreTerrainGroup ? ogreTerrainGroup->getHeightAtWorldPosition(x, 1000, z) : 0; }
 
 void TerrainManager::RegTerrainGroup(Ogre::TerrainGroup *terrainGroup) {
   OgreAssert(terrainGroup, "[TerrainManager] terrainGroup can't be NULL");
