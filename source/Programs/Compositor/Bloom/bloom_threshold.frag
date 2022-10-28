@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 #ifndef GL_ES
 #version 120
@@ -21,8 +21,11 @@ vec3 ApplyThreshold(const vec3 color, const float threshold)
   const float strength = 1.0;
   // convert rgb to grayscale/brightness
   float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
-  if (brightness > threshold) return strength * color;
-  else return vec3(0.0);
+  if (brightness > threshold) {
+    return strength * color;
+  } else {
+    return vec3(0.0);
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -31,7 +31,7 @@ material Output
                 param_named uSceneSampler int 0
 			}
 
-			texture_unit scene
+			texture_unit rt
             {
                 texture black.dds
                 tex_coord_set 0

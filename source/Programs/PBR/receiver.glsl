@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 #ifndef RECEIVER_GLSL
 #define RECEIVER_GLSL

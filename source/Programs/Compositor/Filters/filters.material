@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
 // Linear gaussian blur
@@ -17,7 +17,7 @@ material FilterY
 
 			fragment_program_ref gauss_filter3y_fs {}
 
-			texture_unit rt1
+			texture_unit rt
             {
                 texture black.dds
                 tex_coord_set 0
@@ -42,7 +42,7 @@ material FilterX
 
 			fragment_program_ref gauss_filter3x_fs {}
 
-			texture_unit rt1
+			texture_unit rt
             {
                 texture black.dds
                 tex_coord_set 0
@@ -70,7 +70,7 @@ material Downscale3x3
 
             fragment_program_ref downscale3x3_fs {}
 
-            texture_unit Scene
+            texture_unit rt
             {
                 texture black.dds
                 tex_coord_set 0
@@ -95,7 +95,7 @@ material Downscale2x2
 
             fragment_program_ref downscale2x2_fs {}
 
-            texture_unit Scene
+            texture_unit rt
             {
                 texture black.dds
                 tex_coord_set 0
@@ -120,7 +120,7 @@ material Downscale
 
             fragment_program_ref downscale_fs {}
 
-            texture_unit Scene
+            texture_unit rt
             {
                 texture black.dds
                 tex_coord_set 0
@@ -145,7 +145,7 @@ material Bypass
 
             fragment_program_ref bypass_fs {}
 
-            texture_unit Scene
+            texture_unit rt
             {
                 texture black.dds
                 tex_coord_set 0
@@ -170,7 +170,7 @@ material BoxFilter
 
             fragment_program_ref box_filter_fs {}
 
-            texture_unit Scene
+            texture_unit rt
             {
                 texture black.dds
                 tex_coord_set 0

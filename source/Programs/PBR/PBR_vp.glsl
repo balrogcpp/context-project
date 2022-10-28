@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 // The MIT License
 // Copyright (c) 2016-2017 Mohamad Moneimne and Contributors

@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 #ifndef HEADER_FRAG
 #define HEADER_FRAG

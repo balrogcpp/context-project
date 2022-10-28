@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 #ifndef PBR_GLSL
 #define PBR_GLSL

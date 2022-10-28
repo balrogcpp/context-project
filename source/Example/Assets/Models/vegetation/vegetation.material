@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 import PBR_Basic from PBR.material
 import PBRS_Basic from PBRS.material

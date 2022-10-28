@@ -1,6 +1,6 @@
 #version 300 es
 #define VERSION 300
 
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 #include "Sky_fp.glsl"

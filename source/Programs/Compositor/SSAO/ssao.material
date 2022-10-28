@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -41,14 +41,13 @@ material SSAO
 				param_named uEdgeHighlight float 2
             }
 
-            texture_unit scene
+            texture_unit depth
             {
                 texture black.dds
                 tex_coord_set 0
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit noise
             {
                 texture regularSphereJittered4.dds
@@ -95,7 +94,6 @@ material SSAO_mod
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit ssao
             {
                 texture white.dds

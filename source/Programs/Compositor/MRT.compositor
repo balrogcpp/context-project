@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -249,6 +249,8 @@ compositor Bloom
                 input 6 rt6
                 input 7 rt7
                 input 8 rt8
+                input 9 rt9
+                input 10 rt10
             }
         }
     }

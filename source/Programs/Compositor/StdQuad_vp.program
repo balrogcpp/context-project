@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 vertex_program Ogre/Compositor/StdQuad_GLSL_vp glsl
 {

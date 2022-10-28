@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -41,7 +41,6 @@ material Blur
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit velocity
             {
                 texture black.dds
@@ -49,14 +48,6 @@ material Blur
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
-            /*texture_unit luminance
-            {
-                texture black.dds
-                tex_coord_set 0
-                tex_address_mode clamp
-                filtering none
-            }*/
 		}
 	}
 }

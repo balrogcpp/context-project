@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 import PBR from PBR.material
 import PBR_I_vs from PBR.program
@@ -27,13 +27,16 @@ abstract fragment_program PBR_Terrain_I_fs glsl glsles : PBR_BaseI_fs
     }
 }
 
-vertex_program PBR_Terrain_nvc_vs glsl glsles : PBR_Terrain_I_vs {}
+vertex_program PBR_Terrain_vc_vs glsl glsles : PBR_Terrain_I_vs
+{
+    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+}
 
 fragment_program PBR_Terrain_nvc_fs glsl glsles : PBR_Terrain_I_fs {}
 
 vertex_program PBR_Terrain_vs glsl glsles : PBR_Terrain_I_vs
 {
-    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
 }
 
 fragment_program PBR_Terrain_fs glsl glsles : PBR_Terrain_I_fs {}
@@ -115,13 +118,13 @@ abstract material PBR_Terrain
     }
 }
 
-abstract material PBR_Terrain_nvc : PBR_Terrain // no vertex compression
+abstract material PBR_Terrain_vc : PBR_Terrain // with vertex compression
 {
     technique
     {
         pass
         {
-            vertex_program_ref PBR_Terrain_nvc_vs {}
+            vertex_program_ref PBR_Terrain_vc_vs {}
 
             fragment_program_ref PBR_Terrain_nvc_fs
             {

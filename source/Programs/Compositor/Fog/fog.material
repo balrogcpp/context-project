@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -42,7 +42,6 @@ material Fog
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit depth
             {
                 texture black.dds

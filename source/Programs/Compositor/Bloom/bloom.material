@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 //----------------------------------------------------------------------------------------------------------------------
 // Cut bright parts of scene
@@ -32,7 +32,7 @@ material Bloom_threshold
                 param_named_auto TexelSize inverse_texture_size 0
 			}
 
-			texture_unit rt1
+			texture_unit scene
             {
                 texture black.dds
                 tex_coord_set 0
@@ -80,7 +80,7 @@ material Bloom_mod
                 param_named uRT6 int 6
                 param_named uRT7 int 7
                 param_named uRT8 int 8
-                param_named uRT9 int 8
+                param_named uRT9 int 9
                 param_named uRT10 int 10
 
                 param_named_auto TexelSize0 inverse_texture_size 0
@@ -103,7 +103,6 @@ material Bloom_mod
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit rt1
             {
                 texture black.dds
@@ -111,7 +110,6 @@ material Bloom_mod
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit rt2
             {
                 texture black.dds
@@ -119,7 +117,6 @@ material Bloom_mod
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit rt3
             {
                 texture black.dds
@@ -127,7 +124,6 @@ material Bloom_mod
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit rt4
             {
                 texture black.dds
@@ -135,7 +131,6 @@ material Bloom_mod
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit rt5
             {
                 texture black.dds
@@ -143,7 +138,6 @@ material Bloom_mod
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit rt6
             {
                 texture black.dds
@@ -151,7 +145,6 @@ material Bloom_mod
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit rt7
             {
                 texture black.dds
@@ -159,7 +152,6 @@ material Bloom_mod
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit rt8
             {
                 texture black.dds
@@ -167,7 +159,6 @@ material Bloom_mod
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit rt9
             {
                 texture black.dds
@@ -175,7 +166,6 @@ material Bloom_mod
                 tex_address_mode clamp
                 filtering linear linear none
             }
-
             texture_unit rt10
             {
                 texture black.dds
@@ -220,7 +210,7 @@ material Flares
                 param_named_auto TexelSize inverse_texture_size 0
 			}
 
-			texture_unit rt1
+			texture_unit rt
             {
                 texture black.dds
                 tex_coord_set 0

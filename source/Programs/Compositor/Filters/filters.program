@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 fragment_program gauss_filter3y_fs glsl glsles
 {

@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 #ifndef FILTERS_GLSL
 #define FILTERS_GLSL

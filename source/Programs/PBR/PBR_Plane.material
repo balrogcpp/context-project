@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 import PBR from PBR.material
 import PBR_vs from PBR.program

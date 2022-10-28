@@ -1,62 +1,81 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 import PBRS from PBRS.material
+import PBRS_I_vs from PBRS.program
+import PBRS_BaseI_fs from PBRS.program
 
-abstract vertex_program PBRS_Terrain_I_vs glsl glsles
+abstract vertex_program PBRS_Terrain_I_vs glsl glsles : PBRS_I_vs
 {
-	source PBR.vert
-    preprocessor_defines HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
-    default_params
-    {
-        shared_params_ref PBRS_Shared_vert
-    }
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8
 }
 
-abstract fragment_program PBRS_Terrain_I_fs glsl glsles
+abstract fragment_program PBRS_Terrain_I_fs glsl glsles : PBRS_BaseI_fs
 {
-	source PBR.frag
-    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines TERRAIN,HAS_BASECOLORMAP,HAS_EMISSIVEMAP,HAS_NORMALMAP,HAS_PARALLAXMAP,HAS_ORM,MAX_LIGHTS=8
 
     default_params
     {
-        shared_params_ref PBRS_Shared_frag
-        param_named uTerrainTexScale float 20.0
+        param_named uTerrainTexScale float 10.0
     }
 }
 
-vertex_program PBRS_Terrain_nvc_vs glsl glsles : PBRS_Terrain_I_vs {}
+vertex_program PBRS_Terrain_vc_vs glsl glsles : PBRS_Terrain_I_vs
+{
+    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8
+}
 
 fragment_program PBRS_Terrain_nvc_fs glsl glsles : PBRS_Terrain_I_fs {}
 
 vertex_program PBRS_Terrain_vs glsl glsles : PBRS_Terrain_I_vs
 {
-    preprocessor_defines VERTEX_COMPRESSION,HAS_UV,MAX_LIGHTS=8,SHADOWRECEIVER,MAX_SHADOW_TEXTURES=4
+    preprocessor_defines HAS_UV,MAX_LIGHTS=8
 }
 
 fragment_program PBRS_Terrain_fs glsl glsles : PBRS_Terrain_I_fs {}
 
-abstract material PBRS_Terrain : PBRS
+abstract material PBRS_Terrain
 {
+    transparency_casts_shadows off
+    receive_shadows off
+
+    set $Albedo white.dds
+    set $Normal normal.dds
+    set $ORM white.dds
+    set $Emissive black.dds
+
     technique
     {
         pass
         {
+            diffuse 1 1 1
+            specular 1 1 1 1
+            ambient 1 1 1
+            emissive 0 0 0
+            alpha_rejection greater_equal 127
+
+            texture_unit Albedo
+            {
+                texture $Albedo
+            }
+            texture_unit Normal
+            {
+                texture $Normal
+            }
+            texture_unit ORM
+            {
+                texture $ORM
+            }
+            texture_unit Emissive
+            {
+                texture $Emissive
+            }
             texture_unit GlobalNormal
             {
-                texture normal.dds
+                texture $Normal
                 filtering bilinear
             }
 
-            /*texture_unit GlobalShadow
-            {
-                texture white.dds
-                filtering bilinear
-            }*/
-
-            vertex_program_ref PBRS_Terrain_vs
-            {
-                param_named_auto ModelMatrix world_matrix
-            }
+            vertex_program_ref PBRS_Terrain_vs {}
 
             fragment_program_ref PBRS_Terrain_fs
             {
@@ -65,35 +84,18 @@ abstract material PBRS_Terrain : PBRS
                 param_named uORMSampler          int 2
                 param_named uEmissiveSampler     int 3
                 param_named uGlobalNormalSampler int 4
-                //param_named uGlobalShadowSampler int 5
             }
         }
     }
 }
 
-// no vertex compression
-abstract material PBRS_Terrain_nvc : PBRS
+abstract material PBRS_Terrain_vc : PBRS_Terrain // with vertex compression
 {
     technique
     {
         pass
         {
-            texture_unit GlobalNormal
-            {
-                texture normal.dds
-                filtering bilinear
-            }
-
-            /*texture_unit GlobalShadow
-            {
-                texture white.dds
-                filtering bilinear
-            }*/
-
-            vertex_program_ref PBRS_Terrain_nvc_vs
-            {
-                param_named_auto ModelMatrix world_matrix
-            }
+            vertex_program_ref PBRS_Terrain_vc_vs {}
 
             fragment_program_ref PBRS_Terrain_nvc_fs
             {
@@ -102,7 +104,6 @@ abstract material PBRS_Terrain_nvc : PBRS
                 param_named uORMSampler          int 2
                 param_named uEmissiveSampler     int 3
                 param_named uGlobalNormalSampler int 4
-                //param_named uGlobalShadowSampler int 5
             }
         }
     }

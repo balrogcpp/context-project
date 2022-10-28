@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 vertex_program PSSM/shadow_caster_alpha_vs glsl glsles
 {

@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 #ifndef KNOSEK_GLSL
 #define KNOSEK_GLSL

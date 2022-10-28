@@ -1,4 +1,4 @@
-/// created by Andrey Vasiliev
+// created by Andrey Vasiliev
 
 #ifndef PBRINFO_GLSL
 #define PBRINFO_GLSL
@@ -22,6 +22,5 @@ struct PBRInfo
     vec3 diffuseColor;            // color contribution from diffuse lighting
     vec3 specularColor;           // color contribution from specular lighting
 };
-
 
 #endif
