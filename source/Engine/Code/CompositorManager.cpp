@@ -141,8 +141,6 @@ void CompositorManager::InitMipChain() {
     rt10Texture->width = w / 1024;
     rt10Texture->height = h / 1024;
   }
-
-  compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, true);
 }
 
 void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
