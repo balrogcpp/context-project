@@ -21,11 +21,13 @@ void TerrainManager::OnSetUp() {
   OgreAssert(ogreSceneManager->hasCamera("Default"), "[TerrainManager] ogreCamera is not initialised");
   ogreCamera = ogreSceneManager->getCamera("Default");
 
-  auto *terrainGlobalOption = Ogre::TerrainGlobalOptions::getSingletonPtr();
-  if (!terrainGlobalOption) {
-    terrainGlobalOption = new Ogre::TerrainGlobalOptions();
-    terrainGlobalOption->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
-    terrainGlobalOption->setUseRayBoxDistanceCalculation(true);
+  auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
+  if (!terrainGlobalOptions) {
+    terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
+    terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
+    terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
+    terrainGlobalOptions->setMaxPixelError(8);
+    terrainGlobalOptions->setCompositeMapDistance(300);
   }
 }
 

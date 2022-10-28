@@ -771,8 +771,8 @@ void DotSceneLoaderB::processPlane(pugi::xml_node& XMLNode, SceneNode* pParent)
     Real distance = getAttribReal(XMLNode, "distance");
     Real width = getAttribReal(XMLNode, "width");
     Real height = getAttribReal(XMLNode, "height");
-    int xSegments = getAttribInt(XMLNode, "xSegments", width);
-    int ySegments = getAttribInt(XMLNode, "ySegments", height);
+    int xSegments = getAttribInt(XMLNode, "xSegments", std::ceil(width/10));
+    int ySegments = getAttribInt(XMLNode, "ySegments", std::ceil(height/10));
     int numTexCoordSets = getAttribInt(XMLNode, "numTexCoordSets", 1);
     Real uTile = getAttribReal(XMLNode, "uTile", xSegments);
     Real vTile = getAttribReal(XMLNode, "vTile", ySegments);

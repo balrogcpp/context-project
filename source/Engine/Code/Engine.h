@@ -13,15 +13,13 @@
 #include <OgreFrameListener.h>
 
 namespace Glue {
-class Engine final : public Singleton<Engine>, public Ogre::FrameListener, public WindowListener {
+class Engine final : public Singleton<Engine>, Ogre::FrameListener, WindowListener {
  public:
   Engine();
   virtual ~Engine();
 
   void Init();
   void Capture();
-  void OnPause();
-  void OnResume();
   void OnCleanup();
   void OnUpdate(float time);
   void RenderFrame();

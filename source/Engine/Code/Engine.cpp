@@ -72,14 +72,6 @@ bool Engine::frameEnded(const Ogre::FrameEvent &evt) { return true; }
 
 bool Engine::frameStarted(const Ogre::FrameEvent &evt) { return true; }
 
-void Engine::OnPause() {
-  // for (auto &it : componentList) it->OnPause();
-}
-
-void Engine::OnResume() {
-  // for (auto &it : componentList) it->OnResume();
-}
-
 void Engine::OnCleanup() {
   for (auto &it : componentList) it->OnClean();
 }

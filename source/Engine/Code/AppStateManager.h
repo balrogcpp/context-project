@@ -3,33 +3,54 @@
 #pragma once
 #include "SDLListener.h"
 #include "Singleton.h"
+#include "System.h"
+#include <OgreFrameListener.h>
 #include <map>
+#include <memory>
 
 namespace Glue {
-class AppState : public MouseListener, WindowListener {
+class AppState : public WindowListener {
  public:
   virtual std::string GetName() = 0;
   virtual void OnSetUp() = 0;
   virtual void OnUpdate(float time) = 0;
-  virtual void OnFrameStarted(float time) = 0;
-  virtual void OnRender(float time) = 0;
-  virtual void OnFrameEnded(float time) = 0;
-  virtual void OnCleanup() = 0;
+  virtual void OnClean() = 0;
 };
 
-class AppStateManager : public DynamicSingleton<AppStateManager> {
+class AppStateImpl : public AppState {
+ public:
+  std::string GetName() override { return "NULL"; }
+  void OnSetUp() override {}
+  void OnUpdate(float time) override {}
+  void OnClean() override {}
+};
+
+class AppStateManager final : public Ogre::FrameListener, public System<AppStateManager> {
  public:
   AppStateManager();
   virtual ~AppStateManager();
+  void Init();
 
-  void RegAppState(AppState *appState);
-  void UnregAppState(AppState *appState);
+  void RegAppState(std::shared_ptr<AppState> appState);
+  void UnregAppState(std::shared_ptr<AppState> appState);
+  void UnregAppState(const std::string &name);
 
-  void SetActiveAppState(AppState *appState);
-  AppState *GetActiveAppState();
+  void SetActiveAppState(std::shared_ptr<AppState> appState);
+  void SetActiveAppState(const std::string &name);
+  std::shared_ptr<AppState> GetActiveAppState();
 
  protected:
-  AppState *activeAppState = nullptr;
-  std::map<std::string, AppState *> appStateList;
+  /// System impl
+  void OnSetUp() override;
+  void OnUpdate(float time) override;
+  void OnClean() override;
+
+  /// Ogre::FrameListener impl
+  bool frameStarted(const Ogre::FrameEvent &evt) override;
+  bool frameRenderingQueued(const Ogre::FrameEvent &evt) override;
+  bool frameEnded(const Ogre::FrameEvent &evt) override;
+
+  std::shared_ptr<AppState> activeAppState;
+  std::map<std::string, std::shared_ptr<AppState>> appStateList;
 };
 }  // namespace Glue

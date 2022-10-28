@@ -29,8 +29,8 @@ class Application : public WindowListener, public DynamicSingleton<Application> 
   void OnFocusGained() override;
 
   /// Handle components
+  std::unique_ptr<AppStateManager> appStateManager;
   std::unique_ptr<Engine> engine;
-  std::unique_ptr<AppStateManager> stateManager;
   bool exiting;
   bool sleep;
   int64_t targetFps;

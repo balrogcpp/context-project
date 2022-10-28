@@ -25,6 +25,7 @@ class Window : public WindowListener {
  protected:
   friend class VideoManager;
 
+  /// WindowListener impl
   void OnEvent(const SDL_Event& event) override;
   void OnQuit() override;
   void OnFocusLost() override;

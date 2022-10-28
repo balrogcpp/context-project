@@ -36,9 +36,9 @@
 #include <Terrain/OgreTerrainGroup.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
-#include <Overlay/OgreFontManager.h>
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
+#include <Overlay/OgreOverlaySystem.h>
 #endif
 #include <SDL2/SDL.h>
 #ifdef DESKTOP
@@ -202,7 +202,6 @@ void VideoManager::OnSetUp() {
   InitOgreScene();
 
   // cleanup
-  imguiOverlay->show();
   Ogre::ImGuiOverlay::NewFrame();
   ogreRoot->renderOneFrame();
 }
@@ -333,9 +332,9 @@ void VideoManager::InitOgreRoot() {
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
   if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
   terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
+  terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
   terrainGlobalOptions->setMaxPixelError(8);
   terrainGlobalOptions->setCompositeMapDistance(300);
-  terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
 #endif
   ogreRoot->initialise(false);
 }
@@ -351,14 +350,14 @@ void VideoManager::CreateWindow() {
 
 void VideoManager::InitOgreOverlay() {
   auto *ogreOverlay = new Ogre::OverlaySystem();
-  imguiOverlay = new Ogre::ImGuiOverlay();
+  auto *imguiOverlay = new Ogre::ImGuiOverlay();
   float vpScale = Ogre::OverlayManager::getSingleton().getPixelRatio();
   ImGui::GetIO().FontGlobalScale = round(vpScale);
   ImGui::GetStyle().ScaleAllSizes(vpScale);
   imguiOverlay->setZOrder(300);
   Ogre::OverlayManager::getSingleton().addOverlay(imguiOverlay);
   ogreSceneManager->addRenderQueueListener(ogreOverlay);
-  imguiListener = make_unique<ImGuiInputListener>();
+  if (!ImGuiInputListener::IsInstanced()) auto *imguiListener = new ImGuiInputListener();
   ImGuiIO &io = ImGui::GetIO();
   io.IniFilename = nullptr;
   io.LogFilename = nullptr;
@@ -366,12 +365,15 @@ void VideoManager::InitOgreOverlay() {
   io.ConfigFlags |= ImGuiBackendFlags_HasGamepad;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
+#ifdef MOBILE
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
+#endif
   //  AddFont("NotoSans-Regular", RGN_INTERNAL, nullptr, io.Fonts->GetGlyphRangesCyrillic());
   //  ImFontConfig config;
   //  config.MergeMode = true;
   //  static const ImWchar icon_ranges[] = {ICON_MIN_MD, ICON_MAX_MD, 0};
   //  AddFont("KenneyIcon-Regular", RGN_INTERNAL, &config, icon_ranges);
+  imguiOverlay->show();
 }
 
 void VideoManager::InitOgreScene() {
@@ -414,6 +416,17 @@ void VideoManager::InitOgreScene() {
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_SPOTLIGHT, 0);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
   }
+}
+
+void VideoManager::ClearScene() {
+  ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+  ogreSceneManager->clearScene();
+}
+
+void VideoManager::UnloadResources() {
+  ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
+  ogreSceneManager->clearScene();
+  Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::RGN_DEFAULT);
 }
 
 class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listener {

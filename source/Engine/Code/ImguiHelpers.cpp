@@ -2,11 +2,9 @@
 
 #include "pch.h"
 #include "ImguiHelpers.h"
-#ifdef OGRE_BUILD_COMPONENT_OVERLAY
 #include <Overlay/OgreFontManager.h>
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
-#endif
 
 using namespace std;
 

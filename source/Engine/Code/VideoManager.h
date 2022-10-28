@@ -6,9 +6,7 @@
 #include "SDLListener.h"
 #include "System.h"
 #include "Window.h"
-#include <Ogre.h>
-#include <Overlay/OgreImGuiOverlay.h>
-#include <Overlay/OgreOverlaySystem.h>
+#include <OgrePrerequisites.h>
 
 namespace Glue {
 class VideoManager final : public System<VideoManager> {
@@ -19,14 +17,13 @@ class VideoManager final : public System<VideoManager> {
   VideoManager();
   virtual ~VideoManager();
 
-  void OnSetUp() override;
-  void OnClean() override;
-  void OnUpdate(float time) override;
-
   void RenderFrame();
   Window& GetWindow(int number);
   Window& GetMainWindow();
   void ShowWindow(int num, bool show);
+
+  void UnloadResources();
+  void ClearScene();
 
  protected:
   void CreateWindow();
@@ -37,6 +34,11 @@ class VideoManager final : public System<VideoManager> {
   void LoadResources();
   void InitOgreScene();
   void CheckGPU();
+
+  /// System impl
+  void OnSetUp() override;
+  void OnClean() override;
+  void OnUpdate(float time) override;
 
   Window* mainWindow = nullptr;
   std::vector<Window> windowList;
@@ -55,7 +57,5 @@ class VideoManager final : public System<VideoManager> {
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssmSetup;
   std::vector<Ogre::Real> pssmSplitPointList;
   int pssmSplitCount;
-  std::unique_ptr<ImGuiInputListener> imguiListener;
-  Ogre::ImGuiOverlay* imguiOverlay = nullptr;
 };
 }  // namespace Glue

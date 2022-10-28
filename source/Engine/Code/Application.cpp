@@ -11,6 +11,8 @@ namespace Glue {
 Application::Application() : targetFps(60), lockFps(true), exiting(false), sleep(false) {
   engine = make_unique<Engine>();
   engine->Init();
+  appStateManager = make_unique<AppStateManager>();
+  appStateManager->Init();
 }
 
 Application::~Application() { InputSequencer::GetInstance().UnregWinListener(this); }
@@ -19,7 +21,6 @@ void Application::LoopBody() {
   static int64_t cumulatedTime = 0;
   auto duration_before_frame = chrono::system_clock::now().time_since_epoch();
   static int64_t timeOfLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_frame).count();
-  static bool onWakeUp = false;
   int64_t timeBeforeFrame = chrono::duration_cast<chrono::microseconds>(duration_before_frame).count();
 
   if (cumulatedTime > int64_t(1e+6)) cumulatedTime = 0;
@@ -27,19 +28,11 @@ void Application::LoopBody() {
   engine->Capture();
 
   if (!sleep) {
-    if (onWakeUp) {
-      engine->OnResume();
-      onWakeUp = false;
-    }
-
     auto duration_before_update = chrono::system_clock::now().time_since_epoch();
     int64_t timeBeforeUpdate = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
     float frameTime = static_cast<float>(timeBeforeUpdate - timeOfLastFrame) / 1e+6;
     timeOfLastFrame = timeBeforeUpdate;
     engine->OnUpdate(frameTime);
-  } else {
-    engine->OnPause();
-    onWakeUp = true;
   }
 
   int64_t timeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
@@ -88,12 +81,10 @@ void Application::OnQuit() { exiting = true; }
 
 void Application::OnFocusLost() {
   sleep = true;
-  engine->OnPause();
 }
 
 void Application::OnFocusGained() {
   sleep = false;
-  engine->OnResume();
 }
 
 int Application::Main() {

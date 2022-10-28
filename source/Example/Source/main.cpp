@@ -5,6 +5,23 @@
 
 using namespace Glue;
 
+class MenuAppState : public AppState {
+ public:
+  std::string GetName() { return "MenuAppState"; }
+  void OnSetUp() {
+    GetComponent<VideoManager>().GetWindow(0).GrabCursor(true);
+    GetComponent<SceneManager>().LoadFromFile("1.scene");
+    GetComponent<SkyManager>().SetUpSky();
+    GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
+    GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
+    GetComponent<CompositorManager>().SetCompositorEnabled("FXAA", true);
+  }
+  void OnUpdate(float time) {}
+  void OnClean() {
+    GetComponent<VideoManager>().ClearScene();
+  }
+};
+
 #if defined(_WIN32) && !defined(DEBUG)
 #include <windows.h>
 INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
@@ -16,12 +33,10 @@ int main()
     // main app class object
     Glue::Application app;
 
-    GetComponent<VideoManager>().GetWindow(0).GrabCursor(true);
-    GetComponent<SceneManager>().LoadFromFile("1.scene");
-    GetComponent<SkyManager>().SetUpSky();
-    //GetComponent<VideoManager>().GetMainWindow().SetFullscreen(true);
+    GetComponent<AppStateManager>().RegAppState(std::make_shared<MenuAppState>());
+    GetComponent<AppStateManager>().SetActiveAppState("MenuAppState");
+//    GetComponent<VideoManager>().GetMainWindow().SetFullscreen(true);
     GetComponent<VideoManager>().ShowWindow(0, true);
-    GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
 
     // main function
     return app.Main();
