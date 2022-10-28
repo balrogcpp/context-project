@@ -24,17 +24,23 @@ if (ANY_NOT_FOUND)
 endif ()
 
 
-# vs project folders
-file(GLOB_RECURSE ENGINE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*)
-file(GLOB_RECURSE SHADER_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Programs/*)
+# this required to to disable windows upscaling @hdp monitors @windows
+file(GLOB_RECURSE ENGINE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.hpp)
+if (MINGW)
+    list(APPEND ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/source/Engine/manifest.rc)
+elseif (MSVC)
+    list(APPEND ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/source/Engine/app.manifest)
+endif ()
+
+
+# engine vs project folders
+file(GLOB_RECURSE SHADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Programs/*)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Engine PREFIX "Engine" FILES ${ENGINE_SOURCE_FILES})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Programs PREFIX "Programs" FILES ${SHADER_SOURCE_FILES})
-if (MSVC)
-    list(APPEND ENGINE_SOURCE_FILES ${SHADER_SOURCE_FILES})
-    set_source_files_properties(${SHADER_SOURCE_FILES} PROPERTIES LANGUAGE shaders)
-elseif (${CMAKE_GENERATOR} STREQUAL "Xcode")
-    list(APPEND ENGINE_SOURCE_FILES ${SHADER_SOURCE_FILES})
-    set_source_files_properties(${SHADER_SOURCE_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Programs PREFIX "Programs" FILES ${SHADER_FILES})
+list(APPEND ENGINE_SOURCE_FILES ${SHADER_FILES})
+set_source_files_properties(${SHADER_FILES} PROPERTIES LANGUAGE shaders)
+if (${CMAKE_GENERATOR} STREQUAL "Xcode")
+    set_source_files_properties(${SHADER_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
 endif ()
 
 
@@ -48,23 +54,25 @@ if (EMSCRIPTEN)
 endif ()
 
 
-# this required to to disable windows upscaling @hdp monitors @windows
-file(GLOB_RECURSE ENGINE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.hpp)
-if (MINGW)
-    list(APPEND ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/source/Engine/manifest.rc)
-elseif (MSVC)
-    list(APPEND ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/source/Engine/app.manifest)
-endif ()
-
-
 # static library
 add_library(engine STATIC EXCLUDE_FROM_ALL ${ENGINE_SOURCE_FILES})
 include_directories(engine ${ENGINE_INCLUDE_DIRS})
 target_precompile_headers(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Code/pch.h)
 
 
-# example project
-file(GLOB_RECURSE SAMPLE_SOURCE_FILES Example/*.cpp Example/*.h Example/*.hpp)
+# example vs project folders
+file(GLOB_RECURSE SAMPLE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Example/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Example/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Example/*.hpp)
+file(GLOB_RECURSE ASSET_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Example/Assets/*)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Example/Source PREFIX "Example" FILES ${SAMPLE_SOURCE_FILES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Example/Assets PREFIX "Assets" FILES ${ASSET_FILES})
+list(APPEND SAMPLE_SOURCE_FILES ${ASSET_FILES})
+set_source_files_properties(${ASSET_FILES} PROPERTIES LANGUAGE shaders)
+if (${CMAKE_GENERATOR} STREQUAL "Xcode")
+    set_source_files_properties(${ASSET_FILES} PROPERTIES EXTERNAL_OBJECT TRUE)
+endif ()
+
+
+# executable
 if (NOT ANDROID)
     if (CMAKE_BUILD_TYPE_LOWER STREQUAL "release")
         add_executable(example WIN32 ${SAMPLE_SOURCE_FILES})
