@@ -347,7 +347,7 @@ void VideoManager::CreateWindow() {
   ogreCamera = ogreSceneManager->createCamera("Default");
   mainWindow->Create("Example0", ogreCamera, -1, 1270, 720, 0);
   ogreViewport = mainWindow->ogreViewport;
-  InputSequencer::GetInstance().RegWinObserver(mainWindow);
+  InputSequencer::GetInstance().RegWinListener(mainWindow);
 }
 
 void VideoManager::InitOgreOverlay() {

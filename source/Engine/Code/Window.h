@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "Observer.h"
+#include "SDLListener.h"
 #include <Ogre.h>
 
 struct SDL_Window;
 
 namespace Glue {
-class Window : public WindowObserver {
+class Window : public WindowListener {
  public:
   Window();
   virtual ~Window();

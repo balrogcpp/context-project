@@ -13,7 +13,7 @@ Application::Application() {
   engine->Init();
 }
 
-Application::~Application() { InputSequencer::GetInstance().UnregWinObserver(this); }
+Application::~Application() { InputSequencer::GetInstance().UnregWinListener(this); }
 
 void Application::LoopBody() {
   static int64_t cumulatedTime = 0;
@@ -71,7 +71,7 @@ void Application::EmscriptenLoop(void *arg) {
 }
 
 void Application::Go() {
-  InputSequencer::GetInstance().RegWinObserver(this);
+  InputSequencer::GetInstance().RegWinListener(this);
 #ifdef MOBILE
   targetFps = 30;
 #endif

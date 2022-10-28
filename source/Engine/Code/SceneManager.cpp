@@ -107,7 +107,8 @@ void SceneManager::OnClean() {
   ogreSceneManager->clearScene();
   ogreRoot->removeFrameListener(this);
   ogreSceneManager->removeRenderObjectListener(this);
-  InputSequencer::GetInstance().UnRegObserver(sinbad.get());
+  InputSequencer::GetInstance().UnregMsListener(sinbad.get());
+  InputSequencer::GetInstance().UnregKbListener(sinbad.get());
   sinbad.reset();
   fpParams.clear();
   fpParams.shrink_to_fit();
@@ -147,7 +148,8 @@ void SceneManager::LoadFromFile(const std::string filename) {
 
   if (!sinbad && ogreSceneManager->hasCamera("Default")) {
     sinbad = make_unique<SinbadCharacterController>(ogreSceneManager->getCamera("Default"));
-    InputSequencer::GetInstance().RegObserver(sinbad.get());
+    InputSequencer::GetInstance().RegMsListener(sinbad.get());
+    InputSequencer::GetInstance().RegKbListener(sinbad.get());
   }
 
   // scan second time, new objects added during first scan

@@ -1,13 +1,12 @@
 /// created by Andrey Vasiliev
 
 #pragma once
+#include "SDLListener.h"
 #include "Singleton.h"
-#include "Observer.h"
 #include <map>
 
 namespace Glue {
-
-class AppState : public InputObserver, WindowObserver {
+class AppState : public MouseListener, WindowListener {
  public:
   virtual std::string GetName() = 0;
   virtual void OnSetUp() = 0;
@@ -26,9 +25,11 @@ class AppStateManager : public DynamicSingleton<AppStateManager> {
   void RegAppState(AppState *appState);
   void UnregAppState(AppState *appState);
 
+  void SetActiveAppState(AppState *appState);
+  AppState *GetActiveAppState();
+
  protected:
   AppState *activeAppState = nullptr;
-  std::map<std::string, AppState*> AppStateList;
+  std::map<std::string, AppState *> appStateList;
 };
-
 }  // namespace Glue

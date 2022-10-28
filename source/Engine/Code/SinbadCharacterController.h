@@ -1,7 +1,7 @@
 // This source file is part of Glue Engine. Created by Andrey Vasiliev
 
 #pragma once
-#include "Observer.h"
+#include "SDLListener.h"
 #include <Ogre.h>
 
 #define SCALE 0.2f
@@ -15,7 +15,7 @@
 
 namespace Glue {
 
-class SinbadCharacterController : public InputObserver {
+class SinbadCharacterController : public KeyboardListener, public MouseListener {
  public:
   // all the animations our character has, and a null ID
   // some of these affect separate body parts and will be blended together

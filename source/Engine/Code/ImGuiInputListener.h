@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "Observer.h"
+#include "SDLListener.h"
 #include "Singleton.h"
 #include <SDL2/SDL_keycode.h>
 #include <imgui.h>
 
 namespace Glue {
 /// \class to control ImGui interface overlay
-class ImGuiInputListener final : public InputObserver, public Singleton<ImGuiInputListener> {
+class ImGuiInputListener final : public KeyboardListener, public MouseListener, public Singleton<ImGuiInputListener> {
  public:
   /// map sdl2 mouse buttons to imgui
   static int sdl2imgui(int b) {
@@ -54,7 +54,8 @@ class ImGuiInputListener final : public InputObserver, public Singleton<ImGuiInp
   }
 
   ImGuiInputListener() {
-    InputSequencer::GetInstance().RegObserver(this);
+    InputSequencer::GetInstance().RegKbListener(this);
+    InputSequencer::GetInstance().RegMsListener(this);
     static ImGuiIO &io = ImGui::GetIO();
 
     // Keyboard mapping. ImGui will use those indices to peek into the
@@ -83,7 +84,10 @@ class ImGuiInputListener final : public InputObserver, public Singleton<ImGuiInp
     io.KeyMap[ImGuiKey_Z] = 'z';
   }
 
-  virtual ~ImGuiInputListener() { InputSequencer::GetInstance().UnRegObserver(this); }
+  virtual ~ImGuiInputListener() {
+    InputSequencer::GetInstance().UnregMsListener(this);
+    InputSequencer::GetInstance().UnregKbListener(this);
+  }
 
   void OnKeyDown(SDL_Keycode sym) {
     static auto &io = ImGui::GetIO();

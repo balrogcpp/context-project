@@ -4,13 +4,13 @@
 
 #include "AudioManager.h"
 #include "CompositorManager.h"
-#include "Observer.h"
 #include "PhysicsManager.h"
+#include "SDLListener.h"
 #include "SceneManager.h"
 #include "Singleton.h"
-#include "VideoManager.h"
 #include "SkyManager.h"
 #include "TerrainManager.h"
+#include "VideoManager.h"
 
 namespace Glue {
 

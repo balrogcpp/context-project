@@ -2,14 +2,13 @@
 
 #pragma once
 
-#include "Observer.h"
+#include "ImGuiInputListener.h"
+#include "SDLListener.h"
 #include "System.h"
 #include "Window.h"
 #include <Ogre.h>
-#include "ImGuiInputListener.h"
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlaySystem.h>
-
 
 namespace Glue {
 class VideoManager final : public System<VideoManager>, public Ogre::FrameListener {

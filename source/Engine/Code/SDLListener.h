@@ -10,8 +10,7 @@
 
 namespace Glue {
 
-/// Interface for Physical input listener (Mouse, Keyboard and Gamepad)
-class InputObserver {
+class KeyboardListener {
  public:
   /// Callback on keyboard key down
   virtual void OnKeyDown(SDL_Keycode sym) {}
@@ -20,7 +19,11 @@ class InputObserver {
   /// Callback on keyboard typing
   /// @param text typed text
   virtual void OnTextInput(const char *text) {}
+};
 
+/// Interface for Physical input listener (Mouse, Keyboard and Gamepad)
+class MouseListener {
+ public:
   /// Callback on mouse move #1
   /// @param dx position change in pixels
   /// @param dy position change in pixels
@@ -90,7 +93,7 @@ class InputObserver {
 };
 
 /// Interface for Window events listener listener
-class WindowObserver {
+class WindowListener {
  public:
   /// Callback called on any windows event
   /// @param event SDL_Event structure
@@ -111,15 +114,29 @@ class WindowObserver {
 /// Keeps listeners list, capture inputs and send messages every frame
 class InputSequencer final : public LazySingleton<InputSequencer> {
  public:
-  /// Register physical input listener
-  void RegObserver(InputObserver *p) {
+  ///
+  void RegKbListener(KeyboardListener *p) {
+    if (std::find(keyListeners.begin(), keyListeners.end(), p) == keyListeners.end()) {
+      keyListeners.push_back(p);
+    }
+  }
+
+  void UnregKbListener(KeyboardListener *p) {
+    auto it = std::find(keyListeners.begin(), keyListeners.end(), p), end = keyListeners.end();
+    if (it != keyListeners.end()) {
+      std::swap(it, --end);
+      keyListeners.pop_back();
+    }
+  }
+
+  /// Register mouse listener
+  void RegMsListener(MouseListener *p) {
     if (std::find(ioListeners.begin(), ioListeners.end(), p) == ioListeners.end()) {
       ioListeners.push_back(p);
     }
   }
 
-  /// Un-Register physical input listener
-  void UnRegObserver(InputObserver *p) {
+  void UnregMsListener(MouseListener *p) {
     auto it = std::find(ioListeners.begin(), ioListeners.end(), p), end = ioListeners.end();
     if (it != ioListeners.end()) {
       std::swap(it, --end);
@@ -128,7 +145,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   }
 
   /// Register SDLWindowPtr input listener
-  void RegWinObserver(WindowObserver *p) {
+  void RegWinListener(WindowListener *p) {
 #ifdef __ANDROID__
     if (!SDL_GetEventFilter(nullptr, nullptr)) {
       auto callback = [](void *userdata, SDL_Event *event) { return InputSequencer::GetInstance().HandleAppEvents(userdata, event); };
@@ -141,8 +158,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
     }
   }
 
-  /// Un-Register SDLWindowPtr input listener
-  void UnregWinObserver(WindowObserver *p) {
+  void UnregWinListener(WindowListener *p) {
     auto it = std::find(winListeners.begin(), winListeners.end(), p), end = winListeners.end();
     if (it != winListeners.end()) {
       std::swap(it, --end);
@@ -156,12 +172,12 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
         case SDL_KEYUP: {
-          for (auto &it : ioListeners) it->OnKeyUp(event.key.keysym.sym);
+          for (auto &it : keyListeners) it->OnKeyUp(event.key.keysym.sym);
           break;
         }
 
         case SDL_KEYDOWN: {
-          for (auto &it : ioListeners) it->OnKeyDown(event.key.keysym.sym);
+          for (auto &it : keyListeners) it->OnKeyDown(event.key.keysym.sym);
           break;
         }
 
@@ -247,7 +263,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
         }
 #ifndef __ANDROID__
         case SDL_TEXTINPUT: {
-          for (auto &it : ioListeners) it->OnTextInput(event.text.text);
+          for (auto &it : keyListeners) it->OnTextInput(event.text.text);
           break;
         }
 
@@ -286,11 +302,14 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   }
 
  protected:
+  /// Keyboard listener list
+  std::vector<KeyboardListener *> keyListeners;
+
   /// Listeners list (physical input)
-  std::vector<InputObserver *> ioListeners;
+  std::vector<MouseListener *> ioListeners;
 
   /// Listeners list (SDLWindowPtr input)
-  std::vector<WindowObserver *> winListeners;
+  std::vector<WindowListener *> winListeners;
 
   /// Required for Android/IOS
 #ifdef __ANDROID__

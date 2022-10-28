@@ -4,14 +4,14 @@
 
 #include "AppStateManager.h"
 #include "Engine.h"
-#include "Observer.h"
+#include "SDLListener.h"
 #include "Singleton.h"
 #include <memory>
 #include <string>
 
 namespace Glue {
 
-class Application : public WindowObserver, public InputObserver, public DynamicSingleton<Application> {
+class Application : public WindowListener, public MouseListener, public DynamicSingleton<Application> {
  public:
   /// Constructors
   Application();
