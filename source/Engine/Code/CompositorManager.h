@@ -20,15 +20,18 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Viewpor
 
  protected:
   void InitMRT();
+  void InitMipChain();
 
   void viewportDimensionsChanged(Ogre::Viewport* viewport) override;
 
+  bool fixedViewportSize;
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;
   Ogre::SceneManager* ogreSceneManager = nullptr;
   Ogre::Camera* ogreCamera = nullptr;
   Ogre::Viewport* ogreViewport = nullptr;
   const std::string MRT_COMPOSITOR;
+  const std::string BLOOM_COMPOSITOR;
   std::vector<std::string> compositorList;
 };
 

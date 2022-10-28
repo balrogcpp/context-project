@@ -13,8 +13,8 @@ class MenuAppState : public AppState {
     GetComponent<SceneManager>().LoadFromFile("1.scene");
     GetComponent<SkyManager>().SetUpSky();
     GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
-    GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
-    GetComponent<CompositorManager>().SetCompositorEnabled("FXAA", true);
+    //GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
+    //GetComponent<CompositorManager>().SetCompositorEnabled("FXAA", true);
   }
   void OnUpdate(float time) {}
   void OnClean() {
@@ -35,7 +35,7 @@ int main()
 
     GetComponent<AppStateManager>().RegAppState(std::make_shared<MenuAppState>());
     GetComponent<AppStateManager>().SetActiveAppState("MenuAppState");
-//    GetComponent<VideoManager>().GetMainWindow().SetFullscreen(true);
+    //GetComponent<VideoManager>().GetMainWindow().SetFullscreen(true);
     GetComponent<VideoManager>().ShowWindow(0, true);
 
     // main function
