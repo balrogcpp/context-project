@@ -9,20 +9,29 @@
 using namespace std;
 
 namespace {
-void onTick(btDynamicsWorld *world, btScalar timeStep) {
-  //  int numManifolds = world->getDispatcher()->getNumManifolds();
-  //  auto manifolds = world->getDispatcher()->getInternalManifoldPointer();
-  //  for (int i = 0; i < numManifolds; i++) {
-  //    btPersistentManifold *manifold = manifolds[i];
-  //
-  //    for (int j = 0; j < manifold->getNumContacts(); j++) {
-  //      const btManifoldPoint &mp = manifold->getContactPoint(i);
-  //      auto body0 = static_cast<EntityCollisionListener *>(manifold->getBody0()->getUserPointer());
-  //      auto body1 = static_cast<EntityCollisionListener *>(manifold->getBody1()->getUserPointer());
-  //      if (body0->listener) body0->listener->contact(body1->entity, mp);
-  //      if (body1->listener) body1->listener->contact(body0->entity, mp);
-  //    }
-  //  }
+struct EntityCollisionListener {
+  const Ogre::MovableObject *entity;
+  BtOgre::CollisionListener *listener;
+};
+
+void OnTick(btDynamicsWorld *world, btScalar timeStep) {
+  int numManifolds = world->getDispatcher()->getNumManifolds();
+  auto manifolds = world->getDispatcher()->getInternalManifoldPointer();
+  for (int i = 0; i < numManifolds; i++) {
+    btPersistentManifold *manifold = manifolds[i];
+
+    for (int j = 0; j < manifold->getNumContacts(); j++) {
+      const btManifoldPoint &mp = manifold->getContactPoint(i);
+      auto body0 = static_cast<EntityCollisionListener *>(manifold->getBody0()->getUserPointer());
+      auto body1 = static_cast<EntityCollisionListener *>(manifold->getBody1()->getUserPointer());
+      if (body0->listener) {
+        body0->listener->contact(body1->entity, mp);
+      }
+      if (body1->listener) {
+        body1->listener->contact(body0->entity, mp);
+      }
+    }
+  }
 }
 }  // namespace
 
@@ -40,7 +49,7 @@ void PhysicsManager::OnSetUp() {
   auto *rootNode = ogreSceneManager->getRootSceneNode();
 
   dynamicWorld = make_unique<BtOgre::DynamicsWorld>(Ogre::Vector3(0.0, -9.8, 0.0));
-  dynamicWorld->getBtWorld()->setInternalTickCallback(onTick);
+  dynamicWorld->getBtWorld()->setInternalTickCallback(OnTick);
   debugDrawer = make_unique<BtOgre::DebugDrawer>(rootNode->createChildSceneNode(), dynamicWorld->getBtWorld());
 }
 
@@ -158,7 +167,7 @@ void PhysicsManager::ProcessData(Ogre::Entity *entity) {
                                                BtOgre::ColliderType::CT_CAPSULE, BtOgre::ColliderType::CT_TRIMESH, BtOgre::ColliderType::CT_HULL};
   float mass = ParseReal(userData.getUserAny("mass"));
   int proxy = ParseInt(userData.getUserAny("proxy"));
-  OgreAssert(proxy >= 0 && proxy < sizeof(typeList)/sizeof(BtOgre::ColliderType), "[PhysicsManager] proxy type is out of range");
+  OgreAssert(proxy >= 0 && proxy < sizeof(typeList) / sizeof(BtOgre::ColliderType), "[PhysicsManager] proxy type is out of range");
 
   dynamicWorld->addRigidBody(mass, entity, typeList[proxy], nullptr);
 }

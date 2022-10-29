@@ -216,7 +216,7 @@ void VideoManager::ShowWindow(int num, bool show) { windowList[0].Show(show); }
 void VideoManager::CheckGPU() {
   const auto *ogreRenderSystem = ogreRoot->getRenderSystem();
   const auto *ogreRenderCapabilities = ogreRenderSystem->getCapabilities();
-  const auto *ogreRenderSystemCommon = dynamic_cast<const Ogre::GLRenderSystemCommon *>(ogreRenderSystem);
+  const auto *ogreRenderSystemCommon = static_cast<const Ogre::GLRenderSystemCommon *>(ogreRenderSystem);
   OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
   OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
   OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
