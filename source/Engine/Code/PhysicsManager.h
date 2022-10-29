@@ -36,6 +36,7 @@ class PhysicsManager final : public System<PhysicsManager> {
   bool sleep;
   bool debugView;
   int subSteps;
+  float fixedTimeStep;
 
   std::unique_ptr<BtOgre::DynamicsWorld> dynamicWorld;
   std::unique_ptr<BtOgre::DebugDrawer> debugDrawer;
