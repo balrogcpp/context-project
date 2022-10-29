@@ -286,6 +286,38 @@ externalproject_add(Target_Vorbis
         )
 
 
+externalproject_add(Target_Theora
+        EXCLUDE_FROM_ALL true
+        BUILD_ALWAYS false
+        BUILD_IN_SOURCE false
+        DEPENDS Target_Ogg
+        PREFIX ${DEPS_PREFIX_LOCATION}
+        DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
+        SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Theora
+        GIT_REPOSITORY https://github.com/xiph/theora.git
+        GIT_TAG 7180717276af1ebc7da15c83162d6c5d6203aabf
+        GIT_SHALLOW false
+        GIT_PROGRESS false
+        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/cmake/theora.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/CMakeLists.txt
+        CMAKE_ARGS
+        -G ${CMAKE_GENERATOR}
+        -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+        -DCMAKE_PREFIX_PATH=${DEPS_ROOT}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_C_FLAGS=${DEPS_C_FLAGS}
+        -DCMAKE_CXX_FLAGS=${DEPS_CXX_FLAGS}
+        -DCMAKE_EXE_LINKER_FLAGS=${DEPS_EXE_LINKER_FLAGS}
+        -DCMAKE_SHARED_LINKER_FLAGS=${DEPS_SHARED_LINKER_FLAGS}
+        -DCMAKE_STATIC_LINKER_FLAGS=${DEPS_STATIC_LINKER_FLAGS}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        )
+
+
 if (NOT EMSCRIPTEN)
     externalproject_add(Target_zlib
             EXCLUDE_FROM_ALL true
