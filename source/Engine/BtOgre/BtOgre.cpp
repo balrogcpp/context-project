@@ -14,6 +14,11 @@
  */
 
 #include "BtOgre.h"
+#if (OGRE_THREAD_SUPPORT > 0)
+#include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
+#include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
+#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
+#endif
 
 using namespace Ogre;
 
@@ -194,11 +199,23 @@ DynamicsWorld::DynamicsWorld(const Vector3& gravity)
 {
   // Bullet initialisation.
   mCollisionConfig.reset(new btDefaultCollisionConfiguration());
-  mDispatcher.reset(new btCollisionDispatcher(mCollisionConfig.get()));
-  mSolver.reset(new btSequentialImpulseConstraintSolver());
   mBroadphase.reset(new btDbvtBroadphase());
 
+#if (OGRE_THREAD_SUPPORT > 0)
+  mScheduler.reset(btCreateDefaultTaskScheduler());
+  OgreAssert(mScheduler, "[BtOgre] Bullet physics: no task scheduler available");
+  btSetTaskScheduler(mScheduler.get());
+  mSolverPool.reset(new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT));
+
+  mDispatcher.reset(new btCollisionDispatcherMt(mCollisionConfig.get()));
+  mSolver.reset(new btSequentialImpulseConstraintSolverMt());
+  mBtWorld = new btDiscreteDynamicsWorldMt(mDispatcher.get(), mBroadphase.get(), static_cast<btConstraintSolverPoolMt*>(mSolverPool.get()), mSolver.get(), mCollisionConfig.get());
+#else
+  mDispatcher.reset(new btCollisionDispatcher(mCollisionConfig.get()));
+  mSolver.reset(new btSequentialImpulseConstraintSolver());
   mBtWorld = new btDiscreteDynamicsWorld(mDispatcher.get(), mBroadphase.get(), mSolver.get(), mCollisionConfig.get());
+#endif
+
   mBtWorld->setGravity(convert(gravity));
   mBtWorld->setInternalTickCallback(onTick);
 }

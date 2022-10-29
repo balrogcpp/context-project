@@ -89,6 +89,10 @@ class DynamicsWorld
     std::unique_ptr<btCollisionDispatcher> mDispatcher;
     std::unique_ptr<btConstraintSolver> mSolver;
     std::unique_ptr<btBroadphaseInterface> mBroadphase;
+#if (OGRE_THREAD_SUPPORT > 0)
+    std::unique_ptr<btITaskScheduler> mScheduler;
+    std::unique_ptr<btConstraintSolver> mSolverPool;
+#endif
     btDynamicsWorld* mBtWorld;
 
     public:

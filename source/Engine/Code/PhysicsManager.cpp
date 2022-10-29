@@ -3,87 +3,43 @@
 #include "pch.h"
 #include "PhysicsManager.h"
 #include "BtOgre/BtOgre.h"
-#include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
-#include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
-#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorldMt.h>
+#include <OgreTerrainGroup.h>
 
 using namespace std;
 
-namespace Glue {
-PhysicsManager::PhysicsManager() : sleep(false), threaded(false), updateRate(60), subSteps(4) {
-  auto *scheduler = btCreateDefaultTaskScheduler();
-  OgreAssert(scheduler, "[PhysicsManager] Bullet physics: no task scheduler available");
-  btSetTaskScheduler(scheduler);
-  btBroadphase = make_unique<btDbvtBroadphase>();
-  btConfig = make_unique<btDefaultCollisionConfiguration>();
-
-#if (OGRE_THREAD_SUPPORT > 0)
-  btDispatcher = make_unique<btCollisionDispatcherMt>(btConfig.get());
-  btSolver = make_unique<btSequentialImpulseConstraintSolverMt>();
-  auto *solverPool = new btConstraintSolverPoolMt(BT_MAX_THREAD_COUNT);
-  btWorld = make_unique<btDiscreteDynamicsWorldMt>(btDispatcher.get(), btBroadphase.get(), solverPool, btSolver.get(), btConfig.get());
-#else
-  btDispatcher = make_unique<btCollisionDispatcher>(btConfig.get());
-  btSolver = make_unique<btSequentialImpulseConstraintSolver>();
-  btWorld = make_unique<btDiscreteDynamicsWorld>(btDispatcher.get(), btBroadphase.get(), btSolver.get(), btConfig.get());
-#endif
-
-  btWorld->setGravity(btVector3(0.0, -9.8, 0.0));
-  if (threaded) {
-    InitThread();
-  }
+namespace {
+void onTick(btDynamicsWorld *world, btScalar timeStep) {
+  //  int numManifolds = world->getDispatcher()->getNumManifolds();
+  //  auto manifolds = world->getDispatcher()->getInternalManifoldPointer();
+  //  for (int i = 0; i < numManifolds; i++) {
+  //    btPersistentManifold *manifold = manifolds[i];
+  //
+  //    for (int j = 0; j < manifold->getNumContacts(); j++) {
+  //      const btManifoldPoint &mp = manifold->getContactPoint(i);
+  //      auto body0 = static_cast<EntityCollisionListener *>(manifold->getBody0()->getUserPointer());
+  //      auto body1 = static_cast<EntityCollisionListener *>(manifold->getBody1()->getUserPointer());
+  //      if (body0->listener) body0->listener->contact(body1->entity, mp);
+  //      if (body1->listener) body1->listener->contact(body0->entity, mp);
+  //    }
+  //  }
 }
+}  // namespace
+
+namespace Glue {
+PhysicsManager::PhysicsManager() : sleep(false), subSteps(4) {}
 PhysicsManager::~PhysicsManager() {}
 
-void PhysicsManager::InitThread() {
-  if (!threaded) {
-    return;
-  }
-
-  static int64_t time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-
-  function<void(void)> update_func_ = [&]() {
-    while (!sleep) {
-      auto before_update = chrono::system_clock::now().time_since_epoch();
-      int64_t micros_before_update = chrono::duration_cast<chrono::microseconds>(before_update).count();
-      float frame_time = static_cast<float>(micros_before_update - time_of_last_frame_) / 1e+6;
-      time_of_last_frame_ = micros_before_update;
-
-      // Actually do calculations
-      if (!sleep) {
-        btWorld->stepSimulation(frame_time, subSteps, 1.0f / updateRate);
-      }
-      // Actually do calculations
-
-      auto after_update = chrono::system_clock::now().time_since_epoch();
-      int64_t micros_after_update = chrono::duration_cast<chrono::microseconds>(after_update).count();
-
-      auto update_time = micros_after_update - micros_before_update;
-
-      auto delay = static_cast<int64_t>((1e+6 / updateRate) - update_time);
-      if (delay > 0) this_thread::sleep_for(chrono::microseconds(delay));
-    }
-  };
-
-  updateThread = make_unique<thread>(update_func_);
-  updateThread->detach();
+void PhysicsManager::OnSetUp() {
+  dynamicWorld = make_unique<BtOgre::DynamicsWorld>(Ogre::Vector3(0.0, -9.8, 0.0));
+  dynamicWorld->getBtWorld()->setInternalTickCallback(onTick);
 }
-
-void PhysicsManager::OnUpdate(float time) {
-  if (threaded || sleep) {
-    return;
-  }
-
-  btWorld->stepSimulation(time, subSteps, 1.0f / updateRate);
-}
-
-void PhysicsManager::OnSetUp() {}
 
 void PhysicsManager::OnClean() {
+  auto *btWorld = dynamicWorld->getBtWorld();
   btWorld->clearForces();
 
-  // remove the rigidbodies from the dynamics btWorld and delete them
+  // remove the rigidbodies from the dynamics world and delete them
   for (int i = btWorld->getNumCollisionObjects() - 1; i >= 0; i--) {
     btCollisionObject *obj = btWorld->getCollisionObjectArray()[i];
     btWorld->removeCollisionObject(obj);
@@ -97,6 +53,12 @@ void PhysicsManager::OnClean() {
   }
 }
 
+void PhysicsManager::OnUpdate(float time) {
+  if (!sleep) {
+    dynamicWorld->getBtWorld()->stepSimulation(time, subSteps, time);
+  }
+}
+
 void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::TerrainGroup *terrainGroup) {
   for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
     auto *terrain = it.getNext()->instance;
@@ -105,6 +67,7 @@ void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::TerrainGroup *terrainGr
 }
 
 void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::Terrain *terrain) {
+  auto *btWorld = dynamicWorld->getBtWorld();
   int size = terrain->getSize();
   float *data = terrain->getHeightData();
   float minHeight = terrain->getMinHeight();
@@ -148,6 +111,7 @@ void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::Terrain *terrain) {
 }
 
 void PhysicsManager::ProcessData(Ogre::Entity *entity, const Ogre::UserObjectBindings &userData) {
+  auto *btWorld = dynamicWorld->getBtWorld();
   string proxy = Ogre::any_cast<string>(userData.getUserAny("proxy"));
   float mass = Ogre::any_cast<float>(userData.getUserAny("mass"));
   //  string physics_type = Ogre::any_cast<string>(userData.getUserAny("physics_type"));
@@ -193,7 +157,7 @@ void PhysicsManager::ProcessData(Ogre::Entity *entity, const Ogre::UserObjectBin
   auto *bodyState = new BtOgre::RigidBodyState(parent);
 
   rigidBody = new btRigidBody(mass, bodyState, entShape, inertia);
-  if (mass == 0.0) {
+  if (mass <= 0.0) {
     rigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
   }
 
