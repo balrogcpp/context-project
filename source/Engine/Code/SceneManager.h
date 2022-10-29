@@ -11,10 +11,6 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   SceneManager();
   virtual ~SceneManager();
 
-  void OnSetUp() override;
-  void OnClean() override;
-  void OnUpdate(float time) override;
-
   void LoadFromFile(const std::string filename);
   void RegCamera(Ogre::Camera *camera);
   void RegLight(Ogre::Light *light);
@@ -25,6 +21,11 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   void ScanNode(Ogre::SceneNode *node);
 
  protected:
+  /// System impl
+  void OnSetUp() override;
+  void OnClean() override;
+  void OnUpdate(float time) override;
+
   /// Ogre::MaterialManager::Listener impl
   Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const std::string &schemeName, Ogre::Material *originalMaterial,
                                         unsigned short lodIndex, const Ogre::Renderable *rend) override;

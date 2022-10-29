@@ -11,11 +11,8 @@ class AudioManager final : public System<AudioManager> {
   AudioManager();
   virtual ~AudioManager();
 
-  void OnSetUp() override;
-  void OnClean() override;
   void Pause();
   void Resume();
-  void OnUpdate(float passedTime) override;
 
   void AddSound(const char *name, const char *audioFile, Ogre::SceneNode *parent = nullptr, bool playInLoop = false);
   void PlaySound(const char *name, bool playImmediately = true);
@@ -27,6 +24,10 @@ class AudioManager final : public System<AudioManager> {
   void RemoveListener(Ogre::SceneNode *parent);
 
  protected:
+  void OnSetUp() override;
+  void OnClean() override;
+  void OnUpdate(float passedTime) override;
+
   std::unique_ptr<OgreOggSound::Root> audioRoot;
   OgreOggSound::OgreOggSoundManager *oggSoundManager = nullptr;
 };

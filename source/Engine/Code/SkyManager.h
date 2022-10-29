@@ -10,14 +10,15 @@ class SkyManager final : public System<SkyManager> {
   SkyManager();
   virtual ~SkyManager();
 
-  void OnSetUp() override;
-  void OnUpdate(float time) override;
-  void OnClean() override;
-
   Ogre::Vector3 GetSunPosition();
   void SetUpSky();
 
  protected:
+  /// System impl
+  void OnSetUp() override;
+  void OnUpdate(float time) override;
+  void OnClean() override;
+
   bool needsUpdate;
   Ogre::GpuProgramParametersSharedPtr fpParams;
   const std::array<const char *, 10> hosekParamList;

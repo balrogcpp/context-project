@@ -9,6 +9,7 @@ namespace Ogre {
 class Terrain;
 class TerrainGroup;
 }  // namespace Ogre
+
 namespace BtOgre {
 class DynamicsWorld;
 }  // namespace BtOgre

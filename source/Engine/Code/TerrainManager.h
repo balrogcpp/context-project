@@ -16,6 +16,7 @@ class TerrainManager final : public System<TerrainManager> {
   void ProcessTerrainCollider(Ogre::TerrainGroup *terrainGroup);
 
  protected:
+  /// System impl
   void OnSetUp() override;
   void OnUpdate(float time) override;
   void OnClean() override;

@@ -21,7 +21,7 @@
             <entity meshFile="DamagedHelmet.mesh" name="Helmet2">
                 <userData>
                     <property data="1000.0" name="mass" type="float"/>
-                    <property data="box" name="proxy" type="str"/>
+                    <property data="3" name="proxy" type="int"/>
                 </userData>
             </entity>
         </node>
@@ -29,7 +29,7 @@
             <plane name="Plane" material="Plane" width="30" height="30" distance="0.0">
                 <userData>
                     <property data="0.0" name="mass" type="float"/>
-                    <property data="box" name="proxy" type="str"/>
+                    <property data="0" name="proxy" type="int"/>
                 </userData>
             </plane>
         </node>

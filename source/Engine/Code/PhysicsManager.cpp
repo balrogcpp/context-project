@@ -110,57 +110,45 @@ void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::Terrain *terrain) {
   btWorld->setForceUpdateAllAabbs(false);
 }
 
+inline static Ogre::Real ParseReal(const Ogre::Any &userData, Ogre::Real defaultValue = 0) {
+  if (userData.has_value()) {
+    return Ogre::any_cast<Ogre::Real>(userData);
+  } else {
+    return defaultValue;
+  }
+}
+
+inline static int ParseInt(const Ogre::Any &userData, int defaultValue = 0) {
+  if (userData.has_value()) {
+    return Ogre::any_cast<int>(userData);
+  } else {
+    return defaultValue;
+  }
+}
+
+inline static bool ParseBool(const Ogre::Any &userData, bool defaultValue = false) {
+  if (userData.has_value()) {
+    return Ogre::any_cast<bool>(userData);
+  } else {
+    return defaultValue;
+  }
+}
+
+inline static Ogre::String ParseString(const Ogre::Any &userData, Ogre::String defaultValue = "") {
+  if (userData.has_value()) {
+    return Ogre::any_cast<Ogre::String>(userData);
+  } else {
+    return defaultValue;
+  }
+}
+
 void PhysicsManager::ProcessData(Ogre::Entity *entity, const Ogre::UserObjectBindings &userData) {
-  auto *btWorld = dynamicWorld->getBtWorld();
-  string proxy = Ogre::any_cast<string>(userData.getUserAny("proxy"));
-  float mass = Ogre::any_cast<float>(userData.getUserAny("mass"));
-  //  string physics_type = Ogre::any_cast<string>(userData.getUserAny("physics_type"));
-  //  float mass_radius = Ogre::any_cast<float>(userData.getUserAny("mass_radius"));
-  //  float inertia_tensor = Ogre::any_cast<float>(userData.getUserAny("inertia_tensor"));
-  //  float velocity_min = Ogre::any_cast<float>(userData.getUserAny("velocity_min"));
-  //  float velocity_max = Ogre::any_cast<float>(userData.getUserAny("velocity_max"));
-  //  bool lock_trans_x = Ogre::any_cast<bool>(userData.getUserAny("lock_trans_x"));
-  //  bool lock_trans_y = Ogre::any_cast<bool>(userData.getUserAny("lock_trans_y"));
-  //  bool lock_trans_z = Ogre::any_cast<bool>(userData.getUserAny("lock_trans_z"));
-  //  bool lock_rot_x = Ogre::any_cast<bool>(userData.getUserAny("lock_rot_x"));
-  //  bool lock_rot_y = Ogre::any_cast<bool>(userData.getUserAny("lock_rot_y"));
-  //  bool lock_rot_z = Ogre::any_cast<bool>(userData.getUserAny("lock_rot_z"));
-  //  bool anisotropic_friction = Ogre::any_cast<bool>(userData.getUserAny("anisotropic_friction"));
-  //  float friction_x = Ogre::any_cast<float>(userData.getUserAny("friction_x"));
-  //  float friction_y = Ogre::any_cast<float>(userData.getUserAny("friction_y"));
-  //  float friction_z = Ogre::any_cast<float>(userData.getUserAny("friction_z"));
-  //  float damping_trans = Ogre::any_cast<float>(userData.getUserAny("damping_trans"));
-  //  float damping_rot = Ogre::any_cast<float>(userData.getUserAny("damping_rot"));
-  //  bool isStatic = (physics_type != "dynamic");
+  constexpr BtOgre::ColliderType typeList[] = {BtOgre::ColliderType::CT_BOX,     BtOgre::ColliderType::CT_SPHERE,  BtOgre::ColliderType::CT_CYLINDER,
+                                               BtOgre::ColliderType::CT_CAPSULE, BtOgre::ColliderType::CT_TRIMESH, BtOgre::ColliderType::CT_HULL};
+  float mass = ParseReal(userData.getUserAny("mass"));
+  int proxy = ParseInt(userData.getUserAny("proxy"));
+  OgreAssert(proxy >= 0 && proxy < sizeof(typeList)/sizeof(BtOgre::ColliderType), "[PhysicsManager] proxy type is out of range");
 
-  btRigidBody *rigidBody = nullptr;
-  btVector3 inertia = btVector3(0, 0, 0);
-
-  Ogre::SceneNode *parent = entity->getParentSceneNode();
-  btConvexInternalShape *entShape = nullptr;
-
-  if (proxy == "box")
-    entShape = BtOgre::createBoxCollider(entity);
-  else if (proxy == "capsule")
-    entShape = BtOgre::createCapsuleCollider(entity);
-  else if (proxy == "sphere")
-    entShape = BtOgre::createSphereCollider(entity);
-  else if (proxy == "cylinder")
-    entShape = BtOgre::createCylinderCollider(entity);
-  else
-    entShape = BtOgre::createBoxCollider(entity);
-
-  if (mass > 0.0) {
-    entShape->calculateLocalInertia(mass, inertia);
-  }
-
-  auto *bodyState = new BtOgre::RigidBodyState(parent);
-
-  rigidBody = new btRigidBody(mass, bodyState, entShape, inertia);
-  if (mass <= 0.0) {
-    rigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
-  }
-
-  btWorld->addRigidBody(rigidBody);
+  dynamicWorld->addRigidBody(mass, entity, typeList[proxy], nullptr);
 }
 }  // namespace Glue
