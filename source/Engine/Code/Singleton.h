@@ -5,7 +5,6 @@
 #include "Assertion.h"
 
 namespace Glue {
-
 /// Deletes copy constructor
 class NoCopy {
  public:
@@ -24,7 +23,7 @@ class DynamicSingleton : public NoCopy {
  public:
   /// Constructor
   DynamicSingleton() {
-    OgreAssert(!instanced, (std::string(typeid(T).name()) + " is a Singleton class. Creation of another instance is forbidden").c_str());
+    OgreAssert(!instanced, "[DynamicSingleton] Creation of another singleton instance is forbidden");
     instanced = true;
   }
 
@@ -66,5 +65,4 @@ class LazySingleton : public DynamicSingleton<T> {
     return t;
   }
 };
-
 }  // namespace Glue

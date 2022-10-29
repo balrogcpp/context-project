@@ -32,7 +32,6 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Viewpor
   Ogre::Viewport* ogreViewport = nullptr;
   const std::string MRT_COMPOSITOR;
   const std::string BLOOM_COMPOSITOR;
-  std::vector<std::string> compositorList;
 };
 
 }  // namespace Glue

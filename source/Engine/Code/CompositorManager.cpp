@@ -170,7 +170,7 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
     compositorList.pop();
     const bool enabled = compositorEnabled.front();
     compositorEnabled.pop();
-    OgreAssert(compositorManager->addCompositor(ogreViewport, compositor), std::string("Failed to add " + compositor + " compositor").c_str());
+    OgreAssert(compositorManager->addCompositor(ogreViewport, compositor), "[CompositorManager] Failed to add compositor");
     compositorManager->setCompositorEnabled(ogreViewport, compositor, enabled);
   }
 }
