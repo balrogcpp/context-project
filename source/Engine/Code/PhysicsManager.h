@@ -1,7 +1,6 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include "System.h"
 #include <OgrePrerequisites.h>
 #include <OgreTerrainGroup.h>
@@ -15,6 +14,13 @@ class btDefaultCollisionConfiguration;
 class btCollisionDispatcher;
 class btSequentialImpulseConstraintSolver;
 
+namespace Ogre {
+class TerrainGroup;
+namespace Bullet {
+
+}
+}  // namespace Ogre
+
 namespace Glue {
 class PhysicsManager final : public System<PhysicsManager> {
  public:
@@ -27,12 +33,13 @@ class PhysicsManager final : public System<PhysicsManager> {
   void CreateTerrainHeightfieldShape(Ogre::TerrainGroup *terrainGroup);
 
  protected:
+  /// System impl
   void OnSetUp() override;
   void OnClean() override;
   void OnUpdate(float time) override;
 
   std::atomic<bool> sleep;
-  int SubSteps;
+  int subSteps;
   bool threaded;
   int64_t updateRate;
   std::unique_ptr<std::thread> updateThread;

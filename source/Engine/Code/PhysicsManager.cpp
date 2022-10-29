@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "PhysicsManager.h"
-#include <Bullet/OgreBullet.h>
+#include "BtOgre/BtOgre.h"
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcherMt.h>
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolverMt.h>
@@ -11,11 +11,10 @@
 using namespace std;
 
 namespace Glue {
-
-PhysicsManager::PhysicsManager() : sleep(false), threaded(false), updateRate(60), SubSteps(4) {
-  auto *Scheduler = btCreateDefaultTaskScheduler();
-  if (!Scheduler) throw std::runtime_error("Bullet physics no task scheduler available");
-  btSetTaskScheduler(Scheduler);
+PhysicsManager::PhysicsManager() : sleep(false), threaded(false), updateRate(60), subSteps(4) {
+  auto *scheduler = btCreateDefaultTaskScheduler();
+  OgreAssert(scheduler, "[PhysicsManager] Bullet physics: no task scheduler available");
+  btSetTaskScheduler(scheduler);
   btBroadphase = make_unique<btDbvtBroadphase>();
   btConfig = make_unique<btDefaultCollisionConfiguration>();
 
@@ -31,12 +30,16 @@ PhysicsManager::PhysicsManager() : sleep(false), threaded(false), updateRate(60)
 #endif
 
   btWorld->setGravity(btVector3(0.0, -9.8, 0.0));
-  if (threaded) InitThread();
-  sleep = false;
+  if (threaded) {
+    InitThread();
+  }
 }
+PhysicsManager::~PhysicsManager() {}
 
 void PhysicsManager::InitThread() {
-  if (!threaded) return;
+  if (!threaded) {
+    return;
+  }
 
   static int64_t time_of_last_frame_ = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
 
@@ -49,7 +52,7 @@ void PhysicsManager::InitThread() {
 
       // Actually do calculations
       if (!sleep) {
-        btWorld->stepSimulation(frame_time, SubSteps, 1.0f / updateRate);
+        btWorld->stepSimulation(frame_time, subSteps, 1.0f / updateRate);
       }
       // Actually do calculations
 
@@ -67,12 +70,12 @@ void PhysicsManager::InitThread() {
   updateThread->detach();
 }
 
-PhysicsManager::~PhysicsManager() {}
-
 void PhysicsManager::OnUpdate(float time) {
-  if (threaded || sleep) return;
+  if (threaded || sleep) {
+    return;
+  }
 
-  btWorld->stepSimulation(time, SubSteps, 1.0f / updateRate);
+  btWorld->stepSimulation(time, subSteps, 1.0f / updateRate);
 }
 
 void PhysicsManager::OnSetUp() {}
@@ -136,7 +139,7 @@ void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::Terrain *terrain) {
   rigidBody->setHitFraction(0.8f);
   rigidBody->setRestitution(0.6f);
   rigidBody->getWorldTransform().setOrigin(btVector3(position.x, position.y + (maxHeight - minHeight) / 2 - 0.5, position.z));
-  rigidBody->getWorldTransform().setRotation(Ogre::Bullet::convert(Ogre::Quaternion::IDENTITY));
+  rigidBody->getWorldTransform().setRotation(BtOgre::convert(Ogre::Quaternion::IDENTITY));
   rigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
   rigidBody->setUserIndex(0);
@@ -146,51 +149,54 @@ void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::Terrain *terrain) {
 
 void PhysicsManager::ProcessData(Ogre::Entity *entity, const Ogre::UserObjectBindings &userData) {
   string proxy = Ogre::any_cast<string>(userData.getUserAny("proxy"));
-  string physics_type = Ogre::any_cast<string>(userData.getUserAny("physics_type"));
   float mass = Ogre::any_cast<float>(userData.getUserAny("mass"));
-  float mass_radius = Ogre::any_cast<float>(userData.getUserAny("mass_radius"));
-  float inertia_tensor = Ogre::any_cast<float>(userData.getUserAny("inertia_tensor"));
-  float velocity_min = Ogre::any_cast<float>(userData.getUserAny("velocity_min"));
-  float velocity_max = Ogre::any_cast<float>(userData.getUserAny("velocity_max"));
-  bool lock_trans_x = Ogre::any_cast<bool>(userData.getUserAny("lock_trans_x"));
-  bool lock_trans_y = Ogre::any_cast<bool>(userData.getUserAny("lock_trans_y"));
-  bool lock_trans_z = Ogre::any_cast<bool>(userData.getUserAny("lock_trans_z"));
-  bool lock_rot_x = Ogre::any_cast<bool>(userData.getUserAny("lock_rot_x"));
-  bool lock_rot_y = Ogre::any_cast<bool>(userData.getUserAny("lock_rot_y"));
-  bool lock_rot_z = Ogre::any_cast<bool>(userData.getUserAny("lock_rot_z"));
-  bool anisotropic_friction = Ogre::any_cast<bool>(userData.getUserAny("anisotropic_friction"));
-  float friction_x = Ogre::any_cast<float>(userData.getUserAny("friction_x"));
-  float friction_y = Ogre::any_cast<float>(userData.getUserAny("friction_y"));
-  float friction_z = Ogre::any_cast<float>(userData.getUserAny("friction_z"));
-  float damping_trans = Ogre::any_cast<float>(userData.getUserAny("damping_trans"));
-  float damping_rot = Ogre::any_cast<float>(userData.getUserAny("damping_rot"));
-  bool isStatic = (physics_type != "dynamic");
+  //  string physics_type = Ogre::any_cast<string>(userData.getUserAny("physics_type"));
+  //  float mass_radius = Ogre::any_cast<float>(userData.getUserAny("mass_radius"));
+  //  float inertia_tensor = Ogre::any_cast<float>(userData.getUserAny("inertia_tensor"));
+  //  float velocity_min = Ogre::any_cast<float>(userData.getUserAny("velocity_min"));
+  //  float velocity_max = Ogre::any_cast<float>(userData.getUserAny("velocity_max"));
+  //  bool lock_trans_x = Ogre::any_cast<bool>(userData.getUserAny("lock_trans_x"));
+  //  bool lock_trans_y = Ogre::any_cast<bool>(userData.getUserAny("lock_trans_y"));
+  //  bool lock_trans_z = Ogre::any_cast<bool>(userData.getUserAny("lock_trans_z"));
+  //  bool lock_rot_x = Ogre::any_cast<bool>(userData.getUserAny("lock_rot_x"));
+  //  bool lock_rot_y = Ogre::any_cast<bool>(userData.getUserAny("lock_rot_y"));
+  //  bool lock_rot_z = Ogre::any_cast<bool>(userData.getUserAny("lock_rot_z"));
+  //  bool anisotropic_friction = Ogre::any_cast<bool>(userData.getUserAny("anisotropic_friction"));
+  //  float friction_x = Ogre::any_cast<float>(userData.getUserAny("friction_x"));
+  //  float friction_y = Ogre::any_cast<float>(userData.getUserAny("friction_y"));
+  //  float friction_z = Ogre::any_cast<float>(userData.getUserAny("friction_z"));
+  //  float damping_trans = Ogre::any_cast<float>(userData.getUserAny("damping_trans"));
+  //  float damping_rot = Ogre::any_cast<float>(userData.getUserAny("damping_rot"));
+  //  bool isStatic = (physics_type != "dynamic");
 
   btRigidBody *rigidBody = nullptr;
-  btVector3 Inertia = btVector3(0, 0, 0);
+  btVector3 inertia = btVector3(0, 0, 0);
 
   Ogre::SceneNode *parent = entity->getParentSceneNode();
   btConvexInternalShape *entShape = nullptr;
 
   if (proxy == "box")
-    entShape = Ogre::Bullet::createBoxCollider(entity);
+    entShape = BtOgre::createBoxCollider(entity);
   else if (proxy == "capsule")
-    entShape = Ogre::Bullet::createCapsuleCollider(entity);
+    entShape = BtOgre::createCapsuleCollider(entity);
   else if (proxy == "sphere")
-    entShape = Ogre::Bullet::createSphereCollider(entity);
+    entShape = BtOgre::createSphereCollider(entity);
   else if (proxy == "cylinder")
-    entShape = Ogre::Bullet::createCylinderCollider(entity);
+    entShape = BtOgre::createCylinderCollider(entity);
   else
-    entShape = Ogre::Bullet::createBoxCollider(entity);
+    entShape = BtOgre::createBoxCollider(entity);
 
-  if (mass > 0.0) entShape->calculateLocalInertia(mass, Inertia);
+  if (mass > 0.0) {
+    entShape->calculateLocalInertia(mass, inertia);
+  }
 
-  auto *bodyState = new Ogre::Bullet::RigidBodyState(parent);
+  auto *bodyState = new BtOgre::RigidBodyState(parent);
 
-  rigidBody = new btRigidBody(mass, bodyState, entShape, Inertia);
-  if (mass == 0.0) rigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+  rigidBody = new btRigidBody(mass, bodyState, entShape, inertia);
+  if (mass == 0.0) {
+    rigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+  }
 
   btWorld->addRigidBody(rigidBody);
 }
-
 }  // namespace Glue
