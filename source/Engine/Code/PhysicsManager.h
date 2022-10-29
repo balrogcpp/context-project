@@ -12,6 +12,7 @@ class TerrainGroup;
 
 namespace BtOgre {
 class DynamicsWorld;
+class DebugDrawer;
 }  // namespace BtOgre
 
 namespace Glue {
@@ -20,7 +21,9 @@ class PhysicsManager final : public System<PhysicsManager> {
   PhysicsManager();
   virtual ~PhysicsManager();
 
-  void ProcessData(Ogre::Entity *entity, const Ogre::UserObjectBindings &userData);
+  void SetDebugView(bool debug);
+
+  void ProcessData(Ogre::Entity *entity);
   void CreateTerrainHeightfieldShape(Ogre::Terrain *terrain);
   void CreateTerrainHeightfieldShape(Ogre::TerrainGroup *terrainGroup);
 
@@ -31,8 +34,10 @@ class PhysicsManager final : public System<PhysicsManager> {
   void OnUpdate(float time) override;
 
   bool sleep;
+  bool debugView;
   int subSteps;
 
   std::unique_ptr<BtOgre::DynamicsWorld> dynamicWorld;
+  std::unique_ptr<BtOgre::DebugDrawer> debugDrawer;
 };
 }  // namespace Glue

@@ -188,7 +188,7 @@ void SceneManager::RegEntity(Ogre::Entity *entity) {
 
   auto objBindings = entity->getUserObjectBindings();
   if (objBindings.getUserAny("proxy").has_value()) {
-    Glue::GetComponent<Glue::PhysicsManager>().ProcessData(entity, objBindings);
+    Glue::GetComponent<Glue::PhysicsManager>().ProcessData(entity);
   }
 }
 

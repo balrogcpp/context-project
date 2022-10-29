@@ -1,0 +1,15 @@
+// created by Andrey Vasiliev
+
+material Ogre/Debug/LinesMat
+{
+	technique
+	{
+		pass
+		{
+			fog_override true none
+            lighting off
+            ambient vertexcolour
+            rtshader_system {}
+		}
+	}
+}

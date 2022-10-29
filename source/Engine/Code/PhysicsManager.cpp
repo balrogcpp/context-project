@@ -27,12 +27,21 @@ void onTick(btDynamicsWorld *world, btScalar timeStep) {
 }  // namespace
 
 namespace Glue {
-PhysicsManager::PhysicsManager() : sleep(false), subSteps(4) {}
+PhysicsManager::PhysicsManager() : sleep(false), debugView(false), subSteps(4) {}
 PhysicsManager::~PhysicsManager() {}
 
+void PhysicsManager::SetDebugView(bool debug) { this->debugView = debug; }
+
 void PhysicsManager::OnSetUp() {
+  auto *ogreRoot = Ogre::Root::getSingletonPtr();
+  OgreAssert(ogreRoot, "[PhysicsManager] ogreRoot is not initialised");
+  auto *ogreSceneManager = ogreRoot->getSceneManager("Default");
+  OgreAssert(ogreSceneManager, "[PhysicsManager] ogreSceneManager is not initialised");
+  auto *rootNode = ogreSceneManager->getRootSceneNode();
+
   dynamicWorld = make_unique<BtOgre::DynamicsWorld>(Ogre::Vector3(0.0, -9.8, 0.0));
   dynamicWorld->getBtWorld()->setInternalTickCallback(onTick);
+  debugDrawer = make_unique<BtOgre::DebugDrawer>(rootNode->createChildSceneNode(), dynamicWorld->getBtWorld());
 }
 
 void PhysicsManager::OnClean() {
@@ -56,6 +65,7 @@ void PhysicsManager::OnClean() {
 void PhysicsManager::OnUpdate(float time) {
   if (!sleep) {
     dynamicWorld->getBtWorld()->stepSimulation(time, subSteps, time);
+    if (debugView) debugDrawer->update();
   }
 }
 
@@ -142,7 +152,8 @@ inline static Ogre::String ParseString(const Ogre::Any &userData, Ogre::String d
   }
 }
 
-void PhysicsManager::ProcessData(Ogre::Entity *entity, const Ogre::UserObjectBindings &userData) {
+void PhysicsManager::ProcessData(Ogre::Entity *entity) {
+  const Ogre::UserObjectBindings &userData = entity->getUserObjectBindings();
   constexpr BtOgre::ColliderType typeList[] = {BtOgre::ColliderType::CT_BOX,     BtOgre::ColliderType::CT_SPHERE,  BtOgre::ColliderType::CT_CYLINDER,
                                                BtOgre::ColliderType::CT_CAPSULE, BtOgre::ColliderType::CT_TRIMESH, BtOgre::ColliderType::CT_HULL};
   float mass = ParseReal(userData.getUserAny("mass"));
