@@ -13,10 +13,10 @@
 #include <OgreFrameListener.h>
 
 namespace Glue {
-class Engine final : public Singleton<Engine>, Ogre::FrameListener, WindowListener {
+class Locator final : public Singleton<Locator>, Ogre::FrameListener, WindowListener {
  public:
-  Engine();
-  virtual ~Engine();
+  Locator();
+  virtual ~Locator();
 
   void Init();
   void Capture();

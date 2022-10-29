@@ -1,7 +1,6 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include "ImGuiInputListener.h"
 #include "SDLListener.h"
 #include "System.h"

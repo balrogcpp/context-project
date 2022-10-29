@@ -1,9 +1,8 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include "AppStateManager.h"
-#include "Engine.h"
+#include "Locator.h"
 #include "SDLListener.h"
 #include "Singleton.h"
 #include <memory>
@@ -30,7 +29,7 @@ class Application : public WindowListener, public DynamicSingleton<Application> 
 
   /// Handle components
   std::unique_ptr<AppStateManager> appStateManager;
-  std::unique_ptr<Engine> engine;
+  std::unique_ptr<Locator> engine;
   bool exiting;
   bool sleep;
   int64_t targetFps;

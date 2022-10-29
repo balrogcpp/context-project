@@ -2,20 +2,19 @@
 
 #include "pch.h"
 #include "Application.h"
-#include "Engine.h"
+#include "Locator.h"
 
 using namespace std;
 
 namespace Glue {
-
 Application::Application() : targetFps(60), lockFps(true), exiting(false), sleep(false) {
-  engine = make_unique<Engine>();
+  engine = make_unique<Locator>();
   engine->Init();
   appStateManager = make_unique<AppStateManager>();
   appStateManager->Init();
 }
 
-Application::~Application() { InputSequencer::GetInstance().UnregWinListener(this); }
+Application::~Application() { InputSequencer::GetInstance().UnregWindowListener(this); }
 
 void Application::LoopBody() {
   static int64_t cumulatedTime = 0;
@@ -64,7 +63,7 @@ void Application::EmscriptenLoop(void *arg) {
 }
 
 void Application::Go() {
-  InputSequencer::GetInstance().RegWinListener(this);
+  InputSequencer::GetInstance().RegWindowListener(this);
 #ifdef MOBILE
   targetFps = 30;
 #endif
@@ -94,5 +93,4 @@ int Application::Main() {
   Go();
   return 0;
 }
-
 }  // namespace Glue

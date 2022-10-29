@@ -9,9 +9,7 @@
 using namespace std;
 
 namespace Glue {
-
 Window::Window() : sdlFlags(SDL_WINDOW_HIDDEN), vsync(true), width(1270), height(720), fullscreen(false), id(0) {}
-
 Window::~Window() { SDL_SetWindowFullscreen(sdlWindow, SDL_FALSE); }
 
 void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, int width, int height, uint32_t sdlFlags) {
@@ -204,5 +202,4 @@ void Window::OnSizeChanged(int x, int y, uint32_t id) {
 #endif
 }
 void Window::OnExposed() {}
-
 }  // namespace Glue

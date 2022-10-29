@@ -1,7 +1,6 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include <Terrain/OgreTerrainMaterialGenerator.h>
 #include <Terrain/OgreTerrainPrerequisites.h>
 

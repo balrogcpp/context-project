@@ -1,7 +1,6 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include "Singleton.h"
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>
@@ -9,7 +8,6 @@
 #include <vector>
 
 namespace Glue {
-
 class KeyboardListener {
  public:
   /// Callback on keyboard key down
@@ -114,14 +112,17 @@ class WindowListener {
 /// Keeps listeners list, capture inputs and send messages every frame
 class InputSequencer final : public LazySingleton<InputSequencer> {
  public:
+  InputSequencer() {}
+  virtual ~InputSequencer() {}
+
   ///
-  void RegKbListener(KeyboardListener *p) {
+  void RegKeyboardListener(KeyboardListener *p) {
     if (std::find(keyListeners.begin(), keyListeners.end(), p) == keyListeners.end()) {
       keyListeners.push_back(p);
     }
   }
 
-  void UnregKbListener(KeyboardListener *p) {
+  void UnregKeyboardListener(KeyboardListener *p) {
     auto it = std::find(keyListeners.begin(), keyListeners.end(), p), end = keyListeners.end();
     if (it != keyListeners.end()) {
       std::swap(it, --end);
@@ -130,13 +131,13 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   }
 
   /// Register mouse listener
-  void RegMsListener(MouseListener *p) {
+  void RegMouseListener(MouseListener *p) {
     if (std::find(ioListeners.begin(), ioListeners.end(), p) == ioListeners.end()) {
       ioListeners.push_back(p);
     }
   }
 
-  void UnregMsListener(MouseListener *p) {
+  void UnregMouseListener(MouseListener *p) {
     auto it = std::find(ioListeners.begin(), ioListeners.end(), p), end = ioListeners.end();
     if (it != ioListeners.end()) {
       std::swap(it, --end);
@@ -145,7 +146,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   }
 
   /// Register SDLWindowPtr input listener
-  void RegWinListener(WindowListener *p) {
+  void RegWindowListener(WindowListener *p) {
 #ifdef __ANDROID__
     if (!SDL_GetEventFilter(nullptr, nullptr)) {
       auto callback = [](void *userdata, SDL_Event *event) { return InputSequencer::GetInstance().HandleAppEvents(userdata, event); };
@@ -158,7 +159,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
     }
   }
 
-  void UnregWinListener(WindowListener *p) {
+  void UnregWindowListener(WindowListener *p) {
     auto it = std::find(winListeners.begin(), winListeners.end(), p), end = winListeners.end();
     if (it != winListeners.end()) {
       std::swap(it, --end);
@@ -333,5 +334,4 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   }
 #endif
 };
-
 }  // namespace Glue

@@ -1,14 +1,12 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include "SinbadCharacterController.h"
 #include "System.h"
 #include <Ogre.h>
 
 namespace Glue {
-
-class SceneManager final : public System<SceneManager>, public Ogre::RenderObjectListener {
+class SceneManager final : public System<SceneManager>, public Ogre::RenderObjectListener, public Ogre::MaterialManager::Listener {
  public:
   SceneManager();
   virtual ~SceneManager();
@@ -22,11 +20,18 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   void RegLight(Ogre::Light *light);
   void RegEntity(Ogre::Entity *entity);
   void RegEntity(const std::string &name);
-  void RegMaterial(const Ogre::MaterialPtr &material);
+  void RegMaterial(const Ogre::Material *material);
   void RegMaterial(const std::string &name);
   void ScanNode(Ogre::SceneNode *node);
 
  protected:
+  /// Ogre::MaterialManager::Listener impl
+  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const std::string &schemeName, Ogre::Material *originalMaterial,
+                                        unsigned short lodIndex, const Ogre::Renderable *rend) override;
+  bool afterIlluminationPassesCreated(Ogre::Technique *tech) override;
+  bool beforeIlluminationPassesCleared(Ogre::Technique *tech) override;
+
+  /// Ogre::RenderObjectListener impl
   void notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                 const Ogre::LightList *pLightList, bool suppressRenderStateChanges) override;
 
@@ -39,5 +44,4 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   Ogre::SceneManager *ogreSceneManager = nullptr;
   Ogre::Camera *ogreCamera = nullptr;
 };
-
 }  // namespace Glue

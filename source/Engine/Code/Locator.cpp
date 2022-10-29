@@ -1,7 +1,7 @@
 /// created by Andrey Vasiliev
 
 #include "pch.h"
-#include "Engine.h"
+#include "Locator.h"
 #include "SDLListener.h"
 #include "SinbadCharacterController.h"
 #include <Ogre.h>
@@ -16,12 +16,10 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 using namespace std;
 
 namespace Glue {
+Locator::Locator() {}
+Locator::~Locator() { Ogre::Root::getSingleton().removeFrameListener(this); }
 
-Engine::Engine() {}
-
-Engine::~Engine() { Ogre::Root::getSingleton().removeFrameListener(this); }
-
-void Engine::Init() {
+void Locator::Init() {
   video = make_unique<VideoManager>();
   RegComponent(video.get());
 
@@ -46,47 +44,50 @@ void Engine::Init() {
   Ogre::Root::getSingleton().addFrameListener(this);
 }
 
-void Engine::Capture() {
+void Locator::Capture() {
   static auto &io = InputSequencer::GetInstance();
   io.Capture();
 }
 
-void Engine::RegComponent(SystemI *component) {
-  component->OnSetUp();
+void Locator::RegComponent(SystemI *component) {
   auto it = find(componentList.begin(), componentList.end(), component);
-  if (it == componentList.end()) componentList.push_back(component);
+  if (it == componentList.end()) {
+    component->OnSetUp();
+    componentList.push_back(component);
+  }
 }
 
-void Engine::UnRegComponent(SystemI *component) {
-  component->OnClean();
+void Locator::UnRegComponent(SystemI *component) {
   auto it = find(componentList.begin(), componentList.end(), component);
-  if (it != componentList.end()) componentList.erase(it);
+  if (it != componentList.end()) {
+    component->OnClean();
+    componentList.erase(it);
+  }
 }
 
-bool Engine::frameRenderingQueued(const Ogre::FrameEvent &evt) {
+bool Locator::frameRenderingQueued(const Ogre::FrameEvent &evt) {
   for (auto &it : componentList) it->OnUpdate(evt.timeSinceLastFrame);
   return true;
 }
 
-bool Engine::frameEnded(const Ogre::FrameEvent &evt) { return true; }
+bool Locator::frameEnded(const Ogre::FrameEvent &evt) { return true; }
 
-bool Engine::frameStarted(const Ogre::FrameEvent &evt) { return true; }
+bool Locator::frameStarted(const Ogre::FrameEvent &evt) { return true; }
 
-void Engine::OnCleanup() {
+void Locator::OnCleanup() {
   for (auto &it : componentList) it->OnClean();
 }
 
-void Engine::OnUpdate(float time) {
+void Locator::OnUpdate(float time) {
   if (sleep) return;
   RenderFrame();
 }
 
-void Engine::OnQuit() {}
+void Locator::OnQuit() {}
 
-void Engine::OnFocusLost() { sleep = true; }
+void Locator::OnFocusLost() { sleep = true; }
 
-void Engine::OnFocusGained() { sleep = false; }
+void Locator::OnFocusGained() { sleep = false; }
 
-void Engine::RenderFrame() { video->RenderFrame(); }
-
+void Locator::RenderFrame() { video->RenderFrame(); }
 }  // namespace Glue

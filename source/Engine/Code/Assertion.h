@@ -1,7 +1,6 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include <OgreException.h>
 #include <OgreLogManager.h>
 #include <SDL2/SDL_messagebox.h>

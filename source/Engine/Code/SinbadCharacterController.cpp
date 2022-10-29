@@ -2,12 +2,10 @@
 
 #include "pch.h"
 #include "SinbadCharacterController.h"
-//#include "Engine.h"
 
 using namespace std;
 
 namespace Glue {
-
 SinbadCharacterController::SinbadCharacterController(Ogre::Camera *camera) : baseAnimID(ANIM_NONE), topAnimID(ANIM_NONE) {
   SetupCamera(camera);
   SetupBody();
@@ -426,5 +424,4 @@ void SinbadCharacterController::SetTopAnimation(AnimID ID, bool reset) {
   // else
   //  GetAudio().StopSound("walk_grass");
 }
-
 }  // namespace Glue

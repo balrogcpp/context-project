@@ -79,10 +79,10 @@ RUN apt-get update \
     && cd ${CONTEXT_HOME}/source/Engine \
     && sdkmanager  --install "cmake;3.18.1" --sdk_root=${ANDROID_HOME} > /dev/null  \
     && sh gradlew assembleRelease > /dev/null \
-    && rm -rf .gradle android/.cxx android/build android/assets \
+    && rm -rf build .gradle android/.cxx android/build android/assets \
     && sh gradlew assembleRelease \
     && cp android/build/outputs/apk/release/android-arm64-v8a-release.apk ${CONTEXT_HOME}/artifacts\
-    && rm -rf .gradle android/.cxx android/build android/assets ../../artifacts/_CPack_Packages ../../contrib/build ../../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
+    && rm -rf build .gradle android/.cxx android/build android/assets ../../artifacts/_CPack_Packages ../../contrib/build ../../contrib/sdk /root/.android /root/.gradle ${ANDROID_HOME} \
     && apt-get -y purge openjdk-8-jdk \
     && apt-get -y autoremove
 

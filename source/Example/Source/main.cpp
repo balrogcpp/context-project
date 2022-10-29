@@ -9,7 +9,8 @@ class MenuAppState : public AppState {
  public:
   std::string GetName() { return "MenuAppState"; }
   void OnSetUp() {
-    GetComponent<VideoManager>().GetWindow(0).GrabCursor(true);
+//    GetComponent<VideoManager>().GetWindow(0).GrabCursor(true);
+    //GetComponent<VideoManager>().GetMainWindow().SetFullscreen(true);
     GetComponent<SceneManager>().LoadFromFile("1.scene");
     GetComponent<SkyManager>().SetUpSky();
     GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
@@ -35,7 +36,6 @@ int main()
 
     GetComponent<AppStateManager>().RegAppState(std::make_shared<MenuAppState>());
     GetComponent<AppStateManager>().SetActiveAppState("MenuAppState");
-    //GetComponent<VideoManager>().GetMainWindow().SetFullscreen(true);
     GetComponent<VideoManager>().ShowWindow(0, true);
 
     // main function

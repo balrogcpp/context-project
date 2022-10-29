@@ -1,12 +1,10 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include "Singleton.h"
 #include <OgreFrameListener.h>
 
 namespace Glue {
-
 /// @class ComponentI
 /// Component interface. Components are
 class SystemI {
@@ -34,5 +32,4 @@ T& GetComponent() {
   static T& ref = *System<T>::GetInstancePtr();
   return ref;
 }
-
 }  // namespace Glue

@@ -1,7 +1,6 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include "Assertion.h"
 
 namespace Glue {
@@ -31,7 +30,7 @@ class DynamicSingleton : public NoCopy {
   static bool IsInstanced() { return instanced; }
 
  protected:
-  /// Is this flag is up -- any call of "new" will throw exception
+  /// Is this flag is up -- any call of "new" will abort program
   inline static bool instanced = false;
 };
 

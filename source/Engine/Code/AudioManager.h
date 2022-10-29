@@ -1,16 +1,11 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include "OggSound/OgreOggSound.h"
 #include "OggSound/OgreOggSoundRoot.h"
 #include "System.h"
-#include <Ogre.h>
-#include <memory>
-#include <string>
 
 namespace Glue {
-
 class AudioManager final : public System<AudioManager> {
  public:
   AudioManager();
@@ -35,5 +30,4 @@ class AudioManager final : public System<AudioManager> {
   std::unique_ptr<OgreOggSound::Root> audioRoot;
   OgreOggSound::OgreOggSoundManager *oggSoundManager = nullptr;
 };
-
 }  // namespace Glue

@@ -1,7 +1,6 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include "SDLListener.h"
 #include <OgrePrerequisites.h>
 

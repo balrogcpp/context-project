@@ -1,8 +1,6 @@
 /// created by Andrey Vasiliev
 
-#pragma once
-
-namespace Glue {
+#pragma oncenamespace Glue {
 class Object {
  public:
   virtual void Update(float time) = 0;

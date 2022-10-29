@@ -135,15 +135,8 @@ void ScanLocation(const string &path, const string &groupName) {
 
 namespace Glue {
 void VideoManager::LoadResources() {
-#ifdef DESKTOP
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
-  if (Ogre::Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_ANISOTROPY)) {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_ANISOTROPIC);
-    Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(8);
-  } else {
-    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
-  }
-#endif
+  Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
@@ -190,22 +183,6 @@ VideoManager::VideoManager()
     : ogreMinLogLevel(Ogre::LML_TRIVIAL), ogreLogFile("Ogre.log"), shadowEnabled(true), shadowTechnique(Ogre::SHADOWTYPE_NONE), pssmSplitCount(3) {}
 VideoManager::~VideoManager() { SDL_Quit(); }
 
-void VideoManager::OnSetUp() {
-  // init
-  InitOgreRoot();
-  InitSDL();
-  CreateWindow();
-  CheckGPU();
-  InitOgreRTSS();
-  InitOgreOverlay();
-  LoadResources();
-  InitOgreScene();
-
-  // cleanup
-  Ogre::ImGuiOverlay::NewFrame();
-  ogreRoot->renderOneFrame();
-}
-
 void VideoManager::OnUpdate(float time) {
   static ImGuiIO &io = ImGui::GetIO();
   Ogre::ImGuiOverlay::NewFrame();
@@ -237,8 +214,9 @@ Window &VideoManager::GetMainWindow() { return *mainWindow; }
 void VideoManager::ShowWindow(int num, bool show) { windowList[0].Show(show); }
 
 void VideoManager::CheckGPU() {
-  const auto *ogreRenderCapabilities = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
-  const auto *ogreRenderSystemCommon = dynamic_cast<Ogre::GLRenderSystemCommon *>(Ogre::Root::getSingleton().getRenderSystem());
+  const auto *ogreRenderSystem = ogreRoot->getRenderSystem();
+  const auto *ogreRenderCapabilities = ogreRenderSystem->getCapabilities();
+  const auto *ogreRenderSystemCommon = dynamic_cast<const Ogre::GLRenderSystemCommon *>(ogreRenderSystem);
   OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
   OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
   OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
@@ -345,7 +323,7 @@ void VideoManager::CreateWindow() {
   ogreCamera = ogreSceneManager->createCamera("Default");
   mainWindow->Create("Example0", ogreCamera, -1, 1270, 720, 0);
   ogreViewport = mainWindow->ogreViewport;
-  InputSequencer::GetInstance().RegWinListener(mainWindow);
+  InputSequencer::GetInstance().RegWindowListener(mainWindow);
 }
 
 void VideoManager::InitOgreOverlay() {
@@ -496,4 +474,20 @@ void VideoManager::InitOgreRTSS() {
   Ogre::MaterialManager::getSingleton().addListener(shaderResolver.get());
 }
 
+void VideoManager::OnSetUp() {
+  // init
+  InitOgreRoot();
+  InitSDL();
+  CreateWindow();
+  CheckGPU();
+  InitOgreRTSS();
+  InitOgreOverlay();
+  LoadResources();
+  InitOgreScene();
+
+  // cleanup
+  Ogre::ImGuiOverlay::NewFrame();
+  ogreRoot->renderOneFrame();
+  Ogre::MaterialManager::getSingleton().removeListener(shaderResolver.get());
+}
 }  // namespace Glue

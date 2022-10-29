@@ -2,16 +2,14 @@
 
 #include "pch.h"
 #include "AudioManager.h"
+#include <Ogre.h>
 
 using namespace std;
 
 namespace Glue {
-
 AudioManager::AudioManager() {}
-
 AudioManager::~AudioManager() { audioRoot->shutdown(); }
 
-void AudioManager::OnClean() {}
 
 void AudioManager::OnSetUp() {
 #ifndef DEBUG
@@ -23,18 +21,19 @@ void AudioManager::OnSetUp() {
 #endif
   audioRoot = make_unique<OgreOggSound::Root>();
   audioRoot->initialise();
-  oggSoundManager = &OgreOggSound::OgreOggSoundManager::getSingleton();
+  oggSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
+  OgreAssert(oggSoundManager, "[AudioManager] oggSoundManager not initialised");
   oggSoundManager->init();
   oggSoundManager->setResourceGroupName(Ogre::RGN_AUTODETECT);
 
-  auto *CameraNode = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getParentSceneNode();
-  if (CameraNode) AddListener(CameraNode);
+//  auto *cameraNode =
+//  auto *CameraNode = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getParentSceneNode();
+//  if (CameraNode) AddListener(CameraNode);
 }
-
 void AudioManager::OnUpdate(float passedTime) {}
+void AudioManager::OnClean() {}
 
 void AudioManager::Pause() { oggSoundManager->pauseAllSounds(); }
-
 void AudioManager::Resume() { oggSoundManager->resumeAllPausedSounds(); }
 
 void AudioManager::AddSound(const char *name, const char *audioFile, Ogre::SceneNode *parent, bool playInLoop) {
@@ -51,46 +50,40 @@ void AudioManager::AddSound(const char *name, const char *audioFile, Ogre::Scene
 
 void AudioManager::AddListener(Ogre::SceneNode *parent) {
   auto *listener = oggSoundManager->getListener();
-
   if (!listener) {
-    OgreAssert(oggSoundManager->createListener(), "Failed to create sound listener");
+    OgreAssert(oggSoundManager->createListener(), "[AudioManager] Failed to create listener");
     listener = oggSoundManager->getListener();
   }
 
-  if (parent) parent->attachObject(listener);
+  parent->attachObject(listener);
 }
 
 void AudioManager::RemoveListener(Ogre::SceneNode *parent) {}
 
 void AudioManager::PlaySound(const char *name, bool playImmediately) {
   auto *sound = oggSoundManager->getSound(name);
-  if (sound) {
-    if (playImmediately) sound->stop();
-    sound->play();
-  } else {
-    throw std::runtime_error(string("Sound \"") + name + "\" not found. Aborting\n");
-  }
+  OgreAssert(sound, "[AudioManager] Sound not found");
+  if (playImmediately) sound->stop();
+  sound->play();
 }
 
 void AudioManager::StopSound(const char *name) {
   auto *sound = oggSoundManager->getSound(name);
-  if (sound) {
-    sound->stop();
-  } else {
-    throw std::runtime_error(string("Sound \"") + name + "\" not found. Aborting\n");
-  }
+  OgreAssert(sound, "[AudioManager] Sound not found");
+  sound->stop();
 }
 
 void AudioManager::SetMasterVolume(float volume) { oggSoundManager->setMasterVolume(volume); }
 
 void AudioManager::SetSoundMaxVolume(const char *name, float volume) {
-  auto *Sound = oggSoundManager->getSound(name);
-  if (Sound) Sound->setMaxVolume(volume);
+  auto *sound = oggSoundManager->getSound(name);
+  OgreAssert(sound, "[AudioManager] Sound not found");
+  sound->setMaxVolume(volume);
 }
 
 void AudioManager::SetSoundVolume(const char *name, float volume) {
   auto *sound = oggSoundManager->getSound(name);
-  if (sound) sound->setVolume(volume);
+  OgreAssert(sound, "[AudioManager] Sound not found");
+  sound->setVolume(volume);
 }
-
 }  // namespace Glue

@@ -1,7 +1,6 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include "SDLListener.h"
 #include "Singleton.h"
 #include <SDL2/SDL_keycode.h>
@@ -54,8 +53,8 @@ class ImGuiInputListener final : public KeyboardListener, public MouseListener, 
   }
 
   ImGuiInputListener() {
-    InputSequencer::GetInstance().RegKbListener(this);
-    InputSequencer::GetInstance().RegMsListener(this);
+    InputSequencer::GetInstance().RegKeyboardListener(this);
+    InputSequencer::GetInstance().RegMouseListener(this);
     static ImGuiIO &io = ImGui::GetIO();
 
     // Keyboard mapping. ImGui will use those indices to peek into the
@@ -85,8 +84,8 @@ class ImGuiInputListener final : public KeyboardListener, public MouseListener, 
   }
 
   virtual ~ImGuiInputListener() {
-    InputSequencer::GetInstance().UnregMsListener(this);
-    InputSequencer::GetInstance().UnregKbListener(this);
+    InputSequencer::GetInstance().UnregMouseListener(this);
+    InputSequencer::GetInstance().UnregKeyboardListener(this);
   }
 
   void OnKeyDown(SDL_Keycode sym) {
@@ -168,5 +167,4 @@ class ImGuiInputListener final : public KeyboardListener, public MouseListener, 
     if (b < 5) io.MouseDown[b] = false;
   }
 };
-
 }  // namespace Glue

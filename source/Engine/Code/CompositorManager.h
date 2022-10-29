@@ -5,23 +5,27 @@
 #include <Ogre.h>
 
 namespace Glue {
-
 class CompositorManager : public System<CompositorManager>, public Ogre::Viewport::Listener {
  public:
   CompositorManager();
   virtual ~CompositorManager();
 
+  void AddCompositor(const std::string& name, bool enable, int position = -1);
+  void SetCompositorEnabled(const std::string& name, bool enable);
+
+  void SetFixedViewportSize(int x, int y);
+
+ protected:
+  /// System impl
   void OnSetUp() override;
   void OnClean() override;
   void OnUpdate(float time) override;
 
-  void AddCompositor(const std::string& name, bool enable, int position = -1);
-  void SetCompositorEnabled(const std::string& name, bool enable);
-
- protected:
   void InitMRT();
   void InitMipChain();
 
+  /// Ogre::Viewport::Listener impl
+  void viewportCameraChanged(Ogre::Viewport* viewport) override;
   void viewportDimensionsChanged(Ogre::Viewport* viewport) override;
 
   bool fixedViewportSize;
@@ -33,5 +37,4 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Viewpor
   const std::string MRT_COMPOSITOR;
   const std::string BLOOM_COMPOSITOR;
 };
-
 }  // namespace Glue

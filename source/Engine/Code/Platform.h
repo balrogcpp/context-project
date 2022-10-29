@@ -1,7 +1,6 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include <OgreComponents.h>
 #include <OgrePlatform.h>
 #include <OgrePlatformInformation.h>

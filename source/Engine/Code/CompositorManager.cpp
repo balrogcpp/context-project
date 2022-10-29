@@ -7,9 +7,7 @@
 using namespace std;
 
 namespace Glue {
-
 CompositorManager::CompositorManager() : fixedViewportSize(false), MRT_COMPOSITOR("MRT"), BLOOM_COMPOSITOR("Bloom") {}
-
 CompositorManager::~CompositorManager() {}
 
 void CompositorManager::OnUpdate(float time) {}
@@ -53,6 +51,10 @@ void CompositorManager::AddCompositor(const string &name, bool enable, int posit
 }
 
 void CompositorManager::SetCompositorEnabled(const string &name, bool enable) { compositorManager->setCompositorEnabled(ogreViewport, name, enable); }
+
+void CompositorManager::SetFixedViewportSize(int x, int y) {
+  fixedViewportSize = (x < 0) && (y < 0);
+}
 
 void CompositorManager::InitMRT() {
   OgreAssert(compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR, 0), "Failed to add MRT compositor");
@@ -141,8 +143,11 @@ void CompositorManager::InitMipChain() {
     rt10Texture->width = w / 1024;
     rt10Texture->height = h / 1024;
   }
+
+  compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, false);
 }
 
+void CompositorManager::viewportCameraChanged(Ogre::Viewport *viewport) {}
 void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
   // don't update if viewport size handled manually
   if (fixedViewportSize) {
@@ -153,11 +158,6 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
   std::queue<std::string> compositorList;
   std::queue<bool> compositorEnabled;
 
-  int sizeY = ogreViewport->getActualDimensions().height();
-  int sizeX = ogreViewport->getActualDimensions().width();
-  Ogre::LogManager::getSingleton().logMessage("[CompositorManager] Actual viewport size: " + to_string(sizeX) + "x" + to_string(sizeY),
-                                              Ogre::LML_TRIVIAL);
-
   for (const auto it : compositorChain->getCompositorInstances()) {
     compositorList.push(it->getCompositor()->getName());
     compositorEnabled.push(it->getEnabled());
@@ -165,6 +165,7 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
 
   compositorChain->removeAllCompositors();
 
+  // compositors are automatically resized according to actual viewport size when added to chain
   while (!compositorList.empty()) {
     const std::string compositor = compositorList.front();
     compositorList.pop();
@@ -174,5 +175,4 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
     compositorManager->setCompositorEnabled(ogreViewport, compositor, enabled);
   }
 }
-
 }  // namespace Glue

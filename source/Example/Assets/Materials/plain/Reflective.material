@@ -4,14 +4,12 @@ import PBR_Basic from PBR.material
 
 material Plane : PBR_Basic
 {
-    /*set $Albedo bog_albedo.dds
-    set $Normal bog_normal.dds
-    set $Metallic bog_metallic.dds
-    set $Roughness bog_roughness.dds
-    set $AO bog_ao.dds*/
-        /*technique {
-            pass {
-                diffuse 0.13 0.49 0.25 1.00
-            }
-        }*/
+    //set $Albedo dungeon-stone1-albedo2.png
+    //set $Normal dungeon-stone1-normal.png
+    //set $ORM dungeon-stone1-orm.png
+    technique {
+        pass {
+            diffuse 0.13 0.49 0.25 1.00
+        }
+    }
 }

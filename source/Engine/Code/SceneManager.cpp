@@ -8,7 +8,7 @@
 using namespace std;
 
 namespace {
-void CheckTransparentShadowCaster(const Ogre::MaterialPtr &material) {
+void CheckTransparentShadowCaster(const Ogre::Material *material) {
   auto *pass = material->getTechnique(0)->getPass(0);
 
   if (pass->getNumTextureUnitStates() > 0 && pass->getAlphaRejectValue() > 0 && material->getTransparencyCastsShadows()) {
@@ -42,8 +42,7 @@ void CheckTransparentShadowCaster(const Ogre::MaterialPtr &material) {
 }
 
 void CheckTransparentShadowCaster(const std::string &material) {
-  auto ptr = Ogre::MaterialManager::getSingleton().getByName(material);
-  CheckTransparentShadowCaster(ptr);
+  CheckTransparentShadowCaster(Ogre::MaterialManager::getSingleton().getByName(material).get());
 }
 
 bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
@@ -88,7 +87,7 @@ void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
 
 namespace Glue {
 SceneManager::SceneManager() {}
-SceneManager::~SceneManager() {}
+SceneManager::~SceneManager() { Ogre::MaterialManager::getSingleton().removeListener(this); }
 
 void SceneManager::OnSetUp() {
   ogreRoot = Ogre::Root::getSingletonPtr();
@@ -99,14 +98,15 @@ void SceneManager::OnSetUp() {
   ogreCamera = ogreSceneManager->getCamera("Default");
 
   ogreSceneManager->addRenderObjectListener(this);
+  // Ogre::MaterialManager::getSingleton().addListener(this);
 }
 
 void SceneManager::OnClean() {
   ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   ogreSceneManager->clearScene();
   ogreSceneManager->removeRenderObjectListener(this);
-  InputSequencer::GetInstance().UnregMsListener(sinbad.get());
-  InputSequencer::GetInstance().UnregKbListener(sinbad.get());
+  InputSequencer::GetInstance().UnregMouseListener(sinbad.get());
+  InputSequencer::GetInstance().UnregKeyboardListener(sinbad.get());
   sinbad.reset();
   fpParams.clear();
   fpParams.shrink_to_fit();
@@ -123,9 +123,6 @@ void SceneManager::OnUpdate(float time) {
   for (auto &it : vpParams) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
 }
 
-void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
-                                            const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {}
-
 void SceneManager::LoadFromFile(const std::string filename) {
   auto *rootNode = ogreSceneManager->getRootSceneNode();
   rootNode->loadChildren(filename);
@@ -136,8 +133,8 @@ void SceneManager::LoadFromFile(const std::string filename) {
 
   if (!sinbad && ogreSceneManager->hasCamera("Default")) {
     sinbad = make_unique<SinbadCharacterController>(ogreSceneManager->getCamera("Default"));
-    InputSequencer::GetInstance().RegMsListener(sinbad.get());
-    InputSequencer::GetInstance().RegKbListener(sinbad.get());
+    InputSequencer::GetInstance().RegMouseListener(sinbad.get());
+    InputSequencer::GetInstance().RegKeyboardListener(sinbad.get());
   }
 
   // scan second time, new objects added during first scan
@@ -186,7 +183,7 @@ void SceneManager::RegEntity(Ogre::Entity *entity) {
   }
 
   for (const auto &it : entity->getSubEntities()) {
-    RegMaterial(it->getMaterial());
+    RegMaterial(it->getMaterial().get());
   }
 
   auto objBindings = entity->getUserObjectBindings();
@@ -195,7 +192,7 @@ void SceneManager::RegEntity(Ogre::Entity *entity) {
   }
 }
 
-void SceneManager::RegMaterial(const Ogre::MaterialPtr &material) {
+void SceneManager::RegMaterial(const Ogre::Material *material) {
   CheckTransparentShadowCaster(material);
 
   const auto *pass = material->getTechnique(0)->getPass(0);
@@ -211,7 +208,7 @@ void SceneManager::RegMaterial(const Ogre::MaterialPtr &material) {
   }
 }
 
-void SceneManager::RegMaterial(const std::string &name) { RegMaterial(Ogre::MaterialManager::getSingleton().getByName(name)); }
+void SceneManager::RegMaterial(const std::string &name) { RegMaterial(Ogre::MaterialManager::getSingleton().getByName(name).get()); }
 
 void SceneManager::ScanNode(Ogre::SceneNode *node) {
   for (auto it : node->getAttachedObjects()) {
@@ -239,4 +236,15 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
     ScanNode(static_cast<Ogre::SceneNode *>(it));
   }
 }
+
+Ogre::Technique *SceneManager::handleSchemeNotFound(unsigned short schemeIndex, const std::string &schemeName, Ogre::Material *originalMaterial,
+                                                    unsigned short lodIndex, const Ogre::Renderable *rend) {
+  return nullptr;
+}
+bool SceneManager::afterIlluminationPassesCreated(Ogre::Technique *tech) { return false; }
+bool SceneManager::beforeIlluminationPassesCleared(Ogre::Technique *tech) { return false; }
+
+void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
+                                            const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {}
+
 }  // namespace Glue

@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "TerrainMaterialGeneratorB.h"
-#include "Engine.h"
+#include "Locator.h"
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainMaterialGenerator.h>
 
@@ -69,7 +69,7 @@ MaterialPtr TerrainMaterialGeneratorB::SM2Profile::generate(const Terrain *OgreT
       texture_state->setTextureAddressingMode(TextureUnitState::TAM_CLAMP);
     }
 
-    Glue::GetComponent<Glue::SceneManager>().RegMaterial(new_material);
+    Glue::GetComponent<Glue::SceneManager>().RegMaterial(new_material.get());
     return new_material;
   }
 }
