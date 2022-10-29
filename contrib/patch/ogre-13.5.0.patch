@@ -1,0 +1,130 @@
+diff --git a/CMake/Templates/imconfig.h b/CMake/Templates/imconfig.h
+index 7f6a28ce..86100989 100644
+--- a/CMake/Templates/imconfig.h
++++ b/CMake/Templates/imconfig.h
+@@ -1,5 +1,6 @@
+ #pragma once
+ #define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
++#define IMGUI_USE_WCHAR32
+ #include <OgreOverlayPrerequisites.h>
+ #define IMGUI_API _OgreOverlayExport
+ #cmakedefine IMGUI_ENABLE_FREETYPE
+\ No newline at end of file
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index fef681a1..885abcdb 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -273,12 +273,12 @@ elseif(EMSCRIPTEN)
+   set(OGRE_BUILD_PLUGIN_BSP FALSE CACHE BOOL "Disable pcz on Emscripten" FORCE)
+   set(OGRE_BUILD_TOOLS FALSE CACHE BOOL "Disable tools on Emscripten" FORCE)
+   set(OGRE_BUILD_TESTS FALSE CACHE BOOL "Disable tests on Emscripten" FORCE)
+-  set(OGRE_BUILD_COMPONENT_VOLUME FALSE CACHE BOOL "Disable volume component on Emscripten" FORCE)
++  #set(OGRE_BUILD_COMPONENT_VOLUME FALSE CACHE BOOL "Disable volume component on Emscripten" FORCE)
+   set(OGRE_BUILD_COMPONENT_PAGING FALSE CACHE BOOL "Disable paging component on Emscripten" FORCE)
+-  set(OGRE_BUILD_COMPONENT_TERRAIN FALSE CACHE BOOL "Disable terrain component on Emscripten" FORCE)
++  #set(OGRE_BUILD_COMPONENT_TERRAIN FALSE CACHE BOOL "Disable terrain component on Emscripten" FORCE)
+   set(OGRE_STATIC TRUE CACHE BOOL "Forcing static build for Emscripten" FORCE)
+ 
+-  set(OGRE_CONFIG_THREADS "0" CACHE STRING "Threading is unstable on Emscripten" FORCE)
++  #set(OGRE_CONFIG_THREADS "0" CACHE STRING "Threading is unstable on Emscripten" FORCE)
+ elseif (APPLE AND NOT APPLE_IOS)
+   # Make sure that the GLES2 render system is disabled for non-iOS Apple builds
+   set(OGRE_BUILD_RENDERSYSTEM_GLES2 FALSE CACHE BOOL "" FORCE)
+diff --git a/Components/Overlay/CMakeLists.txt b/Components/Overlay/CMakeLists.txt
+index 0c74ce29..829e6080 100644
+--- a/Components/Overlay/CMakeLists.txt
++++ b/Components/Overlay/CMakeLists.txt
+@@ -86,7 +86,7 @@ if(OGRE_BUILD_COMPONENT_OVERLAY_IMGUI)
+   configure_file(${OGRE_TEMPLATES_DIR}/imconfig.h ${IMGUI_DIR}/imconfig.h)
+ 
+   list(APPEND HEADER_FILES
+-    ${IMGUI_DIR}/imgui.h
++    ${IMGUI_DIR}/imgui.h ${IMGUI_DIR}/imgui_internal.h ${IMGUI_DIR}/imstb_textedit.h ${IMGUI_DIR}/imstb_truetype.h ${IMGUI_DIR}/imstb_rectpack.h
+     ${IMGUI_DIR}/imconfig.h)
+ endif()
+ 
+diff --git a/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp b/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp
+index 0ff8e2e2..78342e6e 100644
+--- a/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp
++++ b/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp
+@@ -74,8 +74,8 @@ namespace Ogre {
+             if(program->getType() == GPT_FRAGMENT_PROGRAM && mGLSLVersion > 100)
+             {
+                 // sampler3D has no default precision
+-                os << "precision lowp sampler3D;" << std::endl;
+-                os << "precision lowp sampler2DShadow;" << std::endl;
++                //os << "precision lowp sampler3D;" << std::endl;
++                //os << "precision lowp sampler2DShadow;" << std::endl;
+                 // also write float precision, as auto shader-patching is off if it sees "precision"
+                 os << "precision mediump float;" << std::endl;
+             }
+diff --git a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
+index ac9e4c35..739e4851 100644
+--- a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
++++ b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
+@@ -179,7 +179,7 @@ namespace Ogre
+             for (int i = 0; i < 4; ++i)
+                 mChildren[i]->prepare();
+         }
+-
++        setCastShadows(TerrainGlobalOptions::getSingleton().getCastsDynamicShadows());
+     }
+     //---------------------------------------------------------------------
+     void TerrainQuadTreeNode::prepare(StreamSerialiser& stream)
+diff --git a/OgreMain/CMakeLists.txt b/OgreMain/CMakeLists.txt
+index 44a17787..d9add2ba 100644
+--- a/OgreMain/CMakeLists.txt
++++ b/OgreMain/CMakeLists.txt
+@@ -243,7 +243,9 @@ endif ()
+ target_link_libraries(OgreMain PUBLIC ${PLATFORM_LIBS} PRIVATE ${LIBRARIES} ${CMAKE_DL_LIBS})
+ 
+ # specify a precompiled header to use
++if (!APPLE)
+ add_native_precompiled_header(OgreMain "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/src/OgreStableHeaders.h>")
++endif ()
+ 
+ # install OgreMain
+ ogre_config_lib(OgreMain TRUE)
+diff --git a/OgreMain/include/OgreException.h b/OgreMain/include/OgreException.h
+index 38de07ed..d0e5c1d5 100644
+--- a/OgreMain/include/OgreException.h
++++ b/OgreMain/include/OgreException.h
+@@ -60,7 +60,11 @@ THE SOFTWARE.
+  * To always abort instead of throwing an exception or disabling OgreAssert in Release configuration altogether,
+  * set OGRE_ASSERT_MODE in CMake accordingly.
+  */
+-#   define OgreAssert( expr, mesg ) assert( (expr) && (mesg) )
++#   if OGRE_DEBUG_MODE
++#       define OgreAssert( expr, mesg ) assert( (expr) && (mesg) )
++#   else
++#       define OgreAssert( expr, mesg )
++#   endif
+ #endif
+ 
+ #if OGRE_DEBUG_MODE
+diff --git a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
+index 024ddebf..19220d48 100644
+--- a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
++++ b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
+@@ -122,7 +122,7 @@ namespace Ogre {
+           mLevel(level)
+     {
+         // Get face identifier
+-        mFaceTarget = mTarget;
++        mFaceTarget = mTarget; mUsage &= ~TU_AUTOMIPMAP;
+         if(mTarget == GL_TEXTURE_CUBE_MAP)
+             mFaceTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
+ 
+diff --git a/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp b/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
+index 6d11662e..fb16ef0c 100644
+--- a/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
++++ b/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
+@@ -215,7 +215,7 @@ namespace Ogre {
+ #if OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
+         int* gamma_attribs = NULL;
+ #else
+-        int gamma_attribs[] = {EGL_GL_COLORSPACE_KHR, EGL_GL_COLORSPACE_SRGB_KHR, EGL_NONE};
++        int gamma_attribs[] = {EGL_NONE};
+ #endif
+         mHwGamma = mHwGamma && mGLSupport->checkExtension("EGL_KHR_gl_colorspace");
+ 

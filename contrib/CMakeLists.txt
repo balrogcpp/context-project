@@ -327,7 +327,7 @@ if (NOT EMSCRIPTEN)
             DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
             SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_zlib
             GIT_REPOSITORY https://github.com/madler/zlib.git
-            GIT_TAG v1.2.12
+            GIT_TAG v1.2.13
             GIT_SHALLOW true
             GIT_PROGRESS false
             DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
@@ -474,7 +474,7 @@ externalproject_add(Target_PNG
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_PNG
         GIT_REPOSITORY https://github.com/glennrp/libpng.git
-        GIT_TAG v1.6.37
+        GIT_TAG v1.6.38
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
@@ -673,17 +673,17 @@ externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS Target_zlib Target_FreeType Target_SDL2 Target_Bullet Target_pugixml
+        DEPENDS Target_zlib Target_FreeType Target_SDL2 Target_pugixml
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
         GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-        GIT_TAG v13.4.4
+        GIT_TAG v13.5.0
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         UPDATE_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OGRE ${GIT_EXECUTABLE} reset --hard
-        PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OGRE ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogre-13.4.0.patch
+        PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OGRE ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogre-13.5.0.patch
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -700,7 +700,7 @@ externalproject_add(Target_OGRE
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DOGRE_STATIC=ON
-        -DCMAKE_CXX_STANDARD=17
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
         -DOGRE_DEPENDENCIES_DIR=${DEPS_ROOT}
         -DOGRE_ENABLE_PRECOMPILED_HEADERS=ON
         -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=OFF
@@ -807,7 +807,7 @@ externalproject_add(Target_OGRE2
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DOGRE_STATIC=ON
-        -DCMAKE_CXX_STANDARD=17
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
         -DOGRE_SIMD_SSE2=ON
         -DOGRE_SIMD_NEON=ON
         -DOGRE_RESTRICT_ALIASING=ON
@@ -900,6 +900,7 @@ externalproject_add(Target_Lua
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DLUA_VERSION=v5.4.4
         -DLUA_EXE=OFF
         -DLUA_DOC=OFF
         -DLUA_BUILD_WLUA=OFF
@@ -908,7 +909,6 @@ externalproject_add(Target_Lua
         -DLUA_USE_RELATIVE_LOADLIB=OFF
         -DLUA_USE_POSIX=OFF
         -DLUA_USE_DLOPEN=OFF
-        -DLUA_VERSION=v5.4.4
         )
 
 
@@ -987,7 +987,7 @@ externalproject_add(Target_GoogleTest
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_GoogleTest
         GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG v1.12.0
+        GIT_TAG v1.12.1
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
@@ -1140,7 +1140,7 @@ externalproject_add(Target_asio
         PATCH_COMMAND ${CMAKE_COMMAND} -E true
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_asio
         GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
-        GIT_TAG asio-1-22-1
+        GIT_TAG asio-1-24-0
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
