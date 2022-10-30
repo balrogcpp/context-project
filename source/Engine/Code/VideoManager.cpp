@@ -34,17 +34,18 @@
 #ifdef OGRE_BUILD_COMPONENT_TERRAIN
 #include "TerrainMaterialGeneratorB.h"
 #include <Terrain/OgreTerrainGroup.h>
+#ifdef OGRE_BUILD_COMPONENT_PAGING
+#include <Terrain/OgreTerrainPaging.h>
+#endif
+#endif
+#ifdef OGRE_BUILD_COMPONENT_PAGING
+#include <Paging/OgrePaging.h>
 #endif
 #ifdef OGRE_BUILD_COMPONENT_OVERLAY
+#include <Overlay/OgreFontManager.h>
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
-//#include "imgui_user/IconsMaterialDesign.h"
-//#include "imgui_user/IconsMaterialDesign.h"
-//#include "imgui_user/IconsMaterialDesign.h"
-//#include "imgui_user/IconsKenney.h"
-//#include "imgui_user/IconsFontAwesome4.h"
-//#include "imgui_user/IconsFontAwesome5.h"
 #endif
 #include <SDL2/SDL.h>
 #ifdef DESKTOP

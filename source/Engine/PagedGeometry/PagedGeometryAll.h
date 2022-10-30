@@ -1,7 +1,6 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-
 #include "BatchPage.h"
 #include "GrassLoader.h"
 #include "ImpostorPage.h"

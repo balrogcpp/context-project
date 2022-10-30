@@ -1,6 +1,7 @@
 #ifndef SKYMODEL_H
 #define SKYMODEL_H
 
+#include "Astronomy.h"
 #include <OgreVector3.h>
 #include <cmath>
 

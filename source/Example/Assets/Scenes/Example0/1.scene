@@ -34,8 +34,6 @@
             </plane>
         </node>
     </nodes>
-    <forest>
-    </forest>
     <environment>
         <colourAmbient r="60" g="60" b="60"/>
         <shadowColor b="60"/>

@@ -2,9 +2,11 @@
 
 #include "pch.h"
 #include "ImguiHelpers.h"
+#define IMGUI_INCLUDE_IMGUI_USER_H
 #include <Overlay/OgreFontManager.h>
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
+#include <Overlay/OgreOverlaySystem.h>
 
 using namespace std;
 
