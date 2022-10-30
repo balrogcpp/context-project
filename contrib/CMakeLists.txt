@@ -673,7 +673,7 @@ externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS Target_zlib Target_FreeType Target_SDL2 Target_pugixml
+        DEPENDS Target_zlib Target_FreeType
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
@@ -1280,15 +1280,15 @@ externalproject_add(Target_opencv
 
 
 # list of dependency targets
+list(APPEND DEP_TARGETS Target_SDL2)
+list(APPEND DEP_TARGETS Target_pugixml)
 list(APPEND DEP_TARGETS Target_zlib)
 list(APPEND DEP_TARGETS Target_Lua)
 list(APPEND DEP_TARGETS Target_sol2)
-list(APPEND DEP_TARGETS Target_pugixml)
 list(APPEND DEP_TARGETS Target_FreeType)
 list(APPEND DEP_TARGETS Target_OpenAL)
 list(APPEND DEP_TARGETS Target_Ogg)
 list(APPEND DEP_TARGETS Target_Vorbis)
 list(APPEND DEP_TARGETS Target_Bullet)
-list(APPEND DEP_TARGETS Target_SDL2)
 list(APPEND DEP_TARGETS Target_OGRE)
 add_custom_target(contrib COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILE} DEPENDS ${DEP_TARGETS})
