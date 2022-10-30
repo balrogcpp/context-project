@@ -15,11 +15,15 @@ class Window : public WindowListener {
   void Show(bool show);
   void Delete();
   void RenderFrame() const;
-  void GrabCursor(bool grab);
-  void ShowCursor(bool show);
-  void Resize(int width, int height);
+  void SetGrabMouse(bool grab);
+  void SetMouseRelativeMode(bool relative);
+  void SetShowCursor(bool show);
+  void SetSize(int width, int height);
+  void SetCaption(const char* caption);
   void SetFullscreen(bool fullscreen);
-  void SetWindowCaption(const char* caption);
+  void SetBordered(bool bordered);
+  void SetResizable(bool resizable);
+  void SetAlwaysOnTop(bool alwayOnTop);
 
  protected:
   friend class VideoManager;

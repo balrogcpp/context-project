@@ -83,8 +83,8 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
     auto *compositorPtr = compositorChain->getCompositor(compositor);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
       if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
-        jt->width = x * jt->widthFactor;
-        jt->height = y * jt->heightFactor;
+        if (jt->width == 0) jt->width = x * jt->widthFactor;
+        if (jt->height == 0) jt->height = y * jt->heightFactor;
       }
     }
 

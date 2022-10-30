@@ -131,38 +131,49 @@ void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, in
 #endif
 }
 
-void Window::Show(bool show) { show ? SDL_ShowWindow(sdlWindow) : SDL_HideWindow(sdlWindow); }
+void Window::Show(bool show) {
+  OgreAssert(sdlWindow, "sdlWindow not initialised");
+  show ? SDL_ShowWindow(sdlWindow) : SDL_HideWindow(sdlWindow);
+}
 
-void Window::Resize(int width, int height) {
+void Window::SetSize(int width, int height) {
   width = width;
   height = height;
+  OgreAssert(sdlWindow, "sdlWindow not initialised");
   SDL_SetWindowSize(sdlWindow, width, height);
   ogreWindow->resize(width, height);
   ogreCamera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
 }
 
-void Window::GrabCursor(bool grab) {
+void Window::SetGrabMouse(bool grab) {
 #ifndef MOBILE  // This breaks input @Android >9.0
   OgreAssert(sdlWindow, "sdlWindow not initialised");
   SDL_SetWindowGrab(sdlWindow, static_cast<SDL_bool>(grab));
-  SDL_SetRelativeMouseMode(static_cast<SDL_bool>(grab));
-  grab ? SDL_ShowCursor(SDL_DISABLE) : SDL_ShowCursor(SDL_ENABLE);
 #endif
 }
 
-void Window::ShowCursor(bool show) {
+void Window::SetMouseRelativeMode(bool relative) {
+#ifndef MOBILE  // This breaks input @Android >9.0
+  OgreAssert(sdlWindow, "sdlWindow not initialised");
+  SDL_SetRelativeMouseMode(static_cast<SDL_bool>(relative));
+#endif
+}
+
+void Window::SetShowCursor(bool show) {
 #ifndef MOBILE  // This breaks input @Android >9.0
   OgreAssert(sdlWindow, "sdlWindow not initialised");
   show ? SDL_ShowCursor(SDL_ENABLE) : SDL_ShowCursor(SDL_DISABLE);
 #endif
 }
 
-void Window::SetWindowCaption(const char *caption) {
+void Window::SetCaption(const char *caption) {
+  OgreAssert(sdlWindow, "sdlWindow not initialised");
   this->caption = caption;
   SDL_SetWindowTitle(sdlWindow, caption);
 }
 
 void Window::SetFullscreen(bool fullscreen) {
+  OgreAssert(sdlWindow, "sdlWindow not initialised");
   if (fullscreen) {
     fullscreen = true;
     ogreWindow->setFullscreen(fullscreen, width, height);
@@ -177,6 +188,21 @@ void Window::SetFullscreen(bool fullscreen) {
     SDL_SetWindowFullscreen(sdlWindow, sdlFlags);
     SDL_SetWindowSize(sdlWindow, width, height);
   }
+}
+
+void Window::SetBordered(bool bordered) {
+  OgreAssert(sdlWindow, "sdlWindow not initialised");
+  SDL_SetWindowBordered(sdlWindow, static_cast<SDL_bool>(bordered));
+}
+
+void Window::SetResizable(bool resizable) {
+  OgreAssert(sdlWindow, "sdlWindow not initialised");
+  SDL_SetWindowResizable(sdlWindow, static_cast<SDL_bool>(resizable));
+}
+
+void Window::SetAlwaysOnTop(bool alwayOnTop) {
+  OgreAssert(sdlWindow, "sdlWindow not initialised");
+  SDL_SetWindowAlwaysOnTop(sdlWindow, static_cast<SDL_bool>(alwayOnTop));
 }
 
 void Window::Delete() {}
