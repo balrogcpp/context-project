@@ -9,23 +9,27 @@
 #include "Singleton.h"
 #include "SkyManager.h"
 #include "TerrainManager.h"
+#include "ForestsManager.h"
 #include "VideoManager.h"
 #include <OgreFrameListener.h>
 
 namespace Glue {
-class Locator final : public Singleton<Locator>, Ogre::FrameListener, WindowListener {
+class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, WindowListener {
  public:
-  Locator();
-  virtual ~Locator();
+  SystemLocator();
+  virtual ~SystemLocator();
 
   void Init();
   void Capture();
-  void OnCleanup();
-  void OnUpdate(float time);
   void RenderFrame();
 
   void RegComponent(SystemI* component);
   void UnRegComponent(SystemI* component);
+
+  /// System impl
+  void OnSetUp() override;
+  void OnUpdate(float time) override;
+  void OnClean() override;
 
  protected:
   /// Ogre::FrameListener impl
@@ -47,5 +51,6 @@ class Locator final : public Singleton<Locator>, Ogre::FrameListener, WindowList
   std::unique_ptr<AudioManager> audio;
   std::unique_ptr<SkyManager> sky;
   std::unique_ptr<TerrainManager> terrain;
+  std::unique_ptr<ForestsManager> forests;
 };
 }  // namespace Glue

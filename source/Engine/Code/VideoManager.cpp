@@ -39,6 +39,12 @@
 #include <Overlay/OgreImGuiOverlay.h>
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
+//#include "imgui_user/IconsMaterialDesign.h"
+//#include "imgui_user/IconsMaterialDesign.h"
+//#include "imgui_user/IconsMaterialDesign.h"
+//#include "imgui_user/IconsKenney.h"
+//#include "imgui_user/IconsFontAwesome4.h"
+//#include "imgui_user/IconsFontAwesome5.h"
 #endif
 #include <SDL2/SDL.h>
 #ifdef DESKTOP
@@ -183,22 +189,12 @@ VideoManager::VideoManager()
     : ogreMinLogLevel(Ogre::LML_TRIVIAL), ogreLogFile("Ogre.log"), shadowEnabled(true), shadowTechnique(Ogre::SHADOWTYPE_NONE), pssmSplitCount(3) {}
 VideoManager::~VideoManager() { SDL_Quit(); }
 
-void VideoManager::OnUpdate(float time) {
-  static ImGuiIO &io = ImGui::GetIO();
-  Ogre::ImGuiOverlay::NewFrame();
-  ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
-  ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
-  ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
-  ImGui::SetNextWindowBgAlpha(0.5);
-  ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-  ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-  ImGui::End();
-}
+void VideoManager::OnUpdate(float time) {}
 
 void VideoManager::OnClean() {
-  Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::RGN_DEFAULT);
   ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   ogreSceneManager->clearScene();
+  Ogre::ResourceGroupManager::getSingleton().unloadResourceGroup(Ogre::RGN_DEFAULT);
 }
 
 void VideoManager::RenderFrame() {
@@ -381,7 +377,9 @@ void VideoManager::InitOgreScene() {
     pssmSetup->calculateSplitPoints(pssmSplitCount, 0.001, ogreSceneManager->getShadowFarDistance());
     pssmSplitPointList = pssmSetup->getSplitPoints();
     pssmSetup->setSplitPadding(0.0);
-    for (int i = 0; i < pssmSplitCount; i++) pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));
+    for (int i = 0; i < pssmSplitCount; i++) {
+      pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));
+    }
     ogreSceneManager->setShadowCameraSetup(pssmSetup);
     auto *shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
     auto *schemRenderState = shaderGenerator->getRenderState(Ogre::MSN_SHADERGEN);

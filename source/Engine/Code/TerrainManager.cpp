@@ -11,7 +11,16 @@ using namespace std;
 
 namespace Glue {
 TerrainManager::TerrainManager() {}
-TerrainManager::~TerrainManager() {}
+TerrainManager::~TerrainManager() {
+  if (ogreTerrainGroup) {
+    ogreTerrainGroup->removeAllTerrains();
+    ogreTerrainGroup.reset();
+  }
+  auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
+  if (terrainGlobalOptions) {
+    delete terrainGlobalOptions;
+  }
+}
 
 void TerrainManager::OnSetUp() {
   ogreRoot = Ogre::Root::getSingletonPtr();
@@ -56,5 +65,4 @@ void TerrainManager::OnClean() {
     ogreTerrainGroup.reset();
   }
 }
-
 }  // namespace Glue

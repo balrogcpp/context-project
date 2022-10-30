@@ -5,7 +5,6 @@
 #include <Terrain/OgreTerrainPrerequisites.h>
 
 namespace Ogre {
-
 class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
  public:
   TerrainMaterialGeneratorB();
@@ -30,5 +29,4 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
     int8_t terrainMaxLayers = 4;
   };
 };
-
 }  // namespace Ogre

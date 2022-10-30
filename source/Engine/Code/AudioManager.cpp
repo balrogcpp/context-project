@@ -12,13 +12,18 @@ AudioManager::~AudioManager() { audioRoot->shutdown(); }
 
 
 void AudioManager::OnSetUp() {
-#ifndef DEBUG
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
   putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   _putenv((char *)"ALSOFT_LOGLEVEL=LOG_NONE");
 #endif
-#endif
+  ogreRoot = Ogre::Root::getSingletonPtr();
+  OgreAssert(ogreRoot, "[AudioManager] ogreRoot is not initialised");
+  ogreSceneManager = ogreRoot->getSceneManager("Default");
+  OgreAssert(ogreSceneManager, "[AudioManager] ogreSceneManager is not initialised");
+  OgreAssert(ogreSceneManager->hasCamera("Default"), "[AudioManager] ogreCamera is not initialised");
+  ogreCamera = ogreSceneManager->getCamera("Default");
+
   audioRoot = make_unique<OgreOggSound::Root>();
   audioRoot->initialise();
   oggSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
@@ -26,9 +31,9 @@ void AudioManager::OnSetUp() {
   oggSoundManager->init();
   oggSoundManager->setResourceGroupName(Ogre::RGN_AUTODETECT);
 
-//  auto *cameraNode =
-//  auto *CameraNode = Ogre::Root::getSingleton().getSceneManager("Default")->getCamera("Default")->getParentSceneNode();
-//  if (CameraNode) AddListener(CameraNode);
+  if (ogreCamera->getParentSceneNode()) {
+    AddListener(ogreCamera->getParentSceneNode());
+  }
 }
 void AudioManager::OnUpdate(float passedTime) {}
 void AudioManager::OnClean() {}

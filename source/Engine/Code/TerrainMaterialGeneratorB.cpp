@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "TerrainMaterialGeneratorB.h"
-#include "Locator.h"
+#include "SystemLocator.h"
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainMaterialGenerator.h>
 

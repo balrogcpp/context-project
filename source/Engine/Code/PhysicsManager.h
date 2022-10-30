@@ -33,7 +33,6 @@ class PhysicsManager final : public System<PhysicsManager> {
   void OnClean() override;
   void OnUpdate(float time) override;
 
-  bool sleep;
   bool debugView;
   int subSteps;
   float fixedTimeStep;

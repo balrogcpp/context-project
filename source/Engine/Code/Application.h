@@ -2,9 +2,9 @@
 
 #pragma once
 #include "AppStateManager.h"
-#include "Locator.h"
 #include "SDLListener.h"
 #include "Singleton.h"
+#include "SystemLocator.h"
 #include <memory>
 #include <string>
 
@@ -14,6 +14,7 @@ class Application : public WindowListener, public DynamicSingleton<Application> 
   /// Constructors
   Application();
   virtual ~Application();
+  void Init();
   int Main();
   static void EmscriptenLoop(void *arg);
 
@@ -29,7 +30,7 @@ class Application : public WindowListener, public DynamicSingleton<Application> 
 
   /// Handle components
   std::unique_ptr<AppStateManager> appStateManager;
-  std::unique_ptr<Locator> engine;
+  std::unique_ptr<SystemLocator> engine;
   bool exiting;
   bool sleep;
   int64_t targetFps;
