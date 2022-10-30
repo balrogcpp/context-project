@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "AppStateManager.h"
+#include <Ogre.h>
 
 namespace Glue {
 AppStateManager::AppStateManager() {}

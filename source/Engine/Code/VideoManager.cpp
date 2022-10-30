@@ -6,7 +6,6 @@
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
 #include "ImguiHelpers.h"
 #include "Platform.h"
-#include <Ogre.h>
 #ifdef OGRE_OPENGL
 #include <OgreGLRenderSystemCommon.h>
 #endif

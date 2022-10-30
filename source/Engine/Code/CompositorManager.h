@@ -28,13 +28,15 @@ class CompositorManager : public System<CompositorManager>, public Ogre::Viewpor
   void viewportCameraChanged(Ogre::Viewport* viewport) override;
   void viewportDimensionsChanged(Ogre::Viewport* viewport) override;
 
+  const std::string MRT_COMPOSITOR;
+  const std::string BLOOM_COMPOSITOR;
   bool fixedViewportSize;
+  int forceSizeX, forceSizeY;
+
   Ogre::CompositorManager* compositorManager = nullptr;
   Ogre::CompositorChain* compositorChain = nullptr;
   Ogre::SceneManager* ogreSceneManager = nullptr;
   Ogre::Camera* ogreCamera = nullptr;
   Ogre::Viewport* ogreViewport = nullptr;
-  const std::string MRT_COMPOSITOR;
-  const std::string BLOOM_COMPOSITOR;
 };
 }  // namespace Glue

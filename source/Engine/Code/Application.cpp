@@ -42,7 +42,9 @@ void Application::LoopBody() {
 
   if (lockFps) {
     int64_t delay = static_cast<int64_t>((1e+6 / targetFps) - renderDuration);
-    if (delay > 0) this_thread::sleep_for(chrono::microseconds(delay));
+    if (delay > 0) {
+      this_thread::sleep_for(chrono::microseconds(delay));
+    }
   }
 
   int64_t TimeInEndOfLoop = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();

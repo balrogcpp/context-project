@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "ForestsManager.h"
+#include <Ogre.h>
 
 using namespace std;
 
@@ -19,5 +20,4 @@ void ForestsManager::OnSetUp() {
 }
 void ForestsManager::OnUpdate(float time) {}
 void ForestsManager::OnClean() {}
-
 }

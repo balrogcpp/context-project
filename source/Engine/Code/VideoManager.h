@@ -5,7 +5,7 @@
 #include "SDLListener.h"
 #include "System.h"
 #include "Window.h"
-#include <OgrePrerequisites.h>
+#include <Ogre.h>
 
 namespace Glue {
 class VideoManager final : public System<VideoManager> {

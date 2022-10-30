@@ -5,11 +5,9 @@
 #include "SDLListener.h"
 #include "Singleton.h"
 #include "SystemLocator.h"
-#include <memory>
-#include <string>
 
 namespace Glue {
-class Application : public WindowListener, public DynamicSingleton<Application> {
+class Application final : public WindowListener, public DynamicSingleton<Application> {
  public:
   /// Constructors
   Application();
