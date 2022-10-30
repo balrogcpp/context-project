@@ -171,14 +171,12 @@ ENV ARM64_EVAL=`arm64-apple-darwin${MACOS_SDK_CODE}-osxcross-conf`
 ARG CMAKE_VERSION=3.24.2
 ARG CMAKE_HOME=/opt/cmake-${CMAKE_VERSION}
 ARG NINJA_VERSION=1.11.1
-ARG UPX_VERSION=3.99
-RUN wget https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip -q -O /tmp/ninja-linux.zip \
-    && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin && rm /tmp/ninja-linux.zip \
-    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -q -O /tmp/cmake-install.sh \
-    && chmod u+x /tmp/cmake-install.sh \
-    && mkdir ${CMAKE_HOME} \
-    && /tmp/cmake-install.sh --skip-license --prefix=${CMAKE_HOME} && rm /tmp/cmake-install.sh \
+ARG UPX_VERSION=4.0.0
+RUN cd /tmp \
+    && wget -q https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip \
+    && unzip -q /tmp/ninja-linux.zip -d /usr/local/bin && rm ninja-linux.zip \
+    && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
+    && mkdir ${CMAKE_HOME} && sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=${CMAKE_HOME} && rm cmake-${CMAKE_VERSION}-Linux-x86_64.sh \
     && wget https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -q  -O - | tar -xJ \
-    && cp upx-${UPX_VERSION}-amd64_linux/upx /usr/local/bin \
-    && rm -rf upx-${UPX_VERSION}-amd64_linux
+    && mv upx-${UPX_VERSION}-amd64_linux/upx /usr/local/bin && rm -rf upx-${UPX_VERSION}-amd64_linux
 ENV PATH="${CMAKE_HOME}/bin:${PATH}"
