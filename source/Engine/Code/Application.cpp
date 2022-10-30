@@ -90,9 +90,7 @@ void Application::OnFocusGained() {
 }
 
 int Application::Main() {
-#ifndef DEBUG
   ios_base::sync_with_stdio(false);
-#endif
   Go();
   return 0;
 }
