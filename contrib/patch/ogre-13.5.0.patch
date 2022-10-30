@@ -11,10 +11,10 @@ index 7f6a28ce..86100989 100644
  #cmakedefine IMGUI_ENABLE_FREETYPE
 \ No newline at end of file
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index fef681a1..885abcdb 100644
+index f8e7856f..d3a8f4af 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -273,12 +273,12 @@ elseif(EMSCRIPTEN)
+@@ -275,12 +275,12 @@ elseif(EMSCRIPTEN)
    set(OGRE_BUILD_PLUGIN_BSP FALSE CACHE BOOL "Disable pcz on Emscripten" FORCE)
    set(OGRE_BUILD_TOOLS FALSE CACHE BOOL "Disable tools on Emscripten" FORCE)
    set(OGRE_BUILD_TESTS FALSE CACHE BOOL "Disable tests on Emscripten" FORCE)
@@ -59,7 +59,7 @@ index 0ff8e2e2..78342e6e 100644
                  os << "precision mediump float;" << std::endl;
              }
 diff --git a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
-index ac9e4c35..739e4851 100644
+index 01f4e3c8..381e9726 100644
 --- a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
 +++ b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
 @@ -179,7 +179,7 @@ namespace Ogre
@@ -86,7 +86,7 @@ index 44a17787..d9add2ba 100644
  # install OgreMain
  ogre_config_lib(OgreMain TRUE)
 diff --git a/OgreMain/include/OgreException.h b/OgreMain/include/OgreException.h
-index 38de07ed..d0e5c1d5 100644
+index 5e06c194..a26a58f7 100644
 --- a/OgreMain/include/OgreException.h
 +++ b/OgreMain/include/OgreException.h
 @@ -60,7 +60,11 @@ THE SOFTWARE.
@@ -102,6 +102,19 @@ index 38de07ed..d0e5c1d5 100644
  #endif
  
  #if OGRE_DEBUG_MODE
+diff --git a/OgreMain/include/OgreMath.h b/OgreMain/include/OgreMath.h
+index f2e2aefb..5e2f9cbd 100644
+--- a/OgreMain/include/OgreMath.h
++++ b/OgreMain/include/OgreMath.h
+@@ -320,7 +320,7 @@ namespace Ogre
+         static inline bool isNaN(Real f)
+         {
+ #if defined(__FAST_MATH__) || defined(_M_FP_FAST)
+-            assert(false && "not available with fast math");
++            //assert(false && "not available with fast math");
+ #endif
+             // std::isnan() has non-portable behaviour on MSVC
+             // However NaN always fails this next test, no other number does.
 diff --git a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 index 024ddebf..19220d48 100644
 --- a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp

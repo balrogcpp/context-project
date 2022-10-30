@@ -25,7 +25,7 @@ class VideoManager final : public System<VideoManager> {
   void ClearScene();
 
  protected:
-  void CreateWindow();
+  void MakeWindow();
   void InitOgreRoot();
   void InitSDL();
   void InitOgreRTSS();

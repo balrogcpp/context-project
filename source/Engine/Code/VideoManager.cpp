@@ -66,7 +66,6 @@ namespace fs = ghc::filesystem;
 #endif
 #ifdef WINDOWS
 #include <windows.h>
-#undef CreateWindow
 #endif
 #endif  // DESKTOP
 
@@ -314,7 +313,7 @@ void VideoManager::InitOgreRoot() {
   ogreRoot->initialise(false);
 }
 
-void VideoManager::CreateWindow() {
+void VideoManager::MakeWindow() {
   windowList.emplace_back();
   mainWindow = &windowList[0];
   ogreCamera = ogreSceneManager->createCamera("Default");
@@ -477,7 +476,7 @@ void VideoManager::OnSetUp() {
   // init
   InitOgreRoot();
   InitSDL();
-  CreateWindow();
+  MakeWindow();
   CheckGPU();
   InitOgreRTSS();
   InitOgreOverlay();
