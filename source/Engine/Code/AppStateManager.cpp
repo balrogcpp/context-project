@@ -48,7 +48,7 @@ void AppStateManager::SetActiveAppState(const std::string &name) {
   activeAppState = appStatePtr;
   activeAppState->OnSetUp();
 }
-std::shared_ptr<AppState> AppStateManager::GetActiveAppState() { return activeAppState; }
+AppState *AppStateManager::GetActiveAppState() { return activeAppState.get(); }
 
 bool AppStateManager::frameStarted(const Ogre::FrameEvent &evt) {
   activeAppState->OnUpdate(evt.timeSinceLastFrame);

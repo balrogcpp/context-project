@@ -280,7 +280,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
               break;
             }
 
-            case SDL_WINDOWEVENT_RESIZED: {
+            case SDL_WINDOWEVENT_SIZE_CHANGED: {
               for (auto &it : winListeners) it->OnSizeChanged(event.window.data1, event.window.data2, event.window.windowID);
               break;
             }

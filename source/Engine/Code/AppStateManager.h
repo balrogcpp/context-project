@@ -37,7 +37,7 @@ class AppStateManager final : public Ogre::FrameListener, public System<AppState
 
   void SetActiveAppState(std::shared_ptr<AppState> appState);
   void SetActiveAppState(const std::string &name);
-  std::shared_ptr<AppState> GetActiveAppState();
+  AppState *GetActiveAppState();
 
  protected:
   /// System impl
