@@ -1,0 +1,83 @@
+diff --git a/CMake/Packages/FindOpenGLES2.cmake b/CMake/Packages/FindOpenGLES2.cmake
+index 1ad144d4..c7c0bf4f 100644
+--- a/CMake/Packages/FindOpenGLES2.cmake
++++ b/CMake/Packages/FindOpenGLES2.cmake
+@@ -23,8 +23,6 @@
+ #  EGL_INCLUDE_DIR  - the EGL include directory
+ #  EGL_LIBRARIES    - Link these to use EGL
+ 
+-include(FindPkgMacros)
+-
+ IF(APPLE)
+   create_search_paths(/Developer/Platforms)
+   findpkg_framework(OpenGLES2)
+@@ -83,11 +81,8 @@ IF(OPENGLES2_gl_LIBRARY)
+     SET( OPENGLES2_FOUND TRUE )
+ ENDIF(OPENGLES2_gl_LIBRARY)
+ 
+-IF(OPENGL_egl_LIBRARY)
+-  SET( EGL_LIBRARIES ${OPENGL_egl_LIBRARY})
+-  SET( EGL_FOUND TRUE )
+-ELSEIF(EGL_egl_LIBRARY)
+-  SET( EGL_LIBRARIES ${EGL_egl_LIBRARY})
++IF(EGL_egl_LIBRARY)
++  SET( EGL_LIBRARIES ${EGL_egl_LIBRARY} ${EGL_LIBRARIES})
+   SET( EGL_FOUND TRUE)
+ ENDIF()
+ 
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4e065572..b0066563 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -276,12 +276,12 @@ elseif(EMSCRIPTEN)
+ elseif (APPLE AND NOT APPLE_IOS)
+ 
+   set(XCODE_ATTRIBUTE_SDKROOT macosx)
+-  if(CMAKE_GENERATOR STREQUAL "Unix Makefiles")
+-    execute_process(COMMAND xcodebuild -version -sdk "${XCODE_ATTRIBUTE_SDKROOT}" Path | head -n 1 OUTPUT_VARIABLE CMAKE_OSX_SYSROOT)
+-    string(REGEX REPLACE "(\r?\n)+$" "" CMAKE_OSX_SYSROOT "${CMAKE_OSX_SYSROOT}")
+-  else()
+-    set(CMAKE_OSX_SYSROOT macosx)
+-  endif()
++#  if(CMAKE_GENERATOR STREQUAL "Unix Makefiles")
++#    execute_process(COMMAND xcodebuild -version -sdk "${XCODE_ATTRIBUTE_SDKROOT}" Path | head -n 1 OUTPUT_VARIABLE CMAKE_OSX_SYSROOT)
++#    string(REGEX REPLACE "(\r?\n)+$" "" CMAKE_OSX_SYSROOT "${CMAKE_OSX_SYSROOT}")
++#  else()
++#    set(CMAKE_OSX_SYSROOT macosx)
++#  endif()
+ 
+   # Make sure that the GLES2 render system is disabled for non-iOS Apple builds
+   set(OGRE_BUILD_RENDERSYSTEM_GLES2 FALSE CACHE BOOL "" FORCE)
+diff --git a/RenderSystems/GLES2/CMakeLists.txt b/RenderSystems/GLES2/CMakeLists.txt
+index 22370631..96b0cf86 100644
+--- a/RenderSystems/GLES2/CMakeLists.txt
++++ b/RenderSystems/GLES2/CMakeLists.txt
+@@ -52,13 +52,14 @@ if (APPLE)
+   file(GLOB PLATFORM_SOURCES "src/EAGL/*.mm")
+ 
+   include_directories(src/EAGL include/EAGL)
++  link_directories(${OPENGLES2_LIBRARY_PATH})
+   set(PLATFORM_HEADER_INSTALL "APPLE")
+ endif ()
+ 
+ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/GLSLES/include)
+ 
+ add_library(RenderSystem_GLES2 ${OGRE_LIB_TYPE} ${HEADER_FILES} ${GLESW_HEADERS} ${KHR_HEADERS} ${PLATFORM_HEADERS} ${SOURCE_FILES} ${PLATFORM_SOURCES} ${GLSLES_FILES})
+-target_link_libraries(RenderSystem_GLES2 PUBLIC OgreMain ${CMAKE_DL_LIBS} PRIVATE OgreGLSupport)
++target_link_libraries(RenderSystem_GLES2 PUBLIC OgreMain ${OPENGLES2_LIBRARIES} ${CMAKE_DL_LIBS} PRIVATE OgreGLSupport)
+ target_include_directories(RenderSystem_GLES2 PUBLIC 
+     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+     $<INSTALL_INTERFACE:include/OGRE/RenderSystems/GLES2>)
+diff --git a/RenderSystems/GLSupport/CMakeLists.txt b/RenderSystems/GLSupport/CMakeLists.txt
+index bae087ae..d4193175 100644
+--- a/RenderSystems/GLSupport/CMakeLists.txt
++++ b/RenderSystems/GLSupport/CMakeLists.txt
+@@ -79,7 +79,7 @@ elseif (UNIX)
+         ${CMAKE_CURRENT_SOURCE_DIR}/include/GLX
+         ${OPENGL_INCLUDE_DIR})
+     
+-    set(PLATFORM_LIBS ${X11_LIBRARIES} ${X11_Xrandr_LIB} ${OPENGL_glx_LIBRARY})
++    set(PLATFORM_LIBS ${X11_LIBRARIES} ${X11_Xrandr_LIB} ${OPENGL_gl_LIBRARY})
+   endif()
+   list(APPEND NATIVE_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/src/X11/")
+ endif ()

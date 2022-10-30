@@ -1,0 +1,84 @@
+--- /home/balrog/sources/OGRECave/ogre/OgreMain/src/OgreSceneManager.cpp
++++ /home/balrog/sources/OGRECave/ogre-fix/OgreMain/src/OgreSceneManager.cpp
+@@ -397,15 +397,6 @@
+     {
+         std::stable_sort(destList.begin(), destList.end(), lightLess());
+     }
+-
+-    // Now assign indexes in the list so they can be examined if needed
+-    size_t lightIndex = 0;
+-    for (LightList::iterator li = destList.begin(); li != destList.end(); ++li, ++lightIndex)
+-    {
+-        (*li)->_notifyIndexInFrame(lightIndex);
+-    }
+-
+-
+ }
+ //-----------------------------------------------------------------------
+ void SceneManager::_populateLightList(const SceneNode* sn, Real radius, LightList& destList, uint32 lightMask)
+@@ -2203,7 +2194,48 @@
+             {
+                 pLightListToUse = &rendLightList;
+             }
+-            lightsLeft = 0;
++
++            if (isShadowTechniqueIntegrated() && mLightsDirtyCounter > 0)
++            {
++                size_t shadowTexIndex = mShadowRenderer.getShadowTexIndex(lightIndex);
++                unsigned short numShadowTextureLights = 0;
++
++                for (const auto it : *pLightListToUse)
++                {
++                    if (!it->getCastShadows())
++                        continue;
++
++                    // potentially need to update content_type shadow texunit
++                    // corresponding to this light
++                    size_t textureCountPerLight = mShadowRenderer.mShadowTextureCountPerType[it->getType()];
++                    size_t textureCounterPerLight = 0;
++
++                    for (size_t j = 0; j < textureCountPerLight && shadowTexIndex < mShadowRenderer.mShadowTextures.size(); ++j)
++                    {
++                        // link the numShadowTextureLights'th shadow texture unit
++                        ushort tuindex = pass->_getTextureUnitWithContentTypeIndex(TextureUnitState::CONTENT_SHADOW, numShadowTextureLights);
++                        if (tuindex > pass->getNumTextureUnitStates()) break;
++
++                        TextureUnitState *tu = pass->getTextureUnitState(tuindex);
++
++                        //pick up correct shadow texture index by light's frame index + texture counter per light
++                        const TexturePtr &shadowTex = mShadowRenderer.mShadowTextures[mShadowRenderer.mShadowTextureIndexLightList[it->_getIndexInFrame()] + textureCounterPerLight];
++                        tu->_setTexturePtr(shadowTex);
++
++                        Camera *cam = shadowTex->getBuffer()->getRenderTarget()->getViewport(0)->getCamera();
++                        tu->setProjectiveTexturing(!pass->hasVertexProgram(), cam);
++                        mAutoParamDataSource->setTextureProjector(cam, numShadowTextureLights);
++                        ++numShadowTextureLights;
++                        ++shadowTexIndex;
++                        ++textureCounterPerLight;
++                        // Have to set TU on rendersystem right now, although
++                        // autoparams will be set later
++                        mDestRenderSystem->_setTextureUnitSettings(tuindex, *tu);
++                    }
++                }
++            }
++
++        lightsLeft = 0;
+         }
+
+         // issue the render op
+@@ -3024,7 +3056,14 @@
+         // Use swap instead of copy operator for efficiently
+         mCachedLightInfos.swap(mTestLightInfos);
+
+-        // notify light dirty, so all movable objects will re-populate
++        // Update light index in frame
++        size_t lightIndex = 0;
++        for (LightList::iterator li = mLightsAffectingFrustum.begin(); li != mLightsAffectingFrustum.end(); ++li, ++lightIndex)
++        {
++          (*li)->_notifyIndexInFrame(lightIndex);
++        }
++
++        // notify light dirty, so all movable objects will re-populate
+         // their light list next time
+         _notifyLightsDirty();
+     }

@@ -1,0 +1,24 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c058bef..e2752c9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -31,6 +31,8 @@ list(REMOVE_ITEM glsl_sources ${glsl_sources_remove})
+ add_library(glsl_optimizer ${glsl_sources})
+ target_link_libraries(glsl_optimizer glcpp-library mesa)
+ 
++if (UNIX)
++
+ add_executable(glsl_compiler src/glsl/main.cpp)
+ target_link_libraries(glsl_compiler glsl_optimizer)
+ 
+@@ -49,3 +51,10 @@ target_link_libraries(glslopt glsl_optimizer)
+ 
+ #add_executable(glcpp src/glsl/glcpp/glcpp.c)
+ #target_link_libraries(glcpp glsl_optimizer)
++
++install(TARGETS glsl_compiler glsl_test glslopt RUNTIME DESTINATION bin)
++
++endif (UNIX)
++
++install(TARGETS glcpp-library mesa glsl_optimizer DESTINATION lib)
++install(FILES src/glsl/glsl_optimizer.h DESTINATION include)

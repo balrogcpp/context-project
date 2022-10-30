@@ -1,0 +1,181 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 289f7817..397c0570 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -280,12 +280,12 @@ elseif(EMSCRIPTEN)
+ elseif (APPLE AND NOT APPLE_IOS)
+ 
+   set(XCODE_ATTRIBUTE_SDKROOT macosx)
+-  if(CMAKE_GENERATOR STREQUAL "Unix Makefiles")
+-    execute_process(COMMAND xcodebuild -version -sdk "${XCODE_ATTRIBUTE_SDKROOT}" Path | head -n 1 OUTPUT_VARIABLE CMAKE_OSX_SYSROOT)
+-    string(REGEX REPLACE "(\r?\n)+$" "" CMAKE_OSX_SYSROOT "${CMAKE_OSX_SYSROOT}")
+-  else()
+-    set(CMAKE_OSX_SYSROOT macosx)
+-  endif()
++#  if(CMAKE_GENERATOR STREQUAL "Unix Makefiles")
++#    execute_process(COMMAND xcodebuild -version -sdk "${XCODE_ATTRIBUTE_SDKROOT}" Path | head -n 1 OUTPUT_VARIABLE CMAKE_OSX_SYSROOT)
++#    string(REGEX REPLACE "(\r?\n)+$" "" CMAKE_OSX_SYSROOT "${CMAKE_OSX_SYSROOT}")
++#  else()
++#    set(CMAKE_OSX_SYSROOT macosx)
++#  endif()
+ 
+   # Make sure that the GLES2 render system is disabled for non-iOS Apple builds
+   set(OGRE_BUILD_RENDERSYSTEM_GLES2 FALSE CACHE BOOL "" FORCE)
+diff --git a/Components/Bites/src/OgreImGuiInputListener.cpp b/Components/Bites/src/OgreImGuiInputListener.cpp
+index 59b51bb4..bc6bf7dc 100644
+--- a/Components/Bites/src/OgreImGuiInputListener.cpp
++++ b/Components/Bites/src/OgreImGuiInputListener.cpp
+@@ -81,7 +81,7 @@ ImGuiInputListener::ImGuiInputListener()
+     io.KeyMap[ImGuiKey_Enter] = SDLK_RETURN;
+     io.KeyMap[ImGuiKey_Escape] = '\033';
+     io.KeyMap[ImGuiKey_Space] = ' ';
+-    io.KeyMap[ImGuiKey_KeyPadEnter] = kc2sc(SDLK_KP_ENTER);
++    io.KeyMap[ImGuiKey_KeypadEnter] = kc2sc(SDLK_KP_ENTER);
+     io.KeyMap[ImGuiKey_A] = 'a';
+     io.KeyMap[ImGuiKey_C] = 'c';
+     io.KeyMap[ImGuiKey_V] = 'v';
+diff --git a/Components/Overlay/CMakeLists.txt b/Components/Overlay/CMakeLists.txt
+index ec67ef51..0c74ce29 100644
+--- a/Components/Overlay/CMakeLists.txt
++++ b/Components/Overlay/CMakeLists.txt
+@@ -19,11 +19,11 @@ list(APPEND HEADER_FILES
+ file(GLOB SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+ 
+ if(OGRE_BUILD_COMPONENT_OVERLAY_IMGUI)
+-  set(IMGUI_DIR "${PROJECT_BINARY_DIR}/imgui-1.85" CACHE PATH "")
++  set(IMGUI_DIR "${PROJECT_BINARY_DIR}/imgui-1.87" CACHE PATH "")
+   if(NOT EXISTS ${IMGUI_DIR})
+     message(STATUS "Downloading imgui")
+     file(DOWNLOAD
+-        https://github.com/ocornut/imgui/archive/v1.85.tar.gz
++        https://github.com/ocornut/imgui/archive/v1.87.tar.gz
+         ${PROJECT_BINARY_DIR}/imgui.tar.gz)
+     execute_process(COMMAND ${CMAKE_COMMAND}
+         -E tar xf imgui.tar.gz WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+diff --git a/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp b/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp
+index 0ff8e2e2..78342e6e 100644
+--- a/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp
++++ b/Components/RTShaderSystem/src/OgreShaderGLSLESProgramWriter.cpp
+@@ -74,8 +74,8 @@ namespace Ogre {
+             if(program->getType() == GPT_FRAGMENT_PROGRAM && mGLSLVersion > 100)
+             {
+                 // sampler3D has no default precision
+-                os << "precision lowp sampler3D;" << std::endl;
+-                os << "precision lowp sampler2DShadow;" << std::endl;
++                //os << "precision lowp sampler3D;" << std::endl;
++                //os << "precision lowp sampler2DShadow;" << std::endl;
+                 // also write float precision, as auto shader-patching is off if it sees "precision"
+                 os << "precision mediump float;" << std::endl;
+             }
+diff --git a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
+index d8b07def..f7e1358a 100644
+--- a/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
++++ b/Components/Terrain/src/OgreTerrainQuadTreeNode.cpp
+@@ -67,6 +67,7 @@ namespace Ogre
+         , mVertexDataRecord(0)
+         , mLocalNode(0)
+     {
++        setCastShadows(TerrainGlobalOptions::getSingleton().getCastsDynamicShadows());
+         if (terrain->getMaxBatchSize() < size)
+         {
+             uint16 childSize = (uint16)(((size - 1) * 0.5f) + 1);
+diff --git a/OgreMain/CMakeLists.txt b/OgreMain/CMakeLists.txt
+index 44a17787..d9add2ba 100644
+--- a/OgreMain/CMakeLists.txt
++++ b/OgreMain/CMakeLists.txt
+@@ -243,7 +243,9 @@ endif ()
+ target_link_libraries(OgreMain PUBLIC ${PLATFORM_LIBS} PRIVATE ${LIBRARIES} ${CMAKE_DL_LIBS})
+ 
+ # specify a precompiled header to use
++if (!APPLE)
+ add_native_precompiled_header(OgreMain "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/src/OgreStableHeaders.h>")
++endif ()
+ 
+ # install OgreMain
+ ogre_config_lib(OgreMain TRUE)
+diff --git a/RenderSystems/GL3Plus/src/GLSL/src/OgreGLSLMonolithicProgram.cpp b/RenderSystems/GL3Plus/src/GLSL/src/OgreGLSLMonolithicProgram.cpp
+index a549c695..ec1b2661 100644
+--- a/RenderSystems/GL3Plus/src/GLSL/src/OgreGLSLMonolithicProgram.cpp
++++ b/RenderSystems/GL3Plus/src/GLSL/src/OgreGLSLMonolithicProgram.cpp
+@@ -89,18 +89,18 @@ namespace Ogre {
+         }
+ 
+         bindFixedAttributes(mGLProgramHandle);
+-
+-        // the link
+-        OGRE_CHECK_GL_ERROR(glLinkProgram( mGLProgramHandle ));
+-        OGRE_CHECK_GL_ERROR(glGetProgramiv( mGLProgramHandle, GL_LINK_STATUS, &mLinked ));
+-
+-        logObjectInfo( getCombinedName() + String(" GLSL link result : "), mGLProgramHandle );
+-
++#ifdef DEBUG
+         if(glIsProgram(mGLProgramHandle))
+         {
+             OGRE_CHECK_GL_ERROR(glValidateProgram(mGLProgramHandle));
+         }
+         logObjectInfo( getCombinedName() + String(" GLSL validation result : "), mGLProgramHandle );
++#endif
++        // the link
++        OGRE_CHECK_GL_ERROR(glLinkProgram( mGLProgramHandle ));
++        OGRE_CHECK_GL_ERROR(glGetProgramiv( mGLProgramHandle, GL_LINK_STATUS, &mLinked ));
++
++        logObjectInfo( getCombinedName() + String(" GLSL link result : "), mGLProgramHandle );
+ 
+         if(mLinked)
+         {
+diff --git a/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp b/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
+index 5cb05203..4bac2f80 100644
+--- a/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
++++ b/RenderSystems/GLES2/src/GLSLES/src/OgreGLSLESLinkProgram.cpp
+@@ -129,12 +129,7 @@ namespace Ogre {
+         
+         bindFixedAttributes( mGLProgramHandle );
+ 
+-        // The link
+-        OGRE_CHECK_GL_ERROR(glLinkProgram( mGLProgramHandle ));
+-        OGRE_CHECK_GL_ERROR(glGetProgramiv( mGLProgramHandle, GL_LINK_STATUS, &mLinked ));
+-
+-        GLSLES::logObjectInfo( getCombinedName() + String("GLSL link result : "), mGLProgramHandle );
+-
++#ifdef DEBUG
+         const RenderSystemCapabilities* caps = Root::getSingleton().getRenderSystem()->getCapabilities();
+ 
+         if(caps->hasCapability(RSC_SEPARATE_SHADER_OBJECTS))
+@@ -148,6 +143,11 @@ namespace Ogre {
+         }
+ 
+         GLSLES::logObjectInfo( getCombinedName() + String(" GLSL validation result : "), mGLProgramHandle );
++#endif
++        // The link
++        OGRE_CHECK_GL_ERROR(glLinkProgram( mGLProgramHandle ));
++        OGRE_CHECK_GL_ERROR(glGetProgramiv( mGLProgramHandle, GL_LINK_STATUS, &mLinked ));
++        GLSLES::logObjectInfo( getCombinedName() + String("GLSL link result : "), mGLProgramHandle );
+ 
+         if(mLinked)
+         {
+diff --git a/RenderSystems/GLSupport/CMakeLists.txt b/RenderSystems/GLSupport/CMakeLists.txt
+index bae087ae..d4193175 100644
+--- a/RenderSystems/GLSupport/CMakeLists.txt
++++ b/RenderSystems/GLSupport/CMakeLists.txt
+@@ -79,7 +79,7 @@ elseif (UNIX)
+         ${CMAKE_CURRENT_SOURCE_DIR}/include/GLX
+         ${OPENGL_INCLUDE_DIR})
+     
+-    set(PLATFORM_LIBS ${X11_LIBRARIES} ${X11_Xrandr_LIB} ${OPENGL_glx_LIBRARY})
++    set(PLATFORM_LIBS ${X11_LIBRARIES} ${X11_Xrandr_LIB} ${OPENGL_gl_LIBRARY})
+   endif()
+   list(APPEND NATIVE_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/src/X11/")
+ endif ()
+diff --git a/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp b/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
+index 6d11662e..fb16ef0c 100644
+--- a/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
++++ b/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
+@@ -215,7 +215,7 @@ namespace Ogre {
+ #if OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
+         int* gamma_attribs = NULL;
+ #else
+-        int gamma_attribs[] = {EGL_GL_COLORSPACE_KHR, EGL_GL_COLORSPACE_SRGB_KHR, EGL_NONE};
++        int gamma_attribs[] = {EGL_NONE};
+ #endif
+         mHwGamma = mHwGamma && mGLSupport->checkExtension("EGL_KHR_gl_colorspace");
+ 
