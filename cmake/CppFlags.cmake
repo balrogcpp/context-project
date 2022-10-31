@@ -53,7 +53,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
         string(APPEND CMAKE_CXX_FLAGS " -DVC_EXTRALEAN -DWIN32_LEAN_AND_MEAN")
     endif ()
 
-    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    # avoid AppleClang
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-ld=lld")
         string(APPEND CMAKE_SHARED_LINKER_FLAGS " -fuse-ld=lld")
     endif ()
