@@ -941,7 +941,7 @@ externalproject_add(Target_sol2
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DSOL2_BUILD_LUA=ON
+        -DSOL2_BUILD_LUA=OFF
         -DBUILD_LUA_AS_DLL=OFF
         )
 

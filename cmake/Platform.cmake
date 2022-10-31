@@ -12,35 +12,29 @@ if (MINGW)
 endif ()
 string(TOLOWER ${TOOLCHAIN_FULL} TOOLCHAIN_FULL_LOWER)
 
+
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(LINUX 1)
-endif ()
-
-if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(MACOS 1)
-endif ()
-
-if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(WINDOWS 1)
 endif ()
 
-if (CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
+
+if (LINUX OR MACOS OR WINDOWS)
     set(DESKTOP 1)
 elseif (ANDROID OR IOS)
     set(MOBILE 1)
 endif ()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR MINGW)
-    set(GCC 1)
-endif ()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(GCC 1)
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang") # to cover AppleClang
     set(CLANG 1)
 endif ()
 
-if (${CMAKE_GENERATOR} STREQUAL "Xcode")
-    set(XCODE 1)
-endif ()
 
 if (CMAKE_BUILD_TYPE_LOWER STREQUAL "debug")
     set(DEBUG 1)
