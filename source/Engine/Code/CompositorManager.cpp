@@ -46,7 +46,8 @@ void CompositorManager::OnSetUp() {
 void CompositorManager::OnClean() { ogreViewport->removeListener(this); }
 
 void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
-  OgreAssert(compositorManager->addCompositor(ogreViewport, name, position), "Failed to add MRT compoitor");
+  auto *compositor = compositorManager->addCompositor(ogreViewport, name, position);
+  OgreAssert(compositor, "Failed to add MRT compoitor");
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 }
 
@@ -74,13 +75,14 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
 
   // compositors are automatically resized according to actual viewport size when added to chain
   while (!compositorList.empty()) {
-    const std::string compositor = compositorList.front().first;
+    const std::string compositorName = compositorList.front().first;
     const bool enabled = compositorList.front().second;
     compositorList.pop();
 
-    OgreAssert(compositorManager->addCompositor(ogreViewport, compositor), "[CompositorManager] Failed to add compositor");
+    auto *compositor = compositorManager->addCompositor(ogreViewport, compositorName);
+    OgreAssert(compositor, "[CompositorManager] Failed to add compositor");
 
-    auto *compositorPtr = compositorChain->getCompositor(compositor);
+    auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
       if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
         if (jt->width == 0) jt->width = x * jt->widthFactor;
@@ -88,15 +90,15 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
       }
     }
 
-    compositorManager->setCompositorEnabled(ogreViewport, compositor, enabled);
+    compositorManager->setCompositorEnabled(ogreViewport, compositorName, enabled);
   }
 }
 
 void CompositorManager::InitMRT() {
-  OgreAssert(compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR, 0), "Failed to add MRT compositor");
+  auto *mrtCompositor = compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR, 0);
+  OgreAssert(mrtCompositor, "Failed to add MRT compositor");
 
   // check textures
-  auto *mrtCompositor = compositorChain->getCompositor(MRT_COMPOSITOR);
   auto *tech = mrtCompositor->getTechnique();
 
   OgreAssert(tech->getTextureDefinition("mrt"), "mrt texture failed to create");
@@ -108,10 +110,10 @@ void CompositorManager::InitMRT() {
 }
 
 void CompositorManager::InitMipChain() {
-  OgreAssert(compositorManager->addCompositor(ogreViewport, BLOOM_COMPOSITOR, 1), "Failed to add Bloom compoitor");
+  auto *bloomCompositor = compositorManager->addCompositor(ogreViewport, BLOOM_COMPOSITOR, 1);
+  OgreAssert(bloomCompositor, "Failed to add Bloom compoitor");
 
   // check textures
-  auto *bloomCompositor = compositorChain->getCompositor(BLOOM_COMPOSITOR);
   auto *tech = bloomCompositor->getTechnique();
 
   OgreAssert(tech->getTextureDefinition("rt1"), "rt1 texture failed to create");
@@ -151,13 +153,14 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
 
   // compositors are automatically resized according to actual viewport size when added to chain
   while (!compositorList.empty()) {
-    const std::string compositor = compositorList.front().first;
+    const std::string compositorName = compositorList.front().first;
     const bool enabled = compositorList.front().second;
     compositorList.pop();
 
-    OgreAssert(compositorManager->addCompositor(viewport, compositor), "[CompositorManager] Failed to add compositor");
+    auto *compositor = compositorManager->addCompositor(viewport, compositorName);
+    OgreAssert(compositor, "[CompositorManager] Failed to add compositor");
 
-    auto *compositorPtr = compositorChain->getCompositor(compositor);
+    auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
       if (jt->type == Ogre::TEX_TYPE_2D && jt->refTexName.empty()) {
         jt->width = 0;
@@ -165,7 +168,7 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
       }
     }
 
-    compositorManager->setCompositorEnabled(viewport, compositor, enabled);
+    compositorManager->setCompositorEnabled(viewport, compositorName, enabled);
   }
 }
 }  // namespace Glue

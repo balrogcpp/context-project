@@ -88,11 +88,11 @@ std::string GetBinaryDir() {
   _NSGetExecutablePath(nullptr, &bufferSize);
   char unresolvedPath[bufferSize];
   _NSGetExecutablePath(unresolvedPath, &bufferSize);
-  OgreAssert(realpath(unresolvedPath, buffer), "macos realpath failed");
+  realpath(unresolvedPath, buffer);
 #elif defined(WINDOWS)
   GetModuleFileNameA(NULL, buffer, MAX_PATH);
 #elif defined(LINUX)
-  OgreAssert(readlink("/proc/self/exe", buffer, MAX_PATH), "linux readlink failed");
+  readlink("/proc/self/exe", buffer, MAX_PATH);
 #endif
   buffer[MAX_PATH - 1] = 0;
   auto pos = std::string(buffer).find_last_of("\\/");
@@ -149,7 +149,7 @@ void VideoManager::LoadResources() {
   const char *PROGRAMS_ZIP = "programs.zip";
   const char *ASSETS_ZIP = "assets.zip";
   const int SCAN_DEPTH = 4;
-#if defined(DESKTOP) && defined(_DEBUG)
+#if defined(DESKTOP) && defined(DEBUG)
   const char *PROGRAMS_DIR = "source/Programs";
   const char *GLSL_DIR = "source/GLSL";
   const char *GLSLES_DIR = "source/GLSLES";
@@ -464,7 +464,8 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
 };
 
 void VideoManager::InitOgreRTSS() {
-  OgreAssert(Ogre::RTShader::ShaderGenerator::initialize(), "OGRE RTSS init failed");
+  bool result = Ogre::RTShader::ShaderGenerator::initialize();
+  OgreAssert(result, "[VideoManager] OGRE RTSS init failed");
   auto *shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
   ogreViewport->setMaterialScheme(Ogre::MSN_SHADERGEN);
   shaderGenerator->addSceneManager(ogreSceneManager);
