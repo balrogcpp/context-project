@@ -85,6 +85,26 @@ index 44a17787..d9add2ba 100644
  
  # install OgreMain
  ogre_config_lib(OgreMain TRUE)
+diff --git a/OgreMain/include/OgreException.h b/OgreMain/include/OgreException.h
+index 5e06c194..5e48e79d 100644
+--- a/OgreMain/include/OgreException.h
++++ b/OgreMain/include/OgreException.h
+@@ -272,12 +272,14 @@ namespace Ogre {
+             }
+         }
+     public:
+-        static OGRE_NORETURN void throwException(
++        static void throwException(
+             Exception::ExceptionCodes code,
+             const String& desc,
+             const String& src, const char* file, long line)
+         {
++#if OGRE_ASSERT_MODE > 0
+             _throwException(code, code, desc, src, file, line);
++#endif
+         }
+     };
+     
 diff --git a/OgreMain/include/OgreMath.h b/OgreMain/include/OgreMath.h
 index f2e2aefb..5e2f9cbd 100644
 --- a/OgreMain/include/OgreMath.h
