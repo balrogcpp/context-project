@@ -1169,8 +1169,8 @@ externalproject_add(Target_asio
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
-        BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_asio/asio/include/asio ${DEPS_INCLUDE_DIR}/asio
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${DEPS_SOURCE_LOCATION}/Target_asio/asio/include/asio.hpp asio/include/asio ${DEPS_INCLUDE_DIR}
+        BUILD_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_asio/asio/include/asio.hpp ${DEPS_INCLUDE_DIR}
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_asio/asio/include/asio ${DEPS_INCLUDE_DIR}
         )
 
 
