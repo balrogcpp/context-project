@@ -149,7 +149,7 @@ void VideoManager::LoadResources() {
   const char *PROGRAMS_ZIP = "programs.zip";
   const char *ASSETS_ZIP = "assets.zip";
   const int SCAN_DEPTH = 4;
-#if defined(DESKTOP) && defined(DEBUG)
+#if defined(DESKTOP) && defined(_DEBUG)
   const char *PROGRAMS_DIR = "source/Programs";
   const char *GLSL_DIR = "source/GLSL";
   const char *GLSLES_DIR = "source/GLSLES";
@@ -197,6 +197,8 @@ void VideoManager::OnClean() {
 }
 
 void VideoManager::RenderFrame() {
+  ogreRoot->renderOneFrame();
+
   for (const auto &it : windowList) {
     it.RenderFrame();
   }

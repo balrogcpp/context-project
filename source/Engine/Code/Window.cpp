@@ -21,6 +21,14 @@ void Window::Create(const string &title, Ogre::Camera *camera, int monitor, int 
   SDL_DisplayMode displayMode;
   int screenWidth = 0, screenHeight = 0, currentDisplay = 0;
 
+#ifdef EMSCRIPTEN
+  sdlFlags |= SDL_WINDOW_RESIZABLE;
+#endif
+
+#ifdef MOBILE
+  fullscreen = true;
+#endif
+
   // select biggest display
   if (monitor < 0) {
     for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
@@ -59,12 +67,6 @@ void Window::Create(const string &title, Ogre::Camera *camera, int monitor, int 
   if (sdlFlags & SDL_WINDOW_FULLSCREEN) {
     fullscreen = true;
   }
-#ifdef EMSCRIPTEN
-  sdlFlags |= SDL_WINDOW_RESIZABLE;
-#endif
-#ifdef MOBILE
-  fullscreen = true;
-#endif
 
   if (sizeX == screenWidth && sizeY == screenHeight) {
     sdlFlags |= SDL_WINDOW_BORDERLESS;
@@ -95,9 +97,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int monitor, int 
   sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, sizeX, sizeY, sdlFlags);
   SDL_GL_CreateContext(sdlWindow);
 #endif
-
   OgreAssert(sdlWindow, "SDL_CreateWindow failed");
-  id = SDL_GetWindowID(sdlWindow);
 
   Ogre::NameValuePairList renderParams;
   const char *TRUE_STR = "true";
@@ -105,6 +105,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int monitor, int 
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
   SDL_GetWindowWMInfo(sdlWindow, &info);
+
   renderParams["vsync"] = vsync ? TRUE_STR : FALSE_STR;
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
   renderParams["externalWindowHandle"] = to_string(reinterpret_cast<size_t>(info.info.win.window));
@@ -129,6 +130,7 @@ void Window::Create(const string &title, Ogre::Camera *camera, int monitor, int 
 
   ogreCamera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
   ogreCamera->setAutoAspectRatio(true);
+  id = SDL_GetWindowID(sdlWindow);
 }
 
 void Window::Show(bool show) {
@@ -271,7 +273,6 @@ std::string Window::GetCaption() {
 void Window::Delete() {}
 
 void Window::RenderFrame() const {
-  ogreRoot->renderOneFrame();
 #if defined(WINDOWS) || defined(ANDROID)
   SDL_GL_SwapWindow(sdlWindow);
 #endif

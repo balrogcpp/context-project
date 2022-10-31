@@ -85,23 +85,6 @@ index 44a17787..d9add2ba 100644
  
  # install OgreMain
  ogre_config_lib(OgreMain TRUE)
-diff --git a/OgreMain/include/OgreException.h b/OgreMain/include/OgreException.h
-index 38de07ed..d0e5c1d5 100644
---- a/OgreMain/include/OgreException.h
-+++ b/OgreMain/include/OgreException.h
-@@ -60,7 +60,11 @@ THE SOFTWARE.
-  * To always abort instead of throwing an exception or disabling OgreAssert in Release configuration altogether,
-  * set OGRE_ASSERT_MODE in CMake accordingly.
-  */
--#   define OgreAssert( expr, mesg ) assert( (expr) && (mesg) )
-+#   if OGRE_DEBUG_MODE
-+#       define OgreAssert( expr, mesg ) assert( (expr) && (mesg) )
-+#   else
-+#       define OgreAssert( expr, mesg )
-+#   endif
- #endif
- 
- #if OGRE_DEBUG_MODE
 diff --git a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 index 024ddebf..19220d48 100644
 --- a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
