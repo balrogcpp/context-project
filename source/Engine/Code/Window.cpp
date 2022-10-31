@@ -59,17 +59,17 @@ void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, in
   if (sdlFlags & SDL_WINDOW_FULLSCREEN) fullscreen = true;
 
 #if defined(DESKTOP)
-  if (width == screenWidth && height == screenHeight) {
+  if (sizeX == screenWidth && sizeY == screenHeight) {
     sdlFlags |= SDL_WINDOW_BORDERLESS;
   }
   if (fullscreen) {
     sdlFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     sdlFlags |= SDL_WINDOW_BORDERLESS;
-    width = screenWidth;
-    height = screenHeight;
+    sizeX = screenWidth;
+    sizeY = screenHeight;
   }
   int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED_DISPLAY(currentDisplay);
-  sdlWindow = SDL_CreateWindow(caption.c_str(), sdlPositionFlags, sdlPositionFlags, width, height, sdlFlags);
+  sdlWindow = SDL_CreateWindow(caption.c_str(), sdlPositionFlags, sdlPositionFlags, sizeX, sizeY, sdlFlags);
   OgreAssert(sdlWindow, "SDL_CreateWindow failed");
   id = SDL_GetWindowID(sdlWindow);
 #else
@@ -87,15 +87,13 @@ void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, in
 #ifdef EMSCRIPTEN
   sdlFlags |= SDL_WINDOW_RESIZABLE;
 #endif
-  sdlFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
 #ifdef MOBILE
-  sdlFlags |= SDL_WINDOW_BORDERLESS;
-  sdlFlags |= SDL_WINDOW_FULLSCREEN;
+  fullscreen = true;
+  sdlFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 #endif
-  width = screenWidth;
-  height = screenHeight;
-  int32_t sdlPositionFlags = SDL_WINDOWPOS_CENTERED;
-  sdlWindow = SDL_CreateWindow(nullptr, sdlPositionFlags, sdlPositionFlags, screenWidth, screenHeight, sdlFlags);
+  sizeX = screenWidth;
+  sizeY = screenHeight;
+  sdlWindow = SDL_CreateWindow(nullptr, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, sizeX, sizeY, sdlFlags);
   SDL_GL_CreateContext(sdlWindow);
 #endif
 
@@ -120,15 +118,15 @@ void Window::Create(const string &caption, Ogre::Camera *camera, int monitor, in
 #endif
   ogreRoot = Ogre::Root::getSingletonPtr();
   OgreAssert(ogreRoot, "ogreRoot not initialised");
-  ogreWindow = ogreRoot->createRenderWindow(caption, width, height, fullscreen, &renderParams);
+  ogreWindow = ogreRoot->createRenderWindow(caption, sizeX, sizeY, fullscreen, &renderParams);
   renderTarget = ogreRoot->getRenderTarget(ogreWindow->getName());
   ogreViewport = renderTarget->addViewport(ogreCamera);
+
+  // android is not completely ok without it
+  SetSize(sizeX, sizeY);
+
   ogreCamera->setAspectRatio(static_cast<float>(ogreViewport->getActualWidth()) / static_cast<float>(ogreViewport->getActualHeight()));
   ogreCamera->setAutoAspectRatio(true);
-  //#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-  //  SDL_GetDesktopDisplayMode(currentDisplay, &displayMode);
-  //  ogreWindow->resize(static_cast<int>(displayMode.w), static_cast<int>(displayMode.h));
-  //#endif
 }
 
 void Window::Show(bool show) {
@@ -145,6 +143,10 @@ void Window::SetSize(int x, int y) {
 }
 
 void Window::SetFullscreen(bool fullscreen) {
+#ifdef MOBILE
+  return;
+#endif
+
   OgreAssert(sdlWindow, "sdlWindow not initialised");
   this->fullscreen = fullscreen;
 
@@ -274,13 +276,11 @@ void Window::OnQuit() {}
 void Window::OnFocusLost() {}
 void Window::OnFocusGained() {}
 void Window::OnSizeChanged(int x, int y, uint32_t id) {
-#ifndef MOBILE
-  if (this->id == id) {
+  if (this->id == id && !fullscreen) {
     sizeX = x;
     sizeY = y;
     ogreWindow->resize(x, y);
   }
-#endif
 }
 void Window::OnExposed() {}
 }  // namespace Glue

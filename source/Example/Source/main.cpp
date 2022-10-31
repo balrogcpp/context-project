@@ -9,17 +9,13 @@ class MenuAppState : public AppState {
  public:
   std::string GetName() { return "MenuAppState"; }
   void OnSetUp() {
-    // GetComponent<VideoManager>().GetWindow(0).SetGrabMouse(true);
     GetComponent<VideoManager>().GetWindow(0).SetMouseRelativeMode(true);
-    GetComponent<VideoManager>().GetWindow(0).SetBordered(true);
-    // GetComponent<VideoManager>().GetWindow(0).SetSize(320, 240);
-    GetComponent<VideoManager>().GetMainWindow().SetFullscreen(true);
+#ifdef ANDROID
+    GetComponent<CompositorManager>().SetFixedViewportSize(1024, 768);
+#endif
     GetComponent<SceneManager>().LoadFromFile("1.scene");
     GetComponent<SkyManager>().SetUpSky();
     GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
-
-    // GetComponent<CompositorManager>().SetCompositorEnabled("Bloom", true);
-    // GetComponent<CompositorManager>().SetCompositorEnabled("FXAA", true);
   }
   void OnUpdate(float time) {
     static ImGuiIO &io = ImGui::GetIO();
