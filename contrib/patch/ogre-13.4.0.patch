@@ -89,13 +89,7 @@ diff --git a/OgreMain/include/OgreException.h b/OgreMain/include/OgreException.h
 index 5e06c194..5e48e79d 100644
 --- a/OgreMain/include/OgreException.h
 +++ b/OgreMain/include/OgreException.h
-@@ -272,12 +272,14 @@ namespace Ogre {
-             }
-         }
-     public:
--        static OGRE_NORETURN void throwException(
-+        static void throwException(
-             Exception::ExceptionCodes code,
+@@ -277,7 +277,9 @@ namespace Ogre {
              const String& desc,
              const String& src, const char* file, long line)
          {
@@ -104,7 +98,7 @@ index 5e06c194..5e48e79d 100644
 +#endif
          }
      };
-
+     
 diff --git a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 index 024ddebf..19220d48 100644
 --- a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
@@ -118,19 +112,6 @@ index 024ddebf..19220d48 100644
          if(mTarget == GL_TEXTURE_CUBE_MAP)
              mFaceTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
  
-diff --git a/RenderSystems/GLSupport/CMakeLists.txt b/RenderSystems/GLSupport/CMakeLists.txt
-index bae087ae..d4193175 100644
---- a/RenderSystems/GLSupport/CMakeLists.txt
-+++ b/RenderSystems/GLSupport/CMakeLists.txt
-@@ -79,7 +79,7 @@ elseif (UNIX)
-         ${CMAKE_CURRENT_SOURCE_DIR}/include/GLX
-         ${OPENGL_INCLUDE_DIR})
-     
--    set(PLATFORM_LIBS ${X11_LIBRARIES} ${X11_Xrandr_LIB} ${OPENGL_glx_LIBRARY})
-+    set(PLATFORM_LIBS ${X11_LIBRARIES} ${X11_Xrandr_LIB} ${OPENGL_gl_LIBRARY})
-   endif()
-   list(APPEND NATIVE_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/src/X11/")
- endif ()
 diff --git a/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp b/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
 index 6d11662e..fb16ef0c 100644
 --- a/RenderSystems/GLSupport/src/EGL/OgreEGLWindow.cpp
