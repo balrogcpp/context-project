@@ -10,6 +10,7 @@ class MenuAppState : public AppState {
   std::string GetName() { return "MenuAppState"; }
   void OnSetUp() {
     GetComponent<VideoManager>().GetWindow(0).SetMouseRelativeMode(true);
+    // GetComponent<VideoManager>().GetWindow(0).SetFullscreen(true);
 #ifdef ANDROID
     GetComponent<CompositorManager>().SetFixedViewportSize(1024, 768);
 #endif
