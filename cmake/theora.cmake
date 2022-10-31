@@ -14,7 +14,7 @@ set(LIBTHEORA_SOURCE ${LIBTHEORA_DEC} "${CMAKE_SOURCE_DIR}/lib/apiwrapper.c"
 
 add_library(theoradec STATIC ${LIBTHEORA_SOURCE})
 target_include_directories(theoradec PRIVATE ${OGG_INCLUDE_DIRS} "${CMAKE_SOURCE_DIR}/include")
-target_compile_options(theoradec PRIVATE -Wno-shift-negative-value -Wno-shift-op-parentheses)
+#target_compile_options(theoradec PRIVATE -Wno-shift-negative-value -Wno-shift-op-parentheses)
 
 install(TARGETS theoradec)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/theora TYPE INCLUDE FILES_MATCHING PATTERN "*.h")
