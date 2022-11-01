@@ -8,9 +8,9 @@ variables:
   GIT_DEPTH: "1"
 
 build:
-  stage: build
+  stage: compile
   script:
-    - sh docker.sh
+    - sh docker_compile.sh
   artifacts:
     paths:
       - "artifacts/*"

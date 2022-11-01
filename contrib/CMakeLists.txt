@@ -30,14 +30,47 @@ set(DEPS_C_FLAGS ${CMAKE_C_FLAGS})
 set(DEPS_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
 set(DEPS_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS})
 set(DEPS_STATIC_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS})
-set(STAMP_FILE ${DEPS_SOURCE_LOCATION}/ready)
-if (EXISTS ${STAMP_FILE})
-    set(SKIP_DOWNLOAD ${CMAKE_COMMAND} -E true)
-endif ()
 
 
-# list of thirdparty targets
+# receives target name and defines STAMP_FILE, STAMP_FILES, UPDATE_PLACEHOLDER and PATCH_PLACEHOLDER commands
+macro(check_stamp TARGET)
+    set(STAMP_FILE ${DEPS_SOURCE_LOCATION}/${TARGET}_ready)
+    set(STAMP_FILES ${STAMP_FILE})
+    set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+
+    if (EXISTS ${STAMP_FILE} AND NOT IS_DIRECTORY ${STAMP_FILE})
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    else ()
+        unset(DOWNLOAD_PLACEHOLDER)
+    endif ()
+endmacro()
+
+
+# same as check_stamp but also applies patch file after update
+macro(check_stamp_patch TARGET PATCH)
+    set(STAMP_FILE ${DEPS_SOURCE_LOCATION}/${TARGET}_ready)
+    set(STAMP_FILES ${STAMP_FILE})
+
+    if (NOT EXISTS ${DEPS_PATCH_LOCATION}/${PATCH})
+        message(FATAL_ERROR "Patch file ${PATCH} not found")
+    endif ()
+
+    if (EXISTS ${STAMP_FILE} AND NOT IS_DIRECTORY ${STAMP_FILE})
+        set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    else ()
+        unset(DOWNLOAD_PLACEHOLDER)
+        set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} reset --hard)
+        set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/${PATCH})
+    endif ()
+endmacro()
+
+
+# list of third-party targets
 if (NOT EMSCRIPTEN)
+    check_stamp_patch(Target_SDL2 sdl2-2.24.0.patch)
     externalproject_add(Target_SDL2
             EXCLUDE_FROM_ALL true
             BUILD_ALWAYS false
@@ -49,9 +82,9 @@ if (NOT EMSCRIPTEN)
             GIT_TAG release-2.24.1
             GIT_SHALLOW true
             GIT_PROGRESS false
-            DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-            UPDATE_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_SDL2 ${GIT_EXECUTABLE} reset --hard
-            PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_SDL2 ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/sdl2-2.24.0.patch
+            DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+            UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+            PATCH_COMMAND ${PATCH_PLACEHOLDER}
             CMAKE_ARGS
             -G ${CMAKE_GENERATOR}
             -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -75,12 +108,15 @@ if (NOT EMSCRIPTEN)
             -DHIDAPI=OFF
             -DSDL_HIDAPI=OFF
             -DSDL_HIDAPI_JOYSTICK=OFF
+            TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+            TEST_AFTER_INSTALL true
             )
 else ()
     add_custom_target(Target_SDL2 COMMAND ${CMAKE_COMMAND} -E true)
 endif ()
 
 
+check_stamp(Target_OIS)
 externalproject_add(Target_OIS
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -92,9 +128,9 @@ externalproject_add(Target_OIS
         GIT_TAG v1.5.1
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -112,9 +148,12 @@ externalproject_add(Target_OIS
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DOIS_BUILD_SHARED_LIBS=OFF
         -DOIS_BUILD_DEMOS=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_Bullet)
 externalproject_add(Target_Bullet
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -126,9 +165,9 @@ externalproject_add(Target_Bullet
         GIT_TAG 3.24
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -166,10 +205,13 @@ externalproject_add(Target_Bullet
         -DUSE_MSVC_AVX=OFF
         -DUSE_MSVC_FAST_FLOATINGPOINT=ON
         -DINTERNAL_CREATE_MSVC_RELATIVE_PATH_PROJECTFILES=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
 if (NOT EMSCRIPTEN)
+    check_stamp_patch(Target_OpenAL openal-1.21.1.patch)
     externalproject_add(Target_OpenAL
             EXCLUDE_FROM_ALL true
             BUILD_ALWAYS false
@@ -181,9 +223,9 @@ if (NOT EMSCRIPTEN)
             GIT_TAG 1.22.2
             GIT_SHALLOW true
             GIT_PROGRESS false
-            DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-            UPDATE_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OpenAL ${GIT_EXECUTABLE} reset --hard
-            PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OpenAL ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/openal-1.21.1.patch
+            DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+            UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+            PATCH_COMMAND ${PATCH_PLACEHOLDER}
             CMAKE_ARGS
             -G ${CMAKE_GENERATOR}
             -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -211,12 +253,15 @@ if (NOT EMSCRIPTEN)
             -DALSOFT_BACKEND_WAVE=OFF
             -DLIBTYPE=SHARED
             -DALSOFT_OSX_FRAMEWORK=OFF
+            TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+            TEST_AFTER_INSTALL true
             )
 else ()
     add_custom_target(Target_OpenAL COMMAND ${CMAKE_COMMAND} -E true)
 endif ()
 
 
+check_stamp(Target_Ogg)
 externalproject_add(Target_Ogg
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -229,7 +274,7 @@ externalproject_add(Target_Ogg
         GIT_TAG v1.3.5
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         UPDATE_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_Ogg ${GIT_EXECUTABLE} reset --hard
         PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_Ogg ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogg-1.3.5.patch
         CMAKE_ARGS
@@ -253,9 +298,12 @@ externalproject_add(Target_Ogg
         -DBUILD_SHARED_LIBS=OFF
         -DBUILD_FRAMEWORK=OFF
         -DBUILD_TESTING=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_Vorbis)
 externalproject_add(Target_Vorbis
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -268,9 +316,9 @@ externalproject_add(Target_Vorbis
         GIT_TAG v1.3.7
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -288,9 +336,12 @@ externalproject_add(Target_Vorbis
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DOGG_INCLUDE_DIR=${DEPS_ROOT}/include #for Android
         -DOGG_LIBRARY=${DEPS_ROOT}/lib/libogg.a #for Android
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_Theora)
 externalproject_add(Target_Theora
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -303,8 +354,8 @@ externalproject_add(Target_Theora
         GIT_TAG 7180717276af1ebc7da15c83162d6c5d6203aabf
         GIT_SHALLOW false
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/cmake/theora.cmake ${DEPS_SOURCE_LOCATION}/Target_Theora/CMakeLists.txt
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
@@ -321,10 +372,13 @@ externalproject_add(Target_Theora
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
 if (NOT EMSCRIPTEN)
+    check_stamp(Target_zlib)
     externalproject_add(Target_zlib
             EXCLUDE_FROM_ALL true
             BUILD_ALWAYS false
@@ -336,9 +390,9 @@ if (NOT EMSCRIPTEN)
             GIT_TAG v1.2.13
             GIT_SHALLOW true
             GIT_PROGRESS false
-            DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-            UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-            PATCH_COMMAND ${CMAKE_COMMAND} -E true
+            DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+            UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+            PATCH_COMMAND ${PATCH_PLACEHOLDER}
             CMAKE_ARGS
             -G ${CMAKE_GENERATOR}
             -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -357,8 +411,9 @@ if (NOT EMSCRIPTEN)
             -DANDROID_PLATFORM=${ANDROID_PLATFORM}
             -DBUILD_SHARED_LIBS=OFF
             -DCMAKE_DEBUG_POSTFIX=
-            TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT}
-            ${CMAKE_COMMAND} -E remove -f lib/libz.so lib/libzlib.dll.a lib/zlib.lib lib/zlibd.lib bin/libzlib.dll bin/zlib.dll bin/zlibd.dll lib/libz.dylib
+            TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT} ${CMAKE_COMMAND} -E remove -f
+            lib/libz.so lib/libzlib.dll.a lib/zlib.lib lib/zlibd.lib bin/libzlib.dll bin/zlib.dll bin/zlibd.dll lib/libz.dylib
+            COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
             TEST_AFTER_INSTALL true
             )
 else ()
@@ -366,6 +421,7 @@ else ()
 endif ()
 
 
+check_stamp(Target_ZZIP)
 externalproject_add(Target_ZZIP
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -378,9 +434,9 @@ externalproject_add(Target_ZZIP
         GIT_TAG v0.13.72
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -406,9 +462,12 @@ externalproject_add(Target_ZZIP
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_pugixml)
 externalproject_add(Target_pugixml
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -420,9 +479,9 @@ externalproject_add(Target_pugixml
         GIT_TAG v1.12.1
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -438,9 +497,12 @@ externalproject_add(Target_pugixml
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_tinyxml2)
 externalproject_add(Target_tinyxml2
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -452,9 +514,9 @@ externalproject_add(Target_tinyxml2
         GIT_TAG 9.0.0
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -472,9 +534,12 @@ externalproject_add(Target_tinyxml2
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -Dtinyxml2_BUILD_TESTING=OFF
         -Dtinyxml2_SHARED_LIBS=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_PNG)
 externalproject_add(Target_PNG
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -487,9 +552,9 @@ externalproject_add(Target_PNG
         GIT_TAG v1.6.38
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -507,9 +572,12 @@ externalproject_add(Target_PNG
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DPNG_SHARED=OFF
         -DPNG_TESTS=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_FreeType)
 externalproject_add(Target_FreeType
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -522,9 +590,9 @@ externalproject_add(Target_FreeType
         GIT_TAG VER-2-12-1
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -551,9 +619,12 @@ externalproject_add(Target_FreeType
         -DFT_DISABLE_HARFBUZZ=ON
         -DFT_DISABLE_BROTLI=ON
         -DBUILD_SHARED_LIBS=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_rapidjson)
 externalproject_add(Target_rapidjson
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -565,9 +636,9 @@ externalproject_add(Target_rapidjson
         GIT_TAG 27c3a8dc0e2c9218fe94986d249a12b5ed838f1d
         GIT_SHALLOW false
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -588,9 +659,12 @@ externalproject_add(Target_rapidjson
         -DRAPIDJSON_BUILD_TESTS=OFF
         -DRAPIDJSON_BUILD_THIRDPARTY_GTEST=OFF
         -DRAPIDJSON_HAS_STDSTRING=ON
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_assimp)
 externalproject_add(Target_assimp
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -603,9 +677,9 @@ externalproject_add(Target_assimp
         GIT_TAG v5.2.5
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -680,9 +754,12 @@ externalproject_add(Target_assimp
         -DASSIMP_BUILD_3MF_IMPORTER=OFF
         -DASSIMP_BUILD_MMD_IMPORTER=OFF
         -DASSIMP_BUILD_STEP_IMPORTER=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp_patch(Target_OGRE ogre-13.5.0.patch)
 externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -695,9 +772,9 @@ externalproject_add(Target_OGRE
         GIT_TAG v13.5.0
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OGRE ${GIT_EXECUTABLE} reset --hard
-        PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_OGRE ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogre-13.5.0.patch
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -786,10 +863,12 @@ externalproject_add(Target_OGRE
         TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${DEPS_SOURCE_LOCATION}/Target_OGRE/RenderSystems/GLSupport/include/GLSL
         ${DEPS_ROOT}/include/OGRE/RenderSystems/GLES2
+        COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
         TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_OGRE2)
 externalproject_add(Target_OGRE2
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -802,9 +881,9 @@ externalproject_add(Target_OGRE2
         GIT_TAG v2.3.1
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -851,9 +930,12 @@ externalproject_add(Target_OGRE2
         -DOGRE_USE_BOOST=OFF
         -DOGRE_CONFIG_THREAD_PROVIDER=std
         -DCMAKE_SKIP_INSTALL_RPATH=ON
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_freeglut)
 externalproject_add(Target_freeglut
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -865,9 +947,9 @@ externalproject_add(Target_freeglut
         GIT_TAG v3.4.0
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -887,9 +969,12 @@ externalproject_add(Target_freeglut
         -DFREEGLUT_BUILD_STATIC_LIBS=ON
         -DFREEGLUT_GLES=OFF
         -DINSTALL_PDB=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_Lua)
 externalproject_add(Target_Lua
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -898,7 +983,7 @@ externalproject_add(Target_Lua
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_Lua
         DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E true
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/cmake/lua.cmake ${DEPS_SOURCE_LOCATION}/Target_Lua/CMakeLists.txt
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
@@ -924,9 +1009,12 @@ externalproject_add(Target_Lua
         -DLUA_USE_RELATIVE_LOADLIB=OFF
         -DLUA_USE_POSIX=OFF
         -DLUA_USE_DLOPEN=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_sol2)
 externalproject_add(Target_sol2
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -939,9 +1027,9 @@ externalproject_add(Target_sol2
         GIT_TAG v3.3.0
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -962,9 +1050,12 @@ externalproject_add(Target_sol2
         -DLUA_LIBRARIES="lua"
         -DSOL2_BUILD_LUA=OFF
         -DBUILD_LUA_AS_DLL=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_filesystem)
 externalproject_add(Target_filesystem
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -976,9 +1067,9 @@ externalproject_add(Target_filesystem
         GIT_TAG v1.5.12
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -996,9 +1087,12 @@ externalproject_add(Target_filesystem
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DGHC_FILESYSTEM_BUILD_TESTING=OFF
         -DGHC_FILESYSTEM_BUILD_EXAMPLES=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_GoogleTest)
 externalproject_add(Target_GoogleTest
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -1010,9 +1104,9 @@ externalproject_add(Target_GoogleTest
         GIT_TAG v1.12.1
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1029,9 +1123,12 @@ externalproject_add(Target_GoogleTest
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_GoogleBenchmark)
 externalproject_add(Target_GoogleBenchmark
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -1043,9 +1140,9 @@ externalproject_add(Target_GoogleBenchmark
         GIT_TAG v1.7.0
         GIT_SHALLOW ${EXTERNAL_GIT_SHALLOW}
         GIT_PROGRESS ${EXTERNAL_GIT_PROGRESS}
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1062,9 +1159,12 @@ externalproject_add(Target_GoogleBenchmark
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DBENCHMARK_ENABLE_TESTING=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_json)
 externalproject_add(Target_json
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -1076,9 +1176,9 @@ externalproject_add(Target_json
         GIT_TAG v3.11.2
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1095,29 +1195,35 @@ externalproject_add(Target_json
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DJSON_BuildTests=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_ini)
 externalproject_add(Target_ini
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_ini
         GIT_REPOSITORY https://github.com/jhpy1024/ini_parser
         GIT_TAG cd52297c5ad5c8f1bd622fee45b7ea0301bcb856
         GIT_SHALLOW false
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${DEPS_SOURCE_LOCATION}/Target_ini/ini_parser.hpp ${DEPS_INCLUDE_DIR}
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_yaml)
 externalproject_add(Target_yaml-cpp
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -1129,9 +1235,9 @@ externalproject_add(Target_yaml-cpp
         GIT_TAG yaml-cpp-0.7.0
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1151,29 +1257,35 @@ externalproject_add(Target_yaml-cpp
         -DYAML_CPP_BUILD_TOOLS=OFF
         -DYAML_BUILD_SHARED_LIBS=OFF
         -DYAML_CPP_BUILD_TESTS=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_asio)
 externalproject_add(Target_asio
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_asio
         GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
         GIT_TAG asio-1-24-0
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_asio/asio/include/asio.hpp ${DEPS_INCLUDE_DIR}
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_asio/asio/include/asio ${DEPS_INCLUDE_DIR}
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_OpenSSL)
 externalproject_add(Target_OpenSSL
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -1185,9 +1297,9 @@ externalproject_add(Target_OpenSSL
         GIT_TAG 1.1.1n-20220327
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1204,9 +1316,12 @@ externalproject_add(Target_OpenSSL
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DWITH_APPS=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_entt)
 externalproject_add(Target_entt
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -1218,9 +1333,9 @@ externalproject_add(Target_entt
         GIT_TAG v3.10.3
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1242,9 +1357,12 @@ externalproject_add(Target_entt
         -DENTT_BUILD_BENCHMARK=OFF
         -DENTT_BUILD_EXAMPLE=OFF
         -DENTT_BUILD_DOCS=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_opencv_contrib)
 externalproject_add(Target_opencv_contrib
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -1256,15 +1374,18 @@ externalproject_add(Target_opencv_contrib
         GIT_TAG 4.6.0
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
         INSTALL_COMMAND ${CMAKE_COMMAND} -E true
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
+check_stamp(Target_opencv)
 externalproject_add(Target_opencv
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -1277,9 +1398,9 @@ externalproject_add(Target_opencv
         GIT_TAG 4.6.0
         GIT_SHALLOW true
         GIT_PROGRESS false
-        DOWNLOAD_COMMAND ${SKIP_DOWNLOAD}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E true
-        PATCH_COMMAND ${CMAKE_COMMAND} -E true
+        DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -1303,6 +1424,8 @@ externalproject_add(Target_opencv
         -DBUILD_EXAMPLES=OFF
         -DBUILD_TESTS=OFF
         -DBUILD_DOCS=OFF
+        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
+        TEST_AFTER_INSTALL true
         )
 
 
