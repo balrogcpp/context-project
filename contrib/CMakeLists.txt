@@ -34,12 +34,13 @@ set(DEPS_STATIC_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS})
 
 # receives target name and defines STAMP_FILE, STAMP_FILES, UPDATE_PLACEHOLDER and PATCH_PLACEHOLDER commands
 macro(check_stamp TARGET)
-    set(STAMP_FILE ${DEPS_SOURCE_LOCATION}/${TARGET}_ready)
-    set(STAMP_FILES ${STAMP_FILE})
+    set(STAMP_FILE_DOWNLOAD ${DEPS_SOURCE_LOCATION}/${TARGET}_download)
+    set(STAMP_FILES ${STAMP_FILE_DOWNLOAD})
     set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    set(STAMP_PLACEHOLDER ${CMAKE_COMMAND} -E touch ${STAMP_FILES})
 
-    if (EXISTS ${STAMP_FILE} AND NOT IS_DIRECTORY ${STAMP_FILE})
+    if (EXISTS ${STAMP_FILE_DOWNLOAD} AND NOT IS_DIRECTORY ${STAMP_FILE_DOWNLOAD})
         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     else ()
         unset(DOWNLOAD_PLACEHOLDER)
@@ -49,19 +50,25 @@ endmacro()
 
 # same as check_stamp but also applies patch file after update
 macro(check_stamp_patch TARGET PATCH)
-    set(STAMP_FILE ${DEPS_SOURCE_LOCATION}/${TARGET}_ready)
-    set(STAMP_FILES ${STAMP_FILE})
+    set(STAMP_FILE_DOWNLOAD ${DEPS_SOURCE_LOCATION}/${TARGET}_download)
+    set(STAMP_FILE_PATCH ${DEPS_SOURCE_LOCATION}/${TARGET}_patch)
+    set(STAMP_FILES ${STAMP_FILE_DOWNLOAD} ${STAMP_FILE_PATCH})
+    set(STAMP_PLACEHOLDER ${CMAKE_COMMAND} -E touch ${STAMP_FILES})
 
     if (NOT EXISTS ${DEPS_PATCH_LOCATION}/${PATCH})
         message(FATAL_ERROR "Patch file ${PATCH} not found")
     endif ()
 
-    if (EXISTS ${STAMP_FILE} AND NOT IS_DIRECTORY ${STAMP_FILE})
+    if (EXISTS ${STAMP_FILE_DOWNLOAD} AND NOT IS_DIRECTORY ${STAMP_FILE_DOWNLOAD})
         set(DOWNLOAD_PLACEHOLDER ${CMAKE_COMMAND} -E true)
+    else ()
+        unset(DOWNLOAD_PLACEHOLDER)
+    endif ()
+
+    if (EXISTS ${STAMP_FILE_PATCH} AND NOT IS_DIRECTORY ${STAMP_FILE_PATCH})
         set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E true)
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E true)
     else ()
-        unset(DOWNLOAD_PLACEHOLDER)
         set(UPDATE_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} reset --hard)
         set(PATCH_PLACEHOLDER ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/${TARGET} ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/${PATCH})
     endif ()
@@ -108,8 +115,8 @@ if (NOT EMSCRIPTEN)
             -DHIDAPI=OFF
             -DSDL_HIDAPI=OFF
             -DSDL_HIDAPI_JOYSTICK=OFF
-            TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-            TEST_AFTER_INSTALL true
+            TEST_AFTER_INSTALL ON
+            TEST_COMMAND ${STAMP_PLACEHOLDER}
             )
 else ()
     add_custom_target(Target_SDL2 COMMAND ${CMAKE_COMMAND} -E true)
@@ -148,8 +155,8 @@ externalproject_add(Target_OIS
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DOIS_BUILD_SHARED_LIBS=OFF
         -DOIS_BUILD_DEMOS=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -205,8 +212,8 @@ externalproject_add(Target_Bullet
         -DUSE_MSVC_AVX=OFF
         -DUSE_MSVC_FAST_FLOATINGPOINT=ON
         -DINTERNAL_CREATE_MSVC_RELATIVE_PATH_PROJECTFILES=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -253,15 +260,15 @@ if (NOT EMSCRIPTEN)
             -DALSOFT_BACKEND_WAVE=OFF
             -DLIBTYPE=SHARED
             -DALSOFT_OSX_FRAMEWORK=OFF
-            TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-            TEST_AFTER_INSTALL true
+            TEST_AFTER_INSTALL ON
+            TEST_COMMAND ${STAMP_PLACEHOLDER}
             )
 else ()
     add_custom_target(Target_OpenAL COMMAND ${CMAKE_COMMAND} -E true)
 endif ()
 
 
-check_stamp(Target_Ogg)
+check_stamp_patch(Target_Ogg ogg-1.3.5.patch)
 externalproject_add(Target_Ogg
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
@@ -275,8 +282,8 @@ externalproject_add(Target_Ogg
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_Ogg ${GIT_EXECUTABLE} reset --hard
-        PATCH_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_SOURCE_LOCATION}/Target_Ogg ${GIT_EXECUTABLE} apply ${DEPS_PATCH_LOCATION}/ogg-1.3.5.patch
+        UPDATE_COMMAND ${UPDATE_PLACEHOLDER}
+        PATCH_COMMAND ${PATCH_PLACEHOLDER}
         CMAKE_ARGS
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
@@ -298,8 +305,8 @@ externalproject_add(Target_Ogg
         -DBUILD_SHARED_LIBS=OFF
         -DBUILD_FRAMEWORK=OFF
         -DBUILD_TESTING=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -336,8 +343,8 @@ externalproject_add(Target_Vorbis
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DOGG_INCLUDE_DIR=${DEPS_ROOT}/include #for Android
         -DOGG_LIBRARY=${DEPS_ROOT}/lib/libogg.a #for Android
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -372,8 +379,8 @@ externalproject_add(Target_Theora
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -411,10 +418,10 @@ if (NOT EMSCRIPTEN)
             -DANDROID_PLATFORM=${ANDROID_PLATFORM}
             -DBUILD_SHARED_LIBS=OFF
             -DCMAKE_DEBUG_POSTFIX=
-            TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT} ${CMAKE_COMMAND} -E remove -f
+            TEST_AFTER_INSTALL ON
+            TEST_COMMAND ${CMAKE_COMMAND} -E chdir ${DEPS_ROOT} ${CMAKE_COMMAND} -E rm -rf
             lib/libz.so lib/libzlib.dll.a lib/zlib.lib lib/zlibd.lib bin/libzlib.dll bin/zlib.dll bin/zlibd.dll lib/libz.dylib
-            COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-            TEST_AFTER_INSTALL true
+            COMMAND ${STAMP_PLACEHOLDER}
             )
 else ()
     add_custom_target(Target_zlib COMMAND ${CMAKE_COMMAND} -E true)
@@ -462,8 +469,8 @@ externalproject_add(Target_ZZIP
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -497,8 +504,8 @@ externalproject_add(Target_pugixml
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -534,8 +541,8 @@ externalproject_add(Target_tinyxml2
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -Dtinyxml2_BUILD_TESTING=OFF
         -Dtinyxml2_SHARED_LIBS=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -572,8 +579,8 @@ externalproject_add(Target_PNG
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DPNG_SHARED=OFF
         -DPNG_TESTS=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -619,8 +626,8 @@ externalproject_add(Target_FreeType
         -DFT_DISABLE_HARFBUZZ=ON
         -DFT_DISABLE_BROTLI=ON
         -DBUILD_SHARED_LIBS=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -659,8 +666,8 @@ externalproject_add(Target_rapidjson
         -DRAPIDJSON_BUILD_TESTS=OFF
         -DRAPIDJSON_BUILD_THIRDPARTY_GTEST=OFF
         -DRAPIDJSON_HAS_STDSTRING=ON
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -754,8 +761,8 @@ externalproject_add(Target_assimp
         -DASSIMP_BUILD_3MF_IMPORTER=OFF
         -DASSIMP_BUILD_MMD_IMPORTER=OFF
         -DASSIMP_BUILD_STEP_IMPORTER=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -860,11 +867,11 @@ externalproject_add(Target_OGRE
         -DOGRE_BUILD_TESTS=OFF
         -DOGRE_BUILD_LIBS_AS_FRAMEWORKS=OFF
         -DOGRE_BUILD_PLATFORM_APPLE_IOS=OFF
+        TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${DEPS_SOURCE_LOCATION}/Target_OGRE/RenderSystems/GLSupport/include/GLSL
-        ${DEPS_ROOT}/include/OGRE/RenderSystems/GLES2
-        COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        ${DEPS_ROOT}/include/OGRE/RenderSystems/GLES2/GLSL
+        COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -930,8 +937,8 @@ externalproject_add(Target_OGRE2
         -DOGRE_USE_BOOST=OFF
         -DOGRE_CONFIG_THREAD_PROVIDER=std
         -DCMAKE_SKIP_INSTALL_RPATH=ON
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -969,8 +976,8 @@ externalproject_add(Target_freeglut
         -DFREEGLUT_BUILD_STATIC_LIBS=ON
         -DFREEGLUT_GLES=OFF
         -DINSTALL_PDB=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1009,8 +1016,8 @@ externalproject_add(Target_Lua
         -DLUA_USE_RELATIVE_LOADLIB=OFF
         -DLUA_USE_POSIX=OFF
         -DLUA_USE_DLOPEN=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1050,8 +1057,8 @@ externalproject_add(Target_sol2
         -DLUA_LIBRARIES="lua"
         -DSOL2_BUILD_LUA=OFF
         -DBUILD_LUA_AS_DLL=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1087,8 +1094,8 @@ externalproject_add(Target_filesystem
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DGHC_FILESYSTEM_BUILD_TESTING=OFF
         -DGHC_FILESYSTEM_BUILD_EXAMPLES=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1123,8 +1130,8 @@ externalproject_add(Target_GoogleTest
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1159,8 +1166,8 @@ externalproject_add(Target_GoogleBenchmark
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DBENCHMARK_ENABLE_TESTING=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1195,8 +1202,8 @@ externalproject_add(Target_json
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DJSON_BuildTests=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1218,8 +1225,8 @@ externalproject_add(Target_ini
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${DEPS_SOURCE_LOCATION}/Target_ini/ini_parser.hpp ${DEPS_INCLUDE_DIR}
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1257,8 +1264,8 @@ externalproject_add(Target_yaml-cpp
         -DYAML_CPP_BUILD_TOOLS=OFF
         -DYAML_BUILD_SHARED_LIBS=OFF
         -DYAML_CPP_BUILD_TESTS=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1278,10 +1285,10 @@ externalproject_add(Target_asio
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
-        BUILD_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_asio/asio/include/asio.hpp ${DEPS_INCLUDE_DIR}
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_asio/asio/include/asio ${DEPS_INCLUDE_DIR}
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_SOURCE_LOCATION}/Target_asio/asio/include/asio ${DEPS_INCLUDE_DIR}/asio
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_SOURCE_LOCATION}/Target_asio/asio/include/asio.hpp ${DEPS_INCLUDE_DIR}
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1316,8 +1323,8 @@ externalproject_add(Target_OpenSSL
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         -DWITH_APPS=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1357,8 +1364,8 @@ externalproject_add(Target_entt
         -DENTT_BUILD_BENCHMARK=OFF
         -DENTT_BUILD_EXAMPLE=OFF
         -DENTT_BUILD_DOCS=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1380,8 +1387,8 @@ externalproject_add(Target_opencv_contrib
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E true
         BUILD_COMMAND ${CMAKE_COMMAND} -E true
         INSTALL_COMMAND ${CMAKE_COMMAND} -E true
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1424,8 +1431,8 @@ externalproject_add(Target_opencv
         -DBUILD_EXAMPLES=OFF
         -DBUILD_TESTS=OFF
         -DBUILD_DOCS=OFF
-        TEST_COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILES}
-        TEST_AFTER_INSTALL true
+        TEST_AFTER_INSTALL ON
+        TEST_COMMAND ${STAMP_PLACEHOLDER}
         )
 
 
@@ -1433,6 +1440,7 @@ externalproject_add(Target_opencv
 list(APPEND DEP_TARGETS Target_SDL2)
 list(APPEND DEP_TARGETS Target_pugixml)
 list(APPEND DEP_TARGETS Target_zlib)
+list(APPEND DEP_TARGETS Target_asio)
 list(APPEND DEP_TARGETS Target_Lua)
 list(APPEND DEP_TARGETS Target_sol2)
 list(APPEND DEP_TARGETS Target_FreeType)

@@ -72,7 +72,7 @@ class MenuAppState : public AppState {
   void OnClean() { GetComponent<SystemLocator>().OnClean(); }
 };
 
-#if defined(_WIN32) && !defined(DEBUG)
+#if defined(_WIN32) && (defined(NDEBUG))
 #include <windows.h>
 INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
 #else

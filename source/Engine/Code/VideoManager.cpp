@@ -149,26 +149,34 @@ void VideoManager::LoadResources() {
   const char *PROGRAMS_ZIP = "programs.zip";
   const char *ASSETS_ZIP = "assets.zip";
   const int SCAN_DEPTH = 4;
-#if defined(DESKTOP) && defined(DEBUG)
   const char *PROGRAMS_DIR = "source/Programs";
   const char *GLSL_DIR = "source/GLSL";
   const char *GLSLES_DIR = "source/GLSLES";
   const char *ASSETS_DIR = "source/Example/Assets";
-  ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
-  if (RenderSystemIsGLES2())
-    ScanLocation(FindPath(GLSLES_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
-  else
-    ScanLocation(FindPath(GLSL_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
-  ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_DEFAULT);
+
+#if defined(DESKTOP)
+  if (!FindPath(PROGRAMS_ZIP, SCAN_DEPTH).empty()) {
+    ogreResourceManager.addResourceLocation(FindPath(PROGRAMS_ZIP, SCAN_DEPTH), ZIP, Ogre::RGN_INTERNAL);
+  } else {
+    ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
+    if (RenderSystemIsGLES2())
+      ScanLocation(FindPath(GLSLES_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
+    else
+      ScanLocation(FindPath(GLSL_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
+  }
+
+  if (!FindPath(ASSETS_ZIP, SCAN_DEPTH).empty()) {
+    ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP, SCAN_DEPTH), ZIP, Ogre::RGN_DEFAULT);
+  } else {
+    ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_DEFAULT);
+  }
+
 #elif defined(ANDROID)
   ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, APKZIP, Ogre::RGN_INTERNAL);
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, APKZIP, Ogre::RGN_DEFAULT);
 #elif defined(EMSCRIPTEN)
   ogreResourceManager.addResourceLocation(PROGRAMS_ZIP, ZIP, Ogre::RGN_INTERNAL);
   ogreResourceManager.addResourceLocation(ASSETS_ZIP, ZIP, Ogre::RGN_DEFAULT);
-#else
-  ogreResourceManager.addResourceLocation(FindPath(PROGRAMS_ZIP, SCAN_DEPTH), ZIP, Ogre::RGN_INTERNAL);
-  ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP, SCAN_DEPTH), ZIP, Ogre::RGN_DEFAULT);
 #endif
   ogreResourceManager.initialiseResourceGroup(Ogre::RGN_INTERNAL);
   ogreResourceManager.initialiseAllResourceGroups();
