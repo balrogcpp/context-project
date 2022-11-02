@@ -1,6 +1,6 @@
 project(lua C)
 cmake_minimum_required(VERSION 2.9)
-find_package(Git REQUIRED)
+
 
 # installation directories
 set(INSTALL_BIN bin CACHE PATH "Where to install binaries to.")
@@ -350,7 +350,10 @@ endif ()
 
 
 # fetch lua sources from official git mirror
-execute_process(COMMAND ${GIT_EXECUTABLE} clone -b ${LUA_VERSION} --depth 1 --recursive https://github.com/lua/lua.git lua WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+find_package(Git REQUIRED)
+if (NOT IS_DIRECTORY ${CMAKE_SOURCE_DIR}/lua)
+    execute_process(COMMAND ${GIT_EXECUTABLE} clone -b ${LUA_VERSION} --depth 1 --recursive https://github.com/lua/lua.git lua WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif ()
 
 ## SOURCES
 # Sources and headers
