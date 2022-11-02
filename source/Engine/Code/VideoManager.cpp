@@ -193,7 +193,14 @@ void InitOgreRenderSystemGL();
 #endif
 
 VideoManager::VideoManager()
-    : ogreMinLogLevel(Ogre::LML_TRIVIAL), ogreLogFile("Ogre.log"), shadowEnabled(true), shadowTechnique(Ogre::SHADOWTYPE_NONE), pssmSplitCount(3) {}
+    : ogreMinLogLevel(Ogre::LML_TRIVIAL),
+      ogreLogFile("Ogre.log"),
+      shadowEnabled(true),
+      shadowTechnique(Ogre::SHADOWTYPE_NONE),
+      pssmSplitCount(3),
+      shadowFarDistance(400.0),
+      shadowTexSize(512) {}
+
 VideoManager::~VideoManager() { SDL_Quit(); }
 
 void VideoManager::OnUpdate(float time) {}
@@ -372,7 +379,12 @@ void VideoManager::InitOgreScene() {
     Ogre::PixelFormat ShadowTextureFormat = Ogre::PixelFormat::PF_FLOAT16_R;
 #endif
     shadowFarDistance = 400;
+#ifdef DESKTOP
     shadowTexSize = 2048;
+#else
+    shadowTexSize = 512;
+#endif
+
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE_INTEGRATED);
     ogreSceneManager->setShadowFarDistance(shadowFarDistance);
     ogreSceneManager->setShadowTextureSize(shadowTexSize);
@@ -382,6 +394,8 @@ void VideoManager::InitOgreScene() {
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_POINT, 0);
     auto passCaterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
     ogreSceneManager->setShadowTextureCasterMaterial(passCaterMaterial);
+
+    // pssm stuff
     pssmSetup = make_shared<Ogre::PSSMShadowCameraSetup>();
     pssmSetup->calculateSplitPoints(pssmSplitCount, 0.001, ogreSceneManager->getShadowFarDistance());
     pssmSplitPointList = pssmSetup->getSplitPoints();
@@ -390,11 +404,10 @@ void VideoManager::InitOgreScene() {
       pssmSetup->setOptimalAdjustFactor(i, static_cast<Ogre::Real>(0.5 * i));
     }
     ogreSceneManager->setShadowCameraSetup(pssmSetup);
-    auto *shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
-    auto *schemRenderState = shaderGenerator->getRenderState(Ogre::MSN_SHADERGEN);
-    auto subRenderState = shaderGenerator->createSubRenderState<Ogre::RTShader::IntegratedPSSM3>();
+    auto *schemRenderState = Ogre::RTShader::ShaderGenerator::getSingleton().getRenderState(Ogre::MSN_SHADERGEN);
+    auto *subRenderState = static_cast<Ogre::RTShader::IntegratedPSSM3 *>(schemRenderState->getSubRenderState(Ogre::RTShader::SRS_INTEGRATED_PSSM3));
     subRenderState->setSplitPoints(pssmSplitPointList);
-    schemRenderState->addTemplateSubRenderState(subRenderState);
+
   } else {
     ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
     ogreSceneManager->setShadowTextureCountPerLightType(Ogre::Light::LT_DIRECTIONAL, 0);
@@ -475,7 +488,7 @@ void VideoManager::InitOgreRTSS() {
   bool result = Ogre::RTShader::ShaderGenerator::initialize();
   OgreAssert(result, "[VideoManager] OGRE RTSS init failed");
   auto &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
-  //ogreViewport->setMaterialScheme(Ogre::MSN_SHADERGEN);
+  // ogreViewport->setMaterialScheme(Ogre::MSN_SHADERGEN);
   rtShaderGen.addSceneManager(ogreSceneManager);
   rtShaderGen.setShaderCachePath("");
   shaderResolver = make_unique<ShaderResolver>(&rtShaderGen);
