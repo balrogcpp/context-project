@@ -24,9 +24,9 @@ RUN apt-get update \
     && apt-get clean \
     && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
-    && ninja contrib \
+    && cmake --build . --target contrib \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-linux.cmake -G Ninja .. \
-    && ninja package \
+    && cmake --build . --target package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build \
     && apt-get -y purge libxaw7-dev libxrandr-dev libglew-dev libpulse-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev \
     && apt-get -y autoremove
@@ -35,9 +35,9 @@ RUN apt-get update \
 # win32
 RUN mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
-    && ninja contrib \
+    && cmake --build . --target contrib \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-clang-mingw.cmake -G Ninja .. \
-    && ninja package \
+    && cmake --build . --target package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
@@ -46,9 +46,9 @@ RUN mkdir build && cd build \
     && export OSXCROSS_HOST=$OSXCROSS_HOST_X86_64 \
     && eval $X86_64_EVAL \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
-    && ninja contrib \
+    && cmake --build . --target contrib \
     && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
-    && ninja package \
+    && cmake --build . --target package \
     && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
@@ -57,9 +57,9 @@ RUN mkdir build && cd build \
 #    && export OSXCROSS_HOST=$OSXCROSS_HOST_ARM64 \
 #    && eval $ARM64_EVAL \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
-#    && ninja contrib \
+#    && cmake --build . --target contrib \
 #    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${OSXCROSS_TOOLCHAIN_FILE} -G Ninja .. \
-#    && ninja package \
+#    && cmake --build . --target package \
 #    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build
 
 
@@ -104,7 +104,7 @@ RUN apt-get update \
 #RUN cd ${EMSDK_ROOT} && EMSDK_QUIET=1 . ./emsdk_env.sh \
 #    && mkdir ${CONTEXT_HOME}/build && cd ${CONTEXT_HOME}/build \
 #    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
-#    && emmake ninja contrib \
+#    && emmake cmake --build . --target contrib \
 #    && emcmake cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
-#    && emmake ninja package \
+#    && emmake cmake --build . --target package \
 #    && rm -rf ../artifacts/_CPack_Packages ../contrib/build ../contrib/sdk ../build

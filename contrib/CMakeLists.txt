@@ -1468,7 +1468,7 @@ externalproject_add(Target_opencv
 
 
 # list of dependency targets
-add_custom_target(contrib)
+add_custom_target(contrib COMMAND ${CMAKE_COMMAND} -E touch ${DEPS_SOURCE_LOCATION}/contrib_ready)
 add_dependencies(contrib Target_SDL2)
 add_dependencies(contrib Target_pugixml)
 add_dependencies(contrib Target_zlib)
