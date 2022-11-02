@@ -124,7 +124,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
 
   void UnregKeyboardListener(KeyboardListener *p) {
     auto it = std::find(keyListeners.begin(), keyListeners.end(), p), end = keyListeners.end();
-    if (it != keyListeners.end()) {
+    if (it != end) {
       std::swap(it, --end);
       keyListeners.pop_back();
     }
@@ -139,7 +139,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
 
   void UnregMouseListener(MouseListener *p) {
     auto it = std::find(ioListeners.begin(), ioListeners.end(), p), end = ioListeners.end();
-    if (it != ioListeners.end()) {
+    if (it != end) {
       std::swap(it, --end);
       ioListeners.pop_back();
     }
@@ -161,7 +161,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
 
   void UnregWindowListener(WindowListener *p) {
     auto it = std::find(winListeners.begin(), winListeners.end(), p), end = winListeners.end();
-    if (it != winListeners.end()) {
+    if (it != end) {
       std::swap(it, --end);
       winListeners.pop_back();
     }

@@ -68,10 +68,11 @@ void SystemLocator::RegComponent(SystemI *component) {
 }
 
 void SystemLocator::UnRegComponent(SystemI *component) {
-  auto it = find(componentList.begin(), componentList.end(), component);
-  if (it != componentList.end()) {
+  auto it = find(componentList.begin(), componentList.end(), component), end = componentList.end();
+  if (it != end) {
+    swap(it, --end);
+    componentList.pop_back();
     component->OnClean();
-    componentList.erase(it);
   }
 }
 
