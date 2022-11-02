@@ -618,7 +618,7 @@ void DotSceneLoaderB::processLookTarget(pugi::xml_node& XMLNode, SceneNode* pPar
         localDirection = parseVector3(pElement);
 
     // Setup the look target
-    try
+    // try
     {
         if (!nodeName.empty())
         {
@@ -628,10 +628,10 @@ void DotSceneLoaderB::processLookTarget(pugi::xml_node& XMLNode, SceneNode* pPar
 
         pParent->lookAt(position, relativeTo, localDirection);
     }
-    catch (const Exception& e)
-    {
-        LogManager::getSingleton().logError("DotSceneLoaderB - " + e.getDescription());
-    }
+    //catch (const Exception& e)
+    //{
+    //    LogManager::getSingleton().logError("DotSceneLoaderB - " + e.getDescription());
+    //}
 }
 
 void DotSceneLoaderB::processTrackTarget(pugi::xml_node& XMLNode, SceneNode* pParent)
@@ -652,15 +652,15 @@ void DotSceneLoaderB::processTrackTarget(pugi::xml_node& XMLNode, SceneNode* pPa
         offset = parseVector3(pElement);
 
     // Setup the track target
-    try
+    // try
     {
         SceneNode* pTrackNode = mSceneMgr->getSceneNode(nodeName);
         pParent->setAutoTracking(true, pTrackNode, localDirection, offset);
     }
-    catch (const Exception& e)
-    {
-        LogManager::getSingleton().logError("DotSceneLoaderB - " + e.getDescription());
-    }
+    //catch (const Exception& e)
+    //{
+    //    LogManager::getSingleton().logError("DotSceneLoaderB - " + e.getDescription());
+    //}
 }
 
 void DotSceneLoaderB::processEntity(pugi::xml_node& XMLNode, SceneNode* pParent)
@@ -680,7 +680,7 @@ void DotSceneLoaderB::processEntity(pugi::xml_node& XMLNode, SceneNode* pParent)
     // Create the entity
 	MovableObject* pEntity = 0;
 
-    try
+    // try
     {
 		// If the Entity is instanced then the creation path is different
 		if (!instancedManager.empty())
@@ -722,11 +722,11 @@ void DotSceneLoaderB::processEntity(pugi::xml_node& XMLNode, SceneNode* pParent)
 			}
 		}
     }
-    catch (const Exception& e)
-    {
-        LogManager::getSingleton().logError("DotSceneLoaderB - " + e.getDescription());
-        return;
-    }
+    //catch (const Exception& e)
+    //{
+    //    LogManager::getSingleton().logError("DotSceneLoaderB - " + e.getDescription());
+    //    return;
+    //}
 
     // Process userDataReference (?)
     if (auto pElement = XMLNode.child("userData"))
@@ -746,15 +746,15 @@ void DotSceneLoaderB::processParticleSystem(pugi::xml_node& XMLNode, SceneNode* 
         templateName = getAttrib(XMLNode, "file"); // compatibility with old scenes
 
     // Create the particle system
-    try
+    // try
     {
         ParticleSystem* pParticles = mSceneMgr->createParticleSystem(name, templateName);
         pParent->attachObject(pParticles);
     }
-    catch (const Exception& e)
-    {
-        LogManager::getSingleton().logError("DotSceneLoaderB - " + e.getDescription());
-    }
+    //catch (const Exception& e)
+    //{
+    //    LogManager::getSingleton().logError("DotSceneLoaderB - " + e.getDescription());
+    //}
 }
 
 void DotSceneLoaderB::processBillboardSet(pugi::xml_node& XMLNode, SceneNode* pParent)

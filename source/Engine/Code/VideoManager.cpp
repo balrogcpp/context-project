@@ -474,12 +474,26 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
 void VideoManager::InitOgreRTSS() {
   bool result = Ogre::RTShader::ShaderGenerator::initialize();
   OgreAssert(result, "[VideoManager] OGRE RTSS init failed");
-  auto *shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
-  ogreViewport->setMaterialScheme(Ogre::MSN_SHADERGEN);
-  shaderGenerator->addSceneManager(ogreSceneManager);
-  shaderGenerator->setShaderCachePath("");
-  shaderResolver = make_unique<ShaderResolver>(shaderGenerator);
+  auto &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
+  //ogreViewport->setMaterialScheme(Ogre::MSN_SHADERGEN);
+  rtShaderGen.addSceneManager(ogreSceneManager);
+  rtShaderGen.setShaderCachePath("");
+  shaderResolver = make_unique<ShaderResolver>(&rtShaderGen);
   Ogre::MaterialManager::getSingleton().addListener(shaderResolver.get());
+
+  auto *schemRenderState = rtShaderGen.getRenderState(Ogre::MSN_SHADERGEN);
+  auto *subRenderState = rtShaderGen.createSubRenderState(Ogre::RTShader::SRS_INTEGRATED_PSSM3);
+  schemRenderState->addTemplateSubRenderState(subRenderState);
+
+  // Add the hardware skinning to the shader generator default render state
+  subRenderState = rtShaderGen.createSubRenderState(Ogre::RTShader::SRS_HARDWARE_SKINNING);
+  schemRenderState->addTemplateSubRenderState(subRenderState);
+
+  // increase max bone count for higher efficiency
+  Ogre::RTShader::HardwareSkinningFactory::getSingleton().setMaxCalculableBoneCount(80);
+
+  // re-generate shaders to include new SRSs
+  rtShaderGen.invalidateScheme(Ogre::MSN_SHADERGEN);
 }
 
 void VideoManager::OnSetUp() {
