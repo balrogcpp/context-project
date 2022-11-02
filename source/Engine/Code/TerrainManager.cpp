@@ -24,10 +24,10 @@ TerrainManager::~TerrainManager() {
 
 void TerrainManager::OnSetUp() {
   ogreRoot = Ogre::Root::getSingletonPtr();
-  OgreAssert(ogreRoot, "[TerrainManager] ogreRoot is not initialised");
+  ASSERTION(ogreRoot, "[TerrainManager] ogreRoot is not initialised");
   ogreSceneManager = ogreRoot->getSceneManager("Default");
-  OgreAssert(ogreSceneManager, "[TerrainManager] ogreSceneManager is not initialised");
-  OgreAssert(ogreSceneManager->hasCamera("Default"), "[TerrainManager] ogreCamera is not initialised");
+  ASSERTION(ogreSceneManager, "[TerrainManager] ogreSceneManager is not initialised");
+  ASSERTION(ogreSceneManager->hasCamera("Default"), "[TerrainManager] ogreCamera is not initialised");
   ogreCamera = ogreSceneManager->getCamera("Default");
 
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
@@ -43,8 +43,8 @@ void TerrainManager::OnSetUp() {
 float TerrainManager::GetHeight(float x, float z) { return ogreTerrainGroup ? ogreTerrainGroup->getHeightAtWorldPosition(x, 1000, z) : 0; }
 
 void TerrainManager::RegTerrainGroup(Ogre::TerrainGroup *terrainGroup) {
-  OgreAssert(terrainGroup, "[TerrainManager] terrainGroup can't be NULL");
-  OgreAssert(!ogreTerrainGroup, "[TerrainManager] terrainGroup already registered");
+  ASSERTION(terrainGroup, "[TerrainManager] terrainGroup can't be NULL");
+  ASSERTION(!ogreTerrainGroup, "[TerrainManager] terrainGroup already registered");
   ogreTerrainGroup.reset(terrainGroup);
 }
 

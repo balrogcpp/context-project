@@ -1,6 +1,7 @@
 /// created by Andrey Vasiliev
 
 #include "pch.h"
+#include "Assertion.h"
 #include "ImguiHelpers.h"
 #define IMGUI_INCLUDE_IMGUI_USER_H
 #include <Overlay/OgreFontManager.h>
@@ -41,8 +42,8 @@ ImFont *AddFont(const Ogre::String &name, const char *group, const ImFontConfig 
   vector<CodePointRange> mCodePointRanges;
 
   Ogre::FontPtr font = Ogre::FontManager::getSingleton().getByName(name, group);
-  OgreAssert(font, "font does not exist");
-  OgreAssert(font->getType() == Ogre::FT_TRUETYPE, "font must be of FT_TRUETYPE");
+  ASSERTION(font, "font does not exist");
+  ASSERTION(font->getType() == Ogre::FT_TRUETYPE, "font must be of FT_TRUETYPE");
   Ogre::DataStreamPtr dataStreamPtr = Ogre::ResourceGroupManager::getSingleton().openResource(font->getSource(), font->getGroup());
   Ogre::MemoryDataStream ttfchunk(dataStreamPtr, false);  // transfer ownership to imgui
 

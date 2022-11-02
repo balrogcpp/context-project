@@ -18,11 +18,11 @@ void CompositorManager::OnSetUp() {
 #endif
   // init fields
   compositorManager = Ogre::CompositorManager::getSingletonPtr();
-  OgreAssert(compositorManager, "[CompositorManager] compositorManager not initialised");
+  ASSERTION(compositorManager, "[CompositorManager] compositorManager not initialised");
   ogreSceneManager = Ogre::Root::getSingleton().getSceneManager("Default");
-  OgreAssert(ogreSceneManager, "[CompositorManager] ogreSceneManager not initialised");
+  ASSERTION(ogreSceneManager, "[CompositorManager] ogreSceneManager not initialised");
   ogreCamera = ogreSceneManager->getCamera("Default");
-  OgreAssert(ogreCamera, "[CompositorManager] ogreCamera not initialised");
+  ASSERTION(ogreCamera, "[CompositorManager] ogreCamera not initialised");
   ogreViewport = ogreCamera->getViewport();
   compositorChain = compositorManager->getCompositorChain(ogreViewport);
 
@@ -47,7 +47,7 @@ void CompositorManager::OnClean() { ogreViewport->removeListener(this); }
 
 void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
   auto *compositor = compositorManager->addCompositor(ogreViewport, name, position);
-  OgreAssert(compositor, "Failed to add MRT compoitor");
+  ASSERTION(compositor, "Failed to add MRT compoitor");
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 }
 
@@ -80,7 +80,7 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
     compositorList.pop();
 
     auto *compositor = compositorManager->addCompositor(ogreViewport, compositorName);
-    OgreAssert(compositor, "[CompositorManager] Failed to add compositor");
+    ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
 
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {
@@ -96,36 +96,36 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
 
 void CompositorManager::InitMRT() {
   auto *mrtCompositor = compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR, 0);
-  OgreAssert(mrtCompositor, "Failed to add MRT compositor");
+  ASSERTION(mrtCompositor, "Failed to add MRT compositor");
 
   // check textures
   auto *tech = mrtCompositor->getTechnique();
 
-  OgreAssert(tech->getTextureDefinition("mrt"), "mrt texture failed to create");
-  OgreAssert(tech->getTextureDefinition("rt"), "rt texture failed to create");
-  OgreAssert(tech->getTextureDefinition("mrt1"), "mrt1 failed to create");
-  OgreAssert(tech->getTextureDefinition("mrt2"), "mrt2 failed to create");
+  ASSERTION(tech->getTextureDefinition("mrt"), "mrt texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt"), "rt texture failed to create");
+  ASSERTION(tech->getTextureDefinition("mrt1"), "mrt1 failed to create");
+  ASSERTION(tech->getTextureDefinition("mrt2"), "mrt2 failed to create");
 
   compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, true);
 }
 
 void CompositorManager::InitMipChain() {
   auto *bloomCompositor = compositorManager->addCompositor(ogreViewport, BLOOM_COMPOSITOR, 1);
-  OgreAssert(bloomCompositor, "Failed to add Bloom compoitor");
+  ASSERTION(bloomCompositor, "Failed to add Bloom compoitor");
 
   // check textures
   auto *tech = bloomCompositor->getTechnique();
 
-  OgreAssert(tech->getTextureDefinition("rt1"), "rt1 texture failed to create");
-  OgreAssert(tech->getTextureDefinition("rt2"), "rt2 texture failed to create");
-  OgreAssert(tech->getTextureDefinition("rt3"), "rt3 texture failed to create");
-  OgreAssert(tech->getTextureDefinition("rt4"), "rt4 texture failed to create");
-  OgreAssert(tech->getTextureDefinition("rt5"), "rt5 texture failed to create");
-  OgreAssert(tech->getTextureDefinition("rt6"), "rt6 texture failed to create");
-  OgreAssert(tech->getTextureDefinition("rt7"), "rt7 texture failed to create");
-  OgreAssert(tech->getTextureDefinition("rt8"), "rt8 texture failed to create");
-  OgreAssert(tech->getTextureDefinition("rt9"), "rt9 texture failed to create");
-  OgreAssert(tech->getTextureDefinition("rt10"), "rt10 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt1"), "rt1 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt2"), "rt2 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt3"), "rt3 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt4"), "rt4 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt5"), "rt5 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt6"), "rt6 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt7"), "rt7 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt8"), "rt8 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt9"), "rt9 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt10"), "rt10 texture failed to create");
 
   compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, false);
 }
@@ -158,7 +158,7 @@ void CompositorManager::viewportDimensionsChanged(Ogre::Viewport *viewport) {
     compositorList.pop();
 
     auto *compositor = compositorManager->addCompositor(viewport, compositorName);
-    OgreAssert(compositor, "[CompositorManager] Failed to add compositor");
+    ASSERTION(compositor, "[CompositorManager] Failed to add compositor");
 
     auto *compositorPtr = compositorChain->getCompositor(compositorName);
     for (auto &jt : compositorPtr->getTechnique()->getTextureDefinitions()) {

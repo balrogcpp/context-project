@@ -11,7 +11,7 @@ SkyManager::SkyManager() : needsUpdate(false), hosekParamList({"A", "B", "C", "D
 SkyManager::~SkyManager() {}
 
 Ogre::Vector3 SkyManager::GetSunPosition() {
-  OgreAssert(ogreSceneManager->hasLight("Sun"), "[SkyManager] light Sun not created");
+  ASSERTION(ogreSceneManager->hasLight("Sun"), "[SkyManager] light Sun not created");
   auto *SunPtr = ogreSceneManager->getLight("Sun");
   return SunPtr ? -SunPtr->getDerivedDirection().normalisedCopy() : Ogre::Vector3::ZERO;
 }
@@ -48,10 +48,10 @@ void SkyManager::SetUpSky() {
 
 void SkyManager::OnSetUp() {
   ogreRoot = Ogre::Root::getSingletonPtr();
-  OgreAssert(ogreRoot, "[SceneManager] ogreRoot is not initialised");
+  ASSERTION(ogreRoot, "[SceneManager] ogreRoot is not initialised");
   ogreSceneManager = ogreRoot->getSceneManager("Default");
-  OgreAssert(ogreSceneManager, "[SceneManager] ogreSceneManager is not initialised");
-  OgreAssert(ogreSceneManager->hasCamera("Default"), "[SceneManager] ogreCamera is not initialised");
+  ASSERTION(ogreSceneManager, "[SceneManager] ogreSceneManager is not initialised");
+  ASSERTION(ogreSceneManager->hasCamera("Default"), "[SceneManager] ogreCamera is not initialised");
   ogreCamera = ogreSceneManager->getCamera("Default");
 }
 

@@ -43,9 +43,9 @@ void PhysicsManager::SetDebugView(bool debug) { this->debugView = debug; }
 
 void PhysicsManager::OnSetUp() {
   auto *ogreRoot = Ogre::Root::getSingletonPtr();
-  OgreAssert(ogreRoot, "[PhysicsManager] ogreRoot is not initialised");
+  ASSERTION(ogreRoot, "[PhysicsManager] ogreRoot is not initialised");
   auto *ogreSceneManager = ogreRoot->getSceneManager("Default");
-  OgreAssert(ogreSceneManager, "[PhysicsManager] ogreSceneManager is not initialised");
+  ASSERTION(ogreSceneManager, "[PhysicsManager] ogreSceneManager is not initialised");
   auto *rootNode = ogreSceneManager->getRootSceneNode();
 
   dynamicWorld = make_unique<BtOgre::DynamicsWorld>(Ogre::Vector3(0.0, -9.8, 0.0));
@@ -165,7 +165,7 @@ void PhysicsManager::ProcessData(Ogre::Entity *entity) {
                                                BtOgre::ColliderType::CT_CAPSULE, BtOgre::ColliderType::CT_TRIMESH, BtOgre::ColliderType::CT_HULL};
   float mass = ParseReal(userData.getUserAny("mass"));
   int proxy = ParseInt(userData.getUserAny("proxy"));
-  OgreAssert(proxy >= 0 && proxy < sizeof(typeList) / sizeof(BtOgre::ColliderType), "[PhysicsManager] proxy type is out of range");
+  ASSERTION(proxy >= 0 && proxy < sizeof(typeList) / sizeof(BtOgre::ColliderType), "[PhysicsManager] proxy type is out of range");
 
   dynamicWorld->addRigidBody(mass, entity, typeList[proxy], nullptr);
 }

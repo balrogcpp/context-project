@@ -18,12 +18,12 @@ void AppStateManager::OnClean() { Ogre::Root::getSingleton().addFrameListener(th
 
 void AppStateManager::RegAppState(std::shared_ptr<AppState> appState) {
   const std::string name = appState->GetName();
-  OgreAssert(!appStateList.count(name), "[AppStateManager] appState with this name already registered");
+  ASSERTION(!appStateList.count(name), "[AppStateManager] appState with this name already registered");
   appStateList[name] = appState;
   if (!activeAppState) activeAppState = appState;
 }
 void AppStateManager::UnregAppState(std::shared_ptr<AppState> appState) {
-  OgreAssert(appState, "[AppStateManager] appStatePtr is NULL");
+  ASSERTION(appState, "[AppStateManager] appStatePtr is NULL");
   const std::string name = appState->GetName();
   if (appStateList.count(name)) appStateList.erase(name);
 }
@@ -32,7 +32,7 @@ void AppStateManager::UnregAppState(const std::string &name) {
 }
 
 void AppStateManager::SetActiveAppState(std::shared_ptr<AppState> appState) {
-  OgreAssert(appState, "[AppStateManager] appStatePtr is NULL");
+  ASSERTION(appState, "[AppStateManager] appStatePtr is NULL");
   if (!appStateList.count(appState->GetName())) RegAppState(appState);
   activeAppState->OnClean();
   activeAppState.reset();
@@ -40,9 +40,9 @@ void AppStateManager::SetActiveAppState(std::shared_ptr<AppState> appState) {
   activeAppState->OnSetUp();
 }
 void AppStateManager::SetActiveAppState(const std::string &name) {
-  OgreAssert(appStateList.count(name), "[AppStateManager] appState with this name not registered");
+  ASSERTION(appStateList.count(name), "[AppStateManager] appState with this name not registered");
   const auto &appStatePtr = appStateList[name];
-  OgreAssert(appStatePtr, "[AppStateManager] appStatePtr is NULL");
+  ASSERTION(appStatePtr, "[AppStateManager] appStatePtr is NULL");
   activeAppState->OnClean();
   activeAppState.reset();
   activeAppState = appStatePtr;

@@ -121,7 +121,7 @@ void ScanLocation(const string &path, const string &groupName) {
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
   std::vector<std::string> resourceList;
-  OgreAssert(fs::is_directory(path), "path is not directory");
+  ASSERTION(fs::is_directory(path), "path is not directory");
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
   ogreResourceManager.addResourceLocation(path, FILE_SYSTEM, groupName);
 
@@ -229,23 +229,23 @@ void VideoManager::CheckGPU() {
   const auto *ogreRenderSystem = ogreRoot->getRenderSystem();
   const auto *ogreRenderCapabilities = ogreRenderSystem->getCapabilities();
   const auto *ogreRenderSystemCommon = static_cast<const Ogre::GLRenderSystemCommon *>(ogreRenderSystem);
-  OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
-  OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
-  OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
 #if defined(DESKTOP)
-  OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
 #elif defined(ANDROID)
-  OgreAssert(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_ETC1), "ETC1 compression support required");
 #elif defined(IOS)
-  OgreAssert(ogreRenderCapabilities->hasCapabilityOgre::(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
+  ASSERTION(ogreRenderCapabilities->hasCapabilityOgre::(RSC_TEXTURE_COMPRESSION_PVRTC), "PVRTC compression support required");
 #endif
   if (RenderSystemIsGL3()) {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-    OgreAssert(ogreRenderSystemCommon->hasMinGLVersion(3, 3), "OpenGL 3.3 is not supported");
+    ASSERTION(ogreRenderSystemCommon->hasMinGLVersion(3, 3), "OpenGL 3.3 is not supported");
 #endif
   } else if (RenderSystemIsGLES2()) {
 #ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-    OgreAssert(ogreRenderSystemCommon->hasMinGLVersion(3, 0), "OpenGLES 3.0 is not supported");
+    ASSERTION(ogreRenderSystemCommon->hasMinGLVersion(3, 0), "OpenGLES 3.0 is not supported");
 #endif
   }
 }
@@ -255,12 +255,12 @@ void VideoManager::InitSDL() {
   SDL_SetMainReady();
 #endif
 #ifndef EMSCRIPTEN
-  OgreAssert(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER), "Failed to init SDL");
+  ASSERTION(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER), "Failed to init SDL");
   for (int i = 0; i < SDL_NumJoysticks(); i++) {
     if (SDL_IsGameController(i)) SDL_GameControllerOpen(i);
   }
 #else
-  OgreAssert(!SDL_Init(SDL_INIT_VIDEO), "Failed to init SDL");
+  ASSERTION(!SDL_Init(SDL_INIT_VIDEO), "Failed to init SDL");
 #endif
 }
 
@@ -486,7 +486,7 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
 
 void VideoManager::InitOgreRTSS() {
   bool result = Ogre::RTShader::ShaderGenerator::initialize();
-  OgreAssert(result, "[VideoManager] OGRE RTSS init failed");
+  ASSERTION(result, "[VideoManager] OGRE RTSS init failed");
   auto &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
   // ogreViewport->setMaterialScheme(Ogre::MSN_SHADERGEN);
   rtShaderGen.addSceneManager(ogreSceneManager);

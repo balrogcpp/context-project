@@ -91,10 +91,10 @@ SceneManager::~SceneManager() { Ogre::MaterialManager::getSingleton().removeList
 
 void SceneManager::OnSetUp() {
   ogreRoot = Ogre::Root::getSingletonPtr();
-  OgreAssert(ogreRoot, "[SceneManager] ogreRoot is not initialised");
+  ASSERTION(ogreRoot, "[SceneManager] ogreRoot is not initialised");
   ogreSceneManager = ogreRoot->getSceneManager("Default");
-  OgreAssert(ogreSceneManager, "[SceneManager] ogreSceneManager is not initialised");
-  OgreAssert(ogreSceneManager->hasCamera("Default"), "[SceneManager] ogreCamera is not initialised");
+  ASSERTION(ogreSceneManager, "[SceneManager] ogreSceneManager is not initialised");
+  ASSERTION(ogreSceneManager->hasCamera("Default"), "[SceneManager] ogreCamera is not initialised");
   ogreCamera = ogreSceneManager->getCamera("Default");
 
   ogreSceneManager->addRenderObjectListener(this);
