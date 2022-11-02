@@ -18,6 +18,7 @@ using namespace std;
 namespace Glue {
 SystemLocator::SystemLocator() {}
 SystemLocator::~SystemLocator() {
+  OnClean();
   Ogre::Root::getSingleton().removeFrameListener(this);
 }
 
@@ -67,7 +68,7 @@ void SystemLocator::RegComponent(SystemI *component) {
   }
 }
 
-void SystemLocator::UnRegComponent(SystemI *component) {
+void SystemLocator::UnregComponent(SystemI *component) {
   auto it = find(componentList.begin(), componentList.end(), component), end = componentList.end();
   if (it != end) {
     swap(it, --end);

@@ -16,6 +16,7 @@ TerrainManager::~TerrainManager() {
     ogreTerrainGroup->removeAllTerrains();
     ogreTerrainGroup.reset();
   }
+
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
   if (terrainGlobalOptions) {
     delete terrainGlobalOptions;
@@ -35,8 +36,8 @@ void TerrainManager::OnSetUp() {
     terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
     terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
     terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
-    terrainGlobalOptions->setMaxPixelError(8);
     terrainGlobalOptions->setCompositeMapDistance(300);
+    terrainGlobalOptions->setCastsDynamicShadows(false);
   }
 }
 

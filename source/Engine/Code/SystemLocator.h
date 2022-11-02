@@ -24,7 +24,7 @@ class SystemLocator final : public System<SystemLocator>, Ogre::FrameListener, W
   void RenderFrame();
 
   void RegComponent(SystemI* component);
-  void UnRegComponent(SystemI* component);
+  void UnregComponent(SystemI* component);
 
   /// System impl
   void OnSetUp() override;

@@ -168,7 +168,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   }
 
   /// Called once per frame, sent callback message to listeners
-  void Capture() {
+  inline void Capture() noexcept {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
       switch (event.type) {

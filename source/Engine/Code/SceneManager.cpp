@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "SceneManager.h"
+#include "ForestsManager.h"
 #include "PhysicsManager.h"
 #include "TerrainManager.h"
 
@@ -149,6 +150,9 @@ void SceneManager::LoadFromFile(const std::string filename) {
     GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
     GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup);
   }
+
+  // search for PagedGeometry
+  GetComponent<ForestsManager>().AddGrass();
 }
 
 void SceneManager::RegCamera(Ogre::Camera *camera) {}

@@ -323,8 +323,8 @@ void VideoManager::InitOgreRoot() {
   if (!terrainGlobalOptions) terrainGlobalOptions = new Ogre::TerrainGlobalOptions();
   terrainGlobalOptions->setDefaultMaterialGenerator(make_shared<Ogre::TerrainMaterialGeneratorB>());
   terrainGlobalOptions->setUseRayBoxDistanceCalculation(true);
-  terrainGlobalOptions->setMaxPixelError(8);
   terrainGlobalOptions->setCompositeMapDistance(300);
+  terrainGlobalOptions->setCastsDynamicShadows(false);
 #endif
   ogreRoot->initialise(false);
 }

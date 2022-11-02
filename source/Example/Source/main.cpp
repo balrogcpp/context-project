@@ -16,7 +16,7 @@ class MenuAppState : public AppState {
 #endif
     GetComponent<SceneManager>().LoadFromFile("1.scene");
     GetComponent<SkyManager>().SetUpSky();
-    GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
+    //GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
   }
   void OnUpdate(float time) {
     static ImGuiIO &io = ImGui::GetIO();

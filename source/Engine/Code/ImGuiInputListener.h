@@ -11,7 +11,7 @@ namespace Glue {
 class ImGuiInputListener final : public KeyboardListener, public MouseListener, public Singleton<ImGuiInputListener> {
  public:
   /// map sdl2 mouse buttons to imgui
-  static int sdl2imgui(int b) {
+  inline int sdl2imgui(int b) noexcept {
     switch (b) {
       case 2:
         return 2;
@@ -25,7 +25,7 @@ class ImGuiInputListener final : public KeyboardListener, public MouseListener, 
   /// SDL2 keycode to scancode
   inline int kc2sc(int kc) { return kc & ~(1 << 30); }
 
-  inline int keypad2kc(int sym, int mod) {
+  inline int keypad2kc(int sym, int mod) noexcept {
     if (sym < SDLK_KP_1 || sym > SDLK_KP_PERIOD) return sym;
     bool numlock = (mod & KMOD_NUM) != 0;
     if (numlock) return sym;
@@ -122,7 +122,7 @@ class ImGuiInputListener final : public KeyboardListener, public MouseListener, 
   }
 
   template <typename T>
-  static int sign(T val) {
+  inline int sign(T val) noexcept {
     return (T(0) < val) - (val < T(0));
   }
 
