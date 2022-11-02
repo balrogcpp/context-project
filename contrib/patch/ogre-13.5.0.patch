@@ -93,10 +93,10 @@ index 5e06c194..22497dab 100644
              }
          }
      public:
-+#if defined(_MSC_VER) && defined(NDEBUG)
-+        static void throwException(
-+#else
++#if defined(_MSC_VER) && defined(_DEBUG)
          static OGRE_NORETURN void throwException(
++#else
++        static void throwException(
 +#endif
              Exception::ExceptionCodes code,
              const String& desc,
