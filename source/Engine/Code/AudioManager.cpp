@@ -41,10 +41,7 @@ void AudioManager::OnClean() {}
 void AudioManager::Pause() { oggSoundManager->pauseAllSounds(); }
 void AudioManager::Resume() { oggSoundManager->resumeAllPausedSounds(); }
 
-void AudioManager::AddSound(const char *name, const char *audioFile, Ogre::SceneNode *parent, bool playInLoop) {
-  //#if OGRE_THREAD_SUPPORT > 0
-  //  this_thread::sleep_for(chrono::milliseconds(16));
-  //#endif
+void AudioManager::AddSound(const std::string &name, const std::string &audioFile, Ogre::SceneNode *parent, bool playInLoop) {
   auto *sound = oggSoundManager->createSound(name, audioFile, true, playInLoop, true, nullptr);
   auto *root_node = Ogre::Root::getSingleton().getSceneManager("Default")->getRootSceneNode();
   if (parent)
@@ -56,7 +53,7 @@ void AudioManager::AddSound(const char *name, const char *audioFile, Ogre::Scene
 void AudioManager::AddListener(Ogre::SceneNode *parent) {
   auto *listener = oggSoundManager->getListener();
   if (!listener) {
-    ASSERTION(oggSoundManager->createListener(), "[AudioManager] Failed to create listener");
+    OgreAssert(oggSoundManager->createListener(), "[AudioManager] Failed to create listener");
     listener = oggSoundManager->getListener();
   }
 
@@ -65,30 +62,30 @@ void AudioManager::AddListener(Ogre::SceneNode *parent) {
 
 void AudioManager::RemoveListener(Ogre::SceneNode *parent) {}
 
-void AudioManager::PlaySound(const char *name, bool playImmediately) {
+void AudioManager::PlaySound(const std::string &name, bool playImmediately) {
   auto *sound = oggSoundManager->getSound(name);
-  ASSERTION(sound, "[AudioManager] Sound not found");
+  OgreAssert(sound, "[AudioManager] Sound not found");
   if (playImmediately) sound->stop();
   sound->play();
 }
 
-void AudioManager::StopSound(const char *name) {
+void AudioManager::StopSound(const std::string &name) {
   auto *sound = oggSoundManager->getSound(name);
-  ASSERTION(sound, "[AudioManager] Sound not found");
+  OgreAssert(sound, "[AudioManager] Sound not found");
   sound->stop();
 }
 
 void AudioManager::SetMasterVolume(float volume) { oggSoundManager->setMasterVolume(volume); }
 
-void AudioManager::SetSoundMaxVolume(const char *name, float volume) {
+void AudioManager::SetSoundMaxVolume(const std::string &name, float volume) {
   auto *sound = oggSoundManager->getSound(name);
-  ASSERTION(sound, "[AudioManager] Sound not found");
+  OgreAssert(sound, "[AudioManager] Sound not found");
   sound->setMaxVolume(volume);
 }
 
-void AudioManager::SetSoundVolume(const char *name, float volume) {
+void AudioManager::SetSoundVolume(const std::string &name, float volume) {
   auto *sound = oggSoundManager->getSound(name);
-  ASSERTION(sound, "[AudioManager] Sound not found");
+  OgreAssert(sound, "[AudioManager] Sound not found");
   sound->setVolume(volume);
 }
 }  // namespace Glue

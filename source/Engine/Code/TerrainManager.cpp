@@ -12,10 +12,7 @@ using namespace std;
 namespace Glue {
 TerrainManager::TerrainManager() {}
 TerrainManager::~TerrainManager() {
-  if (ogreTerrainGroup) {
-    ogreTerrainGroup->removeAllTerrains();
-    ogreTerrainGroup.reset();
-  }
+  OnClean();
 
   auto *terrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
   if (terrainGlobalOptions) {
@@ -41,7 +38,7 @@ void TerrainManager::OnSetUp() {
   }
 }
 
-float TerrainManager::GetHeight(float x, float z) { return ogreTerrainGroup ? ogreTerrainGroup->getHeightAtWorldPosition(x, 1000, z) : 0; }
+float TerrainManager::GetHeight(float x, float z) { return ogreTerrainGroup ? ogreTerrainGroup->getHeightAtWorldPosition(x, 10000.0, z) : 0.0; }
 
 void TerrainManager::RegTerrainGroup(Ogre::TerrainGroup *terrainGroup) {
   ASSERTION(terrainGroup, "[TerrainManager] terrainGroup can't be NULL");

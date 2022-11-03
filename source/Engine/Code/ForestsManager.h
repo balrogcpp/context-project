@@ -10,7 +10,6 @@ class ForestsManager final : public System<ForestsManager> {
   ForestsManager();
   virtual ~ForestsManager();
 
-  void AddGrass();
   void RegPagedGeometry(Forests::PagedGeometry *pagedGeometry);
   void UnregPagedGeometry(Forests::PagedGeometry *pagedGeometry);
 

@@ -13,3 +13,5 @@
 #include "OggSound/OgreOggSound.h"
 
 #include "SkyModel/SkyModel.h"
+
+#include "DotSceneLoaderB/DotSceneLoaderB.h"

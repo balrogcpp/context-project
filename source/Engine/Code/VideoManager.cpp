@@ -390,7 +390,7 @@ void VideoManager::InitOgreScene() {
 #endif
     shadowFarDistance = 400;
 #ifdef DESKTOP
-    shadowTexSize = 2048;
+    shadowTexSize = 1024;
 #else
     shadowTexSize = 512;
 #endif

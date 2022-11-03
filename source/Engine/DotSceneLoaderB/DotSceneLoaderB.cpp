@@ -7,6 +7,8 @@
 #include <OgreTerrainGroup.h>
 #endif
 
+#include <PagedGeometry/PagedGeometryAll.h>
+
 #include <pugixml.hpp>
 
 using namespace Ogre;
@@ -127,7 +129,7 @@ ColourValue parseColour(pugi::xml_node& XMLNode, ColourValue defaultValue = Colo
 
 struct DotSceneCodecB : public Codec
 {
-    String magicNumberToFileExt(const char* magicNumberPtr, size_t maxbytes) const { return ""; }
+    String magicNumberToFileExt(const char* magicNumberPtr, size_t maxbytes) const override { return ""; }
     String getType() const override { return "scene"; }
     void decode(const DataStreamPtr& stream, const Any& output) const override
     {
@@ -920,7 +922,7 @@ void DotSceneLoaderB::processLightAttenuation(pugi::xml_node& XMLNode, Light* pL
 
 void DotSceneLoaderB::processLightShadowProperties(Light* pLight)
 {
-    auto texture_config = mSceneMgr->getShadowTextureConfigList()[0];
+    auto shadowTexConfig = mSceneMgr->getShadowTextureConfigList()[0];
 
     if (pLight->getType() == Light::LT_POINT)
     {
@@ -928,27 +930,25 @@ void DotSceneLoaderB::processLightShadowProperties(Light* pLight)
     }
     else if (pLight->getType() == Light::LT_SPOTLIGHT)
     {
-        static ShadowCameraSetupPtr default_scs = LiSPSMShadowCameraSetup::create();
+        static ShadowCameraSetupPtr cameraSetup = LiSPSMShadowCameraSetup::create();
 
-        pLight->setCustomShadowCameraSetup(default_scs);
-        int tex_count = mSceneMgr->getShadowTextureConfigList().size() + 1;
-        mSceneMgr->setShadowTextureCount(tex_count);
+        pLight->setCustomShadowCameraSetup(cameraSetup);
+        int texCount = mSceneMgr->getShadowTextureConfigList().size();
+        mSceneMgr->setShadowTextureCount(texCount + 1);
 
-        int index = tex_count - 1;
-        texture_config.height *= pow(2.0, -floor(index / 3.0));
-        texture_config.width *= pow(2.0, -floor(index / 3.0));
-        mSceneMgr->setShadowTextureConfig(index, texture_config);
+        shadowTexConfig.height *= pow(2.0, -floor(texCount / 3.0));
+        shadowTexConfig.width *= pow(2.0, -floor(texCount / 3.0));
+        mSceneMgr->setShadowTextureConfig(texCount, shadowTexConfig);
     }
     else if (pLight->getType() == Light::LT_DIRECTIONAL)
     {
-        int per_light = mSceneMgr->getShadowTextureCountPerLightType(Light::LT_DIRECTIONAL);
-        int tex_count = mSceneMgr->getShadowTextureConfigList().size() + per_light - 1;
-        mSceneMgr->setShadowTextureCount(tex_count);
+        int perLight = mSceneMgr->getShadowTextureCountPerLightType(Light::LT_DIRECTIONAL);
+        int texCount = mSceneMgr->getShadowTextureConfigList().size();
+        mSceneMgr->setShadowTextureCount(texCount + perLight);
 
-        for (int i = 1; i <= per_light; i++)
+        for (int i = 0; i < perLight; i++)
         {
-            int index = tex_count - i;
-            mSceneMgr->setShadowTextureConfig(index, texture_config);
+            mSceneMgr->setShadowTextureConfig(texCount - 1 + i, shadowTexConfig);
         }
     }
 }
