@@ -10,8 +10,9 @@
 using namespace std;
 
 namespace {
-void CheckTransparentShadowCaster(const Ogre::Material *material) {
-  const auto *pass = material->getTechnique(0)->getPass(0);
+inline void UpgradeTransparentShadowCaster(const Ogre::Material *material) {
+  auto *tech = material->getTechnique(0);
+  auto *pass = tech->getPass(0);
 
   if (!material->getTransparencyCastsShadows() || !pass->getNumTextureUnitStates() || !pass->getAlphaRejectValue() ||
       !pass->getTextureUnitState("Albedo")) {
@@ -34,15 +35,15 @@ void CheckTransparentShadowCaster(const Ogre::Material *material) {
     newPass->setCullingMode(pass->getCullingMode());
     newPass->setManualCullingMode(pass->getManualCullingMode());
     newPass->setAlphaRejectValue(pass->getAlphaRejectValue());
-    material->getTechnique(0)->setShadowCasterMaterial(newCaster);
+    tech->setShadowCasterMaterial(newCaster);
   }
 }
 
-void CheckTransparentShadowCaster(const std::string &material) {
-  CheckTransparentShadowCaster(Ogre::MaterialManager::getSingleton().getByName(material).get());
+inline void CheckTransparentShadowCaster(const std::string &material) {
+  UpgradeTransparentShadowCaster(Ogre::MaterialManager::getSingleton().getByName(material).get());
 }
 
-bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
+inline bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
   bool hasTangents = false;
   bool hasUVs = false;
   auto &elementList = vertex_declaration->getElements();
@@ -60,7 +61,7 @@ bool HasNoTangentsAndCanGenerate(Ogre::VertexDeclaration *vertex_declaration) {
   return !hasTangents && hasUVs;
 }
 
-void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
+inline void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
   bool generateTangents = false;
 
   if (mesh->sharedVertexData) {
@@ -83,7 +84,10 @@ void EnsureHasTangents(const Ogre::MeshPtr &mesh) {
 }  // namespace
 
 namespace Glue {
-SceneManager::SceneManager() {}
+SceneManager::SceneManager() {
+  vpParams.reserve(200);
+  fpParams.reserve(200);
+}
 SceneManager::~SceneManager() { Ogre::MaterialManager::getSingleton().removeListener(this); }
 
 void SceneManager::OnSetUp() {
@@ -106,9 +110,7 @@ void SceneManager::OnClean() {
   InputSequencer::GetInstance().UnregKeyboardListener(sinbad.get());
   sinbad.reset();
   fpParams.clear();
-  fpParams.shrink_to_fit();
   vpParams.clear();
-  vpParams.shrink_to_fit();
 }
 
 void SceneManager::OnUpdate(float time) {
@@ -117,10 +119,12 @@ void SceneManager::OnUpdate(float time) {
   static Ogre::Matrix4 MVPprev;
   MVPprev = MVP;
   MVP = ogreCamera->getProjectionMatrixWithRSDepth() * ogreCamera->getViewMatrix();
-  for (auto &it : vpParams) it->setNamedConstant("uWorldViewProjPrev", MVPprev);
+  for (auto &it : vpParams) {
+    it->setNamedConstant("uWorldViewProjPrev", MVPprev);
+  }
 }
 
-void SceneManager::LoadFromFile(const std::string filename) {
+void SceneManager::LoadFromFile(const std::string &filename) {
   auto *rootNode = ogreSceneManager->getRootSceneNode();
   rootNode->loadChildren(filename);
 
@@ -206,7 +210,7 @@ void SceneManager::RegEntity(Ogre::Entity *entity) {
 }
 
 void SceneManager::RegMaterial(const Ogre::Material *material) {
-  CheckTransparentShadowCaster(material);
+  UpgradeTransparentShadowCaster(material);
 
   const auto *pass = material->getTechnique(0)->getPass(0);
 

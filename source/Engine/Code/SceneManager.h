@@ -11,7 +11,7 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   SceneManager();
   virtual ~SceneManager();
 
-  void LoadFromFile(const std::string filename);
+  void LoadFromFile(const std::string &filename);
   void RegCamera(Ogre::Camera *camera);
   void RegLight(Ogre::Light *light);
   void RegEntity(Ogre::Entity *entity);

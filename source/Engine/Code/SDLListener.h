@@ -63,7 +63,11 @@ class MouseListener {
   /// @param x absolute position in pixels
   /// @param y absolute position in pixels
   virtual void OnMouseMbUp(int x, int y) {}
+};
 
+/// Interface for Physical input listener (Mouse, Keyboard and Gamepad)
+class ControllerListener {
+ public:
   /// Callback on joystick axis event
   /// @param which joystick number
   /// @param axis which axis
@@ -112,17 +116,42 @@ class WindowListener {
 /// Keeps listeners list, capture inputs and send messages every frame
 class InputSequencer final : public LazySingleton<InputSequencer> {
  public:
-  InputSequencer() {}
+  InputSequencer() {
+    winListeners.reserve(200);
+    keyListeners.reserve(200);
+    mouseListeners.reserve(200);
+    contListeners.reserve(200);
+  }
   virtual ~InputSequencer() {}
 
   ///
-  void RegKeyboardListener(KeyboardListener *p) {
+  void UnregAll() noexcept {
+    UnregAllControllerListeners();
+    UnregAllMouseListeners();
+    UnregAllKeyboardListeners();
+    UnregAlWindowListeners();
+  }
+
+  ///
+  void UnregAlWindowListeners() noexcept { winListeners.clear(); }
+
+  ///
+  void UnregAllKeyboardListeners() noexcept { keyListeners.clear(); }
+
+  ///
+  void UnregAllMouseListeners() noexcept { mouseListeners.clear(); }
+
+  ///
+  void UnregAllControllerListeners() noexcept { contListeners.clear(); }
+
+  ///
+  void RegKeyboardListener(KeyboardListener *p) noexcept {
     if (std::find(keyListeners.begin(), keyListeners.end(), p) == keyListeners.end()) {
       keyListeners.push_back(p);
     }
   }
 
-  void UnregKeyboardListener(KeyboardListener *p) {
+  void UnregKeyboardListener(KeyboardListener *p) noexcept {
     auto it = std::find(keyListeners.begin(), keyListeners.end(), p), end = keyListeners.end();
     if (it != end) {
       std::swap(it, --end);
@@ -131,22 +160,37 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   }
 
   /// Register mouse listener
-  void RegMouseListener(MouseListener *p) {
-    if (std::find(ioListeners.begin(), ioListeners.end(), p) == ioListeners.end()) {
-      ioListeners.push_back(p);
+  void RegMouseListener(MouseListener *p) noexcept {
+    if (std::find(mouseListeners.begin(), mouseListeners.end(), p) == mouseListeners.end()) {
+      mouseListeners.push_back(p);
     }
   }
 
-  void UnregMouseListener(MouseListener *p) {
-    auto it = std::find(ioListeners.begin(), ioListeners.end(), p), end = ioListeners.end();
+  void UnregMouseListener(MouseListener *p) noexcept {
+    auto it = std::find(mouseListeners.begin(), mouseListeners.end(), p), end = mouseListeners.end();
     if (it != end) {
       std::swap(it, --end);
-      ioListeners.pop_back();
+      mouseListeners.pop_back();
+    }
+  }
+
+  /// Register controller listener
+  void RegContListener(ControllerListener *p) noexcept {
+    if (std::find(contListeners.begin(), contListeners.end(), p) == contListeners.end()) {
+      contListeners.push_back(p);
+    }
+  }
+
+  void UnregContListener(ControllerListener *p) noexcept {
+    auto it = std::find(contListeners.begin(), contListeners.end(), p), end = contListeners.end();
+    if (it != end) {
+      std::swap(it, --end);
+      contListeners.pop_back();
     }
   }
 
   /// Register SDLWindowPtr input listener
-  void RegWindowListener(WindowListener *p) {
+  void RegWindowListener(WindowListener *p) noexcept {
 #ifdef __ANDROID__
     if (!SDL_GetEventFilter(nullptr, nullptr)) {
       auto callback = [](void *userdata, SDL_Event *event) { return InputSequencer::GetInstance().HandleAppEvents(userdata, event); };
@@ -159,7 +203,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
     }
   }
 
-  void UnregWindowListener(WindowListener *p) {
+  void UnregWindowListener(WindowListener *p) noexcept {
     auto it = std::find(winListeners.begin(), winListeners.end(), p), end = winListeners.end();
     if (it != end) {
       std::swap(it, --end);
@@ -183,7 +227,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
         }
 
         case SDL_MOUSEMOTION: {
-          for (auto it : ioListeners) {
+          for (auto it : mouseListeners) {
             it->OnMouseMove(event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel,
                             (event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0, (event.motion.state & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0,
                             (event.motion.state & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
@@ -195,15 +239,15 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
         case SDL_MOUSEBUTTONDOWN: {
           switch (event.button.button) {
             case SDL_BUTTON_LEFT: {
-              for (auto &it : ioListeners) it->OnMouseLbDown(event.button.x, event.button.y);
+              for (auto &it : mouseListeners) it->OnMouseLbDown(event.button.x, event.button.y);
               break;
             }
             case SDL_BUTTON_RIGHT: {
-              for (auto &it : ioListeners) it->OnMouseRbDown(event.button.x, event.button.y);
+              for (auto &it : mouseListeners) it->OnMouseRbDown(event.button.x, event.button.y);
               break;
             }
             case SDL_BUTTON_MIDDLE: {
-              for (auto &it : ioListeners) it->OnMouseMbDown(event.button.x, event.button.y);
+              for (auto &it : mouseListeners) it->OnMouseMbDown(event.button.x, event.button.y);
               break;
             }
           }
@@ -213,15 +257,15 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
         case SDL_MOUSEBUTTONUP: {
           switch (event.button.button) {
             case SDL_BUTTON_LEFT: {
-              for (auto &it : ioListeners) it->OnMouseLbUp(event.button.x, event.button.y);
+              for (auto &it : mouseListeners) it->OnMouseLbUp(event.button.x, event.button.y);
               break;
             }
             case SDL_BUTTON_RIGHT: {
-              for (auto &it : ioListeners) it->OnMouseRbUp(event.button.x, event.button.y);
+              for (auto &it : mouseListeners) it->OnMouseRbUp(event.button.x, event.button.y);
               break;
             }
             case SDL_BUTTON_MIDDLE: {
-              for (auto &it : ioListeners) it->OnMouseMbUp(event.button.x, event.button.y);
+              for (auto &it : mouseListeners) it->OnMouseMbUp(event.button.x, event.button.y);
               break;
             }
           }
@@ -229,32 +273,32 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
         }
 
         case SDL_MOUSEWHEEL: {
-          for (auto &it : ioListeners) it->OnMouseWheel(event.wheel.x, event.wheel.y);
+          for (auto &it : mouseListeners) it->OnMouseWheel(event.wheel.x, event.wheel.y);
           break;
         }
 
         case SDL_JOYAXISMOTION: {
-          for (auto &it : ioListeners) it->OnGamepadAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
+          for (auto &it : contListeners) it->OnGamepadAxis(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
           break;
         }
 
         case SDL_JOYBALLMOTION: {
-          for (auto &it : ioListeners) it->OnGamepadBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
+          for (auto &it : contListeners) it->OnGamepadBall(event.jball.which, event.jball.ball, event.jball.xrel, event.jball.yrel);
           break;
         }
 
         case SDL_JOYHATMOTION: {
-          for (auto &it : ioListeners) it->OnGamepadHat(event.jhat.which, event.jhat.hat, event.jhat.value);
+          for (auto &it : contListeners) it->OnGamepadHat(event.jhat.which, event.jhat.hat, event.jhat.value);
           break;
         }
 
         case SDL_JOYBUTTONDOWN: {
-          for (auto &it : ioListeners) it->OnGamepadBtDown(event.jbutton.which, event.jbutton.button);
+          for (auto &it : contListeners) it->OnGamepadBtDown(event.jbutton.which, event.jbutton.button);
           break;
         }
 
         case SDL_JOYBUTTONUP: {
-          for (auto &it : ioListeners) it->OnGamepadBtUp(event.jbutton.which, event.jbutton.button);
+          for (auto &it : contListeners) it->OnGamepadBtUp(event.jbutton.which, event.jbutton.button);
           break;
         }
 
@@ -307,7 +351,10 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   std::vector<KeyboardListener *> keyListeners;
 
   /// Listeners list (physical input)
-  std::vector<MouseListener *> ioListeners;
+  std::vector<MouseListener *> mouseListeners;
+
+  /// Listeners list (physical input)
+  std::vector<ControllerListener *> contListeners;
 
   /// Listeners list (SDLWindowPtr input)
   std::vector<WindowListener *> winListeners;

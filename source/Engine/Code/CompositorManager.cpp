@@ -47,11 +47,14 @@ void CompositorManager::OnClean() { ogreViewport->removeListener(this); }
 
 void CompositorManager::AddCompositor(const string &name, bool enable, int position) {
   auto *compositor = compositorManager->addCompositor(ogreViewport, name, position);
-  ASSERTION(compositor, "Failed to add MRT compoitor");
+  ASSERTION(compositor, "[CompositorManager] Failed to add MRT compoitor");
   compositorManager->setCompositorEnabled(ogreViewport, name, enable);
 }
 
-void CompositorManager::SetCompositorEnabled(const string &name, bool enable) { compositorManager->setCompositorEnabled(ogreViewport, name, enable); }
+void CompositorManager::SetCompositorEnabled(const string &name, bool enable) {
+  ASSERTION(compositorChain->getCompositorPosition(name) != Ogre::CompositorChain::NPOS, "[CompositorManager] No compositor found");
+  compositorManager->setCompositorEnabled(ogreViewport, name, enable);
+}
 
 void CompositorManager::SetFixedViewportSize(int x, int y) {
   fixedViewportSize = (x > 0) && (y > 0);
@@ -96,36 +99,36 @@ void CompositorManager::SetFixedViewportSize(int x, int y) {
 
 void CompositorManager::InitMRT() {
   auto *mrtCompositor = compositorManager->addCompositor(ogreViewport, MRT_COMPOSITOR, 0);
-  ASSERTION(mrtCompositor, "Failed to add MRT compositor");
+  ASSERTION(mrtCompositor, "[CompositorManager] Failed to add MRT compositor");
 
   // check textures
   auto *tech = mrtCompositor->getTechnique();
 
-  ASSERTION(tech->getTextureDefinition("mrt"), "mrt texture failed to create");
-  ASSERTION(tech->getTextureDefinition("rt"), "rt texture failed to create");
-  ASSERTION(tech->getTextureDefinition("mrt1"), "mrt1 failed to create");
-  ASSERTION(tech->getTextureDefinition("mrt2"), "mrt2 failed to create");
+  ASSERTION(tech->getTextureDefinition("mrt"), "[CompositorManager] mrt texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt"), "[CompositorManager] rt texture failed to create");
+  ASSERTION(tech->getTextureDefinition("mrt1"), "[CompositorManager] mrt1 failed to create");
+  ASSERTION(tech->getTextureDefinition("mrt2"), "[CompositorManager] mrt2 failed to create");
 
   compositorManager->setCompositorEnabled(ogreViewport, MRT_COMPOSITOR, true);
 }
 
 void CompositorManager::InitMipChain() {
   auto *bloomCompositor = compositorManager->addCompositor(ogreViewport, BLOOM_COMPOSITOR, 1);
-  ASSERTION(bloomCompositor, "Failed to add Bloom compoitor");
+  ASSERTION(bloomCompositor, "[CompositorManager] Failed to add Bloom compoitor");
 
   // check textures
   auto *tech = bloomCompositor->getTechnique();
 
-  ASSERTION(tech->getTextureDefinition("rt1"), "rt1 texture failed to create");
-  ASSERTION(tech->getTextureDefinition("rt2"), "rt2 texture failed to create");
-  ASSERTION(tech->getTextureDefinition("rt3"), "rt3 texture failed to create");
-  ASSERTION(tech->getTextureDefinition("rt4"), "rt4 texture failed to create");
-  ASSERTION(tech->getTextureDefinition("rt5"), "rt5 texture failed to create");
-  ASSERTION(tech->getTextureDefinition("rt6"), "rt6 texture failed to create");
-  ASSERTION(tech->getTextureDefinition("rt7"), "rt7 texture failed to create");
-  ASSERTION(tech->getTextureDefinition("rt8"), "rt8 texture failed to create");
-  ASSERTION(tech->getTextureDefinition("rt9"), "rt9 texture failed to create");
-  ASSERTION(tech->getTextureDefinition("rt10"), "rt10 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt1"), "[CompositorManager] rt1 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt2"), "[CompositorManager] rt2 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt3"), "[CompositorManager] rt3 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt4"), "[CompositorManager] rt4 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt5"), "[CompositorManager] rt5 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt6"), "[CompositorManager] rt6 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt7"), "[CompositorManager] rt7 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt8"), "[CompositorManager] rt8 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt9"), "[CompositorManager] rt9 texture failed to create");
+  ASSERTION(tech->getTextureDefinition("rt10"), "[CompositorManager] rt10 texture failed to create");
 
   compositorManager->setCompositorEnabled(ogreViewport, BLOOM_COMPOSITOR, false);
 }

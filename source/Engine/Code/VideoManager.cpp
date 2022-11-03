@@ -201,7 +201,12 @@ VideoManager::VideoManager()
       shadowFarDistance(400.0),
       shadowTexSize(512) {}
 
-VideoManager::~VideoManager() { SDL_Quit(); }
+VideoManager::~VideoManager() {
+  InputSequencer::GetInstance().UnregMouseListener(imguiListener.get());
+  InputSequencer::GetInstance().UnregKeyboardListener(imguiListener.get());
+  InputSequencer::GetInstance().UnregContListener(imguiListener.get());
+  SDL_Quit();
+}
 
 void VideoManager::OnUpdate(float time) {}
 
@@ -341,13 +346,18 @@ void VideoManager::MakeWindow() {
 void VideoManager::InitOgreOverlay() {
   auto *ogreOverlay = new Ogre::OverlaySystem();
   auto *imguiOverlay = new Ogre::ImGuiOverlay();
+  imguiListener = make_unique<ImGuiListener>();
+  InputSequencer::GetInstance().RegKeyboardListener(imguiListener.get());
+  InputSequencer::GetInstance().RegMouseListener(imguiListener.get());
+  InputSequencer::GetInstance().UnregContListener(imguiListener.get());
+
   float vpScale = Ogre::OverlayManager::getSingleton().getPixelRatio();
   ImGui::GetIO().FontGlobalScale = round(vpScale);
   ImGui::GetStyle().ScaleAllSizes(vpScale);
   imguiOverlay->setZOrder(300);
   Ogre::OverlayManager::getSingleton().addOverlay(imguiOverlay);
   ogreSceneManager->addRenderQueueListener(ogreOverlay);
-  if (!ImGuiInputListener::IsInstanced()) auto *imguiListener = new ImGuiInputListener();
+
   ImGuiIO &io = ImGui::GetIO();
   io.IniFilename = nullptr;
   io.LogFilename = nullptr;

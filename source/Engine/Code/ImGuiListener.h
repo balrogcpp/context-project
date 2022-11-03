@@ -8,7 +8,7 @@
 
 namespace Glue {
 /// \class to control ImGui interface overlay
-class ImGuiInputListener final : public KeyboardListener, public MouseListener, public Singleton<ImGuiInputListener> {
+class ImGuiListener final : public KeyboardListener, public MouseListener, public ControllerListener, public Singleton<ImGuiListener> {
  public:
   /// map sdl2 mouse buttons to imgui
   inline int sdl2imgui(int b) noexcept {
@@ -23,8 +23,9 @@ class ImGuiInputListener final : public KeyboardListener, public MouseListener, 
   }
 
   /// SDL2 keycode to scancode
-  inline int kc2sc(int kc) { return kc & ~(1 << 30); }
+  inline int kc2sc(int kc) noexcept { return kc & ~(1 << 30); }
 
+  ///
   inline int keypad2kc(int sym, int mod) noexcept {
     if (sym < SDLK_KP_1 || sym > SDLK_KP_PERIOD) return sym;
     bool numlock = (mod & KMOD_NUM) != 0;
@@ -52,9 +53,7 @@ class ImGuiInputListener final : public KeyboardListener, public MouseListener, 
     return sym;
   }
 
-  ImGuiInputListener() {
-    InputSequencer::GetInstance().RegKeyboardListener(this);
-    InputSequencer::GetInstance().RegMouseListener(this);
+  ImGuiListener() {
     static ImGuiIO &io = ImGui::GetIO();
 
     // Keyboard mapping. ImGui will use those indices to peek into the
@@ -83,12 +82,9 @@ class ImGuiInputListener final : public KeyboardListener, public MouseListener, 
     io.KeyMap[ImGuiKey_Z] = 'z';
   }
 
-  virtual ~ImGuiInputListener() {
-    InputSequencer::GetInstance().UnregMouseListener(this);
-    InputSequencer::GetInstance().UnregKeyboardListener(this);
-  }
+  virtual ~ImGuiListener() {}
 
-  void OnKeyDown(SDL_Keycode sym) {
+  void OnKeyDown(SDL_Keycode sym) noexcept {
     static auto &io = ImGui::GetIO();
     const int MODE = KMOD_NUM;
 
@@ -97,7 +93,7 @@ class ImGuiInputListener final : public KeyboardListener, public MouseListener, 
     io.KeysDown[key] = true;
   }
 
-  void OnKeyUp(SDL_Keycode sym) {
+  void OnKeyUp(SDL_Keycode sym) noexcept {
     static auto &io = ImGui::GetIO();
     int mod = KMOD_NUM;
 
@@ -106,16 +102,15 @@ class ImGuiInputListener final : public KeyboardListener, public MouseListener, 
     io.KeysDown[key] = false;
   }
 
-  void OnTextInput(const char *text) {
+  void OnTextInput(const char *text) noexcept {
     static auto &io = ImGui::GetIO();
     io.AddInputCharactersUTF8(text);
   }
 
   // Mouse
+  void OnMouseMove(int dx, int dy) noexcept {}
 
-  void OnMouseMove(int dx, int dy) {}
-
-  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) {
+  void OnMouseMove(int x, int y, int dx, int dy, bool left, bool right, bool middle) noexcept {
     static auto &io = ImGui::GetIO();
     io.MousePos.x = static_cast<float>(x);
     io.MousePos.y = static_cast<float>(y);
@@ -126,42 +121,42 @@ class ImGuiInputListener final : public KeyboardListener, public MouseListener, 
     return (T(0) < val) - (val < T(0));
   }
 
-  void OnMouseWheel(int x, int y) {
+  void OnMouseWheel(int x, int y) noexcept {
     static auto &io = ImGui::GetIO();
     io.MouseWheel = static_cast<float>(sign(y));
   }
 
-  void OnMouseLbDown(int x, int y) {
+  void OnMouseLbDown(int x, int y) noexcept {
     static auto &io = ImGui::GetIO();
     int b = sdl2imgui(SDL_BUTTON_LEFT);
     if (b < 5) io.MouseDown[b] = true;
   }
 
-  void OnMouseLbUp(int x, int y) {
+  void OnMouseLbUp(int x, int y) noexcept {
     static auto &io = ImGui::GetIO();
     int b = sdl2imgui(SDL_BUTTON_LEFT);
     if (b < 5) io.MouseDown[b] = false;
   }
 
-  void OnMouseRbDown(int x, int y) {
+  void OnMouseRbDown(int x, int y) noexcept {
     static auto &io = ImGui::GetIO();
     int b = sdl2imgui(SDL_BUTTON_RIGHT);
     if (b < 5) io.MouseDown[b] = true;
   }
 
-  void OnMouseRbUp(int x, int y) {
+  void OnMouseRbUp(int x, int y) noexcept {
     static auto &io = ImGui::GetIO();
     int b = sdl2imgui(SDL_BUTTON_RIGHT);
     if (b < 5) io.MouseDown[b] = false;
   }
 
-  void OnMouseMbDown(int x, int y) {
+  void OnMouseMbDown(int x, int y) noexcept {
     static auto &io = ImGui::GetIO();
     int b = sdl2imgui(SDL_BUTTON_MIDDLE);
     if (b < 5) io.MouseDown[b] = true;
   }
 
-  void OnMouseMbUp(int x, int y) {
+  void OnMouseMbUp(int x, int y) noexcept {
     static auto &io = ImGui::GetIO();
     int b = sdl2imgui(SDL_BUTTON_MIDDLE);
     if (b < 5) io.MouseDown[b] = false;

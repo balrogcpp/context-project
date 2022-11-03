@@ -1,7 +1,7 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-#include "ImGuiInputListener.h"
+#include "ImGuiListener.h"
 #include "SDLListener.h"
 #include "System.h"
 #include "Window.h"
@@ -39,15 +39,11 @@ class VideoManager final : public System<VideoManager> {
   void OnClean() override;
   void OnUpdate(float time) override;
 
+  std::unique_ptr<ImGuiListener> imguiListener;
   Window* mainWindow = nullptr;
   std::vector<Window> windowList;
   std::string ogreLogFile;
   unsigned short ogreMinLogLevel;
-  Ogre::Root* ogreRoot = nullptr;
-  Ogre::SceneManager* ogreSceneManager = nullptr;
-  Ogre::RenderWindow* ogreWindow = nullptr;
-  Ogre::Camera* ogreCamera = nullptr;
-  Ogre::Viewport* ogreViewport = nullptr;
   std::unique_ptr<ShaderResolver> shaderResolver;
   Ogre::ShadowTechnique shadowTechnique;
   Ogre::Real shadowFarDistance;
@@ -56,5 +52,11 @@ class VideoManager final : public System<VideoManager> {
   std::shared_ptr<Ogre::PSSMShadowCameraSetup> pssmSetup;
   std::vector<Ogre::Real> pssmSplitPointList;
   int pssmSplitCount;
+
+  Ogre::Root* ogreRoot = nullptr;
+  Ogre::SceneManager* ogreSceneManager = nullptr;
+  Ogre::RenderWindow* ogreWindow = nullptr;
+  Ogre::Camera* ogreCamera = nullptr;
+  Ogre::Viewport* ogreViewport = nullptr;
 };
 }  // namespace Glue

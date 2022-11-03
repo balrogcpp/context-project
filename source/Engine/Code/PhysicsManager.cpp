@@ -36,7 +36,7 @@ void OnTick(btDynamicsWorld *world, btScalar timeStep) {
 }  // namespace
 
 namespace Glue {
-PhysicsManager::PhysicsManager() : debugView(false), subSteps(4), fixedTimeStep(1.0/60.0) {}
+PhysicsManager::PhysicsManager() : debugView(false), subSteps(4), fixedTimeStep(1.0 / 60.0) {}
 PhysicsManager::~PhysicsManager() {}
 
 void PhysicsManager::SetDebugView(bool debug) { this->debugView = debug; }
@@ -73,7 +73,9 @@ void PhysicsManager::OnClean() {
 
 void PhysicsManager::OnUpdate(float time) {
   dynamicWorld->getBtWorld()->stepSimulation(time, subSteps, fixedTimeStep);
-  if (debugView) debugDrawer->update();
+  if (debugView) {
+    debugDrawer->update();
+  }
 }
 
 void PhysicsManager::CreateTerrainHeightfieldShape(Ogre::TerrainGroup *terrainGroup) {
