@@ -152,7 +152,7 @@ void BatchPage::build()
 		m_vecUnfadedMaterials.push_back(subBatch->getMaterial());
 	}
 
-	//_updateShaders();
+	_updateShaders();
 }
 
 
@@ -194,7 +194,7 @@ void BatchPage::setFade(bool enabled, Real visibleDist, Real invisibleDist)
 
 		m_fVisibleDist    = visibleDist;
 		m_fInvisibleDist  = invisibleDist;
-		//_updateShaders();
+		_updateShaders();
 	}
 }
 
@@ -202,7 +202,7 @@ void BatchPage::setFade(bool enabled, Real visibleDist, Real invisibleDist)
 //-----------------------------------------------------------------------------
 ///
 void BatchPage::_updateShaders()
-{
+{/*
 	if (!m_bShadersSupported)
 		return;
 
@@ -360,6 +360,6 @@ void BatchPage::_updateShaders()
 
 		//Apply the material
 		subBatch->setMaterial(generatedMaterial);
-	}
+	}*/
 
 }

@@ -63,7 +63,7 @@ void WindBatchPage::init(PagedGeometry *geom, const Any &data)
 //-----------------------------------------------------------------------------
 ///
 void WindBatchPage::_updateShaders()
-{
+{/*
 	if (!m_bShadersSupported)
 		return;
 
@@ -229,5 +229,5 @@ void WindBatchPage::_updateShaders()
 		//Apply the material
 		subBatch->setMaterial(generatedMaterial);
 	}
-
+*/
 }

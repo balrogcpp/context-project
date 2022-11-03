@@ -96,35 +96,35 @@ void GrassLoader::deleteLayer(GrassLayer *layer)
 }
 
 void GrassLoader::frameUpdate()
-{
-//	unsigned long currentTime = windTimer.getMilliseconds();
-//	unsigned long ellapsedTime = currentTime - lastTime;
-//	lastTime = currentTime;
-//
-//	float ellapsed = ellapsedTime / 1000.0f;
-//
-//	//Update the vertex shader parameters
-//	std::list<GrassLayer*>::iterator it;
-//	for (it = layerList.begin(); it != layerList.end(); ++it){
-//		GrassLayer *layer = *it;
-//
-//		layer->_updateShaders();
-//
-//		GpuProgramParametersSharedPtr params = layer->material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
-//		if (layer->animate){
-//			//Increment animation frame
-//			layer->waveCount += ellapsed * (layer->animSpeed * Math::PI);
-//			if (layer->waveCount > Math::PI*2) layer->waveCount -= Math::PI*2;
-//
-//			//Set vertex shader parameters
-//			params->setNamedConstant("time", layer->waveCount);
-//			params->setNamedConstant("frequency", layer->animFreq);
-//
-//			Vector3 direction = windDir * layer->animMag;
-//			params->setNamedConstant("direction", Vector4(direction.x, direction.y, direction.z, 0));
-//
-//		}
-//	}
+{/*
+	unsigned long currentTime = windTimer.getMilliseconds();
+	unsigned long ellapsedTime = currentTime - lastTime;
+	lastTime = currentTime;
+
+	float ellapsed = ellapsedTime / 1000.0f;
+
+	//Update the vertex shader parameters
+	std::list<GrassLayer*>::iterator it;
+	for (it = layerList.begin(); it != layerList.end(); ++it){
+		GrassLayer *layer = *it;
+
+		layer->_updateShaders();
+
+		GpuProgramParametersSharedPtr params = layer->material->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+		if (layer->animate){
+			//Increment animation frame
+			layer->waveCount += ellapsed * (layer->animSpeed * Math::PI);
+			if (layer->waveCount > Math::PI*2) layer->waveCount -= Math::PI*2;
+
+			//Set vertex shader parameters
+			params->setNamedConstant("time", layer->waveCount);
+			params->setNamedConstant("frequency", layer->animFreq);
+
+			Vector3 direction = windDir * layer->animMag;
+			params->setNamedConstant("direction", Vector4(direction.x, direction.y, direction.z, 0));
+
+		}
+	}*/
 }
 
 void GrassLoader::loadPage(PageInfo &page)
@@ -1155,7 +1155,7 @@ void GrassLayer::setColorMapFilter(MapFilter filter)
 }
 
 void GrassLayer::_updateShaders()
-{
+{/*
 	if (shaderNeedsUpdate){
 		shaderNeedsUpdate = false;
 
@@ -1274,7 +1274,7 @@ void GrassLayer::_updateShaders()
 			//Apply the new material
 			material = tmpMat;
 		}
-	}
+	}*/
 }
 
 
