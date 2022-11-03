@@ -5,36 +5,32 @@
 #include "ForestsManager.h"
 #include "PhysicsManager.h"
 #include "TerrainManager.h"
+#include "VideoManager.h"
 
 using namespace std;
 
 namespace {
 void CheckTransparentShadowCaster(const Ogre::Material *material) {
-  auto *pass = material->getTechnique(0)->getPass(0);
+  const auto *pass = material->getTechnique(0)->getPass(0);
 
-  if (pass->getNumTextureUnitStates() > 0 && pass->getAlphaRejectValue() > 0 && material->getTransparencyCastsShadows()) {
-    auto caster_material = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
-    std::string caster_name = "PSSM/shadow_caster_alpha/" + material->getName();
-    auto newCaster = Ogre::MaterialManager::getSingleton().getByName(caster_name);
+  if (!material->getTransparencyCastsShadows() || !pass->getNumTextureUnitStates() || !pass->getAlphaRejectValue() ||
+      !pass->getTextureUnitState("Albedo")) {
+    return;
+  }
 
-    if (!newCaster) {
-      newCaster = caster_material->clone(caster_name);
+  auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
+  std::string newCasterName = "PSSM/shadow_caster_alpha/" + material->getName();
+  auto newCaster = Ogre::MaterialManager::getSingleton().getByName(newCasterName);
 
-      auto texture_albedo = pass->getTextureUnitState("Albedo");
-
-      if (texture_albedo) {
-        std::string texture_name = pass->getTextureUnitState("Albedo")->getTextureName();
-
-        auto *texPtr3 = newCaster->getTechnique(0)->getPass(0)->getTextureUnitState("BaseColor");
-
-        if (texPtr3) {
-          texPtr3->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
-          texPtr3->setTextureName(texture_name);
-        }
-      }
-    }
-
+  if (!newCaster) {
+    newCaster = casterMaterial->clone(newCasterName);
+    std::string albedoTexture = pass->getTextureUnitState("Albedo")->getTextureName();
     auto *newPass = newCaster->getTechnique(0)->getPass(0);
+
+    auto *baseColor = newPass->getTextureUnitState("BaseColor");
+    baseColor->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
+    baseColor->setTextureName(albedoTexture);
+
     newPass->setCullingMode(pass->getCullingMode());
     newPass->setManualCullingMode(pass->getManualCullingMode());
     newPass->setAlphaRejectValue(pass->getAlphaRejectValue());
@@ -138,11 +134,6 @@ void SceneManager::LoadFromFile(const std::string filename) {
     InputSequencer::GetInstance().RegKeyboardListener(sinbad.get());
   }
 
-  // scan second time, new objects added during first scan
-  for (auto it : rootNode->getChildren()) {
-    ScanNode(static_cast<Ogre::SceneNode *>(it));
-  }
-
   // search for TerrainGroup
   auto objBindings = ogreSceneManager->getRootSceneNode()->getUserObjectBindings();
   if (objBindings.getUserAny("TerrainGroup").has_value()) {
@@ -152,7 +143,25 @@ void SceneManager::LoadFromFile(const std::string filename) {
   }
 
   // search for PagedGeometry
-  GetComponent<ForestsManager>().AddGrass();
+  auto &forests = GetComponent<ForestsManager>();
+  const std::string base = "PagedGeometry";
+  std::string key = base;
+  int i = 1;  // counter
+  Ogre::Any value = objBindings.getUserAny(key);
+
+  while (value.has_value()) {
+    forests.RegPagedGeometry(Ogre::any_cast<Forests::PagedGeometry *>(value));
+    key = base + to_string(i++);
+    value = objBindings.getUserAny(key);
+  }
+
+  // this will update al objects in scene
+  // GetComponent<VideoManager>().RenderFrame();
+
+  // scan second time, new objects added during first scan
+  for (auto it : rootNode->getChildren()) {
+    ScanNode(static_cast<Ogre::SceneNode *>(it));
+  }
 }
 
 void SceneManager::RegCamera(Ogre::Camera *camera) {}
@@ -203,12 +212,16 @@ void SceneManager::RegMaterial(const Ogre::Material *material) {
 
   if (pass->hasVertexProgram()) {
     const auto ptr = pass->getVertexProgramParameters();
-    if (find(vpParams.begin(), vpParams.end(), ptr) == vpParams.end()) vpParams.push_back(ptr);
+    if (find(vpParams.begin(), vpParams.end(), ptr) == vpParams.end()) {
+      vpParams.push_back(ptr);
+    }
   }
 
   if (pass->hasFragmentProgram()) {
     const auto ptr = pass->getFragmentProgramParameters();
-    if (find(fpParams.begin(), fpParams.end(), ptr) == fpParams.end()) fpParams.push_back(ptr);
+    if (find(fpParams.begin(), fpParams.end(), ptr) == fpParams.end()) {
+      fpParams.push_back(ptr);
+    }
   }
 }
 
@@ -231,6 +244,15 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
     if (auto entity = dynamic_cast<Ogre::Entity *>(it)) {
       Ogre::LogManager::getSingleton().logMessage("[ScanNode] Node: " + node->getName() + "  Entity: " + it->getName());
       RegEntity(entity);
+      continue;
+    }
+
+    if (auto geometry = dynamic_cast<Forests::BatchedGeometry *>(it)) {
+      Ogre::LogManager::getSingleton().logMessage("[ScanNode] Node: " + node->getName() + "  Forests::BatchedGeometry: " + it->getName());
+      auto it = geometry->getSubBatchIterator();
+      while (it.hasMoreElements()) {
+        RegMaterial(it.getNext()->getMaterial().get());
+      }
       continue;
     }
   }
