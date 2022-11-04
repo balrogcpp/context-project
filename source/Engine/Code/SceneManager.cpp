@@ -11,6 +11,8 @@ using namespace std;
 
 namespace {
 inline void UpgradeTransparentShadowCaster(const Ogre::Material *material) {
+  Ogre::LogManager::getSingleton().logMessage("[ScanNode] UpgradeTransparentShadowCaster: " + material->getName());
+
   auto *tech = material->getTechnique(0);
   auto *pass = tech->getPass(0);
 
@@ -19,22 +21,23 @@ inline void UpgradeTransparentShadowCaster(const Ogre::Material *material) {
     return;
   }
 
-  auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster_alpha");
-  std::string newCasterName = "PSSM/shadow_caster_alpha/" + material->getName();
+  const std::string baseCaster = "PSSM/shadow_caster_alpha";
+  auto casterMaterial = Ogre::MaterialManager::getSingleton().getByName(baseCaster);
+  std::string newCasterName = baseCaster + "/" + material->getName();
   auto newCaster = Ogre::MaterialManager::getSingleton().getByName(newCasterName);
 
   if (!newCaster) {
     newCaster = casterMaterial->clone(newCasterName);
     std::string albedoTexture = pass->getTextureUnitState("Albedo")->getTextureName();
     auto *newPass = newCaster->getTechnique(0)->getPass(0);
+    auto *baseColor = newPass->getTextureUnitState("Albedo");
 
-    auto *baseColor = newPass->getTextureUnitState("BaseColor");
     baseColor->setContentType(Ogre::TextureUnitState::CONTENT_NAMED);
     baseColor->setTextureName(albedoTexture);
-
     newPass->setCullingMode(pass->getCullingMode());
     newPass->setManualCullingMode(pass->getManualCullingMode());
     newPass->setAlphaRejectValue(pass->getAlphaRejectValue());
+
     tech->setShadowCasterMaterial(newCaster);
   }
 }
@@ -99,7 +102,7 @@ void SceneManager::OnSetUp() {
   ogreCamera = ogreSceneManager->getCamera("Default");
 
   ogreSceneManager->addRenderObjectListener(this);
-  // Ogre::MaterialManager::getSingleton().addListener(this);
+  Ogre::MaterialManager::getSingleton().addListener(this);
 }
 
 void SceneManager::OnClean() {
@@ -175,7 +178,7 @@ void SceneManager::RegLight(Ogre::Light *light) {}
 void SceneManager::RegEntity(const std::string &name) { RegEntity(ogreSceneManager->getEntity(name)); }
 
 void SceneManager::RegEntity(Ogre::Entity *entity) {
-  EnsureHasTangents(entity->getMesh());
+  //EnsureHasTangents(entity->getMesh());
 
   if (entity->hasSkeleton()) {
     for (auto it : entity->getAttachedObjects()) {
@@ -210,12 +213,15 @@ void SceneManager::RegEntity(Ogre::Entity *entity) {
 }
 
 void SceneManager::RegMaterial(const Ogre::Material *material) {
-  UpgradeTransparentShadowCaster(material);
+  Ogre::LogManager::getSingleton().logMessage("[ScanNode] Material: " + material->getName());
+
+  //UpgradeTransparentShadowCaster(material);
 
   const auto *pass = material->getTechnique(0)->getPass(0);
 
   if (pass->hasVertexProgram()) {
     const auto ptr = pass->getVertexProgramParameters();
+    ptr->setIgnoreMissingParams(true);
     if (find(vpParams.begin(), vpParams.end(), ptr) == vpParams.end()) {
       vpParams.push_back(ptr);
     }
@@ -223,6 +229,7 @@ void SceneManager::RegMaterial(const Ogre::Material *material) {
 
   if (pass->hasFragmentProgram()) {
     const auto ptr = pass->getFragmentProgramParameters();
+    ptr->setIgnoreMissingParams(true);
     if (find(fpParams.begin(), fpParams.end(), ptr) == fpParams.end()) {
       fpParams.push_back(ptr);
     }

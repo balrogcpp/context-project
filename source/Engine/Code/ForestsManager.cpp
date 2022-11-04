@@ -38,6 +38,7 @@ void ForestsManager::UnregPagedGeometry(Forests::PagedGeometry *pagedGeometry) {
 void ForestsManager::OnUpdate(float time) {
   for (auto it : pagedGeometryList) {
     it->update();
+    it->setCastShadows(false);
   }
 }
 void ForestsManager::OnClean() {

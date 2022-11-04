@@ -102,7 +102,7 @@ index 5e06c194..22497dab 100644
              const String& desc,
              const String& src, const char* file, long line)
          {
-+#if OGRE_ASSERT_MODE > 0
++#if OGRE_ASSERT_MODE > 0 || OGRE_DEBUG_MODE
              _throwException(code, code, desc, src, file, line);
 +#endif
          }

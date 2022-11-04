@@ -38,6 +38,6 @@
         </fog>
     </environment>
     <terrainGroupLegacy  tuningMaxPixelError="0">
-        <terrain x="0" y="0" file="terrain.cfg" grass="GrassCustom" trees="fir05_30.bak.mesh"/>
+        <terrain x="0" y="0" file="terrain.cfg" grass="GrassCustom" trees="fir05_30.mesh"/>
     </terrainGroupLegacy>
 </scene>

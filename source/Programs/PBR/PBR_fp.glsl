@@ -604,13 +604,12 @@ void main()
 #endif
 
 #else //SHADOWCASTER
+
 #ifdef SHADOWCASTER_ALPHA
     if (texture2D(uAlbedoSampler, vUV0.xy).a < SurfaceAlphaRejection) discard;
 #endif //SHADOWCASTER_ALPHA
-#ifdef NO_MRT
+
     FragColor.r = gl_FragCoord.z;
-#else
-    FragData[0].r = gl_FragCoord.z;
-#endif
+
 #endif //SHADOWCASTER
 }

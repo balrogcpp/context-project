@@ -13,6 +13,10 @@
 #endif
 #endif
 
+#ifdef SHADOWCASTER
+#define NO_MRT
+#endif
+
 #include "header.vert"
 
 #ifdef SHADOWCASTER_ALPHA
@@ -191,7 +195,7 @@ void main()
 #else // HAS_TANGENTS != 1
   vNormal = normalize(vec3(ModelMatrix * vec4(normal.xyz, 0.0)));
 #endif
-#endif // !SHADOWCASTER
+#endif // !HAS_NORMALS
 
   gl_Position = MVPMatrix * new_position;
 
@@ -212,10 +216,10 @@ void main()
   projectionCoord = GetProjectionCoord(gl_Position);
 #endif
 
-#else //SHADOWCASTER
+#else // SHADOWCASTER
 #ifdef SHADOWCASTER_ALPHA
   vUV0.xy = uv0.xy;
 #endif
   gl_Position = MVPMatrix * new_position;
-#endif //SHADOWCASTER
+#endif // SHADOWCASTER
 }

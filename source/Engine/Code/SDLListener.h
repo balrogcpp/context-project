@@ -117,10 +117,10 @@ class WindowListener {
 class InputSequencer final : public LazySingleton<InputSequencer> {
  public:
   InputSequencer() {
-    winListeners.reserve(200);
-    keyListeners.reserve(200);
-    mouseListeners.reserve(200);
-    contListeners.reserve(200);
+    winListeners.reserve(50);
+    keyboardListeners.reserve(50);
+    mouseListeners.reserve(50);
+    contListeners.reserve(50);
   }
   virtual ~InputSequencer() {}
 
@@ -133,29 +133,41 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
   }
 
   ///
-  void UnregAlWindowListeners() noexcept { winListeners.clear(); }
+  void UnregAlWindowListeners() noexcept {
+    winListeners.clear();
+    winListeners.reserve(50);
+  }
 
   ///
-  void UnregAllKeyboardListeners() noexcept { keyListeners.clear(); }
+  void UnregAllKeyboardListeners() noexcept {
+    keyboardListeners.clear();
+    keyboardListeners.reserve(50);
+  }
 
   ///
-  void UnregAllMouseListeners() noexcept { mouseListeners.clear(); }
+  void UnregAllMouseListeners() noexcept {
+    mouseListeners.clear();
+    mouseListeners.reserve(50);
+  }
 
   ///
-  void UnregAllControllerListeners() noexcept { contListeners.clear(); }
+  void UnregAllControllerListeners() noexcept {
+    contListeners.clear();
+    contListeners.reserve(50);
+  }
 
   ///
   void RegKeyboardListener(KeyboardListener *p) noexcept {
-    if (std::find(keyListeners.begin(), keyListeners.end(), p) == keyListeners.end()) {
-      keyListeners.push_back(p);
+    if (std::find(keyboardListeners.begin(), keyboardListeners.end(), p) == keyboardListeners.end()) {
+      keyboardListeners.push_back(p);
     }
   }
 
   void UnregKeyboardListener(KeyboardListener *p) noexcept {
-    auto it = std::find(keyListeners.begin(), keyListeners.end(), p), end = keyListeners.end();
+    auto it = std::find(keyboardListeners.begin(), keyboardListeners.end(), p), end = keyboardListeners.end();
     if (it != end) {
       std::swap(it, --end);
-      keyListeners.pop_back();
+      keyboardListeners.pop_back();
     }
   }
 
@@ -217,12 +229,12 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
         case SDL_KEYUP: {
-          for (auto &it : keyListeners) it->OnKeyUp(event.key.keysym.sym);
+          for (auto &it : keyboardListeners) it->OnKeyUp(event.key.keysym.sym);
           break;
         }
 
         case SDL_KEYDOWN: {
-          for (auto &it : keyListeners) it->OnKeyDown(event.key.keysym.sym);
+          for (auto &it : keyboardListeners) it->OnKeyDown(event.key.keysym.sym);
           break;
         }
 
@@ -308,7 +320,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
         }
 #ifndef __ANDROID__
         case SDL_TEXTINPUT: {
-          for (auto &it : keyListeners) it->OnTextInput(event.text.text);
+          for (auto &it : keyboardListeners) it->OnTextInput(event.text.text);
           break;
         }
 
@@ -348,7 +360,7 @@ class InputSequencer final : public LazySingleton<InputSequencer> {
 
  protected:
   /// Keyboard listener list
-  std::vector<KeyboardListener *> keyListeners;
+  std::vector<KeyboardListener *> keyboardListeners;
 
   /// Listeners list (physical input)
   std::vector<MouseListener *> mouseListeners;

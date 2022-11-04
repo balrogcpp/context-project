@@ -43,6 +43,7 @@ void main()
 #ifndef NO_MRT
     FragData[0] = color;
     FragData[1].r = float(oFogCoord / uFarClipDistance);
+    //FragData[2].rg = vec2(0.0);
 #else // NO_MRT
 #ifdef USE_FOG
     color.rgb = ApplyFog(color.rgb, fogParams, fogColour.rgb, oFogCoord);
