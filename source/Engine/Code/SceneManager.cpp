@@ -127,6 +127,19 @@ void SceneManager::OnUpdate(float time) {
   }
 }
 
+static inline void ScanForests(const Ogre::UserObjectBindings &objBindings, const std::string &base) {
+  auto &forests = GetComponent<ForestsManager>();
+  int i = 0;  // counter
+  std::string key = base + to_string(i++);
+  Ogre::Any value = objBindings.getUserAny(key);
+
+  while (value.has_value()) {
+    forests.RegPagedGeometry(Ogre::any_cast<Forests::PagedGeometry *>(value));
+    key = base + to_string(i++);
+    value = objBindings.getUserAny(key);
+  }
+}
+
 void SceneManager::LoadFromFile(const std::string &filename) {
   auto *rootNode = ogreSceneManager->getRootSceneNode();
   rootNode->loadChildren(filename);
@@ -142,25 +155,16 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   }
 
   // search for TerrainGroup
-  auto objBindings = ogreSceneManager->getRootSceneNode()->getUserObjectBindings();
+  const auto &objBindings = ogreSceneManager->getRootSceneNode()->getUserObjectBindings();
   if (objBindings.getUserAny("TerrainGroup").has_value()) {
     auto terrainGroup = Ogre::any_cast<Ogre::TerrainGroup *>(objBindings.getUserAny("TerrainGroup"));
     GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
     GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup);
   }
 
-  // search for PagedGeometry
-  auto &forests = GetComponent<ForestsManager>();
-  const std::string base = "PagedGeometry";
-  std::string key = base;
-  int i = 1;  // counter
-  Ogre::Any value = objBindings.getUserAny(key);
-
-  while (value.has_value()) {
-    forests.RegPagedGeometry(Ogre::any_cast<Forests::PagedGeometry *>(value));
-    key = base + to_string(i++);
-    value = objBindings.getUserAny(key);
-  }
+  // search for GrassPage
+  ScanForests(objBindings, "GrassPage");
+  ScanForests(objBindings, "BatchPage");
 
   // this will update al objects in scene
   // GetComponent<VideoManager>().RenderFrame();
@@ -178,7 +182,7 @@ void SceneManager::RegLight(Ogre::Light *light) {}
 void SceneManager::RegEntity(const std::string &name) { RegEntity(ogreSceneManager->getEntity(name)); }
 
 void SceneManager::RegEntity(Ogre::Entity *entity) {
-  //EnsureHasTangents(entity->getMesh());
+  // EnsureHasTangents(entity->getMesh());
 
   if (entity->hasSkeleton()) {
     for (auto it : entity->getAttachedObjects()) {
@@ -215,7 +219,7 @@ void SceneManager::RegEntity(Ogre::Entity *entity) {
 void SceneManager::RegMaterial(const Ogre::Material *material) {
   Ogre::LogManager::getSingleton().logMessage("[ScanNode] Material: " + material->getName());
 
-  //UpgradeTransparentShadowCaster(material);
+  // UpgradeTransparentShadowCaster(material);
 
   const auto *pass = material->getTechnique(0)->getPass(0);
 
