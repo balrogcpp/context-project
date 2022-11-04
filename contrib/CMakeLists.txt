@@ -492,7 +492,7 @@ externalproject_add(Target_pugixml
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_pugixml
         GIT_REPOSITORY https://github.com/zeux/pugixml.git
-        GIT_TAG v1.12.1
+        GIT_TAG v1.13
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
