@@ -98,6 +98,7 @@ namespace Forests
       void build();
       void removeEntities();
       void setVisible(bool visible);
+      void setCastShadows(bool enable) override { /* always disabled*/ }
       void setFade(bool enabled, Ogre::Real visibleDist, Ogre::Real invisibleDist);
       void update();
 

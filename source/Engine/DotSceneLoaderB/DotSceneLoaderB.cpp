@@ -207,7 +207,7 @@ void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
             yaw = Ogre::Math::RangeRandom(0, 360);
             x = Ogre::Math::RangeRandom(minimum.x, maximum.x);
             z = Ogre::Math::RangeRandom(minimum.z, maximum.z);
-            y = terrainGroup->getHeightAtWorldPosition(x, 10000.0, z);
+            y = terrainGroup->getHeightAtWorldPosition(x, 10000.0, z) - 0.2;
 
             Ogre::Quaternion quat;
             scale = 0.2 * Ogre::Math::RangeRandom(0.9f, 1.1f);
@@ -215,9 +215,6 @@ void processPagedGeometryTrees(pugi::xml_node& XMLNode, Ogre::Camera* pCamera, T
 
             treeLoader->addTree(fir1EntPtr, Ogre::Vector3(x, y, z), Ogre::Degree(yaw), scale);
         }
-
-      trees->update();
-      trees->setCastsShadows(false);
 
       sceneManager->getRootSceneNode()->getUserObjectBindings().setUserAny("PagedGeometry1", trees);
     }
@@ -408,7 +405,7 @@ void DotSceneLoaderB::processTerrainGroupLegacy(pugi::xml_node& XMLNode)
     for (auto &pPageElement : XMLNode.children("terrain"))
     {
         processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup);
-        //processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup);
+        processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup);
     }
 
     terrainGroup->freeTemporaryResources();
@@ -454,7 +451,7 @@ void DotSceneLoaderB::processTerrainGroup(pugi::xml_node& XMLNode)
 
     for (auto& pPageElement : XMLNode.children("terrain")) {
         processPagedGeometryGrass(pPageElement, defaultCamera, terrainGroup.get());
-        //processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup);
+        processPagedGeometryTrees(pPageElement, defaultCamera, terrainGroup.get());
     }
 
 

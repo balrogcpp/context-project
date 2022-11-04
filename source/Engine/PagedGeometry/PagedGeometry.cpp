@@ -98,7 +98,7 @@ PagedGeometry::~PagedGeometry()
         delete pageLoader;
 }
 
-void PagedGeometry::setCastsShadows(bool enable) { for (auto it : managerList) it->setCastsShadows(enable); }
+void PagedGeometry::setCastShadows(bool enable) { for (auto it : managerList) it->setCastShadows(enable); }
 
 void PagedGeometry::setTempDir(Ogre::String dir)
 {

@@ -585,7 +585,7 @@ public:
 	void removeEntities();
 	void setFade(bool enabled, Ogre::Real visibleDist, Ogre::Real invisibleDist) {}
 	void setVisible(bool visible);
-
+        void setCastShadows(bool enable) override { /* always disabled*/ }
 private:
 	Ogre::SceneManager *sceneMgr;
 	Ogre::SceneNode *rootNode;
