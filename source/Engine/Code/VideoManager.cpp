@@ -316,7 +316,7 @@ void VideoManager::InitOgreRoot() {
 
   auto tc = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
   std::stringstream ss;
-  ss << std::put_time(std::localtime(&tc), "%F %T");
+  ss << std::put_time(std::localtime(&tc), "%F %T %Z");
   ogreLogManager->getDefaultLog()->logMessage(ss.str(), Ogre::LML_NORMAL);
 #endif
 
