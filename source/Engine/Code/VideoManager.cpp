@@ -132,7 +132,7 @@ void ScanLocation(const string &path, const string &groupName) {
 
     if (it->is_directory())
       ogreResourceManager.addResourceLocation(fullPath, FILE_SYSTEM, groupName);
-    else if (it->is_regular_file() && fileExtention == ".zip")
+    else if (it->is_regular_file() && fileExtention == ".bin")
       ogreResourceManager.addResourceLocation(fullPath, ZIP, groupName);
   }
 }
@@ -148,8 +148,8 @@ void VideoManager::LoadResources() {
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
   const char *APKZIP = "APKZip";
-  const char *PROGRAMS_ZIP = "programs.zip";
-  const char *ASSETS_ZIP = "assets.zip";
+  const char *PROGRAMS_ZIP = "programs.bin";
+  const char *ASSETS_ZIP = "assets.bin";
   const int SCAN_DEPTH = 4;
   const char *PROGRAMS_DIR = "source/Programs";
   const char *GLSL_DIR = "source/GLSL";
