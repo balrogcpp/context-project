@@ -263,7 +263,7 @@ void VideoManager::InitSDL() {
   SDL_SetMainReady();
 #endif
 
-  int sdlInitResult = 0;
+  int sdlInitResult = -1;
 #ifndef EMSCRIPTEN
   sdlInitResult = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
   for (int i = 0; i < SDL_NumJoysticks(); i++) {
@@ -301,16 +301,16 @@ void VideoManager::InitOgreRoot() {
 #ifdef _DEBUG
   ogreMinLogLevel = Ogre::LML_TRIVIAL;
 #endif
+#ifdef DESKTOP
   auto *logger = new Ogre::LogManager();
   logger->createLog(ogreLogFile, false, false, true);
-#ifdef DESKTOP
   logger->getDefaultLog()->addListener(new DefaultLogListener());
-#else
-  logger->getDefaultLog()->addListener(new MutedLogListener());
 #endif
-  logger->setMinLogLevel(static_cast<Ogre::LogMessageLevel>(ogreMinLogLevel));
 
   ogreRoot = new Ogre::Root("", "", "");
+
+  Ogre::LogManager::getSingleton().setMinLogLevel(static_cast<Ogre::LogMessageLevel>(ogreMinLogLevel));
+
 #ifdef ANDROID
   JNIEnv *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
   jclass classActivity = env->FindClass("android/app/Activity");
