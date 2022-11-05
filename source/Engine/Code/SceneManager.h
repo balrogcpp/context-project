@@ -17,7 +17,9 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   void RegEntity(Ogre::Entity *entity);
   void RegEntity(const std::string &name);
   void RegMaterial(const Ogre::Material *material);
+  void UnregMaterial(const Ogre::Material *material);
   void RegMaterial(const std::string &name);
+  void UnregMaterial(const std::string &name);
   void ScanNode(Ogre::SceneNode *node);
 
  protected:

@@ -224,17 +224,17 @@ void PagedGeometry::removeDetailLevels()
 	managerList.clear();
 }
 
-void PagedGeometry::update()
+void PagedGeometry::update(float deltaTime)
 {
 	//If no camera has been set, then return without doing anything
 	if (sceneCam == NULL)
 		return;
 
 	//Calculate time since last update
-	unsigned long deltaTime, tmp;
-	tmp = timer.getMilliseconds();
-	deltaTime = tmp - lastTime;
-	lastTime = tmp;
+	//unsigned long deltaTime, tmp;
+	//tmp = timer.getMilliseconds();
+	//deltaTime = tmp - lastTime;
+	//lastTime = tmp;
 
 	//Get camera position and speed
 	Vector3 camPos = _convertToLocal(sceneCam->getDerivedPosition());

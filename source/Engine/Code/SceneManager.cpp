@@ -243,7 +243,26 @@ void SceneManager::RegMaterial(const Ogre::Material *material) {
   }
 }
 
+void SceneManager::UnregMaterial(const Ogre::Material *material) {
+  const auto *pass = material->getTechnique(0)->getPass(0);
+  const auto &vp = pass->getVertexProgramParameters();
+  const auto &fp = pass->getFragmentProgramParameters();
+
+  auto it = find(vpParams.begin(), vpParams.end(), vp), end = vpParams.end();
+  if (it != end) {
+    swap(it, --end);
+    vpParams.pop_back();
+  }
+
+  it = find(fpParams.begin(), fpParams.end(), fp), end = fpParams.end();
+  if (it != end) {
+    swap(it, --end);
+    fpParams.pop_back();
+  }
+}
+
 void SceneManager::RegMaterial(const std::string &name) { RegMaterial(Ogre::MaterialManager::getSingleton().getByName(name).get()); }
+void SceneManager::UnregMaterial(const std::string &name) { UnregMaterial(Ogre::MaterialManager::getSingleton().getByName(name).get()); }
 
 void SceneManager::ScanNode(Ogre::SceneNode *node) {
   for (auto it : node->getAttachedObjects()) {

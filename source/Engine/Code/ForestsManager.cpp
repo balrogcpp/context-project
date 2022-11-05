@@ -21,7 +21,7 @@ void ForestsManager::OnSetUp() {
 }
 
 void ForestsManager::RegPagedGeometry(Forests::PagedGeometry *pagedGeometry) {
-  pagedGeometry->update();
+  pagedGeometry->update(0);
   if (find(pagedGeometryList.begin(), pagedGeometryList.end(), pagedGeometry) == pagedGeometryList.end()) {
     pagedGeometryList.push_back(pagedGeometry);
   }
@@ -37,7 +37,7 @@ void ForestsManager::UnregPagedGeometry(Forests::PagedGeometry *pagedGeometry) {
 
 void ForestsManager::OnUpdate(float time) {
   for (auto it : pagedGeometryList) {
-    it->update();
+    it->update(time);
     it->setCastShadows(false);
   }
 }

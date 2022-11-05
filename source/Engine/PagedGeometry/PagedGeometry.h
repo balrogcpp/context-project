@@ -452,7 +452,7 @@ public:
 	none of the geometry managed by this PagedGeometry instance will appear (or if it
 	does, it will appear incorrectly)
 	*/
-	void update();
+	void update(float deltaTime);
 
 
 	/**
