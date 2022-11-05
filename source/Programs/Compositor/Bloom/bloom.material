@@ -49,10 +49,10 @@ material Bloom_threshold
 fragment_program bloom_mod_fs glsl glsles
 {
 	source bloom_mod.frag
+    preprocessor_defines NONE
 
     default_params
     {
-        param_named NONE
     }
 }
 

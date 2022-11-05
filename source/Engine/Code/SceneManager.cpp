@@ -117,7 +117,9 @@ void SceneManager::OnClean() {
 }
 
 void SceneManager::OnUpdate(float time) {
-  if (sinbad) sinbad->Update(time);
+  if (sinbad) {
+    sinbad->Update(time);
+  }
   static Ogre::Matrix4 MVP;
   static Ogre::Matrix4 MVPprev;
   MVPprev = MVP;
@@ -223,19 +225,20 @@ void SceneManager::RegMaterial(const Ogre::Material *material) {
 
   const auto *pass = material->getTechnique(0)->getPass(0);
 
-  if (pass->hasVertexProgram()) {
-    const auto ptr = pass->getVertexProgramParameters();
-    ptr->setIgnoreMissingParams(true);
-    if (find(vpParams.begin(), vpParams.end(), ptr) == vpParams.end()) {
-      vpParams.push_back(ptr);
-    }
+  if (!pass->hasVertexProgram() || !pass->hasFragmentProgram()) {
+    return;
   }
 
-  if (pass->hasFragmentProgram()) {
-    const auto ptr = pass->getFragmentProgramParameters();
-    ptr->setIgnoreMissingParams(true);
-    if (find(fpParams.begin(), fpParams.end(), ptr) == fpParams.end()) {
-      fpParams.push_back(ptr);
+  const auto &vp = pass->getVertexProgramParameters();
+  const auto &fp = pass->getFragmentProgramParameters();
+
+  if (vp->getConstantDefinitions().map.count("uWorldViewProjPrev") > 0) {
+    if (find(vpParams.begin(), vpParams.end(), vp) == vpParams.end()) {
+      vpParams.push_back(vp);
+    }
+
+    if (find(fpParams.begin(), fpParams.end(), fp) == fpParams.end()) {
+      fpParams.push_back(fp);
     }
   }
 }
