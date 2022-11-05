@@ -281,30 +281,43 @@ class MutedLogListener final : public Ogre::LogListener {
                      bool &skipThisMessage) override {}
 };
 
+#ifdef DESKTOP
 class DefaultLogListener final : public Ogre::LogListener {
  public:
   void messageLogged(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName,
                      bool &skipThisMessage) override {
-    static std::ofstream of(logName);
+    static std::ofstream of(GetBinaryDir() + "/" + logName);
     static bool isOpen = of.is_open();
 
-    if (isOpen) of << message << "\n";
+    if (isOpen) {
+      of << "[" << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count() << "] ";
+      of << message << '\n';
+    }
 
 #ifdef _DEBUG
     printf("%s\n", message.c_str());
 #endif
   }
 };
+#endif
 
 void VideoManager::InitOgreRoot() {
   ogreLogFile = "runtime.log";
 #ifdef _DEBUG
   ogreMinLogLevel = Ogre::LML_TRIVIAL;
 #endif
+#if !defined(_DEBUG) && defined(ANDROID)
+  ogreMinLogLevel = Ogre::LML_CRITICAL;
+#endif
 #ifdef DESKTOP
-  auto *logger = new Ogre::LogManager();
-  logger->createLog(ogreLogFile, false, false, true);
-  logger->getDefaultLog()->addListener(new DefaultLogListener());
+  ogreLogManager = std::make_unique<Ogre::LogManager>();
+  ogreLogManager->createLog(ogreLogFile, false, false, true);
+  ogreLogManager->getDefaultLog()->addListener(new DefaultLogListener());
+
+  auto tc = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+  std::stringstream ss;
+  ss << std::put_time(std::localtime(&tc), "%F %T");
+  ogreLogManager->getDefaultLog()->logMessage(ss.str(), Ogre::LML_NORMAL);
 #endif
 
   ogreRoot = new Ogre::Root("", "", "");

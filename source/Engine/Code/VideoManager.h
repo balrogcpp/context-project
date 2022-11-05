@@ -44,6 +44,7 @@ class VideoManager final : public System<VideoManager> {
   std::vector<Window> windowList;
   std::string ogreLogFile;
   unsigned short ogreMinLogLevel;
+  std::unique_ptr<Ogre::LogManager> ogreLogManager;
   std::unique_ptr<ShaderResolver> shaderResolver;
   Ogre::ShadowTechnique shadowTechnique;
   Ogre::Real shadowFarDistance;

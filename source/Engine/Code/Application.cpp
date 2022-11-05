@@ -21,36 +21,21 @@ void Application::Init() {
 }
 
 void Application::LoopBody() {
-  static int64_t cumulatedTime = 0;
-  auto duration_before_frame = chrono::system_clock::now().time_since_epoch();
-  static int64_t timeOfLastFrame = chrono::duration_cast<chrono::microseconds>(duration_before_frame).count();
-  int64_t timeBeforeFrame = chrono::duration_cast<chrono::microseconds>(duration_before_frame).count();
-
-  if (cumulatedTime > int64_t(1e+6)) cumulatedTime = 0;
+  auto tpBeforeFrame = chrono::steady_clock::now();
 
   engine->Capture();
 
   if (!sleep) {
-    auto duration_before_update = chrono::system_clock::now().time_since_epoch();
-    int64_t timeBeforeUpdate = chrono::duration_cast<chrono::microseconds>(duration_before_update).count();
-    float frameTime = static_cast<float>(timeBeforeUpdate - timeOfLastFrame) / 1e+6;
-    timeOfLastFrame = timeBeforeUpdate;
-    engine->OnUpdate(frameTime);
+    engine->OnUpdate(0);
   }
 
-  int64_t timeAftetRender = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-  int64_t renderDuration = timeAftetRender - timeBeforeFrame;
+  auto tpAfterFrame = chrono::steady_clock::now();
+  auto frameDuration = tpAfterFrame - tpBeforeFrame;
 
   if (lockFps) {
-    int64_t delay = static_cast<int64_t>((1e+6 / targetFps) - renderDuration);
-    if (delay > 0) {
-      this_thread::sleep_for(chrono::microseconds(delay));
-    }
+    auto delay = chrono::microseconds{static_cast<int64_t>(1e+6 / targetFps)} - frameDuration;
+    this_thread::sleep_for(delay);
   }
-
-  int64_t TimeInEndOfLoop = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now().time_since_epoch()).count();
-  int64_t TimeSinceLastFrame = TimeInEndOfLoop - timeBeforeFrame;
-  cumulatedTime += TimeSinceLastFrame;
 
 #ifdef EMSCRIPTEN
   if (exiting) emscripten_cancel_main_loop();
