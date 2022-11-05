@@ -17,7 +17,7 @@ class VideoManager final : public System<VideoManager> {
   virtual ~VideoManager();
 
   void RenderFrame();
-  Window& GetWindow(int number);
+  Window& GetWindow(int number = 0);
   Window& GetMainWindow();
   void ShowWindow(int num, bool show);
 

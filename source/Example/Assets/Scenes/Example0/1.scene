@@ -26,7 +26,7 @@
             </entity>
         </node>
         <node name="Plane">
-            <plane name="Plane" material="Plane" width="300" height="300" distance="-10.0"/>
+            <plane name="Plane" material="Plane" width="20" height="20" distance="0.0"/>
         </node>
     </nodes>
     <environment>
@@ -37,7 +37,7 @@
             <colour r="155" g="171" b="187"/>
         </fog>
     </environment>
-    <terrainGroupLegacy  tuningMaxPixelError="0">
-        <terrain x="0" y="0" file="terrain.cfg" grass="GrassCustom" trees="fir05_30.mesh"/>
-    </terrainGroupLegacy>
+<!--    <terrainGroupLegacy>-->
+<!--        <terrain x="0" y="0" file="terrain.cfg"/>-->
+<!--    </terrainGroupLegacy>-->
 </scene>

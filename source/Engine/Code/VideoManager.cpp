@@ -47,6 +47,7 @@
 #include <Overlay/OgreOverlaySystem.h>
 #endif
 #include <SDL2/SDL.h>
+#include <iostream>
 #ifdef DESKTOP
 #if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \
     || (defined(__cplusplus) && __cplusplus >= 201703L && !defined(__APPLE__)) \
@@ -80,7 +81,7 @@ inline bool RenderSystemIsGLES2() { return Ogre::Root::getSingleton().getRenderS
 // https://github.com/tensorflow/tensorflow/blob/e895d5ca395c2362df4f5c8f08b68501b41f8a98/tensorflow/stream_executor/cuda/cuda_gpu_executor.cc#L202
 std::string GetBinaryDir() {
 #ifndef MAX_PATH
-#define MAX_PATH 4096
+#define MAX_PATH 1024
 #endif
   char buffer[MAX_PATH] = {0};
 #ifdef APPLE
@@ -143,6 +144,7 @@ void VideoManager::LoadResources() {
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
+
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
   const char *APKZIP = "APKZip";
@@ -193,7 +195,7 @@ void InitOgreRenderSystemGL();
 #endif
 
 VideoManager::VideoManager()
-    : ogreMinLogLevel(Ogre::LML_TRIVIAL),
+    : ogreMinLogLevel(Ogre::LML_NORMAL),
       ogreLogFile("Ogre.log"),
       shadowEnabled(true),
       shadowTechnique(Ogre::SHADOWTYPE_NONE),
@@ -237,6 +239,7 @@ void VideoManager::CheckGPU() {
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_HWRENDER_TO_TEXTURE), "Render to texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_FLOAT), "Float texture support required");
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION), "Texture compression support required");
+  ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_VERTEX_BUFFER_INSTANCE_DATA), "Texture compression support required");
 #if defined(DESKTOP)
   ASSERTION(ogreRenderCapabilities->hasCapability(Ogre::RSC_TEXTURE_COMPRESSION_DXT), "DXT compression support required");
 #elif defined(ANDROID)
@@ -259,21 +262,55 @@ void VideoManager::InitSDL() {
 #ifdef _MSC_VER
   SDL_SetMainReady();
 #endif
+
+  int sdlInitResult = 0;
 #ifndef EMSCRIPTEN
-  ASSERTION(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER), "Failed to init SDL");
+  sdlInitResult = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
   for (int i = 0; i < SDL_NumJoysticks(); i++) {
     if (SDL_IsGameController(i)) SDL_GameControllerOpen(i);
   }
 #else
-  ASSERTION(!SDL_Init(SDL_INIT_VIDEO), "Failed to init SDL");
+  sdlInitResult = SDL_Init(SDL_INIT_VIDEO);
 #endif
+  ASSERTION(!sdlInitResult, "Failed to init SDL");
 }
+
+class MutedLogListener final : public Ogre::LogListener {
+ public:
+  void messageLogged(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName,
+                     bool &skipThisMessage) override {}
+};
+
+class DefaultLogListener final : public Ogre::LogListener {
+ public:
+  void messageLogged(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName,
+                     bool &skipThisMessage) override {
+    static std::ofstream of(logName);
+    static bool isOpen = of.is_open();
+
+    if (isOpen) of << message << "\n";
+
+#ifdef _DEBUG
+    printf("%s\n", message.c_str());
+#endif
+  }
+};
 
 void VideoManager::InitOgreRoot() {
   ogreLogFile = "runtime.log";
+#ifdef _DEBUG
   ogreMinLogLevel = Ogre::LML_TRIVIAL;
-  ogreRoot = new Ogre::Root("", "", ogreLogFile);
-  Ogre::LogManager::getSingleton().setMinLogLevel(static_cast<Ogre::LogMessageLevel>(ogreMinLogLevel));
+#endif
+  auto *logger = new Ogre::LogManager();
+  logger->createLog(ogreLogFile, false, false, true);
+#ifdef DESKTOP
+  logger->getDefaultLog()->addListener(new DefaultLogListener());
+#else
+  logger->getDefaultLog()->addListener(new MutedLogListener());
+#endif
+  logger->setMinLogLevel(static_cast<Ogre::LogMessageLevel>(ogreMinLogLevel));
+
+  ogreRoot = new Ogre::Root("", "", "");
 #ifdef ANDROID
   JNIEnv *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
   jclass classActivity = env->FindClass("android/app/Activity");
@@ -286,8 +323,9 @@ void VideoManager::InitOgreRoot() {
   AAssetManager *assetManager = AAssetManager_fromJava(env, rawAssetManager);
   AConfiguration *aConfig = AConfiguration_new();
   AConfiguration_fromAssetManager(aConfig, assetManager);
-  Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(assetManager));
-  Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKZipArchiveFactory(assetManager));
+  auto &archiveManager = Ogre::ArchiveManager::getSingleton();
+  archiveManager.addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(assetManager));
+  archiveManager.addArchiveFactory(new Ogre::APKZipArchiveFactory(assetManager));
 #endif
 #ifdef DESKTOP
 #if defined(OGRE_BUILD_RENDERSYSTEM_GL3PLUS)

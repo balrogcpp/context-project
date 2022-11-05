@@ -8,6 +8,7 @@ using namespace std;
 
 namespace Glue {
 Application::Application() : targetFps(60), lockFps(true), exiting(false), sleep(false) {
+  std::ios_base::sync_with_stdio(false);
   engine = make_unique<SystemLocator>();
   appStateManager = make_unique<AppStateManager>();
 }
@@ -82,17 +83,10 @@ void Application::Go() {
 }
 
 void Application::OnQuit() { exiting = true; }
-
-void Application::OnFocusLost() {
-  sleep = true;
-}
-
-void Application::OnFocusGained() {
-  sleep = false;
-}
+void Application::OnFocusLost() { sleep = true; }
+void Application::OnFocusGained() { sleep = false; }
 
 int Application::Main() {
-  ios_base::sync_with_stdio(false);
   Go();
   return 0;
 }
