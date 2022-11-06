@@ -86,7 +86,7 @@ index 44a17787..d9add2ba 100644
  # install OgreMain
  ogre_config_lib(OgreMain TRUE)
 diff --git a/OgreMain/include/OgreException.h b/OgreMain/include/OgreException.h
-index 5e06c194..22497dab 100644
+index 5e06c194..17e8e022 100644
 --- a/OgreMain/include/OgreException.h
 +++ b/OgreMain/include/OgreException.h
 @@ -272,12 +272,18 @@ namespace Ogre {
@@ -121,6 +121,19 @@ index f2e2aefb..5e2f9cbd 100644
  #endif
              // std::isnan() has non-portable behaviour on MSVC
              // However NaN always fails this next test, no other number does.
+diff --git a/PlugIns/STBICodec/src/OgreSTBICodec.cpp b/PlugIns/STBICodec/src/OgreSTBICodec.cpp
+index b3e9fe78..8bc84113 100644
+--- a/PlugIns/STBICodec/src/OgreSTBICodec.cpp
++++ b/PlugIns/STBICodec/src/OgreSTBICodec.cpp
+@@ -41,7 +41,7 @@ THE SOFTWARE.
+ #define STB_IMAGE_IMPLEMENTATION
+ #define STB_IMAGE_STATIC
+ #include "stbi/stb_image.h"
+-
++#undef HAVE_ZLIB
+ #ifdef HAVE_ZLIB
+ #include <zlib.h>
+ static Ogre::uchar* custom_zlib_compress(Ogre::uchar* data, int data_len, int* out_len, int /*quality*/)
 diff --git a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp b/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp
 index 024ddebf..19220d48 100644
 --- a/RenderSystems/GLES2/src/OgreGLES2HardwarePixelBuffer.cpp

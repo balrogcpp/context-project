@@ -601,7 +601,6 @@ externalproject_add(Target_FreeType
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS Target_zlib
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_FreeType
@@ -628,12 +627,12 @@ externalproject_add(Target_FreeType
         -DANDROID_NDK=${ANDROID_NDK}
         -DANDROID_ABI=${ANDROID_ABI}
         -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-        -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=OFF
+        -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_PNG=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_BrotliDec=ON
-        -DFT_DISABLE_ZLIB=OFF
+        -DFT_DISABLE_ZLIB=ON
         -DFT_DISABLE_BZIP2=ON
         -DFT_DISABLE_PNG=ON
         -DFT_DISABLE_HARFBUZZ=ON
@@ -786,7 +785,7 @@ externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS Target_zlib Target_FreeType
+        DEPENDS Target_FreeType
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
@@ -1472,13 +1471,9 @@ externalproject_add(Target_opencv
 add_custom_target(contrib COMMAND ${CMAKE_COMMAND} -E touch ${DEPS_SOURCE_LOCATION}/contrib_ready)
 add_dependencies(contrib Target_SDL2)
 add_dependencies(contrib Target_pugixml)
-add_dependencies(contrib Target_zlib)
 add_dependencies(contrib Target_asio)
 add_dependencies(contrib Target_Lua)
 add_dependencies(contrib Target_sol2)
-add_dependencies(contrib Target_FreeType)
-add_dependencies(contrib Target_OpenAL)
-add_dependencies(contrib Target_Ogg)
 add_dependencies(contrib Target_Vorbis)
 add_dependencies(contrib Target_Bullet)
 add_dependencies(contrib Target_OGRE)
