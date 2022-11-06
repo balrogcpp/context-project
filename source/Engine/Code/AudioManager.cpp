@@ -2,14 +2,14 @@
 
 #include "pch.h"
 #include "AudioManager.h"
-#include <Ogre.h>
+#include <OggSound/OgreOggSound.h>
+#include <OggSound/OgreOggSoundRoot.h>
 
 using namespace std;
 
 namespace Glue {
 AudioManager::AudioManager() {}
 AudioManager::~AudioManager() { audioRoot->shutdown(); }
-
 
 void AudioManager::OnSetUp() {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX || OGRE_PLATFORM == OGRE_PLATFORM_APPLE

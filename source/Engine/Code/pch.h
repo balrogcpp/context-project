@@ -6,12 +6,12 @@
 #include <Overlay/OgreImGuiOverlay.h>
 #endif
 
-#include "BtOgre/BtOgre.h"
+#include <BtOgre/BtOgre.h>
 
-#include "PagedGeometry/PagedGeometryAll.h"
+#include <PagedGeometry/PagedGeometryAll.h>
 
-#include "OggSound/OgreOggSound.h"
+#include <OggSound/OgreOggSound.h>
 
-#include "SkyModel/SkyModel.h"
+#include <SkyModel/SkyModel.h>
 
-#include "DotSceneLoaderB/DotSceneLoaderB.h"
+#include <DotSceneLoaderB/DotSceneLoaderB.h>

@@ -47,6 +47,8 @@
 #include <Overlay/OgreOverlaySystem.h>
 #endif
 #include <SDL2/SDL.h>
+#include <chrono>
+#include <iomanip>
 #include <iostream>
 #ifdef DESKTOP
 #if __has_include(<filesystem>) && ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) \

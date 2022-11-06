@@ -1,8 +1,12 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-#include "PagedGeometry/PagedGeometryAll.h"
 #include "System.h"
+#include <Ogre.h>
+
+namespace Forests {
+class PagedGeometry;
+}
 
 namespace Glue {
 class ForestsManager final : public System<ForestsManager> {

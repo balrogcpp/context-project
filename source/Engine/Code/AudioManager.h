@@ -1,9 +1,13 @@
 /// created by Andrey Vasiliev
 
 #pragma once
-#include "OggSound/OgreOggSound.h"
-#include "OggSound/OgreOggSoundRoot.h"
 #include "System.h"
+#include <Ogre.h>
+
+namespace OgreOggSound {
+class Root;
+class OgreOggSoundManager;
+}  // namespace OgreOggSound
 
 namespace Glue {
 class AudioManager final : public System<AudioManager> {

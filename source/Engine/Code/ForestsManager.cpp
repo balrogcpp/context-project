@@ -3,7 +3,7 @@
 #include "pch.h"
 #include "ForestsManager.h"
 #include "TerrainManager.h"
-#include <Ogre.h>
+#include <PagedGeometry/PagedGeometryAll.h>
 
 using namespace std;
 

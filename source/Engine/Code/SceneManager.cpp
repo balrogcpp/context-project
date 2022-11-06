@@ -6,6 +6,7 @@
 #include "PhysicsManager.h"
 #include "TerrainManager.h"
 #include "VideoManager.h"
+#include <PagedGeometry/PagedGeometryAll.h>
 
 using namespace std;
 

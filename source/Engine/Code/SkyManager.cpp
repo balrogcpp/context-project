@@ -3,8 +3,7 @@
 #include "pch.h"
 #include "SkyManager.h"
 #include "Platform.h"
-#include "SkyModel/ArHosekSkyModel.h"
-#include "SkyModel/SkyModel.h"
+#include <SkyModel/SkyModel.h>
 
 namespace Glue {
 SkyManager::SkyManager() : needsUpdate(false), hosekParamList({"A", "B", "C", "D", "E", "F", "G", "H", "I", "Z"}) {}

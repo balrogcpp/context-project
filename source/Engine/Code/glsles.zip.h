@@ -1,6 +1,6 @@
 #pragma once
 
-		constexpr uint8_t glsles_zip[] =
+		constexpr unsigned char glsles_zip[] =
 		{
 			 80,  75,   3,   4,  20,   0,   8,   0,   8,   0,  27,  96,  98,  85,   0,   0,   0,   0,   0,   0,   0, 
 			  0,  95,   0,   0,   0,  12,   0,  32,   0,  68, 101, 102,  97, 117, 108, 116,  46, 102, 114,  97, 103, 
