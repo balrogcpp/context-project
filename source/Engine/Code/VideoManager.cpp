@@ -100,7 +100,7 @@ std::string GetBinaryDir() {
   return std::string(buffer).substr(0, pos + 1);
 }
 
-std::string FindPath(const std::string &path, int depth) {
+std::string FindPath(const std::string &path, int depth = 0) {
   std::string result = path;
   std::string buffer = GetBinaryDir();
 
@@ -140,6 +140,17 @@ void ScanLocation(const string &path, const string &groupName) {
 }  // namespace
 
 namespace Glue {
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
+void InitOgreRenderSystemGL3();
+#endif
+#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
+void InitOgreRenderSystemGLES2();
+#endif
+#ifdef OGRE_BUILD_RENDERSYSTEM_GL
+void InitOgreRenderSystemGL();
+#endif
+void InitEmbeddedResources();
+
 void VideoManager::LoadResources() {
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
@@ -148,6 +159,7 @@ void VideoManager::LoadResources() {
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
   const char *APKZIP = "APKZip";
+  const char *EMZIP = "EmbeddedZip";
   const char *PROGRAMS_ZIP = "programs.bin";
   const char *ASSETS_ZIP = "assets.bin";
   const int SCAN_DEPTH = 4;
@@ -157,18 +169,20 @@ void VideoManager::LoadResources() {
   const char *ASSETS_DIR = "source/Example/Assets";
 
 #if defined(DESKTOP)
-  if (!FindPath(PROGRAMS_ZIP, SCAN_DEPTH).empty()) {
-    ogreResourceManager.addResourceLocation(FindPath(PROGRAMS_ZIP, SCAN_DEPTH), ZIP, Ogre::RGN_INTERNAL);
-  } else {
+  if (!FindPath(PROGRAMS_ZIP).empty()) {
+    ogreResourceManager.addResourceLocation(FindPath(PROGRAMS_ZIP), ZIP, Ogre::RGN_INTERNAL);
+  } else if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty()) {
     ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
     if (RenderSystemIsGLES2())
       ScanLocation(FindPath(GLSLES_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
     else
       ScanLocation(FindPath(GLSL_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
+  } else {
+    InitEmbeddedResources();
   }
 
-  if (!FindPath(ASSETS_ZIP, SCAN_DEPTH).empty()) {
-    ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP, SCAN_DEPTH), ZIP, Ogre::RGN_DEFAULT);
+  if (!FindPath(ASSETS_ZIP).empty()) {
+    ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP), ZIP, Ogre::RGN_DEFAULT);
   } else {
     ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_DEFAULT);
   }
@@ -183,16 +197,6 @@ void VideoManager::LoadResources() {
   ogreResourceManager.initialiseResourceGroup(Ogre::RGN_INTERNAL);
   ogreResourceManager.initialiseAllResourceGroups();
 }
-
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL3PLUS
-void InitOgreRenderSystemGL3();
-#endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_GLES2
-void InitOgreRenderSystemGLES2();
-#endif
-#ifdef OGRE_BUILD_RENDERSYSTEM_GL
-void InitOgreRenderSystemGL();
-#endif
 
 VideoManager::VideoManager()
     : ogreMinLogLevel(Ogre::LML_NORMAL),
@@ -292,6 +296,7 @@ class DefaultLogListener final : public Ogre::LogListener {
     if (isOpen) {
       of << "[" << chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count() << "] ";
       of << message << '\n';
+      of.flush();
     }
 
 #ifdef _DEBUG
@@ -303,12 +308,13 @@ class DefaultLogListener final : public Ogre::LogListener {
 
 void VideoManager::InitOgreRoot() {
   ogreLogFile = "runtime.log";
-#ifdef _DEBUG
+
+#if defined(NDEBUG) && defined(ANDROID)
+  ogreMinLogLevel = Ogre::LML_CRITICAL;
+#else
   ogreMinLogLevel = Ogre::LML_TRIVIAL;
 #endif
-#if !defined(_DEBUG) && defined(ANDROID)
-  ogreMinLogLevel = Ogre::LML_CRITICAL;
-#endif
+
 #ifdef DESKTOP
   ogreLogManager = std::make_unique<Ogre::LogManager>();
   ogreLogManager->createLog(ogreLogFile, false, false, true);
