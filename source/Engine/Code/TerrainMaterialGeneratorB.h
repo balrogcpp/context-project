@@ -10,6 +10,7 @@ class TerrainMaterialGeneratorB final : public Ogre::TerrainMaterialGenerator {
   TerrainMaterialGeneratorB();
   virtual ~TerrainMaterialGeneratorB();
 
+ private:
   class SM2Profile : public Ogre::TerrainMaterialGenerator::Profile {
    public:
     SM2Profile(Ogre::TerrainMaterialGenerator *parent, const Ogre::String &name, const Ogre::String &desc);

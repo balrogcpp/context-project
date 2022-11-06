@@ -159,7 +159,11 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   // search for TerrainGroup
   const auto &objBindings = ogreSceneManager->getRootSceneNode()->getUserObjectBindings();
   if (objBindings.getUserAny("TerrainGroup").has_value()) {
-    auto terrainGroup = Ogre::any_cast<Ogre::TerrainGroup *>(objBindings.getUserAny("TerrainGroup"));
+    auto *terrainGroup = Ogre::any_cast<Ogre::TerrainGroup *>(objBindings.getUserAny("TerrainGroup"));
+    for (auto it = terrainGroup->getTerrainIterator(); it.hasMoreElements();) {
+      auto *terrain = it.getNext()->instance;
+      RegMaterial(terrain->getMaterial().get());
+    }
     GetComponent<TerrainManager>().RegTerrainGroup(terrainGroup);
     GetComponent<TerrainManager>().ProcessTerrainCollider(terrainGroup);
   }
@@ -167,9 +171,6 @@ void SceneManager::LoadFromFile(const std::string &filename) {
   // search for GrassPage
   ScanForests(objBindings, "GrassPage");
   ScanForests(objBindings, "BatchPage");
-
-  // this will update al objects in scene
-  // GetComponent<VideoManager>().RenderFrame();
 
   // scan second time, new objects added during first scan
   for (auto it : rootNode->getChildren()) {
