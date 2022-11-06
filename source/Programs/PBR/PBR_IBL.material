@@ -36,8 +36,8 @@ fragment_program PBRS_IBL_fs glsl glsles : PBRS_IBLI_fs {}
 
 abstract material PBR_IBL : PBRS
 {
-    set $IBL_Diffuse diffuse.dds
-    set $IBL_Specular specular.dds
+    set $IBL_Diffuse white.dds
+    set $IBL_Specular black.dds
     set $IBL_LUT brdfLUT.dds
 
     technique
