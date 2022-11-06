@@ -1,3 +1,19 @@
+# include guard
+if (_insertdependency_included)
+    return()
+endif (_insertdependency_included)
+set(_insertdependency_included true)
+
+
+macro(find_package_static PACKAGE VERBOSE)
+    set(_OLD_FIND_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".a" ".so" ".sl" ".dylib" ".dll.a")
+    find_package(${PACKAGE} ${VERBOSE})
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ${_OLD_FIND_SUFFIXES})
+    unset(_OLD_FIND_SUFFIXES)
+endmacro()
+
+
 macro(insert_dependency PACKAGE)
     find_package(${PACKAGE} QUIET)
 

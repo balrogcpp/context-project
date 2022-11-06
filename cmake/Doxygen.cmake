@@ -1,3 +1,10 @@
+# include guard
+if (_doxygen_included)
+    return()
+endif (_doxygen_included)
+set(_doxygen_included true)
+
+
 set(CMAKE_FOLDER Doxygen)
 find_package(Doxygen COMPONENTS dot QUIET)
 find_package(LATEX COMPONENTS PDFLATEX QUIET)
@@ -5,9 +12,11 @@ include(ProcessorCount)
 processorcount(PROCESSOR_COUNT)
 set(MAKE_COMMAND make -j${PROCESSOR_COUNT})
 
+
 if (NOT ARTIFACT_DIR)
     message(FATAL "ARTIFACT_DIR is not defined")
 endif ()
+
 
 if (UNIX)
     set(DOXYGEN_MAKE_COMMAND ${MAKE_COMMAND})

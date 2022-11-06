@@ -1,8 +1,8 @@
 # include guard
-if (_cppflags_included)
+if (_assets_included)
     return()
-endif (_cppflags_included)
-set(_cppflags_included true)
+endif (_assets_included)
+set(_assets_included true)
 
 
 # Zip files from directory into flat zip

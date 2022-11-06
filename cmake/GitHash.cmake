@@ -1,4 +1,12 @@
+# include guard
+if (_githash_included)
+    return()
+endif (_githash_included)
+set(_githash_included true)
+
+
 find_package(Git REQUIRED QUIET)
+
 
 if (NOT GIT_SHA AND NOT GIT_SHA_SHORT AND GIT_FOUND)
     execute_process(
