@@ -803,7 +803,6 @@ externalproject_add(Target_imgui
         TEST_AFTER_INSTALL ON
         TEST_COMMAND ${CREATE_PATCH_STAMP}
         )
-message(${DEPS_SOURCE_LOCATION}/Target_imgui)
 
 check_stamp_patch(Target_OGRE ogre-13.5.0.patch)
 externalproject_add(Target_OGRE
@@ -815,7 +814,7 @@ externalproject_add(Target_OGRE
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
         GIT_REPOSITORY https://github.com/OGRECave/ogre.git
-        GIT_TAG v13.5.0
+        GIT_TAG v13.5.1
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}
