@@ -122,7 +122,11 @@ void ScanLocation(const string &path, const string &groupName) {
   const char *FILE_SYSTEM = "FileSystem";
   const char *ZIP = "Zip";
   std::vector<std::string> resourceList;
-  ASSERTION(fs::is_directory(path), "path is not directory");
+
+  if (!fs::is_directory(path)) {
+    LogError("[ScanLocation]", "path is not directory");
+    return;
+  }
   auto &ogreResourceManager = Ogre::ResourceGroupManager::getSingleton();
   ogreResourceManager.addResourceLocation(path, FILE_SYSTEM, groupName);
 
@@ -171,6 +175,8 @@ void VideoManager::LoadResources() {
 #if defined(DESKTOP)
   if (!FindPath(PROGRAMS_ZIP).empty()) {
     ogreResourceManager.addResourceLocation(FindPath(PROGRAMS_ZIP), ZIP, Ogre::RGN_INTERNAL);
+  } else if (!FindPath("programs").empty()) {
+    ScanLocation(FindPath("programs"), Ogre::RGN_INTERNAL);
   } else if (!FindPath(PROGRAMS_DIR, SCAN_DEPTH).empty()) {
     ScanLocation(FindPath(PROGRAMS_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
     if (RenderSystemIsGLES2())
@@ -183,6 +189,8 @@ void VideoManager::LoadResources() {
 
   if (!FindPath(ASSETS_ZIP).empty()) {
     ogreResourceManager.addResourceLocation(FindPath(ASSETS_ZIP), ZIP, Ogre::RGN_DEFAULT);
+  } else if (!FindPath("assets").empty()) {
+    ScanLocation(FindPath("assets"), Ogre::RGN_DEFAULT);
   } else {
     ScanLocation(FindPath(ASSETS_DIR, SCAN_DEPTH), Ogre::RGN_DEFAULT);
   }
