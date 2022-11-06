@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "Application.h"
+#include "ImguiHelpers.h"
 #include <Overlay/OgreImGuiOverlay.h>
 
 using namespace Glue;
@@ -10,18 +11,22 @@ class MenuAppState : public AppState {
  public:
   std::string GetName() { return "MenuAppState"; }
   void OnSetUp() {
-    GetComponent<VideoManager>().GetWindow(0).SetMouseRelativeMode(true);
+    // GetComponent<VideoManager>().GetWindow(0).SetMouseRelativeMode(true);
     // GetComponent<VideoManager>().GetWindow(0).SetFullscreen(true);
 #ifdef ANDROID
     GetComponent<CompositorManager>().SetFixedViewportSize(1024, 768);
 #endif
     GetComponent<SceneManager>().LoadFromFile("1.scene");
     GetComponent<SkyManager>().SetUpSky();
-    //GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
+    // GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
+
+    //AddFont("NotoSans-Regular", Ogre::RGN_DEFAULT);
+    GetComponent<VideoManager>().ShowOverlay(true);
   }
   void OnUpdate(float time) {
     static ImGuiIO &io = ImGui::GetIO();
     Ogre::ImGuiOverlay::NewFrame();
+
     static bool ShowContextMenu = false;
     // fps counter
     ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
@@ -61,6 +66,7 @@ class MenuAppState : public AppState {
       ShowContextMenu = false;
     }
     ImGui::End();
+
     //    ImGui::NewLine();
     //    if (ImGui::Button(u8"    Main Menu")) {
     //      //ChangeState(make_unique<MenuAppState>());

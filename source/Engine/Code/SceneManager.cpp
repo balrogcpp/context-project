@@ -92,7 +92,7 @@ SceneManager::SceneManager() {
   vpParams.reserve(200);
   fpParams.reserve(200);
 }
-SceneManager::~SceneManager() { Ogre::MaterialManager::getSingleton().removeListener(this); }
+SceneManager::~SceneManager() { ogreSceneManager->removeRenderObjectListener(this); }
 
 void SceneManager::OnSetUp() {
   ogreRoot = Ogre::Root::getSingletonPtr();
@@ -103,7 +103,6 @@ void SceneManager::OnSetUp() {
   ogreCamera = ogreSceneManager->getCamera("Default");
 
   ogreSceneManager->addRenderObjectListener(this);
-  Ogre::MaterialManager::getSingleton().addListener(this);
 }
 
 void SceneManager::OnClean() {
@@ -301,13 +300,6 @@ void SceneManager::ScanNode(Ogre::SceneNode *node) {
     ScanNode(static_cast<Ogre::SceneNode *>(it));
   }
 }
-
-Ogre::Technique *SceneManager::handleSchemeNotFound(unsigned short schemeIndex, const std::string &schemeName, Ogre::Material *originalMaterial,
-                                                    unsigned short lodIndex, const Ogre::Renderable *rend) {
-  return nullptr;
-}
-bool SceneManager::afterIlluminationPassesCreated(Ogre::Technique *tech) { return false; }
-bool SceneManager::beforeIlluminationPassesCleared(Ogre::Technique *tech) { return false; }
 
 void SceneManager::notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,
                                             const Ogre::LightList *pLightList, bool suppressRenderStateChanges) {}

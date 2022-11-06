@@ -6,7 +6,7 @@
 #include <Ogre.h>
 
 namespace Glue {
-class SceneManager final : public System<SceneManager>, public Ogre::RenderObjectListener, public Ogre::MaterialManager::Listener {
+class SceneManager final : public System<SceneManager>, public Ogre::RenderObjectListener {
  public:
   SceneManager();
   virtual ~SceneManager();
@@ -27,12 +27,6 @@ class SceneManager final : public System<SceneManager>, public Ogre::RenderObjec
   void OnSetUp() override;
   void OnClean() override;
   void OnUpdate(float time) override;
-
-  /// Ogre::MaterialManager::Listener impl
-  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const std::string &schemeName, Ogre::Material *originalMaterial,
-                                        unsigned short lodIndex, const Ogre::Renderable *rend) override;
-  bool afterIlluminationPassesCreated(Ogre::Technique *tech) override;
-  bool beforeIlluminationPassesCleared(Ogre::Technique *tech) override;
 
   /// Ogre::RenderObjectListener impl
   void notifyRenderSingleObject(Ogre::Renderable *rend, const Ogre::Pass *pass, const Ogre::AutoParamDataSource *source,

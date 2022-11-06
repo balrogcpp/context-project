@@ -6,6 +6,7 @@
 #include "System.h"
 #include "Window.h"
 #include <Ogre.h>
+#include <OgreImGuiOverlay.h>
 
 namespace Glue {
 class VideoManager final : public System<VideoManager> {
@@ -23,6 +24,8 @@ class VideoManager final : public System<VideoManager> {
 
   void UnloadResources();
   void ClearScene();
+
+  void ShowOverlay(bool show);
 
  protected:
   void MakeWindow();
@@ -59,5 +62,6 @@ class VideoManager final : public System<VideoManager> {
   Ogre::RenderWindow* ogreWindow = nullptr;
   Ogre::Camera* ogreCamera = nullptr;
   Ogre::Viewport* ogreViewport = nullptr;
+  Ogre::ImGuiOverlay *imguiOverlay = nullptr;
 };
 }  // namespace Glue

@@ -186,7 +186,7 @@ void VideoManager::LoadResources() {
     else
       ScanLocation(FindPath(GLSL_DIR, SCAN_DEPTH), Ogre::RGN_INTERNAL);
   } else {
-    InitEmbeddedResources();
+    // InitEmbeddedResources();
   }
 
   if (!FindPath(ASSETS_ZIP).empty()) {
@@ -412,11 +412,11 @@ void VideoManager::MakeWindow() {
 
 void VideoManager::InitOgreOverlay() {
   auto *ogreOverlay = new Ogre::OverlaySystem();
-  auto *imguiOverlay = new Ogre::ImGuiOverlay();
+  imguiOverlay = new Ogre::ImGuiOverlay();
   imguiListener = make_unique<ImGuiListener>();
   InputSequencer::GetInstance().RegKeyboardListener(imguiListener.get());
   InputSequencer::GetInstance().RegMouseListener(imguiListener.get());
-  InputSequencer::GetInstance().UnregContListener(imguiListener.get());
+  InputSequencer::GetInstance().RegContListener(imguiListener.get());
 
   float vpScale = Ogre::OverlayManager::getSingleton().getPixelRatio();
   ImGui::GetIO().FontGlobalScale = round(vpScale);
@@ -429,18 +429,12 @@ void VideoManager::InitOgreOverlay() {
   io.IniFilename = nullptr;
   io.LogFilename = nullptr;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-  io.ConfigFlags |= ImGuiBackendFlags_HasGamepad;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+  io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
 #ifdef MOBILE
   io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 #endif
-  //  AddFont("NotoSans-Regular", RGN_INTERNAL, nullptr, io.Fonts->GetGlyphRangesCyrillic());
-  //  ImFontConfig config;
-  //  config.MergeMode = true;
-  //  static const ImWchar icon_ranges[] = {ICON_MIN_MD, ICON_MAX_MD, 0};
-  //  AddFont("KenneyIcon-Regular", RGN_INTERNAL, &config, icon_ranges);
-  imguiOverlay->show();
 }
 
 void VideoManager::InitOgreScene() {
@@ -508,6 +502,38 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
  public:
   explicit ShaderResolver(Ogre::RTShader::ShaderGenerator *shaderGenerator) : shaderGenerator(shaderGenerator) {}
 
+  static bool ResolveMaterial(const std::string &name, const std::string &group = Ogre::RGN_AUTODETECT) {
+    auto &shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingleton();
+    auto &ogreMaterialManager = Ogre::MaterialManager::getSingleton();
+    auto material = ogreMaterialManager.getByName(name);
+    const std::string schemeName = Ogre::MSN_SHADERGEN;
+
+    if (!material) {
+      return false;
+    }
+
+    // SetUp shader generated technique for this material.
+    bool tech = shaderGenerator.createShaderBasedTechnique(*material, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, schemeName);
+
+    if (!tech) {
+      return false;
+    }
+
+    // Force creating the shaders for the generated technique.
+    shaderGenerator.validateMaterial(schemeName, *material);
+
+    Ogre::Material::Techniques::const_iterator it;
+    for (it = material->getTechniques().begin(); it != material->getTechniques().end(); ++it) {
+      Ogre::Technique *curTech = *it;
+
+      if (curTech->getSchemeName() == schemeName) {
+        return curTech;
+      }
+    }
+
+    return true;
+  }
+
   Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const string &schemeName, Ogre::Material *originalMaterial,
                                         unsigned short lodIndex, const Ogre::Renderable *rend) override {
     if (!shaderGenerator->hasRenderState(schemeName)) {
@@ -561,15 +587,18 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
   Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
 };
 
+void VideoManager::ShowOverlay(bool show) {
+  show ? imguiOverlay->show() : imguiOverlay->hide();
+  ShaderResolver::ResolveMaterial("ImGui/material", Ogre::RGN_INTERNAL);
+}
+
 void VideoManager::InitOgreRTSS() {
   bool result = Ogre::RTShader::ShaderGenerator::initialize();
   ASSERTION(result, "[VideoManager] OGRE RTSS init failed");
   auto &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
-  // ogreViewport->setMaterialScheme(Ogre::MSN_SHADERGEN);
   rtShaderGen.addSceneManager(ogreSceneManager);
   rtShaderGen.setShaderCachePath("");
   shaderResolver = make_unique<ShaderResolver>(&rtShaderGen);
-  Ogre::MaterialManager::getSingleton().addListener(shaderResolver.get());
 
   auto *schemRenderState = rtShaderGen.getRenderState(Ogre::MSN_SHADERGEN);
   auto *subRenderState = rtShaderGen.createSubRenderState(Ogre::RTShader::SRS_INTEGRATED_PSSM3);
@@ -596,10 +625,5 @@ void VideoManager::OnSetUp() {
   InitOgreOverlay();
   LoadResources();
   InitOgreScene();
-
-  // cleanup
-  Ogre::ImGuiOverlay::NewFrame();
-  ogreRoot->renderOneFrame();
-  Ogre::MaterialManager::getSingleton().removeListener(shaderResolver.get());
 }
 }  // namespace Glue
