@@ -3,10 +3,6 @@
 #include "pch.h"
 #include "ImguiHelpers.h"
 #include "Assertion.h"
-#include <Overlay/OgreFontManager.h>
-#include <Overlay/OgreImGuiOverlay.h>
-#include <Overlay/OgreOverlayManager.h>
-#include <Overlay/OgreOverlaySystem.h>
 
 namespace {
 struct ResolutionItem {
@@ -40,38 +36,4 @@ constexpr ResolutionItem ResolutionList[] = {
 }  // namespace
 
 namespace Glue {
-ImFont *AddFont(const Ogre::String &name, const char *group, const ImFontConfig *fontCfg, const ImWchar *glyphRanges) {
-  typedef std::vector<ImWchar> CodePointRange;
-  std::vector<CodePointRange> mCodePointRanges;
-  static ImGuiIO &io = ImGui::GetIO();
-
-  Ogre::FontPtr font = Ogre::FontManager::getSingleton().getByName(name, group);
-  ASSERTION(font, "font does not exist");
-  ASSERTION(font->getType() == Ogre::FT_TRUETYPE, "font must be of FT_TRUETYPE");
-  Ogre::DataStreamPtr dataStreamPtr = Ogre::ResourceGroupManager::getSingleton().openResource(font->getSource(), font->getGroup());
-  Ogre::MemoryDataStream ttfchunk(dataStreamPtr, false);  // transfer ownership to imgui
-
-  // convert codepoint ranges for imgui
-  CodePointRange cprange;
-  for (const auto &r : font->getCodePointRangeList()) {
-    cprange.push_back(r.first);
-    cprange.push_back(r.second);
-  }
-
-  const ImWchar *cprangePtr = io.Fonts->GetGlyphRangesDefault();
-  if (!cprange.empty()) {
-    cprange.push_back(0);  // terminate
-    mCodePointRanges.push_back(cprange);
-    // ptr must persist until createFontTexture
-    cprangePtr = mCodePointRanges.back().data();
-  }
-
-  float vpScale = Ogre::OverlayManager::getSingleton().getPixelRatio();
-
-  ImFontConfig cfg;
-  strncpy(cfg.Name, name.c_str(), IM_ARRAYSIZE(cfg.Name) - 1);
-  auto *imguiFont = io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), font->getTrueTypeSize() * vpScale, fontCfg, glyphRanges);
-
-  return imguiFont;
-}
 }  // namespace Glue

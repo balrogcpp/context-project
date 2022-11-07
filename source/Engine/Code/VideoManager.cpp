@@ -4,7 +4,6 @@
 #include "VideoManager.h"
 #include "Android.h"
 #include "DotSceneLoaderB/DotSceneLoaderB.h"
-#include "ImguiHelpers.h"
 #include "Platform.h"
 #ifdef OGRE_OPENGL
 #include <OgreGLRenderSystemCommon.h>
@@ -587,9 +586,44 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
   Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
 };
 
+ImFont *VideoManager::AddFont(const std::string &name, const std::string &group, const ImFontConfig *cfg, const ImWchar *ranges) {
+  typedef std::vector<ImWchar> CodePointRange;
+  std::vector<CodePointRange> mCodePointRanges;
+  static ImGuiIO &io = ImGui::GetIO();
+
+  Ogre::FontPtr font = Ogre::FontManager::getSingleton().getByName(name, group);
+  ASSERTION(font, "font does not exist");
+  ASSERTION(font->getType() == Ogre::FT_TRUETYPE, "font must be of FT_TRUETYPE");
+  Ogre::DataStreamPtr dataStreamPtr = Ogre::ResourceGroupManager::getSingleton().openResource(font->getSource(), font->getGroup());
+  Ogre::MemoryDataStream ttfchunk(dataStreamPtr, false);  // transfer ownership to imgui
+
+  // convert codepoint ranges for imgui
+  CodePointRange cprange;
+  for (const auto &r : font->getCodePointRangeList()) {
+    cprange.push_back(r.first);
+    cprange.push_back(r.second);
+  }
+
+  const ImWchar *cprangePtr = io.Fonts->GetGlyphRangesDefault();
+  if (!cprange.empty()) {
+    cprange.push_back(0);  // terminate
+    mCodePointRanges.push_back(cprange);
+    // ptr must persist until createFontTexture
+    cprangePtr = mCodePointRanges.back().data();
+  }
+
+  float vpScale = Ogre::OverlayManager::getSingleton().getPixelRatio();
+
+  return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), ttfchunk.size(), font->getTrueTypeSize() * vpScale, cfg, ranges);
+}
+
 void VideoManager::ShowOverlay(bool show) {
-  show ? imguiOverlay->show() : imguiOverlay->hide();
-  ShaderResolver::ResolveMaterial("ImGui/material", Ogre::RGN_INTERNAL);
+  if (show) {
+    imguiOverlay->show();
+    ShaderResolver::ResolveMaterial("ImGui/material", Ogre::RGN_INTERNAL);
+  } else {
+    imguiOverlay->hide();
+  }
 }
 
 void VideoManager::InitOgreRTSS() {

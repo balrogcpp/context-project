@@ -11,7 +11,7 @@ class MenuAppState : public AppState {
  public:
   std::string GetName() { return "MenuAppState"; }
   void OnSetUp() {
-    // GetComponent<VideoManager>().GetWindow(0).SetMouseRelativeMode(true);
+    GetComponent<VideoManager>().GetWindow(0).SetMouseRelativeMode(true);
     // GetComponent<VideoManager>().GetWindow(0).SetFullscreen(true);
 #ifdef ANDROID
     GetComponent<CompositorManager>().SetFixedViewportSize(1024, 768);
@@ -20,7 +20,7 @@ class MenuAppState : public AppState {
     GetComponent<SkyManager>().SetUpSky();
     // GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
 
-    //AddFont("NotoSans-Regular", Ogre::RGN_DEFAULT);
+    //auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
     GetComponent<VideoManager>().ShowOverlay(true);
   }
   void OnUpdate(float time) {

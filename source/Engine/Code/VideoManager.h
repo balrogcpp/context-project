@@ -26,6 +26,8 @@ class VideoManager final : public System<VideoManager> {
   void ClearScene();
 
   void ShowOverlay(bool show);
+  ImFont* AddFont(const std::string& name, const std::string& group = Ogre::RGN_AUTODETECT, const ImFontConfig* cfg = nullptr,
+                  const ImWchar* ranges = nullptr);
 
  protected:
   void MakeWindow();
@@ -62,6 +64,6 @@ class VideoManager final : public System<VideoManager> {
   Ogre::RenderWindow* ogreWindow = nullptr;
   Ogre::Camera* ogreCamera = nullptr;
   Ogre::Viewport* ogreViewport = nullptr;
-  Ogre::ImGuiOverlay *imguiOverlay = nullptr;
+  Ogre::ImGuiOverlay* imguiOverlay = nullptr;
 };
 }  // namespace Glue
