@@ -4,4 +4,4 @@
 #include "imgui_user/imgui_user.h"
 #include <imgui.h>
 
-namespace Glue {}
+namespace ImHelpers {}

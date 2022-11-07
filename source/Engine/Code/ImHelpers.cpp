@@ -1,7 +1,7 @@
 /// created by Andrey Vasiliev
 
 #include "pch.h"
-#include "ImguiHelpers.h"
+#include "ImHelpers.h"
 #include "Assertion.h"
 
 namespace {
@@ -35,5 +35,5 @@ constexpr ResolutionItem ResolutionList[] = {
 };
 }  // namespace
 
-namespace Glue {
+namespace ImHelpers {
 }  // namespace Glue

@@ -499,33 +499,33 @@ void VideoManager::UnloadResources() {
 
 class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listener {
  public:
-  explicit ShaderResolver(Ogre::RTShader::ShaderGenerator *shaderGenerator) : shaderGenerator(shaderGenerator) {}
+  explicit ShaderResolver(Ogre::RTShader::ShaderGenerator *shaderGenerator) : shaderGen(shaderGenerator) {}
 
   static bool ResolveMaterial(const std::string &name, const std::string &group = Ogre::RGN_AUTODETECT) {
-    auto &shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingleton();
-    auto &ogreMaterialManager = Ogre::MaterialManager::getSingleton();
+    static auto &shaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
+    static auto &ogreMaterialManager = Ogre::MaterialManager::getSingleton();
     auto material = ogreMaterialManager.getByName(name);
-    const std::string schemeName = Ogre::MSN_SHADERGEN;
+    const std::string scheme = Ogre::MSN_SHADERGEN;
 
     if (!material) {
       return false;
     }
 
     // SetUp shader generated technique for this material.
-    bool tech = shaderGenerator.createShaderBasedTechnique(*material, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, schemeName);
+    bool tech = shaderGen.createShaderBasedTechnique(*material, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, scheme);
 
     if (!tech) {
       return false;
     }
 
     // Force creating the shaders for the generated technique.
-    shaderGenerator.validateMaterial(schemeName, *material);
+    shaderGen.validateMaterial(scheme, *material);
 
     Ogre::Material::Techniques::const_iterator it;
     for (it = material->getTechniques().begin(); it != material->getTechniques().end(); ++it) {
       Ogre::Technique *curTech = *it;
 
-      if (curTech->getSchemeName() == schemeName) {
+      if (curTech->getSchemeName() == scheme) {
         return curTech;
       }
     }
@@ -533,30 +533,30 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
     return true;
   }
 
-  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const string &schemeName, Ogre::Material *originalMaterial,
-                                        unsigned short lodIndex, const Ogre::Renderable *rend) override {
-    if (!shaderGenerator->hasRenderState(schemeName)) {
+  Ogre::Technique *handleSchemeNotFound(unsigned short schemeIndex, const string &scheme, Ogre::Material *material, unsigned short lod,
+                                        const Ogre::Renderable *rend) override {
+    if (!shaderGen->hasRenderState(scheme)) {
       return nullptr;
     }
     // Case this is the default shader generator scheme.
 
     // Create shader generated technique for this material.
-    bool techniqueCreated = shaderGenerator->createShaderBasedTechnique(*originalMaterial, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, schemeName);
+    bool tech = shaderGen->createShaderBasedTechnique(*material, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, scheme);
 
-    if (!techniqueCreated) {
+    if (!tech) {
       return nullptr;
     }
     // Case technique registration succeeded.
 
     // Force creating the shaders for the generated technique.
-    shaderGenerator->validateMaterial(schemeName, *originalMaterial);
+    shaderGen->validateMaterial(scheme, *material);
 
     // Grab the generated technique.
     Ogre::Material::Techniques::const_iterator it;
-    for (it = originalMaterial->getTechniques().begin(); it != originalMaterial->getTechniques().end(); ++it) {
+    for (it = material->getTechniques().begin(); it != material->getTechniques().end(); ++it) {
       Ogre::Technique *curTech = *it;
 
-      if (curTech->getSchemeName() == schemeName) {
+      if (curTech->getSchemeName() == scheme) {
         return curTech;
       }
     }
@@ -564,26 +564,12 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
     return nullptr;
   }
 
-  bool afterIlluminationPassesCreated(Ogre::Technique *tech) override {
-    if (shaderGenerator->hasRenderState(tech->getSchemeName())) {
-      Ogre::Material *mat = tech->getParent();
-      shaderGenerator->validateMaterialIlluminationPasses(tech->getSchemeName(), mat->getName(), mat->getGroup());
-      return true;
-    }
-    return false;
-  }
+  bool afterIlluminationPassesCreated(Ogre::Technique *tech) override { return true; }
 
-  bool beforeIlluminationPassesCleared(Ogre::Technique *tech) override {
-    if (shaderGenerator->hasRenderState(tech->getSchemeName())) {
-      Ogre::Material *mat = tech->getParent();
-      shaderGenerator->invalidateMaterialIlluminationPasses(tech->getSchemeName(), mat->getName(), mat->getGroup());
-      return true;
-    }
-    return false;
-  }
+  bool beforeIlluminationPassesCleared(Ogre::Technique *tech) override { return true; }
 
  protected:
-  Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
+  Ogre::RTShader::ShaderGenerator *shaderGen = nullptr;
 };
 
 ImFont *VideoManager::AddFont(const std::string &name, const std::string &group, const ImFontConfig *cfg, const ImWchar *ranges) {
@@ -629,24 +615,24 @@ void VideoManager::ShowOverlay(bool show) {
 void VideoManager::InitOgreRTSS() {
   bool result = Ogre::RTShader::ShaderGenerator::initialize();
   ASSERTION(result, "[VideoManager] OGRE RTSS init failed");
-  auto &rtShaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
-  rtShaderGen.addSceneManager(ogreSceneManager);
-  rtShaderGen.setShaderCachePath("");
-  shaderResolver = make_unique<ShaderResolver>(&rtShaderGen);
+  auto &shaderGen = Ogre::RTShader::ShaderGenerator::getSingleton();
+  shaderGen.addSceneManager(ogreSceneManager);
+  shaderGen.setShaderCachePath("");
+  shaderResolver = make_unique<ShaderResolver>(&shaderGen);
 
-  auto *schemRenderState = rtShaderGen.getRenderState(Ogre::MSN_SHADERGEN);
-  auto *subRenderState = rtShaderGen.createSubRenderState(Ogre::RTShader::SRS_INTEGRATED_PSSM3);
+  auto *schemRenderState = shaderGen.getRenderState(Ogre::MSN_SHADERGEN);
+  auto *subRenderState = shaderGen.createSubRenderState(Ogre::RTShader::SRS_INTEGRATED_PSSM3);
   schemRenderState->addTemplateSubRenderState(subRenderState);
 
   // Add the hardware skinning to the shader generator default render state
-  subRenderState = rtShaderGen.createSubRenderState(Ogre::RTShader::SRS_HARDWARE_SKINNING);
+  subRenderState = shaderGen.createSubRenderState(Ogre::RTShader::SRS_HARDWARE_SKINNING);
   schemRenderState->addTemplateSubRenderState(subRenderState);
 
   // increase max bone count for higher efficiency
   Ogre::RTShader::HardwareSkinningFactory::getSingleton().setMaxCalculableBoneCount(80);
 
   // re-generate shaders to include new SRSs
-  rtShaderGen.invalidateScheme(Ogre::MSN_SHADERGEN);
+  shaderGen.invalidateScheme(Ogre::MSN_SHADERGEN);
 }
 
 void VideoManager::OnSetUp() {

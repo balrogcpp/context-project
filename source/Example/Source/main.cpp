@@ -2,8 +2,6 @@
 
 #include "pch.h"
 #include "Application.h"
-#include "ImguiHelpers.h"
-#include <Overlay/OgreImGuiOverlay.h>
 
 using namespace Glue;
 
