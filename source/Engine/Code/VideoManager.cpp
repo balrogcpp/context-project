@@ -564,9 +564,23 @@ class VideoManager::ShaderResolver final : public Ogre::MaterialManager::Listene
     return nullptr;
   }
 
-  bool afterIlluminationPassesCreated(Ogre::Technique *tech) override { return true; }
+  bool afterIlluminationPassesCreated(Ogre::Technique *tech) override {
+    if (shaderGen->hasRenderState(tech->getSchemeName())) {
+      auto *mat = tech->getParent();
+      shaderGen->validateMaterialIlluminationPasses(tech->getSchemeName(), mat->getName(), mat->getGroup());
+      return true;
+    }
+    return false;
+  }
 
-  bool beforeIlluminationPassesCleared(Ogre::Technique *tech) override { return true; }
+  bool beforeIlluminationPassesCleared(Ogre::Technique *tech) override {
+    if (shaderGen->hasRenderState(tech->getSchemeName())) {
+      auto *mat = tech->getParent();
+      shaderGen->invalidateMaterialIlluminationPasses(tech->getSchemeName(), mat->getName(), mat->getGroup());
+      return true;
+    }
+    return false;
+  }
 
  protected:
   Ogre::RTShader::ShaderGenerator *shaderGen = nullptr;
