@@ -809,7 +809,7 @@ externalproject_add(Target_OGRE
         EXCLUDE_FROM_ALL true
         BUILD_ALWAYS false
         BUILD_IN_SOURCE false
-        DEPENDS Target_FreeType Target_imgui
+        DEPENDS Target_imgui
         PREFIX ${DEPS_PREFIX_LOCATION}
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_OGRE
@@ -1499,7 +1499,6 @@ add_dependencies(contrib Target_pugixml)
 add_dependencies(contrib Target_asio)
 add_dependencies(contrib Target_Lua)
 add_dependencies(contrib Target_sol2)
-add_dependencies(contrib Target_FreeType)
 add_dependencies(contrib Target_OpenAL)
 add_dependencies(contrib Target_Ogg)
 add_dependencies(contrib Target_Vorbis)

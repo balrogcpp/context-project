@@ -13,4 +13,5 @@ void SetupImGuiStyle_RedFont();
 void SetupImGuiStyle_MaterialFlat();
 void SetupImGuiStyle_GreenFont();
 void SetupImGuiStyle_DarkCustom();
+void SetupImGuiStyle_RedCustom();
 }  // namespace ImStyle

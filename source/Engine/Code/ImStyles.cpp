@@ -779,4 +779,33 @@ void SetupImGuiStyle_DarkCustom() {
   style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
   style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
 }
+
+void SetupImGuiStyle_RedCustom() {
+  ImGuiStyle &style = ImGui::GetStyle();
+
+  style.Colors[ImGuiCol_WindowBg] = ImColor(0, 0, 0, 230);
+  style.Colors[ImGuiCol_Border] = ImColor(0, 0, 0, 0);
+  style.Colors[ImGuiCol_Button] = ImColor(31, 30, 31, 255);
+  style.Colors[ImGuiCol_ButtonActive] = ImColor(239, 73, 88, 255);
+  style.Colors[ImGuiCol_ButtonHovered] = ImColor(173, 55, 65, 255);
+  style.Colors[ImGuiCol_FrameBg] = ImColor(31, 30, 31, 255);
+
+  style.Colors[ImGuiCol_FrameBgActive] = ImColor(44, 43, 44, 255);
+  style.Colors[ImGuiCol_FrameBgHovered] = ImColor(37, 36, 37, 255);
+
+  style.Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
+  style.Colors[ImGuiCol_ChildBg] = ImColor(33, 34, 45, 255);
+  style.Colors[ImGuiCol_CheckMark] = ImColor(240, 50, 66, 255);
+  style.Colors[ImGuiCol_SliderGrab] = ImColor(240, 74, 88, 255);
+  style.Colors[ImGuiCol_SliderGrabActive] = ImColor(240, 50, 66, 255);
+  style.Colors[ImGuiCol_Header] = ImColor(240, 50, 66, 255);
+  style.Colors[ImGuiCol_HeaderHovered] = ImColor(240, 74, 88, 255);
+  style.Colors[ImGuiCol_HeaderActive] = ImColor(240, 50, 66, 255);
+  style.Colors[ImGuiCol_ResizeGrip] = ImColor(220, 50, 66, 120);
+  style.Colors[ImGuiCol_ResizeGripHovered] = ImColor(250, 50, 66, 140);
+  style.Colors[ImGuiCol_ResizeGripActive] = ImColor(240, 50, 66, 255);
+  style.Colors[ImGuiCol_SeparatorHovered] = ImColor(250, 50, 66, 140);
+  style.Colors[ImGuiCol_SeparatorActive] = ImColor(240, 50, 66, 255);
+  style.Colors[ImGuiCol_TitleBgActive] = ImColor(240, 50, 66, 255);
+}
 }  // namespace ImStyle
