@@ -12,5 +12,5 @@ void SetupImGuiStyle_Darcula();
 void SetupImGuiStyle_RedFont();
 void SetupImGuiStyle_MaterialFlat();
 void SetupImGuiStyle_GreenFont();
-void SetupImGuiStyle_Custom();
+void SetupImGuiStyle_DarkCustom();
 }  // namespace ImStyle

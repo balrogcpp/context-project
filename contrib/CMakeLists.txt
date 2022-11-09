@@ -1390,7 +1390,7 @@ externalproject_add(Target_entt
         DOWNLOAD_DIR ${DEPS_SOURCE_LOCATION}
         SOURCE_DIR ${DEPS_SOURCE_LOCATION}/Target_entt
         GIT_REPOSITORY https://github.com/skypjack/entt.git
-        GIT_TAG v3.10.3
+        GIT_TAG v3.11.0
         GIT_SHALLOW true
         GIT_PROGRESS false
         DOWNLOAD_COMMAND ${DOWNLOAD_PLACEHOLDER}

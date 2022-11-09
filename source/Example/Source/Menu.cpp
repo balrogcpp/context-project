@@ -2,8 +2,8 @@
 
 #include "pch.h"
 #include "Menu.h"
+#include "ImStyles.h"
 #include "SystemLocator.h"
-#include "imgui_user/ImStyles.h"
 
 namespace {}  // namespace
 
@@ -16,14 +16,14 @@ void Menu::OnSetUp() {
 #ifdef ANDROID
   GetComponent<CompositorManager>().SetFixedViewportSize(1024, 768);
 #endif
-  GetComponent<SceneManager>().LoadFromFile("1.scene");
-  GetComponent<SkyManager>().SetUpSky();
+  //  GetComponent<SceneManager>().LoadFromFile("1.scene");
+  //  GetComponent<SkyManager>().SetUpSky();
   // GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
 
   //auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
   GetComponent<VideoManager>().ShowOverlay(true);
   // ImStyle::SetupImGuiStyle_DiscordDark();
-  ImStyle::SetupImGuiStyle_GreenFont();
+  ImStyle::SetupImGuiStyle_DarkCustom();
 }
 
 void Menu::OnUpdate(float time) {
