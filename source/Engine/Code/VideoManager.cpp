@@ -243,7 +243,7 @@ Window &VideoManager::GetWindow(int number) { return windowList[0]; }
 
 Window &VideoManager::GetMainWindow() { return *mainWindow; }
 
-void VideoManager::ShowWindow(int num, bool show) { windowList[0].Show(show); }
+void VideoManager::ShowWindow(bool show, int index) { windowList[index].Show(show); }
 
 void VideoManager::CheckGPU() {
   const auto *ogreRenderSystem = ogreRoot->getRenderSystem();

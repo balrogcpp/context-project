@@ -20,7 +20,7 @@ class VideoManager final : public System<VideoManager> {
   void RenderFrame();
   Window& GetWindow(int number = 0);
   Window& GetMainWindow();
-  void ShowWindow(int num, bool show);
+  void ShowWindow(bool show, int index = 0);
 
   void UnloadResources();
   void ClearScene();

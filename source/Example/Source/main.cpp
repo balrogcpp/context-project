@@ -19,7 +19,7 @@ int main()
     Glue::Application app;
     app.Init();
 
-    GetComponent<VideoManager>().ShowWindow(0, true);
+    GetComponent<VideoManager>().ShowWindow(true);
     GetComponent<AppStateManager>().RegAppState(std::make_shared<Menu>());
     GetComponent<AppStateManager>().SetActiveAppState("Menu");
 

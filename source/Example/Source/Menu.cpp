@@ -20,7 +20,7 @@ void Menu::OnSetUp() {
   GetComponent<SkyManager>().SetUpSky();
   // GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
 
-  auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
+  //auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
   GetComponent<VideoManager>().ShowOverlay(true);
   // ImStyle::SetupImGuiStyle_DiscordDark();
   ImStyle::SetupImGuiStyle_GreenFont();
