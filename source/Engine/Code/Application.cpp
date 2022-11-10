@@ -33,12 +33,14 @@ void Application::LoopBody() {
   auto frameDuration = tpAfterFrame - tpBeforeFrame;
 
   if (lockFps) {
-    auto delay = chrono::microseconds{static_cast<int64_t>(1e+6 / targetFps)} - frameDuration;
+    auto delay = chrono::microseconds(static_cast<int>(1e+6 / targetFps)) - frameDuration;
     this_thread::sleep_for(delay);
   }
 
 #ifdef EMSCRIPTEN
-  if (exiting) emscripten_cancel_main_loop();
+  if (exiting) {
+    emscripten_cancel_main_loop();
+  }
 #endif
 }
 
