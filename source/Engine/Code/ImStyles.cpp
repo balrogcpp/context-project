@@ -968,16 +968,23 @@ void SetupImGuiStyle_DarkCustom() {
 void SetupImGuiStyle_RedCustom() {
   ImGuiStyle &style = ImGui::GetStyle();
 
+  style.WindowRounding = 6;
+  style.ChildRounding = 6;
+  style.FrameRounding = 2;
+  style.GrabRounding = 2;
+  style.PopupRounding = 2;
+  style.ScrollbarSize = 9;
+  style.FramePadding = ImVec2(6.0f, 3.0f);
+  style.ItemSpacing = ImVec2(4.0f, 4.0f);
+  
   style.Colors[ImGuiCol_WindowBg] = ImColor(0, 0, 0, 230);
   style.Colors[ImGuiCol_Border] = ImColor(0, 0, 0, 0);
   style.Colors[ImGuiCol_Button] = ImColor(31, 30, 31, 255);
   style.Colors[ImGuiCol_ButtonActive] = ImColor(239, 73, 88, 255);
   style.Colors[ImGuiCol_ButtonHovered] = ImColor(173, 55, 65, 255);
   style.Colors[ImGuiCol_FrameBg] = ImColor(31, 30, 31, 255);
-
   style.Colors[ImGuiCol_FrameBgActive] = ImColor(44, 43, 44, 255);
   style.Colors[ImGuiCol_FrameBgHovered] = ImColor(37, 36, 37, 255);
-
   style.Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
   style.Colors[ImGuiCol_ChildBg] = ImColor(33, 34, 45, 255);
   style.Colors[ImGuiCol_CheckMark] = ImColor(240, 50, 66, 255);
