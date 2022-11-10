@@ -12,66 +12,48 @@ void Menu::OnClean() { GetComponent<SystemLocator>().OnClean(); }
 
 void Menu::OnSetUp() {
   // GetComponent<VideoManager>().GetWindow().SetMouseRelativeMode(true);
-// GetComponent<VideoManager>().GetWindow().SetFullscreen(true);
+  // GetComponent<VideoManager>().GetWindow().SetFullscreen(true);
 #ifdef ANDROID
   GetComponent<CompositorManager>().SetFixedViewportSize(1024, 768);
 #endif
-  //  GetComponent<SceneManager>().LoadFromFile("1.scene");
-  //  GetComponent<SkyManager>().SetUpSky();
+  GetComponent<SceneManager>().LoadFromFile("1.scene");
+  GetComponent<SkyManager>().SetUpSky();
   // GetComponent<CompositorManager>().SetCompositorEnabled("Blur", true);
-
-  //auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
+  // auto *font = GetComponent<VideoManager>().AddFont("NotoSans-Regular");
   GetComponent<VideoManager>().ShowOverlay(true);
-  // ImStyle::SetupImGuiStyle_DiscordDark();
-  ImStyle::SetupImGuiStyle_DarkCustom();
+  ImStyle::SetupImGuiStyle_RedCustom();
 }
 
 void Menu::OnUpdate(float time) {
-  static ImGuiIO &io = ImGui::GetIO();
+  const static ImGuiIO &io = ImGui::GetIO();
+  const static auto *viewport = ImGui::GetMainViewport();
+
   Ogre::ImGuiOverlay::NewFrame();
 
-  ImGui::ShowDemoWindow();
-  ImGui::ShowMetricsWindow();
+  float vx = viewport->Size.x, vy = viewport->Size.y;
+  float scale = 0.9;
+  float border = 0.5 - 0.5 * scale;
+
+  ImGui::SetNextWindowPos({border * vx, border * vy});
+  ImGui::SetNextWindowSize({scale * vx, scale * vy});
+  ImGui::SetNextWindowBgAlpha(0.2);
+  ImGui::Begin("Settings", 0, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+
+  static int tab;
+  std::vector<std::string> types{" Window", " Errors", " Info"};
+
+  DrawTabHorizontally("Styles", ImVec2(ImGetWidth(), 50), types, tab);
+
+  const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
+  ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), true, ImGuiWindowFlags_HorizontalScrollbar);
+  ImGui::EndChild();
+
+  ImGui::End();
 
   // fps counter
-  // ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
-  // ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
-  // ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
-  // ImGui::SetNextWindowBgAlpha(0.5);
-  // ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-  // ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-  // ImGui::End();
-
-  static bool use_work_area = true;
-  // const ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
-  const auto *viewport = ImGui::GetMainViewport();
-  //  ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
-  //  ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize : viewport->Size);
-  //  ImGui::SetNextWindowBgAlpha(0.5);
-  //  ImGui::Begin("Example: Fullscreen window", nullptr);
-  //  ImGui::End();
-
-  // ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5, io.DisplaySize.y * 0.5), ImGuiCond_Always, ImVec2(0.5, 0.5));
-  // ImGui::SetNextWindowSize({0, 0}, ImGuiCond_Always);
-  // ImGui::SetNextWindowBgAlpha(0.5);
-  //  ImGui::SetNextWindowCollapsed(false, ImGuiCond_Always);
-  //  ImGui::Begin("Menu");
-  //  ImGui::BeginChild("Menu", nullptr);
-
-  //  ImGui::NewLine();
-  //  if (ImGui::Button(u8"Back to game")) {
-  //  }
-
-  //  ImGui::End();
-  //  ImGui::End();
-
-  //    ImGui::NewLine();
-  //    if (ImGui::Button(u8"    Main Menu")) {
-  //      //ChangeState(make_unique<MenuAppState>());
-  //    }
-  //    ImGui::NewLine();
-  //    if (ImGui::Button(u8"    Quit game")) {
-  //      //ChangeState();
-  //    }
+  ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
+  ImGui::Begin("FPS", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoInputs);
+  ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+  ImGui::End();
 }
 }  // namespace Glue

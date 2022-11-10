@@ -1,6 +1,48 @@
 /// created by Andrey Vasiliev
 
 #include "ImStyles.h"
+#include <algorithm>
+#include <imgui_internal.h>
+
+void DrawTabHorizontally(std::string childName, ImVec2 childSize, std::vector<std::string> tabNames, int &selectedSubTab) {
+  int length = tabNames.front().length();  // get shortest string length
+  int strIndex = 1;
+  for (int i = 1; i < tabNames.size(); i++) {
+    if (length > tabNames.at(i).length()) {
+      length = tabNames.at(i).length();
+      strIndex = i;
+    }
+  }
+
+  ImGui::BeginChild(childName.c_str(), childSize, true, ImGuiWindowFlags_HorizontalScrollbar);
+
+  int minWidth = GetTextLength(tabNames.at(strIndex).c_str()).x;
+  int maxWidth = 200;
+
+  int btnWidth = (ImGetWidth() - ImGui::GetStyle().ItemSpacing.x * (tabNames.size())) / tabNames.size();
+  int btnHeight = std::clamp(ImGetHeight(), 20.0f, 60.0f);
+  btnWidth = (std::max)(minWidth, (std::min)(btnWidth, maxWidth));
+
+  {  // center buttons
+    // tell Dear ImGui to render the button at the new pos
+    ImGui::SetCursorPosX((childSize.x - btnWidth * tabNames.size() - ImGui::GetStyle().ItemSpacing.x) / 2);
+  }
+
+  ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5);  // round buttons
+  for (int i = 0; i < tabNames.size(); i++) {
+    std::string it = tabNames.at(i);
+    ImGui::PushStyleColor(ImGuiCol_Button,
+                          selectedSubTab == i ? ImGui::GetStyle().Colors[ImGuiCol_ButtonActive] : ImGui::GetStyle().Colors[ImGuiCol_Button]);
+    ImGui::PushStyleColor(ImGuiCol_Text, selectedSubTab == i ? ImGui::GetStyle().Colors[ImGuiCol_Text] : rgbaToVec4(140, 140, 140, 255));
+
+    if (ImGui::Button(it.c_str(), ImVec2(btnWidth, btnHeight))) selectedSubTab = i;
+    ImGui::SameLine();
+    ImGui::PopStyleColor(2);
+  }
+  ImGui::PopStyleVar();
+
+  ImGui::EndChild();
+}
 
 namespace Spectrum {
 // a list of changes introduced to change the look of the widgets.
@@ -976,7 +1018,7 @@ void SetupImGuiStyle_RedCustom() {
   style.ScrollbarSize = 9;
   style.FramePadding = ImVec2(6.0f, 3.0f);
   style.ItemSpacing = ImVec2(4.0f, 4.0f);
-  
+
   style.Colors[ImGuiCol_WindowBg] = ImColor(0, 0, 0, 230);
   style.Colors[ImGuiCol_Border] = ImColor(0, 0, 0, 0);
   style.Colors[ImGuiCol_Button] = ImColor(31, 30, 31, 255);
@@ -1096,30 +1138,28 @@ void SetupImGuiStyle_SpectrumLight() {
   style->GrabRounding = 4.0f;
 
   ImVec4 *colors = style->Colors;
-  colors[ImGuiCol_Text] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY800);  // text on hovered controls is gray900
+  colors[ImGuiCol_Text] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY800);
   colors[ImGuiCol_TextDisabled] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY500);
   colors[ImGuiCol_WindowBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY100);
   colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-  colors[ImGuiCol_PopupBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY50);  // not sure about this. Note: applies to tooltips too.
+  colors[ImGuiCol_PopupBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY50);
   colors[ImGuiCol_Border] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY300);
-  colors[ImGuiCol_BorderShadow] = ImGui::ColorConvertU32ToFloat4(Spectrum::Static::NONE);  // We don't want shadows. Ever.
-  colors[ImGuiCol_FrameBg] =
-      ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY75);  // this isnt right, spectrum does not do this, but it's a good fallback
+  colors[ImGuiCol_BorderShadow] = ImGui::ColorConvertU32ToFloat4(Spectrum::Static::NONE);
+  colors[ImGuiCol_FrameBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY75);
   colors[ImGuiCol_FrameBgHovered] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY50);
   colors[ImGuiCol_FrameBgActive] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY200);
-  colors[ImGuiCol_TitleBg] =
-      ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY300);  // those titlebar values are totally made up, spectrum does not have this.
+  colors[ImGuiCol_TitleBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY300);
   colors[ImGuiCol_TitleBgActive] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY200);
   colors[ImGuiCol_TitleBgCollapsed] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY400);
   colors[ImGuiCol_MenuBarBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY100);
-  colors[ImGuiCol_ScrollbarBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY100);  // same as regular background
+  colors[ImGuiCol_ScrollbarBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY100);
   colors[ImGuiCol_ScrollbarGrab] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY400);
   colors[ImGuiCol_ScrollbarGrabHovered] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY600);
   colors[ImGuiCol_ScrollbarGrabActive] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY700);
   colors[ImGuiCol_CheckMark] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::BLUE500);
   colors[ImGuiCol_SliderGrab] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY700);
   colors[ImGuiCol_SliderGrabActive] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY800);
-  colors[ImGuiCol_Button] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY75);  // match default button to Spectrum's 'Action Button'.
+  colors[ImGuiCol_Button] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY75);
   colors[ImGuiCol_ButtonHovered] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY50);
   colors[ImGuiCol_ButtonActive] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::GRAY200);
   colors[ImGuiCol_Header] = ImGui::ColorConvertU32ToFloat4(Spectrum::Light::BLUE400);
@@ -1148,30 +1188,28 @@ void SetupImGuiStyle_SpectrumDark() {
   style->GrabRounding = 4.0f;
 
   ImVec4 *colors = style->Colors;
-  colors[ImGuiCol_Text] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY800);  // text on hovered controls is gray900
+  colors[ImGuiCol_Text] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY800);
   colors[ImGuiCol_TextDisabled] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY500);
   colors[ImGuiCol_WindowBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY100);
   colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-  colors[ImGuiCol_PopupBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY50);  // not sure about this. Note: applies to tooltips too.
+  colors[ImGuiCol_PopupBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY50);
   colors[ImGuiCol_Border] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY300);
-  colors[ImGuiCol_BorderShadow] = ImGui::ColorConvertU32ToFloat4(Spectrum::Static::NONE);  // We don't want shadows. Ever.
-  colors[ImGuiCol_FrameBg] =
-      ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY75);  // this isnt right, spectrum does not do this, but it's a good fallback
+  colors[ImGuiCol_BorderShadow] = ImGui::ColorConvertU32ToFloat4(Spectrum::Static::NONE);
+  colors[ImGuiCol_FrameBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY75);
   colors[ImGuiCol_FrameBgHovered] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY50);
   colors[ImGuiCol_FrameBgActive] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY200);
-  colors[ImGuiCol_TitleBg] =
-      ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY300);  // those titlebar values are totally made up, spectrum does not have this.
+  colors[ImGuiCol_TitleBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY300);
   colors[ImGuiCol_TitleBgActive] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY200);
   colors[ImGuiCol_TitleBgCollapsed] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY400);
   colors[ImGuiCol_MenuBarBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY100);
-  colors[ImGuiCol_ScrollbarBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY100);  // same as regular background
+  colors[ImGuiCol_ScrollbarBg] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY100);
   colors[ImGuiCol_ScrollbarGrab] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY400);
   colors[ImGuiCol_ScrollbarGrabHovered] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY600);
   colors[ImGuiCol_ScrollbarGrabActive] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY700);
   colors[ImGuiCol_CheckMark] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::BLUE500);
   colors[ImGuiCol_SliderGrab] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY700);
   colors[ImGuiCol_SliderGrabActive] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY800);
-  colors[ImGuiCol_Button] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY75);  // match default button to Spectrum's 'Action Button'.
+  colors[ImGuiCol_Button] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY75);
   colors[ImGuiCol_ButtonHovered] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY50);
   colors[ImGuiCol_ButtonActive] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::GRAY200);
   colors[ImGuiCol_Header] = ImGui::ColorConvertU32ToFloat4(Spectrum::Dark::BLUE400);
@@ -1193,5 +1231,20 @@ void SetupImGuiStyle_SpectrumDark() {
   colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
   colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
   colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+}
+
+void SetupImGuiStyle_NeverBlue() {
+  // Enemymouse style by enemymouse from ImThemes
+  ImVec4 *colors = ImGui::GetStyle().Colors;
+}
+
+void SetupImGuiStyle_NeverDark() {
+  // Enemymouse style by enemymouse from ImThemes
+  ImVec4 *colors = ImGui::GetStyle().Colors;
+}
+
+void SetupImGuiStyle_NeverLight() {
+  // Enemymouse style by enemymouse from ImThemes
+  ImVec4 *colors = ImGui::GetStyle().Colors;
 }
 }  // namespace ImStyle
