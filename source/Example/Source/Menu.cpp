@@ -31,21 +31,21 @@ void Menu::OnUpdate(float time) {
   Ogre::ImGuiOverlay::NewFrame();
 
   float vx = viewport->Size.x, vy = viewport->Size.y;
-  float scale = 0.9;
+  float scale = 0.95;
   float border = 0.5 - 0.5 * scale;
 
   ImGui::SetNextWindowPos({border * vx, border * vy});
   ImGui::SetNextWindowSize({scale * vx, scale * vy});
   ImGui::SetNextWindowBgAlpha(0.2);
-  ImGui::Begin("Settings", 0, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+  ImGui::Begin("Settings", 0, ImGuiWindowFlags_NoDecoration);
 
   static int tab;
-  std::vector<std::string> types{" Window", " Errors", " Info"};
+  std::vector<std::string> types{" Window", " Errors", " Info", "AnotherTab"};
 
   DrawTabHorizontally("Styles", ImVec2(ImGetWidth(), 50), types, tab);
 
   const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-  ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), true, ImGuiWindowFlags_HorizontalScrollbar);
+  ImGui::BeginChild("ScrollingRegion", ImVec2(0, -0), true, ImGuiWindowFlags_NoInputs);
   ImGui::EndChild();
 
   ImGui::End();
@@ -53,7 +53,7 @@ void Menu::OnUpdate(float time) {
   // fps counter
   ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
   ImGui::Begin("FPS", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoInputs);
-  ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+  ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
   ImGui::End();
 }
 }  // namespace Glue
